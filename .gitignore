@@ -1,0 +1,21 @@
+# Output local Maven/JVM; nu face parte din sursa ATF.
+target/
+artifacts/
+.presentation-build/
+_mmdc-config.json
+_render_*.mmd
+_render_*.png
+hs_err_pid*.log
+reports/
+.speech-cache/
+models/
+.venv/
+__pycache__/
+*.pyc
+
+# IDE-uri și fișiere locale.
+.idea/
+*.iml
+.classpath
+.project
+.settings/
