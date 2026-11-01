@@ -11,7 +11,7 @@ VM.
   selected from J3 after comparing J1/J2/J3 and checking that the shared Java
   sources match the current J0 baseline.
 - `lib/atf-core-1.0.0-c2.{jar,pom}` and
-  `lib/atf-reporting-1.0.0-j9.{jar,pom}`: binary consumer dependencies. J4
+  `lib/atf-reporting-1.0.0-j10.{jar,pom}`: binary consumer dependencies. J4
   records their hashes and source lineage in `library-provenance.json`.
 - Core and Reporting implementation and contract tests remain owned by J0.
   J4 owns only Android integration and consumer-specific report composition.
@@ -26,40 +26,42 @@ connection, what was actually exercised, and known display limitations.
 - `atf-tests`: J4-owned cross-module acceptance and architecture catalog.
 - The four copied shared foundation modules and Core/Reporting binary pairs.
 
-## Build and device check
+## Component and Android tests
 
-Requires JDK 21 and Maven. Run from this directory:
-
-```powershell
-mvn package
-```
-
-The Android device check is deliberately skipped unless enabled. To run it after
-the emulator is available:
+Requires JDK 21 and Maven. The default build does not contact the emulator.
+For the complete headless run, with the Podman emulator already booted and the
+app installed, run:
 
 ```powershell
-$env:ADB_SERVER_SOCKET='tcp:192.168.56.1:5038'
-$env:ATF_ANDROID_ADB='X:\scrcpy-win64-v5.0.1\adb.exe'
-$env:ATF_ANDROID_SERIAL='emulator-5554'
-mvn -pl atf-test-android -am test "-Datf.android.enabled=true"
+.\scripts\run-deep-tests.ps1
 ```
 
-The test requires the package to have already been installed through Play
-Store. It does not install apps or authenticate accounts. It checks the menu,
-instructions, high-score name prompt, game setup selectors, bidding, and one
-hand-card interaction, and resume rendering for six seconds after app restart.
-A run stores UI hierarchies, screenshots, and a Reporting J9 HTML report in
-`atf-test-android/target/android-artifacts/`. The captured run
-from 1 November 2026 is preserved in
-[`artifacts/deep-app-test/`](artifacts/deep-app-test/android-gameplay.html).
-Do not collect logcat by default: it can contain personal or account data.
+The script runs each module's component tests, then the named Android component
+and live-gameplay suites. `scrcpy` can stay closed; the emulator and host ADB
+bridge must remain up.
+It saves a timestamped run folder under `artifacts/deep-app-test/runs/` and
+publishes one Extent HTML report. Android screenshots are attached to named UI
+checkpoints through Reporting J10, with inline Base64 data URIs; Surefire XML,
+text output, and UI hierarchy files remain linked as diagnostics.
+
+Each run writes final-extent-report.html inside its timestamped run folder. The
+latest verified run is artifacts/deep-app-test/runs/20261101-164823/: both
+Android E2E tests passed, and the Extent report contains 13 inline PNG Base64
+data URIs generated through Reporting J10. The report publisher contract test
+also passed against the exact screenshot payloads. See the [final Extent
+report](artifacts/deep-app-test/runs/20261101-164823/final-extent-report.html)
+and [Android test notes](docs/ATF_Android_Whist_Testing.md) for coverage and
+limits.
 
 The app has a serious visual rendering problem on this emulator (neon-green
 table/background, oversized and overlapping content, and hand cards clipped at
-the bottom). The interaction test passes, but the screenshots are not a visual
-acceptance pass. Multiplayer and full-game scoring are not covered yet.
-The Multiplayer entry currently prompts to edit the player name; the probe
-pressed Cancel and did not enter an online session.
+the bottom). The Extent report marks visual acceptance as WARNING and contains
+the screenshots and UI trees. Multiplayer was not entered and full-match
+scoring was not tested. The app was not reinstalled, and the Google account was
+not modified.
+
+For the package layout, activation properties, report flow, and standalone
+commands, see [Android test organization](docs/ANDROID_TESTING.md).
 
 When adding a new business consumer, copy only the specific adapter or tests
 it needs. Keep generic harness, backend contracts, and Reporting implementation

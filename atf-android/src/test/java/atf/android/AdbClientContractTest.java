@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import atf.testkit.AtfComponentTest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class AdbClientContractTest {
+@AtfComponentTest
+public class AdbClientContractTest {
     @Test
     void requiresAnExplicitNonBlankDeviceSerial() {
         assertThrows(IllegalArgumentException.class,

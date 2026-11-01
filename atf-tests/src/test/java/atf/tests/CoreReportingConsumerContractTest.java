@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import atf.core.reporting.duration.AtfDurationParser;
-import atf.core.reporting.contract.AtfReportStatus;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
-import atf.reporting.html.HtmlReportSession;
+import atf.reporting.contract.AtfReportStatus;
+import atf.reporting.extent.session.ExtentReportSession;
 import atf.reporting.model.ReportField;
 import atf.reporting.model.ReportObservation;
 import java.nio.file.Files;
@@ -24,13 +24,13 @@ class CoreReportingConsumerContractTest {
     }
 
     @Test
-    void reportingLibraryPublishesAConsumerHtmlReport(@TempDir Path tempDir) throws Exception {
+    void reportingLibraryPublishesAConsumerExtentReport(@TempDir Path tempDir) throws Exception {
         Path report = tempDir.resolve("consumer-contract.html");
         var settings = AtfReportConfigurationLoader.load().reportingSettings();
-        try (var session = new HtmlReportSession(report, settings);
+        try (var session = new ExtentReportSession(report, settings);
              var scenario = session.startScenario("J4 Core and Reporting consumer contract", "atf.tests",
                      "local-consumer", List.of("component", "reporting"));
-             var phase = scenario.startPhase("Publish an Extent HTML result")) {
+             var phase = scenario.startPhase("Publish an Extent result")) {
             phase.observation(new ReportObservation("Consumer integration",
                     List.of(new ReportField("Core duration parsing", "PASS"),
                             new ReportField("Reporting output path", report.toString())), List.of(), List.of()));
@@ -42,6 +42,6 @@ class CoreReportingConsumerContractTest {
         assertTrue(Files.size(report) > 2_000, "Reporting created an unexpectedly small HTML file");
         String html = Files.readString(report);
         assertTrue(html.contains("J4 Core and Reporting consumer contract"));
-        assertTrue(html.contains("Extent HTML result"));
+        assertTrue(html.contains("Publish an Extent result"));
     }
 }

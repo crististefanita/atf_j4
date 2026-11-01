@@ -1,5 +1,7 @@
-package atf.android;
+package atf.android.e2e;
 
+import atf.android.AdbClient;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -30,18 +32,26 @@ final class AndroidUiDriver {
 
     String dump() throws Exception {
         Path local = output.resolve("current-window.xml");
+        IOException lastFailure = null;
         for (int attempt = 0; attempt < 4; attempt++) {
-            var dump = adb.run("shell", "uiautomator", "dump", REMOTE_XML);
-            if (dump.succeeded()) {
-                var pull = adb.run("pull", REMOTE_XML, local.toString());
-                if (pull.succeeded() && Files.isRegularFile(local)) {
-                    String xml = Files.readString(local);
-                    if (xml.contains("<hierarchy")) return xml;
+            try {
+                var dump = adb.run("shell", "uiautomator", "dump", REMOTE_XML);
+                if (dump.succeeded()) {
+                    var pull = adb.run("pull", REMOTE_XML, local.toString());
+                    if (pull.succeeded() && Files.isRegularFile(local)) {
+                        String xml = Files.readString(local);
+                        if (xml.contains("<hierarchy")) return xml;
+                    }
                 }
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw interrupted;
+            } catch (IOException transferFailure) {
+                lastFailure = transferFailure;
             }
             Thread.sleep(350L * (attempt + 1));
         }
-        throw new IllegalStateException("UI Automator did not produce a hierarchy: " + local);
+        throw new IllegalStateException("UI Automator did not produce a hierarchy: " + local, lastFailure);
     }
 
     boolean hasText(String xml, String exactText) throws Exception {
@@ -67,6 +77,25 @@ final class AndroidUiDriver {
         List<Node> spinners = nodes(dump()).stream().filter(node -> node.className().equals("android.widget.Spinner") && node.clickable()).toList();
         if (index < 0 || index >= spinners.size()) throw new IllegalStateException("Spinner " + index + " not found; count=" + spinners.size());
         tap(spinners.get(index));
+    }
+
+    void selectSpinnerOption(int index, String expectedText) throws Exception {
+        tapSpinner(index);
+        long deadline = System.nanoTime() + Duration.ofSeconds(8).toNanos();
+        String latest;
+        do {
+            latest = dump();
+            List<Node> options = nodes(latest).stream()
+                    .filter(node -> node.className().equals("android.widget.CheckedTextView"))
+                    .filter(node -> node.text().equals(expectedText)).toList();
+            if (options.size() == 1) {
+                tap(options.get(0));
+                return;
+            }
+            Thread.sleep(250);
+        } while (System.nanoTime() < deadline);
+        throw new IllegalStateException("Spinner option '" + expectedText
+                + "' did not appear exactly once; visible texts=" + texts(latest));
     }
 
     String awaitSpinnerSelection(String expected, Duration timeout) throws Exception {
@@ -122,9 +151,58 @@ final class AndroidUiDriver {
 
     String restartToMainMenu(String packageName) throws Exception {
         adb.run("shell", "am", "force-stop", packageName).requireSuccess();
-        adb.run("shell", "am", "start", "-W", "-n", packageName + "/.Whist").requireSuccess();
-        if (isKeyboardShown()) back();
-        return awaitText("New Game", Duration.ofSeconds(15));
+        IllegalStateException lastFailure = null;
+        for (int attempt = 0; attempt < 3; attempt++) {
+            adb.run("shell", "am", "start", "-W", "-n", packageName + "/.Whist").requireSuccess();
+            if (isKeyboardShown()) back();
+            try {
+                return awaitMainMenu(Duration.ofSeconds(5));
+            } catch (IllegalStateException menuNotReady) {
+                lastFailure = menuNotReady;
+                String current = dump();
+                if (current.contains("package=\"" + packageName + "\"")) {
+                    back();
+                    try {
+                        return awaitMainMenu(Duration.ofSeconds(15));
+                    } catch (IllegalStateException restoredMenuNotReady) {
+                        lastFailure = restoredMenuNotReady;
+                    }
+                }
+            }
+        }
+        throw new IllegalStateException("Android app did not reach its main menu after relaunch: " + packageName,
+                lastFailure);
+    }
+
+    String restartToActivity(String packageName, String activity, String... intentArguments) throws Exception {
+        adb.run("shell", "am", "force-stop", packageName).requireSuccess();
+        List<String> command = new ArrayList<>(List.of("shell", "am", "start", "-W", "-n",
+                packageName + "/" + activity));
+        command.addAll(List.of(intentArguments));
+        adb.run(command.toArray(String[]::new)).requireSuccess();
+        return dump();
+    }
+
+    private String awaitMainMenu(Duration timeout) throws Exception {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        String latest;
+        do {
+            latest = dump();
+            if (hasText(latest, "New Game") && hasText(latest, "Resume Game")) {
+                if (hasText(latest, "CANCEL")) {
+                    tapText("CANCEL");
+                    continue;
+                }
+                if (hasText(latest, "START") || hasClass(latest, "android.widget.EditText")) {
+                    back();
+                    continue;
+                }
+                return latest;
+            }
+            Thread.sleep(300);
+        } while (System.nanoTime() < deadline);
+        throw new IllegalStateException("Android app did not reach an unobstructed main menu within "
+                + timeout + "; visible texts=" + texts(latest));
     }
 
     private boolean isKeyboardShown() throws Exception {
@@ -134,10 +212,12 @@ final class AndroidUiDriver {
 
     void ensureMainMenu() throws Exception {
         String xml = dump();
-        if (hasText(xml, "New Game") && hasText(xml, "Resume Game")) return;
-        back();
-        awaitText("New Game", Duration.ofSeconds(15));
-        awaitText("Resume Game", Duration.ofSeconds(5));
+        if (hasText(xml, "New Game") && hasText(xml, "Resume Game")
+                && !hasText(xml, "CANCEL") && !hasText(xml, "START")
+                && !hasClass(xml, "android.widget.EditText")) return;
+        if (hasText(xml, "CANCEL")) tapText("CANCEL");
+        else back();
+        awaitMainMenu(Duration.ofSeconds(15));
     }
 
     List<Path> capture(String label) throws Exception {
@@ -145,10 +225,30 @@ final class AndroidUiDriver {
         Path xmlFile = output.resolve(label + ".xml");
         Path imageFile = output.resolve(label + ".png");
         Files.writeString(xmlFile, xml);
-        adb.run("shell", "screencap", "-p", REMOTE_PNG).requireSuccess();
-        adb.run("pull", REMOTE_PNG, imageFile.toString()).requireSuccess();
-        if (Files.size(imageFile) < 10_000) throw new IllegalStateException("Screenshot looks incomplete: " + imageFile);
+        capturePng(imageFile);
         return List.of(xmlFile, imageFile);
+    }
+
+    private void capturePng(Path imageFile) throws Exception {
+        IOException lastFailure = null;
+        for (int attempt = 0; attempt < 3; attempt++) {
+            try {
+                Files.deleteIfExists(imageFile);
+                adb.run("shell", "screencap", "-p", REMOTE_PNG).requireSuccess();
+                adb.run("pull", REMOTE_PNG, imageFile.toString()).requireSuccess();
+                if (Files.size(imageFile) >= 10_000) return;
+                lastFailure = new IOException("Screenshot looks incomplete after ADB pull: " + imageFile);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw interrupted;
+            } catch (IOException transferFailure) {
+                lastFailure = transferFailure;
+            }
+            if (attempt < 2) Thread.sleep(500L * (attempt + 1));
+        }
+        throw lastFailure == null
+                ? new IOException("Screenshot capture failed: " + imageFile)
+                : lastFailure;
     }
 
     long countBrightNeutralPixels(Path image, double minVerticalFraction) throws Exception {
@@ -184,15 +284,13 @@ final class AndroidUiDriver {
                 int x = (int) (width * (card + 0.5) / cards);
                 adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y)).requireSuccess();
                 Thread.sleep(1_000);
-                adb.run("shell", "screencap", "-p", REMOTE_PNG).requireSuccess();
-                adb.run("pull", REMOTE_PNG, probe.toString()).requireSuccess();
+                capturePng(probe);
                 changed = countChangedPixels(before, probe, 0.67, 0.94);
                 if (changed > 3_000) {
                     // Ignore animations or transient selection flashes; the hand must
                     // remain changed in a second settled screenshot.
                     Thread.sleep(1_500);
-                    adb.run("shell", "screencap", "-p", REMOTE_PNG).requireSuccess();
-                    adb.run("pull", REMOTE_PNG, probe.toString()).requireSuccess();
+                    capturePng(probe);
                     changed = countChangedPixels(before, probe, 0.67, 0.94);
                     if (changed > 3_000) {
                         Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);

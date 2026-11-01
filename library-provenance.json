@@ -30,24 +30,24 @@
       "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
     },
     {
-      "artifact": "atf.api:atf-reporting:1.0.0-j9",
+      "artifact": "atf.api:atf-reporting:1.0.0-j10",
       "files": {
         "jar": {
-          "path": "lib/atf-reporting-1.0.0-j9.jar",
-          "sha256": "2B58E5B871CCB78AF53C5BF77F1A21B6F6EAE92D18EF5F66CAC6FF9CCA154322"
+          "path": "lib/atf-reporting-1.0.0-j10.jar",
+          "sha256": "CE527BA085FC216656B7E4DFBF11C71193FBACE2CEE17C2B40E2AEDECB0F0AC9"
         },
         "pom": {
-          "path": "lib/atf-reporting-1.0.0-j9.pom",
-          "sha256": "530F77AD397EBBAEF1FB0BD8385EDC7723B228F2C1B2B6E7B8D11450E6A0E645"
+          "path": "lib/atf-reporting-1.0.0-j10.pom",
+          "sha256": "CB2358F7899243A35716EC2ED5B39740E7B94DAF646AD4A88BDDBCB799FF64D2"
         }
       },
       "upstreamProducer": "atf_j0",
       "copySource": "atf_j3/lib",
-      "comparison": "SHA-256 matches the Reporting J9 pair in J1, J2, and J3."
+      "comparison": "SHA-256 matches the Reporting J10 pair in J1, J2, and J3."
     }
   ],
   "validation": {
-    "j4Build": "isolated package build succeeded in a unique Windows temp stage using JDK 21, Maven 3.10.0, and a stage-local Maven repository; after adding the Reporting J9 HTML report adapter, package and test sources recompiled successfully; tests were skipped",
-    "deviceAcceptance": "Integrated opt-in run passed against emulator-5554: 133 ATF Test Kit tests plus 2 Contract Whist Android UI tests (menu/setup/bidding/card play and Resume Game visibility after six seconds), all without failures. The resume probe measured 485301 bright neutral pixels immediately and after settling. UI hierarchies, screenshots, Reporting J9 reports, and Surefire results are preserved under artifacts/deep-app-test/. Multiplayer entry was inspected; Cancel was used at the player-name prompt and no online session was created. Full scoring and match completion remain untested; screenshots show serious layout/card-rendering defects."
+    "j4Build": "J4 consumes the byte-identical J10 Reporting pair used by J1/J2/J3. Android component (5/5), live E2E (2/2), and J10 inline screenshot publisher contract passed on 2026-11-01; see artifacts/deep-app-test/runs/20261101-164823/.",
+    "deviceAcceptance": "2026-11-01 run against emulator-5554: Android component suite 5/5 and Contract Whist E2E 2/2 passed. Covered menus, instructions, setup options, bidding, human card play through an AI turn, and saved-game rendering after settling. Extent report final-extent-report.html was generated through Reporting J10; 13 PNG data:image/png;base64 embeds were verified in the 7.1 MB HTML. PNGs and UI hierarchy XMLs remain under artifacts/deep-app-test/runs/20261101-164823/evidence/. Multiplayer entry was inspected; Cancel was used at the player-name prompt and no online session was created. Full match completion/scoring remain untested; screenshots show serious layout/card-rendering defects."
   }
 }
