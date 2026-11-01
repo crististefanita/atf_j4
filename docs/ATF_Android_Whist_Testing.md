@@ -74,11 +74,13 @@ WARNING pentru defectele vizuale ale aplicației originale. La rerulare, scrcpy
 poate rămâne închis; sunt suficiente emulatorul pornit și ADB.
 
 Tabla și cărțile sunt desenate într-un singur `android.view.View`, fără text sau
-controale accesibile prin UIAutomator. Testul de mutare este astfel calibrat la
-emulatorul 1080×1920 și la mâna inițială de 13 cărți (două rânduri de 6 și 7); el
-încearcă centrele cărților și compară regiunea mâinii, inclusiv o verificare
-stabilă după animație. Nu este un page object generic pentru alte rezoluții sau
-dimensiuni de mână.
+controale de carte accesibile prin UIAutomator. Captura observată pentru
+configurația cu patru jucători arată zece cărți, în două rânduri de câte cinci;
+vechea notă despre treisprezece cărți și împărțirea 6+7 era incorectă și a fost
+eliminată. Adapterul folosește centrele a cinci sloturi per rând și cere atât o
+schimbare stabilă a mâinii, cât și una în zona de joc pentru a număra mutarea.
+Geometria rămâne calibrată la emulatorul 1080×1920; distribuția din mâini mai
+mici și alte densități trebuie confirmată separat.
 
 Interacțiunea de bază funcționează: două cărți au fost jucate în ture succesive,
 iar AI-ul a încheiat levata dintre ele. Testul nu validează independent

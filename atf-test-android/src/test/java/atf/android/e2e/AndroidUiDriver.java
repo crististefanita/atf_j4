@@ -62,6 +62,24 @@ final class AndroidUiDriver {
         return nodes(xml).stream().anyMatch(node -> node.className().equals(exactClass));
     }
 
+    boolean isEnabled(String xml, String exactText) throws Exception {
+        List<Node> matches = nodes(xml).stream().filter(node -> node.text().equals(exactText)).toList();
+        if (matches.size() != 1) {
+            throw new IllegalStateException("Expected one UI element named '" + exactText
+                    + "', got " + matches.size());
+        }
+        return matches.getFirst().enabled();
+    }
+
+    List<String> disabledButtonTexts(String xml) throws Exception {
+        return nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.Button"))
+                .filter(node -> !node.enabled())
+                .map(Node::text)
+                .filter(text -> !text.isBlank())
+                .toList();
+    }
+
     List<String> texts(String xml) throws Exception {
         return nodes(xml).stream().map(Node::text).filter(text -> !text.isBlank()).toList();
     }
@@ -270,40 +288,60 @@ final class AndroidUiDriver {
     }
 
     long tapUntilHandChanges(Path before, Path after) throws Exception {
+        return tapUntilHandChangesDetailed(before, after).handChangedPixels();
+    }
+
+    CardPlayResult tapUntilHandChangesDetailed(Path before, Path after) throws Exception {
         var initial = ImageIO.read(before.toFile());
         if (initial == null) throw new IllegalStateException("Cannot decode screenshot: " + before);
         int width = initial.getWidth(), height = initial.getHeight();
         Path probe = output.resolve("card-probe.png");
-        long changed = 0;
-        // At the tested 13-card hand size the app wraps six cards over seven cards.
-        // Try each card center: off-suit cards are correctly ignored by the game.
+        List<CardTapAttempt> attempts = new ArrayList<>();
+        long handChanged = 0, tableChanged = 0;
+        // Observed 4-player hand: ten cards laid out as five slots on each row.
+        // The custom canvas exposes no accessible card nodes, so probe visible slot centers.
         for (int row = 0; row < 2; row++) {
-            int cards = row == 0 ? 6 : 7;
             int y = (int) (height * (row == 0 ? 0.74 : 0.89));
-            for (int card = 0; card < cards; card++) {
-                int x = (int) (width * (card + 0.5) / cards);
+            for (int card = 0; card < 5; card++) {
+                int x = (int) (width * (card + 0.5) / 5.0);
+                long started = System.nanoTime();
                 adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y)).requireSuccess();
-                Thread.sleep(1_000);
+                Thread.sleep(900);
                 capturePng(probe);
-                changed = countChangedPixels(before, probe, 0.67, 0.94);
-                if (changed > 3_000) {
-                    // Ignore animations or transient selection flashes; the hand must
-                    // remain changed in a second settled screenshot.
-                    Thread.sleep(1_500);
+                handChanged = countChangedPixels(before, probe, 0.67, 0.94);
+                tableChanged = countChangedPixels(before, probe, 0.20, 0.65);
+                if (handChanged > 3_000 && tableChanged > 3_000) {
+                    // Require a stable hand change and a matching table-area transition,
+                    // so a card-selection highlight alone cannot count as a played card.
+                    Thread.sleep(1_200);
                     capturePng(probe);
-                    changed = countChangedPixels(before, probe, 0.67, 0.94);
-                    if (changed > 3_000) {
+                    handChanged = countChangedPixels(before, probe, 0.67, 0.94);
+                    tableChanged = countChangedPixels(before, probe, 0.20, 0.65);
+                    boolean accepted = handChanged > 3_000 && tableChanged > 3_000;
+                    attempts.add(new CardTapAttempt(x, y, handChanged, tableChanged,
+                            Duration.ofNanos(System.nanoTime() - started).toMillis(), accepted));
+                    if (accepted) {
                         Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                         Files.deleteIfExists(probe);
-                        return changed;
+                        return new CardPlayResult(List.copyOf(attempts), handChanged, tableChanged,
+                                x, y, true);
                     }
+                } else {
+                    attempts.add(new CardTapAttempt(x, y, handChanged, tableChanged,
+                            Duration.ofNanos(System.nanoTime() - started).toMillis(), false));
                 }
             }
         }
         Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(probe);
-        return changed;
+        return new CardPlayResult(List.copyOf(attempts), handChanged, tableChanged, -1, -1, false);
     }
+
+    record CardTapAttempt(int x, int y, long handChangedPixels, long tableChangedPixels,
+            long durationMillis, boolean accepted) { }
+
+    record CardPlayResult(List<CardTapAttempt> attempts, long handChangedPixels,
+            long tableChangedPixels, int acceptedX, int acceptedY, boolean accepted) { }
 
     private long countChangedPixels(Path before, Path after, double firstRowFraction, double lastRowFraction) throws Exception {
         var left = ImageIO.read(before.toFile());
@@ -348,10 +386,11 @@ final class AndroidUiDriver {
         for (int index = 0; index < elements.getLength(); index++) {
             Element element = (Element) elements.item(index);
             result.add(new Node(element.getAttribute("text"), element.getAttribute("class"),
-                    element.getAttribute("bounds"), Boolean.parseBoolean(element.getAttribute("clickable"))));
+                    element.getAttribute("bounds"), Boolean.parseBoolean(element.getAttribute("clickable")),
+                    Boolean.parseBoolean(element.getAttribute("enabled"))));
         }
         return result;
     }
 
-    private record Node(String text, String className, String bounds, boolean clickable) { }
+    private record Node(String text, String className, String bounds, boolean clickable, boolean enabled) { }
 }

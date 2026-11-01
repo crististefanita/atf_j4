@@ -56,13 +56,18 @@ default; override it with `-AdbTimeoutSeconds`.
 ## Screenshot/report contract
 
 `AndroidScreenshotEvidence` turns each device PNG into a validated
-`ReportScreenshot` (checkpoint title plus Base64 PNG). The Android test sends
-that screenshot through `UiExtentReportSession` and the J10 `ExtentReportSession`
-as a normal UI step. Reporting owns its inline media markup and status. J4 does
-not append HTML or inject a separate image gallery after the report is closed.
+`ReportScreenshot` (checkpoint title plus Base64 PNG). Live flows write an
+atomic checkpoint manifest after every UI step so earlier evidence survives a
+later timeout or game failure. The final publisher consumes that manifest
+through J10 `ExtentReportSession` + `UiExtentReportSession`: separate scenario,
+`SETUP` / `TEST BODY` / `TEARDOWN` phases, ordered Gherkin steps, action records,
+expected/actual assertions, and the exact PNG payload attached to the step that
+captured it. Reporting owns the inline media markup and status. J4 does not
+append HTML or inject a separate image gallery after the report is closed.
 
 Original PNG and UI Automator XML files stay under the run's evidence folder for
-debugging. The HTML embeds each PNG inline in the corresponding checkpoint.
+debugging. The HTML embeds each PNG inline in the corresponding checkpoint and
+keeps the XML hierarchy as a linked audit artifact.
 
 ## Current product coverage
 

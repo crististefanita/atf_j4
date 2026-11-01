@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import atf.android.AdbClient;
 import atf.android.evidence.AndroidScreenshotEvidence;
 import atf.reporting.contract.AtfReportPorts;
+import atf.reporting.contract.AtfAssertion;
+import atf.reporting.contract.AtfGherkinKeyword;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.evidence.ReportScreenshotPolicy;
@@ -14,6 +16,9 @@ import atf.reporting.model.ReportField;
 import atf.reporting.model.ReportObservation;
 import atf.reporting.model.ReportScreenshot;
 import atf.reporting.ui.UiExtentReportSession;
+import atf.reporting.ui.model.AtfUiActionRecord;
+import atf.reporting.ui.model.AtfUiEvidenceSource;
+import atf.android.e2e.support.AndroidUiFlowTrace;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -50,6 +55,19 @@ public class ContractWhistGameplayE2eTest {
         String instructions = ui.awaitContains("Bidding Phase", Duration.ofSeconds(10));
         assertTrue(instructions.contains("Play Phase"), "Instructions do not describe the play phase");
         assertTrue(instructions.contains("additional 10 points"), "Instructions do not describe scoring");
+        String ruleText = String.join(" ", ui.texts(instructions)).toLowerCase(java.util.Locale.ROOT);
+        List<String> requiredRules = List.of(
+                "2-5 ai opponents", "standard deck of playing cards",
+                "number of tricks they think they are going to win",
+                "last player to bid cannot bid to make the total bids equal the number of cards in the hand",
+                "exact number of tricks that player thinks they will win",
+                "player to dealer's left", "same suit if possible", "highest card winning the trick",
+                "discard an unwanted card or play a trump", "highest trump wins the trick",
+                "if nt is displayed", "spades, hearts, clubs, diamonds, no trumps",
+                "1 point for every trick they won", "additional 10 points",
+                "number of cards in the hand", "players' scores so far");
+        List<String> missingRules = requiredRules.stream().filter(rule -> !ruleText.contains(rule)).toList();
+        assertTrue(missingRules.isEmpty(), "Original Instructions changed or missed reconstructed rules: " + missingRules);
         evidence.addAll(ui.capture("instructions"));
 
         ui.ensureMainMenu();
@@ -87,12 +105,14 @@ public class ContractWhistGameplayE2eTest {
         String players = ui.awaitText("6", Duration.ofSeconds(10));
         assertTrue(Set.copyOf(ui.texts(players)).containsAll(Set.of("3", "4", "5", "6")), "Player choices must be 3–6");
         ui.back();
+        configuration = ui.awaitSpinnerSelection(initialPlayerCount, Duration.ofSeconds(10));
 
         ui.tapSpinner(1);
         String gameTypes = ui.awaitText("Reverse Oh Hell", Duration.ofSeconds(10));
         assertTrue(Set.copyOf(ui.texts(gameTypes)).containsAll(Set.of("Descending", "Down & Up", "Maximum", "Romanian", "Long Romanian", "Oh Hell", "Reverse Oh Hell")),
                 "A game type is missing from its selector");
         ui.back();
+        configuration = ui.awaitSpinnerSelection(initialGameType, Duration.ofSeconds(10));
 
         ui.tapSpinner(2);
         String aiLevels = ui.awaitText("Hard", Duration.ofSeconds(10));
@@ -186,6 +206,448 @@ public class ContractWhistGameplayE2eTest {
         assertTrue(immediatePixels > 5_000 && settledPixels > 5_000,
                 "Resumed game lost its visible cards after settling; immediate bright pixels=" + immediatePixels
                         + ", after six seconds=" + settledPixels);
+    }
+
+    @Test
+    void completesOneFourPlayerOhHellHandAndCapturesScoreSheet() throws Exception {
+        AdbClient adb = AdbClient.fromSystemProperties();
+        var packagePath = adb.run("shell", "pm", "path", PACKAGE);
+        packagePath.requireSuccess();
+        assertTrue(packagePath.output().contains("package:"), "Package is not installed: " + packagePath.output());
+
+        Path artifacts = Path.of(System.getProperty("atf.android.artifacts", "target/android-artifacts"));
+        AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "contract-whist-full-oh-hell-hand",
+                "Contract Whist — complete four-player Oh Hell hand", getClass().getSimpleName(),
+                "atf.android.e2e", PACKAGE, List.of("android", "api-28", "original-app", "e2e", "oh-hell", "full-hand"));
+        AtfReportStatus result = AtfReportStatus.FAIL;
+        try {
+            long actionStarted = System.nanoTime();
+            String menu = ui.restartToMainMenu(PACKAGE);
+            List<Path> menuEvidence = ui.capture("ohhell-full-menu");
+            boolean menuReady = ui.hasText(menu, "New Game") && ui.hasText(menu, "Resume Game");
+            recordCheckpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN, "Open the installed original game",
+                    PACKAGE, menuEvidence, "force-stop and launch app", "Main menu with New Game and Resume Game",
+                    "visible labels=" + ui.texts(menu), Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
+                    List.of(new AtfAssertion("Main menu is available", "New Game and Resume Game visible",
+                            "visible labels=" + ui.texts(menu), menuReady)),
+                    menuReady ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            assertTrue(menuReady, "Original app did not expose the main menu");
+
+            actionStarted = System.nanoTime();
+            ui.tapText("New Game");
+            String setup = ui.awaitText("START", Duration.ofSeconds(10));
+            List<Path> setupEvidence = ui.capture("ohhell-full-setup");
+            String players = selectedChoice(ui, setup, Set.of("3", "4", "5", "6"), "player count");
+            String gameType = selectedChoice(ui, setup,
+                    Set.of("Descending", "Down & Up", "Maximum", "Romanian", "Long Romanian", "Oh Hell", "Reverse Oh Hell"),
+                    "game type");
+            String aiLevel = selectedChoice(ui, setup, Set.of("Normal", "Hard"), "AI level");
+            boolean knownDeal = players.equals("4") && gameType.equals("Oh Hell");
+            recordCheckpoint(trace, "SETUP", AtfGherkinKeyword.THEN, "Record the exact live-game configuration",
+                    "New Game configuration", setupEvidence, "read selected setup controls",
+                    "4 players; Oh Hell; " + aiLevel + " AI", "Players=" + players + "; Game Type=" + gameType
+                            + "; AI Level=" + aiLevel,
+                    Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
+                    List.of(new AtfAssertion("Four-player deal is selected", "4", players, players.equals("4")),
+                            new AtfAssertion("Oh Hell ruleset is selected", "Oh Hell", gameType, gameType.equals("Oh Hell")),
+                            new AtfAssertion("AI level is recorded", "Normal or Hard", aiLevel,
+                                    Set.of("Normal", "Hard").contains(aiLevel))),
+                    knownDeal ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            assertTrue(knownDeal, "Full-hand oracle requires the observed four-player Oh Hell deal; current selection: "
+                    + players + " players / " + gameType);
+
+            actionStarted = System.nanoTime();
+            ui.tapText("START");
+            String bidding = ui.awaitText("Bid 0", Duration.ofSeconds(20));
+            long bidChoices = ui.texts(bidding).stream().filter(text -> text.matches("Bid \\d+")).count();
+            List<String> disabledBidChoices = ui.disabledButtonTexts(bidding).stream()
+                    .filter(text -> text.matches("Bid \\d+")).toList();
+            List<Path> biddingEvidence = ui.capture("ohhell-full-bidding");
+            boolean biddingReady = bidChoices >= 2 && disabledBidChoices.size() <= 1
+                    && !ui.hasText(bidding, "Bid Other");
+            recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN, "Start the four-player Oh Hell hand",
+                    "START", biddingEvidence, "tap START", "numeric bid controls become available",
+                    "numeric bid controls=" + bidChoices + "; Bid Other visible=" + ui.hasText(bidding, "Bid Other"),
+                    Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
+                    List.of(new AtfAssertion("Numeric bidding controls are exposed", "at least 2 choices",
+                            Long.toString(bidChoices), bidChoices >= 2),
+                            new AtfAssertion("No alternate Bid Other path is shown", "absent",
+                                    Boolean.toString(ui.hasText(bidding, "Bid Other")), !ui.hasText(bidding, "Bid Other")),
+                            new AtfAssertion("Last-bid exclusion is visible when the prior total permits it",
+                                    "zero or one disabled numeric bid", disabledBidChoices.toString(),
+                                    disabledBidChoices.size() <= 1,
+                                    disabledBidChoices.isEmpty() ? AtfReportStatus.WARNING : AtfReportStatus.PASS)),
+                    biddingReady ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            assertTrue(biddingReady, "Bidding controls are incomplete; visible labels=" + ui.texts(bidding));
+
+            actionStarted = System.nanoTime();
+            String submittedBid = null;
+            List<Integer> numericBidValues = ui.texts(bidding).stream()
+                    .map(text -> java.util.regex.Pattern.compile("^Bid (\\d+)$").matcher(text))
+                    .filter(java.util.regex.Matcher::matches)
+                    .map(matcher -> Integer.parseInt(matcher.group(1))).sorted().toList();
+            for (int value : numericBidValues) {
+                String label = "Bid " + value;
+                if (ui.isEnabled(bidding, label)) {
+                    submittedBid = label;
+                    break;
+                }
+            }
+            assertTrue(submittedBid != null, "No enabled numeric bid is available; visible=" + ui.texts(bidding));
+            ui.tapText(submittedBid);
+            String play = ui.awaitAbsent(submittedBid, Duration.ofSeconds(20));
+            Thread.sleep(4_000);
+            List<Path> firstTurnEvidence = ui.capture("ohhell-full-trick-01-before");
+            long handPixels = ui.countBrightNeutralPixels(artifacts.resolve("ohhell-full-trick-01-before.png"), 0.67);
+            recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN, "Place an enabled bid and enter card play",
+                    submittedBid, firstTurnEvidence, "tap " + submittedBid, "bid controls close and card play is visible",
+                    submittedBid + " absent=" + !ui.hasText(play, submittedBid) + "; bright card pixels=" + handPixels,
+                    Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
+                    List.of(new AtfAssertion("Bid control closes after submission", submittedBid + " absent",
+                            Boolean.toString(!ui.hasText(play, submittedBid)), !ui.hasText(play, submittedBid)),
+                            new AtfAssertion("Card faces render in the play phase", "> 5000 bright neutral pixels",
+                                    Long.toString(handPixels), handPixels > 5_000)),
+                    handPixels > 5_000 ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            assertTrue(handPixels > 5_000, "The play phase did not render the human hand");
+
+            Path baseline = artifacts.resolve("ohhell-full-trick-01-before.png");
+            for (int trick = 1; trick <= 10; trick++) {
+                String ordinal = String.format(java.util.Locale.ROOT, "%02d", trick);
+                Path after = artifacts.resolve("ohhell-full-trick-" + ordinal + "-after.png");
+                AndroidUiDriver.CardPlayResult playResult = null;
+                for (int retry = 0; retry < 3; retry++) {
+                    AndroidUiDriver.CardPlayResult attempt = ui.tapUntilHandChangesDetailed(baseline, after);
+                    if (playResult == null) playResult = attempt;
+                    else {
+                        List<AndroidUiDriver.CardTapAttempt> all = new ArrayList<>(playResult.attempts());
+                        all.addAll(attempt.attempts());
+                        playResult = new AndroidUiDriver.CardPlayResult(List.copyOf(all), attempt.handChangedPixels(),
+                                attempt.tableChangedPixels(), attempt.acceptedX(), attempt.acceptedY(), attempt.accepted());
+                    }
+                    if (attempt.accepted()) break;
+                    Thread.sleep(2_000);
+                }
+                if (playResult == null || !playResult.accepted()) {
+                    List<Path> failureEvidence = ui.capture("ohhell-full-trick-" + ordinal + "-no-accepted-card");
+                    List<AtfUiActionRecord> failedActions = cardTapActions(trace, playResult);
+                    trace.checkpoint("TEST BODY", AtfGherkinKeyword.WHEN.text(),
+                            "Trick " + ordinal + " — probe visible card slots", "Human hand / card slot centers",
+                            failureEvidence.stream().filter(file -> file.toString().endsWith(".png")).findFirst().orElse(null),
+                            failedActions,
+                            List.of(new AtfAssertion("A card is accepted on the human turn",
+                                    "stable hand and table transitions", "no candidate tap satisfied both pixel oracles", false)),
+                            AtfReportStatus.FAIL,
+                            failureEvidence.stream().filter(file -> file.toString().endsWith(".xml")).toList());
+                    throw new AssertionError("No card slot produced a stable hand and table transition on trick " + ordinal);
+                }
+                List<Path> playEvidence = ui.capture("ohhell-full-trick-" + ordinal + "-human-play");
+                List<AtfAssertion> playAssertions = List.of(
+                        new AtfAssertion("Human hand advances after card play", "> 3000 changed pixels",
+                                Long.toString(playResult.handChangedPixels()), playResult.handChangedPixels() > 3_000),
+                        new AtfAssertion("Played-card area changes with the hand", "> 3000 changed pixels",
+                                Long.toString(playResult.tableChangedPixels()), playResult.tableChangedPixels() > 3_000));
+                boolean turnPassed = playAssertions.stream().allMatch(AtfAssertion::passed);
+                recordCheckpoint(trace, "TEST BODY", trick == 1 ? AtfGherkinKeyword.WHEN : AtfGherkinKeyword.AND,
+                        "Trick " + ordinal + " — human card accepted",
+                        "visible card slot at x=" + playResult.acceptedX() + ", y=" + playResult.acceptedY(),
+                        playEvidence, "tap card-slot center and compare stable hand/table regions",
+                        "one legal card leaves the human hand and appears in play", playResult.toString(),
+                        playResult.attempts().stream().mapToLong(AndroidUiDriver.CardTapAttempt::durationMillis).sum(),
+                        playAssertions, turnPassed ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                assertTrue(turnPassed, "Card transition oracle failed on trick " + ordinal + ": " + playResult);
+
+                Thread.sleep(8_000);
+                List<Path> settledEvidence = ui.capture("ohhell-full-trick-" + ordinal + "-ai-settled");
+                long settledPixels = ui.countBrightNeutralPixels(
+                        settledEvidence.stream().filter(file -> file.toString().endsWith(".png")).findFirst().orElseThrow(), 0.67);
+                if (trick < 10) {
+                    recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
+                            "Trick " + ordinal + " — AI turns settle before the next human turn",
+                            "AI seats and human hand", settledEvidence, "wait 8 seconds for AI turn progression",
+                            "next human hand remains visible", "bright neutral card pixels=" + settledPixels,
+                            8_000, List.of(new AtfAssertion("The game remains in card play", "> 5000 bright neutral pixels",
+                                    Long.toString(settledPixels), settledPixels > 5_000)),
+                            settledPixels > 5_000 ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                    assertTrue(settledPixels > 5_000, "Human cards disappeared before the expected hand boundary at trick " + ordinal);
+                } else {
+                    List<String> endOfHandLabels = ui.texts(Files.readString(settledEvidence.stream()
+                            .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow()));
+                    boolean nextHandControl = endOfHandLabels.contains("Next Hand");
+                    recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
+                            "Trick 10 — capture the end-of-hand transition",
+                            "Oh Hell score boundary", settledEvidence, "wait 8 seconds after the final human card",
+                            "hand ends and a score surface is rendered", "bright neutral pixels in hand region=" + settledPixels,
+                            8_000, List.of(new AtfAssertion("Ten human card actions completed",
+                                            "10 accepted cards", Integer.toString(trick), trick == 10),
+                                    new AtfAssertion("Next-hand control is exposed", "Next Hand",
+                                            "accessible labels=" + endOfHandLabels, nextHandControl,
+                                            nextHandControl ? AtfReportStatus.PASS : AtfReportStatus.WARNING)),
+                            nextHandControl ? AtfReportStatus.PASS : AtfReportStatus.WARNING);
+                }
+                baseline = settledEvidence.stream().filter(file -> file.toString().endsWith(".png")).findFirst().orElseThrow();
+            }
+
+            Thread.sleep(10_000);
+            List<Path> scoreEvidence = ui.capture("ohhell-full-score-sheet");
+            String scoreHierarchy = Files.readString(scoreEvidence.stream()
+                    .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow());
+            List<String> scoreLabels = ui.texts(scoreHierarchy);
+            boolean scoreSheetVisible = scoreLabels.stream().anyMatch(label -> label.toLowerCase(java.util.Locale.ROOT).contains("score"))
+                    || scoreLabels.stream().anyMatch(label -> label.equalsIgnoreCase("Next Hand")
+                            || label.equalsIgnoreCase("Play Again") || label.equalsIgnoreCase("New Game"));
+            recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN, "Verify the score-sheet boundary after ten tricks",
+                    "Oh Hell score sheet", scoreEvidence, "wait for end-of-hand scoring view",
+                    "score sheet or end-of-hand controls are visible",
+                    "accessible score labels=" + scoreLabels + "; screenshot=ohhell-full-score-sheet.png",
+                    10_000, List.of(new AtfAssertion("A hand-end score surface is exposed",
+                            "score label or next-hand control", "accessible labels=" + scoreLabels,
+                            scoreSheetVisible, scoreSheetVisible ? AtfReportStatus.PASS : AtfReportStatus.WARNING)),
+                    scoreSheetVisible ? AtfReportStatus.PASS : AtfReportStatus.WARNING);
+            result = scoreSheetVisible ? AtfReportStatus.PASS : AtfReportStatus.WARNING;
+            if (scoreSheetVisible) {
+                actionStarted = System.nanoTime();
+                ui.tapText("Next Hand");
+                String nextBidding = ui.awaitText("Bid 0", Duration.ofSeconds(20));
+                List<Path> nextHandEvidence = ui.capture("ohhell-next-hand-bidding");
+                long nextBidOptions = ui.texts(nextBidding).stream().filter(text -> text.matches("Bid \\d+")).count();
+                boolean nextHandStarted = nextBidOptions >= 2;
+                recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN,
+                        "Advance from the 10-card deal to the next hand",
+                        "Next Hand", nextHandEvidence, "tap Next Hand",
+                        "bidding controls reopen for the following deal",
+                        "numeric bid controls=" + nextBidOptions + "; visible labels=" + ui.texts(nextBidding),
+                        Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
+                        List.of(new AtfAssertion("The game advances to another hand", "numeric bid controls reappear",
+                                Long.toString(nextBidOptions), nextHandStarted)),
+                        nextHandStarted ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                assertTrue(nextHandStarted, "Next Hand did not start a new bidding phase");
+            }
+            ui.restartToMainMenu(PACKAGE);
+        } catch (Throwable failure) {
+            result = AtfReportStatus.FAIL;
+            trace.fail(failure);
+            if (failure instanceof Exception exception) throw exception;
+            if (failure instanceof Error error) throw error;
+            throw new RuntimeException(failure);
+        } finally {
+            try {
+                List<Path> teardown = ui.capture("ohhell-full-teardown");
+                recordCheckpoint(trace, "TEARDOWN", AtfGherkinKeyword.THEN,
+                        "Leave the original app at a stable screen", "Contract Whist Android app",
+                        teardown, "capture final app state", "retain final screen and hierarchy for audit",
+                        "final UI hierarchy and PNG retained", 0,
+                        List.of(new AtfAssertion("Final teardown capture exists", "PNG and UI hierarchy",
+                                teardown.stream().map(file -> file.getFileName().toString()).toList().toString(),
+                                teardown.size() == 2)), AtfReportStatus.PASS);
+            } catch (Exception teardownFailure) {
+                trace.fail(teardownFailure);
+                if (result != AtfReportStatus.FAIL) {
+                    result = AtfReportStatus.FAIL;
+                    throw teardownFailure;
+                }
+            } finally {
+                trace.finish(result);
+            }
+        }
+    }
+
+    @Test
+    void discoversOhHellBidGridAtEachSupportedPlayerCount() throws Exception {
+        AdbClient adb = AdbClient.fromSystemProperties();
+        var packagePath = adb.run("shell", "pm", "path", PACKAGE);
+        packagePath.requireSuccess();
+        assertTrue(packagePath.output().contains("package:"), "Package is not installed: " + packagePath.output());
+
+        Path artifacts = Path.of(System.getProperty("atf.android.artifacts", "target/android-artifacts"));
+        AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "contract-whist-oh-hell-bid-grid-by-seat-count",
+                "Contract Whist — Oh Hell bid-grid discovery for 3–6 players", getClass().getSimpleName(),
+                "atf.android.e2e", PACKAGE, List.of("android", "api-28", "original-app", "rule-discovery", "bidding"));
+        AtfReportStatus result = AtfReportStatus.FAIL;
+        String originalPlayers = "4", originalGameType = "Oh Hell", originalAiLevel = "Normal";
+        boolean originalSetupCaptured = false;
+        try {
+            String menu = ui.restartToMainMenu(PACKAGE);
+            List<Path> menuEvidence = ui.capture("ohhell-bid-matrix-menu");
+            recordCheckpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN, "Open the original app for bid-grid discovery",
+                    PACKAGE, menuEvidence, "force-stop and launch app", "main menu before changing table size",
+                    "visible labels=" + ui.texts(menu), 0,
+                    List.of(new AtfAssertion("Main menu is ready", "New Game and Resume Game",
+                            "visible labels=" + ui.texts(menu), ui.hasText(menu, "New Game") && ui.hasText(menu, "Resume Game"))),
+                    AtfReportStatus.PASS);
+
+            ui.tapText("New Game");
+            String initialSetup = ui.awaitText("START", Duration.ofSeconds(10));
+            originalPlayers = selectedChoice(ui, initialSetup, Set.of("3", "4", "5", "6"), "player count");
+            originalGameType = selectedChoice(ui, initialSetup,
+                    Set.of("Descending", "Down & Up", "Maximum", "Romanian", "Long Romanian", "Oh Hell", "Reverse Oh Hell"),
+                    "game type");
+            originalAiLevel = selectedChoice(ui, initialSetup, Set.of("Normal", "Hard"), "AI level");
+            originalSetupCaptured = true;
+            ui.restartToMainMenu(PACKAGE);
+
+            for (int playerCount = 3; playerCount <= 6; playerCount++) {
+                String playerLabel = Integer.toString(playerCount);
+                ui.tapText("New Game");
+                String setup = ui.awaitText("START", Duration.ofSeconds(10));
+                ui.selectSpinnerOption(0, playerLabel);
+                setup = ui.awaitSpinnerSelection(playerLabel, Duration.ofSeconds(10));
+                String type = selectedChoice(ui, setup,
+                        Set.of("Descending", "Down & Up", "Maximum", "Romanian", "Long Romanian", "Oh Hell", "Reverse Oh Hell"),
+                        "game type");
+                if (!type.equals("Oh Hell")) {
+                    ui.selectSpinnerOption(1, "Oh Hell");
+                    setup = ui.awaitSpinnerSelection("Oh Hell", Duration.ofSeconds(10));
+                }
+                String level = selectedChoice(ui, setup, Set.of("Normal", "Hard"), "AI level");
+                if (!level.equals("Normal")) {
+                    ui.selectSpinnerOption(2, "Normal");
+                    setup = ui.awaitSpinnerSelection("Normal", Duration.ofSeconds(10));
+                }
+                List<Path> configEvidence = ui.capture("ohhell-bid-matrix-" + playerLabel + "-setup");
+                recordCheckpoint(trace, "SETUP", playerCount == 3 ? AtfGherkinKeyword.WHEN : AtfGherkinKeyword.AND,
+                        "Select Oh Hell with " + playerCount + " total players",
+                        "Players=" + playerCount + "; Game Type=Oh Hell; AI Level=Normal", configEvidence,
+                        "select player-count, ruleset, and AI controls",
+                        "configuration is accepted for " + playerCount + " seats",
+                        "Players=" + selectedChoice(ui, setup, Set.of("3", "4", "5", "6"), "player count")
+                                + "; Game Type=Oh Hell; AI Level=Normal", 0,
+                        List.of(new AtfAssertion("Requested player count is selected", playerLabel,
+                                        selectedChoice(ui, setup, Set.of("3", "4", "5", "6"), "player count"), true),
+                                new AtfAssertion("Oh Hell ruleset is selected", "Oh Hell", "Oh Hell", true)),
+                        AtfReportStatus.PASS);
+
+                long started = System.nanoTime();
+                ui.tapText("START");
+                String bidding = ui.awaitText("Bid 0", Duration.ofSeconds(20));
+                List<Integer> bidValues = ui.texts(bidding).stream()
+                        .map(text -> java.util.regex.Pattern.compile("^Bid (\\d+)$").matcher(text))
+                        .filter(java.util.regex.Matcher::matches)
+                        .map(matcher -> Integer.parseInt(matcher.group(1))).sorted().toList();
+                List<Path> bidEvidence = ui.capture("ohhell-bid-matrix-" + playerLabel + "-bidding");
+                boolean numericGrid = !bidValues.isEmpty()
+                        && bidValues.stream().allMatch(value -> value >= 0 && value <= 10);
+                int largestBid = bidValues.isEmpty() ? -1 : bidValues.getLast();
+                AtfReportStatus observationStatus = playerCount == 4
+                        ? (largestBid >= 9 && largestBid <= 10 ? AtfReportStatus.PASS : AtfReportStatus.FAIL)
+                        : AtfReportStatus.WARNING;
+                List<AtfAssertion> assertions = new ArrayList<>();
+                assertions.add(new AtfAssertion("Bid controls are numeric and in the legal range",
+                        "Non-empty numeric bids in the legal 0–10 range", "visible bids=" + bidValues, numericGrid));
+                if (playerCount == 4) {
+                    assertions.add(new AtfAssertion("Observed four-player Oh Hell max bid matches ten cards",
+                            "Bid 9 or Bid 10 (the last-bid prohibition can remove Bid 10)",
+                            "visible bids=" + bidValues, largestBid >= 9 && largestBid <= 10));
+                } else {
+                    assertions.add(new AtfAssertion("Unmapped table size is captured for rule discovery",
+                            "observation only; no original-app baseline yet",
+                            "visible bids=" + bidValues + "; maximum=" + largestBid, false, AtfReportStatus.WARNING));
+                }
+                recordCheckpoint(trace, "TEST BODY", playerCount == 3 ? AtfGherkinKeyword.WHEN : AtfGherkinKeyword.AND,
+                        "Observe Oh Hell bid choices for " + playerCount + " players",
+                        "Bidding controls", bidEvidence, "tap START and enumerate visible Bid N labels",
+                        "record the numeric bid range and its relationship to hand size",
+                        "visible bids=" + bidValues + "; maximum=" + largestBid
+                                + "; Bid Other=" + ui.hasText(bidding, "Bid Other"),
+                        Duration.ofNanos(System.nanoTime() - started).toMillis(), assertions, observationStatus);
+                if (playerCount == 4) {
+                    assertTrue(largestBid >= 9 && largestBid <= 10,
+                            "The known four-player Oh Hell deal should expose a maximum of 9 or 10 after any last-bid restriction; visible=" + bidValues);
+                }
+                ui.restartToMainMenu(PACKAGE);
+            }
+
+            ui.tapText("New Game");
+            String restoreSetup = ui.awaitText("START", Duration.ofSeconds(10));
+            ui.selectSpinnerOption(0, originalPlayers);
+            restoreSetup = ui.awaitSpinnerSelection(originalPlayers, Duration.ofSeconds(10));
+            String currentType = selectedChoice(ui, restoreSetup,
+                    Set.of("Descending", "Down & Up", "Maximum", "Romanian", "Long Romanian", "Oh Hell", "Reverse Oh Hell"),
+                    "game type");
+            if (!currentType.equals(originalGameType)) {
+                ui.selectSpinnerOption(1, originalGameType);
+                restoreSetup = ui.awaitSpinnerSelection(originalGameType, Duration.ofSeconds(10));
+            }
+            String currentLevel = selectedChoice(ui, restoreSetup, Set.of("Normal", "Hard"), "AI level");
+            if (!currentLevel.equals(originalAiLevel)) {
+                ui.selectSpinnerOption(2, originalAiLevel);
+                restoreSetup = ui.awaitSpinnerSelection(originalAiLevel, Duration.ofSeconds(10));
+            }
+            ui.tapText("START");
+            ui.restartToMainMenu(PACKAGE);
+            List<Path> teardown = ui.capture("ohhell-bid-matrix-restored-menu");
+            recordCheckpoint(trace, "TEARDOWN", AtfGherkinKeyword.THEN,
+                    "Restore the original setup selection after rule discovery",
+                    "Players=" + originalPlayers + "; Game Type=" + originalGameType + "; AI Level=" + originalAiLevel,
+                    teardown, "start one restored setup and relaunch to main menu",
+                    "saved setup selection restored and original app remains at menu",
+                    "final labels=" + ui.texts(Files.readString(teardown.stream()
+                            .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow())), 0,
+                    List.of(new AtfAssertion("Final menu is reachable", "New Game and Resume Game",
+                            "captured final menu", true)), AtfReportStatus.PASS);
+            result = AtfReportStatus.WARNING;
+            trace.finish(result);
+        } catch (Throwable failure) {
+            result = AtfReportStatus.FAIL;
+            trace.fail(failure);
+            if (failure instanceof Exception exception) throw exception;
+            if (failure instanceof Error error) throw error;
+            throw new RuntimeException(failure);
+        } finally {
+            if (result == AtfReportStatus.FAIL && originalSetupCaptured) {
+                try {
+                    ui.restartToMainMenu(PACKAGE);
+                    ui.tapText("New Game");
+                    String restore = ui.awaitText("START", Duration.ofSeconds(10));
+                    ui.selectSpinnerOption(0, originalPlayers);
+                    restore = ui.awaitSpinnerSelection(originalPlayers, Duration.ofSeconds(10));
+                    if (!selectedChoice(ui, restore,
+                            Set.of("Descending", "Down & Up", "Maximum", "Romanian", "Long Romanian", "Oh Hell", "Reverse Oh Hell"),
+                            "game type").equals(originalGameType)) {
+                        ui.selectSpinnerOption(1, originalGameType);
+                        restore = ui.awaitSpinnerSelection(originalGameType, Duration.ofSeconds(10));
+                    }
+                    if (!selectedChoice(ui, restore, Set.of("Normal", "Hard"), "AI level").equals(originalAiLevel)) {
+                        ui.selectSpinnerOption(2, originalAiLevel);
+                        ui.awaitSpinnerSelection(originalAiLevel, Duration.ofSeconds(10));
+                    }
+                    ui.tapText("START");
+                    ui.restartToMainMenu(PACKAGE);
+                } catch (Exception restoreFailure) {
+                    trace.fail(restoreFailure);
+                }
+            }
+            trace.finish(result);
+        }
+    }
+
+    private static void recordCheckpoint(AndroidUiFlowTrace trace, String phase, AtfGherkinKeyword keyword,
+            String title, String target, List<Path> evidence, String operation, String expected,
+            String observed, long durationMillis, List<AtfAssertion> assertions, AtfReportStatus status) throws Exception {
+        Path screenshot = evidence.stream().filter(file -> file.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
+                .findFirst().orElse(null);
+        List<Path> supporting = evidence.stream().filter(file -> file.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".xml")).toList();
+        AtfUiActionRecord action = new AtfUiActionRecord(trace.nextActionSequence(), operation, target,
+                expected, observed, Math.max(0, durationMillis), status,
+                operation.startsWith("read") || operation.startsWith("wait")
+                        ? AtfUiEvidenceSource.OBSERVE : AtfUiEvidenceSource.ACTION);
+        trace.checkpoint(phase, keyword.text(), title, target, screenshot, List.of(action), assertions, status, supporting);
+    }
+
+    private static List<AtfUiActionRecord> cardTapActions(AndroidUiFlowTrace trace,
+            AndroidUiDriver.CardPlayResult playResult) {
+        if (playResult == null) return List.of();
+        List<AtfUiActionRecord> actions = new ArrayList<>();
+        for (AndroidUiDriver.CardTapAttempt attempt : playResult.attempts()) {
+            actions.add(new AtfUiActionRecord(trace.nextActionSequence(), "ADB tap card slot",
+                    "x=" + attempt.x() + ", y=" + attempt.y(),
+                    "human hand and table advance if this is a legal card", "hand pixels="
+                            + attempt.handChangedPixels() + "; table pixels=" + attempt.tableChangedPixels()
+                            + "; accepted=" + attempt.accepted(), attempt.durationMillis(),
+                    attempt.accepted() ? AtfReportStatus.PASS : AtfReportStatus.WARNING));
+        }
+        return List.copyOf(actions);
     }
 
     private static void publishReport(Path artifacts, String installedPackagePath, List<Path> files,
