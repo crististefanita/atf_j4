@@ -1,103 +1,62 @@
 # Android test organization
 
-J4 follows the component/E2E split used by J1–J3 and keeps Android-specific
-work in J4.
+J4 follows the component/E2E split used by J1–J3 and keeps Android-specific work in J4.
 
 ## Test layers
 
-- **Component:** `atf-android` owns `AdbClient` and the screenshot evidence
-  adapter. `atf.android.suites.AndroidComponentSuite` runs these contracts
-  locally and does not need an emulator.
-- **E2E:** `atf-test-android` owns Contract Whist original-app flows and the
-  Whist Lab local-app adapter under `atf.android.e2e`.
-  `ContractWhistE2eSuite` targets the original app; serialized
-  `AndroidGameplayE2eSuite` runs both apps against the shared emulator.
-- **Final report:** `atf-tests` summarizes Surefire results, diagnostics, the
-  live-game outcome, and visual findings in one Extent report.
+- **Component:** `atf-android` owns `AdbClient` and screenshot evidence. `AndroidComponentSuite` runs without an emulator.
+- **E2E:** `atf-test-android` owns Contract Whist and Whist Lab UI flows. The parallel app project is nested at `whist-lab-app/`.
+- **Final report:** `atf-tests` aggregates Surefire results, UI flow manifests, diagnostics, visual observations, and inline screenshots through Reporting J10.
 
 ## Running
 
-The ordinary Maven build does not contact a device. Run the local adapter suite
-with:
+The ordinary Maven build does not contact a device. Run the Android adapter contracts with:
 
 ```powershell
 mvn -pl atf-android -Dtest=AndroidComponentSuite test
 ```
 
-Run the original app flow only when the emulator is booted and ADB is reachable:
+Run the original app flow when the emulator is booted and ADB is reachable:
 
 ```powershell
 mvn -pl atf-test-android -Dtest=ContractWhistE2eSuite `
   -Datf.android.enabled=true `
   -Datf.android.serial=emulator-5554 `
--Datf.android.commandTimeoutSeconds=90 `
-  -Datf.android.artifacts=artifacts/android `
+  -Datf.android.commandTimeoutSeconds=90 `
+  -Datf.android.artifacts=C:\work\whist_back\deep-app-test\probes\original-app `
   test
 ```
 
-Run the combined original and local app acceptance suite (install Whist Lab
-first, or use the full runner below):
+The standard full run is `scripts/run-deep-tests.ps1`. It builds `game-core` and the APK, installs Whist Lab, configures the host ADB bridge, runs all component and Android suites, and publishes one aggregate report. `scrcpy` can stay closed. Android and ADB must stay available.
+
+This VM run used the local SDK client because `X:` was not mounted in the shell:
 
 ```powershell
-mvn -pl atf-test-android -Dtest=AndroidGameplayE2eSuite `
-  -Datf.android.enabled=true `
-  -Datf.android.serial=emulator-5554 `
-  -Datf.android.artifacts=artifacts/android `
-  test
+.\scripts\run-deep-tests.ps1 `
+  -AdbExecutable 'C:\tools\whist-android-sdk\platform-tools\adb.exe' `
+  -AdbServerSocket 'tcp:192.168.56.1:5038'
 ```
 
-The standard full run is `scripts/run-deep-tests.ps1`. It builds the Whist Lab
-core and APK, installs the APK, configures the host ADB bridge, runs module and
-named-suite results for both apps, stores timestamped evidence, and publishes
-the aggregate report. `scrcpy` is optional; Android and ADB must stay
-available. The remote host ADB bridge gets a 90-second command timeout by
-default; override it with `-AdbTimeoutSeconds`.
+The runner's default evidence root is `C:\work\whist_back\deep-app-test\runs\<run-id>`, outside the J4 source tree. Override it with `-EvidenceRoot` if needed.
 
 ## Screenshot/report contract
 
-`AndroidScreenshotEvidence` turns each device PNG into a validated
-`ReportScreenshot` (checkpoint title plus Base64 PNG). Live flows write an
-atomic checkpoint manifest after every UI step so earlier evidence survives a
-later timeout or game failure. The final publisher consumes that manifest
-through J10 `ExtentReportSession` + `UiExtentReportSession`: separate scenario,
-`SETUP` / `TEST BODY` / `TEARDOWN` phases, ordered Gherkin steps, action records,
-expected/actual assertions, and the exact PNG payload attached to the step that
-captured it. Reporting owns the inline media markup and status. J4 does not
-append HTML or inject a separate image gallery after the report is closed.
-
-Original PNG and UI Automator XML files stay under the run's evidence folder for
-debugging. The HTML embeds each PNG inline in the corresponding checkpoint and
-keeps the XML hierarchy as a linked audit artifact.
+`AndroidScreenshotEvidence` validates each device PNG as a `ReportScreenshot`. Live flows write atomic manifests with `SETUP` / `TEST BODY` / `TEARDOWN` phases, ordered Gherkin checkpoints, actions, assertions, and image paths. The publisher consumes those manifests through J10 `ExtentReportSession` and `UiExtentReportSession`; each PNG is attached inline as Base64 to its checkpoint. UI hierarchy XML and original PNGs remain as linked audit evidence. J4 does not append HTML or inject a second gallery after publication.
 
 ## Current product coverage
 
-The original live flow checks menu content, instructions and scoring copy,
-setup options, bidding, two human card plays separated by an AI turn, and
-saved-game rendering after settling. Whist Lab runs a deterministic full trick,
-verifies the exact-bid score, and resumes an in-progress trick after the Android
-process is force-stopped. Its pure Java tests simulate complete descending
-matches for 3–6 players and restore checkpoints from bidding, mid-trick, and
-score phases. The original app's full match and computed score are not yet
-verified; multiplayer remains untested. The original app's display defects
-remain a WARNING in the report.
+The original app flows cover menu and full instruction text, High Scores state, every player/game/AI setup option, bid grids at 3–6 seats, saved-game rendering after resume, and a guarded 4-player Oh Hell hand-end. The score flow selects human `Bid 0`, stops probing as soon as `Next Hand` appears, and verifies that the following hand exposes `Bid 0` through `Bid 9` with `Bid 10` absent. The adapter's raster interaction cycles do not identify card faces or prove the exact number of accepted human cards.
+
+Whist Lab covers deterministic exact-bid scoring, process-death resume, and its default four-player Oh Hell setup. `game-core` simulates complete descending matches for 3–6 players and tests checkpoint restoration from bidding, mid-trick, and score phases. The original app's full match, individual trick winners, and numeric score formula remain unverified; multiplayer is untested.
 
 ## Latest verified run
 
-Run 20261101-195037 completed on 2026-11-01. The Android component suite
-passed 5/5 contracts. The combined Android E2E suite passed 3/3 flows: the
-original app passed both menu/setup/gameplay and saved-game rendering checks;
-Whist Lab passed the exact-bid trick after a force-stop and resume. The setup
-test inspects every player-count, game-type, and AI choice, closes selectors
-without changing them, and confirms the starting selections remain intact.
+Run `20261101-222629` completed on 2026-11-01. Android component contracts passed 6/6. Android E2E passed 6/6 tests: four original-app flows and two Whist Lab flows. The J4 reactor produced 498 Surefire cases: 497 passed, zero failures/errors, and one opt-in publisher test skipped in the ordinary module pass. The Extent publisher then ran explicitly and passed. Whist Lab's Gradle core passed 29/29 tests; `:app:assembleDebug` succeeded and the APK installed on API 28.
 
-The J4 reactor produced 494 Surefire cases: 493 passed and one report publisher
-test was intentionally skipped in the ordinary module pass. The publisher then
-ran explicitly and passed. Separately, Whist Lab's Gradle core suite passed
-20/20 tests and `:app:assembleDebug` succeeded. The final Extent report is
-7,076,637 bytes and contains 15 inline PNG Base64 images; the run folder retains
-the PNGs, UI hierarchy XML, module XML/TXT results, and logs. The report
-includes the verified `You | Bid 1 | Won 1 | +11 | Total: 11` row.
+The final Extent report is 16,805,609 bytes with 42 inline PNG Base64 data URIs. Its run folder retains 56 PNGs, 50 UI hierarchy XML files, four UI flow manifests, module results, and logs:
 
-The original app's display defect warning remains: cards and content are
-clipped or oversized on this emulator. Its full match, computed score, and
-multiplayer session were not verified.
+`C:\work\whist_back\deep-app-test\runs\20261101-222629\final-extent-report.html`
+
+The first-hand score sheet was manually transcribed as Player 5, Hilary 0, Hubert 1, and Phyllis 4. The row sums to 10, conditionally consistent with ten trick points and no exact-bid bonus. This does not verify each player's tricks or bids. In the next hand, the hierarchy lists the complete `Bid 0`–`Bid 9` domain and disabled `Bid 1`; the screenshot shows 9 cards and previous bids totaling 8, so `8 + 1 = 9` reconciles with the last-bid exclusion rule. The visible row and bidding counters are manual visual evidence, not OCR output.
+
+The report remains WARNING because the original app has severe display defects: neon-green background, oversized/overlapping labels, distorted cards, and clipped hand cards. Full-match completion, repeated controlled scoring cases, trick winner decoding, and multiplayer remain open.

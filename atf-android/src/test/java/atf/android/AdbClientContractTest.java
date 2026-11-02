@@ -1,6 +1,7 @@
 package atf.android;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,5 +46,20 @@ public class AdbClientContractTest {
         assertFalse(failure.succeeded());
         IOException error = assertThrows(IOException.class, failure::requireSuccess);
         assertTrue(error.getMessage().contains("offline"));
+    }
+
+    @Test
+    void binaryResultPreservesScreenshotBytesAndDefensivelyCopiesPayload() throws Exception {
+        byte[] pngSignature = new byte[] {(byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
+        AdbClient.BinaryResult result = new AdbClient.BinaryResult(0, pngSignature, "",
+                List.of("adb", "-s", "emulator-5554", "exec-out", "screencap", "-p"));
+        pngSignature[0] = 0;
+
+        assertTrue(result.succeeded());
+        assertArrayEquals(new byte[] {(byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a}, result.output());
+        byte[] returned = result.output();
+        returned[0] = 0;
+        assertEquals((byte) 0x89, result.output()[0]);
+        assertTrue(result.command().contains("screencap"));
     }
 }

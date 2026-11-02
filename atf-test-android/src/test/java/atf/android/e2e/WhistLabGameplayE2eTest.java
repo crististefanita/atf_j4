@@ -35,7 +35,7 @@ public class WhistLabGameplayE2eTest {
     private static final String PACKAGE = "ro.whistlab.app";
 
     @Test
-    void defaultFourPlayerOhHellMatchesTheObservedTenCardHandAndFlagsTrumpMismatch() throws Exception {
+    void defaultFourPlayerOhHellMatchesTheObservedTenCardHandAndSuitedTrump() throws Exception {
         AdbClient adb = AdbClient.fromSystemProperties();
         var packagePath = adb.run("shell", "pm", "path", PACKAGE);
         packagePath.requireSuccess();
@@ -84,7 +84,7 @@ public class WhistLabGameplayE2eTest {
             List<String> visibleTrumpLabels = ui.texts(bidding).stream()
                     .filter(label -> label.startsWith("Trump:")).toList();
             boolean recognizedTrump = visibleTrumpLabels.size() == 1 && Set.of(
-                    "Trump: Spades", "Trump: Hearts", "Trump: Clubs", "Trump: Diamonds", "Trump: No trump")
+                    "Trump: Spades", "Trump: Hearts", "Trump: Clubs", "Trump: Diamonds")
                     .contains(visibleTrumpLabels.getFirst());
             boolean biddingReady = ui.hasText(bidding, "Place your bid")
                     && recognizedTrump;
@@ -92,24 +92,20 @@ public class WhistLabGameplayE2eTest {
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Start the default four-player Oh Hell deal",
                     "4 players; Oh Hell; Normal AI", biddingEvidence,
-                    "tap Start game", "Hand 1 has 10 cards, a recognized trump value, and awaits a human bid; parity is unresolved",
+                    "tap Start game", "Hand 1 has 10 cards, a suited trump value, and awaits a human bid",
                     "visible labels=" + ui.texts(bidding)
                             + "; original samples by seats 3/4/5/6 showed Diamonds/Hearts/Clubs/Spades",
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.of(new AtfAssertion("First hand size matches the observed original", "10 cards in this hand",
                                     Boolean.toString(ui.hasText(bidding, "10 cards in this hand")),
                                     ui.hasText(bidding, "10 cards in this hand")),
-                            new AtfAssertion("A supported trump value is rendered", "one of Spades, Hearts, Clubs, Diamonds, No trumps",
+                            new AtfAssertion("An Oh Hell trump suit is rendered", "one of Spades, Hearts, Clubs, Diamonds",
                                     visibleTrumpLabels.toString(), recognizedTrump),
                             new AtfAssertion("Human can place the first bid", "Place your bid",
-                                    Boolean.toString(ui.hasText(bidding, "Place your bid")), ui.hasText(bidding, "Place your bid")),
-                            new AtfAssertion("Trump sequence parity remains an open rule question",
-                                    "Repeat fresh sessions and observe a complete five-value cycle",
-                                    "original first-hand samples for 3/4/5/6 seats: Diamonds/Hearts/Clubs/Spades; one 4-seat next hand: Diamonds; instructions list Spades, Hearts, Clubs, Diamonds, No trumps",
-                                    false, AtfReportStatus.WARNING)),
-                    biddingReady ? AtfReportStatus.WARNING : AtfReportStatus.FAIL);
+                                    Boolean.toString(ui.hasText(bidding, "Place your bid")), ui.hasText(bidding, "Place your bid"))),
+                    biddingReady ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
             assertTrue(biddingReady, "Default Oh Hell first hand did not reach the human bidding state");
-            result = AtfReportStatus.WARNING;
+            result = AtfReportStatus.PASS;
             trace.finish(result);
         } catch (Throwable failure) {
             result = AtfReportStatus.FAIL;

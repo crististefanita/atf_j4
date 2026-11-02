@@ -3,13 +3,17 @@ param(
     [string]$Serial = 'emulator-5554',
     [string]$AdbServerSocket = 'tcp:192.168.56.1:5038',
     [int]$AdbTimeoutSeconds = 90,
-    [string]$WhistLabProject = 'C:\work\1\whist_lab_app',
+    [string]$WhistLabProject = '',
+    [string]$EvidenceRoot = 'C:\work\whist_back\deep-app-test',
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk'
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$evidenceRoot = Join-Path $root 'artifacts\deep-app-test'
+if ([string]::IsNullOrWhiteSpace($WhistLabProject)) {
+    $WhistLabProject = Join-Path $root 'whist-lab-app'
+}
+$evidenceRoot = $EvidenceRoot
 $runId = Get-Date -Format 'yyyyMMdd-HHmmss'
 $runRoot = Join-Path $evidenceRoot (Join-Path 'runs' $runId)
 $componentResults = Join-Path $runRoot 'components'

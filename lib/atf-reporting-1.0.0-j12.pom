@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>atf.api</groupId>
     <artifactId>atf-reporting</artifactId>
-    <version>1.0.0-j10</version>
+    <version>1.0.0-j12</version>
     <name>ATF Reporting</name>
     <description>Standalone semantic renderer and reporting contract library.</description>
     <properties>
@@ -17,6 +17,9 @@
         <surefire.failIfNoSpecifiedTests>true</surefire.failIfNoSpecifiedTests>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.jsoup</groupId><artifactId>jsoup</artifactId><version>1.23.2</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>

@@ -30,24 +30,375 @@
       "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
     },
     {
-      "artifact": "atf.api:atf-reporting:1.0.0-j10",
+      "artifact": "atf.api:atf-reporting:1.0.0-j12",
       "files": {
         "jar": {
-          "path": "lib/atf-reporting-1.0.0-j10.jar",
-          "sha256": "CE527BA085FC216656B7E4DFBF11C71193FBACE2CEE17C2B40E2AEDECB0F0AC9"
+          "path": "lib/atf-reporting-1.0.0-j12.jar",
+          "sha256": "1F1B7B5502FEFEA02F500C2FC80494859D4E57E38261306B57FA7AD2D5AB38B1"
         },
         "pom": {
-          "path": "lib/atf-reporting-1.0.0-j10.pom",
-          "sha256": "CB2358F7899243A35716EC2ED5B39740E7B94DAF646AD4A88BDDBCB799FF64D2"
+          "path": "lib/atf-reporting-1.0.0-j12.pom",
+          "sha256": "F3F300B4E5F0625BE637373FBEAFB6B475AEFC68121D767D0EAD377742680028"
         }
       },
       "upstreamProducer": "atf_j0",
-      "copySource": "atf_j3/lib",
-      "comparison": "SHA-256 matches the Reporting J10 pair in J1, J2, and J3."
+      "copySource": "atf_j0 parentless J12 publication",
+      "comparison": "Same Reporting J12 pair as J1/J2/J3; Android domain/device acceptance remains separate",
+      "producerInputs": {
+        "files": 409,
+        "sha256": "681BFB147FC4065D5158B8A67A7ED4C51F40446D71F8D55938EA77A6C2F25B8C",
+        "nativeTests": [
+          {
+            "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneArtifactProfileTest.java",
+            "sha256": "BF0870B1BAD55498696989EDAAF35C7B17E5FBEDBEC6FAF90B228C18C95C2C40"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneInspectionResultTest.java",
+            "sha256": "6470578F575163851723967EB30DC028D3126376DCBCE5A71D1E1BB90ED34F10"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/json/ReportingStandaloneJsonFidelityTest.java",
+            "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
+            "sha256": "A8C07D18F5DD9A54F0060CACC4A2CEBB56BD5DF2CCC36E629020F0CA4604FB72"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
+            "sha256": "29D357B8B6A6705E65F845ACC290146A24EDA5D94EC69AD70ECF58C714A247BA"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEnvironmentSnapshotTest.java",
+            "sha256": "2D2BD48956B6B0132C06D561F232E2C2468411A0CB3616B730A06CD9C3270452"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEvidenceLayoutTest.java",
+            "sha256": "CCE0286F5C72B7594B6EA93470D13B1A2D70A89AC4E8B3369350BC0FE9AE6D87"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneObservationTest.java",
+            "sha256": "0F18DD7CE941B16E37B2AFDFA17CA4E93BB2F872AE7AD72A7243D8CE98F8BFE1"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneVerdictComponentTest.java",
+            "sha256": "4BC5E57541808DCF007F8E05AFC7D4504C212AFF670D07A9362DBC7CA4BB4FD1"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/source/ReportingModuleSource.java",
+            "sha256": "00FD26CAB91F72FFBE291CE635647A5F664B22B086A9A6C444CC792D9506D20A"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/source/ReportingSourceArchitectureTest.java",
+            "sha256": "109D8B6E26D72600B07A26EE9E15CA0EF17923D9FC0FC1F28DF65BAD2E5EE074"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRules.java",
+            "sha256": "5896EF9D48823375F27CA7949106EC787F60409158DCEA8513DC4E173B1AFEF2"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRulesTest.java",
+            "sha256": "ED01C4CD0F0BE551D5B8BD5889A1D56BFBA58D6A4D7BDE9C9804119F8C55BD89"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/tags/ReportingStandaloneTagCompatibilityTest.java",
+            "sha256": "FE1CFCBFAABB8CB5A6C8B18E9910F13E45EB0315B50D148E253C921DBDEEAA4D"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/timing/ReportingStandaloneTransportTimingTest.java",
+            "sha256": "A9185780FD883AECE1A55398964068267C7BF0956B54C585E4413495B549B5B7"
+          },
+          {
+            "path": "src/test/java/atf/reporting/standalone/validation/ReportingStandaloneValidationDisclosureTest.java",
+            "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
+          }
+        ]
+      }
     }
   ],
   "validation": {
-    "j4Build": "J4 consumes the byte-identical J10 Reporting pair used by J1/J2/J3. Android component (5/5), live E2E (2/2), and J10 inline screenshot publisher contract passed on 2026-11-01; see artifacts/deep-app-test/runs/20261101-164823/.",
-    "deviceAcceptance": "2026-11-01 run against emulator-5554: Android component suite 5/5 and Contract Whist E2E 2/2 passed. Covered menus, instructions, setup options, bidding, human card play through an AI turn, and saved-game rendering after settling. Extent report final-extent-report.html was generated through Reporting J10; 13 PNG data:image/png;base64 embeds were verified in the 7.1 MB HTML. PNGs and UI hierarchy XMLs remain under artifacts/deep-app-test/runs/20261101-164823/evidence/. Multiplayer entry was inspected; Cancel was used at the player-name prompt and no online session was created. Full match completion/scoring remain untested; screenshots show serious layout/card-rendering defects."
+    "j4Build": "J4 consumes the byte-identical Core C2 and Reporting J10 pairs used by J1/J2/J3. Full run 20261101-222629: component suites passed, all six Android E2E tests passed, 29/29 Whist Lab game-core tests passed, and the inline screenshot publisher passed. See C:\\work\\whist_back\\deep-app-test\\runs\\20261101-222629\\.",
+    "deviceAcceptance": "2026-11-01 run against emulator-5554 (Android API 28): J4 reported 498 Surefire cases, 497 passed, zero failures/errors, and one opt-in publisher test skipped in the ordinary module pass; the publisher then ran explicitly and passed. Android component tests 6/6; live E2E 6/6 (Contract Whist 4/4, Whist Lab 2/2); game-core 29/29. The final Extent report after publishing the manual evidence note is 16,805,609 bytes with 42 inline PNG Base64 data URIs; evidence is outside J4 at C:\\work\\whist_back\\deep-app-test\\runs\\20261101-222629\\. The first-hand score row is manually transcribed and conditionally consistent, not an independent trick oracle. The next-hand 9-card bid grid and disabled Bid 1 were captured. Full match, trick winner decoding, and multiplayer remain unverified; serious rendering defects keep visual acceptance at WARNING.",
+    "recordedWithReporting": "1.0.0-j11; retained historical device evidence, not rerun by this library upgrade"
+  },
+  "history": [
+    {
+      "consumer": "atf_j4",
+      "created": "2026-11-01",
+      "sharedSource": {
+        "sourceSnapshot": "atf_j3",
+        "comparison": "J1/J2/J3 shared module trees compared with J0; J3 was selected as latest consumer snapshot with the smallest shared-code delta. J3's Kit/Mock/Validation/Console Java sources match J0; remaining differences are documentation and consumer POM metadata.",
+        "copiedModules": [
+          "atf-test-kit",
+          "atf-mock",
+          "atf-validation",
+          "atf-console"
+        ],
+        "ownership": "J0 remains the source owner for Core, Reporting, and generic contract tests. J4 owns only Android adapters, J4 acceptance, and consumer report composition."
+      },
+      "libraries": [
+        {
+          "artifact": "atf.api:atf-core:1.0.0-c2",
+          "files": {
+            "jar": {
+              "path": "lib/atf-core-1.0.0-c2.jar",
+              "sha256": "91080FE996CCB358B7E42B8F147322B3D4468D84C364DFD259371EEEF9AFD5DB"
+            },
+            "pom": {
+              "path": "lib/atf-core-1.0.0-c2.pom",
+              "sha256": "C31CAE6EA04B626B9FB6C5FE0DDAE916520762B7463316CC0886E71576A2CA72"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j3/lib",
+          "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
+        },
+        {
+          "artifact": "atf.api:atf-reporting:1.0.0-j10",
+          "files": {
+            "jar": {
+              "path": "lib/atf-reporting-1.0.0-j10.jar",
+              "sha256": "CE527BA085FC216656B7E4DFBF11C71193FBACE2CEE17C2B40E2AEDECB0F0AC9"
+            },
+            "pom": {
+              "path": "lib/atf-reporting-1.0.0-j10.pom",
+              "sha256": "CB2358F7899243A35716EC2ED5B39740E7B94DAF646AD4A88BDDBCB799FF64D2"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j3/lib",
+          "comparison": "SHA-256 matches the Reporting J10 pair in J1, J2, and J3."
+        }
+      ],
+      "validation": {
+        "j4Build": "J4 consumes the byte-identical J10 Reporting pair used by J1/J2/J3. Android component (5/5), live E2E (2/2), and J10 inline screenshot publisher contract passed on 2026-11-01; see artifacts/deep-app-test/runs/20261101-164823/.",
+        "deviceAcceptance": "2026-11-01 run against emulator-5554: Android component suite 5/5 and Contract Whist E2E 2/2 passed. Covered menus, instructions, setup options, bidding, human card play through an AI turn, and saved-game rendering after settling. Extent report final-extent-report.html was generated through Reporting J10; 13 PNG data:image/png;base64 embeds were verified in the 7.1 MB HTML. PNGs and UI hierarchy XMLs remain under artifacts/deep-app-test/runs/20261101-164823/evidence/. Multiplayer entry was inspected; Cancel was used at the player-name prompt and no online session was created. Full match completion/scoring remain untested; screenshots show serious layout/card-rendering defects."
+      }
+    },
+    {
+      "consumer": "atf_j4",
+      "created": "2026-11-01",
+      "sharedSource": {
+        "sourceSnapshot": "atf_j3",
+        "comparison": "J1/J2/J3 shared module trees compared with J0; J3 was selected as latest consumer snapshot with the smallest shared-code delta. J3's Kit/Mock/Validation/Console Java sources match J0; remaining differences are documentation and consumer POM metadata.",
+        "copiedModules": [
+          "atf-test-kit",
+          "atf-mock",
+          "atf-validation",
+          "atf-console"
+        ],
+        "ownership": "J0 remains the source owner for Core, Reporting, and generic contract tests. J4 owns only Android adapters, J4 acceptance, and consumer report composition."
+      },
+      "libraries": [
+        {
+          "artifact": "atf.api:atf-core:1.0.0-c2",
+          "files": {
+            "jar": {
+              "path": "lib/atf-core-1.0.0-c2.jar",
+              "sha256": "91080FE996CCB358B7E42B8F147322B3D4468D84C364DFD259371EEEF9AFD5DB"
+            },
+            "pom": {
+              "path": "lib/atf-core-1.0.0-c2.pom",
+              "sha256": "C31CAE6EA04B626B9FB6C5FE0DDAE916520762B7463316CC0886E71576A2CA72"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j3/lib",
+          "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
+        },
+        {
+          "artifact": "atf.api:atf-reporting:1.0.0-j10",
+          "files": {
+            "jar": {
+              "path": "lib/atf-reporting-1.0.0-j10.jar",
+              "sha256": "CE527BA085FC216656B7E4DFBF11C71193FBACE2CEE17C2B40E2AEDECB0F0AC9"
+            },
+            "pom": {
+              "path": "lib/atf-reporting-1.0.0-j10.pom",
+              "sha256": "CB2358F7899243A35716EC2ED5B39740E7B94DAF646AD4A88BDDBCB799FF64D2"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j3/lib",
+          "comparison": "SHA-256 matches the Reporting J10 pair in J1, J2, and J3."
+        }
+      ],
+      "validation": {
+        "j4Build": "J4 consumes the byte-identical Core C2 and Reporting J10 pairs used by J1/J2/J3. Full run 20261101-222629: component suites passed, all six Android E2E tests passed, 29/29 Whist Lab game-core tests passed, and the inline screenshot publisher passed. See C:\\work\\whist_back\\deep-app-test\\runs\\20261101-222629\\.",
+        "deviceAcceptance": "2026-11-01 run against emulator-5554 (Android API 28): J4 reported 498 Surefire cases, 497 passed, zero failures/errors, and one opt-in publisher test skipped in the ordinary module pass; the publisher then ran explicitly and passed. Android component tests 6/6; live E2E 6/6 (Contract Whist 4/4, Whist Lab 2/2); game-core 29/29. The final Extent report after publishing the manual evidence note is 16,805,609 bytes with 42 inline PNG Base64 data URIs; evidence is outside J4 at C:\\work\\whist_back\\deep-app-test\\runs\\20261101-222629\\. The first-hand score row is manually transcribed and conditionally consistent, not an independent trick oracle. The next-hand 9-card bid grid and disabled Bid 1 were captured. Full match, trick winner decoding, and multiplayer remain unverified; serious rendering defects keep visual acceptance at WARNING."
+      }
+    },
+    {
+      "consumer": "atf_j4",
+      "created": "2026-11-01",
+      "sharedSource": {
+        "sourceSnapshot": "atf_j3",
+        "comparison": "J1/J2/J3 shared module trees compared with J0; J3 was selected as latest consumer snapshot with the smallest shared-code delta. J3's Kit/Mock/Validation/Console Java sources match J0; remaining differences are documentation and consumer POM metadata.",
+        "copiedModules": [
+          "atf-test-kit",
+          "atf-mock",
+          "atf-validation",
+          "atf-console"
+        ],
+        "ownership": "J0 remains the source owner for Core, Reporting, and generic contract tests. J4 owns only Android adapters, J4 acceptance, and consumer report composition."
+      },
+      "libraries": [
+        {
+          "artifact": "atf.api:atf-core:1.0.0-c2",
+          "files": {
+            "jar": {
+              "path": "lib/atf-core-1.0.0-c2.jar",
+              "sha256": "91080FE996CCB358B7E42B8F147322B3D4468D84C364DFD259371EEEF9AFD5DB"
+            },
+            "pom": {
+              "path": "lib/atf-core-1.0.0-c2.pom",
+              "sha256": "C31CAE6EA04B626B9FB6C5FE0DDAE916520762B7463316CC0886E71576A2CA72"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j3/lib",
+          "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
+        },
+        {
+          "artifact": "atf.api:atf-reporting:1.0.0-j11",
+          "files": {
+            "jar": {
+              "path": "lib/atf-reporting-1.0.0-j11.jar",
+              "sha256": "20072F4DF0B9326476D7DAD3C889DCAF824BC1930B595AFBEE0E1C5253AD867F"
+            },
+            "pom": {
+              "path": "lib/atf-reporting-1.0.0-j11.pom",
+              "sha256": "A9192906B1793F020F167FC2D4F309CA4D4202D3D06EB79171E3DFEDB30B535C"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j0 parentless J11 publication",
+          "comparison": "Same Reporting J11 pair as J1/J2/J3; Android domain/device acceptance remains separate",
+          "producerInputs": {
+            "files": 400,
+            "sha256": "A238ACE757282A15B3414C961FECC6351EC8EFD70228F3167040C4C54CDCDA50",
+            "nativeTests": [
+              {
+                "path": "src/test/java/atf/reporting/standalone/json/ReportingStandaloneJsonFidelityTest.java",
+                "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
+                "sha256": "A8C07D18F5DD9A54F0060CACC4A2CEBB56BD5DF2CCC36E629020F0CA4604FB72"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
+                "sha256": "29D357B8B6A6705E65F845ACC290146A24EDA5D94EC69AD70ECF58C714A247BA"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEnvironmentSnapshotTest.java",
+                "sha256": "2D2BD48956B6B0132C06D561F232E2C2468411A0CB3616B730A06CD9C3270452"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEvidenceLayoutTest.java",
+                "sha256": "CCE0286F5C72B7594B6EA93470D13B1A2D70A89AC4E8B3369350BC0FE9AE6D87"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneObservationTest.java",
+                "sha256": "0F18DD7CE941B16E37B2AFDFA17CA4E93BB2F872AE7AD72A7243D8CE98F8BFE1"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneVerdictComponentTest.java",
+                "sha256": "4BC5E57541808DCF007F8E05AFC7D4504C212AFF670D07A9362DBC7CA4BB4FD1"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/source/ReportingModuleSource.java",
+                "sha256": "00FD26CAB91F72FFBE291CE635647A5F664B22B086A9A6C444CC792D9506D20A"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/source/ReportingSourceArchitectureTest.java",
+                "sha256": "109D8B6E26D72600B07A26EE9E15CA0EF17923D9FC0FC1F28DF65BAD2E5EE074"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRules.java",
+                "sha256": "5896EF9D48823375F27CA7949106EC787F60409158DCEA8513DC4E173B1AFEF2"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRulesTest.java",
+                "sha256": "ED01C4CD0F0BE551D5B8BD5889A1D56BFBA58D6A4D7BDE9C9804119F8C55BD89"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/tags/ReportingStandaloneTagCompatibilityTest.java",
+                "sha256": "FE1CFCBFAABB8CB5A6C8B18E9910F13E45EB0315B50D148E253C921DBDEEAA4D"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/validation/ReportingStandaloneValidationDisclosureTest.java",
+                "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
+              }
+            ]
+          }
+        }
+      ],
+      "validation": {
+        "j4Build": "J4 consumes the byte-identical Core C2 and Reporting J10 pairs used by J1/J2/J3. Full run 20261101-222629: component suites passed, all six Android E2E tests passed, 29/29 Whist Lab game-core tests passed, and the inline screenshot publisher passed. See C:\\work\\whist_back\\deep-app-test\\runs\\20261101-222629\\.",
+        "deviceAcceptance": "2026-11-01 run against emulator-5554 (Android API 28): J4 reported 498 Surefire cases, 497 passed, zero failures/errors, and one opt-in publisher test skipped in the ordinary module pass; the publisher then ran explicitly and passed. Android component tests 6/6; live E2E 6/6 (Contract Whist 4/4, Whist Lab 2/2); game-core 29/29. The final Extent report after publishing the manual evidence note is 16,805,609 bytes with 42 inline PNG Base64 data URIs; evidence is outside J4 at C:\\work\\whist_back\\deep-app-test\\runs\\20261101-222629\\. The first-hand score row is manually transcribed and conditionally consistent, not an independent trick oracle. The next-hand 9-card bid grid and disabled Bid 1 were captured. Full match, trick winner decoding, and multiplayer remain unverified; serious rendering defects keep visual acceptance at WARNING.",
+        "recordedWithReporting": "1.0.0-j10; historical device/game evidence is preserved, not rerun by this library upgrade"
+      },
+      "currentAcceptance": {
+        "status": "VERIFIED",
+        "date": "2026-11-01",
+        "evidenceRoot": "C:/Users/Cristi/AppData/Local/Temp/ATF_REPORTING_J11_ACTIVE_DO_NOT_CLEAN_RRYvMT",
+        "gitHead": "304765b641ac83e38e737d1362e7c9a4ac4f15e8",
+        "reportingSha256": "20072F4DF0B9326476D7DAD3C889DCAF824BC1930B595AFBEE0E1C5253AD867F",
+        "scope": "J11 System defaults and neutral fallback index; producer and consumer acceptance remain distinct",
+        "sourceRegression": {
+          "invocations": 541,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "reconciliation": "Initial broad run retained two encoded-fragment test-oracle failures; corrected URI identity comparison and affected classes rerun. Final XML inventory has no unresolved failure."
+        },
+        "nativePublication": {
+          "cleanBuilds": 2,
+          "invocationsPerBuild": 70,
+          "identicalJarBytes": true
+        },
+        "binaryRegression": {
+          "invocations": 61,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "additionalKeyboardFocusRerun": 2
+        },
+        "defaultAssertionPreviewCharacters": 240,
+        "browserAudit": "Physical J11 Extent/fallback: six System facts, neutral index with separate badges, decoded keyboard target, collapsed comparison opened with Space; original FAIL retained",
+        "binaryApiComparison": {
+          "reference": "atf.api:atf-reporting:1.0.0-j10",
+          "removedPublicProtectedEntries": 0,
+          "addedPublicProtectedEntries": 2,
+          "addedMethod": "HtmlReportSession.updateEnvironment(ReportEnvironmentSnapshot)"
+        },
+        "consumerAcceptance": {
+          "reportingContracts": 3,
+          "syntheticInlinePng": true,
+          "androidDeviceExecuted": false,
+          "scope": "Core/Reporting consumer contracts and PNG publication only; historical device results retained separately"
+        }
+      }
+    }
+  ],
+  "currentAcceptance": {
+    "status": "VERIFIED",
+    "date": "2026-11-02",
+    "evidenceRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J12_ACTIVE_DO_NOT_CLEAN_ofy19s",
+    "gitHead": "304765b641ac83e38e737d1362e7c9a4ac4f15e8",
+    "reportingSha256": "1F1B7B5502FEFEA02F500C2FC80494859D4E57E38261306B57FA7AD2D5AB38B1",
+    "scope": "J12 explicit artifact intent, captured timing and disclosure indicators; producer and consumer acceptance remain distinct",
+    "candidate": "Final publication; original CSS viewport precedence preserved",
+    "evidence": "docs/ATF_Reporting_J12_Verification.md",
+    "producerRegression": {
+      "native": 83,
+      "sourceBroad": 570,
+      "sourceAffected": 86,
+      "binary": 136,
+      "importsSource": 15,
+      "importsBinary": 15
+    },
+    "browserAudit": "TAB MCP, neutral FAIL owners and actual J2 Extent/fallback suite, last rows and caption spacing"
   }
 }

@@ -1,0 +1,47 @@
+plugins {
+    id "java-library"
+    id "jacoco"
+}
+
+jacoco { toolVersion = "0.8.14" }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    testImplementation "junit:junit:4.13.2"
+}
+
+tasks.withType(Test).configureEach { maxHeapSize = "256m" }
+
+tasks.named("jacocoTestReport") {
+    dependsOn tasks.named("test")
+    reports { xml.required = true; html.required = true }
+}
+
+tasks.named("test", Test) {
+    exclude "**/ObservedOriginalReplayTest.class"
+    exclude "**/AiTournamentTest.class"
+    systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
+}
+
+tasks.register("aiTournamentTest", Test) {
+    description = "Pairs Expert and Hard on declared held-out deals with rotated seats."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.AiTournamentTest" }
+    systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
+    systemProperty "whist.aiBenchmarkSeeds", providers.gradleProperty("whist.aiBenchmarkSeeds").getOrElse("8")
+}
+
+tasks.register("originalReplayTest", Test) {
+    description = "Replays retained original game inputs through the normal rules engine."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.ObservedOriginalReplayTest" }
+    systemProperty "whist.originalReplay", providers.gradleProperty("whist.originalReplay").getOrElse("")
+    systemProperty "whist.allowPartialReplay", providers.gradleProperty("whist.allowPartialReplay").getOrElse("false")
+    inputs.file(providers.gradleProperty("whist.originalReplay")).withPropertyName("observedOriginalMatch")
+}

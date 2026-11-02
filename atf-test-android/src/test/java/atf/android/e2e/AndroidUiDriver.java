@@ -19,12 +19,22 @@ import org.w3c.dom.NodeList;
 /** Small UI Automator bridge; resolves visible labels and bounds from each fresh hierarchy. */
 final class AndroidUiDriver {
     private static final String REMOTE_XML = "/sdcard/atf-j4-window.xml";
-    private static final String REMOTE_PNG = "/sdcard/atf-j4-screen.png";
     private static final Pattern BOUNDS = Pattern.compile("\\[(\\d+),(\\d+)]\\[(\\d+),(\\d+)]");
-    private final AdbClient adb;
+    interface Device {
+        AdbClient.Result run(String... arguments) throws IOException, InterruptedException;
+        AdbClient.BinaryResult runBinary(String... arguments) throws IOException, InterruptedException;
+    }
+    private final Device adb;
     private final Path output;
 
     AndroidUiDriver(AdbClient adb, Path output) throws Exception {
+        this(new Device() {
+            public AdbClient.Result run(String... arguments) throws IOException, InterruptedException { return adb.run(arguments); }
+            public AdbClient.BinaryResult runBinary(String... arguments) throws IOException, InterruptedException { return adb.runBinary(arguments); }
+        }, output);
+    }
+
+    AndroidUiDriver(Device adb, Path output) throws Exception {
         this.adb = Objects.requireNonNull(adb);
         this.output = output.toAbsolutePath().normalize();
         Files.createDirectories(this.output);
@@ -35,8 +45,11 @@ final class AndroidUiDriver {
         IOException lastFailure = null;
         for (int attempt = 0; attempt < 4; attempt++) {
             try {
+                // uiautomator can exit 0 after "null root node" without rewriting the file.
+                // Never pull a hierarchy left behind by a previous screen.
+                adb.run("shell", "rm", "-f", REMOTE_XML).requireSuccess();
                 var dump = adb.run("shell", "uiautomator", "dump", REMOTE_XML);
-                if (dump.succeeded()) {
+                if (dump.succeeded() && dump.output().contains("dumped to:")) {
                     var pull = adb.run("pull", REMOTE_XML, local.toString());
                     if (pull.succeeded() && Files.isRegularFile(local)) {
                         String xml = Files.readString(local);
@@ -86,6 +99,10 @@ final class AndroidUiDriver {
 
     void tapText(String exactText) throws Exception {
         String xml = awaitText(exactText, Duration.ofSeconds(8));
+        tapTextIn(xml, exactText);
+    }
+
+    void tapTextIn(String xml, String exactText) throws Exception {
         List<Node> matches = nodes(xml).stream().filter(node -> node.text().equals(exactText)).toList();
         if (matches.size() != 1) throw new IllegalStateException("Expected one UI element named '" + exactText + "', got " + matches.size());
         tap(matches.getFirst());
@@ -247,26 +264,34 @@ final class AndroidUiDriver {
         return List.of(xmlFile, imageFile);
     }
 
+    Path captureImage(String label) throws Exception {
+        Path image = output.resolve(label + ".png");
+        capturePng(image);
+        return image;
+    }
+
     private void capturePng(Path imageFile) throws Exception {
         IOException lastFailure = null;
         for (int attempt = 0; attempt < 3; attempt++) {
             try {
                 Files.deleteIfExists(imageFile);
-                adb.run("shell", "screencap", "-p", REMOTE_PNG).requireSuccess();
-                adb.run("pull", REMOTE_PNG, imageFile.toString()).requireSuccess();
-                if (Files.size(imageFile) >= 10_000) return;
-                lastFailure = new IOException("Screenshot looks incomplete after ADB pull: " + imageFile);
+                var capture = adb.runBinary("exec-out", "screencap", "-p");
+                capture.requireSuccess();
+                byte[] png = capture.output();
+                if (png.length >= 10_000) {
+                    Files.write(imageFile, png);
+                    return;
+                }
+                lastFailure = new IOException("Screenshot looks incomplete after ADB exec-out: " + imageFile);
             } catch (InterruptedException interrupted) {
                 Thread.currentThread().interrupt();
                 throw interrupted;
             } catch (IOException transferFailure) {
                 lastFailure = transferFailure;
             }
-            if (attempt < 2) Thread.sleep(500L * (attempt + 1));
+            if (attempt < 2) Thread.sleep(250L * (attempt + 1));
         }
-        throw lastFailure == null
-                ? new IOException("Screenshot capture failed: " + imageFile)
-                : lastFailure;
+        throw lastFailure == null ? new IOException("Screenshot capture failed: " + imageFile) : lastFailure;
     }
 
     long countBrightNeutralPixels(Path image, double minVerticalFraction) throws Exception {
@@ -304,19 +329,34 @@ final class AndroidUiDriver {
             int y = (int) (height * (row == 0 ? 0.74 : 0.89));
             for (int card = 0; card < 5; card++) {
                 int x = (int) (width * (card + 0.5) / 5.0);
+                // The score-sheet Next Hand button occupies this calibrated slot.
+                // Check the accessible hierarchy before probing it so a card search
+                // can never advance to another hand and mislabel that as card play.
+                if (row == 1 && card == 2) {
+                    List<String> visible = texts(dump());
+                    if (visible.stream().anyMatch(label -> label.equalsIgnoreCase("Next Hand")
+                            || label.equalsIgnoreCase("Play Again"))) {
+                        return new CardPlayResult(List.copyOf(attempts), handChanged, tableChanged,
+                                -1, -1, false, true, visible);
+                    }
+                }
                 long started = System.nanoTime();
                 adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y)).requireSuccess();
-                Thread.sleep(900);
+                Thread.sleep(400);
                 capturePng(probe);
-                handChanged = countChangedPixels(before, probe, 0.67, 0.94);
-                tableChanged = countChangedPixels(before, probe, 0.20, 0.65);
+                var firstFrame = ImageIO.read(probe.toFile());
+                if (firstFrame == null) throw new IllegalStateException("Cannot decode screenshot: " + probe);
+                handChanged = countChangedPixels(initial, firstFrame, 0.67, 0.94);
+                tableChanged = countChangedPixels(initial, firstFrame, 0.20, 0.65);
                 if (handChanged > 3_000 && tableChanged > 3_000) {
                     // Require a stable hand change and a matching table-area transition,
                     // so a card-selection highlight alone cannot count as a played card.
-                    Thread.sleep(1_200);
+                    Thread.sleep(650);
                     capturePng(probe);
-                    handChanged = countChangedPixels(before, probe, 0.67, 0.94);
-                    tableChanged = countChangedPixels(before, probe, 0.20, 0.65);
+                    var stableFrame = ImageIO.read(probe.toFile());
+                    if (stableFrame == null) throw new IllegalStateException("Cannot decode screenshot: " + probe);
+                    handChanged = countChangedPixels(initial, stableFrame, 0.67, 0.94);
+                    tableChanged = countChangedPixels(initial, stableFrame, 0.20, 0.65);
                     boolean accepted = handChanged > 3_000 && tableChanged > 3_000;
                     attempts.add(new CardTapAttempt(x, y, handChanged, tableChanged,
                             Duration.ofNanos(System.nanoTime() - started).toMillis(), accepted));
@@ -324,7 +364,7 @@ final class AndroidUiDriver {
                         Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                         Files.deleteIfExists(probe);
                         return new CardPlayResult(List.copyOf(attempts), handChanged, tableChanged,
-                                x, y, true);
+                                x, y, true, false, List.of());
                     }
                 } else {
                     attempts.add(new CardTapAttempt(x, y, handChanged, tableChanged,
@@ -334,20 +374,21 @@ final class AndroidUiDriver {
         }
         Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(probe);
-        return new CardPlayResult(List.copyOf(attempts), handChanged, tableChanged, -1, -1, false);
+        return new CardPlayResult(List.copyOf(attempts), handChanged, tableChanged,
+                -1, -1, false, false, List.of());
     }
 
     record CardTapAttempt(int x, int y, long handChangedPixels, long tableChangedPixels,
             long durationMillis, boolean accepted) { }
 
     record CardPlayResult(List<CardTapAttempt> attempts, long handChangedPixels,
-            long tableChangedPixels, int acceptedX, int acceptedY, boolean accepted) { }
+            long tableChangedPixels, int acceptedX, int acceptedY, boolean accepted,
+            boolean handBoundary, List<String> boundaryLabels) { }
 
-    private long countChangedPixels(Path before, Path after, double firstRowFraction, double lastRowFraction) throws Exception {
-        var left = ImageIO.read(before.toFile());
-        var right = ImageIO.read(after.toFile());
-        if (left == null || right == null || left.getWidth() != right.getWidth() || left.getHeight() != right.getHeight())
-            throw new IllegalStateException("Cannot compare gameplay screenshots: " + before + " and " + after);
+    private long countChangedPixels(java.awt.image.BufferedImage left, java.awt.image.BufferedImage right,
+            double firstRowFraction, double lastRowFraction) {
+        if (left.getWidth() != right.getWidth() || left.getHeight() != right.getHeight())
+            throw new IllegalStateException("Cannot compare gameplay screenshots with different dimensions");
         int width = left.getWidth(), height = left.getHeight();
         int firstRow = (int) (height * firstRowFraction);
         int lastRow = (int) (height * lastRowFraction);

@@ -36,10 +36,7 @@ public final class AdbClient {
     }
 
     public Result run(String... arguments) throws IOException, InterruptedException {
-        List<String> command = new ArrayList<>();
-        command.add(executable);
-        command.add("-s"); command.add(serial);
-        command.addAll(List.of(arguments));
+        List<String> command = command(arguments);
         ProcessBuilder builder = new ProcessBuilder(command).redirectErrorStream(true);
         if (serverSocket != null) builder.environment().put("ADB_SERVER_SOCKET", serverSocket);
         Process process = builder.start();
@@ -60,6 +57,44 @@ public final class AdbClient {
         return new Result(process.exitValue(), output, List.copyOf(command));
     }
 
+    /** Runs a command whose stdout is binary (for example {@code exec-out screencap -p}). */
+    public BinaryResult runBinary(String... arguments) throws IOException, InterruptedException {
+        List<String> command = command(arguments);
+        ProcessBuilder builder = new ProcessBuilder(command);
+        if (serverSocket != null) builder.environment().put("ADB_SERVER_SOCKET", serverSocket);
+        Process process = builder.start();
+        ByteArrayOutputStream standardOutput = new ByteArrayOutputStream();
+        ByteArrayOutputStream standardError = new ByteArrayOutputStream();
+        Thread stdoutReader = Thread.startVirtualThread(() -> transfer(process.getInputStream(), standardOutput));
+        Thread stderrReader = Thread.startVirtualThread(() -> transfer(process.getErrorStream(), standardError));
+        boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
+        if (!finished) {
+            process.descendants().forEach(ProcessHandle::destroyForcibly);
+            process.destroyForcibly();
+            stdoutReader.join();
+            stderrReader.join();
+            throw new IOException("ADB command timed out after " + timeout + ": "
+                    + safeCommand(List.of(arguments)));
+        }
+        stdoutReader.join();
+        stderrReader.join();
+        return new BinaryResult(process.exitValue(), standardOutput.toByteArray(),
+                standardError.toString(StandardCharsets.UTF_8), command);
+    }
+
+    private List<String> command(String... arguments) {
+        List<String> command = new ArrayList<>();
+        command.add(executable);
+        command.add("-s"); command.add(serial);
+        command.addAll(List.of(arguments));
+        return List.copyOf(command);
+    }
+
+    private static void transfer(java.io.InputStream input, ByteArrayOutputStream output) {
+        try { input.transferTo(output); }
+        catch (IOException ignored) { /* the process may be forcibly stopped on timeout */ }
+    }
+
     private static String setting(String property, String env, String fallback) {
         String value = System.getProperty(property);
         if (value == null || value.isBlank()) value = System.getenv(env);
@@ -78,6 +113,19 @@ public final class AdbClient {
         public boolean succeeded() { return exitCode == 0; }
         public void requireSuccess() throws IOException {
             if (!succeeded()) throw new IOException("ADB exited " + exitCode + ": " + output);
+        }
+    }
+
+    public record BinaryResult(int exitCode, byte[] output, String error, List<String> command) {
+        public BinaryResult {
+            output = Objects.requireNonNull(output).clone();
+            error = Objects.requireNonNull(error);
+            command = List.copyOf(command);
+        }
+        @Override public byte[] output() { return output.clone(); }
+        public boolean succeeded() { return exitCode == 0; }
+        public void requireSuccess() throws IOException {
+            if (!succeeded()) throw new IOException("ADB exited " + exitCode + ": " + error);
         }
     }
 }

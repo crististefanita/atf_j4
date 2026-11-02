@@ -53,6 +53,7 @@ public class ContractWhistGameplayE2eTest {
 
         ui.tapText("Instructions");
         String instructions = ui.awaitContains("Bidding Phase", Duration.ofSeconds(10));
+        evidence.addAll(ui.capture("instructions"));
         assertTrue(instructions.contains("Play Phase"), "Instructions do not describe the play phase");
         assertTrue(instructions.contains("additional 10 points"), "Instructions do not describe scoring");
         String ruleText = String.join(" ", ui.texts(instructions)).toLowerCase(java.util.Locale.ROOT);
@@ -63,12 +64,12 @@ public class ContractWhistGameplayE2eTest {
                 "exact number of tricks that player thinks they will win",
                 "player to dealer's left", "same suit if possible", "highest card winning the trick",
                 "discard an unwanted card or play a trump", "highest trump wins the trick",
-                "if nt is displayed", "spades, hearts, clubs, diamonds, no trumps",
+                "if \"nt\" is displayed", "spades, hearts, clubs, diamonds, no trumps",
                 "1 point for every trick they won", "additional 10 points",
                 "number of cards in the hand", "players' scores so far");
         List<String> missingRules = requiredRules.stream().filter(rule -> !ruleText.contains(rule)).toList();
-        assertTrue(missingRules.isEmpty(), "Original Instructions changed or missed reconstructed rules: " + missingRules);
-        evidence.addAll(ui.capture("instructions"));
+        assertTrue(missingRules.isEmpty(), "Original Instructions changed or missed reconstructed rules: "
+                + missingRules + "; observed rule text=" + ruleText);
 
         ui.ensureMainMenu();
         ui.tapText("High Scores");
@@ -209,7 +210,7 @@ public class ContractWhistGameplayE2eTest {
     }
 
     @Test
-    void completesOneFourPlayerOhHellHandAndCapturesScoreSheet() throws Exception {
+    void reachesOhHellScoreSheetAndVerifiesNextHandBidRange() throws Exception {
         AdbClient adb = AdbClient.fromSystemProperties();
         var packagePath = adb.run("shell", "pm", "path", PACKAGE);
         packagePath.requireSuccess();
@@ -217,9 +218,10 @@ public class ContractWhistGameplayE2eTest {
 
         Path artifacts = Path.of(System.getProperty("atf.android.artifacts", "target/android-artifacts"));
         AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
-        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "contract-whist-full-oh-hell-hand",
-                "Contract Whist — complete four-player Oh Hell hand", getClass().getSimpleName(),
-                "atf.android.e2e", PACKAGE, List.of("android", "api-28", "original-app", "e2e", "oh-hell", "full-hand"));
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "contract-whist-oh-hell-score-next-hand",
+                "Contract Whist — live Oh Hell score and next-hand transition", getClass().getSimpleName(),
+                "atf.android.e2e", PACKAGE,
+                List.of("android", "api-28", "original-app", "e2e", "oh-hell", "score", "next-hand"));
         AtfReportStatus result = AtfReportStatus.FAIL;
         try {
             long actionStarted = System.nanoTime();
@@ -312,9 +314,13 @@ public class ContractWhistGameplayE2eTest {
             assertTrue(handPixels > 5_000, "The play phase did not render the human hand");
 
             Path baseline = artifacts.resolve("ohhell-full-trick-01-before.png");
-            for (int trick = 1; trick <= 10; trick++) {
-                String ordinal = String.format(java.util.Locale.ROOT, "%02d", trick);
-                Path after = artifacts.resolve("ohhell-full-trick-" + ordinal + "-after.png");
+            boolean scoreBoundaryVisible = false;
+            List<Path> scoreEvidence = List.of();
+            List<String> scoreLabels = List.of();
+            int interactionCycles = 0;
+            for (int cycle = 1; cycle <= 12; cycle++) {
+                String ordinal = String.format(java.util.Locale.ROOT, "%02d", cycle);
+                Path after = artifacts.resolve("ohhell-full-cycle-" + ordinal + "-after.png");
                 AndroidUiDriver.CardPlayResult playResult = null;
                 for (int retry = 0; retry < 3; retry++) {
                     AndroidUiDriver.CardPlayResult attempt = ui.tapUntilHandChangesDetailed(baseline, after);
@@ -323,105 +329,151 @@ public class ContractWhistGameplayE2eTest {
                         List<AndroidUiDriver.CardTapAttempt> all = new ArrayList<>(playResult.attempts());
                         all.addAll(attempt.attempts());
                         playResult = new AndroidUiDriver.CardPlayResult(List.copyOf(all), attempt.handChangedPixels(),
-                                attempt.tableChangedPixels(), attempt.acceptedX(), attempt.acceptedY(), attempt.accepted());
+                                attempt.tableChangedPixels(), attempt.acceptedX(), attempt.acceptedY(), attempt.accepted(),
+                                attempt.handBoundary(), attempt.boundaryLabels());
                     }
+                    if (attempt.handBoundary()) break;
                     if (attempt.accepted()) break;
                     Thread.sleep(2_000);
                 }
+                if (playResult != null && playResult.handBoundary()) {
+                    scoreBoundaryVisible = true;
+                    scoreEvidence = ui.capture("ohhell-score-boundary-guard");
+                    scoreLabels = ui.texts(Files.readString(scoreEvidence.stream()
+                            .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow()));
+                    recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
+                            "Stop card exploration when the original exposes a score control",
+                            "Next Hand / Play Again", scoreEvidence,
+                            "inspect UI hierarchy before the hazardous bottom-center card coordinate",
+                            "do not tap the score control during card probing",
+                            "boundary labels=" + playResult.boundaryLabels(), 0,
+                            List.of(new AtfAssertion("Score control is protected from exploratory taps",
+                                            "probe stops before x=540, y=1708", "boundary detected before tap", true),
+                                    new AtfAssertion("Human card count is machine-verified", "ten distinct card removals",
+                                            "custom canvas card count is not exposed", false, AtfReportStatus.WARNING)),
+                            AtfReportStatus.WARNING);
+                    break;
+                }
                 if (playResult == null || !playResult.accepted()) {
-                    List<Path> failureEvidence = ui.capture("ohhell-full-trick-" + ordinal + "-no-accepted-card");
+                    List<Path> failureEvidence = ui.capture("ohhell-full-cycle-" + ordinal + "-no-raster-transition");
                     List<AtfUiActionRecord> failedActions = cardTapActions(trace, playResult);
                     trace.checkpoint("TEST BODY", AtfGherkinKeyword.WHEN.text(),
-                            "Trick " + ordinal + " — probe visible card slots", "Human hand / card slot centers",
+                            "Interaction cycle " + ordinal + " — probe visible card slots", "Human hand / card slot centers",
                             failureEvidence.stream().filter(file -> file.toString().endsWith(".png")).findFirst().orElse(null),
                             failedActions,
-                            List.of(new AtfAssertion("A card is accepted on the human turn",
-                                    "stable hand and table transitions", "no candidate tap satisfied both pixel oracles", false)),
+                            List.of(new AtfAssertion("A stable hand/table raster transition is observed",
+                                    "both pixel regions change", "no candidate tap satisfied both pixel oracles", false)),
                             AtfReportStatus.FAIL,
                             failureEvidence.stream().filter(file -> file.toString().endsWith(".xml")).toList());
-                    throw new AssertionError("No card slot produced a stable hand and table transition on trick " + ordinal);
+                    throw new AssertionError("No candidate tap produced a stable hand/table raster transition in cycle " + ordinal);
                 }
-                List<Path> playEvidence = ui.capture("ohhell-full-trick-" + ordinal + "-human-play");
+                interactionCycles++;
+                List<Path> playEvidence = ui.capture("ohhell-full-cycle-" + ordinal + "-tap-probe");
                 List<AtfAssertion> playAssertions = List.of(
-                        new AtfAssertion("Human hand advances after card play", "> 3000 changed pixels",
+                        new AtfAssertion("Hand-area raster changes after tap exploration", "> 3000 changed pixels",
                                 Long.toString(playResult.handChangedPixels()), playResult.handChangedPixels() > 3_000),
-                        new AtfAssertion("Played-card area changes with the hand", "> 3000 changed pixels",
+                        new AtfAssertion("Table-area raster changes after tap exploration", "> 3000 changed pixels",
                                 Long.toString(playResult.tableChangedPixels()), playResult.tableChangedPixels() > 3_000));
-                boolean turnPassed = playAssertions.stream().allMatch(AtfAssertion::passed);
-                recordCheckpoint(trace, "TEST BODY", trick == 1 ? AtfGherkinKeyword.WHEN : AtfGherkinKeyword.AND,
-                        "Trick " + ordinal + " — human card accepted",
+                boolean rasterChanged = playAssertions.stream().allMatch(AtfAssertion::passed);
+                recordCheckpoint(trace, "TEST BODY", cycle == 1 ? AtfGherkinKeyword.WHEN : AtfGherkinKeyword.AND,
+                        "Interaction cycle " + ordinal + " — hand/table raster transition; card identity is not decoded",
                         "visible card slot at x=" + playResult.acceptedX() + ", y=" + playResult.acceptedY(),
-                        playEvidence, "tap card-slot center and compare stable hand/table regions",
-                        "one legal card leaves the human hand and appears in play", playResult.toString(),
+                        playEvidence, "probe visible card slots and compare stable hand/table raster regions",
+                        "raster changed; number and identity of accepted human cards remain unverified",
+                        playResult.toString(),
                         playResult.attempts().stream().mapToLong(AndroidUiDriver.CardTapAttempt::durationMillis).sum(),
-                        playAssertions, turnPassed ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
-                assertTrue(turnPassed, "Card transition oracle failed on trick " + ordinal + ": " + playResult);
+                        playAssertions, rasterChanged ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                assertTrue(rasterChanged, "Raster transition oracle failed in interaction cycle " + ordinal + ": " + playResult);
 
                 Thread.sleep(8_000);
-                List<Path> settledEvidence = ui.capture("ohhell-full-trick-" + ordinal + "-ai-settled");
+                List<Path> settledEvidence = ui.capture("ohhell-full-cycle-" + ordinal + "-settled");
+                List<String> settledLabels = ui.texts(Files.readString(settledEvidence.stream()
+                        .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow()));
+                boolean handBoundaryVisible = settledLabels.stream().anyMatch(label ->
+                        label.equalsIgnoreCase("Next Hand") || label.equalsIgnoreCase("Play Again"));
                 long settledPixels = ui.countBrightNeutralPixels(
                         settledEvidence.stream().filter(file -> file.toString().endsWith(".png")).findFirst().orElseThrow(), 0.67);
-                if (trick < 10) {
+                if (handBoundaryVisible) {
+                    scoreBoundaryVisible = true;
+                    scoreEvidence = settledEvidence;
+                    scoreLabels = settledLabels;
+                    boolean nextHandLabelVisible = settledLabels.stream()
+                            .anyMatch(label -> label.equalsIgnoreCase("Next Hand"));
                     recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
-                            "Trick " + ordinal + " — AI turns settle before the next human turn",
-                            "AI seats and human hand", settledEvidence, "wait 8 seconds for AI turn progression",
-                            "next human hand remains visible", "bright neutral card pixels=" + settledPixels,
-                            8_000, List.of(new AtfAssertion("The game remains in card play", "> 5000 bright neutral pixels",
-                                    Long.toString(settledPixels), settledPixels > 5_000)),
-                            settledPixels > 5_000 ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
-                    assertTrue(settledPixels > 5_000, "Human cards disappeared before the expected hand boundary at trick " + ordinal);
+                            "Observe the original score boundary without inferring a trick count",
+                            "Next Hand control", settledEvidence, "wait 8 seconds and inspect the accessible boundary label",
+                            "score boundary is visible; card count is separately reported as unverified",
+                            "interaction cycles=" + interactionCycles + "; labels=" + settledLabels,
+                            8_000, List.of(new AtfAssertion("Score boundary exposes Next Hand", "Next Hand",
+                                            settledLabels.toString(), nextHandLabelVisible),
+                                    new AtfAssertion("Ten human cards are machine-verified", "10 distinct hand-card removals",
+                                            "canvas card identities/count are not exposed by UI Automator",
+                                            false, AtfReportStatus.WARNING)),
+                            AtfReportStatus.WARNING);
+                    break;
                 } else {
-                    List<String> endOfHandLabels = ui.texts(Files.readString(settledEvidence.stream()
-                            .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow()));
-                    boolean nextHandControl = endOfHandLabels.contains("Next Hand");
+                    boolean remainsPlayable = settledPixels > 5_000;
                     recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
-                            "Trick 10 — capture the end-of-hand transition",
-                            "Oh Hell score boundary", settledEvidence, "wait 8 seconds after the final human card",
-                            "hand ends and a score surface is rendered", "bright neutral pixels in hand region=" + settledPixels,
-                            8_000, List.of(new AtfAssertion("Ten human card actions completed",
-                                            "10 accepted cards", Integer.toString(trick), trick == 10),
-                                    new AtfAssertion("Next-hand control is exposed", "Next Hand",
-                                            "accessible labels=" + endOfHandLabels, nextHandControl,
-                                            nextHandControl ? AtfReportStatus.PASS : AtfReportStatus.WARNING)),
-                            nextHandControl ? AtfReportStatus.PASS : AtfReportStatus.WARNING);
+                            "Interaction cycle " + ordinal + " — inspect live table after AI settles",
+                            "AI seats and human hand", settledEvidence, "wait 8 seconds and inspect accessible labels",
+                            "play remains rendered and no score boundary is exposed",
+                            "bright neutral pixels=" + settledPixels + "; labels=" + settledLabels,
+                            8_000, List.of(new AtfAssertion("Play surface remains visible before score boundary",
+                                    "> 5000 bright pixels; no Next Hand label", "pixels=" + settledPixels
+                                            + "; labels=" + settledLabels, remainsPlayable)),
+                            remainsPlayable ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                    assertTrue(remainsPlayable, "Original left the live-play surface without exposing Next Hand; labels="
+                            + settledLabels + "; bright pixels=" + settledPixels);
+                    baseline = settledEvidence.stream().filter(file -> file.toString().endsWith(".png"))
+                            .findFirst().orElseThrow();
                 }
-                baseline = settledEvidence.stream().filter(file -> file.toString().endsWith(".png")).findFirst().orElseThrow();
             }
+            assertTrue(scoreBoundaryVisible, "No score/Next Hand boundary appeared within 12 tap-exploration cycles");
 
-            Thread.sleep(10_000);
-            List<Path> scoreEvidence = ui.capture("ohhell-full-score-sheet");
+            scoreEvidence = ui.capture("ohhell-full-score-sheet");
             String scoreHierarchy = Files.readString(scoreEvidence.stream()
                     .filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow());
-            List<String> scoreLabels = ui.texts(scoreHierarchy);
+            scoreLabels = ui.texts(scoreHierarchy);
             boolean scoreSheetVisible = scoreLabels.stream().anyMatch(label -> label.toLowerCase(java.util.Locale.ROOT).contains("score"))
                     || scoreLabels.stream().anyMatch(label -> label.equalsIgnoreCase("Next Hand")
                             || label.equalsIgnoreCase("Play Again") || label.equalsIgnoreCase("New Game"));
-            recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN, "Verify the score-sheet boundary after ten tricks",
+            recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN, "Capture the original score sheet; preserve unverified card count",
                     "Oh Hell score sheet", scoreEvidence, "wait for end-of-hand scoring view",
                     "score sheet or end-of-hand controls are visible",
                     "accessible score labels=" + scoreLabels + "; screenshot=ohhell-full-score-sheet.png",
-                    10_000, List.of(new AtfAssertion("A hand-end score surface is exposed",
-                            "score label or next-hand control", "accessible labels=" + scoreLabels,
-                            scoreSheetVisible, scoreSheetVisible ? AtfReportStatus.PASS : AtfReportStatus.WARNING)),
-                    scoreSheetVisible ? AtfReportStatus.PASS : AtfReportStatus.WARNING);
-            result = scoreSheetVisible ? AtfReportStatus.PASS : AtfReportStatus.WARNING;
+                    0, List.of(new AtfAssertion("A hand-end score surface is exposed",
+                                    "score label or next-hand control", "accessible labels=" + scoreLabels,
+                                    scoreSheetVisible),
+                            new AtfAssertion("Original hand score values are independently decoded",
+                                    "all four per-player scores and earned tricks", "custom canvas is not semantically exposed",
+                                    false, AtfReportStatus.WARNING)), AtfReportStatus.WARNING);
+            result = AtfReportStatus.WARNING;
             if (scoreSheetVisible) {
                 actionStarted = System.nanoTime();
                 ui.tapText("Next Hand");
                 String nextBidding = ui.awaitText("Bid 0", Duration.ofSeconds(20));
                 List<Path> nextHandEvidence = ui.capture("ohhell-next-hand-bidding");
-                long nextBidOptions = ui.texts(nextBidding).stream().filter(text -> text.matches("Bid \\d+")).count();
-                boolean nextHandStarted = nextBidOptions >= 2;
+                List<Integer> nextBidValues = ui.texts(nextBidding).stream()
+                        .map(text -> java.util.regex.Pattern.compile("^Bid (\\d+)$").matcher(text))
+                        .filter(java.util.regex.Matcher::matches)
+                        .map(matcher -> Integer.parseInt(matcher.group(1))).sorted().toList();
+                List<String> disabledNextBids = ui.disabledButtonTexts(nextBidding).stream()
+                        .filter(text -> text.matches("Bid \\d+")).toList();
+                List<Integer> expectedNextBidValues = java.util.stream.IntStream.rangeClosed(0, 9).boxed().toList();
+                boolean nextHandHasNineCardBidRange = nextBidValues.equals(expectedNextBidValues);
                 recordCheckpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN,
-                        "Advance from the 10-card deal to the next hand",
+                        "Advance to the next hand and verify its nine-card bid range",
                         "Next Hand", nextHandEvidence, "tap Next Hand",
-                        "bidding controls reopen for the following deal",
-                        "numeric bid controls=" + nextBidOptions + "; visible labels=" + ui.texts(nextBidding),
+                        "bid controls range from Bid 0 through Bid 9; Bid 10 is absent",
+                        "numeric bid values=" + nextBidValues + "; disabled=" + disabledNextBids,
                         Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
-                        List.of(new AtfAssertion("The game advances to another hand", "numeric bid controls reappear",
-                                Long.toString(nextBidOptions), nextHandStarted)),
-                        nextHandStarted ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
-                assertTrue(nextHandStarted, "Next Hand did not start a new bidding phase");
+                        List.of(new AtfAssertion("Next hand offers exactly the nine-card bid domain",
+                                        "0 through 9 inclusive; no 10", nextBidValues.toString(), nextHandHasNineCardBidRange),
+                                new AtfAssertion("Last-bid exclusion remains represented when applicable",
+                                        "at most one disabled numeric bid", disabledNextBids.toString(), disabledNextBids.size() <= 1)),
+                        nextHandHasNineCardBidRange ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                assertTrue(nextHandHasNineCardBidRange,
+                        "Next Hand did not expose the expected nine-card bid domain: " + nextBidValues);
             }
             ui.restartToMainMenu(PACKAGE);
         } catch (Throwable failure) {
@@ -640,12 +692,12 @@ public class ContractWhistGameplayE2eTest {
         if (playResult == null) return List.of();
         List<AtfUiActionRecord> actions = new ArrayList<>();
         for (AndroidUiDriver.CardTapAttempt attempt : playResult.attempts()) {
-            actions.add(new AtfUiActionRecord(trace.nextActionSequence(), "ADB tap card slot",
+            actions.add(new AtfUiActionRecord(trace.nextActionSequence(), "ADB exploratory tap at card slot",
                     "x=" + attempt.x() + ", y=" + attempt.y(),
-                    "human hand and table advance if this is a legal card", "hand pixels="
+                    "tap is only a candidate input; no card identity or legality claim", "hand pixels="
                             + attempt.handChangedPixels() + "; table pixels=" + attempt.tableChangedPixels()
-                            + "; accepted=" + attempt.accepted(), attempt.durationMillis(),
-                    attempt.accepted() ? AtfReportStatus.PASS : AtfReportStatus.WARNING));
+                            + "; raster-threshold-met=" + attempt.accepted(), attempt.durationMillis(),
+                    AtfReportStatus.WARNING));
         }
         return List.copyOf(actions);
     }

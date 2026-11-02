@@ -17,7 +17,9 @@ Podman pe gazda fizică și controlat din Windows VM.
 | Emulator | imagine Google Play, API 28; `emulator-5554` apare `device` | ADB prin gazdă, 1 noiembrie 2026 |
 | ADB în VM | client `X:\scrcpy-win64-v5.0.1\adb.exe`, server `tcp:192.168.56.1:5038` | verificat în VM, 1 noiembrie 2026 |
 | Afișare | scrcpy cu serialul `emulator-5554` | verificat în VM, 1 noiembrie 2026 |
-| Runda locală | 4 jucători, Descending, AI Normal; Bid 0, două mutări ale jucătorului în ture consecutive, cu AI-ul încheind levata dintre ele | test UI ADB headless, 1 noiembrie 2026 |
+| Runda locală | 4 jucători, Oh Hell, AI Normal; testul guarded ajunge la scor și verifică mâna următoare cu 9 cărți și `Bid 0`–`Bid 9`. Ciclurile raster nu sunt număr de cărți acceptate. | E2E UI ADB headless, 1 noiembrie 2026 |
+| Deal Oh Hell pe locuri | Primele capturi: 3/4/5 jucători = 10 cărți; 6 = 8. Grid-urile arată Bid 0–10 pentru 3/4/5 și Bid 0–8 pentru 6. În captura 4p, suma AI 7 dezactivează Bid 3. | discovery E2E live și citire vizuală, 1 noiembrie 2026 |
+| Atu inițial | Capturile primei mâini: 3 locuri=caro, 4=inimă, 5=treflă, 6=pică. La 4p, mâna următoare a trecut inimă→caro; originea și tranziția sunt neconfirmate. | PNG-uri citite vizual; instrucțiunile enumeră pică, inimă, treflă, caro, fără atu |
 | High Scores | dialogul de nume este dependent de starea persistentă: prima rulare îl închide cu Cancel; rulările următoare verifică întoarcerea la meniu fără ștergerea datelor | capturi UI, 1 noiembrie 2026 |
 | Resume Game | după force-stop/start a redeschis aceeași partidă; testul separat a găsit același număr de pixeli ai cărților imediat și după 6 secunde (485301) | test UI și capturi, 1 noiembrie 2026 |
 | Multiplayer | butonul deschide promptul de editare a numelui; Cancel revine la meniu. Nu s-a creat sau accesat o sesiune online. | explorare UI, 1 noiembrie 2026 |
@@ -32,83 +34,81 @@ acum este serverul ADB al gazdei pe portul 5038 și serialul explicit.
 ## Test UI în J4
 
 `atf-android` oferă un client ADB cu timeout și selectare explicită de serial,
-acoperit de 5 teste de contract. `atf-test-android` conține
+acoperit de 6 teste. `atf-test-android` conține
 `ContractWhistGameplayE2eTest`, activat prin `ContractWhistE2eSuite`; suita
 comună serializată `AndroidGameplayE2eSuite` rulează originalul și Whist Lab:
 
 1. verifică instalarea și deschide meniul;
-2. citește instrucțiunile pentru licitare, joc și punctaj;
+2. verifică în instrucțiunile originale regulile de licitare, ofertă exactă,
+   restricția ultimei oferte, culoare, atu, conducerea levatei, scor și tabel;
 3. verifică promptul inițial High Scores sau revenirea la meniu dacă numele a
    fost deja salvat de o rulare anterioară;
 4. citește selecțiile curente, deschide și enumeră opțiunile pentru jucători,
    variante de joc și AI, apoi închide selectorii fără să le schimbe și verifică
    faptul că toate selecțiile inițiale au rămas intacte;
-5. pornește jocul, verifică opțiuni numerice de licitare și licitează Bid 0;
-   în Oh Hell se afișează `Bid 0`–`Bid 10`, fără butonul `Bid Other`;
-6. licitează Bid 0, probează centrele cărților până când prima mutare este
-   acceptată, așteaptă AI-ul să încheie levata, apoi verifică o a doua mutare;
+5. pornește jocuri Oh Hell pentru 3–6 locuri, fotografiază primul grid și
+   verifică intervalul Bid N; capturile arată primele deal-uri 10/10/10/8;
+6. pornește mâna originală Oh Hell cu 4 locuri și 10 cărți; probează sloturile
+   prin diferențe raster stabile, se oprește când UI-ul expune `Next Hand`, apoi
+   verifică foaia de scor și domeniul următoarei licitații `Bid 0`–`Bid 9`;
+   numărul și identitatea cărților acceptate nu sunt decodate semantic;
 7. separat, redeschide jocul salvat din Resume Game și verifică păstrarea
    vizibilității cărților după șase secunde.
 
-Ultima rulare completă este `20261101-195037`. Reactorul J4 a produs 494 de
-cazuri Surefire: 493 trecute, 0 eșecuri, 0 erori și un test publisher omis
-intenționat în rularea obișnuită a modulelor; publisher-ul a rulat apoi explicit
-și a trecut. Android component suite a trecut 5/5. Android E2E a trecut 3/3:
-originalul 2/2, Whist Lab 1/1. Separat, motorul `game-core` a trecut 20/20 teste
-Gradle, iar APK-ul debug s-a construit și instalat.
+Ultima rulare completă este `20261101-222629`. Reactorul J4 a produs 498 de
+cazuri Surefire: 497 trecute, 0 eșecuri, 0 erori și un test publisher omis
+intenționat în rularea obișnuită; publisher-ul a rulat separat și a trecut.
+Android component suite a trecut 6/6. Android E2E a trecut 6/6: originalul 4/4,
+Whist Lab 2/2. Motorul `game-core` a trecut 29/29 teste Gradle, iar APK-ul debug
+s-a construit și s-a instalat pe API 28.
 
-Rularea live a originalului a verificat meniurile, instrucțiunile, toate
-opțiunile de configurare fără să schimbe setările salvate, licitarea, două
-mutări cu un tur AI între ele și vizibilitatea jocului salvat după stabilizare.
-Nu s-a verificat o partidă completă sau scorul calculat de original. În Whist
-Lab, testul a licitat 1, a oprit forțat procesul Android, a reluat aceeași tură
-din `Resume game`, a jucat A♥ și a verificat `+11`, total `11`.
+Rularea originalului a acoperit meniuri și instrucțiunile complete, toate
+opțiunile de setup, bid-grid-urile pentru 3–6 locuri, Resume Game, o mână
+Oh Hell cu 4 jucători până la foaia de scor și tranziția la licitarea cu 9 cărți.
+Captura scorului se citește manual: Player 5, Hilary 0, Hubert 1, Phyllis 4.
+Valorile însumează 10; sub formula afișată, sunt compatibile condițional cu zece
+puncte de levată și niciun bonus exact în acest rând. Nu demonstrează câte levate
+a câștigat fiecare loc.
+
+În următoarea licitație, UIAutomator a găsit `Bid 0`–`Bid 9` și butonul `Bid 1`
+dezactivat. PNG-ul arată 9 cărți, total anterior de bid-uri 8, ofertele AI 4, 4,
+0 și marcajul de dealer la Player; `8 + 1 = 9` explică dezactivarea conform
+regulii ultimei oferte. Sumele și ofertele sunt citire vizuală manuală; starea
+butonului și domeniul sunt capturate de test.
 
 Raportul Extent final este
-`artifacts/deep-app-test/runs/20261101-195037/final-extent-report.html`.
-Are 7.076.637 bytes și 15 imagini PNG inline `data:image/png;base64,...`.
-Dosarul păstrează PNG-urile originale, XML-urile UI, rezultatele Surefire și
-logurile. J10/UiExtentReportSession au atașat capturile inline la pașii UI,
-iar publisher-ul a trecut verificarea payload-urilor exacte. Raportul rămâne
-WARNING pentru defectele vizuale ale aplicației originale. La rerulare, scrcpy
-poate rămâne închis; sunt suficiente emulatorul pornit și ADB.
-
+`C:\work\whist_back\deep-app-test\runs\20261101-222629\final-extent-report.html`.
+Are 16.804.407 bytes și 42 imagini PNG inline `data:image/png;base64,...`;
+folderul de dovezi păstrează 56 PNG-uri, 50 XML-uri UI, rezultatele Surefire și
+logurile. Publisher-ul J10 a verificat payload-urile Base64 exacte. Raportul
+rămâne WARNING pentru defectele vizuale. Ciclurile raster nu sunt raportate ca
+număr semantic de cărți jucate.
 Tabla și cărțile sunt desenate într-un singur `android.view.View`, fără text sau
 controale de carte accesibile prin UIAutomator. Captura observată pentru
 configurația cu patru jucători arată zece cărți, în două rânduri de câte cinci;
 vechea notă despre treisprezece cărți și împărțirea 6+7 era incorectă și a fost
 eliminată. Adapterul folosește centrele a cinci sloturi per rând și cere atât o
-schimbare stabilă a mâinii, cât și una în zona de joc pentru a număra mutarea.
+schimbare stabilă a mâinii, cât și una în zona de joc pentru a confirma un eveniment raster; acest prag nu identifică rangul, culoarea sau legalitatea cărții.
 Geometria rămâne calibrată la emulatorul 1080×1920; distribuția din mâini mai
 mici și alte densități trebuie confirmată separat.
 
-Interacțiunea de bază funcționează: două cărți au fost jucate în ture succesive,
-iar AI-ul a încheiat levata dintre ele. Testul nu validează independent
-oracolul regulilor sau punctajul.
-Capturile nu trec însă acceptanța vizuală: masa are
-fundal verde neon, panourile și literele sunt supradimensionate, imaginile
-cărților apar distorsionate, iar mâna este tăiată la marginea de jos. Testul nu
-verifică încă integral corectitudinea punctajului, toate turele, finalizarea
-rundelor sau multiplayer.
+Flow-ul E2E guarded a oprit probele când UIAutomator a expus `Next Hand`, apoi a verificat următoarea licitație `Bid 0`–`Bid 9`; nu susține că a decodat zece cărți umane. Oracolul legalității fiecărei cărți, câștigătorul fiecărei levate și scorurile exacte ale originalului nu sunt decodate independent din suprafața desenată. Capturile nu trec acceptanța vizuală: masa are fundal verde neon, panourile și literele sunt supradimensionate, imaginile cărților apar distorsionate, iar mâna este tăiată la marginea de jos. Testul nu verifică încă toate turele, finalizarea partidei sau multiplayer.
 
 ## Aplicația locală în paralel — Whist Lab
 
-Codul aplicației este izolat în `C:\work\1\whist_lab_app`: `game-core` conține
+Codul aplicației este izolat în `C:\work\1\atf_j4\whist-lab-app`: `game-core` conține
 regulile, sesiunea, AI-ul și testele JVM, iar `app` conține UI-ul Android.
 Pachetul `ro.whistlab.app` este separat de original. Regulile confirmate în
 instrucțiunile originale (licitație, culoare, atu și scor) sunt implementate
-local; checkpoint-ul partidei se salvează ca JSON versionat în SharedPreferences
+local; mărimile primei mâini observate 10/10/10/8 sunt codificate, iar
+progresia cap-coadă 10→1 este verificată local pentru toate cele patru numere
+de locuri. Originea ciclului de atu este deschisă și raportată ca WARNING;
+checkpoint-ul partidei se salvează ca JSON versionat în SharedPreferences
 după fiecare mutare/licitație (inclusiv AI) și după trecerea la următoarea mână.
 Reluarea după oprirea procesului este verificată live pe API 28. Variantele
 neobservate și multiplayer nu sunt încă acoperite.
 
-`WhistLabGameplayE2eTest` exercită fixture-ul deterministic pe API 28: omul
-licitează 1, procesul este oprit forțat, `Resume game` restaurează exact tura de
-joc, omul joacă A♥, AI-ul termină levata, iar tabelul de scor arată `+11`, total
-`11`. Cele patru capturi (licitație, joc, reluare și scor) sunt incluse inline
-Base64 în `whist-lab-gameplay.html`. Testul live a trecut 1/1 în rularea
-`20261101-195037`. J4 folosește același `AdbClient`, adapterul UI Automator și
-J10 Extent Reporting pentru ambele pachete.
+`WhistLabGameplayE2eTest` are două flow-uri live pe API 28. Primul exercită fixture-ul deterministic: omul licitează 1, procesul este oprit forțat, `Resume game` restaurează exact tura, omul joacă A♥, AI-ul termină levata, iar tabelul de scor arată `+11`, total `11`. Al doilea verifică setup-ul default Oh Hell cu patru jucători și înregistrează WARNING-ul pentru originea atuului, deoarece originalul arată pică/inimă/treflă/caro la 3/4/5/6 locuri în capturile inițiale. Ambele flow-uri au trecut în rularea `20261101-222629`; J4 folosește același `AdbClient`, adapterul UI Automator și J10 Extent Reporting pentru ambele pachete.
 
 `run-deep-tests.ps1` construiește APK-ul și testele core, îl instalează în
 emulator, rulează `AndroidGameplayE2eSuite` (original plus Whist Lab), apoi
@@ -163,13 +163,14 @@ X:\scrcpy-win64-v5.0.1\scrcpy.exe --serial=emulator-5554 --tunnel-host=192.168.5
 1. Diagnostichează randarea înainte de extinderea testelor vizuale: compară
    rezoluția/densitatea, rendererul grafic, accelerarea hardware și compatibilitatea
    API 28 cu versiunea 4.5. Păstrează capturile curente ca reper.
-2. Adaugă verificări de reguli cu oracole independente: restricția de culoare,
-   ordinea atuului, licitația interzisă ultimului jucător și punctajul exact.
-3. Acoperă mai multe mâini, variantele de joc, nivelul AI, jocuri complete și
-   compară exact starea salvată înainte/după reluare.
-4. Testează Multiplayer separat, cu strategie pentru două instanțe și conturi;
+2. Urmărește ciclul original al atuului în jocuri proaspete și în mâini
+   consecutive, până la `No Trumps` și revenirea la primul atu.
+3. Adaugă un oracol independent de cărți pentru aplicația originală: culoare
+   condusă, decartare/atu, câștigător și primul seat al levatei următoare.
+4. Compară formula de scor prin mâini controlate și acoperă variantele și AI-ul.
+5. Testează Multiplayer separat, cu strategie pentru două instanțe și conturi;
    rețeaua/sincronizarea nu este acoperită acum.
-5. Păstrează codul generic de raportare și testele sale în J0; J4 rămâne
+6. Păstrează codul generic de raportare și testele sale în J0; J4 rămâne
    consumator și extinde doar integrarea și scenariile Contract Whist.
 
 ## Proveniență și limite
@@ -184,3 +185,24 @@ pentru Kit/Mock/Validation/Console a fost luat din J3, după comparație cu J1/J
 - [scrcpy pentru Windows](https://github.com/Genymobile/scrcpy/blob/master/doc/windows.md)
 - [Conectarea scrcpy prin TCP/IP](https://github.com/Genymobile/scrcpy/blob/master/doc/connection.md)
 
+
+## Reluare după restartul gazdei — 2 noiembrie 2026
+
+Containerul existent `atf-android-emulator-api28` a fost pornit, fără recreare
+sau wipe. Serverul ADB remote a avut inițial lista goală. Cu
+`ADB_SERVER_SOCKET=tcp:192.168.56.1:5038`, comanda
+`adb connect 127.0.0.1:5555` a reconectat emulatorul; ținta loopback este
+interpretată de serverul ADB al gazdei. Serialul observat acum este
+`127.0.0.1:5555`, nu `emulator-5554`. Folosiți serialul efectiv în variabila
+`ATF_ANDROID_SERIAL` și parametrul `-Serial` al scripturilor.
+
+Boot-ul este complet. APK-ul original v4.5/145 păstrează SHA-256
+`884c492e4410d197199d23051d5405dd478620122ee70124426abd4a2e3d8d05`.
+Nu s-au modificat contul Google, regulile de firewall sau containerele J2.
+
+La SCORE, salvarea originalului poate avea indexul/mărimea mâinii următoare,
+dar cărțile jucate și scorul mâinii precedente. Cititorul parsează layout-ul
+cu mărimea serializată și deduce separat mărimea jucată din istoricul complet,
+levate și mâini goale. Fixture-ul real `v4.5-resumed-score-next-size.save2`
+acoperă cazul 8 cărți jucate / 9 serializate. Continuarea nu avansează acest
+scor înainte de a recupera ultima carte acceptată înaintea pauzei.

@@ -160,7 +160,8 @@ class DeepSuiteExtentReportTest {
                         List.of(new ReportField("Surefire tests", Long.toString(appTests)),
                                 new ReportField("Failures and errors", Long.toString(appFailures)),
                                 new ReportField("Skipped", Long.toString(appSkipped)),
-                                new ReportField("Contract Whist flow", "Menu, instructions, setup, bidding, human card play, AI turn, second card play, and saved-game rendering"),
+                                new ReportField("Contract Whist flow", "Menu and rules, setup matrix for 3–6 seats, guarded 4-seat Oh Hell hand-end, manual score-sheet review, and Next Hand bidding with 9 cards"),
+                                new ReportField("Card-play evidence limit", "Raster interaction cycles are reported as UI activity only; the custom table does not expose card identity, exact accepted-card count, legality, or trick winners to UIAutomator"),
                                 new ReportField("Whist Lab flow", "Deterministic practice trick, bid 1, force-stop and resume the same human turn, play A♥, AI seats complete trick, exact-bid score Total: 11"),
                                 new ReportField("Screenshot captures", Integer.toString(screenshots.size() + flowScreenshots.size())),
                                 new ReportField("Screenshot and UI-tree assets", Integer.toString(evidenceAssets.size())),
@@ -208,8 +209,8 @@ class DeepSuiteExtentReportTest {
                     "Final Extent report is missing inline UI-flow checkpoint " + screenshot.title());
         }
         if (!flowManifests.isEmpty()) {
-            assertTrue(html.contains("TEST BODY") && html.contains("Trick 01"),
-                    "Android UI flow phases and their ordered gameplay checkpoints are missing");
+            assertTrue(html.contains("TEST BODY"),
+                    "Android E2E test-body phases are missing from the final report");
             for (Path manifest : flowManifests) {
                 Properties trace = loadTrace(manifest);
                 assertTrue(html.contains(required(trace, "flow.name")),
@@ -237,7 +238,7 @@ class DeepSuiteExtentReportTest {
         return Path.of(value).toAbsolutePath().normalize();
     }
 
-    private static void publishUiFlow(ExtentReportSession session, Path manifest, Path evidenceDir) throws Exception {
+    static void publishUiFlow(ExtentReportSession session, Path manifest, Path evidenceDir) throws Exception {
         Properties trace = loadTrace(manifest);
         assertTrue("1".equals(trace.getProperty("format.version")), "Unsupported Android UI flow manifest: " + manifest);
         String flowName = required(trace, "flow.name");
@@ -318,17 +319,34 @@ class DeepSuiteExtentReportTest {
             }
         }
         AtfReportStatus publishedFlowStatus = flowStatus;
-        if ("contract-whist-full-oh-hell-hand".equals(trace.getProperty("flow.id"))) {
+        if ("contract-whist-oh-hell-score-next-hand".equals(trace.getProperty("flow.id"))) {
             Path scoreSheet = resolveEvidence(evidenceDir, "ohhell-full-score-sheet.png");
+            Path nextHandBidding = resolveEvidence(evidenceDir, "ohhell-next-hand-bidding.png");
+            Path manualObservationFile = resolveEvidence(evidenceDir, "ohhell-manual-score-observation.properties");
+            Properties manualObservation = Files.isRegularFile(manualObservationFile)
+                    ? loadTrace(manualObservationFile) : new Properties();
+            String nextBidObservation = actionObservationForTitle(trace,
+                    "Advance to the next hand and verify its nine-card bid range");
+            List<Path> manualObservationArtifacts = new ArrayList<>(List.of(scoreSheet, nextHandBidding));
+            if (Files.isRegularFile(manualObservationFile)) manualObservationArtifacts.add(manualObservationFile);
             try (var visual = raw.startPhase("Visual acceptance observation")) {
                 visual.observation(new ReportObservation("Original Oh Hell hand-end table — visual read",
                         List.of(new ReportField("Observed deal row", "Cards 10; the table then lists rows 9 through 1"),
-                                new ReportField("Visible score-sheet cells", "3, 3, 4, 0 in player-column order (sum 10)"),
-                                new ReportField("Next-hand progression", "Next Hand control is accessible; the E2E flow checks that bidding opens again"),
-                                new ReportField("Evidence method", "The custom score canvas is not exposed as text; values above were read from the attached PNG, not extracted by UIAutomator"),
-                                new ReportField("Scoring limit", "The instructions say score is tricks won plus 10 for an exact bid. This deal produced no verified exact-bid case, so the original app's numeric scoring formula and match completion remain unverified."),
+                                new ReportField("Visible score-sheet cells", manualObservation.getProperty("score.cells",
+                                        "Manual transcription not supplied; inspect the attached score-sheet PNG")),
+                                new ReportField("Flow action", "The test selected Bid 0 for the human seat, reached the hand-end score sheet, then explicitly opened Next Hand"),
+                                new ReportField("Next-hand bidding", "Cards: 9; UIAutomator bid domain: Bid 0 through Bid 9; Bid 10 absent; " + nextBidObservation),
+                                new ReportField("Conditional score reconciliation", manualObservation.getProperty("score.interpretation",
+                                        "The score canvas is not exposed as text; no manual score interpretation was supplied.")),
+                                new ReportField("Last-bid rule visual reading", manualObservation.getProperty("next-hand.bid-reconciliation",
+                                        "The disabled numeric bid is recorded from the UI hierarchy. Bid counter and other seats' bids require manual visual transcription.")),
+                                new ReportField("Evidence method and confidence", manualObservation.getProperty("method",
+                                        "The custom score canvas is not exposed as text. No OCR or card-recognition oracle was used; treat visual values as WARNING evidence.")),
+                                new ReportField("Card-count boundary", "The adapter records raster interaction cycles whose count can vary between runs. A cycle is not a verified accepted card; this flow does not assert a semantically decoded card count."),
+                                new ReportField("Scoring limit", "This single score row does not independently prove trick counts or exact bids. Repeated controlled bids/tricks, lower-hand scoring, full-match completion, and final ranking remain unverified."),
                                 new ReportField("Visible defect", "The score table text is rotated in portrait and the layout wastes most of the display area.")),
-                        List.of(), List.of(artifactUnchecked(scoreSheet))));
+                        List.of(), manualObservationArtifacts.stream()
+                                .map(DeepSuiteExtentReportTest::artifactUnchecked).toList()));
                 visual.complete(AtfReportStatus.WARNING);
             }
             publishedFlowStatus = AtfReportStatus.worst(flowStatus, AtfReportStatus.WARNING);
@@ -360,6 +378,20 @@ class DeepSuiteExtentReportTest {
         Properties properties = new Properties();
         try (var input = Files.newInputStream(file)) { properties.load(input); }
         return properties;
+    }
+
+    private static String actionObservationForTitle(Properties trace, String title) {
+        for (int phase = 0; phase < integer(trace, "flow.phaseCount"); phase++) {
+            String phasePrefix = "phase." + phase;
+            for (int step = 0; step < integer(trace, phasePrefix + ".stepCount"); step++) {
+                String stepPrefix = phasePrefix + ".step." + step;
+                if (title.equals(trace.getProperty(stepPrefix + ".title"))
+                        && integer(trace, stepPrefix + ".actionCount") > 0) {
+                    return trace.getProperty(stepPrefix + ".action.0.observed", "not recorded");
+                }
+            }
+        }
+        return "not recorded";
     }
 
     private static String required(Properties properties, String key) {

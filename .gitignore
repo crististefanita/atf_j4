@@ -1,6 +1,9 @@
 # Output local Maven/JVM; nu face parte din sursa ATF.
 target/
 artifacts/
+**/.gradle/
+**/build/
+local.properties
 .presentation-build/
 _mmdc-config.json
 _render_*.mmd
