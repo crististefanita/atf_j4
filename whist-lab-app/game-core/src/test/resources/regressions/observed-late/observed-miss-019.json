@@ -1,0 +1,187 @@
+{
+  "id": "observed-miss-019",
+  "gameId": "round5-large01-development-expert-player_v4-seed5502-seat2-before",
+  "role": "expert",
+  "hand": 19,
+  "size": 3,
+  "seat": 2,
+  "bid": 0,
+  "wonBefore": 0,
+  "oldChoice": "7H",
+  "newChoice": "QH",
+  "held": [
+    "7H",
+    "QH"
+  ],
+  "trump": "D",
+  "currentTrick": [
+    {
+      "seat": 1,
+      "card": "7S"
+    }
+  ],
+  "lastTrick": {
+    "plays": [
+      {
+        "seat": 0,
+        "card": "8H"
+      },
+      {
+        "seat": 1,
+        "card": "QS"
+      },
+      {
+        "seat": 2,
+        "card": "QH"
+      },
+      {
+        "seat": 3,
+        "card": "10H"
+      }
+    ],
+    "winner": 2
+  },
+  "swappedLastTrick": [
+    {
+      "seat": 0,
+      "card": "8H"
+    },
+    {
+      "seat": 1,
+      "card": "QS"
+    },
+    {
+      "seat": 2,
+      "card": "7H"
+    },
+    {
+      "seat": 3,
+      "card": "10H"
+    }
+  ],
+  "oldWon": 1,
+  "newWon": 0,
+  "scope": "Fixed recorded legal opponent continuation; evidence of the late-rank error, not a claim that opponents would repeat every response after a different card.",
+  "before": {
+    "mode": "ROMANIAN_WHIST",
+    "trump": "DIAMONDS",
+    "seat": 2,
+    "dealer": 2,
+    "handSize": 3,
+    "hand": [
+      {
+        "suit": "HEARTS",
+        "rank": 7
+      },
+      {
+        "suit": "HEARTS",
+        "rank": 12
+      }
+    ],
+    "seats": [
+      {
+        "remaining": 2,
+        "bid": 1,
+        "won": 0,
+        "total": 68,
+        "streak": 2
+      },
+      {
+        "remaining": 1,
+        "bid": 1,
+        "won": 1,
+        "total": 77,
+        "streak": 1
+      },
+      {
+        "remaining": 2,
+        "bid": 0,
+        "won": 0,
+        "total": 45,
+        "streak": -1
+      },
+      {
+        "remaining": 2,
+        "bid": 0,
+        "won": 0,
+        "total": 55,
+        "streak": 1
+      }
+    ],
+    "trick": [
+      {
+        "seat": 1,
+        "card": {
+          "suit": "SPADES",
+          "rank": 7
+        }
+      }
+    ],
+    "history": [
+      {
+        "seat": 3,
+        "card": {
+          "suit": "CLUBS",
+          "rank": 9
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "CLUBS",
+          "rank": 12
+        }
+      },
+      {
+        "seat": 1,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 7
+        }
+      },
+      {
+        "seat": 2,
+        "card": {
+          "suit": "CLUBS",
+          "rank": 7
+        }
+      },
+      {
+        "seat": 1,
+        "card": {
+          "suit": "SPADES",
+          "rank": 7
+        }
+      }
+    ],
+    "turnedCard": {
+      "suit": "DIAMONDS",
+      "rank": 11
+    },
+    "streakBonuses": true,
+    "streakBonusPoints": 10
+  },
+  "expectedOldBase": -1,
+  "expectedNewBase": 5,
+  "originalCurrentTrick": {
+    "plays": [
+      {
+        "seat": 1,
+        "card": "7S"
+      },
+      {
+        "seat": 2,
+        "card": "7H"
+      },
+      {
+        "seat": 3,
+        "card": "9H"
+      },
+      {
+        "seat": 0,
+        "card": "9D"
+      }
+    ],
+    "winner": 0
+  }
+}

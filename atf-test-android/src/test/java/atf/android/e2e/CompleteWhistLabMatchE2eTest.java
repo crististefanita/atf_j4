@@ -95,7 +95,7 @@ public class CompleteWhistLabMatchE2eTest {
                 }
                 int[] originalBids=numbers(recording.getProperty(k+"bids"));
                 int humanBid=originalBids[0];
-                if(!retained){ui.selectSpinnerOption(0,Integer.toString(humanBid));ui.tapText("Place bid");}
+                if(!retained){ui.selectBid(humanBid);ui.tapText("Place bid");}
                 OriginalWhistState state=retained?retainedState(out,prefix+"-turn00",deal):awaitStable(adb,out,prefix+"-turn00",deal,0);
                 captureAndVerify(trace,ui,out,prefix+"-turn00","Hand "+(h+1)+": submit bid "+humanBid+" and verify initial AI moves",state,oracle,totals,originalBids,-1,retained);
                 List<Integer> expectedMoves=Arrays.stream(numbers(recording.getProperty(k+"plays"))).boxed().toList();

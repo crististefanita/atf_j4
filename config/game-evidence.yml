@@ -4,3 +4,11 @@ maxDetailedComparisons: 10000
 maxDetailedContextCharacters: 250000
 passingExamplesPerFamily: 1
 optionalContextBudgetCharacters: 65536
+
+# Native component table and optional-context presentation limits.
+rowsPerGroup: 100
+fieldsPerGroup: 20
+optionalMaxItems: 32
+
+# Complete regression/docs collections are not sampled when mixed with learning.
+alwaysIncludeCollections: [regression, documentation]

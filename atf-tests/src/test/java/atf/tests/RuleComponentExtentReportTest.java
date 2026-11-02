@@ -1,5 +1,8 @@
 package atf.tests;
 
+import atf.tests.reporting.GameReportSession;
+import atf.tests.reporting.GameReportPhase;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
@@ -19,7 +22,8 @@ class RuleComponentExtentReportTest {
             new ReportField("RW04 — legal card","Leader may play any held card. Follow led suit if held, even after someone trumped. Otherwise trump if held; otherwise discard. No overtrump obligation."),
             new ReportField("RW05 — trick winner","Highest trump wins; without a trump, highest card of led suit wins. Off-suit non-trump cannot win. Seats play clockwise; winner leads the next trick."),
             new ReportField("RW06 — score","Exact contract: 5 + tricks. Otherwise: minus absolute difference between tricks and bid. Add to prior total once after the final card; negative totals are valid."),
-            new ReportField("RW07 — persistence and completion","Save bids, hands, public played cards, turned card, trick counts and cumulative scores. Reject inconsistent checkpoints. Finish after the final scheduled hand; scoring cannot be applied twice."));
+            new ReportField("RW07 — persistence and completion",("Save bids, hands, public played cards, turned card, trick counts and cumulative scores. Reject inconsistent checkpoints. Finish after the final scheduled hand; " +
+                "scoring cannot be applied twice.")));
     @Test void publishesOfflineRuleCasesAndActualIndependentGameTrace()throws Exception {
         assumeTrue(Boolean.getBoolean("atf.rules.publish"));
         Path run=Path.of(System.getProperty("atf.rules.runDir")),report=run.resolve("component-extent-report.html");
@@ -51,11 +55,8 @@ class RuleComponentExtentReportTest {
             }
         }
         boolean pass=failures==0&&skips==0&&"PASS".equals(ai.getProperty("status"));
-        var configured=AtfReportConfigurationLoader.load().reportingSettings();
-        // Keep the shared 240-character preview; full component payloads use the supported body-limit opt-out.
-        var completeBodies=new atf.reporting.configuration.ReportingSettings(configured.assertionMaxDisplayCharacters(),
-                atf.reporting.configuration.ReportingSettings.DISABLE_BODY_DISPLAY_LIMIT);
-        try(var session=new ExtentReportSession(report,completeBodies)) {
+
+        try(var session=GameReportSession.open(report)) {
             var scenario=session.startScenario("Whist romanesc — component rule contracts and AI evaluation","atf.tests","JVM / offline",List.of("component","romanian-whist","independent-oracle","AI"));
             try(var phase=scenario.startPhase("SETUP")) {
                 phase.observation(new ReportObservation("Rule profile and source contract",List.of(
@@ -74,24 +75,28 @@ class RuleComponentExtentReportTest {
                         new ReportField("Forced trump moves / void discards",forced+" / "+discards),
                         new ReportField("Negative-score checkpoints",""+negative),
                         new ReportField("Exhaustive legality combinations","6375"),new ReportField("Exhaustive winner comparisons","4960"),
-                        new ReportField("Independence","Expected legal cards, actors, winners, next leaders and scores are calculated without calling GameRules. Model games also restore checkpoints during bidding, play and scoring.")),List.of(),List.of()));
+                        new ReportField("Independence",
+                            "Expected legal cards, actors, winners, next leaders and scores are calculated without calling GameRules. Model games also restore checkpoints during bidding, play and scoring.")),List.of(),List.of()));
                 for(ReportObservation detail:cases)phase.observation(detail);
-                phase.observation(new ReportObservation("AI paired held-out benchmark",ai.stringPropertyNames().stream().filter(k->!k.startsWith("pair.")).sorted().map(k->new ReportField(k,ai.getProperty(k))).toList(),List.of(),List.of(artifact(run.resolve("evidence/ai-tournament.properties")))));
+                phase.observation(new ReportObservation("AI paired held-out benchmark",ai.stringPropertyNames().stream().filter(k->!k.startsWith("pair.")).sorted().map(k->new ReportField(k,ai.getProperty(k))).toList(),List.of(),
+                    List.of(artifact(run.resolve("evidence/ai-tournament.properties")))));
                 Path coverage=run.resolve("coverage/jacocoTestReport.xml");
                 if(Files.exists(coverage)) {
                     var root=parse(coverage).getDocumentElement();var counters=root.getChildNodes();List<ReportField> fields=new ArrayList<>();
                     for(int i=0;i<counters.getLength();i++)if(counters.item(i) instanceof org.w3c.dom.Element e&&e.getTagName().equals("counter"))
                         fields.add(new ReportField(e.getAttribute("type"),"covered="+e.getAttribute("covered")+"; missed="+e.getAttribute("missed")));
-                    phase.observation(new ReportObservation("Measured JaCoCo coverage — game-core",fields,List.of(),List.of(artifact(coverage))));
+                    GameReportPhase.optional(phase, new ReportObservation("Measured JaCoCo coverage — game-core",fields,List.of(),List.of(artifact(coverage))));
                 }
                 phase.complete(pass?AtfReportStatus.PASS:AtfReportStatus.FAIL);
             }
             try(var phase=scenario.startPhase("TEARDOWN")) {
                 phase.observation(new ReportObservation("Reproduction and boundaries",List.of(
                         new ReportField("Command","scripts/run-rule-components.ps1"),
-                        new ReportField("AI information boundary","Only own cards, public bids/counters, remaining hand sizes and played-card history are passed to the sampling API. Hidden-card permutations must leave the observation and decision identical."),
+                        new ReportField("AI information boundary",("Only own cards, public bids/counters, remaining hand sizes and played-card history are passed to the sampling API. Hidden-card permutations must leave the obser" +
+                            "vation and decision identical.")),
                         new ReportField("AI limitation","32 sampled deals and a heuristic rollout opponent. The held-out benchmark measures this declared sample, not global optimality or human-level strength."),
-                        new ReportField("Android next","Only after component acceptance: restore the preserved original match, then validate Android integration and exact replay. Romanian rules do not redefine the separate Oh Hell oracle.")),List.of(),List.of()));
+                        new ReportField("Android next",("Only after component acceptance: restore the preserved original match, then validate Android integration and exact replay. Romanian rules do not redefine the se" +
+                            "parate Oh Hell oracle."))),List.of(),List.of()));
                 phase.complete(pass?AtfReportStatus.PASS:AtfReportStatus.FAIL);
             }
             scenario.complete(pass?AtfReportStatus.PASS:AtfReportStatus.FAIL);

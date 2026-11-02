@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 final class AndroidUiDriver {
     private static final String REMOTE_XML = "/sdcard/atf-j4-window.xml";
     private static final Pattern BOUNDS = Pattern.compile("\\[(\\d+),(\\d+)]\\[(\\d+),(\\d+)]");
+    private static final Pattern PLAYING_CARD = Pattern.compile("(?:[2-9]|10|J|Q|K|A)[♠♥♣♦]");
     interface Device {
         AdbClient.Result run(String... arguments) throws IOException, InterruptedException;
         AdbClient.BinaryResult runBinary(String... arguments) throws IOException, InterruptedException;
@@ -71,6 +72,14 @@ final class AndroidUiDriver {
         return nodes(xml).stream().anyMatch(node -> node.text().equals(exactText));
     }
 
+    boolean hasTextContaining(String xml, String fragment) throws Exception {
+        return nodes(xml).stream().anyMatch(node -> node.text().contains(fragment));
+    }
+
+    boolean hasDescription(String xml, String exactDescription) throws Exception {
+        return nodes(xml).stream().anyMatch(node -> node.description().equals(exactDescription));
+    }
+
     boolean hasClass(String xml, String exactClass) throws Exception {
         return nodes(xml).stream().anyMatch(node -> node.className().equals(exactClass));
     }
@@ -82,6 +91,15 @@ final class AndroidUiDriver {
                     + "', got " + matches.size());
         }
         return matches.getFirst().enabled();
+    }
+
+    boolean isSelected(String xml, String exactText) throws Exception {
+        List<Node> matches = nodes(xml).stream().filter(node -> node.text().equals(exactText)).toList();
+        if (matches.size() != 1) {
+            throw new IllegalStateException("Expected one UI element named '" + exactText
+                    + "', got " + matches.size());
+        }
+        return matches.getFirst().selected();
     }
 
     List<String> disabledButtonTexts(String xml) throws Exception {
@@ -108,6 +126,41 @@ final class AndroidUiDriver {
         tap(matches.getFirst());
     }
 
+    void tapDescription(String exactDescription) throws Exception {
+        List<Node> matches = nodes(dump()).stream()
+                .filter(node -> node.description().equals(exactDescription)).toList();
+        if (matches.size() != 1) throw new IllegalStateException("Expected one UI element described as '"
+                + exactDescription + "', got " + matches.size());
+        tap(matches.getFirst());
+    }
+
+    List<CardLabel> bottomRowCardLabels(String xml) throws Exception {
+        List<CardLabel> cards = nodes(xml).stream()
+                .filter(node -> PLAYING_CARD.matcher(node.text()).matches())
+                .map(node -> new CardLabel(node.text(), bounds(node.bounds())[1]))
+                .toList();
+        if (cards.isEmpty()) return List.of();
+        int bottomRowTop = cards.stream().mapToInt(CardLabel::top).max().orElseThrow();
+        return cards.stream().filter(card -> card.top() >= bottomRowTop - 15).toList();
+    }
+
+    List<Integer> numericButtonWidths(String xml) throws Exception {
+        return nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.Button"))
+                .filter(node -> node.text().matches("\\d+"))
+                .map(node -> {
+                    try { int[] value = bounds(node.bounds()); return value[2] - value[0]; }
+                    catch (RuntimeException invalidBounds) { throw invalidBounds; }
+                }).toList();
+    }
+
+    private static int[] bounds(String value) {
+        Matcher matcher = BOUNDS.matcher(value);
+        if (!matcher.matches()) throw new IllegalArgumentException("Invalid UI bounds: " + value);
+        return new int[]{Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)),
+                Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(4))};
+    }
+
     void tapSpinner(int index) throws Exception {
         List<Node> spinners = nodes(dump()).stream().filter(node -> node.className().equals("android.widget.Spinner") && node.clickable()).toList();
         if (index < 0 || index >= spinners.size()) throw new IllegalStateException("Spinner " + index + " not found; count=" + spinners.size());
@@ -119,11 +172,29 @@ final class AndroidUiDriver {
         selectOpenedSpinnerOption(expectedText);
     }
 
+    void selectBid(int bid) throws Exception {
+        tapText(Integer.toString(bid));
+    }
+
     void selectNamedSpinnerOption(String description,String expectedText)throws Exception {
-        reveal(node->node.description().equals(description));
-        var matches=nodes(dump()).stream().filter(node->node.className().equals("android.widget.Spinner")&&node.description().equals(description)).toList();
+        reveal(node->node.className().equals("android.widget.Spinner")
+                && matchesSpinnerLabel(description,node.description()));
+        var matches=nodes(dump()).stream().filter(node->node.className().equals("android.widget.Spinner")
+                && matchesSpinnerLabel(description,node.description())).toList();
         if(matches.size()!=1)throw new IllegalStateException("Expected one spinner: "+description);
         tap(matches.getFirst());selectOpenedSpinnerOption(expectedText);
+    }
+
+    private static boolean matchesSpinnerLabel(String selector,String label) {
+        return switch(selector) {
+            case "player-count" -> List.of("Players","Jucători").contains(label);
+            case "game-type" -> List.of("Game type","Varianta de joc").contains(label);
+            case "ai-level" -> List.of("AI level","Nivelul adversarilor").contains(label);
+            case "romanian-streak-value" -> List.of("Five-hand exact-contract bonus",
+                    "Bonus pentru cinci contracte exacte eligibile").contains(label);
+            case "bid-options" -> List.of("Bid value","Valoarea licitației").contains(label);
+            default -> selector.equals(label);
+        };
     }
 
     void revealText(String expected)throws Exception {reveal(node->node.text().equals(expected));}
@@ -451,10 +522,13 @@ final class AndroidUiDriver {
             Element element = (Element) elements.item(index);
             result.add(new Node(element.getAttribute("text"), element.getAttribute("class"),
                     element.getAttribute("bounds"), Boolean.parseBoolean(element.getAttribute("clickable")),
-                    Boolean.parseBoolean(element.getAttribute("enabled")),element.getAttribute("content-desc")));
+                    Boolean.parseBoolean(element.getAttribute("enabled")),
+                    Boolean.parseBoolean(element.getAttribute("selected")), element.getAttribute("content-desc")));
         }
         return result;
     }
 
-    private record Node(String text, String className, String bounds, boolean clickable, boolean enabled,String description) { }
+    private record Node(String text, String className, String bounds, boolean clickable,
+            boolean enabled, boolean selected, String description) { }
+    record CardLabel(String text, int top) { }
 }

@@ -151,3 +151,14 @@ The following evidence was recorded by the consumer agent during this review and
 The original archives are C:/work/whist_back/ai-training/20261102-round3/ and C:/work/whist_back/ai-training/20261102-171252-round4/. Their corpus-report-verification.properties, publication-attempt-01/02 and learning-heldout-extent-r2.html retain the detailed receipts. The agent reported file-URL policy rejection and did not bypass it; the artifact remains outside this review’s interactive acceptance.
 
 This is a stress witness, not an automatic classification of every large report as a J15 defect. J4 owns adaptive selection/grouping and budgets; J0 owns any independently reproduced neutral publication limit. The current J16 delivery must not rewrite the recorded J15 execution or imply a fresh game run.
+
+## Adaptive publication — verified consumer migration
+
+The [current contract](ATF_Game_Report_Presentation.md) replaces hardcoded unlimited bodies in all six publishers with one captured AUTO/SUMMARY/FULL policy. The [verification record](ATF_Game_Report_Verification.md) separates 54 passing permanent contracts, five archived publishers, actual learning individual/suite scopes and adjacent J1/J2/J3 sanity.
+
+- Corpus and AI component comparisons now use native assertion steps, with groups of at most 100 rows by default.
+- Complete TEXT/JSON values and PNG bytes remain inline; optional provenance has explicit cumulative inventory and positive limits.
+- Legacy missing receipts, global owner correlation, capture timing and physical display dimensions remain active J4 criteria.
+- The 55.7 MB archived AI report renders its initial view but timed out during deep interactive inspection; this is retained as a limitation, not full visual acceptance.
+
+This migration does not change C3/J16, replay business oracles or start Android. Historical J12–J15 evidence and earlier failures above keep their original scope.

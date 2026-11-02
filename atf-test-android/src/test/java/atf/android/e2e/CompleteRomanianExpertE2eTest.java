@@ -59,7 +59,7 @@ class CompleteRomanianExpertE2eTest {
                 var bidAdvice=challenge?ro.whistlab.coach.IndependentPlayer.bid(WhistChallenger.position(start,0)):null;
                 int bid=challenge?bidAdvice.value():expected.stream().min(Comparator.comparingInt(b->Math.abs(b-preferred))).orElseThrow();
                 assertTrue(expected.contains(bid),"Independent planner must choose from the displayed allowed bid domain");
-                ui.back();ui.selectSpinnerOption(0,""+bid);ui.tapText("Place bid");JsonNode state=stable(adb);
+                ui.back();ui.selectBid(bid);ui.tapText("Place bid");JsonNode state=stable(adb);
                 checks=new ArrayList<>(oracle.verify(state));RomanianMatchOracle.equal(checks,"Selected human bid accepted",bid,state.path("players").get(0).path("bid").asInt());
                 String label=prefix+"-bids";save(out,label,state);ui.capture(label);
                 checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": all AI bids and opening moves",label,state.toPrettyString()+"\n"+oracle.explanation()+(challenge?"\nRedacted human input: "+WhistChallenger.position(start,0)+"\nHuman decision: "+bidAdvice.explanation():""),checks,

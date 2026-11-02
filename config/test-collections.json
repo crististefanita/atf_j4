@@ -26,14 +26,15 @@
     },
     {
       "id": "learning",
-      "task": ":game-core:learningTest",
+      "task": ":game-core:roundSixTest",
       "targetMinutes": 15,
       "trigger": "Explicit candidate experiment only",
       "evidence": "All JSON games and receipts, fixed-opponent gates, development examples; no automatic bulk HTML.",
       "requires": [
         "Fresh candidate ID",
         "External corpus path",
-        "Frozen protocol; untouched heldout before promotion"
+        "Frozen protocol; untouched heldout before promotion",
+        "Explicit protocol JSON; new heldout range registered to a source freeze"
       ]
     },
     {

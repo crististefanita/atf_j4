@@ -1,5 +1,9 @@
 package atf.tests;
 
+import atf.tests.reporting.GameReportSession;
+import atf.tests.reporting.GameReportTextAudit;
+import atf.tests.reporting.GameReportPhase;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
@@ -76,10 +80,8 @@ class FullMatchExtentReportTest {
         Path verificationPath=report.resolveSibling("full-match-report-verification.properties");
         if(Files.exists(verificationPath))Files.copy(verificationPath,verificationPath.resolveSibling("full-match-report-verification-previous-"+System.currentTimeMillis()+".properties"));
         Files.writeString(verificationPath,"status=PENDING\n");
-        var configured=AtfReportConfigurationLoader.load().reportingSettings();
-        var completeBodies=new atf.reporting.configuration.ReportingSettings(configured.assertionMaxDisplayCharacters(),
-                atf.reporting.configuration.ReportingSettings.DISABLE_BODY_DISPLAY_LIMIT);
-        try(var session=new ExtentReportSession(report,completeBodies)) {
+
+        try(var session=GameReportSession.open(report)) {
             var summary=session.startScenario("Full Oh Hell match — original and Whist Lab parity","atf.tests",
                     "Android API 28 / ADB",List.of("full-match","rules","score","original","parallel-app"));
             try(var phase=summary.startPhase("Component contracts, game engine and live execution results")) {
@@ -89,7 +91,8 @@ class FullMatchExtentReportTest {
                         new ReportField("Failures and errors",Long.toString(componentFailures)),
                         new ReportField("Skipped",Long.toString(componentSkipped)),
                         new ReportField("Original live acquisition",live.getProperty("flow.status")),
-                        new ReportField("Continuation provenance","Retained original and Lab hands are revalidated before live continuation. Retained Lab UI actions are labeled explicitly; no new tap is claimed. Earlier failed logs and traces remain under diagnostics.")),
+                        new ReportField("Continuation provenance",("Retained original and Lab hands are revalidated before live continuation. Retained Lab UI actions are labeled explicitly; no new tap is claimed. Earlier failed " +
+                            "logs and traces remain under diagnostics."))),
                         List.of(),resultXml.stream().map(FullMatchExtentReportTest::artifact).toList()));
                 for(ReportObservation detail:resultDetails)phase.observation(detail);
                 phase.complete(componentFailures>0?AtfReportStatus.FAIL:componentSkipped>0?AtfReportStatus.WARNING:AtfReportStatus.PASS);
@@ -120,10 +123,13 @@ class FullMatchExtentReportTest {
                         new ReportField("Timing interpretation",timingNote),
                         new ReportField("Step timing","OBSERVE records have no per-command timing; 0 ms is an uninstrumented placeholder, not a measured action latency."),
                         new ReportField("Original package proof",Files.exists(packageProof)?Files.readString(packageProof):"See original-package-version.txt in the run folder"),
-                        new ReportField("Original observation","Unmodified Play-installed v4.5/145; Android package backup observes save2.dat. Every observation pauses and resumes the real game; this exercises persistence as well as gameplay."),
+                        new ReportField("Original observation",
+                            "Unmodified Play-installed v4.5/145; Android package backup observes save2.dat. Every observation pauses and resumes the real game; this exercises persistence as well as gameplay."),
                         new ReportField("Independent oracle","Checks card ownership, following led suit, highest trump/led card, next leader, trick counters, dealer rotation, bid restriction and cumulative tricks + exact-bid bonus."),
-                        new ReportField("Phase counters","Original score saves can carry the next index/size beside the completed previous hand. Played size is derived from empty hands, complete history and won counters. Whist Lab retains the current index; final original gameover is checked separately."),
-                        new ReportField("Parallel app","Same observed deals, trump, bids and card inputs are replayed in debug mode through the normal Whist Lab engine. Winners and scores are calculated; original outcomes are never injected."),
+                        new ReportField("Phase counters",("Original score saves can carry the next index/size beside the completed previous hand. Played size is derived from empty hands, complete history and won counter" +
+                            "s. Whist Lab retains the current index; final original gameover is checked separately.")),
+                        new ReportField("Parallel app",("Same observed deals, trump, bids and card inputs are replayed in debug mode through the normal Whist Lab engine. Winners and scores are calculated; original out" +
+                            "comes are never injected.")),
                         new ReportField("Limits","One complete four-player Normal-AI Oh Hell scenario. Does not establish all modes, every random deal, online multiplayer, or uninterrupted animation timing.")),List.of(),
                         List.of(artifact(evidence.resolve("original-match.properties")),artifact(evidence.resolve("ui-flow-match-original.properties")),artifact(evidence.resolve("rule-coverage.properties")))));
                 phase.complete(allPassed&&failed==0?AtfReportStatus.PASS:AtfReportStatus.FAIL);
@@ -131,7 +137,8 @@ class FullMatchExtentReportTest {
             Path labProvenance=evidence.getParent().resolve("lab-apk-provenance.json");
             if(Files.exists(labProvenance))try(var phase=summary.startPhase("Whist Lab APK provenance and subsequent normal-game check")) {
                 phase.observation(new ReportObservation("Exact APKs and validation scope",List.of(
-                        new ReportField("Scope","The complete recorded-input replay and the subsequent normal Romanian Expert test have separately recorded APK hashes. The later app change clears debug replay on New game / Play again.")),
+                        new ReportField("Scope",("The complete recorded-input replay and the subsequent normal Romanian Expert test have separately recorded APK hashes. The later app change clears debug replay " +
+                            "on New game / Play again."))),
                         List.of(new ReportObservation.Body("APK provenance",Files.readString(labProvenance),ReportObservation.Format.JSON)),List.of(artifact(labProvenance))));
                 phase.complete(AtfReportStatus.PASS);
             }
@@ -177,15 +184,15 @@ class FullMatchExtentReportTest {
             inlinePngHashes.add(hash(Base64.getDecoder().decode(matcher.group(1))));inlineCount++;
             textOnly.append(html,last,matcher.start()).append("[verified inline PNG]");last=matcher.end();
         }
-        textOnly.append(html,last,html.length());String rendered=textOnly.toString();
+        textOnly.append(html,last,html.length());String rendered=textOnly.toString();var textAudit=new GameReportTextAudit(rendered);
         for(Path screenshot:screenshots)assertTrue(inlinePngHashes.contains(hash(Files.readAllBytes(screenshot))),
                 "Missing exact inline PNG bytes: "+screenshot);
         for(Path manifest:manifests) {
-            Properties flow=load(manifest);assertRendered(rendered,flow.getProperty("flow.name"));
+            Properties flow=load(manifest);assertRendered(textAudit,flow.getProperty("flow.name"));
             for(String key:flow.stringPropertyNames()) {
                 if(key.endsWith(".title")||key.matches(".*\\.assertion\\.\\d+\\.(name|expected|actual)$")
                         ||key.matches(".*\\.action\\.\\d+\\.(operation|target|expected|observed)$")) {
-                    String value=flow.getProperty(key);if(!value.isBlank())assertRendered(rendered,value);
+                    String value=flow.getProperty(key);if(!value.isBlank())assertRendered(textAudit,value);
                 }
             }
         }
@@ -206,8 +213,8 @@ class FullMatchExtentReportTest {
         try(var out=Files.newOutputStream(verificationPath)){verification.store(out,"Exact PNG bytes and complete assertion texts verified");}
     }
     private static Properties load(Path file)throws Exception {Properties p=new Properties();try(var in=Files.newInputStream(file)){p.load(in);}return p;}
-    private static void assertRendered(String html,String value) {
-        assertTrue(ReportTextValueMatcher.containsCompleteValue(html,value),()->"Report omitted complete text: "+value);
+    private static void assertRendered(GameReportTextAudit audit,String value) {
+        assertTrue(audit.contains(value), "Missing complete rendered value: " + value);
     }
     private static String hash(byte[] bytes)throws Exception {return HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));}
     private static String hashFile(Path path)throws Exception {

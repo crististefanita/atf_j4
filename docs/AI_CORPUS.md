@@ -83,3 +83,5 @@ Pentru runda V3, protocolul este înghețat înainte de evaluare în
 `C:\work\whist_back\ai-training\20261102-round3\PROTOCOL.json`: dezvoltare
 2000…2007, evaluare finală 60000…60015, ambele cu locuri rotite. Se măsoară separat
 progresul plannerului și al Expertului față de adversari V2 fixați.
+
+R6 evidence and rejection ledger: [analysis RO/EN](AI_ROUND6_ANALYSIS.md). The local fix has 20 new captured regression cases; 256 fresh full games showed no score/win change. The statistical model failed on its separate 512-game evaluation and was not deployed. Both ranges are reserved permanently in the external holdout-use registry.

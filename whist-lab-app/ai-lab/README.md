@@ -41,3 +41,5 @@ last bid is uninformative. Training uses development games only. The frozen V3
 player remains the reference; the V3 paragraphs above describe that history.
 On fresh deals V4 gains242points and5win shares over128paired games, with both
 fixed opponent families passing. See [V4 acceptance](../../docs/AI_CORPUS_ROUND4_ACCEPTANCE.md).
+
+R6: late-card rank correction is shared in behavior with the Expert through a separate implementation; public-bid statistical weights failed independent evaluation and remain test-only. See ../../docs/AI_ROUND6_ANALYSIS.md. Default regression excludes research/mining tournaments.

@@ -39,8 +39,6 @@ public final class MonteCarloAi {
                 game.currentTrick(),game.history(),game.turnedCard(),game.streakBonuses(),game.streakBonusPoints());
     }
 
-    private static int samplingBudget(View view){return view.mode().isRomanian()&&view.seats().size()==4&&view.handSize()>=2?64:SAMPLES;}
-
     public static int chooseBid(View view) {
         int prior=view.seats().stream().filter(s->s.bid()!=null).mapToInt(s->s.bid()).sum();
         boolean last=view.seats().stream().filter(s->s.bid()!=null).count()==view.seats().size()-1;
@@ -50,7 +48,7 @@ public final class MonteCarloAi {
             for(int bid:allowed){double expected=win*points(view,view.seat(),1,bid)+(1-win)*points(view,view.seat(),0,bid);if(expected>value){value=expected;best=bid;}}return best;
         }
         double[] values=new double[view.handSize()+1];int samples=0;
-        for(int sample=0;sample<samplingBudget(view);sample++) {
+        for(int sample=0;sample<SAMPLES;sample++) {
             Random random=new Random(seed(view,sample));List<List<Card>> hands=sample(view,random);
             if(hands==null)continue;
             for(int bid:allowed){int[] targets=biddingTargets(view,hands,bid);
@@ -72,11 +70,12 @@ public final class MonteCarloAi {
         if(legal.isEmpty())throw new IllegalArgumentException("No legal card for the observed player");
         if(legal.size()==1)return new Decision(legal.get(0),List.of(),
                 "Only legal card; no hidden-deal sampling or score estimate required");
+        Card dominant=LateDiscard.choose(view);if(dominant!=null)return new Decision(dominant,List.of(),"Two-card same-suit dominance: current trick already lost, or last-seat win fixed; retain high only if one further trick is needed. No hidden cards or samples used.");
         List<Candidate> evaluations=new ArrayList<>();
         int[] targets=view.seats().stream().mapToInt(s->s.bid()==null?0:s.bid()).toArray();
         double[] values=new double[legal.size()],rivals=new double[legal.size()];int samples=0;
         List<List<List<Card>>> exactDeals=enumerateSmallDeals(view);
-        int worlds=exactDeals.isEmpty()?samplingBudget(view):exactDeals.size();
+        int worlds=exactDeals.isEmpty()?SAMPLES:exactDeals.size();
         for(int sample=0;sample<worlds;sample++){
             List<List<Card>> hands=exactDeals.isEmpty()?sample(view,new Random(seed(view,sample))):exactDeals.get(sample);if(hands==null)continue;samples++;
             for(int c=0;c<legal.size();c++){

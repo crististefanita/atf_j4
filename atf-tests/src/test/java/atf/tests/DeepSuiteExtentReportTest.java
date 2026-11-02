@@ -161,7 +161,8 @@ class DeepSuiteExtentReportTest {
                                 new ReportField("Failures and errors", Long.toString(appFailures)),
                                 new ReportField("Skipped", Long.toString(appSkipped)),
                                 new ReportField("Contract Whist flow", "Menu and rules, setup matrix for 3–6 seats, guarded 4-seat Oh Hell hand-end, manual score-sheet review, and Next Hand bidding with 9 cards"),
-                                new ReportField("Card-play evidence limit", "Raster interaction cycles are reported as UI activity only; the custom table does not expose card identity, exact accepted-card count, legality, or trick winners to UIAutomator"),
+                                new ReportField("Card-play evidence limit",
+                                    "Raster interaction cycles are reported as UI activity only; the custom table does not expose card identity, exact accepted-card count, legality, or trick winners to UIAutomator"),
                                 new ReportField("Whist Lab flow", "Deterministic practice trick, bid 1, force-stop and resume the same human turn, play A♥, AI seats complete trick, exact-bid score Total: 11"),
                                 new ReportField("Screenshot captures", Integer.toString(screenshots.size() + flowScreenshots.size())),
                                 new ReportField("Screenshot and UI-tree assets", Integer.toString(evidenceAssets.size())),
@@ -238,11 +239,11 @@ class DeepSuiteExtentReportTest {
         return Path.of(value).toAbsolutePath().normalize();
     }
 
-    static void publishUiFlow(ExtentReportSession session, Path manifest, Path evidenceDir) throws Exception {
+    static void publishUiFlow(atf.reporting.contract.AtfReportPorts.Session session, Path manifest, Path evidenceDir) throws Exception {
         publishUiFlow(session,manifest,evidenceDir,false);
     }
 
-    static void publishUiFlow(ExtentReportSession session, Path manifest, Path evidenceDir, boolean completeActionBodies) throws Exception {
+    static void publishUiFlow(atf.reporting.contract.AtfReportPorts.Session session, Path manifest, Path evidenceDir, boolean completeActionBodies) throws Exception {
         Properties trace = loadTrace(manifest);
         assertTrue("1".equals(trace.getProperty("format.version")), "Unsupported Android UI flow manifest: " + manifest);
         String flowName = required(trace, "flow.name");
@@ -343,7 +344,7 @@ class DeepSuiteExtentReportTest {
                             : AndroidScreenshotEvidence.from(resolveEvidence(evidenceDir, screenshotName)).base64Png();
                     if(assertions.isEmpty()&&!base64Png.isBlank()) {
                         // A captured observation is media evidence, not an invented business assertion.
-                        phase.uiValidationAsMedia(keyword+" "+title,target,base64Png,assertions,actions,status);
+                        phase.uiValidationAsMedia(title,target,base64Png,assertions,actions,status);
                     } else phase.step(AtfGherkinKeyword.valueOf(keyword), title, target, base64Png,
                             assertions, actions, ReportScreenshotPolicy.CapturePoint.CHECKPOINT, status);
                 }
@@ -374,8 +375,10 @@ class DeepSuiteExtentReportTest {
                                         "The disabled numeric bid is recorded from the UI hierarchy. Bid counter and other seats' bids require manual visual transcription.")),
                                 new ReportField("Evidence method and confidence", manualObservation.getProperty("method",
                                         "The custom score canvas is not exposed as text. No OCR or card-recognition oracle was used; treat visual values as WARNING evidence.")),
-                                new ReportField("Card-count boundary", "The adapter records raster interaction cycles whose count can vary between runs. A cycle is not a verified accepted card; this flow does not assert a semantically decoded card count."),
-                                new ReportField("Scoring limit", "This single score row does not independently prove trick counts or exact bids. Repeated controlled bids/tricks, lower-hand scoring, full-match completion, and final ranking remain unverified."),
+                                new ReportField("Card-count boundary",
+                                    ("The adapter records raster interaction cycles whose count can vary between runs. A cycle is not a verified accepted card; this flow does not assert a semantical" + "ly decoded card count.")),
+                                new ReportField("Scoring limit", ("This single score row does not independently prove trick counts or exact bids. Repeated controlled bids/tricks, lower-hand scoring, full-match completion, and f" +
+                                    "inal ranking remain unverified.")),
                                 new ReportField("Visible defect", "The score table text is rotated in portrait and the layout wastes most of the display area.")),
                         List.of(), manualObservationArtifacts.stream()
                                 .map(DeepSuiteExtentReportTest::artifactUnchecked).toList()));
@@ -396,7 +399,8 @@ class DeepSuiteExtentReportTest {
                                 new ReportField("First-hand trump samples", "3 players: Diamonds; 4: Hearts; 5: Clubs; 6: Spades"),
                                 new ReportField("Last-bid restriction", "In the 4-player screenshot, prior AI bids total 7 and Bid 3 is disabled for the final bidder; 7 + 3 would equal the 10-card hand"),
                                 new ReportField("Evidence method", "Values were read visually from the attached emulator PNGs; custom table text is absent from the UIAutomator hierarchy"),
-                                new ReportField("Rule boundary", "First deal sizes match the local 10/10/10/8 model; first-trump origin varies across these sessions and does not yet establish the rotation rule. Only 4-player 10-to-1 progression has been followed in the original app."),
+                                new ReportField("Rule boundary", ("First deal sizes match the local 10/10/10/8 model; first-trump origin varies across these sessions and does not yet establish the rotation rule. Only 4-player 1" +
+                                    "0-to-1 progression has been followed in the original app.")),
                                 new ReportField("Open work", "Repeat fresh games at each seat count and follow five consecutive hands through No Trumps and back to the next trump")),
                         List.of(), screenshotsBySeats.stream().map(DeepSuiteExtentReportTest::artifactUnchecked).toList()));
                 visual.complete(AtfReportStatus.WARNING);

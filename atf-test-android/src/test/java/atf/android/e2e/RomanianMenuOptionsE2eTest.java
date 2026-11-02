@@ -17,7 +17,8 @@ class RomanianMenuOptionsE2eTest {
         var trace=new AndroidUiFlowTrace(out,"romanian-menu-options","Romanian series: menu selects five/ten or classic, then exact resume",getClass().getSimpleName(),"atf.android.e2e","ro.whistlab.app",List.of("android","menu","series","persistence"));
         try{
             adb.run("shell","am","force-stop","ro.whistlab.app").requireSuccess();adb.run("shell","am","start","-W","-n","ro.whistlab.app/.MainActivity").requireSuccess();
-            ui.tapText("Ajutor / How to play");
+            ui.tapText("English");
+            ui.tapText("How to play");
             for(String language:List.of("English","Română")){
                 ui.tapText(language);
                 String heading=language.equals("English")?"Mandatory trump when void":"Atu obligatoriu când nu ai culoarea";
@@ -28,12 +29,19 @@ class RomanianMenuOptionsE2eTest {
                 RomanianMatchOracle.truth(helpChecks,"Help distinguishes compulsory trump from compulsory overtrump",duty+"; "+under,content,content.contains(duty)&&content.contains(under));
                 String label=language.equals("English")?"help-en":"help-ro";ui.capture(label);
                 CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Read Romanian rules in "+language,label,"Normal Help menu; no injected state",helpChecks,List.of());
-                ui.back();ui.awaitText("New game",Duration.ofSeconds(12));ui.tapText("Ajutor / How to play");
+                ui.back();
+                String homeNewGame=language.equals("English")?"New game":"Joc nou";
+                String homeHelp=language.equals("English")?"How to play":"Reguli de joc";
+                String home=ui.awaitText(homeNewGame,Duration.ofSeconds(12));
+                var menuChecks=new ArrayList<AtfAssertion>();
+                RomanianMatchOracle.truth(menuChecks,"Selected language also applies to the main menu",
+                        homeNewGame,String.join(" ",ui.texts(home)),ui.hasText(home,homeNewGame));
+                ui.tapText(homeHelp);
                 String title=language.equals("English")?"HELP — HOW TO PLAY":"AJUTOR — CUM SE JOACĂ";String reopened=ui.awaitText(title,Duration.ofSeconds(12));
-                helpChecks=new ArrayList<>();RomanianMatchOracle.truth(helpChecks,"Chosen help language survives reopening",title,String.join(" ",ui.texts(reopened)),ui.hasText(reopened,title));ui.capture(label+"-reopen");
+                helpChecks=new ArrayList<>(menuChecks);RomanianMatchOracle.truth(helpChecks,"Chosen help language survives reopening",title,String.join(" ",ui.texts(reopened)),ui.hasText(reopened,title));ui.capture(label+"-reopen");
                 CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Reopen the selected help language",label+"-reopen","Back to menu and reopen Help",helpChecks,List.of());
             }
-            ui.back();ui.awaitText("New game",Duration.ofSeconds(12));
+            ui.back();ui.tapText("English");ui.awaitText("New game",Duration.ofSeconds(12));
             for(int value:List.of(5,10,0)){
                 ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Whist romanesc (1-8-1)");ui.selectNamedSpinnerOption("ai-level","Hard");
                 ui.revealText("10 points");var setup=ui.dump();var checks=new ArrayList<AtfAssertion>();

@@ -100,18 +100,18 @@ Current ADB screencap captures the full display; the generic viewer and return-c
 
 ## Adaptive detail and evidence budgets
 
-J4 captures a typed immutable presentation policy once per run, from consumer-owned YAML. AUTO adapts semantic grouping to the measured count/size; SUMMARY declares its summary scope, while FULL retains the required detailed evidence or explicitly fails completeness. The effective policy and every omission are visible in the standalone HTML.
+The [implemented presentation contract](ATF_Game_Report_Presentation.md) captures one immutable policy from config/game-evidence.yml and generic Reporting settings for all six publishers. AUTO and SUMMARY select whole learning invocations with an explicit omitted population; the five legacy publishers retain their supplied scope. FULL retains every supplied invocation and requested optional detail within positive budgets, or refuses complete-audit acceptance.
 
 | Boundary | Invariant |
 |---|---|
-| generic settings | assertion preview stays 240; body budget is independent and must not be replaced by a hardcoded unlimited value |
-| game grouping | shared setup is deduplicated; hands/tricks and retained game detail have explicit scopes and original order |
-| mandatory audit | compared inputs, expected/actual/status, failure cause and required checkpoint remain available |
-| optional context | positive per-group and report-level budgets; show original/retained/omitted counts and reason |
-| completeness | missing required evidence means INCOMPLETE audit acceptance; original business verdict is preserved separately |
-| serialized structure | split at semantic boundaries before publication; no half JSON values or over-budget hidden originals |
+| generic settings | assertion preview stays 240; body budget is positive and never overridden with an unlimited constant |
+| native grouping | bounded assertion rows and observation fields, complete ordered TEXT/JSON parts, native disclosures |
+| mandatory audit | all supplied comparisons, compared inputs, original verdict, failure cause and PNGs remain available in the declared scope |
+| optional context | cumulative item/character budget, including upstream fingerprints; original/retained/omitted counts and reasons |
+| completeness | INCOMPLETE publication refusal survives close; the captured business outcome is a separate fact |
+| responsibility | missing legacy receipts, independent business oracles and measured Android timing remain J4 capture requirements |
 
-Changing display level cannot change game behavior, assertion evaluation, seeds, selection outcomes or privacy policy. Validate limits/enums before publication and retain boundary/mutant tests in J4; a library capability gap receives a neutral J0 reproduction. [Active adaptive-detail criteria](feedback/ATF_Android_Alignment_Feedback.md#adaptive-game-detail--configurație-consumer-fără-pierderea-verdictului) track implementation; no new game-specific J0 YAML keys are introduced.
+[Permanent contracts and rendering evidence](ATF_Game_Report_Verification.md) cover the physical C3/J16 pair, individual/combined publication and deliberate negative controls. No game-specific keys, HTML rewriting or private renderer are introduced into J0.
 
 ## Timp, status și acceptor
 

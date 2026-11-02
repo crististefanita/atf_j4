@@ -1,0 +1,233 @@
+{
+  "gameId": "round5-large01-development-expert-player_v4-seed5503-seat1-before",
+  "role": "expert",
+  "handNumber": 9,
+  "before": {
+    "mode": "ROMANIAN_WHIST",
+    "trump": "SPADES",
+    "seat": 1,
+    "dealer": 0,
+    "handSize": 6,
+    "hand": [
+      {
+        "suit": "CLUBS",
+        "rank": 7
+      },
+      {
+        "suit": "CLUBS",
+        "rank": 11
+      }
+    ],
+    "seats": [
+      {
+        "remaining": 1,
+        "bid": 0,
+        "won": 0,
+        "total": 35,
+        "streak": 3
+      },
+      {
+        "remaining": 2,
+        "bid": 1,
+        "won": 1,
+        "total": 35,
+        "streak": 1
+      },
+      {
+        "remaining": 1,
+        "bid": 3,
+        "won": 3,
+        "total": 3,
+        "streak": 1
+      },
+      {
+        "remaining": 1,
+        "bid": 1,
+        "won": 0,
+        "total": 28,
+        "streak": -1
+      }
+    ],
+    "trick": [
+      {
+        "seat": 2,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 13
+        }
+      },
+      {
+        "seat": 3,
+        "card": {
+          "suit": "CLUBS",
+          "rank": 9
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 11
+        }
+      }
+    ],
+    "history": [
+      {
+        "seat": 1,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 10
+        }
+      },
+      {
+        "seat": 2,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 9
+        }
+      },
+      {
+        "seat": 3,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 8
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 7
+        }
+      },
+      {
+        "seat": 1,
+        "card": {
+          "suit": "SPADES",
+          "rank": 10
+        }
+      },
+      {
+        "seat": 2,
+        "card": {
+          "suit": "SPADES",
+          "rank": 14
+        }
+      },
+      {
+        "seat": 3,
+        "card": {
+          "suit": "SPADES",
+          "rank": 13
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "SPADES",
+          "rank": 9
+        }
+      },
+      {
+        "seat": 2,
+        "card": {
+          "suit": "SPADES",
+          "rank": 8
+        }
+      },
+      {
+        "seat": 3,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      },
+      {
+        "seat": 1,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 14
+        }
+      },
+      {
+        "seat": 2,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 10
+        }
+      },
+      {
+        "seat": 3,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 9
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 8
+        }
+      },
+      {
+        "seat": 1,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 7
+        }
+      },
+      {
+        "seat": 2,
+        "card": {
+          "suit": "DIAMONDS",
+          "rank": 13
+        }
+      },
+      {
+        "seat": 3,
+        "card": {
+          "suit": "CLUBS",
+          "rank": 9
+        }
+      },
+      {
+        "seat": 0,
+        "card": {
+          "suit": "HEARTS",
+          "rank": 11
+        }
+      }
+    ],
+    "turnedCard": {
+      "suit": "SPADES",
+      "rank": 11
+    },
+    "streakBonuses": true,
+    "streakBonusPoints": 10
+  },
+  "oldChoice": "7C",
+  "guaranteed": [
+    "JC"
+  ],
+  "worlds": 336,
+  "nodes": 1069,
+  "actualHandOutcome": {
+    "seat": 1,
+    "bid": 1,
+    "won": 1,
+    "base": 6,
+    "series": 0,
+    "total": 41,
+    "streak": 2
+  },
+  "explanation": "The source game was lost, but this observed hand met its contract. This regression tests a compatible hidden continuation where the old choice fails; it does not claim the old choice lost the recorded hand.",
+  "oracle": "All feasible unknown deals and every legal remaining opponent action; future own card is forced. Literal certified choices are fixed in this fixture."
+}

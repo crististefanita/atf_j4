@@ -1,6 +1,8 @@
 # Feedback de aliniere ATF J4 Android
 
-Revizie live: 2026-11-02; Core C3 și Reporting J15.
+Revizie live: 2026-11-02; Core C3 și Reporting J16.
+
+Politica comună a celor șase publicatoare este implementată și verificată în [contractul oficial](../ATF_Game_Report_Presentation.md) și [probele de regresie/randare](../ATF_Game_Report_Verification.md). Secțiunile J14/J15 de mai jos păstrează probe istorice; criteriile active nu includ remediile de prezentare deja livrate.
 Biblioteca și testele generice sunt în J0; cerințele de mai jos aparțin consumerului.
 
 ## J14 — criterii active demonstrate
@@ -53,7 +55,7 @@ Rularea AI folosește snapshot-ul înghețat C3/J13, conform library-binaries.js
 |---|---|---|
 | J4-RPT-01 / P0 | publishUiFlow acceptă flow.status=PASS cu phaseCount=0; HTML arată PASS fără checkpoint, assertions ori PNG | acceptorul J4 refuză receipt-ul gol pentru un journey de acceptanță; păstrează observațiile media legitime fără assertions inventate |
 | J4-RPT-02 / P1 | un testcase transformat controlat în SKIP apare cu RESULT=PASS în observation, deși sumarul are skipped=1 și publisherul refuză global acceptanța | mapare distinctă PASS/FAIL/ERROR/SKIP per invocare; negative pentru un SKIP, all-SKIP și zero cazuri |
-| J4-RPT-03 / P1 | ReportTextValueMatcher respinge phase.1.step.67.action.1.observed; DOM-ul păstrează exact 2.856 caractere și 152 CR, codificate corect prin `&#13;` | comparație TEXT pe textContent/wholeText decodat o dată, JSON numai ca document complet; negative literal entity, ultimul scalar lipsă, owner greșit și redacție |
+| J4-RPT-03 / P1 — rest de corelare legacy | TEXT decodat o dată, JSON complet și fragmentele sunt reparate și testate; acceptorii legacy încă indexează global valori și PNG-uri | inventar per invocare/fază/pas, cu negative cross-owner și multiplicitate; nu închideți criteriul doar pentru că decodarea trece |
 | J4-RPT-04 / P1 | selecția are 130 cazuri în patru clase, fără clasele exhaustive dedicate; Executed coverage afișează totuși constantele 6.375 / 4.960 | fiecare metrică executată provine dintr-o receipt legată de selecție; domeniul normativ potențial se declară separat |
 | J4-RPT-06 / P1 | RomanianWhistModelTest singur trece 88 de cazuri; publisherul cade înainte de HTML pentru ai-tournament.properties absent | raport component individual fără dependențe de benchmark-uri neexecutate; unitățile native rămân categorie separată |
 | J4-RPT-05 / P1 | suma intervalelor suitelor JUnit este 39,742 s, iar a metodelor 39,542 s; cele două scenarii Extent afișează circa 0,579 s de compoziție | executionTiming din intervalele capturate, fără confundarea publicării cu execuția; test negativ schimbă numai timing-ul |
@@ -79,18 +81,11 @@ Proba diagnostică leagă 425 de comparații originale de players=4, AI=NORMAL, 
 
 ## Adaptive game detail — configurație consumer, fără pierderea verdictului
 
-**P1; cerință dinamică adăugată la audit.** J0 are deja assertionMaxDisplayCharacters și bodyMaxDisplayCharacters; J4 nu trebuie să le ocolească printr-un 0 impus în publisher. Granularitatea jocurilor, selecția trace-urilor și eliminarea contextului redundant sunt responsabilitatea compoziției J4.
+Rezolvat pentru cele șase publicatoare: un singur config/game-evidence.yml, value objects imuabile, preview 240, body pozitiv, grupuri native și buget opțional cumulat. AUTO/SUMMARY declară invocările learning selectate și omise; FULL refuză acceptanța completă dacă detaliul cerut nu încape. Scope-ul legacy nu este eșantionat implicit.
 
-- [ ] Capturați o singură politică imuabilă la composition root din YAML-ul consumerului, cu nivel AUTO/SUMMARY/FULL, praguri pozitive pentru grupuri/rânduri/context și plafon cumulat al dovezilor opționale. Documentați valorile efective în raport și refuzați enum/limite invalide, overflow și zero nelimitat accidental.
-- [ ] AUTO măsoară populația și volumul înaintea serializării: păstrează detaliul unui caz mic, grupează semantic hand/trick la cazuri mari și deduplică setup-ul comun. SUMMARY declară clar nivelul sumar; FULL păstrează toate detaliile cerute și nu trece silențios la alt profil.
-- [ ] Păstrați toate comparațiile obligatorii și inputurile necesare verificării lor, inclusiv FAIL, cauza și checkpoint-ul relevant. Nivelul de afișare nu schimbă jocul, oracolul, ordinea, datele originale sau rezultatul JUnit; nu comparați valori deja tăiate.
-- [ ] Limitați separat contextul opțional repetat, inventarele și logurile; afișați original/retained/omitted și motivul. Dacă lipsește dovadă obligatorie, marcați raportul INCOMPLETE și refuzați acceptanța auditului complet, păstrând verdictul business capturat.
-- [ ] Împărțiți structurile mari la limite semantice înainte de publicare; nu tăiați JSON/TSV în mijlocul valorii și nu ascundeți versiunea integrală peste buget în DOM/script/base64. Nicio mutare a dovezii obligatorii într-un fișier extern pentru a masca plafonul HTML.
-- [ ] Testați mic/mare, limita minus unu/exact/plus unu, selecții diferite individual/suită, setări invalide și schimbare după capturarea politicii. Oracolul verifică toate profilele, ultima comparație, redacția, verdictul independent, inventarul omisiunilor și randarea pe același JAR; preview-ul rămâne 240.
-
-Inventarul live recitit include și LearningRunReport.publish din main Java: acesta folosește deja assertions native, dar păstrează același bypass al limitei body. Extrageți politica consumerului într-un value object imuabil injectat în compoziție, cu rezoluția YAML într-un adaptor separat; nu duplicați condițiile de volum în fiecare publisher.
-
-Schema YAML este de proiectat și implementat în J4, separat de vocabularul strict al loaderului generic. Nu adăugați chei Whist/Android la configurația J0; reutilizați setările și modelele neutre existente, iar o capabilitate neutră lipsă se reproduce separat în Reporting Tests.
+- Contractul stabil, schema și responsabilitățile sunt în [documentația de proiect](../ATF_Game_Report_Presentation.md); nu duplicăm cerințe închise ca TODO.
+- [54 contracte permanente](../ATF_Game_Report_Verification.md) acoperă individual/suită, Extent/fallback, ultima comparație, valori complete, JSON/TEXT, PNG, omisiuni și INCOMPLETE persistent.
+- Lipsa receptei business, timing-ul legacy și performanța artifactelor mari rămân criterii separate; un profil de prezentare nu reconstruiește date necapturate.
 
 ## Ecran Android integral — captură și afișare
 
@@ -105,11 +100,8 @@ Codul live capturePng folosește exec-out screencap -p și scrie bytes fără de
 
 | ID | Problemă live / input de implementare | Închidere verificabilă |
 |---|---|---|
-| J4-RPT-07 | corpus și AI folosesc startRequest cu metodă/path goale pentru comparații offline | startAssertionStep pentru componente; păstrați UI/API/SQL numai când există acel tip de evidence; assertions și verdicturile rămân identice |
 | J4-RPT-08 | corpus proiectează fiecare joc ca expected PASS / actual PASS, deși replay-ul detaliat există numai pentru referință | sumarul declară că este un rezultat de evaluator; fiecare afirmație de audit complet cere inputuri, regulă explicită și comparații capturate per joc, cu identitatea exactă |
 | J4-RPT-09 | secțiuni Complete evidence conțin JSON/loguri brute; regula, setup-ul și notația nu sunt explicate consecvent în același artifact | scop scurt, profil/configurație efectivă, stare inițială, inputuri/seed, pași și expected independent; glosar inline pentru termeni, unități și ordinea seat/array |
-| J4-RPT-13 | RuleComponent, WhistAiTraining, WhistCorpus, FullMatch, RomanianExpert și noul LearningRunReport înlocuiesc limita body configurată cu DISABLE_BODY_DISPLAY_LIMIT | politică J4 tipizată de detaliu AUTO/SUMMARY/FULL și bugete pozitive configurate; fără bypass global; grupare semantică și diagnostic explicit pentru date omise |
-| J4-RPT-12 | raportul corpus deschide 1.137 rânduri PASS/PASS într-un tabel, sub noduri validation/request/phase; cititorul nu vede inputul jocului din acel rând | grupare semantică lizibilă cu inventar complet și populații separate; sumarul de evaluator nu se numește audit detaliat al fiecărui joc; folosiți pașii assertions nativi, fără scenarii JUnit inventate |
 | J4-RPT-11 | AndroidScreenshotEvidence validează semnătura PNG, fără decodare raster ori dimensiuni fizice | adaptorul verifică imaginea completă, orientarea și dimensiunile capturii originale, cu negative pentru PNG trunchiat/crop; Reporting păstrează bytes, fără parser Android |
 | J4-RPT-10 | zero ms în unele acțiuni Android este declarat placeholder în notele publisherului | instrumentați acțiunea la execuție; valoarea necapturată nu este prezentată ca latență măsurată zero; separați timing execuție/captură/publicare |
 
@@ -127,8 +119,8 @@ Biblioteca J0 deține numai modelele neutre și randarea comună. Viewer-ul și 
 
 1. Refuzați false PASS-ul resume pe meniul capturat/disabled/stale, prin componente offline independente.
 2. Capturați receipt per invocare, setup/input/oracol, comparațiile originale, intervalele și failure-ul parțial.
-3. Compuneți assertions native și context semantic inline, cu glosar și populații corecte; eliminați request-urile fictive, dump-urile și metadatele tehnice repetate.
-4. Implementați politica de detaliu adaptiv și bugetele configurabile pe modelul capturat, fără bypass nelimitat sau pierderea dovezii obligatorii.
+3. Completați contextul semantic și receptele legacy per invocare; pașii assertions nativi, gruparea și bugetele comune sunt livrate, fără a inventa inputuri business.
+4. Rezolvați separat încărcarea și interacțiunea artifactelor mari, păstrând politica adaptivă și toate dovezile obligatorii.
 5. Regenerați individual și prin suită pe J16; verificați reader acceptance, nominal/FAIL/SKIP/partial, ultimul pas și capturile originale.
 6. Rulați E2E Android nou numai sub lease exclusiv; acceptanța generică J0 nu certifică device-ul ori business-ul.
 
@@ -242,3 +234,35 @@ Run C:/work/whist_back/ai-training/20261102-171252-round4/ adaugă un pipeline l
 - Valorile lungi sunt internate fără pierderi numai în checkpoint-ul propriu; verdictul se copiază, nu se deduce din text.
 - Auditul DOM incremental trece. Randarea interactivă a acelui artifact rămâne BLOCKED: agentul a raportat respingerea protocolului file de TAB MCP și nu a ocolit-o.
 - J15 fizic a rămas fixat în run; reporting-watch.jsonl păstrează citirile live. PASS-ul jocurilor și al datelor nu închide acceptanța vizuală.
+
+## Increment J16 — colecții, input adaptiv și autonomie a cititorului
+
+Verificat la 2 noiembrie, run C:/work/whist_back/ai-training/20261102-184455-round5. Acest increment închide criterii numai pentru noua compoziție LearningRunReport; publisherii legacy și false PASS resume rămân deschiși. J0 JAR/CSS/JS/renderer nu au fost modificate.
+
+- [x] Politică J4 imuabilă AUTO/SUMMARY/FULL din YAML strict separat; limite pozitive, chei/enum/tipuri/overflow/duplicate/multi-document refuzate. Setarea generică body este pozitivă și respectată; LearningRunReport nu mai impune DISABLE_BODY_DISPLAY_LIMIT.
+- [x] Selecție pe invocări întregi: exemple deterministe per familie, toate non-PASS și gate-ul întregii populații. Ordinea originală, toate comparațiile incluse și cauza rămân intacte. Executat/selectat/omis și ID-urile sunt inline; HTML-ul selectat nu pretinde audit individual al omisiunilor.
+- [x] Context obligatoriu fără trunchiere; refuz INCOMPLETE înainte de publicare dacă nu încape. Contextul tehnic comun apare o dată; diagnostic opțional deduplicat și plafonat pe înregistrări întregi, cu inventar original/retained/omitted. Nu se fragmentează automat o structură arbitrară peste buget.
+- [x] Ghid de citire, reguli efective, glosar hand/trick/bid/seat, notația cărților, motivul comparațiilor și proveniența expected-ului independent. Scenariul include ID-ul real, pentru a evita contopirea unor titluri semantice identice.
+- [x] Contracte pentru prag minus/exact/plus unu, mic/mare, FULL/SUMMARY/AUTO, individual/suită, input schimbat, ultima comparație, cross-owner, verdict, timing, context, omisiuni și buget insuficient. Auditul compară același JAR fizic la publicare și verificare.
+- [x] Colecții quick/regression/documentation/learning/e2e documentate. Runner offline în TMP propriu; quick verificat real: 105 cazuri, zero failures/errors/skips, aproximativ 46 s măsurate. Regresia completă finală: 375 cazuri, zero failures/errors/skips, build+APK în 1m50s. Turneele learning sunt excluse din testul implicit.
+- [x] Ajutor RO/EN din catalogul comun Android/documentație; 32 exemple executabile, 100 comparații în raportul de documentație. Scenariul E2E de meniu a fost extins pentru limbi și redeschidere, compilat; nu a fost executat pe device în acest run.
+- [x] artifacts din atf-test-android mutat în C:/work/whist_back/atf-test-android-artifacts-20261102: 38 fișiere, 12.573.359 bytes, fiecare cale/dimensiune/SHA-256 identică. Niciun HTML istoric rescris.
+
+- Probe: documentation/how-to-play-extent-j16.html are 32 invocări/100 comparații, 2.862.580 bytes. large03/selected-development-extent-j16.html are 5 din 129 invocări, 2.138 comparații, 4.739.578 bytes; păstrează FAIL-ul real al gate-ului candidatului respins. Reducerea este o selecție explicită de scope, nu o compresie pretins fără pierderi a tuturor jocurilor.
+
+- Cele patru variante AI au fost respinse de criteriul prestabilit; politica acceptată V4 este restaurată byte-for-byte. Partidele de antrenament și pierderile sunt păstrate extern, iar casebook-ul de development are 14 exemple, fără promovare automată a acțiunilor observate ca mutări optime. Lotul 81000..81015 rămâne nefolosit.
+
+- Limitele acestui increment inițial au fost revizuite separat: politica și body-urile celor cinci publisheri legacy sunt acum migrate, cu probe în contractul oficial. Oracolul resume, receptele legacy, instrumentarea E2E și auditul interactiv complet al artifactelor mari rămân deschise. Nicio republicare de receipts nu este o execuție Android nouă.
+
+## Artifacte mari — performanță verificabilă, nu pierderea dovezii
+
+| ID / prioritate | Probă / limită actuală | Criteriu de închidere |
+|---|---|---|
+| J4-RPT-14 / P2 | selecția learning primește populația completă deja materializată; profilul limitează publicarea, nu heap-ul încărcării | selectare pe metadate/receipts validate, cu limite explicite de încărcare; păstrați IDs, hashes, toate non-PASS/gates și oracolul independent al selecției |
+| J4-RPT-15 / P1 | AI arhivat republicat are 55.694.897 bytes; ecranul inițial se afișează, dar interogările globale și navigarea către owner expiră în TAB MCP | măsurați timp/heap/DOM și verificați interacțiunea owner, ultimul assertion și PNG pe un artifact mare real; păstrați toate comparațiile și capturile, fără a prezenta încărcarea inițială ca audit complet |
+
+J4 trebuie să măsoare compoziția și densitatea receipt-urilor. O limită neutră a viewer-ului/DOM-ului se reproduce separat cu date sintetice în J0 înaintea oricărei modificări de bibliotecă; nu atribuim aceste timeouts direct unui defect Reporting.
+
+## R6 — offline algorithm acceptance and live input reconciliation
+
+See [AI R6 feedback](AI_TRAINING_ROUND6_Feedback.md) and [RO/EN analysis](../AI_ROUND6_ANALYSIS.md). The local rank correction is accepted on twenty targeted regressions plus fresh no-regression comparisons; statistical superiority is explicitly unproved. The rejected evidence model remains rejected. Latest live presentation grouping/budgets were preserved; complete configured collections are now protected from learning sampling. No device/UI acceptance is claimed.

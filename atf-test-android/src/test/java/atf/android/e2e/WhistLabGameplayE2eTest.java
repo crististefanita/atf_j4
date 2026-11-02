@@ -26,13 +26,200 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 /** Runs the new app through the same Android adapter and inline-screenshot report contract. */
 @AndroidE2eTest
 public class WhistLabGameplayE2eTest {
     private static final String PACKAGE = "ro.whistlab.app";
+    private static final Pattern DENSITY = Pattern.compile("(?:Override|Physical) density:\\s*(\\d+)");
+
+    @Test
+    void sixPlayerEightCardHandFitsOneRowAndMenuKeepsScoreAndHomeAccessible() throws Exception {
+        AdbClient adb = AdbClient.fromSystemProperties();
+        var packagePath = adb.run("shell", "pm", "path", PACKAGE);
+        packagePath.requireSuccess();
+        assertTrue(packagePath.output().contains("package:"), "Whist Lab is not installed: " + packagePath.output());
+
+        Path artifacts = artifacts("table-presentation");
+        AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "whist-lab-table-presentation",
+                "Whist Lab — eight-card table, compact bidding, and hamburger navigation",
+                getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
+                List.of("android", "e2e", "ui", "table-layout", "navigation", "sanity"));
+        List<Path> evidence = new ArrayList<>();
+        AtfReportStatus outcome = AtfReportStatus.FAIL;
+        String checks = "Presentation flow did not complete.";
+        try {
+            long started = System.nanoTime();
+            String home = ui.restartToActivity(PACKAGE, ".MainActivity");
+            assertTrue(ui.hasText(home, "English"), "English language option is not available on home");
+            ui.tapText("English");
+            ui.tapText("New game");
+            String setup = ui.awaitText("Start game", Duration.ofSeconds(10));
+            ui.selectNamedSpinnerOption("player-count", "6");
+            setup = ui.awaitText("Start game", Duration.ofSeconds(10));
+            List<Path> setupEvidence = ui.capture("whist-lab-presentation-six-player-setup");
+            evidence.addAll(setupEvidence);
+            checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN,
+                    "Configure six players to produce the eight-card hand",
+                    "New game; Players = 6", setupEvidence, "select six players and start a new game",
+                    "six-player setup is ready", "visible labels=" + ui.texts(setup),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("Six-player option is selected", "Players = 6",
+                                    String.join(" | ", ui.texts(setup)), ui.hasText(setup, "6")),
+                            new AtfAssertion("Start action remains available", "Start game",
+                                    Boolean.toString(ui.hasText(setup, "Start game")), ui.hasText(setup, "Start game"))),
+                    AtfReportStatus.PASS);
+
+            started = System.nanoTime();
+            ui.tapText("Start game");
+            String bidding = ui.awaitText("Place bid", Duration.ofSeconds(15));
+            String initialBidSummary = ui.texts(bidding).stream()
+                    .filter(label -> label.startsWith("Bids submitted "))
+                    .findFirst().orElseThrow(() -> new IllegalStateException(
+                            "Bid summary was not visible before opening the score sheet"));
+            List<AndroidUiDriver.CardLabel> handRow = ui.bottomRowCardLabels(bidding);
+            List<String> handLabels = handRow.stream().map(AndroidUiDriver.CardLabel::text).toList();
+            boolean oneRow = handRow.size() == 8 && handRow.stream()
+                    .map(AndroidUiDriver.CardLabel::top).distinct().count() == 1;
+            boolean allBidsVisible = true;
+            for (int bid = 0; bid <= 8; bid++) {
+                allBidsVisible &= ui.hasText(bidding, Integer.toString(bid));
+            }
+            List<Integer> bidWidths = ui.numericButtonWidths(bidding);
+            Matcher densityMatch = DENSITY.matcher(adb.run("shell", "wm", "density").output());
+            assertTrue(densityMatch.find(), "Android display density was not reported");
+            double densityScale = Integer.parseInt(densityMatch.group(1)) / 160.0;
+            int minimumBidWidth = bidWidths.stream().mapToInt(Integer::intValue).min().orElse(0);
+            boolean touchTargetsRemain48Dp = bidWidths.size() == 9
+                    && minimumBidWidth >= Math.round(48 * densityScale * 0.95);
+            assertTrue(oneRow, "Expected all eight hand cards on one row; visible bottom-row cards=" + handLabels);
+            assertTrue(allBidsVisible, "Expected bid buttons 0 through 8; visible texts=" + ui.texts(bidding));
+            assertTrue(touchTargetsRemain48Dp, "Bid touch targets fell below 48 dp: " + bidWidths);
+            List<Path> biddingEvidence = ui.capture("whist-lab-presentation-eight-card-table");
+            evidence.addAll(biddingEvidence);
+            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
+                    "Render all eight cards and the complete compact bidding grid",
+                    "Six-player Oh Hell bidding table", biddingEvidence,
+                    "inspect all hand labels, bid values, and button bounds",
+                    "eight cards share one row; bid values 0–8 remain visible with 48 dp targets",
+                    "hand=" + handLabels + "; bid widths px=" + bidWidths
+                            + "; visible labels=" + ui.texts(bidding),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("All eight hand cards occupy one row", "8 cards; 1 row",
+                                    handLabels + "; y=" + handRow.stream().map(AndroidUiDriver.CardLabel::top).distinct().toList(), oneRow),
+                            new AtfAssertion("Bids cover the eight-card hand", "0 through 8",
+                                    bidWidths.size() + " buttons; " + ui.texts(bidding), allBidsVisible),
+                            new AtfAssertion("Bid hit targets remain at least 48 dp", "48 dp minimum",
+                                    minimumBidWidth + " px at density " + densityScale, touchTargetsRemain48Dp)),
+                    AtfReportStatus.PASS);
+
+            started = System.nanoTime();
+            ui.selectBid(3);
+            ui.tapDescription("Game menu");
+            String menu = ui.awaitText("Score sheet", Duration.ofSeconds(8));
+            assertTrue(ui.hasText(menu, "Main menu"), "Game menu omitted Main menu");
+            List<Path> menuEvidence = ui.capture("whist-lab-presentation-hamburger-menu");
+            evidence.addAll(menuEvidence);
+            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN,
+                    "Open the top-left hamburger after selecting a bid",
+                    "Game menu", menuEvidence, "select bid 3 and activate Game menu",
+                    "Score sheet and Main menu are available", "visible labels=" + ui.texts(menu),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("Score sheet is in the game menu", "Score sheet",
+                                    Boolean.toString(ui.hasText(menu, "Score sheet")), ui.hasText(menu, "Score sheet")),
+                            new AtfAssertion("Main menu is in the game menu", "Main menu",
+                                    Boolean.toString(ui.hasText(menu, "Main menu")), ui.hasText(menu, "Main menu"))),
+                    AtfReportStatus.PASS);
+
+            started = System.nanoTime();
+            ui.tapText("Score sheet");
+            String score = ui.awaitText("CLOSE", Duration.ofSeconds(8));
+            boolean selectionWasNotSubmitted = ui.hasTextContaining(score, "Bid not placed");
+            assertTrue(selectionWasNotSubmitted,
+                    "Opening Score sheet submitted the unconfirmed bid; visible=" + ui.texts(score));
+            List<Path> scoreEvidence = ui.capture("whist-lab-presentation-live-score");
+            evidence.addAll(scoreEvidence);
+            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
+                    "Open the read-only score sheet without submitting the selected bid",
+                    "Current scores · Hand 1", scoreEvidence, "open Score sheet and inspect the human score row",
+                    "unsubmitted bid remains unsubmitted", "visible labels=" + ui.texts(score),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("Score view does not commit the pending bid", "Bid not placed",
+                                    Boolean.toString(selectionWasNotSubmitted), selectionWasNotSubmitted)),
+                    AtfReportStatus.PASS);
+
+            started = System.nanoTime();
+            ui.tapText("CLOSE");
+            String biddingAfterScore = ui.awaitText("Place bid", Duration.ofSeconds(8));
+            boolean selectedBidPersisted = ui.isSelected(biddingAfterScore, "3");
+            String summaryAfterScore = ui.texts(biddingAfterScore).stream()
+                    .filter(label -> label.startsWith("Bids submitted "))
+                    .findFirst().orElse("<missing bid summary>");
+            boolean bidSummaryPersisted = initialBidSummary.equals(summaryAfterScore);
+            assertTrue(selectedBidPersisted, "Closing Score sheet lost the unconfirmed bid selection");
+            assertTrue(bidSummaryPersisted, "Score navigation changed submitted bids or bid total: before='"
+                    + initialBidSummary + "', after='" + summaryAfterScore + "'");
+            List<Path> restoredTableEvidence = ui.capture("whist-lab-presentation-restored-bidding");
+            evidence.addAll(restoredTableEvidence);
+            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.AND,
+                    "Close Score sheet and verify the same bid remains selected",
+                    "Bidding table; value 3", restoredTableEvidence, "close Score sheet and inspect selected button 3",
+                    "bid 3 remains selected and no bid has been submitted",
+                    "selected=" + selectedBidPersisted + "; summary=" + summaryAfterScore
+                            + "; visible labels=" + ui.texts(biddingAfterScore),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("Score view preserves the pending selection", "Bid 3 selected",
+                                    Boolean.toString(selectedBidPersisted), selectedBidPersisted),
+                            new AtfAssertion("Score navigation leaves the bid summary unchanged", initialBidSummary,
+                                    summaryAfterScore, bidSummaryPersisted)),
+                    AtfReportStatus.PASS);
+
+            started = System.nanoTime();
+            ui.tapDescription("Game menu");
+            ui.tapText("Main menu");
+            String returnedHome = ui.awaitText("New game", Duration.ofSeconds(10));
+            List<Path> homeEvidence = ui.capture("whist-lab-presentation-return-home");
+            evidence.addAll(homeEvidence);
+            boolean homeReady = ui.hasText(returnedHome, "Resume game") && ui.hasText(returnedHome, "How to play");
+            assertTrue(homeReady, "Main menu did not restore the home navigation options");
+            checkpoint(trace, "TEARDOWN", AtfGherkinKeyword.THEN,
+                    "Return to home from the game menu without advancing play",
+                    "Main menu", homeEvidence, "close Score sheet; open Game menu; choose Main menu",
+                    "home screen offers New game, Resume game, and How to play",
+                    "visible labels=" + ui.texts(returnedHome),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("Home navigation is restored", "New game; Resume game; How to play",
+                                    ui.texts(returnedHome).toString(), homeReady)),
+                    AtfReportStatus.PASS);
+            checks = "Six-player Oh Hell opened an eight-card human hand. All eight cards rendered on one row; bids 0–8 remained visible and each hit target measured at least 48 dp. The hamburger exposed Score sheet and Main menu. A selected but unconfirmed bid remained unsubmitted in the score view. The flow returned home without submitting a bid or playing a card.";
+            outcome = AtfReportStatus.PASS;
+            trace.finish(outcome);
+        } catch (Throwable failure) {
+            outcome = AtfReportStatus.FAIL;
+            trace.fail(failure);
+            if (failure instanceof Exception exception) throw exception;
+            if (failure instanceof Error error) throw error;
+            throw new RuntimeException(failure);
+        } finally {
+            try { adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess(); }
+            catch (Exception teardownFailure) {
+                boolean alreadyFailed = outcome == AtfReportStatus.FAIL;
+                trace.fail(teardownFailure);
+                if (!alreadyFailed) {
+                    outcome = AtfReportStatus.FAIL;
+                    throw teardownFailure;
+                }
+            }
+            trace.finish(outcome);
+            List<Path> reportEvidence = new ArrayList<>(evidence);
+            reportEvidence.add(trace.manifest());
+            publishPresentationReport(artifacts, packagePath.output(), reportEvidence, checks, outcome);
+        }
+    }
 
     @Test
     void defaultFourPlayerOhHellMatchesTheObservedTenCardHandAndSuitedTrump() throws Exception {
@@ -41,7 +228,7 @@ public class WhistLabGameplayE2eTest {
         packagePath.requireSuccess();
         assertTrue(packagePath.output().contains("package:"), "Whist Lab is not installed: " + packagePath.output());
 
-        Path artifacts = Path.of(System.getProperty("atf.android.artifacts", "target/android-artifacts"));
+        Path artifacts = artifacts("default-oh-hell");
         AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
         AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "whist-lab-default-oh-hell-deal",
                 "Whist Lab — default Oh Hell setup matches the observed four-player deal",
@@ -52,6 +239,7 @@ public class WhistLabGameplayE2eTest {
             long started = System.nanoTime();
             String home = ui.restartToActivity(PACKAGE, ".MainActivity");
             assertTrue(ui.hasText(home, "New game"), "Whist Lab home screen was not exposed");
+            ui.tapText("English");
             ui.tapText("New game");
             String setup = ui.awaitText("Start game", Duration.ofSeconds(10));
             ui.tapSpinner(1);
@@ -80,31 +268,35 @@ public class WhistLabGameplayE2eTest {
 
             started = System.nanoTime();
             ui.tapText("Start game");
-            String bidding = ui.awaitText("10 cards in this hand", Duration.ofSeconds(15));
-            List<String> visibleTrumpLabels = ui.texts(bidding).stream()
-                    .filter(label -> label.startsWith("Trump:")).toList();
-            boolean recognizedTrump = visibleTrumpLabels.size() == 1 && Set.of(
-                    "Trump: Spades", "Trump: Hearts", "Trump: Clubs", "Trump: Diamonds")
-                    .contains(visibleTrumpLabels.getFirst());
-            boolean biddingReady = ui.hasText(bidding, "Place your bid")
-                    && recognizedTrump;
+            String bidding = ui.awaitText("Place bid", Duration.ofSeconds(15));
+            String trumpHeading = ui.texts(bidding).stream()
+                    .filter(label -> label.startsWith("YOUR BID"))
+                    .filter(label -> label.contains("TRUMP"))
+                    .findFirst().orElse("");
+            boolean recognizedTrump = trumpHeading.matches(
+                    "YOUR BID\\s*[·]\\s*TRUMP\\s+(?:[2-9]|10|J|Q|K|A)[♠♥♣♦]");
+            boolean tenCardHand = ui.hasDescription(bidding, "Your hand, 10 cards.");
+            boolean biddingReady = ui.hasText(bidding, "Hand 1 / 19")
+                    && ui.hasText(bidding, "Place bid") && recognizedTrump && tenCardHand;
             List<Path> biddingEvidence = ui.capture("whist-lab-default-oh-hell-bidding");
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Start the default four-player Oh Hell deal",
                     "4 players; Oh Hell; Normal AI", biddingEvidence,
-                    "tap Start game", "Hand 1 has 10 cards, a suited trump value, and awaits a human bid",
+                    "tap Start game", "Hand 1 / 19 has ten human cards, a visible suited trump, and awaits a human bid",
                     "visible labels=" + ui.texts(bidding)
                             + "; original samples by seats 3/4/5/6 showed Diamonds/Hearts/Clubs/Spades",
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
-                    List.of(new AtfAssertion("First hand size matches the observed original", "10 cards in this hand",
-                                    Boolean.toString(ui.hasText(bidding, "10 cards in this hand")),
-                                    ui.hasText(bidding, "10 cards in this hand")),
-                            new AtfAssertion("An Oh Hell trump suit is rendered", "one of Spades, Hearts, Clubs, Diamonds",
-                                    visibleTrumpLabels.toString(), recognizedTrump),
-                            new AtfAssertion("Human can place the first bid", "Place your bid",
-                                    Boolean.toString(ui.hasText(bidding, "Place your bid")), ui.hasText(bidding, "Place your bid"))),
+                    List.of(new AtfAssertion("Default hand schedule is visible", "Hand 1 / 19",
+                                    Boolean.toString(ui.hasText(bidding, "Hand 1 / 19")), ui.hasText(bidding, "Hand 1 / 19")),
+                            new AtfAssertion("Ten-card hand is exposed accessibly", "Your hand, 10 cards.",
+                                    Boolean.toString(tenCardHand), tenCardHand),
+                            new AtfAssertion("An Oh Hell trump is visible in the bidding center", "YOUR BID · TRUMP + card",
+                                    trumpHeading, recognizedTrump),
+                            new AtfAssertion("Human can place the first bid", "Place bid",
+                                    Boolean.toString(ui.hasText(bidding, "Place bid")), ui.hasText(bidding, "Place bid"))),
                     biddingReady ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
-            assertTrue(biddingReady, "Default Oh Hell first hand did not reach the human bidding state");
+            assertTrue(biddingReady, "Default Oh Hell first hand did not reach the current human bidding UI; labels="
+                    + ui.texts(bidding) + "; trump=" + trumpHeading + "; hand=" + tenCardHand);
             result = AtfReportStatus.PASS;
             trace.finish(result);
         } catch (Throwable failure) {
@@ -134,7 +326,7 @@ public class WhistLabGameplayE2eTest {
         packagePath.requireSuccess();
         assertTrue(packagePath.output().contains("package:"), "Whist Lab is not installed: " + packagePath.output());
 
-        Path artifacts = Path.of(System.getProperty("atf.android.artifacts", "target/android-artifacts"));
+        Path artifacts = artifacts("practice-trick");
         AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
         List<Path> evidence = new ArrayList<>();
         AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "whist-lab-resume-exact-bid-trick",
@@ -164,7 +356,7 @@ public class WhistLabGameplayE2eTest {
                     AtfReportStatus.PASS);
 
             actionStarted = System.nanoTime();
-            ui.selectSpinnerOption(0, "1");
+            ui.selectBid(1);
             ui.tapText("Place bid");
             String play = ui.awaitText("A♥", Duration.ofSeconds(10));
             assertTrue(ui.hasText(play, "Your turn"), "Fixture did not reach the human play turn");
@@ -172,7 +364,7 @@ public class WhistLabGameplayE2eTest {
             List<Path> playEvidence = ui.capture("whist-lab-play");
             evidence.addAll(playEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN, "Select Bid 1 and reach the human A♥ turn",
-                    "bid selector=1; Place bid", playEvidence, "select bid 1 and tap Place bid",
+                    "central bid button=1; Place bid", playEvidence, "select bid 1 at table center and tap Place bid",
                     "Your turn with bid 1", "visible labels=" + ui.texts(play),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
                     List.of(new AtfAssertion("Human reaches play turn", "Your turn",
@@ -309,6 +501,54 @@ public class WhistLabGameplayE2eTest {
         }
     }
 
+    private static void publishPresentationReport(Path artifacts, String installedPackage, List<Path> files,
+            String checks, AtfReportStatus outcome) throws Exception {
+        Path report = artifacts.resolve("whist-lab-table-presentation.html");
+        var settings = AtfReportConfigurationLoader.load().reportingSettings();
+        try (var session = new ExtentReportSession(report, settings)) {
+            AtfReportPorts.Scenario raw = session.startScenario(
+                    "Whist Lab table presentation and navigation", "atf.android.e2e", PACKAGE,
+                    List.of("android", "e2e", "ui", "table-layout", "navigation"));
+            try (var details = raw.startPhase("Layout assertions, navigation, and Android hierarchy")) {
+                details.observation(new ReportObservation("Eight-card table and safe menu navigation",
+                        List.of(new ReportField("Device", System.getProperty("atf.android.serial", "emulator-5554")),
+                                new ReportField("Android API", System.getProperty("atf.android.api", "device reported at runtime")),
+                                new ReportField("Package", PACKAGE),
+                                new ReportField("Installed APK", installedPackage.trim()),
+                                new ReportField("Observed contract", checks)),
+                        List.of(), files.stream()
+                                .filter(file -> !file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
+                                .map(WhistLabGameplayE2eTest::artifactUnchecked).toList()));
+                details.complete(outcome);
+            }
+            var ui = UiExtentReportSession.adaptScenario(raw,
+                    ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
+                    "Whist Lab table presentation and navigation");
+            try (var phase = ui.startPhase("Inline Android presentation screenshots")) {
+                for (Path image : files.stream()
+                        .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
+                    ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
+                    phase.uiValidation(screenshot.title(), "Android emulator", screenshot.base64Png(),
+                            List.of(), outcome);
+                }
+                phase.complete(outcome);
+            }
+            raw.complete(outcome);
+        }
+        assertTrue(Files.isRegularFile(report) && Files.size(report) > 2_000,
+                "Whist Lab presentation Extent report was not published: " + report);
+        String html = Files.readString(report);
+        if (outcome == AtfReportStatus.PASS) {
+            assertTrue(html.contains("data:image/png;base64,"), "Presentation screenshots must be inline in Extent");
+            for (Path image : files.stream()
+                    .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
+                ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
+                assertTrue(html.contains(screenshot.base64Png()),
+                        "Presentation Extent is missing screenshot payload " + screenshot.title());
+            }
+        }
+    }
+
     private static ReportObservation.Artifact artifactUnchecked(Path file) {
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file));
@@ -316,5 +556,13 @@ public class WhistLabGameplayE2eTest {
         } catch (Exception failure) {
             throw new IllegalStateException("Could not attach Whist Lab evidence " + file, failure);
         }
+    }
+
+    private Path artifacts(String flow) {
+        String configured = System.getProperty("atf.android.artifacts");
+        Path root = configured == null || configured.isBlank()
+                ? Path.of(System.getProperty("java.io.tmpdir"), "atf-j4-android-artifacts")
+                : Path.of(configured);
+        return root.resolve(flow);
     }
 }

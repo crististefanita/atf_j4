@@ -27,7 +27,7 @@ public final class IndependentPlayer {
             return new Choice(best,"Public-bid-conditioned one-card posterior="+chance+"; no private opponent cards");
         }
         double[] values=new double[p.size+1];int samples=0;
-        for(int k=0;k<(p.seats.size()==4&&p.size>=2?48:24);k++){
+        for(int k=0;k<24;k++){
             var world=deal(p,new Random(seed(p,k)));if(world==null)continue;samples++;
             for(int b=0;b<=p.size;b++)if(!last||b+prior!=p.size){int[] goals=goals(p,world,b);int[] won=roll(p,copy(world),-1,goals,new Random(seed(p,k)^0xC0AC4L));values[b]+=score(p,p.seat,won[p.seat],b);}
         }
@@ -37,9 +37,10 @@ public final class IndependentPlayer {
     public static Choice card(Position p){
         var allowed=legal(p.hand,p.trick.isEmpty()?-1:p.trick.get(0).card/13,p.trump);if(allowed.isEmpty())throw new IllegalArgumentException("No playable card");
         if(allowed.size()==1)return new Choice(allowed.get(0),"Only legal card under independent follow-suit/mandatory-trump rules");
+        Integer dominant=lateDiscard(p);if(dominant!=null)return new Choice(dominant,"Two-card same-suit dominance; retain the rank matching the remaining contract; public information only");
         double[] values=new double[allowed.size()],rivals=new double[allowed.size()];int samples=0;
         int[] goals=p.seats.stream().mapToInt(s->s.bid==null?0:s.bid).toArray();
-        for(int k=0;k<(p.seats.size()==4&&p.size>=2?96:48);k++){
+        for(int k=0;k<48;k++){
             var world=deal(p,new Random(seed(p,k)));if(world==null)continue;samples++;
             for(int c=0;c<allowed.size();c++){
                 int[] won=roll(p,copy(world),allowed.get(c),goals,new Random(seed(p,k)^0xC0AC4L));values[c]+=score(p,p.seat,won[p.seat],goals[p.seat]);
@@ -48,6 +49,12 @@ public final class IndependentPlayer {
         }
         int best=0;for(int c=1;c<allowed.size();c++)if(values[c]>values[best]+1e-8||Math.abs(values[c]-values[best])<1e-8&&rivals[c]<rivals[best])best=c;
         return new Choice(allowed.get(best),"Independent planner; "+samples+" possible deals; candidates="+allowed+"; contract sums="+Arrays.toString(values)+"; strongest-rival sums="+Arrays.toString(rivals));
+    }
+    private static Integer lateDiscard(Position p){
+        if(p.hand.size()!=2||p.trick.isEmpty()||p.seats.get(p.seat).bid==null)return null;int low=p.hand.get(0),high=p.hand.get(1);if(low/13!=high/13)return null;
+        var a=new ArrayList<>(p.trick);a.add(new Play(p.seat,low));var b=new ArrayList<>(p.trick);b.add(new Play(p.seat,high));boolean first=winner(a,p.trump)==p.seat,second=winner(b,p.trump)==p.seat;int gain;
+        if(!first&&!second)gain=0;else if(first&&second&&p.trick.size()==p.seats.size()-1)gain=1;else return null;
+        return p.seats.get(p.seat).bid-p.seats.get(p.seat).won-gain>0?low:high;
     }
     private static int[] goals(Position p,List<List<Integer>> world,int own){
         int[] targets=new int[p.seats.size()];int sum=0;

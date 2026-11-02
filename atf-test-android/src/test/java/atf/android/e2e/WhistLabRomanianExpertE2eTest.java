@@ -47,7 +47,7 @@ class WhistLabRomanianExpertE2eTest {
                     "romanian-expert-bidding",bidding.toString(),checks);
             ui.tapSpinner(0);String options=ui.dump();
             int bid=ui.texts(options).stream().filter(t->t.matches("[01]")).mapToInt(Integer::parseInt).min().orElseThrow();
-            ui.back();ui.selectSpinnerOption(0,Integer.toString(bid));ui.tapText("Place bid");
+            ui.back();ui.selectBid(bid);ui.tapText("Place bid");
             ui.awaitText("Your turn",Duration.ofSeconds(25));
             JsonNode playing=saved(adb,out,"romanian-expert-human-turn");
             JsonNode card=playing.path("players").get(0).path("hand").get(0);

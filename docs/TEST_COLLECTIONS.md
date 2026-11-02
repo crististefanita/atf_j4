@@ -57,3 +57,7 @@ C:/work/1/atf_j4/atf-test-android/artifacts a fost mutat în C:/work/whist_back/
 | Resume raster legacy | Defect de oracol cunoscut; nu este gate de promovare |
 
 Această schimbare produce componente și APK offline. Nicio acceptanță Android nouă nu este dedusă din build ori din documentație.
+
+## R6 — small regressions and protected evaluation
+
+Quick/default regression now include the 20 late-card counterexamples and guards. Four statistical-model tests are research-only, excluded by default. Learning uses roundSixTest and requires -ProtocolFile pointing to a V6 JSON plan with development/heldout.firstSeed and seeds; heldout also requires -CandidateFreeze. Source hashes and the external holdout-use registry prevent candidate or range reuse. alwaysIncludeCollections in game-evidence.yml keeps regression/documentation cases complete even when the learning population is sampled. Existing rowsPerGroup, fieldsPerGroup and optionalMaxItems remain effective. See AI_ROUND6_ANALYSIS.md for measured outcomes and the explicit lack of a strength claim.
