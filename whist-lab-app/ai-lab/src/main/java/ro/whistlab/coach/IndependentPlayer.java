@@ -52,12 +52,31 @@ public final class IndependentPlayer {
             targets[s]=bid;sum+=bid;
         }return targets;
     }
+    // Offline diagnostic solver; not selected by the accepted policy after development regressions.
+    static int[] exactAfter(Position p,List<List<Integer>> world,int first,int[] goals){
+        var hands=copy(world);if(!hands.get(p.seat).remove(Integer.valueOf(first)))throw new IllegalArgumentException("First card not held");
+        var trick=new ArrayList<>(p.trick);trick.add(new Play(p.seat,first));int[] won=p.seats.stream().mapToInt(Seat::won).toArray();int actor=(p.seat+1)%hands.size();
+        if(trick.size()==hands.size()){actor=winner(trick,p.trump);won[actor]++;trick.clear();}
+        return solve(p,hands,trick,actor,won,goals);
+    }
+    private static int[] solve(Position p,List<List<Integer>> hands,List<Play> trick,int actor,int[] won,int[] goals){
+        if(hands.stream().allMatch(List::isEmpty))return won;
+        var choices=new ArrayList<>(legal(hands.get(actor),trick.isEmpty()?-1:trick.get(0).card/13,p.trump));Collections.sort(choices);int[] best=null;
+        for(int card:choices){var next=copy(hands);next.get(actor).remove(Integer.valueOf(card));var round=new ArrayList<>(trick);round.add(new Play(actor,card));int[] count=won.clone();int turn=(actor+1)%hands.size();
+            if(round.size()==hands.size()){turn=winner(round,p.trump);count[turn]++;round.clear();}
+            int[] value=solve(p,next,round,turn,count,goals);
+            if(best==null||score(p,actor,value[actor],goals[actor])>score(p,actor,best[actor],goals[actor])||score(p,actor,value[actor],goals[actor])==score(p,actor,best[actor],goals[actor])&&rival(p,value,goals,actor)<rival(p,best,goals,actor))best=value;
+        }return best;
+    }
+    private static int rival(Position p,int[] won,int[] goals,int actor){int best=Integer.MIN_VALUE;for(int s=0;s<won.length;s++)if(s!=actor)best=Math.max(best,p.seats.get(s).total+score(p,s,won[s],goals[s]));return best;}
     private static int estimate(List<Integer> hand,int trump){double value=0;for(int c:hand)value+=(c%13==12?0.92:c%13==11?0.60:c%13==10?0.33:c%13==9?0.15:0.02)+(c/13==trump?0.19:0);return Math.min(hand.size(),(int)Math.round(value));}
-    private static List<List<Integer>> deal(Position p,Random r){
+    static List<List<Integer>> deal(Position p,Random r){
         boolean[] used=new boolean[52];for(int c:p.hand)used[c]=true;for(Play x:p.history)used[x.card]=true;for(Play x:p.trick)used[x.card]=true;if(p.turnedCard>=0)used[p.turnedCard]=true;
         var pool=new ArrayList<Integer>();for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++)if(!used[suit*13+rank])pool.add(suit*13+rank);
         boolean[][] voids=new boolean[p.seats.size()][4];for(int i=0;i<p.history.size();i++){Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;
             if(play.card/13!=led){voids[play.seat][led]=true;if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;}}
+        // Preserve the established distribution on easy states; the Hall fallback guarantees
+        // an assignment when a feasible late deal defeats bounded rejection sampling.
         for(int attempt=0;attempt<64;attempt++){
             Collections.shuffle(pool,r);var hands=new ArrayList<List<Integer>>();for(int s=0;s<p.seats.size();s++)hands.add(new ArrayList<>());hands.set(p.seat,new ArrayList<>(p.hand));
             var available=new ArrayList<>(pool);boolean valid=true;
@@ -65,8 +84,39 @@ public final class IndependentPlayer {
                 int at=-1;for(int i=0;i<available.size();i++)if(!voids[s][available.get(i)/13]){at=i;break;}
                 if(at<0){valid=false;break;}hands.get(s).add(available.remove(at));
             }if(valid)return hands;
-        }return null;
+        }return feasibleDeal(p,r);
     }
+    static List<List<Integer>> feasibleDeal(Position p,Random r){
+        boolean[] used=new boolean[52];for(int c:p.hand)used[c]=true;for(Play x:p.history)used[x.card]=true;for(Play x:p.trick)used[x.card]=true;if(p.turnedCard>=0)used[p.turnedCard]=true;
+        var pool=new ArrayList<Integer>();for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++)if(!used[suit*13+rank])pool.add(suit*13+rank);
+        boolean[][] voids=new boolean[p.seats.size()][4];for(int i=0;i<p.history.size();i++){Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;
+            if(play.card/13!=led){voids[play.seat][led]=true;if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;}}
+        var hands=new ArrayList<List<Integer>>();int[] need=new int[p.seats.size()],suits=new int[4];
+        for(int s=0;s<p.seats.size();s++){hands.add(new ArrayList<>());if(s!=p.seat)need[s]=p.seats.get(s).remaining;}hands.set(p.seat,new ArrayList<>(p.hand));for(int c:pool)suits[c/13]++;
+        if(!feasible(need,suits,voids))return null;
+        while(Arrays.stream(need).sum()>0){
+            int seat=-1,slack=Integer.MAX_VALUE;var order=new ArrayList<Integer>();for(int s=0;s<need.length;s++)if(need[s]>0)order.add(s);Collections.shuffle(order,r);
+            for(int s:order){int eligible=0;for(int suit=0;suit<4;suit++)if(!voids[s][suit])eligible+=suits[suit];if(eligible-need[s]<slack){slack=eligible-need[s];seat=s;}}
+            Collections.shuffle(pool,r);need[seat]--;boolean placed=false;
+            for(int i=0;i<pool.size();i++){int c=pool.get(i);if(voids[seat][c/13])continue;suits[c/13]--;if(feasible(need,suits,voids)){hands.get(seat).add(c);pool.remove(i);placed=true;break;}suits[c/13]++;}
+            if(!placed)throw new IllegalStateException("Hall-feasible deal lost a viable assignment");
+        }return hands;
+    }
+    /** Hall conditions over groups of identical seat slots; at most 63 subsets for six seats. */
+    static boolean feasible(int[] need,int[] counts,boolean[][] voids){
+        for(int n:need)if(n<0)return false;
+        for(int n:counts)if(n<0)return false;
+        for(int mask=1;mask<(1<<need.length);mask++){int required=0,allowed=0;for(int s=0;s<need.length;s++)if((mask&(1<<s))!=0&&need[s]>0){required+=need[s];for(int suit=0;suit<4;suit++)if(!voids[s][suit])allowed|=1<<suit;}
+            int available=0;for(int suit=0;suit<4;suit++)if((allowed&(1<<suit))!=0)available+=counts[suit];if(required>available)return false;
+        }return true;
+    }
+    static double oneCardWinChance(Position p){
+        int own=p.hand.get(0),pool=0,threats=0,lower=0;boolean trump=own/13==p.trump;
+        for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++){int c=suit*13+rank;if(c==own||c==p.turnedCard)continue;pool++;if(suit==own/13&&rank<own%13)lower++;if(trump?suit==own/13&&rank>own%13:suit==p.trump||suit==own/13&&rank>own%13)threats++;}
+        int others=p.seats.size()-1;long winning=trump||p.seat==(p.dealer+1)%p.seats.size()?ordered(pool-threats,others):lower*ordered(pool-1-threats,others-1);
+        return winning/(double)ordered(pool,others);
+    }
+    private static long ordered(int available,int count){if(available<count)return 0;long value=1;for(int i=0;i<count;i++)value*=available-i;return value;}
     private static int[] roll(Position p,List<List<Integer>> hands,int first,int[] goals,Random r){
         int n=hands.size(),actor=first<0?(p.dealer+1)%n:p.seat;int[] won=p.seats.stream().mapToInt(Seat::won).toArray();var trick=new ArrayList<>(p.trick);int left=hands.stream().mapToInt(List::size).sum();boolean initial=true;
         while(left-->0){int c=initial&&first>=0?first:greedy(hands.get(actor),trick,p.trump,actor,goals[actor]-won[actor],r);initial=false;
@@ -94,5 +144,9 @@ public final class IndependentPlayer {
         return base;
     }
     private static List<List<Integer>> copy(List<List<Integer>> w){var r=new ArrayList<List<Integer>>();for(var h:w)r.add(new ArrayList<>(h));return r;}
-    private static long seed(Position p,int sample){return 0xC0AC42026L+31L*p.hashCode()+sample*0x9e3779b97f4a7c15L;}
+    private static long seed(Position p,int sample){
+        int seats=1;for(Seat s:p.seats){int h=((s.remaining*31+Objects.hashCode(s.bid))*31+s.won)*31+s.total;seats=31*seats+h;}
+        int h=((p.seat*31+p.dealer)*31+p.size)*31+p.trump;h=h*31+p.hand.hashCode();h=h*31+seats;h=h*31+p.trick.hashCode();h=h*31+p.history.hashCode();h=h*31+p.turnedCard;
+        return 0xC0AC42026L+31L*h+sample*0x9e3779b97f4a7c15L;
+    }
 }

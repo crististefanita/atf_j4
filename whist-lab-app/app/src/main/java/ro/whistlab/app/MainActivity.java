@@ -128,6 +128,8 @@ public final class MainActivity extends Activity {
         streakBonuses.setVisibility(View.GONE);
         page.addView(streakBonuses,matchWrap());
         Spinner streakValue=spinner(Arrays.asList("5 points (original)","10 points"),"romanian-streak-value");
+        TextView streakValueLabel=text("Five-hand exact-contract bonus",13,MUTED,false);
+        streakValueLabel.setVisibility(View.GONE);
         streakValue.setSelection(1);
         streakValue.setVisibility(View.GONE);
         streakBonuses.setOnCheckedChangeListener((button,checked)->streakValue.setEnabled(checked));
@@ -136,6 +138,7 @@ public final class MainActivity extends Activity {
                 modeHelp.setText(MatchSummary.modeDescription(GameMode.values()[position]));
                 streakBonuses.setVisibility(GameMode.values()[position].isRomanian()?View.VISIBLE:View.GONE);
                 streakValue.setVisibility(GameMode.values()[position].isRomanian()?View.VISIBLE:View.GONE);
+                streakValueLabel.setVisibility(GameMode.values()[position].isRomanian()?View.VISIBLE:View.GONE);
             }
             public void onNothingSelected(AdapterView<?> parent) { }
         });
@@ -145,6 +148,7 @@ public final class MainActivity extends Activity {
                 "ai-level");
         difficulty.setSelection(0);
         page.addView(difficulty, matchWrap());
+        page.addView(streakValueLabel,matchWrap());
         page.addView(streakValue,matchWrap());
 
         addButton(page, "Start game", "btn_start_game", true, () -> {

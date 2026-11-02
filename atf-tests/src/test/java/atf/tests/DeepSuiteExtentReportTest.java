@@ -341,7 +341,10 @@ class DeepSuiteExtentReportTest {
                     String screenshotName = trace.getProperty(prefix + ".screenshot", "");
                     String base64Png = screenshotName.isBlank() ? ""
                             : AndroidScreenshotEvidence.from(resolveEvidence(evidenceDir, screenshotName)).base64Png();
-                    phase.step(AtfGherkinKeyword.valueOf(keyword), title, target, base64Png,
+                    if(assertions.isEmpty()&&!base64Png.isBlank()) {
+                        // A captured observation is media evidence, not an invented business assertion.
+                        phase.uiValidationAsMedia(keyword+" "+title,target,base64Png,assertions,actions,status);
+                    } else phase.step(AtfGherkinKeyword.valueOf(keyword), title, target, base64Png,
                             assertions, actions, ReportScreenshotPolicy.CapturePoint.CHECKPOINT, status);
                 }
                 phase.complete(phaseStatus);

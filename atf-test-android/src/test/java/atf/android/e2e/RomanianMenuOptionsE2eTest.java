@@ -22,6 +22,7 @@ class RomanianMenuOptionsE2eTest {
                 ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Whist romanesc (1-8-1)");ui.selectNamedSpinnerOption("ai-level","Hard");
                 ui.revealText("10 points");var setup=ui.dump();var checks=new ArrayList<AtfAssertion>();
                 RomanianMatchOracle.truth(checks,"New game defaults to positive series ten","10 points",ui.texts(setup).toString(),ui.hasText(setup,"10 points"));
+                RomanianMatchOracle.truth(checks,"Series value is labeled separately from AI level","Five-hand exact-contract bonus",ui.texts(setup).toString(),ui.hasText(setup,"Five-hand exact-contract bonus"));
                 if(value==5)ui.selectNamedSpinnerOption("romanian-streak-value","5 points (original)");
                 if(value==0){ui.back();ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Whist romanesc (1-8-1)");ui.tapText("Romanian five-hand streaks (missed series: -5)");}
                 String label="menu-series-"+value;ui.revealText("Start game");ui.capture(label+"-setup");

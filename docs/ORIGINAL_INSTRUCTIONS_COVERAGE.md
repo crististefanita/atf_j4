@@ -41,7 +41,7 @@ de emulator. Nu confundăm o propoziție despre un control UI cu o regulă de mo
 | OI24–25 | Blocurile Romanian și Long Romanian se repetă de N ori la capete și la întoarcere; Long este 8–1–8. |
 | OI26–27 | Oh Hell 10–1–10 sau 8–1–8 la șase locuri; Reverse începe și termină cu o carte. |
 | OI28–33 | Toate variantele încap în pachet, profilurile Romanian împart regulile de atu/scor, cartea întoarsă este neîmpărțită, iar numărul invalid de locuri este respins. |
-| RS01–18 | Serii exacte/ratate, bonus 5/10, penalizare −5, resetare, excepția unei cărți, persistență, aplicare o singură dată și utilitatea Expert. |
+| RS01–24 | Serii exacte/ratate, bonus 5/10, penalizare −5, resetare, excepția unei cărți, persistență, aplicare o singură dată, checkpoint-uri corupte, utilitatea Expert, licitare cu rezultat forțat și distribuții ipotetice stabile la schimbarea recompensei. |
 
 Fiecare rând este legat de metoda `oiXX...` din clasa de test. Domeniile
 enumerate dintr-o metodă nu sunt numărate ca sute de cazuri JUnit suplimentare.

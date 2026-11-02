@@ -113,7 +113,7 @@ public final class MonteCarloAi {
     private static double[] evaluate(View view,List<List<Card>> hands,Card first,int[] targets,long seed,double exactWeight){
         int[] greedy=rollout(view,copy(hands),first,targets,new Random(seed));
         double[] result=utility(view,greedy,targets);
-        if(exactWeight>0&&hands.stream().allMatch(h->h.size()<=2)){
+        if(exactWeight>0&&hands.stream().allMatch(h->h.size()<=(hands.size()==4?3:2))){
             double[] exact=utility(view,ContractEndgame.after(view,hands,first,targets),targets);
             for(int i=0;i<result.length;i++)result[i]=(1-exactWeight)*result[i]+exactWeight*exact[i];
         }return result;
@@ -145,8 +145,7 @@ public final class MonteCarloAi {
         for(Seat s:view.seats()){seed=seed*31+s.remaining();seed=seed*31+(s.bid()==null?-1:s.bid());seed=seed*31+s.won();seed=seed*31+s.total();}
         for(PlayedCard p:view.history()){seed=seed*31+p.seat();seed=seed*31+p.card().suit().ordinal();seed=seed*31+p.card().rank();}
         if(view.turnedCard()!=null){seed=seed*31+view.turnedCard().suit().ordinal();seed=seed*31+view.turnedCard().rank();}
-        // Preserve the frozen classic random stream. New public counters affect only the enabled profile.
-        if(view.streakBonuses()){seed=seed*31+view.streakBonusPoints();for(Seat s:view.seats())seed=seed*31+s.streak();}
+        // Rule rewards affect utility, not the distribution of cards in otherwise identical public states.
         return seed;
     }
 

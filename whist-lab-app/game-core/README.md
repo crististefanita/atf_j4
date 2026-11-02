@@ -9,7 +9,9 @@ regulile aplicației Android studiate. Un PASS al primului nu certifică al doil
 Surse consultate la **2 noiembrie 2026**:
 [Goobix, editorul jocului](https://ro.goobix.com/jocuri-online/whist/) și
 [Pagat, descrierea Romanian Whist](https://www.pagat.com/exact/romwhist.html).
-Acesta este profilul clasic ales, fără premiere pentru serii. Reguli de club
+Constructorul compatibil cu patru argumente păstrează profilul clasic fără
+premiere pentru serii. Meniul Android nou activează implicit seriile, cu +10;
++5 reproduce valoarea din secțiunea Romanian a originalului. Reguli de club
 precum [8-2-2-8, 8-1-8, 8-8-8](https://clubuldewhist.ro/regulament/)
 sunt variante distincte, nu excepții ascunse în acest profil.
 
@@ -25,6 +27,48 @@ sunt variante distincte, nu excepții ascunse în acest profil.
 
 La 4 jucători secvența are **24 de mâini, 94 de levate, 376 de cărți jucate**.
 Nu se aplică regula Oh Hell `levate + 10 dacă exact`.
+
+## Instructions complete și serii configurabile
+
+Am citit toate secțiunile meniului original, inclusiv cele aflate sub primul
+viewport. [Matricea Instructions](../../docs/ORIGINAL_INSTRUCTIONS_COVERAGE.md)
+separă cerințele offline implementate de rating/multiplayer neimplementate.
+
+`GameConfig(..., true, 5)` activează seria originală; `(..., true, 10)` activează
+bonusul pozitiv cerut. După cinci contracte exacte eligibile se acordă +5/+10,
+după cinci ratări −5, apoi contorul se resetează. Mâinile de o carte nu măresc
+seria, dar rezultatul opus o întrerupe. Contractele zero exacte sunt succese.
+`RomanianScoring.Result` separă punctele contractului, punctele de serie și
+contorul următor. Scorarea sesiunii le aplică numai după ultima carte.
+
+`RomanianStreakContractTest` verifică domeniul complet de 5.112 combinații,
+serii la mâna a cincea/a zecea, întreruperi, restaurare și respingerea unor
+bonusuri incoerente. `OriginalVariantContractTest` acoperă opt moduri, inclusiv
+Descending 17 la trei locuri, Down & Up, Maximum, Long Romanian și Reverse.
+`OriginalVariantModelTest` verifică 48 de partide complete cu model separat,
+toate variantele la 3–6 locuri și Romanian/Long Romanian cu serii 5/10 sau fără.
+
+Checkpoint-ul păstrează opțiunea, contorul semnat −4…4 și premiul ultimei mâini.
+Schema Android v3 citește v1/v2 fără să inventeze serii anterioare. Reluarea la
+SCORE nu reaplică bonusul. AI-ul Expert primește numai contoarele publice și
+valoarea configurată; reward-ul modifică utilitatea, nu distribuția eșantionată
+a cărților în stări publice identice. Profilul clasic păstrează fluxul aleator
+înghețat al plannerului independent.
+
+Expert folosește probabilitatea exactă a unei mâini de o carte, 32 de lumi
+comune pentru alternative, repartizare fezabilă cu respectarea culorilor
+epuizate și enumerare completă a cel mult 256 de lumi mici. În finaluri cu
+cel mult trei cărți pe loc la patru jucători, respectiv două la celelalte mese,
+utilitatea combină 50/50 rollout euristic și MaxN
+exact într-o ipoteză completă. Aceasta nu este rezolvarea perfectă a jocului cu
+informație ascunsă. Solverul are oracol finit separat; comparațiile păstrează
+și experimentele regresive. Vezi [protocolul AI](../../docs/AI_TRAINING_PROTOCOL.md).
+
+[Runda V3](../../docs/AI_CORPUS_ROUND3_ACCEPTANCE.md) are 333 de teste JVM PASS
+și 1.137 de partide JSON revalidate independent, fără emulator. Expertul acceptat
+are win share 31 față de 28 pe 128 de comparații heldout; punctajul agregat este
+aproape egal. Forecast-ul de serie calibrat este un instrument de analiză:
+experimentele care îl activau au regresat și nu intră în politica acceptată.
 
 ## Acoperirea cazurilor
 

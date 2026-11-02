@@ -19,6 +19,22 @@ import org.junit.jupiter.api.Test;
 
 @AtfComponentTest
 class AndroidInlineScreenshotReportContractTest {
+    @Test void observationOnlyViewportKeepsItsPngWithoutInventingAssertions()throws Exception {
+        var bytes=new ByteArrayOutputStream();ImageIO.write(new BufferedImage(2,2,BufferedImage.TYPE_INT_ARGB),"png",bytes);
+        var capture=AndroidScreenshotEvidence.from("observation-only.png",bytes.toByteArray());
+        Path report=Path.of("target","android-observation-only.html").toAbsolutePath();
+        try(var session=new ExtentReportSession(report,AtfReportConfigurationLoader.load().reportingSettings())) {
+            var raw=session.startScenario("Captured viewport without a business comparison","atf.tests","component fixture",java.util.List.of("component","observation"));
+            try(var scenario=UiExtentReportSession.adaptScenario(raw,ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),"viewport")) {
+                try(var phase=scenario.startPhase("TEST BODY")) {
+                    var observation=new atf.reporting.ui.model.AtfUiActionRecord(1,"Read captured instructions","instructions viewport","retain text and PNG","observed text",0,AtfReportStatus.PASS,atf.reporting.ui.model.AtfUiEvidenceSource.OBSERVE);
+                    phase.uiValidationAsMedia(capture.title(),"instructions viewport",capture.base64Png(),java.util.List.of(),java.util.List.of(observation),AtfReportStatus.PASS);
+                    phase.complete(AtfReportStatus.PASS);
+                }scenario.complete(AtfReportStatus.PASS);
+            }
+        }
+        String html=Files.readString(report);assertTrue(html.contains(capture.base64Png()));assertTrue(html.contains("observation-only.png"));assertTrue(html.contains("Read captured instructions"));
+    }
     @Test
     void rendersAndroidPngAsAnInlineUiCheckpoint() throws Exception {
         byte[] png;

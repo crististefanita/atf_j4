@@ -8,16 +8,16 @@ public class ContractEndgameTest {
     @Test public void exactWorldSolverMatchesIndependentMaxNOnFiniteFourSeatEndgames(){
         Random r=new Random(77291);int compared=0;
         for(int t=0;t<60;t++){
-            var deck=new ArrayList<>(GameRules.deck(GameMode.ROMANIAN_WHIST,4));Collections.shuffle(deck,r);var hands=new ArrayList<List<Card>>();for(int s=0;s<4;s++)hands.add(new ArrayList<>(deck.subList(s*2,s*2+2)));
-            int[] bids=new int[4];for(int s=0;s<4;s++)bids[s]=r.nextInt(3);Trump trump=Trump.values()[t%5];
-            var seats=new ArrayList<MonteCarloAi.Seat>();for(int s=0;s<4;s++)seats.add(new MonteCarloAi.Seat(2,bids[s],0,s*2));
-            var view=new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,trump,0,3,2,hands.get(0),seats,List.of(),List.of());
+            int size=t<8?3:2;var deck=new ArrayList<>(GameRules.deck(GameMode.ROMANIAN_WHIST,4));Collections.shuffle(deck,r);var hands=new ArrayList<List<Card>>();for(int s=0;s<4;s++)hands.add(new ArrayList<>(deck.subList(s*size,s*size+size)));
+            int[] bids=new int[4];for(int s=0;s<4;s++)bids[s]=r.nextInt(size+1);Trump trump=Trump.values()[t%5];
+            var seats=new ArrayList<MonteCarloAi.Seat>();for(int s=0;s<4;s++)seats.add(new MonteCarloAi.Seat(size,bids[s],0,s*2));
+            var view=new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,trump,0,3,size,hands.get(0),seats,List.of(),List.of());
             for(Card first:hands.get(0)){
                 int[] actual=ContractEndgame.after(view,hands,first,bids);var numeric=new ArrayList<List<Integer>>();for(var h:hands)numeric.add(new ArrayList<>(h.stream().map(c->13*c.suit().ordinal()+c.rank()-2).toList()));
                 int id=13*first.suit().ordinal()+first.rank()-2;numeric.get(0).remove(Integer.valueOf(id));
                 int[] expected=reference(numeric,new int[4],bids,1,List.of(id),0,trump.ordinal());assertArrayEquals("world "+t+" first "+first,expected,actual);compared++;
             }
-        }assertEquals(120,compared);
+        }assertEquals(128,compared);
     }
     private static int[] reference(List<List<Integer>> h,int[] won,int[] bids,int actor,List<Integer> trick,int leadSeat,int trump){
         if(h.stream().allMatch(List::isEmpty))return won.clone();

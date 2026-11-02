@@ -45,6 +45,37 @@ de joc perfect.
 
 Profilul nou folosește contoare publice și valoarea aleasă în meniul jocului.
 Compatibilitatea hash/seed a plannerului independent pentru intrările clasice
-este verificată separat față de forma V1 înghețată. Campoanele temporale din
+este verificată separat față de forma V1 înghețată. Câmpurile temporale din
 benchmark măsoară cea mai lentă decizie a oricărui actor din joc, nu exclusiv
 eroul; fișierele vechi păstrează numele inițial `newMaxDecisionMillis`.
+
+Profilul cu +10 a trecut evaluarea finală pe 128 de perechi: **11.074 vs 10.216**
+puncte, **38,5 vs 29,5** victorii ponderate. Față de OLD: 5.570/5.205 puncte și
+17/16 victorii; față de CHALLENGER: 5.504/5.011 și 21,5/13,5. Sunt rezultate
+finite, nu garanție de victorie. La dezvoltare: 2.443/2.348 puncte; progres în
+ambele familii, fără progres al numărului total de victorii.
+
+Experimentul 07, care includea noii parametri în seed-ul ambilor selectori,
+regresase în familia CHALLENGER. Corecția păstrează lumile ipotetice comune când
+se schimbă numai recompensa, folosind-o în utilitate. Fluxul plannerului cu
+serii s-a schimbat și el între aceste experimente; nu comparăm scorurile brute
+între ele ca un A/B cu adversar identic. În fiecare experiment perechea OLD/NEW
+are aceeași politică adversă. Ambele surse și rezultatele sunt arhivate.
+
+Repetarea profilului clasic după adăugarea seriilor a păstrat identice toate
+cele **1.423** de valori comparate: scoruri individuale/finale, contracte exacte,
+victorii, distribuții și locuri. Timpii sunt excluși din comparația deterministă.
+Dovezi: `C:\work\whist_back\ai-training\20261102-143525\`, în special
+`series-heldout/`, `classic-stream-parity.json` și experimentele păstrate.
+
+## Runda V3 închisă — corpus și selecție separată pe rol
+
+Protocolul și source freeze sunt în
+`C:/work/whist_back/ai-training/20261102-round3/`. Training: 800…863;
+development: 2000…2007; heldout: 60000…60015, deschis numai după înghețarea
+Expert candidate05. Expertul trece ambele familii fixe: win share agregat 31
+față de 28 pe 128 de perechi, puncte 10.640 față de 10.649. Plannerul nu are
+progres demonstrat; schimbările de forță sunt respinse, rămâne fallback-ul de
+fezabilitate. Rezultatele detaliate, cele șase experimente păstrate și limitele
+sunt în [acceptanța V3](AI_CORPUS_ROUND3_ACCEPTANCE.md). Heldout-ul este acum
+consumat și nu se reutilizează ca evaluare nouă după ajustări.

@@ -1,6 +1,6 @@
 # Feedback de aliniere ATF J4 Android
 
-Revizie live: 2026-11-02; Core C3 și Reporting J14.
+Revizie live: 2026-11-02; Core C3 și Reporting J15.
 Biblioteca și testele generice sunt în J0; cerințele de mai jos aparțin consumerului.
 
 ## J14 — criterii active demonstrate
@@ -23,6 +23,66 @@ J0 Reporting nu poate reconstrui comparații ori intervale pe care callerul nu l
 - [ ] Păstrați probă componentă a adaptorului și individual/suită, pe același JAR, cu valori și verdict independente; păstrați preview 240.
 
 Dovadă: [audit J14](../ATF_Reporting_J14_Verification.md), consumer-journeys/j4-adb și j4-resume în staging-ul datat. Randarea celor două PNG trece; acceptanța izolată pe device nu este dedusă din artifact.
+
+## Compoziție inline — constatări suplimentare din codul live
+
+| Criteriu | Dovadă actuală | Acceptanță cerută |
+|---|---|---|
+| populații | RuleComponentExtentReportTest pune cazurile JUnit în observations și creează două scenarii globale | un scenariu per invocare; numărători JUnit/model/assertions/PNG separate |
+| assertions componente | expected/actual sunt fields/bodies fără verdict pe rând pentru traiectoria modelului | comparații evaluate exportate în tabelul standard; faptele nu inventează PASS |
+| fișiere | publisherii construiesc Artifact(path.toUri()) pentru XML, properties și alte fișiere | profilul J4 public fără linkuri ori căi necesare deciziei; fapte complete inline |
+| raw dump | WhistAiTrainingExtentReportTest.observeFile citește întregul fișier ca TEXT și atașează linkul | proiecție semantică lizibilă; fără dumps XML/JaCoCo/source ca substitut al contextului |
+| acceptor | căutare globală de text și set global de hash-uri PNG | corelare exactă per invocare/fază/pas, inclusiv multiplicitate și ordinea dovezilor |
+| contract local | AndroidInlineScreenshotReportContractTest verifică legitim PNG-ul, fără comparații business | familie complementară de contracte J4 pentru compoziția per invocare, assertions, timing și failure parțial; nu lărgiți artificial testul focalizat PNG |
+| lipsă date | observeFile ignoră fișierul absent; unele grupuri au doar status din JUnit | dovezile obligatorii absente/invalide, zero cazuri și all-SKIP nu produc acceptanță PASS |
+
+- [ ] Aplicați [contractul de compoziție Android](../ATF_Android_Report_Contract.md), prin API-ul J0 existent; fără renderer privat sau parsare Android în Reporting.
+- [ ] Păstrați XML/JSON/properties ca diagnostice externe ale execuției, fără referințe afișate în profilul public cerut. Datele necesare verificării sunt deja proiectate în HTML.
+- [ ] Înregistrați la testul de componentă valorile și rezultatul evaluării unice; un rezultat JUnit agregat nu reconstruiește assertions pierdute.
+- [ ] Migrați acceptorii de la contains global la inventar pe owner, cu negative last-row, cross-owner, FAIL→PASS, missing receipt și PNG mutat la sibling.
+
+Rularea AI folosește snapshot-ul înghețat C3/J13, conform library-binaries.json; nu este relabelat ca J14/J15. Nu se modifică rularea sau lease-ul activ.
+
+[Auditul J15](../ATF_Reporting_J15_Verification.md) confirmă în TAB MCP cele două scenarii/189 referințe locale și zero tabele assertions în componenta recompusă. JAR-ul corectează TEXT; criteriile consumer de mai sus rămân deschise.
+
+## Audit componentă și randare — probe noi din 2 noiembrie
+
+[Auditul reproductibil](../ATF_J4_Report_Audit.md) distinge execuțiile noi, reconstrucția E2E arhivată și controalele deliberat negative. Rularea Android nouă este amânată până la eliberarea lease-ului; nu este declarată PASS prin skip ori prin republicarea capturilor vechi.
+
+| ID / prioritate | Dovadă chirurgicală | Criteriu de închidere |
+|---|---|---|
+| J4-RPT-01 / P0 | publishUiFlow acceptă flow.status=PASS cu phaseCount=0; HTML arată PASS fără checkpoint, assertions ori PNG | acceptorul J4 refuză receipt-ul gol pentru un journey de acceptanță; păstrează observațiile media legitime fără assertions inventate |
+| J4-RPT-02 / P1 | un testcase transformat controlat în SKIP apare cu RESULT=PASS în observation, deși sumarul are skipped=1 și publisherul refuză global acceptanța | mapare distinctă PASS/FAIL/ERROR/SKIP per invocare; negative pentru un SKIP, all-SKIP și zero cazuri |
+| J4-RPT-03 / P1 | ReportTextValueMatcher respinge phase.1.step.67.action.1.observed; DOM-ul păstrează exact 2.856 caractere și 152 CR, codificate corect prin `&#13;` | comparație TEXT pe textContent/wholeText decodat o dată, JSON numai ca document complet; negative literal entity, ultimul scalar lipsă, owner greșit și redacție |
+| J4-RPT-04 / P1 | selecția are 130 cazuri în patru clase, fără clasele exhaustive dedicate; Executed coverage afișează totuși constantele 6.375 / 4.960 | fiecare metrică executată provine dintr-o receipt legată de selecție; domeniul normativ potențial se declară separat |
+| J4-RPT-06 / P1 | RomanianWhistModelTest singur trece 88 de cazuri; publisherul cade înainte de HTML pentru ai-tournament.properties absent | raport component individual fără dependențe de benchmark-uri neexecutate; unitățile native rămân categorie separată |
+| J4-RPT-05 / P1 | suma intervalelor suitelor JUnit este 39,742 s, iar a metodelor 39,542 s; cele două scenarii Extent afișează circa 0,579 s de compoziție | executionTiming din intervalele capturate, fără confundarea publicării cu execuția; test negativ schimbă numai timing-ul |
+
+- [ ] Pentru model/component rulat individual, eliminați dependența obligatorie de un benchmark AI fără legătură cu selecția; păstrați clasificarea separată pentru unit tests native, care nu primesc automat contractul E2E.
+- [ ] Stocați compoziția reutilizabilă în main Java, cu modele tipizate per invocare și oracole independente; testele rămân teste, fără un renderer privat ori un modul nou.
+- [ ] Verificați candidate HTML înaintea promovării ca raport acceptat. La eșecul acceptorului, păstrați separat verdictul business capturat și starea verificării raportului; nu publicați un fișier aparent acceptat numai fiindcă sesiunile s-au închis.
+- [ ] Înlocuiți cei 578 de href file ai E2E-ului recompus cu fapte semantice inline. Cele patru celule assertions lungi păstrate în metadata nu se elimină înaintea unei alternative complete și corelate; boundary-ul generic 133 rămâne în J0.
+- [ ] Păstrați cele 287 de capturi: 177 PNG canonice plus 110 referințe corecte. Verificarea exactă per checkpoint a trecut pentru 11.047 assertions; nu creați un issue de capturi lipsă prin numărarea exclusivă a data URI-urilor.
+
+Problema de revenire din PNG duplicat este [REPORT-SCREENSHOT-RETURN-137 în J0](../../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-screenshot-return-137--png-reutilizat-schimbă-ownerul-și-pierde-expandările), reprodusă fără Android. J4 păstrează acceptanța consumerului; nu repară JavaScript-ul bibliotecii prin postprocesarea HTML-ului.
+
+## Un singur artifact — prototip verificabil, migrare încă deschisă
+
+[Contractul actualizat](../ATF_Android_Report_Contract.md#one-artifact-original-execution-identities) cere un HTML autonom per rulare, nu un singur scenariu global. Prototipul din TMP folosește API-ul public J15, fără modificări HTML, și păstrează patru clase/130 invocări reale; nu închide migrarea publisherului live.
+
+- [ ] Înlocuiți compoziția celor două rezumate globale cu scenarii per clasă/metodă/parametri. Atașați traiectoria exact invocării care a evaluat-o; metricele comune au selecție și scope, fără teste PASS fictive.
+- [ ] Capturați receipt tipizată per invocare la evaluare: run/case ID, parametri, input fingerprints, expected/actual/status, cauza și ordinea checkpoint-urilor. Păstrați receipt parțială și intervalele originale la failure; nu reconstruiți comparații din JUnit PASS.
+- [ ] Completați [RPT-04/05/06](#audit-componentă-și-randare--probe-noi-din-2-noiembrie) cu oracole pentru individual/model fără AI, selecție mixtă, SKIP/ERROR/FAIL, timing și lipsa detaliilor. Portarea decoderului legacy din prototip nu substituie capturarea canonică.
+- [ ] Validați HTML-ul copiat singur într-un folder gol: toate datele necesare deciziei sunt inline, în ownerul original, fără dependențe XML/properties/log ori agregarea execuțiilor istorice ca o rulare nouă.
+
+Proba diagnostică leagă 425 de comparații originale de players=4, AI=NORMAL, seed=0, prin snapshot-ul producătorului și receipt-ul completat după assertEquals. Celelalte invocări păstrează rezultatul capturat și limita explicită a detaliilor; nu sunt declarate complet auditabile prin această republicare.
+
+## Ecran Android integral — captură și afișare
+
+- [ ] Păstrați întregul display Android, toate marginile și orientarea, fără crop ori înlocuire cu regiunea analizată. Verificați dimensiunile fizice și bytes în componenta adaptorului, apoi corelarea cu checkpoint-ul în E2E sub lease.
+- [ ] Folosiți viewer-ul generic cu [fit integral 138](../../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-screenshot-viewport-138--imagine-integrală-în-spațiul-disponibil), când este livrat; nu introduceți CSS sau galerie privată în J4. Păstrați acceptanța distinctă pentru [revenirea 137](../../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-screenshot-return-137--png-reutilizat-schimbă-ownerul-și-pierde-expandările).
+
+Codul live capturePng folosește exec-out screencap -p și scrie bytes fără decupare. Aceasta confirmă mecanismul capturii, nu geometria viewer-ului; [contractul complet](../ATF_Android_Report_Contract.md#full-display-android-screenshots) separă cele două responsabilități.
 
 ## Ordinea remedierii
 

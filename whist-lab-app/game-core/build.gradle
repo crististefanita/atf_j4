@@ -12,6 +12,7 @@ java {
 
 dependencies {
     testImplementation "junit:junit:4.13.2"
+    testImplementation "com.fasterxml.jackson.core:jackson-databind:2.17.2"
 }
 sourceSets.test.java.srcDir("../ai-lab/src/main/java")
 
@@ -26,7 +27,29 @@ tasks.named("test", Test) {
     exclude "**/ObservedOriginalReplayTest.class"
     exclude "**/AiTournamentTest.class"
     exclude "**/AiTrainingTournamentTest.class"
+    exclude "**/ComponentCorpusCollectorTest.class"
+    exclude "**/RoundTwoFreezeParityTest.class"
+    exclude "**/DualLearningTournamentTest.class"
     systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
+}
+tasks.register("corpusTest", Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.ComponentCorpusCollectorTest" }
+    for (def key : ["whist.corpusDir", "whist.corpusSeeds", "whist.corpusFirstSeed", "whist.corpusVariant", "whist.corpusOpponent"])
+        systemProperty key, providers.gradleProperty(key).getOrElse("")
+}
+tasks.register("freezeParityTest", Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.RoundTwoFreezeParityTest" }
+}
+tasks.register("dualLearningTest", Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.DualLearningTournamentTest" }
+    for (def key : ["whist.corpusDir", "whist.learningOutput", "whist.learningCandidate", "whist.learningPhase", "whist.learningRole"])
+        systemProperty key, providers.gradleProperty(key).getOrElse("")
 }
 tasks.register("aiTrainingTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
