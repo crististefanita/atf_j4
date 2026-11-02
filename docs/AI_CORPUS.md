@@ -5,9 +5,11 @@ JSON simplu reprezintă o partidă completă. Prima partidă Android verificată
 `games/development/android-round-v2-21049369348797.json`: 24 de mâini, 96 de
 licitații, 94 de levate și 376 de cărți; scor `[63,90,110,74]`.
 
-La închiderea rundei V3: **1.137 de partide, 93 de seturi distincte de distribuții,
-427.512 cărți**, toate validate. Sunt 881 în development și 256 în heldout.
-Rezultatele și limitele sunt în [acceptanța V3](AI_CORPUS_ROUND3_ACCEPTANCE.md).
+La închiderea rundei V4: **2.161 de partide, 117 seturi distincte de distribuții,
+812.536 de cărți**, toate validate. Sunt 1.393 în development și 768 în heldout.
+Rezultatele, politicile îmbunătățite și limita auditului vizual sunt în
+[acceptanța V4](AI_CORPUS_ROUND4_ACCEPTANCE.md). [V3](AI_CORPUS_ROUND3_ACCEPTANCE.md)
+rămâne o referință istorică separată.
 
 Fiecare mână are distribuțiile, dealerul, atuul/cartea întoarsă, licitațiile în
 ordine, cărțile fiecărei levate în ordine, câștigătorul și scorurile pe locuri.

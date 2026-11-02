@@ -30,6 +30,8 @@ tasks.named("test", Test) {
     exclude "**/ComponentCorpusCollectorTest.class"
     exclude "**/RoundTwoFreezeParityTest.class"
     exclude "**/DualLearningTournamentTest.class"
+    exclude "**/RoundFourTournamentTest.class"
+    exclude "**/RoundFiveTournamentTest.class"
     systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
 }
 tasks.register("corpusTest", Test) {
@@ -50,6 +52,14 @@ tasks.register("dualLearningTest", Test) {
     filter { includeTestsMatching "ro.whistlab.core.DualLearningTournamentTest" }
     for (def key : ["whist.corpusDir", "whist.learningOutput", "whist.learningCandidate", "whist.learningPhase", "whist.learningRole"])
         systemProperty key, providers.gradleProperty(key).getOrElse("")
+}
+tasks.register("roundFourTest", Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.RoundFourTournamentTest" }
+    for (def key : ["whist.round4.output", "whist.round4.corpus", "whist.round4.candidate", "whist.round4.phase", "whist.round4.role"])
+        systemProperty key, providers.gradleProperty(key).getOrElse(key=="whist.round4.phase"?"development":"")
+    outputs.upToDateWhen { false }
 }
 tasks.register("aiTrainingTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
@@ -79,4 +89,28 @@ tasks.register("originalReplayTest", Test) {
     systemProperty "whist.originalReplay", providers.gradleProperty("whist.originalReplay").getOrElse("")
     systemProperty "whist.allowPartialReplay", providers.gradleProperty("whist.allowPartialReplay").getOrElse("false")
     inputs.file(providers.gradleProperty("whist.originalReplay")).withPropertyName("observedOriginalMatch")
+}
+
+// Collection entrypoints: default regression stays offline; learning is opt-in.
+tasks.register("regressionTest") { dependsOn tasks.named("test") }
+tasks.register("learningTest", Test) {
+ testClassesDirs=sourceSets.test.output.classesDirs
+ classpath=sourceSets.test.runtimeClasspath
+ filter { includeTestsMatching "ro.whistlab.core.RoundFiveTournamentTest" }
+ for(def key:["whist.round5.output","whist.round5.corpus","whist.round5.candidate","whist.round5.phase","whist.round5.role"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round5.phase"?"development":"")
+ outputs.upToDateWhen { false }
+}
+
+// Deterministic minutes-scale rule checks; no tournaments and no device.
+tasks.register("quickRegressionTest", Test) {
+    testClassesDirs=sourceSets.test.output.classesDirs
+    classpath=sourceSets.test.runtimeClasspath
+    filter { for(def name:["GameRulesBoundaryTest","RomanianWhistRulesTest","RomanianStreakContractTest","GameCheckpointRejectionTest","HowToPlayDocumentationTest","OneCardBidBeliefTest"])includeTestsMatching "ro.whistlab.core."+name }
+}
+tasks.register("documentationTest", Test) {
+    testClassesDirs=sourceSets.test.output.classesDirs
+    classpath=sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.HowToPlayDocumentationTest" }
+    for(def key:["whist.documentationEvidence","whist.documentationMarkdown","whist.documentationRunId"])systemProperty key,providers.gradleProperty(key).getOrElse("")
+    outputs.upToDateWhen { false }
 }

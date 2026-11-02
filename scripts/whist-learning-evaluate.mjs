@@ -1,0 +1,33 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+
+export async function evaluateLearning(folder,phase='development',roles=['expert','player'],protocol=null){
+  if(!['development','heldout'].includes(phase))throw new Error('Invalid phase');
+  const start=new Date().toISOString(),begin=performance.now(),seeds=protocol?.[phase]?.seeds??(phase==='heldout'?16:8),first=protocol?.[phase]?.firstSeed??(phase==='heldout'?71000:4500);
+  const version=protocol?.version??4,opponents=version===5?['EXPERT_V4','PLAYER_V4']:['EXPERT_V3','PLAYER_V3'];
+  const selectedKeys=new Set();
+  const files=(await fs.readdir(path.join(folder,'invocations'))).filter(f=>f.startsWith(phase+'-')&&f.endsWith('.json')).sort();
+  const expected=roles.length*2*seeds*4;if(files.length!==expected)throw new Error(`Expected ${expected} invocation receipts, found ${files.length}`);
+  const inventory=[],families=new Map(),ids=new Set();
+  for(const name of files){const file=path.join(folder,'invocations',name),bytes=await fs.readFile(file),r=JSON.parse(bytes);if(r.status!=='PASS'||!r.durationNanos||ids.has(r.invocationId))throw new Error('Incomplete/failed/duplicate invocation '+name);ids.add(r.invocationId);
+    if(!roles.includes(r.parameters.role)||!opponents.includes(r.parameters.opponent)||Number(r.parameters.seed)<first||Number(r.parameters.seed)>=first+seeds||![0,1,2,3].includes(r.parameters.heroSeat))throw new Error('Unexpected evaluation selection');
+    const selectedKey=[r.parameters.role,r.parameters.opponent,r.parameters.seed,r.parameters.heroSeat].join('/');if(selectedKeys.has(selectedKey))throw new Error('Duplicate paired selection');selectedKeys.add(selectedKey);
+    if(r.results.length!==2||r.checkpoints.some(c=>c.comparisons.some(a=>!a.passed)))throw new Error('Contradictory captured outcome');
+    inventory.push({file:'invocations/'+name,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),invocationId:r.invocationId});
+    const key=r.parameters.role+'/'+r.parameters.opponent;const family=families.get(key)??{role:r.parameters.role,opponent:r.parameters.opponent,pairs:0,beforePoints:0,afterPoints:0,beforeWinShare:0,afterWinShare:0,beforeExact:0,afterExact:0,byHandSize:{}};
+    for(const result of r.results){family[result.kind+'Points']+=result.points;family[result.kind+'WinShare']+=result.winShare;family[result.kind+'Exact']+=result.exact;
+      if(version===5){if(Object.keys(result.byHandSize??{}).join(',')!=='1,2,3,4,5,6,7,8')throw new Error('Missing hand-size evidence');for(const [size,metrics] of Object.entries(result.byHandSize)){const bucket=family.byHandSize[size]??{};for(const [metric,value]of Object.entries(metrics)){if(!Number.isFinite(value))throw new Error('Invalid size metric');bucket[result.kind+metric]=(bucket[result.kind+metric]??0)+value;}family.byHandSize[size]=bucket;}} }family.pairs++;families.set(key,family);
+  }
+  const checkpoints=[],roleResults={};let accepted=true;
+  for(const [key,f] of families){if(f.pairs!==seeds*4)throw new Error('Missing paired seats in '+key);const win=f.afterWinShare+1e-9>=f.beforeWinShare,score=f.afterPoints>=f.beforePoints-2*f.pairs;f.accepted=win&&score;accepted&&=f.accepted;
+    checkpoints.push({owner:'quality/'+key,title:'Paired progression / '+key,context:f,comparisons:[{name:'Win share against the fixed opponent family',expected:`>= ${f.beforeWinShare}`,actual:f.afterWinShare,passed:win},{name:'Mean score drop at most two points per game',expected:`>= ${f.beforePoints-2*f.pairs}`,actual:f.afterPoints,passed:score}]});
+    const role=roleResults[f.role]??{pointDelta:0,winShareDelta:0,largeHandPointDelta:0,accepted:true};role.largeHandPointDelta+=Object.entries(f.byHandSize).filter(([size])=>Number(size)>=2).reduce((sum,[,m])=>sum+m.afterpoints-m.beforepoints,0);role.pointDelta+=f.afterPoints-f.beforePoints;role.winShareDelta+=f.afterWinShare-f.beforeWinShare;role.accepted&&=f.accepted;roleResults[f.role]=role;
+  }
+  for(const [name,r] of Object.entries(roleResults)){r.strictGain=(r.pointDelta>0||r.winShareDelta>1e-9)&&(version!==5||r.largeHandPointDelta>0);r.accepted&&=r.strictGain;accepted&&=r.strictGain;checkpoints.push({owner:'quality/'+name,title:'Strict aggregate gain / '+name,context:r,comparisons:[{name:'At least one strict win-share or score gain',expected:true,actual:r.strictGain,passed:r.strictGain}]});}
+  const status=accepted?'PASS':'REGRESSION',summary={phase,status,pairs:expected,families:[...families.values()],roles:roleResults};
+  const gate={schemaVersion:1,runId:path.basename(folder)+'/'+phase,invocationId:phase+'-quality-gate',className:'scripts.whist-learning-evaluate',methodName:'pairedProgressAgainstFrozenV'+(version-1),parameters:{phase,roles,seeds,firstSeed:first},startedAt:start,endedAt:new Date().toISOString(),durationNanos:Math.max(1,Math.round((performance.now()-begin)*1e6)),status:accepted?'PASS':'FAIL',executionKind:'NODE_COMPONENT_GATE',checkpoints,results:[],failure:accepted?'': 'Prespecified learning criterion failed; gameplay rule acceptance remains separate'};
+  await fs.mkdir(path.join(folder,'quality-invocations'),{recursive:true});const gateFile='quality-invocations/'+phase+'.json',gateBytes=JSON.stringify(gate,null,2)+'\n';await fs.writeFile(path.join(folder,gateFile),gateBytes);inventory.push({file:gateFile,sha256:crypto.createHash('sha256').update(gateBytes).digest('hex'),invocationId:gate.invocationId});
+  await fs.writeFile(path.join(folder,phase+'-summary.json'),JSON.stringify(summary,null,2)+'\n');await fs.writeFile(path.join(folder,phase+'-composition-manifest.json'),JSON.stringify({schemaVersion:1,phase,capturedGameplayInvocations:expected,capturedQualityInvocations:1,receipts:inventory},null,2)+'\n');return summary;
+}
+if(process.argv[1]?.replaceAll('\\','/').endsWith('/whist-learning-evaluate.mjs')){try{const [folder,phase='development',role,protocolFile]=process.argv.slice(2);if(!folder)throw new Error('Usage: node scripts/whist-learning-evaluate.mjs <candidate-folder> [development|heldout] [expert|player]');const result=await evaluateLearning(folder,phase,role&&role!=='all'?[role]:['expert','player'],protocolFile?JSON.parse(await fs.readFile(protocolFile,'utf8')):null);console.log(JSON.stringify(result,null,2));if(result.status!=='PASS')process.exitCode=2;}catch(error){console.error(error.stack);process.exitCode=1;}}

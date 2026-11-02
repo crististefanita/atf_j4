@@ -21,8 +21,13 @@ public final class IndependentPlayer {
     private IndependentPlayer() { }
     public static Choice bid(Position p){
         int prior=p.seats.stream().filter(s->s.bid!=null).mapToInt(s->s.bid).sum();boolean last=p.seats.stream().filter(s->s.bid!=null).count()==p.seats.size()-1;
+        if(p.seats.size()==4&&p.size==1&&p.hand.size()==1&&p.turnedCard>=0&&p.history.isEmpty()&&p.trick.isEmpty()){
+            double chance=OneCardBidBelief.probability(p),value=Double.NEGATIVE_INFINITY;int best=-1;
+            for(int b=0;b<=1;b++)if(!last||prior+b!=1){double expected=chance*score(p,p.seat,1,b)+(1-chance)*score(p,p.seat,0,b);if(expected>value){value=expected;best=b;}}
+            return new Choice(best,"Public-bid-conditioned one-card posterior="+chance+"; no private opponent cards");
+        }
         double[] values=new double[p.size+1];int samples=0;
-        for(int k=0;k<24;k++){
+        for(int k=0;k<(p.seats.size()==4&&p.size>=2?48:24);k++){
             var world=deal(p,new Random(seed(p,k)));if(world==null)continue;samples++;
             for(int b=0;b<=p.size;b++)if(!last||b+prior!=p.size){int[] goals=goals(p,world,b);int[] won=roll(p,copy(world),-1,goals,new Random(seed(p,k)^0xC0AC4L));values[b]+=score(p,p.seat,won[p.seat],b);}
         }
@@ -34,7 +39,7 @@ public final class IndependentPlayer {
         if(allowed.size()==1)return new Choice(allowed.get(0),"Only legal card under independent follow-suit/mandatory-trump rules");
         double[] values=new double[allowed.size()],rivals=new double[allowed.size()];int samples=0;
         int[] goals=p.seats.stream().mapToInt(s->s.bid==null?0:s.bid).toArray();
-        for(int k=0;k<48;k++){
+        for(int k=0;k<(p.seats.size()==4&&p.size>=2?96:48);k++){
             var world=deal(p,new Random(seed(p,k)));if(world==null)continue;samples++;
             for(int c=0;c<allowed.size();c++){
                 int[] won=roll(p,copy(world),allowed.get(c),goals,new Random(seed(p,k)^0xC0AC4L));values[c]+=score(p,p.seat,won[p.seat],goals[p.seat]);

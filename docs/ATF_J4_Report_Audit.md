@@ -2,6 +2,8 @@
 
 ## Scope
 
+The initial J15 review and single-artifact prototype below are dated evidence. The later reader-first review uses J16 for generic viewer acceptance; consumer composition and device acceptance remain separate.
+
 Review date: 2 November 2026; physical Core C3 / Reporting J15. All builds and generated evidence stayed in owned TMP staging; source code, runtime libraries and Android state were not changed by this audit.
 
 - Fresh component execution is distinct from reconstruction of a previously completed Android match.
@@ -110,3 +112,42 @@ The screenshot-return defect 137 remains independently open. The device lease wa
 | prototype-receipt.json | captured execution outcomes; REVIEW_ONLY_PARTIAL_CAPTURE |
 
 No runtime library changed, so this increment does not publish a new JAR or replace the deployed C3/J15 pairs.
+
+## Reader-first rendering review — live publisher inputs
+
+The current corpus artifact has nine root owners, 3,222 comparison rows and no file links. Its first evaluator-summary table contains 1,137 PASS/PASS rows under validation/request/phase nesting; the independent game inputs and rule checks are not explained by those summary cells. Twelve observation bodies include a raw body of 26,511 characters, so a physically autonomous HTML is not yet a complete reader-oriented audit.
+
+| Owner | Required improvement |
+|---|---|
+| J4 | meaningful purpose, effective setup/input/state, explicit rule variant, independent expected values and inline notation legend |
+| J4 | native component assertion groups, scoped evaluator summaries and readable grouping without invented JUnit tests |
+| J4 | measured action timing and full decoded Android capture dimensions; optional deduplicated technical provenance |
+| J0 | common screenshot viewport, exact local captions and stable return context; neutral permanent mock/browser regressions |
+
+The refined temporary reader prototype moves the source checksum into optional class-level provenance, adds setup/oracle explanations and the classic-rule/notation legend, and retains all 425 original captured comparisons. Its 130 outcomes and legacy missing-detail notices are preserved; it remains a diagnostic review, not a migration of the live J4 publishers.
+
+The [J16 library evidence](ATF_Reporting_J16_Verification.md) tracks the generic fix and separate adoption. [J4-RPT-07 through J4-RPT-13](feedback/ATF_Android_Alignment_Feedback.md#reader-autonomy--input-uri-pentru-implementarea-j4) are implementation inputs for the consumer; replacing its JAR does not supply absent business receipts. No fresh Android execution is claimed by this review.
+
+### Historical observation-only frames
+
+The frozen J13 AI run 20261102-143525 retains its original publication receipt: eight Instructions screenshots were supplied as THEN, with an OBSERVE action and no business assertions. The explicit uiValidationAsMedia route preserves observation-only images without manufacturing comparisons. This is historical consumer evidence, not a declaration that J16 loses those frames.
+
+The original component publication also contains 15,336 series-domain comparisons from 5,112 combinations and 425 model-state comparisons. These are comparison populations, not distinct JUnit tests, and they do not replace captured setup/input details. Full receipts remain in the original run archive; the HTML audit must carry the necessary facts independently.
+
+## Concurrent consumer evidence — J15 learning publication
+
+The following evidence was recorded by the consumer agent during this review and preserved without a new device or learning execution here. It extends the capture context; it does not close the legacy publisher criteria above.
+
+| Consumer witness | Original result and boundary |
+|---|---|
+| J15 round 3 | 3,222 native comparisons, complete independent replay and three exact historical PNGs via uiValidationAsMedia; rejected experiments retain WARNING/REGRESSION |
+| J15 learning V4 | 256 parameterized JUnit invocations plus one Node gate; 136,202 native comparisons, invocation-owned receipts and captured timing |
+| publication attempt 01 | 2 GiB publication failed in FreeMarker StringWriter/AbstractStringBuilder before HTML |
+| attempt 02 | acceptance initially rejected a compacted JSON preview; the revised oracle compares prefix tokens and full typed owner-local values |
+| retained publication | 3 GiB, 144,325,590 HTML bytes after exact long-value deduplication within each checkpoint; no assertion or capture removal |
+| data acceptance | incremental DOM checks cover owner/order/value/status/timing; no new interactive browser acceptance was recorded for this V4 artifact |
+| runtime identity | physical Core C3 / Reporting J15; Reporting SHA-256 7B3C9DF7D22B4DD50EEFEB1E72358B4BAEC35CC3B24AC13D531BD1A101D3ADF0 |
+
+The original archives are C:/work/whist_back/ai-training/20261102-round3/ and C:/work/whist_back/ai-training/20261102-171252-round4/. Their corpus-report-verification.properties, publication-attempt-01/02 and learning-heldout-extent-r2.html retain the detailed receipts. The agent reported file-URL policy rejection and did not bypass it; the artifact remains outside this review’s interactive acceptance.
+
+This is a stress witness, not an automatic classification of every large report as a J15 defect. J4 owns adaptive selection/grouping and budgets; J0 owns any independently reproduced neutral publication limit. The current J16 delivery must not rewrite the recorded J15 execution or imply a fresh game run.

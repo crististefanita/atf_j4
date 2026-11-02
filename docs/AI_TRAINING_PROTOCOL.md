@@ -79,3 +79,11 @@ progres demonstrat; schimbările de forță sunt respinse, rămâne fallback-ul 
 fezabilitate. Rezultatele detaliate, cele șase experimente păstrate și limitele
 sunt în [acceptanța V3](AI_CORPUS_ROUND3_ACCEPTANCE.md). Heldout-ul este acum
 consumat și nu se reutilizează ca evaluare nouă după ajustări.
+
+## Runda V4 — închisă pentru tuning
+
+Training și calibrare exclusiv din development-ul anterior; două iterații pe
+4500…4507, apoi freeze bid02 înainte de71000…71015. Câte128perechi heldout per
+rol: Expert+190puncte/+4win share, planner+242/+5. Ambele familii fixe per rol
+trec. Setul final este consumat și nu se reutilizează ca evaluare nouă după
+ajustări. [Dovezi, timpi, raport și limita TAB MCP](AI_CORPUS_ROUND4_ACCEPTANCE.md).

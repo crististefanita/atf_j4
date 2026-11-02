@@ -26,6 +26,13 @@ including every bid, trick, series payment and final score. Replay, validation
 and training-example export run without Android or a UI. Development and heldout
 deals are kept separate; losses are retained.
 
+[V4 acceptance](docs/AI_CORPUS_ROUND4_ACCEPTANCE.md) improves both policies using
+public one-card bids. On fresh heldout deals, Expert gains 190 points / four win
+shares and the independent player 242 points / five win shares, per 128 paired
+comparisons each. The corpus now has 2,161 complete games. The new Extent projects
+257 real invocations and 136,202 comparisons; DOM/data acceptance is distinct
+from the interactive browser audit, blocked by the MCP file-URL policy.
+
 [V3 offline acceptance](docs/AI_CORPUS_ROUND3_ACCEPTANCE.md): 1,137 complete
 games independently replayed, 333 JVM and four Node contracts passed. The
 accepted Expert improves heldout win share from 28 to 31 on 128 paired games,
@@ -234,3 +241,7 @@ The publisher migration remains open in [J4 feedback](docs/feedback/ATF_Android_
 J15 also preserves literal CR/LF and leading newlines in inline TEXT bodies.
 
 The [current report audit](docs/ATF_J4_Report_Audit.md) separates fresh component checks, archived E2E reconstruction, deliberate negative controls and the remaining consumer/renderer gaps.
+
+## Current screenshot viewer — J16
+
+[Reporting J16](docs/ATF_Reporting_J16_Verification.md) fits complete PNG evidence to the browser viewport and preserves the clicked checkpoint, local caption, disclosures and focus when closing the viewer. Core C3, the 240-character preview and the existing UI/API/SQL evidence contracts remain unchanged. Producer-side setup, inputs, independent expected values and capture completeness retain their own acceptance.

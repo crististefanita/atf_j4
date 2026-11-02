@@ -5,6 +5,8 @@
     <artifactId>atf-tests</artifactId>
     <name>ATF J4 architecture and acceptance catalog</name>
     <dependencies>
+        <dependency><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></dependency>
+        <dependency><groupId>org.jsoup</groupId><artifactId>jsoup</artifactId><version>1.23.2</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-test-kit</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-core</artifactId><version>${atf.core.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-android</artifactId><version>${project.version}</version></dependency>

@@ -39,16 +39,18 @@ public final class MonteCarloAi {
                 game.currentTrick(),game.history(),game.turnedCard(),game.streakBonuses(),game.streakBonusPoints());
     }
 
+    private static int samplingBudget(View view){return view.mode().isRomanian()&&view.seats().size()==4&&view.handSize()>=2?64:SAMPLES;}
+
     public static int chooseBid(View view) {
         int prior=view.seats().stream().filter(s->s.bid()!=null).mapToInt(s->s.bid()).sum();
         boolean last=view.seats().stream().filter(s->s.bid()!=null).count()==view.seats().size()-1;
         List<Integer> allowed=GameRules.allowedBids(view.handSize(),prior,last);
         if(view.handSize()==1&&view.hand().size()==1&&view.trick().isEmpty()&&view.history().isEmpty()){
-            double win=oneCardWinProbability(view);int best=allowed.get(0);double value=Double.NEGATIVE_INFINITY;
+            double win=OneCardBidBelief.probability(view);int best=allowed.get(0);double value=Double.NEGATIVE_INFINITY;
             for(int bid:allowed){double expected=win*points(view,view.seat(),1,bid)+(1-win)*points(view,view.seat(),0,bid);if(expected>value){value=expected;best=bid;}}return best;
         }
         double[] values=new double[view.handSize()+1];int samples=0;
-        for(int sample=0;sample<SAMPLES;sample++) {
+        for(int sample=0;sample<samplingBudget(view);sample++) {
             Random random=new Random(seed(view,sample));List<List<Card>> hands=sample(view,random);
             if(hands==null)continue;
             for(int bid:allowed){int[] targets=biddingTargets(view,hands,bid);
@@ -74,7 +76,7 @@ public final class MonteCarloAi {
         int[] targets=view.seats().stream().mapToInt(s->s.bid()==null?0:s.bid()).toArray();
         double[] values=new double[legal.size()],rivals=new double[legal.size()];int samples=0;
         List<List<List<Card>>> exactDeals=enumerateSmallDeals(view);
-        int worlds=exactDeals.isEmpty()?SAMPLES:exactDeals.size();
+        int worlds=exactDeals.isEmpty()?samplingBudget(view):exactDeals.size();
         for(int sample=0;sample<worlds;sample++){
             List<List<Card>> hands=exactDeals.isEmpty()?sample(view,new Random(seed(view,sample))):exactDeals.get(sample);if(hands==null)continue;samples++;
             for(int c=0;c<legal.size();c++){

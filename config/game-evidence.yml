@@ -1,0 +1,6 @@
+detailLevel: AUTO
+maxDetailedInvocations: 64
+maxDetailedComparisons: 10000
+maxDetailedContextCharacters: 250000
+passingExamplesPerFamily: 1
+optionalContextBudgetCharacters: 65536

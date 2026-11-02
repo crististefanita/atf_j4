@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import ro.whistlab.core.HowToPlay;
 import ro.whistlab.core.AiDifficulty;
 import ro.whistlab.core.AiPolicy;
 import ro.whistlab.core.Card;
@@ -97,7 +98,7 @@ public final class MainActivity extends Activity {
         addButton(page, "New game", "btn_new_game", true, this::renderSetup, true);
         addButton(page, "Resume game", "btn_resume_game", game != null,
                 this::renderCurrentState, false);
-        addButton(page, "How to play", "btn_instructions", true,
+        addButton(page, "Ajutor / How to play", "btn_instructions", true,
                 this::renderInstructions, false);
         addText(page, "Play locally against computer opponents. Your game state stays on this device.",
                 13, MUTED, false, 24, 0);
@@ -320,14 +321,17 @@ public final class MainActivity extends Activity {
 
     private void renderInstructions() {
         tableVisible=false;menuSubpage=true;handler.removeCallbacksAndMessages(null);
-        LinearLayout page = page("HOW TO PLAY", "Simple rules. Sharp decisions.");
-        addRule(page, "Bidding", "Bid the exact number of tricks you expect to win. The final bid cannot make all bids add up to the cards in the hand.");
-        addRule(page, "Play", "Follow the suit led if you can. Romanian Whist: when void you must trump if you have one; otherwise discard. Oh Hell: when void you may discard or trump.");
-        addRule(page, "Winning a trick", "The highest card of the led suit wins unless a trump is played. Then the highest trump wins.");
-        addRule(page, "Trump", "Romanian Whist and Oh Hell turn an undealt card to determine trump. Romanian eight-card hands have no trump. Descending cycles spades, hearts, clubs, diamonds, then no trump.");
-        addRule(page, "Scoring", "Romanian Whist: exact bid scores 5 + tricks, otherwise lose the difference. Oh Hell: tricks + 10 for an exact bid.");
-        addRule(page, "Romanian streaks", "Five consecutive eligible exact contracts add the selected 5 or 10 points (default 10). Five missed contracts deduct 5. The series then resets. One-card hands do not advance the streak, but an opposite result breaks it. Disable streaks for classic scoring.");
-        addButton(page, "Back", "btn_instructions_back", true, this::renderHome, true);
+        HowToPlay.Language language=HowToPlay.Language.valueOf(getPreferences(MODE_PRIVATE).getString("helpLanguage","RO"));
+        LinearLayout page=page(HowToPlay.title(language),language==HowToPlay.Language.RO?"Whist românesc — reguli și exemple":"Romanian Whist — rules and examples");
+        addButton(page,"Română","btn_help_ro",true,()->setHelpLanguage(HowToPlay.Language.RO),language==HowToPlay.Language.RO);
+        addButton(page,"English","btn_help_en",true,()->setHelpLanguage(HowToPlay.Language.EN),language==HowToPlay.Language.EN);
+        for(var section:HowToPlay.sections(language))addRule(page,section.title(),section.explanation());
+        addButton(page,language==HowToPlay.Language.RO?"Înapoi":"Back","btn_instructions_back",true,this::renderHome,true);
+    }
+
+    private void setHelpLanguage(HowToPlay.Language language) {
+        getPreferences(MODE_PRIVATE).edit().putString("helpLanguage",language.name()).apply();
+        renderInstructions();
     }
 
     private void driveAutomatedTurns() {

@@ -8,11 +8,15 @@ import org.junit.Test;
 import ro.whistlab.coach.IndependentPlayer;
 import ro.whistlab.coach.baseline.PreviousIndependentPlayer;
 import ro.whistlab.core.baseline.RoundTwoAiPolicy;
+import ro.whistlab.core.baseline.RoundThreeAiPolicy;
+import ro.whistlab.coach.baseline.RoundThreeIndependentPlayer;
+import ro.whistlab.core.baseline.RoundFourAiPolicy;
+import ro.whistlab.coach.baseline.RoundFourIndependentPlayer;
 
 /** Offline complete games. Full deals go only to the recorder, not to policy inputs. */
 public class ComponentCorpusCollectorTest {
     private static final ObjectMapper JSON=new ObjectMapper();
-    enum Policy { EXPERT_V2, PLAYER_V2, EXPERT_CANDIDATE, PLAYER_CANDIDATE }
+    enum Policy { EXPERT_V2, PLAYER_V2, EXPERT_V3, PLAYER_V3, EXPERT_V4, PLAYER_V4, EXPERT_CANDIDATE, PLAYER_CANDIDATE }
     @Test public void collectsEveryDeclaredGameIncludingLossesAsSimpleJson()throws Exception {
         String output=System.getProperty("whist.corpusDir","");assertFalse("Explicit external corpus folder required",output.isBlank());
         Path folder=Path.of(output).toAbsolutePath().resolve("games/development");Files.createDirectories(folder);
@@ -37,6 +41,9 @@ public class ComponentCorpusCollectorTest {
         Properties done=new Properties();done.setProperty("status","PASS");done.setProperty("variant",variant);done.setProperty("completed",""+completed);done.setProperty("created",""+created);done.setProperty("planned",""+(seeds*4));try(var stream=Files.newOutputStream(Path.of(output).resolve("collection-progress.properties"))){done.store(stream,"Collection complete; independent replay validation is a separate receipt");}
     }
     static Map<String,Object> play(String id,long seed,int heroSeat,Policy hero,Policy opponent){
+        return play(id,seed,heroSeat,hero,opponent,game->{});
+    }
+    static Map<String,Object> play(String id,long seed,int heroSeat,Policy hero,Policy opponent,java.util.function.Consumer<Map<String,Object>> checkpoint){
         var game=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,true,10));
         var players=new ArrayList<Map<String,Object>>();for(var p:game.snapshot().players())players.add(map("seat",p.seat(),"name",p.name(),"controller",label(p.seat()==heroSeat?hero:opponent)));
         var hands=new ArrayList<Map<String,Object>>();int moves=0,tricks=0;
@@ -44,25 +51,31 @@ public class ComponentCorpusCollectorTest {
             var start=game.snapshot();var deal=new ArrayList<Map<String,Object>>();for(var p:start.players())deal.add(map("seat",p.seat(),"cards",p.hand().stream().map(ComponentCorpusCollectorTest::code).toList()));
             var bids=new ArrayList<Map<String,Object>>();var rounds=new ArrayList<Map<String,Object>>();
             while(game.snapshot().phase()==GamePhase.BIDDING){var s=game.snapshot();int seat=s.biddingSeat();Policy policy=seat==heroSeat?hero:opponent;
-                int bid=switch(policy){case EXPERT_V2->RoundTwoAiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);case PLAYER_V2->PreviousIndependentPlayer.bid(previous(s,seat)).value();case EXPERT_CANDIDATE->AiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);case PLAYER_CANDIDATE->IndependentPlayer.bid(AiTrainingTournamentTest.publicPosition(s,seat)).value();};
+                int bid=switch(policy){case EXPERT_V2->RoundTwoAiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);case PLAYER_V2->PreviousIndependentPlayer.bid(previous(s,seat)).value();case EXPERT_V3->RoundThreeAiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);case PLAYER_V3->RoundThreeIndependentPlayer.bid(roundThree(s,seat)).value();case EXPERT_V4->RoundFourAiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);case PLAYER_V4->RoundFourIndependentPlayer.bid(roundFour(s,seat)).value();case EXPERT_CANDIDATE->AiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);case PLAYER_CANDIDATE->IndependentPlayer.bid(AiTrainingTournamentTest.publicPosition(s,seat)).value();};
                 bids.add(map("seat",seat,"bid",bid));game.submitBid(seat,bid);
             }
             var plays=new ArrayList<Map<String,Object>>();
             while(game.snapshot().phase()==GamePhase.PLAYING){var s=game.snapshot();int seat=s.currentSeat();Policy policy=seat==heroSeat?hero:opponent;Card choice;
                 if(policy==Policy.EXPERT_V2)choice=RoundTwoAiPolicy.chooseCard(s,seat,AiDifficulty.EXPERT);
+                else if(policy==Policy.EXPERT_V3)choice=RoundThreeAiPolicy.chooseCard(s,seat,AiDifficulty.EXPERT);
+                else if(policy==Policy.EXPERT_V4)choice=RoundFourAiPolicy.chooseCard(s,seat,AiDifficulty.EXPERT);
                 else if(policy==Policy.EXPERT_CANDIDATE)choice=AiPolicy.chooseCard(s,seat,AiDifficulty.EXPERT);
-                else {int c=policy==Policy.PLAYER_V2?PreviousIndependentPlayer.card(previous(s,seat)).value():IndependentPlayer.card(AiTrainingTournamentTest.publicPosition(s,seat)).value();choice=new Card(Suit.values()[c/13],c%13+2);}
+                else {int c=policy==Policy.PLAYER_V2?PreviousIndependentPlayer.card(previous(s,seat)).value():policy==Policy.PLAYER_V3?RoundThreeIndependentPlayer.card(roundThree(s,seat)).value():policy==Policy.PLAYER_V4?RoundFourIndependentPlayer.card(roundFour(s,seat)).value():IndependentPlayer.card(AiTrainingTournamentTest.publicPosition(s,seat)).value();choice=new Card(Suit.values()[c/13],c%13+2);}
                 plays.add(map("seat",seat,"card",code(choice)));game.playCard(seat,choice);moves++;
                 var after=game.snapshot();if(plays.size()==4){rounds.add(map("plays",new ArrayList<>(plays),"winner",after.lastTrickWinnerSeat()));plays.clear();tricks++;}
             }
             var end=game.snapshot();var scores=new ArrayList<Map<String,Object>>();for(var p:end.players())scores.add(map("seat",p.seat(),"bid",p.bid(),"won",p.tricksWon(),"base",GameRules.scoreDelta(p.tricksWon(),p.bid(),end.mode()),"series",p.streakPoints(),"total",p.totalScore(),"streak",p.streak()));
             hands.add(map("number",start.handNumber(),"size",start.handSize(),"dealer",start.dealerSeat(),"trump",start.trump()==Trump.NO_TRUMP?"NT":"SHCD".substring(start.trump().ordinal(),start.trump().ordinal()+1),"turnedCard",start.turnedCard()==null?null:code(start.turnedCard()),"deal",deal,"bids",bids,"tricks",rounds,"scores",scores));
-            if(end.finalHand()){assertEquals(376,moves);assertEquals(94,tricks);return map("schemaVersion",1,"id",id,"partition","development","source",map("kind","component","heroSeat",heroSeat,"visibility","post-game full deal; not a decision input"),"rules",map("variant","ROMANIAN_WHIST","players",4,"seriesEnabled",true,"seriesBonus",10),"seed",Long.toString(seed),"players",players,"hands",hands,"finalScores",end.players().stream().map(GameSession.PlayerSnapshot::totalScore).toList());}
+            hands.get(hands.size()-1).put("remainingCards",end.players().stream().map(p->p.hand().size()).toList());
+            var record=map("schemaVersion",1,"id",id,"partition","development","source",map("kind","component","heroSeat",heroSeat,"complete",end.finalHand(),"visibility","post-game full deal; not a decision input"),"rules",map("variant","ROMANIAN_WHIST","players",4,"seriesEnabled",true,"seriesBonus",10),"seed",Long.toString(seed),"players",players,"hands",hands,"finalScores",end.players().stream().map(GameSession.PlayerSnapshot::totalScore).toList());checkpoint.accept(record);
+            if(end.finalHand()){assertEquals(376,moves);assertEquals(94,tricks);return record;}
             game.startNextHand();
         }
     }
     static PreviousIndependentPlayer.Position previous(GameSession.Snapshot s,int seat){return new PreviousIndependentPlayer.Position(seat,s.dealerSeat(),s.handSize(),s.trump().ordinal(),s.players().get(seat).hand().stream().map(ComponentCorpusCollectorTest::id).toList(),s.players().stream().map(p->new PreviousIndependentPlayer.Seat(p.hand().size(),p.bid(),p.tricksWon(),p.totalScore(),p.streak())).toList(),s.currentTrick().stream().map(p->new PreviousIndependentPlayer.Play(p.seat(),id(p.card()))).toList(),s.history().stream().map(p->new PreviousIndependentPlayer.Play(p.seat(),id(p.card()))).toList(),s.turnedCard()==null?-1:id(s.turnedCard()),s.streakBonuses(),s.streakBonusPoints());}
-    private static String label(Policy p){return switch(p){case EXPERT_V2->"Expert round-v2";case PLAYER_V2->"IndependentPlayer round-v2";case EXPERT_CANDIDATE->"Expert candidate-v3";case PLAYER_CANDIDATE->"IndependentPlayer candidate-v3";};}
+    static RoundThreeIndependentPlayer.Position roundThree(GameSession.Snapshot s,int seat){return new RoundThreeIndependentPlayer.Position(seat,s.dealerSeat(),s.handSize(),s.trump().ordinal(),s.players().get(seat).hand().stream().map(ComponentCorpusCollectorTest::id).toList(),s.players().stream().map(p->new RoundThreeIndependentPlayer.Seat(p.hand().size(),p.bid(),p.tricksWon(),p.totalScore(),p.streak())).toList(),s.currentTrick().stream().map(p->new RoundThreeIndependentPlayer.Play(p.seat(),id(p.card()))).toList(),s.history().stream().map(p->new RoundThreeIndependentPlayer.Play(p.seat(),id(p.card()))).toList(),s.turnedCard()==null?-1:id(s.turnedCard()),s.streakBonuses(),s.streakBonusPoints());}
+    static RoundFourIndependentPlayer.Position roundFour(GameSession.Snapshot s,int seat){return new RoundFourIndependentPlayer.Position(seat,s.dealerSeat(),s.handSize(),s.trump().ordinal(),s.players().get(seat).hand().stream().map(ComponentCorpusCollectorTest::id).toList(),s.players().stream().map(p->new RoundFourIndependentPlayer.Seat(p.hand().size(),p.bid(),p.tricksWon(),p.totalScore(),p.streak())).toList(),s.currentTrick().stream().map(p->new RoundFourIndependentPlayer.Play(p.seat(),id(p.card()))).toList(),s.history().stream().map(p->new RoundFourIndependentPlayer.Play(p.seat(),id(p.card()))).toList(),s.turnedCard()==null?-1:id(s.turnedCard()),s.streakBonuses(),s.streakBonusPoints());}
+    private static String label(Policy p){return switch(p){case EXPERT_V2->"Expert round-v2";case PLAYER_V2->"IndependentPlayer round-v2";case EXPERT_V3->"Expert round-v3";case PLAYER_V3->"IndependentPlayer round-v3";case EXPERT_V4->"Expert round-v4";case PLAYER_V4->"IndependentPlayer round-v4";case EXPERT_CANDIDATE->"Expert candidate-v5";case PLAYER_CANDIDATE->"IndependentPlayer candidate-v5";};}
     private static int number(String key,int fallback){String value=System.getProperty(key,"");return value.isBlank()?fallback:Integer.parseInt(value);}
     private static int id(Card c){return c.suit().ordinal()*13+c.rank()-2;}
     private static String code(Card c){return (c.rank()==14?"A":c.rank()==13?"K":c.rank()==12?"Q":c.rank()==11?"J":""+c.rank())+"SHCD".charAt(c.suit().ordinal());}

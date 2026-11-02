@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "policy": "Learning determines candidate changes; it is not part of the default regression. Estimated time budgets are scheduling guidance, never a reason to turn unfinished work into PASS.",
+  "collections": [
+    {
+      "id": "quick",
+      "task": ":game-core:quickRegressionTest",
+      "targetMinutes": 2,
+      "trigger": "Every rules/scoring/help change",
+      "evidence": "Native JUnit XML; documentation receipts when explicitly requested",
+      "promotion": "Counterexample must have an independent expectation, stable case ID, and named rule."
+    },
+    {
+      "id": "regression",
+      "task": ":game-core:regressionTest",
+      "targetMinutes": 5,
+      "trigger": "Before promoting a policy or APK",
+      "evidence": "Full offline JUnit regression. No learning tournaments and no emulator."
+    },
+    {
+      "id": "documentation",
+      "task": ":game-core:documentationTest",
+      "targetMinutes": 1,
+      "trigger": "Rules/help or report reader contract changes",
+      "evidence": "32 bilingual examples, actual comparisons, generated RO/EN help and selected native Extent."
+    },
+    {
+      "id": "learning",
+      "task": ":game-core:learningTest",
+      "targetMinutes": 15,
+      "trigger": "Explicit candidate experiment only",
+      "evidence": "All JSON games and receipts, fixed-opponent gates, development examples; no automatic bulk HTML.",
+      "requires": [
+        "Fresh candidate ID",
+        "External corpus path",
+        "Frozen protocol; untouched heldout before promotion"
+      ]
+    },
+    {
+      "id": "e2e",
+      "task": "Existing opt-in Android suites and serialized run-complete-match/run-romanian-expert scripts",
+      "targetMinutes": 45,
+      "trigger": "Explicit device acceptance under exclusive lease",
+      "evidence": "New measured actions, independent state/score oracle and full-display PNG inline Base64.",
+      "requires": [
+        "Exclusive device lease",
+        "Known APK/app version",
+        "Full-match final score for complete-game claims"
+      ]
+    }
+  ]
+}

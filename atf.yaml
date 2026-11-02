@@ -1,0 +1,3 @@
+reporting:
+  assertionMaxDisplayCharacters: 240
+  bodyMaxDisplayCharacters: 32768

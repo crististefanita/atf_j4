@@ -16,6 +16,21 @@ Acesta este contractul țintă al consumerului; [feedback-ul activ](feedback/ATF
 
 [Contractul generic](../../atf_j0/docs/ATF_Inline_Audit_Contract.md) descrie API-ul existent și profilul fără referințe.
 
+## Reader without repository access
+
+The HTML is the complete audit deliverable for a reader who has no J4 checkout, filesystem or source browser. Every claimed test explains its purpose, effective setup and inputs, evaluated preconditions, ordered steps, independent expected result, actual observation and final disposition. Missing capture detail is explicit and cannot be repaired by a descriptive title.
+
+| Reading level | Content |
+|---|---|
+| primary | meaningful test/step names, selected rule variant, parameters and concise outcome/limitations |
+| comparisons | standard ASSERTION / EXPECTED / ACTUAL / RESULT table, with the evaluated verdict and required bounded/full evidence |
+| context | initial state, input or action, resulting state, units and inline rule/notation legend |
+| technical provenance | original case identity and optional deduplicated checksums/build inventory; no checksum is presented as a business oracle |
+
+Use native assertion steps for offline component comparisons; HTTP requests require actual HTTP evidence. SQL observations remain SQL facts and Android actions remain UI evidence; consistency means common tables/disclosures/status/timing, not fabricated transports. A summary that an independent replay returned PASS is clearly labeled as an evaluator summary and does not substitute detailed game assertions.
+
+An external-reader acceptance opens the isolated HTML alone and reconstructs why at least one representative test passed or failed. It checks setup, actual input, independent rule, final comparison and partial-failure evidence without resolving a path or opaque rule code. Producer-side contract tests enforce this content; neutral renderer regressions stay in J0.
+
 ## Structura componentelor
 
 | Nivel | Informație obligatorie | Proiecție |
@@ -72,7 +87,7 @@ Capture the entire physical Android display at each reported checkpoint, includi
 | inspection | explicit original-size/zoom mode may scroll; returning to fit or closing retains the current owner, disclosures, scroll and keyboard focus |
 | portrait in landscape | side margins are legitimate; filling the viewport must not remove the top, bottom or edges of the Android screen |
 
-Current ADB screencap captures the full display; this does not prove the current viewer meets the viewport requirement. [Generic viewer criterion 138](../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-screenshot-viewport-138--imagine-integrală-în-spațiul-disponibil) remains open alongside the independent return-context defect 137.
+Current ADB screencap captures the full display; the generic viewer and return-context fixes are verified in [J16](ATF_Reporting_J16_Verification.md). J4 must regenerate its reports with that binary and independently verify physical capture dimensions and checkpoint ownership. Generic PNG fixtures do not certify a new Android execution.
 
 ## Agregare lizibilă, fără file browser
 
@@ -82,6 +97,21 @@ Current ADB screencap captures the full display; this does not prove the current
 - Nu se înlocuiește un link XML cu un dump XML gigantic. Coverage devine contoare/scope; receptele devin intrări și rezultate structurate.
 - Expected/actual și verdictul nu sunt ascunse numai într-un text brut; comparațiile apar în grupul standard Assertions.
 - Preview-ul rămâne 240. Bugetul fiecărui corp trebuie să permită dovezile obligatorii, iar un conținut omis nu este declarat COMPLETE.
+
+## Adaptive detail and evidence budgets
+
+J4 captures a typed immutable presentation policy once per run, from consumer-owned YAML. AUTO adapts semantic grouping to the measured count/size; SUMMARY declares its summary scope, while FULL retains the required detailed evidence or explicitly fails completeness. The effective policy and every omission are visible in the standalone HTML.
+
+| Boundary | Invariant |
+|---|---|
+| generic settings | assertion preview stays 240; body budget is independent and must not be replaced by a hardcoded unlimited value |
+| game grouping | shared setup is deduplicated; hands/tricks and retained game detail have explicit scopes and original order |
+| mandatory audit | compared inputs, expected/actual/status, failure cause and required checkpoint remain available |
+| optional context | positive per-group and report-level budgets; show original/retained/omitted counts and reason |
+| completeness | missing required evidence means INCOMPLETE audit acceptance; original business verdict is preserved separately |
+| serialized structure | split at semantic boundaries before publication; no half JSON values or over-budget hidden originals |
+
+Changing display level cannot change game behavior, assertion evaluation, seeds, selection outcomes or privacy policy. Validate limits/enums before publication and retain boundary/mutant tests in J4; a library capability gap receives a neutral J0 reproduction. [Active adaptive-detail criteria](feedback/ATF_Android_Alignment_Feedback.md#adaptive-game-detail--configurație-consumer-fără-pierderea-verdictului) track implementation; no new game-specific J0 YAML keys are introduced.
 
 ## Timp, status și acceptor
 

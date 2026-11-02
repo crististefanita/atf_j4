@@ -55,7 +55,9 @@ valoarea configurată; reward-ul modifică utilitatea, nu distribuția eșantion
 a cărților în stări publice identice. Profilul clasic păstrează fluxul aleator
 înghețat al plannerului independent.
 
-Expert folosește probabilitatea exactă a unei mâini de o carte, 32 de lumi
+Expert folosește la patru locuri un posterior al licitațiilor publice pentru o
+mână de o carte, calibrat pe development, cu oferta forțată exclusă ca indiciu.
+Celelalte mese păstrează priorul combinatoric. Folosește 32 de lumi
 comune pentru alternative, repartizare fezabilă cu respectarea culorilor
 epuizate și enumerare completă a cel mult 256 de lumi mici. În finaluri cu
 cel mult trei cărți pe loc la patru jucători, respectiv două la celelalte mese,

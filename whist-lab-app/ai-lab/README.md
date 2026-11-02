@@ -32,3 +32,12 @@ This is a declared independent benchmark opponent, not a perfect player. Its
 classic random stream is checked against the original record hashes, and the
 paired tournaments retain wins, ties and losses. See the
 [evaluation protocol](../../docs/AI_TRAINING_PROTOCOL.md).
+
+## V4 accepted one-card bids
+
+The current policy conditions one-card bids on already-public bids, using its
+own numerical posterior implementation and no game-core imports. A forced
+last bid is uninformative. Training uses development games only. The frozen V3
+player remains the reference; the V3 paragraphs above describe that history.
+On fresh deals V4 gains242points and5win shares over128paired games, with both
+fixed opponent families passing. See [V4 acceptance](../../docs/AI_CORPUS_ROUND4_ACCEPTANCE.md).
