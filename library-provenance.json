@@ -14,39 +14,243 @@
   },
   "libraries": [
     {
-      "artifact": "atf.api:atf-core:1.0.0-c2",
+      "artifact": "atf.api:atf-core:1.0.0-c3",
       "files": {
         "jar": {
-          "path": "lib/atf-core-1.0.0-c2.jar",
-          "sha256": "91080FE996CCB358B7E42B8F147322B3D4468D84C364DFD259371EEEF9AFD5DB"
+          "path": "lib/atf-core-1.0.0-c3.jar",
+          "sha256": "605407B9D40E67C9C352EE6E94DA758E50BD3CFB14CC0D7A0DE3359C71088447"
         },
         "pom": {
-          "path": "lib/atf-core-1.0.0-c2.pom",
-          "sha256": "C31CAE6EA04B626B9FB6C5FE0DDAE916520762B7463316CC0886E71576A2CA72"
+          "path": "lib/atf-core-1.0.0-c3.pom",
+          "sha256": "7853373300E588B2EA25F6A07C927ECAC1FB06044073AD75FDA8D6B7CFF275E0"
         }
       },
       "upstreamProducer": "atf_j0",
-      "copySource": "atf_j3/lib",
-      "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
+      "copySource": "atf_j0 verified TMP publisher",
+      "comparison": "Byte-identical Core C3 pair delivered to J1/J2/J3/J4",
+      "producerInputs": {
+        "files": 149,
+        "sha256": "98601EBAAF545C8A7C09D5626BCE2661F8B776D3D3B18F46F6E495783FC34211",
+        "nativeTests": [
+          {
+            "path": "src/test/java/atf/core/ApiTransportPolicyTest.java",
+            "sha256": "FA4F50BC25EA43B49ED837C9AD08039810B0E6ECACE33AD008FA953215C81006"
+          },
+          {
+            "path": "src/test/java/atf/core/AtfDurationParserTest.java",
+            "sha256": "386211EE97434884C1973A14F507171C503FF71A499A012592A3121CD2789D86"
+          },
+          {
+            "path": "src/test/java/atf/core/AuthenticationAndRetryTest.java",
+            "sha256": "6BD6D5DF73C507DE6D13AFF1FA1AA4E63C28D8534E225B329550A35116BC3A5D"
+          },
+          {
+            "path": "src/test/java/atf/core/ConfigurationContractTest.java",
+            "sha256": "267DA4EAC84AEB07C646C9C8022C9EBC47F0DE9429BE5ACF1A59C9C1EEF0402B"
+          },
+          {
+            "path": "src/test/java/atf/core/CoreContractTest.java",
+            "sha256": "22A3608796ED10467FA8E518A1BABCF326B47BAFFAB19AA32B36FAF916E4DADF"
+          },
+          {
+            "path": "src/test/java/atf/core/ExecutionResilienceTest.java",
+            "sha256": "3BAA7BE15A508747EE589B27F63C26BDF84798DF401A49A7BD21EDA0D9526230"
+          },
+          {
+            "path": "src/test/java/atf/core/ReportStatusAggregatorTest.java",
+            "sha256": "13CC4049D36248F32AD5CE7C0D08BE65A5BDD41E028748DABA90751FFAB9DE17"
+          },
+          {
+            "path": "src/test/java/atf/core/config/AtfModuleConfigurationLoaderTest.java",
+            "sha256": "0B8A840D2CFC6DED790BE6E658B2EB55D61445BAC1E84B9850F67A45DCA5FF22"
+          },
+          {
+            "path": "src/test/java/atf/core/diagnostics/ThrowableDiagnosticsTest.java",
+            "sha256": "F2470D28F368216C61194673B54315A6464432F6E790E4A03C17C4F6AE072E1D"
+          },
+          {
+            "path": "src/test/java/atf/core/files/AtfFileTreeTest.java",
+            "sha256": "69C8F7FF320349C0B754055B018215F848A4A783C90AA050DD59A2989C3090C9"
+          },
+          {
+            "path": "src/test/java/atf/core/files/AtfJavaSourceInventoryTest.java",
+            "sha256": "A955EA12CAEC74D95C8885E9CA97BD46DAC87C1046D5E548DE9537DB8B69E5BA"
+          },
+          {
+            "path": "src/test/java/atf/core/files/AtfJavaSourceReferencesTest.java",
+            "sha256": "8CDC566715ACC2C57AE1F18D0DCD83041EF77D54F4D5B71E658A9606D5535800"
+          },
+          {
+            "path": "src/test/java/atf/core/files/AtfPathLocatorTest.java",
+            "sha256": "04F6F77DC8A6008A81741062F43A2D17C381378E3E3E5EC6899E10EAA3BE676F"
+          },
+          {
+            "path": "src/test/java/atf/core/http/ApiBodyEvidenceTest.java",
+            "sha256": "822DF47A796D1537120F0C1809BEF3BAA0417503D5479A254F7A8C2741016E49"
+          },
+          {
+            "path": "src/test/java/atf/core/http/ApiExecutorConsoleRedactionTest.java",
+            "sha256": "C67E1061E8E855DE68A51DA73EAB836E0908892C59108CA3E61C4DFC205CEB0E"
+          },
+          {
+            "path": "src/test/java/atf/core/http/ApiExecutorConsoleTelemetryTest.java",
+            "sha256": "46CE29E4E69B4CE3E429C1C410E03CC3707CBAE51A752E27533DAC04D64E4700"
+          },
+          {
+            "path": "src/test/java/atf/core/http/ApiUrlBuilderTest.java",
+            "sha256": "40664316813746C5232DEB6B075A19F6FB340D453EF4CC1FFCBA9AEDD0D09B76"
+          },
+          {
+            "path": "src/test/java/atf/core/http/JsonBodyPolicyTest.java",
+            "sha256": "BB8BE9D230B1B701AB6C46B519AC4DBEAF63EDB992CCE056006F450B20FC0223"
+          },
+          {
+            "path": "src/test/java/atf/core/http/RetryAfterParserTest.java",
+            "sha256": "15A9A9B589CC4C26C842D716CA04FCF3D5E49FB27F01D9406F575B8452FF5808"
+          },
+          {
+            "path": "src/test/java/atf/core/http/auth/AuthProfilesTest.java",
+            "sha256": "DE617DBED9A08AE10F1372C1007F06C2B73DDA13BFABA7FB52D325614BAECA1D"
+          },
+          {
+            "path": "src/test/java/atf/core/http/diagnostics/ApiDiagnosticIsolationTest.java",
+            "sha256": "7ADE3A01E9C1ECFE255CC3176BE5BA4A3C30C55CB592903EBBB92EF8921B81DC"
+          },
+          {
+            "path": "src/test/java/atf/core/http/execution/ApiExecutionTimePolicyTest.java",
+            "sha256": "B6A64AC9F296AC861786A1A1ABFF076FBDE3F24A02558D09C72F32A60A4785DC"
+          },
+          {
+            "path": "src/test/java/atf/core/http/execution/ApiTerminalExecutionEvidenceTest.java",
+            "sha256": "D002A5BC16ECA300AE375838DEFC8DF7E777448F598FD1766A172CEE2BDE6624"
+          },
+          {
+            "path": "src/test/java/atf/core/http/protocol/ApiUrisTest.java",
+            "sha256": "EA974EDC095DBE34E86193B61881C8DF6CD8A0FCEB1BB1158D9AFB0D39CF9120"
+          },
+          {
+            "path": "src/test/java/atf/core/http/protocol/HttpHeaderProfilesTest.java",
+            "sha256": "D23F89D4C653C837FDA8DA6951BA920BE08416C47529F2CD6050DE2D2E866911"
+          },
+          {
+            "path": "src/test/java/atf/core/http/request/MediaTypesTest.java",
+            "sha256": "5D79853C3BA3D85D5C53716D13E4AE9AE981BDECB0FFE8EA5324792FA92C4D11"
+          },
+          {
+            "path": "src/test/java/atf/core/http/request/json/JsonWriteBoundaryTest.java",
+            "sha256": "EDD2D38DA30F2C8F29163AE1CA9A4B90ED16A03CE0D36D0391A074DD8AB13C98"
+          },
+          {
+            "path": "src/test/java/atf/core/http/transport/ApiLiveTransportCatalogTest.java",
+            "sha256": "FE57B5FC1D03B3EB75FC8BD072881C8EA258C92AD17EA0B80D41C37E8B653624"
+          },
+          {
+            "path": "src/test/java/atf/core/http/transport/HttpClientCancellationTest.java",
+            "sha256": "B7B418243CEC867F0544625CFE50DB4C06FB9ABF91D56C499F72B021BD50A09B"
+          },
+          {
+            "path": "src/test/java/atf/core/http/transport/HttpClientReadCancellationTest.java",
+            "sha256": "2DD98EC82B39098233581FE3D8F995DA352A3D560AB10A3F851A3D31E4E6404E"
+          },
+          {
+            "path": "src/test/java/atf/core/http/transport/HttpClientRequestHeadersTest.java",
+            "sha256": "1440B6997C46AFEA7848166E8AEDC16A52228E6009A112C3D9A8A8D61A7F46FA"
+          },
+          {
+            "path": "src/test/java/atf/core/json/JsonCompleteDocumentTest.java",
+            "sha256": "BCA4366A5BA24A9144A86A47CD58DBEB1A57777A7461364AF04584BBC885A717"
+          },
+          {
+            "path": "src/test/java/atf/core/lifecycle/ApiScenarioPhaseExecutorTest.java",
+            "sha256": "D68D2F6732ED474CB8C9A8DE138AF934CF235942CDDB7841CA9C63752394B2D1"
+          },
+          {
+            "path": "src/test/java/atf/core/lifecycle/CleanupRegistryTest.java",
+            "sha256": "484EFA75F50239F5E82DBD3A4B54240E008D5AA4570B56EFEDA8DC65F5B67F08"
+          },
+          {
+            "path": "src/test/java/atf/core/reporting/AtfConsoleEventInteropTest.java",
+            "sha256": "B24DA3E8A91852E533D783CE6020DBFF8EB3FCEA852C7B91097F4F6126F548B3"
+          },
+          {
+            "path": "src/test/java/atf/core/reporting/AtfDurationFormatterTest.java",
+            "sha256": "816296E878D7BC620429BC3037860C9A23E1DE8609FEB036DDFBAAF7D208AE24"
+          },
+          {
+            "path": "src/test/java/atf/core/reporting/contract/AtfReportStatusTest.java",
+            "sha256": "0C746FD1EA5034FB74CDCDE2A0FB95250BD5AE82F170E1B4A5304E65B3629C82"
+          },
+          {
+            "path": "src/test/java/atf/core/routing/ApiPathTemplateTest.java",
+            "sha256": "1E9DA3B2D0B6F236FD0665781153D17F4802037CE6091E25A555536FCC75AE5A"
+          },
+          {
+            "path": "src/test/java/atf/core/security/QuotedAuthorizationRedactionTest.java",
+            "sha256": "564B65A670FB6725D7C225D3481D1CB498C6F73F4E9263B5EB64E89CD543E831"
+          },
+          {
+            "path": "src/test/java/atf/core/security/RedactionStrategiesTest.java",
+            "sha256": "F9045DD6C0A40DDD5754ABE9A5A8EE85638E3DE8EB07BDD504815D2F6C4464BA"
+          },
+          {
+            "path": "src/test/java/atf/core/security/json/JsonPublicStringRedactionTest.java",
+            "sha256": "56F6F5DE4C2F53CCD6386B7A758C553EDAE2F9D21F011B20FB625BEC0CB3C9C1"
+          },
+          {
+            "path": "src/test/java/atf/core/security/json/JsonRedactionFidelityTest.java",
+            "sha256": "300BBB2345605B2034E840787D42C220CC05107578E26F407763BB2C50C39D3D"
+          },
+          {
+            "path": "src/test/java/atf/core/sync/AtfPromotionGuardTest.java",
+            "sha256": "F74F8EA566512BC4320FFD28F5F06A62425B3E0F83EC0A8D3984831BDF312CA3"
+          },
+          {
+            "path": "src/test/java/atf/core/sync/AtfPromotionPreflightTest.java",
+            "sha256": "3E2685659BA0D82CB65C2DF7656558F56C706AA565C394621F0F2577B801B9E7"
+          },
+          {
+            "path": "src/test/java/atf/core/testing/api/ApiScenarioSelectionTest.java",
+            "sha256": "A08A983BC417FE4A5100240911A663B789104C277EDE6C72C562E363C6F00284"
+          },
+          {
+            "path": "src/test/java/atf/core/testing/http/RecordingApiTransportTest.java",
+            "sha256": "00C0073D987FE0940C2F918822E25CA9928260C2B32C13E8E28282B4AA261EAA"
+          },
+          {
+            "path": "src/test/java/atf/core/ui/AtfUiActionRecordTest.java",
+            "sha256": "1C76C154272B22C4C47E8D683975195A1973551B9207286467E30C652EDB562B"
+          }
+        ]
+      },
+      "producerInputsSha256": "B1557383EA70D08D62A8C7A14842C7864C4D84116171003EA2622F61BF03975E",
+      "acceptance": {
+        "producerNative": 286,
+        "binaryNative": 287,
+        "j4ConsumerContracts": 2,
+        "coreSourceIncluded": false,
+        "domainAcceptanceNotInferred": true,
+        "evidenceRoot": "C:/Users/Cristi/AppData/Local/Temp/ATF_ADOPTION_CORE_C3_ACTIVE_DO_NOT_CLEAN_HjeEfO"
+      }
     },
     {
-      "artifact": "atf.api:atf-reporting:1.0.0-j12",
+      "artifact": "atf.api:atf-reporting:1.0.0-j14",
       "files": {
         "jar": {
-          "path": "lib/atf-reporting-1.0.0-j12.jar",
-          "sha256": "1F1B7B5502FEFEA02F500C2FC80494859D4E57E38261306B57FA7AD2D5AB38B1"
+          "path": "lib/atf-reporting-1.0.0-j14.jar",
+          "sha256": "981E99045D5F2F37FEC30E08341C4414541E79DA01E6DC237835E43A95DD9FCB"
         },
         "pom": {
-          "path": "lib/atf-reporting-1.0.0-j12.pom",
-          "sha256": "F3F300B4E5F0625BE637373FBEAFB6B475AEFC68121D767D0EAD377742680028"
+          "path": "lib/atf-reporting-1.0.0-j14.pom",
+          "sha256": "C47D339C7CC2A89A2E6F0B06FD4FE6B782DE5AEDA873125F7F95EADCE285B2F9"
         }
       },
       "upstreamProducer": "atf_j0",
-      "copySource": "atf_j0 parentless J12 publication",
-      "comparison": "Same Reporting J12 pair as J1/J2/J3; Android domain/device acceptance remains separate",
+      "copySource": "atf_j0 parentless J14 publication",
+      "comparison": "Same Reporting J14 pair as J1/J2/J3; domain/device acceptance remains separate",
       "producerInputs": {
-        "files": 409,
-        "sha256": "681BFB147FC4065D5158B8A67A7ED4C51F40446D71F8D55938EA77A6C2F25B8C",
+        "files": 414,
+        "sha256": "28C15E5F26EBA250A75481CAD53CEAB68F2A26A5A700C9244BE64C29037BEA6E",
+        "scope": "pom.xml, README.md and src/** raw source bytes; generated output excluded",
         "nativeTests": [
           {
             "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneArtifactProfileTest.java",
@@ -61,8 +265,12 @@
             "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
           },
           {
+            "path": "src/test/java/atf/reporting/standalone/publication/ReportingStandaloneInlinePayloadTest.java",
+            "sha256": "D520B9ABF0B6886F3135CF998B3C47960377B907ACD874FE206EAC1423FEBCC7"
+          },
+          {
             "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
-            "sha256": "A8C07D18F5DD9A54F0060CACC4A2CEBB56BD5DF2CCC36E629020F0CA4604FB72"
+            "sha256": "F5237DF9C40FF16412FC8591A04DDBB8E74E1C6203E9190D8A7C4C079522EB0C"
           },
           {
             "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
@@ -113,6 +321,470 @@
             "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
           }
         ]
+      },
+      "release": {
+        "coordinate": "atf.api:atf-reporting:1.0.0-j14",
+        "producerDirectory": "C:/work/1/atf_j0",
+        "producerHead": "17ee3e6a12226e580ef46e987dc86283217f3501",
+        "producerHasUncommittedChanges": true,
+        "buildStage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J14_ACTIVE_DO_NOT_CLEAN_9ptTeB\\publisher-1",
+        "javaRelease": 21,
+        "sourceIncluded": false,
+        "binarySha256": "981E99045D5F2F37FEC30E08341C4414541E79DA01E6DC237835E43A95DD9FCB",
+        "publishedPomSha256": "C47D339C7CC2A89A2E6F0B06FD4FE6B782DE5AEDA873125F7F95EADCE285B2F9",
+        "nativeTests": 89,
+        "nativeTestFailures": 0,
+        "nativeTestSkips": 0,
+        "versionTransformation": {
+          "producer": "1.0.0-SNAPSHOT",
+          "published": "1.0.0-j14",
+          "otherPomChanges": false
+        },
+        "reproducibility": {
+          "freshParentlessBuilds": 2,
+          "identicalBytes": true
+        },
+        "producerInputs": {
+          "files": 414,
+          "sha256": "28C15E5F26EBA250A75481CAD53CEAB68F2A26A5A700C9244BE64C29037BEA6E",
+          "scope": "pom.xml, README.md and src/** raw source bytes; generated output excluded",
+          "nativeTests": [
+            {
+              "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneArtifactProfileTest.java",
+              "sha256": "BF0870B1BAD55498696989EDAAF35C7B17E5FBEDBEC6FAF90B228C18C95C2C40"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneInspectionResultTest.java",
+              "sha256": "6470578F575163851723967EB30DC028D3126376DCBCE5A71D1E1BB90ED34F10"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/json/ReportingStandaloneJsonFidelityTest.java",
+              "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/publication/ReportingStandaloneInlinePayloadTest.java",
+              "sha256": "D520B9ABF0B6886F3135CF998B3C47960377B907ACD874FE206EAC1423FEBCC7"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
+              "sha256": "F5237DF9C40FF16412FC8591A04DDBB8E74E1C6203E9190D8A7C4C079522EB0C"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
+              "sha256": "29D357B8B6A6705E65F845ACC290146A24EDA5D94EC69AD70ECF58C714A247BA"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEnvironmentSnapshotTest.java",
+              "sha256": "2D2BD48956B6B0132C06D561F232E2C2468411A0CB3616B730A06CD9C3270452"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEvidenceLayoutTest.java",
+              "sha256": "CCE0286F5C72B7594B6EA93470D13B1A2D70A89AC4E8B3369350BC0FE9AE6D87"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneObservationTest.java",
+              "sha256": "0F18DD7CE941B16E37B2AFDFA17CA4E93BB2F872AE7AD72A7243D8CE98F8BFE1"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneVerdictComponentTest.java",
+              "sha256": "4BC5E57541808DCF007F8E05AFC7D4504C212AFF670D07A9362DBC7CA4BB4FD1"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/source/ReportingModuleSource.java",
+              "sha256": "00FD26CAB91F72FFBE291CE635647A5F664B22B086A9A6C444CC792D9506D20A"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/source/ReportingSourceArchitectureTest.java",
+              "sha256": "109D8B6E26D72600B07A26EE9E15CA0EF17923D9FC0FC1F28DF65BAD2E5EE074"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRules.java",
+              "sha256": "5896EF9D48823375F27CA7949106EC787F60409158DCEA8513DC4E173B1AFEF2"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRulesTest.java",
+              "sha256": "ED01C4CD0F0BE551D5B8BD5889A1D56BFBA58D6A4D7BDE9C9804119F8C55BD89"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/tags/ReportingStandaloneTagCompatibilityTest.java",
+              "sha256": "FE1CFCBFAABB8CB5A6C8B18E9910F13E45EB0315B50D148E253C921DBDEEAA4D"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/timing/ReportingStandaloneTransportTimingTest.java",
+              "sha256": "A9185780FD883AECE1A55398964068267C7BF0956B54C585E4413495B549B5B7"
+            },
+            {
+              "path": "src/test/java/atf/reporting/standalone/validation/ReportingStandaloneValidationDisclosureTest.java",
+              "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
+            }
+          ]
+        },
+        "producerInputsSha256": "590E1FE380FE54CA730EA8063230F9435E46FD37EB3EBBE91E24CC8C68DCFB10",
+        "producerInputsDigestFormat": "producerInputsSha256: SHA-256 of compact producerInputs JSON; producerInputs.sha256: SHA-256 of sorted relativePath + NUL + uppercase file SHA-256, joined with LF and terminal LF; publicationInputsSha256 applies the same file digest after the declared version-only transformation",
+        "binaryApiComparison": {
+          "reference": "atf.api:atf-reporting:1.0.0-j13",
+          "previousPublicProtectedEntries": 6595,
+          "removed": 0,
+          "added": 0
+        },
+        "publicationInputsSha256": "017B96206E1214D8DA8DDC1B3EAD25F961565225F87EF5381681994F0228FD01"
+      },
+      "history": [
+        {
+          "artifact": "atf.api:atf-reporting:1.0.0-j13",
+          "files": {
+            "jar": {
+              "path": "lib/atf-reporting-1.0.0-j13.jar",
+              "sha256": "9B501223A60EA8C3F4B44B74DC0336F101770A7C63A35DE8DB889C49B302A367"
+            },
+            "pom": {
+              "path": "lib/atf-reporting-1.0.0-j13.pom",
+              "sha256": "736A6860926978310BC3E2DEF3E8C2ADC6A0C0B69153D140BF9F048CE295BA74"
+            }
+          },
+          "upstreamProducer": "atf_j0",
+          "copySource": "atf_j0 parentless J12 publication",
+          "comparison": "Byte-identical Reporting J13 delivered to J1/J2/J3/J4",
+          "producerInputs": {
+            "files": 412,
+            "sha256": "A04D5B04B39EB439BA5F26DAC4790A8370F7235369B43E42C486670C96A33283",
+            "nativeTests": [
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
+                "sha256": "A8C07D18F5DD9A54F0060CACC4A2CEBB56BD5DF2CCC36E629020F0CA4604FB72"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
+                "sha256": "29D357B8B6A6705E65F845ACC290146A24EDA5D94EC69AD70ECF58C714A247BA"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEnvironmentSnapshotTest.java",
+                "sha256": "2D2BD48956B6B0132C06D561F232E2C2468411A0CB3616B730A06CD9C3270452"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEvidenceLayoutTest.java",
+                "sha256": "CCE0286F5C72B7594B6EA93470D13B1A2D70A89AC4E8B3369350BC0FE9AE6D87"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneObservationTest.java",
+                "sha256": "0F18DD7CE941B16E37B2AFDFA17CA4E93BB2F872AE7AD72A7243D8CE98F8BFE1"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneVerdictComponentTest.java",
+                "sha256": "4BC5E57541808DCF007F8E05AFC7D4504C212AFF670D07A9362DBC7CA4BB4FD1"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRules.java",
+                "sha256": "5896EF9D48823375F27CA7949106EC787F60409158DCEA8513DC4E173B1AFEF2"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRulesTest.java",
+                "sha256": "ED01C4CD0F0BE551D5B8BD5889A1D56BFBA58D6A4D7BDE9C9804119F8C55BD89"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneArtifactProfileTest.java",
+                "sha256": "BF0870B1BAD55498696989EDAAF35C7B17E5FBEDBEC6FAF90B228C18C95C2C40"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneInspectionResultTest.java",
+                "sha256": "6470578F575163851723967EB30DC028D3126376DCBCE5A71D1E1BB90ED34F10"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/json/ReportingStandaloneJsonFidelityTest.java",
+                "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/publication/ReportingStandaloneInlinePayloadTest.java",
+                "sha256": "D520B9ABF0B6886F3135CF998B3C47960377B907ACD874FE206EAC1423FEBCC7"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/source/ReportingModuleSource.java",
+                "sha256": "00FD26CAB91F72FFBE291CE635647A5F664B22B086A9A6C444CC792D9506D20A"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/source/ReportingSourceArchitectureTest.java",
+                "sha256": "109D8B6E26D72600B07A26EE9E15CA0EF17923D9FC0FC1F28DF65BAD2E5EE074"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/tags/ReportingStandaloneTagCompatibilityTest.java",
+                "sha256": "FE1CFCBFAABB8CB5A6C8B18E9910F13E45EB0315B50D148E253C921DBDEEAA4D"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/timing/ReportingStandaloneTransportTimingTest.java",
+                "sha256": "A9185780FD883AECE1A55398964068267C7BF0956B54C585E4413495B549B5B7"
+              },
+              {
+                "path": "src/test/java/atf/reporting/standalone/validation/ReportingStandaloneValidationDisclosureTest.java",
+                "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
+              }
+            ]
+          },
+          "release": {
+            "coordinate": "atf.api:atf-reporting:1.0.0-j13",
+            "producerDirectory": "C:/work/1/atf_j0",
+            "producerHead": "17ee3e6a12226e580ef46e987dc86283217f3501",
+            "producerHasUncommittedChanges": true,
+            "buildStage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J13_ACTIVE_DO_NOT_CLEAN_WvBK4t\\publisher-1",
+            "javaRelease": 21,
+            "sourceIncluded": false,
+            "binarySha256": "9B501223A60EA8C3F4B44B74DC0336F101770A7C63A35DE8DB889C49B302A367",
+            "publishedPomSha256": "736A6860926978310BC3E2DEF3E8C2ADC6A0C0B69153D140BF9F048CE295BA74",
+            "nativeTests": 87,
+            "nativeTestFailures": 0,
+            "nativeTestSkips": 0,
+            "versionTransformation": {
+              "producer": "1.0.0-SNAPSHOT",
+              "published": "1.0.0-j13",
+              "otherPomChanges": false
+            },
+            "reproducibility": {
+              "freshParentlessBuilds": 2,
+              "identicalBytes": true
+            },
+            "producerInputs": {
+              "files": 412,
+              "sha256": "A04D5B04B39EB439BA5F26DAC4790A8370F7235369B43E42C486670C96A33283",
+              "nativeTests": [
+                {
+                  "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
+                  "sha256": "A8C07D18F5DD9A54F0060CACC4A2CEBB56BD5DF2CCC36E629020F0CA4604FB72"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
+                  "sha256": "29D357B8B6A6705E65F845ACC290146A24EDA5D94EC69AD70ECF58C714A247BA"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEnvironmentSnapshotTest.java",
+                  "sha256": "2D2BD48956B6B0132C06D561F232E2C2468411A0CB3616B730A06CD9C3270452"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEvidenceLayoutTest.java",
+                  "sha256": "CCE0286F5C72B7594B6EA93470D13B1A2D70A89AC4E8B3369350BC0FE9AE6D87"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneObservationTest.java",
+                  "sha256": "0F18DD7CE941B16E37B2AFDFA17CA4E93BB2F872AE7AD72A7243D8CE98F8BFE1"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneVerdictComponentTest.java",
+                  "sha256": "4BC5E57541808DCF007F8E05AFC7D4504C212AFF670D07A9362DBC7CA4BB4FD1"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRules.java",
+                  "sha256": "5896EF9D48823375F27CA7949106EC787F60409158DCEA8513DC4E173B1AFEF2"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRulesTest.java",
+                  "sha256": "ED01C4CD0F0BE551D5B8BD5889A1D56BFBA58D6A4D7BDE9C9804119F8C55BD89"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneArtifactProfileTest.java",
+                  "sha256": "BF0870B1BAD55498696989EDAAF35C7B17E5FBEDBEC6FAF90B228C18C95C2C40"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneInspectionResultTest.java",
+                  "sha256": "6470578F575163851723967EB30DC028D3126376DCBCE5A71D1E1BB90ED34F10"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/json/ReportingStandaloneJsonFidelityTest.java",
+                  "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/publication/ReportingStandaloneInlinePayloadTest.java",
+                  "sha256": "D520B9ABF0B6886F3135CF998B3C47960377B907ACD874FE206EAC1423FEBCC7"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/source/ReportingModuleSource.java",
+                  "sha256": "00FD26CAB91F72FFBE291CE635647A5F664B22B086A9A6C444CC792D9506D20A"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/source/ReportingSourceArchitectureTest.java",
+                  "sha256": "109D8B6E26D72600B07A26EE9E15CA0EF17923D9FC0FC1F28DF65BAD2E5EE074"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/tags/ReportingStandaloneTagCompatibilityTest.java",
+                  "sha256": "FE1CFCBFAABB8CB5A6C8B18E9910F13E45EB0315B50D148E253C921DBDEEAA4D"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/timing/ReportingStandaloneTransportTimingTest.java",
+                  "sha256": "A9185780FD883AECE1A55398964068267C7BF0956B54C585E4413495B549B5B7"
+                },
+                {
+                  "path": "src/test/java/atf/reporting/standalone/validation/ReportingStandaloneValidationDisclosureTest.java",
+                  "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
+                }
+              ]
+            },
+            "producerInputsSha256": "A587EC3DE9866F431EF7ED83265E7617E62530AE95DE48D7FBADBA14024EFBC1",
+            "producerInputsDigestFormat": "SHA-256 of sorted relativePath + NUL + uppercase file SHA-256, joined with LF and terminal LF",
+            "binaryApiComparison": {
+              "reference": "atf.api:atf-reporting:1.0.0-j12",
+              "previousPublicProtectedEntries": 6571,
+              "removed": 0,
+              "added": 24
+            }
+          },
+          "history": [
+            {
+              "artifact": "atf.api:atf-reporting:1.0.0-j12",
+              "files": {
+                "jar": {
+                  "path": "lib/atf-reporting-1.0.0-j12.jar",
+                  "sha256": "1F1B7B5502FEFEA02F500C2FC80494859D4E57E38261306B57FA7AD2D5AB38B1"
+                },
+                "pom": {
+                  "path": "lib/atf-reporting-1.0.0-j12.pom",
+                  "sha256": "F3F300B4E5F0625BE637373FBEAFB6B475AEFC68121D767D0EAD377742680028"
+                }
+              },
+              "upstreamProducer": "atf_j0",
+              "copySource": "atf_j0 parentless J12 publication",
+              "comparison": "Same Reporting J12 pair as J1/J2/J3; Android domain/device acceptance remains separate",
+              "producerInputs": {
+                "files": 409,
+                "sha256": "681BFB147FC4065D5158B8A67A7ED4C51F40446D71F8D55938EA77A6C2F25B8C",
+                "nativeTests": [
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneArtifactProfileTest.java",
+                    "sha256": "BF0870B1BAD55498696989EDAAF35C7B17E5FBEDBEC6FAF90B228C18C95C2C40"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/artifact/ReportingStandaloneInspectionResultTest.java",
+                    "sha256": "6470578F575163851723967EB30DC028D3126376DCBCE5A71D1E1BB90ED34F10"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/json/ReportingStandaloneJsonFidelityTest.java",
+                    "sha256": "A9FDDA088069C27F9C55DF07AB7ED27EF7AA1EAC3DAF4CD0F8E5B72B4E4B95D8"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneContractTest.java",
+                    "sha256": "A8C07D18F5DD9A54F0060CACC4A2CEBB56BD5DF2CCC36E629020F0CA4604FB72"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneDependencyTest.java",
+                    "sha256": "29D357B8B6A6705E65F845ACC290146A24EDA5D94EC69AD70ECF58C714A247BA"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEnvironmentSnapshotTest.java",
+                    "sha256": "2D2BD48956B6B0132C06D561F232E2C2468411A0CB3616B730A06CD9C3270452"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneEvidenceLayoutTest.java",
+                    "sha256": "CCE0286F5C72B7594B6EA93470D13B1A2D70A89AC4E8B3369350BC0FE9AE6D87"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneObservationTest.java",
+                    "sha256": "0F18DD7CE941B16E37B2AFDFA17CA4E93BB2F872AE7AD72A7243D8CE98F8BFE1"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/ReportingStandaloneVerdictComponentTest.java",
+                    "sha256": "4BC5E57541808DCF007F8E05AFC7D4504C212AFF670D07A9362DBC7CA4BB4FD1"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/source/ReportingModuleSource.java",
+                    "sha256": "00FD26CAB91F72FFBE291CE635647A5F664B22B086A9A6C444CC792D9506D20A"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/source/ReportingSourceArchitectureTest.java",
+                    "sha256": "109D8B6E26D72600B07A26EE9E15CA0EF17923D9FC0FC1F28DF65BAD2E5EE074"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRules.java",
+                    "sha256": "5896EF9D48823375F27CA7949106EC787F60409158DCEA8513DC4E173B1AFEF2"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/StandaloneBoundaryRulesTest.java",
+                    "sha256": "ED01C4CD0F0BE551D5B8BD5889A1D56BFBA58D6A4D7BDE9C9804119F8C55BD89"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/tags/ReportingStandaloneTagCompatibilityTest.java",
+                    "sha256": "FE1CFCBFAABB8CB5A6C8B18E9910F13E45EB0315B50D148E253C921DBDEEAA4D"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/timing/ReportingStandaloneTransportTimingTest.java",
+                    "sha256": "A9185780FD883AECE1A55398964068267C7BF0956B54C585E4413495B549B5B7"
+                  },
+                  {
+                    "path": "src/test/java/atf/reporting/standalone/validation/ReportingStandaloneValidationDisclosureTest.java",
+                    "sha256": "0360B39B331120D87C24D67AB391D9DBA6B480D9E6FE22DDDB241980190E4C96"
+                  }
+                ]
+              }
+            }
+          ],
+          "acceptance": {
+            "status": "VERIFIED",
+            "date": "2026-11-02",
+            "evidenceRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J13_ACTIVE_DO_NOT_CLEAN_WvBK4t",
+            "consumerHead": "0550769786490ad5ff9d221aaf82f32690b19f9d",
+            "reportingSha256": "9B501223A60EA8C3F4B44B74DC0336F101770A7C63A35DE8DB889C49B302A367",
+            "evidence": "docs/ATF_Reporting_J13_Verification.md",
+            "scope": "Publication memory and complete redacted ACTION/OBSERVE cells; Core C3 unchanged",
+            "producerRegression": {
+              "native": 87,
+              "sourceBroad": 327,
+              "binaryBroad": 332,
+              "adjacentSource": 71,
+              "adjacentBinary": 71,
+              "defaultHeapOracleSource": 1,
+              "defaultHeapOracleBinary": 2
+            },
+            "consumerRegression": {
+              "coreReportingContract": 2
+            },
+            "browserAudit": "browser-audit.json; Extent/fallback complete cells and JAR volume final FAIL/action/PNG viewer",
+            "limits": [
+              "No universal heap bound claimed",
+              "Long assertion values are a separate source backlog criterion",
+              "Consumer device/broker/ASR/business acceptance is not inferred from the synthetic report"
+            ]
+          }
+        }
+      ],
+      "acceptance": {
+        "status": "VERIFIED",
+        "date": "2026-11-02",
+        "evidenceRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J14_ACTIVE_DO_NOT_CLEAN_9ptTeB",
+        "consumerHead": "0550769786490ad5ff9d221aaf82f32690b19f9d",
+        "reportingSha256": "981E99045D5F2F37FEC30E08341C4414541E79DA01E6DC237835E43A95DD9FCB",
+        "evidence": "docs/ATF_Reporting_J14_Verification.md",
+        "scope": "UI row projection, exact captured whitespace and one redaction policy; Core C3 unchanged",
+        "producerRegression": {
+          "native": 89,
+          "source": 416,
+          "jar": 417,
+          "governance": 156,
+          "ownerDocs": 36
+        },
+        "postDistributionSanity": {
+          "snapshot": "post-delivery/atf_j4",
+          "initialGate": "PASSED",
+          "initialInvocations": 2,
+          "initialScope": "Core/Reporting consumer contracts; no Android device run",
+          "physicalJarIdentity": "J14 physical JAR on Surefire classpath; live/snapshot/cache hashes equal",
+          "extended": {
+            "componentContracts": 3,
+            "liveJUnitPassed": 2,
+            "deviceAcceptance": "NOT ACCEPTED: false PASS resume and shared-device contention",
+            "resume": {
+              "junitSeconds": 37.476,
+              "reportMillis": 209,
+              "assertionRows": 0,
+              "expectedState": "resumed game",
+              "actualState": "main menu; Resume Game disabled"
+            },
+            "individualBidGridHtml": false
+          },
+          "renderAudit": "consumer-render-audit.json; individual limits retained"
+        },
+        "consumerRegression": {
+          "n": 2,
+          "f": 0,
+          "e": 0,
+          "s": 0,
+          "scope": "Core/Reporting consumer contracts; no Android device run"
+        },
+        "browserAudit": "browser-audit.json; MCP TAB Extent/fallback source/JAR, exact CRLF/LF and screenshot title"
       }
     }
   ],
@@ -380,25 +1052,94 @@
           "scope": "Core/Reporting consumer contracts and PNG publication only; historical device results retained separately"
         }
       }
+    },
+    {
+      "recordedAt": "2026-11-02",
+      "reason": "Core C3 replaces C2; previous import retained without rewriting its historical acceptance",
+      "library": {
+        "artifact": "atf.api:atf-core:1.0.0-c2",
+        "files": {
+          "jar": {
+            "path": "lib/atf-core-1.0.0-c2.jar",
+            "sha256": "91080FE996CCB358B7E42B8F147322B3D4468D84C364DFD259371EEEF9AFD5DB"
+          },
+          "pom": {
+            "path": "lib/atf-core-1.0.0-c2.pom",
+            "sha256": "C31CAE6EA04B626B9FB6C5FE0DDAE916520762B7463316CC0886E71576A2CA72"
+          }
+        },
+        "upstreamProducer": "atf_j0",
+        "copySource": "atf_j3/lib",
+        "comparison": "SHA-256 matches the Core C2 pair in J1, J2, and J3."
+      }
+    },
+    {
+      "recordedAt": "2026-11-02",
+      "reason": "Root currentAcceptance J12 was historical; retained before aligning current Reporting acceptance with J14",
+      "currentAcceptance": {
+        "status": "VERIFIED",
+        "date": "2026-11-02",
+        "evidenceRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J12_ACTIVE_DO_NOT_CLEAN_ofy19s",
+        "gitHead": "304765b641ac83e38e737d1362e7c9a4ac4f15e8",
+        "reportingSha256": "1F1B7B5502FEFEA02F500C2FC80494859D4E57E38261306B57FA7AD2D5AB38B1",
+        "scope": "J12 explicit artifact intent, captured timing and disclosure indicators; producer and consumer acceptance remain distinct",
+        "candidate": "Final publication; original CSS viewport precedence preserved",
+        "evidence": "docs/ATF_Reporting_J12_Verification.md",
+        "producerRegression": {
+          "native": 83,
+          "sourceBroad": 570,
+          "sourceAffected": 86,
+          "binary": 136,
+          "importsSource": 15,
+          "importsBinary": 15
+        },
+        "browserAudit": "TAB MCP, neutral FAIL owners and actual J2 Extent/fallback suite, last rows and caption spacing"
+      }
     }
   ],
   "currentAcceptance": {
     "status": "VERIFIED",
     "date": "2026-11-02",
-    "evidenceRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J12_ACTIVE_DO_NOT_CLEAN_ofy19s",
-    "gitHead": "304765b641ac83e38e737d1362e7c9a4ac4f15e8",
-    "reportingSha256": "1F1B7B5502FEFEA02F500C2FC80494859D4E57E38261306B57FA7AD2D5AB38B1",
-    "scope": "J12 explicit artifact intent, captured timing and disclosure indicators; producer and consumer acceptance remain distinct",
-    "candidate": "Final publication; original CSS viewport precedence preserved",
-    "evidence": "docs/ATF_Reporting_J12_Verification.md",
+    "evidenceRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORTING_J14_ACTIVE_DO_NOT_CLEAN_9ptTeB",
+    "consumerHead": "0550769786490ad5ff9d221aaf82f32690b19f9d",
+    "reportingSha256": "981E99045D5F2F37FEC30E08341C4414541E79DA01E6DC237835E43A95DD9FCB",
+    "evidence": "docs/ATF_Reporting_J14_Verification.md",
+    "scope": "UI row projection, exact captured whitespace and one redaction policy; Core C3 unchanged",
     "producerRegression": {
-      "native": 83,
-      "sourceBroad": 570,
-      "sourceAffected": 86,
-      "binary": 136,
-      "importsSource": 15,
-      "importsBinary": 15
+      "native": 89,
+      "source": 416,
+      "jar": 417,
+      "governance": 156,
+      "ownerDocs": 36
     },
-    "browserAudit": "TAB MCP, neutral FAIL owners and actual J2 Extent/fallback suite, last rows and caption spacing"
+    "postDistributionSanity": {
+      "snapshot": "post-delivery/atf_j4",
+      "initialGate": "PASSED",
+      "initialInvocations": 2,
+      "initialScope": "Core/Reporting consumer contracts; no Android device run",
+      "physicalJarIdentity": "J14 physical JAR on Surefire classpath; live/snapshot/cache hashes equal",
+      "extended": {
+        "componentContracts": 3,
+        "liveJUnitPassed": 2,
+        "deviceAcceptance": "NOT ACCEPTED: false PASS resume and shared-device contention",
+        "resume": {
+          "junitSeconds": 37.476,
+          "reportMillis": 209,
+          "assertionRows": 0,
+          "expectedState": "resumed game",
+          "actualState": "main menu; Resume Game disabled"
+        },
+        "individualBidGridHtml": false
+      },
+      "renderAudit": "consumer-render-audit.json; individual limits retained"
+    },
+    "consumerRegression": {
+      "n": 2,
+      "f": 0,
+      "e": 0,
+      "s": 0,
+      "scope": "Core/Reporting consumer contracts; no Android device run"
+    },
+    "browserAudit": "browser-audit.json; MCP TAB Extent/fallback source/JAR, exact CRLF/LF and screenshot title"
   }
 }

@@ -13,6 +13,7 @@ java {
 dependencies {
     testImplementation "junit:junit:4.13.2"
 }
+sourceSets.test.java.srcDir("../ai-lab/src/main/java")
 
 tasks.withType(Test).configureEach { maxHeapSize = "256m" }
 
@@ -24,7 +25,18 @@ tasks.named("jacocoTestReport") {
 tasks.named("test", Test) {
     exclude "**/ObservedOriginalReplayTest.class"
     exclude "**/AiTournamentTest.class"
+    exclude "**/AiTrainingTournamentTest.class"
     systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
+}
+tasks.register("aiTrainingTest", Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.AiTrainingTournamentTest" }
+    systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
+    systemProperty "whist.aiTrainingPhase", providers.gradleProperty("whist.aiTrainingPhase").getOrElse("development")
+    systemProperty "whist.aiTrainingSeeds", providers.gradleProperty("whist.aiTrainingSeeds").getOrElse("8")
+    systemProperty "whist.aiCandidate", providers.gradleProperty("whist.aiCandidate").getOrElse("FULL")
+    systemProperty "whist.streakBonus", providers.gradleProperty("whist.streakBonus").getOrElse("0")
 }
 
 tasks.register("aiTournamentTest", Test) {

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>atf.api</groupId>
     <artifactId>atf-core</artifactId>
-    <version>1.0.0-c2</version>
+    <version>1.0.0-c3</version>
     <name>ATF Core</name>
     <description>Renderer-neutral ATF configuration, HTTP execution, evidence and filesystem contracts.</description>
     <properties>

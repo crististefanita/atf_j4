@@ -21,8 +21,10 @@ class FullMatchExtentReportTest {
         Path timingFile=evidence.getParent().resolve("environment-timing-note.txt");
         String timingNote=Files.exists(timingFile)?Files.readString(timingFile):"Correctness run; timings are not a performance benchmark.";
         Path packageProof=evidence.getParent().resolve("original-package-proof.json");
-        List<Path> manifests=List.of(evidence.resolve("ui-flow-match-original-audit.properties"),
-                evidence.resolve("ui-flow-match-whist-lab.properties"));
+        List<Path> manifests=new ArrayList<>(List.of(evidence.resolve("ui-flow-match-original-audit.properties"),
+                evidence.resolve("ui-flow-match-whist-lab.properties")));
+        Path normalSmoke=evidence.resolve("ui-flow-romanian-expert-smoke.properties");
+        if(Files.exists(normalSmoke))manifests.add(normalSmoke);
         List<Path> screenshots=new ArrayList<>();long assertions=0,failed=0,actionRecords=0;boolean allPassed="PASS".equals(live.getProperty("flow.status"));
         List<Path> resultXml;
         try(var files=Files.walk(evidence.getParent().resolve("components"))) {
@@ -62,6 +64,18 @@ class FullMatchExtentReportTest {
             }
         }
         Files.createDirectories(report.toAbsolutePath().getParent());
+        Properties publicationInputs=new Properties();
+        publicationInputs.setProperty("checkpoint.screenshots",Integer.toString(screenshots.size()));
+        long pngBytes=0;for(Path screenshot:screenshots)pngBytes+=Files.size(screenshot);
+        publicationInputs.setProperty("checkpoint.png.bytes",Long.toString(pngBytes));
+        publicationInputs.setProperty("rule.assertions",Long.toString(assertions));
+        publicationInputs.setProperty("action.records",Long.toString(actionRecords));
+        publicationInputs.setProperty("jvm.maxHeap.bytes",Long.toString(Runtime.getRuntime().maxMemory()));
+        publicationInputs.setProperty("reporting.codeSource",ExtentReportSession.class.getProtectionDomain().getCodeSource().getLocation().toString());
+        try(var stream=Files.newOutputStream(report.resolveSibling("full-match-publication-inputs.properties"))){publicationInputs.store(stream,"Known publication inputs before native renderer is invoked");}
+        Path verificationPath=report.resolveSibling("full-match-report-verification.properties");
+        if(Files.exists(verificationPath))Files.copy(verificationPath,verificationPath.resolveSibling("full-match-report-verification-previous-"+System.currentTimeMillis()+".properties"));
+        Files.writeString(verificationPath,"status=PENDING\n");
         var configured=AtfReportConfigurationLoader.load().reportingSettings();
         var completeBodies=new atf.reporting.configuration.ReportingSettings(configured.assertionMaxDisplayCharacters(),
                 atf.reporting.configuration.ReportingSettings.DISABLE_BODY_DISPLAY_LIMIT);
@@ -75,7 +89,7 @@ class FullMatchExtentReportTest {
                         new ReportField("Failures and errors",Long.toString(componentFailures)),
                         new ReportField("Skipped",Long.toString(componentSkipped)),
                         new ReportField("Original live acquisition",live.getProperty("flow.status")),
-                        new ReportField("Continuation provenance","Any retained hand is independently revalidated before live continuation. Earlier diagnostic logs and the pre-continuation trace remain in the run folder.")),
+                        new ReportField("Continuation provenance","Retained original and Lab hands are revalidated before live continuation. Retained Lab UI actions are labeled explicitly; no new tap is claimed. Earlier failed logs and traces remain under diagnostics.")),
                         List.of(),resultXml.stream().map(FullMatchExtentReportTest::artifact).toList()));
                 for(ReportObservation detail:resultDetails)phase.observation(detail);
                 phase.complete(componentFailures>0?AtfReportStatus.FAIL:componentSkipped>0?AtfReportStatus.WARNING:AtfReportStatus.PASS);
@@ -114,6 +128,13 @@ class FullMatchExtentReportTest {
                         List.of(artifact(evidence.resolve("original-match.properties")),artifact(evidence.resolve("ui-flow-match-original.properties")),artifact(evidence.resolve("rule-coverage.properties")))));
                 phase.complete(allPassed&&failed==0?AtfReportStatus.PASS:AtfReportStatus.FAIL);
             }
+            Path labProvenance=evidence.getParent().resolve("lab-apk-provenance.json");
+            if(Files.exists(labProvenance))try(var phase=summary.startPhase("Whist Lab APK provenance and subsequent normal-game check")) {
+                phase.observation(new ReportObservation("Exact APKs and validation scope",List.of(
+                        new ReportField("Scope","The complete recorded-input replay and the subsequent normal Romanian Expert test have separately recorded APK hashes. The later app change clears debug replay on New game / Play again.")),
+                        List.of(new ReportObservation.Body("APK provenance",Files.readString(labProvenance),ReportObservation.Format.JSON)),List.of(artifact(labProvenance))));
+                phase.complete(AtfReportStatus.PASS);
+            }
             Properties coverage=load(evidence.resolve("rule-coverage.properties"));
             try(var phase=summary.startPhase("Observed rule branch coverage")) {
                 phase.observation(new ReportObservation("Real original-match branches, also replayed in Whist Lab",
@@ -147,7 +168,7 @@ class FullMatchExtentReportTest {
                 phase.complete(AtfReportStatus.WARNING);
             }
             summary.complete(allPassed&&failed==0?AtfReportStatus.WARNING:AtfReportStatus.FAIL);
-            for(Path manifest:manifests)DeepSuiteExtentReportTest.publishUiFlow(session,manifest,evidence);
+            for(Path manifest:manifests)DeepSuiteExtentReportTest.publishUiFlow(session,manifest,evidence,true);
         }
         String html=Files.readString(report);
         var matcher=java.util.regex.Pattern.compile("data:image/png;base64,([A-Za-z0-9+/=]+)").matcher(html);
@@ -175,19 +196,25 @@ class FullMatchExtentReportTest {
         verification.setProperty("rule.assertions",Long.toString(assertions));
         verification.setProperty("action.records",Long.toString(actionRecords));
         verification.setProperty("rule.failedAssertions",Long.toString(failed));
-        try(var out=Files.newOutputStream(report.resolveSibling("full-match-report-verification.properties"))){verification.store(out,"Exact PNG bytes and complete assertion texts verified");}
         assertEquals("true",recorded.getProperty("match.complete"));assertEquals("19",recorded.getProperty("match.handCount"));
         assertEquals("436",recorded.getProperty("match.moves"));assertEquals("109",recorded.getProperty("match.tricks"));
         assertEquals("true",recorded.getProperty("match.originalGameOver"));
         assertTrue(allPassed,"One of the original or parallel live flows did not pass");assertEquals(0,failed);
         assertTrue(componentCases>0,"Current component/live JUnit results are required");
+        verification.setProperty("status","PASS");
+        verification.setProperty("report.sha256",hashFile(report));
+        try(var out=Files.newOutputStream(verificationPath)){verification.store(out,"Exact PNG bytes and complete assertion texts verified");}
     }
     private static Properties load(Path file)throws Exception {Properties p=new Properties();try(var in=Files.newInputStream(file)){p.load(in);}return p;}
     private static void assertRendered(String html,String value) {
-        String escaped=value.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;").replace("'","&#39;");
-        assertTrue(html.contains(value)||html.contains(escaped),()->"Report omitted complete text: "+value);
+        assertTrue(ReportTextValueMatcher.containsCompleteValue(html,value),()->"Report omitted complete text: "+value);
     }
     private static String hash(byte[] bytes)throws Exception {return HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));}
+    private static String hashFile(Path path)throws Exception {
+        var digest=java.security.MessageDigest.getInstance("SHA-256");byte[] buffer=new byte[65536];
+        try(var in=Files.newInputStream(path)){int count;while((count=in.read(buffer))!=-1)digest.update(buffer,0,count);}
+        return HexFormat.of().formatHex(digest.digest());
+    }
     private static ReportObservation.Artifact artifact(Path path) {
         try{return new ReportObservation.Artifact(path.getFileName().toString(),path.toUri(),
                 HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))));}

@@ -39,7 +39,7 @@ public final class GameSession {
         for (int seat = 1; seat < config.playerCount(); seat++) {
             players.add(new Player(seat, AI_NAMES.get(seat - 1), false));
         }
-        dealerSeat = config.mode() == GameMode.OH_HELL || config.mode() == GameMode.ROMANIAN_WHIST
+        dealerSeat = config.mode().usesTurnedTrump()
                 ? new Random(config.seed()).nextInt(config.playerCount()) : config.playerCount() - 1;
     }
 
@@ -88,6 +88,15 @@ public final class GameSession {
     }
 
     /** Restores a validated, immutable checkpoint produced by {@link #saveState()}. */
+    public static GameSession restoreComplete(SaveState saved) {
+        Objects.requireNonNull(saved,"saved");
+        int remaining=saved.players().stream().mapToInt(p->p.hand().size()).sum();
+        if(saved.history().size()!=saved.handSize()*saved.config().playerCount()-remaining)
+            throw new IllegalArgumentException("Complete checkpoint is missing public card history");
+        return restore(saved);
+    }
+
+    /** Also reads legacy checkpoints that retained only the last/current trick. */
     public static GameSession restore(SaveState saved) {
         Objects.requireNonNull(saved, "saved");
         GameSession session = new GameSession(saved.config());
@@ -136,8 +145,20 @@ public final class GameSession {
             player.bid = source.bid();
             player.tricksWon = source.tricksWon();
             player.score = source.totalScore();
+            player.streak = source.streak();
+            player.streakPoints = source.streakPoints();
             if (player.hand.size() > session.handSize || player.tricksWon < 0 || player.tricksWon > session.handSize
-                    || (player.score < 0 && saved.config().mode() != GameMode.ROMANIAN_WHIST)
+                    || (player.score < 0 && !saved.config().mode().isRomanian())
+                    || player.streak < -4 || player.streak > 4
+                    || player.streakPoints != 0 && player.streakPoints != -5 && player.streakPoints != saved.config().streakBonusPoints()
+                    || !saved.config().streakBonuses() && (player.streak != 0 || player.streakPoints != 0)
+                    || saved.phase() != GamePhase.SCORE && player.streakPoints != 0
+                    || saved.phase() == GamePhase.SCORE && saved.config().streakBonuses()
+                        && (player.bid == null
+                            || player.streak > 0 && player.tricksWon != player.bid
+                            || player.streak < 0 && player.tricksWon == player.bid
+                            || player.streakPoints != 0 && (session.handSize == 1 || player.streak != 0
+                                || (player.streakPoints > 0) != (player.tricksWon == player.bid)))
                     || player.bid != null && (player.bid < 0 || player.bid > session.handSize)) {
                 throw new IllegalArgumentException("Saved player state is outside the legal range");
             }
@@ -199,6 +220,46 @@ public final class GameSession {
                     lastTrickWinnerSeat>=0?lastTrickWinnerSeat:(dealerSeat+1)%n;
             if(currentSeat!=expected)throw new IllegalArgumentException("Saved current player is inconsistent");
         }
+        if(config.mode().isRomanian()&&handSize==8
+                &&(trump!=Trump.NO_TRUMP||turnedCard!=null))
+            throw new IllegalArgumentException("Romanian eight-card hands must have no trump");
+        validatePublicHistory(remaining);
+    }
+
+    private void validatePublicHistory(int remaining) {
+        int n=players.size(),played=handSize*n-remaining;
+        if(history.size()>played)throw new IllegalArgumentException("Saved history exceeds the played-card count");
+        if(!lastTrick.isEmpty()) {
+            Set<Card> distinct=new HashSet<>();
+            if(lastTrick.size()!=n||lastTrick.stream().anyMatch(p->p.seat()>=n
+                    ||!GameRules.deck(config.mode(),n).contains(p.card())||!distinct.add(p.card()))
+                    ||GameRules.winningSeat(lastTrick,trump)!=lastTrickWinnerSeat)
+                throw new IllegalArgumentException("Saved last trick or winner is inconsistent");
+        } else if(lastTrickWinnerSeat!=-1)throw new IllegalArgumentException("Saved winner has no completed trick");
+        // Version-1 saves may retain only the last/current trick. Full history allows a stronger audit.
+        if(history.size()!=played)return;
+        List<List<Card>> hands=new ArrayList<>();
+        for(Player p:players)hands.add(new ArrayList<>(p.hand));
+        for(PlayedCard p:history)hands.get(p.seat()).add(p.card());
+        if(hands.stream().anyMatch(h->h.size()!=handSize))
+            throw new IllegalArgumentException("Saved card ownership does not conserve each original hand");
+        int actor=nextSeat(dealerSeat);int[] winners=new int[n];List<PlayedCard> round=new ArrayList<>();
+        List<PlayedCard> completed=java.util.Collections.emptyList();int winner=-1;
+        for(PlayedCard p:history) {
+            Suit led=round.isEmpty()?null:round.get(0).card().suit();
+            if(p.seat()!=actor||!GameRules.legalCards(hands.get(actor),led,trump,config.mode()).contains(p.card()))
+                throw new IllegalArgumentException("Saved public history violates turn order, suit or mandatory trump");
+            hands.get(actor).remove(p.card());round.add(p);
+            if(round.size()==n) {
+                winner=GameRules.winningSeat(round,trump);winners[winner]++;
+                actor=winner;completed=new ArrayList<>(round);round.clear();
+            }else actor=nextSeat(actor);
+        }
+        for(Player p:players)if(p.tricksWon!=winners[p.seat])
+            throw new IllegalArgumentException("Saved trick counters disagree with public winners");
+        if(!round.equals(trick)||(!round.isEmpty()&&(!lastTrick.isEmpty()||lastTrickWinnerSeat!=-1))
+                ||(round.isEmpty()&&(!lastTrick.equals(completed)||lastTrickWinnerSeat!=winner)))
+            throw new IllegalArgumentException("Saved last/current trick disagrees with public history");
     }
 
     public void submitBid(int seat, int bid) {
@@ -273,17 +334,17 @@ public final class GameSession {
     public Snapshot snapshot() {
         List<PlayerSnapshot> playerSnapshots = players.stream()
                 .map(player -> new PlayerSnapshot(player.seat, player.name, player.human,
-                        player.hand, player.bid, player.tricksWon, player.score))
+                        player.hand, player.bid, player.tricksWon, player.score, player.streak, player.streakPoints))
                 .collect(java.util.stream.Collectors.toList());
         return new Snapshot(phase, handIndex, handIndex + 1, handSize, trump, dealerSeat,
                 biddingSeat, currentSeat, bidsSubmitted, bidTotal, playerSnapshots,
-                trick, lastTrick, lastTrickWinnerSeat, handIndex + 1 == handSizes.size(), config.mode(), history, turnedCard);
+                trick, lastTrick, lastTrickWinnerSeat, handIndex + 1 == handSizes.size(), config.mode(), history, turnedCard, config.streakBonuses(),config.streakBonusPoints());
     }
 
     public SaveState saveState() {
         List<PlayerState> savedPlayers = players.stream()
                 .map(player -> new PlayerState(player.seat, player.name, player.human,
-                        player.hand, player.bid, player.tricksWon, player.score))
+                        player.hand, player.bid, player.tricksWon, player.score, player.streak, player.streakPoints))
                 .collect(java.util.stream.Collectors.toList());
         return new SaveState(config, phase, handIndex, handSize, dealerSeat, biddingSeat,
                 currentSeat, bidsSubmitted, bidTotal, trump, lastTrickWinnerSeat,
@@ -302,6 +363,7 @@ public final class GameSession {
             player.hand.clear();
             player.bid = null;
             player.tricksWon = 0;
+            player.streakPoints = 0;
         }
 
         List<Card> deck = new ArrayList<>(GameRules.deck(config.mode(), players.size()));
@@ -313,9 +375,9 @@ public final class GameSession {
             int seat = (firstSeat + index) % players.size();
             players.get(seat).hand.add(deck.get(index));
         }
-        if (config.mode() == GameMode.ROMANIAN_WHIST && cardsToDeal == deck.size()) {
+        if (config.mode().isRomanian() && cardsToDeal == deck.size()) {
             trump = Trump.NO_TRUMP;
-        } else if (config.mode() == GameMode.OH_HELL || config.mode() == GameMode.ROMANIAN_WHIST) {
+        } else if (config.mode().usesTurnedTrump()) {
             // The first undealt card determines Oh Hell trump; cycle applies to Descending.
             turnedCard = deck.get(cardsToDeal);
             trump = Trump.values()[turnedCard.suit().ordinal()];
@@ -341,7 +403,12 @@ public final class GameSession {
             if (player.bid == null) {
                 throw new IllegalStateException("Cannot score a hand before all bids are submitted");
             }
-            player.score += GameRules.scoreDelta(player.tricksWon, player.bid, config.mode());
+            if (config.streakBonuses()) {
+                RomanianScoring.Result result = RomanianScoring.score(player.tricksWon, player.bid, handSize, player.streak,config.streakBonusPoints());
+                player.score += result.totalPoints();
+                player.streak = result.nextStreak();
+                player.streakPoints = result.streakPoints();
+            } else player.score += GameRules.scoreDelta(player.tricksWon, player.bid, config.mode());
         }
         phase = GamePhase.SCORE;
     }
@@ -374,6 +441,8 @@ public final class GameSession {
         private Integer bid;
         private int tricksWon;
         private int score;
+        private int streak;
+        private int streakPoints;
 
         private Player(int seat, String name, boolean human) {
             this.seat = seat;
@@ -383,7 +452,11 @@ public final class GameSession {
     }
 
     public record PlayerSnapshot(int seat, String name, boolean human, List<Card> hand,
-            Integer bid, int tricksWon, int totalScore) {
+            Integer bid, int tricksWon, int totalScore, int streak, int streakPoints) {
+        public PlayerSnapshot(int seat, String name, boolean human, List<Card> hand,
+                Integer bid, int tricksWon, int totalScore) {
+            this(seat, name, human, hand, bid, tricksWon, totalScore, 0, 0);
+        }
         public PlayerSnapshot {
             hand = GameRules.immutableCopy(hand);
         }
@@ -392,7 +465,7 @@ public final class GameSession {
     public record Snapshot(GamePhase phase, int handIndex, int handNumber, int handSize,
             Trump trump, int dealerSeat, int biddingSeat, int currentSeat, int bidsSubmitted,
             int bidTotal, List<PlayerSnapshot> players, List<PlayedCard> currentTrick,
-            List<PlayedCard> lastTrick, int lastTrickWinnerSeat, boolean finalHand, GameMode mode, List<PlayedCard> history, Card turnedCard) {
+            List<PlayedCard> lastTrick, int lastTrickWinnerSeat, boolean finalHand, GameMode mode, List<PlayedCard> history, Card turnedCard, boolean streakBonuses,int streakBonusPoints) {
         public Snapshot {
             players = GameRules.immutableCopy(players);
             currentTrick = GameRules.immutableCopy(currentTrick);
@@ -402,7 +475,11 @@ public final class GameSession {
     }
 
     public record PlayerState(int seat, String name, boolean human, List<Card> hand,
-            Integer bid, int tricksWon, int totalScore) {
+            Integer bid, int tricksWon, int totalScore, int streak, int streakPoints) {
+        public PlayerState(int seat, String name, boolean human, List<Card> hand,
+                Integer bid, int tricksWon, int totalScore) {
+            this(seat, name, human, hand, bid, tricksWon, totalScore, 0, 0);
+        }
         public PlayerState {
             Objects.requireNonNull(name, "name");
             if (name.isBlank()) throw new IllegalArgumentException("Player name cannot be blank");

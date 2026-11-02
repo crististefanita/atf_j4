@@ -21,7 +21,7 @@ import ro.whistlab.core.Trump;
 final class GameSessionStore {
     private static final String PREFERENCES = "whist_lab_game";
     private static final String SAVE_KEY = "current_session_v1";
-    private static final int VERSION = 2;
+    private static final int VERSION = 3;
 
     private GameSessionStore() { }
 
@@ -40,10 +40,11 @@ final class GameSessionStore {
         if (encoded == null || encoded.isBlank()) return null;
         try {
             JSONObject root = new JSONObject(encoded);
-            if (root.getInt("version") != VERSION && root.getInt("version") != 1) {
+            if (root.getInt("version") < 1 || root.getInt("version") > VERSION) {
                 throw new IllegalArgumentException("Unsupported saved-game version " + root.getInt("version"));
             }
-            return GameSession.restore(decode(root));
+            GameSession.SaveState state=decode(root);
+            return root.getInt("version")>=2?GameSession.restoreComplete(state):GameSession.restore(state);
         } catch (JSONException | IllegalArgumentException failure) {
             throw new IllegalStateException("Saved game is invalid and cannot be resumed", failure);
         }
@@ -59,11 +60,16 @@ final class GameSessionStore {
 
     private static JSONObject encode(GameSession.SaveState state) throws JSONException {
         JSONObject root = new JSONObject();
-        root.put("version", VERSION);
+        int remaining=state.players().stream().mapToInt(p->p.hand().size()).sum();
+        // A resumed v1 hand cannot invent its missing early history. Keep its legacy
+        // marker until the next fresh deal; only complete checkpoints claim v2.
+        root.put("version",state.history().size()==state.handSize()*state.config().playerCount()-remaining?VERSION:1);
         root.put("playerCount", state.config().playerCount());
         root.put("mode", state.config().mode().name());
         root.put("difficulty", state.config().aiDifficulty().name());
         root.put("seed", state.config().seed());
+        root.put("streakBonuses", state.config().streakBonuses());
+        root.put("streakBonusPoints", state.config().streakBonusPoints());
         root.put("phase", state.phase().name());
         root.put("handIndex", state.handIndex());
         root.put("handSize", state.handSize());
@@ -85,6 +91,8 @@ final class GameSessionStore {
             item.put("bid", player.bid() == null ? JSONObject.NULL : player.bid());
             item.put("tricksWon", player.tricksWon());
             item.put("totalScore", player.totalScore());
+            item.put("streak", player.streak());
+            item.put("streakPoints", player.streakPoints());
             players.put(item);
         }
         root.put("players", players);
@@ -99,7 +107,7 @@ final class GameSessionStore {
     private static GameSession.SaveState decode(JSONObject root) throws JSONException {
         GameConfig config = new GameConfig(root.getInt("playerCount"),
                 GameMode.valueOf(root.getString("mode")),
-                AiDifficulty.valueOf(root.getString("difficulty")), root.getLong("seed"));
+                AiDifficulty.valueOf(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5));
         JSONArray encodedPlayers = root.getJSONArray("players");
         List<GameSession.PlayerState> players = new ArrayList<>(encodedPlayers.length());
         for (int index = 0; index < encodedPlayers.length(); index++) {
@@ -108,7 +116,7 @@ final class GameSessionStore {
             Integer bid = encodedBid == JSONObject.NULL ? null : ((Number) encodedBid).intValue();
             players.add(new GameSession.PlayerState(player.getInt("seat"), player.getString("name"),
                     player.getBoolean("human"), decodeCards(player.getJSONArray("hand")), bid,
-                    player.getInt("tricksWon"), player.getInt("totalScore")));
+                    player.getInt("tricksWon"), player.getInt("totalScore"),player.optInt("streak",0),player.optInt("streakPoints",0)));
         }
         List<PlayedCard> current = decodeTrick(root.getJSONArray("currentTrick"));
         List<PlayedCard> last = decodeTrick(root.getJSONArray("lastTrick"));

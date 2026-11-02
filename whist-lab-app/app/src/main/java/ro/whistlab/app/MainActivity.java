@@ -11,7 +11,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -32,6 +34,7 @@ import ro.whistlab.core.GamePhase;
 import ro.whistlab.core.GameRules;
 import ro.whistlab.core.GameSession;
 import ro.whistlab.core.PlayedCard;
+import ro.whistlab.core.MatchSummary;
 import ro.whistlab.core.Suit;
 import ro.whistlab.core.Trump;
 
@@ -48,6 +51,13 @@ public final class MainActivity extends Activity {
     private GameConfig lastConfig;
     private Spinner bidSpinner;
     private OriginalMatchReplay recordedReplay;
+    private boolean tableVisible;
+    private boolean menuSubpage;
+
+    @Override protected void onResume(){super.onResume();if(tableVisible&&game!=null)driveAutomatedTurns();}
+    @Override protected void onStop(){handler.removeCallbacksAndMessages(null);persistGame();super.onStop();}
+    @Override protected void onDestroy(){handler.removeCallbacksAndMessages(null);super.onDestroy();}
+    @Override public void onBackPressed(){if(tableVisible||menuSubpage)renderHome();else super.onBackPressed();}
 
     @Override
     protected void onCreate(Bundle state) {
@@ -78,6 +88,9 @@ public final class MainActivity extends Activity {
     }
 
     private void renderHome() {
+        tableVisible=false;
+        menuSubpage=false;
+        handler.removeCallbacksAndMessages(null);
         LinearLayout page = page("WHIST LAB", "A thoughtful trick-taking table");
         addText(page, "Make an exact bid. Follow the suit. Win the tricks you called.",
                 16, MUTED, false, 0, 20);
@@ -91,6 +104,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderSetup() {
+        tableVisible=false;menuSubpage=true;handler.removeCallbacksAndMessages(null);
         LinearLayout page = page("NEW GAME", "Set up your table");
         addText(page, "Choose a game size and opponents.", 15, MUTED, false, 0, 12);
 
@@ -105,20 +119,40 @@ public final class MainActivity extends Activity {
                 "game-type");
         modes.setSelection(0);
         page.addView(modes, matchWrap());
-        addText(page, "Practice hand deals one card to each player so you can learn and test a full trick.",
-                13, MUTED, false, 3, 8);
+        TextView modeHelp=text(MatchSummary.modeDescription(GameMode.OH_HELL),13,MUTED,false);
+        page.addView(modeHelp,matchWrap());
+        CheckBox streakBonuses=new CheckBox(this);
+        streakBonuses.setText("Romanian five-hand streaks (missed series: -5)");
+        streakBonuses.setContentDescription("romanian-streak-bonuses");
+        streakBonuses.setChecked(true);
+        streakBonuses.setVisibility(View.GONE);
+        page.addView(streakBonuses,matchWrap());
+        Spinner streakValue=spinner(Arrays.asList("5 points (original)","10 points"),"romanian-streak-value");
+        streakValue.setSelection(1);
+        streakValue.setVisibility(View.GONE);
+        streakBonuses.setOnCheckedChangeListener((button,checked)->streakValue.setEnabled(checked));
+        modes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
+                modeHelp.setText(MatchSummary.modeDescription(GameMode.values()[position]));
+                streakBonuses.setVisibility(GameMode.values()[position].isRomanian()?View.VISIBLE:View.GONE);
+                streakValue.setVisibility(GameMode.values()[position].isRomanian()?View.VISIBLE:View.GONE);
+            }
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
 
         addText(page, "AI level", 16, INK, true, 16, 4);
         Spinner difficulty = spinner(Arrays.stream(AiDifficulty.values()).map(AiDifficulty::label).collect(Collectors.toList()),
                 "ai-level");
         difficulty.setSelection(0);
         page.addView(difficulty, matchWrap());
+        page.addView(streakValue,matchWrap());
 
         addButton(page, "Start game", "btn_start_game", true, () -> {
             int playerCount = Integer.parseInt(String.valueOf(players.getSelectedItem()));
             GameMode mode = GameMode.values()[modes.getSelectedItemPosition()];
             AiDifficulty ai = AiDifficulty.values()[difficulty.getSelectedItemPosition()];
-            lastConfig = new GameConfig(playerCount, mode, ai, System.nanoTime());
+            recordedReplay = null;
+            lastConfig = new GameConfig(playerCount, mode, ai, System.nanoTime(),mode.isRomanian()&&streakBonuses.isChecked(),streakValue.getSelectedItemPosition()==0?5:10);
             game = GameSession.newGame(lastConfig);
             persistGame();
             driveAutomatedTurns();
@@ -129,11 +163,12 @@ public final class MainActivity extends Activity {
     private void renderBidding() {
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = page("HAND " + state.handNumber(), "Place your bid");
+        addText(page,MatchSummary.progress(state),13,MUTED,false,0,4);
         addText(page, state.handSize() + (state.handSize() == 1 ? " card in this hand" : " cards in this hand"),
                 18, INK, true, 0, 6);
         addText(page, "Trump: " + trumpLabel(state.trump())
                 + (state.turnedCard() == null ? "" : " | Turned: " + state.turnedCard().shortLabel()), 15, MUTED, false, 0, 12);
-        addText(page, "Bids so far: " + state.bidTotal(), 15, MUTED, false, 0, 18);
+        addText(page, "Bids so far: " + state.bidTotal()+" · Balance: "+MatchSummary.bidBalance(state), 15, MUTED, false, 0, 18);
 
         boolean lastBid = state.bidsSubmitted() == state.players().size() - 1;
         List<String> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(), lastBid)
@@ -162,6 +197,7 @@ public final class MainActivity extends Activity {
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = page("HAND " + state.handNumber() + " · " + state.trump(),
                 "Play a card");
+        addText(page,MatchSummary.progress(state),13,MUTED,false,0,4);
         addText(page, "Trump: " + trumpLabel(state.trump()) + "  ·  Cards in hand: " + state.handSize(),
                 14, MUTED, false, 0, 12);
 
@@ -186,6 +222,7 @@ public final class MainActivity extends Activity {
         }
 
         boolean humanTurn = state.currentSeat() == 0;
+        if(humanTurn)addText(page,MatchSummary.playHint(state),13,MUTED,false,4,4);
         addText(page, humanTurn ? "Your turn" : "Waiting for " + state.players().get(state.currentSeat()).name(),
                 16, humanTurn ? BLUE : MUTED, true, 16, 8);
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
@@ -229,18 +266,23 @@ public final class MainActivity extends Activity {
     private void renderScore() {
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = page("HAND " + state.handNumber(), "Score sheet");
+        addText(page,MatchSummary.progress(state),13,MUTED,false,0,4);
         addText(page, state.finalHand() ? "Game complete" : "Hand complete",
                 16, MUTED, false, 0, 12);
-        addText(page, state.mode() == GameMode.ROMANIAN_WHIST
+        if(state.finalHand())addText(page,MatchSummary.winners(state),18,BLUE,true,0,12);
+        addText(page, state.mode().isRomanian()
                 ? "Exact bid: 5 + tricks. Otherwise: minus the bid difference."
                 : "Each trick is one point. An exact bid adds ten points.",
                 14, MUTED, false, 0, 14);
+        if(state.streakBonuses())addText(page,"Five eligible exact contracts: +"+state.streakBonusPoints()+"; five missed: -5, then reset. One-card hands do not advance a streak; opposite outcomes break it.",13,MUTED,false,0,10);
 
         for (GameSession.PlayerSnapshot player : state.players()) {
             int bid = player.bid() == null ? 0 : player.bid();
-            int earned = GameRules.scoreDelta(player.tricksWon(), bid, state.mode());
+            int earned = GameRules.scoreDelta(player.tricksWon(), bid, state.mode())+player.streakPoints();
             String row = player.name() + " | Bid " + bid + " | Won " + player.tricksWon()
-                    + " | " + (earned >= 0 ? "+" : "") + earned + " | Total: " + player.totalScore();
+                    + " | " + (earned >= 0 ? "+" : "") + earned
+                    + (player.streakPoints()==0?"":" (streak "+(player.streakPoints()>0?"+":"")+player.streakPoints()+")")
+                    + " | Total: " + player.totalScore();
             TextView score = text(row, 15, INK, player.human());
             score.setContentDescription("score-" + player.seat() + ": " + row);
             score.setTag("score:" + player.seat());
@@ -262,8 +304,9 @@ public final class MainActivity extends Activity {
             }, true);
         } else {
             addButton(page, "Play again", "btn_play_again", true, () -> {
+                recordedReplay = null;
                 game = GameSession.newGame(new GameConfig(lastConfig.playerCount(), lastConfig.mode(),
-                        lastConfig.aiDifficulty(), System.nanoTime()));
+                        lastConfig.aiDifficulty(), System.nanoTime(),lastConfig.streakBonuses(),lastConfig.streakBonusPoints()));
                 persistGame();
                 driveAutomatedTurns();
             }, true);
@@ -272,21 +315,25 @@ public final class MainActivity extends Activity {
     }
 
     private void renderInstructions() {
+        tableVisible=false;menuSubpage=true;handler.removeCallbacksAndMessages(null);
         LinearLayout page = page("HOW TO PLAY", "Simple rules. Sharp decisions.");
         addRule(page, "Bidding", "Bid the exact number of tricks you expect to win. The final bid cannot make all bids add up to the cards in the hand.");
         addRule(page, "Play", "Follow the suit led if you can. Romanian Whist: when void you must trump if you have one; otherwise discard. Oh Hell: when void you may discard or trump.");
         addRule(page, "Winning a trick", "The highest card of the led suit wins unless a trump is played. Then the highest trump wins.");
         addRule(page, "Trump", "Romanian Whist and Oh Hell turn an undealt card to determine trump. Romanian eight-card hands have no trump. Descending cycles spades, hearts, clubs, diamonds, then no trump.");
         addRule(page, "Scoring", "Romanian Whist: exact bid scores 5 + tricks, otherwise lose the difference. Oh Hell: tricks + 10 for an exact bid.");
+        addRule(page, "Romanian streaks", "Five consecutive eligible exact contracts add the selected 5 or 10 points (default 10). Five missed contracts deduct 5. The series then resets. One-card hands do not advance the streak, but an opposite result breaks it. Disable streaks for classic scoring.");
         addButton(page, "Back", "btn_instructions_back", true, this::renderHome, true);
     }
 
     private void driveAutomatedTurns() {
+        handler.removeCallbacksAndMessages(null);
         if (game == null) {
             renderHome();
             return;
         }
         GameSession.Snapshot state = game.snapshot();
+        tableVisible=true;
         if (state.phase() == GamePhase.SCORE) {
             renderScore();
             return;
@@ -307,6 +354,7 @@ public final class MainActivity extends Activity {
             renderPlay();
             return;
         }
+        renderPlay();
         handler.postDelayed(() -> {
             if (game == null || game.snapshot().phase() != GamePhase.PLAYING) {
                 driveAutomatedTurns();

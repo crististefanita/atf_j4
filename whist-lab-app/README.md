@@ -12,8 +12,10 @@ the original `com.qsoft.android.whist` package remains separate and untouched.
   [rule contract, component coverage and AI tests](game-core/README.md).
 - 3–6 seats, one human plus local AI opponents.
 - Oh Hell mode; original screenshots show 10 cards for 3–5 players and 8 for 6.
-  The retained four-player live game advanced 10→1→8 before the pause in hand
-  17 of its 19-hand 10→1→10 schedule. Full original completion is still pending.
+  The retained four-player live game completed its 19-hand 10→1→10 schedule.
+  All 436 card plays and 109 trick winners passed the independent oracle;
+  exact replay in this engine and Android UI ended at the original totals
+  `[89,126,145,119]`.
 - Descending mode remains separate; it starts at the largest whole hand that
   fits in the 52-card deck and table size.
 - Oh Hell: follow suit when possible; otherwise discard or play trump.
@@ -30,6 +32,22 @@ the original `com.qsoft.android.whist` package remains separate and untouched.
 - A one-card practice hand supports deterministic end-to-end testing.
 - The current game checkpoint is saved locally after bids and card plays;
   `Resume game` restores it after Android kills or restarts the app process.
+- Normal `New game` and `Play again` clear debug replay. The normal Romanian
+  Expert mobile check played a complete first hand, verified its winner and
+  score independently, then checked dealer rotation and cumulative totals.
+- The active mode explains its rules during setup. During play the app explains
+  following suit, mandatory trump and optional overtrumping, shows match progress,
+  and announces final winners including ties. Complete v2 checkpoints audit
+  every public historical card; partial legacy saves retain their v1 marker.
+
+See the [complete-game acceptance record](../docs/COMPLETE_GAME_ACCEPTANCE.md)
+for native Extent reports, inline Base64 screenshots, exact APK provenance,
+component coverage and the distinction between full replay and normal-game checks.
+The [Romanian Expert acceptance](../docs/ROMANIAN_EXPERT_ACCEPTANCE.md) records
+the subsequent component expansion and full normal Android game: all 24 hands,
+94 tricks and 376 cards passed, with final totals `[12,87,91,61]`. The app
+remains at the completed score sheet; Miles won with 91 points. The tested
+APK is archived outside the repository with its exact hash.
 
 Oh Hell evidence comes from the original app's instructions and captured
 version-145 game states, checked by an independent integer-card oracle.

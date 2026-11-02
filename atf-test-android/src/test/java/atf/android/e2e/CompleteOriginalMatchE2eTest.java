@@ -195,7 +195,7 @@ public class CompleteOriginalMatchE2eTest {
         boolean pass=assertions.stream().allMatch(AtfAssertion::passed);
         AtfReportStatus status=pass?AtfReportStatus.PASS:AtfReportStatus.FAIL;
         List<Path> artifacts=new ArrayList<>();
-        for(String suffix:List.of(".xml",".save2","-state.txt","-lab-state.properties"))if(Files.exists(out.resolve(label+suffix)))artifacts.add(out.resolve(label+suffix));
+        for(String suffix:List.of(".xml",".save2","-state.txt","-lab-state.properties","-lab-state.json"))if(Files.exists(out.resolve(label+suffix)))artifacts.add(out.resolve(label+suffix));
         AtfGherkinKeyword keyword=phase.equals("SETUP")?AtfGherkinKeyword.GIVEN:
                 title.contains("human turn")||title.contains("submit bid")?AtfGherkinKeyword.WHEN:AtfGherkinKeyword.THEN;
         List<AtfUiActionRecord> actions=new ArrayList<>(inputActions);

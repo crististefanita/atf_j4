@@ -116,6 +116,29 @@ final class AndroidUiDriver {
 
     void selectSpinnerOption(int index, String expectedText) throws Exception {
         tapSpinner(index);
+        selectOpenedSpinnerOption(expectedText);
+    }
+
+    void selectNamedSpinnerOption(String description,String expectedText)throws Exception {
+        reveal(node->node.description().equals(description));
+        var matches=nodes(dump()).stream().filter(node->node.className().equals("android.widget.Spinner")&&node.description().equals(description)).toList();
+        if(matches.size()!=1)throw new IllegalStateException("Expected one spinner: "+description);
+        tap(matches.getFirst());selectOpenedSpinnerOption(expectedText);
+    }
+
+    void revealText(String expected)throws Exception {reveal(node->node.text().equals(expected));}
+
+    private void reveal(java.util.function.Predicate<Node> target)throws Exception {
+        for(int attempt=0;attempt<8;attempt++){
+            var current=nodes(dump());if(current.stream().anyMatch(target))return;
+            int width=0,height=0;for(Node node:current){var match=BOUNDS.matcher(node.bounds());if(match.matches()){width=Math.max(width,Integer.parseInt(match.group(3)));height=Math.max(height,Integer.parseInt(match.group(4)));}}
+            if(width==0||height==0)throw new IllegalStateException("No visible scroll bounds");
+            adb.run("shell","input","swipe",""+(width/2),""+(height*4/5),""+(width/2),""+(height/3),"350").requireSuccess();Thread.sleep(250);
+        }
+        throw new IllegalStateException("Setup control not found after scrolling");
+    }
+
+    private void selectOpenedSpinnerOption(String expectedText)throws Exception {
         long deadline = System.nanoTime() + Duration.ofSeconds(8).toNanos();
         String latest;
         do {
@@ -428,10 +451,10 @@ final class AndroidUiDriver {
             Element element = (Element) elements.item(index);
             result.add(new Node(element.getAttribute("text"), element.getAttribute("class"),
                     element.getAttribute("bounds"), Boolean.parseBoolean(element.getAttribute("clickable")),
-                    Boolean.parseBoolean(element.getAttribute("enabled"))));
+                    Boolean.parseBoolean(element.getAttribute("enabled")),element.getAttribute("content-desc")));
         }
         return result;
     }
 
-    private record Node(String text, String className, String bounds, boolean clickable, boolean enabled) { }
+    private record Node(String text, String className, String bounds, boolean clickable, boolean enabled,String description) { }
 }

@@ -6,7 +6,30 @@ Păstrăm o cale repetabilă pentru a porni și testa local aplicația gratuită
 Contract Whist (`com.qsoft.android.whist`) pe emulatorul Android rulat prin
 Podman pe gazda fizică și controlat din Windows VM.
 
-## Configurația observată
+## Acceptanța curentă — 2 noiembrie 2026
+
+[Acceptanța completă](COMPLETE_GAME_ACCEPTANCE.md) înlocuiește limitele
+explorării istorice de mai jos: originalul și Whist Lab au terminat fiecare
+19 mâini, 109 levate și 436 de cărți, cu aceleași totaluri `[89,126,145,119]`.
+Auditul independent verifică fiecare carte, actor, câștigător și scor.
+Cele 219 cazuri acceptate au zero eșecuri/erori/omiteri; cele 187 de componente
+reguli/AI au fost încheiate înaintea acceptanței Android.
+
+Raportul Extent J12 din `20261101-231857-full-match` are 6.655 aserțiuni și
+325 checkpoint-uri cu PNG inline Base64. PASS-ul funcțional păstrează separat
+WARNING-ul randării originale. Prima integrare normală Romanian Expert a trecut
+o mână și tranziția. [Acceptanța ulterioară](ROMANIAN_EXPERT_ACCEPTANCE.md) a
+încheiat toate cele 24 de mâini, 94 de levate și 376 de cărți pe Android,
+cu scorurile `[12,87,91,61]`; aplicația proprie rămâne la scorul final.
+Core C3 livrat ulterior are o probă separată de consum; nu relabelăm jocurile
+măsurate pe C2/J12.
+
+Configurația ADB actuală este `tcp:192.168.56.1:5038`, serial
+`127.0.0.1:5555`, client `C:\tools\whist-android-sdk\platform-tools\adb.exe`.
+Scrcpy poate rămâne închis. Pentru o partidă nouă verificată se folosește
+`scripts/run-complete-match.ps1 -Serial '127.0.0.1:5555'`.
+
+## Configurația observată la explorarea din 1 noiembrie — istoric
 
 | Componentă | Valoare / stare | Proveniență |
 |---|---|---|
@@ -55,7 +78,7 @@ comună serializată `AndroidGameplayE2eSuite` rulează originalul și Whist Lab
 7. separat, redeschide jocul salvat din Resume Game și verifică păstrarea
    vizibilității cărților după șase secunde.
 
-Ultima rulare completă este `20261101-222629`. Reactorul J4 a produs 498 de
+Rularea istorică de explorare este `20261101-222629`. Reactorul J4 a produs 498 de
 cazuri Surefire: 497 trecute, 0 eșecuri, 0 erori și un test publisher omis
 intenționat în rularea obișnuită; publisher-ul a rulat separat și a trecut.
 Android component suite a trecut 6/6. Android E2E a trecut 6/6: originalul 4/4,
@@ -158,16 +181,18 @@ $env:ADB_SERVER_SOCKET='tcp:192.168.56.1:5038'
 X:\scrcpy-win64-v5.0.1\scrcpy.exe --serial=emulator-5554 --tunnel-host=192.168.56.1
 ```
 
-## Ce urmează pentru testare profundă
+## Restanțe după acceptanța completă
 
 1. Diagnostichează randarea înainte de extinderea testelor vizuale: compară
    rezoluția/densitatea, rendererul grafic, accelerarea hardware și compatibilitatea
    API 28 cu versiunea 4.5. Păstrează capturile curente ca reper.
-2. Urmărește ciclul original al atuului în jocuri proaspete și în mâini
-   consecutive, până la `No Trumps` și revenirea la primul atu.
-3. Adaugă un oracol independent de cărți pentru aplicația originală: culoare
-   condusă, decartare/atu, câștigător și primul seat al levatei următoare.
-4. Compară formula de scor prin mâini controlate și acoperă variantele și AI-ul.
+2. Extinde acceptanța originalului dincolo de partida Oh Hell cu patru locuri,
+   AI Normal. Atuul Oh Hell provine din cartea neîmpărțită, nu dintr-un ciclu fix.
+3. Păstrează oracolul independent și cazurile de restart la extinderea spre
+   alte variante. Partida curentă are toate cele 436 de cărți și scorurile auditate.
+4. Extinde integrarea mobilă Romanian Expert spre alte dispozitive și mese
+   de 3/5/6 locuri. Partida normală Android cu patru locuri și toate cele
+   24 de mâini este încheiată; componentele acoperă deja 3–6 locuri.
 5. Testează Multiplayer separat, cu strategie pentru două instanțe și conturi;
    rețeaua/sincronizarea nu este acoperită acum.
 6. Păstrează codul generic de raportare și testele sale în J0; J4 rămâne
@@ -175,8 +200,10 @@ X:\scrcpy-win64-v5.0.1\scrcpy.exe --serial=emulator-5554 --tunnel-host=192.168.5
 
 ## Proveniență și limite
 
-Core `1.0.0-c2` și Reporting `1.0.0-j10` sunt importate ca perechi JAR/POM în
-`lib/`, cu SHA-256 consemnate în `library-provenance.json`. Codul sursă comun
+Core `1.0.0-c3` și Reporting `1.0.0-j12` sunt acum perechile JAR/POM din
+`lib/`, cu SHA-256 consemnate în `library-provenance.json`. Explorarea de mai
+sus folosea C2/J10; partida completă și publisherul ei au folosit C2/J12.
+Codul sursă comun
 pentru Kit/Mock/Validation/Console a fost luat din J3, după comparație cu J1/J2
 și baseline-ul J0; manifestul notează și această proveniență.
 
@@ -206,3 +233,19 @@ cu mărimea serializată și deduce separat mărimea jucată din istoricul compl
 levate și mâini goale. Fixture-ul real `v4.5-resumed-score-next-size.save2`
 acoperă cazul 8 cărți jucate / 9 serializate. Continuarea nu avansează acest
 scor înainte de a recupera ultima carte acceptată înaintea pauzei.
+
+### Continuare Whist Lab dintr-o limită verificată
+
+După întreruperea harness-ului la ecranul de licitare al următoarei mâini,
+`-Datf.match.continueLab=true` permite reluarea testului
+`CompleteWhistLabMatchE2eTest` fără reinstalare și fără restartul aplicației.
+Testul cere ca portul de observare real să confirme BIDDING, indexul următoarei
+mâini și istoric de mutări gol. Revalidează din fișiere toate mâinile încheiate,
+cu cărți, oferte, câștigători, totaluri și rândurile de scor UI. Pașii reținuți
+sunt etichetați explicit; nu trimite tap-uri noi pentru ei. Se verifică toate
+condițiile înainte de a interacționa cu prima mână rămasă.
+
+Această cale nu reface o partidă din rezultate așteptate: instanța Android
+curentă și totalurile calculate de motor rămân în uz. Dacă aplicația a fost
+închisă/reinstalată sau starea vie nu coincide, continuarea refuză execuția.
+După o partidă deja încheiată se publică din dovezi, nu se cere Resume.

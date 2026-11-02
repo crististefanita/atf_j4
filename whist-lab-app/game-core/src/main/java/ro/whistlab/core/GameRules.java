@@ -18,25 +18,29 @@ public final class GameRules {
         if (mode == GameMode.PRACTICE_HAND) {
             return Collections.singletonList(1);
         }
-        if (mode == GameMode.ROMANIAN_WHIST) {
+        if (mode.isRomanian()) {
             List<Integer> sizes = new ArrayList<>();
             for (int i = 0; i < playerCount; i++) sizes.add(1);
             for (int size = 2; size <= 7; size++) sizes.add(size);
             for (int i = 0; i < playerCount; i++) sizes.add(8);
             for (int size = 7; size >= 2; size--) sizes.add(size);
             for (int i = 0; i < playerCount; i++) sizes.add(1);
+            if (mode == GameMode.LONG_ROMANIAN) {
+                sizes.replaceAll(size -> 9 - size);
+            }
             return immutableCopy(sizes);
         }
-        // Oh Hell descends to one card, then returns to the starting hand size.
-        int modeCap = mode == GameMode.OH_HELL ? 10 : 13;
-        int maximum = Math.min(modeCap, 52 / playerCount);
+        int maximum = mode == GameMode.OH_HELL || mode == GameMode.REVERSE_OH_HELL
+                ? Math.min(10, 52 / playerCount) : 52 / playerCount;
+        if (mode == GameMode.MAXIMUM) return immutableCopy(Collections.nCopies(10, maximum));
         List<Integer> sizes = new ArrayList<>(maximum);
         for (int size = maximum; size >= 1; size--) {
             sizes.add(size);
         }
-        if (mode == GameMode.OH_HELL) {
+        if (mode == GameMode.OH_HELL || mode == GameMode.DOWN_AND_UP || mode == GameMode.REVERSE_OH_HELL) {
             for (int size = 2; size <= maximum; size++) sizes.add(size);
         }
+        if (mode == GameMode.REVERSE_OH_HELL) sizes.replaceAll(size -> maximum + 1 - size);
         return immutableCopy(sizes);
     }
 
@@ -53,7 +57,7 @@ public final class GameRules {
     public static List<Card> deck(GameMode mode, int playerCount) {
         // Validates the mode and table size even for modes using the full deck.
         handSizes(mode, playerCount);
-        if (mode != GameMode.ROMANIAN_WHIST) return standardDeck();
+        if (!mode.isRomanian()) return standardDeck();
         int minimumRank = 15 - 2 * playerCount;
         return immutableCopy(standardDeck().stream().filter(card -> card.rank() >= minimumRank)
                 .collect(Collectors.toList()));
@@ -64,7 +68,7 @@ public final class GameRules {
         Objects.requireNonNull(trump, "trump");
         Objects.requireNonNull(mode, "mode");
         List<Card> following = legalCards(hand, ledSuit);
-        if (mode != GameMode.ROMANIAN_WHIST || ledSuit == null
+        if (!mode.isRomanian() || ledSuit == null
                 || hand.stream().anyMatch(card -> card.suit() == ledSuit)) return following;
         List<Card> trumps = hand.stream().filter(card -> trump.suit().filter(s -> s == card.suit()).isPresent())
                 .collect(Collectors.toList());
@@ -114,7 +118,7 @@ public final class GameRules {
 
     public static int scoreDelta(int tricksWon, int bid, GameMode mode) {
         Objects.requireNonNull(mode, "mode");
-        if (mode != GameMode.ROMANIAN_WHIST) return scoreDelta(tricksWon, bid);
+        if (!mode.isRomanian()) return scoreDelta(tricksWon, bid);
         if (tricksWon < 0 || bid < 0 || tricksWon > 8 || bid > 8)
             throw new IllegalArgumentException("Romanian tricks and bids must be between 0 and 8");
         return tricksWon == bid ? 5 + tricksWon : -Math.abs(tricksWon - bid);

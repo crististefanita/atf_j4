@@ -239,6 +239,10 @@ class DeepSuiteExtentReportTest {
     }
 
     static void publishUiFlow(ExtentReportSession session, Path manifest, Path evidenceDir) throws Exception {
+        publishUiFlow(session,manifest,evidenceDir,false);
+    }
+
+    static void publishUiFlow(ExtentReportSession session, Path manifest, Path evidenceDir, boolean completeActionBodies) throws Exception {
         Properties trace = loadTrace(manifest);
         assertTrue("1".equals(trace.getProperty("format.version")), "Unsupported Android UI flow manifest: " + manifest);
         String flowName = required(trace, "flow.name");
@@ -275,6 +279,31 @@ class DeepSuiteExtentReportTest {
                             new ReportField("Ordered UI checkpoints", Integer.toString(checkpointCount)),
                             new ReportField("Failure", trace.getProperty("flow.failure", ""))),
                     List.of(), retainedArtifacts.stream().distinct().map(DeepSuiteExtentReportTest::artifactUnchecked).toList()));
+            if(completeActionBodies) {
+                for(int p=0;p<phaseCount;p++)for(int s=0;s<integer(trace,"phase."+p+".stepCount");s++) {
+                    String key="phase."+p+".step."+s;
+                    List<ReportObservation.Body> payloads=new ArrayList<>();
+                    for(int a=0;a<integer(trace,key+".actionCount");a++) {
+                        String action=key+".action."+a;
+                        String label=required(trace,action+".source")+" #"+required(trace,action+".sequence")+" "+required(trace,action+".operation");
+                        payloads.add(new ReportObservation.Body(label+" — target",required(trace,action+".target"),ReportObservation.Format.TEXT));
+                        payloads.add(new ReportObservation.Body(label+" — expected",trace.getProperty(action+".expected",""),ReportObservation.Format.TEXT));
+                        payloads.add(new ReportObservation.Body(label+" — observed",trace.getProperty(action+".observed",""),ReportObservation.Format.TEXT));
+                    }
+                    for(int a=0;a<integer(trace,key+".assertionCount");a++) {
+                        String assertion=key+".assertion."+a;
+                        String expected=trace.getProperty(assertion+".expected",""),actual=trace.getProperty(assertion+".actual","");
+                        if(expected.length()>240||actual.length()>240) {
+                            String label="Assertion "+required(trace,assertion+".name");
+                            payloads.add(new ReportObservation.Body(label+" — full expected",expected,ReportObservation.Format.TEXT));
+                            payloads.add(new ReportObservation.Body(label+" — full actual",actual,ReportObservation.Format.TEXT));
+                        }
+                    }
+                    details.observation(new ReportObservation("Full state and action payload — "+required(trace,"phase."+p+".name")+" / "+required(trace,key+".title"),
+                            List.of(new ReportField("Checkpoint key",key),
+                                    new ReportField("Presentation","The UI action table retains its short preview. These native TEXT bodies retain complete values with the same source and sequence.")),payloads,List.of()));
+                }
+            }
             details.complete(flowStatus);
         }
         for (int phaseIndex = 0; phaseIndex < phaseCount; phaseIndex++) {

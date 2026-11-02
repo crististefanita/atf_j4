@@ -48,6 +48,20 @@ așteptate**. Rulează partide complete la 3–6 locuri, cu ambele politici de b
 și cu Expert, verificând fiecare mutare și restaurând checkpoint-uri în toate
 fazele. O rulare cu dovezi produce un flow complet explicat de 4 jucători.
 
+`CheckpointHistoryAuditTest` reconstruiește istoricul complet al unei mâini
+la restaurare. Include câștigător inventat, contoare de levate redistribuite cu
+suma păstrată, ordine schimbată, renunțare ilegală la culoare, evitarea atuului,
+istoric v2 trunchiat și atu inventat la opt cărți. `restoreComplete` cere toate
+cărțile jucate; `restore` rămâne calea explicită pentru checkpoint-uri v1 cu
+istoric parțial. O mână v1 reluată nu devine v2 completă prin simpla resalvare;
+următoarea distribuție nouă începe din nou cu istoric complet.
+
+`MatchSummaryTest` verifică explicațiile profilurilor, prioritatea culorii,
+tăierea obligatorie, supratăierea opțională, mâinile fără atu, progresul și
+câștigătorii la egalitate sau cu totaluri negative. Expert are o cale explicită
+pentru o singură carte legală: o joacă fără simulare și fără punctaj estimat
+inventat. Restul deciziilor păstrează eșantionarea descrisă mai jos.
+
 JaCoCo măsoară linii și ramuri ale codului; raportul păstrează și ramurile
 neacoperite. Procentul de cod și acoperirea regulilor sunt măsurători diferite.
 Regulile de club, premierele, jocul pe nevăzute și multiplayer nu sunt acoperite.
@@ -87,7 +101,7 @@ Din `whist-lab-app`, numai motorul:
 .\gradlew.bat --no-daemon --console=plain :game-core:aiTournamentTest
 ```
 
-Rularea reproductibilă cu dovezi și Extent nativ J11, din rădăcina J4:
+Rularea reproductibilă cu dovezi și Extent nativ J12, din rădăcina J4:
 
 ```powershell
 .\scripts\run-rule-components.ps1
@@ -102,7 +116,24 @@ Consumerul păstrează preview-ul de 240 caractere și folosește corpurile TEXT
 native cu `bodyMaxDisplayCharacters=0`, pentru ca datele integrale să rămână
 în HTML. Publisherul verifică fiecare valoare, inclusiv ultimul element.
 
-## Acceptanță componentă — 2 noiembrie 2026
+## Extinderea componentelor — 2 noiembrie 2026
+
+Rularea `C:\work\whist_back\romanian-expert\20261102-131344\component-acceptance\`
+are **210 cazuri motor/AI PASS**, fără erori sau omiteri, înainte de Android.
+Cele 23 de cazuri noi se adaugă baseline-ului de 187; aceleași 88 de partide,
+40.304 mutări și benchmark-ul cu 144 perechi rămân verificate. Expert/Hard:
+14.604/7.689 puncte, 2.792/1.777 contracte exacte.
+
+GameRules rămâne la 77/77 linii și 94/94 ramuri. Întreg motorul are acum
+652/671 linii (97,17%) și 549/607 ramuri (90,44%). Gărzile și explicațiile noi
+măresc codul măsurat; procentul global nu este o enumerare a partidelor posibile.
+Un control separat elimină numai auditul istoricului într-un mutant TMP:
+7 dintre cele 12 cazuri îl refuză. Mutantul nu ajunge în APK.
+
+Pentru verificarea normală Android, oracolul separat și raportul corespunzător,
+vezi [Whist românesc Expert](../../docs/ROMANIAN_EXPERT_ACCEPTANCE.md).
+
+## Prima acceptanță componentă — 2 noiembrie 2026, istoric
 
 Rularea `C:\work\whist_back\rules-components\20261102-card-acceptance\`:
 187 cazuri JUnit/Gradle PASS, fără FAIL/ERROR/SKIP; publisherul Extent a trecut
@@ -129,3 +160,10 @@ Rularea anterioară `20261102-complete` (184 cazuri) este păstrată ca istoric.
 Capturile Android au identificat apoi pica marcată roșu și caroul negru.
 `CardPresentationTest` acoperă acum culorile corecte, identitatea textuală și
 accesibilă a tuturor celor 52 de cărți și respingerea rangurilor invalide.
+
+[Acceptanța completă Android](../../docs/COMPLETE_GAME_ACCEPTANCE.md) a trecut
+ulterior toate cele 19 mâini originale și replay-ul acelorași 436 de intrări
+în motor și UI, cu scoruri identice. Testul normal Romanian Expert a confirmat
+separat ieșirea din replay și integrarea unei mâini reale. Raportul Android
+include 325 checkpoint-uri cu PNG inline Base64; testele de componente rămân
+independente de emulator și de randarea originalului.

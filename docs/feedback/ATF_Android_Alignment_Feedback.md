@@ -1,5 +1,40 @@
 # Feedback de aliniere ATF J4 Android
 
+Revizie live: 2026-11-02; Core C3 și Reporting J14.
+Biblioteca și testele generice sunt în J0; cerințele de mai jos aparțin consumerului.
+
+## J14 — criterii active demonstrate
+
+Owner: J4 pentru oracol, compoziție și instrumentarea execuției; J1 coordonează.
+J0 Reporting nu poate reconstrui comparații ori intervale pe care callerul nu le publică.
+
+| Probă live din TMP | Observație verificată |
+|---|---|
+| bid-grid individual, 3–6 jucători | JUnit PASS; PNG/XML și ui-flow properties sunt produse, fără HTML individual |
+| resume individual | JUnit PASS în 37,476 s; HTML nativ arată circa 209 ms ai construirii/publicării |
+| false PASS resume — prioritate ridicată | PNG și XML arată meniul cu Resume Game enabled=false; pixelii luminoși trec totuși pragul de 5.000 |
+| assertions resume | două PNG inline exacte și metadata; zero comparații expected/actual trimise către Reporting |
+| contracte Android | două comparații screenshot adapter și un contract renderer trec; nu sunt acceptanță business |
+
+- [ ] Refuzați meniul și Resume Game dezactivat ca dovadă de joc reluat. Introduceți oracol independent de stare/identitate înaintea heuristicei raster, cu negative pentru meniu, buton disabled, XML stale și captură schimbată concurent. Nu validați cărți numai prin pixeli luminoși.
+- [ ] Publicați HTML și pentru trace-ul individual, la închiderea ownerului local, inclusiv la failure; reutilizați compoziția consumerului fără renderer HTML privat.
+- [ ] Trimiteți comparațiile deja evaluate în grupul standard colapsabil; nu înlocuiți rezultatul JUnit cu PASS-uri de screenshot și nu reevaluați business-ul în Reporting.
+- [ ] Capturați intervalul execuției ADB și publicați-l prin contractul existent de timing. Separați publicarea/flush-ul; nu prezentați durata construirii raportului drept journey.
+- [ ] Păstrați probă componentă a adaptorului și individual/suită, pe același JAR, cu valori și verdict independente; păstrați preview 240.
+
+Dovadă: [audit J14](../ATF_Reporting_J14_Verification.md), consumer-journeys/j4-adb și j4-resume în staging-ul datat. Randarea celor două PNG trece; acceptanța izolată pe device nu este dedusă din artifact.
+
+## Ordinea remedierii
+
+1. Închideți false PASS-ul resume prin componente offline pe meniul capturat și XML cu buton disabled, fără acces la device partajat.
+2. Exportați în raport comparațiile evaluate și intervalele execuției, cu același verdict JUnit și preview 240.
+3. Verificați publicarea individuală și prin suită pe JAR-ul curent, inclusiv failure/partial trace; abia apoi rerulați ADB sub lease exclusiv.
+
+[Coordonarea între proiecte](../../../atf_j1/docs/feedback/ATF_Consumer_Reporting_Handoff_Feedback.md#j14--lacune-în-publicarea-individuală-j4) păstrează avizul pentru dispozitivul comun.
+
+<details>
+<summary><strong>Istoric — analiza inițială și închiderile din 1 noiembrie</strong></summary>
+
 Data analizei: 2026-11-01  
 Comparație: ATF J1, J2, J3 și consumatorul Reporting din J0.
 
@@ -92,3 +127,5 @@ Constatările de mai sus descriu starea inițială. În implementarea curentă:
   2/2 flow-uri E2E; raportul de 7.1 MB include 13 imagini PNG inline Base64.
   Raportul păstrează WARNING-urile de afișare și limitele: fără meci complet,
   scor final sau multiplayer.
+
+</details>

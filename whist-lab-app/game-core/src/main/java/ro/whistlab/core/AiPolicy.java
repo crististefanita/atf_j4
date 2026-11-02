@@ -41,25 +41,23 @@ public final class AiPolicy {
             return legal.stream().min(Comparator.comparingInt(Card::rank)).orElseThrow();
         }
         if (game.currentTrick().isEmpty()) {
-            return legal.stream().max(Comparator
-                    .comparingDouble((Card card) -> strength(card, game.trump()))
-                    .thenComparingInt(Card::rank)).orElseThrow();
+            Comparator<Card> power=Comparator.comparingDouble((Card card)->strength(card,game.trump())).thenComparingInt(Card::rank);
+            boolean wantsTrick=player.bid()!=null&&player.tricksWon()<player.bid()
+                    ||!game.mode().isRomanian()&&player.bid()!=null&&player.tricksWon()>player.bid();
+            return wantsTrick?legal.stream().max(power).orElseThrow():legal.stream().min(power).orElseThrow();
         }
 
-        int currentWinner = GameRules.winningSeat(game.currentTrick(), game.trump());
         int tricksNeeded = player.bid() == null ? 0 : Math.max(0, player.bid() - player.tricksWon());
+        boolean wantsTrick=tricksNeeded>0||!game.mode().isRomanian()&&player.bid()!=null&&player.tricksWon()>player.bid();
         List<Card> winningCards = legal.stream()
                 .filter(card -> wouldWin(game, seat, card))
                 .sorted(Comparator.comparingInt(Card::rank)).collect(Collectors.toList());
-        if (tricksNeeded > 0 && !winningCards.isEmpty()) {
+        if (wantsTrick && !winningCards.isEmpty()) {
             return winningCards.get(0);
         }
-        if (tricksNeeded == 0 && winningCards.size() < legal.size()) {
+        if (!wantsTrick && winningCards.size() < legal.size()) {
             return legal.stream().filter(card -> !winningCards.contains(card))
-                    .min(Comparator.comparingInt(Card::rank)).orElseThrow();
-        }
-        if (currentWinner == seat && tricksNeeded > 0) {
-            return legal.stream().min(Comparator.comparingInt(Card::rank)).orElseThrow();
+                    .max(Comparator.comparingInt(Card::rank)).orElseThrow();
         }
         return legal.stream().min(Comparator.comparingInt(Card::rank)).orElseThrow();
     }

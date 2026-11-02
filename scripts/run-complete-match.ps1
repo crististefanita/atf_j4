@@ -5,6 +5,7 @@ param(
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk',
     [string]$EvidenceRoot = 'C:\work\whist_back\deep-app-test',
     [string]$RunRoot = '',
+    [string]$ReportHeap = '3g',
     [switch]$ReplayOnly,
     [switch]$ContinueOriginal
 )
@@ -49,18 +50,22 @@ try {
         Select-Object Path,Algorithm,Hash | ConvertTo-Json | Set-Content (Join-Path $RunRoot 'library-binaries.json')
     & $AdbExecutable -s $Serial shell dumpsys package com.qsoft.android.whist |
         Select-String 'versionCode=|versionName=' | Set-Content (Join-Path $RunRoot 'original-package-version.txt')
+    Invoke-MatchStage 'complete-report-value-controls' @('-q','-pl','atf-tests','test','-Dtest=ReportTextValueMatcherTest')
+    Save-MatchXml 'atf-tests' @('atf.tests.ReportTextValueMatcherTest')
     Invoke-MatchStage 'android-adapter-components' @('-q','-pl','atf-android','test','-Dtest=AndroidComponentSuite')
     Save-MatchXml 'atf-android' @('atf.android.AdbClientContractTest','atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
-    Invoke-MatchStage 'observation-components' @('-q','-pl','atf-test-android','test','-Dtest=AndroidHierarchyFreshnessTest,OriginalWhistStateTest,OriginalMatchOracleTest,OriginalContinuationBoundaryTest')
-    Save-MatchXml 'atf-test-android' @('atf.android.e2e.AndroidHierarchyFreshnessTest','atf.android.e2e.OriginalWhistStateTest','atf.android.e2e.OriginalMatchOracleTest','atf.android.e2e.OriginalContinuationBoundaryTest')
+    Invoke-MatchStage 'observation-components' @('-q','-pl','atf-test-android','test','-Dtest=AndroidHierarchyFreshnessTest,OriginalWhistStateTest,OriginalMatchOracleTest,OriginalContinuationBoundaryTest,WhistLabContinuationTest')
+    Save-MatchXml 'atf-test-android' @('atf.android.e2e.AndroidHierarchyFreshnessTest','atf.android.e2e.OriginalWhistStateTest','atf.android.e2e.OriginalMatchOracleTest','atf.android.e2e.OriginalContinuationBoundaryTest','atf.android.e2e.WhistLabContinuationTest')
     Push-Location (Join-Path $root 'whist-lab-app')
     try {
-        & .\gradlew.bat --no-daemon --console=plain :game-core:test :app:assembleDebug *> (Join-Path $RunRoot 'whist-lab-build.log')
+        & .\gradlew.bat --no-daemon --console=plain :game-core:test :game-core:aiTournamentTest :app:assembleDebug "-Pwhist.componentEvidence=$evidence\romanian-components" *> (Join-Path $RunRoot 'whist-lab-build.log')
         if($LASTEXITCODE -ne 0){throw "Whist Lab build failed; see $RunRoot\whist-lab-build.log"}
     } finally { Pop-Location }
     $coreResults=Join-Path $components 'game-core'
     New-Item -ItemType Directory -Force $coreResults | Out-Null
     Copy-Item -Path (Join-Path $root 'whist-lab-app\game-core\build\test-results\test\TEST-*.xml') -Destination $coreResults -Force
+    Copy-Item -Path (Join-Path $root 'whist-lab-app\game-core\build\test-results\aiTournamentTest\TEST-*.xml') -Destination $coreResults -Force
+    Copy-Item -LiteralPath (Join-Path $evidence 'romanian-components\ai-tournament.properties') -Destination (Join-Path $evidence 'romanian-ai-tournament.properties') -Force
     & $AdbExecutable -s $Serial install -r (Join-Path $root 'whist-lab-app\app\build\outputs\apk\debug\app-debug.apk') *> (Join-Path $RunRoot 'lab-install.log')
     if($LASTEXITCODE -ne 0){throw "Whist Lab install failed; see $RunRoot\lab-install.log"}
     if(-not $ReplayOnly) {
@@ -81,8 +86,10 @@ try {
     Copy-Item -Path (Join-Path $root 'whist-lab-app\game-core\build\test-results\originalReplayTest\TEST-*.xml') -Destination $replayResults -Force
     Invoke-MatchStage 'whist-lab-replay-test' @('-q','-pl','atf-test-android','test','-Dtest=CompleteWhistLabMatchE2eTest','-Datf.android.enabled=true','-Datf.android.fullMatch=true',"-Datf.match.evidenceDir=$evidence")
     Save-MatchXml 'atf-test-android' @('atf.android.e2e.CompleteWhistLabMatchE2eTest')
+    Invoke-MatchStage 'romanian-expert-mobile' @('-q','-pl','atf-test-android','test','-Dtest=WhistLabRomanianExpertE2eTest','-Datf.android.enabled=true',"-Datf.match.evidenceDir=$evidence")
+    Save-MatchXml 'atf-test-android' @('atf.android.e2e.WhistLabRomanianExpertE2eTest')
     $report=Join-Path $RunRoot 'final-extent-report.html'
-    Invoke-MatchStage 'full-match-extent-publisher' @('-q','-pl','atf-tests','test','-Dtest=FullMatchExtentReportTest','-Datf.match.publish=true',"-Datf.match.evidenceDir=$evidence","-Datf.match.reportPath=$report")
+    Invoke-MatchStage 'full-match-extent-publisher' @('-q','-pl','atf-tests','test','-Dtest=FullMatchExtentReportTest','-Datf.match.publish=true',"-Datf.test.heap.max=$ReportHeap","-Datf.match.evidenceDir=$evidence","-Datf.match.reportPath=$report")
     Write-Host "Extent report: $report"
 } finally {
     Pop-Location
