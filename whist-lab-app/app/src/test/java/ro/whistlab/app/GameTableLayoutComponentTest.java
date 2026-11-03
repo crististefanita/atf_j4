@@ -1,6 +1,7 @@
 package ro.whistlab.app;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -65,6 +66,8 @@ public final class GameTableLayoutComponentTest {
                 > TableLayoutMetrics.biddingCenterRowHeightDp(18, 353));
         assertTrue(TableLayoutMetrics.biddingHeightDp(3, 18, 240, 1f)
                 > TableLayoutMetrics.playingHeightDp(3, 1f));
+        assertEquals(TableLayoutMetrics.playingHeightDp(4, 1f),
+                TableLayoutMetrics.biddingHeightDp(4, 14, 320, 1f));
     }
 
     @Test public void humanSeatStaysSouthCenterAndEveryPlayerGetsAUniquePerimeterSlot() {
@@ -90,7 +93,7 @@ public final class GameTableLayoutComponentTest {
             assertEquals(TableSeatLayout.Anchor.SOUTH, seats[0]);
             Set<TableSeatLayout.Anchor> unique = new HashSet<>();
             for (int index = 0; index < seats.length; index++) {
-                assertEquals("seat order follows the accepted oval for " + players + " players",
+                assertEquals("seat order follows the accepted perimeter for " + players + " players",
                         expected[index], seats[index]);
                 unique.add(seats[index]);
             }
@@ -107,14 +110,30 @@ public final class GameTableLayoutComponentTest {
         assertEquals(0.16f, TableSeatLayout.sideInsetFraction(true, 353), 0.001f);
         assertEquals(0.18f, TableSeatLayout.sideInsetFraction(true, 400), 0.001f);
         assertEquals(0.23f, TableSeatLayout.sideInsetFraction(false, 280), 0.001f);
+        assertEquals(0.06f, TableSeatLayout.sideInsetFraction(true, 4, 14, 353), 0.001f);
+        assertEquals(0.16f, TableSeatLayout.sideInsetFraction(true, 4, 9, 353), 0.001f);
     }
 
     @Test public void trickFitsBetweenPerimeterSeatsAndKeepsTheMockTwoColumnShape() {
         assertEquals(162, TableLayoutMetrics.centerPlayWidthDp(353));
         assertEquals(148, TableLayoutMetrics.centerPlayWidthDp(280));
         assertEquals(320, TableLayoutMetrics.centerPlayWidthDp(760));
+        assertEquals(44, TableLayoutMetrics.TRICK_CARD_WIDTH_DP);
+        assertEquals(52, TableLayoutMetrics.TRICK_CARD_HEIGHT_DP);
         assertEquals(102, TableLayoutMetrics.seatWidthDp(353));
         assertTrue(TableLayoutMetrics.seatWidthDp(760) < 760 / 3);
         assertTrue(TableLayoutMetrics.playingCenterRowHeightDp(6, 1f) >= 170);
+    }
+
+    @Test public void denseFourPlayerBiddingMovesSideSeatsAboveTheBidGrid() {
+        assertArrayEquals(new TableSeatLayout.Anchor[]{TableSeatLayout.Anchor.SOUTH,
+                        TableSeatLayout.Anchor.WEST, TableSeatLayout.Anchor.NORTH, TableSeatLayout.Anchor.EAST},
+                TableSeatLayout.positions(4, false, 14));
+        assertArrayEquals(new TableSeatLayout.Anchor[]{TableSeatLayout.Anchor.SOUTH,
+                        TableSeatLayout.Anchor.WEST, TableSeatLayout.Anchor.NORTH, TableSeatLayout.Anchor.EAST},
+                TableSeatLayout.positions(4, true, 9));
+        assertArrayEquals(new TableSeatLayout.Anchor[]{TableSeatLayout.Anchor.SOUTH,
+                        TableSeatLayout.Anchor.NORTH_WEST, TableSeatLayout.Anchor.NORTH,
+                        TableSeatLayout.Anchor.NORTH_EAST}, TableSeatLayout.positions(4, true, 14));
     }
 }

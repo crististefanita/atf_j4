@@ -5,9 +5,10 @@ final class TableLayoutMetrics {
     private static final int PLAYING_BASE_HEIGHT_DP = 360;
     private static final int EXTRA_PLAYER_HEIGHT_DP = 8;
     private static final int SEAT_ROW_RESERVE_DP = 16;
+    private static final int BID_SEAT_PERIMETER_RESERVE_DP = 132;
     private static final float PLAY_CENTER_ROW_WEIGHT = 2.3f;
-    private static final float BID_CENTER_ROW_WEIGHT = 2.6f;
-    private static final float ALL_ROW_WEIGHTS = 4.6f;
+    static final int TRICK_CARD_WIDTH_DP = 44;
+    static final int TRICK_CARD_HEIGHT_DP = 52;
 
     private TableLayoutMetrics() { }
 
@@ -42,7 +43,7 @@ final class TableLayoutMetrics {
     static int biddingHeightDp(int playerCount, int optionCount, int availableWidthDp, float fontScale) {
         requirePlayerCount(playerCount);
         int centerRow = biddingCenterRowHeightDp(optionCount, availableWidthDp);
-        int totalForCenter = (int) Math.ceil(centerRow * ALL_ROW_WEIGHTS / BID_CENTER_ROW_WEIGHT);
+        int totalForCenter = centerRow + BID_SEAT_PERIMETER_RESERVE_DP;
         return Math.max(playingHeightDp(playerCount, 1f), totalForCenter)
                 + accessibilityAllowance(fontScale);
     }

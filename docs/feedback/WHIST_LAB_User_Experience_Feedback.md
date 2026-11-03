@@ -24,7 +24,7 @@ Rapoartele Extent conțin capturi inline, pași expandabili și câte 19 aserți
 trecute per flow. Nu s-a jucat o partidă completă.
 
 Față de mock, totalul licitațiilor rămâne în rezumatul vizibil din antet, lângă
-numărul licitațiilor depuse; centrul ovalului rămâne rezervat alegerii și
+numărul licitațiilor depuse; centrul zonei de joc rămâne rezervat alegerii și
 confirmării bidului. Forma 3 × 3 se păstrează pe ecrane largi, iar grila de cinci
 coloane apare numai în intervalul îngust în care forma 3 × 3 intra în locurile
 laterale. Suprafața verde continuă pe tot ecranul, conform cerinței aplicației
@@ -38,16 +38,17 @@ Jucătorul trebuie să compare toată mâna cu decizia curentă. Înainte de con
 valorile disponibile trebuie să fie vizibile direct pe suprafața mesei, nu ascunse
 într-un dropdown. Atuul, locurile, licitațiile și levatele câștigate rămân lizibile.
 
-**Rezolvare în cod:** masa are 360 dp înălțime de bază și este o suprafață ovală,
-trasată discret peste același fundal de felt ca restul ecranului. Locurile au
-ancore numite pe perimetru, nu celule de grilă: la șase jucători, forma este
+**Rezolvare în cod:** pâsla continuă umple zona de joc; nu se mai desenează o
+ramă ovală. Locurile au ancore numite pe perimetru, nu celule de grilă: la șase
+jucători, forma este
 `N; NW/NE; SW/SE; S`, iar omul rămâne în sud. Ancorele nu se schimbă între
 licitare și joc; flancurile sunt apropiate de margini cu 18% din înălțimea mesei
 în licitarea normală, 16% în licitarea compactă și 23% în joc, pentru a păstra
 centrul liber ca în mock și a lăsa grila în dreptul scaunelor. Pentru 3–5 jucători,
 locurile ocupă ancorele simetrice disponibile. Locurile laterale
 flanchează grila centrală fără să intre în ea. Numele ocupă
-primul rând al fiecărui loc; `Bid X · Won Y` este separat pe al doilea. Jucătorul
+primul rând al fiecărui loc; licitația și levatele sunt pe rânduri separate,
+aliniate la stânga (`Bid` / `Won`, `Licitat` / `Levate`). Jucătorul
 activ primește badge-ul `BID NOW` sau `PLAY NOW` (în română `LICITEAZĂ` sau
 `JOACĂ ACUM`), dar fiecare loc rezervă aceeași înălțime pentru badge, ca turele
 să nu deplaseze scaunele. Descrierea TalkBack păstrează formularea completă.
@@ -57,12 +58,12 @@ mai mult de nouă valori folosește șase coloane de la 312 dp, altfel trei. La
 `393×698 dp`, lățimea efectivă a tablei este 353 dp: forma 3 × 3 intersecta în
 mod măsurabil locurile laterale. Varianta de cinci coloane și insetul compact au
 eliminat intersectarea fără să reducă țintele de 48 dp. Opțiunea aleasă și
-`Place bid` stau împreună în centrul mesei. Indicatorul
+`Place bid` / `Licitează` stă împreună cu valoarea în centrul mesei. Indicatorul
 din antet afișează cartea întoarsă reală, dacă există; la mâna de 13 cărți din
 `Descending`, pachetul este împărțit complet și nu există carte întoarsă, deci
 interfața spune explicit că atuul este doar culoarea stabilită de variantă. În
 joc, centrul mesei ține levata
-curentă centrată în oval; o singură carte stă chiar pe axa mesei, iar cărțile
+curentă centrată în zona de joc; o singură carte stă chiar pe axa mesei, iar cărțile
 următoare se aliniază în două coloane. Mâna este un fan
 pe un singur rând, cu 98 dp
 înălțime și 28 dp rezervați pentru animația verticală. Cartea ridicată se deplasează
@@ -81,9 +82,10 @@ mână pe ecrane înalte, precum și culoarea eșantionată din screenshot după
 coordonatelor logice la PNG-ul letterboxat. Testele de text acoperă bid/levate și
 badge-urile în engleză și română.
 
-**Rezultat live pentru această revizie:** cele 15 teste Android ale aplicației și
-cele 500 de teste standard ale regulilor au trecut; APK-ul a fost construit în
-`%TEMP%`. Ambele teste UI țintite au trecut pe emulator API 28 la 320, 393 și
+**Rezultat live pentru această revizie:** cele 19 teste Android de componentă au
+trecut, iar testul E2E pentru pauza levatei a trecut pe emulator API 28. APK-ul
+debug a fost construit în `%TEMP%`. Cele două flow-uri UI responsive documentate
+mai jos au trecut anterior la 320, 393 și
 600 dp:
 `sixPlayerEightCardHandFitsOneRowAndMenuKeepsScoreAndHomeAccessible` și
 `thirteenCardFanKeepsOneRowAndMovesTheChosenCardIntoTheTable`. Raportul de masă
@@ -184,15 +186,31 @@ Captura anterioară `previous-screen-04.png` arată rama lată de fildeș în ju
 mesei, cărțile pe o bază separată și un gol mare sub vechiul buton plin. Această
 zonă slăbea masa ca element dominant și părea spațiu nefolosit.
 
-**Rezolvare în cod:** pâsla continuă până la marginea viewport-ului, iar suprafața
-ovală este desenată pe ea, fără ramă de fildeș. `Place bid` este conturat și stă
-în centrul mesei, deasupra mâinii. Mâna are o înălțime fixă, un singur rând și
+**Rezolvare în cod:** pâsla continuă până la marginea viewport-ului. Nu se mai
+desenează un oval sau o ramă de fildeș. `Place bid` / `Licitează` este
+conturat și stă în centrul zonei de joc, deasupra mâinii. Mâna are o înălțime
+fixă, un singur rând și
 derulare orizontală, astfel că zona cărților nu rearanjează masa.
 
 **Contract E2E actualizat:** verifică ordinea verticală dintre acțiunea centrală
-și mână și include un flow separat care atinge o carte legală. Raportul nou
-trebuie să includă capturile inline și pasul colapsabil standard pentru aserțiuni;
-vechile capturi ale butonului plin nu sunt dovadă pentru această versiune.
+și mână și include un flow separat care atinge o carte legală. Raportul include
+capturile inline și pasul colapsabil standard pentru aserțiuni; vechile capturi
+ale butonului plin nu sunt dovadă pentru această versiune.
+
+### P1 — Toate cele patru cărți ale levatei trebuie să rămână vizibile înainte de următoarea
+
+**Rezolvat:** după ultima carte, interfața ține împreună cele patru cărți timp de
+exact 1.500 ms, apoi golește centrul și oferă tura următoare câștigătorului. În
+fereastra de afișare nu acceptă input pentru următoarea carte. `CompletedTrickPauseComponentTest`
+verifică limita la 1.499/1.500 ms și pornirea unei ferestre noi pentru levata
+următoare.
+
+**Verificare live:** `completedTrickRemainsRenderedBeforeTheNextTrickBecomesInteractive`
+a trecut pe emulator API 28. E2E-ul eșantionează pe dispozitiv 36 de capturi PNG,
+verifică patru fețe fildeș cu marcaje roșii în pozițiile levatei și compară
+pixeli identici pe două cadre la 900–1.400 ms distanță. Următorul checkpoint
+confirmă că masa s-a golit și câștigătorul are tura. Raportul Extent păstrează
+acțiunile, aserțiunile expandabile și imaginile inline în `%TEMP%`.
 
 ### P1 — Navigarea trebuie să lase masa drept elementul dominant
 

@@ -48,14 +48,16 @@ separat și nemodificat.
 - Mâna de antrenament cu o singură carte permite verificări Android deterministe.
 - Ecranul partidei identifică varianta prin `Whist · [variantă]`. Atuul are o
   singură zonă persistentă, mărită în antetul deasupra mesei; licitația nu îl
-  repetă. Locurile arată numele, licitația și levatele câștigate. Scorurile sunt
+  repetă. Locurile arată numele, licitația și levatele câștigate pe două rânduri
+  aliniate la stânga (`Bid` / `Won`, respectiv `Licitat` / `Levate`). Scorurile sunt
   consultate în foaia de scor. Rezumatul separă licitațiile depuse de **totalul
   licitat**, raportat la mărimea mâinii. Locul activ primește un badge discret
   `BID NOW` sau `PLAY NOW` (în română, `LICITEAZĂ` sau `JOACĂ ACUM`); locul
   rezervă aceeași înălțime pentru badge și când nu este activ, astfel încât
   schimbarea turei nu mută jucătorii. Cărțile
-  adversarilor rămân ascunse. Locurile folosesc ancore explicite pe oval, pentru
-  3–6 jucători, iar omul rămâne în sud, în centru. La șase jucători, conturul
+  adversarilor rămân ascunse. Locurile folosesc ancore stabile în jurul zonei
+  centrale pentru 3–6 jucători, iar omul rămâne în sud, în centru. Pâsla este
+  continuă și nu desenează o ramă ovală. La șase jucători, conturul
   urmează pozițiile `N; NW/NE; SW/SE; S`; pentru configurațiile mai mici sunt
   eliminate perechile simetrice care nu mai sunt necesare. Ancorele rămân aceleași
   între licitare și joc; flancurile au inset de 16% în licitarea compactă, 18% în
@@ -65,12 +67,16 @@ separat și nemodificat.
   400 dp. Între 260 și 399 dp, 4–9 valori folosesc cinci coloane și două rânduri;
   sub 260 dp revin la trei coloane. Seturile cu mai mult de nouă valori folosesc
   șase coloane de la 312 dp, altfel trei. Fiecare valoare are țintă tactilă de cel
-  puțin 48 × 48 dp și cip vizual compact. Confirmarea conturată `Place bid` stă în același grup,
+  puțin 48 × 48 dp și cip vizual compact. Confirmarea conturată folosește
+  `Place bid` în engleză sau `Licitează` în română și stă în același grup,
   imediat sub valori. În timpul jocului, levata
   curentă și numele celor care au jucat stau în centrul mesei; prima carte este
   centrată singură, iar mutările următoare completează grupul în două coloane. Meniul
   hamburger din stânga sus oferă `Score sheet` și `Main menu`. Foaia de scor nu
   schimbă licitația sau mâna; revenirea la home păstrează partida pentru reluare.
+  După completarea unei levate, toate cele patru cărți rămân vizibile împreună
+  timp de exact 1.500 ms, fără input pentru următoarea carte. Apoi masa se golește,
+  iar câștigătorul levatei primește tura următoare.
 - Mâna rămâne pe un singur rând: cărțile se suprapun controlat, iar eticheta
   fiecăreia rămâne expusă. Pe lățimea de referință de 353 dp, 13 cărți încap
   fără derulare. Mâinile de 14–17 cărți rămân tot pe un rând și permit derulare
@@ -78,9 +84,9 @@ separat și nemodificat.
   grilă. Fiecare carte are 98 dp înălțime și 28 dp rezervați deasupra pentru
   animația de ridicare. Cartea atinsă se ridică 20 dp, se scalează la 1,12 și se
   desenează sub vecine; dimensiunea mâinii și locul omului nu se schimbă. Masa
-  ovală are înălțimea de bază 360 dp și folosește același felt ca ecranul, cu o
-  singură margine subțire; levata rămâne într-un grup compact de două coloane în
-  centrul ovalului, iar atuul apare numai în antet. Pe ecrane înalte, masa și mâna
+  folosește pâsla continuă a ecranului, fără oval sau ramă desenată. Levata rămâne
+  într-un grup compact de două coloane în centrul suprafeței, iar atuul apare
+  numai în antet. Pe ecrane înalte, masa și mâna
   se centrează împreună în zona de joc; slotul instrucțiunii rămâne rezervat și când
   mută AI-ul, astfel încât locurile să nu sară între ture.
 - La configurare, programul mâinilor este calculat din regulile efective pentru
@@ -99,7 +105,8 @@ separat și nemodificat.
 
 ## Principii de layout pentru jucător
 
-- Masa ovală este ancora vizuală și ocupă zona dintre antet și mâna omului.
+- Pâsla continuă este ancora vizuală dintre antet și mâna omului; locurile
+  jucătorilor formează conturul fără să fie desenată o masă ovală.
   Locul omului rămâne jos, la centru, iar adversarii stau pe contur. Geometria
   mesei depinde de numărul de locuri și de conținutul selectorului de licitare,
   nu de ridicarea unei cărți. Antetul ține numele variantei, progresul și un
@@ -144,8 +151,8 @@ de 16% pentru a lăsa spațiu suplimentar sub și deasupra grilei.
   roșii pentru identificarea rapidă a culorii; și dialogurile Android folosesc
   accentul verde al aplicației.
 - În timpul partidei, pâsla verde continuă pe toată fereastra, inclusiv în zona
-  sistemului și în jurul mesei ovale. Mâna și masa folosesc aceeași suprafață;
-  `Place bid` rămâne conturat în centrul mesei. Foaia de
+  sistemului și în jurul zonei centrale. Mâna și masa folosesc aceeași suprafață;
+  `Place bid` / `Licitează` rămâne conturat în centrul ei. Foaia de
   scor este un tabel compact cu jucător, licitație, levate, rezultat pe mâna
   curentă și total cumulativ. Nu pretinde să fie istoricul complet al partidei:
   starea salvată nu păstrează încă rezultatele fiecărei mâini.
@@ -171,7 +178,11 @@ Scorurile, raționamentul și capturile locale sunt păstrate în pachetul tempo
 copiate în repository. Acestea sunt repere de ierarhie și utilizare, nu modele
 de copiat ca stil sau reguli.
 
-Build-ul TMP a trecut: 15 teste ale aplicației și 500 teste `game-core`. Ambele
+Build-ul TMP din 3 noiembrie a trecut 19 teste de componentă Android. Testul E2E
+`completedTrickRemainsRenderedBeforeTheNextTrickBecomesInteractive` a trecut pe
+emulator API 28: verifică cele patru fețe în capturi de pe dispozitiv, stabilitatea
+lor între 900 și 1.400 ms, golirea mesei și tura câștigătorului. Raportul Extent
+include acțiunile, aserțiunile și capturile PNG inline. Ambele
 flow-uri UI au trecut la fiecare lățime, iar cele șase rapoarte Extent păstrează
 capturile inline, manifestele `PASS` și aserțiunile expandabile. APK-ul instalat
 pe emulatorul API 28 a fost testat cu aceste viewport-uri logice la 440 dpi:
@@ -180,7 +191,7 @@ pe emulatorul API 28 a fost testat cu aceste viewport-uri logice la 440 dpi:
 320/600 dp, emulatorul capturează fizic `1080×1920` și letterboxează imaginea;
 testele mapă coordonatele ierarhiei UI în PNG după dimensiunea raportată de
 `wm size`. APK-ul debug instalabil și hash-ul verificabil sunt în
-`../dist/WhistLab-0.1.0-debug.apk` și `../dist/WhistLab-0.1.0-debug.apk.sha256`
+`../dist/WhistLab-0.1.2-debug.apk` și `../dist/WhistLab-0.1.2-debug.apk.sha256`
 (minSdk 24, fără biblioteci native dependente de ABI).
 Rapoartele curente sunt în `%TEMP%`:
 
@@ -190,6 +201,7 @@ Rapoartele curente sunt în `%TEMP%`:
 - `whist-j4-display-final-v12-393dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
 - `whist-j4-display-final-v11-600dp-20261103\table-presentation\whist-lab-table-presentation.html`
 - `whist-j4-display-final-v11-600dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+- `ATF_J4_TRICK_PAUSE_DEVICE_SAMPLER_R9_20261103\completed-trick-display-pause\whist-lab-trick-display-pause.html`
 
 Testele de componentă verifică 13 cărți fără derulare pe 353 dp și 17 cărți
 pe un singur rând cu derulare orizontală.
@@ -303,7 +315,7 @@ $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
 ```
 
 Configurația curentă a APK-ului este `minSdk 24`, `compileSdk 36`,
-`targetSdk 36`, `versionCode 2` / `versionName 0.1.1`. `targetSdk 36`
+`targetSdk 36`, `versionCode 3` / `versionName 0.1.2`. `targetSdk 36`
 înlocuiește API 28: țintele cu peste două niveluri API sub versiunea Android a
 telefonului pot declanșa avertizarea Play Protect „Unsafe app blocked / built
 for an older version of Android”. Ridică `targetSdk` la nivelul cerut la acea
@@ -322,7 +334,7 @@ Instalează APK-ul de depanare pe emulatorul API 28:
 $env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
 C:\tools\whist-android-sdk\platform-tools\adb.exe connect 127.0.0.1:5555
 C:\tools\whist-android-sdk\platform-tools\adb.exe -s 127.0.0.1:5555 install -r `
-  C:\work\auto\atf_j4\whist-lab-app\app\build\outputs\apk\debug\app-debug.apk
+  C:\work\1\atf_j4\dist\WhistLab-0.1.2-debug.apk
 ```
 
 Pornește fluxul determinist de antrenament:

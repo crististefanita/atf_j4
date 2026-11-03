@@ -64,7 +64,7 @@ final class WhistUiText {
     String tenPoints() { return choose("10 points", "10 puncte"); }
     String startGame() { return choose("Start game", "Începe partida"); }
     String back() { return choose("Back", "Înapoi"); }
-    String placeBid() { return choose("Place bid", "Anunță licitația"); }
+    String placeBid() { return choose("Place bid", "Licitează"); }
     String scoreSheet() { return choose("Score sheet", "Scorul partidei"); }
     String mainMenu() { return choose("Main menu", "Meniu principal"); }
     String gameMenu() { return choose("Game menu", "Meniu joc"); }
@@ -113,10 +113,11 @@ final class WhistUiText {
     }
 
     String difficultyName(AiDifficulty difficulty) {
-        return switch (difficulty) {
-            case NORMAL -> choose("Normal", "Normal");
-            case HARD -> choose("Hard", "Dificil");
-            case EXPERT -> choose("Expert (simulation)", "Expert (simulare)");
+        return switch (difficulty.name()) {
+            case "NORMAL" -> choose("Normal", "Normal");
+            case "HARD" -> choose("Hard", "Dificil");
+            case "EXPERT" -> choose("Expert (simulation)", "Expert (simulare)");
+            default -> difficulty.label();
         };
     }
 
@@ -272,7 +273,7 @@ final class WhistUiText {
     String seatName(GameSession.PlayerSnapshot player) { return playerName(player); }
     String seatFacts(GameSession.PlayerSnapshot player) {
         return bidLabel() + " " + (player.bid() == null ? "—" : player.bid())
-                + "  ·  " + choose("Won", "Levate") + " " + player.tricksWon();
+                + "\n" + choose("Won", "Levate") + " " + player.tricksWon();
     }
     String seatTurnAction(boolean bidding) {
         return bidding ? choose("BID NOW", "LICITEAZĂ ACUM")

@@ -4,17 +4,20 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-/** Places each player at a named oval anchor without letting the bidding center move seats. */
+/** Places each player at a named table perimeter anchor without moving the human seat. */
 final class TableSeatRingLayout extends ViewGroup {
     private final TableSeatLayout.Anchor[] anchors;
     private final boolean bidding;
+    private final int bidOptionCount;
     private final int seatWidthPx;
     private final int tableWidthDp;
 
-    TableSeatRingLayout(Context context, int playerCount, boolean bidding, int seatWidthPx, int tableWidthDp) {
+    TableSeatRingLayout(Context context, int playerCount, boolean bidding, int bidOptionCount,
+            int seatWidthPx, int tableWidthDp) {
         super(context);
-        this.anchors = TableSeatLayout.positions(playerCount);
+        this.anchors = TableSeatLayout.positions(playerCount, bidding, bidOptionCount);
         this.bidding = bidding;
+        this.bidOptionCount = bidOptionCount;
         this.seatWidthPx = Math.max(1, seatWidthPx);
         this.tableWidthDp = Math.max(1, tableWidthDp);
         setClipChildren(false);
@@ -44,7 +47,8 @@ final class TableSeatRingLayout extends ViewGroup {
 
         int width = right - left;
         int height = bottom - top;
-        int sideInset = Math.round(height * TableSeatLayout.sideInsetFraction(bidding, tableWidthDp));
+        int sideInset = Math.round(height * TableSeatLayout.sideInsetFraction(
+                bidding, anchors.length, bidOptionCount, tableWidthDp));
         for (int index = 0; index < anchors.length; index++) {
             View seat = getChildAt(index);
             int seatWidth = seat.getMeasuredWidth();

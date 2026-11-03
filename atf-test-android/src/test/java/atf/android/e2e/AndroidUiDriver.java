@@ -126,6 +126,31 @@ final class AndroidUiDriver {
         return toBounds(matches.getFirst().bounds());
     }
 
+    String spinnerValue(String xml, String exactDescription) throws Exception {
+        List<Node> controls = nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.Spinner"))
+                .filter(node -> node.description().equals(exactDescription)).toList();
+        if (controls.size() != 1) {
+            throw new IllegalStateException("Expected one spinner described as '" + exactDescription
+                    + "', got " + controls.size());
+        }
+        Bounds control = toBounds(controls.getFirst().bounds());
+        List<String> values = nodes(xml).stream()
+                .filter(node -> !node.text().isBlank())
+                .filter(node -> !node.className().equals("android.widget.Spinner"))
+                .filter(node -> {
+                    Bounds value = toBounds(node.bounds());
+                    return value.left() >= control.left() && value.top() >= control.top()
+                            && value.right() <= control.right() && value.bottom() <= control.bottom();
+                })
+                .map(Node::text).distinct().toList();
+        if (values.size() != 1) {
+            throw new IllegalStateException("Expected one visible value inside spinner '" + exactDescription
+                    + "', got " + values);
+        }
+        return values.getFirst();
+    }
+
     Bounds boundsForDescriptionContaining(String xml, String fragment) throws Exception {
         List<Node> matches = nodes(xml).stream()
                 .filter(node -> node.description().contains(fragment)).toList();
@@ -209,6 +234,12 @@ final class AndroidUiDriver {
         if (cards.isEmpty()) return List.of();
         int bottomRowTop = cards.stream().mapToInt(CardLabel::top).max().orElseThrow();
         return cards.stream().filter(card -> card.top() >= bottomRowTop - 15).toList();
+    }
+
+    List<Bounds> playingCardLabelBounds(String xml) throws Exception {
+        return nodes(xml).stream()
+                .filter(node -> PLAYING_CARD.matcher(node.text()).matches())
+                .map(node -> toBounds(node.bounds())).toList();
     }
 
     List<ElementSize> numericButtonSizes(String xml) throws Exception {

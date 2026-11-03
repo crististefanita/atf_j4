@@ -1,6 +1,6 @@
 package ro.whistlab.app;
 
-/** Named perimeter anchors keep player seats on the approved oval in every phase. */
+/** Named perimeter anchors keep player seats stable while dense controls claim the center. */
 final class TableSeatLayout {
     enum Anchor {
         NORTH,
@@ -27,6 +27,11 @@ final class TableSeatLayout {
         };
     }
 
+    static Anchor[] positions(int playerCount, boolean bidding, int bidOptionCount) {
+        if (!bidding || bidOptionCount <= 9 || playerCount != 4) return positions(playerCount);
+        return new Anchor[]{Anchor.SOUTH, Anchor.NORTH_WEST, Anchor.NORTH, Anchor.NORTH_EAST};
+    }
+
     static float sideInsetFraction(boolean bidding) {
         return bidding ? 0.18f : 0.23f;
     }
@@ -35,5 +40,10 @@ final class TableSeatLayout {
         if (tableWidthDp <= 0) throw new IllegalArgumentException("Table width must be positive");
         if (!bidding) return 0.23f;
         return tableWidthDp < BidGridMetrics.DENSE_MAX_WIDTH_DP ? 0.16f : 0.18f;
+    }
+
+    static float sideInsetFraction(boolean bidding, int playerCount, int bidOptionCount, int tableWidthDp) {
+        if (bidding && playerCount == 4 && bidOptionCount > 9) return 0.06f;
+        return sideInsetFraction(bidding, tableWidthDp);
     }
 }

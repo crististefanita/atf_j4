@@ -39,6 +39,8 @@ final class GameTablePanel extends LinearLayout {
     private final GameSession.Snapshot state;
     private final WhistUiText copy;
     private final boolean bidding;
+    private final boolean interactionPaused;
+    private final List<PlayedCard> completedTrickToDisplay;
     private final Set<Card> playableCards;
     private final Consumer<Card> onCardSelected;
     private final List<Integer> bidOptions;
@@ -51,25 +53,42 @@ final class GameTablePanel extends LinearLayout {
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
             Runnable onBidSubmitted, WhistUiText copy) {
         return new GameTablePanel(context, state, true, Collections.emptyList(), null,
-                null, bidOptions, selectedBid, onBidSelected, onBidSubmitted, copy);
+                null, bidOptions, selectedBid, onBidSelected, onBidSubmitted, copy,
+                Collections.emptyList(), false);
     }
 
     static GameTablePanel playing(Context context, GameSession.Snapshot state,
             List<Card> legalCards, Consumer<Card> onCardSelected, String hint, WhistUiText copy) {
+        return playing(context, state, legalCards, onCardSelected, hint,
+                Collections.emptyList(), copy);
+    }
+
+    static GameTablePanel playing(Context context, GameSession.Snapshot state,
+            List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
+            List<PlayedCard> completedTrickToDisplay, WhistUiText copy) {
         return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
-                Collections.emptyList(), 0, null, null, copy);
+                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay, false);
+    }
+
+    static GameTablePanel playing(Context context, GameSession.Snapshot state,
+            List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
+            List<PlayedCard> completedTrickToDisplay, boolean interactionPaused, WhistUiText copy) {
+        return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
+                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay, interactionPaused);
     }
 
     private GameTablePanel(Context context, GameSession.Snapshot state, boolean bidding,
             List<Card> playableCards, Consumer<Card> onCardSelected, String hint,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
             Runnable onBidSubmitted,
-            WhistUiText copy) {
+            WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused) {
         super(context);
         this.context = context;
         this.state = state;
         this.copy = copy;
         this.bidding = bidding;
+        this.interactionPaused = interactionPaused;
+        this.completedTrickToDisplay = List.copyOf(completedTrickToDisplay);
         this.playableCards = new HashSet<>(playableCards);
         this.onCardSelected = onCardSelected;
         this.bidOptions = List.copyOf(bidOptions);
@@ -111,7 +130,7 @@ final class GameTablePanel extends LinearLayout {
 
     private View buildRoundTable() {
         FrameLayout board = new FrameLayout(context);
-        board.setBackground(tableSurface());
+        board.setBackgroundColor(Color.TRANSPARENT);
         board.setPadding(dp(4), dp(4), dp(4), dp(4));
         board.setContentDescription(copy.boardSurface());
         board.setTag("game-board");
@@ -119,7 +138,7 @@ final class GameTablePanel extends LinearLayout {
 
         int tableWidthDp = Math.min(availableContentWidthDp(), 760);
         TableSeatRingLayout seats = new TableSeatRingLayout(context, state.players().size(), bidding,
-                dp(TableLayoutMetrics.seatWidthDp(tableWidthDp)), tableWidthDp);
+                bidOptions.size(), dp(TableLayoutMetrics.seatWidthDp(tableWidthDp)), tableWidthDp);
         for (GameSession.PlayerSnapshot player : state.players()) {
             seats.addView(buildSeat(player));
         }
@@ -235,7 +254,7 @@ final class GameTablePanel extends LinearLayout {
 
     private View buildSeat(GameSession.PlayerSnapshot player) {
         int activeSeat = bidding ? state.biddingSeat() : state.currentSeat();
-        boolean active = player.seat() == activeSeat;
+        boolean active = !interactionPaused && player.seat() == activeSeat;
         boolean dealer = player.seat() == state.dealerSeat();
         LinearLayout seat = new LinearLayout(context);
         seat.setOrientation(VERTICAL);
@@ -274,7 +293,7 @@ final class GameTablePanel extends LinearLayout {
         seat.addView(name, matchWrap());
         TextView facts = text(copy.seatFacts(player), 11,
                 active ? INK : Color.rgb(229, 239, 230), false);
-        facts.setGravity(Gravity.CENTER);
+        facts.setGravity(Gravity.LEFT);
         facts.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         seat.addView(facts, matchWrap());
         seat.setTag("table-seat:" + player.seat());
@@ -285,7 +304,9 @@ final class GameTablePanel extends LinearLayout {
     }
 
     private View buildCurrentTrick() {
-        if (state.currentTrick().isEmpty()) {
+        List<PlayedCard> plays = state.currentTrick().isEmpty() && !completedTrickToDisplay.isEmpty()
+                ? completedTrickToDisplay : state.currentTrick();
+        if (plays.isEmpty()) {
             TextView empty = text("", 13, Color.TRANSPARENT, false);
             empty.setContentDescription(copy.noCardsYet());
             empty.setTag("current-trick");
@@ -297,7 +318,6 @@ final class GameTablePanel extends LinearLayout {
         cards.setGravity(Gravity.CENTER);
         cards.setContentDescription(copy.currentTrick());
         cards.setTag("current-trick");
-        List<PlayedCard> plays = state.currentTrick();
         for (int start = 0; start < plays.size(); start += 2) {
             LinearLayout row = new LinearLayout(context);
             row.setOrientation(HORIZONTAL);
@@ -316,7 +336,8 @@ final class GameTablePanel extends LinearLayout {
                 card.setPadding(dp(3), dp(4), dp(3), dp(4));
                 card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
                 card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-                item.addView(card, new LayoutParams(dp(36), dp(41)));
+                item.addView(card, new LayoutParams(dp(TableLayoutMetrics.TRICK_CARD_WIDTH_DP),
+                        dp(TableLayoutMetrics.TRICK_CARD_HEIGHT_DP)));
                 TextView who = text(copy.trickPlayer(player), 10, Color.rgb(212, 223, 209), false);
                 who.setGravity(Gravity.CENTER);
                 who.setSingleLine(true);
@@ -459,14 +480,6 @@ final class GameTablePanel extends LinearLayout {
                         getResources().getConfiguration().fontScale)
                 : TableLayoutMetrics.playingHeightDp(state.players().size(),
                         getResources().getConfiguration().fontScale);
-    }
-
-    private GradientDrawable tableSurface() {
-        GradientDrawable surface = new GradientDrawable();
-        surface.setShape(GradientDrawable.OVAL);
-        surface.setColor(WhistUiPalette.TABLE_FELT);
-        surface.setStroke(dp(1), Color.rgb(66, 111, 82));
-        return surface;
     }
 
 }

@@ -74,4 +74,28 @@ class AndroidUiDriverActionTraceTest {
                 driver.boundsForDescription(hierarchy, "Your hand, 13 cards.",
                         "android.widget.HorizontalScrollView"));
     }
+
+    @Test
+    void readsTheSelectedValueFromItsNamedSpinnerInsteadOfAnotherMatchingLabel(@TempDir Path output)
+            throws Exception {
+        AndroidUiDriver.Device device = new AndroidUiDriver.Device() {
+            @Override
+            public AdbClient.Result run(String... arguments) {
+                return new AdbClient.Result(0, "", List.of(arguments));
+            }
+
+            @Override
+            public AdbClient.BinaryResult runBinary(String... arguments) {
+                throw new UnsupportedOperationException("Binary capture is outside this spinner fixture");
+            }
+        };
+        AndroidUiDriver driver = new AndroidUiDriver(device, output);
+        String hierarchy = "<hierarchy><node text=\"Players\" class=\"android.widget.Spinner\" "
+                + "content-desc=\"Players\" bounds=\"[10,20][210,70]\"><node text=\"6\" "
+                + "class=\"android.widget.TextView\" bounds=\"[20,30][200,60]\"/></node>"
+                + "<node text=\"6\" class=\"android.widget.Button\" bounds=\"[300,20][350,70]\"/>"
+                + "</hierarchy>";
+
+        assertEquals("6", driver.spinnerValue(hierarchy, "Players"));
+    }
 }

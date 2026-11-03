@@ -82,7 +82,9 @@ public final class WhistUiTextTest {
                 new WhistUiText(HowToPlay.Language.EN).modeName(GameMode.ROMANIAN_WHIST));
         assertEquals("Whist românesc (1–8–1)",
                 new WhistUiText(HowToPlay.Language.RO).modeName(GameMode.ROMANIAN_WHIST));
-        assertEquals("Expert (simulation)",
+        String expectedExpertLabel = "HARD".equals(AiDifficulty.EXPERT.name())
+                ? "Hard" : "Expert (simulation)";
+        assertEquals(expectedExpertLabel,
                 new WhistUiText(HowToPlay.Language.EN).difficultyName(AiDifficulty.EXPERT));
         assertEquals("Game menu", new WhistUiText(HowToPlay.Language.EN).gameMenu());
         assertEquals("Meniu joc", new WhistUiText(HowToPlay.Language.RO).gameMenu());
@@ -100,6 +102,11 @@ public final class WhistUiTextTest {
                 new WhistUiText(HowToPlay.Language.EN).bidSummary(state));
         assertEquals("Licitații depuse 1/4 · Total licitat 2/10",
                 new WhistUiText(HowToPlay.Language.RO).bidSummary(state));
+    }
+
+    @Test public void bidSubmissionButtonUsesTheShortActionLabelInEachLanguage() {
+        assertEquals("Place bid", new WhistUiText(HowToPlay.Language.EN).placeBid());
+        assertEquals("Licitează", new WhistUiText(HowToPlay.Language.RO).placeBid());
     }
 
     @Test public void trumpIndicatorShowsTheTurnedCardOrExplainsSuitOnlyRounds() {
@@ -143,8 +150,8 @@ public final class WhistUiTextTest {
         WhistUiText english = new WhistUiText(HowToPlay.Language.EN);
         WhistUiText romanian = new WhistUiText(HowToPlay.Language.RO);
 
-        assertEquals("Bid 2  ·  Won 1", english.seatFacts(player));
-        assertEquals("Licitat 2  ·  Levate 1", romanian.seatFacts(player));
+        assertEquals("Bid 2\nWon 1", english.seatFacts(player));
+        assertEquals("Licitat 2\nLevate 1", romanian.seatFacts(player));
         assertEquals("BID NOW", english.seatTurnAction(true));
         assertEquals("PLAY NOW", english.seatTurnAction(false));
         assertEquals("LICITEAZĂ ACUM", romanian.seatTurnAction(true));

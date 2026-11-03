@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import ro.whistlab.core.HowToPlay;
@@ -35,10 +37,12 @@ import ro.whistlab.core.GameMode;
 import ro.whistlab.core.GamePhase;
 import ro.whistlab.core.GameRules;
 import ro.whistlab.core.GameSession;
+import ro.whistlab.core.PlayedCard;
 import ro.whistlab.core.Suit;
 import ro.whistlab.core.Trump;
 
 public final class MainActivity extends Activity {
+    private static final long COMPLETED_TRICK_DISPLAY_MILLIS = 1_500L;
     private static final int PINE = Color.rgb(29, 54, 43);
     private static final int INK = Color.rgb(41, 54, 46);
     private static final int MUTED = Color.rgb(105, 117, 106);
@@ -47,6 +51,7 @@ public final class MainActivity extends Activity {
     private static final int BACKGROUND = Color.rgb(246, 245, 237);
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final CompletedTrickPause completedTrickPause = new CompletedTrickPause();
     private GameSession game;
     private GameConfig lastConfig;
     private OriginalMatchReplay recordedReplay;
@@ -90,6 +95,8 @@ public final class MainActivity extends Activity {
             } catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_fixture", false)) {
             openOneTrickFixture(getIntent().getBooleanExtra("persist_fixture", false));
+        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_trick_pause_fixture", false)) {
+            openTrickPauseFixture();
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hand_fan_fixture", false)) {
             openThirteenCardFanFixture();
         } else {
@@ -294,17 +301,21 @@ public final class MainActivity extends Activity {
     }
 
     private void renderPlay() {
+        renderPlay(Collections.emptyList(), false);
+    }
+
+    private void renderPlay(List<PlayedCard> completedTrick, boolean pauseActive) {
         applyTableWindowChrome();
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = gamePage();
         addGameHeader(page, state);
-        boolean humanTurn = state.currentSeat() == 0;
+        boolean humanTurn = !pauseActive && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
         List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
         String instruction = humanTurn ? copy.playHint(state) : null;
         GameTablePanel table = GameTablePanel.playing(this, state,
                 humanTurn ? legal : java.util.Collections.emptyList(),
-                this::playHumanCard, instruction, copy);
+                this::playHumanCard, instruction, completedTrick, pauseActive, copy);
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
     }
@@ -473,6 +484,13 @@ public final class MainActivity extends Activity {
         }
         GameSession.Snapshot state = game.snapshot();
         tableVisible=true;
+        CompletedTrickPause.DisplayState trickPause = completedTrickPause.evaluate(
+                state, SystemClock.uptimeMillis());
+        if (trickPause.active()) {
+            renderPlay(trickPause.cards(), true);
+            handler.postDelayed(this::driveAutomatedTurns, trickPause.remainingMillis());
+            return;
+        }
         if (state.phase() == GamePhase.SCORE) {
             renderScore();
             return;
@@ -541,6 +559,19 @@ public final class MainActivity extends Activity {
         game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
         lastConfig = config;
         if (persistFixture) persistGame();
+        driveAutomatedTurns();
+    }
+
+    private void openTrickPauseFixture() {
+        GameConfig config = new GameConfig(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 20261103L);
+        List<List<Card>> hands = Arrays.asList(
+                Arrays.asList(new Card(Suit.HEARTS, 14), new Card(Suit.CLUBS, 14)),
+                Arrays.asList(new Card(Suit.HEARTS, 13), new Card(Suit.CLUBS, 13)),
+                Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
+                Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
+        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
+        lastConfig = config;
+        persistGame();
         driveAutomatedTurns();
     }
 

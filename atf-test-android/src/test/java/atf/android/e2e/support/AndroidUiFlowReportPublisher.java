@@ -5,11 +5,15 @@ import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.contract.AtfReportPorts;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.contract.AtfGherkinKeyword;
+import atf.reporting.configuration.ReportingSettings;
 import atf.reporting.evidence.ReportScreenshotPolicy;
 import atf.reporting.evidence.profile.ReportEvidenceProfile;
+import atf.reporting.markup.ExtentReportNodeSupport;
+import atf.reporting.markup.vocabulary.AtfReportHtmlVocabulary;
 import atf.reporting.extent.session.ExtentReportSession;
 import atf.reporting.model.ReportField;
 import atf.reporting.model.ReportObservation;
+import atf.reporting.security.SensitiveDataRedactor;
 import atf.reporting.ui.UiExtentReportSession;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,9 +34,11 @@ public final class AndroidUiFlowReportPublisher {
         List<Path> evidenceFiles = files == null ? List.of() : List.copyOf(files);
         Path output = report.toAbsolutePath().normalize();
         Files.createDirectories(output.getParent());
+        ReportingSettings settings = AtfReportConfigurationLoader.load().reportingSettings();
+        validateCheckpointContract(trace,
+                settings.assertionMaxDisplayCharacters());
 
-        try (var session = new ExtentReportSession(output,
-                AtfReportConfigurationLoader.load().reportingSettings())) {
+        try (var session = new ExtentReportSession(output, settings)) {
             AtfReportPorts.Scenario raw = session.startScenario(
                     trace.testClass(), trace.testPackage(), trace.name(), trace.tags());
             publishRunReceipt(raw, trace, installedPackage, device, androidApi, summary, evidenceFiles);
@@ -63,7 +69,7 @@ public final class AndroidUiFlowReportPublisher {
             raw.complete(trace.status());
         }
 
-        auditPublishedReport(output, trace);
+        auditPublishedReport(output, trace, settings);
         return output;
     }
 
@@ -99,7 +105,8 @@ public final class AndroidUiFlowReportPublisher {
                 .reduce(AtfReportStatus.INFO, AtfReportStatus::worst);
     }
 
-    private static void auditPublishedReport(Path report, AndroidUiFlowTrace trace) throws Exception {
+    private static void auditPublishedReport(Path report, AndroidUiFlowTrace trace,
+            ReportingSettings settings) throws Exception {
         require(Files.isRegularFile(report) && Files.size(report) > 2_000,
                 "Android UI Extent report was not published: " + report);
         String html = Files.readString(report);
@@ -137,32 +144,68 @@ public final class AndroidUiFlowReportPublisher {
                 "UI evidence disclosures must be collapsed by default");
 
         java.util.Map<String, Integer> screenshotOccurrences = new java.util.HashMap<>();
-        for (AndroidUiFlowTrace.PhaseSnapshot phase : trace.phaseSnapshots()) {
-            for (AndroidUiFlowTrace.CheckpointSnapshot checkpoint : phase.checkpoints()) {
-                require(containsText(html, checkpoint.title()), "Extent omitted checkpoint " + checkpoint.title());
-                for (var action : checkpoint.actions()) {
-                    boolean rowIsVisible = containsText(html, action.operation()) && containsText(html, action.target())
-                            && containsText(html, action.expected()) && containsText(html, action.observed());
-                    boolean measuredDispatchIsVisible = action.source().name().equals("OBSERVE")
-                            || (containsText(html, action.durationText())
-                                    && (containsText(html, action.status().displayValue())
-                                            || containsText(html, action.status().displayLabel())));
-                    require(rowIsVisible && measuredDispatchIsVisible,
-                            "Extent omitted action/observation details from " + checkpoint.title());
-                }
-                for (var assertion : checkpoint.assertions()) {
-                    require(containsText(html, assertion.name()),
-                            "Extent omitted assertion " + assertion.name() + " from " + checkpoint.title());
-                    require(containsText(html, assertion.expected()) && containsText(html, assertion.actual())
-                                    && (containsText(html, assertion.resultStatus().displayValue())
-                                            || containsText(html, assertion.resultStatus().displayLabel())),
-                            "Extent omitted the evaluated expected/actual/result for " + assertion.name());
-                }
-                if (checkpoint.screenshot() != null) {
-                    String payload = AndroidScreenshotEvidence.from(checkpoint.screenshot()).base64Png();
-                    screenshotOccurrences.merge(payload, 1, Integer::sum);
-                }
+        List<AndroidUiFlowTrace.CheckpointSnapshot> orderedCheckpoints = checkpoints;
+        int ownerSearchFrom = 0;
+        SensitiveDataRedactor redactor = new SensitiveDataRedactor();
+        for (int index = 0; index < orderedCheckpoints.size(); index++) {
+            AndroidUiFlowTrace.CheckpointSnapshot checkpoint = orderedCheckpoints.get(index);
+            String titleMarker = checkpointTitleMarker(checkpoint);
+            int ownerStart = html.indexOf(titleMarker, ownerSearchFrom);
+            require(ownerStart >= 0, "Extent omitted checkpoint " + checkpoint.title());
+            int ownerEnd = html.length();
+            if (index + 1 < orderedCheckpoints.size()) {
+                int nextOwner = html.indexOf(checkpointTitleMarker(orderedCheckpoints.get(index + 1)),
+                        ownerStart + titleMarker.length());
+                require(nextOwner >= 0, "Extent omitted the next ordered checkpoint after " + checkpoint.title());
+                ownerEnd = nextOwner;
             }
+            int diagnosticStart = html.indexOf("EXECUTION DIAGNOSTICS", ownerStart + titleMarker.length());
+            if (diagnosticStart >= 0 && diagnosticStart < ownerEnd) ownerEnd = diagnosticStart;
+            String ownerHtml = html.substring(ownerStart, ownerEnd);
+            require(countOccurrences(ownerHtml, "class=\"atf-ui-action-sequence\"") == 1
+                            && countOccurrences(ownerHtml, "class=\"atf-ui-observations\"") == 1
+                            && countOccurrences(ownerHtml, "class=\"atf-ui-assertions\"") == 1,
+                    "Checkpoint does not own exactly one collapsed action, observation, and assertion table: "
+                            + checkpoint.title());
+            String actionDisclosure = detailsBlock(ownerHtml, "atf-ui-action-sequence");
+            String observationDisclosure = detailsBlock(ownerHtml, "atf-ui-observations");
+            require(actionDisclosure != null && observationDisclosure != null,
+                    "Checkpoint evidence is detached from its Gherkin owner: " + checkpoint.title());
+            for (var action : checkpoint.actions()) {
+                String actionEvidence = action.source().name().equals("ACTION")
+                        ? actionDisclosure : observationDisclosure;
+                boolean operationVisible = containsText(actionEvidence, action.operation());
+                boolean targetVisible = containsText(actionEvidence, action.target());
+                boolean expectedVisible = containsText(actionEvidence, action.expected());
+                boolean observedVisible = containsText(actionEvidence, action.observed());
+                boolean statusVisible = containsText(actionEvidence, action.status().marker())
+                        || containsText(actionEvidence, action.status().displayValue())
+                        || containsText(actionEvidence, action.status().displayLabel());
+                boolean rowIsVisible = operationVisible && targetVisible && expectedVisible
+                        && observedVisible && statusVisible;
+                boolean measuredDispatchIsVisible = action.source().name().equals("OBSERVE")
+                        || containsText(actionEvidence, action.durationText());
+                require(rowIsVisible && measuredDispatchIsVisible,
+                        "Extent omitted an action/observation row from its owning checkpoint: "
+                                + checkpoint.title() + " / " + action.operation()
+                                + " [operation=" + operationVisible + ", target=" + targetVisible
+                                + ", expected=" + expectedVisible + ", observed=" + observedVisible
+                                + ", status=" + statusVisible + ", duration=" + measuredDispatchIsVisible + "]");
+            }
+            for (var assertion : checkpoint.assertions()) {
+                String row = assertionRow(assertion, settings, redactor);
+                require(ownerHtml.contains(row),
+                        "Extent omitted or detached the complete evaluated assertion row from "
+                                + checkpoint.title() + ": " + assertion.name());
+            }
+            if (checkpoint.screenshot() != null) {
+                String payload = AndroidScreenshotEvidence.from(checkpoint.screenshot()).base64Png();
+                require(actionDisclosure.contains("data:image/png;base64," + payload),
+                        "The exact checkpoint PNG is not embedded in its owning action disclosure: "
+                                + checkpoint.title());
+                screenshotOccurrences.merge(payload, 1, Integer::sum);
+            }
+            ownerSearchFrom = ownerEnd;
         }
         for (var screenshot : screenshotOccurrences.entrySet()) {
             require(countOccurrences(html, "data:image/png;base64," + screenshot.getKey()) == screenshot.getValue(),
@@ -185,6 +228,56 @@ public final class AndroidUiFlowReportPublisher {
                                 + " targeting " + action.target());
             }
         }
+    }
+
+    private static void validateCheckpointContract(AndroidUiFlowTrace trace, int assertionPreviewLimit) {
+        List<AndroidUiFlowTrace.CheckpointSnapshot> checkpoints = trace.phaseSnapshots().stream()
+                .flatMap(phase -> phase.checkpoints().stream()).toList();
+        for (AndroidUiFlowTrace.CheckpointSnapshot checkpoint : checkpoints) {
+            require(checkpoint.screenshot() != null && Files.isRegularFile(checkpoint.screenshot()),
+                    "Android checkpoint has no captured PNG: " + checkpoint.title());
+            require(checkpoint.actions().stream().anyMatch(action -> action.source().name().equals("ACTION")),
+                    "Android checkpoint has no dispatched UI action: " + checkpoint.title());
+            require(checkpoint.actions().stream().anyMatch(action -> action.source().name().equals("OBSERVE")),
+                    "Android checkpoint has no recorded UI observation: " + checkpoint.title());
+            require(!checkpoint.assertions().isEmpty(),
+                    "Android checkpoint has no evaluated assertions: " + checkpoint.title());
+            for (var assertion : checkpoint.assertions()) {
+                require(assertion.expected().length() <= assertionPreviewLimit,
+                        "Assertion expected value exceeds Extent's configured " + assertionPreviewLimit
+                                + " character preview: " + assertion.name());
+                require(assertion.actual().length() <= assertionPreviewLimit,
+                        "Assertion actual value exceeds Extent's configured " + assertionPreviewLimit
+                                + " character preview: " + assertion.name()
+                                + "; put complete diagnostic values in the expandable observation table");
+            }
+        }
+    }
+
+    private static String checkpointTitleMarker(AndroidUiFlowTrace.CheckpointSnapshot checkpoint) {
+        return "<span>" + checkpoint.keyword() + " "
+                + AtfReportHtmlVocabulary.escapeHtml(checkpoint.title()) + "</span>";
+    }
+
+    private static String detailsBlock(String ownerHtml, String className) {
+        String opening = "<details class=\"" + className + "\"";
+        int start = ownerHtml.indexOf(opening);
+        if (start < 0) return null;
+        int end = ownerHtml.indexOf("</details>", start);
+        return end < 0 ? null : ownerHtml.substring(start, end + "</details>".length());
+    }
+
+    private static String assertionRow(atf.reporting.contract.AtfAssertion assertion,
+            ReportingSettings settings, SensitiveDataRedactor redactor) {
+        String name = redactor.redactText(assertion.name());
+        String expected = ExtentReportNodeSupport.display(
+                redactor.redactField(assertion.name(), assertion.expected()), settings);
+        String actual = ExtentReportNodeSupport.display(
+                redactor.redactField(assertion.name(), assertion.actual()), settings);
+        return "<tr><td>" + AtfReportHtmlVocabulary.escapeHtml(name) + "</td><td>"
+                + AtfReportHtmlVocabulary.escapeHtml(expected) + "</td><td>"
+                + AtfReportHtmlVocabulary.escapeHtml(actual) + "</td><td>"
+                + assertion.resultStatus().marker() + "</td></tr>";
     }
 
     private static String fingerprintLine(Path file) {
@@ -222,7 +315,7 @@ public final class AndroidUiFlowReportPublisher {
     private static boolean containsText(String html, String value) {
         return html.contains(value) || html.contains(value.replace("&", "&amp;")
                 .replace("<", "&lt;").replace(">", "&gt;")
-                .replace("\"", "&quot;").replace("'", "&#39;"));
+                .replace("\"", "&quot;").replace("'", "&#39;").replace("\r", "&#13;"));
     }
 
     private static void require(boolean condition, String message) {
