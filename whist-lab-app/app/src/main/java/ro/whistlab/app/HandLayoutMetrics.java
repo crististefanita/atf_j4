@@ -10,6 +10,10 @@ final class HandLayoutMetrics {
     static final int NEIGHBOR_Z_DP = 1;
     static final int SELECTED_Z_DP = -1;
     static final float CARD_LIFT_SCALE = 1.12f;
+    private static final int FULL_SIZE_HAND_CARD_LIMIT = 8;
+    private static final int MAX_PLAYABLE_HAND_SIZE = 13;
+    private static final int MIN_DENSE_CARD_WIDTH_DP = 44;
+    static final int DENSE_HAND_MIN_ADVANCE_DP = 16;
     private static final int MIN_CARD_COUNT = 1;
     private static final int MAX_CARD_COUNT = 17;
 
@@ -23,6 +27,17 @@ final class HandLayoutMetrics {
         return Math.max(CARD_WIDTH_DP, Math.round(CARD_WIDTH_DP * Math.min(fontScale, 1.5f)));
     }
 
+    static int cardWidthDp(int cardCount, int availableWidthDp, float fontScale) {
+        requireHand(cardCount, availableWidthDp, fontScale);
+        int preferredWidth = cardWidthDp(fontScale);
+        if (cardCount <= FULL_SIZE_HAND_CARD_LIMIT || cardCount > MAX_PLAYABLE_HAND_SIZE) {
+            return preferredWidth;
+        }
+        int readableWidth = Math.round(MIN_DENSE_CARD_WIDTH_DP * Math.min(fontScale, 1.5f));
+        int halfOverlapWidth = (2 * availableWidthDp) / (cardCount + 1);
+        return Math.min(preferredWidth, Math.max(readableWidth, halfOverlapWidth));
+    }
+
     static int cardLabelSizeSp() {
         return 13;
     }
@@ -33,14 +48,19 @@ final class HandLayoutMetrics {
 
     static int horizontalAdvanceDp(int cardCount, int availableWidthDp, float fontScale) {
         requireHand(cardCount, availableWidthDp, fontScale);
-        if (cardCount == 1) return cardWidthDp(fontScale);
-        int fitAdvance = (availableWidthDp - cardWidthDp(fontScale)) / (cardCount - 1);
-        return Math.max(minVisibleAdvanceDp(fontScale), fitAdvance);
+        int cardWidth = cardWidthDp(cardCount, availableWidthDp, fontScale);
+        if (cardCount == 1) return cardWidth;
+        int fitAdvance = (availableWidthDp - cardWidth) / (cardCount - 1);
+        int minimumAdvance = cardCount <= MAX_PLAYABLE_HAND_SIZE
+                ? Math.round(DENSE_HAND_MIN_ADVANCE_DP * Math.min(fontScale, 1.5f))
+                : minVisibleAdvanceDp(fontScale);
+        return Math.max(minimumAdvance, fitAdvance);
     }
 
     static int contentWidthDp(int cardCount, int availableWidthDp, float fontScale) {
         int advance = horizontalAdvanceDp(cardCount, availableWidthDp, fontScale);
-        return cardCount == 1 ? advance : (cardCount - 1) * advance + cardWidthDp(fontScale);
+        return cardCount == 1 ? advance
+                : (cardCount - 1) * advance + cardWidthDp(cardCount, availableWidthDp, fontScale);
     }
 
     static boolean requiresHorizontalScroll(int cardCount, int availableWidthDp, float fontScale) {

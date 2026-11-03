@@ -34,7 +34,8 @@ public final class IndependentPlayer {
         int best=-1;for(int b=0;b<=p.size;b++)if((!last||b+prior!=p.size)&&(best<0||values[b]>values[best]))best=b;
         return new Choice(best,"Independent planner; own cards/public facts; "+samples+" possible deals; counterfactual contract values="+Arrays.toString(values));
     }
-    public static Choice card(Position p){
+    public static Choice card(Position p){var model=modelCard(p);var proof=ContractGuarantee.choose(p,model.value());return proof.certified()&&proof.card()!=model.value()?new Choice(proof.card(),model.explanation()+"; public contract certificate across"+proof.worlds()+" complete feasible deals and all legal continuations"):model;}
+    private static Choice modelCard(Position p){
         var allowed=legal(p.hand,p.trick.isEmpty()?-1:p.trick.get(0).card/13,p.trump);if(allowed.isEmpty())throw new IllegalArgumentException("No playable card");
         if(allowed.size()==1)return new Choice(allowed.get(0),"Only legal card under independent follow-suit/mandatory-trump rules");
         Integer dominant=lateDiscard(p);if(dominant!=null)return new Choice(dominant,"Two-card same-suit dominance; retain the rank matching the remaining contract; public information only");
@@ -49,6 +50,20 @@ public final class IndependentPlayer {
         }
         int best=0;for(int c=1;c<allowed.size();c++)if(values[c]>values[best]+1e-8||Math.abs(values[c]-values[best])<1e-8&&rivals[c]<rivals[best])best=c;
         return new Choice(allowed.get(best),"Independent planner; "+samples+" possible deals; candidates="+allowed+"; contract sums="+Arrays.toString(values)+"; strongest-rival sums="+Arrays.toString(rivals));
+    }
+    /** Every feasible unordered hand assignment, including undealt cards, or an explicit fallback. Never a partial prefix. */
+    static List<List<List<Integer>>> smallDeals(Position p){
+     if(p.seats.size()!=4||p.seats.stream().anyMatch(s->s.remaining>2))return List.of();
+     boolean[] used=new boolean[52];for(int c:p.hand)used[c]=true;for(Play x:p.history)used[x.card]=true;for(Play x:p.trick)used[x.card]=true;if(p.turnedCard>=0)used[p.turnedCard]=true;
+     var pool=new ArrayList<Integer>();for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++)if(!used[suit*13+rank])pool.add(suit*13+rank);if(pool.size()>10)return List.of();
+     boolean[][] voids=new boolean[p.seats.size()][4];for(int i=0;i<p.history.size();i++){Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;if(play.card/13!=led){voids[play.seat][led]=true;if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;}}
+     var hands=new ArrayList<List<Integer>>();for(int s=0;s<p.seats.size();s++)hands.add(new ArrayList<>());hands.set(p.seat,new ArrayList<>(p.hand));var results=new ArrayList<List<List<Integer>>>();enumerate(p,pool,voids,hands,0,results);return results.size()>256?List.of():List.copyOf(results);
+    }
+    private static void enumerate(Position p,List<Integer> available,boolean[][] voids,List<List<Integer>> hands,int seat,List<List<List<Integer>>> out){
+     if(out.size()>256)return;if(seat==hands.size()){out.add(copy(hands));return;}if(seat==p.seat){enumerate(p,available,voids,hands,seat+1,out);return;}choose(p,available,voids,hands,seat,0,p.seats.get(seat).remaining,new ArrayList<>(),out);
+    }
+    private static void choose(Position p,List<Integer> available,boolean[][] voids,List<List<Integer>> hands,int seat,int at,int need,List<Integer> chosen,List<List<List<Integer>>> out){
+     if(out.size()>256)return;if(need==0){hands.set(seat,new ArrayList<>(chosen));var rest=new ArrayList<>(available);rest.removeAll(chosen);enumerate(p,rest,voids,hands,seat+1,out);return;}for(int i=at;i<=available.size()-need;i++)if(!voids[seat][available.get(i)/13]){chosen.add(available.get(i));choose(p,available,voids,hands,seat,i+1,need-1,chosen,out);chosen.remove(chosen.size()-1);}
     }
     private static Integer lateDiscard(Position p){
         if(p.hand.size()!=2||p.trick.isEmpty()||p.seats.get(p.seat).bid==null)return null;int low=p.hand.get(0),high=p.hand.get(1);if(low/13!=high/13)return null;
@@ -145,7 +160,7 @@ public final class IndependentPlayer {
         return needed>0?preferred.stream().min(power).orElseThrow():preferred.stream().max(power).orElseThrow();
     }
     public static List<Integer> legal(List<Integer> hand,int led,int trump){if(led<0)return hand;var follows=hand.stream().filter(c->c/13==led).toList();if(!follows.isEmpty())return follows;var cuts=hand.stream().filter(c->c/13==trump).toList();return cuts.isEmpty()?hand:cuts;}
-    private static int winner(List<Play> t,int trump){Play best=t.get(0);int led=best.card/13;for(Play p:t)if(strength(p.card,led,trump)>strength(best.card,led,trump))best=p;return best.seat;}
+    static int winner(List<Play> t,int trump){Play best=t.get(0);int led=best.card/13;for(Play p:t)if(strength(p.card,led,trump)>strength(best.card,led,trump))best=p;return best.seat;}
     private static int strength(int c,int led,int trump){return (c/13==trump?200:c/13==led?100:0)+c%13;}
     private static int score(Position p,int seat,int won,int bid){
         int base=won==bid?5+won:-Math.abs(won-bid);

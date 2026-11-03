@@ -41,3 +41,6 @@ node --test scripts/whist-hand-patterns.test.mjs scripts/whist-heuristic-calibra
 ```
 
 Pentru protocolul de masă, rezultate și limite vezi [Arena AI](../AI_STRATEGY_ARENA.md). Nu există aici o promisiune de joc perfect sau acoperire exhaustivă a tuturor mâinilor posibile.
+## Lecție verificată: evitarea unei levate în plus
+
+După realizarea contractului, o carte mai mică nu este automat alegerea sigură. În contraexemplul R11, contract 1 și deja 1 levată, QH + 10D la atu treflă, aruncarea lui 10D păstrează exact contractul în toate cele 96 de distribuții public compatibile și toate continuările legale; aruncarea QH permite o levată suplimentară. Aceasta este o demonstrație contextuală, nu regula „păstrează mereu dama”. Garda se aplică doar finalurilor mici enumerate complet; fără dovadă sau la depășirea bugetului se păstrează plannerul anterior. Vezi [analiza R11](../AI_LOSS11_ACCEPTANCE.md).

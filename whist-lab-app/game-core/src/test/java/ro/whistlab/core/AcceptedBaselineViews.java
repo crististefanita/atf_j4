@@ -1,0 +1,6 @@
+package ro.whistlab.core;
+import ro.whistlab.coach.baseline.RoundEightIndependentPlayer;import ro.whistlab.core.baseline.RoundTenMonteCarloAi;
+final class AcceptedBaselineViews {private AcceptedBaselineViews(){}
+ static RoundTenMonteCarloAi.View expert(MonteCarloAi.View v){return new RoundTenMonteCarloAi.View(v.mode(),v.trump(),v.seat(),v.dealer(),v.handSize(),v.hand(),v.seats().stream().map(s->new RoundTenMonteCarloAi.Seat(s.remaining(),s.bid(),s.won(),s.total(),s.streak())).toList(),v.trick(),v.history(),v.turnedCard(),v.streakBonuses(),v.streakBonusPoints());}
+ static RoundEightIndependentPlayer.Position player(MonteCarloAi.View v){var p=LostGameContractRegressionTest.independent(v);return new RoundEightIndependentPlayer.Position(p.seat(),p.dealer(),p.size(),p.trump(),p.hand(),p.seats().stream().map(s->new RoundEightIndependentPlayer.Seat(s.remaining(),s.bid(),s.won(),s.total(),s.streak())).toList(),p.trick().stream().map(x->new RoundEightIndependentPlayer.Play(x.seat(),x.card())).toList(),p.history().stream().map(x->new RoundEightIndependentPlayer.Play(x.seat(),x.card())).toList(),p.turnedCard(),p.streakBonuses(),p.streakBonusPoints());}
+}

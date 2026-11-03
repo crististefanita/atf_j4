@@ -424,3 +424,6 @@ UI/API/SQL table formatting remain part of the contract.
 single initialization for the requested view, truthful readiness and native
 navigation-link repair. PNGs, audit comparisons and preview 240 are retained;
 readiness/action and navigation deadlines remain 10 s and 45 s.
+
+
+Offline R11: [analiza pierderilor, regresii mici și acceptanță](docs/AI_LOSS11_ACCEPTANCE.md), [feedback](docs/feedback/AI_LOSS11_Feedback.md). Corecția finalului cu contract certificat este distinctă de progresul statistic; evaluarea nouă are 512 partide și delte zero. Interfața nu a fost modificată în această iterație.

@@ -8,14 +8,16 @@ const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const json = bytes => JSON.parse(bytes.toString().replace(/^\uFEFF/, ''));
 const write = (file, value) => fs.writeFile(file, JSON.stringify(value, null, 2) + '\n', {flag: 'wx'});
 
-export function validateCapture(r, legacyArenaInventory = false) {
+export function validateCapture(r, legacyArenaInventory = false, expectedStatus = 'PASS') {
     assert.equal(r.schemaVersion, 1);
     for (const key of ['runId', 'invocationId', 'className', 'methodName', 'startedAt', 'endedAt']) {
         assert.equal(typeof r[key], 'string'); assert.ok(r[key].length);
     }
     assert.ok(Number.isFinite(Date.parse(r.startedAt)) && Number.isFinite(Date.parse(r.endedAt)));
     assert.ok(Number.isSafeInteger(r.durationNanos) && r.durationNanos > 0);
-    assert.equal(r.status, 'PASS', 'Release collections cannot conceal non-PASS captures');
+    assert.ok(['PASS', 'FAIL'].includes(expectedStatus), 'Only explicitly declared closed outcomes are publishable');
+    assert.equal(r.status, expectedStatus, 'Source outcome differs from the declared report population');
+    if (r.status === 'FAIL') assert.ok(typeof r.failure === 'string' && r.failure.length, 'A failed experiment needs its original reason');
     assert.ok(r.parameters && Array.isArray(r.checkpoints) && r.checkpoints.length);
     const owners = new Map(); let knownDuplicates = 0;
     for (const cp of r.checkpoints) {
@@ -27,19 +29,24 @@ export function validateCapture(r, legacyArenaInventory = false) {
             knownDuplicates++;
         }
         owners.set(cp.owner, cp.title);
-        for (const c of cp.comparisons) assert.equal(c.passed, true, 'Contradictory PASS capture');
+        for (const c of cp.comparisons) {
+            assert.equal(typeof c.passed, 'boolean');
+            if (r.status === 'PASS') assert.equal(c.passed, true, 'Contradictory PASS capture');
+        }
     }
     if (legacyArenaInventory) assert.equal(knownDuplicates, 1, 'Legacy exception must match the declared historical defect exactly');
 }
 
-export function selectWholeCaptures(records, requestedIds) {
+export function selectWholeCaptures(records, requestedIds, expectedStatuses = {}) {
     assert.equal(new Set(requestedIds).size, requestedIds.length, 'Repeated selection');
     const byId = new Map();
     for (const r of records) {
-        validateCapture(r);
+        validateCapture(r, false, expectedStatuses[r.invocationId] ?? 'PASS');
+        if (r.status !== 'PASS') assert.ok(requestedIds.includes(r.invocationId), 'Declared failed experiment must be included whole');
         assert.ok(!byId.has(r.invocationId), 'Duplicate population identity');
         byId.set(r.invocationId, r);
     }
+    for (const id of Object.keys(expectedStatuses)) assert.ok(byId.has(id), 'Declared outcome absent from population');
     return requestedIds.map(id => { assert.ok(byId.has(id), 'Missing requested capture: ' + id); return byId.get(id); });
 }
 
@@ -122,7 +129,7 @@ export async function collectReportInput(specFile, output) {
         const sources = [], records = [];
         for (const name of names) {
             const source = path.join(cohort.folder, name), bytes = await fs.readFile(source), r = json(bytes);
-            validateCapture(r, cohort.legacyArenaInventory === true); assert.equal(name, r.invocationId + '.json');
+            validateCapture(r, cohort.legacyArenaInventory === true, cohort.expectedStatuses?.[r.invocationId] ?? 'PASS'); assert.equal(name, r.invocationId + '.json');
             assert.equal(hash(bytes), expected.get(r.invocationId), 'Source population changed');
             assert.ok(!globalIds.has(r.invocationId), 'Repeated invocation across cohorts'); globalIds.add(r.invocationId);
             let dealIdentity;
@@ -146,7 +153,7 @@ export async function collectReportInput(specFile, output) {
                 detailed: cohort.includeIds.includes(r.invocationId), source});
             records.push(r);
         }
-        const selected = cohort.legacyArenaInventory ? [] : selectWholeCaptures(records, cohort.includeIds);
+        const selected = cohort.legacyArenaInventory ? [] : selectWholeCaptures(records, cohort.includeIds, cohort.expectedStatuses);
         for (const r of selected) {
             const source = sources.find(s => s.invocationId === r.invocationId), file = 'invocations/' + r.invocationId + '.json';
             await fs.copyFile(source.source, path.join(output, file));

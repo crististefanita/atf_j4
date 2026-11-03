@@ -144,13 +144,15 @@ home. Flow-ul cu 13 cărți verifică pozițiile celor patru locuri, o carte juc
 fanul rămas, centrul levatei și stabilitatea locului omului. Build-ul și testele
 UI vizate au trecut în staging TMP și pe emulatorul API 28.
 
-Captura live anterioară a flow-ului de prezentare are manifest `PASS`, însă publicarea ei veche a pus manifestul de 11.967 caractere într-un preview Extent trunchiat. Publicarea actuală trimite comparațiile printr-un singur `AssertionStep` standard și păstrează manifestul atașat cu hash; verificarea raportului pe aceeași captură live a găsit toate cele 11 aserțiuni în tabel și PNG-urile inline. Raportul identifică acum dispozitivul din aceeași proprietate/variabilă ca `AdbClient`, fără fallback fals la `emulator-5554`.
+Captura live anterioară a flow-ului de prezentare avea manifest `PASS`, însă publisherul vechi punea manifestul de 11.967 caractere într-un preview Extent trunchiat. Acum fiecare checkpoint folosește pasul UI public din J18: acțiunile ADB, captura inline și comparațiile evaluate sunt în același owner Gherkin, iar receipt-ul păstrează numărătorile și hash-urile probelor locale fără linkuri `file:`. `TIME` măsoară dispatch-ul ADB, separat de așteptarea de stabilizare. Raportul identifică dispozitivul din aceeași proprietate/variabilă ca `AdbClient`, fără fallback fals la `emulator-5554`.
 
-`AndroidUiFlowTraceTest` verifică separat ordinea checkpoint-urilor, contextul
-Gherkin și păstrarea unui verdict FAIL cu diagnosticul lui. În rularea live din
-3 noiembrie 2026, ambele flow-uri Whist Lab au trecut; fiecare raport Extent are
-manifest `PASS`, capturi PNG încorporate și pași cu tabelul standard de aserțiuni
-expandabil.
+`AndroidUiDriverActionTraceTest` verifică măsurarea dispatch-ului fără timpul
+fix de așteptare. `AndroidUiFlowReportPublisherTest` verifică tabelul de acțiuni,
+assert-urile, PNG-ul în același disclosure colapsabil, receipt-ul și failure-ul
+dinaintea primului checkpoint. În rularea live din 3 noiembrie 2026, ambele
+flow-uri Whist Lab au trecut: raportul cu opt cărți are șase checkpoint-uri, iar
+cel cu treisprezece cărți are două; toate includ tabelele acțiune/assert și
+capturile proprii, fără linkuri locale. Ambele au rulat pe emulatorul API 28.
 
 Confirmarea licitației are 132 × 48 dp cu contur, iar E2E măsoară lățimea ei și
 ambele dimensiuni ale opțiunilor. Capturile live din 3 noiembrie au confirmat
@@ -159,9 +161,10 @@ patru. Inseturile laterale sunt 18% în licitare și 23% în joc, conform mock-u
 Raportul cu opt cărți afișează cartea întoarsă cu rang și simbol (`6♠` în acea
 rulare); mâna Descending de 13 cărți consumă tot pachetul și declară
 `NO TURNED CARD`. E2E compară limitele cărții jucate cu suprafața ovală: centrul
-observat a fost la `x=539,5 px`, față de `x=540,5 px` pentru masă. Rapoartele sunt
-în `%TEMP%\whist-j4-final-layout-live-20261103-142000\table-presentation` și
-`%TEMP%\whist-j4-final-layout-live-20261103-142000\thirteen-card-fan`.
+observat a fost la `x=539,5 px`, față de `x=540,5 px` pentru masă. Rapoartele
+regenerate după corectarea TIME sunt în
+`%TEMP%\ATF_J4_REPORT_E2E_20261103_1609\table-presentation` și
+`%TEMP%\ATF_J4_REPORT_E2E_20261103_1609\thirteen-card-fan`.
 
 Flow-urile anterioare de gameplay și inițializare au trecut în rularea `20261101-222629`; J4 folosește același `AdbClient`, adapterul UI Automator și Extent Reporting J16 pentru ambele pachete.
 

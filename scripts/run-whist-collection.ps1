@@ -26,7 +26,8 @@ if($Collection -eq 'learning'){
     $range=$protocol.$Phase
     $declaredRoles=@("expert","player")
     if($null -ne $protocol.roles){$declaredRoles=@($protocol.roles);if($declaredRoles.Count -lt 1 -or $declaredRoles.Count -gt 2 -or @($declaredRoles | Select-Object -Unique).Count -ne $declaredRoles.Count -or @($declaredRoles | Where-Object {$_ -notin @("expert","player")}).Count){throw "Invalid declared protocol roles."}}
-    if($protocol.version -ne 7 -or $null -eq $range){throw 'Current schema7 protocol and selected phase are required; historical protocols use their retained source snapshots.'}
+    if($protocol.version -notin @(7,11) -or $null -eq $range){throw 'An explicit schema7/11 protocol and selected phase are required; historical protocols use their retained source snapshots.'}
+    if($protocol.version -eq 11 -and ($null -eq $protocol.baselines -or $protocol.baselines.expert -ne "EXPERT_V10" -or $protocol.baselines.player -ne "PLAYER_V8" -or (@($protocol.opponents | Sort-Object) -join ",") -ne "EXPERT_V10,PLAYER_V8")){throw "Round11 requires its frozen ExpertV10/IndependentV8 baselines and opponent families."}
     if(($range.firstSeed -isnot [long] -and $range.firstSeed -isnot [int]) -or ($range.seeds -isnot [long] -and $range.seeds -isnot [int])){throw 'Seed range must contain integers.'}
     if($range.firstSeed -lt 0 -or $range.seeds -lt 1 -or $range.seeds -gt 1000 -or ([long]$range.firstSeed+[long]$range.seeds) -gt [int]::MaxValue){throw 'Invalid declared seed range.'}
 }
@@ -35,7 +36,7 @@ if($Collection -eq 'arena'){
     $arenaProtocol=Get-Content -LiteralPath $ProtocolFile -Raw | ConvertFrom-Json
     if($arenaProtocol.schemaVersion -ne 1 -or $arenaProtocol.profile -ne 'ROMANIAN4_SERIES10'){throw 'Unsupported arena protocol.'}
 }
-if($CasesFile -and ($Collection -ne "learning" -or $protocol.version -ne 7 -or -not (Test-Path -LiteralPath $CasesFile -PathType Leaf))){throw "Case selection requires a Round7 learning protocol and an existing selection file."}
+if($CasesFile -and ($Collection -ne "learning" -or $protocol.version -notin @(7,11) -or -not (Test-Path -LiteralPath $CasesFile -PathType Leaf))){throw "Case selection requires a current Round7/Round11 learning protocol and an existing selection file."}
 $stageRoot=Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_COLLECTION_'+[guid]::NewGuid().ToString('N'))
 $stageApp=Join-Path $stageRoot 'whist-lab-app'
 New-Item -ItemType Directory -Path $RunRoot,$stageApp | Out-Null
@@ -74,15 +75,16 @@ if($Collection -eq 'learning' -and $Phase -eq 'heldout'){
 
 $inventory | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-inventory.json') -Encoding utf8
 $arguments=@('-p','algorithm-build','--offline','--no-daemon','--console=plain',$selection[0].task)
-if($Collection -eq 'learning'){$arguments[-1]=':game-core:roundSevenTest';$learningPrefix='whist.round7'}
+if($Collection -eq 'learning'){if($protocol.version -eq 11){$arguments[-1]=':game-core:roundElevenTest';$learningPrefix='whist.round11'}else{$arguments[-1]=':game-core:roundSevenTest';$learningPrefix='whist.round7'}}
 if($Collection -eq 'documentation'){$arguments+=@("-Pwhist.documentationEvidence=$RunRoot","-Pwhist.documentationMarkdown=$RunRoot\rules","-Pwhist.documentationRunId=$([IO.Path]::GetFileName($RunRoot))")}
 if($Collection -eq 'learning'){$arguments+=@("-P$learningPrefix.output=$RunRoot","-P$learningPrefix.corpus=$CorpusRoot","-P$learningPrefix.candidate=$Candidate","-P$learningPrefix.phase=$Phase","-P$learningPrefix.firstSeed=$($range.firstSeed)","-P$learningPrefix.seeds=$($range.seeds)")}
 if($Collection -eq "learning" -and $declaredRoles.Count -eq 1){$arguments+=("-P$learningPrefix.role="+$declaredRoles[0])}
 if($CasesFile){$arguments+=("-P$learningPrefix.casesFile="+$stagedCasesFile)}
 if($Collection -eq 'learning' -and $null -ne $protocol.baselines){
-    if($protocol.baselines.expert -ne 'EXPERT_V6' -or $protocol.baselines.player -notin @('PLAYER_V6','PLAYER_V8')){throw 'Unsupported frozen role baseline.'}
+    if($protocol.version -eq 7 -and ($protocol.baselines.expert -ne 'EXPERT_V6' -or $protocol.baselines.player -notin @('PLAYER_V6','PLAYER_V8'))){throw 'Unsupported frozen role baseline.'}
     $arguments+=("-P$learningPrefix.playerBaseline="+$protocol.baselines.player)
 }
+if($Collection -eq "learning" -and $null -eq $protocol.baselines){$arguments+=("-P$learningPrefix.playerBaseline=PLAYER_V6")}
 if($Collection -eq 'arena'){$arguments+=@("-Pwhist.arena.protocol=$RunRoot\protocol.json","-Pwhist.arena.output=$RunRoot","-Pwhist.arena.corpus=$CorpusRoot","-Pwhist.componentEvidence=$RunRoot")}
 if($Collection -eq 'strategy'){$arguments+=("-Pwhist.componentEvidence=$RunRoot")}
 $savedJava=$env:JAVA_HOME;$savedAndroid=$env:ANDROID_HOME;$savedPath=$env:Path

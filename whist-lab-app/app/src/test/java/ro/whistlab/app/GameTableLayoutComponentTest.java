@@ -27,25 +27,40 @@ public final class GameTableLayoutComponentTest {
         assertTrue(HandLayoutMetrics.SELECTED_Z_DP < HandLayoutMetrics.NEIGHBOR_Z_DP);
     }
 
-    @Test public void thirteenCardsFitTheReferenceViewportAndSeventeenScrollWithoutWrapping() {
+    @Test public void playableHandsFitNarrowViewportsAndLargerFixturesScrollWithoutWrapping() {
+        assertFalse(HandLayoutMetrics.requiresHorizontalScroll(13, 280, 1f));
         assertFalse(HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1f));
         assertTrue(HandLayoutMetrics.requiresHorizontalScroll(17, 353, 1f));
         assertTrue(HandLayoutMetrics.usesSingleRow(17));
         assertTrue(HandLayoutMetrics.requiresHorizontalScroll(17, 240, 1f));
+        assertEquals(44, HandLayoutMetrics.cardWidthDp(13, 280, 1f));
+        assertEquals(50, HandLayoutMetrics.cardWidthDp(13, 353, 1f));
+        assertEquals(66, HandLayoutMetrics.cardWidthDp(13, 560, 1f));
+        assertEquals(66, HandLayoutMetrics.cardWidthDp(17, 353, 1f));
+        assertTrue(HandLayoutMetrics.horizontalAdvanceDp(13, 280, 1f)
+                >= HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP);
         assertTrue(HandLayoutMetrics.horizontalAdvanceDp(13, 353, 1f)
                 >= HandLayoutMetrics.MIN_VISIBLE_ADVANCE_DP);
-        assertEquals(342, HandLayoutMetrics.contentWidthDp(13, 353, 1f));
+        assertTrue(HandLayoutMetrics.contentWidthDp(13, 280, 1f) <= 280);
+        assertEquals(350, HandLayoutMetrics.contentWidthDp(13, 353, 1f));
     }
 
-    @Test public void bidGridKeepsTheMockShapeAndUsesSixColumnsForLargeSetsWhenTheyFit() {
+    @Test public void bidGridCompactsNarrowTablesWithoutShrinkingTouchTargets() {
         assertEquals(0, BidGridMetrics.rowCount(0, 353));
         assertEquals(1, BidGridMetrics.rowCount(3, 353));
-        assertEquals(3, BidGridMetrics.rowCount(9, 353));
+        assertEquals(2, BidGridMetrics.rowCount(9, 353));
+        assertEquals(2, BidGridMetrics.rowCount(9, 399));
+        assertEquals(3, BidGridMetrics.rowCount(9, 400));
+        assertEquals(2, BidGridMetrics.rowCount(9, 280));
         assertEquals(6, BidGridMetrics.rowCount(18, 240));
         assertEquals(6, BidGridMetrics.columnCount(18, 353));
         assertEquals(3, BidGridMetrics.columnCount(18, 240));
+        assertEquals(5, BidGridMetrics.columnCount(9, 280));
         assertEquals(48, BidGridMetrics.CHOICE_TARGET_DP);
         assertEquals(48, BidGridMetrics.SUBMIT_TARGET_DP);
+        assertEquals(BidGridMetrics.DENSE_MIN_WIDTH_DP, 260);
+        assertEquals(BidGridMetrics.centerHeightDp(9, 280), BidGridMetrics.centerHeightDp(9, 353));
+        assertTrue(BidGridMetrics.centerHeightDp(9, 353) < BidGridMetrics.centerHeightDp(9, 400));
         assertTrue(TableLayoutMetrics.biddingCenterRowHeightDp(18, 240)
                 > TableLayoutMetrics.biddingCenterRowHeightDp(18, 353));
         assertTrue(TableLayoutMetrics.biddingHeightDp(3, 18, 240, 1f)
@@ -88,6 +103,10 @@ public final class GameTableLayoutComponentTest {
         }
         assertEquals(0.18f, TableSeatLayout.sideInsetFraction(true), 0.001f);
         assertEquals(0.23f, TableSeatLayout.sideInsetFraction(false), 0.001f);
+        assertEquals(0.16f, TableSeatLayout.sideInsetFraction(true, 280), 0.001f);
+        assertEquals(0.16f, TableSeatLayout.sideInsetFraction(true, 353), 0.001f);
+        assertEquals(0.18f, TableSeatLayout.sideInsetFraction(true, 400), 0.001f);
+        assertEquals(0.23f, TableSeatLayout.sideInsetFraction(false, 280), 0.001f);
     }
 
     @Test public void trickFitsBetweenPerimeterSeatsAndKeepsTheMockTwoColumnShape() {

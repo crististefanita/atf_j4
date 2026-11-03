@@ -30,4 +30,10 @@ final class TableSeatLayout {
     static float sideInsetFraction(boolean bidding) {
         return bidding ? 0.18f : 0.23f;
     }
+
+    static float sideInsetFraction(boolean bidding, int tableWidthDp) {
+        if (tableWidthDp <= 0) throw new IllegalArgumentException("Table width must be positive");
+        if (!bidding) return 0.23f;
+        return tableWidthDp < BidGridMetrics.DENSE_MAX_WIDTH_DP ? 0.16f : 0.18f;
+    }
 }

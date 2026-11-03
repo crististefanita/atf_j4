@@ -9,12 +9,14 @@ final class TableSeatRingLayout extends ViewGroup {
     private final TableSeatLayout.Anchor[] anchors;
     private final boolean bidding;
     private final int seatWidthPx;
+    private final int tableWidthDp;
 
-    TableSeatRingLayout(Context context, int playerCount, boolean bidding, int seatWidthPx) {
+    TableSeatRingLayout(Context context, int playerCount, boolean bidding, int seatWidthPx, int tableWidthDp) {
         super(context);
         this.anchors = TableSeatLayout.positions(playerCount);
         this.bidding = bidding;
         this.seatWidthPx = Math.max(1, seatWidthPx);
+        this.tableWidthDp = Math.max(1, tableWidthDp);
         setClipChildren(false);
         setClipToPadding(false);
         setFocusable(false);
@@ -42,7 +44,7 @@ final class TableSeatRingLayout extends ViewGroup {
 
         int width = right - left;
         int height = bottom - top;
-        int sideInset = Math.round(height * TableSeatLayout.sideInsetFraction(bidding));
+        int sideInset = Math.round(height * TableSeatLayout.sideInsetFraction(bidding, tableWidthDp));
         for (int index = 0; index < anchors.length; index++) {
             View seat = getChildAt(index);
             int seatWidth = seat.getMeasuredWidth();

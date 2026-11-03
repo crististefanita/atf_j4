@@ -81,6 +81,10 @@ public final class MonteCarloAi {
         return chooseCard(view,.5);
     }
     static Decision chooseCard(View view,double exactWeight) {
+        var model=modelCard(view,exactWeight);var proof=ContractGuarantee.choose(view,model.card());
+        return proof.certified()&&!proof.card().equals(model.card())?new Decision(proof.card(),model.candidates(),model.method()+"; public contract certificate across"+proof.worlds()+" complete feasible deals and all legal continuations"):model;
+    }
+    private static Decision modelCard(View view,double exactWeight) {
         Suit led=view.trick().isEmpty()?null:view.trick().get(0).card().suit();
         List<Card> legal=GameRules.legalCards(view.hand(),led,view.trump(),view.mode());
         if(legal.isEmpty())throw new IllegalArgumentException("No legal card for the observed player");
@@ -90,7 +94,7 @@ public final class MonteCarloAi {
         List<Candidate> evaluations=new ArrayList<>();
         int[] targets=view.seats().stream().mapToInt(s->s.bid()==null?0:s.bid()).toArray();
         double[] values=new double[legal.size()],rivals=new double[legal.size()],exact=new double[legal.size()];int samples=0;
-        List<List<List<Card>>> exactDeals=enumerateSmallDeals(view);
+        List<List<List<Card>>> exactDeals=unknownCards(view).size()<=7?enumerateSmallDeals(view):List.of();
         int worlds=exactDeals.isEmpty()?SAMPLES:exactDeals.size();
         for(int sample=0;sample<worlds;sample++){
             List<List<Card>> hands=exactDeals.isEmpty()?sample(view,new Random(seed(view,sample))):exactDeals.get(sample);if(hands==null)continue;samples++;
@@ -119,7 +123,7 @@ public final class MonteCarloAi {
     }
     private static double avoid(int pool,int threats,int draws){double p=1;for(int i=0;i<draws;i++){if(pool-threats-i<=0)return 0;p*=(pool-threats-i)/(double)(pool-i);}return p;}
     static List<List<List<Card>>> enumerateSmallDeals(View v){
-        List<Card> pool=unknownCards(v);if(pool.size()>7||v.seats().stream().anyMatch(s->s.remaining()>2))return List.of();
+        List<Card> pool=unknownCards(v);if(pool.size()>10||v.seats().stream().anyMatch(s->s.remaining()>2))return List.of();
         boolean[][] voids=knownVoids(v);List<List<Card>> hands=new ArrayList<>();for(int s=0;s<v.seats().size();s++)hands.add(new ArrayList<>());hands.set(v.seat(),new ArrayList<>(v.hand()));
         List<List<List<Card>>> result=new ArrayList<>();enumerate(v,pool,voids,hands,0,result);return result.size()>256?List.of():result;
     }

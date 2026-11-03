@@ -108,7 +108,7 @@ tasks.register("legacyRoundFiveTest", Test) {
  outputs.upToDateWhen { false }
 }
 
-tasks.register("learningTest") { dependsOn "roundSevenTest" }
+tasks.register("learningTest") { dependsOn "roundElevenTest" }
 
 // Deterministic minutes-scale rule checks; no tournaments and no device.
 tasks.register("quickRegressionTest", Test) {
@@ -141,3 +141,17 @@ tasks.register("strategyArenaTest",Test){testClassesDirs=sourceSets.test.output.
 tasks.register("arenaContractTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ArenaProfileReplayTest";includeTestsMatching "ro.whistlab.core.FrozenV8ParityTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")}
 
 tasks.named("strategyArenaTest",Test){ dependsOn "arenaContractTest" }
+
+tasks.named("test",Test){exclude "**/RoundElevenTournamentTest.class";exclude "**/ArenaLossMiningTest.class"}
+tasks.register("roundElevenTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundElevenTournamentTest"};for(def key:["whist.round11.output","whist.round11.corpus","whist.round11.candidate","whist.round11.phase","whist.round11.role","whist.round11.playerBaseline","whist.round11.opponent","whist.round11.seat","whist.round11.casesFile","whist.round11.firstSeed","whist.round11.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round11.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+
+tasks.register("arenaLossMiningTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ArenaLossMiningTest"};for(def key:["whist.loss.positions","whist.loss.output"])systemProperty key,providers.gradleProperty(key).getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
+
+tasks.named("quickRegressionTest",Test){filter{for(def name:["PromotedMasterLossTest","BidForecastContractTest","LearningBaselineOptionTest"])includeTestsMatching "ro.whistlab.core."+name}}
+
+tasks.named("test",Test){exclude "**/ScoreTranslationRegressionTest.class"}
+tasks.register("scoreConsistencyDiagnosticTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ScoreTranslationRegressionTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
+
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.SmallWorldEnumerationTest";includeTestsMatching "ro.whistlab.core.EnumerationBudgetTest"}}
+
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.CertifiedContractRegressionTest"}}

@@ -33,10 +33,10 @@
     },
     {
       "id": "learning",
-      "task": ":game-core:roundSevenTest",
+      "task": ":game-core:roundElevenTest",
       "targetMinutes": 15,
       "trigger": "Explicit candidate experiment only",
-      "evidence": "All JSON games and receipts, fixed-opponent gates, development examples; no automatic bulk HTML.",
+      "evidence": "All JSON games and receipts; explicit schema11 protocol against frozen ExpertSafety10/IndependentV8, per-role acceptance, development examples. Historical schema7 remains explicit opt-in.",
       "requires": [
         "Fresh candidate ID",
         "External corpus path",

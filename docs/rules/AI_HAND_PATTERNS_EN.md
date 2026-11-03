@@ -15,3 +15,6 @@ The v2 calibration uses development only: 4,869 validated complete games, 2,551 
 Observed outcomes are policy dependent, including deliberate ducking or discarding. A king's capture frequency is not an intrinsic or causal win probability for K+x. The catalog therefore remains **`NOT_RUNTIME_CONFIGURATION`, runtime influence 0**. Runtime use requires its own controlled ablation and unused evaluation, rather than importing descriptive weights directly into the player.
 
 The [arena protocol and results](../AI_STRATEGY_ARENA.md) explain balanced seats, distinct strategies per player, separate promotion criteria and the rejected safety variant. This catalog makes no optimal-play or exhaustive state-space coverage claim.
+## Verified lesson: avoiding an extra trick
+
+After making the contract, the lower card is not automatically safer. In the R11 counterexample, bid 1 with 1 trick already won, QH + 10D and clubs trump, discarding 10D preserves the exact contract across all 96 feasible public worlds and every legal continuation; discarding QH can add an unwanted trick. This is a contextual proof, not a rule to always retain a queen. The guard applies only to completely enumerated small endgames. Missing proof or an exhausted budget preserves the previous planner. See the [R11 analysis](../AI_LOSS11_ACCEPTANCE.md).

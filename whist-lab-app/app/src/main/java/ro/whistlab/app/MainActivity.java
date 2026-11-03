@@ -587,6 +587,7 @@ public final class MainActivity extends Activity {
 
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
+        content.setGravity(Gravity.CENTER_VERTICAL);
         content.setPadding(dp(12), dp(6), dp(12), dp(8));
         content.setBackgroundColor(WhistUiPalette.TABLE_FELT);
         viewport.addView(content, new ScrollView.LayoutParams(

@@ -1,0 +1,2473 @@
+[
+  {
+    "id": "score-shift-expert-bid-2",
+    "role": "expert",
+    "kind": "bid",
+    "size": 2,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 5,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "DIAMONDS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 2,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 8
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 21,
+          "streak": 0
+        },
+        {
+          "remaining": 2,
+          "bid": null,
+          "won": 0,
+          "total": 8,
+          "streak": 0
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 15,
+          "streak": 0
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 14,
+          "streak": 0
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "DIAMONDS",
+        "rank": 13
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-bid-3",
+    "role": "expert",
+    "kind": "bid",
+    "size": 3,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 19,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 1,
+      "dealer": 3,
+      "handSize": 3,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 10
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 7
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 72,
+          "streak": 2
+        },
+        {
+          "remaining": 3,
+          "bid": null,
+          "won": 0,
+          "total": 72,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": null,
+          "won": 0,
+          "total": 51,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": null,
+          "won": 0,
+          "total": 17,
+          "streak": -2
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 9
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-bid-4",
+    "role": "expert",
+    "kind": "bid",
+    "size": 4,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating2",
+    "hand": 7,
+    "sourceSha256": "9756075354251da985149a2d0d2052c937ea86f11e65b3da8c45f086d591d7da",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 3,
+      "dealer": 3,
+      "handSize": 4,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 8
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 4,
+          "bid": 3,
+          "won": 0,
+          "total": 31,
+          "streak": 2
+        },
+        {
+          "remaining": 4,
+          "bid": 0,
+          "won": 0,
+          "total": 12,
+          "streak": 1
+        },
+        {
+          "remaining": 4,
+          "bid": 0,
+          "won": 0,
+          "total": 26,
+          "streak": 2
+        },
+        {
+          "remaining": 4,
+          "bid": null,
+          "won": 0,
+          "total": 18,
+          "streak": -1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 7
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-bid-5",
+    "role": "expert",
+    "kind": "bid",
+    "size": 5,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 17,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 5,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 10
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 5,
+          "bid": 1,
+          "won": 0,
+          "total": 61,
+          "streak": -1
+        },
+        {
+          "remaining": 5,
+          "bid": null,
+          "won": 0,
+          "total": 69,
+          "streak": -1
+        },
+        {
+          "remaining": 5,
+          "bid": 0,
+          "won": 0,
+          "total": 48,
+          "streak": -1
+        },
+        {
+          "remaining": 5,
+          "bid": 2,
+          "won": 0,
+          "total": 19,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 11
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-bid-6",
+    "role": "expert",
+    "kind": "bid",
+    "size": 6,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 9,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 6,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 8
+        },
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 14
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 6,
+          "bid": 2,
+          "won": 0,
+          "total": 45,
+          "streak": 4
+        },
+        {
+          "remaining": 6,
+          "bid": null,
+          "won": 0,
+          "total": 22,
+          "streak": 3
+        },
+        {
+          "remaining": 6,
+          "bid": 4,
+          "won": 0,
+          "total": 30,
+          "streak": 2
+        },
+        {
+          "remaining": 6,
+          "bid": 0,
+          "won": 0,
+          "total": 15,
+          "streak": -3
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-bid-7",
+    "role": "expert",
+    "kind": "bid",
+    "size": 7,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating3",
+    "hand": 15,
+    "sourceSha256": "c381f14d4571ee250f3a066683fa386db80a2bf112e240189ac4e9a516048c5d",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 2,
+      "dealer": 3,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 7
+        },
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "SPADES",
+          "rank": 13
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 8
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 7,
+          "bid": 0,
+          "won": 0,
+          "total": 79,
+          "streak": 2
+        },
+        {
+          "remaining": 7,
+          "bid": 0,
+          "won": 0,
+          "total": 45,
+          "streak": 3
+        },
+        {
+          "remaining": 7,
+          "bid": null,
+          "won": 0,
+          "total": 73,
+          "streak": -1
+        },
+        {
+          "remaining": 7,
+          "bid": null,
+          "won": 0,
+          "total": 20,
+          "streak": -4
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-bid-8",
+    "role": "expert",
+    "kind": "bid",
+    "size": 8,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating2",
+    "hand": 12,
+    "sourceSha256": "9756075354251da985149a2d0d2052c937ea86f11e65b3da8c45f086d591d7da",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 3,
+      "dealer": 0,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 13
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 8,
+          "bid": null,
+          "won": 0,
+          "total": 68,
+          "streak": 1
+        },
+        {
+          "remaining": 8,
+          "bid": 2,
+          "won": 0,
+          "total": 26,
+          "streak": -1
+        },
+        {
+          "remaining": 8,
+          "bid": 0,
+          "won": 0,
+          "total": 66,
+          "streak": 2
+        },
+        {
+          "remaining": 8,
+          "bid": null,
+          "won": 0,
+          "total": 30,
+          "streak": 3
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-2",
+    "role": "expert",
+    "kind": "card",
+    "size": 2,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 20,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 0,
+      "handSize": 2,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 77,
+          "streak": 3
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 71,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 50,
+          "streak": -2
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 22,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 9
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-3",
+    "role": "expert",
+    "kind": "card",
+    "size": 3,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating2",
+    "hand": 6,
+    "sourceSha256": "9756075354251da985149a2d0d2052c937ea86f11e65b3da8c45f086d591d7da",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 3,
+      "dealer": 2,
+      "handSize": 3,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 10
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 13
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 26,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 7,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 0,
+          "total": 20,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 0,
+          "total": 19,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-4",
+    "role": "expert",
+    "kind": "card",
+    "size": 4,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating2",
+    "hand": 7,
+    "sourceSha256": "9756075354251da985149a2d0d2052c937ea86f11e65b3da8c45f086d591d7da",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 3,
+      "dealer": 3,
+      "handSize": 4,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 8
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 3,
+          "won": 0,
+          "total": 31,
+          "streak": 2
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 12,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 26,
+          "streak": 2
+        },
+        {
+          "remaining": 4,
+          "bid": 3,
+          "won": 0,
+          "total": 18,
+          "streak": -1
+        }
+      ],
+      "trick": [
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 7
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-5",
+    "role": "expert",
+    "kind": "card",
+    "size": 5,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 17,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 5,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 0,
+          "total": 61,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 1,
+          "total": 69,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 48,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": 2,
+          "won": 1,
+          "total": 19,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 7
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 11
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-6",
+    "role": "expert",
+    "kind": "card",
+    "size": 6,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating0",
+    "hand": 9,
+    "sourceSha256": "bcc8f57813843abad4f3a0576c43e036890362d62285bb2468678779ce2cfe5f",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 6,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 8
+        },
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 14
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 5,
+          "bid": 2,
+          "won": 0,
+          "total": 45,
+          "streak": 4
+        },
+        {
+          "remaining": 5,
+          "bid": 4,
+          "won": 1,
+          "total": 22,
+          "streak": 3
+        },
+        {
+          "remaining": 5,
+          "bid": 4,
+          "won": 0,
+          "total": 30,
+          "streak": 2
+        },
+        {
+          "remaining": 5,
+          "bid": 0,
+          "won": 0,
+          "total": 15,
+          "streak": -3
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 14
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-7",
+    "role": "expert",
+    "kind": "card",
+    "size": 7,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating3",
+    "hand": 15,
+    "sourceSha256": "c381f14d4571ee250f3a066683fa386db80a2bf112e240189ac4e9a516048c5d",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 2,
+      "dealer": 3,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 7
+        },
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "SPADES",
+          "rank": 13
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 8
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 6,
+          "bid": 0,
+          "won": 0,
+          "total": 79,
+          "streak": 2
+        },
+        {
+          "remaining": 6,
+          "bid": 0,
+          "won": 0,
+          "total": 45,
+          "streak": 3
+        },
+        {
+          "remaining": 7,
+          "bid": 3,
+          "won": 0,
+          "total": 73,
+          "streak": -1
+        },
+        {
+          "remaining": 7,
+          "bid": 6,
+          "won": 0,
+          "total": 20,
+          "streak": -4
+        }
+      ],
+      "trick": [
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-expert-card-8",
+    "role": "expert",
+    "kind": "card",
+    "size": 8,
+    "origin": "arena-safety10-arena-mixed-seed7100-seating2",
+    "hand": 12,
+    "sourceSha256": "9756075354251da985149a2d0d2052c937ea86f11e65b3da8c45f086d591d7da",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 3,
+      "dealer": 0,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 13
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 8,
+          "bid": 4,
+          "won": 0,
+          "total": 68,
+          "streak": 1
+        },
+        {
+          "remaining": 7,
+          "bid": 2,
+          "won": 0,
+          "total": 26,
+          "streak": -1
+        },
+        {
+          "remaining": 7,
+          "bid": 0,
+          "won": 0,
+          "total": 66,
+          "streak": 2
+        },
+        {
+          "remaining": 8,
+          "bid": 3,
+          "won": 0,
+          "total": 30,
+          "streak": 3
+        }
+      ],
+      "trick": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        }
+      ],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-2",
+    "role": "player",
+    "kind": "bid",
+    "size": 2,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 5,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "DIAMONDS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 2,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 8
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 21,
+          "streak": 0
+        },
+        {
+          "remaining": 2,
+          "bid": null,
+          "won": 0,
+          "total": 8,
+          "streak": 0
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 15,
+          "streak": 0
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 14,
+          "streak": 0
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "DIAMONDS",
+        "rank": 13
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-3",
+    "role": "player",
+    "kind": "bid",
+    "size": 3,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 19,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 1,
+      "dealer": 3,
+      "handSize": 3,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 10
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 7
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 72,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": null,
+          "won": 0,
+          "total": 79,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": null,
+          "won": 0,
+          "total": 42,
+          "streak": 2
+        },
+        {
+          "remaining": 3,
+          "bid": null,
+          "won": 0,
+          "total": 44,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 9
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-4",
+    "role": "player",
+    "kind": "bid",
+    "size": 4,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating1",
+    "hand": 18,
+    "sourceSha256": "e19a6795691e88b9e636dd071d4b6cc9f22a0f97e2356a96a0d959f97179976e",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "CLUBS",
+      "seat": 0,
+      "dealer": 2,
+      "handSize": 4,
+      "hand": [
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 13
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 4,
+          "bid": null,
+          "won": 0,
+          "total": 94,
+          "streak": 1
+        },
+        {
+          "remaining": 4,
+          "bid": null,
+          "won": 0,
+          "total": 41,
+          "streak": -3
+        },
+        {
+          "remaining": 4,
+          "bid": null,
+          "won": 0,
+          "total": 78,
+          "streak": 2
+        },
+        {
+          "remaining": 4,
+          "bid": 1,
+          "won": 0,
+          "total": 36,
+          "streak": -1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "CLUBS",
+        "rank": 8
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-5",
+    "role": "player",
+    "kind": "bid",
+    "size": 5,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 17,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 5,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 10
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 5,
+          "bid": 1,
+          "won": 0,
+          "total": 67,
+          "streak": 3
+        },
+        {
+          "remaining": 5,
+          "bid": null,
+          "won": 0,
+          "total": 76,
+          "streak": -2
+        },
+        {
+          "remaining": 5,
+          "bid": 0,
+          "won": 0,
+          "total": 30,
+          "streak": -3
+        },
+        {
+          "remaining": 5,
+          "bid": 2,
+          "won": 0,
+          "total": 38,
+          "streak": 2
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 11
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-6",
+    "role": "player",
+    "kind": "bid",
+    "size": 6,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 16,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 0,
+      "handSize": 6,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 8
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 9
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 6,
+          "bid": null,
+          "won": 0,
+          "total": 60,
+          "streak": 2
+        },
+        {
+          "remaining": 6,
+          "bid": null,
+          "won": 0,
+          "total": 77,
+          "streak": -1
+        },
+        {
+          "remaining": 6,
+          "bid": null,
+          "won": 0,
+          "total": 31,
+          "streak": -2
+        },
+        {
+          "remaining": 6,
+          "bid": null,
+          "won": 0,
+          "total": 33,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 12
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-7",
+    "role": "player",
+    "kind": "bid",
+    "size": 7,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 15,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 1,
+      "dealer": 3,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 9
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 8
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 7,
+          "bid": 0,
+          "won": 0,
+          "total": 55,
+          "streak": 1
+        },
+        {
+          "remaining": 7,
+          "bid": null,
+          "won": 0,
+          "total": 78,
+          "streak": 4
+        },
+        {
+          "remaining": 7,
+          "bid": null,
+          "won": 0,
+          "total": 34,
+          "streak": -1
+        },
+        {
+          "remaining": 7,
+          "bid": null,
+          "won": 0,
+          "total": 22,
+          "streak": -1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-bid-8",
+    "role": "player",
+    "kind": "bid",
+    "size": 8,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating2",
+    "hand": 12,
+    "sourceSha256": "5f0f48fd28e7f901312791d554044daf309ccf5a5f7fbc3df10ce2c56a6037fd",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 3,
+      "dealer": 0,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 13
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 8,
+          "bid": null,
+          "won": 0,
+          "total": 41,
+          "streak": -3
+        },
+        {
+          "remaining": 8,
+          "bid": 2,
+          "won": 0,
+          "total": 47,
+          "streak": -1
+        },
+        {
+          "remaining": 8,
+          "bid": 0,
+          "won": 0,
+          "total": 64,
+          "streak": 2
+        },
+        {
+          "remaining": 8,
+          "bid": null,
+          "won": 0,
+          "total": 29,
+          "streak": 3
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-2",
+    "role": "player",
+    "kind": "card",
+    "size": 2,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 20,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 0,
+      "handSize": 2,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 77,
+          "streak": 1
+        },
+        {
+          "remaining": 2,
+          "bid": 1,
+          "won": 0,
+          "total": 78,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 41,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 49,
+          "streak": 2
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 9
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-3",
+    "role": "player",
+    "kind": "card",
+    "size": 3,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating2",
+    "hand": 6,
+    "sourceSha256": "5f0f48fd28e7f901312791d554044daf309ccf5a5f7fbc3df10ce2c56a6037fd",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 3,
+      "dealer": 2,
+      "handSize": 3,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 10
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 13
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 26,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 7,
+          "streak": -1
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 20,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": 2,
+          "won": 0,
+          "total": 19,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-4",
+    "role": "player",
+    "kind": "card",
+    "size": 4,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating1",
+    "hand": 18,
+    "sourceSha256": "e19a6795691e88b9e636dd071d4b6cc9f22a0f97e2356a96a0d959f97179976e",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "CLUBS",
+      "seat": 0,
+      "dealer": 2,
+      "handSize": 4,
+      "hand": [
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 13
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 1,
+          "total": 94,
+          "streak": 1
+        },
+        {
+          "remaining": 3,
+          "bid": 0,
+          "won": 0,
+          "total": 41,
+          "streak": -3
+        },
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 0,
+          "total": 78,
+          "streak": 2
+        },
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 0,
+          "total": 36,
+          "streak": -1
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 12
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "CLUBS",
+        "rank": 8
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-5",
+    "role": "player",
+    "kind": "card",
+    "size": 5,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 17,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 5,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 11
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 3,
+          "bid": 1,
+          "won": 0,
+          "total": 67,
+          "streak": 3
+        },
+        {
+          "remaining": 4,
+          "bid": 1,
+          "won": 0,
+          "total": 76,
+          "streak": -2
+        },
+        {
+          "remaining": 4,
+          "bid": 0,
+          "won": 0,
+          "total": 30,
+          "streak": -3
+        },
+        {
+          "remaining": 3,
+          "bid": 2,
+          "won": 1,
+          "total": 38,
+          "streak": 2
+        }
+      ],
+      "trick": [
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 11
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-6",
+    "role": "player",
+    "kind": "card",
+    "size": 6,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 16,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "HEARTS",
+      "seat": 1,
+      "dealer": 0,
+      "handSize": 6,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 8
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 9
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 6,
+          "bid": 2,
+          "won": 0,
+          "total": 60,
+          "streak": 2
+        },
+        {
+          "remaining": 6,
+          "bid": 4,
+          "won": 0,
+          "total": 77,
+          "streak": -1
+        },
+        {
+          "remaining": 6,
+          "bid": 2,
+          "won": 0,
+          "total": 31,
+          "streak": -2
+        },
+        {
+          "remaining": 6,
+          "bid": 0,
+          "won": 0,
+          "total": 33,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [],
+      "turnedCard": {
+        "suit": "HEARTS",
+        "rank": 12
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-7",
+    "role": "player",
+    "kind": "card",
+    "size": 7,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating0",
+    "hand": 15,
+    "sourceSha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 1,
+      "dealer": 3,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 9
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 7
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 8
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 6,
+          "bid": 0,
+          "won": 0,
+          "total": 55,
+          "streak": 1
+        },
+        {
+          "remaining": 7,
+          "bid": 0,
+          "won": 0,
+          "total": 78,
+          "streak": 4
+        },
+        {
+          "remaining": 7,
+          "bid": 3,
+          "won": 0,
+          "total": 34,
+          "streak": -1
+        },
+        {
+          "remaining": 7,
+          "bid": 6,
+          "won": 0,
+          "total": 22,
+          "streak": -1
+        }
+      ],
+      "trick": [
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "score-shift-player-card-8",
+    "role": "player",
+    "kind": "card",
+    "size": 8,
+    "origin": "arena-safety10-arena-factorial-seed7100-seating2",
+    "hand": 12,
+    "sourceSha256": "5f0f48fd28e7f901312791d554044daf309ccf5a5f7fbc3df10ce2c56a6037fd",
+    "offset": 100,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 3,
+      "dealer": 0,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 13
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "HEARTS",
+          "rank": 13
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 7,
+          "bid": 3,
+          "won": 0,
+          "total": 41,
+          "streak": -3
+        },
+        {
+          "remaining": 6,
+          "bid": 2,
+          "won": 1,
+          "total": 47,
+          "streak": -1
+        },
+        {
+          "remaining": 6,
+          "bid": 0,
+          "won": 0,
+          "total": 64,
+          "streak": 2
+        },
+        {
+          "remaining": 7,
+          "bid": 4,
+          "won": 0,
+          "total": 29,
+          "streak": 3
+        }
+      ],
+      "trick": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        }
+      ],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  }
+]

@@ -3,28 +3,16 @@ package atf.android.e2e;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import atf.android.AdbClient;
-import atf.android.evidence.AndroidScreenshotEvidence;
-import atf.reporting.configuration.AtfReportConfigurationLoader;
-import atf.reporting.contract.AtfReportPorts;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfGherkinKeyword;
-import atf.reporting.evidence.ReportScreenshotPolicy;
-import atf.reporting.evidence.profile.ReportEvidenceProfile;
-import atf.reporting.extent.session.ExtentReportSession;
-import atf.reporting.model.ReportField;
-import atf.reporting.model.ReportObservation;
-import atf.reporting.model.ReportScreenshot;
-import atf.reporting.ui.UiExtentReportSession;
 import atf.reporting.ui.model.AtfUiActionRecord;
 import atf.reporting.ui.model.AtfUiEvidenceSource;
 import atf.android.e2e.support.AndroidUiFlowTrace;
-import java.nio.file.Files;
+import atf.android.e2e.support.AndroidUiFlowReportPublisher;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,6 +24,8 @@ import org.junit.jupiter.api.Test;
 public class WhistLabGameplayE2eTest {
     private static final String PACKAGE = "ro.whistlab.app";
     private static final Pattern DENSITY = Pattern.compile("(?:Override|Physical) density:\\s*(\\d+)");
+    private static final Pattern OVERRIDE_SIZE = Pattern.compile("(?m)^Override size:\\s*(\\d+)x(\\d+)");
+    private static final Pattern PHYSICAL_SIZE = Pattern.compile("(?m)^Physical size:\\s*(\\d+)x(\\d+)");
     private static final Pattern SIX_PLAYER_EIGHT_CARD_BID_SUMMARY = Pattern.compile(
             "Bids submitted (\\d+)/6 · Bid total (-?\\d+)/8");
 
@@ -52,6 +42,7 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — eight-card table, compact bidding, and hamburger navigation",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "e2e", "ui", "table-layout", "navigation", "sanity"));
+        ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         AtfReportStatus outcome = AtfReportStatus.FAIL;
         String checks = "Presentation flow did not complete.";
@@ -129,6 +120,11 @@ public class WhistLabGameplayE2eTest {
                         try { return ui.boundsForDescription(bidding, description); }
                         catch (Exception failure) { throw new IllegalStateException(failure); }
                     }).toList();
+            List<AndroidUiDriver.Bounds> biddingControlBounds = new ArrayList<>();
+            for (int bid : visibleBids) biddingControlBounds.add(ui.boundsForText(bidding, Integer.toString(bid)));
+            biddingControlBounds.add(submitBounds);
+            boolean biddingControlsAvoidSeats = biddingControlBounds.stream()
+                    .noneMatch(control -> seatBounds.stream().anyMatch(seat -> overlaps(control, seat)));
             List<String> seatPositions = seatBounds.stream().map(bounds -> String.format(java.util.Locale.ROOT,
                     "x=%.2f,y=%.2f", (centerX(bounds) - boardBounds.left()) / (double) width(boardBounds),
                     (bounds.top() - boardBounds.top()) / (double) height(boardBounds))).toList();
@@ -166,11 +162,15 @@ public class WhistLabGameplayE2eTest {
             assertTrue(mockSeatRingRendered,
                     "Six player seats must match the mock's north, upper flanks, lower flanks, and south positions: "
                             + seatPositions + "; human south=" + humanSeatIsSouth);
+            assertTrue(biddingControlsAvoidSeats, "Bidding controls overlap a player seat: controls="
+                    + biddingControlBounds + "; seats=" + seatBounds);
             List<Path> biddingEvidence = ui.capture("whist-lab-presentation-eight-card-table");
             evidence.addAll(biddingEvidence);
             Path biddingScreenshot = biddingEvidence.stream()
                     .filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow();
-            boolean feltContinuesBelowTable = ui.sameBackgroundAcrossTableMargin(biddingScreenshot, 0.55, 0.87);
+            String biddingDisplaySize = adb.run("shell", "wm", "size").output();
+            boolean feltContinuesBelowTable = ui.sameBackgroundAcrossTableMargin(
+                    biddingScreenshot, 0.55, 0.87, biddingDisplaySize);
             assertTrue(feltContinuesBelowTable,
                     "The game surface changes color between the table and space below the action");
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
@@ -189,6 +189,11 @@ public class WhistLabGameplayE2eTest {
                                     handLabels + "; y=" + handRow.stream().map(AndroidUiDriver.CardLabel::top).distinct().toList(), oneRow),
                             new AtfAssertion("Six player seats follow the approved oval", "N; NW/NE; SW/SE; S",
                                     seatPositions + "; human south=" + humanSeatIsSouth, mockSeatRingRendered),
+                            new AtfAssertion("Bidding controls stay clear of player seats",
+                                    "no visible intersection (allow 1 px bounds rounding) between any bid/submit target and a seat",
+                                    "controls="
+                                            + biddingControlBounds + "; seats=" + seatBounds,
+                                    biddingControlsAvoidSeats),
                             new AtfAssertion("All currently legal bids are visible", expectedBids.toString(),
                                     visibleBids.toString(), allBidsVisible),
                             new AtfAssertion("Bid hit targets remain at least 48 dp", "48 dp minimum",
@@ -321,8 +326,9 @@ public class WhistLabGameplayE2eTest {
             trace.finish(outcome);
             List<Path> reportEvidence = new ArrayList<>(evidence);
             reportEvidence.add(trace.manifest());
-            publishPresentationReport(artifacts, packagePath.output(), reportEvidence, trace.assertions(), checks,
-                    outcome);
+            AndroidUiFlowReportPublisher.publish(artifacts.resolve("whist-lab-table-presentation.html"),
+                    packagePath.output(), reportSetting("atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554"),
+                    System.getProperty("atf.android.api", "device reported at runtime"), checks, reportEvidence, trace);
         }
     }
 
@@ -339,6 +345,7 @@ public class WhistLabGameplayE2eTest {
                 "Whist · Descending — thirteen-card fan and one-card play",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "e2e", "ui", "card-fan", "single-row", "click-flow"));
+        ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         List<AtfAssertion> assertions = new ArrayList<>();
         AtfReportStatus outcome = AtfReportStatus.FAIL;
@@ -355,6 +362,11 @@ public class WhistLabGameplayE2eTest {
             for (String description : legalCards) cardSlots.add(ui.boundsForDescription(before, description));
             boolean oneVisibleRow = legalCards.size() == 13
                     && cardSlots.stream().map(AndroidUiDriver.Bounds::top).distinct().count() == 1;
+            AndroidUiDriver.Bounds handBoundsBefore = ui.boundsForDescription(before, "Your hand, 13 cards.",
+                    "android.widget.HorizontalScrollView");
+            boolean finalCardFitsViewport = cardSlots.size() == 13
+                    && cardSlots.getLast().right() <= handBoundsBefore.right()
+                    && width(cardSlots.getLast()) > width(cardSlots.getFirst());
             String trumpDescription = ui.descriptions(before).stream()
                     .filter(value -> value.startsWith("Trump"))
                     .findFirst().orElse("");
@@ -365,6 +377,12 @@ public class WhistLabGameplayE2eTest {
                     && ui.hasTextContaining(before, "Bid 0")
                     && ui.hasTextContaining(before, "Won 0");
             AndroidUiDriver.Bounds playingSurfaceBefore = ui.boundsForDescription(before, "Playing surface");
+            AndroidUiDriver.Bounds gamePanelBefore = ui.boundsForDescription(before, "Game table, 4 players.");
+            double presentationCenterY = (playingSurfaceBefore.top() + handBoundsBefore.bottom()) / 2.0;
+            double gamePanelCenterY = centerY(gamePanelBefore);
+            double verticalBalanceTolerance = height(playingSurfaceBefore) * 0.08;
+            boolean tableAndHandVerticallyBalanced = Math.abs(presentationCenterY - gamePanelCenterY)
+                    <= verticalBalanceTolerance;
             AndroidUiDriver.Bounds humanSeatBefore = ui.boundsForDescriptionContaining(before, "You. ");
             String tableSnapshot = before;
             List<AndroidUiDriver.Bounds> fourPlayerSeats = ui.descriptions(before).stream()
@@ -398,6 +416,9 @@ public class WhistLabGameplayE2eTest {
             assertions.add(new AtfAssertion("All thirteen cards are exposed on one row", "13 clickable cards; 1 y-coordinate",
                     legalCards.size() + " cards; y=" + cardSlots.stream()
                             .map(AndroidUiDriver.Bounds::top).distinct().toList(), oneVisibleRow));
+            assertions.add(new AtfAssertion("The final card face is not clipped by the hand viewport",
+                    "last slot is wider than the overlap advance and inside " + handBoundsBefore,
+                    "last=" + cardSlots.getLast() + "; first=" + cardSlots.getFirst(), finalCardFitsViewport));
             assertions.add(new AtfAssertion("Variant and trump stay visible in the header", "Whist · Descending; trump tile",
                     ui.texts(before) + "; " + ui.descriptions(before), identityAndTrump));
             assertions.add(new AtfAssertion("A full-deck hand identifies that no turned card exists",
@@ -407,21 +428,34 @@ public class WhistLabGameplayE2eTest {
                     ui.texts(before).toString(), seatSignalsAreVisible));
             assertions.add(new AtfAssertion("Four player seats follow the approved oval", "N; W/E; S",
                     fourPlayerSeats + "; human south=" + humanSeatIsSouth, fourPlayerMockRingRendered));
+            assertions.add(new AtfAssertion("Table and hand are vertically balanced in the game viewport",
+                    "surface-to-hand center within " + Math.round(verticalBalanceTolerance) + " px of panel center",
+                    "surface=" + playingSurfaceBefore + "; hand=" + handBoundsBefore
+                            + "; panel=" + gamePanelBefore + "; centers=" + presentationCenterY
+                            + "/" + gamePanelCenterY,
+                    tableAndHandVerticallyBalanced));
             checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN,
                     "Open a deterministic thirteen-card hand with the human on lead",
                     "debug_hand_fan_fixture; AI turns held", beforeEvidence,
                     "launch the debug deal and inspect each clickable card bound",
                     "13 cards on one row; four seats match N/W/E/S anchors; PLAY NOW and Bid/Won facts visible; header identity and trump persist",
                     "legal cards=" + legalCards + "; seat=" + humanSeatBefore
-                            + "; seat positions=" + fourPlayerSeats + "; descriptions=" + ui.descriptions(before),
+                            + "; seat positions=" + fourPlayerSeats + "; hand viewport=" + handBoundsBefore
+                            + "; final slot=" + cardSlots.getLast() + "; descriptions=" + ui.descriptions(before),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
-                    List.copyOf(assertions), oneVisibleRow && identityAndTrump && fourPlayerMockRingRendered
+                    List.copyOf(assertions), oneVisibleRow && finalCardFitsViewport
+                            && identityAndTrump && fourPlayerMockRingRendered && tableAndHandVerticallyBalanced
                             ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
             assertTrue(oneVisibleRow, "Expected thirteen accessible card slots in one row: " + legalCards);
+            assertTrue(finalCardFitsViewport, "The terminal card is clipped by the hand viewport: "
+                    + cardSlots.getLast() + " in " + handBoundsBefore);
             assertTrue(identityAndTrump, "Variant title or trump indicator was missing");
             assertTrue(seatSignalsAreVisible, "Turn badge or seat bid/result facts were missing");
             assertTrue(fourPlayerMockRingRendered, "Four player seats differ from the approved oval: "
                     + fourPlayerSeats + "; human south=" + humanSeatIsSouth);
+            assertTrue(tableAndHandVerticallyBalanced,
+                    "The table and hand are unbalanced vertically: surface=" + playingSurfaceBefore
+                            + "; hand=" + handBoundsBefore + "; panel=" + gamePanelBefore);
 
             started = System.nanoTime();
             String selectedCard = ui.firstLegalCardDescription(before);
@@ -431,6 +465,13 @@ public class WhistLabGameplayE2eTest {
             played = ui.awaitDescriptionContaining("Your hand, 12 cards.", Duration.ofSeconds(8));
             List<Path> afterEvidence = ui.capture("whist-lab-thirteen-card-fan-after-play");
             evidence.addAll(afterEvidence);
+            AndroidUiDriver.Bounds handBoundsAfter = ui.boundsForDescription(played, "Your hand, 12 cards.");
+            Path afterScreenshot = afterEvidence.stream()
+                    .filter(path -> path.getFileName().toString().endsWith(".png"))
+                    .findFirst().orElseThrow();
+            String displaySize = adb.run("shell", "wm", "size").output();
+            int remainingHandRgb = ui.sampleHandFace(afterScreenshot, handBoundsAfter, displaySize);
+            boolean remainingCardsStayOpaque = isIvoryCardSurface(remainingHandRgb);
             AndroidUiDriver.Bounds humanSeatAfter = ui.boundsForDescriptionContaining(played, "You. ");
             boolean seatStayedFixed = humanSeatBefore.equals(humanSeatAfter);
             AndroidUiDriver.Bounds playedCardBounds = ui.boundsForDescription(played, "You played " + cardName);
@@ -449,6 +490,9 @@ public class WhistLabGameplayE2eTest {
             assertions.add(new AtfAssertion("One card leaves the hand after the animation", "Your hand, 12 cards.",
                     ui.descriptions(played).stream().filter(value -> value.startsWith("Your hand")).toList().toString(),
                     ui.hasDescription(played, "Your hand, 12 cards.")));
+            assertions.add(new AtfAssertion("The remaining hand stays opaque during the AI turn",
+                    "ivory card face (R≥220, G≥220, B≥210)",
+                    String.format(java.util.Locale.ROOT, "#%06X", remainingHandRgb), remainingCardsStayOpaque));
             assertions.add(new AtfAssertion("Human seat bounds remain fixed after play", humanSeatBefore.toString(),
                     humanSeatAfter.toString(), seatStayedFixed));
             assertions.add(new AtfAssertion("Trump stays in the header after play", "accessible trump tile remains",
@@ -461,21 +505,28 @@ public class WhistLabGameplayE2eTest {
                             .filter(value -> value.contains(" played ")).toList()
                             + "; hand=" + ui.descriptions(played).stream()
                             .filter(value -> value.startsWith("Your hand")).toList()
+                            + "; remaining card sample="
+                            + String.format(java.util.Locale.ROOT, "#%06X", remainingHandRgb)
+                            + "; display size=" + displaySize.trim()
                             + "; selected card bounds=" + playedCardBounds + "; table=" + playingSurfaceBounds
                             + "; seat before=" + humanSeatBefore + "; after=" + humanSeatAfter,
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.copyOf(assertions), cardMovedToCenter && seatStayedFixed
-                            && ui.hasDescription(played, "Your hand, 12 cards.") && trumpRemainsVisible
+                            && ui.hasDescription(played, "Your hand, 12 cards.")
+                            && remainingCardsStayOpaque && trumpRemainsVisible
                             ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
             assertTrue(cardMovedToCenter, "Selected card did not appear in the center trick");
             assertTrue(seatStayedFixed,
                     "Human seat moved during card play: " + humanSeatBefore + " -> " + humanSeatAfter);
             assertTrue(ui.hasDescription(played, "Your hand, 12 cards."),
                     "Playing one card did not leave a twelve-card hand");
+            assertTrue(remainingCardsStayOpaque, "Remaining cards were dimmed while the AI holds the turn: "
+                    + String.format(java.util.Locale.ROOT, "#%06X", remainingHandRgb));
             assertTrue(trumpRemainsVisible, "Trump tile disappeared after play");
             checks = "A deterministic 13-card Descending hand rendered as one accessible row. Tapping one legal card "
                     + "ran the lift animation, moved that exact card into the central trick, reduced the hand to 12, "
-                    + "kept the human seat at the same bounds, and retained the trump tile in the header.";
+                    + "kept the human seat at the same bounds, retained the trump tile, and left the remaining cards "
+                    + "fully opaque during the AI turn.";
             outcome = AtfReportStatus.PASS;
             trace.finish(outcome);
         } catch (Throwable failure) {
@@ -497,8 +548,9 @@ public class WhistLabGameplayE2eTest {
             trace.finish(outcome);
             List<Path> reportEvidence = new ArrayList<>(evidence);
             reportEvidence.add(trace.manifest());
-            publishInteractionReport(artifacts, packagePath.output(), reportEvidence,
-                    assertions, checks, outcome);
+            AndroidUiFlowReportPublisher.publish(artifacts.resolve("whist-lab-thirteen-card-fan.html"),
+                    packagePath.output(), reportSetting("atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554"),
+                    System.getProperty("atf.android.api", "device reported at runtime"), checks, reportEvidence, trace);
         }
     }
 
@@ -515,6 +567,7 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — default Oh Hell setup matches the observed four-player deal",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "api-28", "parallel-app", "e2e", "oh-hell", "deal-size"));
+        ui.recordActionsAs(trace::recordAction);
         AtfReportStatus result = AtfReportStatus.FAIL;
         try {
             long started = System.nanoTime();
@@ -614,6 +667,7 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — deterministic bid, process death, resume, and exact-bid score",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "api-28", "parallel-app", "e2e", "resume", "scoring"));
+        ui.recordActionsAs(trace::recordAction);
         AtfReportStatus outcome = AtfReportStatus.FAIL;
         String checks = "The deterministic game flow did not complete.";
         try {
@@ -657,8 +711,30 @@ public class WhistLabGameplayE2eTest {
                     AtfReportStatus.PASS);
 
             actionStarted = System.nanoTime();
-            adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess();
-            adb.run("shell", "am", "start", "-W", "-n", PACKAGE + "/.MainActivity").requireSuccess();
+            long processStopStarted = System.nanoTime();
+            try {
+                adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess();
+                ui.recordAction("Force-stop Android app", PACKAGE, "The active game process stops",
+                        "ADB accepted force-stop", Duration.ofNanos(System.nanoTime() - processStopStarted).toMillis(),
+                        AtfReportStatus.PASS);
+            } catch (Exception failure) {
+                ui.recordAction("Force-stop Android app", PACKAGE, "The active game process stops",
+                        failure.toString(), Duration.ofNanos(System.nanoTime() - processStopStarted).toMillis(),
+                        AtfReportStatus.FAIL);
+                throw failure;
+            }
+            long relaunchStarted = System.nanoTime();
+            try {
+                adb.run("shell", "am", "start", "-W", "-n", PACKAGE + "/.MainActivity").requireSuccess();
+                ui.recordAction("Relaunch Android activity", PACKAGE + "/.MainActivity",
+                        "The app returns to its home screen", "ADB accepted activity start",
+                        Duration.ofNanos(System.nanoTime() - relaunchStarted).toMillis(), AtfReportStatus.PASS);
+            } catch (Exception failure) {
+                ui.recordAction("Relaunch Android activity", PACKAGE + "/.MainActivity",
+                        "The app returns to its home screen", failure.toString(),
+                        Duration.ofNanos(System.nanoTime() - relaunchStarted).toMillis(), AtfReportStatus.FAIL);
+                throw failure;
+            }
             String home = ui.awaitText("Resume game", Duration.ofSeconds(10));
             assertTrue(ui.hasText(home, "New game"), "App did not return to its home screen after process restart");
             ui.tapText("Resume game");
@@ -722,7 +798,11 @@ public class WhistLabGameplayE2eTest {
                 }
             }
             trace.finish(outcome);
-            publishReport(artifacts, packagePath.output(), evidence, checks, outcome);
+            List<Path> reportEvidence = new ArrayList<>(evidence);
+            reportEvidence.add(trace.manifest());
+            AndroidUiFlowReportPublisher.publish(artifacts.resolve("whist-lab-gameplay.html"),
+                    packagePath.output(), reportSetting("atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554"),
+                    System.getProperty("atf.android.api", "device reported at runtime"), checks, reportEvidence, trace);
         }
     }
 
@@ -733,200 +813,22 @@ public class WhistLabGameplayE2eTest {
                 .findFirst().orElse(null);
         List<Path> supporting = evidence.stream().filter(file -> file.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".xml")).toList();
         AtfUiActionRecord action = new AtfUiActionRecord(trace.nextActionSequence(), operation, target,
-                expected, observed, Math.max(0, durationMillis), status, AtfUiEvidenceSource.ACTION);
+                expected, observed, Math.max(0, durationMillis), status, AtfUiEvidenceSource.OBSERVE);
         trace.checkpoint(phase, keyword.text(), title, target, screenshot, List.of(action), assertions, status, supporting);
     }
 
-    private static void publishReport(Path artifacts, String installedPackage, List<Path> files,
-            String checks, AtfReportStatus outcome) throws Exception {
-        Path report = artifacts.resolve("whist-lab-gameplay.html");
-        var settings = AtfReportConfigurationLoader.load().reportingSettings();
-        try (var session = new ExtentReportSession(report, settings)) {
-            AtfReportPorts.Scenario raw = session.startScenario(
-                    "Whist Lab Android exact-bid gameplay", "atf.android.e2e", PACKAGE,
-                    List.of("android", "api-28", "practice-trick", "scoring"));
-            try (var details = raw.startPhase("Device details, game assertions, and UI hierarchy")) {
-                details.observation(new ReportObservation("Deterministic practice-hand acceptance",
-                        List.of(new ReportField("Device", reportSetting(
-                                        "atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554")),
-                                new ReportField("Android API", "28"),
-                                new ReportField("Package", PACKAGE),
-                                new ReportField("Installed APK", installedPackage.trim()),
-                                new ReportField("Verified behavior", checks)),
-                        List.of(), files.stream()
-                                .filter(file -> !file.getFileName().toString().toLowerCase().endsWith(".png"))
-                                .map(WhistLabGameplayE2eTest::artifactUnchecked).toList()));
-                details.complete(outcome);
-            }
-            var ui = UiExtentReportSession.adaptScenario(raw,
-                    ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
-                    "Whist Lab Android exact-bid gameplay");
-            try (var phase = ui.startPhase("Inline Android UI screenshots")) {
-                for (Path image : files.stream()
-                        .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".png")).toList()) {
-                    ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
-                    phase.uiValidation(screenshot.title(), "Android emulator", screenshot.base64Png(),
-                            List.of(), outcome);
-                }
-                phase.complete(outcome);
-            }
-            raw.complete(outcome);
-        }
-        assertTrue(Files.isRegularFile(report) && Files.size(report) > 2_000,
-                "Whist Lab Extent report was not published: " + report);
-        String html = Files.readString(report);
-        if (outcome == AtfReportStatus.PASS) {
-            assertTrue(html.contains("Total: 11"), "The Extent report omitted the verified final score");
-            assertTrue(html.contains("data:image/png;base64,"), "Screenshots must be inline in the Extent report");
-            for (Path image : files.stream()
-                    .filter(file -> file.getFileName().toString().toLowerCase().endsWith(".png")).toList()) {
-                ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
-                assertTrue(html.contains(screenshot.base64Png()),
-                        "Extent report is missing screenshot payload " + screenshot.title());
-            }
-        }
+    private static boolean isIvoryCardSurface(int rgb) {
+        return ((rgb >>> 16) & 0xFF) >= 220
+                && ((rgb >>> 8) & 0xFF) >= 220
+                && (rgb & 0xFF) >= 210;
     }
 
-    private static void publishInteractionReport(Path artifacts, String installedPackage, List<Path> files,
-            List<AtfAssertion> assertions, String checks, AtfReportStatus outcome) throws Exception {
-        Path report = artifacts.resolve("whist-lab-thirteen-card-fan.html");
-        var settings = AtfReportConfigurationLoader.load().reportingSettings();
-        try (var session = new ExtentReportSession(report, settings)) {
-            AtfReportPorts.Scenario raw = session.startScenario(
-                    "Whist Lab thirteen-card hand and card-play interaction", "atf.android.e2e", PACKAGE,
-                    List.of("android", "e2e", "ui", "card-fan", "interaction"));
-            try (var details = raw.startPhase("Device, fixture, and observed layout")) {
-                details.observation(new ReportObservation("One-row hand and selected-card movement",
-                        List.of(new ReportField("Device", reportSetting(
-                                        "atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554")),
-                                new ReportField("Android API", System.getProperty("atf.android.api", "device reported at runtime")),
-                                new ReportField("Package", PACKAGE),
-                                new ReportField("Installed APK", installedPackage.trim()),
-                                new ReportField("Observed behavior", checks),
-                                new ReportField("Assertion count", Integer.toString(assertions.size()))),
-                        List.of(), files.stream()
-                                .filter(file -> !file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
-                                .map(WhistLabGameplayE2eTest::artifactUnchecked).toList()));
-                details.complete(outcome);
-            }
-            try (var phase = raw.startPhase("Auditable interaction assertions")) {
-                try (var step = phase.startAssertionStep("Thirteen-card fan and one-card play")) {
-                    step.assertions(assertions);
-                    step.complete(outcome);
-                }
-                phase.complete(outcome);
-            }
-            var ui = UiExtentReportSession.adaptScenario(raw,
-                    ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
-                    "Whist Lab card fan interaction");
-            try (var phase = ui.startPhase("Inline Android screenshots")) {
-                for (Path image : files.stream()
-                        .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
-                    ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
-                    phase.uiValidation(screenshot.title(), "Android emulator", screenshot.base64Png(),
-                            List.of(), outcome);
-                }
-                phase.complete(outcome);
-            }
-            raw.complete(outcome);
-        }
-        assertTrue(Files.isRegularFile(report) && Files.size(report) > 2_000,
-                "Whist Lab card-fan Extent report was not published: " + report);
-        String html = Files.readString(report);
-        if (outcome == AtfReportStatus.PASS) {
-            assertTrue(html.contains("data:image/png;base64,"), "Card-fan screenshots must be inline in Extent");
-            assertTrue(html.contains("atf-ui-assertions"), "Extent omitted the standard expandable assertion table");
-            for (AtfAssertion assertion : assertions) {
-                assertTrue(html.contains(assertion.name()), "Extent omitted assertion row " + assertion.name());
-            }
-        }
-    }
-
-    private static void publishPresentationReport(Path artifacts, String installedPackage, List<Path> files,
-            List<AtfAssertion> assertions, String checks, AtfReportStatus outcome) throws Exception {
-        Path report = artifacts.resolve("whist-lab-table-presentation.html");
-        Path flowManifest = files.stream()
-                .filter(file -> file.getFileName().toString().startsWith("ui-flow-")
-                        && file.getFileName().toString().endsWith(".properties"))
-                .findFirst().orElseThrow(() -> new IllegalStateException("Ordered UI flow manifest is missing"));
-        var settings = AtfReportConfigurationLoader.load().reportingSettings();
-        try (var session = new ExtentReportSession(report, settings)) {
-            AtfReportPorts.Scenario raw = session.startScenario(
-                    "Whist Lab table presentation and navigation", "atf.android.e2e", PACKAGE,
-                    List.of("android", "e2e", "ui", "table-layout", "navigation"));
-            try (var details = raw.startPhase("Layout assertions, navigation, and Android hierarchy")) {
-                details.observation(new ReportObservation("Eight-card table and safe menu navigation",
-                        List.of(new ReportField("Device", reportSetting(
-                                        "atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554")),
-                                new ReportField("Android API", System.getProperty("atf.android.api", "device reported at runtime")),
-                                new ReportField("Package", PACKAGE),
-                                new ReportField("Installed APK", installedPackage.trim()),
-                                new ReportField("Observed contract", checks),
-                                new ReportField("Recorded assertions", Integer.toString(assertions.size())),
-                                new ReportField("Ordered flow manifest bytes", Long.toString(Files.size(flowManifest)))),
-                        List.of(), files.stream()
-                                .filter(file -> !file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
-                                .map(WhistLabGameplayE2eTest::artifactUnchecked).toList()));
-                details.complete(outcome);
-            }
-            try (var assertionPhase = raw.startPhase("Auditable UI assertions")) {
-                try (var assertionStep = assertionPhase
-                        .startAssertionStep("Observed layout, bidding, and navigation assertions")) {
-                    assertionStep.assertions(assertions);
-                    assertionStep.complete(outcome);
-                }
-                assertionPhase.complete(outcome);
-            }
-            var ui = UiExtentReportSession.adaptScenario(raw,
-                    ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
-                    "Whist Lab table presentation and navigation");
-            try (var phase = ui.startPhase("Inline Android presentation screenshots")) {
-                for (Path image : files.stream()
-                        .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
-                    ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
-                    phase.uiValidation(screenshot.title(), "Android emulator", screenshot.base64Png(),
-                            List.of(), outcome);
-                }
-                phase.complete(outcome);
-            }
-            raw.complete(outcome);
-        }
-        assertTrue(Files.isRegularFile(report) && Files.size(report) > 2_000,
-                "Whist Lab presentation Extent report was not published: " + report);
-        String html = Files.readString(report);
-        if (outcome == AtfReportStatus.PASS) {
-            assertTrue(html.contains("data:image/png;base64,"), "Presentation screenshots must be inline in Extent");
-            String assertionTitle = "Observed layout, bidding, and navigation assertions";
-            int assertionGroup = html.indexOf(assertionTitle);
-            assertTrue(assertionGroup >= 0, "Extent omitted the dedicated assertion step");
-            int collapsedBody = html.indexOf("class=\"collapse\"", assertionGroup);
-            int assertionTable = html.indexOf("atf-ui-assertions", assertionGroup);
-            assertTrue(collapsedBody > assertionGroup && assertionTable > collapsedBody,
-                    "The standard assertion table must be inside the expandable Extent step");
-            assertTrue(html.contains("Score view does not commit the pending bid"),
-                    "Extent omitted the read-only score assertion");
-            assertTrue(html.contains("Score navigation leaves the bid summary unchanged"),
-                    "Extent omitted the unchanged-bid-summary assertion");
-            assertTrue(!assertions.isEmpty(), "Presentation flow produced no UI assertions");
-            for (AtfAssertion assertion : assertions) {
-                assertTrue(html.contains(assertion.name()), "Extent omitted assertion row " + assertion.name());
-            }
-            for (Path image : files.stream()
-                    .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
-                ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
-                assertTrue(html.contains(screenshot.base64Png()),
-                        "Presentation Extent is missing screenshot payload " + screenshot.title());
-            }
-        }
-    }
-
-    private static ReportObservation.Artifact artifactUnchecked(Path file) {
-        try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file));
-            return new ReportObservation.Artifact(file.getFileName().toString(), file.toUri(), HexFormat.of().formatHex(digest));
-        } catch (Exception failure) {
-            throw new IllegalStateException("Could not attach Whist Lab evidence " + file, failure);
-        }
+    private static boolean overlaps(AndroidUiDriver.Bounds first, AndroidUiDriver.Bounds second) {
+        int pixelRoundingTolerance = 1;
+        return first.left() < second.right() - pixelRoundingTolerance
+                && first.right() > second.left() + pixelRoundingTolerance
+                && first.top() < second.bottom() - pixelRoundingTolerance
+                && first.bottom() > second.top() + pixelRoundingTolerance;
     }
 
     private static int width(AndroidUiDriver.Bounds bounds) { return bounds.right() - bounds.left(); }

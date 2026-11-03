@@ -1,9 +1,27 @@
 # Feedback de aliniere ATF J4 Android
 
-Revizie live: 2026-11-02; Core C3 și Reporting J16.
+Revizie live: 2026-11-03; Core C3 și Reporting J18.
 
 Politica comună a celor șase publicatoare este implementată și verificată în [contractul oficial](../ATF_Game_Report_Presentation.md) și [probele de regresie/randare](../ATF_Game_Report_Verification.md). Secțiunile J14/J15 de mai jos păstrează probe istorice; criteriile active nu includ remediile de prezentare deja livrate.
 Biblioteca și testele generice sunt în J0; cerințele de mai jos aparțin consumerului.
+
+## UI checkpoints Extent — rezolvat 2026-11-03
+
+Publisherul Whist Lab separa capturile de pașii UI și nu oferea aceeași
+corelare per pas ca raportarea Playwright. `AndroidUiFlowReportPublisher` din
+J4 folosește acum API-ul public `UiExtentReportSession.UiPhase.step`: fiecare
+checkpoint Gherkin deține tabelul standard de acțiuni, captura PNG inline și
+tabelul de aserțiuni evaluat. Receipt-ul publică identitatea și numărătorile,
+iar XML/properties rămân fingerprint-uri colapsate fără linkuri locale sau dump
+brut. Failure-ul de dinaintea primului checkpoint rămâne un diagnostic FAIL.
+
+Timpul Tap/Back/Swipe fusese măsurat împreună cu pauza fixă de stabilizare UI;
+timerul este acum oprit imediat după comanda ADB, iar testul componentă verifică
+că așteptarea de 500 ms nu intră în TIME. Probele componente au trecut 3/3, iar
+cele două flow-uri live pe API 28 au trecut: 6 checkpoint-uri pentru opt cărți și
+2 pentru treisprezece cărți, cu raport Extent individual per flow. Rapoartele de
+verificare sunt în `%TEMP%\ATF_J4_REPORT_E2E_20261103_1609`; nu s-au modificat
+sursele Reporting J0.
 
 ## J14 — criterii active demonstrate
 

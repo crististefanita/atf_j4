@@ -1,0 +1,932 @@
+[
+  {
+    "id": "loss-promoted-master-0",
+    "origin": "arena-safety10-arena-factorial-seed7107-seating2",
+    "sourceHand": 14,
+    "sourceSha256": "22a3c623d2a0d9a4f0261f57b9cfa2e4c0391850ffb8a549f6bfb150cefccde6",
+    "rule": "Own lead, no trump, every remaining own card exceeds every unknown card of its suit. Each legal own lead wins; by induction both remaining tricks are unavoidable, regardless of opponents’ bids or choices.",
+    "expectedFinalWon": 8,
+    "expectedPoints": -6,
+    "unknownPool": [
+      "KH",
+      "9C",
+      "JC",
+      "QC",
+      "KC",
+      "9D"
+    ],
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 3,
+      "dealer": 2,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 11
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 3,
+          "won": 0,
+          "total": 65,
+          "streak": 1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 38,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 40,
+          "streak": 3
+        },
+        {
+          "remaining": 2,
+          "bid": 2,
+          "won": 6,
+          "total": 32,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 10
+          }
+        }
+      ],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "loss-promoted-master-1",
+    "origin": "arena-safety10-arena-mixed-seed7107-seating7",
+    "sourceHand": 12,
+    "sourceSha256": "3acdf9b7073f0c60acc54ff6db1b3c1ef4e6ce1a5498767cbdd1f1c6bf0aff95",
+    "rule": "Own lead, no trump, every remaining own card exceeds every unknown card of its suit. Each legal own lead wins; by induction both remaining tricks are unavoidable, regardless of opponents’ bids or choices.",
+    "expectedFinalWon": 7,
+    "expectedPoints": -5,
+    "unknownPool": [
+      "QS",
+      "KS",
+      "AS",
+      "AH",
+      "7D",
+      "9D"
+    ],
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 0,
+      "dealer": 0,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "CLUBS",
+          "rank": 12
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 2,
+          "won": 5,
+          "total": 51,
+          "streak": -2
+        },
+        {
+          "remaining": 2,
+          "bid": 2,
+          "won": 0,
+          "total": 49,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 32,
+          "streak": 2
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 1,
+          "total": 30,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        }
+      ],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "loss-promoted-master-2",
+    "origin": "arena-safety10-arena-mixed-seed7101-seating5",
+    "sourceHand": 12,
+    "sourceSha256": "877c79560ee9acf731ff1853b67531450656f9d1ffb468f0eb76c46f6c9f5320",
+    "rule": "Own lead, no trump, every remaining own card exceeds every unknown card of its suit. Each legal own lead wins; by induction both remaining tricks are unavoidable, regardless of opponents’ bids or choices.",
+    "expectedFinalWon": 8,
+    "expectedPoints": -4,
+    "unknownPool": [
+      "JS",
+      "7H",
+      "9H",
+      "10H",
+      "QH",
+      "AH"
+    ],
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "NO_TRUMP",
+      "seat": 1,
+      "dealer": 0,
+      "handSize": 8,
+      "hand": [
+        {
+          "suit": "CLUBS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 37,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 4,
+          "won": 6,
+          "total": 36,
+          "streak": 2
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 35,
+          "streak": 1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 57,
+          "streak": -1
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        }
+      ],
+      "turnedCard": null,
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  },
+  {
+    "id": "loss-promoted-master-3",
+    "origin": "arena-safety10-arena-mixed-seed7105-seating2",
+    "sourceHand": 10,
+    "sourceSha256": "f16ec0e9e3de82b380dac724cad2df30efb2e3d832f06a39e1143a35da87b552",
+    "rule": "Own lead with QS/AS as trumps; KS has been publicly played. Every unseen trump is below QS. Each remaining held trump wins regardless of legal opponent replies, so two additional tricks are unavoidable.",
+    "expectedFinalWon": 6,
+    "expectedPoints": -2,
+    "unknownPool": [
+      "7H",
+      "8H",
+      "10H",
+      "JH",
+      "AH",
+      "7C",
+      "8C",
+      "JC",
+      "JD"
+    ],
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 0,
+      "dealer": 2,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 12
+        },
+        {
+          "suit": "SPADES",
+          "rank": 14
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 4,
+          "won": 4,
+          "total": 38,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 28,
+          "streak": 3
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 33,
+          "streak": -2
+        },
+        {
+          "remaining": 2,
+          "bid": 1,
+          "won": 1,
+          "total": 37,
+          "streak": 2
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 14
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 13
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    }
+  }
+]

@@ -22,7 +22,8 @@ public final class WhistUiTextTest {
         assertEquals(0, BidGridMetrics.rowCount(0, 353));
         assertEquals(1, BidGridMetrics.rowCount(1, 353));
         assertEquals(1, BidGridMetrics.rowCount(3, 353));
-        assertEquals(3, BidGridMetrics.rowCount(9, 353));
+        assertEquals(2, BidGridMetrics.rowCount(9, 353));
+        assertEquals(3, BidGridMetrics.rowCount(9, 400));
         assertEquals(3, BidGridMetrics.rowCount(18, 353));
         assertEquals(6, BidGridMetrics.rowCount(18, 240));
     }

@@ -9,19 +9,26 @@ jucătorului, separat de acceptanța ATF și de calitatea rapoartelor.
 
 | Întrebare | Aplicația originală | Whist Lab |
 |---|---|---|
-| Ce pot licita? | Toată mâna este vizibilă înaintea licitării. | Mâna rămâne pe un singur rând. 13 cărți încap pe lățimea de referință; la mâini mai mari sau ecrane înguste se derulează orizontal fără să se împartă în grilă. Bidurile sunt în trei sau șase coloane adaptive, cu ținte de 48 dp. |
+| Ce pot licita? | Toată mâna este vizibilă înaintea licitării. | Mâna rămâne pe un singur rând; 13 cărți încap în 320, 393 și 600 dp. Pentru 4–9 biduri, lățimile de 260–399 dp folosesc cinci coloane, iar forma 3 × 3 revine de la 400 dp. Seturile mai mari folosesc șase coloane de la 312 dp. Toate țintele rămân de 48 dp. |
 | Cât a licitat fiecare? | Valorile sunt pe locurile jucătorilor. | Fiecare loc arată propria licitație; rezumatul arată separat câte licitații s-au depus și suma lor raportată la mărimea mâinii. |
 | Câte levate a câștigat fiecare? | Informația este lângă jucători. | Fiecare loc arată bid-ul și levatele câștigate; punctele rămân în foaia de scor. |
 | Unde este atuul și ce s-a jucat? | Interfața este funcțională, dar are o ierarhie vizuală mai slabă. | Antetul arată rangul și simbolul cărții întoarse când există; la mâinile cu tot pachetul împărțit arată culoarea și precizează că nu există carte întoarsă. Levata curentă și numele jucătorilor stau în centrul mesei. |
 | Ce se întâmplă când ating o carte? | — | Cartea legală se ridică vizual și se mută în levata centrală; locul omului rămâne fix. |
 | Pot verifica scorul fără să schimb jocul? | Meniul are acces la tabela de joc și scor. | Hamburgerul din stânga sus deschide `Score sheet` sau `Main menu`. Scorul este doar pentru citire și păstrează licitația neconfirmată. |
 
-Verificarea live din 3 noiembrie, la `393×698 dp` (`1080×1920`, `440 dpi`, API
-28), a confirmat masa de licitare cu șase locuri, mâna de opt cărți, meniul,
-foaia de scor și revenirea la joc. Al doilea flow a verificat mâna de 13 cărți
-pe un rând, jucarea unei cărți și poziția fixă a locului omului. Rapoartele Extent
-includ PNG-urile și tabelul standard expandabil de aserțiuni; nu s-a jucat o
-partidă completă.
+Matricea live din 3 noiembrie, API 28 și densitate 440 dpi, a rulat ambele flow-uri
+la 320, 393 și 600 dp. La 320 dp, viewport-ul logic a fost `880×1920`; la 393 dp,
+dimensiunea fizică `1080×1920`; la 600 dp, override-ul logic a fost `1650×2560`,
+cu PNG fizic `1080×1920` letterboxat de emulator. Toate cele șase rulări au trecut.
+Rapoartele Extent conțin capturi inline, pași expandabili și câte 19 aserțiuni
+trecute per flow. Nu s-a jucat o partidă completă.
+
+Față de mock, totalul licitațiilor rămâne în rezumatul vizibil din antet, lângă
+numărul licitațiilor depuse; centrul ovalului rămâne rezervat alegerii și
+confirmării bidului. Forma 3 × 3 se păstrează pe ecrane largi, iar grila de cinci
+coloane apare numai în intervalul îngust în care forma 3 × 3 intra în locurile
+laterale. Suprafața verde continuă pe tot ecranul, conform cerinței aplicației
+nativă de a păstra același fundal în jurul mesei și al mâinii.
 
 ## Feedback prioritar
 
@@ -36,16 +43,21 @@ trasată discret peste același fundal de felt ca restul ecranului. Locurile au
 ancore numite pe perimetru, nu celule de grilă: la șase jucători, forma este
 `N; NW/NE; SW/SE; S`, iar omul rămâne în sud. Ancorele nu se schimbă între
 licitare și joc; flancurile sunt apropiate de margini cu 18% din înălțimea mesei
-în licitare și 23% în joc, exact cât să păstreze centrul liber ca în mock. Pentru
-3–5 jucători, locurile ocupă ancorele simetrice disponibile. Locurile laterale
+în licitarea normală, 16% în licitarea compactă și 23% în joc, pentru a păstra
+centrul liber ca în mock și a lăsa grila în dreptul scaunelor. Pentru 3–5 jucători,
+locurile ocupă ancorele simetrice disponibile. Locurile laterale
 flanchează grila centrală fără să intre în ea. Numele ocupă
 primul rând al fiecărui loc; `Bid X · Won Y` este separat pe al doilea. Jucătorul
 activ primește badge-ul `BID NOW` sau `PLAY NOW` (în română `LICITEAZĂ` sau
 `JOACĂ ACUM`), dar fiecare loc rezervă aceeași înălțime pentru badge, ca turele
 să nu deplaseze scaunele. Descrierea TalkBack păstrează formularea completă.
-Selectorul folosește trei coloane pentru forma 3 × 3 din mock și trece la șase
-coloane pentru seturi mai mari când viewport-ul permite; pe ecran îngust rămâne
-la trei. Opțiunea aleasă și `Place bid` stau împreună în centrul mesei. Indicatorul
+Selectorul păstrează forma 3 × 3 pentru 4–9 valori de la 400 dp. Între 260 și
+399 dp folosește cinci coloane pe două rânduri, iar sub 260 dp trei coloane; la
+mai mult de nouă valori folosește șase coloane de la 312 dp, altfel trei. La
+`393×698 dp`, lățimea efectivă a tablei este 353 dp: forma 3 × 3 intersecta în
+mod măsurabil locurile laterale. Varianta de cinci coloane și insetul compact au
+eliminat intersectarea fără să reducă țintele de 48 dp. Opțiunea aleasă și
+`Place bid` stau împreună în centrul mesei. Indicatorul
 din antet afișează cartea întoarsă reală, dacă există; la mâna de 13 cărți din
 `Descending`, pachetul este împărțit complet și nu există carte întoarsă, deci
 interfața spune explicit că atuul este doar culoarea stabilită de variantă. În
@@ -62,18 +74,23 @@ biduri, ancorele simetrice pentru 3–6 jucători și inseturile de fază. E2E-u
 verifică pozițiile efective în ierarhia Android, nu doar geometria modelului.
 Flow-ul cu 13 cărți verifică fanul, atuul disponibil, badge-ul și valorile de la
 loc, apoi atinge o carte și verifică levata centrală, cele 12 cărți rămase și
-coordonatele neschimbate ale locului omului. E2E-ul compară și centrul real al
-cărții jucate cu centrul suprafeței ovale. Testele de text acoperă bid/levate și
+coordonatele neschimbate ale locului omului. Un slot fix pentru instrucțiune
+păstrează locurile nemișcate când indicatorul de tură dispare în timpul turei AI.
+E2E-ul verifică și centrul real al cărții jucate, balanța verticală dintre masă și
+mână pe ecrane înalte, precum și culoarea eșantionată din screenshot după maparea
+coordonatelor logice la PNG-ul letterboxat. Testele de text acoperă bid/levate și
 badge-urile în engleză și română.
 
-**Rezultat live pentru această revizie:** testele Android de componentă (15) și
-testele standard ale regulilor (500) au trecut anterior; APK-ul a fost construit
-în `%TEMP%`, iar ambele teste UI țintite au trecut pe emulator API 28:
+**Rezultat live pentru această revizie:** cele 15 teste Android ale aplicației și
+cele 500 de teste standard ale regulilor au trecut; APK-ul a fost construit în
+`%TEMP%`. Ambele teste UI țintite au trecut pe emulator API 28 la 320, 393 și
+600 dp:
 `sixPlayerEightCardHandFitsOneRowAndMenuKeepsScoreAndHomeAccessible` și
 `thirteenCardFanKeepsOneRowAndMovesTheChosenCardIntoTheTable`. Raportul de masă
 are șase PNG-uri originale și nouă atașări inline; raportul fanului are două PNG-uri
-și cinci atașări inline. Ambele includ tabelele standard expandabile de aserțiuni,
-capturi inline și manifest `PASS`. Aserțiunea E2E pentru șase locuri măsoară
+și cinci atașări inline per viewport. Fiecare raport include tabelul standard
+expandabil de aserțiuni, capturile inline și manifest `PASS`; toate cele 19
+aserțiuni din fiecare flow au trecut. Aserțiunea E2E pentru șase locuri măsoară
 ancorele `N; NW/NE; SW/SE; S`; captura confirmă că niciun loc nu mai intră peste
 grila de biduri. În 8 cărți, indicatorul arată cartea întoarsă completă (`6♠` în
 rularea documentată). În mâna Descending de 13 cărți, distribuirea consumă tot
@@ -86,10 +103,14 @@ aceleași limite (`[55,1409][1026,1756]`). Driver-ul de test unește doar noduri
 cu descriere identică și limite identice; dacă limitele diferă, păstrează eroarea.
 Nicio aserțiune despre geometria jocului nu a fost relaxată.
 
-Rapoartele complete sunt în `%TEMP%`:
+Rapoartele finale complete sunt în `%TEMP%`:
 
-- `whist-j4-final-layout-live-20261103-142000\table-presentation\whist-lab-table-presentation.html`
-- `whist-j4-final-layout-live-20261103-142000\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+- `whist-j4-display-final-v13-320dp-20261103\table-presentation\whist-lab-table-presentation.html`
+- `whist-j4-display-final-v13-320dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+- `whist-j4-display-final-v12-393dp-20261103\table-presentation\whist-lab-table-presentation.html`
+- `whist-j4-display-final-v12-393dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+- `whist-j4-display-final-v11-600dp-20261103\table-presentation\whist-lab-table-presentation.html`
+- `whist-j4-display-final-v11-600dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
 
 **Dovadă live din revizia anterioară, nu pentru redesignul curent:** PNG-ul la
 `393×698 dp` arată opt cărți distincte pe o singură
@@ -104,11 +125,12 @@ valoarea 3 a rămas selectată, iar rezumatul nu s-a schimbat. Nicio licitație 
 fost confirmată și nicio carte nu a fost jucată.
 
 **Cazul de margine revizuit:** 18 valori de bid folosesc șase coloane la 353 dp
-și trei coloane când lățimea scade sub pragul de 312 dp; masa crește numai când
-grila adaptivă cere mai multe rânduri. Mâna de 17 cărți rămâne pe un singur rând
-și se derulează orizontal când nu încape. Contractul JVM fixează aceste praguri,
-13 cărți fără derulare la 353 dp și 17 cărți cu derulare. Ecran îngust, text
-mărit și TalkBack rămân de verificat live.
+și trei coloane când lățimea scade sub pragul de 312 dp; 4–9 valori trec de la
+3 × 3 la cinci coloane sub 400 dp, unde suprapunerea cu scaunele laterale apărea
+la 353 dp. Mâna de 17 cărți rămâne pe un singur rând și se derulează orizontal
+când nu încape. Contractul JVM fixează aceste praguri, iar E2E-ul confirmă 13
+cărți fără derulare la 320/393/600 dp. Textul mărit și TalkBack rămân de
+verificat live.
 
 ### P1 — Totalul licitațiilor și rezultatul individual trebuie să fie neechivoce
 

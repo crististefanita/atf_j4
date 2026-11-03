@@ -76,6 +76,44 @@ Caption-ul este semantic, de exemplu starea după reluare, nu numele unui fișie
 Dacă mai multe cărți se joacă între două cadre, raportul declară fereastra
 observată; nu inventează o imagine pentru fiecare carte.
 
+### Proiecția UI pe checkpoint, la fel ca Playwright
+
+Fiecare checkpoint Android capturat se publică prin `UiExtentReportSession.UiPhase.step`,
+în faza și ordinea în care a rulat. Același nod Gherkin expandabil deține tabelul
+standard ACTION/TARGET/EXPECTED/OBSERVED/TIME/RESULT, PNG-ul inline și tabelul
+ASSERTION/EXPECTED/ACTUAL/RESULT. Nu mutați imaginile într-o galerie sau assertions
+într-o fază agregată: cititorul trebuie să poată audita o stare fără să ghicească
+care captură și care verdict îi aparțin.
+
+- Înregistrați interacțiunile Android efectiv expediate (launch, tap, select, swipe,
+  back) ca `ACTION`, cu timpul capturat al dispatch-ului și rezultatul comenzii ADB.
+  Rezultatul ulterior al UI rămâne în assertions; acceptarea comenzii nu certifică
+  singură schimbarea de stare.
+- Păstrați observația UI de după acțiuni separat de ACTION, dar în același checkpoint.
+  O verificare fără input poate fi `OBSERVE`; nu inventați un click doar ca să existe
+  un rând în tabelul de acțiuni.
+- Atașați PNG-ul full-display checkpoint-ului care l-a produs. Captura și assertions
+  folosesc statusul local al checkpoint-ului; statusul journey-ului nu recolorează
+  retrospectiv toate cadrele anterioare.
+- XML/properties rămân probe locale de suport. Receipt-ul public poate conține
+  fingerprint-uri SHA-256 colapsate, dar nu linkuri `file:` și nici dump-uri brute;
+  checksum-ul este proveniență tehnică, nu oracol de business.
+- Un failure fără checkpoint publicat primește diagnostic explicit FAIL. Nu derivați
+  un PASS din raportul generat, dintr-o imagine disponibilă sau din statusul JUnit.
+
+Contractul se verifică atât ca componentă a publisherului pe receipt sintetic, cât și
+într-o rulare Android: ordinea fază/pas, tabelele expandabile, captura inline proprie
+pasului, assertions originale, acțiunile fără duplicare și diagnostic FAIL parțial.
+
+Implementarea live J4 este `AndroidUiFlowReportPublisher` din `atf-test-android`;
+testele sale și `AndroidUiDriverActionTraceTest` rămân în `src/test`. Proba API 28
+din 3 noiembrie 2026 a publicat șase checkpoint-uri pentru masa cu opt cărți și
+două pentru mâna cu treisprezece cărți. Auditul verifică receipt-ul, identitatea
+și numărătorile, fiecare titlu/acțiune/assert, bytes PNG inline și absența
+linkurilor locale. Timpul Tap/Back/Swipe măsoară numai dispatch-ul ADB, separat
+de pauza folosită pentru stabilizarea UI. Rapoartele și capturile rămân în folderul
+configurat prin `atf.android.artifacts` (implicit `%TEMP%`), nu în sursele J4.
+
 ## Full-display Android screenshots
 
 Capture the entire physical Android display at each reported checkpoint, including every edge, without cropping to the app, a card or a region. Preserve the original PNG bytes and orientation through publication; analysis regions may be derived separately and must not replace the audit image.

@@ -1,0 +1,653 @@
+[
+  {
+    "id": "arena-safety10-arena-factorial-seed7103-seating3-h10-seat2",
+    "gameId": "arena-safety10-arena-factorial-seed7103-seating3",
+    "gameSha256": "4c7433205feae187ab399dd6cb2057e9874020d39117bb4837749105ee03e035",
+    "role": "player",
+    "handNumber": 10,
+    "actualChoice": "JH",
+    "miss": 1,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 2,
+      "dealer": 2,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 11
+        },
+        {
+          "suit": "CLUBS",
+          "rank": 9
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 2,
+          "won": 2,
+          "total": 15,
+          "streak": -1
+        },
+        {
+          "remaining": 1,
+          "bid": 4,
+          "won": 3,
+          "total": 11,
+          "streak": 2
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 36,
+          "streak": 1
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 38,
+          "streak": 1
+        }
+      ],
+      "trick": [
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 10
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    },
+    "unknownCount": 8,
+    "expectedWorlds": 165
+  },
+  {
+    "id": "arena-safety10-arena-factorial-seed7106-seating4-h10-seat3",
+    "gameId": "arena-safety10-arena-factorial-seed7106-seating4",
+    "gameSha256": "dcc1ba3949fd64acb27aa2d64162405dd92dda959c640b3cef20d582136a4477",
+    "role": "player",
+    "handNumber": 10,
+    "actualChoice": "QH",
+    "miss": 2,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "SPADES",
+      "seat": 3,
+      "dealer": 2,
+      "handSize": 7,
+      "hand": [
+        {
+          "suit": "HEARTS",
+          "rank": 12
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 12
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 36,
+          "streak": 3
+        },
+        {
+          "remaining": 2,
+          "bid": 0,
+          "won": 0,
+          "total": 31,
+          "streak": -1
+        },
+        {
+          "remaining": 2,
+          "bid": 2,
+          "won": 2,
+          "total": 22,
+          "streak": 1
+        },
+        {
+          "remaining": 2,
+          "bid": 3,
+          "won": 3,
+          "total": 37,
+          "streak": 1
+        }
+      ],
+      "trick": [],
+      "history": [
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 13
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 9
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "SPADES",
+        "rank": 11
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    },
+    "unknownCount": 9,
+    "expectedWorlds": 180
+  },
+  {
+    "id": "arena-safety10-arena-factorial-seed7107-seating6-h9-seat1",
+    "gameId": "arena-safety10-arena-factorial-seed7107-seating6",
+    "gameSha256": "58c88f9674e52fc6c77fc9988e69bad69fc4ca2957f28a130776d0a8c30d4b1d",
+    "role": "player",
+    "handNumber": 9,
+    "actualChoice": "10D",
+    "miss": 1,
+    "before": {
+      "mode": "ROMANIAN_WHIST",
+      "trump": "CLUBS",
+      "seat": 1,
+      "dealer": 1,
+      "handSize": 6,
+      "hand": [
+        {
+          "suit": "SPADES",
+          "rank": 14
+        },
+        {
+          "suit": "DIAMONDS",
+          "rank": 10
+        }
+      ],
+      "seats": [
+        {
+          "remaining": 1,
+          "bid": 0,
+          "won": 0,
+          "total": 29,
+          "streak": 2
+        },
+        {
+          "remaining": 2,
+          "bid": 1,
+          "won": 0,
+          "total": 30,
+          "streak": -1
+        },
+        {
+          "remaining": 1,
+          "bid": 4,
+          "won": 3,
+          "total": 23,
+          "streak": 1
+        },
+        {
+          "remaining": 1,
+          "bid": 2,
+          "won": 1,
+          "total": 39,
+          "streak": 4
+        }
+      ],
+      "trick": [
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        }
+      ],
+      "history": [
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "SPADES",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 7
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "SPADES",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 14
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 12
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "HEARTS",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 8
+          }
+        },
+        {
+          "seat": 1,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 9
+          }
+        },
+        {
+          "seat": 2,
+          "card": {
+            "suit": "CLUBS",
+            "rank": 10
+          }
+        },
+        {
+          "seat": 3,
+          "card": {
+            "suit": "DIAMONDS",
+            "rank": 11
+          }
+        },
+        {
+          "seat": 0,
+          "card": {
+            "suit": "SPADES",
+            "rank": 12
+          }
+        }
+      ],
+      "turnedCard": {
+        "suit": "CLUBS",
+        "rank": 9
+      },
+      "streakBonuses": true,
+      "streakBonusPoints": 10
+    },
+    "unknownCount": 10,
+    "expectedWorlds": 130
+  }
+]

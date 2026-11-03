@@ -27,6 +27,7 @@ public final class AndroidUiFlowTrace {
     private final String appPackage;
     private final List<String> tags;
     private final Map<String, List<Checkpoint>> phases = new LinkedHashMap<>();
+    private final List<AtfUiActionRecord> pendingActions = new ArrayList<>();
     private int actionSequence;
     private AtfReportStatus status = AtfReportStatus.WARNING;
     private String failure = "";
@@ -49,6 +50,13 @@ public final class AndroidUiFlowTrace {
         return ++actionSequence;
     }
 
+    /** Retains one measured interaction until the next ordered UI checkpoint. */
+    public synchronized void recordAction(AtfUiActionRecord action) {
+        Objects.requireNonNull(action, "action");
+        pendingActions.add(new AtfUiActionRecord(++actionSequence, action.operation(), action.target(),
+                action.expected(), action.observed(), action.durationMillis(), action.status(), action.source()));
+    }
+
     public synchronized void checkpoint(String phase, String keyword, String title, String target,
             Path screenshot, List<AtfUiActionRecord> actions, List<AtfAssertion> assertions,
             AtfReportStatus checkpointStatus, List<Path> supportingArtifacts) throws IOException {
@@ -57,8 +65,11 @@ public final class AndroidUiFlowTrace {
         String screenshotName = artifactName(screenshot);
         List<String> artifactNames = supportingArtifacts == null ? List.of()
                 : supportingArtifacts.stream().map(this::artifactName).filter(value -> !value.isBlank()).toList();
+        List<AtfUiActionRecord> checkpointActions = new ArrayList<>(pendingActions);
+        pendingActions.clear();
+        if (actions != null) checkpointActions.addAll(actions);
         steps.add(new Checkpoint(required(keyword, "keyword"), required(title, "title"),
-                required(target, "target"), screenshotName, List.copyOf(actions),
+                required(target, "target"), screenshotName, List.copyOf(checkpointActions),
                 List.copyOf(assertions), Objects.requireNonNull(checkpointStatus), artifactNames));
         flush();
     }
@@ -77,6 +88,28 @@ public final class AndroidUiFlowTrace {
     }
 
     public Path manifest() { return manifest; }
+
+    public String id() { return id; }
+    public String name() { return name; }
+    public String testClass() { return testClass; }
+    public String testPackage() { return testPackage; }
+    public String appPackage() { return appPackage; }
+    public List<String> tags() { return tags; }
+    public synchronized AtfReportStatus status() { return status; }
+    public synchronized String failure() { return failure; }
+    public synchronized List<AtfUiActionRecord> pendingActions() { return List.copyOf(pendingActions); }
+
+    /** Immutable in-memory projection used to publish each checkpoint through the public UI report API. */
+    public synchronized List<PhaseSnapshot> phaseSnapshots() {
+        return phases.entrySet().stream()
+                .map(entry -> new PhaseSnapshot(entry.getKey(), entry.getValue().stream()
+                        .map(checkpoint -> new CheckpointSnapshot(checkpoint.keyword(), checkpoint.title(),
+                                checkpoint.target(), resolveArtifact(checkpoint.screenshot()),
+                                checkpoint.actions(), checkpoint.assertions(), checkpoint.status(),
+                                checkpoint.artifacts().stream().map(this::resolveArtifact).toList()))
+                        .toList()))
+                .toList();
+    }
 
     /** Returns the recorded comparisons in execution order with their checkpoint context. */
     public synchronized List<AtfAssertion> assertions() {
@@ -98,6 +131,11 @@ public final class AndroidUiFlowTrace {
             throw new IllegalArgumentException("Android UI flow evidence must stay under " + outputDirectory + ": " + file);
         }
         return outputDirectory.relativize(normalized).toString().replace('\\', '/');
+    }
+
+    private Path resolveArtifact(String relative) {
+        return relative == null || relative.isBlank() ? null
+                : outputDirectory.resolve(relative).normalize();
     }
 
     private void flush() throws IOException {
@@ -155,6 +193,19 @@ public final class AndroidUiFlowTrace {
                 }
             }
         }
+        properties.setProperty("flow.pendingActionCount", Integer.toString(pendingActions.size()));
+        for (int index = 0; index < pendingActions.size(); index++) {
+            AtfUiActionRecord action = pendingActions.get(index);
+            String prefix = "flow.pendingAction." + index;
+            properties.setProperty(prefix + ".sequence", Integer.toString(action.sequence()));
+            properties.setProperty(prefix + ".operation", action.operation());
+            properties.setProperty(prefix + ".target", action.target());
+            properties.setProperty(prefix + ".expected", action.expected());
+            properties.setProperty(prefix + ".observed", action.observed());
+            properties.setProperty(prefix + ".durationMillis", Long.toString(action.durationMillis()));
+            properties.setProperty(prefix + ".status", action.status().name());
+            properties.setProperty(prefix + ".source", action.source().name());
+        }
         Path temporary = manifest.resolveSibling(manifest.getFileName() + ".tmp");
         try (OutputStream output = Files.newOutputStream(temporary)) {
             properties.store(output, "ATF J4 ordered Android UI flow evidence");
@@ -174,4 +225,18 @@ public final class AndroidUiFlowTrace {
     private record Checkpoint(String keyword, String title, String target, String screenshot,
             List<AtfUiActionRecord> actions, List<AtfAssertion> assertions,
             AtfReportStatus status, List<String> artifacts) { }
+
+    public record PhaseSnapshot(String name, List<CheckpointSnapshot> checkpoints) {
+        public PhaseSnapshot { checkpoints = List.copyOf(checkpoints); }
+    }
+
+    public record CheckpointSnapshot(String keyword, String title, String target, Path screenshot,
+            List<AtfUiActionRecord> actions, List<AtfAssertion> assertions,
+            AtfReportStatus status, List<Path> supportingArtifacts) {
+        public CheckpointSnapshot {
+            actions = List.copyOf(actions);
+            assertions = List.copyOf(assertions);
+            supportingArtifacts = List.copyOf(supportingArtifacts);
+        }
+    }
 }

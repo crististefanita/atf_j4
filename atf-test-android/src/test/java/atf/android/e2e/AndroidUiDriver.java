@@ -1,6 +1,9 @@
 package atf.android.e2e;
 
 import atf.android.AdbClient;
+import atf.reporting.contract.AtfReportStatus;
+import atf.reporting.ui.model.AtfUiActionRecord;
+import atf.reporting.ui.model.AtfUiEvidenceSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +11,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -20,6 +24,8 @@ import org.w3c.dom.NodeList;
 final class AndroidUiDriver {
     private static final String REMOTE_XML = "/sdcard/atf-j4-window.xml";
     private static final Pattern BOUNDS = Pattern.compile("\\[(\\d+),(\\d+)]\\[(\\d+),(\\d+)]");
+    private static final Pattern OVERRIDE_SIZE = Pattern.compile("(?m)^Override size:\\s*(\\d+)x(\\d+)");
+    private static final Pattern PHYSICAL_SIZE = Pattern.compile("(?m)^Physical size:\\s*(\\d+)x(\\d+)");
     private static final Pattern PLAYING_CARD = Pattern.compile("(?:[2-9]|10|J|Q|K|A)[♠♥♣♦]");
     interface Device {
         AdbClient.Result run(String... arguments) throws IOException, InterruptedException;
@@ -27,6 +33,8 @@ final class AndroidUiDriver {
     }
     private final Device adb;
     private final Path output;
+    private Consumer<AtfUiActionRecord> actionSink = ignored -> { };
+    private int actionSequence;
 
     AndroidUiDriver(AdbClient adb, Path output) throws Exception {
         this(new Device() {
@@ -39,6 +47,10 @@ final class AndroidUiDriver {
         this.adb = Objects.requireNonNull(adb);
         this.output = output.toAbsolutePath().normalize();
         Files.createDirectories(this.output);
+    }
+
+    void recordActionsAs(Consumer<AtfUiActionRecord> sink) {
+        actionSink = Objects.requireNonNull(sink, "sink");
     }
 
     String dump() throws Exception {
@@ -103,6 +115,15 @@ final class AndroidUiDriver {
                 + exactDescription + "', got " + distinctBounds.size() + " distinct bounds across "
                 + matches.size() + " matching nodes");
         return toBounds(distinctBounds.getFirst());
+    }
+
+    Bounds boundsForDescription(String xml, String exactDescription, String exactClassName) throws Exception {
+        List<Node> matches = nodes(xml).stream()
+                .filter(node -> node.description().equals(exactDescription))
+                .filter(node -> node.className().equals(exactClassName)).toList();
+        if (matches.size() != 1) throw new IllegalStateException("Expected one UI element described as '"
+                + exactDescription + "' with class " + exactClassName + ", got " + matches.size());
+        return toBounds(matches.getFirst().bounds());
     }
 
     Bounds boundsForDescriptionContaining(String xml, String fragment) throws Exception {
@@ -224,14 +245,52 @@ final class AndroidUiDriver {
         return (image.getHeight() - bottom) / (double) image.getHeight();
     }
 
-    boolean sameBackgroundAcrossTableMargin(Path screenshot, double firstY, double secondY) throws Exception {
+    boolean sameBackgroundAcrossTableMargin(Path screenshot, double firstY, double secondY,
+            String displaySize) throws Exception {
         var image = ImageIO.read(screenshot.toFile());
         if (image == null) throw new IllegalStateException("Cannot decode screenshot: " + screenshot);
-        // Four percent lands inside the former light table frame on the 393 dp reference layout.
-        int x = Math.min(image.getWidth() - 1, Math.max(0, (int) (image.getWidth() * 0.04)));
-        int first = image.getRGB(x, (int) (image.getHeight() * firstY));
-        int second = image.getRGB(x, (int) (image.getHeight() * secondY));
+        int[] viewport = displayDimensions(displaySize);
+        // One percent stays beyond the oval stroke on both the narrow and wide viewport.
+        int[] firstPoint = screenshotPoint(image, viewport[0] * 0.01, viewport[1] * firstY,
+                viewport[0], viewport[1]);
+        int[] secondPoint = screenshotPoint(image, viewport[0] * 0.01, viewport[1] * secondY,
+                viewport[0], viewport[1]);
+        int first = image.getRGB(firstPoint[0], firstPoint[1]);
+        int second = image.getRGB(secondPoint[0], secondPoint[1]);
         return first == second;
+    }
+
+    int sampleHandFace(Path screenshot, Bounds hand, String displaySize) throws IOException {
+        var image = ImageIO.read(screenshot.toFile());
+        if (image == null) throw new IOException("Cannot decode hand screenshot: " + screenshot);
+        int[] viewport = displayDimensions(displaySize);
+        double logicalX = (hand.left() + hand.right()) / 2.0;
+        double logicalY = hand.bottom() - Math.max(8, (hand.bottom() - hand.top()) / 20);
+        int[] point = screenshotPoint(image, logicalX, logicalY, viewport[0], viewport[1]);
+        return image.getRGB(point[0], point[1]) & 0xFFFFFF;
+    }
+
+    static int[] displayDimensions(String displaySize) throws IOException {
+        Matcher size = OVERRIDE_SIZE.matcher(displaySize);
+        if (!size.find()) {
+            size = PHYSICAL_SIZE.matcher(displaySize);
+            if (!size.find()) throw new IOException("Android display size is unavailable: " + displaySize);
+        }
+        int width = Integer.parseInt(size.group(1));
+        int height = Integer.parseInt(size.group(2));
+        if (width <= 0 || height <= 0) throw new IOException("Android reported invalid display size: " + displaySize);
+        return new int[]{width, height};
+    }
+
+    private static int[] screenshotPoint(java.awt.image.BufferedImage image, double logicalX, double logicalY,
+            int viewportWidth, int viewportHeight) {
+        double scale = Math.min(image.getWidth() / (double) viewportWidth,
+                image.getHeight() / (double) viewportHeight);
+        double offsetX = (image.getWidth() - viewportWidth * scale) / 2.0;
+        double offsetY = (image.getHeight() - viewportHeight * scale) / 2.0;
+        int x = Math.max(0, Math.min(image.getWidth() - 1, (int) Math.round(offsetX + logicalX * scale)));
+        int y = Math.max(0, Math.min(image.getHeight() - 1, (int) Math.round(offsetY + logicalY * scale)));
+        return new int[]{x, y};
     }
 
     List<Integer> numericButtonValues(String xml) throws Exception {
@@ -297,7 +356,19 @@ final class AndroidUiDriver {
             var current=nodes(dump());if(current.stream().anyMatch(target))return;
             int width=0,height=0;for(Node node:current){var match=BOUNDS.matcher(node.bounds());if(match.matches()){width=Math.max(width,Integer.parseInt(match.group(3)));height=Math.max(height,Integer.parseInt(match.group(4)));}}
             if(width==0||height==0)throw new IllegalStateException("No visible scroll bounds");
-            adb.run("shell","input","swipe",""+(width/2),""+(height*4/5),""+(width/2),""+(height/3),"350").requireSuccess();Thread.sleep(250);
+            int startX=width/2,startY=height*4/5,endX=width/2,endY=height/3;
+            long started=System.nanoTime();
+            try {
+                adb.run("shell","input","swipe",""+startX,""+startY,""+endX,""+endY,"350").requireSuccess();
+            } catch(Exception failure) {
+                record("Swipe", "Android setup viewport", "Reveal the configured setup control",
+                        failure.toString(),started,AtfReportStatus.FAIL);
+                throw failure;
+            }
+            record("Swipe", "Android setup viewport", "Reveal the configured setup control",
+                    "ADB accepted swipe "+startX+","+startY+" → "+endX+","+endY,
+                    started,AtfReportStatus.PASS);
+            Thread.sleep(250);
         }
         throw new IllegalStateException("Setup control not found after scrolling");
     }
@@ -379,7 +450,16 @@ final class AndroidUiDriver {
     }
 
     void back() throws Exception {
-        adb.run("shell", "input", "keyevent", "4").requireSuccess();
+        long started = System.nanoTime();
+        try {
+            adb.run("shell", "input", "keyevent", "4").requireSuccess();
+        } catch (Exception failure) {
+            record("Press Back", "Android navigation", "Current overlay or screen closes",
+                    failure.toString(), started, AtfReportStatus.FAIL);
+            throw failure;
+        }
+        record("Press Back", "Android navigation", "Current overlay or screen closes",
+                "ADB accepted keyevent 4", started, AtfReportStatus.PASS);
         Thread.sleep(350);
     }
 
@@ -409,11 +489,31 @@ final class AndroidUiDriver {
     }
 
     String restartToActivity(String packageName, String activity, String... intentArguments) throws Exception {
-        adb.run("shell", "am", "force-stop", packageName).requireSuccess();
-        List<String> command = new ArrayList<>(List.of("shell", "am", "start", "-W", "-n",
-                packageName + "/" + activity));
-        command.addAll(List.of(intentArguments));
-        adb.run(command.toArray(String[]::new)).requireSuccess();
+        String target = packageName + "/" + activity;
+        long stopStarted = System.nanoTime();
+        try {
+            adb.run("shell", "am", "force-stop", packageName).requireSuccess();
+            record("Force-stop Android app", packageName, "The previous app process is stopped",
+                    "ADB accepted force-stop", stopStarted, AtfReportStatus.PASS);
+        } catch (Exception failure) {
+            record("Force-stop Android app", packageName, "The previous app process is stopped",
+                    failure.toString(), stopStarted, AtfReportStatus.FAIL);
+            throw failure;
+        }
+
+        long launchStarted = System.nanoTime();
+        try {
+            List<String> command = new ArrayList<>(List.of("shell", "am", "start", "-W", "-n", target));
+            command.addAll(List.of(intentArguments));
+            adb.run(command.toArray(String[]::new)).requireSuccess();
+            record("Launch Android activity", target,
+                    "The requested app activity opens", "ADB accepted activity start",
+                    launchStarted, AtfReportStatus.PASS);
+        } catch (Exception failure) {
+            record("Launch Android activity", target,
+                    "The requested app activity opens", failure.toString(), launchStarted, AtfReportStatus.FAIL);
+            throw failure;
+        }
         return dump();
     }
 
@@ -609,8 +709,34 @@ final class AndroidUiDriver {
         if (!matcher.matches()) throw new IllegalStateException("Invalid UI bounds: " + node.bounds());
         int x = (Integer.parseInt(matcher.group(1)) + Integer.parseInt(matcher.group(3))) / 2;
         int y = (Integer.parseInt(matcher.group(2)) + Integer.parseInt(matcher.group(4))) / 2;
-        adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y)).requireSuccess();
+        String target = !node.description().isBlank() ? node.description()
+                : !node.text().isBlank() ? node.text() : node.className() + " " + node.bounds();
+        String operation = node.className().equals("android.widget.CheckedTextView") ? "Select option" : "Tap";
+        String expected = operation.equals("Select option")
+                ? "Dispatch a tap to the selected option at its current accessibility bounds"
+                : "Dispatch a tap to the resolved target at its current accessibility bounds";
+        long started = System.nanoTime();
+        try {
+            adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y)).requireSuccess();
+        } catch (Exception failure) {
+            record(operation, target, expected, failure.toString(), started, AtfReportStatus.FAIL);
+            throw failure;
+        }
+        record(operation, target, expected, "ADB accepted tap at " + x + "," + y,
+                started, AtfReportStatus.PASS);
         Thread.sleep(500);
+    }
+
+    private void record(String operation, String target, String expected, String observed,
+            long started, AtfReportStatus status) {
+        recordAction(operation, target, expected, observed,
+                Duration.ofNanos(System.nanoTime() - started).toMillis(), status);
+    }
+
+    void recordAction(String operation, String target, String expected, String observed,
+            long durationMillis, AtfReportStatus status) {
+        actionSink.accept(new AtfUiActionRecord(++actionSequence, operation, target, expected, observed,
+                durationMillis, status, AtfUiEvidenceSource.ACTION));
     }
 
     private static List<Node> nodes(String xml) throws Exception {

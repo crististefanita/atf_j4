@@ -39,3 +39,20 @@ test('Native population counts require actual complete zero-skip suites', () => 
     for (const key of ['skipped', 'failures', 'errors']) assert.throws(() => nativeCounts(xml.replace(key + '="0"', key + '="1"')));
     assert.throws(() => nativeCounts('<testsuite tests="0">'));
 });
+
+test('An explicitly declared rejected experiment retains its original failure and every comparison', () => {
+    const r = capture('strict-gate'); r.status = 'FAIL'; r.failure = 'No strict gain';
+    r.checkpoints[0].comparisons[0] = {name: 'strict gain', expected: true, actual: false, passed: false};
+    const selected = selectWholeCaptures([r], ['strict-gate'], {'strict-gate': 'FAIL'});
+    assert.equal(selected[0], r); assert.equal(selected[0].status, 'FAIL');
+    assert.equal(selected[0].checkpoints[0].comparisons[0].passed, false);
+    assert.throws(() => selectWholeCaptures([r], [], {'strict-gate': 'FAIL'}), /must be included whole/);
+});
+
+test('Outcome declarations cannot hide errors, invent failures or refer to absent records', () => {
+    const r = capture('a');
+    assert.throws(() => selectWholeCaptures([r], ['a'], {a: 'FAIL'}));
+    assert.throws(() => selectWholeCaptures([r], ['a'], {missing: 'FAIL'}));
+    r.status = 'ERROR'; r.failure = 'Interrupted';
+    assert.throws(() => selectWholeCaptures([r], ['a'], {a: 'ERROR'}));
+});

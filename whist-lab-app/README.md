@@ -58,12 +58,14 @@ separat și nemodificat.
   3–6 jucători, iar omul rămâne în sud, în centru. La șase jucători, conturul
   urmează pozițiile `N; NW/NE; SW/SE; S`; pentru configurațiile mai mici sunt
   eliminate perechile simetrice care nu mai sunt necesare. Ancorele rămân aceleași
-  între licitare și joc; flancurile au inset de 18% în licitare și 23% în joc,
-  potrivit mock-ului, pentru ca centrul să rămână liber.
-- Licitația folosește forma 3 × 3 din mock pentru cel mult nouă valori. Pentru
-  seturi mai mari trece la șase coloane dacă lățimea permite; pe ecrane înguste
-  păstrează trei coloane. Fiecare valoare are țintă tactilă de cel puțin 48 × 48
-  dp și cip vizual compact. Confirmarea conturată `Place bid` stă în același grup,
+  între licitare și joc; flancurile au inset de 16% în licitarea compactă, 18% în
+  licitarea normală și 23% în joc. Reducerea insetului lasă loc grilei înguste fără
+  să mute omul din sud.
+- Licitația păstrează forma 3 × 3 din mock când lățimea tablei este de cel puțin
+  400 dp. Între 260 și 399 dp, 4–9 valori folosesc cinci coloane și două rânduri;
+  sub 260 dp revin la trei coloane. Seturile cu mai mult de nouă valori folosesc
+  șase coloane de la 312 dp, altfel trei. Fiecare valoare are țintă tactilă de cel
+  puțin 48 × 48 dp și cip vizual compact. Confirmarea conturată `Place bid` stă în același grup,
   imediat sub valori. În timpul jocului, levata
   curentă și numele celor care au jucat stau în centrul mesei; prima carte este
   centrată singură, iar mutările următoare completează grupul în două coloane. Meniul
@@ -78,7 +80,9 @@ separat și nemodificat.
   desenează sub vecine; dimensiunea mâinii și locul omului nu se schimbă. Masa
   ovală are înălțimea de bază 360 dp și folosește același felt ca ecranul, cu o
   singură margine subțire; levata rămâne într-un grup compact de două coloane în
-  centrul ovalului, iar atuul apare numai în antet.
+  centrul ovalului, iar atuul apare numai în antet. Pe ecrane înalte, masa și mâna
+  se centrează împreună în zona de joc; slotul instrucțiunii rămâne rezervat și când
+  mută AI-ul, astfel încât locurile să nu sară între ture.
 - La configurare, programul mâinilor este calculat din regulile efective pentru
   varianta și numărul de jucători selectate. Se actualizează când se schimbă una
   dintre aceste alegeri; notația explică dimensiunea mâinii și repetările.
@@ -110,16 +114,19 @@ separat și nemodificat.
 ```
 
 Pozițiile sunt ancore de perimetru, nu celule care se rearanjează după fază.
-Insetul lateral se schimbă ușor între licitare și joc pentru a păstra centrul
-liber, iar locul omului rămâne fix în sud.
+Insetul lateral se schimbă între faze și între grila normală și cea compactă;
+locul omului rămâne fix în sud. În licitarea compactă, flancurile folosesc inset
+de 16% pentru a lăsa spațiu suplimentar sub și deasupra grilei.
 
 - Starea publică este grupată după rost: nume, bid și levate la fiecare loc;
-  progresul licitării în antet; atuul în antet; cărțile deja jucate în centrul
+  progresul și totalul licitației în antet; atuul în antet; cărțile deja jucate în centrul
   pâslei; scorul în foaia consultativă. Nu repetăm atuul în selecția de bid.
   Înainte de joc rămâne vizibilă numai mâna omului.
-- Alegerea activă este lângă acțiunea ei: până la nouă biduri folosesc trei
-  coloane în centrul mesei, iar seturile mai mari folosesc șase numai când
-  lățimea le permite. Confirmarea este imediat sub ele. Cipul folosește auriu mat
+- Alegerea activă este lângă acțiunea ei: 4–9 biduri folosesc cinci coloane pe
+  mesele de 260–399 dp și forma 3 × 3 de la 400 dp; seturile mai mari folosesc
+  șase coloane de la 312 dp. Pragul de cinci coloane evită intersectarea cu
+  locurile laterale observată la 353 dp; țintele tactile rămân 48 dp. Confirmarea
+  este imediat sub ele. Cipul folosește auriu mat
   când e selectat și verde salvie când e disponibil; cadrul tactil rămâne 48 dp.
   Cărțile legale se disting prin contur, iar atingerea ridică numai cartea aleasă.
 - Mâna folosește aceeași singură linie pentru 1–17 cărți. Avansul dintre cărți
@@ -144,12 +151,14 @@ liber, iar locul omului rămâne fix în sud.
   starea salvată nu păstrează încă rezultatele fiecărei mâini.
 - Eliminăm titlurile și instrucțiunile redundante. Păstrăm denumiri contextuale,
   contrast suficient și descrieri accesibile pentru locuri, cărți și controale.
-- Capturile E2E live din 3 noiembrie 2026 verifică șase jucători și opt cărți,
-  apoi patru jucători și mâna maximă de 13 cărți. Prima măsoară pozițiile din
-  ierarhia Android și confirmă ovalul `N; NW/NE; SW/SE; S`, meniul și scorul;
-  a doua verifică atuul fără carte întoarsă, alegerea unei cărți și locul omului
-  neschimbat. Ecranele înguste, textul mărit, TalkBack și toate combinațiile de
-  locuri/mâini rămân în matricea de validare.
+- Validarea responsive din 3 noiembrie 2026 a rulat aceleași două flow-uri E2E
+  pentru șase locuri/opt cărți și patru locuri/13 cărți la 320, 393 și 600 dp.
+  Fiecare flow verifică limitele reale din Android, meniul și scorul, un singur
+  rând de cărți, atuul, centrul levatei, opacitatea mâinii și stabilitatea locului
+  omului. La 353 dp, măsurătorile au găsit o intersectare reală între grila 3 × 3
+  și locurile laterale; grila compactă și insetul de 16% o elimină. La 600 dp,
+  masa și mâna se centrează în înălțimea disponibilă. Textul mărit și TalkBack
+  rămân în matricea de validare.
 
 Reperele de interfață și scor au fost evaluate comparativ cu cinci capturi reale:
 [Romanian Whist Gold](https://mwm.ai/apps/romanian-whist-gold/733772257),
@@ -162,11 +171,28 @@ Scorurile, raționamentul și capturile locale sunt păstrate în pachetul tempo
 copiate în repository. Acestea sunt repere de ierarhie și utilizare, nu modele
 de copiat ca stil sau reguli.
 
-Build-ul TMP și cele două teste UI țintite au trecut live pe emulatorul API 28.
-Rapoartele Extent cu capturi înainte/după, manifest `PASS` și pași expandabili
-sunt păstrate în `%TEMP%\whist-j4-final-layout-live-20261103-142000`. Testele
-de componentă verifică 13 cărți fără derulare pe 353 dp și 17 cărți pe un singur
-rând cu derulare orizontală.
+Build-ul TMP a trecut: 15 teste ale aplicației și 500 teste `game-core`. Ambele
+flow-uri UI au trecut la fiecare lățime, iar cele șase rapoarte Extent păstrează
+capturile inline, manifestele `PASS` și aserțiunile expandabile. APK-ul instalat
+pe emulatorul API 28 a fost testat cu aceste viewport-uri logice la 440 dpi:
+`880×1920`
+(320 dp), `1080×1920` (393 dp) și `1650×2560` (600 dp). Pentru override-ul de
+320/600 dp, emulatorul capturează fizic `1080×1920` și letterboxează imaginea;
+testele mapă coordonatele ierarhiei UI în PNG după dimensiunea raportată de
+`wm size`. APK-ul debug instalabil și hash-ul verificabil sunt în
+`../dist/WhistLab-0.1.0-debug.apk` și `../dist/WhistLab-0.1.0-debug.apk.sha256`
+(minSdk 24, fără biblioteci native dependente de ABI).
+Rapoartele curente sunt în `%TEMP%`:
+
+- `whist-j4-display-final-v13-320dp-20261103\table-presentation\whist-lab-table-presentation.html`
+- `whist-j4-display-final-v13-320dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+- `whist-j4-display-final-v12-393dp-20261103\table-presentation\whist-lab-table-presentation.html`
+- `whist-j4-display-final-v12-393dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+- `whist-j4-display-final-v11-600dp-20261103\table-presentation\whist-lab-table-presentation.html`
+- `whist-j4-display-final-v11-600dp-20261103\thirteen-card-fan\whist-lab-thirteen-card-fan.html`
+
+Testele de componentă verifică 13 cărți fără derulare pe 353 dp și 17 cărți
+pe un singur rând cu derulare orizontală.
 Vezi
 [feedback-ul de utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).
 
@@ -251,17 +277,16 @@ finally { Pop-Location }
 
 Testele E2E folosesc APK-ul construit în același staging TMP; capturile și
 raportul Extent sunt scrise în `%TEMP%` implicit sau în `atf.android.artifacts`.
-Raportul păstrează capturile inline și pune toate comparațiile înregistrate
-într-un singur pas Extent colapsabil, cu nume contextual, expected, actual și
-verdict. Manifestul ordonat rămâne atașat ca artefact cu SHA-256; nu este copiat
-într-un corp text care ar fi trunchiat de renderer. Testul componentă pentru
-`AndroidUiFlowTrace` fixează ordinea checkpoint-urilor și păstrarea verdictelor
-și a diagnosticului pentru PASS/FAIL. E2E-ul de mână verifică în Extent tabelul
-colapsabil de aserțiuni și include capturile PNG înainte și după atingere.
-Codul E2E a fost compilat pentru redesignul curent, dar captura live trebuie
-regenerată pe un dispozitiv conectat înainte de a considera randarea verificată;
-capturile din reviziile anterioare nu validează noile poziții, badge-uri sau
-grupul central de cărți.
+Raportul folosește același API UI Extent ca testele Playwright: fiecare checkpoint
+Gherkin are propriul pas expandabil, tabelul colapsabil ACTION/TARGET/EXPECTED/
+OBSERVED/TIME/RESULT, captura PNG full-display și tabelul ASSERTION/EXPECTED/
+ACTUAL/RESULT. Rezultatul tap-ului rămâne observație/assert, nu se deduce din
+acceptarea comenzii ADB; timpul măsurat exclude pauza fixă de stabilizare UI.
+Receipt-ul păstrează identitatea rulării și numărătorile, iar XML/properties sunt
+fingerprint-uri SHA-256 colapsate, fără dump-uri sau linkuri către fișiere locale.
+Testele componente acoperă tabelul comun, asocierea capturii cu pasul și
+diagnosticul FAIL fără checkpoint. E2E-ul verifică rapoartele live pentru masa
+cu 8 cărți și mâna cu 13 cărți.
 
 Începe cu acceptanța de componentă și raportul Extent nativ, fără Android:
 

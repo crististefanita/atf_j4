@@ -21,3 +21,8 @@ Revizie: 3 noiembrie 2026. Owner: J4 pentru domeniu, algoritmi, colecții și in
 Pentru iterația următoare: deduceți teste mici din erorile casebook-ului, cu oracol independent; testați separat influența ponderilor de onoruri; folosiți un protocol și un lot nou. Nu lansați din nou toate turneele istorice pentru o corecție locală. Nu măriți continuu bugetul Monte Carlo fără un control de cost și o măsurare pe mâini 2–8.
 
 Nu a fost identificat un defect nou generic al bibliotecii Reporting în această iterație. Raportul consumă J17 distribuit de J0; cerințele de conținut și selecție de mai sus rămân în J4.
+
+
+## R11 — rezultate offline noi
+
+[Analiza R11](../AI_LOSS11_ACCEPTANCE.md) și [feedbackul dedicat](AI_LOSS11_Feedback.md) păstrează variantele respinse, demonstrația locală cu 96 de distribuții și lotul nou de 512 partide. Nu există câștig statistic strict pentru noua gardă pe acest lot: ambele roluri au delte zero. Corecția locală este acceptată separat, fără regresii observate pe familii. Componentele rămân 520; turneele și diagnosticul de scor sunt opt-in. Noua publicare folosește J18, fără schimbări de JAR sau renderer.
