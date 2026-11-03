@@ -17,6 +17,9 @@ din locul Grace, iar butoanele 5–8 intră peste panourile jucătorilor. Rându
 `Licitat —` și `Levate 0` nu separă vizual eticheta de valoare și nu folosesc
 coloane aliniate; feedback-ul cere separator explicit (`Licitat: —`,
 `Levate: 0`) și layout dinamic fără intersectări, inclusiv cu text mărit.
+Butonul central `Licitează` are greutate vizuală mai mare decât numele și starea
+jucătorilor; recomandarea este să-i reducem moderat dimensiunea vizibilă, nu
+ținta tactilă minimă de 48 dp.
 Activitatea separată `ro.whistlab.app.atfaudit` a întrerupt temporar jocul.
 Detaliile, dovezile și criteriile de acceptare sunt în [feedback-ul de
 utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).

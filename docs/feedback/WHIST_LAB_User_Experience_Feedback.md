@@ -86,6 +86,20 @@ limite vizuale și hitbox-uri măsurate separat. Zero intersectări între selec
 fiecare etichetă și toate valorile de bid ușor de distins înainte de atingere.
 Un test de bounds fără revizie vizuală a capturii nu trece acest criteriu.
 
+### P2 — Butonul „Licitează” domină numele și starea jucătorilor
+
+În aceeași captură, confirmarea centrală este mare și are text proeminent;
+privirea ajunge la ea înainte să poată scana numele, licitațiile și levatele
+celorlalți. Acțiunea trebuie să fie clară, dar nu trebuie să concureze cu
+identitatea și starea mesei, de care omul are nevoie pentru a decide ce licitează.
+
+Reduceți moderat înălțimea vizuală, padding-ul și scala textului butonului, și
+limitați lățimea la grupul selectorului în loc să-i dați o amprentă dominantă.
+Păstrați contrastul și o țintă tactilă de minimum 48 dp; dacă suprafața desenată
+se micșorează, extindeți hitbox-ul separat. Verificați în capturi că titlurile
+scaunelor și perechile `Licitat: valoare` / `Levate: valoare` se citesc înaintea
+butonului, iar butonul rămâne ușor de găsit și atins.
+
 ### P1 — Activitatea de audit întrerupe jocul interactiv
 
 În timpul mâinii 4 și din nou în mâna 6, procesul din prim-plan s-a schimbat la
