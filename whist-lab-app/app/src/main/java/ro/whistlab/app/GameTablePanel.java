@@ -366,10 +366,11 @@ final class GameTablePanel extends LinearLayout {
         hand.setClipToPadding(false);
         hand.setOverScrollMode(View.OVER_SCROLL_NEVER);
         int cardCount = state.players().get(0).hand().size();
-        int availableWidthDp = handWidthDp();
-        float fontScale = getResources().getConfiguration().fontScale;
         hand.setContentDescription(copy.handAccessibility(cardCount));
         hand.setTag("player-hand");
+        if (cardCount == 0) return hand;
+        int availableWidthDp = handWidthDp();
+        float fontScale = getResources().getConfiguration().fontScale;
         FrameLayout fan = new FrameLayout(context);
         fan.setClipChildren(false);
         fan.setClipToPadding(false);

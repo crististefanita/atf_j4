@@ -589,3 +589,7 @@ Principiul aplicat aici: masa și mâna domină, licitarea este vizibilă dar di
 iar scorul și navigarea sunt la un gest distanță. Pentru foaia de scor, separăm
 clar rezultatul mâinii active de un viitor registru istoric. Acestea sunt repere
 de ierarhie, nu modele de copiat ca stil sau reguli.
+
+## Normal / Hard — cerință nouă, 3 noiembrie 2026
+
+Modelul expune numai NORMAL/HARD; EXPERT este doar alias Java și nume vechi migrat la citirea salvării. Hard folosește motorul R11 Expert validat, fără activarea candidaților R12 respinși. Spinnerul citește enum.values(), deci layoutul rămâne neschimbat. WhistUiText elimină numai al treilea case, iar GameSessionStore folosește fromStoredName. Verificările LIVE Android sunt separate; adaptoarele noi trebuie să aștepte difficulty=HARD și să păstreze citirea urmelor istorice EXPERT fără a rescrie dovezile. Nu afișați o afirmație de joc perfect fără demonstrație.

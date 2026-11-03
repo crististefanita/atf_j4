@@ -318,15 +318,18 @@ finally { Pop-Location }
 Testele E2E folosesc APK-ul construit în același staging TMP; capturile și
 raportul Extent sunt scrise în `%TEMP%` implicit sau în `atf.android.artifacts`.
 Raportul folosește același API UI Extent ca testele Playwright: fiecare checkpoint
-Gherkin are propriul pas expandabil, tabelul colapsabil ACTION/TARGET/EXPECTED/
-OBSERVED/TIME/RESULT, captura PNG full-display și tabelul ASSERTION/EXPECTED/
-ACTUAL/RESULT. Rezultatul tap-ului rămâne observație/assert, nu se deduce din
-acceptarea comenzii ADB; timpul măsurat exclude pauza fixă de stabilizare UI.
+Gherkin are propriul pas expandabil, tabel ACTION/TARGET/EXPECTED/OBSERVED/
+TIME/RESULT dacă s-a expediat o interacțiune reală, captura PNG full-display,
+zona colapsabilă de observații și tabelul ASSERTION/EXPECTED/ACTUAL/RESULT.
+Rezultatul tap-ului rămâne observație/assert, nu se deduce din acceptarea comenzii
+ADB; timpul măsurat exclude pauza fixă de stabilizare UI.
 Receipt-ul păstrează identitatea rulării și numărătorile, iar XML/properties sunt
 fingerprint-uri SHA-256 colapsate, fără dump-uri sau linkuri către fișiere locale.
-Testele componente acoperă tabelul comun, asocierea capturii cu pasul și
-diagnosticul FAIL fără checkpoint. E2E-ul verifică rapoartele live pentru masa
-cu 8 cărți și mâna cu 13 cărți.
+Fiecare checkpoint păstrează o observație; tabelul ACTION apare numai dacă a fost
+expediată o interacțiune reală. Verificările fără click au aserțiunile și captura
+proprii, fără click-uri simulate. Testele componente acoperă asocierea dovezilor,
+starea doar-observare și diagnosticul FAIL fără checkpoint. E2E-ul verifică
+rapoartele live pentru masa cu 8 cărți și mâna cu 13 cărți.
 
 Începe cu acceptanța de componentă și raportul Extent nativ, fără Android:
 

@@ -167,10 +167,11 @@ public class GameSessionTest {
     }
 
     @Test
-    public void hardAiUsesCardStrengthWhileNormalAiUsesBasicEstimatesAndLowestLegalCard() {
+    public void hardUsesAcceptedPlannerWhileNormalRetainsItsBasicHeuristic() {
         GameSession oneCard = oneTrickFixture();
         assertEquals(0, AiPolicy.chooseBid(oneCard.snapshot(), 1, AiDifficulty.NORMAL));
-        assertEquals(1, AiPolicy.chooseBid(oneCard.snapshot(), 1, AiDifficulty.HARD));
+        assertEquals(ro.whistlab.core.baseline.RoundElevenAiPolicy.chooseBid(oneCard.snapshot(), 1, AiDifficulty.EXPERT),
+                AiPolicy.chooseBid(oneCard.snapshot(), 1, AiDifficulty.HARD));
 
         List<List<Card>> hands = List.of(
                 List.of(new Card(Suit.HEARTS, 10), new Card(Suit.CLUBS, 2)),
@@ -187,7 +188,8 @@ public class GameSessionTest {
 
         GameSession.Snapshot state = game.snapshot();
         assertEquals(new Card(Suit.HEARTS, 9), AiPolicy.chooseCard(state, 1, AiDifficulty.NORMAL));
-        assertEquals(new Card(Suit.HEARTS, 13), AiPolicy.chooseCard(state, 1, AiDifficulty.HARD));
+        assertEquals(ro.whistlab.core.baseline.RoundElevenAiPolicy.chooseCard(state, 1, AiDifficulty.EXPERT),
+                AiPolicy.chooseCard(state, 1, AiDifficulty.HARD));
     }
 
     @Test

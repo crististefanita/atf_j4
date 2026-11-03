@@ -107,7 +107,7 @@ final class GameSessionStore {
     private static GameSession.SaveState decode(JSONObject root) throws JSONException {
         GameConfig config = new GameConfig(root.getInt("playerCount"),
                 GameMode.valueOf(root.getString("mode")),
-                AiDifficulty.valueOf(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5));
+                AiDifficulty.fromStoredName(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5));
         JSONArray encodedPlayers = root.getJSONArray("players");
         List<GameSession.PlayerState> players = new ArrayList<>(encodedPlayers.length());
         for (int index = 0; index < encodedPlayers.length(); index++) {

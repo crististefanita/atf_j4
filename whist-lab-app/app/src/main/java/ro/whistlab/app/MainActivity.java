@@ -117,7 +117,7 @@ public final class MainActivity extends Activity {
         menuSubpage=false;
         instructionsVisible=false;
         handler.removeCallbacksAndMessages(null);
-        LinearLayout page = page("WHIST LAB", copy.homeSubtitle());
+        LinearLayout page = page(null, copy.homeTitle());
         addText(page, copy.homeTagline(),
                 16, MUTED, false, 0, 20);
         addLanguagePicker(page);
@@ -131,35 +131,27 @@ public final class MainActivity extends Activity {
     }
 
     private void addLanguagePicker(LinearLayout parent) {
-        addText(parent, copy.languageLabel(), 13, MUTED, true, 10, 3);
-        LinearLayout choices = new LinearLayout(this);
-        choices.setOrientation(LinearLayout.HORIZONTAL);
-        choices.setGravity(Gravity.CENTER_VERTICAL);
-        addLanguageOption(choices, HowToPlay.Language.EN, "English");
-        addLanguageOption(choices, HowToPlay.Language.RO, "Română");
-        parent.addView(choices, matchWrap());
-    }
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        TextView label = text(copy.languageLabel(), 13, MUTED, true);
+        row.addView(label, new LinearLayout.LayoutParams(0, dp(48), 1f));
 
-    private void addLanguageOption(LinearLayout parent, HowToPlay.Language language, String label) {
-        boolean selected = copy.language() == language;
-        Button option = new Button(this);
-        option.setAllCaps(false);
-        option.setText(label);
-        option.setTextSize(14);
-        option.setTextColor(selected ? Color.WHITE : PINE);
-        option.setContentDescription(copy.languageOptionDescription(language, selected));
-        option.setTag("language:" + language.name());
-        option.setSelected(selected);
-        option.setMinimumWidth(0);
-        option.setMinHeight(dp(42));
-        option.setBackground(buttonBackground(selected));
-        option.setOnClickListener(ignored -> setUiLanguage(language));
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(42), 1f);
-        params.setMargins(0, 0, dp(8), 0);
-        parent.addView(option, params);
+        Spinner language = spinner(List.of("English", "Română"), "interface-language");
+        language.setSelection(copy.language() == HowToPlay.Language.EN ? 0 : 1);
+        row.addView(language, new LinearLayout.LayoutParams(dp(150), dp(48)));
+        LinearLayout.LayoutParams params = matchWrap();
+        params.topMargin = dp(6);
+        parent.addView(row, params);
+        language.post(() -> language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
+                setUiLanguage(position == 0 ? HowToPlay.Language.EN : HowToPlay.Language.RO);
+            }
+            public void onNothingSelected(AdapterView<?> adapter) { }
+        }));
     }
 
     private void setUiLanguage(HowToPlay.Language language) {
+        if (copy.language() == language) return;
         getPreferences(MODE_PRIVATE).edit()
                 .putString("interfaceLanguage", language.name())
                 .putString("helpLanguage", language.name())
@@ -174,16 +166,14 @@ public final class MainActivity extends Activity {
         applyStandardWindowChrome();
         tableVisible=false;menuSubpage=true;instructionsVisible=false;handler.removeCallbacksAndMessages(null);
         LinearLayout page = page(copy.setupEyebrow(), copy.setupTitle());
-        addText(page, copy.setupHint(), 15, MUTED, false, 0, 4);
         addLanguagePicker(page);
 
-        addText(page, copy.players(), 16, INK, true, 18, 4);
+        addText(page, copy.players(), 16, INK, true, 12, 4);
         Spinner players = spinner(Arrays.asList("3", "4", "5", "6"), "player-count");
         players.setSelection(setupPlayerCount - 3);
         page.addView(players, matchWrap());
-        addText(page, copy.playerCountHint(), 13, MUTED, false, 3, 8);
 
-        addText(page, copy.gameType(), 16, INK, true, 16, 4);
+        addText(page, copy.gameType(), 16, INK, true, 12, 4);
         Spinner modes = spinner(Arrays.stream(GameMode.values()).map(copy::modeName).collect(Collectors.toList()),
                 "game-type");
         modes.setSelection(setupMode.ordinal());
@@ -249,7 +239,7 @@ public final class MainActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        addText(page, copy.aiLevel(), 16, INK, true, 16, 4);
+        addText(page, copy.aiLevel(), 16, INK, true, 12, 4);
         Spinner difficulty = spinner(Arrays.stream(AiDifficulty.values()).map(copy::difficultyName).collect(Collectors.toList()),
                 "ai-level");
         difficulty.setSelection(setupDifficulty.ordinal());
@@ -606,7 +596,7 @@ public final class MainActivity extends Activity {
         scroll.addView(content, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         setContentView(scroll);
-        addText(content, eyebrow, 12, ACCENT, true, 0, 8);
+        if (eyebrow != null && !eyebrow.isBlank()) addText(content, eyebrow, 12, ACCENT, true, 0, 8);
         if (title != null && !title.isBlank()) addText(content, title, 25, PINE, true, 0, 8);
         return content;
     }

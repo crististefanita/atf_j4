@@ -108,7 +108,7 @@ tasks.register("legacyRoundFiveTest", Test) {
  outputs.upToDateWhen { false }
 }
 
-tasks.register("learningTest") { dependsOn "roundElevenTest" }
+tasks.register("learningTest") { dependsOn "roundTwelveTest" }
 
 // Deterministic minutes-scale rule checks; no tournaments and no device.
 tasks.register("quickRegressionTest", Test) {
@@ -155,3 +155,18 @@ tasks.register("scoreConsistencyDiagnosticTest",Test){testClassesDirs=sourceSets
 tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.SmallWorldEnumerationTest";includeTestsMatching "ro.whistlab.core.EnumerationBudgetTest"}}
 
 tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.CertifiedContractRegressionTest"}}
+
+tasks.named("test",Test){exclude "**/RoundTwelveTournamentTest.class"}
+tasks.register("roundTwelveTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundTwelveTournamentTest"};for(def key:["whist.round12.output","whist.round12.corpus","whist.round12.candidate","whist.round12.phase","whist.round12.role","whist.round12.playerBaseline","whist.round12.opponent","whist.round12.seat","whist.round12.casesFile","whist.round12.firstSeed","whist.round12.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round12.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+
+// Rejected model prototypes remain opt-in and outside the default regression.
+tasks.named("test",Test){exclude "**/PublicTailInformationTest.class";exclude "**/OpeningBidEvidenceTest.class"}
+tasks.register("informationResearchTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.PublicTailInformationTest";includeTestsMatching "ro.whistlab.core.OpeningBidEvidenceTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("");systemProperty "whist.componentCollection","research"}
+
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.DifficultyContractTest"}}
+
+// Rejected R13 pressure forecasts are opt-in; the certified salvage feature has separate tests.
+tasks.named("test",Test){exclude "**/ContractPressureTest.class"}
+tasks.named("informationResearchTest",Test){filter{includeTestsMatching "ro.whistlab.core.ContractPressureTest"}}
+
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.PublicSalvageTest"}}

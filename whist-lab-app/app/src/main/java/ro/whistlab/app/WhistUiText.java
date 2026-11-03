@@ -2,6 +2,7 @@ package ro.whistlab.app;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import ro.whistlab.core.AiDifficulty;
 import ro.whistlab.core.Card;
 import ro.whistlab.core.GameMode;
@@ -31,15 +32,8 @@ final class WhistUiText {
     HowToPlay.Language language() { return language; }
     boolean romanian() { return language == HowToPlay.Language.RO; }
 
-    String languageLabel() { return choose("Interface language", "Limba interfeței"); }
-    String languageOptionDescription(HowToPlay.Language option, boolean selected) {
-        String name = option == HowToPlay.Language.RO ? "Română" : "English";
-        return selected ? choose("Interface language: " + name + ", selected",
-                "Limba interfeței: " + name + ", selectată")
-                : choose("Set interface language to " + name,
-                        "Setează limba interfeței la " + name);
-    }
-    String homeSubtitle() { return choose("A thoughtful trick-taking table", "O masă de joc atent construită"); }
+    String languageLabel() { return choose("Language", "Limba"); }
+    String homeTitle() { return "Whist"; }
     String homeTagline() { return choose("Bid exactly. Follow suit. Win the tricks you call.",
             "Licitează exact. Respectă culoarea. Câștigă levatele anunțate."); }
     String homeFootnote() { return choose("Play locally against computer opponents. Your game stays on this device.",
@@ -48,12 +42,8 @@ final class WhistUiText {
     String resumeGame() { return choose("Resume game", "Reia partida"); }
     String help() { return choose("How to play", "Reguli de joc"); }
     String setupEyebrow() { return choose("NEW GAME", "JOC NOU"); }
-    String setupTitle() { return choose("Set up your table", "Configurează masa de joc"); }
-    String setupHint() { return choose("Choose the table size, game type and opponents.",
-            "Alege numărul de jucători, varianta și adversarii."); }
+    String setupTitle() { return choose("Game setup", "Setări joc"); }
     String players() { return choose("Players", "Jucători"); }
-    String playerCountHint() { return choose("Including you. The other seats are local AI players.",
-            "Numărul te include. Celelalte locuri sunt ocupate de adversari locali."); }
     String gameType() { return choose("Game type", "Varianta de joc"); }
     String aiLevel() { return choose("AI level", "Nivelul adversarilor"); }
     String streakToggle() { return choose("Romanian five-hand streaks (missed series: -5)",
@@ -90,6 +80,7 @@ final class WhistUiText {
     }
     String spinnerLabel(String id) {
         return switch (id) {
+            case "interface-language" -> languageLabel();
             case "player-count" -> players();
             case "game-type" -> gameType();
             case "ai-level" -> aiLevel();
@@ -223,7 +214,7 @@ final class WhistUiText {
                 .max().orElseThrow();
         List<String> names = state.players().stream()
                 .filter(player -> player.totalScore() == best)
-                .map(this::playerName).toList();
+                .map(this::playerName).collect(Collectors.toList());
         return names.size() == 1
                 ? choose("Winner: ", "Câștigător: ") + names.get(0) + " (" + best
                         + choose(" points)", " puncte)")

@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {balancedRows,diagnosticSeedKey} from './whist-bid-evidence-diagnostics.mjs';
+test('Diagnostic sampling balances whole seed groups rather than the first repeated game',()=>{const rows=Array.from({length:6},(_,seed)=>Array.from({length:100},(_,i)=>({seed:String(seed),i}))).flat();const selected=balancedRows(rows,32),counts=new Map();for(const r of selected)counts.set(r.seed,(counts.get(r.seed)??0)+1);assert.equal(counts.size,6);assert.ok([...counts.values()].every(n=>n===5||n===6));});
+test('Actual hidden hand labels do not influence generated diagnostic hypotheses',()=>{const row={seed:'12',size:2,observerCards:['7H','8H'],cards:['AS','KS'],trump:'S',turned:'7S',position:1,prefix:0,bid:1};assert.equal(diagnosticSeedKey(row),diagnosticSeedKey({...row,cards:['9D','10D']}));});

@@ -2,6 +2,8 @@ package ro.whistlab.app;
 
 /** Named perimeter anchors keep player seats stable while dense controls claim the center. */
 final class TableSeatLayout {
+    private static final float MULTI_PLAYER_MULTI_ROW_BID_INSET = 0.123f;
+
     enum Anchor {
         NORTH,
         NORTH_WEST,
@@ -43,6 +45,10 @@ final class TableSeatLayout {
     }
 
     static float sideInsetFraction(boolean bidding, int playerCount, int bidOptionCount, int tableWidthDp) {
+        if (bidding && playerCount >= 5
+                && BidGridMetrics.rowCount(bidOptionCount, tableWidthDp) >= 2) {
+            return MULTI_PLAYER_MULTI_ROW_BID_INSET;
+        }
         if (bidding && playerCount == 4 && bidOptionCount > 9) return 0.06f;
         return sideInsetFraction(bidding, tableWidthDp);
     }

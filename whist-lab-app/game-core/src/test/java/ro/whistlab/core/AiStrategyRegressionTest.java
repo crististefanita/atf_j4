@@ -3,12 +3,12 @@ package ro.whistlab.core;
 import static org.junit.Assert.*;
 import java.util.*;
 import org.junit.Test;
-import ro.whistlab.core.baseline.LegacyAiPolicy;
+
 
 public class AiStrategyRegressionTest {
     @Test public void hardDoesNotLeadItsAceWhenTheZeroContractIsStillAchievable(){
         GameSession g=leadFixture();
-        assertEquals(c(1,14),LegacyAiPolicy.chooseCard(g.snapshot(),0,AiDifficulty.HARD));
+        assertEquals(c(1,14),LegacySimpleHardReference.chooseCard(g.snapshot(),0,AiDifficulty.HARD));
         assertEquals(c(2,7),AiPolicy.chooseCard(g.snapshot(),0,AiDifficulty.HARD));
         assertEquals(-1,finishLead(true));assertEquals(5,finishLead(false));
     }
@@ -16,7 +16,7 @@ public class AiStrategyRegressionTest {
         GameSession g=GameSession.fromDeal(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,1),List.of(
                 List.of(c(1,7),c(1,13)),List.of(c(2,7),c(2,8)),List.of(c(3,7),c(3,8)),List.of(c(1,14),c(0,7))),Trump.SPADES,2);
         for(int i=0;i<4;i++)g.submitBid(g.snapshot().biddingSeat(),0);g.playCard(3,c(1,14));
-        assertEquals(c(1,7),LegacyAiPolicy.chooseCard(g.snapshot(),0,AiDifficulty.HARD));
+        assertEquals(c(1,7),LegacySimpleHardReference.chooseCard(g.snapshot(),0,AiDifficulty.HARD));
         assertEquals(c(1,13),AiPolicy.chooseCard(g.snapshot(),0,AiDifficulty.HARD));
     }
     @Test public void biddingHypothesesPreserveObservedBidsAndChangeTheOwnTarget(){
@@ -31,6 +31,6 @@ public class AiStrategyRegressionTest {
     }
     private static GameSession fixture(int dealer){return GameSession.fromDeal(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,1),List.of(List.of(c(1,7),c(1,14)),List.of(c(0,7),c(0,8)),List.of(c(2,7),c(2,8)),List.of(c(3,7),c(3,8))),Trump.SPADES,dealer);}
     private static GameSession leadFixture(){var g=GameSession.fromDeal(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,1),List.of(List.of(c(1,14),c(2,7)),List.of(c(2,8),c(2,9)),List.of(c(2,10),c(2,11)),List.of(c(2,12),c(2,13))),Trump.SPADES,3);int[] b={0,1,0,2};for(int s=0;s<4;s++)g.submitBid(s,b[s]);return g;}
-    private static int finishLead(boolean old){var g=leadFixture();while(g.snapshot().phase()==GamePhase.PLAYING){var s=g.snapshot();int actor=s.currentSeat();g.playCard(actor,actor==0&&!old?AiPolicy.chooseCard(s,actor,AiDifficulty.HARD):LegacyAiPolicy.chooseCard(s,actor,AiDifficulty.HARD));}return g.snapshot().players().get(0).totalScore();}
+    private static int finishLead(boolean old){var g=leadFixture();while(g.snapshot().phase()==GamePhase.PLAYING){var s=g.snapshot();int actor=s.currentSeat();g.playCard(actor,actor==0&&!old?AiPolicy.chooseCard(s,actor,AiDifficulty.HARD):LegacySimpleHardReference.chooseCard(s,actor,AiDifficulty.HARD));}return g.snapshot().players().get(0).totalScore();}
     private static Card c(int suit,int rank){return new Card(Suit.values()[suit],rank);}
 }

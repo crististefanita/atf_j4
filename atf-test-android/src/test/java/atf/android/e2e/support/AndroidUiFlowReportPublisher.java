@@ -22,6 +22,9 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /** Publishes ordered Android checkpoints through the same public UI evidence API used by Playwright. */
 public final class AndroidUiFlowReportPublisher {
@@ -48,13 +51,8 @@ public final class AndroidUiFlowReportPublisher {
                     trace.name());
             for (AndroidUiFlowTrace.PhaseSnapshot phaseSnapshot : trace.phaseSnapshots()) {
                 try (var phase = ui.startPhase(phaseSnapshot.name())) {
-                    for (AndroidUiFlowTrace.CheckpointSnapshot checkpoint : phaseSnapshot.checkpoints()) {
-                        String screenshot = checkpoint.screenshot() == null ? ""
-                                : AndroidScreenshotEvidence.from(checkpoint.screenshot()).base64Png();
-                        phase.step(AtfGherkinKeyword.valueOf(checkpoint.keyword()),
-                                checkpoint.title(), checkpoint.target(), screenshot,
-                                checkpoint.assertions(), checkpoint.actions(),
-                                ReportScreenshotPolicy.CapturePoint.CHECKPOINT, checkpoint.status());
+                    for (var checkpoint : phaseSnapshot.checkpoints()) {
+                        publishCheckpoint(phase, checkpoint);
                     }
                     phase.complete(phaseStatus(phaseSnapshot.checkpoints()));
                 }
@@ -71,6 +69,16 @@ public final class AndroidUiFlowReportPublisher {
 
         auditPublishedReport(output, trace, settings);
         return output;
+    }
+
+    private static void publishCheckpoint(UiExtentReportSession.UiPhase phase,
+            AndroidUiFlowTrace.CheckpointSnapshot checkpoint) throws Exception {
+        String screenshot = checkpoint.screenshot() == null ? ""
+                : AndroidScreenshotEvidence.from(checkpoint.screenshot()).base64Png();
+        phase.step(AtfGherkinKeyword.valueOf(checkpoint.keyword()),
+                checkpoint.title(), checkpoint.target(), screenshot,
+                checkpoint.assertions(), checkpoint.actions(),
+                ReportScreenshotPolicy.CapturePoint.CHECKPOINT, checkpoint.status());
     }
 
     private static void publishRunReceipt(AtfReportPorts.Scenario scenario, AndroidUiFlowTrace trace,
@@ -105,11 +113,12 @@ public final class AndroidUiFlowReportPublisher {
                 .reduce(AtfReportStatus.INFO, AtfReportStatus::worst);
     }
 
-    private static void auditPublishedReport(Path report, AndroidUiFlowTrace trace,
+    static void auditPublishedReport(Path report, AndroidUiFlowTrace trace,
             ReportingSettings settings) throws Exception {
         require(Files.isRegularFile(report) && Files.size(report) > 2_000,
                 "Android UI Extent report was not published: " + report);
         String html = Files.readString(report);
+        Document document = Jsoup.parse(html);
         require(html.contains("Device, run receipt, and supporting Android evidence"),
                 "Extent omitted the Android execution receipt");
         require(containsText(html, trace.id())
@@ -162,14 +171,17 @@ public final class AndroidUiFlowReportPublisher {
             int diagnosticStart = html.indexOf("EXECUTION DIAGNOSTICS", ownerStart + titleMarker.length());
             if (diagnosticStart >= 0 && diagnosticStart < ownerEnd) ownerEnd = diagnosticStart;
             String ownerHtml = html.substring(ownerStart, ownerEnd);
-            require(countOccurrences(ownerHtml, "class=\"atf-ui-action-sequence\"") == 1
+            long checkpointActionCount = checkpoint.actions().stream()
+                    .filter(action -> action.source().name().equals("ACTION")).count();
+            require(countOccurrences(ownerHtml, "class=\"atf-ui-action-sequence\"")
+                            == (checkpointActionCount == 0 ? 0 : 1)
                             && countOccurrences(ownerHtml, "class=\"atf-ui-observations\"") == 1
                             && countOccurrences(ownerHtml, "class=\"atf-ui-assertions\"") == 1,
-                    "Checkpoint does not own exactly one collapsed action, observation, and assertion table: "
+                    "Checkpoint evidence tables do not match the captured action, observation, and assertion owners: "
                             + checkpoint.title());
             String actionDisclosure = detailsBlock(ownerHtml, "atf-ui-action-sequence");
             String observationDisclosure = detailsBlock(ownerHtml, "atf-ui-observations");
-            require(actionDisclosure != null && observationDisclosure != null,
+            require((checkpointActionCount == 0 || actionDisclosure != null) && observationDisclosure != null,
                     "Checkpoint evidence is detached from its Gherkin owner: " + checkpoint.title());
             for (var action : checkpoint.actions()) {
                 String actionEvidence = action.source().name().equals("ACTION")
@@ -200,16 +212,23 @@ public final class AndroidUiFlowReportPublisher {
             }
             if (checkpoint.screenshot() != null) {
                 String payload = AndroidScreenshotEvidence.from(checkpoint.screenshot()).base64Png();
-                require(actionDisclosure.contains("data:image/png;base64," + payload),
-                        "The exact checkpoint PNG is not embedded in its owning action disclosure: "
+                boolean actionOwnsScreenshot = actionDisclosure != null
+                        && ownsScreenshot(actionDisclosure, payload, document);
+                boolean observationCheckpointOwnsScreenshot = checkpointActionCount == 0
+                        && ownsScreenshot(ownerHtml, payload, document);
+                require(actionOwnsScreenshot || observationCheckpointOwnsScreenshot,
+                        "The checkpoint screenshot link does not resolve to its exact captured PNG: "
                                 + checkpoint.title());
                 screenshotOccurrences.merge(payload, 1, Integer::sum);
             }
             ownerSearchFrom = ownerEnd;
         }
         for (var screenshot : screenshotOccurrences.entrySet()) {
-            require(countOccurrences(html, "data:image/png;base64," + screenshot.getKey()) == screenshot.getValue(),
-                    "Extent omitted or duplicated a checkpoint screenshot payload");
+            long links = document.select("a[data-atf-screenshot],a[data-atf-screenshot-ref]").stream()
+                    .filter(anchor -> screenshot.getKey().equals(screenshotPayload(anchor, document))).count();
+            require(countOccurrences(html, "data:image/png;base64," + screenshot.getKey()) == 1
+                            && links == screenshot.getValue(),
+                    "Extent screenshot payload or checkpoint reference multiplicity differs from the captured evidence");
         }
         if (trace.status() == AtfReportStatus.PASS) {
             require(trace.phaseSnapshots().stream().mapToInt(phase -> phase.checkpoints().size()).sum() > 0,
@@ -236,8 +255,6 @@ public final class AndroidUiFlowReportPublisher {
         for (AndroidUiFlowTrace.CheckpointSnapshot checkpoint : checkpoints) {
             require(checkpoint.screenshot() != null && Files.isRegularFile(checkpoint.screenshot()),
                     "Android checkpoint has no captured PNG: " + checkpoint.title());
-            require(checkpoint.actions().stream().anyMatch(action -> action.source().name().equals("ACTION")),
-                    "Android checkpoint has no dispatched UI action: " + checkpoint.title());
             require(checkpoint.actions().stream().anyMatch(action -> action.source().name().equals("OBSERVE")),
                     "Android checkpoint has no recorded UI observation: " + checkpoint.title());
             require(!checkpoint.assertions().isEmpty(),
@@ -257,6 +274,23 @@ public final class AndroidUiFlowReportPublisher {
     private static String checkpointTitleMarker(AndroidUiFlowTrace.CheckpointSnapshot checkpoint) {
         return "<span>" + checkpoint.keyword() + " "
                 + AtfReportHtmlVocabulary.escapeHtml(checkpoint.title()) + "</span>";
+    }
+
+    private static boolean ownsScreenshot(String ownerHtml, String payload, Document report) {
+        return Jsoup.parseBodyFragment(ownerHtml).select("a[data-atf-screenshot],a[data-atf-screenshot-ref]")
+                .stream().anyMatch(anchor -> payload.equals(screenshotPayload(anchor, report)));
+    }
+
+    private static String screenshotPayload(Element anchor, Document report) {
+        String href = anchor.attr("href");
+        String prefix = "data:image/png;base64,";
+        if (href.startsWith(prefix)) return href.substring(prefix.length());
+        String reference = anchor.attr("data-atf-screenshot-ref");
+        if (reference.isBlank() || !href.equals("#atf-screenshot-" + reference)) return "";
+        Element canonical = report.getElementById("atf-screenshot-" + reference);
+        if (canonical == null || !reference.equals(canonical.attr("data-atf-screenshot-ref"))) return "";
+        String canonicalHref = canonical.attr("href");
+        return canonicalHref.startsWith(prefix) ? canonicalHref.substring(prefix.length()) : "";
     }
 
     private static String detailsBlock(String ownerHtml, String className) {

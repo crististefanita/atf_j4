@@ -82,7 +82,9 @@ public final class MonteCarloAi {
     }
     static Decision chooseCard(View view,double exactWeight) {
         var model=modelCard(view,exactWeight);var proof=ContractGuarantee.choose(view,model.card());
-        return proof.certified()&&!proof.card().equals(model.card())?new Decision(proof.card(),model.candidates(),model.method()+"; public contract certificate across"+proof.worlds()+" complete feasible deals and all legal continuations"):model;
+        Decision accepted=proof.certified()&&!proof.card().equals(model.card())?new Decision(proof.card(),model.candidates(),model.method()+"; public contract certificate across"+proof.worlds()+" complete feasible deals and all legal continuations"):model;
+        var salvage=PublicSalvage.choose(view,accepted.card());
+        return salvage.certified()?new Decision(salvage.card(),accepted.candidates(),accepted.method()+"; public salvage dominance certificate: "+salvage.worlds()+" complete worlds, all legal continuations, no worse own points, at least "+salvage.rivalMissFloor()+" rival misses versus baseline ceiling "+salvage.baselineRivalMissCeiling()):accepted;
     }
     private static Decision modelCard(View view,double exactWeight) {
         Suit led=view.trick().isEmpty()?null:view.trick().get(0).card().suit();

@@ -92,6 +92,19 @@ public final class WhistUiTextTest {
         assertEquals("Whist · Descrescător", new WhistUiText(HowToPlay.Language.RO).gameTitle(GameMode.DESCENDING));
     }
 
+    @Test public void homeAndSetupHeadingsStayConciseInBothLanguages() {
+        assertEquals("Whist", new WhistUiText(HowToPlay.Language.EN).homeTitle());
+        assertEquals("Whist", new WhistUiText(HowToPlay.Language.RO).homeTitle());
+        assertEquals("Game setup", new WhistUiText(HowToPlay.Language.EN).setupTitle());
+        assertEquals("Setări joc", new WhistUiText(HowToPlay.Language.RO).setupTitle());
+        assertEquals("Language", new WhistUiText(HowToPlay.Language.EN).languageLabel());
+        assertEquals("Limba", new WhistUiText(HowToPlay.Language.RO).languageLabel());
+        assertEquals("Language", new WhistUiText(HowToPlay.Language.EN).spinnerLabel("interface-language"));
+        assertEquals("Limba", new WhistUiText(HowToPlay.Language.RO).spinnerLabel("interface-language"));
+        assertTrue(new WhistUiText(HowToPlay.Language.EN).setupTitle().length() <= 12);
+        assertTrue(new WhistUiText(HowToPlay.Language.RO).setupTitle().length() <= 12);
+    }
+
     @Test public void biddingSummarySeparatesSubmittedCountFromBidTotal() {
         var game = GameSession.newGame(new GameConfig(4, GameMode.OH_HELL,
                 AiDifficulty.NORMAL, 401));

@@ -1,8 +1,10 @@
 package atf.android.e2e.support;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
@@ -10,12 +12,17 @@ import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.ui.model.AtfUiActionRecord;
 import atf.reporting.ui.model.AtfUiEvidenceSource;
 import atf.testkit.AtfComponentTest;
+import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
+import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.jsoup.Jsoup;
 
 @AtfComponentTest
 class AndroidUiFlowReportPublisherTest {
@@ -77,6 +84,90 @@ class AndroidUiFlowReportPublisherTest {
         assertFalse(html.contains("<details class=\"atf-ui-action-sequence\" open"));
         assertFalse(html.contains("<details class=\"atf-ui-observations\" open"));
         assertFalse(html.contains("<details class=\"atf-ui-assertions\" open"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void publishesObservationOnlyCheckpointWithoutInventingADispatchedUiAction(
+            boolean identicalCapture, @TempDir Path output)
+            throws Exception {
+        Path actionScreenshot = output.resolve("action-state.png");
+        Path observationScreenshot = output.resolve("observed-state.png");
+        writePixelPng(actionScreenshot, 0xFFFF0000);
+        writePixelPng(observationScreenshot, identicalCapture ? 0xFFFF0000 : 0xFF0000FF);
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(output, "android-observation-only",
+                "Android read-only checkpoint report", "AndroidUiFlowReportPublisherTest",
+                "atf.android.e2e.support", "ro.whistlab.app", List.of("android", "ui", "component"));
+        trace.recordAction(new AtfUiActionRecord(1, "Tap", "text=New game", "Open the bidding screen",
+                "ADB accepted tap", 31, AtfReportStatus.PASS));
+        trace.checkpoint("TEST BODY", "WHEN", "Open the bidding screen", "New game", actionScreenshot,
+                List.of(new AtfUiActionRecord(trace.nextActionSequence(), "Observe screen", "Bidding screen",
+                        "Retain the hierarchy for this screen", "Bidding screen captured", 0,
+                        AtfReportStatus.PASS, AtfUiEvidenceSource.OBSERVE)),
+                List.of(new AtfAssertion("Bidding screen opened", "visible", "visible", true)),
+                AtfReportStatus.PASS, List.of());
+        trace.checkpoint("TEST BODY", "THEN", "Visible bid options match the rule domain", "Bidding screen",
+                observationScreenshot,
+                List.of(new AtfUiActionRecord(trace.nextActionSequence(), "Capture UI observation", "Bidding screen",
+                        "Retain the observed hierarchy and screenshot", "Hierarchy and screenshot captured",
+                        0, AtfReportStatus.PASS, AtfUiEvidenceSource.OBSERVE)),
+                List.of(new AtfAssertion("Displayed choices match the legal bid domain", "[0, 1, 2]",
+                        "[0, 1, 2]", true)),
+                AtfReportStatus.PASS, List.of());
+        trace.finish(AtfReportStatus.PASS);
+
+        Path report = AndroidUiFlowReportPublisher.publish(output.resolve("observation-only.html"),
+                "package:/installed.apk", "emulator-5554", "28", "Read-only bid-domain checkpoint",
+                List.of(actionScreenshot, observationScreenshot), trace);
+
+        String html = Files.readString(report);
+        String actionPng = Base64.getEncoder().encodeToString(Files.readAllBytes(actionScreenshot));
+        String observationPng = Base64.getEncoder().encodeToString(Files.readAllBytes(observationScreenshot));
+        assertTrue(html.contains("Open the bidding screen"));
+        assertTrue(html.contains("Visible bid options match the rule domain"));
+        assertTrue(html.contains("class=\"atf-ui-action-sequence\""),
+                "The real click should remain attached to its action checkpoint");
+        assertTrue(html.contains("class=\"atf-ui-observations\""));
+        assertTrue(html.contains("class=\"atf-ui-assertions\""));
+        assertTrue(html.contains("Capture UI observation"));
+        var document = Jsoup.parse(html);
+        assertEquals(1L, document.select("a[data-atf-screenshot=base64]").stream()
+                        .filter(anchor -> anchor.attr("href").equals("data:image/png;base64," + actionPng)).count(),
+                "The action checkpoint screenshot must be embedded exactly once");
+        assertEquals(1L, document.select("a[data-atf-screenshot=base64]").stream()
+                        .filter(anchor -> anchor.attr("href").equals("data:image/png;base64," + observationPng)).count(),
+                "The read-only checkpoint screenshot must be embedded exactly once");
+        int actionOwner = html.indexOf("<span>WHEN Open the bidding screen</span>");
+        int observationOwner = html.indexOf("<span>THEN Visible bid options match the rule domain</span>");
+        assertTrue(actionOwner >= 0 && observationOwner > actionOwner);
+        assertTrue(html.substring(actionOwner, observationOwner).contains("data:image/png;base64," + actionPng),
+                "The real UI action must own its own captured screen");
+        var observationLink = Jsoup.parseBodyFragment(html.substring(observationOwner))
+                .selectFirst("a[data-atf-screenshot-ref]");
+        assertNotNull(observationLink, "The read-only checkpoint must retain its own screenshot control");
+        String reference = observationLink.attr("data-atf-screenshot-ref");
+        var canonical = document.getElementById("atf-screenshot-" + reference);
+        assertNotNull(canonical, "The screenshot reference must resolve inside this report");
+        assertEquals("data:image/png;base64," + observationPng, canonical.attr("href"));
+        if (identicalCapture) {
+            assertEquals("#atf-screenshot-" + reference, observationLink.attr("href"));
+        } else {
+            assertEquals("data:image/png;base64," + observationPng, observationLink.attr("href"));
+        }
+        assertFalse(html.contains("<details class=\"atf-ui-observations\" open"));
+        assertFalse(html.contains("<details class=\"atf-ui-assertions\" open"));
+        int screenshotMarker = html.indexOf("data-atf-screenshot", observationOwner);
+        int linkStart = html.lastIndexOf("<a ", screenshotMarker);
+        int linkEnd = html.indexOf("</a>", linkStart) + "</a>".length();
+        String originalLink = html.substring(linkStart, linkEnd);
+        String brokenLink = originalLink.replace("href=\"" + observationLink.attr("href") + "\"",
+                "href=\"#atf-screenshot-missing\"");
+        assertFalse(originalLink.equals(brokenLink), "The negative probe must mutate this checkpoint's image link");
+        Files.writeString(report, html.substring(0, linkStart) + brokenLink + html.substring(linkEnd));
+        IllegalStateException failure = assertThrows(IllegalStateException.class,
+                () -> AndroidUiFlowReportPublisher.auditPublishedReport(report, trace,
+                        AtfReportConfigurationLoader.load().reportingSettings()));
+        assertTrue(failure.getMessage().contains("does not resolve to its exact captured PNG"));
     }
 
     @Test
@@ -146,5 +237,13 @@ class AndroidUiFlowReportPublisherTest {
                 AtfReportStatus.PASS, List.of());
         trace.finish(AtfReportStatus.PASS);
         return trace;
+    }
+
+    private static void writePixelPng(Path path, int argb) throws Exception {
+        BufferedImage image = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) image.setRGB(x, y, argb);
+        }
+        assertTrue(ImageIO.write(image, "png", path.toFile()), "The JDK PNG writer must be available");
     }
 }

@@ -3,7 +3,7 @@
   "archiveRoot": "C:/work/whist_back/training-corpus",
   "activePointer": "C:/work/whist_back/whist-learning/current.json",
   "defaultReadPolicy": "Explicit curated manifest only; verify SHA-256 and independently replay each selected game. No directory walk of the full archive or heldout.",
-  "maxActiveGames": 96,
+  "maxActiveGames": 100,
   "handSizes": [
     2,
     3,
@@ -13,5 +13,6 @@
     7,
     8
   ],
-  "promotion": "Observed wins/actions are not optimal-action labels. Default regressions require an independent rule, exact bounded oracle or justified invariant."
+  "promotion": "Observed wins/actions are not optimal-action labels. Default regressions require an independent rule, exact bounded oracle or justified invariant.",
+  "selection": "Protected development origins, rarity-weighted cover and bounded improving one-for-one exchanges. The cap100 allows the new55 protected origins and new lesson categories; actual coverage and remaining gaps are always declared."
 }

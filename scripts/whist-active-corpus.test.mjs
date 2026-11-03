@@ -43,6 +43,32 @@ test('caps disclose uncovered lessons and cannot silently drop protected origins
  assert.throws(()=>selectGames(input,{protectedIds:['missing']}),/Missing protected/);
  for(const limit of [0,-1,1.5,NaN])assert.throws(()=>selectGames(input,{maxGames:limit}));
 });
+
+test('one exchange repairs a greedy coverage trap without increasing the active cap',()=>{
+ const entries=[e('a',['a','b','c','d']),e('b',['a','b','e']),e('c',['c','d','f'])];
+ const result=selectGames(entries,{maxGames:2});
+ assert.equal(result.selected.length,2);assert.equal(result.coveredLessons,6);
+ assert.deepEqual(result.missingLessons,[]);assert.equal(result.exchangeImprovements,1);
+ assert.deepEqual(result.selected.map(e=>e.id).sort(),['b','c']);
+ assert.deepEqual(result,selectGames([...entries].reverse(),{maxGames:2}));
+});
+
+test('a coverage improvement cannot trade away a protected regression origin',()=>{
+ const entries=[e('a',['a','b','c','d']),e('b',['a','b','e']),e('c',['c','d','f'])];
+ const result=selectGames(entries,{maxGames:2,protectedIds:['a']});
+ assert.ok(result.selected.some(e=>e.id==='a'&&e.protected));assert.equal(result.selected.length,2);
+ assert.equal(result.coveredLessons,5);assert.equal(result.missingLessons.length,1);
+});
+
+test('an exchange retains a protected alias and every final lesson attribution is truthful',()=>{
+ const entries=[e('a',['a','b','c','d']),e('b',['a','b','e']),e('c',['c','d','f']),e('alias',['a','b','e'],'b')];
+ const result=selectGames(entries,{maxGames:2,protectedIds:['alias']});
+ assert.equal(result.coveredLessons,6);assert.ok(result.selected.some(e=>e.protected&&e.aliases.includes('alias')));
+ const covered=new Set();for(const entry of result.selected){
+  assert.deepEqual(entry.newLessons,entry.lessons.filter(t=>!covered.has(t)));
+  for(const token of entry.lessons)covered.add(token);
+ }
+});
 test('active corpus is development-only, immutable-source, hash-checked, path-safe and independently replayable',async()=>{
  const folder=await fs.mkdtemp(path.join(os.tmpdir(),'ATF_J4_CURATOR_TEST_'));
  const archive=path.join(folder,'archive'),active=path.join(folder,'active');

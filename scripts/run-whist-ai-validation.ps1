@@ -75,7 +75,7 @@ try{
         Invoke-Checked 'android-menu' { & mvn -q -pl atf-test-android test '-Dtest=RomanianMenuOptionsE2eTest' '-Datf.android.enabled=true' "-Datf.match.evidenceDir=$RunRoot\android-menu" }
         Save-Suite 'atf-test-android' 'atf.android.e2e.RomanianMenuOptionsE2eTest'
         $game="$RunRoot\android-expert-01"
-        Invoke-Checked 'android-expert' { & mvn -q -pl atf-test-android test '-Dtest=CompleteRomanianExpertE2eTest' '-Datf.android.enabled=true' '-Datf.android.fullMatch=true' '-Datf.android.aiChallenge=true' '-Datf.android.aiDifficulty=EXPERT' "-Datf.android.streakBonus=$PositiveSeriesBonus" "-Datf.match.evidenceDir=$game" }
+        Invoke-Checked 'android-hard-challenge' { & mvn -q -pl atf-test-android test '-Dtest=CompleteRomanianExpertE2eTest' '-Datf.android.enabled=true' '-Datf.android.fullMatch=true' '-Datf.android.aiChallenge=true' '-Datf.android.aiDifficulty=HARD' "-Datf.android.streakBonus=$PositiveSeriesBonus" "-Datf.match.evidenceDir=$game" }
         Save-Suite 'atf-test-android' 'atf.android.e2e.CompleteRomanianExpertE2eTest'
         Invoke-Checked 'offline-game-audit' { & mvn -q -pl atf-test-android test '-Dtest=RecordedRomanianMatchAuditTest' '-Datf.romanian.audit=true' "-Datf.match.evidenceDir=$game" }
         Save-Suite 'atf-test-android' 'atf.android.e2e.RecordedRomanianMatchAuditTest'

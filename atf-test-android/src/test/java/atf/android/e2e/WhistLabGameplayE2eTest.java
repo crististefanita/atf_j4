@@ -62,13 +62,37 @@ public class WhistLabGameplayE2eTest {
         try {
             long started = System.nanoTime();
             String home = ui.restartToActivity(PACKAGE, ".MainActivity");
-            assertTrue(ui.hasText(home, "English"), "English language option is not available on home");
-            ui.tapText("English");
+            boolean homeTitleVisible = ui.hasText(home, "Whist");
+            String languageValue = ui.hasDescription(home, "Language") ? ui.spinnerValue(home, "Language")
+                    : ui.hasDescription(home, "Limba") ? ui.spinnerValue(home, "Limba") : "";
+            boolean languageDropdownVisible = ui.hasClass(home, "android.widget.Spinner")
+                    && List.of("English", "Română").contains(languageValue);
+            boolean homeFitsWithoutScrolling = ui.allContentFitsViewport(home);
+            List<Path> homeEvidence = ui.capture("whist-lab-presentation-home");
+            evidence.addAll(homeEvidence);
+            checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN,
+                    "Open the concise home screen with language selection and all navigation visible",
+                    "Whist; Language; New game; Resume game; How to play", homeEvidence,
+                    "launch app and inspect current language selector",
+                    "home actions fit inside the first viewport",
+                    "title=" + homeTitleVisible + "; language dropdown=" + languageDropdownVisible
+                            + "; fits=" + homeFitsWithoutScrolling,
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.of(new AtfAssertion("Home uses the concise Whist title", "Whist",
+                                    Boolean.toString(homeTitleVisible), homeTitleVisible),
+                            new AtfAssertion("Interface language is selected from one dropdown",
+                                    "English or Română in one spinner", languageValue, languageDropdownVisible),
+                            new AtfAssertion("Home navigation fits without scrolling", "all content inside viewport",
+                                    Boolean.toString(homeFitsWithoutScrolling), homeFitsWithoutScrolling)),
+                    AtfReportStatus.PASS);
+            ui.selectNamedSpinnerOption("interface-language", "English");
             ui.tapText("New game");
             String setup = ui.awaitText("Start game", Duration.ofSeconds(10));
+            boolean setupTitleVisible = ui.hasText(setup, "Game setup");
             ui.selectNamedSpinnerOption("player-count", "6");
             setup = ui.awaitText("Start game", Duration.ofSeconds(10));
             String selectedPlayerCount = ui.spinnerValue(setup, "Players");
+            boolean setupFitsWithoutScrolling = ui.allContentFitsViewport(setup);
             List<Path> setupEvidence = ui.capture("whist-lab-presentation-six-player-setup");
             evidence.addAll(setupEvidence);
             checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN,
@@ -79,11 +103,15 @@ public class WhistLabGameplayE2eTest {
                     List.of(new AtfAssertion("Six-player option is selected", "6 players",
                                     selectedPlayerCount + " players", selectedPlayerCount.equals("6")),
                             new AtfAssertion("Start action remains available", "Start game",
-                                    Boolean.toString(ui.hasText(setup, "Start game")), ui.hasText(setup, "Start game"))),
+                                    Boolean.toString(ui.hasText(setup, "Start game")), ui.hasText(setup, "Start game")),
+                            new AtfAssertion("Setup title is concise", "Game setup",
+                                    Boolean.toString(setupTitleVisible), setupTitleVisible),
+                            new AtfAssertion("Setup controls fit without scrolling", "all content inside viewport",
+                                    Boolean.toString(setupFitsWithoutScrolling), setupFitsWithoutScrolling)),
                     AtfReportStatus.PASS);
 
             started = System.nanoTime();
-            ui.tapText("Start game");
+            ui.tapTextIn(setup, "Start game");
             String bidding = ui.awaitText("Place bid", Duration.ofSeconds(15));
             String initialBidSummary = ui.texts(bidding).stream()
                     .filter(label -> label.startsWith("Bids submitted "))
@@ -263,11 +291,12 @@ public class WhistLabGameplayE2eTest {
             boolean selectionWasNotSubmitted = ui.hasTextContaining(score, "Bid not placed");
             assertTrue(selectionWasNotSubmitted,
                     "Opening Score sheet submitted the unconfirmed bid; visible=" + ui.texts(score));
-            boolean scoreColumnsVisible = List.of("Player", "Bid", "Won", "Hand", "Total").stream()
-                    .allMatch(label -> {
-                        try { return ui.hasText(score, label); }
-                        catch (Exception failure) { throw new IllegalStateException(failure); }
-                    });
+            List<String> expectedScoreColumns = List.of("Player", "Bid", "Won", "Hand", "Total");
+            List<String> visibleScoreColumns = new ArrayList<>();
+            for (String label : expectedScoreColumns) {
+                if (ui.hasText(score, label)) visibleScoreColumns.add(label);
+            }
+            boolean scoreColumnsVisible = visibleScoreColumns.size() == expectedScoreColumns.size();
             assertTrue(scoreColumnsVisible, "Current score table omitted a column: " + ui.texts(score));
             List<Path> scoreEvidence = ui.capture("whist-lab-presentation-live-score");
             evidence.addAll(scoreEvidence);
@@ -280,12 +309,13 @@ public class WhistLabGameplayE2eTest {
                     List.of(new AtfAssertion("Score view does not commit the pending bid", "Bid not placed",
                                     Boolean.toString(selectionWasNotSubmitted), selectionWasNotSubmitted),
                             new AtfAssertion("Score sheet presents aligned player and score columns",
-                                    "Player · Bid · Won · Hand · Total", String.join(" · ", ui.texts(score)),
+                                    "Player · Bid · Won · Hand · Total",
+                                    String.join(" · ", visibleScoreColumns),
                                     scoreColumnsVisible)),
                     AtfReportStatus.PASS);
 
             started = System.nanoTime();
-            ui.tapText("CLOSE");
+            ui.tapTextIn(score, "CLOSE");
             String biddingAfterScore = ui.awaitText("Place bid", Duration.ofSeconds(8));
             boolean selectedBidPersisted = ui.isSelected(biddingAfterScore, "3");
             String summaryAfterScore = ui.texts(biddingAfterScore).stream()
@@ -314,18 +344,23 @@ public class WhistLabGameplayE2eTest {
             ui.tapDescription("Game menu");
             ui.tapText("Main menu");
             String returnedHome = ui.awaitText("New game", Duration.ofSeconds(10));
-            List<Path> homeEvidence = ui.capture("whist-lab-presentation-return-home");
-            evidence.addAll(homeEvidence);
-            boolean homeReady = ui.hasText(returnedHome, "Resume game") && ui.hasText(returnedHome, "How to play");
+            List<Path> returnedHomeEvidence = ui.capture("whist-lab-presentation-return-home");
+            evidence.addAll(returnedHomeEvidence);
+            List<String> expectedHomeItems = List.of("New game", "Resume game", "How to play");
+            List<String> visibleHomeItems = new ArrayList<>();
+            for (String label : expectedHomeItems) {
+                if (ui.hasText(returnedHome, label)) visibleHomeItems.add(label);
+            }
+            boolean homeReady = visibleHomeItems.size() == expectedHomeItems.size();
             assertTrue(homeReady, "Main menu did not restore the home navigation options");
             checkpoint(trace, "TEARDOWN", AtfGherkinKeyword.THEN,
                     "Return to home from the game menu without advancing play",
-                    "Main menu", homeEvidence, "close Score sheet; open Game menu; choose Main menu",
+                    "Main menu", returnedHomeEvidence, "close Score sheet; open Game menu; choose Main menu",
                     "home screen offers New game, Resume game, and How to play",
                     "visible labels=" + ui.texts(returnedHome),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
-                    List.of(new AtfAssertion("Home navigation is restored", "New game; Resume game; How to play",
-                                    ui.texts(returnedHome).toString(), homeReady)),
+                    List.of(new AtfAssertion("Home navigation is restored",
+                            String.join("; ", expectedHomeItems), String.join("; ", visibleHomeItems), homeReady)),
                     AtfReportStatus.PASS);
             checks = "Six-player Oh Hell opened an eight-card human hand. All eight cards rendered on one row; every bid permitted by the current final-bid rule remained visible and each hit target measured at least 48 dp. The hamburger exposed Score sheet and Main menu. A selected but unconfirmed bid remained unsubmitted in the score view. The flow returned home without submitting a bid or playing a card.";
             outcome = AtfReportStatus.PASS;
@@ -387,7 +422,8 @@ public class WhistLabGameplayE2eTest {
             List<DisplayProfile> profiles = List.of(
                     new DisplayProfile("1080x1920 · 440 dpi", 1080, 1920, 440),
                     new DisplayProfile("720x1280 · 320 dpi", 720, 1280, 320),
-                    new DisplayProfile("1080x2400 · 440 dpi", 1080, 2400, 440));
+                    new DisplayProfile("ROG 7 resolution · 1080x2448 · simulated 440 dpi", 1080, 2448, 440),
+                    new DisplayProfile("600 dp tablet · 1200x1920 · 320 dpi", 1200, 1920, 320));
             int index = 0;
             for (DisplayProfile profile : profiles) {
                 long started = System.nanoTime();
@@ -613,7 +649,7 @@ public class WhistLabGameplayE2eTest {
                     + oneCardPlayViewport + "; card=" + oneCardPlayBounds);
             outcome = AtfReportStatus.PASS;
             checks = "Four-player Descending presents a genuine thirteen-card first-hand bid screen. The same layout "
-                    + "was exercised at 1080x1920@440 dpi, 720x1280@320 dpi, and 1080x2400@440 dpi. Each checkpoint "
+                    + "was exercised at " + String.join(", ", profiles.stream().map(DisplayProfile::name).toList()) + ". Each checkpoint "
                     + "audited every card face, every legal bid, table/seat/button geometry, 48 dp targets, and a "
                     + "full-resolution inline screenshot; no thirteen-card bid was submitted. A normal one-card "
                     + "Practice hand was then checked at bidding and play, with its card centered at the bottom.";
@@ -934,7 +970,7 @@ public class WhistLabGameplayE2eTest {
             long started = System.nanoTime();
             String home = ui.restartToActivity(PACKAGE, ".MainActivity");
             assertTrue(ui.hasText(home, "New game"), "Whist Lab home screen was not exposed");
-            ui.tapText("English");
+            ui.selectNamedSpinnerOption("interface-language", "English");
             ui.tapText("New game");
             String setup = ui.awaitText("Start game", Duration.ofSeconds(10));
             ui.tapSpinner(1);
@@ -1037,19 +1073,24 @@ public class WhistLabGameplayE2eTest {
                     "--ez", "persist_fixture", "true");
             bidding = ui.awaitText("Place bid", Duration.ofSeconds(10));
             assertTrue(ui.hasText(bidding, "Place bid"), "Fixture did not open at its human bidding turn");
-            assertTrue(ui.hasDescriptionContaining(bidding, "Trump: spades"), "Fixture trump should be Spades");
+            assertTrue(ui.hasDescriptionContaining(bidding,
+                    "Trump suit only, no turned card: spades"),
+                    "Fixture trump should be Spades without a turned card");
             List<Path> biddingEvidence = ui.capture("whist-lab-bidding");
             evidence.addAll(biddingEvidence);
             checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN, "Launch deterministic 4-player fixture at bidding",
                     "debug_fixture=true; persist_fixture=true", biddingEvidence,
                     "force-stop and launch MainActivity with deterministic fixture",
-                    "Place bid; header Trump: spades", "visible labels=" + ui.texts(bidding),
+                    "Place bid; accessible trump suit: spades, with no turned card",
+                    "visible labels=" + ui.texts(bidding),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
                     List.of(new AtfAssertion("Fixture opens at human bidding turn", "Place bid",
                                     Boolean.toString(ui.hasText(bidding, "Place bid")), ui.hasText(bidding, "Place bid")),
-                            new AtfAssertion("Fixture trump is Spades", "accessible Trump: spades tile",
-                                    Boolean.toString(ui.hasDescriptionContaining(bidding, "Trump: spades")),
-                                    ui.hasDescriptionContaining(bidding, "Trump: spades"))),
+                            new AtfAssertion("Fixture trump is Spades", "Trump suit only, no turned card: spades",
+                                    Boolean.toString(ui.hasDescriptionContaining(bidding,
+                                            "Trump suit only, no turned card: spades")),
+                                    ui.hasDescriptionContaining(bidding,
+                                            "Trump suit only, no turned card: spades"))),
                     AtfReportStatus.PASS);
 
             actionStarted = System.nanoTime();
@@ -1104,16 +1145,15 @@ public class WhistLabGameplayE2eTest {
             boolean resumedBidAndResult = ui.hasDescriptionContaining(resumed, "You. Bid 1.");
             assertTrue(resumedBidAndResult, "Saved human bid was lost after process restart");
             List<Path> resumeEvidence = ui.capture("whist-lab-resume");
-            evidence.addAll(resumeEvidence);
-            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.AND, "Force-stop the process and resume the same saved turn",
-                    "Resume game", resumeEvidence, "force-stop; relaunch; tap Resume game",
-                    "same human turn and Bid 1 restored", "visible labels=" + ui.texts(resumed),
-                    Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
-                    List.of(new AtfAssertion("Resume restores active play seat", "PLAY NOW",
-                                    Boolean.toString(ui.hasText(resumed, "PLAY NOW")), ui.hasText(resumed, "PLAY NOW")),
-                            new AtfAssertion("Resume preserves bid and won count", "You. Bid 1.",
-                                    Boolean.toString(resumedBidAndResult), resumedBidAndResult)),
-                    AtfReportStatus.PASS);
+            Path beforeRestartScreenshot = playEvidence.stream()
+                    .filter(file -> file.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
+                    .findFirst().orElseThrow();
+            Path resumedScreenshot = resumeEvidence.stream()
+                    .filter(file -> file.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
+                    .findFirst().orElseThrow();
+            boolean resumedViewportMatches = sameGameViewportPixels(beforeRestartScreenshot, resumedScreenshot);
+            assertTrue(resumedViewportMatches,
+                    "Process resume changed the rendered play viewport despite restoring the same turn");
 
             actionStarted = System.nanoTime();
             ui.tapText("A♥");
@@ -1123,12 +1163,28 @@ public class WhistLabGameplayE2eTest {
                     "Exact-bid score row is incorrect; visible texts=" + ui.texts(score));
             List<Path> scoreEvidence = ui.capture("whist-lab-score");
             evidence.addAll(scoreEvidence);
-            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN, "Play A♥ and verify exact-bid scoring",
-                    "A♥; Score sheet", scoreEvidence, "play A♥; let AI finish the trick",
+            evidence.addAll(resumeEvidence);
+            List<Path> resumedScoringEvidence = new ArrayList<>(scoreEvidence);
+            resumeEvidence.stream()
+                    .filter(file -> file.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".xml"))
+                    .forEach(resumedScoringEvidence::add);
+            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
+                    "Resume the saved turn and play A♥ to verify exact-bid scoring",
+                    "Resume game; A♥; Score sheet", resumedScoringEvidence,
+                    "force-stop; relaunch; resume; play A♥; let AI finish the trick",
                     exactScore, "visible labels=" + ui.texts(score),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
-                    List.of(new AtfAssertion("Exact bid earns 10 bonus plus one trick point", exactScore,
-                            Boolean.toString(ui.hasDescription(score, exactScore)), ui.hasDescription(score, exactScore))),
+                    List.of(new AtfAssertion("Resume restores the active play seat", "PLAY NOW",
+                                    Boolean.toString(ui.hasText(resumed, "PLAY NOW")),
+                                    ui.hasText(resumed, "PLAY NOW")),
+                            new AtfAssertion("Resume preserves the human bid and won count", "You. Bid 1.",
+                                    Boolean.toString(resumedBidAndResult), resumedBidAndResult),
+                            new AtfAssertion("Resume preserves the rendered play viewport",
+                                    "same game pixels before and after process restart",
+                                    Boolean.toString(resumedViewportMatches), resumedViewportMatches),
+                            new AtfAssertion("Exact bid earns 10 bonus plus one trick point", exactScore,
+                                    Boolean.toString(ui.hasDescription(score, exactScore)),
+                                    ui.hasDescription(score, exactScore))),
                     AtfReportStatus.PASS);
             checks = "API 28 fixture: human bids 1, the game process is force-stopped, and Resume game restores "
                     + "the human play turn and Bid 1; the human then plays A♥, wins the trick, and receives +11 "
@@ -1142,14 +1198,44 @@ public class WhistLabGameplayE2eTest {
             throw new RuntimeException(failure);
         } finally {
             try {
+                long homeStarted = System.nanoTime();
+                ui.tapText("Main menu");
+                String home = ui.awaitText("New game", Duration.ofSeconds(10));
+                List<String> expectedHomeItems = List.of("New game", "Resume game", "How to play");
+                List<String> visibleHomeItems = new ArrayList<>();
+                for (String label : expectedHomeItems) {
+                    if (ui.hasText(home, label)) visibleHomeItems.add(label);
+                }
+                boolean homeRestored = visibleHomeItems.size() == expectedHomeItems.size();
+                assertTrue(homeRestored, "Final score navigation did not restore the complete home menu: "
+                        + ui.texts(home));
                 List<Path> teardown = ui.capture("whist-lab-teardown");
                 evidence.addAll(teardown);
+                long stopStarted = System.nanoTime();
+                try {
+                    adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess();
+                    ui.recordAction("Force-stop Android app", PACKAGE,
+                            "The app process stops after final UI evidence is captured",
+                            "ADB accepted force-stop", Duration.ofNanos(System.nanoTime() - stopStarted).toMillis(),
+                            AtfReportStatus.PASS);
+                } catch (Exception failure) {
+                    ui.recordAction("Force-stop Android app", PACKAGE,
+                            "The app process stops after final UI evidence is captured", failure.toString(),
+                            Duration.ofNanos(System.nanoTime() - stopStarted).toMillis(), AtfReportStatus.FAIL);
+                    throw failure;
+                }
                 checkpoint(trace, "TEARDOWN", AtfGherkinKeyword.THEN,
-                        "Retain the final local-app screen and accessibility tree", "Whist Lab Android app",
-                        teardown, "capture final app state", "final score or failure screen retained",
-                        "files=" + teardown.stream().map(file -> file.getFileName().toString()).toList(),
-                        0, List.of(new AtfAssertion("Final UI evidence is retained", "PNG and XML", "2 files",
-                                teardown.size() == 2)), AtfReportStatus.PASS);
+                        "Return from exact-bid score to the home menu and retain its final screen",
+                        "Main menu", teardown, "tap Main menu; capture home; stop the app process",
+                        "New game, Resume game, and How to play are visible",
+                        "visible home items=" + String.join("; ", visibleHomeItems)
+                                + "; retained=" + teardown.stream().map(file -> file.getFileName().toString()).toList(),
+                        Duration.ofNanos(System.nanoTime() - homeStarted).toMillis(),
+                        List.of(new AtfAssertion("Home navigation is restored after scoring",
+                                        String.join("; ", expectedHomeItems), String.join("; ", visibleHomeItems),
+                                        homeRestored),
+                                new AtfAssertion("Final home UI evidence is retained", "PNG and XML", "2 files",
+                                        teardown.size() == 2)), AtfReportStatus.PASS);
             } catch (Exception teardownFailure) {
                 boolean alreadyFailed = outcome == AtfReportStatus.FAIL;
                 trace.fail(teardownFailure);
@@ -1515,6 +1601,21 @@ public class WhistLabGameplayE2eTest {
                 }
             }
             if (sampled == 0 || matching < Math.ceil(sampled * 0.98)) return false;
+        }
+        return true;
+    }
+
+    private static boolean sameGameViewportPixels(Path firstPath, Path laterPath) throws Exception {
+        BufferedImage first = ImageIO.read(firstPath.toFile());
+        BufferedImage later = ImageIO.read(laterPath.toFile());
+        if (first == null || later == null || first.getWidth() != later.getWidth()
+                || first.getHeight() != later.getHeight()) return false;
+        int top = (int) Math.round(first.getHeight() * 0.05);
+        int bottom = (int) Math.round(first.getHeight() * 0.95);
+        for (int y = top; y < bottom; y++) {
+            for (int x = 0; x < first.getWidth(); x++) {
+                if (first.getRGB(x, y) != later.getRGB(x, y)) return false;
+            }
         }
         return true;
     }

@@ -6,6 +6,7 @@ final class TableLayoutMetrics {
     private static final int EXTRA_PLAYER_HEIGHT_DP = 8;
     private static final int SEAT_ROW_RESERVE_DP = 16;
     private static final int BID_SEAT_PERIMETER_RESERVE_DP = 132;
+    private static final int MULTI_PLAYER_BID_CLEARANCE_DP = 8;
     private static final float PLAY_CENTER_ROW_WEIGHT = 2.3f;
     static final int TRICK_CARD_WIDTH_DP = 44;
     static final int TRICK_CARD_HEIGHT_DP = 52;
@@ -44,8 +45,11 @@ final class TableLayoutMetrics {
         requirePlayerCount(playerCount);
         int centerRow = biddingCenterRowHeightDp(optionCount, availableWidthDp);
         int totalForCenter = centerRow + BID_SEAT_PERIMETER_RESERVE_DP;
-        return Math.max(playingHeightDp(playerCount, 1f), totalForCenter)
-                + accessibilityAllowance(fontScale);
+        int tableHeight = Math.max(playingHeightDp(playerCount, 1f), totalForCenter);
+        if (playerCount >= 5 && BidGridMetrics.rowCount(optionCount, availableWidthDp) >= 2) {
+            tableHeight += MULTI_PLAYER_BID_CLEARANCE_DP;
+        }
+        return tableHeight + accessibilityAllowance(fontScale);
     }
 
     static int biddingCenterRowHeightDp(int optionCount, int availableWidthDp) {

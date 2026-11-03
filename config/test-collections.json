@@ -33,10 +33,10 @@
     },
     {
       "id": "learning",
-      "task": ":game-core:roundElevenTest",
+      "task": ":game-core:roundTwelveTest",
       "targetMinutes": 15,
       "trigger": "Explicit candidate experiment only",
-      "evidence": "All JSON games and receipts; explicit schema11 protocol against frozen ExpertSafety10/IndependentV8, per-role acceptance, development examples. Historical schema7 remains explicit opt-in.",
+      "evidence": "All JSON games and original outcomes; explicit schema12 against frozen accepted Expert/Independent R11. Schema7/11 retained as historical explicit protocols. Final role-wise gate and development screening remain separate.",
       "requires": [
         "Fresh candidate ID",
         "External corpus path",
@@ -68,6 +68,13 @@
         "Known APK/app version",
         "Full-match final score for complete-game claims"
       ]
+    },
+    {
+      "id": "research",
+      "task": ":game-core:informationResearchTest",
+      "targetMinutes": 2,
+      "trigger": "Explicit examination of rejected information/decision models",
+      "evidence": "21 opt-in components: seven rejected R12 information models and14 R13 quota/public-memory/pressure cases. Test-only models, no runtime activation or stronger-play claim."
     }
   ],
   "algorithmBuild": "whist-lab-app/algorithm-build: pure JVM, cached dependencies, no SDK/device configuration",

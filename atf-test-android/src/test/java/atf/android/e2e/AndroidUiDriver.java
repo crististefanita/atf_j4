@@ -176,6 +176,18 @@ final class AndroidUiDriver {
         return nodes(xml).stream().anyMatch(node -> node.className().equals(exactClass));
     }
 
+    boolean allContentFitsViewport(String xml) throws Exception {
+        List<Node> elements = nodes(xml);
+        Node viewport = elements.stream().filter(node -> node.className().equals("android.widget.ScrollView"))
+                .findFirst().orElseThrow(() -> new IllegalStateException("Screen has no scroll viewport"));
+        int[] viewportBounds = bounds(viewport.bounds());
+        return elements.stream()
+                .filter(node -> !node.text().isBlank() || !node.description().isBlank() || node.clickable())
+                .map(node -> bounds(node.bounds()))
+                .allMatch(element -> element[0] >= viewportBounds[0] && element[1] >= viewportBounds[1]
+                        && element[2] <= viewportBounds[2] && element[3] <= viewportBounds[3]);
+    }
+
     boolean isEnabled(String xml, String exactText) throws Exception {
         List<Node> matches = nodes(xml).stream().filter(node -> node.text().equals(exactText)).toList();
         if (matches.size() != 1) {
@@ -183,6 +195,47 @@ final class AndroidUiDriver {
                     + "', got " + matches.size());
         }
         return matches.getFirst().enabled();
+    }
+
+    boolean legalCardIsClickable(String xml, String cardLabel) throws Exception {
+        String accessibleName = accessibleCardName(cardLabel);
+        List<Node> cards = nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.FrameLayout"))
+                .filter(node -> node.description().startsWith(accessibleName + ". "))
+                .filter(node -> node.description().endsWith("Legal card")
+                        || node.description().endsWith("Not legal now"))
+                .toList();
+        if (cards.size() != 1) {
+            throw new IllegalStateException("Expected one accessible card slot for '" + cardLabel
+                    + "', got " + cards.size());
+        }
+        Node card = cards.getFirst();
+        boolean markedLegal = card.description().endsWith("Legal card");
+        if (card.clickable() != markedLegal) {
+            throw new IllegalStateException("Card accessibility state disagrees with clickability for "
+                    + cardLabel + ": " + card.description() + ", clickable=" + card.clickable());
+        }
+        return card.clickable();
+    }
+
+    private static String accessibleCardName(String cardLabel) {
+        if (cardLabel.length() < 2) throw new IllegalArgumentException("Invalid card label: " + cardLabel);
+        String rank = cardLabel.substring(0, cardLabel.length() - 1);
+        String rankName = switch (rank) {
+            case "J" -> "Jack";
+            case "Q" -> "Queen";
+            case "K" -> "King";
+            case "A" -> "Ace";
+            default -> rank;
+        };
+        String suit = switch (cardLabel.substring(cardLabel.length() - 1)) {
+            case "♠" -> "spades";
+            case "♥" -> "hearts";
+            case "♦" -> "diamonds";
+            case "♣" -> "clubs";
+            default -> throw new IllegalArgumentException("Invalid card label: " + cardLabel);
+        };
+        return rankName + " of " + suit;
     }
 
     boolean isSelected(String xml, String exactText) throws Exception {
@@ -370,6 +423,7 @@ final class AndroidUiDriver {
 
     private static boolean matchesSpinnerLabel(String selector,String label) {
         return switch(selector) {
+            case "interface-language" -> List.of("Language", "Limba").contains(label);
             case "player-count" -> List.of("Players","Jucători").contains(label);
             case "game-type" -> List.of("Game type","Varianta de joc").contains(label);
             case "ai-level" -> List.of("AI level","Nivelul adversarilor").contains(label);

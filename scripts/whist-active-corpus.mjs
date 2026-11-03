@@ -33,8 +33,8 @@ export function lessons(game){
  }
  return [...tokens].sort();
 }
-/** Rarity-weighted set cover. Deterministic and independent of game IDs or winnings. */
-export function selectGames(entries,{maxGames=96,protectedIds=[]}={}){
+/** Rarity cover followed by bounded one-for-one exchanges. No change to protected origins or cap. */
+export function selectGames(entries,{maxGames=100,protectedIds=[]}={}){
  check(Number.isSafeInteger(maxGames)&&maxGames>0,'Positive integral maxGames required');
  const byId=new Map(entries.map(e=>[e.id,e]));for(const id of protectedIds)check(byId.has(id),'Missing protected regression origin '+id);
  const groups=new Map();for(const e of entries){const group=groups.get(e.traceHash)??[];group.push(e);groups.set(e.traceHash,group);}
@@ -49,7 +49,29 @@ export function selectGames(entries,{maxGames=96,protectedIds=[]}={}){
   for(const e of remaining){const score=e.lessons.reduce((s,t)=>s+(covered.has(t)?0:1/Math.sqrt(frequency.get(t))),0);if(score>value+1e-12){value=score;best=e;}}
   if(!best)break;add(best);
  }
- return {selected,uniqueTraces:candidates.length,lessonCount:frequency.size,coveredLessons:covered.size,missingLessons:[...frequency.keys()].filter(t=>!covered.has(t)).sort()};
+ const optimized=selected.map(e=>({...e})),counts=new Map();
+ for(const e of optimized)for(const token of e.lessons)counts.set(token,(counts.get(token)??0)+1);
+ let exchangeImprovements=0;
+ while(counts.size<frequency.size){
+  const chosen=new Set(optimized.map(e=>e.traceHash));
+  const prospects=candidates.filter(e=>!chosen.has(e.traceHash)).map(e=>({entry:e,tokens:new Set(e.lessons),
+   added:e.lessons.filter(t=>!counts.has(t)).length})).filter(e=>e.added>0);
+  let best=null,gain=0;
+  for(let i=0;i<optimized.length;i++)if(!optimized[i].protected){
+   const lost=optimized[i].lessons.filter(t=>counts.get(t)===1);
+   for(const p of prospects){const delta=p.added-lost.filter(t=>!p.tokens.has(t)).length;
+    if(delta>gain){gain=delta;best={index:i,entry:p.entry};}}
+  }
+  if(!best)break;
+  for(const t of optimized[best.index].lessons){const n=counts.get(t)-1;if(n)counts.set(t,n);else counts.delete(t);}
+  for(const t of best.entry.lessons)counts.set(t,(counts.get(t)??0)+1);
+  optimized[best.index]=best.entry;exchangeImprovements++;
+ }
+ const finalCovered=new Set();
+ const finalSelection=optimized.map(e=>{const result={...e,newLessons:e.lessons.filter(t=>!finalCovered.has(t))};
+  for(const t of e.lessons)finalCovered.add(t);return result;});
+ return {selected:finalSelection,exchangeImprovements,uniqueTraces:candidates.length,lessonCount:frequency.size,
+  coveredLessons:finalCovered.size,missingLessons:[...frequency.keys()].filter(t=>!finalCovered.has(t)).sort()};
 }
 export async function curate(archive,output,options={}){
  const began=performance.now();archive=path.resolve(archive);output=path.resolve(output);
@@ -70,7 +92,7 @@ export async function curate(archive,output,options={}){
   active.push({...e,file,archiveFile:e.file});
  }
  const selectedHashes=new Set(active.map(e=>e.traceHash));
- const manifest={schemaVersion:1,partition:'development',purpose:'Small teaching set of observed outcomes; not optimal-action labels or evaluation evidence.',archive,archiveMutation:'NONE: redundant records stay in archival storage; ordinary learning reads this explicit active manifest only.',maxGames:options.maxGames??96,sourceGames:entries.length,sourceBytes:entries.reduce((n,e)=>n+e.bytes,0),activeGames:active.length,activeBytes:active.reduce((n,e)=>n+e.bytes,0),uniqueTraces:selection.uniqueTraces,lessonCount:selection.lessonCount,coveredLessons:selection.coveredLessons,missingLessons:selection.missingLessons,heldout:'Never read or copied by curator',protectedIds:[...(options.protectedIds??[])],selection:'Protected regression origins, then deterministic rarity-weighted set cover over 2..8-card success/failure, role, bid, trump, auction, voids and series outcomes. Stop when no new lesson remains.',elapsedMilliseconds:performance.now()-began,games:active};
+ const manifest={schemaVersion:1,partition:'development',purpose:'Small teaching set of observed outcomes; not optimal-action labels or evaluation evidence.',archive,archiveMutation:'NONE: redundant records stay in archival storage; ordinary learning reads this explicit active manifest only.',maxGames:options.maxGames??100,sourceGames:entries.length,sourceBytes:entries.reduce((n,e)=>n+e.bytes,0),activeGames:active.length,activeBytes:active.reduce((n,e)=>n+e.bytes,0),uniqueTraces:selection.uniqueTraces,lessonCount:selection.lessonCount,coveredLessons:selection.coveredLessons,missingLessons:selection.missingLessons,exchangeImprovements:selection.exchangeImprovements,heldout:'Never read or copied by curator',protectedIds:[...(options.protectedIds??[])],selection:'Protected regression origins, deterministic rarity-weighted set cover, then strictly improving one-for-one exchanges over2..8-card lessons. Protected traces and the cap never change; remaining gaps are disclosed.',elapsedMilliseconds:performance.now()-began,games:active};
  await fs.writeFile(path.join(output,'manifest.json'),JSON.stringify(manifest,null,2)+'\n',{flag:'wx'});
  const inventory=entries.map(e=>({id:e.id,file:e.file,sha256:e.sha256,traceHash:e.traceHash,disposition:active.some(a=>a.id===e.id)?'ACTIVE_COPY':selectedHashes.has(e.traceHash)?'ARCHIVE_DUPLICATE':'ARCHIVE_REDUNDANT_OR_CAP',reason:selectedHashes.has(e.traceHash)?'Exact trace represented in active set':'No additional selected lesson within declared cap'}));
  await fs.writeFile(path.join(output,'archive-inventory.json'),JSON.stringify(inventory,null,2)+'\n',{flag:'wx'});
@@ -91,7 +113,7 @@ export async function resolveActivePointer(pointerFile){
  const manifest=JSON.parse(bytes);check(manifest.partition==='development','Heldout cannot be an active learning pointer');return {folder:pointer.folder,manifest};
 }
 if(process.argv[1]?.replaceAll('\\','/').endsWith('/whist-active-corpus.mjs')){
- try{const [command,archive,output,limit,protectedFile]=process.argv.slice(2);if(command==='curate'&&archive&&output){const protectedIds=protectedFile?JSON.parse(await fs.readFile(protectedFile)):[];check(Array.isArray(protectedIds)&&protectedIds.every(x=>typeof x==='string'),'Protected IDs must be a JSON string array');const m=await curate(archive,output,{maxGames:Number(limit??96),protectedIds});console.log(JSON.stringify({...m,games:undefined},null,2));}
+ try{const [command,archive,output,limit,protectedFile]=process.argv.slice(2);if(command==='curate'&&archive&&output){const protectedIds=protectedFile?JSON.parse(await fs.readFile(protectedFile)):[];check(Array.isArray(protectedIds)&&protectedIds.every(x=>typeof x==='string'),'Protected IDs must be a JSON string array');const m=await curate(archive,output,{maxGames:Number(limit??100),protectedIds});console.log(JSON.stringify({...m,games:undefined},null,2));}
  else if((command==='verify'&&archive)||command==='verify-current'){const config=command==='verify-current'?JSON.parse(await fs.readFile(archive??new URL('../config/learning-corpus.json',import.meta.url))):null;const resolved=config?await resolveActivePointer(config.activePointer):{folder:archive,manifest:JSON.parse(await fs.readFile(path.join(archive,'manifest.json')))};const m=resolved.manifest;for(const e of m.games)await loadActiveGame(resolved.folder,m,e);console.log(JSON.stringify({status:'PASS',activeGames:m.activeGames,activeBytes:m.activeBytes,lessons:m.coveredLessons,missing:m.missingLessons.length}));}
  else throw new Error('Usage: whist-active-corpus.mjs curate <archive> <fresh-active> [maxGames] [protected-ids.json] | verify <active>');}catch(e){console.error(e.stack);process.exitCode=1;}
 }

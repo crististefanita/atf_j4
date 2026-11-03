@@ -18,3 +18,14 @@ The [arena protocol and results](../AI_STRATEGY_ARENA.md) explain balanced seats
 ## Verified lesson: avoiding an extra trick
 
 After making the contract, the lower card is not automatically safer. In the R11 counterexample, bid 1 with 1 trick already won, QH + 10D and clubs trump, discarding 10D preserves the exact contract across all 96 feasible public worlds and every legal continuation; discarding QH can add an unwanted trick. This is a contextual proof, not a rule to always retain a queen. The guard applies only to completely enumerated small endgames. Missing proof or an exhausted budget preserves the previous planner. See the [R11 analysis](../AI_LOSS11_ACCEPTANCE.md).
+
+
+## Bidding and available information — R12
+
+An opening must be chosen before observing the hidden world. Picking a different opening inside each world and averaging afterwards can overstate the achievable contract. [R12](../AI_ROUND12_ANALYSIS.md) retains the counterexamples and rejected models. The current selectable levels are [Normal/Hard](../TWO_GAME_LEVELS.md). Hard retains the accepted engine; complete finite proofs remain distinct from estimated play quality.
+
+## Remaining quota and certified salvage — R13/R14
+
+Remaining need is bid minus completed tricks won; opportunities include the unfinished trick. Own/public cards and the turned card cannot appear in opponent holdings. Contextual pressure weights regressed and remain inactive; see [R13](../AI_CONTRACT_PRESSURE_R13.md).
+
+Hard enables only the [R14 public dominance guard](../AI_CONTRACT_SALVAGE_R14.md): for an already impossible contract, change the card only when every compatible world and legal continuation preserves own points and at least as many opponent misses, with a strict improvement. The7S/7H ending raises rival misses2to3 at the same own penalty−4. Equal averages and exhausted searches never certify dominance. The random128-game evaluation had identical traces; this is a bounded feature correction, not general stronger-play evidence.

@@ -2,11 +2,11 @@
 
 ## Colecțiile curente — 3 noiembrie 2026
 
-Sursa curentă este `config/test-collections.json`. Runnerul `scripts/run-whist-collection.ps1` expune quick (156 de cazuri, subset), regression (520), strategy, documentation, learning și arena. Learning folosește RoundEleven/schema11, cu Expert Safety10 și independent V8 înghețați; schema7 rămâne istoric explicit. [Analiza R11](AI_LOSS11_ACCEPTANCE.md) separă corecția locală certificată de câștigul statistic strict. Arena este opt-in, cu patru strategii distincte per masă; cele trei controale de reluare a profilurilor sunt în afara regresiei zilnice. Build-ul JVM din `whist-lab-app/algorithm-build` nu configurează Android SDK.
+Sursa curentă este `config/test-collections.json`. Runnerul `scripts/run-whist-collection.ps1` expune quick (168 de cazuri, subset), regression (492 după garda de salvare certificată), strategy, documentation, learning, arena și research. Learning folosește RoundTwelve/schema12, cu motorul R11 înghețat; schemele 7/11 rămân istorice explicite. Research are 21 de componente opt-in și prototipuri excluse din APK/regresia zilnică. [Normal/Hard](TWO_GAME_LEVELS.md) sunt singurele niveluri selectabile. [Analiza R11](AI_LOSS11_ACCEPTANCE.md) separă corecția locală certificată de câștigul statistic strict. Arena este opt-in, cu patru strategii distincte per masă; cele trei controale de reluare a profilurilor sunt în afara regresiei zilnice. Build-ul JVM din `whist-lab-app/algorithm-build` nu configurează Android SDK.
 
 [Protocolul și rezultatele A/B](AI_STRATEGY_ARENA.md) descriu aceleași împărțiri, locurile rotite, criteriile distincte pe rol și cele opt seed-uri independente ale ligii. Catalogul [RO](rules/AI_HAND_PATTERNS_RO.md) / [EN](rules/AI_HAND_PATTERNS_EN.md) separă ipotezele de onoruri de regulile jocului.
 
-Setul activ curent are 96 de jocuri (5.877.183 bytes), 48 de origini protejate și 757/757 de categorii declarate. Manifestul și jocurile sunt verificate prin SHA-256. Aceasta este acoperirea taxonomiei selectorului, nu acoperirea tuturor stărilor Whist. Restul arhivei rămâne extern, inclusiv pierderile; heldout nu intră în setul de învățare.
+Setul activ curent are 100 de jocuri (6.223.703 bytes), 55 de origini protejate și 759/759 de categorii declarate. Manifestul și jocurile sunt verificate prin SHA-256. Aceasta este acoperirea taxonomiei selectorului, nu acoperirea tuturor stărilor Whist. Restul arhivei rămâne extern, inclusiv pierderile; heldout nu intră în setul de învățare.
 
 `scripts/whist-report-input.mjs` construiește inputul limitat înaintea compoziției Java: capturi copiate integral, inventar de populație, suite native și audit independent al jocurilor. Politica de publicare a rularii este explicită, cu detalii complete pentru selecția furnizată și buget mic pentru amprentele opționale. Defectele istorice ale capturilor se declară, nu se normalizează. J0 deține în continuare JAR-ul și rendererul.
 
@@ -62,7 +62,7 @@ C:/work/1/atf_j4/atf-test-android/artifacts a fost mutat în C:/work/whist_back/
 |---|---|
 | Setup, bonus 5/10/classic, reluare opțiuni | RomanianMenuOptionsE2eTest existent |
 | Help RO/EN, atu/suprataiere, redeschidere limbă | Adăugat în același test; compilarea și execuția device se declară separat |
-| Partidă românească Expert completă, scor pe fiecare mână | CompleteRomanianExpertE2eTest și WhistLabRomanianExpertE2eTest existente |
+| Partidă românească completă, scor pe fiecare mână | `CompleteRomanianExpertE2eTest` (nume istoric; adapterul live acceptă numai `NORMAL`/`HARD`, implicit `HARD`) și `WhistLabRomanianExpertE2eTest` |
 | Original ↔ Whist Lab, replay | CompleteOriginalMatchE2eTest / CompleteWhistLabMatchE2eTest existente |
 | Resume raster legacy | Defect de oracol cunoscut; nu este gate de promovare |
 
@@ -71,3 +71,5 @@ Această schimbare produce componente și APK offline. Nicio acceptanță Androi
 ## R6 — small regressions and protected evaluation
 
 Quick/default regression now include the 20 late-card counterexamples and guards. Four statistical-model tests are research-only, excluded by default. Historical R6 learning used roundSixTest and required -ProtocolFile pointing to a V6 JSON plan with development/heldout.firstSeed and seeds; heldout also requires -CandidateFreeze. Source hashes and the external holdout-use registry prevent candidate or range reuse. alwaysIncludeCollections in game-evidence.yml keeps regression/documentation cases complete even when the learning population is sampled. Existing rowsPerGroup, fieldsPerGroup and optionalMaxItems remain effective. See AI_ROUND6_ANALYSIS.md for measured outcomes and the explicit lack of a strength claim.
+
+R13/R14: [modele de presiune respinse](AI_CONTRACT_PRESSURE_R13.md), [corecție publică certificată activă](AI_CONTRACT_SALVAGE_R14.md). Cele6 cazuri PublicSalvageTest sunt zilnice și în quick; cele14 ContractPressureTest rămân numai research împreună cu cele7 cazuri R12. Setul activ100 rămâne neschimbat; pressure-casebook conține12 contexte publice separate. Nicio suită de învățare sau Android nu intră în regresia implicită.

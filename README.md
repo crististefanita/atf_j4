@@ -78,10 +78,10 @@ build-urile într-o etapă TMP izolată și păstrează toate dovezile în afara
 ```
 
 A doua comandă verifică și meniul Android real și reluarea, joacă toate cele 24
-de mâini românești cu trei boți Expert, reconstruiește fiecare mutare/scor offline
-și publică Extent nativ J0 cu text complet și capturi Base64 încorporate. Evaluarea
-adversarială măsurată nu dovedește joc perfect. Rapoartele istorice de mai jos
-păstrează profilurile de reguli și APK-urile folosite atunci.
+de mâini românești la nivelul vizibil Hard, reconstruiește fiecare mutare/scor
+offline și publică Extent nativ J0 cu text complet și capturi Base64 încorporate.
+Evaluarea adversarială măsurată nu dovedește joc perfect. Rapoartele istorice de
+mai jos păstrează profilurile de reguli și APK-urile folosite atunci.
 
 Whist Lab are profilul explicit `ROMANIAN_WHIST` alături de `OH_HELL`.
 
@@ -235,6 +235,12 @@ nominalizate pentru componente și joc live.
   Reporting curentă, ca URI-uri Base64 încorporate. XML Surefire, textul, ierarhia
   UI și jurnalele rămân diagnostice externe execuției; cei șase publisheri
   adaptivi exclud linkurile lor din HTML-ul public.
+- Un checkpoint Android înregistrează separat `ACTION` numai când testul a
+  expediat o interacțiune UI și `OBSERVE` pentru starea efectiv capturată. Pașii
+  doar de verificare păstrează observația, captura și aserțiunile expandabile,
+  fără acțiuni inventate. Publisherul verifică proprietatea capturilor,
+  checkpoint-urile și tabelele colapsate; testul lui componentă acoperă și
+  checkpoint-uri fără interacțiune.
 
 Baseline-ul istoric de descoperire este
 `C:\work\whist_back\deep-app-test\runs\20261101-222629\`.
@@ -427,3 +433,8 @@ readiness/action and navigation deadlines remain 10 s and 45 s.
 
 
 Offline R11: [analiza pierderilor, regresii mici și acceptanță](docs/AI_LOSS11_ACCEPTANCE.md), [feedback](docs/feedback/AI_LOSS11_Feedback.md). Corecția finalului cu contract certificat este distinctă de progresul statistic; evaluarea nouă are 512 partide și delte zero. Interfața nu a fost modificată în această iterație.
+
+
+Nivelurile curente sunt [Normal și Hard](docs/TWO_GAME_LEVELS.md); Hard folosește motorul Expert R11 acceptat. [Analiza R12](docs/AI_ROUND12_ANALYSIS.md) păstrează modelele respinse, cele 512 partide noi și selecția de 100 de jocuri development. Perfecțiunea generală nu este declarată pe baza unor estimări.
+
+Offline R13/R14: [presiune și licitații — modele respinse](docs/AI_CONTRACT_PRESSURE_R13.md), [gardă publică certificată activă în Hard](docs/AI_CONTRACT_SALVAGE_R14.md), [feedback J4](docs/feedback/AI_CONTRACT_PRESSURE_R13_Feedback.md). Regresie492, quick168, research21 opt-in; schimbarea7S→7H arde3 adversari în loc de2 la aceeași penalizare proprie în cazul demonstrat. Cele128 de partide noi ale gărzii au urme identice; nu declarăm progres statistic general sau joc perfect. Nicio modificare UI/APK/JAR.

@@ -34,7 +34,7 @@ function opponent(p, hands, trick, actor, won) {
     const wants = p.goals[actor] > won[actor];
     if (!trick.length) return chooseCost(choices, p.trump, wants);
     const preferred = choices.filter(c => (winner([...trick, {seat: actor, card: c}], p.trump) === actor) === wants);
-    return chooseCost(preferred.length ? preferred : choices, p.trump, preferred.length ? !wants : !wants);
+    return chooseCost(preferred.length ? preferred : choices, p.trump, !wants);
 }
 
 /** Reconstruct the old own trick-bound heuristic for comparison, not as the expected optimum. */

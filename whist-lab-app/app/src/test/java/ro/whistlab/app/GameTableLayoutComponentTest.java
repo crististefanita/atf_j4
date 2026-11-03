@@ -68,6 +68,10 @@ public final class GameTableLayoutComponentTest {
                 > TableLayoutMetrics.playingHeightDp(3, 1f));
         assertEquals(TableLayoutMetrics.playingHeightDp(4, 1f),
                 TableLayoutMetrics.biddingHeightDp(4, 14, 320, 1f));
+        assertEquals(TableLayoutMetrics.playingHeightDp(6, 1f) + 8,
+                TableLayoutMetrics.biddingHeightDp(6, 9, 353, 1f));
+        assertEquals(TableLayoutMetrics.playingHeightDp(5, 1f) + 8,
+                TableLayoutMetrics.biddingHeightDp(5, 9, 280, 1f));
     }
 
     @Test public void humanSeatStaysSouthCenterAndEveryPlayerGetsAUniquePerimeterSlot() {
@@ -112,6 +116,9 @@ public final class GameTableLayoutComponentTest {
         assertEquals(0.23f, TableSeatLayout.sideInsetFraction(false, 280), 0.001f);
         assertEquals(0.06f, TableSeatLayout.sideInsetFraction(true, 4, 14, 353), 0.001f);
         assertEquals(0.16f, TableSeatLayout.sideInsetFraction(true, 4, 9, 353), 0.001f);
+        assertEquals(0.123f, TableSeatLayout.sideInsetFraction(true, 6, 9, 353), 0.001f);
+        assertEquals(0.123f, TableSeatLayout.sideInsetFraction(true, 5, 9, 280), 0.001f);
+        assertEquals(0.23f, TableSeatLayout.sideInsetFraction(false, 6, 9, 353), 0.001f);
     }
 
     @Test public void trickFitsBetweenPerimeterSeatsAndKeepsTheMockTwoColumnShape() {

@@ -61,3 +61,30 @@ Validarea statistică a acestei variante este separată de corectitudinea proiec
 Turneele rămân opt-in. Cazurile mici, exemplele de învățare și populațiile finale sunt colecții distincte. Arhiva brută este externă; setul activ development are maximum 96 de jocuri și manifest SHA. O rotație nu este un seed independent. Un lot final consumat nu devine date de antrenament.
 
 Reporting aparține J0. J4 livrează selecții de capturi întregi, inventare, surse și verdicte originale; nu rescrie gate-urile FAIL în PASS. Auditul static al HTML-ului și execuția algoritmilor rămân rezultate diferite de verificarea vizuală interactivă ori Android.
+
+## Rezultatul final: candidați respinși, R11 păstrat
+
+Varianta finală joint-opening adaugă evaluarea comună a licitației și primei cărți pentru primul licitant la două și trei cărți. Se agregă toate lumile pentru fiecare pereche licitație/deschidere, apoi se alege o singură deschidere. Expertul folosește 64 de lumi; independentul 24. În development, independentul a avut +131 puncte / +3 victorii ponderate / +13 contracte exacte și a trecut criteriul pe ambele familii. Expertul a avut +43 / 0 / +6, dar a pierdut o victorie într-o familie. Aceste rezultate nu au fost numite evaluare nouă finală.
+
+Codul a fost înghețat înaintea seed-urilor **108000–108015**. Toate cele 256 de comparații pereche, adică 512 partide complete, trec oracolul regulilor și scorului. Rezultatul statistic final este:
+
+| Rol | Delta puncte | Delta victorii ponderate | Delta exacte 2–8 | Promovare |
+|---|---:|---:|---:|---|
+| Expert | +30 | −0,5 | +2 | Respins |
+| Independent | +24 | −7 | −4 | Respins |
+
+Independentul pierde opt contracte exacte la două cărți și câștigă zece la opt cărți. Agregatul punctelor ascunde pierderi la 2, 4, 5 și 7 cărți. Nu schimbăm ponderile sau criteriul după citirea acestor rezultate. Lotul este consumat, nu intră în antrenament și nu mai este reutilizat ca evaluare neatinsă. **Nu este demonstrat un progres robust al forței de joc în această iterație.**
+
+Prototipurile pure de proiecție publică și agregare a deschiderii sunt păstrate numai în sursele de test. Colecția `research` rulează șapte componente și produce capturi etichetate explicit `research`; este exclusă din regresia implicită. Cele patru controale JavaScript ale oracolului separat și cele trei controale noi ale selectorului sunt independente de promovarea unei politici.
+
+Calificarea candidatului respins a fost 527 / 0 / 0 / 0 în regresia nativă, plus două controale de buget și quick 163. Aceasta este corectitudine pe componente a candidatului, nu acceptanță de forță și nu versiunea activă a aplicației. Înaintea cerinței ulterioare Normal/Hard, quick a avut 156 de componente trecute; runnerul schema12 a verificat o pereche completă identică între R11 activ și R11 înghețat. Toate cele 24 de mâini sunt egale, inclusiv cărțile și scorurile.
+
+Selectorul colecției active a fost îmbunătățit prin schimburi unu-la-unu strict favorabile acoperirii, cu origini protejate și limită păstrate. La aceeași limită de 96 de jocuri crește acoperirea de la 753 la 755 din cele 759 de categorii. Limita finală de configurare este 100 pentru cele 55 de origini protejate; manifestul declară numărul efectiv și eventualele lacune, fără a pretinde acoperirea tuturor stărilor jocului.
+
+## Cerința ulterioară: numai Normal și Hard
+
+După închiderea evaluării R12, utilizatorul a cerut exact două niveluri. `AiDifficulty.values()` expune acum `NORMAL` și `HARD`; Hard folosește motorul Expert R11 acceptat. `EXPERT` este păstrat numai ca alias sursă și nume de salvare migrat. Aceasta este o schimbare de selecție și compatibilitate, nu promovarea vreunui candidat R12. Sursele motoarelor acceptate sunt neschimbate.
+
+Pe această versiune trec **486 de teste de domeniu**, **162 quick** (subset al celor 486), **7 de cercetare separate** și **17 teste JVM ale aplicației**. O pereche nouă de partide complete, cu 24 de mâini fiecare, confirmă egalitatea licitațiilor, cărților și scorurilor între Hard și Expert R11 înghețat. APK-ul a fost construit și semnătura verificată offline; nu s-a executat pe device în această iterație. Cele trei teste eșuate din prima încercare sunt păstrate, împreună cu explicația corecțiilor exclusiv de test.
+
+Demonstrațiile exacte sunt limitate la cazurile finite documentate în [contractul Normal/Hard](TWO_GAME_LEVELS.md). **Perfecțiunea generală a Hard nu este demonstrată.** Raportul păstrează separat succesul migrării și eșecul criteriului de forță R12.

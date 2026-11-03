@@ -60,10 +60,10 @@ try{
     $builtHash=(Get-FileHash -LiteralPath $apk -Algorithm SHA256).Hash
     if($installedHash -ne $builtHash){throw 'Installed APK does not match the accepted component build'}
     Copy-Item -LiteralPath $apk -Destination "$RunRoot\whist-lab-tested.apk"
-    [ordered]@{sha256=$builtHash;installedSha256=$installedHash;installedPath=$installedPath;archivedApk="$RunRoot\whist-lab-tested.apk";scope='Same APK for the complete normal Romanian Expert Android game';installedAt=(Get-Date -Format o)} | ConvertTo-Json | Set-Content "$RunRoot\apk-provenance.json"
+    [ordered]@{sha256=$builtHash;installedSha256=$installedHash;installedPath=$installedPath;archivedApk="$RunRoot\whist-lab-tested.apk";scope='Same APK for the complete Romanian Whist Android game at the declared Normal or Hard level';installedAt=(Get-Date -Format o)} | ConvertTo-Json | Set-Content "$RunRoot\apk-provenance.json"
     $state.status='ANDROID_RUNNING';$state | ConvertTo-Json | Set-Content "$RunRoot\WORKING_STATE.json"
     $gameFailure=$null
-    try{Invoke-Stage 'romanian-expert-android' { & mvn -q -pl atf-test-android test '-Dtest=CompleteRomanianExpertE2eTest' '-Datf.android.enabled=true' '-Datf.android.fullMatch=true' "-Datf.match.evidenceDir=$evidence" }}catch{$gameFailure=$_}
+    try{Invoke-Stage 'romanian-live-match-android' { & mvn -q -pl atf-test-android test '-Dtest=CompleteRomanianExpertE2eTest' '-Datf.android.enabled=true' '-Datf.android.fullMatch=true' "-Datf.match.evidenceDir=$evidence" }}catch{$gameFailure=$_}
     Save-Xml 'atf-test-android' @('atf.android.e2e.CompleteRomanianExpertE2eTest')
     if(-not $gameFailure){
         try{Invoke-Stage 'recorded-romanian-audit' { & mvn -q -pl atf-test-android test '-Dtest=RecordedRomanianMatchAuditTest' '-Datf.romanian.audit=true' "-Datf.match.evidenceDir=$evidence" }}catch{$gameFailure=$_}

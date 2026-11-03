@@ -1,0 +1,63 @@
+schema_version: 1
+id: "HARD_PUBLIC_CONTRACT_PRESSURE_R13"
+status: "RESEARCH_REJECTED_NOT_RUNTIME"
+runtime_influence: 0
+configuration_kind: "CODE_BOUND_RULE_MANIFEST"
+execution: "Java constants; YAML documents and verifies them, editing YAML alone does not tune the engine."
+source: "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ContractPressure.java"
+objective_priority:
+  - "Obey follow-suit and mandatory trump rules."
+  - "Maximize own exact-contract chance while recoverable."
+  - "When mathematically irrecoverable: own penalty, opponent miss count, strongest rival score."
+context:
+  remaining_need: "bid - completed_tricks_won; signed, never clamp before testing impossible."
+  remaining_opportunities: "(all_remaining_cards + cards_on_current_table) / players"
+  density: "clamp(remaining_need / remaining_opportunities, 0, 1)"
+  table_difference: "sum(all signed remaining needs) - remaining_opportunities"
+  progression: "1 - remaining_opportunities / initial_hand_size; completion within this hand, not game number."
+  information: "Own cards, chronological public plays, current table, turned card, public bids, won counts, remaining counts, rules only."
+  opponent_private_cards: "Never an input to a public continuation decision. Sampled worlds are model data only."
+weights:
+  TAKE_BASE: 2.0
+  TAKE_URGENCY: 8.0
+  DUCK_PRIORITY: 10.0
+  RESERVE_MASTER_COST: 3.0
+  TABLE_BALANCE_WEIGHT: 0.10
+  PRESSURE_MIX: 0.25
+rules:
+  - id: "PUBLIC_CARD_MEMORY"
+    rule_ro: "Elimină cărțile proprii, toate cărțile jucate și atuul întors din cărțile posibile ale adversarilor."
+    rule_en: "Exclude own, publicly played and turned cards from possible opponent holdings."
+    scope: "Hard constraints; memory is updated after every simulated play."
+    tests: ["exposedAndPlayedHigherTrumpsPromoteTheHeldQueen", "ai08TurnedCardAndEveryPubliclyPlayedCardAreExcludedFromHiddenDeals"]
+  - id: "PUBLIC_VOIDS"
+    rule_ro: "Lipsa de culoare demonstrată exclude acea culoare; discardul fără atu în Whist românesc exclude și atuul."
+    rule_en: "Public failure to follow proves a void; a Romanian off-trump discard also proves no trump."
+    scope: "Rule-dependent deduction, not an auction guess."
+    tests: ["zeroQuotaCannotOverrideMandatoryTrump"]
+  - id: "QUOTA_AND_RESERVE"
+    rule_ro: "Dacă trebuie toate levatele, prioritizează câștigul curent. Dacă atuuri sigur majore păstrate acoperă necesarul, evită o levată riscantă suplimentară."
+    rule_en: "Need all: prioritize taking now. Sufficient retained master trumps: avoid unnecessary risky extras."
+    scope: "Continuation-model heuristic; a master-trump rank certificate does not certify the whole chosen line."
+    tests: ["quotaChangesTheChoiceWhenOneMasterIsReserved", "quotaCountsTheUnfinishedTrickOnce"]
+  - id: "OVERBOOK_UNDERBOOK"
+    rule_ro: "Diferența pozitivă a mesei crește competiția pentru levate; diferența negativă crește riscul levatelor nedorite. Influența crește pe măsură ce se consumă cărțile."
+    rule_en: "Positive table imbalance increases contest; negative imbalance increases unwanted-trick risk. Influence grows as the hand progresses."
+    scope: "Bounded soft ranking weight; never overrules legality, an impossible contract or a public certificate."
+    tests: ["signedTableDifferenceSeparatesOverAndUnderbidding"]
+  - id: "OPPONENT_DEMAND"
+    rule_ro: "Un adversar cu necesarul realizat încearcă să evite câștigul, dar rămâne obligat să răspundă la culoare sau să taie."
+    rule_en: "An opponent at target tries to duck but must still follow or trump."
+    scope: "Conditional marginal threat model; product over seats ignores correlations and is not a calibrated win probability."
+    tests: ["opponentContractChangesVoluntaryButNotForcedThreat"]
+  - id: "IRRECOVERABLE_CONTRACT"
+    rule_ro: "Dacă ai depășit contractul sau necesarul depășește oportunitățile, nu pretinde că îl mai poți realiza. La aceeași penalizare proprie, preferă mai mulți adversari ratați."
+    rule_en: "Detect overshoot and unreachable contracts. At equal own penalty prefer more opponent misses."
+    scope: "Salvage tie-break only, never sacrifice a recoverable exact contract."
+    tests: ["overAndUnreachableContractsAreBothIrrecoverable", "salvageCannotSpendOwnPointsToBurnAnotherPlayer"]
+  - id: "FORCED_WIN_LOWER_BOUND"
+    rule_ro: "Dacă atuurile sigur majore păstrate depășesc necesarul, contractul este deja imposibil chiar dacă limita numerică pare permisivă."
+    rule_en: "Retained master trumps above remaining need make the contract impossible before another trick is won."
+    scope: "Public rank bound, not a sampled forecast."
+    tests: ["forcedPublicMastersCanMakeANumericallyReachableContractImpossible"]
+activation_gate: "Full component suite plus prespecified paired development/fresh evaluation; family non-regression and strict2..8 exact-contract gain. No UI or device claims."

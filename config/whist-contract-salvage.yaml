@@ -1,0 +1,35 @@
+schema_version: 1
+id: "CERTIFIED_PUBLIC_SALVAGE"
+status: "ACTIVE_CERTIFIED_FEATURE_NOT_GENERAL_STRENGTH_GAIN"
+configuration_kind: "CODE_BOUND_PROOF_MANIFEST"
+source: "whist-lab-app/game-core/src/main/java/ro/whistlab/core/PublicSalvage.java"
+node_limit: 40000
+scope: "Romanian Whist; four players; two own cards; complete compatible worlds and every legal continuation."
+priority:
+  - "Obey follow-suit and mandatory trump."
+  - "Keep existing accepted planner while own exact contract is recoverable."
+  - "For an irrecoverable contract, override only with universal no-worse own points and no-fewer rival misses in every world."
+  - "Require at least one strict improvement; otherwise keep baseline."
+quota:
+  needed: "bid - won"
+  opportunities: "(sum remaining card counts + current table size) / players"
+  forced_lower_bound: "Held trumps with no higher card outside own/public cards; turned card is public, never an opponent card."
+  impossible: "needed < forced_lower_bound OR needed > opportunities"
+proof:
+  known_cards: "Exclude own hand, all public history, current table and turned card."
+  world_enumeration: "Existing complete feasible-deal enumerator; public voids and undealt leftovers preserved. Empty or over-budget enumeration means fallback."
+  response_scope: "All legal responses of every player, including every own later choice. No fitted opponent policy."
+  own_condition: "For each world: candidate minimum own points >= baseline maximum own points."
+  rival_condition: "For each world: candidate minimum opponent misses >= baseline maximum opponent misses."
+  certainty: "Never derived from a sample or an exhausted search."
+  fallback: "Preserve the original decision and uncertified status."
+example_ro: "Fără atu: după istoricul public rămân 7S/7H la noi, AS/8S la adversarul1, AH/8H la2 și AC/8C la3. Am ratat0 cu4 levate. Deschiderea7H arde3 adversari în loc de2, cu aceeași penalizare proprie-4."
+example_en: "A public no-trump two-card ending: lead7H instead of7S; rival misses rise2to3 with unchanged own penalty-4 in every legal response."
+tests:
+  - "certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty"
+  - "independentlyTracedFinalTricksReproduceBothRivalMissCounts"
+  - "recoverableContractCannotBeSacrificedForRivalDamage"
+  - "aPartialSearchCannotClaimDominance"
+  - "equalExpectedPenaltyIsWeakerThanPointwiseDominance"
+  - "turnedAceAndHeldTopTrumpsGiveAPublicLowerBound"
+acceptance: "Separate feature proof plus unused113000..113007 non-regression; no general stronger-play or perfect-play claim. Rejected probabilistic pressure models remain rejected."

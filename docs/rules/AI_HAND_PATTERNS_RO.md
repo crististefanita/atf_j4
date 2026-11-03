@@ -44,3 +44,14 @@ Pentru protocolul de masă, rezultate și limite vezi [Arena AI](../AI_STRATEGY_
 ## Lecție verificată: evitarea unei levate în plus
 
 După realizarea contractului, o carte mai mică nu este automat alegerea sigură. În contraexemplul R11, contract 1 și deja 1 levată, QH + 10D la atu treflă, aruncarea lui 10D păstrează exact contractul în toate cele 96 de distribuții public compatibile și toate continuările legale; aruncarea QH permite o levată suplimentară. Aceasta este o demonstrație contextuală, nu regula „păstrează mereu dama”. Garda se aplică doar finalurilor mici enumerate complet; fără dovadă sau la depășirea bugetului se păstrează plannerul anterior. Vezi [analiza R11](../AI_LOSS11_ACCEPTANCE.md).
+
+
+## Licitație și informație disponibilă — R12
+
+O deschidere trebuie aleasă înainte de a vedea lumea ascunsă. Alegerea altei cărți pentru fiecare lume și abia apoi medierea poate supraestima contractul. Contraexemplele și modelele respinse sunt în [analiza R12](../AI_ROUND12_ANALYSIS.md). Aceste lecții nu activează automat ponderi sau strategii. Nivelurile curente sunt [Normal/Hard](../TWO_GAME_LEVELS.md); Hard păstrează motorul acceptat, iar certitudinea se declară numai pentru cazurile demonstrate complet.
+
+## Necesar și salvare certificată — R13/R14
+
+Necesar=licitat−levate câștigate; oportunitățile includ levata incompletă. Cărțile jucate și atuul întors ies din cărțile posibile ale adversarilor. Ponderile contextuale de presiune au regresat în evaluare și rămân inactive; vezi [analiza R13](../AI_CONTRACT_PRESSURE_R13.md).
+
+Hard activează numai [garda exactă R14](../AI_CONTRACT_SALVAGE_R14.md): pentru un contract deja imposibil, schimbă cartea doar dacă fiecare lume compatibilă și fiecare continuare legală păstrează punctele proprii și cel puțin același număr de adversari ratați, cu o îmbunătățire strictă. Cazul public7S/7H trece de la2 la3 adversari ratați la aceeași penalizare−4. Egalitatea mediilor sau o căutare incompletă nu certifică această regulă.
