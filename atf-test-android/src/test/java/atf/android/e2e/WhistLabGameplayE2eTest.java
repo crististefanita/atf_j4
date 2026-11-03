@@ -25,6 +25,7 @@ import java.security.MessageDigest;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.Test;
 public class WhistLabGameplayE2eTest {
     private static final String PACKAGE = "ro.whistlab.app";
     private static final Pattern DENSITY = Pattern.compile("(?:Override|Physical) density:\\s*(\\d+)");
+    private static final Pattern SIX_PLAYER_EIGHT_CARD_BID_SUMMARY = Pattern.compile(
+            "Bids submitted (\\d+)/6 · Bid total (-?\\d+)/8");
 
     @Test
     void sixPlayerEightCardHandFitsOneRowAndMenuKeepsScoreAndHomeAccessible() throws Exception {
@@ -85,34 +88,45 @@ public class WhistLabGameplayE2eTest {
             List<String> handLabels = handRow.stream().map(AndroidUiDriver.CardLabel::text).toList();
             boolean oneRow = handRow.size() == 8 && handRow.stream()
                     .map(AndroidUiDriver.CardLabel::top).distinct().count() == 1;
-            boolean allBidsVisible = true;
-            for (int bid = 0; bid <= 8; bid++) {
-                allBidsVisible &= ui.hasText(bidding, Integer.toString(bid));
+            Matcher bidSummaryMatch = SIX_PLAYER_EIGHT_CARD_BID_SUMMARY.matcher(initialBidSummary);
+            assertTrue(bidSummaryMatch.matches(), "Unexpected bidding summary: " + initialBidSummary);
+            int submittedBids = Integer.parseInt(bidSummaryMatch.group(1));
+            int currentBidTotal = Integer.parseInt(bidSummaryMatch.group(2));
+            LinkedHashSet<Integer> expectedBids = new LinkedHashSet<>(
+                    java.util.stream.IntStream.rangeClosed(0, 8).boxed().toList());
+            if (submittedBids == 5) {
+                int forbiddenFinalBid = 8 - currentBidTotal;
+                if (forbiddenFinalBid >= 0 && forbiddenFinalBid <= 8) expectedBids.remove(forbiddenFinalBid);
             }
+            List<Integer> visibleBids = ui.numericButtonValues(bidding);
+            boolean allBidsVisible = visibleBids.size() == expectedBids.size()
+                    && new LinkedHashSet<>(visibleBids).equals(expectedBids);
             List<Integer> bidWidths = ui.numericButtonWidths(bidding);
             Matcher densityMatch = DENSITY.matcher(adb.run("shell", "wm", "density").output());
             assertTrue(densityMatch.find(), "Android display density was not reported");
             double densityScale = Integer.parseInt(densityMatch.group(1)) / 160.0;
             int minimumBidWidth = bidWidths.stream().mapToInt(Integer::intValue).min().orElse(0);
-            boolean touchTargetsRemain48Dp = bidWidths.size() == 9
+            boolean touchTargetsRemain48Dp = bidWidths.size() == expectedBids.size()
                     && minimumBidWidth >= Math.round(48 * densityScale * 0.95);
             assertTrue(oneRow, "Expected all eight hand cards on one row; visible bottom-row cards=" + handLabels);
-            assertTrue(allBidsVisible, "Expected bid buttons 0 through 8; visible texts=" + ui.texts(bidding));
+            assertTrue(allBidsVisible, "Visible choices differ from the legal bid set " + expectedBids
+                    + "; actual=" + visibleBids);
             assertTrue(touchTargetsRemain48Dp, "Bid touch targets fell below 48 dp: " + bidWidths);
             List<Path> biddingEvidence = ui.capture("whist-lab-presentation-eight-card-table");
             evidence.addAll(biddingEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Render all eight cards and the complete compact bidding grid",
                     "Six-player Oh Hell bidding table", biddingEvidence,
-                    "inspect all hand labels, bid values, and button bounds",
-                    "eight cards share one row; bid values 0–8 remain visible with 48 dp targets",
-                    "hand=" + handLabels + "; bid widths px=" + bidWidths
+                    "inspect all hand labels, legal bid values, and button bounds",
+                    "eight cards share one row; every bid permitted by the final-bid rule is visible with 48 dp targets",
+                    "hand=" + handLabels + "; expected bids=" + expectedBids + "; actual bids=" + visibleBids
+                            + "; bid widths px=" + bidWidths
                             + "; visible labels=" + ui.texts(bidding),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.of(new AtfAssertion("All eight hand cards occupy one row", "8 cards; 1 row",
                                     handLabels + "; y=" + handRow.stream().map(AndroidUiDriver.CardLabel::top).distinct().toList(), oneRow),
-                            new AtfAssertion("Bids cover the eight-card hand", "0 through 8",
-                                    bidWidths.size() + " buttons; " + ui.texts(bidding), allBidsVisible),
+                            new AtfAssertion("All currently legal bids are visible", expectedBids.toString(),
+                                    visibleBids.toString(), allBidsVisible),
                             new AtfAssertion("Bid hit targets remain at least 48 dp", "48 dp minimum",
                                     minimumBidWidth + " px at density " + densityScale, touchTargetsRemain48Dp)),
                     AtfReportStatus.PASS);
@@ -195,7 +209,7 @@ public class WhistLabGameplayE2eTest {
                     List.of(new AtfAssertion("Home navigation is restored", "New game; Resume game; How to play",
                                     ui.texts(returnedHome).toString(), homeReady)),
                     AtfReportStatus.PASS);
-            checks = "Six-player Oh Hell opened an eight-card human hand. All eight cards rendered on one row; bids 0–8 remained visible and each hit target measured at least 48 dp. The hamburger exposed Score sheet and Main menu. A selected but unconfirmed bid remained unsubmitted in the score view. The flow returned home without submitting a bid or playing a card.";
+            checks = "Six-player Oh Hell opened an eight-card human hand. All eight cards rendered on one row; every bid permitted by the current final-bid rule remained visible and each hit target measured at least 48 dp. The hamburger exposed Score sheet and Main menu. A selected but unconfirmed bid remained unsubmitted in the score view. The flow returned home without submitting a bid or playing a card.";
             outcome = AtfReportStatus.PASS;
             trace.finish(outcome);
         } catch (Throwable failure) {
@@ -217,7 +231,8 @@ public class WhistLabGameplayE2eTest {
             trace.finish(outcome);
             List<Path> reportEvidence = new ArrayList<>(evidence);
             reportEvidence.add(trace.manifest());
-            publishPresentationReport(artifacts, packagePath.output(), reportEvidence, checks, outcome);
+            publishPresentationReport(artifacts, packagePath.output(), reportEvidence, trace.assertions(), checks,
+                    outcome);
         }
     }
 
@@ -502,8 +517,12 @@ public class WhistLabGameplayE2eTest {
     }
 
     private static void publishPresentationReport(Path artifacts, String installedPackage, List<Path> files,
-            String checks, AtfReportStatus outcome) throws Exception {
+            List<AtfAssertion> assertions, String checks, AtfReportStatus outcome) throws Exception {
         Path report = artifacts.resolve("whist-lab-table-presentation.html");
+        Path flowManifest = files.stream()
+                .filter(file -> file.getFileName().toString().startsWith("ui-flow-")
+                        && file.getFileName().toString().endsWith(".properties"))
+                .findFirst().orElseThrow(() -> new IllegalStateException("Ordered UI flow manifest is missing"));
         var settings = AtfReportConfigurationLoader.load().reportingSettings();
         try (var session = new ExtentReportSession(report, settings)) {
             AtfReportPorts.Scenario raw = session.startScenario(
@@ -515,11 +534,21 @@ public class WhistLabGameplayE2eTest {
                                 new ReportField("Android API", System.getProperty("atf.android.api", "device reported at runtime")),
                                 new ReportField("Package", PACKAGE),
                                 new ReportField("Installed APK", installedPackage.trim()),
-                                new ReportField("Observed contract", checks)),
+                                new ReportField("Observed contract", checks),
+                                new ReportField("Recorded assertions", Integer.toString(assertions.size())),
+                                new ReportField("Ordered flow manifest bytes", Long.toString(Files.size(flowManifest)))),
                         List.of(), files.stream()
                                 .filter(file -> !file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
                                 .map(WhistLabGameplayE2eTest::artifactUnchecked).toList()));
                 details.complete(outcome);
+            }
+            try (var assertionPhase = raw.startPhase("Auditable UI assertions")) {
+                try (var assertionStep = assertionPhase
+                        .startAssertionStep("Observed layout, bidding, and navigation assertions")) {
+                    assertionStep.assertions(assertions);
+                    assertionStep.complete(outcome);
+                }
+                assertionPhase.complete(outcome);
             }
             var ui = UiExtentReportSession.adaptScenario(raw,
                     ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
@@ -540,6 +569,17 @@ public class WhistLabGameplayE2eTest {
         String html = Files.readString(report);
         if (outcome == AtfReportStatus.PASS) {
             assertTrue(html.contains("data:image/png;base64,"), "Presentation screenshots must be inline in Extent");
+            assertTrue(html.contains("Observed layout, bidding, and navigation assertions"),
+                    "Extent omitted the dedicated assertion step");
+            assertTrue(html.contains("atf-ui-assertions"), "Extent omitted the standard collapsed assertion table");
+            assertTrue(html.contains("Score view does not commit the pending bid"),
+                    "Extent omitted the read-only score assertion");
+            assertTrue(html.contains("Score navigation leaves the bid summary unchanged"),
+                    "Extent omitted the unchanged-bid-summary assertion");
+            assertTrue(assertions.size() == 11, "Expected all 11 ordered UI assertions; found " + assertions.size());
+            for (AtfAssertion assertion : assertions) {
+                assertTrue(html.contains(assertion.name()), "Extent omitted assertion row " + assertion.name());
+            }
             for (Path image : files.stream()
                     .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
                 ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);

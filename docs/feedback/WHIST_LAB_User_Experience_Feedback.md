@@ -36,10 +36,12 @@ separată. Mâinile de cinci până la opt cărți folosesc coloane cu lățimi 
 un singur rând, cu etichete de 14 sp.
 
 **Verificare live:** PNG-ul la `393×698 dp` arată opt cărți distincte pe o singură
-linie, fără tăiere; toate cele nouă valori, cele șase locuri și butonul de
-confirmare rămân vizibile. UI Automator a găsit opt etichete de carte cu aceeași
-coordonată verticală și nouă ținte numerice de `132 px` la densitatea `2,75`
-(`48 dp`). Cipurile insetate sunt vizibil mai mici decât țintele lor tactile.
+linie, fără tăiere; toate valorile permise de regulă, cele șase locuri și
+butonul de confirmare rămân vizibile. Când omul este ultimul la licitat, valoarea
+care ar duce suma exact la numărul de cărți este exclusă corect. UI Automator a
+găsit opt etichete de carte cu aceeași coordonată verticală și ținte numerice de
+`132 px` la densitatea `2,75` (`48 dp`). Cipurile insetate sunt vizibil mai mici
+decât țintele lor tactile.
 După alegerea lui 3, `Score sheet` a afișat `Bid not placed`; la închidere,
 valoarea 3 a rămas selectată, iar rezumatul nu s-a schimbat. Nicio licitație nu a
 fost confirmată și nicio carte nu a fost jucată.
@@ -165,6 +167,10 @@ text mare, ecran îngust și mâini minime/maxime nu este completă.
   jucători au trecut. Ultimul a verificat rândul de opt cărți, hitbox-urile,
   hamburgerul, scorul doar pentru citire, persistența selecției și revenirea la
   home. Nu s-a jucat nicio carte și nu s-a confirmat vreo licitație.
+- Raportarea prezentării folosește contractul `AssertionStep` al ATF: comparațiile
+  UI apar într-un singur tabel standard colapsabil, iar manifestul ordonat este
+  păstrat separat cu hash. Corpul text lung era trunchiat la preview-ul rendererului
+  și nu oferea dovadă auditabilă; testul verifică acum prezența tuturor rândurilor.
 - O probă anterioară în trei jucători/17 cărți a confirmat grila de trei rânduri,
   dar nu este repetată de această revizie de layout.
 - Ecranele înguste, textul mărit, TalkBack, toate combinațiile de locuri/mâini și

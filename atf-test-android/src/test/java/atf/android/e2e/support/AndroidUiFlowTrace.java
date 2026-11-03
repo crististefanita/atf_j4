@@ -78,6 +78,19 @@ public final class AndroidUiFlowTrace {
 
     public Path manifest() { return manifest; }
 
+    /** Returns the recorded comparisons in execution order with their checkpoint context. */
+    public synchronized List<AtfAssertion> assertions() {
+        return phases.entrySet().stream()
+                .flatMap(phase -> phase.getValue().stream()
+                        .flatMap(checkpoint -> checkpoint.assertions().stream()
+                                .map(assertion -> new AtfAssertion(
+                                        phase.getKey() + " · " + checkpoint.keyword() + " · "
+                                                + checkpoint.title() + " · " + assertion.name(),
+                                        assertion.expected(), assertion.actual(), assertion.passed(),
+                                        assertion.resultStatus()))))
+                .toList();
+    }
+
     private String artifactName(Path file) {
         if (file == null) return "";
         Path normalized = file.toAbsolutePath().normalize();

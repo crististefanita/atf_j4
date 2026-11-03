@@ -99,11 +99,13 @@ separat și nemodificat.
   accentul verde al aplicației.
 - Eliminăm titlurile și instrucțiunile redundante. Păstrăm denumiri contextuale,
   contrast suficient și descrieri accesibile pentru locuri, cărți și controale.
-- Proba live la `393×698 dp` a confirmat opt cărți pe un rând, nouă valori de
-  licitare pentru mâna de opt cărți, șase locuri, meniul și foaia de scor fără
-  derulare în ecranul principal. Mâinile lungi păstrează grila centrală adaptivă
-  și pot necesita derulare verticală. Ecranele înguste, textul mărit, TalkBack și
-  toate combinațiile de locuri/mâini rămân în matricea de validare.
+- Proba live la `393×698 dp` a confirmat opt cărți pe un rând, toate valorile
+  permise de regulile licitației, șase locuri, meniul și foaia de scor fără
+  derulare în ecranul principal. La ultima licitație se exclude valoarea care ar
+  face totalul licitat egal cu numărul de cărți din mână. Mâinile lungi păstrează
+  grila centrală adaptivă și pot necesita derulare verticală. Ecranele înguste,
+  textul mărit, TalkBack și toate combinațiile de locuri/mâini rămân în matricea
+  de validare.
 
 Reperele de interfață au fost comparate cu [Whist-ul Arkadium](https://support.arkadium.com/support/solutions/articles/44002656380--whist-the-game-main-menu-how-to-play-scoring),
 care separă masa de opțiunile pentru tabel și scor, cu [captura Spades+](https://mwm.ai/apps/spades/904702317),
@@ -181,6 +183,10 @@ mâna de opt cărți, țintele licitației, hamburgerul, foaia de scor doar pent
 citire și întoarcerea la home. Nu confirmă licitația și nu joacă o carte.
 Rularea E2E folosește APK-ul construit în același staging TMP; fișierele UI și
 raportul Extent sunt scrise în `%TEMP%` implicit sau în `atf.android.artifacts`.
+Raportul păstrează capturile inline și pune toate comparațiile înregistrate
+într-un singur pas Extent colapsabil, cu nume contextual, expected, actual și
+verdict. Manifestul ordonat rămâne atașat ca artefact cu SHA-256; nu este copiat
+într-un corp text care ar fi trunchiat de renderer.
 
 Începe cu acceptanța de componentă și raportul Extent nativ, fără Android:
 
