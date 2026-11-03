@@ -79,12 +79,45 @@ etichetă ori valoare. Nu hardcodați doar un număr de coloane: captura actual�
   folosește deja 5 coloane, dar al doilea rând tot intră în scaune. Captura este
   păstrată local în `%TEMP%`, nu este inclusă în repo.
 
+Ca reglaj suplimentar, mutați scaunele laterale Ava și Grace spre marginile
+respective cu aproximativ 12–16 dp (circa 2–2,5 mm la scala dp standard),
+păstrând simetria mesei. Calculați offsetul în dp și limitați-l la spațiul sigur
+rămas; nu împingeți panourile în afara ecranului și nu reduceți lizibilitatea
+textului. Pe lățimi mai mici sau cu text mărit, offsetul trebuie micșorat
+dinamic. Această distanțare le eliberează ceva spațiu față de selector, dar nu
+rezolvă singură acoperirea din captura curentă: grila trebuie în continuare să
+stea în afara dreptunghiurilor scaunelor.
+
 **Criterii de acceptare obligatorii:** capturi reale la 320, 353, 393 și 600 dp;
 5–10 opțiuni; turul primului și al ultimului licitator; text implicit și mărit;
 limite vizuale și hitbox-uri măsurate separat. Zero intersectări între selector
 și scaune, etichete/valori cu baseline și coloane consecvente, două puncte după
 fiecare etichetă și toate valorile de bid ușor de distins înainte de atingere.
-Un test de bounds fără revizie vizuală a capturii nu trece acest criteriu.
+Verificați și offsetul lateral la ambele margini, cu păstrarea unui inset sigur și
+a simetriei; un test de bounds fără revizie vizuală a capturii nu trece acest
+criteriu.
+
+### P2 — Chenarele locurilor par rame goale, nu grupuri de informație
+
+În captura existentă, locurile Ava, Grace și Miles au contururi mari, rotunjite,
+fără fundal distinct. Pe pâsla verde, rama ocupă mult spațiu și atrage privirea,
+dar nu grupează clar numele, licitația și levatele. Locul omului folosește în
+schimb o placă deschisă, cu accent auriu; diferența de tratament este atât de
+mare încât scaunul activ pare alt tip de componentă, nu aceeași componentă într-o
+stare activă.
+
+Simplificați locurile: folosiți panouri compacte cu padding consecvent și fundal
+discret pentru toate; indicați tura printr-un accent controlat (de exemplu,
+contur/accent și marcaj), nu printr-o ramă goală foarte mare pentru AI și o placă
+complet diferită pentru om. Dacă se păstrează contururile, reduceți aria lor la
+conținut, uniformizați raza și grosimea și aliniați numele cu rândurile
+`Licitat: valoare` și `Levate: valoare`. Starea activă trebuie să rămână clară
+și pentru utilizatorii care nu disting culorile.
+
+Verificați capturi cu 3–6 jucători, turul omului și al AI-ului, licitare și joc.
+Nu acceptați un redesign care doar face rama mai subțire dacă grila încă îi
+acoperă textul; validarea trebuie să includă ierarhia vizuală și zero
+intersectări.
 
 ### P2 — Butonul „Licitează” domină numele și starea jucătorilor
 

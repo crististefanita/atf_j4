@@ -20,6 +20,8 @@ coloane aliniate; feedback-ul cere separator explicit (`Licitat: —`,
 Butonul central `Licitează` are greutate vizuală mai mare decât numele și starea
 jucătorilor; recomandarea este să-i reducem moderat dimensiunea vizibilă, nu
 ținta tactilă minimă de 48 dp.
+Chenarele mari și goale ale locurilor AI par rame decorative; feedback-ul cere
+panouri compacte și consecvente, cu accent de tură distinct fără rame excesive.
 Activitatea separată `ro.whistlab.app.atfaudit` a întrerupt temporar jocul.
 Detaliile, dovezile și criteriile de acceptare sunt în [feedback-ul de
 utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).
