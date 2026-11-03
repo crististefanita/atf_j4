@@ -5,6 +5,49 @@ Revizie live: 2026-11-03; Core C3 și Reporting J18.
 Politica comună a celor șase publicatoare este implementată și verificată în [contractul oficial](../ATF_Game_Report_Presentation.md) și [probele de regresie/randare](../ATF_Game_Report_Verification.md). Secțiunile J14/J15 de mai jos păstrează probe istorice; criteriile active nu includ remediile de prezentare deja livrate.
 Biblioteca și testele generice sunt în J0; cerințele de mai jos aparțin consumerului.
 
+## Revizie consumer UI — 3 noiembrie, APK 0.1.2 din sursele live
+
+[Acceptanța curentă](../WHIST_UI_012_ACCEPTANCE.md) păstrează separat verdictul
+jocului, publicarea Extent și revizia vizuală. J0 și JAR-ul J18 nu sunt modificate.
+
+| Defect confirmat | Corecție / probă |
+|---|---|
+| Auditul cerea Base64 repetat pentru imagini identice | Linkul checkpoint-ului este rezolvat către PNG-ul canonic; componentele resping referința coruptă pentru imagini identice și distincte |
+| Listele JSON din OBSERVE erau comparate cu formatarea sursei | Comparație exactă per rând numerotat și celulă, după redactorul/normalizatorul public; fără eliminarea arbitrară a spațiilor |
+| Primul `</details>` trunchia observația lungă | DOM-ul păstrează disclosure-ul imbricat și textul complet, inclusiv CR/LF; coruperea ultimei valori este respinsă |
+| `finish(PASS)` ștergea FAIL-ul capturat | Șase teste de trace, cu negative pentru excepție, checkpoint, assertion, acțiune și acțiune încă neatașată |
+| Profilul fizic fără override era declarat neaplicat | Rezoluția efectivă folosește override-ul dacă există, altfel valoarea fizică; profilul și densitatea sunt assertions și condiții JUnit explicite |
+| Jocul trecea, dar publicarea eșua fără delimitarea cauzei | Receipt-ul pilotului păstrează `businessStatus`, `reportStatus` și `failureStage`; verdictul global rămâne FAIL la eșecul raportării |
+
+Cele 16 teste focalizate publisher/trace/profil au trecut. Pilotul Hard cu șase
+mâini a trecut; HTML-ul său, copiat singur, a fost verificat în Edge: 68 de noduri
+și 87 de disclosures expandate, 31 de tabele de assertions, 23 de acțiuni și
+31 de observații. Viewerul a deschis atât PNG-ul canonic, cât și o referință
+reutilizată, a păstrat proporțiile și expandările după revenire.
+
+**Nu închideți prin aceste probe:** RPT-05 pentru intervalele originale ale
+fazelor, migrarea receipt-urilor legacy, oracolul vechi resume bazat pe pixeli
+sau lizibilitatea tuturor rangurilor din mâna de 13 cărți. Capturile noi au
+indici parțial acoperiți, deși XML-ul îi conține; criteriul vizual rămâne deschis
+în [feedback-ul jocului](WHIST_LAB_User_Experience_Feedback.md).
+
+### P1 — Oracolele de geometrie trebuie să includă conținutul expus
+
+Un test care verifică un singur rând și 13 noduri accesibile nu dovedește că
+rangul și culoarea se văd. Introduceți o probă deterministă pentru banda efectiv
+expusă, rangul 10, toate culorile și cartea ridicată; verificați separat nume,
+hitbox-uri și textul acoperit de vecini. Raportul trebuie să numească exact
+afirmația dovedită, nu să folosească «perfect display» pentru bounds valide.
+
+### P2 — Suportul de acceptanță și scenariul de display trebuie descompuse
+
+`WhistLabGameplayE2eTest` depășește 1.800 de linii și amestecă profile de display,
+geometrie, eșantionarea levatei, GIF și scenarii. Extrageți întâi oracole pure și
+operațiile de display în suport J4 tipizat, cu teste negative și fără dependență
+de renderer. Numai mecanismele ADB reutilizabile aparțin `atf-android/main`;
+regulile Whist și assertions de acceptanță rămân la consumer. Refactorizarea
+nu trebuie să schimbe numărătorile, ordinea checkpoint-urilor sau verdictul.
+
 ## UI checkpoints Extent — rezolvat 2026-11-03
 
 Publisherul Whist Lab separa capturile de pașii UI și nu oferea aceeași

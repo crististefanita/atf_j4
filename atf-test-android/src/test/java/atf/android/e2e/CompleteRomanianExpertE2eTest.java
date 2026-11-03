@@ -139,9 +139,15 @@ class CompleteRomanianExpertE2eTest {
                 }
             }
             result.setProperty("status","PASS");result.setProperty("moves",""+moves);result.setProperty("tricks",""+tricks);result.setProperty("humanCards",""+humanActions);result.setProperty("finalTotals",Arrays.toString(totals));result.setProperty("processResume",""+resumed);
+            result.setProperty("businessStatus","PASS");result.setProperty("reportStatus","PUBLISHING");
             store(result,out.resolve("romanian-match-result.properties"));trace.finish(AtfReportStatus.PASS);
             publishReport(out,adb,trace,"Audited "+limit+" real Romanian Whist hands at "+displayLevel+"; human cards="+humanActions+"; tricks="+tricks+"; totals="+Arrays.toString(totals));
+            result.setProperty("reportStatus","PASS");store(result,out.resolve("romanian-match-result.properties"));
         }catch(Throwable failure){
+            boolean reportingFailure="PASS".equals(result.getProperty("businessStatus"));
+            result.setProperty("businessStatus",reportingFailure?"PASS":"FAIL");
+            result.setProperty("reportStatus",reportingFailure?"FAIL":"PARTIAL");
+            result.setProperty("failureStage",reportingFailure?"REPORT_PUBLICATION":"ANDROID_EXECUTION");
             result.setProperty("status","FAIL");result.setProperty("failure",failure.toString());store(result,out.resolve("romanian-match-result.properties"));
             try{String logcat=adb.run("logcat","-d","-t","600","-s","AndroidRuntime:E","ActivityTaskManager:E").output();Files.writeString(out.resolve("android-failure-logcat.txt"),logcat);}
             catch(Throwable diagnosticFailure){failure.addSuppressed(diagnosticFailure);}

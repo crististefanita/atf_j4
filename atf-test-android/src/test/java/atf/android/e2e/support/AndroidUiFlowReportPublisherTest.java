@@ -44,9 +44,11 @@ class AndroidUiFlowReportPublisherTest {
                 "ADB accepted tap at 50,25", 34, AtfReportStatus.PASS));
         trace.recordAction(new AtfUiActionRecord(2, "Select option", "text=6", "Six players are selected",
                 "ADB accepted tap at 85,45", 41, AtfReportStatus.PASS));
+        String completeObservation = "visible label: Players = 6\r\nlayout: compact\r\n"
+                + "measured bounds; ".repeat(30) + "final-boundary-retained";
         trace.checkpoint("SETUP", "GIVEN", "Configure the six-player game", "New game setup", screenshot,
                 List.of(new AtfUiActionRecord(3, "Inspect setup state", "New game setup",
-                        "Players = 6", "visible label: Players = 6\r\nlayout: compact", 0,
+                        "Players = 6", completeObservation, 0,
                         AtfReportStatus.PASS, AtfUiEvidenceSource.OBSERVE)),
                 List.of(new AtfAssertion("Selected player count is six", "6", "6", true)),
                 AtfReportStatus.PASS, List.of(hierarchy));
@@ -84,6 +86,12 @@ class AndroidUiFlowReportPublisherTest {
         assertFalse(html.contains("<details class=\"atf-ui-action-sequence\" open"));
         assertFalse(html.contains("<details class=\"atf-ui-observations\" open"));
         assertFalse(html.contains("<details class=\"atf-ui-assertions\" open"));
+        var fullObservation = Jsoup.parse(html).selectFirst("details.atf-ui-observations details.atf-ui-value pre");
+        assertNotNull(fullObservation, "Long observations must retain their nested complete-value disclosure");
+        assertEquals(completeObservation, fullObservation.wholeText());
+        Files.writeString(report, html.replace("final-boundary-retained", "final-boundary-corrupted"));
+        assertThrows(IllegalStateException.class, () -> AndroidUiFlowReportPublisher.auditPublishedReport(
+                report, trace, AtfReportConfigurationLoader.load().reportingSettings()));
     }
 
     @ParameterizedTest
@@ -109,7 +117,7 @@ class AndroidUiFlowReportPublisherTest {
         trace.checkpoint("TEST BODY", "THEN", "Visible bid options match the rule domain", "Bidding screen",
                 observationScreenshot,
                 List.of(new AtfUiActionRecord(trace.nextActionSequence(), "Capture UI observation", "Bidding screen",
-                        "Retain the observed hierarchy and screenshot", "Hierarchy and screenshot captured",
+                        "[0, 1, 2]", "[0, 1, 2]",
                         0, AtfReportStatus.PASS, AtfUiEvidenceSource.OBSERVE)),
                 List.of(new AtfAssertion("Displayed choices match the legal bid domain", "[0, 1, 2]",
                         "[0, 1, 2]", true)),

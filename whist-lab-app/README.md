@@ -5,33 +5,19 @@ Contract Whist. Include un modul de reguli Java pur și o interfață Android
 compactă. Pachetul aplicației originale, `com.qsoft.android.whist`, rămâne
 separat și nemodificat.
 
-## Feedback de utilizare și blocant confirmat — 3 noiembrie 2026
+## Starea APK-ului și a interfeței — 3 noiembrie 2026
 
-APK-ul debug `dist/WhistLab-0.1.2-debug.apk` s-a blocat la ultima carte din
-mâna 1 pe emulator API 28: `Unsupported hand size: 0`. Nu distribuiți un build
-care conține această regresie; cereți test explicit pentru mâna goală și pentru
-tranziția ultima carte → scor → mâna următoare. Guard-ul încercat pentru a
-continua jocul este doar local, nu face parte din acest feedback și nu este o
-remediere publicată. În captura cu 9 opțiuni (`0–8`), butonul 8 acoperă textul
-din locul Grace, iar butoanele 5–8 intră peste panourile jucătorilor. Codul din
-`origin/master` confirmă cauza: grila trece la 5 coloane la 9 opțiuni, dar
-repoziționarea scaunelor laterale se activează numai peste 9; testul existent
-verifică ambele comportamente separat și nu detectează intersecția. În captura
-cu ultima licitație lipsește opțiunea 2, fără explicația regulii care o exclude.
-Rândurile `Licitat —` și `Levate 0` nu separă vizual eticheta de valoare și nu folosesc
-coloane aliniate; feedback-ul cere separator explicit (`Licitat: —`,
-`Levate: 0`) și layout dinamic fără intersectări, inclusiv cu text mărit.
-Butonul central `Licitează` are greutate vizuală mai mare decât numele și starea
-jucătorilor; recomandarea este să-i reducem moderat dimensiunea vizibilă, nu
-ținta tactilă minimă de 48 dp.
-Chenarele mari și goale ale locurilor AI par rame decorative; feedback-ul cere
-panouri compacte și consecvente, cu accent de tură distinct fără rame excesive.
-Fețele cărților au un singur indice într-un colț și rămân aproape complet albe;
-feedback-ul cere evaluarea unui indice oglindit sau a unor simboluri discrete,
-fără să sacrifice lizibilitatea mâinii compacte.
-Activitatea separată `ro.whistlab.app.atfaudit` a întrerupt temporar jocul.
-Detaliile, dovezile și criteriile de acceptare sunt în [feedback-ul de
-utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).
+Distribuția curentă este `../dist/WhistLab-0.1.2-debug.apk`, construită în TMP
+din sursele live. Regresia `Unsupported hand size: 0` este corectată; build-ul
+instalat a terminat șase mâini românești consecutive, inclusiv reluarea după
+repornirea procesului. Identitatea APK-ului, verificările și limitele sunt în
+[acceptanța 0.1.2](../docs/WHIST_UI_012_ACCEPTANCE.md). Numărul versiunii singur
+nu distinge acest build de APK-ul defect anterior; verificați SHA-256.
+
+Interfața nu este declarată perfectă. Rămân deschise intersecția licitării cu
+nouă opțiuni la patru jucători, încadrarea configurării fără scroll, lizibilitatea
+dropdown-ului și ierarhia foii de scor. [Feedback-ul de utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md)
+este registrul unic al defectelor, capturilor și criteriilor de închidere.
 
 ## Comportament actual
 
@@ -67,12 +53,10 @@ utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).
   cupă, treflă, caro, fără atu.
 - Oh Hell și Descending acordă un punct pentru fiecare levată și încă zece pentru
   contractul exact.
-- AI Normal folosește o estimare simplă a forței cărților și joacă cea mai mică
-  dintre cărțile legale. Dificil estimează licitația ținând cont de atu și încearcă
-  să-și gestioneze levatele rămase. Expert eșantionează distribuții ascunse numai
-  din cărțile proprii și informația publică, apoi compară punctajele estimate.
-  Turneul de componentă îl compară cu Dificil pe distribuții pereche și locuri
-  rotite.
+- Meniul oferă exact două niveluri, Normal și Hard. Normal păstrează politica
+  simplă; Hard folosește motorul acceptat și garda publică R14. `EXPERT` este
+  numai un alias istoric migrat la Hard. [Contractul nivelurilor](../docs/TWO_GAME_LEVELS.md)
+  descrie dispatch-ul, compatibilitatea salvărilor și limitele demonstrațiilor.
 - Mâna de antrenament cu o singură carte permite verificări Android deterministe.
 - Ecranul partidei identifică varianta prin `Whist · [variantă]`. Atuul are o
   singură zonă persistentă, mărită în antetul deasupra mesei; licitația nu îl

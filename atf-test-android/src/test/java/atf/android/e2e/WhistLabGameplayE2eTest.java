@@ -515,7 +515,8 @@ public class WhistLabGameplayE2eTest {
                         && captured.getHeight() == physicalCaptureHeight;
                 String displayOutput = adb.run("shell", "wm", "size").output().trim();
                 boolean logicalDisplayApplied = (profile.width() + "x" + profile.height())
-                        .equals(overrideValue(OVERRIDE_SIZE, displayOutput));
+                        .equals(effectiveDisplaySize(displayOutput));
+                boolean densityApplied = Math.abs(densityScale * 160 - profile.density()) < 0.01;
                 String diagnostic = "profile=" + profile.name() + "; display=" + displayOutput
                         + "; logicalProfileApplied=" + logicalDisplayApplied
                         + "; hand labels=" + cardLabels + "; hand bounds=" + handBounds
@@ -526,7 +527,7 @@ public class WhistLabGameplayE2eTest {
                                 : captured.getWidth() + "x" + captured.getHeight());
                 boolean profilePass = handIsOneRow && allBidsVisible && bidTargetsRemainAccessible
                         && submitRemainsCompact && submitAboveHand && seatsFit && allControlsInsideTable
-                        && controlsAvoidSeats && headerVisible && logicalDisplayApplied && fullResolutionCapture;
+                        && controlsAvoidSeats && headerVisible && logicalDisplayApplied && densityApplied && fullResolutionCapture;
                 checkpoint(trace, "TEST BODY", index == 0 ? AtfGherkinKeyword.GIVEN : AtfGherkinKeyword.AND,
                         "Show and audit the full thirteen-card bidding table at " + profile.name(),
                         "Four-player Descending · hand 13 · legal bids 0–13", checkpointEvidence,
@@ -555,6 +556,10 @@ public class WhistLabGameplayE2eTest {
                                                 + submitAboveHand, submitRemainsCompact && submitAboveHand),
                                 new AtfAssertion("Variant and trump stay visible", "Whist · Descending; TRUMP; NO TURNED CARD",
                                         "variant/trump=" + headerVisible, headerVisible),
+                                new AtfAssertion("Requested logical display and density are effective",
+                                        profile.width() + "x" + profile.height() + "; " + profile.density() + " dpi",
+                                        effectiveDisplaySize(displayOutput) + "; " + Math.round(densityScale * 160) + " dpi",
+                                        logicalDisplayApplied && densityApplied),
                                 new AtfAssertion("Report image preserves the complete display resolution",
                                         "physical " + physicalCaptureWidth + "x" + physicalCaptureHeight
                                                 + "; logical " + profile.width() + "x" + profile.height(),
@@ -576,6 +581,9 @@ public class WhistLabGameplayE2eTest {
                                 + "; table=" + boardBounds);
                 assertTrue(headerVisible, "Game variant or trump is missing at " + profile.name()
                         + "; labels=" + ui.texts(bidding));
+                assertTrue(logicalDisplayApplied && densityApplied,
+                        "Requested display profile was not applied: " + profile.name() + "; " + displayOutput
+                                + "; density=" + densityScale * 160);
                 assertTrue(fullResolutionCapture, "Checkpoint PNG is not full-display for " + profile.name()
                         + "; actual=" + (captured == null ? "unreadable"
                                 : captured.getWidth() + "x" + captured.getHeight()));
@@ -1793,6 +1801,14 @@ public class WhistLabGameplayE2eTest {
                     Duration.ofNanos(System.nanoTime() - started).toMillis(), AtfReportStatus.FAIL);
             throw failure;
         }
+    }
+
+    static String effectiveDisplaySize(String commandOutput) {
+        String override = overrideValue(OVERRIDE_SIZE, commandOutput);
+        if (override != null) return override;
+        String physical = overrideValue(PHYSICAL_SIZE, commandOutput);
+        if (physical == null) throw new IllegalArgumentException("ADB did not report a display size");
+        return physical;
     }
 
     private static String overrideValue(Pattern pattern, String commandOutput) {

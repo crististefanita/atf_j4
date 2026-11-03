@@ -1,16 +1,108 @@
 # Whist Lab — feedback de utilizare
 
-Revizie: 3 noiembrie 2026. Domeniu: comparație între aplicația originală și
-Whist Lab, verificarea ecranului de licitare și a informației publice de la
-masă, plus șase mâini jucate efectiv. Partida de 19 mâini nu a fost terminată.
+Revizie: 3 noiembrie 2026. Domeniu: comparația istorică cu aplicația originală,
+verificarea ecranului de licitare și a informației publice de la masă, plus
+probe noi pe APK-ul construit din sursele live. Partida istorică de 19 mâini
+nu a fost terminată; pilotul nou joacă șase mâini românești din 24.
 Feedback-ul privește experiența jucătorului, separat de acceptanța ATF și de
 calitatea rapoartelor.
 
-**Cod consultat:** `origin/master` la `7a49d2e`. Working tree-ul local diferă
-față de acest cod numai prin guard-ul necomis pentru mâna goală; layout-ul și
-testele analizate mai jos sunt cele din origin.
+**Proveniență:** observațiile manuale inițiale au consultat `7a49d2e`.
+Verificarea nouă folosește sursele aplicației din `d294116`, comparate prin
+SHA-256 cu live, și corecțiile consumerului Android descrise în
+[acceptanța APK-ului](../WHIST_UI_012_ACCEPTANCE.md). Rezultatele vechi și noi
+nu se cumulează într-o singură partidă sau într-un singur verdict.
 
-## Rulare manuală: șase mâini și blocaje confirmate
+## Stare curentă și priorități
+
+- **Închis pentru build-ul verificat:** crash-ul la mâna goală. Pilotul Hard
+  nou a terminat șase mâini, 36 de mutări și nouă levate; scorul final observat
+  este `[5, 18, 19, 23]`, iar reluarea procesului și auditul raportului au trecut.
+- **P1 încă deschis:** nouă opțiuni de licitare la patru jucători. Codul live
+  păstrează pragul `> 9` pentru repoziționarea scaunelor. Un PASS pentru 13 cărți
+  sau pentru șase jucători nu acoperă această intersecție cunoscută.
+- **P1 de acceptanță:** testele de bounds trebuie să respingă și textul acoperit,
+  crop-ul și suprapunerea hitbox-urilor; numărul corect de butoane nu dovedește
+  că jucătorul le vede și le poate atinge distinct.
+- **P2 confirmat în capturile noi:** configurarea încă cere scroll, selectorul
+  limbii nu arată clar că se deschide, iar scorul este împins în jos de explicații.
+  Criteriile concrete sunt mai jos. Nu marcăm UX-ul complet numai fiindcă jocul trece.
+
+### P2 — Configurarea nu respectă încă obiectivul unui singur ecran
+
+`hard-six-hands/ro-setup.png` arată titlul scurt pe un rând și limba într-un
+dropdown, dar butonul secundar de jos este tăiat la viewport-ul de referință.
+Rezumatul variantei și lista mâinilor consumă spațiu înainte de acțiuni, iar
+`NEW GAME` repetă intenția titlului `Game setup`. Scurtarea titlului nu a închis
+cerința fără scroll.
+
+Reduceți explicațiile permanente la informația necesară deciziei. Programul
+complet și regulile se pot deschide la cerere; păstrați câmpurile și acțiunea
+principală în zona sigură, cu minimum 48 dp pentru țintele tactile. Acceptanța
+cere captură fără derulare la 320/353/393 dp, EN/RO și font implicit. Cu text
+mărit, permiteți scroll accesibil, fără crop, în loc să micșorați textul forțat.
+
+### P2 — Selectorul limbii nu comunică posibilitatea de deschidere
+
+În aceeași captură, `English` seamănă cu un buton dreptunghiular fără săgeată.
+Comportamentul este dropdown, dar utilizatorul trebuie să îl ghicească.
+Folosiți un chevron standard discret, păstrați numele limbii și semantica de
+selector. Verificați deschidere, alegere RO/EN, închidere și persistență după
+reluare; fără două butoane de limbă și fără label explicativ suplimentar.
+
+### P2 — Titlul și indicațiile mesei repetă informația
+
+Capturile `ro-h02-deal.png` și `ro-h06-deal.png` arată `Whist · Whist romanesc
+(1-8-1)` într-o interfață engleză. `YOUR BID`, `Place bid` și `BID NOW` repetă
+aceeași instrucțiune, iar `TRUMP` și `TURNED CARD` etichetează aceeași zonă.
+Cartea de atu, cu rang și culoare, este prezentă și trebuie păstrată.
+
+Localizați numele variantei și afișați un singur prefix Whist. Păstrați acțiunea
+de licitare și indicatorul jucătorului activ, eliminând headingurile redundante.
+Acceptanța compară EN/RO în licitare și joc; nu sacrifică numele jucătorilor,
+licitațiile, levatele ori cartea de atu pentru un antet decorativ.
+
+### P2 — Foaia de scor este dominată de explicații și navigare
+
+`hard-six-hands/ro-h06-score.png` are tabel lizibil și valori corecte, dar două
+paragrafe despre reguli/serii îl împing în jos. `Main menu` are aproape aceeași
+arie ca `Next hand`, deși ieșirea nu este acțiunea principală după o mână.
+Mutați explicația completă într-un detaliu la cerere și ieșirea în meniul standard.
+Păstrați punctajul mâinii, totalul și progresul seriilor vizibile; următoarea
+mână rămâne acțiunea dominantă. Verificați patru și șase jucători, punctaje
+negative și text mărit, fără ca ultimul rând să fie ascuns sub navigare.
+
+### P1 — Treisprezece cărți încap, dar unii indici sunt acoperiți
+
+În `display/thirteen-card-bidding-resolutions/whist-lab-thirteen-card-bidding-720x1280-320dpi.png`,
+rangurile sunt prezente, dar simbolul unor cărți de 10 este aproape complet
+acoperit de cartea vecină. Același risc apare în profilul ROG 7. Testul poate
+număra toate cele 13 etichete din XML și poate confirma un singur rând în timp
+ce jucătorul vede doar o parte din indice. Este o lacună de lizibilitate și de
+oracol, nu o problemă rezolvată prin `cardLabels.size() == 13`.
+
+Calculați banda expusă din lățimea reală a indicelui rang–culoare, padding și
+font, inclusiv `10♠/10♥/10♣/10♦`. Evaluați indice vertical compact dacă păstrează
+mai bine lizibilitatea; nu cereți o carte complet descoperită și nu micșorați
+toate cărțile până când textul devine greu de citit. Acceptanța cere toți indicii
+integrali, un singur rând, cartea ridicată în spatele vecinelor și scaunul omului
+fix. Folosiți cazuri deterministe cu toate culorile și rangul 10, apoi comparați
+pixelii și zona expusă; bounds-urile întregului TextView sunt insuficiente.
+
+### P2 — Ecranele înalte lasă masa și mâna într-o zonă prea restrânsă
+
+Profilul logic `1080×2448 @ 440 dpi` păstrează mâna pe un rând, dar lasă benzi
+mari de pâslă nefolosită între antet și scaune și sub mâna omului. În profilul
+de 600 dp, panourile sunt late și goale față de text, iar cărțile rămân relativ
+mici. Măriți controlat zona utilă a jocului și ancorați mâna față de marginea
+sigură de jos; distribuiți scaunele în jurul centrului, fără salt la selectare.
+
+Emulatorul capturează fizic `1080×1920` și letterboxează profilele cu alt aspect.
+Benzile negre exterioare sunt ale simulării; observația de mai sus privește
+spațiul verde din aplicație. Nu folosiți aceste PNG-uri ca dovadă de testare
+pe ROG 7 fizic sau de captură nativă `1080×2448`.
+
+## Istoric: rulare manuală și blocajul build-ului anterior
 
 **Mediu:** emulatorul existent, Android API 28 x86_64, viewport aproximativ
 `393×698 dp`. APK-ul livrat cel mai recent la începutul rulării a fost
@@ -21,9 +113,9 @@ cu `Unsupported hand size: 0` în construirea mâinii goale. Licitația mâinii 
 Pentru a continua jocul am reconstruit local APK-ul 0.1.2 după o corecție minimă
 în `GameTablePanel.java`, care returnează containerul mâinii înainte de a calcula
 layout-ul pentru zero cărți. Cu acest APK local, reconstruit (nu cel din `dist`),
-am terminat mâinile 1–6. Corecția nu este inclusă în acest commit de feedback și
-nu a fost publicată; APK-ul din `dist` rămâne cunoscut ca defect pentru
-închiderea mâinii.
+am terminat mâinile 1–6. La momentul observației, corecția nu era publicată.
+Acest verdict descrie build-ul anterior; distribuția curentă este identificată
+prin SHA-256 și prin acceptanța nouă de mai sus.
 
 | Mâna | Licitația omului | Levate obținute | Puncte afișate | Ce s-a verificat |
 |---:|---:|---:|---:|---|
@@ -38,17 +130,15 @@ Aceste rezultate sunt observații din partida jucată, nu o acceptanță complet
 regulilor sau a tuturor variantelor. Jocul a rămas la mâna 6 din 19; nu afirmăm
 că partida completă a fost verificată.
 
-### Blocant — APK-ul publicat nu poate termina o mână
+### Blocant istoric — remediat și reverificat pe build-ul curent
 
-În APK-ul 0.1.2 din `dist`, eliminarea ultimei cărți ajunge la layout cu
-`cardCount == 0`, iar `HandLayoutMetrics.requireHand` aruncă
-`Unsupported hand size: 0`. Este un defect de progresie, nu un detaliu vizual:
-oprește jocul la fiecare mână terminată în configurația reprodusă. Nu publicați
-următorul APK până când buildul distribuit trece repetat tranziția
-ultima carte → ecran de scor → mâna următoare. Adăugați un test de componentă
-pentru mână goală și un test Android care termină efectiv o mână; buildul local
-cu guard-ul a trecut șase mâini consecutive, dar nu înlocuiește verificarea de
-release și nu a fost încă distribuit.
+În APK-ul 0.1.2 anterior, eliminarea ultimei cărți ajungea la layout cu
+`cardCount == 0`, iar `HandLayoutMetrics.requireHand` arunca
+`Unsupported hand size: 0`. Guard-ul curent returnează containerul gol înaintea
+calculului geometriei; APK-ul nou a trecut repetat ultima carte → scor → mâna
+următoare. E2E acoperă regresia pe device. Rămâne util un contract focalizat al
+rendererului pentru zero cărți: testul pur `usesSingleRow(0) == false` nu verifică
+singur integrarea guard-ului cu View-ul Android.
 
 ### P1 — Licitarea intră peste scaune și nu are aliniere tipografică stabilă
 

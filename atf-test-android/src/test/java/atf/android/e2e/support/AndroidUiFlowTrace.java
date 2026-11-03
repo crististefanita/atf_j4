@@ -75,7 +75,14 @@ public final class AndroidUiFlowTrace {
     }
 
     public synchronized void finish(AtfReportStatus finalStatus) throws IOException {
-        status = Objects.requireNonNull(finalStatus);
+        Objects.requireNonNull(finalStatus);
+        boolean recordedFailure = status == AtfReportStatus.FAIL || !failure.isBlank()
+                || pendingActions.stream().anyMatch(action -> action.status() == AtfReportStatus.FAIL)
+                || phases.values().stream().flatMap(List::stream).anyMatch(checkpoint ->
+                        checkpoint.status() == AtfReportStatus.FAIL
+                                || checkpoint.actions().stream().anyMatch(action -> action.status() == AtfReportStatus.FAIL)
+                                || checkpoint.assertions().stream().anyMatch(assertion -> assertion.resultStatus() == AtfReportStatus.FAIL));
+        status = recordedFailure ? AtfReportStatus.FAIL : finalStatus;
         flush();
     }
 

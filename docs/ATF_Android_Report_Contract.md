@@ -95,6 +95,15 @@ care captură și care verdict îi aparțin.
 - Atașați PNG-ul full-display checkpoint-ului care l-a produs. Captura și assertions
   folosesc statusul local al checkpoint-ului; statusul journey-ului nu recolorează
   retrospectiv toate cadrele anterioare.
+- PNG-urile identice au un payload canonic și câte un link la fiecare checkpoint.
+  Auditul rezolvă `data-atf-screenshot-ref` către imaginea exactă; numără separat
+  bytes-urile unice și linkurile, fără să ceară duplicarea Base64.
+- Valorile lungi din ACTION/OBSERVE au disclosure imbricat. Auditul parcurge DOM-ul
+  întregii celule, inclusiv ultima valoare, și compară forma redactată/normalizată
+  prin API-ul public. Un prim `</details>` nu delimitează tabelul exterior.
+- FAIL-ul unui checkpoint, al unei acțiuni ori al unei comparații și diagnosticul
+  inițial supraviețuiesc unui apel ulterior `finish(PASS)`. Rezultatul funcțional
+  și rezultatul publicării rămân distincte; eșecul auditului nu devine PASS global.
 - XML/properties rămân probe locale de suport. Receipt-ul public poate conține
   fingerprint-uri SHA-256 colapsate, dar nu linkuri `file:` și nici dump-uri brute;
   checksum-ul este proveniență tehnică, nu oracol de business.

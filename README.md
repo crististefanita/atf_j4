@@ -1,8 +1,9 @@
 # ATF J4 — Android / Contract Whist
 
-J4 folosește fundația ATF partajată pentru acceptanța locală a aplicației Android
-Contract Whist (`com.qsoft.android.whist`). Aplicația rulează în emulatorul
-Android găzduit de Podman pe mașina fizică și afișat în mașina virtuală Windows.
+J4 folosește fundația ATF partajată pentru acceptanța aplicației proprii Whist Lab
+(`ro.whistlab.app`) și comparația cu Contract Whist (`com.qsoft.android.whist`).
+Aplicațiile rulează în emulatorul Android existent pe host, accesat prin ADB
+din mașina virtuală Windows. Motorul jocului are și verificări JVM independente.
 
 ## Fundația reutilizată
 
@@ -282,11 +283,16 @@ comenzile individuale, vezi [organizarea testelor Android](docs/ANDROID_TESTING.
 
 ## APK Whist Lab pentru instalare directă
 
-APK-ul actual este [WhistLab-0.1.1-debug.apk](dist/WhistLab-0.1.1-debug.apk).
+APK-ul actual este [WhistLab-0.1.2-debug.apk](dist/WhistLab-0.1.2-debug.apk).
 Declară `minSdk 24`, `compileSdk 36` și `targetSdk 36`; nu include biblioteci
-native sau split-uri ABI. Build-ul 0.1.1 a fost instalat și lansat pe emulatorul
-API 28 x86_64. Testele UI și instalarea pe telefon fizic nu au fost repetate pe
-această versiune.
+native sau split-uri ABI. `dist` păstrează numai APK-ul curent și SHA-256-ul lui;
+build-urile, logurile și capturile de verificare rămân în TMP.
+
+Build-ul din 3 noiembrie a parcurs șase mâini românești pe emulatorul API 28,
+nivel Hard: 36 de mutări, nouă levate, reluare după repornirea procesului și
+raport Extent cu audit trecut. Este un pilot, nu o partidă completă. Vezi
+[acceptanța APK-ului și limitele vizuale](docs/WHIST_UI_012_ACCEPTANCE.md) și
+[harta testelor Android](atf-test-android/README.md).
 
 `targetSdk 36` înlocuiește ținta veche API 28, care producea pe telefon avertizarea
 Play Protect „Unsafe app blocked / built for an older version of Android”.
@@ -298,18 +304,19 @@ afișa alte avertizări pentru un APK instalat din afara Play. Vezi
 Pentru trimiteri noi/actualizări pe Google Play, cerința din 31 august 2026 este
 Android 16 / API 36.
 
-Build-ul 0.1.1 folosește aceeași interfață ca 0.1.0; schimbarea acestei versiuni
-este ținta API și numărul versiunii. Instalarea și lansarea pe emulator au reușit,
-dar fluxurile UI nu au fost rerulate după schimbarea target SDK.
+Guard-ul pentru mâna goală permite tranziția ultima carte → scor → mâna următoare.
+Interfața folosește selector de limbă dropdown și titluri concise. Feedback-ul
+de geometrie și ierarhie vizuală rămas deschis nu este închis prin PASS-ul jocului.
+Instalarea pe ROG 7 fizic și comportamentul pe Android 16 rămân neverificate.
 
 ```powershell
 $env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
 & 'C:\tools\whist-android-sdk\platform-tools\adb.exe' -s 127.0.0.1:5555 `
-  install -r 'dist/WhistLab-0.1.1-debug.apk'
+  install -r 'dist/WhistLab-0.1.2-debug.apk'
 ```
 
 APK-ul este semnat cu cheia debug locală; SHA-256 este în
-[`WhistLab-0.1.1-debug.apk.sha256`](dist/WhistLab-0.1.1-debug.apk.sha256).
+[`WhistLab-0.1.2-debug.apk.sha256`](dist/WhistLab-0.1.2-debug.apk.sha256).
 Nu folosi semnătura debug pentru distribuție. Pentru actualizări păstrează aceeași
 cheie de release; o semnătură diferită blochează instalarea peste pachetul vechi,
 iar dezinstalarea poate șterge datele locale.
@@ -438,3 +445,5 @@ Offline R11: [analiza pierderilor, regresii mici și acceptanță](docs/AI_LOSS1
 Nivelurile curente sunt [Normal și Hard](docs/TWO_GAME_LEVELS.md); Hard folosește motorul Expert R11 acceptat. [Analiza R12](docs/AI_ROUND12_ANALYSIS.md) păstrează modelele respinse, cele 512 partide noi și selecția de 100 de jocuri development. Perfecțiunea generală nu este declarată pe baza unor estimări.
 
 Offline R13/R14: [presiune și licitații — modele respinse](docs/AI_CONTRACT_PRESSURE_R13.md), [gardă publică certificată activă în Hard](docs/AI_CONTRACT_SALVAGE_R14.md), [feedback J4](docs/feedback/AI_CONTRACT_PRESSURE_R13_Feedback.md). Regresie492, quick168, research21 opt-in; schimbarea7S→7H arde3 adversari în loc de2 la aceeași penalizare proprie în cazul demonstrat. Cele128 de partide noi ale gărzii au urme identice; nu declarăm progres statistic general sau joc perfect. Nicio modificare UI/APK/JAR.
+
+Offline R15/R16: [reguli și inferență publică RO/EN](docs/AI_PUBLIC_BELIEFS_R15.md), [estimarea licitațiilor viitoare](docs/AI_FUTURE_BID_FORECAST_R16.md), [reguli ponderate YAML](config/whist-public-beliefs.yaml), [contextul dinamic al licitației](config/whist-future-bid-forecast.yaml). Modelul observat este reproductibil și separat de motorul activ. Variantele respinse rămân în cercetare explicită; +100 puncte/+6 contracte exacte în development R16 nu compensează regresiile de familie. Hard R14 rămâne acceptat. Dovezile și partidele sunt în `C:/work/whist_back/ai-training/20261103-r16-bid-forecast`.

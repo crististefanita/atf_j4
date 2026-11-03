@@ -6,14 +6,39 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
+import atf.reporting.ui.model.AtfUiActionRecord;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class AndroidUiFlowTraceTest {
+    @ParameterizedTest
+    @ValueSource(strings = {"exception", "checkpoint", "assertion", "action", "pending"})
+    void successfulFinishCannotEraseRecordedFailure(String source, @TempDir Path artifacts) throws Exception {
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "failed-trace", "Failure precedence",
+                "AndroidUiFlowTraceTest", "atf.android.e2e.support", "ro.whistlab.app", List.of("component"));
+        if (source.equals("exception")) trace.fail(new IllegalStateException("Original diagnostic"));
+        var failedAction = new AtfUiActionRecord(1, "Tap", "Place bid", "accepted", "rejected", 5, AtfReportStatus.FAIL);
+        if (source.equals("pending")) trace.recordAction(failedAction);
+        else trace.checkpoint("TEST BODY", "THEN", "Keep the observed verdict", "Bidding table", null,
+                source.equals("action") ? List.of(failedAction) : List.of(),
+                List.of(new AtfAssertion("Bid remains pending", "pending", "observed", !source.equals("assertion"))),
+                source.equals("checkpoint") ? AtfReportStatus.FAIL : AtfReportStatus.PASS, List.of());
+
+        trace.finish(AtfReportStatus.PASS);
+
+        assertEquals(AtfReportStatus.FAIL, trace.status());
+        if (source.equals("exception")) assertTrue(trace.failure().contains("Original diagnostic"));
+        Properties manifest = new Properties();
+        try (var input = Files.newInputStream(trace.manifest())) { manifest.load(input); }
+        assertEquals("FAIL", manifest.getProperty("flow.status"));
+    }
+
     @Test
     void assertionsKeepCheckpointOrderContextAndVerdicts(@TempDir Path artifacts) throws Exception {
         AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "trace-contract",

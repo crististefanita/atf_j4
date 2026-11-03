@@ -179,24 +179,33 @@ public final class AndroidUiFlowReportPublisher {
                             && countOccurrences(ownerHtml, "class=\"atf-ui-assertions\"") == 1,
                     "Checkpoint evidence tables do not match the captured action, observation, and assertion owners: "
                             + checkpoint.title());
-            String actionDisclosure = detailsBlock(ownerHtml, "atf-ui-action-sequence");
-            String observationDisclosure = detailsBlock(ownerHtml, "atf-ui-observations");
+            Element actionDisclosure = detailsBlock(ownerHtml, "atf-ui-action-sequence");
+            Element observationDisclosure = detailsBlock(ownerHtml, "atf-ui-observations");
             require((checkpointActionCount == 0 || actionDisclosure != null) && observationDisclosure != null,
                     "Checkpoint evidence is detached from its Gherkin owner: " + checkpoint.title());
             for (var action : checkpoint.actions()) {
-                String actionEvidence = action.source().name().equals("ACTION")
+                Element actionEvidence = action.source().name().equals("ACTION")
                         ? actionDisclosure : observationDisclosure;
-                boolean operationVisible = containsText(actionEvidence, action.operation());
-                boolean targetVisible = containsText(actionEvidence, action.target());
-                boolean expectedVisible = containsText(actionEvidence, action.expected());
-                boolean observedVisible = containsText(actionEvidence, action.observed());
-                boolean statusVisible = containsText(actionEvidence, action.status().marker())
-                        || containsText(actionEvidence, action.status().displayValue())
-                        || containsText(actionEvidence, action.status().displayLabel());
+                Element row = actionEvidence.select("tbody tr").stream()
+                        .filter(candidate -> candidate.select(".atf-ui-action-number").text()
+                                .equals("#" + action.sequence())).findFirst().orElse(null);
+                require(row != null && row.childrenSize() >= 5,
+                        "Extent omitted the numbered UI evidence row: " + checkpoint.title() + " / #" + action.sequence());
+                var cells = row.children();
+                Element operation = cells.get(0).selectFirst(".atf-ui-action-operation");
+                boolean operationVisible = operation != null
+                        && operation.wholeText().equals(redactor.redactText(action.operation()));
+                boolean targetVisible = cellValueEquals(cells.get(1), redactor.redactText(action.target()));
+                boolean expectedVisible = cellValueEquals(cells.get(2), redactor.redactText(action.expected()));
+                boolean observedVisible = cellValueEquals(cells.get(3), redactor.redactText(action.observed()));
+                String resultCell = cells.last().html();
+                boolean statusVisible = containsText(resultCell, action.status().marker())
+                        || containsText(resultCell, action.status().displayValue())
+                        || containsText(resultCell, action.status().displayLabel());
                 boolean rowIsVisible = operationVisible && targetVisible && expectedVisible
                         && observedVisible && statusVisible;
                 boolean measuredDispatchIsVisible = action.source().name().equals("OBSERVE")
-                        || containsText(actionEvidence, action.durationText());
+                        || containsText(cells.get(4).html(), action.durationText());
                 require(rowIsVisible && measuredDispatchIsVisible,
                         "Extent omitted an action/observation row from its owning checkpoint: "
                                 + checkpoint.title() + " / " + action.operation()
@@ -213,7 +222,7 @@ public final class AndroidUiFlowReportPublisher {
             if (checkpoint.screenshot() != null) {
                 String payload = AndroidScreenshotEvidence.from(checkpoint.screenshot()).base64Png();
                 boolean actionOwnsScreenshot = actionDisclosure != null
-                        && ownsScreenshot(actionDisclosure, payload, document);
+                        && ownsScreenshot(actionDisclosure.outerHtml(), payload, document);
                 boolean observationCheckpointOwnsScreenshot = checkpointActionCount == 0
                         && ownsScreenshot(ownerHtml, payload, document);
                 require(actionOwnsScreenshot || observationCheckpointOwnsScreenshot,
@@ -281,6 +290,11 @@ public final class AndroidUiFlowReportPublisher {
                 .stream().anyMatch(anchor -> payload.equals(screenshotPayload(anchor, report)));
     }
 
+    private static boolean cellValueEquals(Element cell, String expected) {
+        Element completeValue = cell.selectFirst("details.atf-ui-value pre");
+        return (completeValue == null ? cell : completeValue).wholeText().equals(expected);
+    }
+
     private static String screenshotPayload(Element anchor, Document report) {
         String href = anchor.attr("href");
         String prefix = "data:image/png;base64,";
@@ -293,12 +307,8 @@ public final class AndroidUiFlowReportPublisher {
         return canonicalHref.startsWith(prefix) ? canonicalHref.substring(prefix.length()) : "";
     }
 
-    private static String detailsBlock(String ownerHtml, String className) {
-        String opening = "<details class=\"" + className + "\"";
-        int start = ownerHtml.indexOf(opening);
-        if (start < 0) return null;
-        int end = ownerHtml.indexOf("</details>", start);
-        return end < 0 ? null : ownerHtml.substring(start, end + "</details>".length());
+    private static Element detailsBlock(String ownerHtml, String className) {
+        return Jsoup.parseBodyFragment(ownerHtml).selectFirst("details." + className);
     }
 
     private static String assertionRow(atf.reporting.contract.AtfAssertion assertion,
