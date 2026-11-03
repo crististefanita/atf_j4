@@ -276,23 +276,37 @@ comenzile individuale, vezi [organizarea testelor Android](docs/ANDROID_TESTING.
 
 ## APK Whist Lab pentru instalare directă
 
-APK-ul debug verificat live este [WhistLab-0.1.0-debug.apk](dist/WhistLab-0.1.0-debug.apk).
-Declară `minSdk 24` (Android 7.0+) și nu include biblioteci native sau split-uri
-ABI. Instalarea a fost verificată pe emulatorul API 28 x86_64; rularea pe toate
-modelele și versiunile Android nu este dedusă din această probă.
+APK-ul actual este [WhistLab-0.1.1-debug.apk](dist/WhistLab-0.1.1-debug.apk).
+Declară `minSdk 24`, `compileSdk 36` și `targetSdk 36`; nu include biblioteci
+native sau split-uri ABI. Build-ul 0.1.1 a fost instalat și lansat pe emulatorul
+API 28 x86_64. Testele UI și instalarea pe telefon fizic nu au fost repetate pe
+această versiune.
 
-Build-ul din 3 noiembrie 2026 include cercul de locuri aliniat mock-ului și
-indicatorul de atu cu rang și simbol când există o carte întoarsă. Prima carte
-jucată este centrată în oval. Testele de componentă Android și cele două flow-uri
-UI țintite au trecut; capturile și rapoartele Extent individuale sunt în
-`%TEMP%\whist-j4-final-layout-live-20261103-142000`.
+`targetSdk 36` înlocuiește ținta veche API 28, care producea pe telefon avertizarea
+Play Protect „Unsafe app blocked / built for an older version of Android”.
+Google spune că avertizarea apare când ținta este cu peste două niveluri API în
+urma versiunii curente; actualizarea țintei nu garantează că Play Protect nu va
+afișa alte avertizări pentru un APK instalat din afara Play. Vezi
+[ghidul Google Play Protect](https://developers.google.com/android/play-protect/warning-dev-guidance)
+și [cerințele curente Play pentru target API](https://developer.android.com/google/play/requirements/target-sdk).
+Pentru trimiteri noi/actualizări pe Google Play, cerința din 31 august 2026 este
+Android 16 / API 36.
+
+Build-ul 0.1.1 folosește aceeași interfață ca 0.1.0; schimbarea acestei versiuni
+este ținta API și numărul versiunii. Instalarea și lansarea pe emulator au reușit,
+dar fluxurile UI nu au fost rerulate după schimbarea target SDK.
 
 ```powershell
-adb install -r dist/WhistLab-0.1.0-debug.apk
+$env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
+& 'C:\tools\whist-android-sdk\platform-tools\adb.exe' -s 127.0.0.1:5555 `
+  install -r 'dist/WhistLab-0.1.1-debug.apk'
 ```
 
 APK-ul este semnat cu cheia debug locală; SHA-256 este în
-[`WhistLab-0.1.0-debug.apk.sha256`](dist/WhistLab-0.1.0-debug.apk.sha256).
+[`WhistLab-0.1.1-debug.apk.sha256`](dist/WhistLab-0.1.1-debug.apk.sha256).
+Nu folosi semnătura debug pentru distribuție. Pentru actualizări păstrează aceeași
+cheie de release; o semnătură diferită blochează instalarea peste pachetul vechi,
+iar dezinstalarea poate șterge datele locale.
 
 La adăugarea unui consumator nou, copiază numai adaptorul sau testele de care are
 nevoie. Păstrează harness-ul generic, contractele backend și implementarea

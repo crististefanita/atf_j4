@@ -277,13 +277,27 @@ $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
 .\gradlew.bat --no-daemon --console=plain :game-core:test :app:assembleDebug
 ```
 
+Configurația curentă a APK-ului este `minSdk 24`, `compileSdk 36`,
+`targetSdk 36`, `versionCode 2` / `versionName 0.1.1`. `targetSdk 36`
+înlocuiește API 28: țintele cu peste două niveluri API sub versiunea Android a
+telefonului pot declanșa avertizarea Play Protect „Unsafe app blocked / built
+for an older version of Android”. Ridică `targetSdk` la nivelul cerut la acea
+dată și verifică separat comportamentele Android noi; emulatorul API 28 confirmă
+compatibilitatea minimă, nu acceptanța pe un telefon actual. Google Play cere
+API 36 pentru trimiteri noi și actualizări începând cu 31 august 2026 ([detalii](https://developer.android.com/google/play/requirements/target-sdk)).
+
+APK-urile din `dist` sunt build-uri debug, nu pachete de release. Actualizările
+trebuie semnate consecvent cu cheia de release; altă semnătură produce
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE`, iar dezinstalarea pachetului vechi poate
+șterge datele sale.
+
 Instalează APK-ul de depanare pe emulatorul API 28:
 
 ```powershell
 $env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
 C:\tools\whist-android-sdk\platform-tools\adb.exe connect 127.0.0.1:5555
 C:\tools\whist-android-sdk\platform-tools\adb.exe -s 127.0.0.1:5555 install -r `
-  C:\work\1\atf_j4\whist-lab-app\app\build\outputs\apk\debug\app-debug.apk
+  C:\work\auto\atf_j4\whist-lab-app\app\build\outputs\apk\debug\app-debug.apk
 ```
 
 Pornește fluxul determinist de antrenament:
@@ -298,5 +312,5 @@ Rularea completă J4 construiește și instalează Whist Lab, rulează acceptan�
 aplicației originale și publică raportul Extent combinat:
 
 ```powershell
-C:\work\1\atf_j4\scripts\run-deep-tests.ps1
+C:\work\auto\atf_j4\scripts\run-deep-tests.ps1
 ```
