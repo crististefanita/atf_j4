@@ -6,6 +6,10 @@ masă, plus șase mâini jucate efectiv. Partida de 19 mâini nu a fost terminat
 Feedback-ul privește experiența jucătorului, separat de acceptanța ATF și de
 calitatea rapoartelor.
 
+**Cod consultat:** `origin/master` la `7a49d2e`. Working tree-ul local diferă
+față de acest cod numai prin guard-ul necomis pentru mâna goală; layout-ul și
+testele analizate mai jos sunt cele din origin.
+
 ## Rulare manuală: șase mâini și blocaje confirmate
 
 **Mediu:** emulatorul existent, Android API 28 x86_64, viewport aproximativ
@@ -55,20 +59,35 @@ conținutul din scaunul Grace; opțiunea `5` intră în dreptul panoului Ava. A�
 grila nu doar atinge contururile: ascunde informația despre jucători exact în
 timpul licitării.
 
-În aceleași panouri, `Licitat —` și `Levate 0` sunt rânduri text fără separator
-vizual între etichetă și valoare. Etichetele și valorile nu au coloane fixe, iar
-alinierea pare diferită între scaune și față de numele centrate. Pentru un
-jucător nou nu este instant clar unde se termină eticheta și unde începe
-valoarea. Puneți separator explicit — de exemplu `Licitat: —` și `Levate: 0` —
-și aliniați eticheta și valoarea în coloane stabile, identice pentru toate
-scaunele; nu obțineți alinierea prin spații în text.
+Verificarea `origin/master` explică precis defectul: `BidGridMetrics` alege 5
+coloane și 2 rânduri pentru 9 valori la 353 dp, dar `TableSeatLayout` mută
+scaunele laterale numai când sunt **mai mult de 9** opțiuni. La exact 9,
+scaunele rămân vest/est. `GameTablePanel` adaugă apoi grila peste ringul
+scaunelor, deci butoanele sunt desenate în fața panourilor. Testul de componentă
+confirmă 2 rânduri pentru 9 și afirmă explicit că la 9 scaunele rămân vest/est;
+nu verifică intersectarea dreptunghiurilor. Prin urmare, testul trece în timp ce
+captura arată text acoperit. Corectați politica pentru cazul 9 și adăugați
+verificarea reală a intersecției, nu doar aserțiuni separate despre numărul de
+rânduri și pozițiile scaunelor. Capturile mâinilor 4–6 arată rândul scurt
+centrat în golul dintre scaune; nu generalizăm suprapunerea la toate licitările.
 
-Butoanele de bid au suprafețe deschise pe pâsla verde, dar nu sunt grupate
-într-un container cu limite clare. Rândul 5–8 pare plutitor peste jucători, iar
-starea selectată 0 este singura care se distinge ferm prin auriu. Faceți întregul
-selector o zonă vizuală coerentă: contrast suficient pentru butoanele normale,
-contur clar, selecție evidentă și stare dezactivată distinctă. Păstrați ținte
-tactile reale de minimum 48 dp; măriți hitbox-ul fără să micșorați sau să
+În aceleași panouri, `Licitat —` și `Levate 0` sunt rânduri text fără separator
+vizual între etichetă și valoare. Codul construiește aceste șiruri ca etichetă,
+spațiu și valoare, fără două puncte sau câmpuri separate; numele sunt centrate,
+iar rândurile de stare sunt aliniate la stânga. Așadar defectul nu este că
+numele și rândurile au alinieri diferite, ci că perechea etichetă–valoare nu se
+citește ca două câmpuri stabile. Folosiți `Licitat: —` și `Levate: 0` și
+randare pe coloane fixe pentru etichetă și valoare, identic la fiecare scaun;
+nu simulați coloanele cu spații într-un singur șir.
+
+Butoanele de bid nu sunt grupate într-un container cu limite clare. În sursă,
+fiecare țintă are 48 dp, dar fundalul vizibil este retras cu 7 dp pe fiecare
+latură, lăsând o suprafață desenată de circa 34 dp; conturul butoanelor normale
+este și el foarte apropiat de culoarea lor de fundal. În captura cu 9 valori,
+rândul 5–8 pare plutitor peste jucători, iar auriul lui 0 este singura stare
+care iese clar în evidență. Faceți selectorul o zonă coerentă, măriți suprafața
+vizibilă și contrastul opțiunilor nealese, păstrând ținta tactilă de minimum
+48 dp. Starea selectată și cea indisponibilă trebuie să se distingă fără să
 înghesuiți cifrele.
 
 **Remediere cerută:** calculați layout-ul din viewport, numărul de opțiuni,
@@ -79,14 +98,14 @@ etichetă ori valoare. Nu hardcodați doar un număr de coloane: captura actual�
   folosește deja 5 coloane, dar al doilea rând tot intră în scaune. Captura este
   păstrată local în `%TEMP%`, nu este inclusă în repo.
 
-Ca reglaj suplimentar, mutați scaunele laterale Ava și Grace spre marginile
-respective cu aproximativ 12–16 dp (circa 2–2,5 mm la scala dp standard),
-păstrând simetria mesei. Calculați offsetul în dp și limitați-l la spațiul sigur
-rămas; nu împingeți panourile în afara ecranului și nu reduceți lizibilitatea
-textului. Pe lățimi mai mici sau cu text mărit, offsetul trebuie micșorat
-dinamic. Această distanțare le eliberează ceva spațiu față de selector, dar nu
-rezolvă singură acoperirea din captura curentă: grila trebuie în continuare să
-stea în afara dreptunghiurilor scaunelor.
+Ca reglaj suplimentar, scaunele laterale pot fi împinse încă 12–16 dp (circa
+2–2,5 mm la scala dp standard) spre margini, dar codul le ancorează deja la
+START/END-ul ringului. Pentru a obține deplasarea cerută trebuie ajustat
+containerul/insetul exterior sau extins ringul controlat, nu doar schimbat
+anchor-ul. Păstrați cel puțin 8–12 dp până la marginea sigură, simetria și
+lizibilitatea textului; reduceți offsetul dinamic la viewport îngust ori text
+mărit. Măsura ajută la distanță, dar nu înlocuiește grila într-o zonă fără
+intersecții.
 
 **Criterii de acceptare obligatorii:** capturi reale la 320, 353, 393 și 600 dp;
 5–10 opțiuni; turul primului și al ultimului licitator; text implicit și mărit;
@@ -100,11 +119,11 @@ criteriu.
 ### P2 — Chenarele locurilor par rame goale, nu grupuri de informație
 
 În captura existentă, locurile Ava, Grace și Miles au contururi mari, rotunjite,
-fără fundal distinct. Pe pâsla verde, rama ocupă mult spațiu și atrage privirea,
-dar nu grupează clar numele, licitația și levatele. Locul omului folosește în
-schimb o placă deschisă, cu accent auriu; diferența de tratament este atât de
-mare încât scaunul activ pare alt tip de componentă, nu aceeași componentă într-o
-stare activă.
+fără fundal distinct. Codul confirmă că scaunele AI folosesc exact culoarea pâslei
+ca umplere și un contur verde discret, în timp ce scaunul activ primește placă
+crem, contur auriu și elevare. Astfel, rama AI ocupă mult spațiu fără să separe
+conținutul de fundal, iar starea activă pare alt tip de componentă, nu aceeași
+componentă într-o stare activă.
 
 Simplificați locurile: folosiți panouri compacte cu padding consecvent și fundal
 discret pentru toate; indicați tura printr-un accent controlat (de exemplu,
@@ -119,6 +138,25 @@ Nu acceptați un redesign care doar face rama mai subțire dacă grila încă î
 acoperă textul; validarea trebuie să includă ierarhia vizuală și zero
 intersectări.
 
+### P2 — Ultima licitație ascunde o valoare fără să explice regula
+
+În captura mâinii 4, suma existentă este `5/7`, iar jucătorul este ultimul la
+licitat. Grila afișează `0, 1, 3, 4, 5, 6, 7`; lipsește 2 fiindcă ar duce suma
+exact la 7. Regula este corect aplicată, dar interfața nu explică absența; un
+jucător poate crede că opțiunea s-a pierdut sau că bidul 0 este interzis.
+
+Arătați un mesaj scurt, localizat și contextual numai când opțiunea este
+exclusă: de exemplu, `Ultimul bid nu poate face suma egală cu 7`. Păstrați
+separat suma curentă și numărul de cărți și nu blocați sume mai mari decât
+numărul de levate: în mâna 4, rezultatul `8/7` după confirmare este permis de
+regula verificată. Confirmați printr-un caz cu valoarea omisă, bid 0 disponibil
+și o sumă finală mai mare decât numărul de cărți.
+
+Codul întărește observația: `buildBiddingCenter()` ascunde headingul când
+selectorul folosește cele 5 coloane dense, iar lista primită de componentă nu
+afișează motivul pentru care lipsește 2. Nu cereți jucătorului să deducă regula
+dintr-un număr absent.
+
 ### P2 — Butonul „Licitează” domină numele și starea jucătorilor
 
 În aceeași captură, confirmarea centrală este mare și are text proeminent;
@@ -126,12 +164,27 @@ privirea ajunge la ea înainte să poată scana numele, licitațiile și levatel
 celorlalți. Acțiunea trebuie să fie clară, dar nu trebuie să concureze cu
 identitatea și starea mesei, de care omul are nevoie pentru a decide ce licitează.
 
-Reduceți moderat înălțimea vizuală, padding-ul și scala textului butonului, și
-limitați lățimea la grupul selectorului în loc să-i dați o amprentă dominantă.
+Sursa îl fixează la 132 dp lățime și 14 sp, în timp ce numele scaunului are
+13 sp, iar scaunul lateral la 353 dp are 102 dp lățime. Reduceți moderat lățimea,
+padding-ul și greutatea textului butonului — fără să-i eliminați rolul de acțiune
+principală — și legați lățimea de grupul selectorului.
 Păstrați contrastul și o țintă tactilă de minimum 48 dp; dacă suprafața desenată
 se micșorează, extindeți hitbox-ul separat. Verificați în capturi că titlurile
 scaunelor și perechile `Licitat: valoare` / `Levate: valoare` se citesc înaintea
 butonului, iar butonul rămâne ușor de găsit și atins.
+
+### P2 — Cărțile din mână arată ca plăci albe, nu ca fețe complete de cărți
+
+În capturile de joc, fiecare carte are un singur indice rang–simbol în colțul
+stânga sus; restul feței este gol. Codul desenează un dreptunghi alb cu contur și
+un singur `shortLabel`, fără indice oglindit sau simboluri centrale. La 7–10
+cărți, rândul compact e practic, dar cărțile par butoane mari și goale, iar
+identificarea depinde de o singură etichetă din zona suprapusă.
+
+Păstrați rândul compact și lizibilitatea etichetelor, dar evaluați un indice
+oglindit în colțul opus și/sau simboluri discrete pe față. Nu aglomerați mâna cu
+ornamente: rangul și culoarea trebuie să se distingă rapid în 13–17 cărți,
+inclusiv pentru cartea selectată și pentru stările în care cartea nu este legală.
 
 ### P1 — Activitatea de audit întrerupe jocul interactiv
 
@@ -166,6 +219,9 @@ capturile de regresie, inclusiv când licitația este zero.
   cu numărul de cărți.
 - La mâna 4, cu 7 cărți și suma celorlalte licitații 5, opțiunea 2 lipsea; bid
   3 a fost permis. Aceasta confirmă regula vizibilă pentru cazul testat.
+- Capturile mâinilor 4–6 arată că rândurile de 2 sau 1 opțiuni rămân în spațiul
+  central. Suprapunerea din captura mâinii 3 este un caz-limită concret cu 9
+  valori, nu o problemă observată uniform pe toate grilele.
 - Indicația de urmare a culorii corespundea cărților disponibile, iar cărțile
   legale se distingeau prin contur. După terminarea mâinilor, scorul afișat a
   corespuns formulei Oh Hell observate.
@@ -203,8 +259,9 @@ Față de mock, totalul licitațiilor rămâne în rezumatul vizibil din antet, 
 numărul licitațiilor depuse; centrul zonei de joc rămâne rezervat alegerii și
 confirmării bidului. Forma 3 × 3 se păstrează pe ecrane largi, iar grila de cinci
 coloane apare numai în intervalul îngust în care forma 3 × 3 intra în locurile
-laterale. Suprafața verde continuă pe tot ecranul, conform cerinței aplicației
-nativă de a păstra același fundal în jurul mesei și al mâinii.
+laterale. Totuși, captura la 9 valori arată că simpla trecere la cinci coloane nu
+eliberează complet scaunele; spațiul central nu este garantat liber de intersecții.
+Suprafața verde continuă pe tot ecranul, conform cerinței aplicației native.
 
 ## Feedback prioritar
 
@@ -214,27 +271,24 @@ Jucătorul trebuie să compare toată mâna cu decizia curentă. Înainte de con
 valorile disponibile trebuie să fie vizibile direct pe suprafața mesei, nu ascunse
 într-un dropdown. Atuul, locurile, licitațiile și levatele câștigate rămân lizibile.
 
-**Rezolvare în cod:** pâsla continuă umple zona de joc; nu se mai desenează o
-ramă ovală. Locurile au ancore numite pe perimetru, nu celule de grilă: la șase
-jucători, forma este
-`N; NW/NE; SW/SE; S`, iar omul rămâne în sud. Ancorele nu se schimbă între
-licitare și joc; flancurile sunt apropiate de margini cu 18% din înălțimea mesei
-în licitarea normală, 16% în licitarea compactă și 23% în joc, pentru a păstra
-centrul liber ca în mock și a lăsa grila în dreptul scaunelor. Pentru 3–5 jucători,
-locurile ocupă ancorele simetrice disponibile. Locurile laterale
-flanchează grila centrală fără să intre în ea. Numele ocupă
-primul rând al fiecărui loc; licitația și levatele sunt pe rânduri separate,
-aliniate la stânga (`Bid` / `Won`, `Licitat` / `Levate`). Jucătorul
-activ primește badge-ul `BID NOW` sau `PLAY NOW` (în română `LICITEAZĂ` sau
-`JOACĂ ACUM`), dar fiecare loc rezervă aceeași înălțime pentru badge, ca turele
-să nu deplaseze scaunele. Descrierea TalkBack păstrează formularea completă.
-Selectorul păstrează forma 3 × 3 pentru 4–9 valori de la 400 dp. Între 260 și
-399 dp folosește cinci coloane pe două rânduri, iar sub 260 dp trei coloane; la
-mai mult de nouă valori folosește șase coloane de la 312 dp, altfel trei. La
-`393×698 dp`, lățimea efectivă a tablei este 353 dp: forma 3 × 3 intersecta în
-mod măsurabil locurile laterale. Varianta de cinci coloane și insetul compact au
-eliminat intersectarea fără să reducă țintele de 48 dp. Opțiunea aleasă și
-`Place bid` / `Licitează` stă împreună cu valoarea în centrul mesei. Indicatorul
+**Implementare confirmată în cod:** pâsla continuă umple zona de joc. Locurile au
+ancore perimetrale, iar omul rămâne la sud. Pentru patru jucători, însă, politica
+schimbă pozițiile AI-urilor de la `WEST/NORTH/EAST` la `NORTH_WEST/NORTH/NORTH_EAST`
+când sunt mai mult de 9 opțiuni. Această rearanjare poate muta scaunele între
+mâini când numărul opțiunilor trece pragul 9; testați stabilitatea vizuală a
+scaunelor, nu doar dacă fiecare anchor este unic. La șase jucători, forma este
+`N; NW/NE; SW/SE; S`. Numele sunt centrate; bidul și levatele sunt un singur
+șir pe două rânduri, aliniat la stânga. Locul activ primește placă crem și badge,
+iar AI-urile păstrează umplerea pâslei cu un contur verde discret.
+
+Selectorul folosește trei coloane sub 260 dp, cinci coloane pentru 4–9 opțiuni
+între 260 și 399 dp, 3 × 3 de la 400 dp, și șase coloane pentru seturi mai mari
+de nouă valori de la 312 dp. La `393×698 dp`, lățimea efectivă a tablei este
+353 dp. La exact 9 opțiuni, grila cu cinci coloane are două rânduri, dar scaunele
+nu sunt mutate; captura mâinii 3 confirmă că al doilea rând intră peste ele.
+Pentru mai mult de 9 opțiuni, scaunele se mută sus, iar testul componentă verifică
+ancorele, nu stabilitatea poziției între mâini. Opțiunea aleasă și
+`Place bid` / `Licitează` stau împreună în centru. Indicatorul
 din antet afișează cartea întoarsă reală, dacă există; la mâna de 13 cărți din
 `Descending`, pachetul este împărțit complet și nu există carte întoarsă, deci
 interfața spune explicit că atuul este doar culoarea stabilită de variantă. În
@@ -325,7 +379,9 @@ Descrierea accesibilă a locului include scorul, împărțitorul și rândul.
 
 **Verificare live:** ecranul cu șase locuri arată licitațiile depuse pe fiecare
 loc, levatele câștigate, punctele, progresul `3/6` și suma `6/8`. Valorile sunt
-lizibile simultan cu alegerea centrală și mâna omului.
+lizibile simultan cu alegerea centrală și mâna omului în acel flow automat cu
+șase jucători. Această observație nu acoperă captura manuală cu patru jucători
+și nouă opțiuni, unde grila acoperă scaunele laterale.
 
 ### P1 — Foaia de scor trebuie să fie o vedere sigură, doar pentru citire
 
@@ -463,11 +519,12 @@ text mare, ecran îngust și mâini minime/maxime nu este completă.
 - Comparația folosește aplicațiile instalate, instrucțiunile lor și o parcurgere
   scurtă de utilizator. Separat, au fost jucate șase mâini din partida de 19;
   partida completă nu a fost terminată.
-- APK-ul verificat a fost construit în `%TEMP%`; probele au folosit `393×698 dp`
+- APK-ul verificat a fost construit în `%TEMP%`; probele UI au folosit `393×698 dp`
   pe API 28 x86_64. Flow-ul cu șase jucători a verificat opt cărți, hitbox-uri,
   hamburgerul, scorul doar pentru citire, păstrarea bidului neconfirmat și home.
   Flow-ul cu 13 cărți a jucat o singură carte și a verificat că locul omului nu se
-  deplasează. Nicio partidă nu a fost terminată.
+  deplasează; aceste flow-uri nu au terminat o partidă. Separat, rularea manuală
+  a terminat șase mâini, descrise la începutul documentului.
 - Raportarea prezentării folosește contractul `AssertionStep` al ATF: comparațiile
   UI apar într-un singur tabel standard colapsabil, iar manifestul ordonat este
   păstrat separat cu hash. Corpul text lung era trunchiat la preview-ul rendererului
@@ -485,6 +542,33 @@ text mare, ecran îngust și mâini minime/maxime nu este completă.
   jucate pe emulator API 28, nu pe dispozitiv fizic.
 - Feedback-ul UX nu generează rapoarte Extent și nu păstrează artefacte de joc în
   J4; testele ATF și dovezile lor rămân separate.
+
+### Capturi locale consultate pentru această revizie
+
+În `%TEMP%` sunt 98 de PNG-uri cu `whist` în nume, dintre care 91 încep cu
+`whistlab`; inventarul include capturi duplicate, tranziții și imagini dinaintea
+rebuildului local, deci nu reprezintă 98 de ecrane distincte ale aceleiași
+versiuni. Am comparat în special:
+
+- `whistlab-hand3-bid.png` — cazul de 9 valori; butoanele 5–8 intră în panourile
+  laterale, iar 8 acoperă textul lui Grace.
+- `whistlab-hand4-bid.png` și `whistlab-hand4-result.png` — valoarea 2 lipsește
+  la ultima licitație (`5/7`), apoi suma licitațiilor apare `8/7` după bidul 3.
+- `whistlab-hand5-bid.png` și `whistlab-hand6-bid.png` — rândurile mai scurte
+  rămân în golul central; nu arată aceeași acoperire ca mâna 3.
+- `whistlab-hand3-play.png`, `whistlab-hand4-play.png` și
+  `whist-hand5-current.png` — instrucțiunea de tură, cărțile legale și fața
+  simplificată a cărților.
+- `whistlab-hand2-result.png`, `whistlab-hand3-result.png`,
+  `whistlab-hand4-result.png`, `whist-hand5-end.png` și
+  `whistlab-hand6-end.png` — etichetele și ierarhia tabelului de scor.
+- `whistlab-hand6-trick3.png` — captura alb/roz din schimbarea activității;
+  nu este un ecran normal al jocului și nu trebuie folosită ca defect de temă.
+
+`whistlab-table.png` și `whistlab-new-game.png` sunt capturi mai vechi, de
+dinaintea rebuildului local; nu le-am folosit pentru a atribui defecte layoutului
+curent. `whistlab-hand1-result.png` surprinde launcherul după blocare, nu ecranul
+de scor. Capturile rămân în TEMP și nu sunt versionate în repo.
 
 ## Repere de interfață consultate
 

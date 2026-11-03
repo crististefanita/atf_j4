@@ -13,8 +13,12 @@ care conține această regresie; cereți test explicit pentru mâna goală și p
 tranziția ultima carte → scor → mâna următoare. Guard-ul încercat pentru a
 continua jocul este doar local, nu face parte din acest feedback și nu este o
 remediere publicată. În captura cu 9 opțiuni (`0–8`), butonul 8 acoperă textul
-din locul Grace, iar butoanele 5–8 intră peste panourile jucătorilor. Rândurile
-`Licitat —` și `Levate 0` nu separă vizual eticheta de valoare și nu folosesc
+din locul Grace, iar butoanele 5–8 intră peste panourile jucătorilor. Codul din
+`origin/master` confirmă cauza: grila trece la 5 coloane la 9 opțiuni, dar
+repoziționarea scaunelor laterale se activează numai peste 9; testul existent
+verifică ambele comportamente separat și nu detectează intersecția. În captura
+cu ultima licitație lipsește opțiunea 2, fără explicația regulii care o exclude.
+Rândurile `Licitat —` și `Levate 0` nu separă vizual eticheta de valoare și nu folosesc
 coloane aliniate; feedback-ul cere separator explicit (`Licitat: —`,
 `Levate: 0`) și layout dinamic fără intersectări, inclusiv cu text mărit.
 Butonul central `Licitează` are greutate vizuală mai mare decât numele și starea
@@ -22,6 +26,9 @@ jucătorilor; recomandarea este să-i reducem moderat dimensiunea vizibilă, nu
 ținta tactilă minimă de 48 dp.
 Chenarele mari și goale ale locurilor AI par rame decorative; feedback-ul cere
 panouri compacte și consecvente, cu accent de tură distinct fără rame excesive.
+Fețele cărților au un singur indice într-un colț și rămân aproape complet albe;
+feedback-ul cere evaluarea unui indice oglindit sau a unor simboluri discrete,
+fără să sacrifice lizibilitatea mâinii compacte.
 Activitatea separată `ro.whistlab.app.atfaudit` a întrerupt temporar jocul.
 Detaliile, dovezile și criteriile de acceptare sunt în [feedback-ul de
 utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).
