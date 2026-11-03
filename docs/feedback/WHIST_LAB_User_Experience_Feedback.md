@@ -2,8 +2,136 @@
 
 Revizie: 3 noiembrie 2026. Domeniu: comparație între aplicația originală și
 Whist Lab, verificarea ecranului de licitare și a informației publice de la
-masă. Nu se joacă o partidă completă. Feedback-ul privește experiența
-jucătorului, separat de acceptanța ATF și de calitatea rapoartelor.
+masă, plus șase mâini jucate efectiv. Partida de 19 mâini nu a fost terminată.
+Feedback-ul privește experiența jucătorului, separat de acceptanța ATF și de
+calitatea rapoartelor.
+
+## Rulare manuală: șase mâini și blocaje confirmate
+
+**Mediu:** emulatorul existent, Android API 28 x86_64, viewport aproximativ
+`393×698 dp`. APK-ul livrat cel mai recent la începutul rulării a fost
+`dist/WhistLab-0.1.2-debug.apk`. Acesta s-a blocat la ultima carte din mâna 1,
+cu `Unsupported hand size: 0` în construirea mâinii goale. Licitația mâinii era
+1 și legală; prin urmare, licitația 0 nu a cauzat blocarea.
+
+Pentru a continua jocul am reconstruit local APK-ul 0.1.2 după o corecție minimă
+în `GameTablePanel.java`, care returnează containerul mâinii înainte de a calcula
+layout-ul pentru zero cărți. Cu acest APK local, reconstruit (nu cel din `dist`),
+am terminat mâinile 1–6. Corecția nu este inclusă în acest commit de feedback și
+nu a fost publicată; APK-ul din `dist` rămâne cunoscut ca defect pentru
+închiderea mâinii.
+
+| Mâna | Licitația omului | Levate obținute | Puncte afișate | Ce s-a verificat |
+|---:|---:|---:|---:|---|
+| 1 | 0 | 4 | +4 | Licitația 0 este acceptată; punctajul Oh Hell este levate, fără bonus exact. |
+| 2 | 1 | 1 | +11 | Contract exact: 10 + 1 levată. |
+| 3 | 2 | 3 | +3 | Ratarea contractului acordă numai levatele. |
+| 4 | 3 | 3 | +13 | Ultima licitație care ar fi egalat totalul cu 7 cărți a fost omisă corect. |
+| 5 | 0 | 0 | +10 | A doua confirmare practică: bid 0 este valid și scorul exact este +10. |
+| 6 | 1 | 3 | +3 | Tururi și urmarea culorii; mâna s-a încheiat după reluarea activității. |
+
+Aceste rezultate sunt observații din partida jucată, nu o acceptanță completă a
+regulilor sau a tuturor variantelor. Jocul a rămas la mâna 6 din 19; nu afirmăm
+că partida completă a fost verificată.
+
+### Blocant — APK-ul publicat nu poate termina o mână
+
+În APK-ul 0.1.2 din `dist`, eliminarea ultimei cărți ajunge la layout cu
+`cardCount == 0`, iar `HandLayoutMetrics.requireHand` aruncă
+`Unsupported hand size: 0`. Este un defect de progresie, nu un detaliu vizual:
+oprește jocul la fiecare mână terminată în configurația reprodusă. Nu publicați
+următorul APK până când buildul distribuit trece repetat tranziția
+ultima carte → ecran de scor → mâna următoare. Adăugați un test de componentă
+pentru mână goală și un test Android care termină efectiv o mână; buildul local
+cu guard-ul a trecut șase mâini consecutive, dar nu înlocuiește verificarea de
+release și nu a fost încă distribuit.
+
+### P1 — Licitarea intră peste scaune și nu are aliniere tipografică stabilă
+
+Captura `whistlab-hand3-bid.png` (mâna 3, ecran de licitare) arată concret
+defectul la 9 opțiuni (`0–8`) și aproximativ 353 dp lățime utilă:
+valorile `5–8` sunt desenate peste panourile Ava și Grace. Butonul `8` acoperă
+conținutul din scaunul Grace; opțiunea `5` intră în dreptul panoului Ava. Așadar
+grila nu doar atinge contururile: ascunde informația despre jucători exact în
+timpul licitării.
+
+În aceleași panouri, `Licitat —` și `Levate 0` sunt rânduri text fără separator
+vizual între etichetă și valoare. Etichetele și valorile nu au coloane fixe, iar
+alinierea pare diferită între scaune și față de numele centrate. Pentru un
+jucător nou nu este instant clar unde se termină eticheta și unde începe
+valoarea. Puneți separator explicit — de exemplu `Licitat: —` și `Levate: 0` —
+și aliniați eticheta și valoarea în coloane stabile, identice pentru toate
+scaunele; nu obțineți alinierea prin spații în text.
+
+Butoanele de bid au suprafețe deschise pe pâsla verde, dar nu sunt grupate
+într-un container cu limite clare. Rândul 5–8 pare plutitor peste jucători, iar
+starea selectată 0 este singura care se distinge ferm prin auriu. Faceți întregul
+selector o zonă vizuală coerentă: contrast suficient pentru butoanele normale,
+contur clar, selecție evidentă și stare dezactivată distinctă. Păstrați ținte
+tactile reale de minimum 48 dp; măriți hitbox-ul fără să micșorați sau să
+înghesuiți cifrele.
+
+**Remediere cerută:** calculați layout-ul din viewport, numărul de opțiuni,
+dimensiunea textului și dreptunghiurile ocupate de scaune. Selectorul trebuie să
+primească o regiune proprie; dacă nu încape, rearanjați dinamic masa și scaunele
+sau folosiți un panou compact/modal, fără ca un bid să treacă peste un nume,
+etichetă ori valoare. Nu hardcodați doar un număr de coloane: captura actuală
+  folosește deja 5 coloane, dar al doilea rând tot intră în scaune. Captura este
+  păstrată local în `%TEMP%`, nu este inclusă în repo.
+
+**Criterii de acceptare obligatorii:** capturi reale la 320, 353, 393 și 600 dp;
+5–10 opțiuni; turul primului și al ultimului licitator; text implicit și mărit;
+limite vizuale și hitbox-uri măsurate separat. Zero intersectări între selector
+și scaune, etichete/valori cu baseline și coloane consecvente, două puncte după
+fiecare etichetă și toate valorile de bid ușor de distins înainte de atingere.
+Un test de bounds fără revizie vizuală a capturii nu trece acest criteriu.
+
+### P1 — Activitatea de audit întrerupe jocul interactiv
+
+În timpul mâinii 4 și din nou în mâna 6, procesul din prim-plan s-a schimbat la
+`ro.whistlab.app.atfaudit/.MainActivity`. Captura imediată a tranziției era
+aproape albă/roz; jocul principal nu raportase `FATAL EXCEPTION`, iar
+`Reia partida` a restaurat mâna și scorul. Așadar nu există dovadă că Whist Lab
+a crăpat, dar experiența utilizatorului este tot întreruptă și pare că aplicația
+l-a scos din joc.
+
+**Remediere cerută:** identificați cine lansează pachetul de audit și în ce
+condiții; în rulările manuale țineți auditul oprit sau separat de sesiunea de
+joc. Adăugați în diagnosticul de acceptanță verificarea activității din
+prim-plan și capturați separat orice schimbare de pachet. Nu ascundeți problema
+sub formularea „checkpoint-ul a păstrat jocul”: păstrarea salvează progresul,
+dar nu repară întreruperea.
+
+### P2 — Etichetele scorului nu spun suficient de precis ce măsoară
+
+Ecranul rezultatului folosește coloanele `Bid`, `Lev.`, `Mână`, `Total`. În
+practică, `Mână` este punctajul mâinii curente, nu numărul de cărți, iar `Total`
+este scorul cumulativ. Înlocuiți-le cu `Licitat`, `Levate câștigate`, `Puncte
+mâna` și `Total puncte`. În antet, scrieți explicit `Suma licitațiilor / cărți`
+în locul unui raport `3/6` izolat; numărul licitațiilor depuse rămâne o valoare
+separată. Păstrați diferența dintre punctele mâinii și totalul partidei în
+capturile de regresie, inclusiv când licitația este zero.
+
+### Ce a funcționat în jocul observat
+
+- Licitația 0 a fost acceptată în două mâini; opțiunea nu este interzisă în Oh
+  Hell. Restricția se aplică numai ultimei licitații dacă suma ar deveni egală
+  cu numărul de cărți.
+- La mâna 4, cu 7 cărți și suma celorlalte licitații 5, opțiunea 2 lipsea; bid
+  3 a fost permis. Aceasta confirmă regula vizibilă pentru cazul testat.
+- Indicația de urmare a culorii corespundea cărților disponibile, iar cărțile
+  legale se distingeau prin contur. După terminarea mâinilor, scorul afișat a
+  corespuns formulei Oh Hell observate.
+- La revenirea din activitatea de audit, checkpoint-ul a păstrat mâna activă;
+  nu s-au pierdut scorurile deja obținute.
+
+### Limitele acestei rulări
+
+Nu s-a terminat partida de 19 mâini. Testul a folosit emulator API 28 și un APK
+debug local reconstruit după blocarea APK-ului publicat. Nu a fost testat pe ROG
+7, pe Android actual, cu TalkBack, text mărit sau pe dispozitivul fizic. Capturile
+manuale au rămas în `%TEMP%` și nu sunt atașate repo-ului; observațiile de mai
+sus descriu ce s-a văzut live și nu pretind o matrice completă.
 
 ## Ce trebuie să înțeleagă jucătorul dintr-o privire
 
@@ -21,7 +149,8 @@ la 320, 393 și 600 dp. La 320 dp, viewport-ul logic a fost `880×1920`; la 393 
 dimensiunea fizică `1080×1920`; la 600 dp, override-ul logic a fost `1650×2560`,
 cu PNG fizic `1080×1920` letterboxat de emulator. Toate cele șase rulări au trecut.
 Rapoartele Extent conțin capturi inline, pași expandabili și câte 19 aserțiuni
-trecute per flow. Nu s-a jucat o partidă completă.
+trecute per flow. Aceste flow-uri verifică prezentarea și navigarea, nu jocul
+complet; rezultatele jocului manual sunt documentate separat mai sus.
 
 Față de mock, totalul licitațiilor rămâne în rezumatul vizibil din antet, lângă
 numărul licitațiilor depuse; centrul zonei de joc rămâne rezervat alegerii și
@@ -285,7 +414,8 @@ text mare, ecran îngust și mâini minime/maxime nu este completă.
 ## Dovezi și limite
 
 - Comparația folosește aplicațiile instalate, instrucțiunile lor și o parcurgere
-  scurtă de utilizator; nu s-a jucat o partidă completă.
+  scurtă de utilizator. Separat, au fost jucate șase mâini din partida de 19;
+  partida completă nu a fost terminată.
 - APK-ul verificat a fost construit în `%TEMP%`; probele au folosit `393×698 dp`
   pe API 28 x86_64. Flow-ul cu șase jucători a verificat opt cărți, hitbox-uri,
   hamburgerul, scorul doar pentru citire, păstrarea bidului neconfirmat și home.
@@ -304,7 +434,8 @@ text mare, ecran îngust și mâini minime/maxime nu este completă.
 - O probă anterioară în trei jucători/17 cărți a confirmat grila de trei rânduri,
   dar nu este repetată de această revizie de layout.
 - Ecranele înguste, textul mărit, TalkBack, toate combinațiile de locuri/mâini și
-  foaia de scor în faza de joc rămân neverificate manual.
+  foaia de scor în faza de joc rămân neverificate manual. Cele șase mâini au fost
+  jucate pe emulator API 28, nu pe dispozitiv fizic.
 - Feedback-ul UX nu generează rapoarte Extent și nu păstrează artefacte de joc în
   J4; testele ATF și dovezile lor rămân separate.
 

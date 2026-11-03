@@ -5,6 +5,22 @@ Contract Whist. Include un modul de reguli Java pur și o interfață Android
 compactă. Pachetul aplicației originale, `com.qsoft.android.whist`, rămâne
 separat și nemodificat.
 
+## Feedback de utilizare și blocant confirmat — 3 noiembrie 2026
+
+APK-ul debug `dist/WhistLab-0.1.2-debug.apk` s-a blocat la ultima carte din
+mâna 1 pe emulator API 28: `Unsupported hand size: 0`. Nu distribuiți un build
+care conține această regresie; cereți test explicit pentru mâna goală și pentru
+tranziția ultima carte → scor → mâna următoare. Guard-ul încercat pentru a
+continua jocul este doar local, nu face parte din acest feedback și nu este o
+remediere publicată. În captura cu 9 opțiuni (`0–8`), butonul 8 acoperă textul
+din locul Grace, iar butoanele 5–8 intră peste panourile jucătorilor. Rândurile
+`Licitat —` și `Levate 0` nu separă vizual eticheta de valoare și nu folosesc
+coloane aliniate; feedback-ul cere separator explicit (`Licitat: —`,
+`Levate: 0`) și layout dinamic fără intersectări, inclusiv cu text mărit.
+Activitatea separată `ro.whistlab.app.atfaudit` a întrerupt temporar jocul.
+Detaliile, dovezile și criteriile de acceptare sunt în [feedback-ul de
+utilizare](../docs/feedback/WHIST_LAB_User_Experience_Feedback.md).
+
 ## Comportament actual
 
 - Interfața poate fi folosită în engleză sau română. Engleza este limba implicită
