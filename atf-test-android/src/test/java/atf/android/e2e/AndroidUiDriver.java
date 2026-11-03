@@ -80,6 +80,52 @@ final class AndroidUiDriver {
         return nodes(xml).stream().anyMatch(node -> node.description().equals(exactDescription));
     }
 
+    boolean hasDescriptionContaining(String xml, String fragment) throws Exception {
+        return nodes(xml).stream().anyMatch(node -> node.description().contains(fragment));
+    }
+
+    List<String> descriptions(String xml) throws Exception {
+        return nodes(xml).stream().map(Node::description).filter(value -> !value.isBlank()).toList();
+    }
+
+    Bounds boundsForText(String xml, String exactText) throws Exception {
+        List<Node> matches = nodes(xml).stream().filter(node -> node.text().equals(exactText)).toList();
+        if (matches.size() != 1) throw new IllegalStateException("Expected one UI element named '"
+                + exactText + "', got " + matches.size());
+        return toBounds(matches.getFirst().bounds());
+    }
+
+    Bounds boundsForDescription(String xml, String exactDescription) throws Exception {
+        List<Node> matches = nodes(xml).stream()
+                .filter(node -> node.description().equals(exactDescription)).toList();
+        List<String> distinctBounds = matches.stream().map(Node::bounds).distinct().toList();
+        if (distinctBounds.size() != 1) throw new IllegalStateException("Expected one UI region described as '"
+                + exactDescription + "', got " + distinctBounds.size() + " distinct bounds across "
+                + matches.size() + " matching nodes");
+        return toBounds(distinctBounds.getFirst());
+    }
+
+    Bounds boundsForDescriptionContaining(String xml, String fragment) throws Exception {
+        List<Node> matches = nodes(xml).stream()
+                .filter(node -> node.description().contains(fragment)).toList();
+        if (matches.size() != 1) throw new IllegalStateException("Expected one UI element described with '"
+                + fragment + "', got " + matches.size());
+        return toBounds(matches.getFirst().bounds());
+    }
+
+    String firstLegalCardDescription(String xml) throws Exception {
+        return nodes(xml).stream().filter(Node::clickable)
+                .filter(node -> node.description().contains("Legal card"))
+                .map(Node::description).findFirst()
+                .orElseThrow(() -> new IllegalStateException("No clickable legal card is exposed"));
+    }
+
+    List<String> legalCardDescriptions(String xml) throws Exception {
+        return nodes(xml).stream().filter(Node::clickable)
+                .filter(node -> node.description().contains("Legal card"))
+                .map(Node::description).distinct().toList();
+    }
+
     boolean hasClass(String xml, String exactClass) throws Exception {
         return nodes(xml).stream().anyMatch(node -> node.className().equals(exactClass));
     }
@@ -144,14 +190,48 @@ final class AndroidUiDriver {
         return cards.stream().filter(card -> card.top() >= bottomRowTop - 15).toList();
     }
 
-    List<Integer> numericButtonWidths(String xml) throws Exception {
+    List<ElementSize> numericButtonSizes(String xml) throws Exception {
         return nodes(xml).stream()
                 .filter(node -> node.className().equals("android.widget.Button"))
                 .filter(node -> node.text().matches("\\d+"))
                 .map(node -> {
-                    try { int[] value = bounds(node.bounds()); return value[2] - value[0]; }
-                    catch (RuntimeException invalidBounds) { throw invalidBounds; }
+                    int[] value = bounds(node.bounds());
+                    return new ElementSize(value[2] - value[0], value[3] - value[1]);
                 }).toList();
+    }
+
+    ElementSize buttonSize(String xml, String text) throws Exception {
+        List<Node> matches = nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.Button"))
+                .filter(node -> node.text().equals(text)).toList();
+        if (matches.size() != 1) {
+            throw new IllegalStateException("Expected one button labeled '" + text + "', got " + matches.size());
+        }
+        int[] value = bounds(matches.getFirst().bounds());
+        return new ElementSize(value[2] - value[0], value[3] - value[1]);
+    }
+
+    double buttonBottomGapFraction(String xml, Path screenshot, String text) throws Exception {
+        List<Node> matches = nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.Button"))
+                .filter(node -> node.text().equals(text)).toList();
+        if (matches.size() != 1) {
+            throw new IllegalStateException("Expected one button labeled '" + text + "', got " + matches.size());
+        }
+        var image = ImageIO.read(screenshot.toFile());
+        if (image == null) throw new IllegalStateException("Cannot decode screenshot: " + screenshot);
+        int bottom = bounds(matches.getFirst().bounds())[3];
+        return (image.getHeight() - bottom) / (double) image.getHeight();
+    }
+
+    boolean sameBackgroundAcrossTableMargin(Path screenshot, double firstY, double secondY) throws Exception {
+        var image = ImageIO.read(screenshot.toFile());
+        if (image == null) throw new IllegalStateException("Cannot decode screenshot: " + screenshot);
+        // Four percent lands inside the former light table frame on the 393 dp reference layout.
+        int x = Math.min(image.getWidth() - 1, Math.max(0, (int) (image.getWidth() * 0.04)));
+        int first = image.getRGB(x, (int) (image.getHeight() * firstY));
+        int second = image.getRGB(x, (int) (image.getHeight() * secondY));
+        return first == second;
     }
 
     List<Integer> numericButtonValues(String xml) throws Exception {
@@ -167,6 +247,11 @@ final class AndroidUiDriver {
         if (!matcher.matches()) throw new IllegalArgumentException("Invalid UI bounds: " + value);
         return new int[]{Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)),
                 Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(4))};
+    }
+
+    private static Bounds toBounds(String value) {
+        int[] parsed = bounds(value);
+        return new Bounds(parsed[0], parsed[1], parsed[2], parsed[3]);
     }
 
     void tapSpinner(int index) throws Exception {
@@ -257,6 +342,18 @@ final class AndroidUiDriver {
             Thread.sleep(300);
         } while (System.nanoTime() < deadline);
         throw new IllegalStateException("UI did not show text '" + expected + "' within " + timeout);
+    }
+
+    String awaitDescriptionContaining(String fragment, Duration timeout) throws Exception {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        String latest;
+        do {
+            latest = dump();
+            if (hasDescriptionContaining(latest, fragment)) return latest;
+            Thread.sleep(250);
+        } while (System.nanoTime() < deadline);
+        throw new IllegalStateException("UI did not expose description containing '" + fragment
+                + "' within " + timeout + "; descriptions=" + descriptions(latest));
     }
 
     String awaitContains(String expected, Duration timeout) throws Exception {
@@ -538,5 +635,8 @@ final class AndroidUiDriver {
 
     private record Node(String text, String className, String bounds, boolean clickable,
             boolean enabled, boolean selected, String description) { }
+
+    record ElementSize(int widthPixels, int heightPixels) { }
     record CardLabel(String text, int top) { }
+    record Bounds(int left, int top, int right, int bottom) { }
 }

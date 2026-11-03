@@ -18,6 +18,13 @@
       "evidence": "Full offline JUnit regression. No learning tournaments and no emulator."
     },
     {
+      "id": "strategy",
+      "task": ":game-core:algorithmGuideTest",
+      "targetMinutes": 2,
+      "trigger": "Before a strategy experiment; small safety/cover/auction cases and accepted-baseline snapshot parity",
+      "evidence": "Actual component assertions; profile controls are not optimal-action labels."
+    },
+    {
       "id": "documentation",
       "task": ":game-core:documentationTest",
       "targetMinutes": 1,
@@ -26,7 +33,7 @@
     },
     {
       "id": "learning",
-      "task": ":game-core:roundSixTest",
+      "task": ":game-core:roundSevenTest",
       "targetMinutes": 15,
       "trigger": "Explicit candidate experiment only",
       "evidence": "All JSON games and receipts, fixed-opponent gates, development examples; no automatic bulk HTML.",
@@ -35,6 +42,19 @@
         "External corpus path",
         "Frozen protocol; untouched heldout before promotion",
         "Explicit protocol JSON; new heldout range registered to a source freeze"
+      ]
+    },
+    {
+      "id": "arena",
+      "task": ":game-core:strategyArenaTest",
+      "targetMinutes": 5,
+      "trigger": "Explicit multi-profile development league",
+      "evidence": "Complete virtual games, identical seed deals, balanced seats, independent rules/score audit, compact failure casebook.",
+      "requires": [
+        "External corpus",
+        "Fresh output",
+        "config/strategy-arena.json or another declared protocol",
+        "Separate unused evaluation before model promotion"
       ]
     },
     {
@@ -49,5 +69,7 @@
         "Full-match final score for complete-game claims"
       ]
     }
-  ]
+  ],
+  "algorithmBuild": "whist-lab-app/algorithm-build: pure JVM, cached dependencies, no SDK/device configuration",
+  "activeLearningPolicy": "Explicit hashed development manifest via config/learning-corpus.json; no default traversal of raw historical or heldout games."
 }

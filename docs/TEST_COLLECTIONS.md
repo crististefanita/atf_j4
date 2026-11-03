@@ -1,5 +1,15 @@
 # Colecții de teste și promovarea exemplelor
 
+## Colecțiile curente — 3 noiembrie 2026
+
+Sursa curentă este `config/test-collections.json`. Runnerul `scripts/run-whist-collection.ps1` expune quick (136 de cazuri, subset), regression (500), strategy, documentation, learning și arena. Learning folosește RoundSeven/schema7; vechile secțiuni R6 sunt istoric. Arena este opt-in, cu patru strategii distincte per masă; cele trei controale de reluare a profilurilor sunt în afara regresiei zilnice. Build-ul JVM din `whist-lab-app/algorithm-build` nu configurează Android SDK.
+
+[Protocolul și rezultatele A/B](AI_STRATEGY_ARENA.md) descriu aceleași împărțiri, locurile rotite, criteriile distincte pe rol și cele opt seed-uri independente ale ligii. Catalogul [RO](rules/AI_HAND_PATTERNS_RO.md) / [EN](rules/AI_HAND_PATTERNS_EN.md) separă ipotezele de onoruri de regulile jocului.
+
+Setul activ curent are 94 de jocuri (5.719.972 bytes), 43 de origini protejate și 757/757 de categorii declarate. Manifestul și jocurile sunt verificate prin SHA-256. Aceasta este acoperirea taxonomiei selectorului, nu acoperirea tuturor stărilor Whist. Restul arhivei rămâne extern, inclusiv pierderile; heldout nu intră în setul de învățare.
+
+`scripts/whist-report-input.mjs` construiește inputul limitat înaintea compoziției Java: capturi copiate integral, inventar de populație, suite native și audit independent al jocurilor. Politica de publicare a rularii este explicită, cu detalii complete pentru selecția furnizată și buget mic pentru amprentele opționale. Defectele istorice ale capturilor se declară, nu se normalizează. J0 deține în continuare JAR-ul și rendererul.
+
 Colecțiile sunt definite în config/test-collections.json. Configurația prezentării este separată: config/game-evidence.yml; setările neutre Reporting rămân în atf.yaml. Reporting este biblioteca fizică J16 din lib, deținută de J0. J4 selectează și explică inputul; nu modifică HTML/CSS/JS ori JAR-ul.
 
 | Colecție | Când | Țintă orientativă | Ce verifică |
@@ -60,4 +70,4 @@ Această schimbare produce componente și APK offline. Nicio acceptanță Androi
 
 ## R6 — small regressions and protected evaluation
 
-Quick/default regression now include the 20 late-card counterexamples and guards. Four statistical-model tests are research-only, excluded by default. Learning uses roundSixTest and requires -ProtocolFile pointing to a V6 JSON plan with development/heldout.firstSeed and seeds; heldout also requires -CandidateFreeze. Source hashes and the external holdout-use registry prevent candidate or range reuse. alwaysIncludeCollections in game-evidence.yml keeps regression/documentation cases complete even when the learning population is sampled. Existing rowsPerGroup, fieldsPerGroup and optionalMaxItems remain effective. See AI_ROUND6_ANALYSIS.md for measured outcomes and the explicit lack of a strength claim.
+Quick/default regression now include the 20 late-card counterexamples and guards. Four statistical-model tests are research-only, excluded by default. Historical R6 learning used roundSixTest and required -ProtocolFile pointing to a V6 JSON plan with development/heldout.firstSeed and seeds; heldout also requires -CandidateFreeze. Source hashes and the external holdout-use registry prevent candidate or range reuse. alwaysIncludeCollections in game-evidence.yml keeps regression/documentation cases complete even when the learning population is sampled. Existing rowsPerGroup, fieldsPerGroup and optionalMaxItems remain effective. See AI_ROUND6_ANALYSIS.md for measured outcomes and the explicit lack of a strength claim.

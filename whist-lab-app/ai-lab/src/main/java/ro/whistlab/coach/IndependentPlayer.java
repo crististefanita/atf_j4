@@ -131,7 +131,7 @@ public final class IndependentPlayer {
     private static long ordered(int available,int count){if(available<count)return 0;long value=1;for(int i=0;i<count;i++)value*=available-i;return value;}
     private static int[] roll(Position p,List<List<Integer>> hands,int first,int[] goals,Random r){
         int n=hands.size(),actor=first<0?(p.dealer+1)%n:p.seat;int[] won=p.seats.stream().mapToInt(Seat::won).toArray();var trick=new ArrayList<>(p.trick);int left=hands.stream().mapToInt(List::size).sum();boolean initial=true;
-        while(left-->0){int c=initial&&first>=0?first:greedy(hands.get(actor),trick,p.trump,actor,goals[actor]-won[actor],r);initial=false;
+        while(left-->0){int c=initial&&first>=0?first:(actor==p.seat?RolloutPlanner.choose(p,hands,trick,actor,goals[actor]-won[actor],r):greedy(hands.get(actor),trick,p.trump,actor,goals[actor]-won[actor],r));initial=false;
             if(!hands.get(actor).remove(Integer.valueOf(c)))throw new IllegalStateException("Independent player invented a card");trick.add(new Play(actor,c));
             if(trick.size()==n){actor=winner(trick,p.trump);won[actor]++;trick.clear();}else actor=(actor+1)%n;
         }return won;

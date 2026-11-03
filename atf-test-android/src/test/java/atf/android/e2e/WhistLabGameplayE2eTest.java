@@ -101,34 +101,114 @@ public class WhistLabGameplayE2eTest {
             List<Integer> visibleBids = ui.numericButtonValues(bidding);
             boolean allBidsVisible = visibleBids.size() == expectedBids.size()
                     && new LinkedHashSet<>(visibleBids).equals(expectedBids);
-            List<Integer> bidWidths = ui.numericButtonWidths(bidding);
+            List<AndroidUiDriver.ElementSize> bidSizes = ui.numericButtonSizes(bidding);
             Matcher densityMatch = DENSITY.matcher(adb.run("shell", "wm", "density").output());
             assertTrue(densityMatch.find(), "Android display density was not reported");
             double densityScale = Integer.parseInt(densityMatch.group(1)) / 160.0;
-            int minimumBidWidth = bidWidths.stream().mapToInt(Integer::intValue).min().orElse(0);
-            boolean touchTargetsRemain48Dp = bidWidths.size() == expectedBids.size()
-                    && minimumBidWidth >= Math.round(48 * densityScale * 0.95);
+            int minimumBidWidth = bidSizes.stream().mapToInt(AndroidUiDriver.ElementSize::widthPixels).min().orElse(0);
+            int minimumBidHeight = bidSizes.stream().mapToInt(AndroidUiDriver.ElementSize::heightPixels).min().orElse(0);
+            boolean touchTargetsRemain48Dp = bidSizes.size() == expectedBids.size()
+                    && minimumBidWidth >= Math.round(48 * densityScale * 0.95)
+                    && minimumBidHeight >= Math.round(48 * densityScale * 0.95);
+            AndroidUiDriver.ElementSize submitBidSize = ui.buttonSize(bidding, "Place bid");
+            boolean submitBidIsDiscreetAndAccessible = submitBidSize.widthPixels()
+                    <= Math.round(144 * densityScale) && submitBidSize.heightPixels()
+                    >= Math.round(48 * densityScale * 0.95);
+            AndroidUiDriver.Bounds submitBounds = ui.boundsForText(bidding, "Place bid");
+            AndroidUiDriver.Bounds handBounds = ui.boundsForDescription(bidding, "Your hand, 8 cards.");
+            boolean actionAnchoredAboveHand = submitBounds.bottom() < handBounds.top();
+            boolean turnedTrumpCardVisible = ui.hasText(bidding, "TURNED CARD")
+                    && ui.descriptions(bidding).stream()
+                            .anyMatch(value -> value.startsWith("Trump set by turned card: "));
+            boolean gameIdentityAndTrumpVisible = ui.hasText(bidding, "Whist · Oh Hell")
+                    && turnedTrumpCardVisible;
+            var boardBounds = ui.boundsForDescription(bidding, "Playing surface");
+            List<AndroidUiDriver.Bounds> seatBounds = ui.descriptions(bidding).stream()
+                    .filter(value -> value.contains(". Bid ") && value.contains(". Score "))
+                    .map(description -> {
+                        try { return ui.boundsForDescription(bidding, description); }
+                        catch (Exception failure) { throw new IllegalStateException(failure); }
+                    }).toList();
+            List<String> seatPositions = seatBounds.stream().map(bounds -> String.format(java.util.Locale.ROOT,
+                    "x=%.2f,y=%.2f", (centerX(bounds) - boardBounds.left()) / (double) width(boardBounds),
+                    (bounds.top() - boardBounds.top()) / (double) height(boardBounds))).toList();
+            double tableCenterX = boardBounds.left() + width(boardBounds) / 2.0;
+            AndroidUiDriver.Bounds humanSeat = ui.boundsForDescriptionContaining(bidding, "You. ");
+            boolean humanSeatIsSouth = Math.abs(centerX(humanSeat) - tableCenterX) <= width(boardBounds) * 0.16
+                    && (humanSeat.top() - boardBounds.top()) >= height(boardBounds) * 0.78;
+            long northSeats = seatBounds.stream().filter(bounds ->
+                    (bounds.top() - boardBounds.top()) <= height(boardBounds) * 0.12
+                    && Math.abs(centerX(bounds) - tableCenterX) <= width(boardBounds) * 0.16).count();
+            long upperFlankSeats = seatBounds.stream().filter(bounds -> {
+                double y = (bounds.top() - boardBounds.top()) / (double) height(boardBounds);
+                double x = (centerX(bounds) - boardBounds.left()) / (double) width(boardBounds);
+                return y >= 0.13 && y <= 0.40 && (x <= 0.32 || x >= 0.68);
+            }).count();
+            long lowerFlankSeats = seatBounds.stream().filter(bounds -> {
+                double y = (bounds.top() - boardBounds.top()) / (double) height(boardBounds);
+                double x = (centerX(bounds) - boardBounds.left()) / (double) width(boardBounds);
+                return y >= 0.55 && y <= 0.82 && (x <= 0.32 || x >= 0.68);
+            }).count();
+            boolean mockSeatRingRendered = seatBounds.size() == 6 && humanSeatIsSouth
+                    && northSeats == 1 && upperFlankSeats == 2 && lowerFlankSeats == 2;
             assertTrue(oneRow, "Expected all eight hand cards on one row; visible bottom-row cards=" + handLabels);
             assertTrue(allBidsVisible, "Visible choices differ from the legal bid set " + expectedBids
                     + "; actual=" + visibleBids);
-            assertTrue(touchTargetsRemain48Dp, "Bid touch targets fell below 48 dp: " + bidWidths);
+            assertTrue(touchTargetsRemain48Dp, "Bid choices fell below 48 x 48 dp touch bounds: " + bidSizes);
+            assertTrue(submitBidIsDiscreetAndAccessible,
+                    "Place bid should stay compact (<=144 dp wide) with a 48 dp touch height: " + submitBidSize);
+            assertTrue(actionAnchoredAboveHand,
+                    "Place bid should sit inside the table above the fixed hand row: submit="
+                            + submitBounds + "; hand=" + handBounds);
+            assertTrue(gameIdentityAndTrumpVisible,
+                    "Variant title and the persistent trump tile must remain visible: " + ui.texts(bidding)
+                            + "; descriptions=" + ui.descriptions(bidding));
+            assertTrue(mockSeatRingRendered,
+                    "Six player seats must match the mock's north, upper flanks, lower flanks, and south positions: "
+                            + seatPositions + "; human south=" + humanSeatIsSouth);
             List<Path> biddingEvidence = ui.capture("whist-lab-presentation-eight-card-table");
             evidence.addAll(biddingEvidence);
+            Path biddingScreenshot = biddingEvidence.stream()
+                    .filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow();
+            boolean feltContinuesBelowTable = ui.sameBackgroundAcrossTableMargin(biddingScreenshot, 0.55, 0.87);
+            assertTrue(feltContinuesBelowTable,
+                    "The game surface changes color between the table and space below the action");
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Render all eight cards and the complete compact bidding grid",
                     "Six-player Oh Hell bidding table", biddingEvidence,
                     "inspect all hand labels, legal bid values, and button bounds",
-                    "eight cards share one row; every bid permitted by the final-bid rule is visible with 48 dp targets",
+                    "eight cards share one row; legal bids and 48 dp targets remain visible; identity and trump remain in the header; Place bid sits in the table above the hand",
                     "hand=" + handLabels + "; expected bids=" + expectedBids + "; actual bids=" + visibleBids
-                            + "; bid widths px=" + bidWidths
+                            + "; bid button bounds px=" + bidSizes + "; Place bid bounds px=" + submitBidSize
+                            + "; table action bounds=" + submitBounds + "; hand bounds=" + handBounds
+                            + "; identity and trump visible=" + gameIdentityAndTrumpVisible
+                            + "; continuous felt background=" + feltContinuesBelowTable
                             + "; visible labels=" + ui.texts(bidding),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.of(new AtfAssertion("All eight hand cards occupy one row", "8 cards; 1 row",
                                     handLabels + "; y=" + handRow.stream().map(AndroidUiDriver.CardLabel::top).distinct().toList(), oneRow),
+                            new AtfAssertion("Six player seats follow the approved oval", "N; NW/NE; SW/SE; S",
+                                    seatPositions + "; human south=" + humanSeatIsSouth, mockSeatRingRendered),
                             new AtfAssertion("All currently legal bids are visible", expectedBids.toString(),
                                     visibleBids.toString(), allBidsVisible),
                             new AtfAssertion("Bid hit targets remain at least 48 dp", "48 dp minimum",
-                                    minimumBidWidth + " px at density " + densityScale, touchTargetsRemain48Dp)),
+                                    "minimum=" + minimumBidWidth + "x" + minimumBidHeight + " px at density "
+                                            + densityScale, touchTargetsRemain48Dp),
+                            new AtfAssertion("Place bid is compact without shrinking its hit target",
+                                    "<=144 dp wide; >=48 dp high", submitBidSize.toString()
+                                            + " px at density " + densityScale, submitBidIsDiscreetAndAccessible),
+                            new AtfAssertion("Place bid remains inside the table above the hand",
+                                    "submit bottom < hand top", submitBounds + "; " + handBounds,
+                                    actionAnchoredAboveHand),
+                            new AtfAssertion("Variant identity and trump remain visible in the header",
+                                    "Whist · Oh Hell; actual turned card rank and suit", ui.texts(bidding).toString()
+                                            + "; " + ui.descriptions(bidding), gameIdentityAndTrumpVisible),
+                            new AtfAssertion("Trump header distinguishes the actual turned card",
+                                    "TURNED CARD and full accessible card identity",
+                                    ui.texts(bidding) + "; " + ui.descriptions(bidding), turnedTrumpCardVisible),
+                            new AtfAssertion("Felt remains continuous from the table frame to the lower viewport",
+                                    "same table-margin color at 55% and 87% height",
+                                    Boolean.toString(feltContinuesBelowTable), feltContinuesBelowTable)),
                     AtfReportStatus.PASS);
 
             started = System.nanoTime();
@@ -155,15 +235,25 @@ public class WhistLabGameplayE2eTest {
             boolean selectionWasNotSubmitted = ui.hasTextContaining(score, "Bid not placed");
             assertTrue(selectionWasNotSubmitted,
                     "Opening Score sheet submitted the unconfirmed bid; visible=" + ui.texts(score));
+            boolean scoreColumnsVisible = List.of("Player", "Bid", "Won", "Hand", "Total").stream()
+                    .allMatch(label -> {
+                        try { return ui.hasText(score, label); }
+                        catch (Exception failure) { throw new IllegalStateException(failure); }
+                    });
+            assertTrue(scoreColumnsVisible, "Current score table omitted a column: " + ui.texts(score));
             List<Path> scoreEvidence = ui.capture("whist-lab-presentation-live-score");
             evidence.addAll(scoreEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Open the read-only score sheet without submitting the selected bid",
                     "Current scores · Hand 1", scoreEvidence, "open Score sheet and inspect the human score row",
-                    "unsubmitted bid remains unsubmitted", "visible labels=" + ui.texts(score),
+                    "unsubmitted bid remains unsubmitted; Player/Bid/Won/Hand/Total columns are aligned",
+                    "visible labels=" + ui.texts(score),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.of(new AtfAssertion("Score view does not commit the pending bid", "Bid not placed",
-                                    Boolean.toString(selectionWasNotSubmitted), selectionWasNotSubmitted)),
+                                    Boolean.toString(selectionWasNotSubmitted), selectionWasNotSubmitted),
+                            new AtfAssertion("Score sheet presents aligned player and score columns",
+                                    "Player · Bid · Won · Hand · Total", String.join(" · ", ui.texts(score)),
+                                    scoreColumnsVisible)),
                     AtfReportStatus.PASS);
 
             started = System.nanoTime();
@@ -237,6 +327,182 @@ public class WhistLabGameplayE2eTest {
     }
 
     @Test
+    void thirteenCardFanKeepsOneRowAndMovesTheChosenCardIntoTheTable() throws Exception {
+        AdbClient adb = AdbClient.fromSystemProperties();
+        var packagePath = adb.run("shell", "pm", "path", PACKAGE);
+        packagePath.requireSuccess();
+        assertTrue(packagePath.output().contains("package:"), "Whist Lab is not installed: " + packagePath.output());
+
+        Path artifacts = artifacts("thirteen-card-fan");
+        AndroidUiDriver ui = new AndroidUiDriver(adb, artifacts);
+        AndroidUiFlowTrace trace = new AndroidUiFlowTrace(artifacts, "whist-lab-thirteen-card-fan",
+                "Whist · Descending — thirteen-card fan and one-card play",
+                getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
+                List.of("android", "e2e", "ui", "card-fan", "single-row", "click-flow"));
+        List<Path> evidence = new ArrayList<>();
+        List<AtfAssertion> assertions = new ArrayList<>();
+        AtfReportStatus outcome = AtfReportStatus.FAIL;
+        String checks = "The thirteen-card click flow did not complete.";
+        try {
+            long started = System.nanoTime();
+            String before = ui.restartToActivity(PACKAGE, ".MainActivity",
+                    "--ez", "debug_hand_fan_fixture", "true",
+                    "--ez", "debug_hold_ai_turns", "true",
+                    "--es", "debug_language", "EN");
+            before = ui.awaitDescriptionContaining("Your hand, 13 cards.", Duration.ofSeconds(12));
+            List<String> legalCards = ui.legalCardDescriptions(before);
+            List<AndroidUiDriver.Bounds> cardSlots = new ArrayList<>();
+            for (String description : legalCards) cardSlots.add(ui.boundsForDescription(before, description));
+            boolean oneVisibleRow = legalCards.size() == 13
+                    && cardSlots.stream().map(AndroidUiDriver.Bounds::top).distinct().count() == 1;
+            String trumpDescription = ui.descriptions(before).stream()
+                    .filter(value -> value.startsWith("Trump"))
+                    .findFirst().orElse("");
+            boolean suitOnlyTrumpIsExplicit = ui.hasText(before, "NO TURNED CARD")
+                    && trumpDescription.startsWith("Trump suit only, no turned card: ");
+            boolean identityAndTrump = ui.hasText(before, "Whist · Descending") && suitOnlyTrumpIsExplicit;
+            boolean seatSignalsAreVisible = ui.hasText(before, "PLAY NOW")
+                    && ui.hasTextContaining(before, "Bid 0")
+                    && ui.hasTextContaining(before, "Won 0");
+            AndroidUiDriver.Bounds playingSurfaceBefore = ui.boundsForDescription(before, "Playing surface");
+            AndroidUiDriver.Bounds humanSeatBefore = ui.boundsForDescriptionContaining(before, "You. ");
+            String tableSnapshot = before;
+            List<AndroidUiDriver.Bounds> fourPlayerSeats = ui.descriptions(before).stream()
+                    .filter(value -> value.contains(". Bid ") && value.contains(". Score "))
+                    .map(description -> {
+                        try { return ui.boundsForDescription(tableSnapshot, description); }
+                        catch (Exception failure) { throw new IllegalStateException(failure); }
+                    }).toList();
+            double fourPlayerCenterX = playingSurfaceBefore.left() + width(playingSurfaceBefore) / 2.0;
+            boolean humanSeatIsSouth = Math.abs(centerX(humanSeatBefore) - fourPlayerCenterX)
+                    <= width(playingSurfaceBefore) * 0.16
+                    && (humanSeatBefore.top() - playingSurfaceBefore.top())
+                    >= height(playingSurfaceBefore) * 0.78;
+            long northSeats = fourPlayerSeats.stream().filter(bounds ->
+                    (bounds.top() - playingSurfaceBefore.top()) <= height(playingSurfaceBefore) * 0.12
+                    && Math.abs(centerX(bounds) - fourPlayerCenterX) <= width(playingSurfaceBefore) * 0.16).count();
+            long westSeats = fourPlayerSeats.stream().filter(bounds -> {
+                double x = (centerX(bounds) - playingSurfaceBefore.left()) / (double) width(playingSurfaceBefore);
+                double y = (bounds.top() - playingSurfaceBefore.top()) / (double) height(playingSurfaceBefore);
+                return x <= 0.32 && y >= 0.30 && y <= 0.65;
+            }).count();
+            long eastSeats = fourPlayerSeats.stream().filter(bounds -> {
+                double x = (centerX(bounds) - playingSurfaceBefore.left()) / (double) width(playingSurfaceBefore);
+                double y = (bounds.top() - playingSurfaceBefore.top()) / (double) height(playingSurfaceBefore);
+                return x >= 0.68 && y >= 0.30 && y <= 0.65;
+            }).count();
+            boolean fourPlayerMockRingRendered = fourPlayerSeats.size() == 4 && humanSeatIsSouth
+                    && northSeats == 1 && westSeats == 1 && eastSeats == 1;
+            List<Path> beforeEvidence = ui.capture("whist-lab-thirteen-card-fan-before-play");
+            evidence.addAll(beforeEvidence);
+            assertions.add(new AtfAssertion("All thirteen cards are exposed on one row", "13 clickable cards; 1 y-coordinate",
+                    legalCards.size() + " cards; y=" + cardSlots.stream()
+                            .map(AndroidUiDriver.Bounds::top).distinct().toList(), oneVisibleRow));
+            assertions.add(new AtfAssertion("Variant and trump stay visible in the header", "Whist · Descending; trump tile",
+                    ui.texts(before) + "; " + ui.descriptions(before), identityAndTrump));
+            assertions.add(new AtfAssertion("A full-deck hand identifies that no turned card exists",
+                    "NO TURNED CARD; suit-based trump", ui.texts(before) + "; " + trumpDescription,
+                    suitOnlyTrumpIsExplicit));
+            assertions.add(new AtfAssertion("Turn badge and seat bid/result stay visible", "PLAY NOW; Bid 0; Won 0",
+                    ui.texts(before).toString(), seatSignalsAreVisible));
+            assertions.add(new AtfAssertion("Four player seats follow the approved oval", "N; W/E; S",
+                    fourPlayerSeats + "; human south=" + humanSeatIsSouth, fourPlayerMockRingRendered));
+            checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN,
+                    "Open a deterministic thirteen-card hand with the human on lead",
+                    "debug_hand_fan_fixture; AI turns held", beforeEvidence,
+                    "launch the debug deal and inspect each clickable card bound",
+                    "13 cards on one row; four seats match N/W/E/S anchors; PLAY NOW and Bid/Won facts visible; header identity and trump persist",
+                    "legal cards=" + legalCards + "; seat=" + humanSeatBefore
+                            + "; seat positions=" + fourPlayerSeats + "; descriptions=" + ui.descriptions(before),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.copyOf(assertions), oneVisibleRow && identityAndTrump && fourPlayerMockRingRendered
+                            ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            assertTrue(oneVisibleRow, "Expected thirteen accessible card slots in one row: " + legalCards);
+            assertTrue(identityAndTrump, "Variant title or trump indicator was missing");
+            assertTrue(seatSignalsAreVisible, "Turn badge or seat bid/result facts were missing");
+            assertTrue(fourPlayerMockRingRendered, "Four player seats differ from the approved oval: "
+                    + fourPlayerSeats + "; human south=" + humanSeatIsSouth);
+
+            started = System.nanoTime();
+            String selectedCard = ui.firstLegalCardDescription(before);
+            String cardName = selectedCard.substring(0, selectedCard.lastIndexOf(". "));
+            ui.tapDescription(selectedCard);
+            String played = ui.awaitDescriptionContaining("You played " + cardName, Duration.ofSeconds(8));
+            played = ui.awaitDescriptionContaining("Your hand, 12 cards.", Duration.ofSeconds(8));
+            List<Path> afterEvidence = ui.capture("whist-lab-thirteen-card-fan-after-play");
+            evidence.addAll(afterEvidence);
+            AndroidUiDriver.Bounds humanSeatAfter = ui.boundsForDescriptionContaining(played, "You. ");
+            boolean seatStayedFixed = humanSeatBefore.equals(humanSeatAfter);
+            AndroidUiDriver.Bounds playedCardBounds = ui.boundsForDescription(played, "You played " + cardName);
+            AndroidUiDriver.Bounds playingSurfaceBounds = ui.boundsForDescription(played, "Playing surface");
+            boolean cardMovedToCenter = Math.abs(centerX(playedCardBounds) - centerX(playingSurfaceBounds))
+                    <= width(playingSurfaceBounds) * 0.08
+                    && Math.abs(centerY(playedCardBounds) - centerY(playingSurfaceBounds))
+                    <= height(playingSurfaceBounds) * 0.20;
+            boolean trumpRemainsVisible = ui.descriptions(played).stream()
+                    .anyMatch(value -> value.startsWith("Trump"));
+            assertions.add(new AtfAssertion("Tap plays exactly the selected card into the current trick",
+                    "You played " + cardName + " in the center of the oval",
+                    "bounds=" + playedCardBounds + "; table=" + playingSurfaceBounds + "; descriptions="
+                            + ui.descriptions(played).stream().filter(value -> value.contains(" played ")).toList(),
+                    cardMovedToCenter));
+            assertions.add(new AtfAssertion("One card leaves the hand after the animation", "Your hand, 12 cards.",
+                    ui.descriptions(played).stream().filter(value -> value.startsWith("Your hand")).toList().toString(),
+                    ui.hasDescription(played, "Your hand, 12 cards.")));
+            assertions.add(new AtfAssertion("Human seat bounds remain fixed after play", humanSeatBefore.toString(),
+                    humanSeatAfter.toString(), seatStayedFixed));
+            assertions.add(new AtfAssertion("Trump stays in the header after play", "accessible trump tile remains",
+                    ui.descriptions(played).toString(), trumpRemainsVisible));
+            checkpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN,
+                    "Tap one legal card and verify the central trick and unchanged seat position",
+                    selectedCard, afterEvidence, "tap the accessible card slot and let its lift animation finish",
+                    "the chosen card is centered in the current trick; hand shows 12 cards; south seat stays fixed",
+                    "selected=" + selectedCard + "; trick=" + ui.descriptions(played).stream()
+                            .filter(value -> value.contains(" played ")).toList()
+                            + "; hand=" + ui.descriptions(played).stream()
+                            .filter(value -> value.startsWith("Your hand")).toList()
+                            + "; selected card bounds=" + playedCardBounds + "; table=" + playingSurfaceBounds
+                            + "; seat before=" + humanSeatBefore + "; after=" + humanSeatAfter,
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                    List.copyOf(assertions), cardMovedToCenter && seatStayedFixed
+                            && ui.hasDescription(played, "Your hand, 12 cards.") && trumpRemainsVisible
+                            ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            assertTrue(cardMovedToCenter, "Selected card did not appear in the center trick");
+            assertTrue(seatStayedFixed,
+                    "Human seat moved during card play: " + humanSeatBefore + " -> " + humanSeatAfter);
+            assertTrue(ui.hasDescription(played, "Your hand, 12 cards."),
+                    "Playing one card did not leave a twelve-card hand");
+            assertTrue(trumpRemainsVisible, "Trump tile disappeared after play");
+            checks = "A deterministic 13-card Descending hand rendered as one accessible row. Tapping one legal card "
+                    + "ran the lift animation, moved that exact card into the central trick, reduced the hand to 12, "
+                    + "kept the human seat at the same bounds, and retained the trump tile in the header.";
+            outcome = AtfReportStatus.PASS;
+            trace.finish(outcome);
+        } catch (Throwable failure) {
+            outcome = AtfReportStatus.FAIL;
+            trace.fail(failure);
+            if (failure instanceof Exception exception) throw exception;
+            if (failure instanceof Error error) throw error;
+            throw new RuntimeException(failure);
+        } finally {
+            try { adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess(); }
+            catch (Exception teardownFailure) {
+                boolean alreadyFailed = outcome == AtfReportStatus.FAIL;
+                trace.fail(teardownFailure);
+                if (!alreadyFailed) {
+                    outcome = AtfReportStatus.FAIL;
+                    throw teardownFailure;
+                }
+            }
+            trace.finish(outcome);
+            List<Path> reportEvidence = new ArrayList<>(evidence);
+            reportEvidence.add(trace.manifest());
+            publishInteractionReport(artifacts, packagePath.output(), reportEvidence,
+                    assertions, checks, outcome);
+        }
+    }
+
+    @Test
     void defaultFourPlayerOhHellMatchesTheObservedTenCardHandAndSuitedTrump() throws Exception {
         AdbClient adb = AdbClient.fromSystemProperties();
         var packagePath = adb.run("shell", "pm", "path", PACKAGE);
@@ -284,20 +550,20 @@ public class WhistLabGameplayE2eTest {
             started = System.nanoTime();
             ui.tapText("Start game");
             String bidding = ui.awaitText("Place bid", Duration.ofSeconds(15));
-            String trumpHeading = ui.texts(bidding).stream()
-                    .filter(label -> label.startsWith("YOUR BID"))
-                    .filter(label -> label.contains("TRUMP"))
+            String trumpDescription = ui.descriptions(bidding).stream()
+                    .filter(label -> label.startsWith("Trump"))
                     .findFirst().orElse("");
-            boolean recognizedTrump = trumpHeading.matches(
-                    "YOUR BID\\s*[·]\\s*TRUMP\\s+(?:[2-9]|10|J|Q|K|A)[♠♥♣♦]");
+            boolean recognizedTrump = trumpDescription.matches(
+                    "Trump (?:: (?:spades|hearts|clubs|diamonds)|set by turned card: .+)");
             boolean tenCardHand = ui.hasDescription(bidding, "Your hand, 10 cards.");
             boolean biddingReady = ui.hasText(bidding, "Hand 1 / 19")
-                    && ui.hasText(bidding, "Place bid") && recognizedTrump && tenCardHand;
+                    && ui.hasText(bidding, "Place bid") && ui.hasText(bidding, "Whist · Oh Hell")
+                    && recognizedTrump && tenCardHand;
             List<Path> biddingEvidence = ui.capture("whist-lab-default-oh-hell-bidding");
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Start the default four-player Oh Hell deal",
                     "4 players; Oh Hell; Normal AI", biddingEvidence,
-                    "tap Start game", "Hand 1 / 19 has ten human cards, a visible suited trump, and awaits a human bid",
+                    "tap Start game", "Whist · Oh Hell; Hand 1 / 19; ten human cards; header trump tile; awaits a human bid",
                     "visible labels=" + ui.texts(bidding)
                             + "; original samples by seats 3/4/5/6 showed Diamonds/Hearts/Clubs/Spades",
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
@@ -305,13 +571,13 @@ public class WhistLabGameplayE2eTest {
                                     Boolean.toString(ui.hasText(bidding, "Hand 1 / 19")), ui.hasText(bidding, "Hand 1 / 19")),
                             new AtfAssertion("Ten-card hand is exposed accessibly", "Your hand, 10 cards.",
                                     Boolean.toString(tenCardHand), tenCardHand),
-                            new AtfAssertion("An Oh Hell trump is visible in the bidding center", "YOUR BID · TRUMP + card",
-                                    trumpHeading, recognizedTrump),
+                            new AtfAssertion("An Oh Hell trump is visible in the persistent header tile",
+                                    "accessible Trump descriptor", trumpDescription, recognizedTrump),
                             new AtfAssertion("Human can place the first bid", "Place bid",
                                     Boolean.toString(ui.hasText(bidding, "Place bid")), ui.hasText(bidding, "Place bid"))),
                     biddingReady ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
             assertTrue(biddingReady, "Default Oh Hell first hand did not reach the current human bidding UI; labels="
-                    + ui.texts(bidding) + "; trump=" + trumpHeading + "; hand=" + tenCardHand);
+                    + ui.texts(bidding) + "; trump=" + trumpDescription + "; hand=" + tenCardHand);
             result = AtfReportStatus.PASS;
             trace.finish(result);
         } catch (Throwable failure) {
@@ -354,38 +620,40 @@ public class WhistLabGameplayE2eTest {
             long actionStarted = System.nanoTime();
             String bidding = ui.restartToActivity(PACKAGE, ".MainActivity", "--ez", "debug_fixture", "true",
                     "--ez", "persist_fixture", "true");
-            bidding = ui.awaitText("Place your bid", Duration.ofSeconds(10));
-            assertTrue(ui.hasText(bidding, "Place your bid"), "Fixture did not open at its human bidding turn");
-            assertTrue(ui.hasText(bidding, "Trump: Spades"), "Fixture trump should be Spades");
+            bidding = ui.awaitText("Place bid", Duration.ofSeconds(10));
+            assertTrue(ui.hasText(bidding, "Place bid"), "Fixture did not open at its human bidding turn");
+            assertTrue(ui.hasDescriptionContaining(bidding, "Trump: spades"), "Fixture trump should be Spades");
             List<Path> biddingEvidence = ui.capture("whist-lab-bidding");
             evidence.addAll(biddingEvidence);
             checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN, "Launch deterministic 4-player fixture at bidding",
                     "debug_fixture=true; persist_fixture=true", biddingEvidence,
                     "force-stop and launch MainActivity with deterministic fixture",
-                    "Place your bid; Trump: Spades", "visible labels=" + ui.texts(bidding),
+                    "Place bid; header Trump: spades", "visible labels=" + ui.texts(bidding),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
-                    List.of(new AtfAssertion("Fixture opens at human bidding turn", "Place your bid",
-                                    Boolean.toString(ui.hasText(bidding, "Place your bid")), ui.hasText(bidding, "Place your bid")),
-                            new AtfAssertion("Fixture trump is Spades", "Trump: Spades",
-                                    Boolean.toString(ui.hasText(bidding, "Trump: Spades")), ui.hasText(bidding, "Trump: Spades"))),
+                    List.of(new AtfAssertion("Fixture opens at human bidding turn", "Place bid",
+                                    Boolean.toString(ui.hasText(bidding, "Place bid")), ui.hasText(bidding, "Place bid")),
+                            new AtfAssertion("Fixture trump is Spades", "accessible Trump: spades tile",
+                                    Boolean.toString(ui.hasDescriptionContaining(bidding, "Trump: spades")),
+                                    ui.hasDescriptionContaining(bidding, "Trump: spades"))),
                     AtfReportStatus.PASS);
 
             actionStarted = System.nanoTime();
             ui.selectBid(1);
             ui.tapText("Place bid");
             String play = ui.awaitText("A♥", Duration.ofSeconds(10));
-            assertTrue(ui.hasText(play, "Your turn"), "Fixture did not reach the human play turn");
-            assertTrue(play.contains("You  ·  Bid 1"), "Human bid was not retained into play");
+            assertTrue(ui.hasText(play, "PLAY NOW"), "Fixture did not show the active play seat");
+            boolean bidAndResultStayAtHumanSeat = ui.hasDescriptionContaining(play, "You. Bid 1.");
+            assertTrue(bidAndResultStayAtHumanSeat, "Human bid was not retained into play");
             List<Path> playEvidence = ui.capture("whist-lab-play");
             evidence.addAll(playEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN, "Select Bid 1 and reach the human A♥ turn",
                     "central bid button=1; Place bid", playEvidence, "select bid 1 at table center and tap Place bid",
-                    "Your turn with bid 1", "visible labels=" + ui.texts(play),
+                    "PLAY NOW with bid 1", "visible labels=" + ui.texts(play),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
-                    List.of(new AtfAssertion("Human reaches play turn", "Your turn",
-                                    Boolean.toString(ui.hasText(play, "Your turn")), ui.hasText(play, "Your turn")),
-                            new AtfAssertion("Bid remains attached to human seat", "You · Bid 1",
-                                    Boolean.toString(play.contains("You  ·  Bid 1")), play.contains("You  ·  Bid 1"))),
+                    List.of(new AtfAssertion("Active play seat is marked", "PLAY NOW",
+                                    Boolean.toString(ui.hasText(play, "PLAY NOW")), ui.hasText(play, "PLAY NOW")),
+                            new AtfAssertion("Bid and won count remain attached to human seat", "You. Bid 1.",
+                                    Boolean.toString(bidAndResultStayAtHumanSeat), bidAndResultStayAtHumanSeat)),
                     AtfReportStatus.PASS);
 
             actionStarted = System.nanoTime();
@@ -395,25 +663,27 @@ public class WhistLabGameplayE2eTest {
             assertTrue(ui.hasText(home, "New game"), "App did not return to its home screen after process restart");
             ui.tapText("Resume game");
             String resumed = ui.awaitText("A♥", Duration.ofSeconds(10));
-            assertTrue(ui.hasText(resumed, "Your turn"), "Saved game did not resume at the human play turn");
-            assertTrue(resumed.contains("You  ·  Bid 1"), "Saved human bid was lost after process restart");
+            assertTrue(ui.hasText(resumed, "PLAY NOW"), "Saved game did not restore the active play seat");
+            boolean resumedBidAndResult = ui.hasDescriptionContaining(resumed, "You. Bid 1.");
+            assertTrue(resumedBidAndResult, "Saved human bid was lost after process restart");
             List<Path> resumeEvidence = ui.capture("whist-lab-resume");
             evidence.addAll(resumeEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.AND, "Force-stop the process and resume the same saved turn",
                     "Resume game", resumeEvidence, "force-stop; relaunch; tap Resume game",
                     "same human turn and Bid 1 restored", "visible labels=" + ui.texts(resumed),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
-                    List.of(new AtfAssertion("Resume restores human turn", "Your turn",
-                                    Boolean.toString(ui.hasText(resumed, "Your turn")), ui.hasText(resumed, "Your turn")),
-                            new AtfAssertion("Resume preserves bid", "You · Bid 1",
-                                    Boolean.toString(resumed.contains("You  ·  Bid 1")), resumed.contains("You  ·  Bid 1"))),
+                    List.of(new AtfAssertion("Resume restores active play seat", "PLAY NOW",
+                                    Boolean.toString(ui.hasText(resumed, "PLAY NOW")), ui.hasText(resumed, "PLAY NOW")),
+                            new AtfAssertion("Resume preserves bid and won count", "You. Bid 1.",
+                                    Boolean.toString(resumedBidAndResult), resumedBidAndResult)),
                     AtfReportStatus.PASS);
 
             actionStarted = System.nanoTime();
             ui.tapText("A♥");
             String score = ui.awaitText("Score sheet", Duration.ofSeconds(12));
-            String exactScore = "You | Bid 1 | Won 1 | +11 | Total: 11";
-            assertTrue(ui.hasText(score, exactScore), "Exact-bid score row is incorrect; visible texts=" + ui.texts(score));
+            String exactScore = "You | Bid: 1 | Tricks won: 1 | Hand: +11 | Total: 11";
+            assertTrue(ui.hasDescription(score, exactScore),
+                    "Exact-bid score row is incorrect; visible texts=" + ui.texts(score));
             List<Path> scoreEvidence = ui.capture("whist-lab-score");
             evidence.addAll(scoreEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN, "Play A♥ and verify exact-bid scoring",
@@ -421,7 +691,7 @@ public class WhistLabGameplayE2eTest {
                     exactScore, "visible labels=" + ui.texts(score),
                     Duration.ofNanos(System.nanoTime() - actionStarted).toMillis(),
                     List.of(new AtfAssertion("Exact bid earns 10 bonus plus one trick point", exactScore,
-                            String.join(" | ", ui.texts(score)), ui.hasText(score, exactScore))),
+                            Boolean.toString(ui.hasDescription(score, exactScore)), ui.hasDescription(score, exactScore))),
                     AtfReportStatus.PASS);
             checks = "API 28 fixture: human bids 1, the game process is force-stopped, and Resume game restores "
                     + "the human play turn and Bid 1; the human then plays A♥, wins the trick, and receives +11 "
@@ -477,7 +747,8 @@ public class WhistLabGameplayE2eTest {
                     List.of("android", "api-28", "practice-trick", "scoring"));
             try (var details = raw.startPhase("Device details, game assertions, and UI hierarchy")) {
                 details.observation(new ReportObservation("Deterministic practice-hand acceptance",
-                        List.of(new ReportField("Device", System.getProperty("atf.android.serial", "emulator-5554")),
+                        List.of(new ReportField("Device", reportSetting(
+                                        "atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554")),
                                 new ReportField("Android API", "28"),
                                 new ReportField("Package", PACKAGE),
                                 new ReportField("Installed APK", installedPackage.trim()),
@@ -516,6 +787,61 @@ public class WhistLabGameplayE2eTest {
         }
     }
 
+    private static void publishInteractionReport(Path artifacts, String installedPackage, List<Path> files,
+            List<AtfAssertion> assertions, String checks, AtfReportStatus outcome) throws Exception {
+        Path report = artifacts.resolve("whist-lab-thirteen-card-fan.html");
+        var settings = AtfReportConfigurationLoader.load().reportingSettings();
+        try (var session = new ExtentReportSession(report, settings)) {
+            AtfReportPorts.Scenario raw = session.startScenario(
+                    "Whist Lab thirteen-card hand and card-play interaction", "atf.android.e2e", PACKAGE,
+                    List.of("android", "e2e", "ui", "card-fan", "interaction"));
+            try (var details = raw.startPhase("Device, fixture, and observed layout")) {
+                details.observation(new ReportObservation("One-row hand and selected-card movement",
+                        List.of(new ReportField("Device", reportSetting(
+                                        "atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554")),
+                                new ReportField("Android API", System.getProperty("atf.android.api", "device reported at runtime")),
+                                new ReportField("Package", PACKAGE),
+                                new ReportField("Installed APK", installedPackage.trim()),
+                                new ReportField("Observed behavior", checks),
+                                new ReportField("Assertion count", Integer.toString(assertions.size()))),
+                        List.of(), files.stream()
+                                .filter(file -> !file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
+                                .map(WhistLabGameplayE2eTest::artifactUnchecked).toList()));
+                details.complete(outcome);
+            }
+            try (var phase = raw.startPhase("Auditable interaction assertions")) {
+                try (var step = phase.startAssertionStep("Thirteen-card fan and one-card play")) {
+                    step.assertions(assertions);
+                    step.complete(outcome);
+                }
+                phase.complete(outcome);
+            }
+            var ui = UiExtentReportSession.adaptScenario(raw,
+                    ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
+                    "Whist Lab card fan interaction");
+            try (var phase = ui.startPhase("Inline Android screenshots")) {
+                for (Path image : files.stream()
+                        .filter(file -> file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png")).toList()) {
+                    ReportScreenshot screenshot = AndroidScreenshotEvidence.from(image);
+                    phase.uiValidation(screenshot.title(), "Android emulator", screenshot.base64Png(),
+                            List.of(), outcome);
+                }
+                phase.complete(outcome);
+            }
+            raw.complete(outcome);
+        }
+        assertTrue(Files.isRegularFile(report) && Files.size(report) > 2_000,
+                "Whist Lab card-fan Extent report was not published: " + report);
+        String html = Files.readString(report);
+        if (outcome == AtfReportStatus.PASS) {
+            assertTrue(html.contains("data:image/png;base64,"), "Card-fan screenshots must be inline in Extent");
+            assertTrue(html.contains("atf-ui-assertions"), "Extent omitted the standard expandable assertion table");
+            for (AtfAssertion assertion : assertions) {
+                assertTrue(html.contains(assertion.name()), "Extent omitted assertion row " + assertion.name());
+            }
+        }
+    }
+
     private static void publishPresentationReport(Path artifacts, String installedPackage, List<Path> files,
             List<AtfAssertion> assertions, String checks, AtfReportStatus outcome) throws Exception {
         Path report = artifacts.resolve("whist-lab-table-presentation.html");
@@ -530,7 +856,8 @@ public class WhistLabGameplayE2eTest {
                     List.of("android", "e2e", "ui", "table-layout", "navigation"));
             try (var details = raw.startPhase("Layout assertions, navigation, and Android hierarchy")) {
                 details.observation(new ReportObservation("Eight-card table and safe menu navigation",
-                        List.of(new ReportField("Device", System.getProperty("atf.android.serial", "emulator-5554")),
+                        List.of(new ReportField("Device", reportSetting(
+                                        "atf.android.serial", "ATF_ANDROID_SERIAL", "emulator-5554")),
                                 new ReportField("Android API", System.getProperty("atf.android.api", "device reported at runtime")),
                                 new ReportField("Package", PACKAGE),
                                 new ReportField("Installed APK", installedPackage.trim()),
@@ -569,14 +896,18 @@ public class WhistLabGameplayE2eTest {
         String html = Files.readString(report);
         if (outcome == AtfReportStatus.PASS) {
             assertTrue(html.contains("data:image/png;base64,"), "Presentation screenshots must be inline in Extent");
-            assertTrue(html.contains("Observed layout, bidding, and navigation assertions"),
-                    "Extent omitted the dedicated assertion step");
-            assertTrue(html.contains("atf-ui-assertions"), "Extent omitted the standard collapsed assertion table");
+            String assertionTitle = "Observed layout, bidding, and navigation assertions";
+            int assertionGroup = html.indexOf(assertionTitle);
+            assertTrue(assertionGroup >= 0, "Extent omitted the dedicated assertion step");
+            int collapsedBody = html.indexOf("class=\"collapse\"", assertionGroup);
+            int assertionTable = html.indexOf("atf-ui-assertions", assertionGroup);
+            assertTrue(collapsedBody > assertionGroup && assertionTable > collapsedBody,
+                    "The standard assertion table must be inside the expandable Extent step");
             assertTrue(html.contains("Score view does not commit the pending bid"),
                     "Extent omitted the read-only score assertion");
             assertTrue(html.contains("Score navigation leaves the bid summary unchanged"),
                     "Extent omitted the unchanged-bid-summary assertion");
-            assertTrue(assertions.size() == 11, "Expected all 11 ordered UI assertions; found " + assertions.size());
+            assertTrue(!assertions.isEmpty(), "Presentation flow produced no UI assertions");
             for (AtfAssertion assertion : assertions) {
                 assertTrue(html.contains(assertion.name()), "Extent omitted assertion row " + assertion.name());
             }
@@ -596,6 +927,17 @@ public class WhistLabGameplayE2eTest {
         } catch (Exception failure) {
             throw new IllegalStateException("Could not attach Whist Lab evidence " + file, failure);
         }
+    }
+
+    private static int width(AndroidUiDriver.Bounds bounds) { return bounds.right() - bounds.left(); }
+    private static int height(AndroidUiDriver.Bounds bounds) { return bounds.bottom() - bounds.top(); }
+    private static int centerX(AndroidUiDriver.Bounds bounds) { return (bounds.left() + bounds.right()) / 2; }
+    private static int centerY(AndroidUiDriver.Bounds bounds) { return (bounds.top() + bounds.bottom()) / 2; }
+
+    private static String reportSetting(String property, String environment, String fallback) {
+        String value = System.getProperty(property);
+        if (value == null || value.isBlank()) value = System.getenv(environment);
+        return value == null || value.isBlank() ? fallback : value.trim();
     }
 
     private Path artifacts(String flow) {

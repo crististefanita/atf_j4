@@ -88,12 +88,6 @@ final class WhistUiText {
         return selected ? choose("Bid " + bid + ", selected", "Licitația " + bid + ", selectată")
                 : choose("Select bid " + bid, "Selectează licitația " + bid);
     }
-    String compactTrump(GameSession.Snapshot state) {
-        String symbol = state.turnedCard() != null ? state.turnedCard().shortLabel()
-                : state.trump().suit().map(Suit::symbol).orElse("—");
-        return trumpHeading() + " " + symbol;
-    }
-
     String spinnerLabel(String id) {
         return switch (id) {
             case "player-count" -> players();
@@ -179,6 +173,10 @@ final class WhistUiText {
                 + GameRules.handSizes(state.mode(), state.players().size()).size();
     }
 
+    String gameTitle(GameMode mode) {
+        return "Whist · " + modeName(mode);
+    }
+
     String bidSummary(GameSession.Snapshot state) {
         if (romanian()) {
             return "Licitații depuse " + state.bidsSubmitted() + "/" + state.players().size()
@@ -257,35 +255,41 @@ final class WhistUiText {
     String tricksWonLabel() { return choose("Tricks won", "Levate câștigate"); }
     String scoreLabel() { return choose("Score", "Scor"); }
     String pointsLabel() { return choose("pts", "pct."); }
+    String scoreColumnPlayer() { return choose("Player", "Jucător"); }
+    String scoreColumnBid() { return choose("Bid", "Bid"); }
+    String scoreColumnTricks() { return choose("Won", "Lev."); }
+    String scoreColumnHand() { return choose("Hand", "Mână"); }
+    String scoreColumnTotal() { return choose("Total", "Total"); }
+    String bidNotPlaced() { return choose("Bid not placed", "Licitația nu a fost depusă"); }
     String dealerLabel() { return choose("DEALER", "ÎMPĂRȚITOR"); }
     String currentTurnLabel() { return choose("Current turn", "La rând"); }
     String yourTurn() { return choose("Your turn", "Este rândul tău"); }
     String waitingFor(String player) { return choose("Waiting for " + player + ".", "Îl așteaptă pe " + player + "."); }
     String currentTrick() { return choose("Current trick", "Levată curentă"); }
-    String cardsPlayed(int count, int total) {
-        return romanian() ? count + " din " + total + " cărți jucate"
-                : count + " of " + total + " cards played";
-    }
-    String firstLead() { return choose("The first player leads any card.", "Primul jucător poate începe cu orice carte."); }
     String noCardsYet() { return choose("No cards have been played in this hand yet.", "Nu s-a jucat nicio carte în această mână."); }
     String trumpHeading() { return choose("TRUMP", "ATU"); }
     String noTrump() { return choose("No trump", "Fără atu"); }
     String seatName(GameSession.PlayerSnapshot player) { return playerName(player); }
     String seatFacts(GameSession.PlayerSnapshot player) {
-        return playerName(player) + "  ·  " + bidLabel() + " "
-                + (player.bid() == null ? "—" : player.bid());
+        return bidLabel() + " " + (player.bid() == null ? "—" : player.bid())
+                + "  ·  " + choose("Won", "Levate") + " " + player.tricksWon();
     }
-    String seatResult(GameSession.PlayerSnapshot player) {
-        return tricksWonLabel() + " " + player.tricksWon() + "  ·  "
-                + player.totalScore() + " " + pointsLabel();
+    String seatTurnAction(boolean bidding) {
+        return bidding ? choose("BID NOW", "LICITEAZĂ ACUM")
+                : choose("PLAY NOW", "JOACĂ ACUM");
     }
-    String seatAccessibility(GameSession.PlayerSnapshot player, boolean dealer, boolean active) {
+    String seatTurnBadge(boolean bidding) {
+        return bidding ? choose("BID NOW", "LICITEAZĂ")
+                : choose("PLAY NOW", "JOACĂ ACUM");
+    }
+    String seatAccessibility(GameSession.PlayerSnapshot player, boolean dealer, boolean active,
+            boolean bidding) {
         String description = playerName(player) + ". " + bidLabel() + " "
                 + (player.bid() == null ? choose("not placed", "nepusă") : player.bid())
                 + ". " + tricksWonLabel() + " " + player.tricksWon() + ". "
                 + scoreLabel() + " " + player.totalScore() + " " + pointsLabel();
         if (dealer) description += ". " + dealerLabel();
-        if (active) description += ". " + currentTurnLabel();
+        if (active) description += ". " + currentTurnLabel() + ". " + seatTurnAction(bidding);
         return description;
     }
     String trickPlayer(GameSession.PlayerSnapshot player) { return playerName(player); }
@@ -325,18 +329,27 @@ final class WhistUiText {
             return choose("Trump set by turned card: ", "Atu stabilit de cartea întoarsă: ")
                     + cardLabel(state.turnedCard());
         }
-        return state.trump().suit().map(suit -> choose("Trump: ", "Atu: ") + suitName(suit))
+        return state.trump().suit().map(suit -> choose("Trump suit only, no turned card: ",
+                        "Atu de culoare, fără carte întoarsă: ") + suitName(suit))
                 .orElse(noTrump());
+    }
+    String trumpIndicatorStatus(GameSession.Snapshot state) {
+        if (state.turnedCard() != null) return choose("TURNED CARD", "CARTE ÎNTOARSĂ");
+        if (state.trump().suit().isPresent()) return choose("NO TURNED CARD", "FĂRĂ CARTE");
+        return choose("NO TRUMP", "FĂRĂ ATU");
     }
     String tableAccessibility(int seats) {
         return romanian() ? "Masa de joc, " + seats + " jucători." : "Game table, " + seats + " players.";
     }
     String boardSurface() { return choose("Playing surface", "Suprafața de joc"); }
     String scoreLine(GameSession.PlayerSnapshot player, int earned) {
+        return scoreLine(player, (earned >= 0 ? "+" : "") + earned);
+    }
+    String scoreLine(GameSession.PlayerSnapshot player, String handValue) {
         String line = playerName(player) + " | " + bidLabel() + ": "
                 + (player.bid() == null ? "—" : player.bid()) + " | "
                 + tricksWonLabel() + ": " + player.tricksWon() + " | "
-                + choose("Hand", "Mână") + ": " + (earned >= 0 ? "+" : "") + earned;
+                + choose("Hand", "Mână") + ": " + handValue;
         if (player.streakPoints() != 0) {
             line += choose(" (series ", " (serie ")
                     + (player.streakPoints() > 0 ? "+" : "") + player.streakPoints() + ")";

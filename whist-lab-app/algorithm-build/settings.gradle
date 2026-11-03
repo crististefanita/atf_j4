@@ -1,0 +1,7 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories { mavenCentral() }
+}
+rootProject.name = "whist-algorithm"
+include(":game-core")
+project(":game-core").projectDir = file("../game-core")

@@ -43,22 +43,38 @@ public final class MonteCarloAi {
         int prior=view.seats().stream().filter(s->s.bid()!=null).mapToInt(s->s.bid()).sum();
         boolean last=view.seats().stream().filter(s->s.bid()!=null).count()==view.seats().size()-1;
         List<Integer> allowed=GameRules.allowedBids(view.handSize(),prior,last);
+        boolean safety=view.mode().isRomanian();
         if(view.handSize()==1&&view.hand().size()==1&&view.trick().isEmpty()&&view.history().isEmpty()){
-            double win=OneCardBidBelief.probability(view);int best=allowed.get(0);double value=Double.NEGATIVE_INFINITY;
-            for(int bid:allowed){double expected=win*points(view,view.seat(),1,bid)+(1-win)*points(view,view.seat(),0,bid);if(expected>value){value=expected;best=bid;}}return best;
+            double win=OneCardBidBelief.probability(view),bestChance=Double.NEGATIVE_INFINITY,value=Double.NEGATIVE_INFINITY;int best=allowed.get(0);
+            for(int bid:allowed){double chance=bid==1?win:1-win;double expected=win*points(view,view.seat(),1,bid)+(1-win)*points(view,view.seat(),0,bid);
+                if((safety?chance:expected)>bestChance||Math.abs((safety?chance:expected)-bestChance)<1e-12&&expected>value){best=bid;bestChance=safety?chance:expected;value=expected;}}return best;
         }
-        double[] values=new double[view.handSize()+1];int samples=0;
-        for(int sample=0;sample<SAMPLES;sample++) {
-            Random random=new Random(seed(view,sample));List<List<Card>> hands=sample(view,random);
-            if(hands==null)continue;
-            for(int bid:allowed){int[] targets=biddingTargets(view,hands,bid);
-                values[bid]+=evaluate(view,hands,null,targets,seed(view,sample)^0xB1D2026L,.5)[0];}
-            samples++;
+        var evidence=new BidSamples(allowed,view.handSize()+1,safety);
+        int budget=safety?128:SAMPLES;
+        for(int sample=0;sample<budget;sample++){
+            List<List<Card>> hands=sample(view,new Random(seed(view,sample)));if(hands==null)continue;
+            double[] points=new double[view.handSize()+1],exact=new double[view.handSize()+1];
+            for(int bid:allowed){int[] targets=biddingTargets(view,hands,bid);double[] result=evaluate(view,hands,null,targets,seed(view,sample)^0xB1D2026L,.5);points[bid]=result[0];exact[bid]=result[2];}
+            evidence.add(points,exact);
+            if((sample+1)%32==0&&evidence.enough())break;
         }
-        if(samples==0)return allowed.get(0);
-        int best=allowed.get(0);
-        for(int bid:allowed)if(values[bid]>values[best]+1e-9)best=bid;
-        return best;
+        return evidence.best();
+    }
+
+    /** Paired-world uncertainty, bounded to128 samples; not a formal confidence guarantee. */
+    static final class BidSamples {
+        private final List<Integer> allowed;private final boolean safety;private final double[] primary,points;private final double[][] squaredDifferences;private int count;
+        BidSamples(List<Integer> allowed,int size,boolean safety){this.allowed=List.copyOf(allowed);if(allowed.isEmpty())throw new IllegalArgumentException("No legal bid");this.safety=safety;primary=new double[size];points=new double[size];squaredDifferences=new double[size][size];}
+        void add(double[] scores,double[] exact){
+            for(int bid:allowed){double value=safety?exact[bid]:scores[bid];if(!Double.isFinite(value)||!Double.isFinite(scores[bid]))throw new IllegalArgumentException("Non-finite sampled utility");primary[bid]+=value;points[bid]+=scores[bid];}
+            for(int a:allowed)for(int b:allowed){double d=safety?exact[a]-exact[b]:scores[a]-scores[b];squaredDifferences[a][b]+=d*d;}count++;
+        }
+        int best(){int best=allowed.get(0);for(int bid:allowed)if(primary[bid]>primary[best]+1e-12||Math.abs(primary[bid]-primary[best])<1e-12&&points[bid]>points[best]+1e-12)best=bid;return best;}
+        boolean enough(){
+            if(count<32)return false;if(count>=128||allowed.size()==1)return true;int leader=best();
+            for(int rival:allowed)if(rival!=leader){double gap=(primary[leader]-primary[rival])/count;double variance=Math.max(0,(squaredDifferences[leader][rival]-count*gap*gap)/(count-1));if(variance>1e-15&&gap<=2*Math.sqrt(variance/count))return false;}return true;
+        }
+        int samples(){return count;}
     }
 
     public static Decision chooseCard(View view) {
@@ -73,20 +89,24 @@ public final class MonteCarloAi {
         Card dominant=LateDiscard.choose(view);if(dominant!=null)return new Decision(dominant,List.of(),"Two-card same-suit dominance: current trick already lost, or last-seat win fixed; retain high only if one further trick is needed. No hidden cards or samples used.");
         List<Candidate> evaluations=new ArrayList<>();
         int[] targets=view.seats().stream().mapToInt(s->s.bid()==null?0:s.bid()).toArray();
-        double[] values=new double[legal.size()],rivals=new double[legal.size()];int samples=0;
+        double[] values=new double[legal.size()],rivals=new double[legal.size()],exact=new double[legal.size()];int samples=0;
         List<List<List<Card>>> exactDeals=enumerateSmallDeals(view);
         int worlds=exactDeals.isEmpty()?SAMPLES:exactDeals.size();
         for(int sample=0;sample<worlds;sample++){
             List<List<Card>> hands=exactDeals.isEmpty()?sample(view,new Random(seed(view,sample))):exactDeals.get(sample);if(hands==null)continue;samples++;
             for(int c=0;c<legal.size();c++){
-                double[] value=evaluate(view,hands,legal.get(c),targets,seed(view,sample)^0xCA4D2026L,exactWeight);values[c]+=value[0];rivals[c]+=value[1];
+                double[] value=evaluate(view,hands,legal.get(c),targets,seed(view,sample)^0xCA4D2026L,exactWeight);values[c]+=value[0];rivals[c]+=value[1];exact[c]+=value[2];
             }
         }
         int best=0;for(int c=0;c<legal.size();c++){
             evaluations.add(new Candidate(legal.get(c),samples==0?Double.NEGATIVE_INFINITY:values[c]/samples,samples));
-            if(values[c]>values[best]+1e-9||Math.abs(values[c]-values[best])<1e-9&&rivals[c]<rivals[best])best=c;
+            if(prefer(view.mode().isRomanian(),exact[c],values[c],rivals[c],exact[best],values[best],rivals[best]))best=c;
         }
-        return new Decision(legal.get(best),evaluations,samples+(exactDeals.isEmpty()?" sampled":" exhaustively enumerated")+" feasible common possible deals; public void inference; small-endgame exact/heuristic mixture weight="+exactWeight+"; contract points then strongest-rival tie-break");
+        return new Decision(legal.get(best),evaluations,samples+(exactDeals.isEmpty()?" sampled":" exhaustively enumerated")+" feasible common possible deals; public void inference; small-endgame exact/heuristic mixture weight="+exactWeight+"; highest estimated exact-contract probability for Romanian Whist; points then rival score break ties");
+    }
+    static boolean prefer(boolean safety,double exact,double points,double rival,double bestExact,double bestPoints,double bestRival){
+        double primary=safety?exact:points,bestPrimary=safety?bestExact:bestPoints;
+        return primary>bestPrimary+1e-9||Math.abs(primary-bestPrimary)<1e-9&&(points>bestPoints+1e-9||Math.abs(points-bestPoints)<1e-9&&rival<bestRival);
     }
     static double oneCardWinProbability(View v){
         Card own=v.hand().get(0);List<Card> pool=unknownCards(v);int threats=0,lower=0;
@@ -119,7 +139,7 @@ public final class MonteCarloAi {
             for(int i=0;i<result.length;i++)result[i]=(1-exactWeight)*result[i]+exactWeight*exact[i];
         }return result;
     }
-    private static double[] utility(View view,int[] won,int[] targets){int rival=Integer.MIN_VALUE;for(int s=0;s<won.length;s++)if(s!=view.seat())rival=Math.max(rival,view.seats().get(s).total()+points(view,s,won[s],targets[s]));return new double[]{points(view,view.seat(),won[view.seat()],targets[view.seat()]),rival};}
+    private static double[] utility(View view,int[] won,int[] targets){int rival=Integer.MIN_VALUE;for(int s=0;s<won.length;s++)if(s!=view.seat())rival=Math.max(rival,view.seats().get(s).total()+points(view,s,won[s],targets[s]));return new double[]{points(view,view.seat(),won[view.seat()],targets[view.seat()]),rival,won[view.seat()]==targets[view.seat()]?1:0};}
 
     static int points(View view,int seat,int won,int bid){
         return view.streakBonuses()?RomanianScoring.score(won,bid,view.handSize(),view.seats().get(seat).streak(),view.streakBonusPoints()).totalPoints()

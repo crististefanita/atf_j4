@@ -10,7 +10,7 @@ Android găzduit de Podman pe mașina fizică și afișat în mașina virtuală 
   surse selectat din J3 după compararea J1/J2/J3 și verificarea compatibilității
   surselor Java cu baseline-ul curent J0.
 - `lib/atf-core-1.0.0-c3.{jar,pom}` și
-  `lib/atf-reporting-1.0.0-j16.{jar,pom}`: dependențe binare pentru consumatori.
+  `lib/atf-reporting-1.0.0-j18.{jar,pom}`: dependențe binare pentru consumatori.
   Hash-urile și proveniența surselor sunt în `library-provenance.json`.
 - Implementarea și testele contractuale Core și Reporting aparțin J0. J4 deține
   integrarea Android și compoziția rapoartelor specifice consumatorului.
@@ -19,6 +19,18 @@ Vezi [notele testelor Android](docs/ATF_Android_Whist_Testing.md) pentru
 conexiunea VM/host, exercițiile efectuate și limitele de afișare cunoscute.
 
 ## Reguli și dezvoltare cu prioritate pe componente
+
+- [Arena AI și acceptanța pe rol](docs/AI_STRATEGY_ARENA.md) documentează mesele
+  virtuale cu strategii diferite, aceleași împărțiri și locuri rotite. Politicile
+  curente acceptate sunt Expert Safety10 și independent V8; varianta independentă
+  Safety10 a fost respinsă. [Catalogul de onoruri și acoperiri](docs/rules/AI_HAND_PATTERNS_RO.md)
+  explică ipotezele contextuale, ponderile de cercetare și limitele lor.
+
+- Iterația offline din 3 noiembrie are 500 de cazuri în regresia completă, trei
+  reluări de binding și o ligă de 128 de partide. [Raportul Extent J17](C:/work/whist_back/ai-training/20261103-safety10/reports/final-extent-report.html)
+  publică o selecție explicită de 56 de capturi întregi, cu inventarul populației,
+  deciziile pe rol și 2.879 de comparații; auditul static este trecut. Această
+  iterație nu revendică o execuție nouă pe Android.
 
 [Corpusul offline](docs/AI_CORPUS.md) păstrează partidele complete ca JSON simplu,
 cu fiecare licitație, levată, plată de serie și scor final. Reluarea, validarea și
@@ -210,6 +222,12 @@ Scriptul rulează testele de componentă ale fiecărui modul, apoi suitele Andro
 nominalizate pentru componente și joc live.
 
 - `scrcpy` poate rămâne închis; emulatorul și puntea ADB host trebuie să fie active.
+- După restartul gazdei, serverul ADB poate să nu aibă încă serialul
+  `127.0.0.1:5555` conectat. Runner-ele live execută `adb connect`, apoi cer
+  `get-state` și continuă doar dacă primesc `device`; fiecare comandă de setup
+  are limită de 15 secunde, iar indisponibilitatea oprește flow-ul înainte de
+  instalare sau UI. Pașii manuali și endpointul curent sunt în
+  [testarea Android](docs/ANDROID_TESTING.md).
 - Dovezile se salvează în afara surselor, în
   `C:\work\whist_back\deep-app-test\runs\`, și se publică într-un singur raport
   Extent HTML.
@@ -255,6 +273,26 @@ tăiate.
 
 Pentru structura pachetelor, proprietățile de activare, fluxul rapoartelor și
 comenzile individuale, vezi [organizarea testelor Android](docs/ANDROID_TESTING.md).
+
+## APK Whist Lab pentru instalare directă
+
+APK-ul debug verificat live este [WhistLab-0.1.0-debug.apk](dist/WhistLab-0.1.0-debug.apk).
+Declară `minSdk 24` (Android 7.0+) și nu include biblioteci native sau split-uri
+ABI. Instalarea a fost verificată pe emulatorul API 28 x86_64; rularea pe toate
+modelele și versiunile Android nu este dedusă din această probă.
+
+Build-ul din 3 noiembrie 2026 include cercul de locuri aliniat mock-ului și
+indicatorul de atu cu rang și simbol când există o carte întoarsă. Prima carte
+jucată este centrată în oval. Testele de componentă Android și cele două flow-uri
+UI țintite au trecut; capturile și rapoartele Extent individuale sunt în
+`%TEMP%\whist-j4-final-layout-live-20261103-142000`.
+
+```powershell
+adb install -r dist/WhistLab-0.1.0-debug.apk
+```
+
+APK-ul este semnat cu cheia debug locală; SHA-256 este în
+[`WhistLab-0.1.0-debug.apk.sha256`](dist/WhistLab-0.1.0-debug.apk.sha256).
 
 La adăugarea unui consumator nou, copiază numai adaptorul sau testele de care are
 nevoie. Păstrează harness-ul generic, contractele backend și implementarea
@@ -319,7 +357,7 @@ J15 păstrează și CR/LF literal și newline-urile inițiale în corpurile TEXT
 proaspete de componente, reconstrucția E2E arhivată, controalele negative
 deliberate și lacunele rămase la consumator/randare.
 
-## Vizualizatorul de capturi curent — J16
+## Vizualizatorul de capturi — introdus în J16
 
 [Reporting J16](docs/ATF_Reporting_J16_Verification.md) încadrează dovezile PNG
 complete în viewport-ul browserului și păstrează checkpoint-ul selectat,
@@ -333,8 +371,9 @@ independente și completitudinea capturii își păstrează acceptanța proprie.
 Vezi [colecțiile de teste](docs/TEST_COLLECTIONS.md), [Cum se joacă](docs/rules/WHIST_RO.md)
 și [How to play](docs/rules/WHIST_EN.md). Regresia curentă exclude turneele de
 învățare; rapoartele de învățare selectează exemple complete și toate eșecurile,
-cu domeniul și omisiunile explicite. Artefactele Android și partidele de antrenare
-rămân în afara proiectului.
+cu domeniul și omisiunile explicite. Artefactele de testare Android și partidele
+de antrenare rămân în afara proiectului; copia APK-ului de instalare directă este
+publicată în `dist/`.
 
 ## Rapoarte adaptive de joc — AUTO, SUMMARY și FULL
 
@@ -351,4 +390,23 @@ de caractere.
 - [Feedback rămas](docs/feedback/ATF_Android_Alignment_Feedback.md): dovezile
   business legacy lipsă, timing-ul și acceptanța pe dispozitiv rămân explicite.
 
-R6 offline algorithms: [analysis and measured limits](docs/AI_ROUND6_ANALYSIS.md). Twenty small regressions protect the late-card correction. Statistical bid-evidence weights failed untouched evaluation and are not deployed. UI acceptance remains a separate iteration.
+- R6 offline algorithms: [analysis and measured limits](docs/AI_ROUND6_ANALYSIS.md).
+- Twenty small regressions protect the late-card correction.
+- Statistical bid-evidence weights failed untouched evaluation and are not deployed.
+- UI acceptance remains a separate iteration.
+
+## Large-report navigation — J17
+
+[J17 acceptance](docs/ATF_Reporting_J17_Verification.md) records the retained-evidence
+navigation fix, permanent source/JAR regressions and this workspace's own sanity.
+The full Android artifact retains its supplied comparison rows and original PNGs;
+closed tables are measured when opened, and timing/view indexes are reused only
+within their aggregation pass. Preview 240, independent verdicts and the shared
+UI/API/SQL table formatting remain part of the contract.
+
+## Cold-start report readiness
+
+[Reporting J18 verification](docs/ATF_Reporting_J18_Verification.md) records
+single initialization for the requested view, truthful readiness and native
+navigation-link repair. PNGs, audit comparisons and preview 240 are retained;
+readiness/action and navigation deadlines remain 10 s and 45 s.

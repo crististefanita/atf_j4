@@ -43,6 +43,19 @@ The current ADB client is `C:\tools\whist-android-sdk\platform-tools\adb.exe`,
 with `ADB_SERVER_SOCKET=tcp:192.168.56.1:5038`. The serial after host restart is
 `127.0.0.1:5555`; older examples below retain their historical serial.
 
+After a host restart, connect the loopback serial through the host ADB server
+before issuing device commands:
+
+```powershell
+$env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
+$adb = 'C:\tools\whist-android-sdk\platform-tools\adb.exe'
+& $adb connect 127.0.0.1:5555
+& $adb -s 127.0.0.1:5555 get-state
+```
+
+J4 live runners now perform this preflight automatically. Each ADB command has a
+15-second bound; a missing host bridge stops the run before install or UI work.
+
 ## Running
 
 The ordinary Maven build does not contact a device. Run the Android adapter contracts with:
@@ -56,7 +69,9 @@ Run the original app flow when the emulator is booted and ADB is reachable:
 ```powershell
 mvn -pl atf-test-android -Dtest=ContractWhistE2eSuite `
   -Datf.android.enabled=true `
-  -Datf.android.serial=emulator-5554 `
+  -Datf.android.adb=C:\tools\whist-android-sdk\platform-tools\adb.exe `
+  -Datf.android.serial=127.0.0.1:5555 `
+  -Datf.android.adbServerSocket=tcp:192.168.56.1:5038 `
   -Datf.android.commandTimeoutSeconds=90 `
   -Datf.android.artifacts=C:\work\whist_back\deep-app-test\probes\original-app `
   test
@@ -64,12 +79,13 @@ mvn -pl atf-test-android -Dtest=ContractWhistE2eSuite `
 
 The standard full run is `scripts/run-deep-tests.ps1`. It builds `game-core` and the APK, installs Whist Lab, configures the host ADB bridge, runs all component and Android suites, and publishes one aggregate report. `scrcpy` can stay closed. Android and ADB must stay available.
 
-This VM run used the local SDK client because `X:` was not mounted in the shell:
+The live runner uses the local SDK client because `X:` is not mounted in this
+shell. Its default serial is the current host-forwarded endpoint:
 
 ```powershell
 .\scripts\run-deep-tests.ps1 `
   -AdbExecutable 'C:\tools\whist-android-sdk\platform-tools\adb.exe' `
-  -AdbServerSocket 'tcp:192.168.56.1:5038'
+  -Serial '127.0.0.1:5555' -AdbServerSocket 'tcp:192.168.56.1:5038'
 ```
 
 The runner's default evidence root is `C:\work\whist_back\deep-app-test\runs\<run-id>`, outside the J4 source tree. Override it with `-EvidenceRoot` if needed.

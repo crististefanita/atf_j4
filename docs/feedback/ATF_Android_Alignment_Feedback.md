@@ -259,10 +259,61 @@ Verificat la 2 noiembrie, run C:/work/whist_back/ai-training/20261102-184455-rou
 | ID / prioritate | Probă / limită actuală | Criteriu de închidere |
 |---|---|---|
 | J4-RPT-14 / P2 | selecția learning primește populația completă deja materializată; profilul limitează publicarea, nu heap-ul încărcării | selectare pe metadate/receipts validate, cu limite explicite de încărcare; păstrați IDs, hashes, toate non-PASS/gates și oracolul independent al selecției |
-| J4-RPT-15 / P1 | AI arhivat republicat are 55.694.897 bytes; ecranul inițial se afișează, dar interogările globale și navigarea către owner expiră în TAB MCP | măsurați timp/heap/DOM și verificați interacțiunea owner, ultimul assertion și PNG pe un artifact mare real; păstrați toate comparațiile și capturile, fără a prezenta încărcarea inițială ca audit complet |
 
 J4 trebuie să măsoare compoziția și densitatea receipt-urilor. O limită neutră a viewer-ului/DOM-ului se reproduce separat cu date sintetice în J0 înaintea oricărei modificări de bibliotecă; nu atribuim aceste timeouts direct unui defect Reporting.
 
 ## R6 — offline algorithm acceptance and live input reconciliation
 
-See [AI R6 feedback](AI_TRAINING_ROUND6_Feedback.md) and [RO/EN analysis](../AI_ROUND6_ANALYSIS.md). The local rank correction is accepted on twenty targeted regressions plus fresh no-regression comparisons; statistical superiority is explicitly unproved. The rejected evidence model remains rejected. Latest live presentation grouping/budgets were preserved; complete configured collections are now protected from learning sampling. No device/UI acceptance is claimed.
+- See [AI R6 feedback](AI_TRAINING_ROUND6_Feedback.md) and [RO/EN analysis](../AI_ROUND6_ANALYSIS.md).
+- The local rank correction is accepted on twenty targeted regressions plus fresh no-regression comparisons; statistical superiority is explicitly unproved.
+- The rejected evidence model remains rejected.
+- Latest live presentation grouping/budgets were preserved; complete configured collections are now protected from learning sampling.
+- No device/UI acceptance is claimed.
+
+## J4-UI-LEASE-16 — enforce exclusive device ownership at every entrypoint
+
+**Priority: P1.** During the 3 November report verification, the shared lease
+file declared active=false while a direct WhistLabGameplayE2eTest run was
+using serial 127.0.0.1:5555. The report validation runner detected that foreign
+process and refused to start its own device session; it did not stop the run.
+
+- [ ] Acquire/release the same exclusive lease from the Android composition root
+      used by Maven, IntelliJ and scripts, including failure and cancellation.
+- [ ] Refuse a second owner before the first ADB action; stale-lease recovery
+      must verify the owner process and preserve another active session.
+- [ ] Add a no-device component contract for two competing owners and abnormal
+      release. Keep actual app/device execution acceptance separate.
+
+This coordination belongs to J4. Publishing an archived trace or fixing the
+Reporting JAR cannot make concurrent device interactions auditable.
+
+## J4-RPT-15 — targeted navigation verified
+
+The [J17 record](../ATF_Reporting_J17_Verification.md) verifies the complete
+55.7 MB archived artifact on the physical JAR, with targeted comparison/PNG
+opening and unchanged evidence inventories. Full-display fit is visible in
+the captured browser rendering. J17 excluded bulk expansion; the later J18 permission is limited to two
+explicitly selected original owners.
+
+The user approved publication with the recorded Chromium checks and visually
+inspected captures while TAB MCP controls are unavailable. Android LIVE remains separate: the current
+ADB precheck returned connection reset. RPT-14 and legacy business/timing gaps
+remain open at their existing owners.
+
+
+## Offline AI / arena — 3 noiembrie 2026
+
+- [Feedbackul pe algoritmi și input](AI_SAFETY_ARENA_Feedback.md) consemnează criteriile distincte pe rol, ligile A/B, respingerea independentului Safety10 și catalogul contextual inactiv. Raportul acestei iterații a consumat J17 fizic: 56 de capturi întregi / 2.879 comparații / 6.613.666 bytes, cu audit static trecut. Din 426 de surse, selecția este făcută înaintea Java; toate ID-urile/hash-urile și limitele sunt declarate. J4-RPT-14 este îmbunătățit pentru această integrare, nu închis pentru loaderul generic.
+
+- Prima publicare a refuzat owner-ul /setup duplicat în capturile de arenă. Producătorul J4 a fost corectat; capturile vechi rămân nemodificate și NOT_PUBLISHABLE. Două partide au fost reexecutate, cu toate cele 24 de mâini și scoruri identice originalelor. Nu s-a relaxat contractul J0 și nu s-a schimbat JAR-ul/rendererul. UI/device, false PASS legacy și acceptanța interactivă a acestui HTML rămân în afara acestei iterații.
+
+## J4-RPT-17 — cold-start readiness corrected at the library owner
+
+[The J18 acceptance](../ATF_Reporting_J18_Verification.md) records single
+requested-view initialization, truthful readiness and lightweight native link
+repair. Permanent neutral regressions remain in J0 Reporting Tests.
+
+- Readiness/action 10 s, navigation 45 s and preview 240 remain unchanged.
+- Android acceptance uses archived receipts and the complete HTML, including canonical PNG bytes and original comparison cells.
+- Structural bulk acceptance is limited to original owners 3 and 4; each semantic tree must open completely, while local evidence disclosures retain their own policy.
+- Device execution, RPT-14 population budgets and legacy input/oracle/timing gaps remain separate consumer criteria.

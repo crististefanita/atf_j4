@@ -8,6 +8,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
 if(!$RunRoot){$RunRoot='C:\work\whist_back\ai-validation\'+(Get-Date -Format yyyyMMdd-HHmmss)}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
 if(Test-Path -LiteralPath $RunRoot){throw 'Choose a fresh evidence folder; previous runs are retained.'}
@@ -57,7 +58,10 @@ try{
         if($foreign){throw 'Another Android UI test process is active. No process was stopped.'}
         [ordered]@{active=$true;owner='J4 AI validation';leaseId=$leaseId;serial=$Serial;run=$RunRoot;startedAt=(Get-Date -Format o)} | ConvertTo-Json | Set-Content $leasePath;$leased=$true
         $adb="$AndroidSdk\platform-tools\adb.exe";$apk="$stage\whist-lab-app\app\build\outputs\apk\debug\app-debug.apk"
-        Invoke-Checked 'device-ready' { & $adb -s $Serial get-state }
+        Invoke-Checked 'device-ready' {
+            Connect-AtfAndroidDevice -AdbExecutable $adb -Serial $Serial `
+                -ServerSocket $AdbServerSocket -TimeoutSeconds 15
+        }
         Invoke-Checked 'install-own-apk' { & $adb -s $Serial install -r $apk }
         $installedPath=(((& $adb -s $Serial shell pm path ro.whistlab.app) | Where-Object {$_ -like 'package:*'} | Select-Object -First 1) -replace '^package:','').Trim()
         $actual=((& $adb -s $Serial shell sha256sum $installedPath) -split '\s+')[0];$expected=(Get-FileHash $apk -Algorithm SHA256).Hash

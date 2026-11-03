@@ -1,6 +1,6 @@
 param(
-    [string]$AdbExecutable = 'X:\scrcpy-win64-v5.0.1\adb.exe',
-    [string]$Serial = 'emulator-5554',
+    [string]$AdbExecutable = 'C:\tools\whist-android-sdk\platform-tools\adb.exe',
+    [string]$Serial = '127.0.0.1:5555',
     [string]$AdbServerSocket = 'tcp:192.168.56.1:5038',
     [int]$AdbTimeoutSeconds = 90,
     [string]$WhistLabProject = '',
@@ -10,6 +10,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
 if ([string]::IsNullOrWhiteSpace($WhistLabProject)) {
     $WhistLabProject = Join-Path $root 'whist-lab-app'
 }
@@ -69,10 +70,8 @@ try {
     $env:ATF_ANDROID_ADB = $AdbExecutable
     $env:ATF_ANDROID_SERIAL = $Serial
     $env:ATF_ANDROID_TIMEOUT_SECONDS = [string]$AdbTimeoutSeconds
-    & $AdbExecutable -s $Serial get-state | Out-Null
-    if ($LASTEXITCODE -ne 0) {
-        throw "ADB cannot reach device '$Serial' through $AdbServerSocket"
-    }
+    Connect-AtfAndroidDevice -AdbExecutable $AdbExecutable -Serial $Serial `
+        -ServerSocket $AdbServerSocket -TimeoutSeconds 15 | Out-Null
 
     Write-Host 'Installing the J4 reactor artifacts with tests skipped ...'
     & mvn -DskipTests install *> (Join-Path $logsDir 'install.log')

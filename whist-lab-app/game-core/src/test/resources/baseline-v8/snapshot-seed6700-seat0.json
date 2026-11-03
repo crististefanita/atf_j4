@@ -1,0 +1,3069 @@
+{
+  "schemaVersion" : 1,
+  "id" : "round7-mixed08-development-player-expert_v6-seed6700-seat0-after",
+  "partition" : "development",
+  "source" : {
+    "kind" : "component",
+    "heroSeat" : 0,
+    "complete" : true,
+    "visibility" : "post-game full deal; not a decision input",
+    "invocationId" : "development-player-expert_v6-seed6700-seat0",
+    "runId" : "mixed08/development",
+    "policyRevision" : "mixed08",
+    "sourceHashes" : {
+      "ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java" : "2959db5d9dc20ea64c10e41b2ac162519e1bf9cef417e9f42eea7c4275e7b50c",
+      "ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java" : "20ae1a34a70c335f5c8ad05d2b410dcabf6b2985e31402e11ac589ab4966850a",
+      "ai-lab/src/main/java/ro/whistlab/coach/RolloutPlanner.java" : "2f894d9542a2cce309855a4d271da766b88fface9fbb6a5b8f915b585e6de1f1",
+      "game-core/src/main/java/ro/whistlab/core/AiPolicy.java" : "37b345ee5aa589390e029364dc93f680c1d3742c849cdaac5c388f50710d0872",
+      "game-core/src/main/java/ro/whistlab/core/ContractEndgame.java" : "d52e4a5caabd4082d0328c00f437105750f9a741d8d2339d94541dcaed008f14",
+      "game-core/src/main/java/ro/whistlab/core/LateDiscard.java" : "033f76a41bfaf55f7446da37511b42bdbf6f346176219934426b6cdd834d7cad",
+      "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java" : "960011f453c9bc9c92b03fc1ec9edfef5a5e4064d9610f641e8fc4ae62261b7e",
+      "game-core/src/main/java/ro/whistlab/core/OneCardBidBelief.java" : "2094ab095ee87c59d49d9f41f8ee2ba5a78b969f6c095cade172663bd9bf6ccc",
+      "game-core/src/main/java/ro/whistlab/core/RolloutPolicy.java" : "05a4a2f3d1e87183100b98378f6836091716254d8bfa7e6e0d0f6420ecbeb62f"
+    }
+  },
+  "rules" : {
+    "variant" : "ROMANIAN_WHIST",
+    "players" : 4,
+    "seriesEnabled" : true,
+    "seriesBonus" : 10
+  },
+  "seed" : "6700",
+  "players" : [ {
+    "seat" : 0,
+    "name" : "You",
+    "controller" : "IndependentPlayer round7-mixed08"
+  }, {
+    "seat" : 1,
+    "name" : "Ava",
+    "controller" : "Expert round-v6"
+  }, {
+    "seat" : 2,
+    "name" : "Miles",
+    "controller" : "Expert round-v6"
+  }, {
+    "seat" : 3,
+    "name" : "Grace",
+    "controller" : "Expert round-v6"
+  } ],
+  "hands" : [ {
+    "number" : 1,
+    "size" : 1,
+    "dealer" : 0,
+    "trump" : "H",
+    "turnedCard" : "JH",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "8C" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "KD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "AD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "10S" ]
+    } ],
+    "bids" : [ {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "KD"
+      }, {
+        "seat" : 2,
+        "card" : "AD"
+      }, {
+        "seat" : 3,
+        "card" : "10S"
+      }, {
+        "seat" : 0,
+        "card" : "8C"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 5,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 5,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : -1,
+      "streak" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 5,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 2,
+    "size" : 1,
+    "dealer" : 1,
+    "trump" : "H",
+    "turnedCard" : "AH",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7C" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7S" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "10H" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "8C" ]
+    } ],
+    "bids" : [ {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "10H"
+      }, {
+        "seat" : 3,
+        "card" : "8C"
+      }, {
+        "seat" : 0,
+        "card" : "7C"
+      }, {
+        "seat" : 1,
+        "card" : "7S"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 10,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 4,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 5,
+      "streak" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 10,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 3,
+    "size" : 1,
+    "dealer" : 2,
+    "trump" : "S",
+    "turnedCard" : "7S",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "10S" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "JS" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "KS" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "8C" ]
+    } ],
+    "bids" : [ {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "8C"
+      }, {
+        "seat" : 0,
+        "card" : "10S"
+      }, {
+        "seat" : 1,
+        "card" : "JS"
+      }, {
+        "seat" : 2,
+        "card" : "KS"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 9,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 9,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 11,
+      "streak" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 15,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 4,
+    "size" : 1,
+    "dealer" : 3,
+    "trump" : "C",
+    "turnedCard" : "10C",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "AH" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "KH" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "8S" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "7C" ]
+    } ],
+    "bids" : [ {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "AH"
+      }, {
+        "seat" : 1,
+        "card" : "KH"
+      }, {
+        "seat" : 2,
+        "card" : "8S"
+      }, {
+        "seat" : 3,
+        "card" : "7C"
+      } ],
+      "winner" : 3
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 14,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 14,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 16,
+      "streak" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 14,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 5,
+    "size" : 2,
+    "dealer" : 0,
+    "trump" : "S",
+    "turnedCard" : "QS",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "KS", "8H" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7S", "KC" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "AH", "9C" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "7H", "10C" ]
+    } ],
+    "bids" : [ {
+      "seat" : 1,
+      "bid" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 2
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "KC"
+      }, {
+        "seat" : 2,
+        "card" : "9C"
+      }, {
+        "seat" : 3,
+        "card" : "10C"
+      }, {
+        "seat" : 0,
+        "card" : "KS"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "8H"
+      }, {
+        "seat" : 1,
+        "card" : "7S"
+      }, {
+        "seat" : 2,
+        "card" : "AH"
+      }, {
+        "seat" : 3,
+        "card" : "7H"
+      } ],
+      "winner" : 1
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 2,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 13,
+      "streak" : -1
+    }, {
+      "seat" : 1,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 20,
+      "streak" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 21,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 19,
+      "streak" : 1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 6,
+    "size" : 3,
+    "dealer" : 1,
+    "trump" : "C",
+    "turnedCard" : "KC",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "10H", "10C", "8D" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7H", "8C", "9D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "KH", "QC", "JD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "8S", "QH", "JC" ]
+    } ],
+    "bids" : [ {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 1
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "QH"
+      }, {
+        "seat" : 0,
+        "card" : "10H"
+      }, {
+        "seat" : 1,
+        "card" : "7H"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QC"
+      }, {
+        "seat" : 3,
+        "card" : "JC"
+      }, {
+        "seat" : 0,
+        "card" : "10C"
+      }, {
+        "seat" : 1,
+        "card" : "8C"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "JD"
+      }, {
+        "seat" : 3,
+        "card" : "8S"
+      }, {
+        "seat" : 0,
+        "card" : "8D"
+      }, {
+        "seat" : 1,
+        "card" : "9D"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 18,
+      "streak" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 25,
+      "streak" : 2
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 3,
+      "base" : -2,
+      "series" : 0,
+      "total" : 19,
+      "streak" : -1
+    }, {
+      "seat" : 3,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 18,
+      "streak" : -1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 7,
+    "size" : 4,
+    "dealer" : 2,
+    "trump" : "S",
+    "turnedCard" : "7S",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "QS", "7H", "KC", "9D" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "10H", "8C", "8D", "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "8S", "10C", "QC", "KD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "JH", "9C", "7D", "JD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "9C"
+      }, {
+        "seat" : 0,
+        "card" : "KC"
+      }, {
+        "seat" : 1,
+        "card" : "8C"
+      }, {
+        "seat" : 2,
+        "card" : "10C"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "QS"
+      }, {
+        "seat" : 1,
+        "card" : "10H"
+      }, {
+        "seat" : 2,
+        "card" : "8S"
+      }, {
+        "seat" : 3,
+        "card" : "JH"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "9D"
+      }, {
+        "seat" : 1,
+        "card" : "8D"
+      }, {
+        "seat" : 2,
+        "card" : "KD"
+      }, {
+        "seat" : 3,
+        "card" : "JD"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QC"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      }, {
+        "seat" : 0,
+        "card" : "7H"
+      }, {
+        "seat" : 1,
+        "card" : "10D"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 2,
+      "base" : -1,
+      "series" : 0,
+      "total" : 17,
+      "streak" : -1
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 30,
+      "streak" : 3
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 2,
+      "base" : -1,
+      "series" : 0,
+      "total" : 18,
+      "streak" : -2
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 23,
+      "streak" : 1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 8,
+    "size" : 5,
+    "dealer" : 3,
+    "trump" : "S",
+    "turnedCard" : "7S",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "KS", "10H", "10C", "10D", "JD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "8H", "9H", "QC", "AC", "7D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "AS", "9C", "8D", "9D", "KD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "7H", "7C", "8C", "KC", "QD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 0,
+      "bid" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "10D"
+      }, {
+        "seat" : 1,
+        "card" : "7D"
+      }, {
+        "seat" : 2,
+        "card" : "8D"
+      }, {
+        "seat" : 3,
+        "card" : "QD"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "7H"
+      }, {
+        "seat" : 0,
+        "card" : "10H"
+      }, {
+        "seat" : 1,
+        "card" : "8H"
+      }, {
+        "seat" : 2,
+        "card" : "AS"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "9D"
+      }, {
+        "seat" : 3,
+        "card" : "KC"
+      }, {
+        "seat" : 0,
+        "card" : "JD"
+      }, {
+        "seat" : 1,
+        "card" : "QC"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "10C"
+      }, {
+        "seat" : 1,
+        "card" : "AC"
+      }, {
+        "seat" : 2,
+        "card" : "9C"
+      }, {
+        "seat" : 3,
+        "card" : "8C"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "9H"
+      }, {
+        "seat" : 2,
+        "card" : "KD"
+      }, {
+        "seat" : 3,
+        "card" : "7C"
+      }, {
+        "seat" : 0,
+        "card" : "KS"
+      } ],
+      "winner" : 0
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 2,
+      "base" : -1,
+      "series" : 0,
+      "total" : 16,
+      "streak" : -2
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 29,
+      "streak" : -1
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 24,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 22,
+      "streak" : -1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 9,
+    "size" : 6,
+    "dealer" : 0,
+    "trump" : "C",
+    "turnedCard" : "8C",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "JS", "7H", "8H", "7D", "8D", "QD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "9S", "QS", "QH", "AH", "9D", "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "9H", "JH", "KH", "7C", "10C", "AD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "KS", "JC", "QC", "KC", "AC", "KD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 1,
+      "bid" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 2
+    }, {
+      "seat" : 3,
+      "bid" : 4
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "AH"
+      }, {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "JC"
+      }, {
+        "seat" : 0,
+        "card" : "8H"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "QC"
+      }, {
+        "seat" : 0,
+        "card" : "JS"
+      }, {
+        "seat" : 1,
+        "card" : "QH"
+      }, {
+        "seat" : 2,
+        "card" : "7C"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "KC"
+      }, {
+        "seat" : 0,
+        "card" : "7H"
+      }, {
+        "seat" : 1,
+        "card" : "QS"
+      }, {
+        "seat" : 2,
+        "card" : "10C"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "AC"
+      }, {
+        "seat" : 0,
+        "card" : "7D"
+      }, {
+        "seat" : 1,
+        "card" : "9D"
+      }, {
+        "seat" : 2,
+        "card" : "9H"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "KS"
+      }, {
+        "seat" : 0,
+        "card" : "QD"
+      }, {
+        "seat" : 1,
+        "card" : "9S"
+      }, {
+        "seat" : 2,
+        "card" : "JH"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "KD"
+      }, {
+        "seat" : 0,
+        "card" : "8D"
+      }, {
+        "seat" : 1,
+        "card" : "10D"
+      }, {
+        "seat" : 2,
+        "card" : "AD"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 21,
+      "streak" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 28,
+      "streak" : -2
+    }, {
+      "seat" : 2,
+      "bid" : 2,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 23,
+      "streak" : -1
+    }, {
+      "seat" : 3,
+      "bid" : 4,
+      "won" : 5,
+      "base" : -1,
+      "series" : 0,
+      "total" : 21,
+      "streak" : -2
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 10,
+    "size" : 7,
+    "dealer" : 1,
+    "trump" : "D",
+    "turnedCard" : "AD",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "10S", "KS", "9H", "JH", "7C", "8C", "KC" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7S", "7H", "JC", "AC", "9D", "QD", "KD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "JS", "QS", "10H", "AH", "10C", "8D", "10D" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "9S", "AS", "8H", "KH", "QC", "7D", "JD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 2,
+      "bid" : 2
+    }, {
+      "seat" : 3,
+      "bid" : 2
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 4
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "10D"
+      }, {
+        "seat" : 3,
+        "card" : "JD"
+      }, {
+        "seat" : 0,
+        "card" : "9H"
+      }, {
+        "seat" : 1,
+        "card" : "QD"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "9D"
+      }, {
+        "seat" : 2,
+        "card" : "8D"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      }, {
+        "seat" : 0,
+        "card" : "KS"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "JC"
+      }, {
+        "seat" : 2,
+        "card" : "10C"
+      }, {
+        "seat" : 3,
+        "card" : "QC"
+      }, {
+        "seat" : 0,
+        "card" : "7C"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "AS"
+      }, {
+        "seat" : 0,
+        "card" : "10S"
+      }, {
+        "seat" : 1,
+        "card" : "7S"
+      }, {
+        "seat" : 2,
+        "card" : "JS"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "9S"
+      }, {
+        "seat" : 0,
+        "card" : "JH"
+      }, {
+        "seat" : 1,
+        "card" : "KD"
+      }, {
+        "seat" : 2,
+        "card" : "QS"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "AC"
+      }, {
+        "seat" : 2,
+        "card" : "10H"
+      }, {
+        "seat" : 3,
+        "card" : "KH"
+      }, {
+        "seat" : 0,
+        "card" : "KC"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "7H"
+      }, {
+        "seat" : 2,
+        "card" : "AH"
+      }, {
+        "seat" : 3,
+        "card" : "8H"
+      }, {
+        "seat" : 0,
+        "card" : "8C"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 26,
+      "streak" : 2
+    }, {
+      "seat" : 1,
+      "bid" : 4,
+      "won" : 4,
+      "base" : 9,
+      "series" : 0,
+      "total" : 37,
+      "streak" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 2,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 22,
+      "streak" : -2
+    }, {
+      "seat" : 3,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 28,
+      "streak" : 1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 11,
+    "size" : 8,
+    "dealer" : 2,
+    "trump" : "NT",
+    "turnedCard" : null,
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "AS", "8H", "10H", "QH", "8C", "9C", "QC", "8D" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "9S", "KS", "9H", "KC", "10D", "QD", "KD", "AD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "7S", "8S", "10S", "JH", "KH", "AH", "JC", "AC" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "JS", "QS", "7H", "7C", "10C", "7D", "9D", "JD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 4
+    }, {
+      "seat" : 2,
+      "bid" : 4
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "7H"
+      }, {
+        "seat" : 0,
+        "card" : "QH"
+      }, {
+        "seat" : 1,
+        "card" : "9H"
+      }, {
+        "seat" : 2,
+        "card" : "AH"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "AC"
+      }, {
+        "seat" : 3,
+        "card" : "10C"
+      }, {
+        "seat" : 0,
+        "card" : "QC"
+      }, {
+        "seat" : 1,
+        "card" : "KC"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "JC"
+      }, {
+        "seat" : 3,
+        "card" : "7C"
+      }, {
+        "seat" : 0,
+        "card" : "8C"
+      }, {
+        "seat" : 1,
+        "card" : "10D"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "JH"
+      }, {
+        "seat" : 3,
+        "card" : "JS"
+      }, {
+        "seat" : 0,
+        "card" : "8H"
+      }, {
+        "seat" : 1,
+        "card" : "9S"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "7S"
+      }, {
+        "seat" : 3,
+        "card" : "QS"
+      }, {
+        "seat" : 0,
+        "card" : "AS"
+      }, {
+        "seat" : 1,
+        "card" : "KS"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "10H"
+      }, {
+        "seat" : 1,
+        "card" : "QD"
+      }, {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "9D"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "8S"
+      }, {
+        "seat" : 3,
+        "card" : "JD"
+      }, {
+        "seat" : 0,
+        "card" : "9C"
+      }, {
+        "seat" : 1,
+        "card" : "KD"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "10S"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      }, {
+        "seat" : 0,
+        "card" : "8D"
+      }, {
+        "seat" : 1,
+        "card" : "AD"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 32,
+      "streak" : 3
+    }, {
+      "seat" : 1,
+      "bid" : 4,
+      "won" : 0,
+      "base" : -4,
+      "series" : 0,
+      "total" : 33,
+      "streak" : -1
+    }, {
+      "seat" : 2,
+      "bid" : 4,
+      "won" : 7,
+      "base" : -3,
+      "series" : 0,
+      "total" : 19,
+      "streak" : -3
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 33,
+      "streak" : 2
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 12,
+    "size" : 8,
+    "dealer" : 3,
+    "trump" : "NT",
+    "turnedCard" : null,
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7S", "QS", "7H", "KH", "7C", "8C", "QC", "9D" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "8S", "JS", "AS", "9H", "QH", "KC", "AC", "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "8H", "AH", "JC", "7D", "8D", "QD", "KD", "AD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "9S", "10S", "KS", "10H", "JH", "9C", "10C", "JD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 3
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "KH"
+      }, {
+        "seat" : 1,
+        "card" : "QH"
+      }, {
+        "seat" : 2,
+        "card" : "AH"
+      }, {
+        "seat" : 3,
+        "card" : "10H"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "JC"
+      }, {
+        "seat" : 3,
+        "card" : "9C"
+      }, {
+        "seat" : 0,
+        "card" : "7C"
+      }, {
+        "seat" : 1,
+        "card" : "KC"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "10D"
+      }, {
+        "seat" : 2,
+        "card" : "7D"
+      }, {
+        "seat" : 3,
+        "card" : "JD"
+      }, {
+        "seat" : 0,
+        "card" : "9D"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "10C"
+      }, {
+        "seat" : 0,
+        "card" : "8C"
+      }, {
+        "seat" : 1,
+        "card" : "AC"
+      }, {
+        "seat" : 2,
+        "card" : "8H"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "AS"
+      }, {
+        "seat" : 2,
+        "card" : "8D"
+      }, {
+        "seat" : 3,
+        "card" : "KS"
+      }, {
+        "seat" : 0,
+        "card" : "QS"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "8S"
+      }, {
+        "seat" : 2,
+        "card" : "QD"
+      }, {
+        "seat" : 3,
+        "card" : "9S"
+      }, {
+        "seat" : 0,
+        "card" : "7S"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "10S"
+      }, {
+        "seat" : 0,
+        "card" : "7H"
+      }, {
+        "seat" : 1,
+        "card" : "JS"
+      }, {
+        "seat" : 2,
+        "card" : "AD"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "9H"
+      }, {
+        "seat" : 2,
+        "card" : "KD"
+      }, {
+        "seat" : 3,
+        "card" : "JH"
+      }, {
+        "seat" : 0,
+        "card" : "QC"
+      } ],
+      "winner" : 3
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 37,
+      "streak" : 4
+    }, {
+      "seat" : 1,
+      "bid" : 3,
+      "won" : 4,
+      "base" : -1,
+      "series" : 0,
+      "total" : 32,
+      "streak" : -2
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 25,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 1,
+      "won" : 3,
+      "base" : -2,
+      "series" : 0,
+      "total" : 31,
+      "streak" : -1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 13,
+    "size" : 8,
+    "dealer" : 0,
+    "trump" : "NT",
+    "turnedCard" : null,
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "9S", "QS", "9H", "QH", "AH", "10C", "JC", "10D" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7S", "KS", "10H", "KH", "7C", "8D", "9D", "QD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "8S", "10S", "AS", "8H", "JH", "9C", "QC", "JD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "JS", "7H", "8C", "KC", "AC", "7D", "KD", "AD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 2
+    }, {
+      "seat" : 3,
+      "bid" : 4
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "KS"
+      }, {
+        "seat" : 2,
+        "card" : "10S"
+      }, {
+        "seat" : 3,
+        "card" : "JS"
+      }, {
+        "seat" : 0,
+        "card" : "9S"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "KH"
+      }, {
+        "seat" : 2,
+        "card" : "JH"
+      }, {
+        "seat" : 3,
+        "card" : "7H"
+      }, {
+        "seat" : 0,
+        "card" : "AH"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "10D"
+      }, {
+        "seat" : 1,
+        "card" : "8D"
+      }, {
+        "seat" : 2,
+        "card" : "JD"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QC"
+      }, {
+        "seat" : 3,
+        "card" : "8C"
+      }, {
+        "seat" : 0,
+        "card" : "10C"
+      }, {
+        "seat" : 1,
+        "card" : "7C"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "9C"
+      }, {
+        "seat" : 3,
+        "card" : "KC"
+      }, {
+        "seat" : 0,
+        "card" : "JC"
+      }, {
+        "seat" : 1,
+        "card" : "10H"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "AC"
+      }, {
+        "seat" : 0,
+        "card" : "QS"
+      }, {
+        "seat" : 1,
+        "card" : "7S"
+      }, {
+        "seat" : 2,
+        "card" : "8S"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "KD"
+      }, {
+        "seat" : 0,
+        "card" : "QH"
+      }, {
+        "seat" : 1,
+        "card" : "QD"
+      }, {
+        "seat" : 2,
+        "card" : "AS"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "AD"
+      }, {
+        "seat" : 0,
+        "card" : "9H"
+      }, {
+        "seat" : 1,
+        "card" : "9D"
+      }, {
+        "seat" : 2,
+        "card" : "8H"
+      } ],
+      "winner" : 3
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 10,
+      "total" : 53,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 31,
+      "streak" : -3
+    }, {
+      "seat" : 2,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 32,
+      "streak" : 2
+    }, {
+      "seat" : 3,
+      "bid" : 4,
+      "won" : 4,
+      "base" : 9,
+      "series" : 0,
+      "total" : 40,
+      "streak" : 1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 14,
+    "size" : 8,
+    "dealer" : 1,
+    "trump" : "NT",
+    "turnedCard" : null,
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7H", "AH", "9C", "10C", "JC", "7D", "8D", "AD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7S", "8S", "AS", "JH", "QC", "KC", "JD", "KD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "JS", "KS", "9H", "QH", "7C", "8C", "9D", "QD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "9S", "10S", "QS", "8H", "10H", "KH", "AC", "10D" ]
+    } ],
+    "bids" : [ {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 2
+    }, {
+      "seat" : 0,
+      "bid" : 2
+    }, {
+      "seat" : 1,
+      "bid" : 3
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QD"
+      }, {
+        "seat" : 3,
+        "card" : "10D"
+      }, {
+        "seat" : 0,
+        "card" : "AD"
+      }, {
+        "seat" : 1,
+        "card" : "KD"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "AH"
+      }, {
+        "seat" : 1,
+        "card" : "JH"
+      }, {
+        "seat" : 2,
+        "card" : "QH"
+      }, {
+        "seat" : 3,
+        "card" : "8H"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "7H"
+      }, {
+        "seat" : 1,
+        "card" : "7S"
+      }, {
+        "seat" : 2,
+        "card" : "9H"
+      }, {
+        "seat" : 3,
+        "card" : "KH"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "AC"
+      }, {
+        "seat" : 0,
+        "card" : "9C"
+      }, {
+        "seat" : 1,
+        "card" : "QC"
+      }, {
+        "seat" : 2,
+        "card" : "7C"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "9S"
+      }, {
+        "seat" : 0,
+        "card" : "10C"
+      }, {
+        "seat" : 1,
+        "card" : "AS"
+      }, {
+        "seat" : 2,
+        "card" : "KS"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "JD"
+      }, {
+        "seat" : 2,
+        "card" : "9D"
+      }, {
+        "seat" : 3,
+        "card" : "QS"
+      }, {
+        "seat" : 0,
+        "card" : "7D"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "KC"
+      }, {
+        "seat" : 2,
+        "card" : "8C"
+      }, {
+        "seat" : 3,
+        "card" : "10S"
+      }, {
+        "seat" : 0,
+        "card" : "JC"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "8S"
+      }, {
+        "seat" : 2,
+        "card" : "JS"
+      }, {
+        "seat" : 3,
+        "card" : "10H"
+      }, {
+        "seat" : 0,
+        "card" : "8D"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 60,
+      "streak" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 3,
+      "won" : 3,
+      "base" : 8,
+      "series" : 0,
+      "total" : 39,
+      "streak" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 31,
+      "streak" : -1
+    }, {
+      "seat" : 3,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 47,
+      "streak" : 2
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 15,
+    "size" : 7,
+    "dealer" : 2,
+    "trump" : "C",
+    "turnedCard" : "JC",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "QS", "7H", "9H", "10H", "AH", "8D", "QD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "7S", "JS", "KS", "AS", "JH", "KC", "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "QH", "KH", "7C", "QC", "AC", "9D", "KD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "8S", "9S", "9C", "10C", "7D", "JD", "AD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 3,
+      "bid" : 2
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 5
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "9C"
+      }, {
+        "seat" : 0,
+        "card" : "QS"
+      }, {
+        "seat" : 1,
+        "card" : "KC"
+      }, {
+        "seat" : 2,
+        "card" : "AC"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QH"
+      }, {
+        "seat" : 3,
+        "card" : "10C"
+      }, {
+        "seat" : 0,
+        "card" : "9H"
+      }, {
+        "seat" : 1,
+        "card" : "JH"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "AD"
+      }, {
+        "seat" : 0,
+        "card" : "QD"
+      }, {
+        "seat" : 1,
+        "card" : "10D"
+      }, {
+        "seat" : 2,
+        "card" : "9D"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "8S"
+      }, {
+        "seat" : 0,
+        "card" : "AH"
+      }, {
+        "seat" : 1,
+        "card" : "JS"
+      }, {
+        "seat" : 2,
+        "card" : "7C"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QC"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      }, {
+        "seat" : 0,
+        "card" : "10H"
+      }, {
+        "seat" : 1,
+        "card" : "7S"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "9S"
+      }, {
+        "seat" : 0,
+        "card" : "7H"
+      }, {
+        "seat" : 1,
+        "card" : "KS"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "KD"
+      }, {
+        "seat" : 3,
+        "card" : "JD"
+      }, {
+        "seat" : 0,
+        "card" : "8D"
+      }, {
+        "seat" : 1,
+        "card" : "AS"
+      } ],
+      "winner" : 2
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 65,
+      "streak" : 2
+    }, {
+      "seat" : 1,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 38,
+      "streak" : -1
+    }, {
+      "seat" : 2,
+      "bid" : 5,
+      "won" : 5,
+      "base" : 10,
+      "series" : 0,
+      "total" : 41,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 54,
+      "streak" : 3
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 16,
+    "size" : 6,
+    "dealer" : 3,
+    "trump" : "H",
+    "turnedCard" : "QH",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "AS", "8H", "9H", "KC", "QD", "KD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "KH", "AH", "7C", "9C", "AC", "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "QS", "7H", "10H", "JC", "QC", "9D" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "7S", "8S", "8C", "10C", "7D", "AD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 0,
+      "bid" : 3
+    }, {
+      "seat" : 1,
+      "bid" : 3
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "KC"
+      }, {
+        "seat" : 1,
+        "card" : "AC"
+      }, {
+        "seat" : 2,
+        "card" : "JC"
+      }, {
+        "seat" : 3,
+        "card" : "10C"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "10D"
+      }, {
+        "seat" : 2,
+        "card" : "9D"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      }, {
+        "seat" : 0,
+        "card" : "QD"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "KD"
+      }, {
+        "seat" : 1,
+        "card" : "KH"
+      }, {
+        "seat" : 2,
+        "card" : "7H"
+      }, {
+        "seat" : 3,
+        "card" : "AD"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "AH"
+      }, {
+        "seat" : 2,
+        "card" : "10H"
+      }, {
+        "seat" : 3,
+        "card" : "8C"
+      }, {
+        "seat" : 0,
+        "card" : "8H"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "7C"
+      }, {
+        "seat" : 2,
+        "card" : "QC"
+      }, {
+        "seat" : 3,
+        "card" : "8S"
+      }, {
+        "seat" : 0,
+        "card" : "9H"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "AS"
+      }, {
+        "seat" : 1,
+        "card" : "9C"
+      }, {
+        "seat" : 2,
+        "card" : "QS"
+      }, {
+        "seat" : 3,
+        "card" : "7S"
+      } ],
+      "winner" : 0
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 3,
+      "won" : 3,
+      "base" : 8,
+      "series" : 0,
+      "total" : 73,
+      "streak" : 3
+    }, {
+      "seat" : 1,
+      "bid" : 3,
+      "won" : 3,
+      "base" : 8,
+      "series" : 0,
+      "total" : 46,
+      "streak" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 40,
+      "streak" : -1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 59,
+      "streak" : 4
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 17,
+    "size" : 5,
+    "dealer" : 0,
+    "trump" : "S",
+    "turnedCard" : "10S",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7S", "QS", "7C", "JC", "7D" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "8S", "AS", "9C", "10C", "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "KS", "8H", "AH", "QC", "QD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "10H", "JH", "QH", "KC", "AC" ]
+    } ],
+    "bids" : [ {
+      "seat" : 1,
+      "bid" : 2
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "10D"
+      }, {
+        "seat" : 2,
+        "card" : "QD"
+      }, {
+        "seat" : 3,
+        "card" : "KC"
+      }, {
+        "seat" : 0,
+        "card" : "7D"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QC"
+      }, {
+        "seat" : 3,
+        "card" : "AC"
+      }, {
+        "seat" : 0,
+        "card" : "JC"
+      }, {
+        "seat" : 1,
+        "card" : "9C"
+      } ],
+      "winner" : 3
+    }, {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "10H"
+      }, {
+        "seat" : 0,
+        "card" : "QS"
+      }, {
+        "seat" : 1,
+        "card" : "8S"
+      }, {
+        "seat" : 2,
+        "card" : "AH"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "7S"
+      }, {
+        "seat" : 1,
+        "card" : "AS"
+      }, {
+        "seat" : 2,
+        "card" : "KS"
+      }, {
+        "seat" : 3,
+        "card" : "QH"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "10C"
+      }, {
+        "seat" : 2,
+        "card" : "8H"
+      }, {
+        "seat" : 3,
+        "card" : "JH"
+      }, {
+        "seat" : 0,
+        "card" : "7C"
+      } ],
+      "winner" : 1
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 79,
+      "streak" : 4
+    }, {
+      "seat" : 1,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 53,
+      "streak" : 2
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 46,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 58,
+      "streak" : -1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 18,
+    "size" : 4,
+    "dealer" : 1,
+    "trump" : "S",
+    "turnedCard" : "AS",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7S", "9H", "10C", "QC" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "10S", "KH", "KC", "QD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "8S", "JS", "QH", "9D" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "8C", "7D", "8D", "JD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 2,
+      "bid" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "8S"
+      }, {
+        "seat" : 3,
+        "card" : "8C"
+      }, {
+        "seat" : 0,
+        "card" : "7S"
+      }, {
+        "seat" : 1,
+        "card" : "10S"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "QD"
+      }, {
+        "seat" : 2,
+        "card" : "9D"
+      }, {
+        "seat" : 3,
+        "card" : "7D"
+      }, {
+        "seat" : 0,
+        "card" : "9H"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "KC"
+      }, {
+        "seat" : 2,
+        "card" : "JS"
+      }, {
+        "seat" : 3,
+        "card" : "JD"
+      }, {
+        "seat" : 0,
+        "card" : "QC"
+      } ],
+      "winner" : 2
+    }, {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "QH"
+      }, {
+        "seat" : 3,
+        "card" : "8D"
+      }, {
+        "seat" : 0,
+        "card" : "10C"
+      }, {
+        "seat" : 1,
+        "card" : "KH"
+      } ],
+      "winner" : 1
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 10,
+      "total" : 94,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 1,
+      "won" : 3,
+      "base" : -2,
+      "series" : 0,
+      "total" : 51,
+      "streak" : -1
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 52,
+      "streak" : 2
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 63,
+      "streak" : 1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 19,
+    "size" : 3,
+    "dealer" : 2,
+    "trump" : "C",
+    "turnedCard" : "JC",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "9S", "AS", "AC" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "JS", "QD", "KD" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "8S", "KH", "9C" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "9H", "7C", "10D" ]
+    } ],
+    "bids" : [ {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "7C"
+      }, {
+        "seat" : 0,
+        "card" : "AC"
+      }, {
+        "seat" : 1,
+        "card" : "JS"
+      }, {
+        "seat" : 2,
+        "card" : "9C"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "9S"
+      }, {
+        "seat" : 1,
+        "card" : "KD"
+      }, {
+        "seat" : 2,
+        "card" : "8S"
+      }, {
+        "seat" : 3,
+        "card" : "10D"
+      } ],
+      "winner" : 0
+    }, {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "AS"
+      }, {
+        "seat" : 1,
+        "card" : "QD"
+      }, {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "9H"
+      } ],
+      "winner" : 0
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 3,
+      "base" : -2,
+      "series" : 0,
+      "total" : 92,
+      "streak" : -1
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 56,
+      "streak" : 1
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 51,
+      "streak" : -1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 68,
+      "streak" : 2
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 20,
+    "size" : 2,
+    "dealer" : 3,
+    "trump" : "C",
+    "turnedCard" : "7C",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7S", "AD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "AH", "KC" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "KH", "JD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "7H", "QC" ]
+    } ],
+    "bids" : [ {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 2
+    }, {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "7S"
+      }, {
+        "seat" : 1,
+        "card" : "KC"
+      }, {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "QC"
+      } ],
+      "winner" : 1
+    }, {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "AH"
+      }, {
+        "seat" : 2,
+        "card" : "JD"
+      }, {
+        "seat" : 3,
+        "card" : "7H"
+      }, {
+        "seat" : 0,
+        "card" : "AD"
+      } ],
+      "winner" : 1
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 97,
+      "streak" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 2,
+      "won" : 2,
+      "base" : 7,
+      "series" : 0,
+      "total" : 63,
+      "streak" : 2
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 56,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 67,
+      "streak" : -1
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 21,
+    "size" : 1,
+    "dealer" : 0,
+    "trump" : "D",
+    "turnedCard" : "KD",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "QD" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "QS" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "KH" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "10S" ]
+    } ],
+    "bids" : [ {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 1,
+        "card" : "QS"
+      }, {
+        "seat" : 2,
+        "card" : "KH"
+      }, {
+        "seat" : 3,
+        "card" : "10S"
+      }, {
+        "seat" : 0,
+        "card" : "QD"
+      } ],
+      "winner" : 0
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 96,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 68,
+      "streak" : 2
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 61,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 72,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 22,
+    "size" : 1,
+    "dealer" : 1,
+    "trump" : "H",
+    "turnedCard" : "9H",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "KH" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "JS" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "JD" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "8C" ]
+    } ],
+    "bids" : [ {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    }, {
+      "seat" : 0,
+      "bid" : 1
+    }, {
+      "seat" : 1,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 2,
+        "card" : "JD"
+      }, {
+        "seat" : 3,
+        "card" : "8C"
+      }, {
+        "seat" : 0,
+        "card" : "KH"
+      }, {
+        "seat" : 1,
+        "card" : "JS"
+      } ],
+      "winner" : 0
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 102,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 67,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 66,
+      "streak" : 1
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 77,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 23,
+    "size" : 1,
+    "dealer" : 2,
+    "trump" : "S",
+    "turnedCard" : "8S",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "7C" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "10D" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "9H" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "JS" ]
+    } ],
+    "bids" : [ {
+      "seat" : 3,
+      "bid" : 1
+    }, {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 3,
+        "card" : "JS"
+      }, {
+        "seat" : 0,
+        "card" : "7C"
+      }, {
+        "seat" : 1,
+        "card" : "10D"
+      }, {
+        "seat" : 2,
+        "card" : "9H"
+      } ],
+      "winner" : 3
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 107,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 72,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 1,
+      "won" : 0,
+      "base" : -1,
+      "series" : 0,
+      "total" : 65,
+      "streak" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 1,
+      "won" : 1,
+      "base" : 6,
+      "series" : 0,
+      "total" : 83,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  }, {
+    "number" : 24,
+    "size" : 1,
+    "dealer" : 3,
+    "trump" : "S",
+    "turnedCard" : "8S",
+    "deal" : [ {
+      "seat" : 0,
+      "cards" : [ "QC" ]
+    }, {
+      "seat" : 1,
+      "cards" : [ "KH" ]
+    }, {
+      "seat" : 2,
+      "cards" : [ "10C" ]
+    }, {
+      "seat" : 3,
+      "cards" : [ "KD" ]
+    } ],
+    "bids" : [ {
+      "seat" : 0,
+      "bid" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0
+    } ],
+    "tricks" : [ {
+      "plays" : [ {
+        "seat" : 0,
+        "card" : "QC"
+      }, {
+        "seat" : 1,
+        "card" : "KH"
+      }, {
+        "seat" : 2,
+        "card" : "10C"
+      }, {
+        "seat" : 3,
+        "card" : "KD"
+      } ],
+      "winner" : 0
+    } ],
+    "scores" : [ {
+      "seat" : 0,
+      "bid" : 0,
+      "won" : 1,
+      "base" : -1,
+      "series" : 0,
+      "total" : 106,
+      "streak" : 0
+    }, {
+      "seat" : 1,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 77,
+      "streak" : 0
+    }, {
+      "seat" : 2,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 70,
+      "streak" : 0
+    }, {
+      "seat" : 3,
+      "bid" : 0,
+      "won" : 0,
+      "base" : 5,
+      "series" : 0,
+      "total" : 88,
+      "streak" : 0
+    } ],
+    "remainingCards" : [ 0, 0, 0, 0 ]
+  } ],
+  "finalScores" : [ 106, 77, 70, 88 ]
+}

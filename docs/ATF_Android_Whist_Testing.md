@@ -26,8 +26,12 @@ măsurate pe C2/J12.
 
 Configurația ADB actuală este `tcp:192.168.56.1:5038`, serial
 `127.0.0.1:5555`, client `C:\tools\whist-android-sdk\platform-tools\adb.exe`.
-Scrcpy poate rămâne închis. Pentru o partidă nouă verificată se folosește
-`scripts/run-complete-match.ps1 -Serial '127.0.0.1:5555'`.
+După restartul gazdei, serverul ADB poate porni fără transportul emulatorului
+înregistrat. Runner-ele live conectează explicit serialul și verifică starea
+`device` înainte să instaleze APK-ul sau să deschidă UI-ul; fiecare comandă de
+preflight are timeout de 15 secunde și păstrează diagnosticul la eșec. Scrcpy
+poate rămâne închis. Pentru o partidă nouă verificată se folosește
+`scripts/run-complete-match.ps1` cu aceste valori implicite.
 
 ## Configurația observată la explorarea din 1 noiembrie — istoric
 
@@ -131,7 +135,35 @@ după fiecare mutare/licitație (inclusiv AI) și după trecerea la următoarea 
 Reluarea după oprirea procesului este verificată live pe API 28. Variantele
 neobservate și multiplayer nu sunt încă acoperite.
 
-`WhistLabGameplayE2eTest` are două flow-uri live pe API 28. Primul exercită fixture-ul deterministic: omul licitează 1, procesul este oprit forțat, `Resume game` restaurează exact tura, omul joacă A♥, AI-ul termină levata, iar tabelul de scor arată `+11`, total `11`. Al doilea verifică setup-ul default Oh Hell cu patru jucători și înregistrează WARNING-ul pentru originea atuului, deoarece originalul arată pică/inimă/treflă/caro la 3/4/5/6 locuri în capturile inițiale. Ambele flow-uri au trecut în rularea `20261101-222629`; J4 folosește același `AdbClient`, adapterul UI Automator și J10 Extent Reporting pentru ambele pachete.
+`WhistLabGameplayE2eTest` acoperă setup-ul default Oh Hell cu patru jucători, un
+fixture determinist de scor și două flow-uri de prezentare cu mutări limitate.
+Flow-ul cu șase jucători nu confirmă licitația: verifică cele opt cărți pe un
+rând, bidurile legale, țintele de 48 × 48 dp, pozițiile efective ale celor șase
+locuri, cartea de atu întoarsă completă, meniul, foaia de scor și revenirea la
+home. Flow-ul cu 13 cărți verifică pozițiile celor patru locuri, o carte jucată,
+fanul rămas, centrul levatei și stabilitatea locului omului. Build-ul și testele
+UI vizate au trecut în staging TMP și pe emulatorul API 28.
+
+Captura live anterioară a flow-ului de prezentare are manifest `PASS`, însă publicarea ei veche a pus manifestul de 11.967 caractere într-un preview Extent trunchiat. Publicarea actuală trimite comparațiile printr-un singur `AssertionStep` standard și păstrează manifestul atașat cu hash; verificarea raportului pe aceeași captură live a găsit toate cele 11 aserțiuni în tabel și PNG-urile inline. Raportul identifică acum dispozitivul din aceeași proprietate/variabilă ca `AdbClient`, fără fallback fals la `emulator-5554`.
+
+`AndroidUiFlowTraceTest` verifică separat ordinea checkpoint-urilor, contextul
+Gherkin și păstrarea unui verdict FAIL cu diagnosticul lui. În rularea live din
+3 noiembrie 2026, ambele flow-uri Whist Lab au trecut; fiecare raport Extent are
+manifest `PASS`, capturi PNG încorporate și pași cu tabelul standard de aserțiuni
+expandabil.
+
+Confirmarea licitației are 132 × 48 dp cu contur, iar E2E măsoară lățimea ei și
+ambele dimensiuni ale opțiunilor. Capturile live din 3 noiembrie au confirmat
+geometria locurilor: `N; NW/NE; SW/SE; S` la șase jucători și `N; W/E; S` la
+patru. Inseturile laterale sunt 18% în licitare și 23% în joc, conform mock-ului.
+Raportul cu opt cărți afișează cartea întoarsă cu rang și simbol (`6♠` în acea
+rulare); mâna Descending de 13 cărți consumă tot pachetul și declară
+`NO TURNED CARD`. E2E compară limitele cărții jucate cu suprafața ovală: centrul
+observat a fost la `x=539,5 px`, față de `x=540,5 px` pentru masă. Rapoartele sunt
+în `%TEMP%\whist-j4-final-layout-live-20261103-142000\table-presentation` și
+`%TEMP%\whist-j4-final-layout-live-20261103-142000\thirteen-card-fan`.
+
+Flow-urile anterioare de gameplay și inițializare au trecut în rularea `20261101-222629`; J4 folosește același `AdbClient`, adapterul UI Automator și Extent Reporting J16 pentru ambele pachete.
 
 `run-deep-tests.ps1` construiește APK-ul și testele core, îl instalează în
 emulator, rulează `AndroidGameplayE2eSuite` (original plus Whist Lab), apoi
@@ -143,8 +175,8 @@ Setările acceptă proprietăți Java sau variabile de mediu:
 | Proprietate Java | Variabilă de mediu | Implicit |
 |---|---|---|
 | `atf.android.adb` | `ATF_ANDROID_ADB` | `adb` din PATH |
-| `atf.android.serial` | `ATF_ANDROID_SERIAL` | `emulator-5554` |
-| `atf.android.adbServerSocket` | `ADB_SERVER_SOCKET` | valoare moștenită din environment sau implicit local ADB |
+| `atf.android.serial` | `ATF_ANDROID_SERIAL` | `emulator-5554` la rularea directă a adaptorului; runner-ele J4 setează `127.0.0.1:5555` |
+| `atf.android.adbServerSocket` | `ADB_SERVER_SOCKET` | valoare moștenită din environment sau implicit local ADB; runner-ele J4 setează `tcp:192.168.56.1:5038` |
 | `atf.android.commandTimeoutSeconds` | `ATF_ANDROID_TIMEOUT_SECONDS` | `30` |
 
 Rularea componentelor, flow-ul Android și raportul cu capturi se pornesc din
@@ -154,11 +186,14 @@ rădăcina `C:\work\1\atf_j4`:
 .\scripts\run-deep-tests.ps1
 ```
 
-Parametrii ADB se pot schimba dacă VM-ul folosește altă literă sau alt serial:
+Parametrii ADB se pot schimba dacă VM-ul folosește alt client, alt server sau
+alt serial. În configurația curentă, clientul din SDK local este disponibil chiar
+când unitatea `X:` nu este montată:
 
 ```powershell
-.\scripts\run-deep-tests.ps1 -AdbExecutable 'X:\scrcpy-win64-v5.0.1\adb.exe' `
-  -Serial 'emulator-5554' -AdbServerSocket 'tcp:192.168.56.1:5038'
+.\scripts\run-deep-tests.ps1 `
+  -AdbExecutable 'C:\tools\whist-android-sdk\platform-tools\adb.exe' `
+  -Serial '127.0.0.1:5555' -AdbServerSocket 'tcp:192.168.56.1:5038'
 ```
 
 Default build nu contactează emulatorul. Nu se salvează credentiale Google și
@@ -168,9 +203,12 @@ nu se arhivează logcat implicit. Capturile UI pot include informații afișate
 ## Comenzi manuale în VM
 
 ```powershell
-$env:ADB_SERVER_SOCKET='tcp:192.168.56.1:5038'
-X:\scrcpy-win64-v5.0.1\adb.exe -s emulator-5554 shell pm path com.qsoft.android.whist
-X:\scrcpy-win64-v5.0.1\adb.exe -s emulator-5554 shell monkey -p com.qsoft.android.whist 1
+$env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
+$adb = 'C:\tools\whist-android-sdk\platform-tools\adb.exe'
+& $adb connect 127.0.0.1:5555
+& $adb -s 127.0.0.1:5555 get-state
+& $adb -s 127.0.0.1:5555 shell pm path com.qsoft.android.whist
+& $adb -s 127.0.0.1:5555 shell monkey -p com.qsoft.android.whist 1
 ```
 
 Launcherul din `X:\Start-AndroidEmulator.cmd` deschide pagina Play Store și

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "forced-loss-retained-trump",
+  "scope": "Constructed remaining world; current trick already contains AS. Retain high only because one future trick is still needed.",
+  "hero": 1,
+  "trump": "S",
+  "remainingWorld": [
+    [
+      "8S"
+    ],
+    [
+      "7S",
+      "KS"
+    ],
+    [
+      "10S",
+      "QS"
+    ],
+    [
+      "9S",
+      "JS"
+    ]
+  ],
+  "currentTrick": [
+    {
+      "seat": 0,
+      "card": "AS"
+    }
+  ],
+  "targets": [
+    1,
+    1,
+    0,
+    0
+  ],
+  "expectedCard": "7S",
+  "reason": "Both held trumps lose to AS. Spending 7S retains KS, which beats the remaining 10S/9S next trick. Spending KS retains an insufficient 7S."
+}

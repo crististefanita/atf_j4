@@ -8,6 +8,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
 if([string]::IsNullOrWhiteSpace($RunRoot)){$RunRoot='C:\work\whist_back\romanian-expert\'+(Get-Date -Format 'yyyyMMdd-HHmmss')}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
 if(Test-Path -LiteralPath $RunRoot){throw 'Use a fresh run folder; completed evidence must stay immutable.'}
@@ -47,8 +48,8 @@ try{
     Save-Xml 'atf-tests' @('atf.tests.CoreReportingConsumerContractTest','atf.tests.AndroidInlineScreenshotReportContractTest','atf.tests.ReportTextValueMatcherTest')
     Save-Xml 'atf-test-android' @('atf.android.e2e.RomanianMatchOracleTest')
     Invoke-Stage 'component-extent-publisher' { & mvn -q -pl atf-tests test '-Dtest=RuleComponentExtentReportTest' '-Datf.rules.publish=true' "-Datf.rules.runDir=$component" }
-    & $AdbExecutable -s $Serial get-state | Out-Null
-    if($LASTEXITCODE -ne 0){throw 'Component acceptance passed; Android device is unavailable.'}
+    Connect-AtfAndroidDevice -AdbExecutable $AdbExecutable -Serial $Serial `
+        -ServerSocket $AdbServerSocket -TimeoutSeconds 15 | Out-Null
     $apk="$stage\whist-lab-app\app\build\outputs\apk\debug\app-debug.apk"
     Get-ChildItem -LiteralPath "$stage\lib" -File | Get-FileHash -Algorithm SHA256 | Select-Object Path,Hash | ConvertTo-Json | Set-Content "$RunRoot\library-binaries.json"
     [ordered]@{serial=$Serial;adbServer=$AdbServerSocket;api=(& $AdbExecutable -s $Serial shell getprop ro.build.version.sdk);display=(& $AdbExecutable -s $Serial shell wm size);density=(& $AdbExecutable -s $Serial shell wm density);scrcpy='Not required; headless ADB control'} | ConvertTo-Json | Set-Content "$RunRoot\environment.json"

@@ -54,6 +54,7 @@ public final class MainActivity extends Activity {
     private boolean menuSubpage;
     private boolean instructionsVisible;
     private boolean scoreDialogShowing;
+    private boolean debugHoldAiTurns;
     private WhistUiText copy;
     private int setupPlayerCount = 4;
     private GameMode setupMode = GameMode.OH_HELL;
@@ -72,10 +73,13 @@ public final class MainActivity extends Activity {
         super.onCreate(state);
         String selectedLanguage = getPreferences(MODE_PRIVATE).getString("interfaceLanguage",
                 getPreferences(MODE_PRIVATE).getString("helpLanguage", "EN"));
+        if (BuildConfig.DEBUG && getIntent().hasExtra("debug_language")) {
+            selectedLanguage = getIntent().getStringExtra("debug_language");
+        }
         copy = new WhistUiText(WhistUiText.parseLanguage(selectedLanguage));
-        getWindow().setStatusBarColor(PINE);
-        getWindow().setNavigationBarColor(BACKGROUND);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+        debugHoldAiTurns = BuildConfig.DEBUG
+                && getIntent().getBooleanExtra("debug_hold_ai_turns", false);
+        applyStandardWindowChrome();
         if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_replay", false)) {
             try {
                 recordedReplay = new OriginalMatchReplay(getFilesDir());
@@ -86,6 +90,8 @@ public final class MainActivity extends Activity {
             } catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_fixture", false)) {
             openOneTrickFixture(getIntent().getBooleanExtra("persist_fixture", false));
+        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hand_fan_fixture", false)) {
+            openThirteenCardFanFixture();
         } else {
             try {
                 game = GameSessionStore.load(this);
@@ -99,6 +105,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderHome() {
+        applyStandardWindowChrome();
         tableVisible=false;
         menuSubpage=false;
         instructionsVisible=false;
@@ -157,6 +164,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderSetup() {
+        applyStandardWindowChrome();
         tableVisible=false;menuSubpage=true;instructionsVisible=false;handler.removeCallbacksAndMessages(null);
         LinearLayout page = page(copy.setupEyebrow(), copy.setupTitle());
         addText(page, copy.setupHint(), 15, MUTED, false, 0, 4);
@@ -260,50 +268,52 @@ public final class MainActivity extends Activity {
     }
 
     private void renderBidding() {
+        applyTableWindowChrome();
         GameSession.Snapshot state = game.snapshot();
-        LinearLayout page = page("", "", 12);
+        LinearLayout page = gamePage();
         addGameHeader(page, state);
         boolean lastBid = state.bidsSubmitted() == state.players().size() - 1;
         List<Integer> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(), lastBid);
         if (selectedBid == null || !choices.contains(selectedBid)) selectedBid = choices.get(0);
-        page.addView(GameTablePanel.bidding(this, state, choices, selectedBid,
-                bid -> selectedBid = bid, copy), matchWrap());
+        GameTablePanel table = GameTablePanel.bidding(this, state, choices, selectedBid,
+                bid -> selectedBid = bid, this::submitSelectedBid, copy);
+        page.addView(table, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+    }
 
-        Button submitBid = actionButton(copy.placeBid(), "btn_submit_bid", true, () -> {
-            try {
-                int bid = selectedBid;
-                game.submitBid(0, bid);
-                selectedBid = null;
-                persistGame();
-                driveAutomatedTurns();
-            } catch (RuntimeException invalidBid) {
-                Toast.makeText(this, copy.invalidBid(), Toast.LENGTH_SHORT).show();
-                renderBidding();
-            }
-        }, true, 14);
-        FrameLayout submitRow = new FrameLayout(this);
-        submitRow.addView(submitBid, new FrameLayout.LayoutParams(dp(178), dp(46), Gravity.CENTER));
-        page.addView(submitRow, matchWrap());
+    private void submitSelectedBid() {
+        try {
+            game.submitBid(0, selectedBid);
+            selectedBid = null;
+            persistGame();
+            driveAutomatedTurns();
+        } catch (RuntimeException invalidBid) {
+            Toast.makeText(this, copy.invalidBid(), Toast.LENGTH_SHORT).show();
+            renderBidding();
+        }
     }
 
     private void renderPlay() {
+        applyTableWindowChrome();
         GameSession.Snapshot state = game.snapshot();
-        LinearLayout page = page("", "", 12);
+        LinearLayout page = gamePage();
         addGameHeader(page, state);
         boolean humanTurn = state.currentSeat() == 0;
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
         List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
-        String instruction = humanTurn ? copy.playHint(state)
-                : copy.waitingFor(copy.playerName(state.players().get(state.currentSeat())));
-        page.addView(GameTablePanel.playing(this, state,
+        String instruction = humanTurn ? copy.playHint(state) : null;
+        GameTablePanel table = GameTablePanel.playing(this, state,
                 humanTurn ? legal : java.util.Collections.emptyList(),
-                this::playHumanCard, instruction, copy), matchWrap());
+                this::playHumanCard, instruction, copy);
+        page.addView(table, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
     }
 
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state) {
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setTag("game-header");
 
         FrameLayout menuButton = new FrameLayout(this);
         menuButton.setTag("btn_game_menu");
@@ -314,7 +324,8 @@ public final class MainActivity extends Activity {
         menuButton.setOnClickListener(ignored -> showGameMenu(menuButton));
         for (int offset : new int[]{-6, 0, 6}) {
             View line = new View(this);
-            line.setBackground(roundedBackground(ACCENT, ACCENT, 2));
+            line.setBackground(roundedBackground(Color.rgb(225, 239, 228),
+                    Color.rgb(225, 239, 228), 2));
             line.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             FrameLayout.LayoutParams lineParams = new FrameLayout.LayoutParams(dp(20), dp(2), Gravity.CENTER);
             lineParams.topMargin = dp(offset);
@@ -325,12 +336,19 @@ public final class MainActivity extends Activity {
         LinearLayout status = new LinearLayout(this);
         status.setOrientation(LinearLayout.VERTICAL);
         status.setPadding(dp(8), 0, 0, 0);
-        TextView progress = text(copy.progress(state), 18, PINE, true);
-        TextView summary = text(copy.bidSummary(state), 11, MUTED, false);
+        TextView title = text(copy.gameTitle(state.mode()), 14, Color.rgb(245, 248, 240), true);
+        title.setSingleLine(true);
+        title.setTag("game-title");
+        TextView progress = text(copy.progress(state), 11, Color.rgb(229, 239, 230), true);
+        TextView summary = text(copy.bidSummary(state), 9, Color.rgb(194, 216, 199), false);
+        summary.setSingleLine(true);
+        status.addView(title, matchWrap());
         status.addView(progress, matchWrap());
         status.addView(summary, matchWrap());
         header.addView(status, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        header.addView(new TrumpIndicatorView(this, state, copy),
+                new LinearLayout.LayoutParams(dp(82), dp(56)));
 
         LinearLayout.LayoutParams params = matchWrap();
         params.bottomMargin = dp(4);
@@ -354,18 +372,29 @@ public final class MainActivity extends Activity {
         GameSession.Snapshot state = game.snapshot();
         boolean resumeAutomatedTurn = (state.phase() == GamePhase.BIDDING && state.biddingSeat() != 0)
                 || (state.phase() == GamePhase.PLAYING && state.currentSeat() != 0);
-        String details = state.players().stream().map(player -> {
-            String bid = player.bid() == null
-                    ? (copy.romanian() ? "nepusă" : "not placed") : player.bid().toString();
-            return copy.playerName(player) + " — " + player.totalScore() + " " + copy.pointsLabel()
-                    + " · " + copy.bidLabel() + " " + bid
-                    + " · " + copy.tricksWonLabel() + " " + player.tricksWon();
-        }).collect(Collectors.joining("\n\n"));
         handler.removeCallbacksAndMessages(null);
         scoreDialogShowing = true;
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(dp(8), dp(2), dp(8), 0);
+        TextView summary = text(copy.bidSummary(state), 12, MUTED, false);
+        summary.setPadding(dp(2), dp(2), dp(2), dp(8));
+        content.addView(summary, matchWrap());
+        if (state.players().get(0).bid() == null) {
+            TextView pendingBid = text(copy.bidNotPlaced(), 12, MUTED, true);
+            pendingBid.setPadding(dp(2), 0, dp(2), dp(8));
+            content.addView(pendingBid, matchWrap());
+        }
+        ScrollView scoreScroll = new ScrollView(this);
+        scoreScroll.setFillViewport(false);
+        scoreScroll.addView(new ScoreTableView(this, state, copy),
+                new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+        content.addView(scoreScroll, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(copy.currentScores(state.handNumber()))
-                .setMessage(details)
+                .setView(content)
                 .setPositiveButton(copy.close(), null)
                 .create();
         dialog.setOnDismissListener(ignored -> {
@@ -388,6 +417,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderScore() {
+        applyStandardWindowChrome();
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = page(copy.romanian() ? "MÂNA " + state.handNumber()
                 : "HAND " + state.handNumber(), copy.scoreSheet());
@@ -398,20 +428,9 @@ public final class MainActivity extends Activity {
         addText(page, copy.scoreRule(state), 14, MUTED, false, 0, 14);
         if(state.streakBonuses())addText(page,copy.streakSummary(state),13,MUTED,false,0,10);
 
-        for (GameSession.PlayerSnapshot player : state.players()) {
-            int bid = player.bid() == null ? 0 : player.bid();
-            int earned = GameRules.scoreDelta(player.tricksWon(), bid, state.mode())+player.streakPoints();
-            String row = copy.scoreLine(player, earned);
-            TextView score = text(row, 15, INK, player.human());
-            score.setContentDescription(copy.scoreAccessibility(player, earned));
-            score.setTag("score:" + player.seat());
-            score.setPadding(dp(12), dp(14), dp(12), dp(14));
-            score.setBackground(roundedBackground(SURFACE,
-                    Color.rgb(211, 220, 210), 12));
-            LinearLayout.LayoutParams params = matchWrap();
-            params.setMargins(0, dp(4), 0, dp(4));
-            page.addView(score, params);
-        }
+        LinearLayout.LayoutParams scoreTableParams = matchWrap();
+        scoreTableParams.setMargins(0, 0, 0, dp(8));
+        page.addView(new ScoreTableView(this, state, copy), scoreTableParams);
 
         if (!state.finalHand()) {
             addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
@@ -435,6 +454,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderInstructions() {
+        applyStandardWindowChrome();
         tableVisible=false;menuSubpage=true;instructionsVisible=true;handler.removeCallbacksAndMessages(null);
         HowToPlay.Language language = copy.language();
         LinearLayout page=page(HowToPlay.title(language),language==HowToPlay.Language.RO
@@ -455,6 +475,10 @@ public final class MainActivity extends Activity {
         tableVisible=true;
         if (state.phase() == GamePhase.SCORE) {
             renderScore();
+            return;
+        }
+        if (debugHoldAiTurns && state.phase() == GamePhase.PLAYING && state.currentSeat() != 0) {
+            renderPlay();
             return;
         }
         if (state.phase() == GamePhase.BIDDING) {
@@ -520,6 +544,23 @@ public final class MainActivity extends Activity {
         driveAutomatedTurns();
     }
 
+    private void openThirteenCardFanFixture() {
+        GameConfig config = new GameConfig(4, GameMode.DESCENDING, AiDifficulty.NORMAL, 20261103L);
+        List<Card> deck = GameRules.deck(config.mode(), config.playerCount());
+        List<List<Card>> hands = new ArrayList<>();
+        for (int seat = 0; seat < config.playerCount(); seat++) hands.add(new ArrayList<>());
+        for (int index = 0; index < 13 * config.playerCount(); index++) {
+            hands.get(index % config.playerCount()).add(deck.get(index));
+        }
+        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
+        for (int seat = 0; seat < config.playerCount(); seat++) {
+            game.submitBid(game.snapshot().biddingSeat(), 0);
+        }
+        lastConfig = config;
+        selectedBid = null;
+        driveAutomatedTurns();
+    }
+
     private LinearLayout page(String eyebrow, String title) {
         return page(eyebrow, title, 22);
     }
@@ -537,6 +578,33 @@ public final class MainActivity extends Activity {
         addText(content, eyebrow, 12, ACCENT, true, 0, 8);
         if (title != null && !title.isBlank()) addText(content, title, 25, PINE, true, 0, 8);
         return content;
+    }
+
+    private LinearLayout gamePage() {
+        ScrollView viewport = new ScrollView(this);
+        viewport.setFillViewport(true);
+        viewport.setBackgroundColor(WhistUiPalette.TABLE_FELT);
+
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(dp(12), dp(6), dp(12), dp(8));
+        content.setBackgroundColor(WhistUiPalette.TABLE_FELT);
+        viewport.addView(content, new ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setContentView(viewport);
+        return content;
+    }
+
+    private void applyStandardWindowChrome() {
+        getWindow().setStatusBarColor(PINE);
+        getWindow().setNavigationBarColor(BACKGROUND);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
+    }
+
+    private void applyTableWindowChrome() {
+        getWindow().setStatusBarColor(WhistUiPalette.TABLE_FELT);
+        getWindow().setNavigationBarColor(WhistUiPalette.TABLE_FELT);
+        getWindow().getDecorView().setSystemUiVisibility(0);
     }
 
     private void addRule(LinearLayout page, String heading, String body) {

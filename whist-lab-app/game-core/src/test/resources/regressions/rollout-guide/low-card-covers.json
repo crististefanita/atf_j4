@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "id": "three-low-covers-dispose-king",
+  "scope": "Constructed hypothetical world with fixed legal opponent continuation; not optimal-action labels for hidden information.",
+  "trump": "NT",
+  "hero": 1,
+  "targets": [
+    3,
+    0,
+    0,
+    0
+  ],
+  "world": [
+    [
+      "JH",
+      "QH",
+      "AH",
+      "AD"
+    ],
+    [
+      "KH",
+      "7H",
+      "8H",
+      "9H"
+    ],
+    [
+      "10H",
+      "7C",
+      "8C",
+      "9C"
+    ],
+    [
+      "10D",
+      "JD",
+      "QD",
+      "KD"
+    ]
+  ],
+  "rounds": [
+    {
+      "lead": "JH",
+      "hero": "9H",
+      "seat2": "10H",
+      "seat3": "10D",
+      "winner": 0
+    },
+    {
+      "lead": "QH",
+      "hero": "8H",
+      "seat2": "9C",
+      "seat3": "JD",
+      "winner": 0
+    },
+    {
+      "lead": "AH",
+      "hero": "KH",
+      "seat2": "8C",
+      "seat3": "QD",
+      "winner": 0
+    },
+    {
+      "lead": "AD",
+      "hero": "7H",
+      "seat2": "7C",
+      "seat3": "KD",
+      "winner": 0
+    }
+  ],
+  "heroWon": 0,
+  "heroBase": 5
+}

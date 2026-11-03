@@ -9,7 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.GridLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,13 +23,9 @@ import java.util.function.IntConsumer;
 import ro.whistlab.core.Card;
 import ro.whistlab.core.GameSession;
 import ro.whistlab.core.PlayedCard;
-import ro.whistlab.core.Suit;
 
 /** Player-facing table, public trick and private hand, composed from a game snapshot. */
 final class GameTablePanel extends LinearLayout {
-    private static final int FELT_TOP = Color.rgb(39, 111, 82);
-    private static final int FELT_BOTTOM = Color.rgb(23, 79, 60);
-    private static final int FELT_EDGE = Color.rgb(112, 157, 125);
     private static final int WHITE = Color.rgb(255, 254, 248);
     private static final int INK = Color.rgb(41, 54, 46);
     private static final int MUTED = Color.rgb(105, 117, 106);
@@ -47,24 +43,26 @@ final class GameTablePanel extends LinearLayout {
     private final List<Integer> bidOptions;
     private final List<Button> bidChoiceButtons = new ArrayList<>();
     private final IntConsumer onBidSelected;
+    private final Runnable onBidSubmitted;
     private int selectedBid;
 
     static GameTablePanel bidding(Context context, GameSession.Snapshot state,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
-            WhistUiText copy) {
+            Runnable onBidSubmitted, WhistUiText copy) {
         return new GameTablePanel(context, state, true, Collections.emptyList(), null,
-                null, bidOptions, selectedBid, onBidSelected, copy);
+                null, bidOptions, selectedBid, onBidSelected, onBidSubmitted, copy);
     }
 
     static GameTablePanel playing(Context context, GameSession.Snapshot state,
             List<Card> legalCards, Consumer<Card> onCardSelected, String hint, WhistUiText copy) {
         return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
-                Collections.emptyList(), 0, null, copy);
+                Collections.emptyList(), 0, null, null, copy);
     }
 
     private GameTablePanel(Context context, GameSession.Snapshot state, boolean bidding,
             List<Card> playableCards, Consumer<Card> onCardSelected, String hint,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
+            Runnable onBidSubmitted,
             WhistUiText copy) {
         super(context);
         this.context = context;
@@ -76,85 +74,46 @@ final class GameTablePanel extends LinearLayout {
         this.bidOptions = List.copyOf(bidOptions);
         this.selectedBid = selectedBid;
         this.onBidSelected = onBidSelected;
+        this.onBidSubmitted = onBidSubmitted;
 
         setOrientation(VERTICAL);
-        setPadding(dp(10), dp(8), dp(10), dp(8));
-        setBackground(rounded(WHITE, SOFT_BORDER, 16));
-        setElevation(dp(2));
+        setGravity(Gravity.CENTER_HORIZONTAL);
+        setPadding(dp(8), dp(4), dp(8), dp(4));
+        setBackgroundColor(Color.TRANSPARENT);
+        setClipChildren(false);
         setContentDescription(copy.tableAccessibility(state.players().size()));
 
-        int activeSeat = bidding ? state.biddingSeat() : state.currentSeat();
-        if (!bidding) {
-            String turnText = activeSeat == 0 ? copy.yourTurn()
-                    : copy.waitingFor(copy.playerName(state.players().get(activeSeat)));
-            TextView turn = text(turnText, 15, INK, true);
-            turn.setContentDescription(turnText);
-            addView(turn, matchWrap());
-        }
-
-        addView(buildRoundTable(), new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(roundTableHeightDp())));
-        if (!bidding) {
-            addSectionTitle(copy.currentTrick(), copy.cardsPlayed(
-                    state.currentTrick().size(), state.players().size()));
-            addView(buildCurrentTrick(), matchWrap());
-        }
+        View board = buildRoundTable();
+        LayoutParams boardParams = new LayoutParams(dp(Math.min(availableContentWidthDp(), 760)),
+                dp(roundTableHeightDp()));
+        boardParams.gravity = Gravity.CENTER_HORIZONTAL;
+        addView(board, boardParams);
         if (!bidding && hint != null && !hint.isBlank()) {
-            TextView help = text(hint, 13, INK, false);
-            help.setPadding(dp(10), dp(9), dp(10), dp(9));
-            help.setBackground(rounded(Color.rgb(235, 241, 233),
-                    Color.rgb(205, 219, 204), 10));
+            TextView help = text(hint, 11, Color.rgb(222, 237, 225), false);
+            help.setGravity(Gravity.CENTER);
             help.setContentDescription(hint);
             LayoutParams params = matchWrap();
-            params.topMargin = dp(10);
+            params.topMargin = dp(4);
             addView(help, params);
         }
-        addView(buildHand(), matchWrap());
+        LayoutParams handParams = new LayoutParams(dp(handWidthDp()), dp(HandLayoutMetrics.reservedHandHeightDp()));
+        handParams.gravity = Gravity.CENTER_HORIZONTAL;
+        addView(buildHand(), handParams);
     }
 
     private View buildRoundTable() {
         FrameLayout board = new FrameLayout(context);
-        GradientDrawable felt = new GradientDrawable(GradientDrawable.Orientation.TL_BR,
-                new int[]{FELT_TOP, FELT_BOTTOM});
-        felt.setCornerRadius(dp(24));
-        felt.setStroke(dp(1), FELT_EDGE);
-        board.setBackground(felt);
-        board.setPadding(dp(5), dp(5), dp(5), dp(5));
+        board.setBackground(tableSurface());
+        board.setPadding(dp(4), dp(4), dp(4), dp(4));
         board.setContentDescription(copy.boardSurface());
+        board.setTag("game-board");
+        board.setClipChildren(false);
 
-        GridLayout seats = new GridLayout(context);
-        seats.setRowCount(3);
-        seats.setColumnCount(3);
-        seats.setUseDefaultMargins(false);
-        seats.setAlignmentMode(GridLayout.ALIGN_BOUNDS);
-        int[][] positions = seatPositions(state.players().size());
-        for (int cellIndex = 0; cellIndex < 9; cellIndex++) {
-            int row = cellIndex / 3;
-            int column = cellIndex % 3;
-            FrameLayout cell = new FrameLayout(context);
-            cell.setMinimumHeight(dp(bidding ? (row == 1 ? 50 : 60) : 70));
-            float rowWeight = bidding && row == 1 ? 2f : 1f;
-            GridLayout.LayoutParams cellParams = new GridLayout.LayoutParams(
-                    GridLayout.spec(row, 1, GridLayout.FILL, rowWeight),
-                    GridLayout.spec(column, 1, GridLayout.FILL, 1f));
-            cellParams.width = 0;
-            cellParams.height = 0;
-            cellParams.setMargins(dp(2), dp(2), dp(2), dp(2));
-            seats.addView(cell, cellParams);
-
-            if (!bidding && row == 1 && column == 1) {
-                cell.addView(buildTrumpMarker(), new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
-                        Gravity.CENTER));
-            }
-            for (int seat = 0; seat < positions.length; seat++) {
-                if (positions[seat][0] == row && positions[seat][1] == column) {
-                    cell.addView(buildSeat(state.players().get(seat)), new FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                            Gravity.CENTER));
-                    break;
-                }
-            }
+        int tableWidthDp = Math.min(availableContentWidthDp(), 760);
+        TableSeatRingLayout seats = new TableSeatRingLayout(context, state.players().size(), bidding,
+                dp(TableLayoutMetrics.seatWidthDp(tableWidthDp)));
+        for (GameSession.PlayerSnapshot player : state.players()) {
+            seats.addView(buildSeat(player));
         }
         board.addView(seats, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -162,6 +121,12 @@ final class GameTablePanel extends LinearLayout {
             board.addView(buildBiddingCenter(), new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
                     Gravity.CENTER));
+        } else {
+            board.addView(buildCurrentTrick(), new FrameLayout.LayoutParams(
+                    dp(TableLayoutMetrics.centerPlayWidthDp(
+                            Math.min(availableContentWidthDp(), 760))),
+                    dp(TableLayoutMetrics.playingCenterRowHeightDp(state.players().size(),
+                            getResources().getConfiguration().fontScale)), Gravity.CENTER));
         }
         return board;
     }
@@ -170,19 +135,19 @@ final class GameTablePanel extends LinearLayout {
         LinearLayout center = new LinearLayout(context);
         center.setOrientation(VERTICAL);
         center.setGravity(Gravity.CENTER);
+        int columns = BidGridMetrics.columnCount(bidOptions.size(), availableContentWidthDp());
 
-        TextView heading = text(copy.bidChoiceHeading() + "  ·  " + copy.compactTrump(state),
-                11, WHITE, true);
+        TextView heading = text(copy.bidChoiceHeading(), 11, WHITE, true);
         heading.setGravity(Gravity.CENTER);
-        heading.setContentDescription(copy.bidSelector() + ". " + copy.trumpAccessibility(state));
+        heading.setContentDescription(copy.bidSelector());
         center.addView(heading, new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        for (int start = 0; start < bidOptions.size(); start += BidGridMetrics.CHOICES_PER_ROW) {
+        for (int start = 0; start < bidOptions.size(); start += columns) {
             LinearLayout row = new LinearLayout(context);
             row.setOrientation(HORIZONTAL);
             row.setGravity(Gravity.CENTER);
-            int end = Math.min(start + BidGridMetrics.CHOICES_PER_ROW, bidOptions.size());
+            int end = Math.min(start + columns, bidOptions.size());
             for (int index = start; index < end; index++) {
                 int bid = bidOptions.get(index);
                 Button choice = new Button(context);
@@ -201,13 +166,36 @@ final class GameTablePanel extends LinearLayout {
                 bidChoiceButtons.add(choice);
 
                 LayoutParams params = new LayoutParams(dp(48), dp(48));
-                params.setMargins(dp(2), dp(2), dp(2), dp(2));
+                params.setMargins(dp(2), dp(1), dp(2), dp(1));
                 row.addView(choice, params);
             }
             center.addView(row, new LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(52)));
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(BidGridMetrics.CHOICE_TARGET_DP)));
         }
+        center.addView(buildBidSubmission(), new LayoutParams(dp(132), dp(BidGridMetrics.SUBMIT_TARGET_DP)));
         return center;
+    }
+
+    private View buildBidSubmission() {
+        LinearLayout row = new LinearLayout(context);
+        row.setGravity(Gravity.CENTER);
+
+        Button submit = new Button(context);
+        submit.setAllCaps(false);
+        submit.setText(copy.placeBid());
+        submit.setTextSize(14);
+        submit.setTextColor(Color.rgb(245, 248, 240));
+        submit.setContentDescription(copy.placeBid());
+        submit.setTag("btn_submit_bid");
+        submit.setMinimumWidth(0);
+        submit.setMinHeight(dp(48));
+        submit.setStateListAnimator(null);
+        submit.setBackground(rounded(Color.TRANSPARENT, Color.rgb(194, 216, 199), 13));
+        submit.setOnClickListener(ignored -> {
+            if (onBidSubmitted != null) onBidSubmitted.run();
+        });
+        row.addView(submit, new LayoutParams(dp(132), dp(48)));
+        return row;
     }
 
     private void selectBid(int bid) {
@@ -233,40 +221,6 @@ final class GameTablePanel extends LinearLayout {
         choice.setContentDescription(copy.bidChoiceDescription(bid, selected));
     }
 
-    private View buildTrumpMarker() {
-        LinearLayout marker = new LinearLayout(context);
-        marker.setOrientation(VERTICAL);
-        marker.setGravity(Gravity.CENTER);
-        marker.setContentDescription(copy.trumpAccessibility(state));
-        marker.setFocusable(true);
-        marker.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        TextView title = text(copy.trumpHeading(), 9, Color.rgb(211, 239, 226), true);
-        title.setGravity(Gravity.CENTER);
-        title.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        marker.addView(title, matchWrap());
-
-        if (state.turnedCard() != null) {
-            Card turnedCard = state.turnedCard();
-            TextView card = text(turnedCard.shortLabel(), 24,
-                    turnedCard.suit().red() ? Color.rgb(255, 177, 177) : WHITE, true);
-            card.setGravity(Gravity.CENTER);
-            card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            marker.addView(card, matchWrap());
-        } else if (state.trump().suit().isPresent()) {
-            Suit suit = state.trump().suit().get();
-            TextView symbol = text(suit.symbol(), 30, suit.red() ? Color.rgb(255, 177, 177) : WHITE, true);
-            symbol.setGravity(Gravity.CENTER);
-            symbol.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            marker.addView(symbol, matchWrap());
-        } else {
-            TextView noTrump = text("—", 30, WHITE, true);
-            noTrump.setGravity(Gravity.CENTER);
-            noTrump.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            marker.addView(noTrump, matchWrap());
-        }
-        return marker;
-    }
-
     private View buildSeat(GameSession.PlayerSnapshot player) {
         int activeSeat = bidding ? state.biddingSeat() : state.currentSeat();
         boolean active = player.seat() == activeSeat;
@@ -275,30 +229,44 @@ final class GameTablePanel extends LinearLayout {
         seat.setOrientation(VERTICAL);
         seat.setGravity(Gravity.CENTER);
         seat.setPadding(dp(4), dp(3), dp(4), dp(3));
-        seat.setBackground(rounded(active ? GOLD : Color.rgb(38, 101, 74),
-                active ? WHITE : Color.rgb(111, 157, 126), 11));
+        seat.setBackground(rounded(active ? Color.rgb(241, 230, 200) : WhistUiPalette.TABLE_FELT,
+                active ? GOLD : Color.rgb(84, 127, 98), 11));
         seat.setElevation(dp(active ? 3 : 1));
 
-        String markers = dealer ? copy.dealerLabel() : "";
-        if (!markers.isEmpty()) {
-            TextView marker = text(markers, 8, active ? INK : Color.rgb(229, 239, 230), true);
-            marker.setGravity(Gravity.CENTER);
-            marker.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            seat.addView(marker, matchWrap());
+        FrameLayout actionSlot = new FrameLayout(context);
+        FrameLayout.LayoutParams actionBadgeParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER);
+        if (active) {
+            TextView action = text(copy.seatTurnBadge(bidding), 9, INK, true);
+            action.setGravity(Gravity.CENTER);
+            action.setPadding(dp(6), dp(2), dp(6), dp(2));
+            action.setBackground(rounded(GOLD, Color.rgb(105, 83, 45), 20));
+            GradientDrawable turnDot = new GradientDrawable();
+            turnDot.setShape(GradientDrawable.OVAL);
+            turnDot.setColor(Color.rgb(105, 83, 45));
+            turnDot.setBounds(0, 0, dp(5), dp(5));
+            action.setCompoundDrawablesRelative(turnDot, null, null, null);
+            action.setCompoundDrawablePadding(dp(3));
+            action.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            actionSlot.addView(action, actionBadgeParams);
         }
+        seat.addView(actionSlot, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(18)));
 
-        TextView facts = text(copy.seatFacts(player), 12,
+        TextView name = text(copy.seatName(player), 13,
+                active ? INK : Color.rgb(229, 239, 230), true);
+        name.setGravity(Gravity.CENTER);
+        name.setSingleLine(true);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        seat.addView(name, matchWrap());
+        TextView facts = text(copy.seatFacts(player), 11,
                 active ? INK : Color.rgb(229, 239, 230), false);
         facts.setGravity(Gravity.CENTER);
         facts.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         seat.addView(facts, matchWrap());
-        TextView result = text(copy.seatResult(player), 12,
-                active ? INK : Color.rgb(229, 239, 230), false);
-        result.setGravity(Gravity.CENTER);
-        result.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        seat.addView(result, matchWrap());
         seat.setTag("table-seat:" + player.seat());
-        seat.setContentDescription(copy.seatAccessibility(player, dealer, active));
+        seat.setContentDescription(copy.seatAccessibility(player, dealer, active, bidding));
         seat.setFocusable(true);
         seat.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         return seat;
@@ -306,118 +274,136 @@ final class GameTablePanel extends LinearLayout {
 
     private View buildCurrentTrick() {
         if (state.currentTrick().isEmpty()) {
-            TextView empty = text(bidding ? copy.noCardsYet() : copy.firstLead(), 13, MUTED, false);
-            empty.setPadding(dp(8), dp(8), dp(8), dp(8));
-            empty.setContentDescription(bidding ? copy.noCardsYet() : copy.firstLead());
+            TextView empty = text("", 13, Color.TRANSPARENT, false);
+            empty.setContentDescription(copy.noCardsYet());
+            empty.setTag("current-trick");
             return empty;
         }
 
-        GridLayout cards = new GridLayout(context);
-        cards.setColumnCount(3);
-        cards.setUseDefaultMargins(false);
-        for (PlayedCard play : state.currentTrick()) {
-            GameSession.PlayerSnapshot player = state.players().get(play.seat());
-            LinearLayout item = new LinearLayout(context);
-            item.setOrientation(VERTICAL);
-            item.setGravity(Gravity.CENTER);
-            item.setPadding(dp(2), dp(3), dp(2), dp(3));
-            TextView card = text(play.card().shortLabel(), 18,
-                    play.card().suit().red() ? CARD_RED : CARD_DARK, true);
-            card.setGravity(Gravity.CENTER);
-            card.setPadding(dp(5), dp(7), dp(5), dp(7));
-            card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
-            card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            item.addView(card, new LayoutParams(dp(58), dp(48)));
-            TextView who = text(copy.trickPlayer(player), 10, MUTED, false);
-            who.setGravity(Gravity.CENTER);
-            who.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            item.addView(who, matchWrap());
-            item.setContentDescription(copy.trickCardAccessibility(player, play.card()));
-            item.setTag("trick-card:" + play.seat());
-            item.setFocusable(true);
-            item.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams(
-                    GridLayout.spec(GridLayout.UNDEFINED),
-                    GridLayout.spec(GridLayout.UNDEFINED, 1, GridLayout.FILL, 1f));
-            params.width = 0;
-            params.setMargins(dp(2), 0, dp(2), 0);
-            cards.addView(item, params);
-        }
+        LinearLayout cards = new LinearLayout(context);
+        cards.setOrientation(VERTICAL);
+        cards.setGravity(Gravity.CENTER);
         cards.setContentDescription(copy.currentTrick());
+        cards.setTag("current-trick");
+        List<PlayedCard> plays = state.currentTrick();
+        for (int start = 0; start < plays.size(); start += 2) {
+            LinearLayout row = new LinearLayout(context);
+            row.setOrientation(HORIZONTAL);
+            row.setGravity(Gravity.CENTER);
+            int end = Math.min(start + 2, plays.size());
+            for (int index = start; index < end; index++) {
+                PlayedCard play = plays.get(index);
+                GameSession.PlayerSnapshot player = state.players().get(play.seat());
+                LinearLayout item = new LinearLayout(context);
+                item.setOrientation(VERTICAL);
+                item.setGravity(Gravity.CENTER);
+                item.setPadding(dp(2), dp(2), dp(2), dp(2));
+                TextView card = text(play.card().shortLabel(), 14,
+                        play.card().suit().red() ? CARD_RED : CARD_DARK, true);
+                card.setGravity(Gravity.CENTER);
+                card.setPadding(dp(3), dp(4), dp(3), dp(4));
+                card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
+                card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+                item.addView(card, new LayoutParams(dp(36), dp(41)));
+                TextView who = text(copy.trickPlayer(player), 10, Color.rgb(212, 223, 209), false);
+                who.setGravity(Gravity.CENTER);
+                who.setSingleLine(true);
+                who.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                who.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+                item.addView(who, matchWrap());
+                item.setContentDescription(copy.trickCardAccessibility(player, play.card()));
+                item.setTag("trick-card:" + play.seat());
+                item.setFocusable(true);
+                item.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+                LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.setMargins(dp(1), 0, dp(1), 0);
+                row.addView(item, params);
+            }
+            cards.addView(row, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
         return cards;
     }
 
     private View buildHand() {
-        GridLayout hand = new GridLayout(context);
+        HorizontalScrollView hand = new HorizontalScrollView(context);
+        hand.setHorizontalScrollBarEnabled(false);
+        hand.setFillViewport(false);
+        hand.setClipToPadding(false);
+        hand.setOverScrollMode(View.OVER_SCROLL_NEVER);
         int cardCount = state.players().get(0).hand().size();
-        boolean compactSingleRow = HandLayoutMetrics.usesSingleRow(cardCount);
-        hand.setColumnCount(HandLayoutMetrics.columnCount(cardCount));
-        hand.setUseDefaultMargins(false);
+        int availableWidthDp = handWidthDp();
+        float fontScale = getResources().getConfiguration().fontScale;
         hand.setContentDescription(copy.handAccessibility(cardCount));
-        for (Card card : state.players().get(0).hand()) {
+        hand.setTag("player-hand");
+        FrameLayout fan = new FrameLayout(context);
+        fan.setClipChildren(false);
+        fan.setClipToPadding(false);
+        int advanceDp = HandLayoutMetrics.horizontalAdvanceDp(cardCount, availableWidthDp, fontScale);
+        int cardWidthDp = HandLayoutMetrics.cardWidthDp(fontScale);
+        int handContentWidthDp = HandLayoutMetrics.contentWidthDp(cardCount, availableWidthDp, fontScale);
+        int cardHeightDp = HandLayoutMetrics.cardHeightDp();
+        int liftClearanceDp = HandLayoutMetrics.LIFT_CLEARANCE_DP;
+        fan.setTag("player-hand-fan");
+        fan.setContentDescription(copy.handAccessibility(cardCount));
+        for (int index = 0; index < cardCount; index++) {
+            Card card = state.players().get(0).hand().get(index);
             boolean playable = !bidding && onCardSelected != null && playableCards.contains(card);
             boolean humanTurn = state.phase() != ro.whistlab.core.GamePhase.PLAYING
                     || state.currentSeat() == 0;
-            FrameLayout face = cardFace(card, playable, compactSingleRow);
-            face.setEnabled(true);
-            face.setAlpha(bidding || playable ? 1f : 0.55f);
-            face.setContentDescription(copy.cardLabel(card) + ". "
+            FrameLayout slot = new FrameLayout(context);
+            slot.setClipChildren(false);
+            slot.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            slot.setFocusable(true);
+            slot.setTag("hand-card:" + card.suit().name() + ":" + card.rank());
+            slot.setContentDescription(copy.cardLabel(card) + ". "
                     + copy.cardState(bidding, humanTurn, playable));
-            face.setTag("hand-card:" + card.suit().name() + ":" + card.rank());
-            face.setFocusable(true);
-            face.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            slot.setEnabled(true);
+            slot.setClickable(playable);
+            slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
+            FrameLayout face = cardFace(card, playable);
+            face.setAlpha(bidding || playable ? 1f : 0.62f);
+            FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(dp(cardWidthDp),
+                    dp(cardHeightDp), Gravity.TOP | Gravity.START);
+            faceParams.topMargin = dp(liftClearanceDp);
+            slot.addView(face, faceParams);
             if (playable) {
-                face.setOnClickListener(ignored -> onCardSelected.accept(card));
+                slot.setOnClickListener(ignored -> {
+                    slot.setClickable(false);
+                    slot.setTranslationZ(dp(HandLayoutMetrics.SELECTED_Z_DP));
+                    face.animate().translationY(-dp(HandLayoutMetrics.CARD_LIFT_DP))
+                            .scaleX(HandLayoutMetrics.CARD_LIFT_SCALE)
+                            .scaleY(HandLayoutMetrics.CARD_LIFT_SCALE)
+                            .setDuration(150L)
+                            .withEndAction(() -> onCardSelected.accept(card))
+                            .start();
+                });
             }
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams(
-                    GridLayout.spec(GridLayout.UNDEFINED),
-                    GridLayout.spec(GridLayout.UNDEFINED, 1,
-                            compactSingleRow ? GridLayout.FILL : GridLayout.CENTER,
-                            compactSingleRow ? 1f : 0f));
-            params.width = compactSingleRow ? 0 : dp(66);
-            params.height = dp(HandLayoutMetrics.cardHeightDp(cardCount));
-            int horizontalMargin = HandLayoutMetrics.horizontalMarginDp(cardCount);
-            params.setMargins(dp(horizontalMargin), dp(2), dp(horizontalMargin), dp(2));
-            hand.addView(face, params);
+            FrameLayout.LayoutParams slotParams = new FrameLayout.LayoutParams(
+                    dp(index == cardCount - 1 ? cardWidthDp : advanceDp),
+                    dp(HandLayoutMetrics.reservedHandHeightDp()));
+            slotParams.leftMargin = dp(index * advanceDp);
+            fan.addView(slot, slotParams);
         }
+        hand.addView(fan, new FrameLayout.LayoutParams(dp(handContentWidthDp),
+                dp(HandLayoutMetrics.reservedHandHeightDp())));
         return hand;
     }
 
-    private FrameLayout cardFace(Card card, boolean playable, boolean compact) {
+    private FrameLayout cardFace(Card card, boolean playable) {
         FrameLayout face = new FrameLayout(context);
-        face.setBackground(rounded(WHITE, playable ? GOLD : SOFT_BORDER, playable ? 11 : 9));
-        face.setElevation(dp(playable ? 3 : 1));
-        face.setFocusable(true);
-        face.setClickable(playable);
+        face.setBackground(rounded(WHITE, playable ? GOLD : SOFT_BORDER, 9));
+        face.setFocusable(false);
+        face.setClickable(false);
 
-        TextView label = text(card.shortLabel(), HandLayoutMetrics.cardLabelSizeSp(compact),
+        TextView label = text(card.shortLabel(), HandLayoutMetrics.cardLabelSizeSp(),
                 card.suit().red() ? CARD_RED : CARD_DARK, true);
-        label.setGravity(Gravity.CENTER);
+        label.setGravity(Gravity.TOP | Gravity.START);
+        label.setPadding(dp(4), dp(5), dp(2), 0);
         face.addView(label, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        if (playable) {
-            TextView mark = text("✓", 11, INK, true);
-            mark.setGravity(Gravity.CENTER);
-            mark.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            mark.setBackground(rounded(GOLD, WHITE, 8));
-            face.addView(mark, new FrameLayout.LayoutParams(dp(18), dp(18),
-                    Gravity.TOP | Gravity.END));
-        }
         return face;
-    }
-
-    private void addSectionTitle(String title, String detail) {
-        TextView heading = text(title, 15, INK, true);
-        LayoutParams headingParams = matchWrap();
-        headingParams.topMargin = dp(8);
-        addView(heading, headingParams);
-        if (detail == null || detail.isBlank()) return;
-        TextView caption = text(detail, 12, MUTED, false);
-        LayoutParams captionParams = matchWrap();
-        captionParams.topMargin = dp(2);
-        captionParams.bottomMargin = dp(2);
-        addView(caption, captionParams);
     }
 
     private TextView text(String value, int size, int color, boolean bold) {
@@ -445,22 +431,30 @@ final class GameTablePanel extends LinearLayout {
         return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
-    private int roundTableHeightDp() {
-        float fontScale = getResources().getConfiguration().fontScale;
-        int accessibilityAllowance = Math.round(Math.max(0f, fontScale - 1f) * 90f);
-        return 200 + (state.players().size() - 3) * 18
-                + (bidding ? 50 : 0)
-                + (bidding ? BidGridMetrics.additionalTableHeightDp(bidOptions.size()) : 0)
-                + accessibilityAllowance;
+    private int handWidthDp() {
+        return Math.min(availableContentWidthDp(), HandLayoutMetrics.maxViewportWidthDp());
     }
 
-    private static int[][] seatPositions(int count) {
-        return switch (count) {
-            case 3 -> new int[][]{{2, 1}, {0, 0}, {0, 2}};
-            case 4 -> new int[][]{{2, 1}, {0, 0}, {0, 2}, {2, 0}};
-            case 5 -> new int[][]{{2, 1}, {2, 0}, {0, 0}, {0, 1}, {0, 2}};
-            case 6 -> new int[][]{{2, 1}, {2, 0}, {0, 0}, {0, 1}, {0, 2}, {2, 2}};
-            default -> throw new IllegalArgumentException("Whist tables support 3–6 players: " + count);
-        };
+    private int availableContentWidthDp() {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.max(1, Math.round(getResources().getDisplayMetrics().widthPixels / density) - 40);
     }
+
+    private int roundTableHeightDp() {
+        return bidding
+                ? TableLayoutMetrics.biddingHeightDp(state.players().size(), bidOptions.size(),
+                        availableContentWidthDp(),
+                        getResources().getConfiguration().fontScale)
+                : TableLayoutMetrics.playingHeightDp(state.players().size(),
+                        getResources().getConfiguration().fontScale);
+    }
+
+    private GradientDrawable tableSurface() {
+        GradientDrawable surface = new GradientDrawable();
+        surface.setShape(GradientDrawable.OVAL);
+        surface.setColor(WhistUiPalette.TABLE_FELT);
+        surface.setStroke(dp(1), Color.rgb(66, 111, 82));
+        return surface;
+    }
+
 }

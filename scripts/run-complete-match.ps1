@@ -1,6 +1,6 @@
 param(
     [string]$AdbExecutable = 'C:\tools\whist-android-sdk\platform-tools\adb.exe',
-    [string]$Serial = 'emulator-5554',
+    [string]$Serial = '127.0.0.1:5555',
     [string]$AdbServerSocket = 'tcp:192.168.56.1:5038',
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk',
     [string]$EvidenceRoot = 'C:\work\whist_back\deep-app-test',
@@ -11,6 +11,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
+Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
 if([string]::IsNullOrWhiteSpace($RunRoot)) {
     $RunRoot=Join-Path $EvidenceRoot (Join-Path 'runs' ((Get-Date -Format 'yyyyMMdd-HHmmss')+'-full-match'))
 }
@@ -43,8 +44,8 @@ try {
     $env:ATF_ANDROID_TIMEOUT_SECONDS='90'
     $env:ANDROID_HOME=$AndroidSdk
     $env:ANDROID_SDK_ROOT=$AndroidSdk
-    & $AdbExecutable -s $Serial get-state | Out-Null
-    if($LASTEXITCODE -ne 0){throw 'Android device is not reachable'}
+    Connect-AtfAndroidDevice -AdbExecutable $AdbExecutable -Serial $Serial `
+        -ServerSocket $AdbServerSocket -TimeoutSeconds 15 | Out-Null
     Invoke-MatchStage 'bootstrap-current-binaries' @('-q','-DskipTests','install')
     Get-ChildItem -LiteralPath (Join-Path $root 'lib') -Filter '*.jar' | Get-FileHash -Algorithm SHA256 |
         Select-Object Path,Algorithm,Hash | ConvertTo-Json | Set-Content (Join-Path $RunRoot 'library-binaries.json')

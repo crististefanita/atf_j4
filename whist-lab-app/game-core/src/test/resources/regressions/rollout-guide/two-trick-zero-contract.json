@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "two-trick-zero-contract",
+  "scope": "A fully specified hypothetical deal used inside rollout tests; never real hidden-card input to a player and never a claim of public-information perfect play.",
+  "rule": "When void in the led suit, trump is mandatory. Draw the low trump before discarding the dangerous ace.",
+  "hero": 0,
+  "dealer": 3,
+  "trump": "S",
+  "handSize": 2,
+  "world": [
+    [
+      "AH",
+      "7S"
+    ],
+    [
+      "7H",
+      "7D"
+    ],
+    [
+      "8D",
+      "9S"
+    ],
+    [
+      "9D",
+      "10S"
+    ]
+  ],
+  "targets": [
+    0,
+    0,
+    0,
+    1
+  ],
+  "oldHeroTricks": 1,
+  "guidedHeroTricks": 0,
+  "oldHeroBase": -1,
+  "guidedHeroBase": 5,
+  "oldTrickWinners": [
+    3,
+    0
+  ],
+  "guidedTrickWinners": [
+    3,
+    3
+  ]
+}

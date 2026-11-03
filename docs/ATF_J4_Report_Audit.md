@@ -162,3 +162,26 @@ The [current contract](ATF_Game_Report_Presentation.md) replaces hardcoded unlim
 - The 55.7 MB archived AI report renders its initial view but timed out during deep interactive inspection; this is retained as a limitation, not full visual acceptance.
 
 This migration does not change C3/J16, replay business oracles or start Android. Historical J12–J15 evidence and earlier failures above keep their original scope.
+
+## J17 targeted large-report acceptance
+
+The [current verification](ATF_Reporting_J17_Verification.md) records the frozen
+JAR, 55 fresh component contracts, 14 consumer renderings and the full archived
+Android acceptance. Original comparison/PNG inventories are unchanged; the
+real large artifact uses targeted paths only.
+
+- Automated Chromium navigation, assertions and full-display viewer captures pass.
+- The user authorized the recorded Chromium/capture alternative to unavailable TAB MCP controls for this delivery.
+- ADB currently resets the connection; no fresh device run is claimed.
+- Earlier J16 loading failures and historical source/device evidence above remain historical.
+
+## J18 cold startup and bounded expansion
+
+[The cold-start record](ATF_Reporting_J18_Verification.md) adds three fresh
+Chromium processes, startup deep links, failure/recovery and native href repair.
+It retains the original action/readiness and navigation deadlines.
+
+- The complete 55.7 MB Android artifact is republished from archived receipts; this is publication/rendering acceptance.
+- Original owners 3 and 4 receive one structural bulk expansion each, with every semantic scenario/phase/node checked open; the remaining paths are targeted.
+- Original cells, supplied bodies, canonical PNG payloads and references are compared before/after; a PNG mutation is rejected.
+- Captures show the complete display with system bars, the selected owner and the final comparison row; no fresh Android gameplay is claimed.

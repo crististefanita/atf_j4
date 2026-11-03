@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "id": "strategy-training-v1",
+  "partition": "development",
+  "profile": "ROMANIAN4_SERIES10",
+  "firstSeed": 7100,
+  "seeds": 8,
+  "arrangements": [
+    [
+      0,
+      1,
+      2,
+      3
+    ],
+    [
+      1,
+      2,
+      3,
+      0
+    ],
+    [
+      2,
+      3,
+      0,
+      1
+    ],
+    [
+      3,
+      0,
+      1,
+      2
+    ],
+    [
+      0,
+      3,
+      2,
+      1
+    ],
+    [
+      3,
+      2,
+      1,
+      0
+    ],
+    [
+      2,
+      1,
+      0,
+      3
+    ],
+    [
+      1,
+      0,
+      3,
+      2
+    ]
+  ],
+  "design": "Balanced8 cyclic/reverse seatings per seed, not all24 permutations. Same deals and all4 seats. Training league only; no heldout superiority claim.",
+  "profiles": [
+    {
+      "id": "point_greedy",
+      "controller": "PLAYER_V6",
+      "objective": "POINTS",
+      "covers": false,
+      "bidSamples": 24,
+      "cardSamples": 48
+    },
+    {
+      "id": "point_covers",
+      "controller": "PLAYER_V8",
+      "objective": "POINTS",
+      "covers": true,
+      "bidSamples": 24,
+      "cardSamples": 48
+    },
+    {
+      "id": "safe_greedy",
+      "controller": "SAFETY_GREEDY",
+      "objective": "EXACT_CONTRACT",
+      "covers": false,
+      "bidSamples": 24,
+      "cardSamples": 48
+    },
+    {
+      "id": "safe_covers",
+      "controller": "SAFETY_COVERS",
+      "objective": "EXACT_CONTRACT",
+      "covers": true,
+      "bidSamples": 24,
+      "cardSamples": 48
+    },
+    {
+      "id": "expert_points",
+      "controller": "EXPERT_V6",
+      "objective": "POINTS",
+      "covers": false,
+      "bidSamples": 32,
+      "cardSamples": 32
+    },
+    {
+      "id": "expert_safety",
+      "controller": "EXPERT_CANDIDATE",
+      "objective": "EXACT_CONTRACT",
+      "covers": false,
+      "bidSamples": "adaptive32..128",
+      "cardSamples": 32
+    }
+  ],
+  "leagues": [
+    {
+      "id": "factorial",
+      "profiles": [
+        "point_greedy",
+        "point_covers",
+        "safe_greedy",
+        "safe_covers"
+      ],
+      "interpretation": "Clean2x2 objective/cover ablation within the independent family; same budgets and public inputs."
+    },
+    {
+      "id": "mixed",
+      "profiles": [
+        "expert_points",
+        "expert_safety",
+        "point_covers",
+        "safe_covers"
+      ],
+      "interpretation": "Practical heterogeneous league across implementations; multiple factors differ, so do not attribute differences to one weight."
+    }
+  ],
+  "promotion": "No automatic promotion. Convert explainable failures to component cases; verify selected improvements separately on unused fixed-opponent evaluation."
+}

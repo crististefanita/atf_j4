@@ -2,22 +2,32 @@ package ro.whistlab.app;
 
 /** Pure layout policy for the selectable bid grid and its table clearance. */
 final class BidGridMetrics {
-    static final int CHOICES_PER_ROW = 6;
-    private static final int BASELINE_ROWS = 2;
-    // Preserves breathing room between a third selector row and perimeter seats.
-    private static final int TABLE_HEIGHT_PER_EXTRA_ROW_DP = 96;
+    static final int COMPACT_COLUMNS = 3;
+    static final int WIDE_COLUMNS = 6;
+    static final int CHOICE_TARGET_DP = 48;
+    static final int SUBMIT_TARGET_DP = 48;
+    private static final int CENTER_PADDING_DP = 8;
 
     private BidGridMetrics() { }
 
-    static int rowCount(int optionCount) {
+    static int rowCount(int optionCount, int availableWidthDp) {
         if (optionCount < 0) {
             throw new IllegalArgumentException("Bid option count cannot be negative");
         }
-        return (optionCount + CHOICES_PER_ROW - 1) / CHOICES_PER_ROW;
+        int columns = columnCount(optionCount, availableWidthDp);
+        return columns == 0 ? 0 : (optionCount + columns - 1) / columns;
     }
 
-    static int additionalTableHeightDp(int optionCount) {
-        int additionalRows = Math.max(0, rowCount(optionCount) - BASELINE_ROWS);
-        return additionalRows * TABLE_HEIGHT_PER_EXTRA_ROW_DP;
+    static int centerHeightDp(int optionCount, int availableWidthDp) {
+        if (optionCount == 0) return CENTER_PADDING_DP;
+        return CENTER_PADDING_DP + rowCount(optionCount, availableWidthDp) * CHOICE_TARGET_DP + SUBMIT_TARGET_DP;
     }
+
+    static int columnCount(int optionCount, int availableWidthDp) {
+        if (optionCount <= 0) return 0;
+        return optionCount > COMPACT_COLUMNS * COMPACT_COLUMNS
+                && availableWidthDp >= WIDE_COLUMNS * CHOICE_TARGET_DP + WIDE_COLUMNS * 4
+                ? WIDE_COLUMNS : COMPACT_COLUMNS;
+    }
+
 }
