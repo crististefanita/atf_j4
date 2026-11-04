@@ -1,7 +1,7 @@
 # Whist Lab 0.1.2 — acceptanța build-ului din 3 noiembrie 2026
 
-APK-ul curent se construiește în TMP din sursele live J4 și se livrează singur
-în `dist`, împreună cu SHA-256. Dovezile și copiile de diagnostic rămân în afara
+Fișa păstrează rezultatele versiunii 0.1.2. Distribuția care a înlocuit-o este
+documentată în [acceptanța 0.1.3](WHIST_UI_013_ACCEPTANCE.md). Dovezile și copiile de diagnostic rămân în afara
 checkout-ului. Un PASS funcțional nu închide automat defectele de afișare.
 
 ## Identitatea build-ului

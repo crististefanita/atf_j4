@@ -1,13 +1,30 @@
 # Feedback de aliniere ATF J4 Android
 
-Revizie live: 2026-11-03; Core C3 și Reporting J18.
+Revizie live la 4 noiembrie 2026, cu Core C3 și Reporting J18.
 
 Politica comună a celor șase publicatoare este implementată și verificată în [contractul oficial](../ATF_Game_Report_Presentation.md) și [probele de regresie/randare](../ATF_Game_Report_Verification.md). Secțiunile J14/J15 de mai jos păstrează probe istorice; criteriile active nu includ remediile de prezentare deja livrate.
 Biblioteca și testele generice sunt în J0; cerințele de mai jos aparțin consumerului.
 
+## Acceptanța de display 0.1.3
+
+Driverul diferențiază un buton numeric de valoarea unui scaun și indicele
+vertical de fața cărții care îl conține. Pentru o mână densă, raportul cere
+concordanța dintre dreptunghiul expus și pixelii celor două linii. Un simbol
+lipsă sau tăiat trebuie să lase FAIL chiar dacă ierarhia conține 13 etichete.
+Comparațiile rămân concise în tabel, iar coordonatele complete sunt în proba
+XML a checkpoint-ului. [Acceptanța UI](../WHIST_UI_013_ACCEPTANCE.md)
+
+**P1 · Acces exclusiv la emulator.** Pe același serial, două procese pot
+schimba fereastra între citirea ierarhiei și tap. Android a raportat
+`UiAutomationService already registered` când a pornit și testul aplicației
+originale. Pentru acceptanță am rezervat serialul prin convenția live
+`android-ui-lease.json`. Generalizați rezervarea în punctele de intrare ale
+ambilor consumatori. Criteriul de închidere este ca al doilea runner să aștepte
+sau să refuze înainte de primul tap, inclusiv când pachetele Android diferă.
+
 ## Revizie consumer UI — 3 noiembrie, APK 0.1.2 din sursele live
 
-[Acceptanța curentă](../WHIST_UI_012_ACCEPTANCE.md) păstrează separat verdictul
+[Acceptanța 0.1.2](../WHIST_UI_012_ACCEPTANCE.md) păstrează separat verdictul
 jocului, publicarea Extent și revizia vizuală. J0 și JAR-ul J18 nu sunt modificate.
 
 | Defect confirmat | Corecție / probă |

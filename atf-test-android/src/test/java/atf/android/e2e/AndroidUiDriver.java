@@ -239,7 +239,7 @@ final class AndroidUiDriver {
     }
 
     boolean isSelected(String xml, String exactText) throws Exception {
-        List<Node> matches = nodes(xml).stream().filter(node -> node.text().equals(exactText)).toList();
+        List<Node> matches = nodes(xml).stream().filter(node -> node.className().equals("android.widget.Button") && node.text().equals(exactText)).toList();
         if (matches.size() != 1) {
             throw new IllegalStateException("Expected one UI element named '" + exactText
                     + "', got " + matches.size());
@@ -409,7 +409,10 @@ final class AndroidUiDriver {
     }
 
     void selectBid(int bid) throws Exception {
-        tapText(Integer.toString(bid));
+        String text = Integer.toString(bid);
+        var matches = nodes(dump()).stream().filter(node -> node.className().equals("android.widget.Button") && node.text().equals(text)).toList();
+        if (matches.size() != 1) throw new IllegalStateException("Expected one bid button: " + text);
+        tap(matches.getFirst());
     }
 
     void selectNamedSpinnerOption(String description,String expectedText)throws Exception {
@@ -836,16 +839,43 @@ final class AndroidUiDriver {
         List<Node> result = new ArrayList<>(elements.getLength());
         for (int index = 0; index < elements.getLength(); index++) {
             Element element = (Element) elements.item(index);
-            result.add(new Node(element.getAttribute("text"), element.getAttribute("class"),
+            result.add(new Node(cardText(element.getAttribute("text")), element.getAttribute("class"),
                     element.getAttribute("bounds"), Boolean.parseBoolean(element.getAttribute("clickable")),
                     Boolean.parseBoolean(element.getAttribute("enabled")),
-                    Boolean.parseBoolean(element.getAttribute("selected")), element.getAttribute("content-desc")));
+                    Boolean.parseBoolean(element.getAttribute("selected")), element.getAttribute("content-desc"),
+                    element.getParentNode() instanceof Element parent ? parent.getAttribute("bounds") : ""));
         }
         return result;
     }
 
+    private static String cardText(String text) {
+        String compact = text.replace("\n", "").replace(" ", "");
+        return PLAYING_CARD.matcher(compact).matches() ? compact : text;
+    }
+
+    boolean turnedTrumpIdentityMatchesVisibleCard(String xml) throws Exception {
+        var entries = nodes(xml);
+        var tiles = entries.stream().filter(n -> n.description().startsWith("Trump set by turned card: ")).toList();
+        if (tiles.size() != 1) return false;
+        var tile = tiles.getFirst();
+        return entries.stream().filter(n -> PLAYING_CARD.matcher(n.text()).matches())
+                .anyMatch(n -> n.parentBounds().equals(tile.bounds()) && tile.description().endsWith(accessibleCardName(n.text())));
+    }
+
+    Bounds buttonBounds(String xml, String text) throws Exception {
+        var matches = nodes(xml).stream().filter(n -> n.className().equals("android.widget.Button") && n.text().equals(text)).toList();
+        if (matches.size() != 1) throw new IllegalStateException("Expected one button: " + text);
+        return toBounds(matches.getFirst().bounds());
+    }
+
+    List<Bounds> handCardFaceBounds(String xml) throws Exception {
+        var labels = nodes(xml).stream().filter(node -> PLAYING_CARD.matcher(node.text()).matches()).toList();
+        int bottom = labels.stream().mapToInt(node -> toBounds(node.bounds()).top()).max().orElse(0);
+        return labels.stream().filter(node -> toBounds(node.bounds()).top() >= bottom - 15)
+                .map(node -> toBounds(node.parentBounds())).toList();
+    }
     private record Node(String text, String className, String bounds, boolean clickable,
-            boolean enabled, boolean selected, String description) { }
+            boolean enabled, boolean selected, String description, String parentBounds) { }
 
     record ElementSize(int widthPixels, int heightPixels) { }
     record CardLabel(String text, int top) { }

@@ -36,6 +36,7 @@ final class GameTablePanel extends LinearLayout {
     private static final int PLAY_HINT_SLOT_HEIGHT_DP = 32;
 
     private final Context context;
+    private final TableViewportPolicy viewport;
     private final GameSession.Snapshot state;
     private final WhistUiText copy;
     private final boolean bidding;
@@ -84,6 +85,7 @@ final class GameTablePanel extends LinearLayout {
             WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused) {
         super(context);
         this.context = context;
+        this.viewport = new TableViewportPolicy(getResources().getConfiguration().screenHeightDp);
         this.state = state;
         this.copy = copy;
         this.bidding = bidding;
@@ -97,7 +99,7 @@ final class GameTablePanel extends LinearLayout {
         this.onBidSubmitted = onBidSubmitted;
 
         setOrientation(VERTICAL);
-        setGravity(Gravity.CENTER);
+        setGravity(Gravity.BOTTOM);
         setPadding(dp(8), dp(4), dp(8), dp(4));
         setBackgroundColor(Color.TRANSPARENT);
         setClipChildren(false);
@@ -105,10 +107,10 @@ final class GameTablePanel extends LinearLayout {
 
         View board = buildRoundTable();
         LayoutParams boardParams = new LayoutParams(dp(Math.min(availableContentWidthDp(), 760)),
-                dp(roundTableHeightDp()));
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         boardParams.gravity = Gravity.CENTER_HORIZONTAL;
         addView(board, boardParams);
-        if (!bidding) {
+        if (!bidding && viewport.showPlayHint()) {
             FrameLayout hintSlot = new FrameLayout(context);
             TextView help = text(hint == null ? "" : hint, 11, Color.rgb(222, 237, 225), false);
             help.setGravity(Gravity.CENTER);
@@ -123,38 +125,28 @@ final class GameTablePanel extends LinearLayout {
             params.topMargin = dp(4);
             addView(hintSlot, params);
         }
-        LayoutParams handParams = new LayoutParams(dp(handWidthDp()), dp(HandLayoutMetrics.reservedHandHeightDp()));
+        LayoutParams handParams = new LayoutParams(dp(handWidthDp()), dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding))));
         handParams.gravity = Gravity.CENTER_HORIZONTAL;
         addView(buildHand(), handParams);
     }
 
     private View buildRoundTable() {
-        FrameLayout board = new FrameLayout(context);
+        int tableWidthDp = Math.min(availableContentWidthDp(), 760);
+        int centerWidthDp = bidding
+                ? Math.max(132, Math.min(bidOptions.size(), BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp)) * 52)
+                : Math.max(state.players().size() > 4 ? 154 : 100, TableLayoutMetrics.centerPlayWidthDp(tableWidthDp));
+        GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp, viewport);
         board.setBackgroundColor(Color.TRANSPARENT);
-        board.setPadding(dp(4), dp(4), dp(4), dp(4));
         board.setContentDescription(copy.boardSurface());
         board.setTag("game-board");
         board.setClipChildren(false);
 
-        int tableWidthDp = Math.min(availableContentWidthDp(), 760);
-        TableSeatRingLayout seats = new TableSeatRingLayout(context, state.players().size(), bidding,
-                bidOptions.size(), dp(TableLayoutMetrics.seatWidthDp(tableWidthDp)), tableWidthDp);
         for (GameSession.PlayerSnapshot player : state.players()) {
-            seats.addView(buildSeat(player));
+            board.addView(buildSeat(player));
         }
-        board.addView(seats, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        if (bidding) {
-            board.addView(buildBiddingCenter(), new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.CENTER));
-        } else {
-            board.addView(buildCurrentTrick(), new FrameLayout.LayoutParams(
-                    dp(TableLayoutMetrics.centerPlayWidthDp(
-                            Math.min(availableContentWidthDp(), 760))),
-                    dp(TableLayoutMetrics.playingCenterRowHeightDp(state.players().size(),
-                            getResources().getConfiguration().fontScale)), Gravity.CENTER));
-        }
+        View center = bidding ? buildBiddingCenter() : buildCurrentTrick();
+        if (!bidding) center.setMinimumHeight(dp(144));
+        board.addView(center);
         return board;
     }
 
@@ -164,15 +156,7 @@ final class GameTablePanel extends LinearLayout {
         center.setGravity(Gravity.CENTER);
         int columns = BidGridMetrics.columnCount(bidOptions.size(), availableContentWidthDp());
 
-        if (columns == BidGridMetrics.DENSE_COLUMNS) {
-            center.setContentDescription(copy.bidSelector());
-        } else {
-            TextView heading = text(copy.bidChoiceHeading(), 11, WHITE, true);
-            heading.setGravity(Gravity.CENTER);
-            heading.setContentDescription(copy.bidSelector());
-            center.addView(heading, new LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
+        center.setContentDescription(copy.bidSelector());
 
         for (int start = 0; start < bidOptions.size(); start += columns) {
             LinearLayout row = new LinearLayout(context);
@@ -201,7 +185,7 @@ final class GameTablePanel extends LinearLayout {
                 row.addView(choice, params);
             }
             center.addView(row, new LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(BidGridMetrics.CHOICE_TARGET_DP)));
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(BidGridMetrics.CHOICE_ROW_DP)));
         }
         center.addView(buildBidSubmission(), new LayoutParams(dp(132), dp(BidGridMetrics.SUBMIT_TARGET_DP)));
         return center;
@@ -259,10 +243,10 @@ final class GameTablePanel extends LinearLayout {
         LinearLayout seat = new LinearLayout(context);
         seat.setOrientation(VERTICAL);
         seat.setGravity(Gravity.CENTER);
-        seat.setPadding(dp(4), dp(3), dp(4), dp(3));
-        seat.setBackground(rounded(active ? Color.rgb(241, 230, 200) : WhistUiPalette.TABLE_FELT,
-                active ? GOLD : Color.rgb(84, 127, 98), 11));
-        seat.setElevation(dp(active ? 3 : 1));
+        seat.setPadding(dp(6), dp(4), dp(6), dp(4));
+        seat.setBackground(rounded(active ? Color.rgb(241, 230, 200) : Color.rgb(31, 87, 67),
+                active ? GOLD : Color.rgb(76, 118, 96), 11));
+        seat.setElevation(dp(active ? 1 : 0));
 
         FrameLayout actionSlot = new FrameLayout(context);
         FrameLayout.LayoutParams actionBadgeParams = new FrameLayout.LayoutParams(
@@ -282,7 +266,7 @@ final class GameTablePanel extends LinearLayout {
             action.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             actionSlot.addView(action, actionBadgeParams);
         }
-        seat.addView(actionSlot, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(18)));
+        seat.addView(actionSlot, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(16)));
 
         TextView name = text(copy.seatName(player), 13,
                 active ? INK : Color.rgb(229, 239, 230), true);
@@ -291,11 +275,8 @@ final class GameTablePanel extends LinearLayout {
         name.setEllipsize(android.text.TextUtils.TruncateAt.END);
         name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         seat.addView(name, matchWrap());
-        TextView facts = text(copy.seatFacts(player), 11,
-                active ? INK : Color.rgb(229, 239, 230), false);
-        facts.setGravity(Gravity.LEFT);
-        facts.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        seat.addView(facts, matchWrap());
+        addSeatFact(seat, copy.bidLabel() + ":", player.bid() == null ? "—" : player.bid().toString(), active);
+        addSeatFact(seat, copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()), active);
         seat.setTag("table-seat:" + player.seat());
         seat.setContentDescription(copy.seatAccessibility(player, dealer, active, bidding));
         seat.setFocusable(true);
@@ -318,11 +299,12 @@ final class GameTablePanel extends LinearLayout {
         cards.setGravity(Gravity.CENTER);
         cards.setContentDescription(copy.currentTrick());
         cards.setTag("current-trick");
-        for (int start = 0; start < plays.size(); start += 2) {
+        int columns = state.players().size() > 4 ? 3 : 2;
+        for (int start = 0; start < plays.size(); start += columns) {
             LinearLayout row = new LinearLayout(context);
             row.setOrientation(HORIZONTAL);
             row.setGravity(Gravity.CENTER);
-            int end = Math.min(start + 2, plays.size());
+            int end = Math.min(start + columns, plays.size());
             for (int index = start; index < end; index++) {
                 PlayedCard play = plays.get(index);
                 GameSession.PlayerSnapshot player = state.players().get(play.seat());
@@ -374,13 +356,17 @@ final class GameTablePanel extends LinearLayout {
         FrameLayout fan = new FrameLayout(context);
         fan.setClipChildren(false);
         fan.setClipToPadding(false);
-        int advanceDp = HandLayoutMetrics.horizontalAdvanceDp(cardCount, availableWidthDp, fontScale);
+        TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CARD_DARK, true);
+        float widestIndex = measurement.getPaint().measureText("10");
+        for (String symbol : List.of("♠", "♥", "♣", "♦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
+        int indexWidthDp = (int) Math.ceil(widestIndex / getResources().getDisplayMetrics().density) + 4;
+        int advanceDp = HandLayoutMetrics.horizontalAdvanceDp(cardCount, availableWidthDp, fontScale, indexWidthDp);
         int cardWidthDp = HandLayoutMetrics.cardWidthDp(cardCount, availableWidthDp, fontScale);
-        int handContentWidthDp = HandLayoutMetrics.contentWidthDp(cardCount, availableWidthDp, fontScale);
+        int handContentWidthDp = (cardCount - 1) * advanceDp + cardWidthDp;
         int fanWidthDp = Math.max(availableWidthDp, handContentWidthDp);
         int handLeadingInsetDp = Math.max(0, (fanWidthDp - handContentWidthDp) / 2);
         int cardHeightDp = HandLayoutMetrics.cardHeightDp();
-        int liftClearanceDp = HandLayoutMetrics.LIFT_CLEARANCE_DP;
+        int liftClearanceDp = viewport.handClearanceDp(bidding);
         fan.setTag("player-hand-fan");
         for (int index = 0; index < cardCount; index++) {
             Card card = state.players().get(0).hand().get(index);
@@ -397,7 +383,7 @@ final class GameTablePanel extends LinearLayout {
             slot.setEnabled(true);
             slot.setClickable(playable);
             slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
-            FrameLayout face = cardFace(card, playable);
+            FrameLayout face = cardFace(card, playable, indexWidthDp);
             FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(dp(cardWidthDp),
                     dp(cardHeightDp), Gravity.TOP | Gravity.START);
             faceParams.topMargin = dp(liftClearanceDp);
@@ -416,28 +402,43 @@ final class GameTablePanel extends LinearLayout {
             }
             FrameLayout.LayoutParams slotParams = new FrameLayout.LayoutParams(
                     dp(index == cardCount - 1 ? cardWidthDp : advanceDp),
-                    dp(HandLayoutMetrics.reservedHandHeightDp()));
+                    dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding))));
             slotParams.leftMargin = dp(handLeadingInsetDp + index * advanceDp);
             fan.addView(slot, slotParams);
         }
         hand.addView(fan, new FrameLayout.LayoutParams(dp(fanWidthDp),
-                dp(HandLayoutMetrics.reservedHandHeightDp())));
+                dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding)))));
         return hand;
     }
 
-    private FrameLayout cardFace(Card card, boolean playable) {
+    private FrameLayout cardFace(Card card, boolean playable, int indexWidthDp) {
         FrameLayout face = new FrameLayout(context);
-        face.setBackground(rounded(WHITE, playable ? GOLD : SOFT_BORDER, 9));
+        face.setBackground(new CardFaceBackground(card, getResources().getDisplayMetrics().density, playable ? GOLD : SOFT_BORDER));
         face.setFocusable(false);
         face.setClickable(false);
 
-        TextView label = text(card.shortLabel(), HandLayoutMetrics.cardLabelSizeSp(),
+        TextView label = text(card.rankLabel() + "\n" + card.suit().symbol(), HandLayoutMetrics.cardLabelSizeSp(),
                 card.suit().red() ? CARD_RED : CARD_DARK, true);
-        label.setGravity(Gravity.TOP | Gravity.START);
-        label.setPadding(dp(4), dp(5), dp(2), 0);
+        label.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        label.setIncludeFontPadding(false);
+        label.setPadding(dp(2), dp(5), dp(2), 0);
+        label.setTag("card-index");
         face.addView(label, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                dp(indexWidthDp), ViewGroup.LayoutParams.WRAP_CONTENT));
         return face;
+    }
+
+    private void addSeatFact(LinearLayout seat, String label, String value, boolean active) {
+        LinearLayout row = new LinearLayout(context);
+        int color = active ? INK : Color.rgb(229, 239, 230);
+        TextView caption = text(label, 11, color, false);
+        TextView amount = text(value, 11, color, true);
+        caption.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        amount.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        amount.setGravity(Gravity.END);
+        row.addView(caption, new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        row.addView(amount, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        seat.addView(row, matchWrap());
     }
 
     private TextView text(String value, int size, int color, boolean bold) {
@@ -472,15 +473,6 @@ final class GameTablePanel extends LinearLayout {
     private int availableContentWidthDp() {
         float density = getResources().getDisplayMetrics().density;
         return Math.max(1, Math.round(getResources().getDisplayMetrics().widthPixels / density) - 40);
-    }
-
-    private int roundTableHeightDp() {
-        return bidding
-                ? TableLayoutMetrics.biddingHeightDp(state.players().size(), bidOptions.size(),
-                        availableContentWidthDp(),
-                        getResources().getConfiguration().fontScale)
-                : TableLayoutMetrics.playingHeightDp(state.players().size(),
-                        getResources().getConfiguration().fontScale);
     }
 
 }

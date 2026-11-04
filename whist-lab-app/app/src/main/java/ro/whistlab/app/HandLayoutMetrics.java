@@ -12,8 +12,8 @@ final class HandLayoutMetrics {
     static final float CARD_LIFT_SCALE = 1.12f;
     private static final int FULL_SIZE_HAND_CARD_LIMIT = 8;
     private static final int MAX_PLAYABLE_HAND_SIZE = 13;
-    private static final int MIN_DENSE_CARD_WIDTH_DP = 44;
-    static final int DENSE_HAND_MIN_ADVANCE_DP = 16;
+    private static final int MIN_DENSE_CARD_WIDTH_DP = 40;
+    static final int DENSE_HAND_MIN_ADVANCE_DP = 19;
     private static final int MIN_CARD_COUNT = 1;
     private static final int MAX_CARD_COUNT = 17;
 
@@ -47,14 +47,20 @@ final class HandLayoutMetrics {
     }
 
     static int horizontalAdvanceDp(int cardCount, int availableWidthDp, float fontScale) {
+        return horizontalAdvanceDp(cardCount, availableWidthDp, fontScale,
+                Math.round(DENSE_HAND_MIN_ADVANCE_DP * fontScale));
+    }
+
+    static int horizontalAdvanceDp(int cardCount, int availableWidthDp, float fontScale, int measuredIndexWidthDp) {
         requireHand(cardCount, availableWidthDp, fontScale);
+        if (measuredIndexWidthDp < 1) throw new IllegalArgumentException("Card index must have a measured width");
         int cardWidth = cardWidthDp(cardCount, availableWidthDp, fontScale);
         if (cardCount == 1) return cardWidth;
         int fitAdvance = (availableWidthDp - cardWidth) / (cardCount - 1);
         int minimumAdvance = cardCount <= MAX_PLAYABLE_HAND_SIZE
                 ? Math.round(DENSE_HAND_MIN_ADVANCE_DP * Math.min(fontScale, 1.5f))
                 : minVisibleAdvanceDp(fontScale);
-        return Math.max(minimumAdvance, fitAdvance);
+        return Math.max(measuredIndexWidthDp, Math.max(minimumAdvance, fitAdvance));
     }
 
     static int contentWidthDp(int cardCount, int availableWidthDp, float fontScale) {

@@ -283,43 +283,24 @@ comenzile individuale, vezi [organizarea testelor Android](docs/ANDROID_TESTING.
 
 ## APK Whist Lab pentru instalare directă
 
-APK-ul actual este [WhistLab-0.1.2-debug.apk](dist/WhistLab-0.1.2-debug.apk).
-Declară `minSdk 24`, `compileSdk 36` și `targetSdk 36`; nu include biblioteci
-native sau split-uri ABI. `dist` păstrează numai APK-ul curent și SHA-256-ul lui;
-build-urile, logurile și capturile de verificare rămân în TMP.
+[WhistLab-0.1.3-debug.apk](dist/WhistLab-0.1.3-debug.apk) are codul 4,
+`minSdk 24` și `targetSdk 36`. Pachetul conține aplicația completă.
+Directorul `dist` păstrează o singură versiune și [suma ei SHA-256](dist/WhistLab-0.1.3-debug.apk.sha256).
 
-Build-ul din 3 noiembrie a parcurs șase mâini românești pe emulatorul API 28,
-nivel Hard: 36 de mutări, nouă levate, reluare după repornirea procesului și
-raport Extent cu audit trecut. Este un pilot, nu o partidă completă. Vezi
-[acceptanța APK-ului și limitele vizuale](docs/WHIST_UI_012_ACCEPTANCE.md) și
-[harta testelor Android](atf-test-android/README.md).
-
-`targetSdk 36` înlocuiește ținta veche API 28, care producea pe telefon avertizarea
-Play Protect „Unsafe app blocked / built for an older version of Android”.
-Google spune că avertizarea apare când ținta este cu peste două niveluri API în
-urma versiunii curente; actualizarea țintei nu garantează că Play Protect nu va
-afișa alte avertizări pentru un APK instalat din afara Play. Vezi
-[ghidul Google Play Protect](https://developers.google.com/android/play-protect/warning-dev-guidance)
-și [cerințele curente Play pentru target API](https://developer.android.com/google/play/requirements/target-sdk).
-Pentru trimiteri noi/actualizări pe Google Play, cerința din 31 august 2026 este
-Android 16 / API 36.
-
-Guard-ul pentru mâna goală permite tranziția ultima carte → scor → mâna următoare.
-Interfața folosește selector de limbă dropdown și titluri concise. Feedback-ul
-de geometrie și ierarhie vizuală rămas deschis nu este închis prin PASS-ul jocului.
-Instalarea pe ROG 7 fizic și comportamentul pe Android 16 rămân neverificate.
+Build-ul include motorul AI local și interfața verificată în J4. Fișa de
+acceptanță identifică separat sursa AI, binarul instalat și probele de pe emulator.
+Pilotul a parcurs șase mâini pe Hard, inclusiv reluarea după repornirea procesului.
+Verificarea de afișare măsoară indicii celor 13 cărți și spațiul dintre cele nouă
+opțiuni de licitare și scaune. [Acceptanța 0.1.3](docs/WHIST_UI_013_ACCEPTANCE.md) · [Atlasul interfeței](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
 
 ```powershell
 $env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
 & 'C:\tools\whist-android-sdk\platform-tools\adb.exe' -s 127.0.0.1:5555 `
-  install -r 'dist/WhistLab-0.1.2-debug.apk'
+  install -r 'dist/WhistLab-0.1.3-debug.apk'
 ```
 
-APK-ul este semnat cu cheia debug locală; SHA-256 este în
-[`WhistLab-0.1.2-debug.apk.sha256`](dist/WhistLab-0.1.2-debug.apk.sha256).
-Nu folosi semnătura debug pentru distribuție. Pentru actualizări păstrează aceeași
-cheie de release; o semnătură diferită blochează instalarea peste pachetul vechi,
-iar dezinstalarea poate șterge datele locale.
+Actualizarea peste o instalare existentă cere aceeași cheie de semnare.
+Pachetul de aici folosește cheia debug locală.
 
 La adăugarea unui consumator nou, copiază numai adaptorul sau testele de care are
 nevoie. Păstrează harness-ul generic, contractele backend și implementarea

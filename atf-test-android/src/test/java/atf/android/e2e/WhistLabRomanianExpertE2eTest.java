@@ -24,13 +24,13 @@ class WhistLabRomanianExpertE2eTest {
             adb.run("shell","am","force-stop","ro.whistlab.app").requireSuccess();
             adb.run("shell","am","start","-W","-n","ro.whistlab.app/.MainActivity","--ez","debug_replay","true").requireSuccess();
             ui.awaitText("Place your bid",Duration.ofSeconds(20));ui.tapText("Main menu");ui.tapText("New game");
-            ui.selectSpinnerOption(1,"Whist romanesc (1-8-1)");ui.selectSpinnerOption(2,"Expert (simulation)");
+            ui.selectSpinnerOption(1,"Romanian (1–8–1)");ui.selectSpinnerOption(2,"Expert (simulation)");
             ui.capture("romanian-expert-setup");
             String setup=ui.dump();
             CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Leave recorded input mode and select a normal four-seat Romanian Expert game",
                     "romanian-expert-setup","4 players / Romanian Whist / Expert",List.of(
-                            new AtfAssertion("Explicit normal game profile","Whist romanesc (1-8-1) / Expert (simulation)",
-                                    ui.texts(setup).toString(),ui.hasText(setup,"Whist romanesc (1-8-1)")&&ui.hasText(setup,"Expert (simulation)"))));
+                            new AtfAssertion("Explicit normal game profile","Romanian (1–8–1) / Expert (simulation)",
+                                    ui.texts(setup).toString(),ui.hasText(setup,"Romanian (1–8–1)")&&ui.hasText(setup,"Expert (simulation)"))));
             ui.tapText("Start game");ui.awaitText("Place your bid",Duration.ofSeconds(25));
             JsonNode bidding=saved(adb,out,"romanian-expert-bidding");
             List<AtfAssertion> checks=new ArrayList<>();

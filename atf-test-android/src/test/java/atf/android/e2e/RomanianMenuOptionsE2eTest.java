@@ -43,12 +43,12 @@ class RomanianMenuOptionsE2eTest {
             }
             ui.back();ui.selectNamedSpinnerOption("interface-language","English");ui.awaitText("New game",Duration.ofSeconds(12));
             for(int value:List.of(5,10,0)){
-                ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Whist romanesc (1-8-1)");ui.selectNamedSpinnerOption("ai-level","Hard");
+                ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.selectNamedSpinnerOption("ai-level","Hard");
                 ui.revealText("10 points");var setup=ui.dump();var checks=new ArrayList<AtfAssertion>();
                 RomanianMatchOracle.truth(checks,"New game defaults to positive series ten","10 points",ui.texts(setup).toString(),ui.hasText(setup,"10 points"));
-                RomanianMatchOracle.truth(checks,"Series value is labeled separately from AI level","Five-hand exact-contract bonus",ui.texts(setup).toString(),ui.hasText(setup,"Five-hand exact-contract bonus"));
+                RomanianMatchOracle.truth(checks,"Series value is labeled separately from AI level","Five-hand streaks + named bonus selector",ui.texts(setup).toString(),ui.hasText(setup,"Five-hand streaks") && ui.hasDescription(setup,"Five-hand exact-contract bonus"));
                 if(value==5)ui.selectNamedSpinnerOption("romanian-streak-value","5 points (original)");
-                if(value==0){ui.back();ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Whist romanesc (1-8-1)");ui.tapText("Romanian five-hand streaks (missed series: -5)");}
+                if(value==0){ui.back();ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.tapDescription("Romanian five-hand streaks (missed series: -5)");}
                 String label="menu-series-"+value;ui.revealText("Start game");ui.capture(label+"-setup");
                 CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Select normal Romanian series profile "+value,label+"-setup","No checkpoint editing or injected cards",checks,List.of());
                 ui.tapText("Start game");var state=CompleteRomanianExpertE2eTest.stable(adb);checks=new ArrayList<>();

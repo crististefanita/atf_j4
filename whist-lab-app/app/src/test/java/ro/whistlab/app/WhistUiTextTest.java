@@ -25,7 +25,7 @@ public final class WhistUiTextTest {
         assertEquals(2, BidGridMetrics.rowCount(9, 353));
         assertEquals(3, BidGridMetrics.rowCount(9, 400));
         assertEquals(3, BidGridMetrics.rowCount(18, 353));
-        assertEquals(6, BidGridMetrics.rowCount(18, 240));
+        assertEquals(5, BidGridMetrics.rowCount(18, 240));
     }
 
     @Test public void supportedHandsUseOneTallerFanRowUpToTheSeventeenCardRuleLimit() {
@@ -78,9 +78,9 @@ public final class WhistUiTextTest {
             assertFalse(mode.name(), english.isBlank());
             assertFalse(mode.name(), romanian.isBlank());
         }
-        assertEquals("Whist romanesc (1-8-1)",
+        assertEquals("Romanian (1–8–1)",
                 new WhistUiText(HowToPlay.Language.EN).modeName(GameMode.ROMANIAN_WHIST));
-        assertEquals("Whist românesc (1–8–1)",
+        assertEquals("Românesc (1–8–1)",
                 new WhistUiText(HowToPlay.Language.RO).modeName(GameMode.ROMANIAN_WHIST));
         String expectedExpertLabel = "HARD".equals(AiDifficulty.EXPERT.name())
                 ? "Hard" : "Expert (simulation)";
@@ -153,9 +153,12 @@ public final class WhistUiTextTest {
         assertEquals("You | Bid: 1 | Tricks won: 1 | Hand: +11 | Total: 11",
                 english.scoreLine(player, 11));
         assertEquals("Jucător", romanian.scoreColumnPlayer());
+        assertEquals("Lic.", romanian.scoreColumnBid());
+        assertEquals("Pct.", romanian.scoreColumnHand());
         assertEquals("Lev.", romanian.scoreColumnTricks());
         assertEquals("Licitația nu a fost depusă", romanian.bidNotPlaced());
         assertTrue(romanian.scoreLine(player, "—").contains("Levate câștigate: 1"));
+        assertTrue(romanian.scoreLine(player, -3).contains("Puncte în această mână: -3"));
     }
 
     @Test public void seatShowsNameSeparateFromBidAndTricksAndTurnBadgeIsLocalized() {
@@ -163,8 +166,8 @@ public final class WhistUiTextTest {
         WhistUiText english = new WhistUiText(HowToPlay.Language.EN);
         WhistUiText romanian = new WhistUiText(HowToPlay.Language.RO);
 
-        assertEquals("Bid 2\nWon 1", english.seatFacts(player));
-        assertEquals("Licitat 2\nLevate 1", romanian.seatFacts(player));
+        assertEquals("Bid: 2\nWon: 1", english.seatFacts(player));
+        assertEquals("Licitat: 2\nLevate: 1", romanian.seatFacts(player));
         assertEquals("BID NOW", english.seatTurnAction(true));
         assertEquals("PLAY NOW", english.seatTurnAction(false));
         assertEquals("LICITEAZĂ ACUM", romanian.seatTurnAction(true));

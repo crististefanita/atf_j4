@@ -39,9 +39,10 @@ class CompleteRomanianExpertE2eTest {
             result.setProperty("scope",limit==24?"COMPLETE":"PILOT");result.setProperty("difficulty",level);result.setProperty("humanPolicy",challenge?"Independent public-information planner; no opponents' cards or shuffle seed":"Own high-card bids and varied legal choices");
             result.setProperty("streakBonus",""+seriesReward);
             adb.run("shell","am","force-stop",APP_PACKAGE).requireSuccess();
-            adb.run("shell","am","start","-W","-n",APP_COMPONENT,"--es","debug_language","EN").requireSuccess();
-            ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Whist romanesc (1-8-1)");ui.selectNamedSpinnerOption("ai-level",displayLevel);
-            if(seriesReward==0)ui.tapText("Romanian five-hand streaks (missed series: -5)");
+            adb.run("shell","am","start","-W","-n",APP_COMPONENT).requireSuccess();
+            ui.selectNamedSpinnerOption("interface-language","English");
+            ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.selectNamedSpinnerOption("ai-level",displayLevel);
+            if(seriesReward==0)ui.tapDescription("Romanian five-hand streaks (missed series: -5)");
             else ui.selectNamedSpinnerOption("romanian-streak-value",seriesReward==5?"5 points (original)":"10 points");
             ui.capture("ro-setup");String setup=ui.dump();var checks=new ArrayList<AtfAssertion>();
             // Semantic profile is also asserted from the fresh checkpoint after the normal menu action.

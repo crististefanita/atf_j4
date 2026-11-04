@@ -16,13 +16,25 @@ J4; HTML-ul, viewerul PNG și deduplicarea aparțin Reporting. Vezi
 | `RomanianMatchOracle` | reconstrucția independentă a distribuției, mutărilor legale, levatelor și scorurilor |
 | `CompleteRomanianExpertE2eTest` | partidă nouă prin meniul normal; numele clasei este istoric, nivelurile live sunt `NORMAL` și `HARD` |
 | `WhistLabGameplayE2eTest` | fluxuri scurte pentru masă, licitare, meniuri, o carte, 13 cărți și pauza levatei |
+| `WhistDenseLayoutE2eTest` | Patru profile, separat pentru 13 indici și nouă butoane la patru jucători. Fiecare captură este legată de aserțiunile sale. |
+| `WhistMenuLayoutE2eTest` | Navigare prin meniurile normale EN/RO, reguli la cerere, scor și revenire. |
+| `HandIndexAudit` | Suport pur în `src/main/java/atf/android/whist/evidence`. Compară banda expusă și pixelii celor două linii. Componentele acoperă și capturile cu letterboxing. |
 
-Suportul de aici este specific acceptanței Android și rămâne în sursele de test.
+Driverul și compoziția scenariilor sunt specifice testelor Android.
 Clientul ADB și conversia PNG reutilizabile sunt în `atf-android/src/main/java`.
 Motorul aplicației rămâne în `whist-lab-app/game-core`; oracolul testului nu
 delegă verdictul către motorul verificat.
 
 ## Contractul dovezilor
+
+[Ultimul raport Extent Whist Lab](../docs/feedback/whist-extent/README.md) conține linkul local către HTML, scenariul, verdictul și data UTC a raportului.
+Publisherul actualizează indexul după audit, inclusiv pentru un joc eșuat cu diagnostic valid. Componentele, aplicația originală și fișierele din afara directorului declarat al rulării nu înlocuiesc raportul.
+
+Pentru un build în TMP setați `ATF_J4_FEEDBACK_DIRECTORY` la directorul `docs/feedback` al checkout-ului live înainte de Maven.
+Opțiunea JVM `atf.android.feedbackDirectory` are prioritate. În checkout, directorul se detectează automat.
+E2E-ul declară `atf.android.artifacts` sau `atf.match.evidenceDir` și activează `atf.android.enabled`. Linkul deschide fișierul pe mașina unde se află dovezile. Curățarea acelui director îl invalidează până la următoarea publicare.
+
+Arhiva permanentă păstrează separat ultima acceptanță pe scope și ultima încercare. [Publicarea și replay-ul offline](../docs/WHIST_UI_REPORT_HANDOFF.md)
 
 - `ACTION` este emis pentru interacțiunea executată de driver. Citirea ecranului
   este `OBSERVE`; un checkpoint de observație nu primește un click inventat.
@@ -44,6 +56,8 @@ delegă verdictul către motorul verificat.
   în feedback-ul consumatorului.
 
 ## Rulare focalizată
+
+Matricea nouă, versiunea APK și dovezile sunt în [acceptanța UI 0.1.3](../docs/WHIST_UI_013_ACCEPTANCE.md).
 
 Build-ul Maven/Gradle se execută într-o copie din `%TEMP%`, conform runnerelor
 din `scripts`. Nu rula comenzile de build în checkout-ul live. E2E necesită

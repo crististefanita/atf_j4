@@ -148,9 +148,7 @@ public class WhistLabGameplayE2eTest {
             AndroidUiDriver.Bounds submitBounds = ui.boundsForText(bidding, "Place bid");
             AndroidUiDriver.Bounds handBounds = ui.boundsForDescription(bidding, "Your hand, 8 cards.");
             boolean actionAnchoredAboveHand = submitBounds.bottom() < handBounds.top();
-            boolean turnedTrumpCardVisible = ui.hasText(bidding, "TURNED CARD")
-                    && ui.descriptions(bidding).stream()
-                            .anyMatch(value -> value.startsWith("Trump set by turned card: "));
+            boolean turnedTrumpCardVisible = ui.turnedTrumpIdentityMatchesVisibleCard(bidding);
             boolean gameIdentityAndTrumpVisible = ui.hasText(bidding, "Whist · Oh Hell")
                     && turnedTrumpCardVisible;
             var boardBounds = ui.boundsForDescription(bidding, "Playing surface");
@@ -161,7 +159,7 @@ public class WhistLabGameplayE2eTest {
                         catch (Exception failure) { throw new IllegalStateException(failure); }
                     }).toList();
             List<AndroidUiDriver.Bounds> biddingControlBounds = new ArrayList<>();
-            for (int bid : visibleBids) biddingControlBounds.add(ui.boundsForText(bidding, Integer.toString(bid)));
+            for (int bid : visibleBids) biddingControlBounds.add(ui.buttonBounds(bidding, Integer.toString(bid)));
             biddingControlBounds.add(submitBounds);
             long biddingSeatOverlaps = biddingControlBounds.stream()
                     .flatMap(control -> seatBounds.stream().filter(seat -> overlaps(control, seat)))
@@ -259,8 +257,8 @@ public class WhistLabGameplayE2eTest {
                                     "Whist · Oh Hell; turned card rank and suit", visibleVariant + "; "
                                             + turnedTrumpDescription, gameIdentityAndTrumpVisible),
                             new AtfAssertion("Trump header distinguishes the actual turned card",
-                                    "TURNED CARD; full accessible card identity",
-                                    "TURNED CARD=" + ui.hasText(bidding, "TURNED CARD") + "; "
+                                    "Visible rank and suit match full accessible card identity",
+                                    "matching face=" + turnedTrumpCardVisible + "; "
                                             + turnedTrumpDescription, turnedTrumpCardVisible),
                             new AtfAssertion("Felt remains continuous from the table frame to the lower viewport",
                                     "same table-margin color at 55% and 87% height",
@@ -268,7 +266,8 @@ public class WhistLabGameplayE2eTest {
                     AtfReportStatus.PASS);
 
             started = System.nanoTime();
-            ui.selectBid(3);
+            int pendingBid = expectedBids.contains(3) ? 3 : 2;
+            ui.selectBid(pendingBid);
             ui.tapDescription("Game menu");
             String menu = ui.awaitText("Score sheet", Duration.ofSeconds(8));
             assertTrue(ui.hasText(menu, "Main menu"), "Game menu omitted Main menu");
@@ -276,7 +275,7 @@ public class WhistLabGameplayE2eTest {
             evidence.addAll(menuEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.WHEN,
                     "Open the top-left hamburger after selecting a bid",
-                    "Game menu", menuEvidence, "select bid 3 and activate Game menu",
+                    "Game menu", menuEvidence, "select bid " + pendingBid + " and activate Game menu",
                     "Score sheet and Main menu are available", "visible labels=" + ui.texts(menu),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.of(new AtfAssertion("Score sheet is in the game menu", "Score sheet",
@@ -317,7 +316,7 @@ public class WhistLabGameplayE2eTest {
             started = System.nanoTime();
             ui.tapTextIn(score, "CLOSE");
             String biddingAfterScore = ui.awaitText("Place bid", Duration.ofSeconds(8));
-            boolean selectedBidPersisted = ui.isSelected(biddingAfterScore, "3");
+            boolean selectedBidPersisted = ui.isSelected(biddingAfterScore, Integer.toString(pendingBid));
             String summaryAfterScore = ui.texts(biddingAfterScore).stream()
                     .filter(label -> label.startsWith("Bids submitted "))
                     .findFirst().orElse("<missing bid summary>");
@@ -329,12 +328,12 @@ public class WhistLabGameplayE2eTest {
             evidence.addAll(restoredTableEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.AND,
                     "Close Score sheet and verify the same bid remains selected",
-                    "Bidding table; value 3", restoredTableEvidence, "close Score sheet and inspect selected button 3",
-                    "bid 3 remains selected and no bid has been submitted",
+                    "Bidding table; value " + pendingBid, restoredTableEvidence, "close Score sheet and inspect the selected bid",
+                    "bid " + pendingBid + " remains selected and no bid has been submitted",
                     "selected=" + selectedBidPersisted + "; summary=" + summaryAfterScore
                             + "; visible labels=" + ui.texts(biddingAfterScore),
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
-                    List.of(new AtfAssertion("Score view preserves the pending selection", "Bid 3 selected",
+                    List.of(new AtfAssertion("Score view preserves the pending selection", "Bid " + pendingBid + " selected",
                                     Boolean.toString(selectedBidPersisted), selectedBidPersisted),
                             new AtfAssertion("Score navigation leaves the bid summary unchanged", initialBidSummary,
                                     summaryAfterScore, bidSummaryPersisted)),
@@ -451,7 +450,7 @@ public class WhistLabGameplayE2eTest {
                         "android.widget.HorizontalScrollView");
                 double densityScale = effectiveDensityScale(adb.run("shell", "wm", "density").output());
                 List<AndroidUiDriver.CardLabel> cardLabels = ui.bottomRowCardLabels(bidding);
-                List<AndroidUiDriver.Bounds> cardBounds = ui.playingCardLabelBounds(bidding);
+                List<AndroidUiDriver.Bounds> cardBounds = ui.handCardFaceBounds(bidding);
                 long handRows = cardLabels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count();
                 boolean fullHandVisible = cardLabels.size() == 13 && cardBounds.size() == 13
                         && cardBounds.stream().allMatch(card -> card.left() >= handBounds.left()
@@ -470,7 +469,7 @@ public class WhistLabGameplayE2eTest {
                         && new LinkedHashSet<>(visibleBids).equals(new LinkedHashSet<>(expectedBids));
                 List<AndroidUiDriver.Bounds> bidBounds = new ArrayList<>();
                 List<AndroidUiDriver.ElementSize> bidSizes = ui.numericButtonSizes(bidding);
-                for (int bid : visibleBids) bidBounds.add(ui.boundsForText(bidding, Integer.toString(bid)));
+                for (int bid : visibleBids) bidBounds.add(ui.buttonBounds(bidding, Integer.toString(bid)));
                 AndroidUiDriver.ElementSize submitSize = ui.buttonSize(bidding, "Place bid");
                 AndroidUiDriver.Bounds submitBounds = ui.boundsForText(bidding, "Place bid");
                 AndroidUiDriver.Bounds boardBounds = ui.boundsForDescription(bidding, "Playing surface");
@@ -608,7 +607,7 @@ public class WhistLabGameplayE2eTest {
             oneCardBidding = ui.awaitDescriptionContaining("Your hand, 1 cards.", Duration.ofSeconds(10));
             AndroidUiDriver.Bounds oneCardBidViewport = ui.boundsForDescription(oneCardBidding,
                     "Your hand, 1 cards.", "android.widget.HorizontalScrollView");
-            List<AndroidUiDriver.Bounds> oneCardBidBounds = ui.playingCardLabelBounds(oneCardBidding);
+            List<AndroidUiDriver.Bounds> oneCardBidBounds = ui.handCardFaceBounds(oneCardBidding);
             boolean oneCardBidCentered = singleCardCentered(oneCardBidViewport, oneCardBidBounds);
             List<Path> oneCardBidEvidence = ui.capture("whist-lab-single-card-bidding-center");
             evidence.addAll(oneCardBidEvidence);
@@ -634,7 +633,7 @@ public class WhistLabGameplayE2eTest {
             String oneCardPlay = ui.awaitDescriptionContaining("Your hand, 1 cards.", Duration.ofSeconds(10));
             AndroidUiDriver.Bounds oneCardPlayViewport = ui.boundsForDescription(oneCardPlay,
                     "Your hand, 1 cards.", "android.widget.HorizontalScrollView");
-            List<AndroidUiDriver.Bounds> oneCardPlayBounds = ui.playingCardLabelBounds(oneCardPlay);
+            List<AndroidUiDriver.Bounds> oneCardPlayBounds = ui.handCardFaceBounds(oneCardPlay);
             boolean oneCardPlayCentered = singleCardCentered(oneCardPlayViewport, oneCardPlayBounds);
             List<Path> oneCardPlayEvidence = ui.capture("whist-lab-single-card-playing-center");
             evidence.addAll(oneCardPlayEvidence);
@@ -767,8 +766,8 @@ public class WhistLabGameplayE2eTest {
                     && trumpDescription.startsWith("Trump suit only, no turned card: ");
             boolean identityAndTrump = ui.hasText(before, "Whist · Descending") && suitOnlyTrumpIsExplicit;
             boolean seatSignalsAreVisible = ui.hasText(before, "PLAY NOW")
-                    && ui.hasTextContaining(before, "Bid 0")
-                    && ui.hasTextContaining(before, "Won 0");
+                    && ui.hasDescriptionContaining(before, ". Bid 0")
+                    && ui.hasDescriptionContaining(before, ". Tricks won 0");
             AndroidUiDriver.Bounds playingSurfaceBefore = ui.boundsForDescription(before, "Playing surface");
             AndroidUiDriver.Bounds gamePanelBefore = ui.boundsForDescription(before, "Game table, 4 players.");
             double presentationCenterY = (playingSurfaceBefore.top() + handBoundsBefore.bottom()) / 2.0;
@@ -823,8 +822,8 @@ public class WhistLabGameplayE2eTest {
                     suitOnlyTrumpIsExplicit));
             assertions.add(new AtfAssertion("Turn badge and seat bid/result stay visible", "PLAY NOW; Bid 0; Won 0",
                     "PLAY NOW=" + ui.hasText(before, "PLAY NOW") + "; Bid 0="
-                            + ui.hasTextContaining(before, "Bid 0") + "; Won 0="
-                            + ui.hasTextContaining(before, "Won 0"), seatSignalsAreVisible));
+                            + ui.hasDescriptionContaining(before, ". Bid 0") + "; Won 0="
+                            + ui.hasDescriptionContaining(before, ". Tricks won 0"), seatSignalsAreVisible));
             assertions.add(new AtfAssertion("Four player seats follow the approved oval", "4 seats; N/W/E/S",
                     "seats=" + fourPlayerSeats.size() + "; N=" + northSeats
                             + "; W=" + westSeats + "; E=" + eastSeats + "; south=" + humanSeatIsSouth,

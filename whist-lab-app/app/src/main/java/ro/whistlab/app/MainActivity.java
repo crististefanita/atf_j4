@@ -98,7 +98,9 @@ public final class MainActivity extends Activity {
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_trick_pause_fixture", false)) {
             openTrickPauseFixture();
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hand_fan_fixture", false)) {
-            openThirteenCardFanFixture();
+            openDisplayFixture(13, true);
+        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_nine_bids_fixture", false)) {
+            openDisplayFixture(8, false);
         } else {
             try {
                 game = GameSessionStore.load(this);
@@ -165,53 +167,49 @@ public final class MainActivity extends Activity {
     private void renderSetup() {
         applyStandardWindowChrome();
         tableVisible=false;menuSubpage=true;instructionsVisible=false;handler.removeCallbacksAndMessages(null);
-        LinearLayout page = page(copy.setupEyebrow(), copy.setupTitle());
+        LinearLayout page = page(null, copy.setupTitle());
         addLanguagePicker(page);
 
-        addText(page, copy.players(), 16, INK, true, 12, 4);
         Spinner players = spinner(Arrays.asList("3", "4", "5", "6"), "player-count");
         players.setSelection(setupPlayerCount - 3);
-        page.addView(players, matchWrap());
+        addSetupSelector(page, copy.players(), players);
 
-        addText(page, copy.gameType(), 16, INK, true, 12, 4);
         Spinner modes = spinner(Arrays.stream(GameMode.values()).map(copy::modeName).collect(Collectors.toList()),
                 "game-type");
         modes.setSelection(setupMode.ordinal());
-        page.addView(modes, matchWrap());
-        TextView modeHelp=text(copy.modeDescription(setupMode),13,MUTED,false);
-        page.addView(modeHelp,matchWrap());
-        TextView schedulePreview = text(copy.schedulePreview(setupMode, setupPlayerCount), 13, MUTED, false);
-        schedulePreview.setPadding(dp(10), dp(9), dp(10), dp(9));
-        schedulePreview.setBackground(roundedBackground(Color.rgb(235, 241, 233),
-                Color.rgb(205, 219, 204), 10));
-        schedulePreview.setContentDescription(copy.schedulePreview(setupMode, setupPlayerCount));
-        LinearLayout.LayoutParams scheduleParams = matchWrap();
-        scheduleParams.topMargin = dp(8);
-        page.addView(schedulePreview, scheduleParams);
+        LinearLayout.LayoutParams modeParams = matchWrap();
+        modeParams.topMargin = dp(4);
+        page.addView(modes, modeParams);
+        addQuietButton(page, copy.rulesAndSchedule(), () -> {
+            new AlertDialog.Builder(this).setTitle(copy.modeName(setupMode))
+                    .setMessage(copy.modeDescription(setupMode) + "\n\n" + copy.schedulePreview(setupMode, setupPlayerCount)
+                            + (setupMode.isRomanian() ? "\n\n" + copy.streakToggle() : ""))
+                    .setPositiveButton(copy.close(), null).show();
+        });
         CheckBox streakBonuses=new CheckBox(this);
-        streakBonuses.setText(copy.streakToggle());
+        streakBonuses.setText(copy.romanian() ? "Serii de cinci mâini" : "Five-hand streaks");
+        streakBonuses.setTextSize(13);
         streakBonuses.setContentDescription(copy.streakToggle());
         streakBonuses.setTag("romanian-streak-bonuses");
         streakBonuses.setChecked(setupStreaks);
-        streakBonuses.setVisibility(View.GONE);
-        page.addView(streakBonuses,matchWrap());
+
+
         Spinner streakValue=spinner(Arrays.asList(copy.fivePointsOriginal(),copy.tenPoints()),"romanian-streak-value");
-        TextView streakValueLabel=text(copy.streakBonusLabel(),13,MUTED,false);
-        streakValueLabel.setVisibility(View.GONE);
         streakValue.setSelection(setupStreakBonus == 5 ? 0 : 1);
-        streakValue.setVisibility(View.GONE);
+
         streakValue.setEnabled(setupStreaks);
         streakBonuses.setOnCheckedChangeListener((button,checked)->{
             setupStreaks=checked;
             streakValue.setEnabled(checked);
         });
-        page.addView(streakValueLabel,matchWrap());
-        page.addView(streakValue,matchWrap());
+        LinearLayout streakRow = new LinearLayout(this);
+        streakRow.setGravity(Gravity.CENTER_VERTICAL);
+        streakRow.addView(streakBonuses, new LinearLayout.LayoutParams(0, dp(48), 1f));
+        streakRow.addView(streakValue, new LinearLayout.LayoutParams(dp(138), dp(48)));
+        page.addView(streakRow, matchWrap());
         players.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
                 setupPlayerCount = position + 3;
-                schedulePreview.setText(copy.schedulePreview(setupMode, setupPlayerCount));
-                schedulePreview.setContentDescription(copy.schedulePreview(setupMode, setupPlayerCount));
             }
             public void onNothingSelected(AdapterView<?> parent) { }
         });
@@ -222,13 +220,7 @@ public final class MainActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
         Runnable updateModeDetails = () -> {
-            modeHelp.setText(copy.modeDescription(setupMode));
-            String schedule = copy.schedulePreview(setupMode, setupPlayerCount);
-            schedulePreview.setText(schedule);
-            schedulePreview.setContentDescription(schedule);
-            streakBonuses.setVisibility(setupMode.isRomanian()?View.VISIBLE:View.GONE);
-            streakValue.setVisibility(setupMode.isRomanian()?View.VISIBLE:View.GONE);
-            streakValueLabel.setVisibility(setupMode.isRomanian()?View.VISIBLE:View.GONE);
+            streakRow.setVisibility(setupMode.isRomanian() ? View.VISIBLE : View.GONE);
         };
         updateModeDetails.run();
         modes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -239,11 +231,10 @@ public final class MainActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        addText(page, copy.aiLevel(), 16, INK, true, 12, 4);
         Spinner difficulty = spinner(Arrays.stream(AiDifficulty.values()).map(copy::difficultyName).collect(Collectors.toList()),
                 "ai-level");
         difficulty.setSelection(setupDifficulty.ordinal());
-        page.addView(difficulty, matchWrap());
+        addSetupSelector(page, copy.aiLevel(), difficulty);
         difficulty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
                 setupDifficulty = AiDifficulty.values()[position];
@@ -261,7 +252,7 @@ public final class MainActivity extends Activity {
             persistGame();
             driveAutomatedTurns();
         }, true);
-        addButton(page, copy.back(), "btn_setup_back", true, this::renderHome, false);
+        addQuietButton(page, copy.back(), this::renderHome);
     }
 
     private void renderBidding() {
@@ -426,12 +417,14 @@ public final class MainActivity extends Activity {
         addText(page, state.finalHand() ? copy.gameComplete() : copy.handComplete(),
                 16, MUTED, false, 0, 12);
         if(state.finalHand())addText(page,copy.winner(state),18,ACCENT,true,0,12);
-        addText(page, copy.scoreRule(state), 14, MUTED, false, 0, 14);
-        if(state.streakBonuses())addText(page,copy.streakSummary(state),13,MUTED,false,0,10);
 
         LinearLayout.LayoutParams scoreTableParams = matchWrap();
         scoreTableParams.setMargins(0, 0, 0, dp(8));
         page.addView(new ScoreTableView(this, state, copy), scoreTableParams);
+        addQuietButton(page, copy.scoringDetails(), () -> new AlertDialog.Builder(this)
+                .setTitle(copy.scoringDetails()).setMessage(copy.scoreRule(state)
+                        + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : ""))
+                .setPositiveButton(copy.close(), null).show());
 
         if (!state.finalHand()) {
             addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
@@ -451,7 +444,7 @@ public final class MainActivity extends Activity {
                 driveAutomatedTurns();
             }, true);
         }
-        addButton(page, copy.mainMenu(), "btn_score_home", true, this::renderHome, false);
+        addQuietButton(page, copy.mainMenu(), this::renderHome);
     }
 
     private void renderInstructions() {
@@ -565,23 +558,16 @@ public final class MainActivity extends Activity {
         driveAutomatedTurns();
     }
 
-    private void openThirteenCardFanFixture() {
+    private void openDisplayFixture(int cards, boolean playing) {
         GameConfig config = new GameConfig(4, GameMode.DESCENDING, AiDifficulty.NORMAL, 20261103L);
-        List<Card> deck = GameRules.deck(config.mode(), config.playerCount());
-        List<List<Card>> hands = new ArrayList<>();
-        for (int seat = 0; seat < config.playerCount(); seat++) hands.add(new ArrayList<>());
-        for (int index = 0; index < 13 * config.playerCount(); index++) {
-            hands.get(index % config.playerCount()).add(deck.get(index));
-        }
-        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
-        for (int seat = 0; seat < config.playerCount(); seat++) {
-            game.submitBid(game.snapshot().biddingSeat(), 0);
+        game = GameSession.fromDeal(config, DisplayFixtureDeals.fourPlayerHands(cards), Trump.SPADES, 3);
+        if (playing) {
+            for (int seat = 0; seat < config.playerCount(); seat++) game.submitBid(game.snapshot().biddingSeat(), 0);
         }
         lastConfig = config;
         selectedBid = null;
         driveAutomatedTurns();
     }
-
     private LinearLayout page(String eyebrow, String title) {
         return page(eyebrow, title, 22);
     }
@@ -609,7 +595,7 @@ public final class MainActivity extends Activity {
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setGravity(Gravity.CENTER_VERTICAL);
-        content.setPadding(dp(12), dp(6), dp(12), dp(8));
+        content.setPadding(dp(12), dp(6), dp(12), dp(4));
         content.setBackgroundColor(WhistUiPalette.TABLE_FELT);
         viewport.addView(content, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -673,7 +659,7 @@ public final class MainActivity extends Activity {
         button.setTag(description);
         button.setEnabled(enabled);
         button.setMinimumWidth(0);
-        button.setMinHeight(dp(44));
+        button.setMinHeight(dp(48));
         button.setBackground(buttonBackground(primary));
         button.setOnClickListener(ignored -> action.run());
         return button;
@@ -684,13 +670,41 @@ public final class MainActivity extends Activity {
         spinner.setContentDescription(copy.spinnerLabel(description));
         spinner.setTag(description);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, new ArrayList<>(values));
+                this, android.R.layout.simple_spinner_item, new ArrayList<>(values)) {
+            @Override public View getView(int position, View recycled, ViewGroup parent) {
+                TextView selected = (TextView) super.getView(position, recycled, parent);
+                selected.setTextSize(14);
+                selected.setTextColor(INK);
+                selected.setSingleLine(true);
+                selected.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                return selected;
+            }
+        };
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setGravity(Gravity.CENTER_VERTICAL);
-        spinner.setBackground(buttonBackground(false));
-        spinner.setPadding(dp(8), dp(4), dp(8), dp(4));
+        spinner.setBackground(new DropdownBackground(getResources().getDisplayMetrics().density));
+        spinner.setMinimumHeight(dp(48));
+        spinner.setPadding(dp(12), dp(4), dp(34), dp(4));
         return spinner;
+    }
+
+    private void addSetupSelector(LinearLayout parent, String label, Spinner selector) {
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(text(label, 14, INK, true), new LinearLayout.LayoutParams(0, dp(48), 1f));
+        row.addView(selector, new LinearLayout.LayoutParams(dp(150), dp(48)));
+        LinearLayout.LayoutParams params = matchWrap();
+        params.topMargin = dp(8);
+        parent.addView(row, params);
+    }
+
+    private void addQuietButton(LinearLayout parent, String label, Runnable action) {
+        Button button = actionButton(label, label, true, action, false, 14);
+        button.setBackgroundColor(Color.TRANSPARENT);
+        button.setElevation(0);
+        button.setStateListAnimator(null);
+        parent.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
     }
 
     private GradientDrawable buttonBackground(boolean primary) {

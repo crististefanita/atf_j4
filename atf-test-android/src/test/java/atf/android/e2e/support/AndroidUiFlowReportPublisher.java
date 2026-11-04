@@ -1,6 +1,7 @@
 package atf.android.e2e.support;
 
 import atf.android.evidence.AndroidScreenshotEvidence;
+import atf.android.whist.evidence.WhistExtentFeedback;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.contract.AtfReportPorts;
 import atf.reporting.contract.AtfReportStatus;
@@ -68,6 +69,12 @@ public final class AndroidUiFlowReportPublisher {
         }
 
         auditPublishedReport(output, trace, settings);
+        try {
+            WhistExtentFeedback.afterAudit(output, trace.appPackage(), trace.name(), trace.status().name());
+        } catch (java.io.IOException | java.nio.file.InvalidPathException indexFailure) {
+            System.getLogger(AndroidUiFlowReportPublisher.class.getName()).log(System.Logger.Level.WARNING,
+                    "Android report was audited but its feedback link could not be updated: " + output, indexFailure);
+        }
         return output;
     }
 

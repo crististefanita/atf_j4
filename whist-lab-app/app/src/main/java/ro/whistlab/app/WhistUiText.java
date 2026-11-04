@@ -41,8 +41,9 @@ final class WhistUiText {
     String newGame() { return choose("New game", "Joc nou"); }
     String resumeGame() { return choose("Resume game", "Reia partida"); }
     String help() { return choose("How to play", "Reguli de joc"); }
-    String setupEyebrow() { return choose("NEW GAME", "JOC NOU"); }
     String setupTitle() { return choose("Game setup", "Setări joc"); }
+    String rulesAndSchedule() { return choose("Rules & schedule", "Reguli și program"); }
+    String scoringDetails() { return choose("Scoring details", "Calculul punctajului"); }
     String players() { return choose("Players", "Jucători"); }
     String gameType() { return choose("Game type", "Varianta de joc"); }
     String aiLevel() { return choose("AI level", "Nivelul adversarilor"); }
@@ -95,7 +96,7 @@ final class WhistUiText {
             case OH_HELL -> "Oh Hell";
             case DESCENDING -> choose("Descending", "Descrescător");
             case PRACTICE_HAND -> choose("Practice hand", "Mână de antrenament");
-            case ROMANIAN_WHIST -> choose("Whist romanesc (1-8-1)", "Whist românesc (1–8–1)");
+            case ROMANIAN_WHIST -> choose("Romanian (1–8–1)", "Românesc (1–8–1)");
             case DOWN_AND_UP -> choose("Down & Up", "Coborâre și urcare");
             case MAXIMUM -> choose("Maximum", "Maxim");
             case LONG_ROMANIAN -> choose("Long Romanian (8-1-8)", "Whist românesc lung (8–1–8)");
@@ -166,7 +167,7 @@ final class WhistUiText {
     }
 
     String gameTitle(GameMode mode) {
-        return "Whist · " + modeName(mode);
+        return "Whist · " + (mode == GameMode.ROMANIAN_WHIST ? choose("Romanian", "Românesc") : modeName(mode));
     }
 
     String bidSummary(GameSession.Snapshot state) {
@@ -248,9 +249,9 @@ final class WhistUiText {
     String scoreLabel() { return choose("Score", "Scor"); }
     String pointsLabel() { return choose("pts", "pct."); }
     String scoreColumnPlayer() { return choose("Player", "Jucător"); }
-    String scoreColumnBid() { return choose("Bid", "Bid"); }
+    String scoreColumnBid() { return choose("Bid", "Lic."); }
     String scoreColumnTricks() { return choose("Won", "Lev."); }
-    String scoreColumnHand() { return choose("Hand", "Mână"); }
+    String scoreColumnHand() { return choose("Hand", "Pct."); }
     String scoreColumnTotal() { return choose("Total", "Total"); }
     String bidNotPlaced() { return choose("Bid not placed", "Licitația nu a fost depusă"); }
     String dealerLabel() { return choose("DEALER", "ÎMPĂRȚITOR"); }
@@ -262,9 +263,10 @@ final class WhistUiText {
     String trumpHeading() { return choose("TRUMP", "ATU"); }
     String noTrump() { return choose("No trump", "Fără atu"); }
     String seatName(GameSession.PlayerSnapshot player) { return playerName(player); }
+    String seatWonLabel() { return choose("Won", "Levate"); }
     String seatFacts(GameSession.PlayerSnapshot player) {
-        return bidLabel() + " " + (player.bid() == null ? "—" : player.bid())
-                + "\n" + choose("Won", "Levate") + " " + player.tricksWon();
+        return bidLabel() + ": " + (player.bid() == null ? "—" : player.bid())
+                + "\n" + seatWonLabel() + ": " + player.tricksWon();
     }
     String seatTurnAction(boolean bidding) {
         return bidding ? choose("BID NOW", "LICITEAZĂ ACUM")
@@ -341,7 +343,7 @@ final class WhistUiText {
         String line = playerName(player) + " | " + bidLabel() + ": "
                 + (player.bid() == null ? "—" : player.bid()) + " | "
                 + tricksWonLabel() + ": " + player.tricksWon() + " | "
-                + choose("Hand", "Mână") + ": " + handValue;
+                + choose("Hand", "Puncte în această mână") + ": " + handValue;
         if (player.streakPoints() != 0) {
             line += choose(" (series ", " (serie ")
                     + (player.streakPoints() > 0 ? "+" : "") + player.streakPoints() + ")";

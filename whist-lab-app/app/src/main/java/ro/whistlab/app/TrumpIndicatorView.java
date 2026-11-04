@@ -56,6 +56,7 @@ final class TrumpIndicatorView extends LinearLayout {
         status.setGravity(Gravity.CENTER);
         status.setSingleLine(true);
         status.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        if (state.turnedCard() != null) status.setVisibility(GONE);
         addView(status, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     }
 
