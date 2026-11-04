@@ -20,4 +20,27 @@
             <configuration><sources><source>${project.basedir}/../whist-lab-app/ai-lab/src/main/java</source><source>${project.basedir}/../whist-lab-app/game-core/src/main/java</source></sources></configuration>
         </execution></executions>
     </plugin></plugins></build>
+    <profiles>
+        <profile>
+            <id>responsive-sanity</id>
+            <build><plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId>
+                    <executions><execution><id>independent-whist-player</id>
+                        <configuration><skipAddTestSource>true</skipAddTestSource></configuration>
+                    </execution></executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
+                    <configuration><testIncludes>
+                        <testInclude>**/AndroidUiDriver.java</testInclude>
+                        <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
+                        <testInclude>**/AndroidUiDriverComponentTest.java</testInclude>
+                        <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
+                        <testInclude>**/WhistResponsivePlaySanityE2eTest.java</testInclude>
+                    </testIncludes></configuration>
+                </plugin>
+            </plugins></build>
+        </profile>
+    </profiles>
 </project>

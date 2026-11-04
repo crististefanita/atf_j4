@@ -27,7 +27,18 @@ public final class MonteCarloAi {
             hand=GameRules.immutableCopy(ordered);seats=List.copyOf(seats);trick=List.copyOf(trick);history=List.copyOf(history);
         }
     }
-    public record Candidate(Card card, double meanContractPoints, int samples) { }
+    public record Candidate(Card card, double meanContractPoints, int samples, double meanRivalMisses,
+            double meanStrongestRivalScore, double exactContractProbability) {
+        public Candidate(Card card,double meanContractPoints,int samples){this(card,meanContractPoints,samples,0.0,0.0,0.0);}
+        public Candidate(Card card,double meanContractPoints,int samples,double meanRivalMisses){this(card,meanContractPoints,samples,meanRivalMisses,0.0,0.0);}
+        public Candidate(Card card,double meanContractPoints,int samples,double meanRivalMisses,double meanStrongestRivalScore){
+            this(card,meanContractPoints,samples,meanRivalMisses,meanStrongestRivalScore,0.0);
+        }
+    }
+    public record BidOption(int bid, double exactContractProbability, double expectedPoints, int samples) { }
+    public record BidDecision(int bid, List<BidOption> candidates, String method) {
+        public BidDecision { candidates = List.copyOf(candidates); }
+    }
     public record Decision(Card card, List<Candidate> candidates, String method) {
         public Decision { candidates=List.copyOf(candidates); }
     }
@@ -40,14 +51,20 @@ public final class MonteCarloAi {
     }
 
     public static int chooseBid(View view) {
+        return chooseBid(view, HardStrategyProfile.CURRENT).bid();
+    }
+
+    static BidDecision chooseBid(View view, HardStrategyProfile profile) {
         int prior=view.seats().stream().filter(s->s.bid()!=null).mapToInt(s->s.bid()).sum();
         boolean last=view.seats().stream().filter(s->s.bid()!=null).count()==view.seats().size()-1;
         List<Integer> allowed=GameRules.allowedBids(view.handSize(),prior,last);
         boolean safety=view.mode().isRomanian();
         if(view.handSize()==1&&view.hand().size()==1&&view.trick().isEmpty()&&view.history().isEmpty()){
-            double win=OneCardBidBelief.probability(view),bestChance=Double.NEGATIVE_INFINITY,value=Double.NEGATIVE_INFINITY;int best=allowed.get(0);
+            double win=OneCardBidBelief.probability(view);List<BidOption> candidates=new ArrayList<>();
             for(int bid:allowed){double chance=bid==1?win:1-win;double expected=win*points(view,view.seat(),1,bid)+(1-win)*points(view,view.seat(),0,bid);
-                if((safety?chance:expected)>bestChance||Math.abs((safety?chance:expected)-bestChance)<1e-12&&expected>value){best=bid;bestChance=safety?chance:expected;value=expected;}}return best;
+                candidates.add(new BidOption(bid,chance,expected,1));}
+            int selected=selectBid(candidates,profile,safety);
+            return new BidDecision(selected,candidates,"one-card exact probability; "+profile.name());
         }
         var evidence=new BidSamples(allowed,view.handSize()+1,safety);
         int budget=safety?128:SAMPLES;
@@ -58,18 +75,43 @@ public final class MonteCarloAi {
             evidence.add(points,exact);
             if((sample+1)%32==0&&evidence.enough())break;
         }
-        return evidence.best();
+        List<BidOption> candidates=evidence.options();
+        int selected=selectBid(candidates,profile,safety);
+        return new BidDecision(selected,candidates,"paired-world bid estimates; "+profile.name());
+    }
+
+    static int selectBid(List<BidOption> candidates,HardStrategyProfile profile,boolean safety){
+        if(candidates.isEmpty())throw new IllegalArgumentException("No legal bid candidates");
+        Comparator<BidOption> safeOrder=Comparator.comparingDouble(BidOption::exactContractProbability)
+                .thenComparingDouble(BidOption::expectedPoints).thenComparingInt(option->-option.bid());
+        if(profile==HardStrategyProfile.SCORE_FIRST){
+            return candidates.stream().max(Comparator.comparingDouble(BidOption::expectedPoints)
+                    .thenComparingDouble(BidOption::exactContractProbability).thenComparingInt(option->-option.bid()))
+                    .orElseThrow().bid();
+        }
+        if(profile.bidProbabilityGap()>0.0&&safety){
+            double best=candidates.stream().mapToDouble(BidOption::exactContractProbability).max().orElseThrow();
+            return candidates.stream().filter(option->option.exactContractProbability()>=best-profile.bidProbabilityGap())
+                    .min(Comparator.comparingInt(BidOption::bid)
+                            .thenComparing(Comparator.comparingDouble(BidOption::exactContractProbability).reversed())
+                            .thenComparing(Comparator.comparingDouble(BidOption::expectedPoints).reversed()))
+                    .orElseThrow().bid();
+        }
+        Comparator<BidOption> order=safety?safeOrder:Comparator.comparingDouble(BidOption::expectedPoints)
+                .thenComparingDouble(BidOption::exactContractProbability).thenComparingInt(option->-option.bid());
+        return candidates.stream().max(order).orElseThrow().bid();
     }
 
     /** Paired-world uncertainty, bounded to128 samples; not a formal confidence guarantee. */
     static final class BidSamples {
-        private final List<Integer> allowed;private final boolean safety;private final double[] primary,points;private final double[][] squaredDifferences;private int count;
-        BidSamples(List<Integer> allowed,int size,boolean safety){this.allowed=List.copyOf(allowed);if(allowed.isEmpty())throw new IllegalArgumentException("No legal bid");this.safety=safety;primary=new double[size];points=new double[size];squaredDifferences=new double[size][size];}
+        private final List<Integer> allowed;private final boolean safety;private final double[] primary,points,exactTotals;private final double[][] squaredDifferences;private int count;
+        BidSamples(List<Integer> allowed,int size,boolean safety){this.allowed=List.copyOf(allowed);if(allowed.isEmpty())throw new IllegalArgumentException("No legal bid");this.safety=safety;primary=new double[size];points=new double[size];exactTotals=new double[size];squaredDifferences=new double[size][size];}
         void add(double[] scores,double[] exact){
-            for(int bid:allowed){double value=safety?exact[bid]:scores[bid];if(!Double.isFinite(value)||!Double.isFinite(scores[bid]))throw new IllegalArgumentException("Non-finite sampled utility");primary[bid]+=value;points[bid]+=scores[bid];}
+            for(int bid:allowed){double value=safety?exact[bid]:scores[bid];if(!Double.isFinite(value)||!Double.isFinite(scores[bid])||!Double.isFinite(exact[bid]))throw new IllegalArgumentException("Non-finite sampled utility");primary[bid]+=value;points[bid]+=scores[bid];exactTotals[bid]+=exact[bid];}
             for(int a:allowed)for(int b:allowed){double d=safety?exact[a]-exact[b]:scores[a]-scores[b];squaredDifferences[a][b]+=d*d;}count++;
         }
         int best(){int best=allowed.get(0);for(int bid:allowed)if(primary[bid]>primary[best]+1e-12||Math.abs(primary[bid]-primary[best])<1e-12&&points[bid]>points[best]+1e-12)best=bid;return best;}
+        List<BidOption> options(){return allowed.stream().map(bid->new BidOption(bid,count==0?0.0:exactTotals[bid]/count,count==0?0.0:points[bid]/count,count)).toList();}
         boolean enough(){
             if(count<32)return false;if(count>=128||allowed.size()==1)return true;int leader=best();
             for(int rival:allowed)if(rival!=leader){double gap=(primary[leader]-primary[rival])/count;double variance=Math.max(0,(squaredDifferences[leader][rival]-count*gap*gap)/(count-1));if(variance>1e-15&&gap<=2*Math.sqrt(variance/count))return false;}return true;
@@ -78,21 +120,27 @@ public final class MonteCarloAi {
     }
 
     public static Decision chooseCard(View view) {
-        return chooseCard(view,.5);
+        return chooseCard(view,.5,HardStrategyProfile.CURRENT);
     }
     static Decision chooseCard(View view,double exactWeight) {
-        var model=modelCard(view,exactWeight);var proof=ContractGuarantee.choose(view,model.card());
+        return chooseCard(view,exactWeight,HardStrategyProfile.CURRENT);
+    }
+    static Decision chooseCard(View view,HardStrategyProfile profile) {
+        return chooseCard(view,.5,profile);
+    }
+    private static Decision chooseCard(View view,double exactWeight,HardStrategyProfile profile) {
+        var model=modelCard(view,exactWeight,profile);var proof=ContractGuarantee.choose(view,model.card());
         Decision accepted=proof.certified()&&!proof.card().equals(model.card())?new Decision(proof.card(),model.candidates(),model.method()+"; public contract certificate across"+proof.worlds()+" complete feasible deals and all legal continuations"):model;
         var salvage=PublicSalvage.choose(view,accepted.card());
         return salvage.certified()?new Decision(salvage.card(),accepted.candidates(),accepted.method()+"; public salvage dominance certificate: "+salvage.worlds()+" complete worlds, all legal continuations, no worse own points, at least "+salvage.rivalMissFloor()+" rival misses versus baseline ceiling "+salvage.baselineRivalMissCeiling()):accepted;
     }
-    private static Decision modelCard(View view,double exactWeight) {
+    private static Decision modelCard(View view,double exactWeight,HardStrategyProfile profile) {
         Suit led=view.trick().isEmpty()?null:view.trick().get(0).card().suit();
         List<Card> legal=GameRules.legalCards(view.hand(),led,view.trump(),view.mode());
         if(legal.isEmpty())throw new IllegalArgumentException("No legal card for the observed player");
         if(legal.size()==1)return new Decision(legal.get(0),List.of(),"Only legal card; no hidden-deal sampling or score estimate required");
-        Card dominant=LateDiscard.choose(view);if(dominant!=null)return new Decision(dominant,List.of(),"Two-card same-suit dominance: current trick already lost, or last-seat win fixed; retain high only if one further trick is needed. No hidden cards or samples used.");
         boolean salvage=view.mode().isRomanian()&&PublicSalvage.quota(view).impossible();
+        Card dominant=LateDiscard.choose(view);if(dominant!=null&&!salvage)return new Decision(dominant,List.of(),"Two-card same-suit dominance: current trick already lost, or last-seat win fixed; retain high only if one further trick is needed. No hidden cards or samples used.");
         List<Candidate> evaluations=new ArrayList<>();
         int[] targets=view.seats().stream().mapToInt(s->s.bid()==null?0:s.bid()).toArray();
         double[] values=new double[legal.size()],rivals=new double[legal.size()],exact=new double[legal.size()],misses=new double[legal.size()];int samples=0;
@@ -105,26 +153,43 @@ public final class MonteCarloAi {
             }
         }
         int best=0;for(int c=0;c<legal.size();c++){
-            evaluations.add(new Candidate(legal.get(c),samples==0?Double.NEGATIVE_INFINITY:values[c]/samples,samples));
-            if(prefer(view.mode().isRomanian(),salvage,exact[c],values[c],misses[c],rivals[c],exact[best],values[best],misses[best],rivals[best]))best=c;
+            evaluations.add(new Candidate(legal.get(c),samples==0?Double.NEGATIVE_INFINITY:values[c]/samples,samples,samples==0?0.0:misses[c]/samples,samples==0?0.0:rivals[c]/samples,samples==0?0.0:exact[c]/samples));
+            if(prefer(view.mode().isRomanian(),salvage,exact[c],values[c],misses[c],rivals[c],exact[best],values[best],misses[best],rivals[best],profile))best=c;
         }
-        String objective=salvage?"publicly unreachable contract: preserve own points, then maximize expected rival misses":"highest estimated exact-contract probability, then own points and rival score";
-        return new Decision(legal.get(best),evaluations,samples+(exactDeals.isEmpty()?" sampled":" exhaustively enumerated")+" feasible common possible deals; public void inference; small-endgame exact/heuristic mixture weight="+exactWeight+"; "+objective);
+        String objective=salvage?(profile==HardStrategyProfile.BURN_IF_DOOMED?"publicly unreachable contract: maximize expected rival misses, then preserve own points":"publicly unreachable contract: preserve own points, then maximize expected rival misses")
+                :profile==HardStrategyProfile.SCORE_FIRST?"maximize expected score, then exact-contract probability":"maximize exact-contract probability, then expected score";
+        return new Decision(legal.get(best),evaluations,samples+(exactDeals.isEmpty()?" sampled":" exhaustively enumerated")+" feasible common possible deals; public void inference; small-endgame exact/heuristic mixture weight="+exactWeight+"; "+profile.name()+"; "+objective);
     }
     static boolean prefer(boolean safety,double exact,double points,double rival,double bestExact,double bestPoints,double bestRival){
         return prefer(safety,false,exact,points,0,rival,bestExact,bestPoints,0,bestRival);
     }
     static boolean prefer(boolean safety,boolean salvage,double exact,double points,double misses,double rival,
             double bestExact,double bestPoints,double bestMisses,double bestRival){
+        return prefer(safety,salvage,exact,points,misses,rival,bestExact,bestPoints,bestMisses,bestRival,HardStrategyProfile.CURRENT);
+    }
+    static boolean prefer(boolean safety,boolean salvage,double exact,double points,double misses,double rival,
+            double bestExact,double bestPoints,double bestMisses,double bestRival,HardStrategyProfile profile){
         if(salvage){
+            if(profile==HardStrategyProfile.BURN_IF_DOOMED){
+                if(misses>bestMisses+1e-9)return true;
+                if(Math.abs(misses-bestMisses)>1e-9)return false;
+                if(points>bestPoints+1e-9)return true;
+                if(Math.abs(points-bestPoints)>1e-9)return false;
+                return rival<bestRival;
+            }
             if(points>bestPoints+1e-9)return true;
             if(Math.abs(points-bestPoints)>1e-9)return false;
             if(misses>bestMisses+1e-9)return true;
             if(Math.abs(misses-bestMisses)>1e-9)return false;
             return rival<bestRival;
         }
+        if(profile==HardStrategyProfile.SCORE_FIRST){
+            return points>bestPoints+1e-9||Math.abs(points-bestPoints)<1e-9
+                    &&(exact>bestExact+1e-9||Math.abs(exact-bestExact)<1e-9&&rival<bestRival);
+        }
         double primary=safety?exact:points,bestPrimary=safety?bestExact:bestPoints;
-        return primary>bestPrimary+1e-9||Math.abs(primary-bestPrimary)<1e-9&&(points>bestPoints+1e-9||Math.abs(points-bestPoints)<1e-9&&rival<bestRival);
+        return primary>bestPrimary+1e-9||Math.abs(primary-bestPrimary)<1e-9
+                &&(points>bestPoints+1e-9||Math.abs(points-bestPoints)<1e-9&&rival<bestRival);
     }
     static double oneCardWinProbability(View v){
         Card own=v.hand().get(0);List<Card> pool=unknownCards(v);int threats=0,lower=0;
@@ -213,14 +278,20 @@ public final class MonteCarloAi {
         int index=0;Suit led=null;
         for(PlayedCard play:view.history()) {
             if(index%view.seats().size()==0)led=play.card().suit();
-            if(play.card().suit()!=led) {
-                voids[play.seat()][led.ordinal()]=true;
-                if(view.mode().isRomanian()&&view.trump()!=Trump.NO_TRUMP
-                        &&play.card().suit().ordinal()!=view.trump().ordinal())voids[play.seat()][view.trump().ordinal()]=true;
-            }
+            markPublicVoid(view,voids,play,led);
             index++;
         }
+        if(!view.trick().isEmpty()){
+            Suit currentLead=view.trick().get(0).card().suit();
+            for(PlayedCard play:view.trick())markPublicVoid(view,voids,play,currentLead);
+        }
         return voids;
+    }
+    private static void markPublicVoid(View view,boolean[][] voids,PlayedCard play,Suit led){
+        if(play.card().suit()==led)return;
+        voids[play.seat()][led.ordinal()]=true;
+        if(view.mode().isRomanian()&&view.trump()!=Trump.NO_TRUMP
+                &&play.card().suit().ordinal()!=view.trump().ordinal())voids[play.seat()][view.trump().ordinal()]=true;
     }
     private static boolean augment(int slot,List<Integer> owners,List<Card> pool,boolean[][] voids,int[] matched,boolean[] seen){
         for(int c=0;c<pool.size();c++)if(!seen[c]&&!voids[owners.get(slot)][pool.get(c).suit().ordinal()]){

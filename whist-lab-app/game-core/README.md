@@ -65,6 +65,8 @@ Restaurarea de compatibilitate poate accepta o salvare veche cu istoric limitat 
 
 - `EXPERT` este un alias de compatibilitate, migrat la Hard la citirea unei salvări vechi.
 - [AiPolicy](src/main/java/ro/whistlab/core/AiPolicy.java) definește dispatch-ul actual.
+- Politicile primesc o observație izolată: mâna proprie, licitațiile, levatele câștigate, masa și istoricul public. Nu primesc listele de cărți ale celorlalți jucători.
+- Hard folosește ofertele publice drept ținte de contract în simulări și exclude cărțile deja jucate și atuul întors din pachetul necunoscut; împărțirea necunoscută nu este încă ponderată cu probabilitatea ca acel loc să fi făcut oferta observată. Acesta este un candidat separat de cercetare, nu o capabilitate deja implementată.
 - Estimările probabilistice și garzile de final cu domeniu finit nu demonstrează joc perfect cu informație ascunsă.
 - Codul experimental extern nu este activat automat.
 
@@ -113,6 +115,32 @@ Rulați o partidă mock completă, deterministă și offline cu:
 ```powershell
 .\scripts\run-offline-policy-match.ps1 -Seed 20261104
 ```
+
+Pentru comparația aceleiași succesiuni de distribuții, cu Hard mutat prin fiecare loc:
+
+```powershell
+.\scripts\run-offline-perspectives.ps1 -Seed 20261104
+```
+
+Rularea înregistrează șase mese: toți Normal, fiecare dintre cele patru locuri Hard pe rând contra Normal, apoi toți Hard. În test, fiecare început de mână primește o amprentă opacă calculată intern; valorile sunt comparate între mese, dar amprentele și mâinile ascunse nu sunt scrise în rezultat. Jucătorii văd numai observația lor legală.
+
+Pentru a compara decizii alternative ale aceluiași Hard pe aceleași distribuiri, la fiecare loc:
+
+```powershell
+.\scripts\run-offline-strategy-profiles.ps1 -Seed 20261104
+```
+
+Matricea rulează reperul Normal și, pentru fiecare loc, Hard curent, trei toleranțe
+de licitare prudentă (4, 8 și 12 puncte procentuale), puncte estimate înainte și
+atacarea contractelor rivale numai după ce propriul contract devine imposibil din
+informația publică. Înregistrarea păstrează probabilitatea și
+punctele estimate pentru fiecare licitație legală, opțiunile de carte evaluate, mutarea
+aleasă, ratările/depășirile și diferența față de Hard curent. Mâinile ascunse și
+amprentele interne ale distribuirilor nu sunt scrise în JSON.
+
+Aceste profiluri sunt variante de experiment și nu schimbă nivelul Hard din aplicație.
+Recomandarea de promovare cere seed-uri noi și rezultat favorabil la toate cele patru
+locuri; o singură partidă câștigată nu este suficientă.
 
 Suita parcurge toate cele 24 de mâini românești 1–8–1, verifică legalitatea prin
 tranzițiile reale ale `GameSession` și înregistrează licitațiile, cărțile public

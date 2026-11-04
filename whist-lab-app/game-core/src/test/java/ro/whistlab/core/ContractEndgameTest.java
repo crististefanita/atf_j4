@@ -50,4 +50,23 @@ public class ContractEndgameTest {
         var view=new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,Trump.SPADES,0,3,3,List.of(new Card(Suit.CLUBS,14),new Card(Suit.DIAMONDS,14)),seats,List.of(history.get(4)),history,new Card(Suit.SPADES,8));
         for(int i=0;i<100;i++){var world=MonteCarloAi.sample(view,new Random(i));assertNotNull(world);assertTrue(world.get(1).stream().noneMatch(c->c.suit()==Suit.HEARTS||c.suit()==Suit.SPADES));assertTrue(world.get(3).stream().noneMatch(c->c.suit()==Suit.HEARTS));assertEquals(1,world.get(3).size());}
     }
+    @Test public void currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored(){
+        List<PlayedCard> history=new ArrayList<>();
+        List<List<Integer>> rankGroups=List.of(List.of(7,8,9,10),List.of(7,8,9,10),
+                List.of(7,8,9,10),List.of(7,8,9,10),List.of(11,12,13,14),List.of(11,12,13,14));
+        List<Suit> leadSuits=List.of(Suit.HEARTS,Suit.CLUBS,Suit.SPADES,Suit.DIAMONDS,Suit.SPADES,Suit.DIAMONDS);
+        for(int trick=0;trick<leadSuits.size();trick++)for(int seat=0;seat<4;seat++)
+            history.add(new PlayedCard(seat,new Card(leadSuits.get(trick),rankGroups.get(trick).get(seat))));
+        List<PlayedCard> current=List.of(new PlayedCard(0,new Card(Suit.HEARTS,11)),
+                new PlayedCard(1,new Card(Suit.CLUBS,11)));
+        List<MonteCarloAi.Seat> seats=List.of(new MonteCarloAi.Seat(1,0,0),new MonteCarloAi.Seat(1,0,0),
+                new MonteCarloAi.Seat(2,0,0),new MonteCarloAi.Seat(2,0,0));
+        var view=new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,Trump.NO_TRUMP,2,3,8,
+                List.of(new Card(Suit.HEARTS,12),new Card(Suit.CLUBS,12)),seats,current,history,null);
+        for(int seed=0;seed<100;seed++){
+            var world=MonteCarloAi.sample(view,new Random(seed));assertNotNull(world);
+            assertTrue("seat 1 discarded while Hearts were led; no Heart can remain",
+                    world.get(1).stream().noneMatch(card->card.suit()==Suit.HEARTS));
+        }
+    }
 }

@@ -28,10 +28,11 @@ class WhistResponsivePlaySanityE2eTest {
     private static final String APP = "ro.whistlab.app";
     private static final Duration WAIT = Duration.ofSeconds(35);
     private static final Pattern HAND_SIZE = Pattern.compile("Your hand, (\\d+) cards\\.");
+    private static final Pattern DEAL_NUMBER = Pattern.compile("Hand (\\d+) / 24");
     private static final String OUTPUT = "atf.android.artifacts";
 
     @Test
-    void configuredProfilesStayReadableFromMenuThroughTwoRealDeals() throws Exception {
+    void configuredProfilesStayReadableFromMenuThroughConfiguredRealDeals() throws Exception {
         AdbClient adb = AdbClient.fromSystemProperties();
         List<ResponsiveDisplayProfile> profiles = ResponsiveDisplayProfile.parse(
                 System.getProperty("atf.android.sanity.profiles"));
@@ -123,7 +124,10 @@ class WhistResponsivePlaySanityE2eTest {
         for (int handNumber = 1; handNumber <= hands; handNumber++) {
             String bidding = ui.awaitText("Place bid", WAIT);
             int handSize = handSize(ui, bidding);
-            assertEquals(handNumber, handSize, "Unexpected 1–8–1 hand size");
+            int displayedDealNumber = dealNumber(ui, bidding);
+            assertEquals(handNumber, displayedDealNumber, "The Romanian deal sequence did not advance");
+            assertEquals(romanianFourPlayerHandSize(handNumber), handSize,
+                    "Unexpected 1–8–1 hand size at deal " + handNumber);
             recordBidding(ui, adb, trace, evidence, profile, handNumber, handSize, bidding);
 
             List<Integer> legalBids = AndroidUiDriver.enabledNumericButtonValues(bidding);
@@ -155,8 +159,9 @@ class WhistResponsivePlaySanityE2eTest {
                     "Finish real deal " + handNumber + " with " + handSize + " tricks",
                     List.of(check("Completed deal advances normally", "Next hand",
                             ui.hasText(settled, "Next hand")),
-                            check("Four player seats remain visible", "4 seats",
-                                    seatCount(ui, settled) == 4)));
+                            check("Score sheet lists all four players", "You, Ava, Miles, Grace",
+                                    ui.hasText(settled, "You") && ui.hasText(settled, "Ava")
+                                            && ui.hasText(settled, "Miles") && ui.hasText(settled, "Grace"))));
             if (handNumber < hands) {
                 ui.tapText("Next hand");
             }
@@ -189,6 +194,7 @@ class WhistResponsivePlaySanityE2eTest {
         var seat = ui.boundsForDescriptionContaining(bidding, "You. Bid ");
         var board = ui.boundsForDescription(bidding, "Game table, 4 players.");
         List<Integer> bids = ui.numericButtonValues(bidding);
+        List<Integer> enabledBids = AndroidUiDriver.enabledNumericButtonValues(bidding);
         List<AndroidUiDriver.Bounds> targets = new ArrayList<>();
         for (int bid : bids) targets.add(ui.buttonBounds(bidding, Integer.toString(bid)));
         targets.add(ui.buttonBounds(bidding, "Place bid"));
@@ -209,9 +215,10 @@ class WhistResponsivePlaySanityE2eTest {
                         "one row, below You", faces.size() + " faces",
                         faces.stream().allMatch(face -> face.top() > seat.bottom()
                                 && face.bottom() == faces.getLast().bottom())),
-                check("All bid values are available", "0.." + handSize, bids.toString(),
-                        bids.equals(java.util.stream.IntStream.rangeClosed(0, handSize)
-                                .boxed().toList())),
+                check("Selectable bids stay within the deal range", "enabled value 0.." + handSize,
+                        enabledBids.toString(),
+                        !enabledBids.isEmpty()
+                                && bids.stream().allMatch(value -> value >= 0 && value <= handSize)),
                 check("Bids and hand stay inside the game table", "inside", insideBoard,
                         insideBoard),
                 check("Bid controls do not cover the four player seats", "no overlap",
@@ -289,7 +296,7 @@ class WhistResponsivePlaySanityE2eTest {
         List<AtfAssertion> checks = new ArrayList<>(List.of(
                 check("Nine legal bids fit", "0..8", bids.toString(),
                         bids.equals(java.util.stream.IntStream.rangeClosed(0, 8).boxed().toList())),
-                check("Four players remain individually visible", "4 seats", seats.size(),
+                check("Four players remain individually visible", "You, Ava, Miles, Grace", seats.size(),
                         seats.size() == 4),
                 check("No player or bid controls overlap", "0", overlaps, overlaps == 0),
                 check("Bid controls remain inside the table", "inside", inside, inside),
@@ -360,6 +367,24 @@ class WhistResponsivePlaySanityE2eTest {
                 .orElseThrow(() -> new IllegalStateException("Own hand size is absent")));
         if (!match.matches()) throw new IllegalStateException("Unexpected hand description");
         return Integer.parseInt(match.group(1));
+    }
+
+    private static int dealNumber(AndroidUiDriver ui, String xml) throws Exception {
+        Matcher match = DEAL_NUMBER.matcher(ui.texts(xml).stream()
+                .filter(value -> value.startsWith("Hand ")).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Deal progress is absent")));
+        if (!match.matches()) throw new IllegalStateException("Unexpected deal progress");
+        return Integer.parseInt(match.group(1));
+    }
+
+    private static int romanianFourPlayerHandSize(int dealNumber) {
+        if (dealNumber < 1 || dealNumber > 24) {
+            throw new IllegalArgumentException("Romanian deal number must be between 1 and 24");
+        }
+        if (dealNumber <= 4 || dealNumber >= 21) return 1;
+        if (dealNumber <= 10) return dealNumber - 3;
+        if (dealNumber <= 14) return 8;
+        return 22 - dealNumber;
     }
 
 

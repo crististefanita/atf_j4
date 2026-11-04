@@ -1,7 +1,7 @@
 schema_version: 1
 id: "NORMAL_HARD_CONTRACT_OBJECTIVES_V1"
 status: "ACTIVE_CODE_BOUND_RULES"
-runtime_influence: "Implemented by AiPolicy, NormalPlayPolicy, MonteCarloAi, and PublicSalvage."
+runtime_influence: "Implemented by AiPolicy, NormalBidPolicy, NormalPlayPolicy, MonteCarloAi, and PublicSalvage."
 profile: "Romanian Whist, legal moves only, four seats, public information."
 information: ["own hand", "public bids", "tricks already won", "current trick", "public card history", "turned card", "remaining opportunities", "public scores"]
 normal:
@@ -16,19 +16,66 @@ normal:
       rule_ro: "După atingerea contractului, evită levatele suplimentare. Când toate cărțile pierd, folosește cartea cu putere mai mare pentru a reduce riscul ulterior."
       rule_en: "After reaching the bid, avoid extra tricks. When the current trick is already lost, shed the higher exposed card to reduce later risk."
       tests: ["normalShedsTheLowestRiskWhenNoTrickIsNeeded"]
+  information_boundary: "The policy input contains its own hand and public seat state only; opponent card lists are removed before the decision method is called."
+  tests: ["bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates"]
   limit: "Transparent local heuristic. No sampled opponent holdings or global-optimality claim."
 hard:
   objective: "Maximize own exact-contract probability while the public state leaves a route to the bid."
   switch_to_salvage_when: "The public lower bound on unavoidable wins exceeds remaining need, or remaining need exceeds remaining trick opportunities."
   salvage:
-    rule_ro: "Dacă realizarea contractului este imposibilă din limite publice, caută doar o mutare certificată care păstrează punctele proprii în toate lumile fezabile și face să rateze mai mulți adversari."
-    rule_en: "When public bounds prove the contract impossible, prefer only a certified move that preserves own points in every feasible world and causes more opponents to miss."
+    rule_ro: "Când limitele publice dovedesc că propriul contract nu mai poate fi realizat, păstrează mai întâi punctajul propriu estimat, apoi maximizează numărul estimat de adversari care ratează. Dacă certificatul exhaustiv găsește o mutare fără pierdere proprie și cu mai multe ratări în toate lumile fezabile, aceasta are prioritate."
+    rule_en: "When public bounds prove the own contract unreachable, preserve estimated own points first, then maximize the estimated number of opponents who miss. Prefer a certified move only when exhaustive proof shows no own-point loss and more misses across every feasible world."
     certificate_scope: "Four-seat Romanian hands with two cards remaining; all feasible hidden deals and all legal continuations, bounded by the configured search limit."
     tests: ["certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty", "recoverableContractCannotBeSacrificedForRivalDamage"]
   fallback: "For a publicly unreachable contract without a complete certificate, preserve expected own points, then maximize the rollout-estimated number of opponent contract misses; use the strongest rival score only as a final tie break."
-  limitations: ["Salvage certificate currently covers two-card endings only.", "No claim of perfect Hard play or universal perfect play."]
+  ranking:
+    feasible: ["exact_contract_probability", "own_expected_points", "lower_strongest_rival_score"]
+    publicly_impossible: ["own_expected_points", "expected_rival_contract_misses", "lower_strongest_rival_score"]
+    weighting: "State-dependent lexicographic priorities, not learned numeric weights. Recomputed after every public bid or played card."
+  inference:
+    unseen_pool: "Remove own cards, publicly played cards, current-trick cards, and the turned-up trump."
+    ownership_constraints: "Sample only deals consistent with inferred suit voids."
+    public_bids: "Use known bids as contract targets and scoring outcomes during rollouts."
+    bid_conditioned_hand_likelihood: "Not implemented: unknown hand assignments are not weighted by a seat-specific likelihood of making the observed bid. Test this as a separate paired candidate before runtime promotion."
+    information_boundary: "The Hard decision view likewise contains only the actor's own hand and public information; simulated hidden deals are generated after observation and never expose the actual opponent holdings."
+    tests: ["bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates", "runsAndCapturesACompleteFourSeatRomanian181MockMatch", "replaysTheSameDealsAndTurnOrderAcrossHardSeatPerspectives", "comparesBidAndCardProfilesOnTheSameDealsAtEverySeat", "currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored", "publicIrrecoverabilityRanksOwnPointsBeforeRivalMisses", "rolloutUtilityCountsHowManyOpponentsMiss"]
+  limitations: ["Salvage certificate currently covers two-card endings only.", "Bid-conditioned hidden-hand likelihood is not yet modeled.", "No claim of perfect Hard play or universal perfect play."]
 evolution:
   recompute_after: "Every public bid and every card played."
-  accepted_evidence: "Small legal component examples plus same-deal paired complete matches with seat balancing and a fresh reserved cohort."
+  accepted_evidence: "Small legal component examples plus same-deal paired complete matches, seat rotation, and fresh seeds; compare each strategy profile at the same seat before promotion."
   rejected_experiments: "Keep outside runtime until all predeclared strength and non-regression gates pass."
   private_information: "Never use actual opponent hands to choose a public strategy."
+
+offline_experiment_profiles:
+  runtime_influence: false
+  focal_seats: [0, 1, 2, 3]
+  opponents: "Three Normal policies; one profile-controlled Hard seat."
+  profiles:
+    CURRENT:
+      bid_priority: ["exact_contract_probability", "expected_points"]
+      card_priority: ["exact_contract_probability", "expected_points", "lower_strongest_rival_score"]
+    PRUDENT_BID_04:
+      bid_rule: "Choose the lowest legal bid whose estimated exact-contract probability is within 0.04 of the highest estimate."
+      max_exact_probability_gap: 0.04
+      card_priority: "Same as CURRENT."
+    PRUDENT_BID:
+      bid_rule: "Choose the lowest legal bid whose estimated exact-contract probability is within 0.08 of the highest estimate."
+      max_exact_probability_gap: 0.08
+      card_priority: "Same as CURRENT."
+    PRUDENT_BID_12:
+      bid_rule: "Choose the lowest legal bid whose estimated exact-contract probability is within 0.12 of the highest estimate."
+      max_exact_probability_gap: 0.12
+      card_priority: "Same as CURRENT."
+    SCORE_FIRST:
+      bid_priority: ["expected_points", "exact_contract_probability"]
+      card_priority: ["expected_points", "exact_contract_probability", "lower_strongest_rival_score"]
+    BURN_IF_DOOMED:
+      bidding: "Same as CURRENT."
+      fallback_only_when_public_quota_proves_own_contract_impossible:
+        priority: ["expected_rival_contract_misses", "own_expected_points", "lower_strongest_rival_score"]
+  paired_evaluation:
+    same_deal_sequence: true
+    vary: ["Hard seat strategy profile", "public bids selected by that profile", "legal card choices selected from current public context"]
+    do_not_record: ["future hidden cards", "opponent private hands", "opaque deal commitments"]
+    report: ["bid-option estimates", "selected bids", "card-action differences", "exact contracts", "overtricks", "undertricks", "points"]
+    promotion: "No experimental profile changes production difficulty until it beats CURRENT across fresh seeds and all four seats without rule or score regressions."

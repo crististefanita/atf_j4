@@ -1,8 +1,5 @@
 package ro.whistlab.core;
 
-import java.util.Comparator;
-import java.util.List;
-
 public final class AiPolicy {
     private AiPolicy() { }
 
@@ -12,15 +9,7 @@ public final class AiPolicy {
 
     public static int chooseBid(GameSession.Snapshot game, int seat, AiDifficulty difficulty) {
         if (difficulty == AiDifficulty.HARD) return MonteCarloAi.chooseBid(MonteCarloAi.observe(game, seat));
-        GameSession.PlayerSnapshot player = game.players().get(seat);
-        double expectation = player.hand().stream()
-                .mapToDouble(card -> basicStrength(card, game.trump()))
-                .sum();
-        int estimate = Math.max(0, Math.min(game.handSize(), (int) Math.round(expectation)));
-        List<Integer> allowed = allowedBids(game);
-        return allowed.stream().min(Comparator
-                .comparingInt((Integer bid) -> Math.abs(bid - estimate))
-                .thenComparingInt(Integer::intValue)).orElseThrow();
+        return NormalBidPolicy.chooseBid(NormalBidPolicy.observe(game, seat));
     }
 
     public static Card chooseCard(GameSession.Snapshot game, int seat) {
@@ -29,22 +18,6 @@ public final class AiPolicy {
 
     public static Card chooseCard(GameSession.Snapshot game, int seat, AiDifficulty difficulty) {
         if (difficulty == AiDifficulty.HARD) return MonteCarloAi.chooseCard(MonteCarloAi.observe(game, seat)).card();
-        return NormalPlayPolicy.chooseCard(game, seat);
-    }
-
-    private static List<Integer> allowedBids(GameSession.Snapshot game) {
-        boolean lastBid = game.bidsSubmitted() == game.players().size() - 1;
-        return GameRules.allowedBids(game.handSize(), game.bidTotal(), lastBid);
-    }
-
-    private static double basicStrength(Card card, Trump trump) {
-        double value = switch (card.rank()) {
-            case 14 -> 0.9;
-            case 13 -> 0.45;
-            case 12 -> 0.2;
-            default -> 0.05;
-        };
-        return trump.suit().filter(suit -> suit == card.suit()).isPresent()
-                ? Math.min(1.0, value + 0.1) : value;
+        return NormalPlayPolicy.chooseCard(NormalPlayPolicy.observe(game, seat));
     }
 }

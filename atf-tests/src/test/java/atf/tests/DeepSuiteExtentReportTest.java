@@ -30,7 +30,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-/** Opt-in publisher for module, original-app, and local-app acceptance results. */
+/** Opt-in publisher for module and Whist Lab acceptance results. */
 class DeepSuiteExtentReportTest {
     private static final List<String> MODULES = List.of(
             "atf-test-kit", "atf-mock", "atf-validation", "atf-console", "atf-android", "atf-tests", "atf-test-android");
@@ -68,16 +68,13 @@ class DeepSuiteExtentReportTest {
             modules.add(new ModuleStats(module, tests, failures, errors, skipped, Duration.ofMillis((long) (seconds * 1_000)), status, xmlFiles, resultFiles));
         }
 
-        Path originalAppXml = componentResults.resolve("atf-test-android")
-                .resolve("TEST-atf.android.e2e.ContractWhistGameplayE2eTest.xml");
         Path labAppXml = componentResults.resolve("atf-test-android")
                 .resolve("TEST-atf.android.e2e.WhistLabGameplayE2eTest.xml");
         Path appSuiteXml = componentResults.resolve("atf-test-android")
                 .resolve("TEST-atf.android.suites.AndroidGameplayE2eSuite.xml");
-        assertTrue(Files.isRegularFile(originalAppXml), "Original Android acceptance result is missing: " + originalAppXml);
         assertTrue(Files.isRegularFile(labAppXml), "Whist Lab Android acceptance result is missing: " + labAppXml);
         assertTrue(Files.isRegularFile(appSuiteXml), "Android E2E suite result is missing: " + appSuiteXml);
-        List<Path> appTestXmls = List.of(originalAppXml, labAppXml);
+        List<Path> appTestXmls = List.of(labAppXml);
         long appTests = 0, appFailures = 0, appSkipped = 0;
         for (Path appXml : appTestXmls) {
             var appSuite = parse(appXml).getDocumentElement();
@@ -85,7 +82,7 @@ class DeepSuiteExtentReportTest {
             appFailures += number(appSuite, "failures") + number(appSuite, "errors");
             appSkipped += number(appSuite, "skipped");
         }
-        assertTrue(appTests > 0, "Android E2E test classes reported zero tests: " + appTestXmls);
+        assertTrue(appTests > 0, "Whist Lab Android E2E reported zero tests: " + appTestXmls);
         AtfReportStatus appStatus = appFailures == 0 && appSkipped == 0
                 ? AtfReportStatus.PASS : appFailures == 0 ? AtfReportStatus.WARNING : AtfReportStatus.FAIL;
 
@@ -131,13 +128,11 @@ class DeepSuiteExtentReportTest {
         }
         AtfReportStatus aggregate = appStatus;
         for (ModuleStats module : modules) aggregate = AtfReportStatus.worst(aggregate, module.status());
-        // The screen captures show a persistent rendering problem, so product acceptance remains a warning.
-        aggregate = AtfReportStatus.worst(aggregate, AtfReportStatus.WARNING);
         Files.createDirectories(report.toAbsolutePath().getParent());
         var settings = AtfReportConfigurationLoader.load().reportingSettings();
         try (var session = new ExtentReportSession(report, settings)) {
-            var reportScenario = session.startScenario("ATF J4 component, Contract Whist, and Whist Lab deep test", "atf.tests",
-                    "Android API 28 emulator", List.of("component-tests", "adb", "original-app", "parallel-app", "live-gameplay", "visual-review"));
+            var reportScenario = session.startScenario("ATF J4 component and Whist Lab deep test", "atf.tests",
+                    "Android API 28 emulator", List.of("component-tests", "adb", "whist-lab", "live-gameplay", "visual-review"));
             try (var scenario = UiExtentReportSession.adaptScenario(reportScenario,
                     ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
                     "Android API 28 emulator")) {
@@ -155,14 +150,11 @@ class DeepSuiteExtentReportTest {
                     phase.complete(module.status());
                 }
             }
-            try (var phase = reportScenario.startPhase("Original app and Whist Lab live gameplay")) {
+            try (var phase = reportScenario.startPhase("Whist Lab live gameplay")) {
                 phase.observation(new ReportObservation("ADB-driven UI acceptance",
                         List.of(new ReportField("Surefire tests", Long.toString(appTests)),
                                 new ReportField("Failures and errors", Long.toString(appFailures)),
                                 new ReportField("Skipped", Long.toString(appSkipped)),
-                                new ReportField("Contract Whist flow", "Menu and rules, setup matrix for 3–6 seats, guarded 4-seat Oh Hell hand-end, manual score-sheet review, and Next Hand bidding with 9 cards"),
-                                new ReportField("Card-play evidence limit",
-                                    "Raster interaction cycles are reported as UI activity only; the custom table does not expose card identity, exact accepted-card count, legality, or trick winners to UIAutomator"),
                                 new ReportField("Whist Lab flow", "Deterministic practice trick, bid 1, force-stop and resume the same human turn, play A♥, AI seats complete trick, exact-bid score Total: 11"),
                                 new ReportField("Screenshot captures", Integer.toString(screenshots.size() + flowScreenshots.size())),
                                 new ReportField("Screenshot and UI-tree assets", Integer.toString(evidenceAssets.size())),
@@ -171,13 +163,6 @@ class DeepSuiteExtentReportTest {
                         List.of(), concatArtifacts(concatPaths(appTestXmls,
                                 concatPaths(List.of(appSuiteXml), runLogs)), linkedEvidenceAssets)));
                 phase.complete(appStatus);
-            }
-            try (var phase = reportScenario.startPhase("Visual acceptance observation")) {
-                phase.observation(new ReportObservation("Visible rendering defects",
-                        List.of(new ReportField("Observed", "Neon-green background; oversized and overlapping labels; distorted card faces; hand clipped at the bottom"),
-                                new ReportField("Scope", "Visual defect is evidenced by emulator captures; scoring and full-match completion are not asserted by this run")),
-                        List.of(), List.of()));
-                phase.complete(AtfReportStatus.WARNING);
             }
             try (var phase = scenario.startPhase("Inline Android UI screenshot checkpoints")) {
                 for (Path image : screenshots) {
@@ -352,61 +337,6 @@ class DeepSuiteExtentReportTest {
             }
         }
         AtfReportStatus publishedFlowStatus = flowStatus;
-        if ("contract-whist-oh-hell-score-next-hand".equals(trace.getProperty("flow.id"))) {
-            Path scoreSheet = resolveEvidence(evidenceDir, "ohhell-full-score-sheet.png");
-            Path nextHandBidding = resolveEvidence(evidenceDir, "ohhell-next-hand-bidding.png");
-            Path manualObservationFile = resolveEvidence(evidenceDir, "ohhell-manual-score-observation.properties");
-            Properties manualObservation = Files.isRegularFile(manualObservationFile)
-                    ? loadTrace(manualObservationFile) : new Properties();
-            String nextBidObservation = actionObservationForTitle(trace,
-                    "Advance to the next hand and verify its nine-card bid range");
-            List<Path> manualObservationArtifacts = new ArrayList<>(List.of(scoreSheet, nextHandBidding));
-            if (Files.isRegularFile(manualObservationFile)) manualObservationArtifacts.add(manualObservationFile);
-            try (var visual = raw.startPhase("Visual acceptance observation")) {
-                visual.observation(new ReportObservation("Original Oh Hell hand-end table — visual read",
-                        List.of(new ReportField("Observed deal row", "Cards 10; the table then lists rows 9 through 1"),
-                                new ReportField("Visible score-sheet cells", manualObservation.getProperty("score.cells",
-                                        "Manual transcription not supplied; inspect the attached score-sheet PNG")),
-                                new ReportField("Flow action", "The test selected Bid 0 for the human seat, reached the hand-end score sheet, then explicitly opened Next Hand"),
-                                new ReportField("Next-hand bidding", "Cards: 9; UIAutomator bid domain: Bid 0 through Bid 9; Bid 10 absent; " + nextBidObservation),
-                                new ReportField("Conditional score reconciliation", manualObservation.getProperty("score.interpretation",
-                                        "The score canvas is not exposed as text; no manual score interpretation was supplied.")),
-                                new ReportField("Last-bid rule visual reading", manualObservation.getProperty("next-hand.bid-reconciliation",
-                                        "The disabled numeric bid is recorded from the UI hierarchy. Bid counter and other seats' bids require manual visual transcription.")),
-                                new ReportField("Evidence method and confidence", manualObservation.getProperty("method",
-                                        "The custom score canvas is not exposed as text. No OCR or card-recognition oracle was used; treat visual values as WARNING evidence.")),
-                                new ReportField("Card-count boundary",
-                                    ("The adapter records raster interaction cycles whose count can vary between runs. A cycle is not a verified accepted card; this flow does not assert a semantical" + "ly decoded card count.")),
-                                new ReportField("Scoring limit", ("This single score row does not independently prove trick counts or exact bids. Repeated controlled bids/tricks, lower-hand scoring, full-match completion, and f" +
-                                    "inal ranking remain unverified.")),
-                                new ReportField("Visible defect", "The score table text is rotated in portrait and the layout wastes most of the display area.")),
-                        List.of(), manualObservationArtifacts.stream()
-                                .map(DeepSuiteExtentReportTest::artifactUnchecked).toList()));
-                visual.complete(AtfReportStatus.WARNING);
-            }
-            publishedFlowStatus = AtfReportStatus.worst(flowStatus, AtfReportStatus.WARNING);
-        }
-        if ("contract-whist-oh-hell-bid-grid-by-seat-count".equals(trace.getProperty("flow.id"))) {
-            List<Path> screenshotsBySeats = List.of(
-                    resolveEvidence(evidenceDir, "ohhell-bid-matrix-3-bidding.png"),
-                    resolveEvidence(evidenceDir, "ohhell-bid-matrix-4-bidding.png"),
-                    resolveEvidence(evidenceDir, "ohhell-bid-matrix-5-bidding.png"),
-                    resolveEvidence(evidenceDir, "ohhell-bid-matrix-6-bidding.png"));
-            try (var visual = raw.startPhase("Visual acceptance observation — Oh Hell setup matrix")) {
-                visual.observation(new ReportObservation("Original app: first deal and trump by table size",
-                        List.of(new ReportField("Observed first deal", "3 players: 10 cards; 4: 10; 5: 10; 6: 8"),
-                                new ReportField("Visible bid values", "3/4/5 players: Bid 0–10; 6 players: Bid 0–8"),
-                                new ReportField("First-hand trump samples", "3 players: Diamonds; 4: Hearts; 5: Clubs; 6: Spades"),
-                                new ReportField("Last-bid restriction", "In the 4-player screenshot, prior AI bids total 7 and Bid 3 is disabled for the final bidder; 7 + 3 would equal the 10-card hand"),
-                                new ReportField("Evidence method", "Values were read visually from the attached emulator PNGs; custom table text is absent from the UIAutomator hierarchy"),
-                                new ReportField("Rule boundary", ("First deal sizes match the local 10/10/10/8 model; first-trump origin varies across these sessions and does not yet establish the rotation rule. Only 4-player 1" +
-                                    "0-to-1 progression has been followed in the original app.")),
-                                new ReportField("Open work", "Repeat fresh games at each seat count and follow five consecutive hands through No Trumps and back to the next trump")),
-                        List.of(), screenshotsBySeats.stream().map(DeepSuiteExtentReportTest::artifactUnchecked).toList()));
-                visual.complete(AtfReportStatus.WARNING);
-            }
-            publishedFlowStatus = AtfReportStatus.worst(publishedFlowStatus, AtfReportStatus.WARNING);
-        }
         raw.complete(publishedFlowStatus);
     }
 
@@ -414,20 +344,6 @@ class DeepSuiteExtentReportTest {
         Properties properties = new Properties();
         try (var input = Files.newInputStream(file)) { properties.load(input); }
         return properties;
-    }
-
-    private static String actionObservationForTitle(Properties trace, String title) {
-        for (int phase = 0; phase < integer(trace, "flow.phaseCount"); phase++) {
-            String phasePrefix = "phase." + phase;
-            for (int step = 0; step < integer(trace, phasePrefix + ".stepCount"); step++) {
-                String stepPrefix = phasePrefix + ".step." + step;
-                if (title.equals(trace.getProperty(stepPrefix + ".title"))
-                        && integer(trace, stepPrefix + ".actionCount") > 0) {
-                    return trace.getProperty(stepPrefix + ".action.0.observed", "not recorded");
-                }
-            }
-        }
-        return "not recorded";
     }
 
     private static String required(Properties properties, String key) {

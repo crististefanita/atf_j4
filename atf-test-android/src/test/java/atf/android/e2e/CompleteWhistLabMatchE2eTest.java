@@ -69,11 +69,11 @@ public class CompleteWhistLabMatchE2eTest {
                     OriginalMatchOracle.check(bidChecks,"Seat "+seat+" actual distribution matches original",new TreeSet<>(deal.hand(seat)).toString(),
                             actual.toString(),actual.equals(new TreeSet<>(deal.hand(seat))));
                 }
-                if(h==0)CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Load the completed original match as debug input fixtures",
+                if(h==0)WhistTestEvidence.checkpoint(trace,out,"SETUP","Load the completed original match as debug input fixtures",
                         prefix+"-bidding","Original outcomes are not injected into the game engine",List.of(
                                 new AtfAssertion("Complete fixture", "19 hands / 436 card inputs",recording.getProperty("match.handCount")+" / "+recording.getProperty("match.moves"),
                                         "19".equals(recording.getProperty("match.handCount"))&&"436".equals(recording.getProperty("match.moves")))));
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": load the same real distribution and trump",
+                WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": load the same real distribution and trump",
                         prefix+"-bidding","Recorded original inputs; actual engine state is read from the debug observation port",bidChecks);
                 if(deal.dealer==0) {
                     int prior=Arrays.stream(deal.bids).filter(b->b>=0).sum();
@@ -87,7 +87,7 @@ public class CompleteWhistLabMatchE2eTest {
                     Set<Integer> actualOptions=new TreeSet<>(ui.texts(optionsXml).stream().filter(t->t.matches("\\d+"))
                             .map(Integer::parseInt).toList());
                     if(!retained)ui.capture(optionsLabel);
-                    CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": final bidder cannot select the forbidden total",
+                    WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": final bidder cannot select the forbidden total",
                             optionsLabel,"prior bids="+prior+"; hand size="+deal.handSize+"; forbidden candidate="+forbidden,List.of(
                                     new AtfAssertion("Actual UI bid choices implement the same last-bid restriction",expectedOptions.toString(),
                                             actualOptions.toString(),actualOptions.equals(expectedOptions))));
@@ -127,14 +127,14 @@ public class CompleteWhistLabMatchE2eTest {
                             expectedRow,"exact score row visible="+visible,visible));
                 }
                 String scoreLabel=prefix+"-score-parity";if(!retained)ui.capture(scoreLabel);
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": all score rows match original",
+                WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": all score rows match original",
                         scoreLabel,Arrays.toString(originalTotals),scoreChecks);
                 System.out.println("LAB MATCH hand="+(h+1)+"/19; moves="+oracle.plays.size()+"; totals="+Arrays.toString(totals));
                 if(h<18&&!retained)ui.tapText("Next hand");
             }
             assertEquals(436,moveCount);
             ui.capture("whist-lab-full-match-teardown");
-            CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEARDOWN","Retain Whist Lab's final independently calculated score",
+            WhistTestEvidence.checkpoint(trace,out,"TEARDOWN","Retain Whist Lab's final independently calculated score",
                     "whist-lab-full-match-teardown",Arrays.toString(totals),List.of(
                             new AtfAssertion("Replay completed all original inputs","436",Integer.toString(moveCount),moveCount==436)));
             trace.finish(AtfReportStatus.PASS);
@@ -179,7 +179,7 @@ public class CompleteWhistLabMatchE2eTest {
         }else input=new AtfUiActionRecord(trace.nextActionSequence(),(retained?"Retained ":"")+"Android UI bid submission","Bid "+originalBids[0]+"; Place bid",
                 "selected bid is submitted","actual human bid="+state.bids[0],0,
                 originalBids[0]==state.bids[0]?AtfReportStatus.PASS:AtfReportStatus.FAIL,AtfUiEvidenceSource.ACTION);
-        CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY",title+(retained?" (retained UI execution revalidated)":""),label,
+        WhistTestEvidence.checkpoint(trace,out,"TEST BODY",title+(retained?" (retained UI execution revalidated)":""),label,
                 (retained?"Retained real UI capture; no new tap issued. ":"")+state.summary(),checks,List.of(input));
     }
     private static OriginalWhistState awaitStable(AdbClient adb,Path out,String label,OriginalWhistState deal,int minimum)throws Exception {

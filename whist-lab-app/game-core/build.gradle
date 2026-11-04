@@ -194,13 +194,41 @@ tasks.named("quickRegressionTest", Test) {
     filter { includeTestsMatching "ro.whistlab.core.NormalContractPursuitTest" }
 }
 
+tasks.named("quickRegressionTest", Test) {
+    filter { includeTestsMatching "ro.whistlab.core.BlindPolicyObservationTest" }
+}
+tasks.named("quickRegressionTest", Test) {
+    filter { includeTestsMatching "ro.whistlab.core.HardStrategyProfileTest" }
+}
+
 tasks.register("offlineMockMatchTest", Test) {
     description = "Plays and records a complete deterministic Romanian 1-8-1 match offline."
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
     filter { includeTestsMatching "ro.whistlab.core.OfflineMockMatchTest" }
     systemProperty "whist.offlineMatch.seed", providers.gradleProperty("whist.offlineMatch.seed").getOrElse("20261104")
+    systemProperty "whist.offlineMatch.roster", providers.gradleProperty("whist.offlineMatch.roster").getOrElse("NORMAL,HARD,NORMAL,HARD")
     systemProperty "whist.offlineMatch.output", providers.gradleProperty("whist.offlineMatch.output").getOrElse("")
+    jacoco.enabled = false
+    outputs.upToDateWhen { false }
+}
+tasks.register("offlinePerspectiveMatchTest", Test) {
+    description = "Replays one hidden deal sequence with Normal/Hard policies rotated across all four seats."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.OfflinePerspectiveMatchTest" }
+    systemProperty "whist.offlinePerspective.seed", providers.gradleProperty("whist.offlinePerspective.seed").getOrElse("20261104")
+    systemProperty "whist.offlinePerspective.output", providers.gradleProperty("whist.offlinePerspective.output").getOrElse("")
+    jacoco.enabled = false
+    outputs.upToDateWhen { false }
+}
+tasks.register("offlineStrategyProfileMatchTest", Test) {
+    description = "Compares cautious, score-first and rival-burn decisions over the same Romanian deals at one fixed seat."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.OfflineStrategyProfileMatchTest" }
+    systemProperty "whist.offlineStrategy.seed", providers.gradleProperty("whist.offlineStrategy.seed").getOrElse("20261104")
+    systemProperty "whist.offlineStrategy.output", providers.gradleProperty("whist.offlineStrategy.output").getOrElse("")
     jacoco.enabled = false
     outputs.upToDateWhen { false }
 }

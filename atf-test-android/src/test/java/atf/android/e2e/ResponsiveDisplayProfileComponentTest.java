@@ -38,14 +38,14 @@ class ResponsiveDisplayProfileComponentTest {
     }
 
     @Test
-    void handsStayWithinTheShortGameBoundary() {
+    void configuredHandsCanReachTheFirstTwoCardDealWithoutPlayingTheFullMatch() {
         assertEquals(1, ResponsiveDisplayProfile.handsPerProfile("1"));
         assertEquals(2, ResponsiveDisplayProfile.handsPerProfile(null));
-        assertEquals(3, ResponsiveDisplayProfile.handsPerProfile("3"));
+        assertEquals(5, ResponsiveDisplayProfile.handsPerProfile("5"));
         assertThrows(IllegalArgumentException.class,
                 () -> ResponsiveDisplayProfile.handsPerProfile("0"));
         assertThrows(IllegalArgumentException.class,
-                () -> ResponsiveDisplayProfile.handsPerProfile("4"));
+                () -> ResponsiveDisplayProfile.handsPerProfile("6"));
         assertThrows(IllegalArgumentException.class,
                 () -> ResponsiveDisplayProfile.handsPerProfile("many"));
     }

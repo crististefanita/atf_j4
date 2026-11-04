@@ -15,7 +15,7 @@ public final class HardSalvageObjectiveTest {
     }
 
     @Test public void aRecoverableContractKeepsExactChanceAheadOfPointsOrRivalDamage() {
-        assertFalse(MonteCarloAi.prefer(true, false, 0.6, -2, 3, 0,
+        assertTrue(MonteCarloAi.prefer(true, false, 0.6, -2, 3, 0,
                 0.5, 7, 0, -100));
     }
 

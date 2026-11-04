@@ -1,6 +1,6 @@
 param(
     [string]$Profiles = '720x1280@360,1080x1920@440,1080x2448@440,1200x1920@320',
-    [ValidateRange(1,3)][int]$HandsPerProfile = 2,
+    [ValidateRange(1,5)][int]$HandsPerProfile = 2,
     [string]$Serial = '127.0.0.1:5555',
     [string]$AdbServerSocket = 'tcp:192.168.56.1:5038',
     [string]$AdbExecutable = 'C:\tools\whist-android-sdk\platform-tools\adb.exe',
@@ -44,13 +44,6 @@ foreach ($module in $modules) {
 
 New-Item -ItemType Directory -Force -Path (Join-Path $stage 'atf-tests') | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'atf-tests\pom.xml') -Destination (Join-Path $stage 'atf-tests\pom.xml')
-foreach ($tree in @('whist-lab-app\game-core\src\main\java','whist-lab-app\ai-lab\src\main\java')) {
-    $source = Join-Path $root $tree
-    $target = Join-Path $stage $tree
-    & robocopy $source $target /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
-    if ($LASTEXITCODE -ge 8) { throw "Could not stage game source $tree" }
-}
-
 $leasePath = 'C:\work\whist_back\android-ui-lease.json'
 $leaseId = ''
 $leaseAcquired = $false
@@ -150,7 +143,7 @@ if($libraryHashes.coreSource -ne $libraryHashes.coreMaven -or
     throw 'The Maven cache must contain the same Core and Reporting JARs as J4 lib.'
 }
 $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot 'library-binaries.json') -Encoding utf8
-    $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test',
+    $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test','-Presponsive-sanity',
         "-Dmaven.repo.local=$MavenRepository",'-Dsurefire.failIfNoSpecifiedTests=false')
     Invoke-SanityMaven 'display-profile-components' ($common + @(
         '-Dtest=ResponsiveDisplayProfileComponentTest,AndroidUiDriverComponentTest',

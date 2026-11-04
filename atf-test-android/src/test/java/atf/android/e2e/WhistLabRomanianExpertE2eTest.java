@@ -27,7 +27,7 @@ class WhistLabRomanianExpertE2eTest {
             ui.selectSpinnerOption(1,"Romanian (1–8–1)");ui.selectSpinnerOption(2,"Expert (simulation)");
             ui.capture("romanian-expert-setup");
             String setup=ui.dump();
-            CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Leave recorded input mode and select a normal four-seat Romanian Expert game",
+            WhistTestEvidence.checkpoint(trace,out,"SETUP","Leave recorded input mode and select a normal four-seat Romanian Expert game",
                     "romanian-expert-setup","4 players / Romanian Whist / Expert",List.of(
                             new AtfAssertion("Explicit normal game profile","Romanian (1–8–1) / Expert (simulation)",
                                     ui.texts(setup).toString(),ui.hasText(setup,"Romanian (1–8–1)")&&ui.hasText(setup,"Expert (simulation)"))));
@@ -43,7 +43,7 @@ class WhistLabRomanianExpertE2eTest {
                 assertEquals(0,player.path("totalScore").asInt());
             }
             ui.capture("romanian-expert-bidding");
-            CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY","Normal Romanian deal and Expert bids use the real game engine",
+            WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Normal Romanian deal and Expert bids use the real game engine",
                     "romanian-expert-bidding",bidding.toString(),checks);
             ui.tapSpinner(0);String options=ui.dump();
             int bid=ui.texts(options).stream().filter(t->t.matches("[01]")).mapToInt(Integer::parseInt).min().orElseThrow();
@@ -71,7 +71,7 @@ class WhistLabRomanianExpertE2eTest {
                 checks.add(new AtfAssertion("Seat "+seat+" displayed Romanian score",row,"exact row visible="+ui.hasText(scoreXml,row),ui.hasText(scoreXml,row)));
             }
             assertEquals(1,totalWon);ui.capture("romanian-expert-score");
-            CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY","Normal Expert opponents finish the hand and Romanian scores match the rules",
+            WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Normal Expert opponents finish the hand and Romanian scores match the rules",
                     "romanian-expert-score",score.toString(),checks);
             ui.tapText("Next hand");ui.awaitText("Place your bid",Duration.ofSeconds(25));
             JsonNode next=saved(adb,out,"romanian-expert-ready");checks=new ArrayList<>();
@@ -80,7 +80,7 @@ class WhistLabRomanianExpertE2eTest {
             for(int seat=0;seat<4;seat++)check(checks,"Seat "+seat+" cumulative score survives the transition",
                     score.path("players").get(seat).path("totalScore").asText(),next.path("players").get(seat).path("totalScore").asText());
             ui.capture("romanian-expert-ready");
-            CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEARDOWN","Leave a normal Romanian Expert game ready for local play",
+            WhistTestEvidence.checkpoint(trace,out,"TEARDOWN","Leave a normal Romanian Expert game ready for local play",
                     "romanian-expert-ready",next.toString(),checks);
             trace.finish(AtfReportStatus.PASS);
         }catch(Throwable failure){trace.fail(failure);throw failure;}

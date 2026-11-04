@@ -28,7 +28,7 @@ class RomanianMenuOptionsE2eTest {
                 String under=language.equals("English")?"overtrumping is not compulsory":"nu este obligatoriu să supratai";
                 RomanianMatchOracle.truth(helpChecks,"Help distinguishes compulsory trump from compulsory overtrump",duty+"; "+under,content,content.contains(duty)&&content.contains(under));
                 String label=language.equals("English")?"help-en":"help-ro";ui.capture(label);
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Read Romanian rules in "+language,label,"Normal Help menu; no injected state",helpChecks,List.of());
+                WhistTestEvidence.checkpoint(trace,out,"SETUP","Read Romanian rules in "+language,label,"Normal Help menu; no injected state",helpChecks,List.of());
                 ui.back();
                 String homeNewGame=language.equals("English")?"New game":"Joc nou";
                 String homeHelp=language.equals("English")?"How to play":"Reguli de joc";
@@ -39,7 +39,7 @@ class RomanianMenuOptionsE2eTest {
                 ui.tapText(homeHelp);
                 String title=language.equals("English")?"HELP — HOW TO PLAY":"AJUTOR — CUM SE JOACĂ";String reopened=ui.awaitText(title,Duration.ofSeconds(12));
                 helpChecks=new ArrayList<>(menuChecks);RomanianMatchOracle.truth(helpChecks,"Chosen help language survives reopening",title,String.join(" ",ui.texts(reopened)),ui.hasText(reopened,title));ui.capture(label+"-reopen");
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Reopen the selected help language",label+"-reopen","Back to menu and reopen Help",helpChecks,List.of());
+                WhistTestEvidence.checkpoint(trace,out,"SETUP","Reopen the selected help language",label+"-reopen","Back to menu and reopen Help",helpChecks,List.of());
             }
             ui.back();ui.selectNamedSpinnerOption("interface-language","English");ui.awaitText("New game",Duration.ofSeconds(12));
             for(int value:List.of(5,10,0)){
@@ -50,16 +50,16 @@ class RomanianMenuOptionsE2eTest {
                 if(value==5)ui.selectNamedSpinnerOption("romanian-streak-value","5 points (original)");
                 if(value==0){ui.back();ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.tapDescription("Romanian five-hand streaks (missed series: -5)");}
                 String label="menu-series-"+value;ui.revealText("Start game");ui.capture(label+"-setup");
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"SETUP","Select normal Romanian series profile "+value,label+"-setup","No checkpoint editing or injected cards",checks,List.of());
+                WhistTestEvidence.checkpoint(trace,out,"SETUP","Select normal Romanian series profile "+value,label+"-setup","No checkpoint editing or injected cards",checks,List.of());
                 ui.tapText("Start game");var state=CompleteRomanianExpertE2eTest.stable(adb);checks=new ArrayList<>();
                 RomanianMatchOracle.equal(checks,"Menu option reaches the engine",value!=0,state.path("streakBonuses").asBoolean());
                 RomanianMatchOracle.equal(checks,"Selected positive series points",value==0?10:value,state.path("streakBonusPoints").asInt());
                 RomanianMatchOracle.equal(checks,"Versioned checkpoint",3,state.path("version").asInt());
                 ui.capture(label+"-game");Files.writeString(out.resolve(label+"-state.json"),state.toPrettyString());
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEST BODY","Normal menu option saved in the active game "+value,label+"-game",state.toPrettyString(),checks,List.of());
+                WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Normal menu option saved in the active game "+value,label+"-game",state.toPrettyString(),checks,List.of());
                 adb.run("shell","am","force-stop","ro.whistlab.app").requireSuccess();adb.run("shell","am","start","-W","-n","ro.whistlab.app/.MainActivity").requireSuccess();ui.tapText("Resume game");var resumed=CompleteRomanianExpertE2eTest.stable(adb);
                 checks=new ArrayList<>();RomanianMatchOracle.equal(checks,"Process restart preserves every card, score and rule option",state.toString(),resumed.toString());ui.capture(label+"-resume");
-                CompleteOriginalMatchE2eTest.checkpoint(trace,out,"TEARDOWN","Resume the same selected profile "+value,label+"-resume",resumed.toPrettyString(),checks,List.of());
+                WhistTestEvidence.checkpoint(trace,out,"TEARDOWN","Resume the same selected profile "+value,label+"-resume",resumed.toPrettyString(),checks,List.of());
                 ui.back();ui.awaitText("New game",Duration.ofSeconds(12));
             }
             trace.finish(AtfReportStatus.PASS);

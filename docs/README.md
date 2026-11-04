@@ -39,7 +39,7 @@ ales, iar orice afirmație de acceptanță trebuie legată de versiunea verifica
 | Meniu, masă și scor pe mai multe ecrane | [Verificarea pe profiluri de ecran](WHIST_RESPONSIVE_UI_SANITY.md) |
 | Ce s-a verificat pe versiunea 0.1.5? | [Acceptanța interfeței](WHIST_UI_015_ACCEPTANCE.md) |
 | Testele și oracolele aplicațiilor | [Modulul Android](../atf-test-android/README.md) |
-| Pregătirea unei partide în aplicația originală | [Runnerul originalului](ORIGINAL_ROMANIAN_HARD_LIVE.md) |
+| Observații și teste pentru aplicația-model | [Proiectul separat J5](../../atf_j5/README.md) |
 | Cerințe pentru un raport inteligibil separat de surse | [Contractul dovezilor](ATF_Android_Report_Contract.md) |
 | Ultimul raport acceptat și ultima încercare, pe scop | [README-ul raportării](reporting/README.md) |
 | Publicarea și reluarea offline a unui trace UI | [Handoff UI](WHIST_UI_REPORT_HANDOFF.md) |

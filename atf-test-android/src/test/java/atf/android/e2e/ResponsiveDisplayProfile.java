@@ -52,10 +52,10 @@ record ResponsiveDisplayProfile(int width, int height, int density) {
         try {
             hands = Integer.parseInt(value == null || value.isBlank() ? "2" : value.trim());
         } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("Hands per profile must be 1, 2 or 3", exception);
+            throw new IllegalArgumentException("Hands per profile must be between 1 and 5", exception);
         }
-        if (hands < 1 || hands > 3) {
-            throw new IllegalArgumentException("Hands per profile must be 1, 2 or 3");
+        if (hands < 1 || hands > 5) {
+            throw new IllegalArgumentException("Hands per profile must be between 1 and 5");
         }
         return hands;
     }

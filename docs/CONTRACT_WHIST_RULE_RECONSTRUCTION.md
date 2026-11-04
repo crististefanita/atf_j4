@@ -1,8 +1,10 @@
 # Contract Whist și Whist românesc: contracte de reguli distincte
 
-Actualizat la 2 noiembrie 2026. Sursa normativă a profilului românesc, matricea
+Actualizat la 4 noiembrie 2026. Sursa normativă a profilului românesc, matricea
 RW01–RW07, cazurile exhaustive și evaluarea AI sunt în
 [game-core/README.md](../whist-lab-app/game-core/README.md).
+
+Observarea live a aplicației-model și producerea fixture-urilor sunt deținute de [J5](../../atf_j5/README.md). J4 păstrează doar adaptorul de citire pentru snapshot-uri arhivate și replay-ul care verifică motorul și UI-ul Whist Lab; testele J4 nu pornesc și nu inspectează pachetul original.
 
 ## Diferențele care schimbă testele
 

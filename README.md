@@ -4,9 +4,11 @@ Whist Lab este un joc Android cu motor Java independent de interfață. Proiectu
 include aplicația, jucători automați și instrumentele pentru verificarea regulilor,
 a licitațiilor și a scorului prin teste de componentă și partide complete.
 
-Contract Whist (`com.qsoft.android.whist`) este aplicația de referință studiată.
-Whist Lab (`ro.whistlab.app`) are propriul motor, propriile salvări și propriile
-reguli configurabile; rezultatele unei aplicații nu certifică automat cealaltă.
+J4 deține Whist Lab (ro.whistlab.app): motorul, aplicația, evaluarea offline
+și E2E-urile care acționează UI-ul propriu. Testarea live a aplicației-model
+Contract Whist este separată în [J5](../atf_j5/README.md). Whist Lab folosește
+fixture-uri înregistrate doar pentru replay comparativ; acestea nu pornesc și
+nu inspectează aplicația-model.
 
 ## Jocul
 
@@ -41,10 +43,10 @@ Doar mâinile de 2–8 cărți avansează seria. La o carte, un rezultat de acel
 | `whist-lab-app/algorithm-build` | Build JVM al motorului pentru lucru offline, fără SDK Android. |
 | `whist-lab-app/ai-lab` | Experimente și evaluator independent; nu este inclus în aplicație. |
 | `atf-android` | Adaptor ADB și captură de dovezi Android. |
-| `atf-test-android` | Teste Android, oracole independente și scenarii complete. |
+| `atf-test-android` | Teste componente, oracole și E2E-uri proprii Whist Lab. |
 | `atf-test-kit`, `atf-mock`, `atf-validation`, `atf-console` | Suportul comun al testelor și al execuției. |
 | `atf-tests` | Verificări ale configurației și ale integrării bibliotecilor. |
-| `config`, `scripts` | Colecții, reguli declarative, selecție de partide și comenzi de lucru. |
+| `config`, `scripts` | Colecții, reguli declarative, selecție de partide și runner-ele Whist Lab. |
 | `lib` | Biblioteci binare; versiunile efective sunt în POM, iar proveniența în `library-provenance.json`. |
 
 Aplicația se construiește cu Gradle; infrastructura de testare folosește Maven.

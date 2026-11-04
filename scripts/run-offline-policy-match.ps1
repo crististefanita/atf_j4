@@ -3,7 +3,8 @@ param(
     [string]$EvidenceRoot = 'C:\work\whist_back\offline-mock'
 )
 $ErrorActionPreference = 'Stop'
-$repo = 'C:\work\1\atf_j4\whist-lab-app'
+$projectRoot = 'C:\work\1\atf_j4'
+$repo = Join-Path $projectRoot 'whist-lab-app'
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $run = Join-Path $EvidenceRoot "romanian181-$stamp-seed$Seed"
 if (Test-Path -LiteralPath $run) { throw "Evidence run already exists: $run" }
@@ -22,6 +23,14 @@ try {
     if (!$result.complete -or $result.handsPlayed -ne 24 -or $result.publicCardDecisions -ne 376 -or [int]$xml.testsuite.failures -or [int]$xml.testsuite.errors) {
         throw 'Mock match receipt failed its independent final checks'
     }
+    $allPlays = @($result.hands | ForEach-Object { $_.plays })
+    $hardPlays = @($allPlays | Where-Object { $_.policy -eq 'HARD' })
+    $impossibleHard = @($hardPlays | Where-Object { $_.hardContractImpossible -eq $true })
+    $salvageFallback = @($impossibleHard | Where-Object { $_.decision -like '*publicly unreachable contract*' })
+    $noChoice = @($impossibleHard | Where-Object { $_.legalOptionCount -eq 1 })
+    if ($impossibleHard.Count -ne $result.hardQuotaImpossibleDecisions -or
+        $salvageFallback.Count -ne $result.hardSalvageFallbackDecisions -or
+        $noChoice.Count -ne $result.hardQuotaImpossibleNoChoice) { throw 'Hard objective event counts do not reconcile' }
     $receipt = [ordered]@{
         status = 'PASS'
         kind = 'FOUR_SEAT_ROMANIAN_1_8_1_OFFLINE_MOCK'
@@ -31,15 +40,20 @@ try {
         publicCardDecisions = $result.publicCardDecisions
         roster = $result.policiesBySeat
         finalScores = $result.finalScores
-        hardCertifiedSalvageDecisions = $result.hardSalvageDecisions
+        hardQuotaImpossibleDecisions = $result.hardQuotaImpossibleDecisions
+        hardSalvageFallbackDecisions = $result.hardSalvageFallbackDecisions
+        hardQuotaImpossibleNoChoice = $result.hardQuotaImpossibleNoChoice
+        hardCertifiedSalvageDecisions = $result.hardSalvageCertificateDecisions
         deviceExecuted = $false
-        sourceSha256 = (Get-FileHash -LiteralPath 'game-core/src/main/java/ro/whistlab/core/AiPolicy.java').Hash
-        rulesSha256 = (Get-FileHash -LiteralPath 'config/whist-play-objectives.yaml').Hash
+        sourceSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/AiPolicy.java')).Hash
+        normalPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/NormalPlayPolicy.java')).Hash
+        hardPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java')).Hash
+        rulesSha256 = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'config/whist-play-objectives.yaml')).Hash
         matchSha256 = (Get-FileHash -LiteralPath $match).Hash
         nativeTest = $xmlPath
         report = $match
     }
     $receipt | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $run 'receipt.json') -Encoding utf8
-    Write-Output "PASS $($result.handsPlayed) hands, $($result.publicCardDecisions) card decisions"
+    Write-Output "PASS $($result.handsPlayed) hands, $($result.publicCardDecisions) card decisions, $($result.hardSalvageFallbackDecisions) Hard salvage fallbacks"
     Write-Output $run
 } finally { Pop-Location }
