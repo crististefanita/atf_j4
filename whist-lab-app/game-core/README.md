@@ -101,9 +101,12 @@ directorul extern al execuției. Un rezultat JVM nu reprezintă o execuție Andr
 obiectivele observabile pentru cele două niveluri. Normal conduce cu forță cât timp
 mai are levate de făcut și evită levatele în plus după contract. Hard maximizează
 șansa propriului contract folosind licitațiile și cărțile publice. Când limitele
-publice arată că exactul este imposibil, Hard poate schimba obiectivul numai printr-o
-certificare de joc complet care nu îi reduce punctele și provoacă mai multe ratări
-la adversari. Certificatul actual acoperă finalurile cu două cărți la patru locuri.
+publice arată că exactul este imposibil, Hard păstrează mai întâi punctele proprii
+estimate, apoi maximizează numărul estimat de adversari care ratează. Scorul celui
+mai puternic rival departajează egalitățile. Un certificat complet poate înlocui
+această estimare doar dacă nu reduce punctele proprii în nicio continuare legală și
+provoacă mai multe ratări în fiecare lume public fezabilă. Certificatul actual
+acoperă finalurile cu două cărți la patru locuri.
 
 Rulați o partidă mock completă, deterministă și offline cu:
 

@@ -25,7 +25,7 @@ hard:
     rule_en: "When public bounds prove the contract impossible, prefer only a certified move that preserves own points in every feasible world and causes more opponents to miss."
     certificate_scope: "Four-seat Romanian hands with two cards remaining; all feasible hidden deals and all legal continuations, bounded by the configured search limit."
     tests: ["certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty", "recoverableContractCannotBeSacrificedForRivalDamage"]
-  fallback: "If the exhaustive public certificate is unavailable, retain the contract-first Monte Carlo decision."
+  fallback: "For a publicly unreachable contract without a complete certificate, preserve expected own points, then maximize the rollout-estimated number of opponent contract misses; use the strongest rival score only as a final tie break."
   limitations: ["Salvage certificate currently covers two-card endings only.", "No claim of perfect Hard play or universal perfect play."]
 evolution:
   recompute_after: "Every public bid and every card played."
