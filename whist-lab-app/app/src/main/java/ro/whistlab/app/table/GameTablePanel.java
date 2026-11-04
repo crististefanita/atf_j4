@@ -106,7 +106,7 @@ public final class GameTablePanel extends LinearLayout {
 
         setOrientation(VERTICAL);
         setGravity(Gravity.BOTTOM);
-        setPadding(dp(8), dp(4), dp(8), dp(4));
+        setPadding(dp(8), dp(viewport.outerVerticalPaddingDp()), dp(8), dp(viewport.outerVerticalPaddingDp()));
         setBackgroundColor(Color.TRANSPARENT);
         setClipChildren(false);
         setContentDescription(copy.tableAccessibility(state.players().size()));
@@ -140,7 +140,8 @@ public final class GameTablePanel extends LinearLayout {
         int tableWidthDp = Math.min(availableContentWidthDp(), 760);
         TrickCardMetrics.Layout trickLayout = bidding
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp,
-                        getResources().getConfiguration().fontScale, viewport.playedCardFaceHeightDp());
+                        getResources().getConfiguration().fontScale, viewport.playedCardFaceHeightDp(),
+                        viewport.playedCardItemVerticalPaddingDp());
         int centerWidthDp = bidding
                 ? Math.max(132, Math.min(bidOptions.size(), BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp)) * 52)
                 : TableLayoutMetrics.centerPlayWidthDp(tableWidthDp);
@@ -324,7 +325,8 @@ public final class GameTablePanel extends LinearLayout {
             LinearLayout item = new LinearLayout(context);
             item.setOrientation(VERTICAL);
             item.setGravity(Gravity.CENTER);
-            item.setPadding(0, dp(2), 0, dp(2));
+            int verticalPadding = dp(layout.itemVerticalPaddingDp() / 2);
+            item.setPadding(0, verticalPadding, 0, verticalPadding);
 
             TextView card = text(play.card().shortLabel(), layout.cardFaceTextSizeSp(),
                     play.card().suit().red() ? CARD_RED : CARD_DARK, true);

@@ -17,7 +17,7 @@ final class TrickCardMetrics {
     record Slot(int seat, int row, int leftDp) { }
 
     record Layout(int columns, int rows, int cardWidthDp, int cardHeightDp,
-            int playerLabelHeightDp, int centerWidthDp, int safeCenterWidthDp,
+            int playerLabelHeightDp, int itemVerticalPaddingDp, int centerWidthDp, int safeCenterWidthDp,
             int cellHeightDp, int centerHeightDp, List<Slot> slots) {
         Layout {
             slots = List.copyOf(slots);
@@ -50,6 +50,11 @@ final class TrickCardMetrics {
     }
 
     static Layout forTable(int players, int tableWidthDp, float fontScale, int cardHeightDp) {
+        return forTable(players, tableWidthDp, fontScale, cardHeightDp, ITEM_VERTICAL_PADDING_DP);
+    }
+
+    static Layout forTable(int players, int tableWidthDp, float fontScale, int cardHeightDp,
+            int itemVerticalPaddingDp) {
         if (players < 3 || players > 6) {
             throw new IllegalArgumentException("A trick requires 3–6 players");
         }
@@ -61,6 +66,9 @@ final class TrickCardMetrics {
         }
         if (cardHeightDp < 1 || cardHeightDp > CARD_HEIGHT_DP) {
             throw new IllegalArgumentException("Played-card height must be between 1 and 104 dp");
+        }
+        if (itemVerticalPaddingDp < 0 || itemVerticalPaddingDp > ITEM_VERTICAL_PADDING_DP) {
+            throw new IllegalArgumentException("Played-card row padding must be between 0 and 4 dp");
         }
 
         int safeCenterWidth = TableLayoutMetrics.centerPlayWidthDp(tableWidthDp);
@@ -75,9 +83,9 @@ final class TrickCardMetrics {
 
         int rows = players == 4 ? 3 : 2;
         int labelHeight = (int) Math.ceil(PLAYER_LABEL_HEIGHT_DP * fontScale);
-        int cellHeight = cardHeightDp + labelHeight + ITEM_VERTICAL_PADDING_DP;
+        int cellHeight = cardHeightDp + labelHeight + itemVerticalPaddingDp;
         List<Slot> slots = seatSlots(players, tableWidthDp, safeCenterWidth, cardWidth, rows);
-        return new Layout(3, rows, cardWidth, cardHeightDp, labelHeight,
+        return new Layout(3, rows, cardWidth, cardHeightDp, labelHeight, itemVerticalPaddingDp,
                 tableWidthDp, safeCenterWidth, cellHeight, rows * cellHeight, slots);
     }
 

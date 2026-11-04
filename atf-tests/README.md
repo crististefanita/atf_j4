@@ -2,89 +2,73 @@
 
 ## Pe scurt
 
-Modulul verifică integrarea bibliotecilor comune și pregătește rezultatele testelor Whist pentru publicare.
-Selectează înregistrările de execuție, păstrează comparațiile originale și verifică raportul publicat.
-Biblioteca de raportare se folosește prin API-ul configurat în [POM-ul părinte](../pom.xml).
+Modulul verifică integrarea bibliotecilor comune, guvernanța proiectului și publicarea rezultatelor Whist. Consumatorul selectează înregistrările, păstrează comparațiile originale și confruntă rezultatul publicat cu intrarea capturată.
+
+Biblioteca comună deține prezentarea HTML și se consumă prin API-ul configurat în [POM-ul părinte](../pom.xml). Contractele de publicare, selecțiile de date și acceptanța binară au verificări distincte.
 
 ## Flux și responsabilități
 
 ```mermaid
 flowchart LR
-INPUT[Înregistrări de execuție] -->|alimentează| POLICY[Politică de selecție]
-POLICY -->|păstrează execuții întregi| REPORT[Compunerea datelor]
-REPORT -->|publică prin API| HTML[Raport HTML]
-AUDIT[Verificare independentă] -->|compară cu sursa| HTML
+    INPUT[Invocări capturate] -->|alimentează| POLICY[Politică de selecție]
+    POLICY -->|transmite integral| DATA[Date pentru publicare]
+    DATA -->|publică prin API| HTML[Raport HTML]
+    AUDIT[Audit independent] -->|confruntă cu intrarea| HTML
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legendă: identitatea execuției precede prezentarea</summary>
 
-O înregistrare descrie o invocare a unui test: identitate, parametri, intervale, comparații și verdict.
-Selecția păstrează înregistrările întregi și declară ce a omis.
-Modulul pregătește datele, iar biblioteca comună construiește prezentarea HTML.
+O înregistrare descrie o invocare: identitate, parametri, intervale, comparații și verdict. Selecția păstrează invocări întregi și declară omisiunile; adaptorul pregătește datele, iar biblioteca comună construiește prezentarea.
 
 </details>
 
 ## Organizare
 
-| Sursă | Responsabilitate |
+| Mecanism | Responsabilitate |
 |---|---|
-| [EvidencePolicyYaml](src/main/java/atf/tests/learning/EvidencePolicyYaml.java) | Citirea și validarea politicii de selecție. |
-| [EvidenceSelection](src/main/java/atf/tests/learning/EvidenceSelection.java) | Selectează invocări întregi, păstrează toate rezultatele diferite de PASS și publică inventarul omisiunilor. |
-| [LearningRunReport](src/main/java/atf/tests/learning/LearningRunReport.java) | Verifică integritatea înregistrărilor și compune datele publicării, cu comparațiile originale. |
-| [GameReportConfiguration](src/main/java/atf/tests/reporting/GameReportConfiguration.java) | Configurație imutabilă pe publicare. |
-| [GameReportSession](src/main/java/atf/tests/reporting/GameReportSession.java) | Organizează fazele și izolează contextul fiecărei publicări. |
-| [GameEvidenceBodies](src/main/java/atf/tests/reporting/GameEvidenceBodies.java) | Corpuri complete sau părți TEXT ordonate; refuzul unei intrări indivizibile care depășește bugetul. |
-| [LearningReportHtmlAudit](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Verificarea identității punctelor de control, rândurilor și valorilor publicate. |
+| [Selecția](src/main/java/atf/tests/learning/EvidenceSelection.java) | Păstrează rezultatele diferite de PASS, colecțiile obligatorii, gărzile populației și exemplele selectate determinist. |
+| [Compoziția](src/main/java/atf/tests/learning/LearningRunReport.java) | Verifică înregistrările și transmite comparațiile originale. |
+| [Sesiunea publicării](src/main/java/atf/tests/reporting/GameReportSession.java) | Izolează configurația, contextul și fazele unei publicări. |
+| [Auditul HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confruntă identitățile, rândurile, valorile și scopul publicat cu datele sursă. |
 
-Politica efectivă și sensul modurilor de prezentare sunt în
-[contractul de prezentare](../docs/reporting/ATF_Presentation.md). Componentele
-reutilizabile sunt în `src/main/java`; intrările JUnit sunt în `src/test/java`.
+[Politica prezentării](../docs/reporting/ATF_Presentation.md) deține regulile de volum și navigare. Codul reutilizabil este în `src/main/java`; intrările JUnit și probele negative sunt în `src/test/java`.
 
 ## Contracte importante
 
-- Fiecare invocare selectată păstrează verdictul original, cauza eșecului și toate comparațiile obligatorii.
-- Limitarea contextului opțional păstrează valorile așteptate, valorile observate și verdictul PASS/FAIL.
-- Selecția publică inventarul complet și identifică invocările omise din prezentarea individuală.
-- Testele de componente, partidele simulate, reluarea unei arhive și un scenariu Android nou au scopuri distincte.
-- Republicarea folosește datele capturate anterior; imaginile istorice ori sintetice sunt etichetate explicit.
+- Fiecare invocare selectată păstrează verdictul, cauza și comparațiile obligatorii.
+- Inventarul omisiunilor arată ce a fost executat și ce nu este prezentat individual în HTML.
+- Bugetul contextului opțional păstrează valorile așteptate, observate și verdictul; [GameEvidenceBodies](src/main/java/atf/tests/reporting/GameEvidenceBodies.java) refuză intrările indivizibile prea mari.
+- Republicarea consumă date capturate și păstrează identitatea execuției originale; imaginile istorice ori sintetice au etichetă explicită.
 
 ## Verificare focalizată
 
-Rulați într-o copie proprie din `%TEMP%`, cu POM-ul părinte, modulele necesare,
-configurația și perechile fizice JAR/POM din `lib`:
+Dintr-o copie temporară proprie, cu POM-ul părinte, modulele necesare, perechile fizice JAR/POM și un depozit Maven propriu:
 
 ```powershell
-mvn -B -pl atf-tests -am "-Dtest=GameReportComponentSuite,LearningRunReportContractTest,EvidenceSelectionContractTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
+mvn -B -pl atf-tests -am '-Dtest=GameReportComponentSuite,LearningRunReportContractTest,EvidenceSelectionContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-Selecțiile din surse au responsabilități distincte:
+Alegeți verificarea după contractul schimbat:
 
-- `GameReportComponentSuite`: politică, corpuri JSON/TEXT, redactare și publicare.
-- `LearningRunReportContractTest`: proprietatea rândurilor, valori lungi,
-  fragmente, timpi și respingerea unor mutații deliberate ale dovezii.
-- `EvidenceSelectionContractTest`: populație, praguri, selecție completă și
-  intrări incomplete.
-- `CoreReportingConsumerContractTest` și `AndroidInlineScreenshotReportContractTest`:
-  contractele binarelor și ale adaptorului PNG.
+| Scop | Intrare JUnit |
+|---|---|
+| Politică, corpuri JSON/TEXT, redactare și publicare | [GameReportComponentSuite](src/test/java/atf/tests/reporting/GameReportComponentSuite.java). |
+| Proprietatea valorilor și mutații deliberate ale datelor publicate | [LearningRunReportContractTest](src/test/java/atf/tests/learning/LearningRunReportContractTest.java). |
+| Populație, praguri și selecție | [EvidenceSelectionContractTest](src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java). |
+| Binare și compoziția modulelor | [CoreReportingConsumerContractTest](src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java). |
+| Capturi PNG prin API | [AndroidInlineScreenshotReportContractTest](src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java). |
 
-[LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java)
-consumă o selecție capturată explicit. `DeepSuiteExtentReportTest` este o intrare
-agregată cu activare explicită. Pentru o modificare punctuală se aleg contractele afectate.
-
-Contractele curente se consultă din [indexul documentației](../docs/). Datele execuțiilor rămân în arhiva externă.
+[LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java) publică o selecție explicită prin activarea sa dedicată. [DeepSuiteExtentReportTest](src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java) compune o publicare agregată, cu precondiții și activare separate.
 
 ## Intervalele Android la republicare
 
-[Contractul măsurării timpilor Android](../docs/reporting/ATF_PhaseTiming.md) se aplică și jurnalelor agregate. `GameReportComponentSuite` respinge intervalele originale lipsă sau atribuite altei acțiuni, în ambele variante de publicare.
+[Contractul măsurării timpilor](../docs/reporting/ATF_PhaseTiming.md) păstrează intervalele originale și asocierea lor cu acțiunile. Verificarea acestui contract pe jurnale capturate are un scop distinct de executarea unor interacțiuni Android noi.
 
 ## Niveluri și guvernanță
 
-| Nivel | Responsabilitate |
-|---|---|
-| Componentă | Politica selecției, adaptoare și contracte de publicare; verificarea surselor și documentației. |
-| Integrare | Perechile fizice JAR/POM, configurația și compoziția modulelor. |
+Componentele verifică selecția, adaptoarele și publicarea; integrarea verifică binarele fizice, configurația și compoziția modulelor. [Matricea nivelurilor](../docs/testing/ATF_Architecture.md) este confruntată cu declarațiile testelor.
 
-[Arhitectura testării](../docs/testing/ATF_Architecture.md) definește matricea comună. [Suita de calitate](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) verifică pachetele, importurile, limitele modulelor, nivelurile și documentația.
+[Suita de calitate](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) verifică sursele, documentația și contractele bibliotecilor. [Lansatorul guvernanței](../scripts/run-atf-governance.ps1) pregătește copia temporară și depozitul Maven propriu, păstrează rezultatele extern și detectează schimbările sursei pe durata verificării.
 
-Lansatorul [run-atf-governance.ps1](../scripts/run-atf-governance.ps1) construiește o copie temporară și păstrează rezultatele în afara proiectului. [Ghidul guvernanței](../docs/governance/README.md) precizează perimetrul, excepțiile și limitele verificării.
+[Guvernanță](../docs/governance/README.md) · [Arhitectura publicării](../docs/reporting/README.md) · [Indexul documentației](../docs/README.md)

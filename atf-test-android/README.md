@@ -2,82 +2,69 @@
 
 ## Pe scurt
 
-Modulul reunește adaptorul ADB, captura și temporizarea Android, audituri reutilizabile și scenariile Whist Lab.
-Componentele fără dispozitiv și fluxurile E2E au selecții explicite și păstrează limita dintre acțiune,
-observație și verificarea independentă.
+Modulul reunește adaptorul ADB, captura și temporizarea Android, audituri reutilizabile și scenariile Whist Lab. Componentele locale și fluxurile pe dispozitiv au selecții explicite; fiecare verificare distinge comanda, observația și comparația independentă.
+
+Infrastructura deține execuția și captura, iar scenariul deține sensul acțiunii și rezultatul așteptat. Construirea APK-ului, instalarea și acceptanța interacțiunii au contracte separate.
 
 ## Flux și responsabilități
 
 ```mermaid
 flowchart LR
-    SCENARIO[Scenariu] -->|trimite acțiuni| DRIVER[AndroidUiDriver]
+    SCENARIO[Scenariu] -->|trimite| DRIVER[Adaptor UI]
     DRIVER -->|execută prin| ADB[AdbClient]
-    DRIVER -->|capturează| TRACE[Punct de control și timp]
+    DRIVER -->|capturează| TRACE[Observație și timp]
     ORACLE[Oracol independent] -->|compară| TRACE
     TRACE -->|alimentează| PUBLISH[Publicare consumator]
 ```
 
 <details>
-<summary>Legendă: infrastructură și domeniu în același modul</summary>
+<summary>Legendă: infrastructură și domeniu</summary>
 
-Adaptorul execută comenzi delimitate și păstrează rezultatul original. Adaptorul de interacțiune interpretează interfața, iar oracolul verifică regulile; biblioteca comună primește datele de intrare tipizate pentru publicare.
+Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpretează starea observată, iar oracolul verifică proprietatea scenariului; biblioteca comună primește datele tipizate ale publicării.
 
 </details>
 
 ## Organizarea surselor
 
-| Zonă | Responsabilitate |
+| Zonă | Contract |
 |---|---|
-| [AdbClient](src/main/java/atf/android/AdbClient.java) | Identificator de dispozitiv explicit, durată maximă și rezultate text sau binare. |
-| [AndroidScreenshotEvidence](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) | PNG-ul original transmis prin API-ul public al raportării. |
-| [Temporizare](src/main/java/atf/android/evidence/timing/) | Ceas monoton, intervale, codec și proiecție, fără interpretarea regulilor jocului. |
-| [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Validări pure și indexare externă reutilizabilă. |
-| [Contracte de infrastructură](src/test/java/atf/android/) | ADB, captură și temporizare, verificate fără emulator. |
-| [Scenarii și oracole](src/test/java/atf/android/e2e/) | Navigare, extragerea stării și comparații independente ale jocului. |
-| [Suport de flux](src/test/java/atf/android/e2e/support/) | Puncte de control, jurnal parțial și contractele publicării individuale sau agregate. |
+| [AdbClient](src/main/java/atf/android/AdbClient.java) | Dispozitiv explicit, durată maximă, ieșiri text sau binare. |
+| [Captură](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) și [temporizare](src/main/java/atf/android/evidence/timing/) | PNG original, ceas monoton, intervale și serializare. |
+| [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Verificări pure și publicarea indexului extern. |
+| [Scenarii și oracole](src/test/java/atf/android/e2e/) | Navigare, extragerea stării, actori și comparații ale jocului. |
+| [Suportul de flux](src/test/java/atf/android/e2e/support/) | Puncte de control, jurnal parțial și publicare individuală sau agregată. |
 
-Codul reutilizabil se află în sursele principale ale acestui modul, cu pachetele atf.android păstrate. Sursele game-core și ai-lab sunt adăugate numai la calea de clase a testelor care le folosesc.
+[POM-ul](pom.xml) adaugă sursele motorului și ale jucătorului independent numai în setul de surse de test. Profilul `responsive-sanity` folosește selecția restrânsă declarată în POM; configurația normală rămâne intrarea pentru setul complet de componente.
 
 ## Contracte de execuție
 
-- Un identificator de dispozitiv explicit și o durată maximă delimitează fiecare comandă ADB.
-- Rezultatul trimiterii comenzii și tranziția semantică observată au verdicte distincte.
+- Fiecare comandă are dispozitiv identificat și durată maximă; succesul transportului și tranziția semantică au verdicte distincte.
 - PNG-ul integral și ierarhia aparțin aceluiași punct de control verificat.
-- Dreptunghiurile UIAutomator sunt logice; aserțiunile de pixeli le mapează la rasterul PNG fizic înainte de comparație.
-- Ceasul fazei pornește înainte de prima acțiune și păstrează intervalele parțiale la eșec.
-- Execuția, captura, persistența jurnalului și publicarea sunt axe temporale separate.
-- Rapoartele și indexurile generate se scriu în depozitul extern; arborele de surse și copia temporară sunt refuzate ca destinații de indexare.
+- Dreptunghiurile logice UIAutomator sunt mapate la rasterul fizic înaintea comparațiilor de pixeli.
+- Ceasul fazei pornește înaintea primei acțiuni și păstrează intervalele parțiale la eșec.
+- Execuția, captura, jurnalul și publicarea păstrează axe temporale distincte.
+- Indexurile și rezultatele se scriu extern; [contractul publicării](../docs/reporting/ATF_Handoff.md) definește identitatea și acceptarea lor.
 
 ## Verificare fără dispozitiv
 
-Dintr-o copie temporară proprie de lucru, cu POM-ul părinte și bibliotecile configurate:
+Dintr-o copie temporară proprie, cu POM-ul părinte, bibliotecile și un depozit Maven propriu:
 
 ```powershell
-mvn -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
+mvn -B -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
 ```
 
-Profilul `responsive-sanity` compilează numai suportul și testele necesare pe ecrane diferite.
-
-- Matricea standard verifică meniul, atuul, cartea jucată, mâna de 13 cărți și cele nouă opțiuni de licitare pe fiecare profil.
-- `-IncludeGameFlow` activează opțional un singur flux pe primul profil.
-- Setul complet de componente folosește configurația normală a modulului.
+[AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) verifică ADB controlat și capturi. [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) verifică temporizarea fluxului prin componente; aceste selecții sunt distincte de activarea scenariilor E2E.
 
 ## Fluxuri Android
 
-Scenariile pe dispozitiv se activează explicit, cu identificator de dispozitiv și rezervare exclusivă.
+[Ghidul Android](../docs/testing/ATF_Android.md) definește dispozitivul, rezervarea exclusivă, activarea și starea inițială. [Matricea de ecrane](../docs/testing/ATF_Display.md) deține profilurile, distribuțiile controlate și fluxul de joc opțional; [verificarea jocului](../docs/testing/ATF_Gameplay.md) deține regulile și scorul.
 
-- Lansatorul verifică precondițiile și profilurile de ecran înainte de acces.
-- Matricea vizuală verifică locurile și derulează până când cartea, locul activ și cărțile jucabile legal pot fi verificate pe ecranele compacte.
-- Construirea APK-ului și acceptanța instalării au contracte separate.
-
-[Verificarea jocului](../docs/testing/ATF_Gameplay.md) · [Testarea Android](../docs/testing/ATF_Android.md) · [Temporizare](../docs/reporting/ATF_PhaseTiming.md) · [Publicare](../docs/reporting/ATF_Android.md)
+Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea în PNG și interacțiunea observată. Scenariile de pe ecrane compacte aduc regiunea necesară în zona vizibilă înaintea comparației.
 
 ## Niveluri de testare
 
-| Nivel | Contract |
-|---|---|
-| Unitar | Ceasul monoton și serializarea intervalelor. |
-| Componentă | ADB controlat, capturi, oracole, geometrie și publicare fără dispozitiv. |
-| E2E | Interacțiuni noi în aplicația instalată, cu rezervarea dispozitivului. |
+- **Unitar:** ceasul monoton și serializarea intervalelor.
+- **Componentă:** ADB controlat, capturi, oracole, geometrie și publicare.
+- **E2E:** acțiuni noi în aplicația identificată și instalată, sub rezervarea dispozitivului.
 
-[Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Un jurnal reluat nu reprezintă o nouă execuție Android.
+[Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.

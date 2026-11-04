@@ -1,29 +1,48 @@
-# Cercetarea modelelor de informație publică
+# Cercetarea deciziilor din informație publică
 
 ## Pe scurt
 
-Această zonă descrie experimente cu activare explicită privind interpretarea licitațiilor și a cărților jucate. Existența unui experiment sau a unui caz de componentă nu activează modelul în aplicație.
+Această zonă explică cercetarea continuărilor de joc și a licitării din observația permisă actorului. Implementările și componentele sunt în sursele de test ale motorului; acest director este punctul lor de orientare și nu adaugă cod în aplicație.
 
-## Separarea ipotezelor
+Proprietatea urmărită este coerența informației: o alegere disponibilă în aceeași observație se evaluează consecvent în lumile ipotetice compatibile. Un rezultat local al modelului necesită separat calificarea politicii pe distribuții noi.
+
+## De la observație la evaluare
 
 ```mermaid
 flowchart LR
-PUBLIC[Prefix public] -->|restrânge legal| FEASIBLE[Lumi fezabile]
-PUBLIC -->|sugerează| LIKELIHOOD[Ipoteză de comportament]
-FEASIBLE -->|limitează| PLAN[Politică de continuare]
-LIKELIHOOD -->|ponderează experimental| PLAN
-PLAN -->|necesită| EVAL[Evaluare separată]
+    PUBLIC[Observație permisă] -->|restrânge| WORLDS[Lumi compatibile]
+    PUBLIC -->|delimitează| ACTION[Acțiune comună]
+    ACTION -->|se evaluează în| WORLDS
+    WORLDS -->|agregă| VALUE[Estimare declarată]
+    VALUE -->|informează| REVIEW[Calificarea politicii]
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legendă: aceeași informație, aceeași alegere disponibilă</summary>
 
-Constrângerile din regulile jocului sunt certe; intenția estimată a unui adversar rămâne dependentă de model. Lumile complete folosite de oracol nu devin informație privată disponibilă politicii.
+Mâna proprie, licitațiile și istoricul public delimitează observația. O lume ipotetică ajută calculul consecințelor; alegerea unei alte acțiuni după consultarea fiecărei lumi ar folosi informație indisponibilă actorului. Ponderarea lumilor și utilitatea comparată trebuie declarate separat.
 
 </details>
 
-Regresiile cu activare explicită verifică ipoteze mici și limitele lor. Comparațiile între politici folosesc surse înghețate, iar un lot rezervat deja deschis rămâne consumat în registrul extern.
+## Componente și limite
 
-[Sarcina Gradle de cercetare](../../../game-core/build.gradle) selectează componentele explicite; directorul acesta este un punct de orientare, fără surse proprii pentru execuția aplicației.
+| Proprietate cercetată | Sursa verificării |
+|---|---|
+| Continuări coerente, legalitate și păstrarea intrărilor | [PublicTailInformationTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java). |
+| Agregarea aceleiași deschideri, obiective pe rol și refuzul lipsei de mostre | [OpeningBidEvidenceTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java). |
 
-[Arhitectura învățării](../../../../docs/ai/README.md) definește fluxul de la ipoteză la promovare.
+Testele construiesc domenii finite și așteptări explicite. Ele verifică mecanismul modelului cercetat; probabilitățile unor exemple construite nu estimează automat distribuția reală a cărților adverse.
+
+## Verificare cu activare explicită
+
+Din rădăcina proiectului, cu Java și dependențele Gradle disponibile local:
+
+```powershell
+.\scripts\run-whist-collection.ps1 -Collection research
+```
+
+[Catalogul](../../../../config/test-collections.json) și [configurația Gradle](../../../game-core/build.gradle) definesc populația efectivă a colecției. Aceasta include și alte ipoteze de cercetare; testele menționate sunt excluse din sarcina implicită `test`.
+
+Lansatorul pregătește copia temporară și păstrează rezultatele extern. Pentru o schimbare a politicii, [protocolul de învățare](../../../../docs/learning/README.md) cere surse înghețate, criterii declarate și un lot rezervat nefolosit la ajustare.
+
+[Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md) · [Componente și oracole](../../../../docs/testing/ATF_AiComponents.md)

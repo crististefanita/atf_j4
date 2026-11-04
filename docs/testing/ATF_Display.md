@@ -51,10 +51,10 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 - Fiecare acțiune este confruntată cu starea observată după ea.
 - Reluarea păstrează registrul scorului și informația cunoscută.
 - Captura păstrează ecranul fizic original; rezoluția logică cerută se verifică separat.
-- La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Fața din mână are 98 dp; fața jucată are 96 dp sub 600 dp înălțime logică și 104 dp pe ferestre mai înalte.
+- La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Fața din mână are 98 dp; fața jucată are 94 dp sub 600 dp înălțime logică și 104 dp pe ferestre mai înalte. Rândul levatei păstrează eticheta, cu 2 dp spațiu vertical compact și 4 dp normal.
 - Zona licitației ocupă banda liberă dintre locurile de sus și cel al omului. Dacă geometria oferă spațiu suplimentar, centrul se deplasează 62% din surplus către jucător; verificarea raportează și compară distanțele față de locurile adverse și cel uman. Țintele tactile rămân de minimum 48 dp.
 - Rama atuului folosește aceeași fabrică de fundal și contur ca locul activ. E2E compară umplerea raster și verifică lizibilitatea titlului, simbolului și stării.
-- Fixture-ul cu 13 cărți cere 13 fețe întregi de 98 dp; cartea jucată are un prag responsive separat de 96/104 dp. Ramele compacte recuperează numai spațiu decorativ, fără să micșoreze textul sau țintele tactile.
+- Fixture-ul cu 13 cărți cere 13 fețe întregi de 98 dp și titlul jocului în același viewport inițial, fără derulare verticală. Cartea jucată are un prag responsive separat de 94/104 dp. Profilul compact recuperează spațiu prin marginile mesei, padding-ul ramelor și distanța rândurilor, fără să micșoreze mâna, textul sau țintele tactile.
 - Pe ferestrele care cer derulare, verificarea stilului și verificarea cărții vizibile complet folosesc puncte de control distincte. Testul de intersecții folosește dreptunghiurile reale ale cadrelor accesibile.
 - La jocul normal, scenariul derulează până când observă întâi controlul turei și apoi o carte legală clicabilă; acțiunea rămâne verificată în viewport-ul efectiv.
 - Simularea unei rezoluții logice nu dovedește proprietățile unui panou fizic de aceeași dimensiune.

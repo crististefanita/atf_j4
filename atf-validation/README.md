@@ -2,66 +2,75 @@
 
 ## Pe scurt
 
-Modulul evaluează contracte de răspuns și produce comparații și decizii independente de prezentare. Transportul și regulile jocului au proprietari separați.
+Modulul evaluează contracte de răspuns și produce comparații și decizii independente de prezentare. Transportul furnizează răspunsul; regulile stabilesc așteptările, iar politica rezultatului interpretează comparațiile evaluate.
+
+Valorile integrale decid verdictul. Proiecția pentru publicare și limitarea previzualizării au loc după evaluare, cu păstrarea cauzei și a valorilor comparate.
 
 ## Responsabilități
 
 ```mermaid
 flowchart LR
-BODY[Răspuns API] -->|parsează o dată| CONTEXT[Context validare]
-RULES[Contract] -->|declară reguli| EVAL[Evaluator]
-CONTEXT -->|furnizează valori| EVAL
-EVAL -->|produce| RESULT[Comparații și verdict]
+    BODY[Răspuns API] -->|alimentează| CONTEXT[Context evaluare]
+    RULES[Contract] -->|declară reguli| EVAL[Evaluator]
+    CONTEXT -->|furnizează valori| EVAL
+    EVAL -->|produce| RESULT[Comparații și verdict]
 ```
 
 <details>
-<summary>Legendă: evaluare și prezentare</summary>
+<summary>Legendă: context local și evaluare unică</summary>
 
-Evaluatorul stabilește rezultatul din valorile integrale. Publicarea primește comparațiile evaluate și nu repetă evaluarea după trunchierea previzualizării.
+[ContractEvaluation](src/main/java/atf/validation/contract/ContractEvaluation.java) parsează corpul JSON la prima regulă care îl cere și reutilizează documentul numai în evaluarea curentă. Regulile de antet pot funcționa separat; publicarea consumă rezultatul capturat, fără a repeta evaluarea după scurtarea textului.
 
 </details>
 
 ## Contractele JSON
 
+- Calea invalidă, absența și valoarea prezentă sunt distincte; `null` explicit este prezent.
+- Căile simple și JSON Pointer au un subset explicit; selecțiile generale, filtrele și căutarea recursivă sunt refuzate.
+- Schema este verificată preliminar, inclusiv în ramuri neatinse de instanță; cuvintele-cheie necunoscute sunt refuzate.
+- Politica strictă produce eșec, iar politica de avertizare păstrează comparațiile negative și statutul `WARNING`.
+
+<details>
+<summary>Subsetul schemei și sursele contractului</summary>
+
 | Suprafață | Semnificație |
 |---|---|
-| Prezență | Calea invalidă, absența și valoarea prezentă sunt distincte; `null` explicit este prezent. |
-| Căi | Proprietăți și indici, formă simplă și JSON Pointer cu secvențe de evitare valide; selecțiile generale, filtrele și căutarea recursivă sunt refuzate. |
-| Egalitate scalară | Obiectele și tablourile nu devin șir gol; regulile scalare refuză containerele. |
-| Schemă | Validare preliminară independentă de instanță, inclusiv pentru ramuri neatinse; schemă obiect sau boolean. |
-| Tipuri și valori | `type`, `enum` și comparații numerice exacte; `integer` acceptă valoarea numerică integrală. |
+| Schemă | Obiect sau boolean; prevalidare independentă de instanță. |
+| Tipuri și valori | `type`, `enum`, egalitate de valori și comparații numerice exacte; `integer` acceptă o valoare numerică integrală. |
 | Obiecte | `required`, `properties` și `additionalProperties` boolean sau schemă. |
 | Tablouri | `items` boolean sau schemă, `minItems` și `maxItems`. |
 | Șiruri | Limite în puncte de cod Unicode și expresii regulate Java valide. |
 | Numere | `minimum` și `maximum` incluzive, prin `BigDecimal`. |
-| Metadate | `$schema` acceptă numai identificatorul draft 2020-12; celelalte metadate acceptate sunt adnotări. |
-| Forme nesuportate | Orice cuvânt-cheie necunoscut ori formă invalidă este refuzată, inclusiv `const`, `$ref` și `format`. |
+| Metadate | `$schema` acceptă identificatorul draft 2020-12; celelalte metadate permise sunt adnotări. |
+| Refuzuri | Cuvinte-cheie și forme nesuportate, inclusiv `const`, `$ref` și `format`. |
 
-URI-ul acceptat este `https://json-schema.org/draft/2020-12/schema`. Modulul implementează un subset explicit; validarea unei ramuri nu legitimează ignorarea unui cuvânt-cheie refuzat în altă ramură.
+[JsonSchemaCapabilities](src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) definește vocabularul și formele acceptate, iar [JsonSchemaValidator](src/main/java/atf/validation/contract/JsonSchemaValidator.java) evaluează instanța. URI-ul acceptat este `https://json-schema.org/draft/2020-12/schema`; modulul implementează subsetul declarat, cu refuz explicit în afara lui.
 
-Politica strictă produce eșec, iar politica de avertizare păstrează rândurile negative și statutul `WARNING`. Valorile integrale decid rezultatul, cu previzualizarea implicită limitată la 240 de caractere.
+[JsonPathSupport](src/main/java/atf/validation/contract/JsonPathSupport.java) deține rezolvarea căilor. Regulile scalare refuză obiectele și tablourile ca valori scalare, în loc să le transforme într-un șir gol.
+
+</details>
 
 ## Tipul conținutului și parserul comun
 
-`contentTypeJson()` delegă clasificarea tipului concret către `MediaTypes.isJson` din Core. Parametrii antetului nu pot transforma `text/plain` în JSON; subtipurile concrete JSON și cele cu sufix `+json` respectă vocabularul comun.
+`contentTypeJson()` delegă clasificarea tipului concret către `MediaTypes.isJson` din Core. Clasificarea antetului și validitatea sintactică a corpului se verifică separat.
 
-- Clasificarea ignoră diferențele de majuscule ale tipului și subtipului.
-- Tipul absent, selecțiile generale și listele de tipuri sunt refuzate.
+- Tipul și subtipul ignoră diferențele de majuscule, iar subtipurile cu sufix `+json` folosesc vocabularul comun.
+- Tipul absent, selecțiile generale și listele de tipuri sunt refuzate; parametrii nu transformă `text/plain` în JSON.
 - `contentTypeContains` păstrează comparația literală de compatibilitate.
-- Sintaxa corpului este verificată separat de clasificarea antetului.
-- Documentele complete folosesc `JsonDocuments` din Core, fără chei duplicate sau conținut ulterior rădăcinii.
+- [JsonDocument](src/main/java/atf/validation/contract/json/JsonDocument.java) folosește parserul complet din Core, cu refuzul cheilor duplicate și al conținutului ulterior rădăcinii.
 
 ## Niveluri și verificare
 
-| Nivel | Contract |
-|---|---|
-| Unitar | Prezență, scalari, scheme, politici și proiecția comparațiilor. |
-| Componentă | Contractele evaluării AI și colaborarea regulilor prin API-ul public. |
-
-[Arhitectura testării](../docs/testing/ATF_Architecture.md) definește matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
+Dintr-o copie temporară proprie, cu POM-ul părinte, bibliotecile și un depozit Maven propriu:
 
 ```powershell
 mvn -B -pl atf-validation -am test
 ```
 
-[Prezența](src/test/java/atf/validation/JsonPresenceContractTest.java), [schema](src/test/java/atf/validation/JsonSchemaContractTest.java) și [tipurile JSON](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java) au contracte distincte. [POM-ul](pom.xml) definește dependențele.
+| Contract | Verificare |
+|---|---|
+| Prezență și scalar | [JsonPresenceContractTest](src/test/java/atf/validation/JsonPresenceContractTest.java). |
+| Subsetul schemei și refuzuri | [JsonSchemaContractTest](src/test/java/atf/validation/JsonSchemaContractTest.java). |
+| Clasificarea antetului | [JsonMediaTypeContractTest](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java). |
+
+[Arhitectura testării](../docs/testing/ATF_Architecture.md) separă regulile unitare de componentele evaluării AI și de colaborarea prin API-ul public. [POM-ul](pom.xml) definește dependențele și limita modulului.

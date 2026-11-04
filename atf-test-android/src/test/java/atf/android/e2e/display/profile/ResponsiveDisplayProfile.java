@@ -69,6 +69,10 @@ public record ResponsiveDisplayProfile(int width, int height, int density) {
     }
 
     public int playedCardFaceHeightDp() {
-        return logicalHeightDp() < 600 ? 96 : 104;
+        return logicalHeightDp() < 600 ? 94 : 104;
+    }
+
+    public int playedCardLabelAndPaddingDp() {
+        return logicalHeightDp() < 600 ? 16 : 18;
     }
 }

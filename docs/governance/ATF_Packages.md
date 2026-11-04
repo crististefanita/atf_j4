@@ -33,8 +33,24 @@ Motorul păstrează starea și validează orice acțiune. Politica este apelată
 | `core.ai.engine` | Estimarea Hard, continuări, finaluri și certificate asupra observației permise. |
 | `core.ai.forecast` | Estimarea contractelor și a seriilor viitoare. |
 | `core.ai.profile` | Alternative explicite de obiectiv pentru comparații controlate. |
+| `core.ai.simulation` | Distribuții ipotetice și continuări ale jocului, separate de alegerea obiectivului și a acțiunii. |
 
 Prefixul complet al motorului este `ro.whistlab`. Implementarea aplicației consumă aceste contracte fără dependență de codul testelor sau al jucătorului independent.
+
+## Clase de intrare și mecanisme interne
+
+O clasă de intrare păstrează contractul folosit de consumatori și deleagă mecanismele care au propriile invariante. Separarea urmărește starea deținută și direcția dependențelor; numărul de linii, singur, nu justifică o clasă nouă.
+
+| Clasă de intrare | Mecanisme delimitate | Invariantă |
+|---|---|---|
+| `GameSession` | `CheckpointValidation` verifică structura, ordinea, conservarea cărților și istoricul levatelor; `CheckpointScores` verifică și restaurează istoricul scorului. | Restaurarea validează datele înainte ca sesiunea să fie returnată; datele invalide nu sunt reparate tacit. Compatibilitatea salvărilor vechi păstrează numai informația cunoscută. |
+| `MonteCarloAi` | `PossibleDeals` construiește lumi fezabile; `RolloutPolicy` continuă o lume ipotetică. | Bugetele, ordinea cărților și fluxul aleator determinist aparțin contractului de reproductibilitate. Politica de selecție rămâne distinctă de simulare. |
+| `IndependentPlayer` | `IndependentDeals` deține bazinul cărților necunoscute, culorile epuizate, distribuirea fezabilă și enumerarea completă limitată. | Implementarea rămâne independentă de motor; reutilizarea nu transmite mâinile reale adverse și nu unește algoritmii celor doi jucători. |
+| `AndroidUiDriver` | `UiHierarchy` parsează și selectează elemente; `ScreenshotAnalysis` măsoară capturi și transformă coordonate. | Parserul și măsurătorile nu emit comenzi ADB. Driverul deține interacțiunile, încercările repetate și trasarea acțiunilor. |
+
+Operațiile publice ale claselor de intrare pot rămâne delegări subțiri pentru stabilitatea consumatorilor. Duplicările se elimină în mecanismul care deține regula: bazinul de cărți al jucătorului independent, selecția butoanelor numerice și parsarea coordonatelor au fiecare o singură implementare în perimetrul lor.
+
+La o extracție verificăm separat mutarea mecanică a logicii, observația permisă și regresiile comportamentale. Politicile istorice înghețate rămân repere independente; documentația și controalele nu sunt relaxate pentru a accepta noua structură.
 
 ## Teste și învățare
 

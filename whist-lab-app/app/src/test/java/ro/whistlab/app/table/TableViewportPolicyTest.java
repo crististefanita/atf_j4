@@ -14,15 +14,20 @@ public class TableViewportPolicyTest {
         assertFalse(compact.showPlayHint());
         assertEquals(28, compact.handClearanceDp(false));
         assertEquals(12, compact.handClearanceDp(true));
-        assertEquals(2, compact.seatVerticalPaddingDp());
+        assertEquals(1, compact.seatVerticalPaddingDp());
+        assertEquals(2, compact.outerVerticalPaddingDp());
         assertEquals(1, compact.turnBadgeVerticalPaddingDp());
         assertEquals(14, compact.turnBadgeSlotHeightDp());
-        assertEquals(96, compact.playedCardFaceHeightDp());
+        assertEquals(94, compact.playedCardFaceHeightDp());
+        assertEquals(2, compact.playedCardItemVerticalPaddingDp());
         assertEquals(98, HandLayoutMetrics.cardHeightDp());
         assertEquals(48, BidGridMetrics.CHOICE_TARGET_DP);
         var roomy = new TableViewportPolicy(700);
         assertTrue(roomy.showPlayHint());
+        assertEquals(4, roomy.seatVerticalPaddingDp());
+        assertEquals(4, roomy.outerVerticalPaddingDp());
         assertEquals(104, roomy.playedCardFaceHeightDp());
+        assertEquals(TrickCardMetrics.ITEM_VERTICAL_PADDING_DP, roomy.playedCardItemVerticalPaddingDp());
     }
 
     @Test public void bidZoneUsesTheLowerPartOfTheAvailableSafeBand() {

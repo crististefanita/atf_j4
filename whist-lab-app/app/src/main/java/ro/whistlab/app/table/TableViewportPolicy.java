@@ -10,8 +10,12 @@ final class TableViewportPolicy {
     int minimumBoardHeightDp() { return compact ? 0 : 320; }
     boolean showPlayHint() { return !compact; }
     int handClearanceDp(boolean bidding) { return compact && bidding ? 12 : HandLayoutMetrics.LIFT_CLEARANCE_DP; }
-    int seatVerticalPaddingDp() { return compact ? 2 : 4; }
+    int seatVerticalPaddingDp() { return compact ? 1 : 4; }
+    int outerVerticalPaddingDp() { return compact ? 2 : 4; }
     int turnBadgeVerticalPaddingDp() { return compact ? 1 : 2; }
     int turnBadgeSlotHeightDp() { return compact ? 14 : 16; }
-    int playedCardFaceHeightDp() { return compact ? 96 : TrickCardMetrics.CARD_HEIGHT_DP; }
+    int playedCardFaceHeightDp() { return compact ? 94 : TrickCardMetrics.CARD_HEIGHT_DP; }
+    int playedCardItemVerticalPaddingDp() {
+        return compact ? 2 : TrickCardMetrics.ITEM_VERTICAL_PADDING_DP;
+    }
 }

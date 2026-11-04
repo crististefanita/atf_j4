@@ -32,7 +32,6 @@ class WhistResponsivePlaySanityE2eTest {
     private static final String APP = "ro.whistlab.app";
     private static final Duration WAIT = Duration.ofSeconds(35);
     private static final int HAND_CARD_FACE_HEIGHT_DP = 98;
-    private static final int PLAYED_CARD_LABEL_AND_PADDING_DP = 18;
     private static final String OUTPUT = "atf.android.artifacts";
     private static final Pattern HAND_SIZE = Pattern.compile("Your hand, (\\d+) cards\\.");
     private static final Pattern DEAL_NUMBER = Pattern.compile("Hand (\\d+) / \\d+");
@@ -297,20 +296,27 @@ class WhistResponsivePlaySanityE2eTest {
             List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
         ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_hand_fan_fixture", "true",
                 "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-        String xml = scrollUntilVisible(adb, ui, profile, "Your hand, 13 cards.", true,
-                HAND_CARD_FACE_HEIGHT_DP);
+        String xml = ui.awaitDescriptionContaining("Your hand, 13 cards.", WAIT);
         List<Path> capture = ui.capture(profile.id() + "-thirteen-card-fan");
         evidence.addAll(capture);
         var faces = ui.handCardFaceBounds(xml).stream()
                 .sorted(Comparator.comparingInt(AndroidUiDriver.Bounds::left)).toList();
         var labels = ui.bottomRowCardLabels(xml);
         var viewport = ui.boundsForDescriptionContaining(xml, "Your hand,");
+        boolean titleExposed = ui.hasText(xml, "Whist · Oh Hell");
+        var gameTitle = titleExposed ? ui.boundsForText(xml, "Whist · Oh Hell")
+                : new AndroidUiDriver.Bounds(0, 0, 0, 0);
         int centerError = faces.size() == 13
                 ? Math.abs(faces.getFirst().left() + faces.getLast().right()
                         - viewport.left() - viewport.right()) : Integer.MAX_VALUE;
         int expectedFaceHeight = (int) Math.round(HAND_CARD_FACE_HEIGHT_DP * profile.density() / 160.0);
         int shortestFaceHeight = faces.stream().mapToInt(WhistResponsivePlaySanityE2eTest::height)
                 .min().orElse(0);
+        boolean wholeGameFitsWithoutScrolling = titleExposed && gameTitle.top() >= 0
+                && gameTitle.bottom() < viewport.top()
+                && faces.size() == 13
+                && faces.stream().allMatch(face -> face.top() >= viewport.top()
+                        && face.bottom() <= viewport.bottom());
         long labelBaselines = labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count();
         List<AtfAssertion> checks = new ArrayList<>(List.of(
                 check("All thirteen cards fit on one row", "13", faces.size(),
@@ -318,6 +324,10 @@ class WhistResponsivePlaySanityE2eTest {
                 check("All thirteen card faces are fully visible", expectedFaceHeight + " px minimum",
                         shortestFaceHeight + " px minimum", faces.size() == 13
                                 && shortestFaceHeight >= expectedFaceHeight),
+                check("Game title and thirteen-card hand fit without vertical scrolling",
+                        "title and every full face in the initial viewport",
+                        "title=" + gameTitle + "; hand=" + viewport,
+                        wholeGameFitsWithoutScrolling),
                 check("Dense hand is centered", "within one pixel", centerError / 2.0,
                         centerError <= 2),
                 check("Indices share one baseline", "one row", labelBaselines,
@@ -406,7 +416,7 @@ class WhistResponsivePlaySanityE2eTest {
         List<String> visibleSeatDescriptions = seatDescriptions(ui, xml);
         List<AndroidUiDriver.Bounds> seats = seatBounds(ui, xml);
         boolean fullFaceStillVisible = height(cardFace) >= playedCardFaceHeight;
-        int fullCardRowHeight = playedCardFaceHeightDp + PLAYED_CARD_LABEL_AND_PADDING_DP;
+        int fullCardRowHeight = playedCardFaceHeightDp + profile.playedCardLabelAndPaddingDp();
         boolean completeCardRowVisible = height(cardSlot) >= (int) Math.round(fullCardRowHeight * density);
         boolean humanSeatVisible = visibleSeatDescriptions.stream()
                 .anyMatch(description -> description.startsWith("You. Bid "));

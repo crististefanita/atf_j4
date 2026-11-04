@@ -2,54 +2,62 @@
 
 ## Pe scurt
 
-Această intrare Gradle include proiectul existent `game-core`, fără configurarea
-aplicației sau a extensiei Android pentru Gradle. Relația este definită în
-[settings.gradle](settings.gradle); sursele și sarcinile Gradle rămân în
-[game-core/build.gradle](../game-core/build.gradle).
+Această intrare Gradle construiește motorul și testele sale fără configurarea aplicației Android. [settings.gradle](settings.gradle) include directorul existent `game-core`; acesta deține sursele, dependențele și sarcinile de testare.
 
-Sunt necesare JDK 17 sau mai nou, lansatorul Gradle inclus în proiect și dependențele JVM ale
-testelor. `ANDROID_HOME` nu este necesar aici. `--offline` folosește dependențele păstrate
-local și eșuează explicit dacă lipsește una.
+Sunt necesare JDK 17 sau mai nou, lansatorul Gradle al proiectului și dependențele JVM în cache. Opțiunea `--offline` refuză dependențele lipsă; SDK-ul Android nu este necesar acestei intrări.
 
 ## Flux și responsabilități
 
 ```mermaid
 flowchart LR
-BUILD[Intrare JVM] -->|include| CORE[game-core]
-CORE -->|compilează| TEST[Componente și politici]
-RUN[Lansator colecții] -->|izolează| BUILD
-TEST -->|scrie în copia temporară| OUT[Rezultate native]
+    RUN[Lansator colecții] -->|izolează| COPY[Copie temporară]
+    COPY -->|configurează| BUILD[Intrare JVM]
+    BUILD -->|include| CORE[game-core]
+    CORE -->|produce| RESULT[Rezultate native]
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legendă: o singură sursă a motorului</summary>
 
-Aceasta este o intrare de construire, nu o copie a motorului. Sursele și selecțiile rămân în game-core; lansatorul asigură copia temporară și destinația externă a rezultatelor.
+Intrarea JVM folosește proiectul vecin, fără copierea lui într-un modul nou. `game-core` compilează producția separat de teste și adaugă jucătorul independent numai în setul de surse de test; lansatorul colecțiilor pregătește izolarea și arhivarea rezultatelor.
 
 </details>
 
-Dintr-o copie proprie din `%TEMP%` a `whist-lab-app`:
+## Verificarea uzuală
+
+Din rădăcina proiectului, [lansatorul colecțiilor](../../scripts/run-whist-collection.ps1) creează propria copie temporară:
+
+```powershell
+.\scripts\run-whist-collection.ps1 -Collection quick
+```
+
+[Catalogul colecțiilor](../../config/test-collections.json) leagă intenția de sarcina Gradle. [Ghidul selecțiilor](../../docs/testing/ATF_Collections.md) explică precondițiile cercetării, turneelor și evaluării rezervate.
+
+## Folosirea directă a Gradle
+
+Într-o copie temporară proprie a directorului `whist-lab-app`:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
-.\gradlew.bat -p algorithm-build :game-core:regressionTest --offline --no-daemon
-.\gradlew.bat -p algorithm-build :game-core:contextRegressionTest --offline --no-daemon
-.\gradlew.bat -p algorithm-build :game-core:tasks --all --offline --no-daemon
 ```
 
-`game-core` adaugă sursele jucătorului independent numai în calea de clase a testelor.
-Sarcina Gradle implicită exclude turneele, analiza erorilor și cercetările cu activare explicită conform
-configurației Gradle curente. `contextRegressionTest` selectează componentele contextuale;
-nu joacă un turneu complet.
+Sarcina aleasă determină limita verificării:
 
-[Lansatorul colecțiilor](../../scripts/run-whist-collection.ps1) citește [catalogul](../../config/test-collections.json), creează o copie temporară și alege sarcina Gradle după colecție și protocol.
+| Sarcină din game-core | Contract |
+|---|---|
+| `quickRegressionTest` | Selecție focalizată de reguli și contexte, definită în Gradle. |
+| `regressionTest` | Deleagă sarcina `test`, cu excluderile sale explicite. |
+| `contextRegressionTest` | Regresii contextuale cu martori legali independenți. |
+| `documentationTest` | Contractul ajutorului de joc și al textelor regulilor. |
+| `tasks --all` | Inventarul sarcinilor configurate; nu execută verificările jocului. |
 
-Pentru `learning` sunt obligatorii candidatul, corpusul extern și protocolul explicit. Reluarea parțială declară exact cazurile lipsă și păstrează aceeași sursă; evaluarea neatinsă cere înghețarea surselor și rezervare înainte de deschidere. Sarcinile Gradle istorice nu sunt alegeri implicite pentru un experiment nou.
+[game-core/build.gradle](../game-core/build.gradle) este sursa selecțiilor efective. Turneele, mineritul erorilor și componentele de cercetare au sarcini distincte și activare explicită.
 
-XML-ul nativ și fișierele de construire apar în `game-core/build` din copia temporară.
+## Ieșiri și concurență
 
-Pentru capturarea componentelor se poate furniza un director extern nou prin `whist.componentEvidence`; ID-urile capturilor nu se suprascriu. Nu rulați simultan cele două intrări Gradle în aceeași copie, deoarece folosesc aceleași directoare de ieșire.
+- XML-ul nativ și fișierele de construire apar în `game-core/build` al copiei temporare.
+- `whist.componentEvidence` poate selecta un director extern pentru capturi de componentă; identitățile capturilor se păstrează fără suprascriere.
+- Cele două intrări Gradle ale aplicației folosesc aceleași directoare ale proiectului inclus; execuțiile concurente au nevoie de copii distincte.
+- Rezultatul identifică sursele și selecția executată; acceptanța Android și calificarea forței de joc au criterii separate.
 
-Această intrare nu construiește, instalează sau controlează o aplicație Android.
-
-Verificarea modelului, puterea statistică pe partide noi și acceptanța interfeței au criterii diferite.
+[Motorul](../game-core/README.md) · [Testarea](../../docs/testing/README.md) · [Învățarea offline](../../docs/learning/README.md)

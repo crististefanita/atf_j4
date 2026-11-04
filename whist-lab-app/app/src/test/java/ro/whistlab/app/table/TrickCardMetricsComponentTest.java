@@ -22,7 +22,7 @@ public final class TrickCardMetricsComponentTest {
                     assertTrue(layout.safeCenterWidthDp() <= width);
                     assertEquals(expectedRows, layout.rows());
                     assertEquals(layout.rows() * (layout.cardHeightDp() + layout.playerLabelHeightDp()
-                                    + TrickCardMetrics.ITEM_VERTICAL_PADDING_DP),
+                                    + layout.itemVerticalPaddingDp()),
                             layout.centerHeightDp());
                     assertTrue(layout.playerLabelHeightDp()
                             >= Math.ceil(TrickCardMetrics.PLAYER_LABEL_HEIGHT_DP * fontScale));
@@ -120,12 +120,13 @@ public final class TrickCardMetricsComponentTest {
 
     @Test public void compactPlayedCardsRemainSubstantiallyLargerThanTheirLegacyHeight() {
         for (int players : new int[]{3, 4, 5, 6}) {
-            var layout = TrickCardMetrics.forTable(players, 320, 1f, 96);
-            assertEquals(96, layout.cardHeightDp());
+            var layout = TrickCardMetrics.forTable(players, 320, 1f, 94, 2);
+            assertEquals(94, layout.cardHeightDp());
+            assertEquals(2, layout.itemVerticalPaddingDp());
             assertTrue("Compact played cards retain at least 1.8x their legacy height",
                     layout.cardHeightDp() >= Math.ceil(TrickCardMetrics.PREVIOUS_CARD_HEIGHT_DP * 1.8));
             assertEquals(layout.rows() * (layout.cardHeightDp() + layout.playerLabelHeightDp()
-                            + TrickCardMetrics.ITEM_VERTICAL_PADDING_DP), layout.centerHeightDp());
+                            + layout.itemVerticalPaddingDp()), layout.centerHeightDp());
         }
     }
 }

@@ -2,145 +2,83 @@
 
 ## Pe scurt
 
-Bibliotecă Java fără dependență de Android. Același motor este consumat de
-aplicație și de testele JVM; verificările independente ale testelor nu trebuie
-să împrumute verdictul motorului verificat.
+Motorul Java deține configurarea, regulile, tranzițiile, istoricul scorului și politica de joc. Aplicația Android și mediul JVM consumă aceleași surse; producția rămâne independentă de Android, ATF și JUnit.
+
+Testele verifică domeniul prin proprietăți și oracole independente. [Intrarea JVM](../algorithm-build/README.md) permite lucrul offline, iar [ghidul variantelor](../../docs/game/README.md) deține explicația completă a regulilor.
 
 ## Fluxul domeniului
 
 ```mermaid
 flowchart LR
-CMD[Comandă] -->|validează| SESSION[GameSession]
-SESSION -->|aplică| RULES[GameRules]
-RULES -->|calculează| SCORE[Scor și serii]
-SESSION -->|expune| SNAP[Stare publică]
-SNAP -->|informează| POLICY[Politică AI]
-POLICY -->|propune| CMD
+    CMD[Comandă] -->|validează| SESSION[GameSession]
+    SESSION -->|aplică| RULES[GameRules]
+    SESSION -->|proiectează prin adaptor| OBS[Observație permisă]
+    OBS -->|alimentează| POLICY[Politică AI]
+    POLICY -->|propune| CMD
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legendă: starea sesiunii și observația actorului</summary>
 
-Regulile filtrează toate acțiunile, inclusiv cele propuse de AI. Starea capturată furnizată politicii conține mâna actorului și faptele publice; istoricul scorului aparține domeniului, nu geometriei Android.
+Sesiunea păstrează starea completă necesară jocului și restaurării. Fațada [AiPolicy](src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) construiește observația politicii prin adaptoarele de observare: mâna proprie și informația publică. Distribuția completă folosită de sesiune și audit nu devine intrare în algoritmul deciziei.
 
 </details>
 
 ## Contracte în cod
 
-| Sursă | Contract |
+| Zonă | Responsabilitate |
 |---|---|
-| [GameConfig](src/main/java/ro/whistlab/core/config/GameConfig.java) | Număr de jucători, variantă, nivel, valoare de inițializare și configurarea seriilor. |
-| [GameMode](src/main/java/ro/whistlab/core/rules/GameMode.java) | Variante distincte și alegerea profilului românesc. |
-| [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Pachet, program, oferte legale, cărți legale, câștigător și scor de bază. |
-| [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Punctele contractului, bonusul de serie și contorul următor. |
-| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Tranzițiile sesiunii, istoricul public și validarea restaurării. |
-| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile pe locuri, punctele mâinii și totalurile după fiecare mână încheiată. Salvările vechi păstrează numai informația cunoscută. |
-| [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Regulile și programul afișate în română și engleză. |
+| [GameConfig](src/main/java/ro/whistlab/core/config/GameConfig.java) | Număr de jucători, variantă, nivel, inițializare și configurarea seriilor. |
+| [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Pachet, program, oferte și cărți legale, câștigător și scor de bază. |
+| [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Punctele contractului și evoluția seriilor. |
+| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Fazele, comenzile, istoricul public și validarea restaurării. |
+| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile cunoscute și soldurile mâinilor încheiate; punctele sunt diferența dintre solduri. |
+| [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Ajutorul RO/EN pentru profilul și programul selectate. |
 
 ## Whist românesc
 
-Profilul acceptă 3–6 jucători și un pachet redus de `8 × N` cărți mari.
+Profilul acceptă 3–6 jucători și un pachet redus de `8 × N` cărți mari. [GameMode](src/main/java/ro/whistlab/core/rules/GameMode.java) selectează varianta, iar `GameRules.handSizes` definește programul; variantele cu nume apropiate păstrează contracte distincte.
 
-Pentru `ROMANIAN_WHIST`, programul este `N` mâini de o carte, 2…7, `N` mâini de opt, 7…2 și `N` mâini de o carte. `LONG_ROMANIAN` are propriul program; nu se suprapune implicit peste primul profil. Programele tuturor variantelor sunt calculate de `GameRules.handSizes`.
+- Se urmează culoarea cerută; în lipsa ei, atuul este obligatoriu dacă există în mână. Supratăierea nu este obligatorie.
+- Câștigă cel mai mare atu sau cea mai mare carte din culoarea cerută; câștigătorul conduce levata următoare.
+- Licitația este în intervalul mâinii, iar ultima ofertă nu poate egaliza suma cu numărul de levate.
+- Contractul exact acordă `5 + levate`; ratarea scade diferența absolută.
+- Seriile opționale folosesc bonusul pozitiv configurat de 5 sau 10 și penalizarea de 5; eligibilitatea și întreruperea sunt definite de `RomanianScoring`.
 
-Licitarea și prima levată pornesc după împărțitor. Oferta este între zero și mărimea
-mâinii; ultima ofertă care ar face suma egală cu numărul de levate este interzisă.
-Rolul de împărțitor trece la următorul jucător după fiecare mână.
-
-Jucătorul urmează culoarea cerută dacă o are.
-
-- Dacă nu o are, dar deține atu, taie obligatoriu; în lipsa ambelor poate decarta.
-- Supratăierea nu este obligatorie.
-- Câștigă cel mai mare atu sau cea mai mare carte din culoarea cerută.
-- Câștigătorul conduce următoarea levată.
-- Atuul românesc este indicat de o carte neîmpărțită, întoarsă; mâinile de opt cărți sunt fără atu.
-
-Contractul exact acordă `5 + levate`; ratarea acordă `-abs(levate - contract)`.
-
-- Seriile sunt opționale și se aplică variantelor românești.
-- După cinci contracte exacte eligibile se acordă +5 sau +10; după cinci ratări se scad 5 puncte, apoi contorul se resetează.
-- O mână de o carte nu avansează seria, dar rezultatul opus o întrerupe.
-- Contractul zero exact este un succes.
-- Constructorul `GameConfig` cu patru argumente păstrează profilul fără serii; constructorii și validările explicite definesc celelalte valori implicite.
-
-Oh Hell și celelalte variante folosesc profilul lor de pachet, program, atu și scor.
-
-De exemplu, obligația de a tăia din profilul românesc nu se transferă automat în Oh Hell. Alegeți întotdeauna `GameMode` în datele de test și în scenariu.
+[Regulile RO/EN](../../docs/game/README.md) explică distribuirea, atuul, programul și seriile. Configurația este explicită: constructorul de compatibilitate cu patru argumente păstrează seriile dezactivate, iar celelalte forme își validează opțiunile.
 
 ## Sesiune și salvare
 
-O comandă ilegală este respinsă înainte de modificarea stării. Scorul și soldul
-de închidere se aplică după ultima carte a mâinii. `ScoreHistory` permite doar
-avansarea cu o mână; punctele unei mâini sunt diferența dintre două solduri,
-inclusiv punctele seriei.
+O comandă ilegală este respinsă înaintea tranziției. Închiderea mâinii aplică scorul și înregistrează soldul; `ScoreHistory` avansează câte o mână și păstrează informația cunoscută.
 
-`GameSession.restoreComplete` cere istoricul public complet.
-
-Restaurarea de compatibilitate poate accepta o salvare veche cu istoric limitat și păstrează originea cunoscută a scorului. Ea nu justifică inventarea unor cărți sau scoruri anterioare. Schema JSON Android este responsabilitatea [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
-
-## AI și componente
-
-[AiDifficulty](src/main/java/ro/whistlab/core/config/AiDifficulty.java) expune Normal și Hard.
-
-- `EXPERT` este un alias de compatibilitate, migrat la Hard la citirea unei salvări vechi.
-- [AiPolicy](src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) alege politica activă pentru nivelul configurat.
-- Politicile primesc o observație izolată: mâna proprie, licitațiile, levatele câștigate, masa și istoricul public. Nu primesc listele de cărți ale celorlalți jucători.
-- Hard folosește ofertele publice drept ținte de contract în simulări și exclude cărțile deja jucate și atuul întors din pachetul necunoscut; împărțirea necunoscută nu este încă ponderată cu probabilitatea ca acel loc să fi făcut oferta observată. Acesta este un candidat separat de cercetare, nu o capabilitate deja implementată.
-- Estimările probabilistice și verificările de final cu domeniu finit nu demonstrează joc perfect cu informație ascunsă.
-- Codul experimental extern nu este activat automat.
-
-Testele de reguli, sesiune, scor, punct de control și AI se găsesc în
-[src/test/java](src/test/java/ro/whistlab/core/). Cazurile cu rezultat așteptat demonstrabil pe un domeniu finit trebuie
-să aibă un oracol separat sau un invariant justificat; o mutare istorică a
-câștigătorului nu este singură un rezultat așteptat corect.
-
-## Rulare offline
-
-Dintr-o copie proprie din `%TEMP%` a `whist-lab-app`:
-
-```powershell
-.\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
-.\gradlew.bat -p algorithm-build :game-core:regressionTest --offline --no-daemon
-.\gradlew.bat -p algorithm-build :game-core:contextRegressionTest --offline --no-daemon
-```
-
-[configurația Gradle](build.gradle) definește selecțiile efective și excluderile testului implicit.
-
-- `quick` este o selecție, nu o populație care se adună la regresia completă.
-- Colecția `context` urmărește finaluri mici cu martori legali independenți.
-- `documentation` verifică regulile afișate; `strategy` și `research` au scopuri distincte.
-- Turneele `learning` și `arena` se activează explicit, cu identitate de candidat și protocol, nu prin testul implicit.
-
-[Catalogul colecțiilor](../../config/test-collections.json) și
-[lansatorul](../../scripts/run-whist-collection.ps1) sunt sursele selecției și
-parametrilor actuali. Rezultatele XML native și datele de comparație se păstrează în
-directorul extern al execuției. Un rezultat JVM nu reprezintă o execuție Android.
+- `restoreComplete` cere istoricul public complet. Restaurarea de compatibilitate păstrează originea cunoscută a scorului; [contractul istoricului](../../docs/game/ATF_ScoreHistory.md) precizează datele care lipsesc din salvările vechi și limita levatelor istorice.
+- Schema JSON Android aparține [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java). Validarea domeniului și serializarea Android au responsabilități și teste distincte.
 
 ## Politica Normal și Hard
 
-[Manifestul regulilor de joc](../../config/whist-play-objectives.yaml) fixează obiectivele observabile pentru cele două niveluri.
+[AiDifficulty](src/main/java/ro/whistlab/core/config/AiDifficulty.java) expune cele două niveluri și aliasul de compatibilitate pentru salvări vechi. Fațada `AiPolicy` selectează politica și izolează observația înaintea calculului.
 
-| Politică sau stare | Prioritate |
-|---|---|
-| Normal înaintea contractului | Caută levatele necesare și păstrează oportunități pentru cele viitoare. |
-| Normal după contract | Evită levatele suplimentare în limitele legalității. |
-| Hard cu contract recuperabil | Șansa exactului, punctele proprii și departajarea prin scorul rivalului principal. |
-| Hard cu imposibilitate dovedită public | Punctele proprii estimate, apoi ratările adverse estimate și scorul rivalului principal. |
-| Certificat complet | Înlocuiește estimarea numai cu protecția punctelor proprii în toate lumile și continuările relevante. |
+- **Normal** urmărește contractul și evită levatele suplimentare după realizarea lui, în limitele acțiunilor legale.
+- **Hard** compară continuări pe lumi compatibile cu informația publică, necesarul și contractele cunoscute; [MonteCarloAi](src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) deține compoziția deciziei.
+- Certificatele finite și recuperarea contractelor imposibile au condiții și bugete explicite; epuizarea unui buget păstrează propunerea de bază.
 
-Domeniul și bugetul certificatului sunt definite de implementare; epuizarea bugetului păstrează propunerea de bază.
+[Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) și [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimitează comportamentul activ de ipotezele de cercetare. Estimarea probabilistă și un certificat local nu garantează câștigarea fiecărei partide cu informație ascunsă.
 
-## Simulare și îmbunătățire offline
+## Rulare offline
 
-| Mecanism | Intrare controlată | Scop |
-|---|---|---|
-| `run-offline-policy-match.ps1` | Valoare de inițializare și politici explicite | Partidă completă pentru diagnostic și verificarea tranzițiilor. |
-| `run-offline-perspectives.ps1` | Aceeași distribuție, locuri rotite | Sensibilitatea rezultatului la poziția politicii evaluate. |
-| `run-offline-strategy-profiles.ps1` | Aceleași distribuții și alternative de decizie | Comparații pereche între politici candidate și politica de bază. |
-| `run-whist-collection.ps1` | Colecție, protocol și candidat | Componente, regresie sau calificare controlată a unei politici. |
+Din rădăcina proiectului, [lansatorul](../../scripts/run-whist-collection.ps1) pregătește copia temporară și păstrează rezultatele extern:
 
-Parametrii și profilurile experimentale sunt definite în lansator și protocol; documentația nu fixează inventarul unui lot sau rezultatele lui. Datele jocurilor rămân în arhiva externă, iar regresia de componentă păstrează doar cazuri minime cu așteptare justificată independent.
+```powershell
+.\scripts\run-whist-collection.ps1 -Collection quick
+.\scripts\run-whist-collection.ps1 -Collection context
+```
 
-După schimbarea unei licitații sau cărți, stările publice ulterioare pot diverge. Comparația pereche păstrează distribuția și locul, iar analiza locală reconstruiește prima decizie divergentă folosind numai informația disponibilă actorului.
+[Configurația Gradle](build.gradle) și [catalogul colecțiilor](../../config/test-collections.json) definesc selecțiile. `regression` execută sarcina de regresie cu excluderile declarate, iar `documentation` verifică ajutorul de joc; învățarea, arena și cercetarea se aleg explicit.
 
-[Arhitectura învățării](../../docs/ai/README.md) și [protocolul](../../docs/learning/README.md) definesc separarea dezvoltării de evaluare și criteriile promovării.
+Dintr-o copie temporară proprie a `whist-lab-app`, intrarea directă este:
+
+```powershell
+.\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
+```
+
+[Arhitectura testării](../../docs/testing/ATF_Architecture.md) delimitează componentele, integrarea și Android. [Învățarea offline](../../docs/learning/README.md) explică extragerea regresiilor mici, comparațiile pe aceleași distribuții și calificarea pe partide noi.
