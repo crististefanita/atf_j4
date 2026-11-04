@@ -32,7 +32,7 @@ class ModuleBoundaryGovernanceTest {
         GovernanceProject.policy(root).required("mavenModules").forEach(value -> expected.add(value.asText()));
         assertEquals(expected, modules, "The source reactor must match the reviewed governance perimeter");
         for (String module : modules) assertTrue(Files.isRegularFile(root.resolve(module).resolve("pom.xml")));
-        for (String binary : List.of("atf-core", "atf-reporting", "atf-reporting-tests"))
+        for (String binary : List.of("atf-core", "atf-reporting", "atf-console", "atf-mock", "atf-reporting-tests"))
             assertFalse(Files.exists(root.resolve(binary)), () -> "Binary consumers must not retain producer source/harness: " + binary);
     }
 }

@@ -17,5 +17,5 @@ Un rezultat bun la build sau la componentă nu certifică elementele vizibile,
 iar un raport nou nu repară retroactiv un eșec anterior.
 
 [Contractul consumerului](../ATF_Android_Report_Contract.md) ·
-[Suitea multi-profile Whist Lab](../WHIST_RESPONSIVE_UI_SANITY.md) ·
+[Suitea multi-profile Whist Lab](../testing/android/display/README.md) ·
 [Feedback-ul de UX](WHIST_LAB_User_Experience_Feedback.md)

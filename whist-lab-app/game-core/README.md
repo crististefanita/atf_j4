@@ -43,9 +43,9 @@ Profilul acceptă 3–6 jucători și un pachet redus de `8 × N` cărți mari.
 
 Pentru `ROMANIAN_WHIST`, programul este `N` mâini de o carte, 2…7, `N` mâini de opt, 7…2 și `N` mâini de o carte. `LONG_ROMANIAN` are propriul program; nu se suprapune implicit peste primul profil. Programele tuturor variantelor sunt calculate de `GameRules.handSizes`.
 
-Licitarea și prima levată pornesc după dealer. Oferta este între zero și mărimea
+Licitarea și prima levată pornesc după împărțitor. Oferta este între zero și mărimea
 mâinii; ultima ofertă care ar face suma egală cu numărul de levate este interzisă.
-Dealerul avansează la mâna următoare.
+Rolul de împărțitor trece la următorul jucător după fiecare mână.
 
 Jucătorul urmează culoarea cerută dacă o are.
 
@@ -86,7 +86,7 @@ Restaurarea de compatibilitate poate accepta o salvare veche cu istoric limitat 
 - [AiPolicy](src/main/java/ro/whistlab/core/AiPolicy.java) alege politica activă pentru nivelul configurat.
 - Politicile primesc o observație izolată: mâna proprie, licitațiile, levatele câștigate, masa și istoricul public. Nu primesc listele de cărți ale celorlalți jucători.
 - Hard folosește ofertele publice drept ținte de contract în simulări și exclude cărțile deja jucate și atuul întors din pachetul necunoscut; împărțirea necunoscută nu este încă ponderată cu probabilitatea ca acel loc să fi făcut oferta observată. Acesta este un candidat separat de cercetare, nu o capabilitate deja implementată.
-- Estimările probabilistice și garzile de final cu domeniu finit nu demonstrează joc perfect cu informație ascunsă.
+- Estimările probabilistice și verificările de final cu domeniu finit nu demonstrează joc perfect cu informație ascunsă.
 - Codul experimental extern nu este activat automat.
 
 Testele de reguli, sesiune, scor, punct de control și AI se găsesc în

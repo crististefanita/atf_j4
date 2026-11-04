@@ -21,7 +21,7 @@ Fiecare candidat reprezintă o modificare identificată a licitării sau a alege
 
 Runnerul selectează turneul din schema protocolului și refuză candidații incompatibili cu sursele înghețate. Rezultatele vechi se reproduc din snapshot-ul lor.
 
-[Colecțiile și parametrii](TEST_COLLECTIONS.md) · [Arena](AI_STRATEGY_ARENA.md) · [Corpusul](AI_CORPUS.md) · [Guvernanța arhivării](history/README.md)
+[Colecțiile și parametrii](testing/collections/README.md) · [Arena](AI_STRATEGY_ARENA.md) · [Corpusul](AI_CORPUS.md) · [Guvernanța arhivării](history/README.md)
 
 ## Reguli stabile și date de experiment
 
@@ -60,4 +60,4 @@ O schimbare de licitație sau carte poate schimba întregul traseu ulterior. De 
 
 Politica nu primește mâinile reale ale adversarilor. Replay-ul complet poate servi analizei după încheierea partidei, dar informația privată nu devine input pentru decizia care este evaluată.
 
-[Reguli și configurare](AI_RULES_AND_CONFIGURATION.md) · [Componente și oracole](AI_TEST_DESIGN.md)
+[Reguli și configurare](AI_RULES_AND_CONFIGURATION.md) · [Componente și oracole](testing/ai/README.md)

@@ -24,11 +24,31 @@ class DocumentationPolicyGovernanceTest {
             assertFalse(file.getFileName().toString().matches("ATF_Reporting_J[0-9]+_Verification\\.md"),
                     () -> "Release chronology belongs in the external archive: " + file);
             if (file.getFileName().toString().equalsIgnoreCase("README.md")) {
-                String prose = Files.readString(file).replaceAll("(?s)```.*?```", "");
-                assertFalse(prose.matches("(?s).*\\n#{1,6} (?:Overview|Quick [Ss]tart|Getting [Ss]tarted|Captured UI timing|Usage|Testing|Architecture|Requirements)\\b.*"),
-                        () -> "README headings must be Romanian: " + file);
+                assertFalse(hasEnglishReadmeProse(Files.readString(file)), () -> "README prose must be Romanian: " + file);
             }
+            String prose = Files.readString(file);
+            if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
+            assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
+                    () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
         }
+    }
+
+    static boolean hasEnglishReadmeProse(String source) {
+        String prose = source.replaceAll("(?s)```.*?```", "").replaceAll("`[^`]*`", "").replaceAll("\\]\\([^)]*\\)", "]");
+        if (java.util.regex.Pattern.compile("(?im)^#{1,6} (?:Overview|Quick start|Getting started|Captured UI timing|Usage|Testing|Architecture|Requirements|Shared platform)\\b")
+                .matcher(prose).find()) return true;
+        var words = java.util.regex.Pattern.compile("(?i)\\b(the|this|these|that|with|without|and|must|should|their|each|after|before|from|where|when|which|remain|remains)\\b");
+        for (String paragraph : prose.split("\\n\\s*\\n")) {
+            long signals = words.matcher(paragraph).results().map(match -> match.group().toLowerCase(java.util.Locale.ROOT)).distinct().count();
+            if (signals >= 4) return true;
+        }
+        return false;
+    }
+
+    @Test void languageGuardRejectsEnglishProseButKeepsQuotedApiAndCommands() {
+        assertTrue(hasEnglishReadmeProse("# Overview\n\nThis module must preserve the source and their contracts before publication."));
+        assertTrue(hasEnglishReadmeProse("# Mecanism\n\nThis component must preserve the source and their contracts before publication."));
+        assertFalse(hasEnglishReadmeProse("# Mecanism\n\nRegulile păstrează contractul. API-ul `with and before after must` își păstrează numele.\n\n```text\nThis and that must remain before the source.\n```"));
     }
 
     @Test void copiedValidatorsDetectInjectedDefectsAndAcceptAHealthyNeighbour(@TempDir Path root) throws Exception {

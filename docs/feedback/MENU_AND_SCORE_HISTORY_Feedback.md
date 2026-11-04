@@ -35,4 +35,4 @@ Contractele componentelor, persistenței și interfeței se verifică separat, c
 
 [Istoricul scorului](../WHIST_SCORE_HISTORY.md) descrie API-ul integrat.
 [Feedback UX](WHIST_LAB_User_Experience_Feedback.md) urmărește acceptanța vizuală;
-[README-ul raportării](whist-extent/README.md) separă ultima încercare de acceptanță.
+[Contractul predării rezultatelor](../WHIST_UI_REPORT_HANDOFF.md) separă ultima încercare de acceptanță.

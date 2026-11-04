@@ -27,4 +27,4 @@ Domeniul Whist Lab deține regulile, politicile, selecția jocurilor și criteri
 
 Regula are precondiții și limite formalizate, teste independente și un candidat identificat prin surse. Comparația rezervată respectă criteriile declarate fără ajustarea retrospectivă a lotului sau a pragurilor.
 
-[Modelul deciziei](../AI_DECISION_MODEL.md) · [Proiectarea testelor](../AI_TEST_DESIGN.md) · [Protocolul](../AI_TRAINING_PROTOCOL.md)
+[Modelul deciziei](../AI_DECISION_MODEL.md) · [Proiectarea testelor](../testing/ai/README.md) · [Protocolul](../AI_TRAINING_PROTOCOL.md)

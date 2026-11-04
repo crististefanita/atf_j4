@@ -3,13 +3,13 @@
 ## Pe scurt
 
 Această intrare Gradle include proiectul existent `game-core`, fără configurarea
-aplicației sau a pluginului Android. Relația este definită în
+aplicației sau a extensiei Android pentru Gradle. Relația este definită în
 [settings.gradle](settings.gradle); sursele și sarcinile Gradle rămân în
 [game-core/build.gradle](../game-core/build.gradle).
 
-Sunt necesare JDK 17 sau mai nou, wrapperul Gradle și dependențele JVM ale
-testelor. `ANDROID_HOME` nu este necesar aici. `--offline` folosește cache-ul
-local și eșuează explicit dacă lipsește o dependență.
+Sunt necesare JDK 17 sau mai nou, lansatorul Gradle inclus în proiect și dependențele JVM ale
+testelor. `ANDROID_HOME` nu este necesar aici. `--offline` folosește dependențele păstrate
+local și eșuează explicit dacă lipsește una.
 
 ## Flux și responsabilități
 

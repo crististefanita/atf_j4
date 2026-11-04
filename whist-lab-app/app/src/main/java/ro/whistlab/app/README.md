@@ -37,7 +37,7 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
 | `MainActivity` | Tranziții, persistență, meniu, limbă, pauza levatei; nu calculează coordonatele scaunelor. |
 | `GameBoardLayout` | Măsoară scaunele și banda sigură. În joc, stratul transparent folosește lățimea mesei; la licitare, centrul rămâne exclusiv. |
 | `TableGeometry` | Dreptunghiuri pentru scaune și banda sigură; omul rămâne sud. În joc, scaunele diagonale stau în afara rândurilor cărților. |
-| `TrickCardMetrics` | Rezervă rândurile levatei și fixează sloturile după ancorele scaunelor. La patru jucători formează crucea, cu cartea omului jos și centrată. Fața are 104 dp; lățimea urmează spațiul. |
+| `TrickCardMetrics` | Rezervă rândurile levatei și fixează pozițiile cărților după ancorele scaunelor. La patru jucători formează crucea, cu cartea omului jos și centrată. Fața are 104 dp; lățimea urmează spațiul. |
 | `WhistUiPalette.seatFrame` | Furnizează același fundal și contur pentru scaunul activ și indicatorul de atu. `TrumpIndicatorView` primește starea turei de la `MainActivity`; E2E compară pixeli din captură în coordonate fizice. |
 | `TableViewportPolicy` | Recuperează spațiu decorativ pe ferestre scunde; nu reduce țintele de 48 dp, înălțimea fețelor din mână de 98 dp sau fețele jucate de 104 dp. Când combinația masă–mână nu încape, zona vizibilă rămâne derulabilă. |
 | `HandLayoutMetrics` | Păstrează un rând și un avans cel puțin egal cu banda măsurată a indicelui; textul mărit poate necesita derulare orizontală. |
@@ -59,8 +59,8 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
   la ambele capete. Treisprezece cărți au
   indici verticali expuși. Cartea selectată se ridică în spațiul rezervat și
   rămâne în spatele vecinelor; selectarea nu mută scaunul omului.
-- Levata ocupă sloturile scaunelor: nord, vest, est și sud la patru jucători;
-  alte configurații folosesc ancorele nord–sud disponibile. Slotul sudic al
+- Levata ocupă pozițiile scaunelor: nord, vest, est și sud la patru jucători;
+  alte configurații folosesc ancorele nord–sud disponibile. Poziția sudică a
   omului rămâne fix chiar dacă ordinea cărților jucate diferă. Rândurile
   libere sunt rezervate dinainte, astfel încât cărțile să nu sară între ture.
   Pe ecranele scunde, masa completă poate cere o derulare verticală; fața de
@@ -77,7 +77,7 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
 
 ## Cum verificăm
 
-`TrickCardMetricsComponentTest` verifică sloturile ancorate, crucea cu patru
+`TrickCardMetricsComponentTest` verifică pozițiile ancorate, crucea cu patru
 jucători, înălțimea de 104 dp, lipsa intersecțiilor cu scaunele și lățimi de
 240–760 dp la trei scări de text. `GameTableLayoutComponentTest` verifică intersecțiile regiunilor, iar
 `TableViewportPolicyTest` verifică ferestrele scunde și rotunjirea dp–pixeli.
@@ -85,13 +85,13 @@ jucători, înălțimea de 104 dp, lipsa intersecțiilor cu scaunele și lățim
 
 În `atf-test-android`, `WhistDenseLayoutE2eTest` compară banda expusă, pixelii
 rangului și simbolului, înălțimea feței și zonele tactile. `HandIndexAudit` are
-negative pentru simbol lipsă, indice acoperit și margine tăiată. Capturile sunt
+cazuri negative pentru simbol lipsă, indice acoperit și margine tăiată. Capturile sunt
 revizuite și vizual; oracolul raster verifică lizibilitatea de bază, nu poate
 certifica singur frumusețea interfeței sau identitatea optică a fiecărui simbol.
 
 `WhistMenuLayoutE2eTest` parcurge meniurile normale în EN/RO.
 
-- `WhistResponsivePlaySanityE2eTest` verifică profilele, fața jucată de 104 dp, slotul sudic, distanța față de rame și culoarea atuului. Pentru ecrane scunde, capturează separat starea de stil și zona derulată complet.
+- `WhistResponsivePlaySanityE2eTest` verifică profilurile, fața jucată de 104 dp, poziția sudică, distanța față de rame și culoarea atuului. Pentru ecrane scunde, capturează separat starea de stil și zona derulată complet.
 - Strategia Hard are o verificare separată de geometrie, cu bugetul de calcul declarat.
 - Pilotul românesc joacă mâini normale și verifică scorul independent.
 - Compilările rămân în TMP, iar rezultatele execuției în depozitul extern configurat.

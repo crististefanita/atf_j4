@@ -37,14 +37,22 @@ New-Item -ItemType Directory -Path $stage,$artifacts | Out-Null
 
 Copy-Item -LiteralPath (Join-Path $root 'pom.xml'),(Join-Path $root 'atf.yaml') -Destination $stage
 Copy-Item -LiteralPath (Join-Path $root 'lib'),(Join-Path $root 'config') -Destination $stage -Recurse
-$modules = @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-test-android')
+[xml]$rootPom = [IO.File]::ReadAllText((Join-Path $root 'pom.xml'))
+$modules = @($rootPom.project.modules.module | ForEach-Object { $_.Trim() })
+if ($modules.Count -eq 0) { throw 'The Maven reactor declares no source modules to stage.' }
 foreach ($module in $modules) {
-    & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
-    if ($LASTEXITCODE -ge 8) { throw "Could not stage source module $module" }
+    $source = Join-Path $root $module
+    if (-not (Test-Path -LiteralPath (Join-Path $source 'pom.xml') -PathType Leaf)) {
+        throw "The Maven reactor declares $module but its source POM is missing."
+    }
+    if ($module -eq 'atf-tests') {
+        New-Item -ItemType Directory -Force -Path (Join-Path $stage $module) | Out-Null
+        Copy-Item -LiteralPath (Join-Path $source 'pom.xml') -Destination (Join-Path $stage $module)
+        continue
+    }
+    & robocopy $source (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "Could not stage source module declared by the reactor: $module" }
 }
-
-New-Item -ItemType Directory -Force -Path (Join-Path $stage 'atf-tests') | Out-Null
-Copy-Item -LiteralPath (Join-Path $root 'atf-tests\pom.xml') -Destination (Join-Path $stage 'atf-tests\pom.xml')
 $leasePath = 'C:\work\whist_back\android-ui-lease.json'
 $leaseId = ''
 $leaseAcquired = $false

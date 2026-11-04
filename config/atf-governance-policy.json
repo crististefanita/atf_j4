@@ -2,9 +2,7 @@
   "schemaVersion": 1,
   "mavenModules": [
     "atf-test-kit",
-    "atf-mock",
     "atf-validation",
-    "atf-console",
     "atf-test-android",
     "atf-tests"
   ],
@@ -43,23 +41,7 @@
       "atf.reporting",
       "ro.whistlab"
     ],
-    "atf-mock": [
-      "atf.android",
-      "atf.tests",
-      "atf.reporting",
-      "atf.testkit",
-      "org.junit",
-      "ro.whistlab"
-    ],
     "atf-validation": [
-      "atf.android",
-      "atf.tests",
-      "atf.reporting",
-      "atf.testkit",
-      "org.junit",
-      "ro.whistlab"
-    ],
-    "atf-console": [
       "atf.android",
       "atf.tests",
       "atf.reporting",
@@ -384,25 +366,5 @@
       ]
     }
   },
-  "productionBoundaryAdapters": {
-    "atf-console/src/main/java/atf/console/junit/AtfConsoleTestContext.java": {
-      "allows": [
-        "org.junit"
-      ],
-      "reason": "Adaptorul consolei deține integrarea explicită cu ciclul de viață JUnit; logica de formatare rămâne neutră."
-    },
-    "atf-console/src/main/java/atf/console/junit/AtfConsoleTestExtension.java": {
-      "allows": [
-        "atf.testkit",
-        "org.junit"
-      ],
-      "reason": "Adaptorul consolei deține integrarea explicită cu ciclul de viață JUnit; logica de formatare rămâne neutră."
-    },
-    "atf-console/src/main/java/atf/console/junit/AtfReportPathOptIn.java": {
-      "allows": [
-        "atf.testkit"
-      ],
-      "reason": "Adaptorul consolei deține integrarea explicită cu ciclul de viață JUnit; logica de formatare rămâne neutră."
-    }
-  }
+  "productionBoundaryAdapters": {}
 }

@@ -39,15 +39,15 @@ Ghidurile definesc responsabilități, contracte și principii. Datele de rulare
 
 | Activitate | Ghid |
 |---|---|
-| Alegerea nivelului unitar, componentă, integrare sau E2E | [Arhitectura testării și matricea modulelor](TESTING_ARCHITECTURE.md) |
-| Calitatea pachetelor, limitelor și documentației | [Guvernanța ATF](ATF_QUALITY_GOVERNANCE.md) |
-| Alegerea unei colecții mici sau a regresiei complete | [Colecțiile de teste](TEST_COLLECTIONS.md) |
+| Alegerea nivelului unitar, componentă, integrare sau E2E | [Arhitectura testării și matricea modulelor](testing/architecture/README.md) |
+| Calitatea pachetelor, limitelor și documentației | [Guvernanța ATF](testing/governance/README.md) |
+| Alegerea unei colecții mici sau a regresiei complete | [Colecțiile de teste](testing/collections/README.md) |
 | Construire fără SDK Android | [Construirea algoritmului](../whist-lab-app/algorithm-build/README.md) |
 | Formatul partidelor și validarea independentă | [Corpusul](AI_CORPUS.md) |
-| Selecția diagnostică a partidelor utile | [Focusul de învățare](AI_LEARNING_FOCUS.md) |
+| Selecția diagnostică a partidelor utile | [Selecția pentru învățare](AI_LEARNING_FOCUS.md) |
 | Modelul observației, simulării și alegerii | [Decizia AI](AI_DECISION_MODEL.md) |
 | Semantica YAML-urilor și influența ponderilor | [Reguli și configurare](AI_RULES_AND_CONFIGURATION.md) |
-| Componente cu așteptări independente | [Proiectarea testelor AI](AI_TEST_DESIGN.md) |
+| Componente cu așteptări independente | [Proiectarea testelor AI](testing/ai/README.md) |
 | Arhitectura mecanismelor de învățare | [Fluxul de îmbunătățire AI](AI_LEARNING_ARCHITECTURE.md) |
 | Separarea dezvoltării de evaluarea nouă | [Protocolul AI](AI_TRAINING_PROTOCOL.md) |
 | Comparații între strategii și locuri la masă | [Arena](AI_STRATEGY_ARENA.md) |
@@ -58,13 +58,14 @@ Ghidurile definesc responsabilități, contracte și principii. Datele de rulare
 
 | Activitate | Ghid |
 |---|---|
-| Contractul verificării unei partide | [Verificarea jocului](GAMEPLAY_VERIFICATION.md) |
-| Pregătirea dispozitivului și alegerea lansatorului | [Testarea Android](ANDROID_TESTING.md) |
-| Meniu, masă și scor pe mai multe ecrane | [Verificarea pe profiluri de ecran](WHIST_RESPONSIVE_UI_SANITY.md) |
+| Contractul verificării unei partide | [Verificarea jocului](testing/gameplay/README.md) |
+| Pregătirea dispozitivului și alegerea lansatorului | [Testarea Android](testing/android/README.md) |
+| Meniu, masă și scor pe mai multe ecrane | [Verificarea pe profiluri de ecran](testing/android/display/README.md) |
 | Testele și oracolele jocului | [Modulul Android](../atf-test-android/README.md) |
 | Contractul acțiunilor și publicării Android | [Contractul publicării](ATF_Android_Report_Contract.md) |
-| Integrarea binarelor comune | [Contractul bibliotecilor](LIBRARY_INTEGRATION.md) |
-| Verificarea datelor și navigării rezultatului publicat | [Auditul publicării](REPORTING_AUDIT_CONTRACT.md) |
+| Integrarea API-urilor comune | [Contractul bibliotecilor](LIBRARY_INTEGRATION.md) |
+| Livrarea și acceptanța bibliotecilor binare | [Consumul bibliotecilor comune](ATF_Platform_Libraries.md) |
+| Verificarea datelor și navigării rezultatului publicat | [Auditul publicării](testing/reporting/README.md) |
 | Responsabilitățile și datele de intrare pentru publicare | [Arhitectura raportării](reporting/README.md) |
 | Publicarea și reluarea offline a unui jurnal UI | [Predarea rezultatelor UI](WHIST_UI_REPORT_HANDOFF.md) |
 | Probleme, responsabilități și criterii de închidere | [Feedback](feedback/README.md) |

@@ -250,34 +250,45 @@ class WhistResponsivePlaySanityE2eTest {
             List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
         ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_hand_fan_fixture", "true",
                 "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-        String xml = scrollUntilVisible(adb, ui, profile, "Your hand, 13 cards.", true);
+        String xml = scrollUntilVisible(adb, ui, profile, "Your hand, 13 cards.", true, 104);
         List<Path> capture = ui.capture(profile.id() + "-thirteen-card-fan");
         evidence.addAll(capture);
         var faces = ui.handCardFaceBounds(xml).stream()
                 .sorted(Comparator.comparingInt(AndroidUiDriver.Bounds::left)).toList();
         var labels = ui.bottomRowCardLabels(xml);
         var viewport = ui.boundsForDescriptionContaining(xml, "Your hand,");
-        var left = faces.getFirst();
-        var right = faces.getLast();
-        int centerError = Math.abs(left.left() + right.right() - viewport.left() - viewport.right());
+        int centerError = faces.size() == 13
+                ? Math.abs(faces.getFirst().left() + faces.getLast().right()
+                        - viewport.left() - viewport.right()) : Integer.MAX_VALUE;
+        int expectedFaceHeight = (int) Math.round(104 * profile.density() / 160.0);
+        int shortestFaceHeight = faces.stream().mapToInt(WhistResponsivePlaySanityE2eTest::height)
+                .min().orElse(0);
+        long labelBaselines = labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count();
         List<AtfAssertion> checks = new ArrayList<>(List.of(
                 check("All thirteen cards fit on one row", "13", faces.size(),
                         faces.size() == 13 && labels.size() == 13),
+                check("All thirteen card faces are fully visible", expectedFaceHeight + " px minimum",
+                        shortestFaceHeight + " px minimum", faces.size() == 13
+                                && shortestFaceHeight >= expectedFaceHeight),
                 check("Dense hand is centered", "within one pixel", centerError / 2.0,
                         centerError <= 2),
-                check("Indices share one baseline", "one row",
-                        labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count(),
-                        labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count() == 1)));
+                check("Indices share one baseline", "one row", labelBaselines,
+                        labels.size() == 13 && labelBaselines == 1)));
         Path screenshot = capture.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow();
         BufferedImage image = ImageIO.read(screenshot.toFile());
         int[] display = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
         List<AndroidUiDriver.Bounds> indices = ui.playingCardLabelBounds(xml).stream()
                 .sorted(Comparator.comparingInt(AndroidUiDriver.Bounds::left)).toList();
-        for (int i = 0; i < indices.size(); i++) {
+        for (int i = 0; i < Math.min(indices.size(), faces.size()); i++) {
             HandIndexAudit.Result pixelAudit = HandIndexAudit.inspect(image, display[0], display[1],
                     box(indices.get(i)), box(faces.get(i)));
             checks.add(check("Rank and suit remain exposed " + (i + 1),
                     "readable", pixelAudit.readable(), pixelAudit.readable()));
+        }
+        if (indices.size() != 13 || faces.size() != 13) {
+            checks.add(check("Thirteen card rank and suit pixels are auditable", "13 visible indices",
+                    "only " + Math.min(indices.size(), faces.size()) + " complete cards",
+                    false));
         }
         checkCaptureSize(adb, capture, profile, checks);
         publishCheckpoint(ui, trace, profile, "Inspect the full thirteen-card fan", capture, checks);
@@ -425,14 +436,21 @@ class WhistResponsivePlaySanityE2eTest {
     }
 
     private static String scrollUntilVisible(AdbClient adb, AndroidUiDriver ui,
-            ResponsiveDisplayProfile profile, String expected, boolean description) throws Exception {
+            ResponsiveDisplayProfile profile, String expected, boolean description,
+            int minimumVisibleHeightDp) throws Exception {
         int[] dimensions = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
         int distance = Math.max(96, Math.round(dimensions[1] * 0.12f));
         for (int attempt = 0; attempt < 8; attempt++) {
             String latest = ui.dump();
             boolean visible = description
                     ? ui.hasDescriptionContaining(latest, expected) : ui.hasText(latest, expected);
-            if (visible) return latest;
+            if (visible) {
+                int requiredHeight = (int) Math.round(minimumVisibleHeightDp
+                        * profile.density() / 160.0);
+                int visibleHeight = description
+                        ? height(ui.boundsForDescriptionContaining(latest, expected)) : requiredHeight;
+                if (visibleHeight >= requiredHeight) return latest;
+            }
             if (attempt == 7) break;
             int startY = dimensions[1] * 90 / 100;
             int endY = Math.max(1, startY - distance);
@@ -507,7 +525,7 @@ class WhistResponsivePlaySanityE2eTest {
                         startsWithTwoCards)));
 
         ui.tapText("Place bid");
-        String play = ui.awaitText("PLAY NOW", Duration.ofSeconds(90));
+        String play = awaitPlayableTurn(adb, ui);
         int visibleSeats = seatCount(ui, play);
         record(ui, adb, trace, evidence, profile, "Complete Hard-AI bids on the Android runtime",
                 List.of(check("All four seats finish bidding without a runtime crash", "4 seats",
@@ -521,7 +539,7 @@ class WhistResponsivePlaySanityE2eTest {
             List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
         ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_nine_bids_fixture", "true",
                 "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-        String xml = scrollUntilVisible(adb, ui, profile, "Place bid", false);
+        String xml = scrollUntilVisible(adb, ui, profile, "Place bid", false, 0);
         List<Path> capture = ui.capture(profile.id() + "-nine-bid-controls");
         evidence.addAll(capture);
         List<Integer> bids = ui.numericButtonValues(xml);

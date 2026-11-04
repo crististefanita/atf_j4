@@ -1,6 +1,6 @@
 # Contractul publicării Android și al componentelor
 
-Publicarea oferă o prezentare autonomă a scopului, intrărilor și rezultatelor evaluate. Consumerul furnizează semantica domeniului și receptele tipizate; biblioteca comună furnizează prezentarea prin API-ul public.
+Publicarea oferă o prezentare autonomă a scopului, intrărilor și rezultatelor evaluate. Consumatorul furnizează semantica domeniului și înregistrările tipizate; biblioteca comună furnizează prezentarea prin API-ul public.
 
 ## Responsabilități
 
@@ -97,4 +97,4 @@ Checksum-ul descrie proveniența tehnică, fără să fie oracol de domeniu. Un 
 
 Controalele urmăresc proprietarul exact, multiplicitatea, ultima comparație, ordinea fragmentelor și bytes-ii PNG. Căutarea globală a unei valori sau a unui hash nu demonstrează asocierea ei cu scenariul corect.
 
-[Politica de prezentare](ATF_Game_Report_Presentation.md) · [Timing original](ATF_Android_Phase_Timing.md) · [Auditul publicării](REPORTING_AUDIT_CONTRACT.md) · [Responsabilități](feedback/README.md)
+[Politica de prezentare](ATF_Game_Report_Presentation.md) · [Timing original](ATF_Android_Phase_Timing.md) · [Auditul publicării](testing/reporting/README.md) · [Responsabilități](feedback/README.md)

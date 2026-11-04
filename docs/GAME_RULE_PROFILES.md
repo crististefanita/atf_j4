@@ -49,4 +49,4 @@ Configurația stabilește regulile aplicabile înainte de distribuire. Ajutorul 
 4. Actualizați ajutorul RO/EN și manifestele afectate.
 5. Verificați separat integrarea Android prin scenarii activate explicit.
 
-[Motorul de reguli](../whist-lab-app/game-core/README.md) · [Reguli RO](rules/WHIST_RO.md) · [Rules EN](rules/WHIST_EN.md) · [Colecții](TEST_COLLECTIONS.md)
+[Motorul de reguli](../whist-lab-app/game-core/README.md) · [Reguli RO](rules/WHIST_RO.md) · [Rules EN](rules/WHIST_EN.md) · [Colecții](testing/collections/README.md)

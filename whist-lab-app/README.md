@@ -57,7 +57,7 @@ GameSession validează comenzile înaintea schimbării stării; UI-ul redă star
 Versiunea aplicației, SDK-urile și identificatorul pachetului au ca sursă
 [configurația Gradle a aplicației](app/build.gradle). Un APK construit din sursele curente și un
 APK instalat anterior au proveniențe distincte; versiunea sursei nu dovedește
-ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/ANDROID_TESTING.md)
+ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/testing/android/README.md)
 
 ## Construire și verificare
 

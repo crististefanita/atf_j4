@@ -58,7 +58,7 @@ Politica strictă produce eșec, iar politica de avertizare păstrează rânduri
 | Unitar | Prezență, scalari, scheme, politici și proiecția comparațiilor. |
 | Componentă | Contractele evaluării AI și colaborarea regulilor prin API-ul public. |
 
-[Arhitectura testării](../docs/TESTING_ARCHITECTURE.md) definește matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
+[Arhitectura testării](../docs/testing/architecture/README.md) definește matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
 
 ```powershell
 mvn -B -pl atf-validation -am test

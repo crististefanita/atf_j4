@@ -35,8 +35,7 @@ import org.w3c.dom.Element;
 /** Opt-in publisher for module and Whist Lab acceptance results. */
 @AtfIntegrationTest
 class DeepSuiteExtentReportTest {
-    private static final List<String> MODULES = List.of(
-            "atf-test-kit", "atf-mock", "atf-validation", "atf-console", "atf-tests", "atf-test-android");
+    private static final List<String> MODULES = List.of("atf-test-kit", "atf-validation", "atf-tests", "atf-test-android");
     @Test
     void publishesCombinedComponentAndLiveGameplayReport() throws Exception {
         assumeTrue(Boolean.getBoolean("atf.deep.publish"), "Set -Datf.deep.publish=true after component runs to publish the final Extent report");

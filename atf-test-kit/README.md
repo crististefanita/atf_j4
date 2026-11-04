@@ -52,7 +52,7 @@ Un succes fără comparații produce diagnosticul structural `Audited assertion 
 | Unitar | Configurare, politici de audit, temporizare și resurse locale. |
 | Componentă | Ciclul JUnit real, izolarea invocărilor și extensiile de audit. |
 
-[Arhitectura testării](../docs/TESTING_ARCHITECTURE.md) definește nivelurile și matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
+[Arhitectura testării](../docs/testing/architecture/README.md) definește nivelurile și matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
 
 ```powershell
 mvn -B -pl atf-test-kit -am test

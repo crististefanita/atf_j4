@@ -23,4 +23,4 @@ Consumerul deține acțiunile, observațiile și oracolul aplicației. Bibliotec
 - Verificați aceleași contracte prin API-ul public pentru rendererul și fallback-ul consumate.
 - Revizia interactivă și execuția pe dispozitiv au scopuri explicite, separate de componente.
 
-[Timing Android](../ATF_Android_Phase_Timing.md) · [Verificarea publicării](../REPORTING_AUDIT_CONTRACT.md)
+[Timing Android](../ATF_Android_Phase_Timing.md) · [Verificarea publicării](../testing/reporting/README.md)

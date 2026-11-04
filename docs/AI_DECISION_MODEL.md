@@ -101,4 +101,4 @@ Lipsa unui certificat păstrează fallback-ul și nu dovedește că alternativa 
 - O carte forțată de legalitate nu dovedește intenția actorului.
 - Bugetul de simulare controlează costul și incertitudinea estimatorului; mărirea lui nu demonstrează singură progres strategic.
 
-[Configurarea regulilor și ponderilor](AI_RULES_AND_CONFIGURATION.md) · [Proiectarea testelor](AI_TEST_DESIGN.md) · [Arhitectura învățării](AI_LEARNING_ARCHITECTURE.md)
+[Configurarea regulilor și ponderilor](AI_RULES_AND_CONFIGURATION.md) · [Proiectarea testelor](testing/ai/README.md) · [Arhitectura învățării](AI_LEARNING_ARCHITECTURE.md)

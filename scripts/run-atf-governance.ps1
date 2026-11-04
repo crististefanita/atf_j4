@@ -41,13 +41,13 @@ $directories = @($policy.mavenModules) + @('lib','config','whist-lab-app/game-co
 foreach ($directory in $directories) {
     $origin = Join-Path $sourceRoot $directory
     $destination = Join-Path $stage $directory
-    & robocopy $origin $destination /E /XD target build artifacts .gradle .git node_modules /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot ('copy-' + ($directory -replace '[/\\]','-') + '.log'))
+    & robocopy $origin $destination /E /R:1 /W:1 /XD target build artifacts .gradle .git node_modules /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot ('copy-' + ($directory -replace '[/\\]','-') + '.log'))
     if ($LASTEXITCODE -gt 7) { throw "Copiere eșuată: $directory" }
 }
 $localRepository = Join-Path $stage 'maven-repository'
 New-Item -ItemType Directory -Path $localRepository | Out-Null
 if (Test-Path -LiteralPath $MavenCache -PathType Container) {
-    & robocopy $MavenCache $localRepository /E /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
+    & robocopy $MavenCache $localRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
     if ($LASTEXITCODE -gt 7) { throw 'Copierea cache-ului Maven a eșuat.' }
 }
 $savedJavaHome = $env:JAVA_HOME

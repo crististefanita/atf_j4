@@ -1,70 +1,71 @@
-# Android phase timing — execution and publication
+# Măsurarea timpilor Android
 
-## Contract
+Ceasul unei faze înregistrează intervalul monoton al activității originale. Trimiterea comenzilor, capturarea, persistența jurnalului și publicarea ulterioară au măsurători distincte.
 
-The phase clock records the original monotonic interval of each Android phase. Dispatch, capture, trace persistence and current report publication remain distinct measurements.
+## Axele temporale
 
-| Axis | Source | Meaning |
+| Axă | Sursă | Semnificație |
 |---|---|---|
-| original elapsed | phase start/end offsets from one trace clock origin | complete or interrupted interval; never derived from child durations |
-| original execution | elapsed minus measured capture and trace persistence | commands, settling, reads and independent business checks within that phase |
-| ADB dispatch | original ACTION records | command duration only; a subset of execution, not its replacement |
-| evidence capture | driver capture scope | full PNG and optional hierarchy acquisition, including failed attempts |
-| trace persistence | original manifest writes inside the interval | IO excluded from execution; retained separately |
-| report publication | a fresh clock during checkpoint projection | separate from original execution and from final HTML flush |
+| Interval original | Început și sfârșit față de aceeași origine monotonă. | Interval complet sau întrerupt, măsurat direct. |
+| Execuție originală | Intervalul original minus captura și persistența măsurate. | Comenzi, așteptări, citiri și verificări de domeniu din acea fază. |
+| Trimitere ADB | Înregistrările originale ACTION. | Durata comenzii, ca parte a execuției. |
+| Captură | Intervalul controlat de adaptorul de interacțiune. | Obținerea PNG-ului și a ierarhiei, inclusiv încercările eșuate. |
+| Persistență | Scrierea manifestului în intervalul fazei. | Operații de intrare/ieșire păstrate separat de execuție. |
+| Publicare | Un ceas nou la proiectarea punctului de control. | Activitatea publicării curente, distinctă de salvarea finală a HTML-ului. |
 
 ```mermaid
 flowchart LR
-    Clock["Original phase<br/>monotonic boundaries"] -->|capture| Trace["Intervals per owner<br/>execution + evidence axes"]
-    Trace -->|supply| Report["Extent / fallback<br/>original execution badge"]
-    Publish["Current publication<br/>independent clock"] -->|separate axis| Report
+    CLOCK[Ceasul fazei originale] -->|înregistrează limite| TRACE[Intervale și proprietari]
+    TRACE -->|furnizează execuția| REPORT[Publicare prin API]
+    PUBLISH[Ceasul publicării] -->|măsoară separat| REPORT
 ```
 
 <details>
-<summary><strong>Legend — captured work and later projection</strong></summary>
+<summary>Legendă: activitatea capturată și prezentarea ulterioară</summary>
 
-- Each interval belongs to one flow ID, phase name and ordinal; repeated visits retain separate ordered intervals.
-- Time spent in another phase does not enter a returning phase's duration.
-- PNG bytes, action records and comparisons retain their original checkpoint ownership.
-- A later PASS does not erase an interrupted interval or the original failure.
+Un interval aparține unui flux, unei faze și unei poziții ordinale. Revenirea într-o fază creează un interval separat; timpul petrecut între timp în altă fază nu este atribuit retroactiv primei faze.
 
 </details>
 
-## Capture and ownership
+## Captură și asociere
 
-[AndroidPhaseClock](../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseClock.java) owns monotonic measurement. [AndroidPhaseTiming](../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseTiming.java) validates immutable offsets and evidence axes; neither component dispatches ADB or evaluates application assertions.
+[AndroidPhaseClock](../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseClock.java) măsoară timpul monoton. [AndroidPhaseTiming](../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseTiming.java) validează intervalele și axele; aceste componente nu execută comenzi ADB sau verificări ale jocului.
 
-- [AndroidUiFlowTrace](../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) enters the phase before its first action. Driver capture scopes measure the whole PNG/hierarchy operation; checkpoint arrival never reconstructs a missing phase start.
-- The additive `phase.<ordinal>.timing` schema keeps trace format 1 compatible with legacy readers. It retains the flow/phase/ordinal tuple, interval offsets, capture and journal nanoseconds, and COMPLETE/PARTIAL state.
+- [AndroidUiFlowTrace](../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) deschide faza înaintea primei acțiuni.
+- Captura măsoară întreaga obținere a imaginii și ierarhiei; un punct de control ulterior nu reconstruiește un început lipsă.
+- Schema `phase.<ordinal>.timing` păstrează identitatea fluxului, fazei și ordinii, intervalele, duratele capturii și persistenței, plus starea COMPLETE/PARTIAL.
+- Schema aditivă păstrează compatibilitatea formatului de jurnal cu cititoarele vechi.
+- Octeții PNG, acțiunile și comparațiile rămân asociate punctului de control original.
 
-| Input | Publication policy |
+## Date complete, parțiale sau absente
+
+| Intrare | Politica publicării |
 |---|---|
-| complete original interval | supply execution through the existing public Reporting typed API |
-| interrupted original interval | preserve PARTIAL and FAIL at its owner, including failure before the first checkpoint |
-| absent legacy timing | show UNAVAILABLE explicitly; legacy dispatch/child badges are not complete original execution |
-| RUNNING or malformed declared timing | refuse complete publication; do not downgrade corrupted metadata to legacy |
-| interval moved to another flow/phase | reject the owner mismatch before accepting the report |
+| Interval original complet | Transmite execuția prin API-ul tipizat al bibliotecii. |
+| Interval întrerupt | Păstrează PARTIAL și cauza eșecului, inclusiv înaintea primei capturi. |
+| Date temporale absente într-un jurnal vechi | Afișează UNAVAILABLE; duratele comenzilor nu substituie intervalul complet. |
+| Date declarate RUNNING ori invalide | Refuză publicarea completă și semnalează metadatele corupte. |
+| Interval atribuit altui flux sau altei faze | Refuză asocierea înaintea acceptării rezultatului. |
 
-## Immediate and combined reports
+## Publicare individuală și agregată
 
-[AndroidPhaseReportTiming](../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseReportTiming.java) projects captured timing into the public Reporting API. Both the immediate Android publisher and the combined trace bridge use it; no private renderer or HTML rewrite is introduced.
+[AndroidPhaseReportTiming](../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseReportTiming.java) proiectează intervalele capturate în API-ul public. Publicatorul Android și adaptorul jurnalului agregat folosesc aceeași proiecție.
 
-The Android receipt explains the original interval axes, while final HTML flush remains outside the checkpoint-publication measurement. Preview policy is configured separately; original PNGs and checkpoint ownership are retained.
+Înregistrarea explică axele originale, iar salvarea finală a HTML-ului rămâne în afara duratei proiectării unui punct de control. Politica previzualizării se configurează separat; capturile originale își păstrează asocierea.
 
-## Permanent checks
+## Verificarea mecanismului
 
-| Boundary | Controls |
+| Limită | Controale |
 |---|---|
-| monotonic clock | execution/capture/journal separation, phase reentry, backward clock, interrupted capture and evidence overlap |
-| manifest codec | exact round trip, missing final scalar, wrong flow/phase/ordinal and impossible intervals |
-| individual publisher | controlled original execution versus dispatch and publication; exact timing marker and PNG ownership |
-| suite | the same controls with trace and existing publisher compatibility tests |
-| combined bridge | Extent/fallback republication and owner/scalar mutation controls |
-| browser review | native execution badge, original-row tables, disclosures and complete original Android PNGs |
+| Ceas | Separarea axelor, revenirea în fază, mersul înapoi, întreruperea și suprapunerea capturilor. |
+| Serializare | Conversie dus–întors exactă, scalari lipsă, intervale imposibile și proprietar greșit. |
+| Publicare individuală | Execuția originală, trimiterea comenzii și publicarea sunt controlate separat. |
+| Publicare agregată | Aceleași intervale prin Extent și prezentarea de rezervă, cu mutații ale scalarilor și proprietarilor. |
+| Revizie interactivă | Durata originală, tabelele, secțiunile pliabile și PNG-urile integrale rămân accesibile. |
 
 ```powershell
 mvn -pl atf-test-android -am '-Dtest=AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
 mvn -pl atf-tests -am '-Dtest=GameReportComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-Run agent builds in an owned TMP staging directory. Clock-controlled and archived-report checks are separate from a new device journey; a shared Android lease must be respected.
+Compilările se execută într-o copie temporară proprie. Verificarea unui ceas controlat sau a unui jurnal arhivat are un scop distinct de o interacțiune Android nouă.

@@ -37,9 +37,16 @@ Verificarea automată controlează structura și relațiile documentului. Revizi
 - Păstrați seturile de date și evaluările editoriale în arhiva externă, cu roluri și integritate verificabile.
 - Folosiți relații și nume de concepte stabile; o etapă istorică nu este identitatea arhitecturii curente.
 
+Valorile definite de reguli, limitele API și exemplele didactice generale au rol normativ. Numerele unei rulări, rezultatele unui candidat și deciziile unei partide sunt date istorice și se păstrează extern.
+
+Controalele active de schimbare a testelor au identitate, bază și termen interpretate de guvernanță. Aceste câmpuri sunt configurație executabilă și se întrețin distinct de explicațiile arhitecturale.
+
 ## Structură și diagrame
 
-- Toate README-urile se redactează în română; identificatorii API, comenzile și etichetele originale citate își păstrează forma.
+- Toate README-urile proiectului se redactează în română, inclusiv cele din module, cercetare și directoare imbricate.
+- Titlurile, explicațiile, tabelele, etichetele diagramelor și rezumatele pliabile folosesc româna cu diacritice.
+- Identificatorii API, numele fișierelor, comenzile și etichetele originale citate își păstrează forma exactă.
+- Termenii tehnici necesari se explică la prima folosire; numele din cod rămân legătura cu implementarea.
 - Un README are un singur titlu și o orientare scurtă înaintea detaliilor.
 - Tabelele compară responsabilități sau contracte; listele descriu pași ori condiții paralele.
 - O diagramă exprimă dependențe, stare sau flux, fără să repete ornamental lista directoarelor.
@@ -56,7 +63,7 @@ Verificările includ titluri, orientare, structură pliabilă, linkuri și fragm
 - Revizia factuală urmărește API-urile, direcția dependențelor, proprietatea datelor și existența mecanismelor descrise.
 - [Feedback-ul](feedback/README.md) direcționează lacunele validatorului către proprietarul comun.
 
-[Suita locală de calitate](ATF_QUALITY_GOVERNANCE.md) aplică verificatoarele adaptate pe rădăcina explicită a proiectului. [Arhitectura testării](TESTING_ARCHITECTURE.md) păstrează matricea nivelurilor în acord cu declarațiile executabile.
+[Suita locală de calitate](testing/governance/README.md) aplică verificatoarele adaptate pe rădăcina explicită a proiectului. [Arhitectura testării](testing/architecture/README.md) păstrează matricea nivelurilor în acord cu declarațiile executabile.
 
 ## Evaluarea editorială
 

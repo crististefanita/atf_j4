@@ -31,7 +31,7 @@ class TestLayerGovernanceTest {
         assertFalse(matrix.isEmpty());
         var documented = new TreeMap<String, Set<String>>();
         var columns = java.util.List.of("@AtfUnitTest", "@AtfComponentTest", "@AtfIntegrationTest", "@AtfE2eTest");
-        for (String row : Files.readAllLines(root.resolve("docs/TESTING_ARCHITECTURE.md"))) {
+        for (String row : Files.readAllLines(root.resolve("docs/testing/architecture/README.md"))) {
             if (!row.startsWith("| `atf-")) continue;
             String[] cells = row.split("\\|", -1);
             String module = cells[1].trim().replace("`", "");

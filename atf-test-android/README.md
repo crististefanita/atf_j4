@@ -20,7 +20,7 @@ flowchart LR
 <details>
 <summary>Legendă: infrastructură și domeniu în același modul</summary>
 
-Adaptorul execută comenzi delimitate și păstrează rezultatul original. Driverul de scenariu interpretează interfața, iar oracolul verifică regulile; biblioteca comună primește datele de intrare tipizate pentru publicare.
+Adaptorul execută comenzi delimitate și păstrează rezultatul original. Adaptorul de interacțiune interpretează interfața, iar oracolul verifică regulile; biblioteca comună primește datele de intrare tipizate pentru publicare.
 
 </details>
 
@@ -28,7 +28,7 @@ Adaptorul execută comenzi delimitate și păstrează rezultatul original. Drive
 
 | Zonă | Responsabilitate |
 |---|---|
-| [AdbClient](src/main/java/atf/android/AdbClient.java) | Identificator de dispozitiv explicit, termen finit și rezultate text sau binare. |
+| [AdbClient](src/main/java/atf/android/AdbClient.java) | Identificator de dispozitiv explicit, durată maximă și rezultate text sau binare. |
 | [AndroidScreenshotEvidence](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) | PNG-ul original transmis prin API-ul public al raportării. |
 | [Temporizare](src/main/java/atf/android/evidence/timing/) | Ceas monoton, intervale, codec și proiecție, fără interpretarea regulilor jocului. |
 | [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Validări pure și indexare externă reutilizabilă. |
@@ -40,7 +40,7 @@ Codul reutilizabil se află în sursele principale ale acestui modul, cu pachete
 
 ## Contracte de execuție
 
-- Un identificator de dispozitiv explicit și un termen finit delimitează fiecare comandă ADB.
+- Un identificator de dispozitiv explicit și o durată maximă delimitează fiecare comandă ADB.
 - Rezultatul trimiterii comenzii și tranziția semantică observată au verdicte distincte.
 - PNG-ul integral și ierarhia aparțin aceluiași punct de control verificat.
 - Dreptunghiurile UIAutomator sunt logice; aserțiunile de pixeli le mapează la rasterul PNG fizic înainte de comparație.
@@ -56,17 +56,17 @@ Dintr-o copie temporară proprie de lucru, cu POM-ul părinte și bibliotecile c
 mvn -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
 ```
 
-Profilul responsive-sanity compilează numai suportul și testele necesare fluxului responsive. Comenzile care solicită întregul set de componente folosesc configurația normală a modulului.
+Profilul `responsive-sanity` compilează numai suportul și testele necesare verificării pe ecrane de dimensiuni diferite. Comenzile care solicită întregul set de componente folosesc configurația normală a modulului.
 
 ## Fluxuri Android
 
 Scenariile pe dispozitiv se activează explicit, cu identificator de dispozitiv și rezervare exclusivă.
 
-- Lansatorul responsive verifică precondițiile și profilele înainte de acces.
-- Matricea vizuală verifică locurile și derulează până când cartea, locul activ și mâna legală pot fi auditate pe profile compacte.
+- Lansatorul verifică precondițiile și profilurile de ecran înainte de acces.
+- Matricea vizuală verifică locurile și derulează până când cartea, locul activ și cărțile jucabile legal pot fi verificate pe ecranele compacte.
 - Construirea APK-ului și acceptanța instalării au contracte separate.
 
-[Verificarea jocului](../docs/GAMEPLAY_VERIFICATION.md) · [Testarea Android](../docs/ANDROID_TESTING.md) · [Temporizare](../docs/ATF_Android_Phase_Timing.md) · [Publicare](../docs/ATF_Android_Report_Contract.md)
+[Verificarea jocului](../docs/testing/gameplay/README.md) · [Testarea Android](../docs/testing/android/README.md) · [Temporizare](../docs/ATF_Android_Phase_Timing.md) · [Publicare](../docs/ATF_Android_Report_Contract.md)
 
 ## Niveluri de testare
 
@@ -76,4 +76,4 @@ Scenariile pe dispozitiv se activează explicit, cu identificator de dispozitiv 
 | Componentă | ADB controlat, capturi, oracole, geometrie și publicare fără dispozitiv. |
 | E2E | Interacțiuni noi în aplicația instalată, cu rezervarea dispozitivului. |
 
-[Arhitectura testării](../docs/TESTING_ARCHITECTURE.md) separă nivelul, colecția, mediul și publicarea. Un jurnal reluat nu reprezintă o nouă execuție Android.
+[Arhitectura testării](../docs/testing/architecture/README.md) separă nivelul, colecția, mediul și publicarea. Un jurnal reluat nu reprezintă o nouă execuție Android.

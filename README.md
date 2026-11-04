@@ -6,7 +6,7 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 ## Jocul
 
-[Instalare APK 0.1.5](dist/WhistLab-0.1.5.apk) · [Verificarea jocului pe mai multe ecrane](docs/WHIST_RESPONSIVE_UI_SANITY.md)
+[Instalare APK 0.1.5](dist/WhistLab-0.1.5.apk) · [Verificarea jocului pe mai multe ecrane](docs/testing/android/display/README.md)
 
 Profilul principal este Whist românesc, patru jucători, cu programul 1–8–1.
 Jucătorul urmează culoarea cerută; când nu o are, joacă atu dacă are atu.
@@ -54,7 +54,7 @@ Motorul deține regulile și tranzițiile. Aplicația deține interacțiunea, ia
 | `whist-lab-app/algorithm-build` | Construirea JVM a motorului pentru lucru offline, fără SDK Android. |
 | `whist-lab-app/ai-lab` | Experimente și evaluator independent; nu este inclus în aplicație. |
 | `atf-test-android` | Adaptor ADB, captură și temporizare Android, audituri reutilizabile, componente și E2E Whist Lab. |
-| `atf-test-kit`, `atf-mock`, `atf-validation`, `atf-console` | Suportul comun al testelor și al execuției. |
+| `atf-test-kit`, `atf-validation` | Suportul comun al testelor, configurării și validării. |
 | `atf-tests` | Contracte ale adaptoarelor, integrarea bibliotecilor și guvernanța calității. |
 | `config`, `scripts` | Colecții, reguli declarative, selecție de partide și lansatoarele Whist Lab. |
 | `lib` | Biblioteci binare; versiunile efective sunt în POM, iar proveniența în `library-provenance.json`. |
@@ -84,9 +84,9 @@ Pentru regresia completă a componentelor:
 Lansatorul pregătește sursele într-un director temporar și păstrează rezultatele
 în depozitul extern de dovezi. Aceste colecții nu comandă emulatorul.
 Parametrii și delimitarea colecțiilor sunt în
-[catalogul colecțiilor](docs/TEST_COLLECTIONS.md).
+[catalogul colecțiilor](docs/testing/collections/README.md).
 
-[Arhitectura testării](docs/TESTING_ARCHITECTURE.md) explică nivelurile unitar, componentă, integrare și E2E, cu o matrice verificată față de cod. [Guvernanța calității](docs/ATF_QUALITY_GOVERNANCE.md) descrie verificările surselor și documentației.
+[Arhitectura testării](docs/testing/architecture/README.md) explică nivelurile unitar, componentă, integrare și E2E, cu o matrice verificată față de cod. [Guvernanța calității](docs/testing/governance/README.md) descrie verificările surselor și documentației.
 
 ## Cum dezvoltăm jucătorii
 
@@ -113,7 +113,7 @@ Aceste evaluări măsoară comportamente pe domenii declarate, fără garanția 
 
 Testele pe dispozitiv urmează verificărilor offline și cer un dispozitiv
 identificat explicit, conectivitate ADB și acces exclusiv pe durata scenariului.
-[Ghidul Android](docs/ANDROID_TESTING.md) descrie pregătirea și comenzile;
+[Ghidul Android](docs/testing/android/README.md) descrie pregătirea și comenzile;
 [aplicația](whist-lab-app/README.md) descrie procesul de construire și salvările.
 
 Sursele rămân în proiect, compilările intermediare în directoare temporare,
@@ -125,3 +125,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite
 de actualizarea ghidului relevant și de o verificare potrivită acelui comportament.
+
+## Biblioteci comune
+
+Reactorul păstrează modulele locale de testare și adaptoarele Android. [Contractul bibliotecilor comune](docs/ATF_Platform_Libraries.md) explică perechile binare din `lib`, identitatea lor și limitele acceptanței locale.

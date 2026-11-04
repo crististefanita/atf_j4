@@ -45,6 +45,6 @@ Bugetele, departajările și domeniile certificate sunt definite în [manifestul
 
 Parserul de dificultate convertește numele vechi EXPERT în HARD fără o a treia opțiune de meniu. Numele necunoscute și checkpoint-urile invalide sunt tratate prin validările explicite ale persistenței.
 
-[Testele de contract](../whist-lab-app/game-core/src/test/java/ro/whistlab/core/DifficultyContractTest.java) verifică enum-ul, dispatch-ul și migrarea. [Colecțiile](TEST_COLLECTIONS.md) disting regresiile de domeniu de compararea politicilor și integrarea Android.
+[Testele de contract](../whist-lab-app/game-core/src/test/java/ro/whistlab/core/DifficultyContractTest.java) verifică enum-ul, dispatch-ul și migrarea. [Colecțiile](testing/collections/README.md) disting regresiile de domeniu de compararea politicilor și integrarea Android.
 
 [Modelul deciziei](AI_DECISION_MODEL.md) formalizează observația, estimarea și ordinea obiectivelor.

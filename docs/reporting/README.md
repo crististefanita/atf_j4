@@ -2,13 +2,13 @@
 
 ## Pe scurt
 
-Consumatorul Whist Lab deține selecția testelor, semantica jocului și datele de intrare publicării. Biblioteca de raportare transformă receptele tipizate într-o prezentare autonomă, păstrând verdictele evaluate și proprietatea capturilor.
+Consumatorul Whist Lab deține selecția testelor, semantica jocului și datele de intrare pentru publicare. Biblioteca de raportare transformă înregistrările de execuție într-o prezentare autonomă, păstrând verdictele evaluate și asocierea capturilor cu testele care le-au produs.
 
 ## Fluxul publicării
 
 ```mermaid
 flowchart LR
-TEST[Test executat] -->|capturează| RECEIPT[Recepte tipizate]
+TEST[Test executat] -->|capturează| RECEIPT[Înregistrări de execuție]
 SELECT[Politică de selecție] -->|alege invocări| RECEIPT
 RECEIPT -->|compune| CONSUMER[Publicator Whist]
 CONSUMER -->|apelează API| LIB[Bibliotecă de raportare]

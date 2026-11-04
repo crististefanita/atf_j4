@@ -26,7 +26,7 @@ Arhiva păstrează proveniența, partiția și integritatea datelor. O selecție
 - Conținutul unei execuții închise este imuabil și verificabil prin hash.
 - Seturile pentru dezvoltare, referință și evaluare rezervată au roluri explicite.
 - Repetițiile fără lecții noi pot fi scoase din selecția activă fără a pierde registrul originii.
-- Pointerele de selecție se actualizează separat de datele partidelor.
+- Referințele către selecția activă se actualizează separat de datele partidelor.
 - Documentele stabile conțin reguli și limite; scorurile, exemplele și evaluările editoriale apar în arhiva externă.
 
 [Arhitectura învățării](../AI_LEARNING_ARCHITECTURE.md) · [Guvernanța documentației](../DOCUMENTATION_GOVERNANCE.md)

@@ -8,6 +8,6 @@ import org.junit.platform.suite.api.Suite;
 /** Local source/documentation governance; no device, training run or renderer harness. */
 @AtfIntegrationTest
 @Suite
-@SelectPackages("atf.tests.governance")
+@SelectPackages({"atf.tests.governance", "atf.libraries"})
 @IncludeClassNamePatterns(".*Test")
 public class AtfQualityGovernanceSuite { }

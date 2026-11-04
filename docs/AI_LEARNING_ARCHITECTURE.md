@@ -107,4 +107,4 @@ Hard folosește contractele cunoscute drept ținte ale simulărilor și constrâ
 | Utilitatea și prioritățile | Contractul, scorul, seria și obiectivul politicii. |
 | Verificarea și promovarea | Proprietăți independente, comparații controlate și criterii fixate. |
 
-[Modelul deciziei](AI_DECISION_MODEL.md), [regulile și ponderile](AI_RULES_AND_CONFIGURATION.md) și [proiectarea testelor](AI_TEST_DESIGN.md) detaliază aceste limite fără a depinde de o partidă concretă.
+[Modelul deciziei](AI_DECISION_MODEL.md), [regulile și ponderile](AI_RULES_AND_CONFIGURATION.md) și [proiectarea testelor](testing/ai/README.md) detaliază aceste limite fără a depinde de o partidă concretă.

@@ -31,4 +31,4 @@ Prezența unui nod sau dreptunghi nu dovedește singură lizibilitatea. Controal
 
 Un defect nou se reduce la o componentă ori stare de display cu proprietate explicită. Situația controlată verifică mecanismul de randare, iar jocul normal verifică integrarea lui cu starea domeniului.
 
-[Atlasul UI](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md) · [Scor](../WHIST_SCORE_HISTORY.md) · [Profile de ecran](../WHIST_RESPONSIVE_UI_SANITY.md)
+[Atlasul UI](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md) · [Scor](../WHIST_SCORE_HISTORY.md) · [Profile de ecran](../testing/android/display/README.md)

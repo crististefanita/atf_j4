@@ -57,3 +57,7 @@ contractele curente de implementare și teste.
 - Un raport nou nu rescrie o încercare anterioară și nu transformă lipsa de
   dovadă într-un PASS.
 - Schimbările concurente se reconciliază înainte de promovarea surselor.
+
+## Biblioteci comune
+
+[Contractul consumului binar](../ATF_Platform_Libraries.md) separă implementarea comună de adaptoarele și acceptanța locală. Cerințele comune urmează aceeași rutare către responsabilul bibliotecilor.

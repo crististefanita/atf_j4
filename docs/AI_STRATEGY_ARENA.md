@@ -44,4 +44,4 @@ foreach ($seed in $seeds) { .\scripts\run-offline-strategy-profiles.ps1 -Seed $s
 
 Folosiți o singură înregistrare de rulare pentru fiecare seed dintr-un rezumat. Pentru promovare, înghețați candidatul și protocolul înainte să selectați lotul neatins.
 
-[Protocolul arenei](../config/strategy-arena.json) · [Colecțiile disponibile](TEST_COLLECTIONS.md) · [Reguli contextuale](rules/AI_HAND_PATTERNS_RO.md) · [Protocolul de învățare](AI_TRAINING_PROTOCOL.md)
+[Protocolul arenei](../config/strategy-arena.json) · [Colecțiile disponibile](testing/collections/README.md) · [Reguli contextuale](rules/AI_HAND_PATTERNS_RO.md) · [Protocolul de învățare](AI_TRAINING_PROTOCOL.md)

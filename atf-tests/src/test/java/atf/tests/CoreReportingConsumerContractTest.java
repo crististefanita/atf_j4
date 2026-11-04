@@ -20,6 +20,23 @@ import org.junit.jupiter.api.io.TempDir;
 @AtfIntegrationTest
 class CoreReportingConsumerContractTest {
     @Test
+    void combinedAcceptanceRequestsResultsOnlyForDeclaredSourceModules() throws Exception {
+        Path root = atf.libraries.PlatformLibrarySurface.workspace();
+        var modules = new java.util.HashSet<String>();
+        var factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(javax.xml.XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        var declared = factory.newDocumentBuilder().parse(root.resolve("pom.xml").toFile()).getElementsByTagName("module");
+        for (int index = 0; index < declared.getLength(); index++) modules.add(declared.item(index).getTextContent().strip());
+        var catalog = DeepSuiteExtentReportTest.class.getDeclaredField("MODULES"); catalog.setAccessible(true);
+        var actual = (List<?>) catalog.get(null);
+        assertEquals(modules, new java.util.HashSet<>(actual), "External libraries have producer-native acceptance, not local Surefire XML");
+        assertEquals(modules.size(), actual.size(), "Combined results must not duplicate a source module");
+    }
+
+
+    @Test
     void androidInfrastructureAndGameEvidenceLoadFromTheSameModule() {
         var owner = atf.android.whist.evidence.WhistExtentFeedback.class
                 .getProtectionDomain().getCodeSource().getLocation();
@@ -35,16 +52,21 @@ class CoreReportingConsumerContractTest {
     }
 
     @Test
-    void bothLibrariesLoadTheDeclaredSingleFlatJar() throws Exception {
+    void allLibrariesLoadTheDeclaredSingleFlatJar() throws Exception {
         Path root = Path.of("").toAbsolutePath();
         while (root != null && !Files.isRegularFile(root.resolve("library-provenance.json"))) root = root.getParent();
         if (root == null) throw new IllegalStateException("Missing J4 library provenance root");
         String pom = Files.readString(root.resolve("pom.xml"));
-        for (String artifact : List.of("core", "reporting")) {
+        for (String artifact : List.of("core", "reporting", "console", "mock")) {
             var version = java.util.regex.Pattern.compile("<atf\\." + artifact + "\\.version>([^<]+)</atf\\." + artifact + "\\.version>").matcher(pom);
             assertTrue(version.find(), "Declared library coordinate: " + artifact);
             String name = "atf-" + artifact + "-" + version.group(1) + ".jar";
-            Class<?> entry = artifact.equals("core") ? AtfDurationParser.class : ExtentReportSession.class;
+            Class<?> entry = switch (artifact) {
+                case "core" -> AtfDurationParser.class;
+                case "reporting" -> ExtentReportSession.class;
+                case "console" -> atf.console.AtfConsoleReporter.class;
+                default -> atf.mock.AtfMockTransport.class;
+            };
             Path loaded = Path.of(entry.getProtectionDomain().getCodeSource().getLocation().toURI());
             assertTrue(Files.isRegularFile(loaded), "Consumer must load a physical JAR: " + loaded);
             assertEquals(name, loaded.getFileName().toString());

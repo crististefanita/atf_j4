@@ -23,4 +23,4 @@ Navigarea păstrează conținutul obligatoriu și limitează lucrul de pregătir
 - Controalele de corupere verifică dacă modificarea conținutului este detectată.
 - Implementarea generică se verifică la proprietarul bibliotecii; consumerul păstrează contractul pe care îl utilizează.
 
-[Verificarea publicării](REPORTING_AUDIT_CONTRACT.md) · [Politica inputului](ATF_Game_Report_Presentation.md) · [Responsabilități](feedback/README.md)
+[Verificarea publicării](testing/reporting/README.md) · [Politica inputului](ATF_Game_Report_Presentation.md) · [Responsabilități](feedback/README.md)

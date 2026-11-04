@@ -1,72 +1,75 @@
-# Game reports — scope, detail and completeness
+# Politica prezentării rezultatelor de joc
 
-One immutable consumer policy controls AUTO, SUMMARY and FULL for the game publishers.
-The consumer prepares evidence and uses the binary library’s native renderer ports,
-tables, disclosures and screenshot viewer.
+O politică imutabilă controlează selecția AUTO, SUMMARY și FULL și limitele prezentării. Consumatorul pregătește datele; biblioteca binară furnizează API-urile, tabelele, secțiunile pliabile și vizualizatorul capturilor.
 
-## One configuration, captured once
+## Configurația capturată la început
 
-| Configuration | Responsibility |
+| Configurație | Responsabilitate |
 |---|---|
-| config/game-evidence.yml | consumer scope and presentation limits; explicit override: atf.evidence.policy |
-| atf.yaml / atf.yml | generic assertion preview and body budget; explicit override: atf.report.config |
-| EvidencePolicy / GameReportConfiguration | resolve both once at composition; later file/property changes do not alter the captured run |
+| `config/game-evidence.yml` | Selecția și limitele specifice consumatorului; cale explicită prin `atf.evidence.policy`. |
+| `atf.yaml` sau `atf.yml` | Previzualizarea comparațiilor și bugetul conținutului; cale explicită prin `atf.report.config`. |
+| `EvidencePolicy` și `GameReportConfiguration` | Rezolvarea configurației o singură dată pentru publicare. |
 
-The evidence YAML declares required selection fields and optional presentation fields with explicit defaults. Unknown keys, duplicate keys, multiple documents,
-invalid enums/types, overflow and nonpositive limits are refused.
+Schimbarea ulterioară a unui fișier sau a unei proprietăți nu modifică configurația deja capturată. Cheile necunoscute ori duplicate, documentele multiple, tipurile invalide, depășirile numerice și limitele nepozitive sunt refuzate.
 
-The current defaults are in [game-evidence.yml](../config/game-evidence.yml).
+Valorile implicite se consultă în [configurația efectivă](../config/game-evidence.yml).
 
-## Mode semantics
+```mermaid
+flowchart LR
+    CONFIG[Configurație capturată] -->|controlează| SELECT[Selecția invocărilor]
+    INPUT[Înregistrări originale] -->|alimentează| SELECT
+    SELECT -->|păstrează comparații complete| GROUP[Grupuri și fragmente]
+    GROUP -->|transmite prin API| HTML[Prezentare autonomă]
+```
 
-| Level | Learning invocation scope | Common presentation |
+<details>
+<summary>Legendă: selecție și completitudine</summary>
+
+Selecția decide ce invocări sunt prezentate și declară omisiunile. Gruparea păstrează toate comparațiile obligatorii ale invocărilor selectate, cu identitatea și verdictul original.
+
+</details>
+
+## Modurile de prezentare
+
+| Mod | Invocări păstrate | Context și prezentare |
 |---|---|---|
-| AUTO | retain the supplied population within inclusive thresholds; otherwise deterministic whole examples per family, all non-PASS and quality gates | retain optional context within the captured run budget; group every retained comparison |
-| SUMMARY | representative whole passing examples, all non-PASS and quality gates; declared original/retained/omitted IDs | omit optional context and fingerprints; retain all required facts in the declared scope |
-| FULL | every supplied invocation and checkpoint | retain requested optional detail within positive budgets or refuse complete-audit acceptance |
+| AUTO | Toată populația furnizată în limitele incluzive; altfel exemple complete deterministe, rezultate diferite de PASS și verificări obligatorii. | Context opțional în bugetul capturat și toate comparațiile selectate. |
+| SUMMARY | Exemple complete reușite, rezultate diferite de PASS și verificări obligatorii. | Omite contextul opțional și amprentele; declară inventarul original, păstrat și omis. |
+| FULL | Toate invocările și punctele de control furnizate. | Păstrează detaliul cerut în limitele pozitive sau refuză publicarea completă. |
 
-- Each producer declares its selected invocation scope; no receipt is sampled implicitly from an aggregate report.
-- All comparisons in the declared scope retain original names, expected/actual, verdict and order; the display policy does not run the game or recalculate an oracle.
-- A selected learning HTML explicitly states that omitted passing games are not individually audited by that artifact.
+Colecțiile marcate explicit pentru păstrare completă se păstrează conform politicii în fiecare mod. Modul de prezentare nu extinde populația furnizată de producător și nu execută jocul sau oracolul.
 
-## Native tables and complete evidence
+## Grupare și conținut integral
 
-| Surface | Contract |
+| Suprafață | Contract |
 |---|---|
-| component comparisons | native assertion steps, at most rowsPerGroup rows; following groups state their original row range |
-| fragment verdict | computed from its retained rows; the terminal fragment also preserves a caller-supplied group outcome |
-| assertion cells | native 240-character preview; complete long values remain attached to the original group/checkpoint |
-| observation fields | at most fieldsPerGroup rows; long values retain a complete body, reusing an exact body already in that observation |
-| TEXT bodies | ordered parts, preferring line boundaries and preserving CR/LF, Unicode and literal entities |
-| JSON bodies | complete typed fragments at object/array boundaries; an oversized indivisible scalar/array item is refused |
-| Android images | original complete PNGs and checkpoint identity; the policy does not crop, replace or discard a screenshot |
-| observations without comparisons | explicit media API, one Gherkin keyword and zero invented business assertions |
+| Comparații | Grupuri native cu cel mult `rowsPerGroup` rânduri; continuările indică intervalul original. |
+| Verdict de fragment | Derivat din rândurile păstrate; fragmentul terminal păstrează și rezultatul grupului furnizat explicit. |
+| Valori lungi | Previzualizare nativă de 240 de caractere și acces la valorile complete, asociate grupului original. |
+| Observații | Cel mult `fieldsPerGroup` rânduri; valorile lungi păstrează conținutul complet. |
+| TEXT | Părți ordonate, cu preferință pentru sfârșitul de linie și păstrarea CR/LF, Unicode și entităților literale. |
+| JSON | Documente complete la limite de obiect sau tablou; un element indivizibil peste buget este refuzat. |
+| Capturi Android | PNG integral original, asociat punctului de control; selecția nu înlocuiește ori decupează imaginea. |
+| Observație fără comparații | API-ul explicit pentru materiale atașate, fără aserțiuni de domeniu inventate. |
 
-JSON fragments are complete documents, not a prefix that happens to parse. Core validates whole documents strictly; original numeric spellings survive native formatting and fragmentation. The presentation contracts check ordered parts and complete typed values; LearningReportHtmlAudit also verifies original checkpoint ownership, final rows and verdicts.
+Fiecare fragment JSON este un document complet. Formele numerice originale se păstrează prin formatare și fragmentare; lipsa ori reordonarea unei părți invalidează completitudinea.
 
-- A missing or reordered part cannot certify complete evidence.
+## Date opționale și refuzul publicării
 
-## Optional data and audit refusal
+- Apelantul marchează explicit diagnosticul opțional; eticheta ori numele fișierului nu decid caracterul obligatoriu.
+- Amprentele selectate și observațiile opționale folosesc același buget cumulativ de elemente și caractere.
+- Pregătirea obligatorie, intrările comparate, verdictele, cauzele eșecului și capturile rămân date obligatorii.
+- Referințele diagnostice externe sunt numărate și omise din HTML; fișierul extern nu substituie informația obligatorie încorporată.
+- Starea INCOMPLETE păstrează refuzul publicării până la închidere, chiar dacă apelantul interceptează o eroare anterioară de buget.
 
-- Callers explicitly mark optional diagnostics; labels or filenames do not decide whether assertion evidence may disappear.
-- Fingerprints selected upstream and optional observations share one cumulative item/character budget, with original/retained/omitted counts and reasons.
-- Required setup, compared inputs, original outcomes, failure causes and images do not consume an optional omission allowance.
-- External diagnostic references are counted and excluded from the public HTML in every mode; an external file cannot substitute for required inline evidence.
-- INCOMPLETE remains a publication refusal through session close, even if a caller catches an earlier body/budget error; captured business outcomes remain separate.
-
-| Budget unit | Boundary |
+| Unitate | Limită |
 |---|---|
-| retained content | UTF-16 character counts; body limits follow the native Reporting length policy |
-| HTML overhead | escaping, labels and renderer markup add size beyond the content budget |
-| required evidence | may still produce a large artifact; publication does not promise unlimited memory or a fixed total HTML size |
+| Conținut | Numărare în unități UTF-16, conform politicii bibliotecii. |
+| HTML | Marcajele, etichetele și caracterele de evitare adaugă volum peste bugetul conținutului. |
+| Date obligatorii | Pot produce un rezultat mare; politica nu garantează o dimensiune totală fixă a HTML-ului sau a memoriei. |
 
-## Responsibilities and verification
+## Implementare și verificare
 
-The composition layer lives in atf-tests main Java. Existing business producers and
-independent oracles remain at their owners; Runtime renderer maintenance and generic browser regressions follow the
-[ownership contract](feedback/README.md).
+Compoziția datelor se află în sursele principale ale [modulului de integrare](../atf-tests/README.md). Întreținerea componentei generice de randare se direcționează prin [responsabilitățile comune](feedback/README.md).
 
-[Owner contracts](../atf-tests/README.md) and [publication verification](REPORTING_AUDIT_CONTRACT.md)
-separate source tests, physical-JAR rendering, archived execution data and new live journeys.
-[Active feedback](feedback/ATF_Android_Alignment_Feedback.md) retains the remaining receipt,
-legacy business-audit, timing and device criteria.
+[Verificarea publicării](testing/reporting/README.md) confruntă identitatea, valorile, ordinea și accesul la conținut. [Contractele Android](ATF_Android_Report_Contract.md) disting publicarea unui jurnal de o interacțiune nouă pe dispozitiv.

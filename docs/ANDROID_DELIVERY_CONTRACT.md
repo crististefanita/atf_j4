@@ -37,4 +37,4 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 4. Verificați restaurarea și schema înainte de a elimina copia de siguranță.
 5. Păstrați explicit limitele migrării informației lipsă.
 
-[Build-ul aplicației](../whist-lab-app/README.md) · [Testarea Android](ANDROID_TESTING.md) · [Istoricul scorului](WHIST_SCORE_HISTORY.md)
+[Build-ul aplicației](../whist-lab-app/README.md) · [Testarea Android](testing/android/README.md) · [Istoricul scorului](WHIST_SCORE_HISTORY.md)

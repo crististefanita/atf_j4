@@ -435,5 +435,164 @@
     "path": "C:/work/whist_back/documentation-audits/20261104-200338-romanian-layers/historical-library-provenance.json",
     "sha256": "eb632445e750f4e18bbbcc1b5bd0b5b63c277650583310ee920c64b453c0b922",
     "retention": "Istoricul original și acceptanțele sunt păstrate integral în arhiva externă; acest fișier identifică numai bibliotecile consumate curent."
+  },
+  "platformLibraries": {
+    "console": {
+      "coordinate": "atf.api:atf-console:1.0.0-c1",
+      "binarySha256": "be71440c0f6bf9a6dbc3c6015ba8e58d5114a289cc4c4d88c434826b1b6423c1",
+      "publishedPomSha256": "4cceabb6c540f018caacac47497b0b654840e3fc77c5611e9147190026a2522c",
+      "producerDirectory": "C:/work/1/atf_j0",
+      "producerGitHead": "89c5b026de84042b032216e035e0008a5e7532c7",
+      "buildStage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_CONSOLE_MOCK_ACTIVE_DO_NOT_CLEAN_74b0e613\\publisher-console-a",
+      "producerInputs": {
+        "files": 25,
+        "sha256": "8a8513be58c6e98b6b0eee035f528e90b92136838fae396b92bd7fc1e29460cc",
+        "nativeTests": [
+          {
+            "path": "src/test/java/atf/console/AtfConsoleConfigurationLoaderTest.java",
+            "sha256": "05314291838d2f3fbab523832b9e1553bc17d7582bbee7165fe5127650cba4a3"
+          },
+          {
+            "path": "src/test/java/atf/console/AtfConsoleReporterTest.java",
+            "sha256": "919d6839f3756c2dd015b3632c2215c1ba0a701332680e27bcef58c1384feca8"
+          },
+          {
+            "path": "src/test/java/atf/console/capture/AtfConsoleOutputCaptureTest.java",
+            "sha256": "a4e290d380cd47665ef9cbcefc55adbb892278c854cc5b20830f4f853dd25cba"
+          },
+          {
+            "path": "src/test/java/atf/console/ConsoleLifecycleStateTest.java",
+            "sha256": "ca8505287ab5d01a8b91461262a7d47d17235330cb8845b4649e09d4906138cc"
+          },
+          {
+            "path": "src/test/java/atf/console/junit/AtfConsoleMessagePolicyTest.java",
+            "sha256": "eff1a69f28981feab46db00acc33ca902bad70e29b1cdd9d51046f1574d9ab2d"
+          },
+          {
+            "path": "src/test/java/atf/console/junit/AtfConsoleTestExtensionIntegrationTest.java",
+            "sha256": "3bda039f35f67dcc5e0060f5ebf047a056d36435b87a737dac16ad532c3285f2"
+          },
+          {
+            "path": "src/test/java/atf/console/junit/AtfConsoleTestLifecycleTest.java",
+            "sha256": "40cdc48d1f5e93ec6115991860b2a130ebc2188eba2e1ba58946073b66a148b3"
+          },
+          {
+            "path": "src/test/java/atf/console/junit/AtfReportPathLifecycleIntegrationTest.java",
+            "sha256": "4a665f5ee923afa08b739bdf3685b3d38cf7d872281a0b9629c8445cab297bab"
+          },
+          {
+            "path": "src/test/java/atf/console/junit/AtfReportPathOptInTest.java",
+            "sha256": "8b388fe20f242f424cde228e879b3e7a6e0721885782290e9c9d4317d5a23720"
+          },
+          {
+            "path": "src/test/java/atf/console/junit/NestedConsoleContextIntegrationTest.java",
+            "sha256": "a405731278a943d5928d9fdb127f60369304585809c5c0d6e68fdf6e6f788c2b"
+          }
+        ]
+      },
+      "producerInputsSha256": "69389ed5d81366272b8c6eb097c39c4b118b0691208a00d6d0eb274c5a814a2b",
+      "sourceComparison": "All J0–J4 production and native Java files match after line-ending normalization; only POM/README deployment metadata differed.",
+      "publicationTransforms": {
+        "projectVersion": {
+          "source": "1.0.0-SNAPSHOT",
+          "published": "1.0.0-c1"
+        },
+        "coreVersion": {
+          "source": "1.0.0-SNAPSHOT",
+          "published": "1.0.0-c3"
+        }
+      },
+      "acceptance": {
+        "nativeSource": 38,
+        "nativePhysicalJar": 39,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reproducibleBuilds": 2,
+        "evidence": "C:/Users/Cristi/AppData/Local/Temp/ATF_CONSOLE_MOCK_ACTIVE_DO_NOT_CLEAN_74b0e613/publisher-console-a/ATF_Library_Verification.md",
+        "consumerAcceptance": "Independent physical-JAR contracts and complete-reactor compilation passed in J1/J2/J3/J4; J1 broad UI/layer findings remain qualified."
+      }
+    },
+    "mock": {
+      "coordinate": "atf.api:atf-mock:1.0.0-m1",
+      "binarySha256": "7fcc5f867e3565cd9e0e3ef7e1ba4ed5b5e45f2387c9698ae7b1ffdcf8a2d319",
+      "publishedPomSha256": "0b62bc5a54e2402e4887d58e47524ad5d40305051c4bc5c1e2bb1bce5699127f",
+      "producerDirectory": "C:/work/1/atf_j0",
+      "producerGitHead": "89c5b026de84042b032216e035e0008a5e7532c7",
+      "buildStage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_CONSOLE_MOCK_ACTIVE_DO_NOT_CLEAN_74b0e613\\publisher-mock-a",
+      "producerInputs": {
+        "files": 17,
+        "sha256": "1342fd64723ce485329b01def3becd5ca3495b08ac0e104270c1d0fa76797a62",
+        "nativeTests": [
+          {
+            "path": "src/test/java/atf/mock/AtfMockTransportTest.java",
+            "sha256": "2045223fe14681e75dfb2a1e8a0e935f905c1ef4ef081d866e809c9573852504"
+          },
+          {
+            "path": "src/test/java/atf/mock/fixtures/MockTransportTestFixtures.java",
+            "sha256": "93f421a919e463eefb4fa72026f71ce6e254c044b0a533573f8d3dcfb7377027"
+          },
+          {
+            "path": "src/test/java/atf/mock/json/MockJsonCatalogComponentTest.java",
+            "sha256": "aaf5b15322f38f33bb2319ab2d4a3ebe228f39c5e201297527e1e5cf043f3856"
+          },
+          {
+            "path": "src/test/java/atf/mock/json/MockJsonFixtureComponentTest.java",
+            "sha256": "b7363fe9e751d7e95e985e7211f18c5eabe98e356036c211923d00a815cf0f4d"
+          },
+          {
+            "path": "src/test/java/atf/mock/json/MockNumericContractComponentTest.java",
+            "sha256": "7b7f62ec35e2399892b743f00913d68301e20da565171bcb0be9f00501c13fce"
+          },
+          {
+            "path": "src/test/java/atf/mock/MockMediaTypeContractTest.java",
+            "sha256": "97518cc69e5b0b7ea847dd906e0f172b12298a1562298d24b256124cf7f437a9"
+          },
+          {
+            "path": "src/test/java/atf/mock/MockRequestBodyModeTest.java",
+            "sha256": "9182554a573854141350261f45f4d9045f645b46c15b6d5b0d70121f9e78ea8e"
+          },
+          {
+            "path": "src/test/java/atf/mock/MockRouteIdentityTest.java",
+            "sha256": "82829efa7f449ecfba6bca3f651285fc75263bf8dce172c41b1e8738b406994a"
+          }
+        ]
+      },
+      "producerInputsSha256": "6d7edd8efcdde7dbc2673337584c1998dde87d48d65bef5ea009266c99821673",
+      "sourceComparison": "All J0–J4 production and native Java files match after line-ending normalization; only POM/README deployment metadata differed.",
+      "publicationTransforms": {
+        "projectVersion": {
+          "source": "1.0.0-SNAPSHOT",
+          "published": "1.0.0-m1"
+        },
+        "coreVersion": {
+          "source": "1.0.0-SNAPSHOT",
+          "published": "1.0.0-c3"
+        }
+      },
+      "acceptance": {
+        "nativeSource": 94,
+        "nativePhysicalJar": 95,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reproducibleBuilds": 2,
+        "evidence": "C:/Users/Cristi/AppData/Local/Temp/ATF_CONSOLE_MOCK_ACTIVE_DO_NOT_CLEAN_74b0e613/publisher-mock-a/ATF_Library_Verification.md",
+        "consumerAcceptance": "Independent physical-JAR contracts and complete-reactor compilation passed in J1/J2/J3/J4; J1 broad UI/layer findings remain qualified."
+      }
+    }
+  },
+  "platformLibraryOwnership": {
+    "sourceOwner": "atf_j0",
+    "implementationAndNativeTests": [
+      "atf-console",
+      "atf-mock"
+    ],
+    "consumerSourceModules": 4,
+    "contract": "docs/ATF_Platform_Libraries.md",
+    "nativeTestRetention": "Complete matching producer catalogs retained in J0; consumer source retirement is recoverable in owned TMP",
+    "acceptanceEvidence": "C:/Users/Cristi/AppData/Local/Temp/ATF_CONSOLE_MOCK_ACTIVE_DO_NOT_CLEAN_74b0e613",
+    "rendering": "Five Chromium-reviewed Extent artifacts; targeted expansion only",
+    "qualification": "Independent source/JAR integration and complete-reactor compilation pass; external/device acceptance remains separate"
   }
 }
