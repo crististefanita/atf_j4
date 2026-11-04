@@ -4,6 +4,22 @@ Arena compară politici pe partide românești complete. Protocolul declară dis
 
 ## Principii de comparare
 
+```mermaid
+flowchart LR
+    DEAL[Distribuție și loc] -->|rejoacă prin| BASE[Politică de bază]
+    DEAL -->|rejoacă prin| CAND[Candidat înghețat]
+    BASE -->|produce| PAIR[Rezultate pereche]
+    CAND -->|produce| PAIR
+    PAIR -->|analizează separat| REVIEW[Rol, loc și obiectiv]
+```
+
+<details>
+<summary>Legendă: aceeași distribuție, decizii independente</summary>
+
+Fiecare politică primește numai observația permisă actorului. Distribuția și locul se păstrează între perechi, iar stările publice pot diverge după prima alegere diferită.
+
+</details>
+
 | Principiu | Interpretare |
 |---|---|
 | Aceeași lume inițială | Candidatul și baza pornesc de la aceleași distribuții și aceeași ordine. |

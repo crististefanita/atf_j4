@@ -1,6 +1,6 @@
-# Mecanismul handoff-ului UI
+# Predarea și acceptarea rezultatelor Android
 
-Handoff-ul publică rezultatele într-un depozit extern și menține separat încercarea, republicarea și acceptanța unui scop. Identitatea execuției originale se păstrează la orice publicare ulterioară.
+Predarea publică rezultatele într-un depozit extern și menține separat încercarea, republicarea și acceptanța unui scop. Identitatea execuției originale se păstrează la orice publicare ulterioară.
 
 ## Fluxul publicării
 

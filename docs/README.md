@@ -37,6 +37,8 @@ Ghidurile definesc responsabilități, contracte și principii. Datele de rulare
 
 ## Testare și învățare offline
 
+[Ghidurile de testare](testing/README.md) oferă traseul de la proprietatea verificată la nivel, colecție, resurse și rezultat.
+
 | Activitate | Ghid |
 |---|---|
 | Alegerea nivelului unitar, componentă, integrare sau E2E | [Arhitectura testării și matricea modulelor](testing/architecture/README.md) |

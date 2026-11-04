@@ -8,6 +8,21 @@
 
 ## Alegerea colecției
 
+```mermaid
+flowchart LR
+    CHANGE[Contract schimbat] -->|alege proprietăți locale| COMPONENT[Componente și regresie]
+    CHANGE -->|evaluează strategia| POLICY[Protocol și lot rezervat]
+    CHANGE -->|verifică interacțiunea| ANDROID[Scenariu Android]
+    COMPONENT -->|permite calificarea| POLICY
+```
+
+<details>
+<summary>Legendă: selecții cu scop diferit</summary>
+
+Colecția restrânge cazurile la proprietatea schimbată. Evaluarea unei politici adaugă un protocol și date rezervate, iar verificarea Android adaugă un dispozitiv; fiecare păstrează propriile limite și rezultat.
+
+</details>
+
 | Colecție | Scop | Execuție |
 |---|---|---|
 | `context` | Onoruri, necesar de levate, atu întors sau încă pe masă, legalitatea prefixelor | Verificări JVM restrânse |
@@ -91,4 +106,4 @@ Calitatea surselor și documentației se verifică separat de colecțiile joculu
 
 [HowToPlay](../../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/HowToPlay.java) furnizează catalogul comun pentru ajutor și exemplele RO/EN. Colecția `documentation` verifică regulile și produce proiecțiile în directorul execuției. Documentele de reguli sunt [română](../../rules/WHIST_RO.md) și [engleză](../../rules/WHIST_EN.md).
 
-Pentru infrastructura dispozitivului și activarea explicită a fluxurilor UI, folosește [Android testing](../android/README.md). Build-ul JVM, construirea unui APK și executarea pe dispozitiv sunt verificări distincte.
+Pentru infrastructura dispozitivului și activarea explicită a fluxurilor UI, folosește [testarea Android](../android/README.md). Compilarea JVM, construirea unui APK și executarea pe dispozitiv sunt verificări distincte.

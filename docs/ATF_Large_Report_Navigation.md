@@ -4,6 +4,21 @@ Navigarea păstrează conținutul obligatoriu și limitează lucrul de pregătir
 
 ## Mecanisme
 
+```mermaid
+flowchart LR
+    SELECT[Selecție declarată] -->|publică prin API| HTML[Conținut complet în scop]
+    NAV[Navigare] -->|face vizibil| SECTION[Secțiune activă]
+    HTML -->|furnizează datele| SECTION
+    SECTION -->|pregătește la nevoie| READY[Prezentare utilizabilă]
+```
+
+<details>
+<summary>Legendă: conținut și cost de prezentare</summary>
+
+Consumatorul controlează selecția datelor, iar biblioteca controlează pregătirea prezentării. Amânarea lucrului pentru o secțiune ascunsă păstrează conținutul obligatoriu și asocierea cu proprietarul său.
+
+</details>
+
 | Suprafață | Contract |
 |---|---|
 | Selecție | Consumerul limitează contextul opțional și păstrează invocări întregi, cu omisiuni declarate. |

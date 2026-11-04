@@ -14,13 +14,32 @@ ro.whistlab.app și acționează controalele vizibile.
 | Adaptor Android | atf-test-android | Comenzi ADB delimitate, capturi și contracte pentru dispozitiv. |
 | UI și Extent | atf-test-android | Meniu, masă, licitare, cărți, scor, acțiuni, aserțiuni și capturi ale aplicației proprii. |
 
+## Pregătire și izolare
+
+```mermaid
+flowchart LR
+    CONFIG[Scenariu și parametri] -->|verifică| PRE[Condiții preliminare]
+    PRE -->|permite| LEASE[Rezervare exclusivă]
+    LEASE -->|izolează| APP[Acțiuni în aplicație]
+    APP -->|capturează| OBS[Stare și imagine]
+    OBS -->|confruntă prin| CHECK[Oracol independent]
+    APP -->|închide cu| RESTORE[Restaurare și eliberare]
+```
+
+<details>
+<summary>Legendă: controlul dispozitivului și rezultatul</summary>
+
+Scenariul identifică aplicația și starea inițială înaintea acțiunilor. Rezervarea și restaurarea protejează resursa partajată; observația de după acțiune stabilește dacă aplicația a acceptat operația.
+
+</details>
+
 ## Verificări offline
 
 Din rădăcina proiectului: run-whist-collection.ps1 -Collection context și
 run-whist-collection.ps1 -Collection regression.
 
 Colecțiile JVM și limitele lor sunt descrise în
-[TEST_COLLECTIONS.md](../collections/README.md). Runnerul agregat scripts/run-whist-ai-validation.ps1 orchestrează build-ul și verificările de integrare, cu selecțiile sale explicite.
+[catalogul colecțiilor](../collections/README.md). Lansatorul agregat `scripts/run-whist-ai-validation.ps1` orchestrează construirea și verificările de integrare, cu selecțiile sale explicite.
 
 Promovarea strategică urmează separat protocolul de învățare, candidatul înghețat și registrul loturilor rezervate. Sursele de build și rezultatele se pregătesc în directoare temporare sau externe, conform ghidului proiectului.
 
