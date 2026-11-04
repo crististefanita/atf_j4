@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {expectedCases,key,closedRecord} from './whist-learning-batches.mjs';
+import test from 'node:test';import assert from 'node:assert/strict';import path from 'node:path';import {expectedCases,key,closedRecord,batchIntegrityId} from './whist-learning-batches.mjs';
 const p={version:7,opponents:['EXPERT_V6','PLAYER_V6'],development:{firstSeed:6700,seeds:6}},expected=expectedCases(p,'development'),hashes={'policy.java':'a'.repeat(64)};
 const good=()=>({status:'PASS',parameters:{role:'expert',opponent:'EXPERT_V6',seed:'6700',heroSeat:0},sourceHashes:hashes,durationNanos:2,startedAt:'start',endedAt:'end',results:[{kind:'before'},{kind:'after'}],checkpoints:[{comparisons:[{passed:true}]}]});
 test('declared six seeds contain96 unique pairs, not96 independent deals',()=>{assert.equal(expected.size,96);assert.equal(key(good().parameters),'expert/EXPERT_V6/6700/0');});
@@ -9,4 +9,11 @@ test('changed source, missing timing, wrong seed and false assertions are refuse
 test('role-specific protocols avoid rerunning an already validated other policy',()=>{
  assert.equal(expectedCases({...p,roles:['expert']},'development').size,48);
  for(const roles of [[],['expert','expert'],['other']])assert.throws(()=>expectedCases({...p,roles},'development'),/Declared roles/);
+});
+
+test('R15 batch gate IDs distinguish candidate cohorts and preserve historical identities',()=>{
+ const a=path.join('run','bid-only-complete'),b=path.join('run','bid-card-complete');
+ assert.notEqual(batchIntegrityId({version:15},'development',a),batchIntegrityId({version:15},'development',b));
+ assert.equal(batchIntegrityId({version:15},'development',a),'batch-integrity-development-bid-only-complete');
+ for(const version of [7,11,12])assert.equal(batchIntegrityId({version},'heldout',a),'batch-integrity-heldout');
 });

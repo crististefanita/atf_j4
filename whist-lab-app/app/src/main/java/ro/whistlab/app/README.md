@@ -1,26 +1,18 @@
 # Interfața Whist — atlas de orientare
 
+## Pe scurt
+
 Acest pachet compune interfața Android dintr-un `GameSession.Snapshot`.
 Regulile, licitațiile legale și scorurile aparțin `game-core`; geometria nu
 modifică distribuția sau rezultatele ca să facă un ecran să pară corect.
 
 ## Traseul unei randări
 
-```mermaid
-flowchart TD
-    A[MainActivity: stare și navigare] --> B[GameTablePanel: masă și mână]
-    B --> C[GameBoardLayout: măsoară scaunele și centrul]
-    C --> D[TableGeometry: regiuni fără intersecții]
-    E[TableViewportPolicy: spațiul vertical disponibil] --> C
-    E --> B
-    B --> F[HandLayoutMetrics: avansul cărților]
-    G[Lățimea reală a rangului și simbolului] --> F
-    F --> H[Indice vertical accesibil și față decorativă]
-    A --> I[ScoreTableView: comparație între jucători]
-    J[GameSession: solduri după fiecare mână] --> I
-    J --> K[ScoreHistoryColumn: puncte și total pentru un loc]
-    K --> L[ScoreHistoryView: selector de jucător și rânduri]
-```
+| Suprafață | Cod și rol |
+|---|---|
+| Masa | MainActivity alege starea, GameTablePanel construiește masa, iar GameBoardLayout și TableGeometry măsoară regiunile. |
+| Mâna | HandLayoutMetrics distribuie cărțile în zona disponibilă. |
+| Scor | ScoreTableView compară locurile. ScoreHistoryColumn furnizează licitația, punctele și totalul afișate în ScoreHistoryView pentru locul selectat. |
 
 | Intrare | Responsabilitate și invariantă |
 |---|---|
@@ -65,7 +57,6 @@ negative pentru simbol lipsă, indice acoperit și margine tăiată. Capturile s
 revizuite și vizual; oracolul raster verifică lizibilitatea de bază, nu poate
 certifica singur frumusețea interfeței sau identitatea optică a fiecărui simbol.
 
-`WhistMenuLayoutE2eTest` parcurge meniurile normale în EN/RO. Pilotul românesc
-joacă mâini reale și verifică scorul independent; nu folosește fixture-urile
-de display. Build-urile și dovezile rămân în TMP. Feedback-ul UX și acceptanța
-versiunii din `docs` păstrează rezultatele măsurate și limitele lor.
+`WhistMenuLayoutE2eTest` parcurge meniurile normale în EN/RO.
+
+Pilotul românesc joacă mâini reale și verifică scorul independent; nu folosește fixture-urile de display. Build-urile și dovezile rămân în TMP. Feedback-ul UX și acceptanța versiunii din `docs` păstrează rezultatele măsurate și limitele lor.

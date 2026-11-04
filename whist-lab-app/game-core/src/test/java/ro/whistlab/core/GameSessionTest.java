@@ -78,7 +78,7 @@ public class GameSessionTest {
                 List.of(new Card(Suit.HEARTS, 13), new Card(Suit.SPADES, 3)),
                 List.of(new Card(Suit.HEARTS, 12), new Card(Suit.SPADES, 4)),
                 List.of(new Card(Suit.HEARTS, 11), new Card(Suit.SPADES, 5)));
-        GameSession game = GameSession.fromDeal(new GameConfig(4, GameMode.PRACTICE_HAND, AiDifficulty.NORMAL, 7L),
+        GameSession game = GameSession.fromDeal(new GameConfig(4, GameMode.REVERSE_OH_HELL, AiDifficulty.NORMAL, 7L),
                 hands, Trump.SPADES, 3);
         for (int seat = 0; seat < 4; seat++) game.submitBid(seat, 0);
         game.playCard(0, new Card(Suit.HEARTS, 14));
@@ -89,7 +89,7 @@ public class GameSessionTest {
     }
 
     @Test
-    public void exactBidPracticeTrickUpdatesTheCorrectWinnerAndScoreSheet() {
+    public void exactBidFirstTrickUpdatesTheCorrectWinnerAndScoreSheet() {
         GameSession game = oneTrickFixture();
         submitFixtureBids(game);
 
@@ -105,8 +105,9 @@ public class GameSessionTest {
         assertEquals(1, result.players().get(0).tricksWon());
         assertEquals(List.of(11, 10, 10, 0), result.players().stream()
                 .map(GameSession.PlayerSnapshot::totalScore).toList());
-        assertTrue(result.finalHand());
-        assertThrows(IllegalStateException.class, game::startNextHand);
+        assertFalse(result.finalHand());
+        game.startNextHand();
+        assertEquals(2, game.snapshot().handSize());
     }
 
     @Test
@@ -116,7 +117,7 @@ public class GameSessionTest {
                 List.of(new Card(Suit.HEARTS, 13), new Card(Suit.DIAMONDS, 2)),
                 List.of(new Card(Suit.HEARTS, 12), new Card(Suit.SPADES, 2)),
                 List.of(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 3)));
-        GameSession game = GameSession.fromDeal(new GameConfig(4, GameMode.PRACTICE_HAND,
+        GameSession game = GameSession.fromDeal(new GameConfig(4, GameMode.REVERSE_OH_HELL,
                 AiDifficulty.NORMAL, 3L), hands, Trump.SPADES, 3);
         for (int seat = 0; seat < 4; seat++) game.submitBid(seat, 0);
         assertEquals(0, game.snapshot().currentSeat());
@@ -146,7 +147,7 @@ public class GameSessionTest {
     @Test
     public void aiCanChooseLegalBidsAndCardsAcrossDeterministicDeals() {
         for (int seed = 0; seed < 30; seed++) {
-            GameSession game = GameSession.newGame(new GameConfig(4, GameMode.PRACTICE_HAND,
+            GameSession game = GameSession.newGame(new GameConfig(4, GameMode.REVERSE_OH_HELL,
                     AiDifficulty.NORMAL, seed));
             while (game.snapshot().phase() == GamePhase.BIDDING) {
                 GameSession.Snapshot state = game.snapshot();
@@ -327,7 +328,7 @@ public class GameSessionTest {
     }
 
     private static GameSession oneTrickFixture() {
-        GameConfig config = new GameConfig(4, GameMode.PRACTICE_HAND, AiDifficulty.NORMAL, 1L);
+        GameConfig config = new GameConfig(4, GameMode.REVERSE_OH_HELL, AiDifficulty.NORMAL, 1L);
         List<List<Card>> hands = List.of(
                 List.of(new Card(Suit.HEARTS, 14)),
                 List.of(new Card(Suit.HEARTS, 13)),

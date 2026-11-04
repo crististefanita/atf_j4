@@ -1,0 +1,62 @@
+schema_version: 1
+id: "CONDITIONED_FUTURE_BID_FORECAST_R16"
+status: "RESEARCH_REJECTED_NOT_RUNTIME"
+runtime_influence: 0
+configuration_kind: "CODE_BOUND_RULE_MANIFEST"
+execution: "Generated Java model constants; YAML records their meaning and qualification. Editing YAML alone does not tune the engine."
+scope: "Original auction time, Romanian Whist, four players, initial hand sizes 2..8. Every Hard seat uses the same decision API."
+model:
+  file: "config/whist-bid-model.json"
+  sha256: "71b51b8a028768d2fecbcd34b97f22e88585c213953d844f074de68ea155f51d"
+  features_and_coefficients: "config/whist-public-beliefs.yaml"
+  target: "Observed bids, not optimal bids or certified trick counts."
+  refit_from_r13_or_r15_outcomes: false
+sources:
+  candidate: "research/ai-bid-models (explicit isolated overlays; never the active engine)"
+  forecast: "game-core/src/main/java/ro/whistlab/core/BidForecast.java"
+  integration: "MonteCarloAi.biddingTargets"
+rules:
+  - id: "LITERAL_OBSERVED_CONTRACTS"
+    rule_ro: "Păstrează licitațiile deja făcute; o presupunere nu înlocuiește un contract public."
+    rule_en: "Keep submitted public contracts literal; a forecast cannot replace them."
+    kind: "HARD_INPUT_FACT"
+    test: "actualPriorBidsAndTheProposedOwnContractStayAuthoritative"
+  - id: "OWN_COUNTERFACTUAL"
+    rule_ro: "Pentru fiecare licitație proprie evaluată, folosește chiar acea valoare în prefixul adversarilor următori."
+    rule_en: "Each own counterfactual bid is authoritative for the following auction prefix."
+    kind: "SIMULATION_CONTRACT"
+    test: "actualPriorBidsAndTheProposedOwnContractStayAuthoritative"
+  - id: "EVOLVING_PREFIX"
+    rule_ro: "Estimează în ordinea licitării. Prefixul următor include licitațiile publice, contractul propriu evaluat și estimările anterioare."
+    rule_en: "Forecast in auction order using preceding public bids, the own counterfactual and preceding forecasts."
+    dynamic_context: ["hypothetical original holding", "trump", "turned card", "auction position", "preceding bid sum", "prefix overbooking"]
+    action: "Mode of the legal conditioned observed-bid distribution; exact ties prefer the lower bid."
+    limitation: "One modal continuation, not integration over every possible future auction. Hypothetical world cards are never actual private opponent inputs."
+    test: "futureForecastsUseTheEvolvingAuctionPrefixAndSeatOrder"
+  - id: "LEGAL_LAST_BID"
+    rule_ro: "Elimină ultima licitație care ar egala totalul cu numărul levatelor și renormalizează distribuția."
+    rule_en: "Exclude the forbidden final total and renormalize the distribution."
+    kind: "RULE_CONSTRAINT"
+    test: "forecastRespectsTheLastBidRestrictionAcrossSizesTwoThroughEight"
+  - id: "UNCHANGED_FALLBACK"
+    rule_ro: "La o carte, alt mod sau o mână ipotetică inițială invalidă, păstrează exact estimarea acceptată."
+    rule_en: "One-card, other modes or invalid original hypothetical holdings retain the accepted forecast."
+    test: "unsupportedModesSizesAndInvalidOriginalHandsKeepTheFrozenForecast"
+action_context:
+  own_remaining_need: "bid - tricksWon, updated after each completed trick by the accepted engine."
+  remaining_opportunities: "Cards remaining plus unfinished table count divided by four; current trick counted once."
+  legal_rules: "Follow suit; otherwise mandatory trump in Romanian Whist; no forecast overrides legality."
+  accepted_utility: "Own exact-contract likelihood, then own score, then strongest rival score. Accepted public guarantees and salvage guard unchanged."
+  runtime_changes_in_this_candidate: "Only unknown future target estimation at bid time. No played-card behavior likelihood, new dynamic card policy, R15 world reweighting, or online coefficient updates."
+qualification:
+  components: "510/510 candidate native tests passed: 492 existing, 14 model controls, four future-auction contracts. Overlapping populations, not additive to other candidates."
+  development: "15200..15207, 64 pairs/128 complete games: +100 points, +1.5 weighted wins, +6 exact2..8. Rejected: Hard family loses one weighted win; Independent family loses one exact2..8."
+  untouched_fresh: "116000..116015 was neither reserved nor opened; development gate failed."
+  promotion: "Every opponent family passes unchanged SAFETY gate; strict aggregate exact2..8 gain; nonnegative total and2..8 points. No changes after fresh results."
+  claim_limit: "No perfect-play, calibrated card-posterior, UI or Android acceptance claim."
+outcomes:
+  verdict: "REJECTED_FAMILY_REGRESSION"
+  total: {point_delta: 100, win_share_delta: 1.5, exact_2_to_8_delta: 6}
+  hard_v14_family: {point_delta: 87, win_share_delta: -1, exact_2_to_8_delta: 7}
+  independent_v11_family: {point_delta: 13, win_share_delta: 2.5, exact_2_to_8_delta: -1}
+  active_runtime: "Hard R14 unchanged; no post-outcome tuning or fresh-range consumption."

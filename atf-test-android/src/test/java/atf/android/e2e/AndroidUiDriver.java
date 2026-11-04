@@ -385,6 +385,15 @@ final class AndroidUiDriver {
                 .toList();
     }
 
+    static List<Integer> enabledNumericButtonValues(String xml) throws Exception {
+        return nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.Button"))
+                .filter(Node::enabled)
+                .filter(node -> node.text().matches("\\d+"))
+                .map(node -> Integer.parseInt(node.text()))
+                .toList();
+    }
+
     private static int[] bounds(String value) {
         Matcher matcher = BOUNDS.matcher(value);
         if (!matcher.matches()) throw new IllegalArgumentException("Invalid UI bounds: " + value);

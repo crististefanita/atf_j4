@@ -108,7 +108,7 @@ tasks.register("legacyRoundFiveTest", Test) {
  outputs.upToDateWhen { false }
 }
 
-tasks.register("learningTest") { dependsOn "roundTwelveTest" }
+tasks.register("learningTest") { dependsOn "roundFifteenTest" }
 
 // Deterministic minutes-scale rule checks; no tournaments and no device.
 tasks.register("quickRegressionTest", Test) {
@@ -170,3 +170,37 @@ tasks.named("test",Test){exclude "**/ContractPressureTest.class"}
 tasks.named("informationResearchTest",Test){filter{includeTestsMatching "ro.whistlab.core.ContractPressureTest"}}
 
 tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.PublicSalvageTest"}}
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ContextualHonorDiscardTest"}}
+
+// Explicit offline experiments against the accepted R14 baseline; never a default tournament.
+tasks.named("test",Test){exclude "**/RoundFifteenTournamentTest.class"}
+tasks.register("roundFifteenTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundFifteenTournamentTest"};for(def key:["whist.round15.output","whist.round15.corpus","whist.round15.candidate","whist.round15.phase","whist.round15.role","whist.round15.playerBaseline","whist.round15.opponent","whist.round15.seat","whist.round15.casesFile","whist.round15.firstSeed","whist.round15.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round15.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+
+tasks.register("contextRegressionTest",Test){
+    description="Focused contextual rules with independent legal reachability witnesses; no game tournament or device."
+    testClassesDirs=sourceSets.test.output.classesDirs
+    classpath=sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.ContextualHonorDiscardTest" }
+    systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")
+    systemProperty "whist.componentCollection","context"
+    outputs.upToDateWhen { false }
+}
+
+// R18 compares against the accepted current-table quota correction; older schemas retain their own baselines.
+tasks.named("test",Test){exclude "**/RoundEighteenTournamentTest.class"}
+tasks.register("roundEighteenTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundEighteenTournamentTest"};for(def key:["whist.round18.output","whist.round18.corpus","whist.round18.candidate","whist.round18.phase","whist.round18.role","whist.round18.playerBaseline","whist.round18.opponent","whist.round18.seat","whist.round18.casesFile","whist.round18.firstSeed","whist.round18.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round18.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+
+tasks.named("quickRegressionTest", Test) {
+    filter { includeTestsMatching "ro.whistlab.core.NormalContractPursuitTest" }
+}
+
+tasks.register("offlineMockMatchTest", Test) {
+    description = "Plays and records a complete deterministic Romanian 1-8-1 match offline."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.OfflineMockMatchTest" }
+    systemProperty "whist.offlineMatch.seed", providers.gradleProperty("whist.offlineMatch.seed").getOrElse("20261104")
+    systemProperty "whist.offlineMatch.output", providers.gradleProperty("whist.offlineMatch.output").getOrElse("")
+    jacoco.enabled = false
+    outputs.upToDateWhen { false }
+}

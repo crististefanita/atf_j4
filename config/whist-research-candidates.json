@@ -1,0 +1,484 @@
+{
+  "activation": "Explicit -ResearchCandidate applies files only to an isolated temporary build; never to the active source tree.",
+  "schemaVersion": 1,
+  "sharedTestNote": "Uses R16 clarification of the same14 test assertions: the future-bid control checks the likelihood helper only, not the entire chooseBid API.",
+  "status": "REJECTED_RESEARCH_ONLY",
+  "learnedModelSha256": "71b51b8a028768d2fecbcd34b97f22e88585c213953d844f074de68ea155f51d",
+  "candidates": [
+    {
+      "protocolVersion": 15,
+      "scope": "Observed auction evidence reweights bid samples only; accepted card policy unchanged.",
+      "baselineGuards": [
+        {
+          "sha256": "dd86d87a644b54465f2777a298442b395aa8f86e184249ff4165b964fdb8b911",
+          "target": "game-core/src/main/java/ro/whistlab/core/AiDifficulty.java"
+        },
+        {
+          "sha256": "6a0aa4ff631ccdf17ef84e5c47b4794010c8abda72bde63b6f95c798d59da893",
+          "target": "game-core/src/main/java/ro/whistlab/core/AiPolicy.java"
+        },
+        {
+          "sha256": "8e1aae3a2179cc802683599ab77d6af3bda57319d811d6f06d1b87248617f101",
+          "target": "game-core/src/main/java/ro/whistlab/core/Card.java"
+        },
+        {
+          "sha256": "d52e4a5caabd4082d0328c00f437105750f9a741d8d2339d94541dcaed008f14",
+          "target": "game-core/src/main/java/ro/whistlab/core/ContractEndgame.java"
+        },
+        {
+          "sha256": "c8f072cbf875721909fb9eee42a8c2db7d20fb50cd58eeca531fde48a50f2d4e",
+          "target": "game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java"
+        },
+        {
+          "sha256": "069bcad45d2b3a8db075b69f085a210e3c2d29582ea14d6a4f91a3f291523259",
+          "target": "game-core/src/main/java/ro/whistlab/core/ExactContractRates.java"
+        },
+        {
+          "sha256": "6d116c38c5bfbd9c1bf7c4d3edcd846f97352a262103749038b68aa00f85bc0d",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameConfig.java"
+        },
+        {
+          "sha256": "f3ca6338167c53ff7e0f49efadbb1d660713c410da63f2a678cf874cb0d62965",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameMode.java"
+        },
+        {
+          "sha256": "6b42f220fa51bd8cb15ac1fe547343bd61b2c1749badf916f430df005b022ff5",
+          "target": "game-core/src/main/java/ro/whistlab/core/GamePhase.java"
+        },
+        {
+          "sha256": "5eb266d86d060603e7e9ff2b02eb96e7044e3966477fea403ef052700d116193",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameRules.java"
+        },
+        {
+          "sha256": "14c4171fc206ea290aad85c5dce81826e72dc5fd34d5f6eca3246e98584e647e",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameSession.java"
+        },
+        {
+          "sha256": "f63b8ad1568a4e12816ec4d32dc0f2f15bf72f26bdda8fc4863c1641ba03d92a",
+          "target": "game-core/src/main/java/ro/whistlab/core/HowToPlay.java"
+        },
+        {
+          "sha256": "033f76a41bfaf55f7446da37511b42bdbf6f346176219934426b6cdd834d7cad",
+          "target": "game-core/src/main/java/ro/whistlab/core/LateDiscard.java"
+        },
+        {
+          "sha256": "c9fa4e02ad6a1fddb684d48e39ff4c338b47e9055902d0b54c3783dcfb584ade",
+          "target": "game-core/src/main/java/ro/whistlab/core/MatchSummary.java"
+        },
+        {
+          "sha256": "4da61a1f5a237998fa3c0f6df9381907516fb15a99dbd9d2f42f386ee981d770",
+          "target": "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+        },
+        {
+          "sha256": "2094ab095ee87c59d49d9f41f8ee2ba5a78b969f6c095cade172663bd9bf6ccc",
+          "target": "game-core/src/main/java/ro/whistlab/core/OneCardBidBelief.java"
+        },
+        {
+          "sha256": "5aaedaad77aea312d518e80882411d309fc5bef87a10ff4f87f408e9c10b7dbd",
+          "target": "game-core/src/main/java/ro/whistlab/core/PlayedCard.java"
+        },
+        {
+          "sha256": "9636bad44f066232fd6c0bbc47a88c37162df18be98c00115e99b3e3ac67bc3c",
+          "target": "game-core/src/main/java/ro/whistlab/core/PublicSalvage.java"
+        },
+        {
+          "sha256": "5c4c69556a917fac05156a196d9173680301995dd971ec289fd43ad54fbf7468",
+          "target": "game-core/src/main/java/ro/whistlab/core/RomanianScoring.java"
+        },
+        {
+          "sha256": "551c8534717aaecdc9e98de670cf776f027b919d0035ade340185a1018c15983",
+          "target": "game-core/src/main/java/ro/whistlab/core/StreakForecast.java"
+        },
+        {
+          "sha256": "f6070feb2fd64be7d7ca76f9c40cfdd7b0d90eee096e15eff1dab18cc644490e",
+          "target": "game-core/src/main/java/ro/whistlab/core/Suit.java"
+        },
+        {
+          "sha256": "98ec9abe02c5953e6df8f8c3e434576f7dd8b8396a0a467ba724afc86b32197f",
+          "target": "game-core/src/main/java/ro/whistlab/core/Trump.java"
+        },
+        {
+          "sha256": "994f20f699335eee1f415d355f2a9f4586e15273713b3f97f8d3f5733b663203",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/ContractGuarantee.java"
+        },
+        {
+          "sha256": "1f69bb6407a5ce0a0c8d752d2bde4d2eeda08c9b85a7c26c4534748ee9eccc8b",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java"
+        },
+        {
+          "sha256": "20ae1a34a70c335f5c8ad05d2b410dcabf6b2985e31402e11ac589ab4966850a",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java"
+        },
+        {
+          "sha256": "2f894d9542a2cce309855a4d271da766b88fface9fbb6a5b8f915b585e6de1f1",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/RolloutPlanner.java"
+        },
+        {
+          "sha256": "3bce5731a79621a76713ac12789ebd98e24f3f3889fab8e32392389a96dcf553",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/PreviousIndependentPlayer.java"
+        },
+        {
+          "sha256": "bb45a30914e8280334d37ffb2f72ba2d2d59c168c9e6adaf9a4e1a0a9b3487ee",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundFourIndependentOneCardBidBelief.java"
+        },
+        {
+          "sha256": "d987f64203e6a95c008196299903ba1aef3bf124662c3e30bb760046c3fbc11b",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundFourIndependentPlayer.java"
+        },
+        {
+          "sha256": "c97a32e4cd1f8009d0a460269c14548542e1030553b94a163c3e41f9b068fd14",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundThreeIndependentPlayer.java"
+        }
+      ],
+      "status": "REJECTED_RESEARCH_ONLY",
+      "files": [
+        {
+          "sha256": "ddf5d6724f52882418634ad24141aa452ac11faa0ff825b268235b82ac061a1a",
+          "source": "research/ai-bid-models/r15-bid-only-v2/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java",
+          "target": "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+        }
+      ],
+      "id": "r15-bid-only-v2",
+      "qualification": {
+        "scope": "Historical count at this revision; execute the full native suite before qualifying any modified model.",
+        "expectedDefaultNativeTests": 506
+      },
+      "candidatePrefix": "bid-evidence-only-v2",
+      "allowedCollections": [
+        "regression",
+        "learning"
+      ]
+    },
+    {
+      "protocolVersion": 15,
+      "scope": "Observed auction evidence reweights bid and card samples; estimator snapshots separated from physical utility bounds.",
+      "baselineGuards": [
+        {
+          "sha256": "dd86d87a644b54465f2777a298442b395aa8f86e184249ff4165b964fdb8b911",
+          "target": "game-core/src/main/java/ro/whistlab/core/AiDifficulty.java"
+        },
+        {
+          "sha256": "6a0aa4ff631ccdf17ef84e5c47b4794010c8abda72bde63b6f95c798d59da893",
+          "target": "game-core/src/main/java/ro/whistlab/core/AiPolicy.java"
+        },
+        {
+          "sha256": "8e1aae3a2179cc802683599ab77d6af3bda57319d811d6f06d1b87248617f101",
+          "target": "game-core/src/main/java/ro/whistlab/core/Card.java"
+        },
+        {
+          "sha256": "d52e4a5caabd4082d0328c00f437105750f9a741d8d2339d94541dcaed008f14",
+          "target": "game-core/src/main/java/ro/whistlab/core/ContractEndgame.java"
+        },
+        {
+          "sha256": "c8f072cbf875721909fb9eee42a8c2db7d20fb50cd58eeca531fde48a50f2d4e",
+          "target": "game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java"
+        },
+        {
+          "sha256": "069bcad45d2b3a8db075b69f085a210e3c2d29582ea14d6a4f91a3f291523259",
+          "target": "game-core/src/main/java/ro/whistlab/core/ExactContractRates.java"
+        },
+        {
+          "sha256": "6d116c38c5bfbd9c1bf7c4d3edcd846f97352a262103749038b68aa00f85bc0d",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameConfig.java"
+        },
+        {
+          "sha256": "f3ca6338167c53ff7e0f49efadbb1d660713c410da63f2a678cf874cb0d62965",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameMode.java"
+        },
+        {
+          "sha256": "6b42f220fa51bd8cb15ac1fe547343bd61b2c1749badf916f430df005b022ff5",
+          "target": "game-core/src/main/java/ro/whistlab/core/GamePhase.java"
+        },
+        {
+          "sha256": "5eb266d86d060603e7e9ff2b02eb96e7044e3966477fea403ef052700d116193",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameRules.java"
+        },
+        {
+          "sha256": "14c4171fc206ea290aad85c5dce81826e72dc5fd34d5f6eca3246e98584e647e",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameSession.java"
+        },
+        {
+          "sha256": "f63b8ad1568a4e12816ec4d32dc0f2f15bf72f26bdda8fc4863c1641ba03d92a",
+          "target": "game-core/src/main/java/ro/whistlab/core/HowToPlay.java"
+        },
+        {
+          "sha256": "033f76a41bfaf55f7446da37511b42bdbf6f346176219934426b6cdd834d7cad",
+          "target": "game-core/src/main/java/ro/whistlab/core/LateDiscard.java"
+        },
+        {
+          "sha256": "c9fa4e02ad6a1fddb684d48e39ff4c338b47e9055902d0b54c3783dcfb584ade",
+          "target": "game-core/src/main/java/ro/whistlab/core/MatchSummary.java"
+        },
+        {
+          "sha256": "4da61a1f5a237998fa3c0f6df9381907516fb15a99dbd9d2f42f386ee981d770",
+          "target": "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+        },
+        {
+          "sha256": "2094ab095ee87c59d49d9f41f8ee2ba5a78b969f6c095cade172663bd9bf6ccc",
+          "target": "game-core/src/main/java/ro/whistlab/core/OneCardBidBelief.java"
+        },
+        {
+          "sha256": "5aaedaad77aea312d518e80882411d309fc5bef87a10ff4f87f408e9c10b7dbd",
+          "target": "game-core/src/main/java/ro/whistlab/core/PlayedCard.java"
+        },
+        {
+          "sha256": "9636bad44f066232fd6c0bbc47a88c37162df18be98c00115e99b3e3ac67bc3c",
+          "target": "game-core/src/main/java/ro/whistlab/core/PublicSalvage.java"
+        },
+        {
+          "sha256": "5c4c69556a917fac05156a196d9173680301995dd971ec289fd43ad54fbf7468",
+          "target": "game-core/src/main/java/ro/whistlab/core/RomanianScoring.java"
+        },
+        {
+          "sha256": "551c8534717aaecdc9e98de670cf776f027b919d0035ade340185a1018c15983",
+          "target": "game-core/src/main/java/ro/whistlab/core/StreakForecast.java"
+        },
+        {
+          "sha256": "f6070feb2fd64be7d7ca76f9c40cfdd7b0d90eee096e15eff1dab18cc644490e",
+          "target": "game-core/src/main/java/ro/whistlab/core/Suit.java"
+        },
+        {
+          "sha256": "98ec9abe02c5953e6df8f8c3e434576f7dd8b8396a0a467ba724afc86b32197f",
+          "target": "game-core/src/main/java/ro/whistlab/core/Trump.java"
+        },
+        {
+          "sha256": "994f20f699335eee1f415d355f2a9f4586e15273713b3f97f8d3f5733b663203",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/ContractGuarantee.java"
+        },
+        {
+          "sha256": "1f69bb6407a5ce0a0c8d752d2bde4d2eeda08c9b85a7c26c4534748ee9eccc8b",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java"
+        },
+        {
+          "sha256": "20ae1a34a70c335f5c8ad05d2b410dcabf6b2985e31402e11ac589ab4966850a",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java"
+        },
+        {
+          "sha256": "2f894d9542a2cce309855a4d271da766b88fface9fbb6a5b8f915b585e6de1f1",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/RolloutPlanner.java"
+        },
+        {
+          "sha256": "3bce5731a79621a76713ac12789ebd98e24f3f3889fab8e32392389a96dcf553",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/PreviousIndependentPlayer.java"
+        },
+        {
+          "sha256": "bb45a30914e8280334d37ffb2f72ba2d2d59c168c9e6adaf9a4e1a0a9b3487ee",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundFourIndependentOneCardBidBelief.java"
+        },
+        {
+          "sha256": "d987f64203e6a95c008196299903ba1aef3bf124662c3e30bb760046c3fbc11b",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundFourIndependentPlayer.java"
+        },
+        {
+          "sha256": "c97a32e4cd1f8009d0a460269c14548542e1030553b94a163c3e41f9b068fd14",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundThreeIndependentPlayer.java"
+        }
+      ],
+      "status": "REJECTED_RESEARCH_ONLY",
+      "files": [
+        {
+          "sha256": "4c7b58d4c7d473ee5b6a0e13f5091252a04430149420b5a6eea2a7eade441734",
+          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java",
+          "target": "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+        },
+        {
+          "sha256": "fcdb49f22d31934f9f3c148fe4affda03dcf01a9940c639c5bb3fd4aab48c0df",
+          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java",
+          "target": "game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java"
+        },
+        {
+          "sha256": "3bc4cb1773b5b1cfb0b06b0232d1da0a05788f92401c12601ec68b84715777f1",
+          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java",
+          "target": "game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java"
+        },
+        {
+          "sha256": "dbaeb7a078496487bede9dd72a5f759baed32234254e84b61df136a8236d3799",
+          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/AcceptedBaselineViews.java",
+          "target": "game-core/src/test/java/ro/whistlab/core/AcceptedBaselineViews.java"
+        }
+      ],
+      "id": "r15-bid-and-card",
+      "qualification": {
+        "scope": "Historical count at this revision; execute the full native suite before qualifying any modified model.",
+        "expectedDefaultNativeTests": 506
+      },
+      "candidatePrefix": "bid-and-card-evidence",
+      "allowedCollections": [
+        "regression",
+        "learning"
+      ]
+    },
+    {
+      "protocolVersion": 16,
+      "scope": "Observed bid model predicts future unknown auction targets; accepted card policy unchanged.",
+      "baselineGuards": [
+        {
+          "sha256": "dd86d87a644b54465f2777a298442b395aa8f86e184249ff4165b964fdb8b911",
+          "target": "game-core/src/main/java/ro/whistlab/core/AiDifficulty.java"
+        },
+        {
+          "sha256": "6a0aa4ff631ccdf17ef84e5c47b4794010c8abda72bde63b6f95c798d59da893",
+          "target": "game-core/src/main/java/ro/whistlab/core/AiPolicy.java"
+        },
+        {
+          "sha256": "8e1aae3a2179cc802683599ab77d6af3bda57319d811d6f06d1b87248617f101",
+          "target": "game-core/src/main/java/ro/whistlab/core/Card.java"
+        },
+        {
+          "sha256": "d52e4a5caabd4082d0328c00f437105750f9a741d8d2339d94541dcaed008f14",
+          "target": "game-core/src/main/java/ro/whistlab/core/ContractEndgame.java"
+        },
+        {
+          "sha256": "c8f072cbf875721909fb9eee42a8c2db7d20fb50cd58eeca531fde48a50f2d4e",
+          "target": "game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java"
+        },
+        {
+          "sha256": "069bcad45d2b3a8db075b69f085a210e3c2d29582ea14d6a4f91a3f291523259",
+          "target": "game-core/src/main/java/ro/whistlab/core/ExactContractRates.java"
+        },
+        {
+          "sha256": "6d116c38c5bfbd9c1bf7c4d3edcd846f97352a262103749038b68aa00f85bc0d",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameConfig.java"
+        },
+        {
+          "sha256": "f3ca6338167c53ff7e0f49efadbb1d660713c410da63f2a678cf874cb0d62965",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameMode.java"
+        },
+        {
+          "sha256": "6b42f220fa51bd8cb15ac1fe547343bd61b2c1749badf916f430df005b022ff5",
+          "target": "game-core/src/main/java/ro/whistlab/core/GamePhase.java"
+        },
+        {
+          "sha256": "5eb266d86d060603e7e9ff2b02eb96e7044e3966477fea403ef052700d116193",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameRules.java"
+        },
+        {
+          "sha256": "14c4171fc206ea290aad85c5dce81826e72dc5fd34d5f6eca3246e98584e647e",
+          "target": "game-core/src/main/java/ro/whistlab/core/GameSession.java"
+        },
+        {
+          "sha256": "f63b8ad1568a4e12816ec4d32dc0f2f15bf72f26bdda8fc4863c1641ba03d92a",
+          "target": "game-core/src/main/java/ro/whistlab/core/HowToPlay.java"
+        },
+        {
+          "sha256": "033f76a41bfaf55f7446da37511b42bdbf6f346176219934426b6cdd834d7cad",
+          "target": "game-core/src/main/java/ro/whistlab/core/LateDiscard.java"
+        },
+        {
+          "sha256": "c9fa4e02ad6a1fddb684d48e39ff4c338b47e9055902d0b54c3783dcfb584ade",
+          "target": "game-core/src/main/java/ro/whistlab/core/MatchSummary.java"
+        },
+        {
+          "sha256": "4da61a1f5a237998fa3c0f6df9381907516fb15a99dbd9d2f42f386ee981d770",
+          "target": "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+        },
+        {
+          "sha256": "2094ab095ee87c59d49d9f41f8ee2ba5a78b969f6c095cade172663bd9bf6ccc",
+          "target": "game-core/src/main/java/ro/whistlab/core/OneCardBidBelief.java"
+        },
+        {
+          "sha256": "5aaedaad77aea312d518e80882411d309fc5bef87a10ff4f87f408e9c10b7dbd",
+          "target": "game-core/src/main/java/ro/whistlab/core/PlayedCard.java"
+        },
+        {
+          "sha256": "9636bad44f066232fd6c0bbc47a88c37162df18be98c00115e99b3e3ac67bc3c",
+          "target": "game-core/src/main/java/ro/whistlab/core/PublicSalvage.java"
+        },
+        {
+          "sha256": "5c4c69556a917fac05156a196d9173680301995dd971ec289fd43ad54fbf7468",
+          "target": "game-core/src/main/java/ro/whistlab/core/RomanianScoring.java"
+        },
+        {
+          "sha256": "551c8534717aaecdc9e98de670cf776f027b919d0035ade340185a1018c15983",
+          "target": "game-core/src/main/java/ro/whistlab/core/StreakForecast.java"
+        },
+        {
+          "sha256": "f6070feb2fd64be7d7ca76f9c40cfdd7b0d90eee096e15eff1dab18cc644490e",
+          "target": "game-core/src/main/java/ro/whistlab/core/Suit.java"
+        },
+        {
+          "sha256": "98ec9abe02c5953e6df8f8c3e434576f7dd8b8396a0a467ba724afc86b32197f",
+          "target": "game-core/src/main/java/ro/whistlab/core/Trump.java"
+        },
+        {
+          "sha256": "994f20f699335eee1f415d355f2a9f4586e15273713b3f97f8d3f5733b663203",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/ContractGuarantee.java"
+        },
+        {
+          "sha256": "1f69bb6407a5ce0a0c8d752d2bde4d2eeda08c9b85a7c26c4534748ee9eccc8b",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java"
+        },
+        {
+          "sha256": "20ae1a34a70c335f5c8ad05d2b410dcabf6b2985e31402e11ac589ab4966850a",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java"
+        },
+        {
+          "sha256": "2f894d9542a2cce309855a4d271da766b88fface9fbb6a5b8f915b585e6de1f1",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/RolloutPlanner.java"
+        },
+        {
+          "sha256": "3bce5731a79621a76713ac12789ebd98e24f3f3889fab8e32392389a96dcf553",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/PreviousIndependentPlayer.java"
+        },
+        {
+          "sha256": "bb45a30914e8280334d37ffb2f72ba2d2d59c168c9e6adaf9a4e1a0a9b3487ee",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundFourIndependentOneCardBidBelief.java"
+        },
+        {
+          "sha256": "d987f64203e6a95c008196299903ba1aef3bf124662c3e30bb760046c3fbc11b",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundFourIndependentPlayer.java"
+        },
+        {
+          "sha256": "c97a32e4cd1f8009d0a460269c14548542e1030553b94a163c3e41f9b068fd14",
+          "target": "ai-lab/src/main/java/ro/whistlab/coach/baseline/RoundThreeIndependentPlayer.java"
+        }
+      ],
+      "status": "REJECTED_RESEARCH_ONLY",
+      "files": [
+        {
+          "sha256": "88416b6432f652cd5cbbdaf8de0d17f6956c47591a0093197a193e1e77f8fe8f",
+          "source": "research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java",
+          "target": "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+        },
+        {
+          "sha256": "584f4e3a4333481201f59451eed099dd2d913da5fe4b7cf58f25bb91996e5023",
+          "source": "research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java",
+          "target": "game-core/src/main/java/ro/whistlab/core/BidForecast.java"
+        },
+        {
+          "sha256": "41e1f7da4ad8eff24552b051d47e9bcc2ba9206ed294fa83faebbd5061a32460",
+          "source": "research/ai-bid-models/r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java",
+          "target": "game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java"
+        }
+      ],
+      "id": "r16-bid-forecast",
+      "qualification": {
+        "scope": "Historical count at this revision; execute the full native suite before qualifying any modified model.",
+        "expectedDefaultNativeTests": 510
+      },
+      "candidatePrefix": "conditioned-future-bids",
+      "allowedCollections": [
+        "regression",
+        "learning"
+      ]
+    }
+  ],
+  "sharedFiles": [
+    {
+      "sha256": "135f001bd5a418d89d5a5fc307918086ad09c10bff0b26a13e5b4b187509bb2b",
+      "source": "research/ai-bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java",
+      "target": "game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java"
+    },
+    {
+      "sha256": "f541fcf21ea803014674f453cc2172a7e89c09f4441cb17dbff56c339053b4e9",
+      "source": "research/ai-bid-models/shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java",
+      "target": "game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java"
+    },
+    {
+      "sha256": "41209cd5eee41d8f6dfd030b3ff0eefe722998f3be1544101a59710d45cbe182",
+      "source": "research/ai-bid-models/shared/game-core/src/test/resources/regressions/bid-evidence/golden.json",
+      "target": "game-core/src/test/resources/regressions/bid-evidence/golden.json"
+    }
+  ],
+  "rebaseNote": "Research overlays now stage on the accepted core with the current-table trump quota correction. Historical506/510 native counts and development outcomes belong to preserved R14-based source archives. A replay on this newer base is a new source identity requiring fresh qualification and experiment ID; no historical outcome is relabelled."
+}

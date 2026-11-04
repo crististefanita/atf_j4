@@ -23,9 +23,8 @@ Foaia consultativă și ecranul de rezultat oferă un istoric per jucător. Cea 
 ## Priorități deschise
 
 La șase jucători, prima revizie așeza flancurile de sus la 8% din înălțimea mesei.
-Proba pe masă normală a descoperit diferența față de mock. Geometria folosește
-acum spațiul disponibil până la regiunea centrală și păstrează distanța dintre
-scaune și țintele de licitare. O componentă fixează cazul măsurat pe emulator.
+
+Proba pe masă normală a descoperit diferența față de mock. Geometria folosește acum spațiul disponibil până la regiunea centrală și păstrează distanța dintre scaune și țintele de licitare. O componentă fixează cazul măsurat pe emulator.
 
 În captura românească de scor apărea antetul englezesc `Bid`; `Mână` nu
 explica unitatea. Antetele scurte sunt acum `Lic.` și `Pct.` și descrierea
@@ -49,7 +48,7 @@ Pentru meniul simplificat, chenarul de atu, mâna centrată și istoricul bid–
 
 Pentru handoff către componente și AI, acceptanța de șase mâini se poate relua
 offline din trace-ul public. Arhiva distinge încercarea eșuată, ultimul rezultat
-acceptat în fiecare scope și hash-urile măsurate ulterior. [Stare și probe J4-UI-HANDOFF](../WHIST_UI_REPORT_HANDOFF.md)
+acceptat în fiecare scope și hash-urile măsurate ulterior. [Stare și probe UI-HANDOFF](../WHIST_UI_REPORT_HANDOFF.md)
 
 - Fiecare profil verifică separat lățimea logică și densitatea efectivă. Captura
   fizică a emulatorului poate avea benzi negre în exteriorul aplicației.

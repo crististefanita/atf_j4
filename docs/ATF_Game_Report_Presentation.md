@@ -1,8 +1,8 @@
-# J4 game reports — scope, detail and completeness
+# Game reports — scope, detail and completeness
 
-One immutable consumer policy controls AUTO, SUMMARY and FULL for the six J4 publishers.
-Core C3 and Reporting J16 remain unchanged; J4 prepares evidence and uses the existing
-native renderer ports, tables, disclosures and screenshot viewer.
+One immutable consumer policy controls AUTO, SUMMARY and FULL for the game publishers.
+The consumer prepares evidence and uses the binary library’s native renderer ports,
+tables, disclosures and screenshot viewer.
 
 ## One configuration, captured once
 
@@ -16,7 +16,7 @@ The evidence YAML keeps its six existing required keys and adds three optional p
 keys with backward-compatible defaults. Unknown keys, duplicate keys, multiple documents,
 invalid enums/types, overflow and nonpositive limits are refused.
 
-~~~yaml
+```yaml
 # config/game-evidence.yml
 detailLevel: AUTO
 maxDetailedInvocations: 64
@@ -27,14 +27,14 @@ optionalContextBudgetCharacters: 65536
 rowsPerGroup: 100
 fieldsPerGroup: 20
 optionalMaxItems: 32
-~~~
+```
 
-~~~yaml
+```yaml
 # atf.yaml: the shared Reporting vocabulary stays unchanged
 reporting:
   assertionMaxDisplayCharacters: 240
   bodyMaxDisplayCharacters: 32768
-~~~
+```
 
 The current defaults are in [game-evidence.yml](../config/game-evidence.yml).
 
@@ -63,7 +63,7 @@ The current defaults are in [game-evidence.yml](../config/game-evidence.yml).
 | Android images | original complete PNGs and checkpoint identity; the policy does not crop, replace or discard a screenshot |
 | observations without comparisons | explicit media API, one Gherkin keyword and zero invented business assertions |
 
-JSON fragments are complete documents, not a prefix that happens to parse. Core C3 validates whole documents strictly; original numeric spellings survive native formatting and fragmentation. The presentation contracts check ordered parts and complete typed values; LearningReportHtmlAudit also verifies original checkpoint ownership, final rows and verdicts.
+JSON fragments are complete documents, not a prefix that happens to parse. Core validates whole documents strictly; original numeric spellings survive native formatting and fragmentation. The presentation contracts check ordered parts and complete typed values; LearningReportHtmlAudit also verifies original checkpoint ownership, final rows and verdicts.
 
 - A missing or reordered part cannot certify complete evidence.
 
@@ -84,8 +84,8 @@ JSON fragments are complete documents, not a prefix that happens to parse. Core 
 ## Responsibilities and verification
 
 The composition layer lives in atf-tests main Java. Existing business producers and
-independent oracles remain at their owners; Reporting runtime implementation and generic
-browser regressions remain in J0.
+independent oracles remain at their owners; Runtime renderer maintenance and generic browser regressions follow the
+[ownership contract](feedback/README.md).
 
 [Owner contracts](../atf-tests/README.md) and [verification evidence](ATF_Game_Report_Verification.md)
 separate source tests, physical-JAR rendering, archived execution data and new live journeys.

@@ -1,6 +1,6 @@
 # AI R6 — constructive acceptance feedback
 
-Owner: J4 domain and consumer input. Reporting remains the physical J16 binary; no library change is requested by this increment. Evidence: C:/work/whist_back/ai-training/20261102213353-round6.
+Owner: Whist Lab domain and consumer input. Reporting remains the physical J16 binary; no library change is requested by this increment. Evidence: <evidence-root>/ai-training/20261102213353-round6.
 
 - Resolved: twenty focused regressions now cover four independently certified risky choices, fourteen rank/contract/domain boundaries and two actual missed contracts reduced to their final tricks. Expected values are literal or independently enumerated; original V4 decisions are reproduced.
 - Resolved: Expert and independent player now retain the correct rank in the bounded same-suit late-card situation. The runtime fix does not enumerate hidden deals. No private opponent cards are representable in its input.

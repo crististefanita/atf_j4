@@ -1,66 +1,61 @@
-# J4 acceptance and report composition
+# Verificări de consumator și compoziția dovezilor
 
-## Pe scurt — purpose and ownership
+## Pe scurt
 
-This consumer module verifies Core/Reporting binaries and composes captured component,
-learning and Android evidence. Runtime implementation and generic renderer regressions
-remain in J0; J4 owns receipt selection, business meaning and publication acceptors.
+Modulul verifică integrarea binarelor comune și transformă receptele capturate
+într-o prezentare auditabilă. Deține selecția inputului, semantica verificărilor
+Whist și acceptorii de publicare. Implementarea generică este consumată prin
+API-ul bibliotecii configurate în [POM-ul părinte](../pom.xml).
 
-## Shared presentation policy
+## Organizare
 
-All six publishers use the same immutable configuration and native Reporting ports.
-Reusable implementation is in main Java; JUnit entrypoints remain in test sources.
-
-| Owner | Responsibility |
+| Sursă | Responsabilitate |
 |---|---|
-| EvidencePolicy / EvidencePolicyYaml | strict consumer YAML; AUTO, SUMMARY, FULL and positive limits |
-| EvidenceSelection | whole learning invocations, all non-PASS and quality gates; original/retained/omitted inventory |
-| GameReportConfiguration | capture the policy and generic settings once; preview 240 and a positive body budget |
-| GameReportSession / GameReportPhase | native scopes, bounded tables, required values, optional context and cumulative accounting |
-| GameEvidenceBodies | complete JSON fragments or ordered TEXT parts; refuse indivisible over-budget JSON |
-| GameReportTextAudit / LearningReportHtmlAudit | decode TEXT once and compare complete JSON; the learning acceptor also checks original checkpoint/row ownership |
+| [EvidencePolicyYaml](src/main/java/atf/tests/learning/EvidencePolicyYaml.java) | Citirea și validarea politicii de selecție. |
+| [EvidenceSelection](src/main/java/atf/tests/learning/EvidenceSelection.java) | Invocări întregi, gate-uri și toate rezultatele non-PASS; inventarul selecției și omisiunilor. |
+| [LearningRunReport](src/main/java/atf/tests/learning/LearningRunReport.java) | Compoziția receptei tipizate și păstrarea comparațiilor originale. |
+| [GameReportConfiguration](src/main/java/atf/tests/reporting/GameReportConfiguration.java) | Configurație imutabilă pe publicare. |
+| [GameReportSession](src/main/java/atf/tests/reporting/GameReportSession.java) | Faze și scopes native, cu limitele declarate. |
+| [GameEvidenceBodies](src/main/java/atf/tests/reporting/GameEvidenceBodies.java) | Corpuri complete sau părți TEXT ordonate; refuzul inputului indivizibil peste buget. |
+| [LearningReportHtmlAudit](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Verificarea identității checkpoint-urilor, rândurilor și valorilor publicate. |
 
-[Game report presentation](../docs/ATF_Game_Report_Presentation.md) defines configuration,
-mode semantics, completeness limits and consumer boundaries.
+Politica efectivă și sensul modurilor de prezentare sunt în
+[contractul de prezentare](../docs/ATF_Game_Report_Presentation.md). Componentele
+reutilizabile sunt în `src/main/java`; intrările JUnit sunt în `src/test/java`.
 
-## Publisher coverage
+## Contracte importante
 
-| Entrypoint | Scope |
-|---|---|
-| RuleComponentExtentReportTest | recorded rule/component selection and independent trace |
-| WhistCorpusExtentReportTest | evaluator outcomes, detailed reference replay and historical media |
-| WhistAiTrainingExtentReportTest | component/AI acceptance and captured Android duel |
-| FullMatchExtentReportTest | original and parallel Oh Hell evidence |
-| RomanianExpertExtentReportTest | recorded complete Romanian Expert evidence |
-| LearningRunReport | typed receipts, whole-case scope selection and native comparisons |
+Inputul păstrează verdictul original, cauza eșecului și toate comparațiile
+obligatorii ale unei invocări selectate. Contextele opționale pot fi limitate
+conform politicii; limitarea lor nu schimbă expected, actual sau PASS/FAIL.
+Selecția unei populații mari publică inventarul complet și nu pretinde că toate
+invocările omise au fost prezentate individual.
 
-- Legacy publishers retain their original invocation scope; they do not infer business verdicts or missing comparisons.
-- Learning declares its selected scope; all supplied required comparisons, inputs, failure causes and PNGs remain independent of optional-context display.
-- Native units keep their separate reporting category.
+Componentele native, partidele offline, replay-ul unei arhive și un scenariu
+Android nou au scope-uri diferite. Republicarea nu produce noi partide sau
+capturi. Imaginile istorice ori sintetice păstrează această etichetă.
 
-## Component verification
+## Verificare focalizată
 
-Run from an owned TMP checkout with its physical lib pairs:
+Rulați într-o copie proprie din `%TEMP%`, cu POM-ul părinte, modulele necesare,
+configurația și perechile fizice JAR/POM din `lib`:
 
-~~~powershell
+```powershell
 mvn -B -pl atf-tests -am "-Dtest=GameReportComponentSuite,LearningRunReportContractTest,EvidenceSelectionContractTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
-~~~
+```
 
-- GameReportComponentSuite covers policy boundaries, redaction, JSON/TEXT parts and individual/combined Extent/fallback reports.
-- LegacyUiMediaReportContractTest covers one Gherkin keyword, original PNGs and observation-only media without fabricated comparisons.
-- LearningRunReportContractTest checks original rows, long values, timing and deliberate owner/verdict/last-row/fragment mutations.
-- EvidenceSelectionContractTest retains the independent scope, threshold, YAML and incomplete-publication controls.
-- CoreReportingConsumerContractTest and AndroidInlineScreenshotReportContractTest remain separate binary/adapter contracts.
+Selecțiile din surse au responsabilități distincte:
 
-[The verification record](../docs/ATF_Game_Report_Verification.md) distinguishes fresh
-contracts, archived-evidence republication and independent J1/J2/J3 sanity checks.
+- `GameReportComponentSuite`: politică, corpuri JSON/TEXT, redaction și publicare.
+- `LearningRunReportContractTest`: proprietatea rândurilor, valori lungi,
+  fragmente, timpi și respingerea unor mutații deliberate ale dovezii.
+- `EvidenceSelectionContractTest`: populație, praguri, selecție completă și
+  inputuri incomplete.
+- `CoreReportingConsumerContractTest` și `AndroidInlineScreenshotReportContractTest`:
+  contractele binarelor și ale adaptorului PNG.
 
-## Aggregate and device execution
-
-DeepSuiteExtentReportTest remains an opt-in aggregate publisher.
-
-- Its manifest adapter uses the native UI API, without a private renderer, stylesheet or JavaScript.
-- Android execution requires explicit activation and an exclusive device lease.
-- Offline republication is separate from a new device journey.
-
-Build and delivery follow the [owned TMP process](../../atf_j0/docs/ATF_Build_And_Execution_Safety.md).
+[LearningRunReportTest](src/test/java/atf/tests/LearningRunReportTest.java)
+consumă o selecție capturată explicit. `DeepSuiteExtentReportTest` este o intrare
+agregată opt-in, nu testul implicit care ar trebui lansat pentru orice schimbare.
+Contractele și verificările arhivate se consultă din [indexul documentației](../docs/),
+fără a confunda un rezultat istoric cu sursele curente.

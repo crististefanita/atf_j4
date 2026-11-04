@@ -90,27 +90,39 @@ public final class MonteCarloAi {
         Suit led=view.trick().isEmpty()?null:view.trick().get(0).card().suit();
         List<Card> legal=GameRules.legalCards(view.hand(),led,view.trump(),view.mode());
         if(legal.isEmpty())throw new IllegalArgumentException("No legal card for the observed player");
-        if(legal.size()==1)return new Decision(legal.get(0),List.of(),
-                "Only legal card; no hidden-deal sampling or score estimate required");
+        if(legal.size()==1)return new Decision(legal.get(0),List.of(),"Only legal card; no hidden-deal sampling or score estimate required");
         Card dominant=LateDiscard.choose(view);if(dominant!=null)return new Decision(dominant,List.of(),"Two-card same-suit dominance: current trick already lost, or last-seat win fixed; retain high only if one further trick is needed. No hidden cards or samples used.");
+        boolean salvage=view.mode().isRomanian()&&PublicSalvage.quota(view).impossible();
         List<Candidate> evaluations=new ArrayList<>();
         int[] targets=view.seats().stream().mapToInt(s->s.bid()==null?0:s.bid()).toArray();
-        double[] values=new double[legal.size()],rivals=new double[legal.size()],exact=new double[legal.size()];int samples=0;
+        double[] values=new double[legal.size()],rivals=new double[legal.size()],exact=new double[legal.size()],misses=new double[legal.size()];int samples=0;
         List<List<List<Card>>> exactDeals=unknownCards(view).size()<=7?enumerateSmallDeals(view):List.of();
         int worlds=exactDeals.isEmpty()?SAMPLES:exactDeals.size();
         for(int sample=0;sample<worlds;sample++){
             List<List<Card>> hands=exactDeals.isEmpty()?sample(view,new Random(seed(view,sample))):exactDeals.get(sample);if(hands==null)continue;samples++;
             for(int c=0;c<legal.size();c++){
-                double[] value=evaluate(view,hands,legal.get(c),targets,seed(view,sample)^0xCA4D2026L,exactWeight);values[c]+=value[0];rivals[c]+=value[1];exact[c]+=value[2];
+                double[] value=evaluate(view,hands,legal.get(c),targets,seed(view,sample)^0xCA4D2026L,exactWeight);values[c]+=value[0];rivals[c]+=value[1];exact[c]+=value[2];misses[c]+=value[3];
             }
         }
         int best=0;for(int c=0;c<legal.size();c++){
             evaluations.add(new Candidate(legal.get(c),samples==0?Double.NEGATIVE_INFINITY:values[c]/samples,samples));
-            if(prefer(view.mode().isRomanian(),exact[c],values[c],rivals[c],exact[best],values[best],rivals[best]))best=c;
+            if(prefer(view.mode().isRomanian(),salvage,exact[c],values[c],misses[c],rivals[c],exact[best],values[best],misses[best],rivals[best]))best=c;
         }
-        return new Decision(legal.get(best),evaluations,samples+(exactDeals.isEmpty()?" sampled":" exhaustively enumerated")+" feasible common possible deals; public void inference; small-endgame exact/heuristic mixture weight="+exactWeight+"; highest estimated exact-contract probability for Romanian Whist; points then rival score break ties");
+        String objective=salvage?"publicly unreachable contract: preserve own points, then maximize expected rival misses":"highest estimated exact-contract probability, then own points and rival score";
+        return new Decision(legal.get(best),evaluations,samples+(exactDeals.isEmpty()?" sampled":" exhaustively enumerated")+" feasible common possible deals; public void inference; small-endgame exact/heuristic mixture weight="+exactWeight+"; "+objective);
     }
     static boolean prefer(boolean safety,double exact,double points,double rival,double bestExact,double bestPoints,double bestRival){
+        return prefer(safety,false,exact,points,0,rival,bestExact,bestPoints,0,bestRival);
+    }
+    static boolean prefer(boolean safety,boolean salvage,double exact,double points,double misses,double rival,
+            double bestExact,double bestPoints,double bestMisses,double bestRival){
+        if(salvage){
+            if(points>bestPoints+1e-9)return true;
+            if(Math.abs(points-bestPoints)>1e-9)return false;
+            if(misses>bestMisses+1e-9)return true;
+            if(Math.abs(misses-bestMisses)>1e-9)return false;
+            return rival<bestRival;
+        }
         double primary=safety?exact:points,bestPrimary=safety?bestExact:bestPoints;
         return primary>bestPrimary+1e-9||Math.abs(primary-bestPrimary)<1e-9&&(points>bestPoints+1e-9||Math.abs(points-bestPoints)<1e-9&&rival<bestRival);
     }
@@ -145,7 +157,7 @@ public final class MonteCarloAi {
             for(int i=0;i<result.length;i++)result[i]=(1-exactWeight)*result[i]+exactWeight*exact[i];
         }return result;
     }
-    private static double[] utility(View view,int[] won,int[] targets){int rival=Integer.MIN_VALUE;for(int s=0;s<won.length;s++)if(s!=view.seat())rival=Math.max(rival,view.seats().get(s).total()+points(view,s,won[s],targets[s]));return new double[]{points(view,view.seat(),won[view.seat()],targets[view.seat()]),rival,won[view.seat()]==targets[view.seat()]?1:0};}
+    static double[] utility(View view,int[] won,int[] targets){int rival=Integer.MIN_VALUE,misses=0;for(int s=0;s<won.length;s++)if(s!=view.seat()){rival=Math.max(rival,view.seats().get(s).total()+points(view,s,won[s],targets[s]));if(won[s]!=targets[s])misses++;}return new double[]{points(view,view.seat(),won[view.seat()],targets[view.seat()]),rival,won[view.seat()]==targets[view.seat()]?1:0,misses};}
 
     static int points(View view,int seat,int won,int bid){
         return view.streakBonuses()?RomanianScoring.score(won,bid,view.handSize(),view.seats().get(seat).streak(),view.streakBonusPoints()).totalPoints()
@@ -166,7 +178,7 @@ public final class MonteCarloAi {
     private static long seed(View view,int sample) {
         // Neither wall-clock time nor hidden hands influence decisions. Replays are reproducible.
         long seed=0x51A7C0DEL+sample*0x9E3779B97F4A7C15L;
-        seed=seed*31+view.mode().ordinal();seed=seed*31+view.trump().ordinal();seed=seed*31+view.seat();
+        seed=seed*31+view.mode().samplingId();seed=seed*31+view.trump().ordinal();seed=seed*31+view.seat();
         seed=seed*31+view.dealer();seed=seed*31+view.handSize();
         for(Card c:view.hand()){seed=seed*31+c.suit().ordinal();seed=seed*31+c.rank();}
         for(Seat s:view.seats()){seed=seed*31+s.remaining();seed=seed*31+(s.bid()==null?-1:s.bid());seed=seed*31+s.won();seed=seed*31+s.total();}

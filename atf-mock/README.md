@@ -1,22 +1,22 @@
-# atf-mock — baza comună în J3
+# Transport API mock
 
 ## Pe scurt
 
-Modulul păstrează transport API determinist pentru adaptoare care au nevoie de el.
-Sursele și testele au fost preluate selectiv din referința J0.
-`bootstrap-provenance.json` păstrează snapshot-ul inițial; sincronizările
-ulterioare sunt reconciliate separat și nu rescriu istoricul.
+Modulul implementează transport API determinist pentru verificări offline.
+Catalogul de rute aparține mock-ului; el nu schimbă setările transportului real
+și nu implementează regulile jocului.
 
-## Ownership și limită
+## Configurare și selecție
 
-Implementarea comună are owner în J0. Transportul MOCK este verificat separat;
-recognizerul real și fixture-urile speech nu sunt implementate prin acest transport.
-Modulul nu primește modele audio, decoder ASR sau logică de transcriere
-pentru a evita ownerul Speech.
+[AtfMockTransport](src/main/java/atf/mock/AtfMockTransport.java) returnează răspunsul
+rutei potrivite sau fallback-ul declarat.
+[AtfMockConfigurationLoader](src/main/java/atf/mock/AtfMockConfigurationLoader.java)
+acceptă o cale explicită și definește descoperirea fișierelor YAML. Prioritatea
+configurației și valorile implicite se citesc din acest loader.
 
-[Arhitectura J3](../docs/ATF_Speech_Architecture.md) delimitează consumerul.
-[Sync-ul selectiv](../docs/ATF_Workspace_Synchronization.md) păstrează
-diferențele locale și interzice mirror-ul altui deployment.
+[MockRoute](src/main/java/atf/mock/MockRoute.java) definește potrivirea metodei,
+căii, parametrilor, headerelor și corpului. Fallback-ul este un rezultat
+configurat, nu dovada că s-a apelat un serviciu extern.
 
 ## JSON strict și potrivire numerică exactă
 
@@ -35,3 +35,16 @@ sau array-urile YAML nu sunt convertite tacit în absența constrângerii.
 [Contractele de componentă](src/test/java/atf/mock/json/MockNumericContractComponentTest.java)
 folosesc API-ul public, expected independent și transportul mock. Ele verifică
 fallback-ul, răspunsul original și încărcarea YAML, fără serviciu extern.
+
+## Verificare
+
+Rulați dintr-o copie proprie din `%TEMP%`, cu POM-ul părinte și dependențele
+locale ale reactorului:
+
+```powershell
+mvn -B -pl atf-mock -am test
+```
+
+[POM-ul modulului](pom.xml) și [sursele testelor](src/test/java/) definesc
+dependențele și contractele efective. Aceste comenzi nu sunt dovada unei execuții
+deja trecute.

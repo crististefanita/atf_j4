@@ -14,8 +14,7 @@ import ro.whistlab.core.Trump;
 
 /** Player-facing copy for the Android UI. Rule calculations stay in game-core. */
 final class WhistUiText {
-    static final List<GameMode> MENU_MODES = List.of(GameMode.OH_HELL, GameMode.DESCENDING, GameMode.ROMANIAN_WHIST,
-            GameMode.DOWN_AND_UP, GameMode.LONG_ROMANIAN, GameMode.REVERSE_OH_HELL);
+    static final List<GameMode> MENU_MODES = List.of(GameMode.values());
     private final HowToPlay.Language language;
 
     WhistUiText(HowToPlay.Language language) {
@@ -76,6 +75,8 @@ final class WhistUiText {
     String close() { return choose("Close", "Închide"); }
     String gameComplete() { return choose("Game complete", "Partidă încheiată"); }
     String handComplete() { return choose("Hand complete", "Mână încheiată"); }
+    String unsupportedSavedMode() { return choose("This saved game uses a retired mode. Starting a new game will replace it.",
+            "Partida salvată folosește o variantă retrasă. O partidă nouă o va înlocui."); }
     String noSavedGame() { return choose("Saved game could not be resumed and was cleared.",
             "Partida salvată nu a putut fi reluată și a fost ștearsă."); }
     String invalidBid() { return choose("That bid is not available. Choose another value.",
@@ -106,10 +107,8 @@ final class WhistUiText {
         return switch (mode) {
             case OH_HELL -> "Oh Hell";
             case DESCENDING -> choose("Descending", "Descrescător");
-            case PRACTICE_HAND -> choose("Practice hand", "Mână de antrenament");
             case ROMANIAN_WHIST -> choose("Romanian (1–8–1)", "Românesc (1–8–1)");
             case DOWN_AND_UP -> choose("Down & Up", "Coborâre și urcare");
-            case MAXIMUM -> choose("Maximum", "Maxim");
             case LONG_ROMANIAN -> choose("Long Romanian (8-1-8)", "Whist românesc lung (8–1–8)");
             case REVERSE_OH_HELL -> choose("Reverse Oh Hell", "Oh Hell inversat");
         };
@@ -133,23 +132,17 @@ final class WhistUiText {
                     "Reduced deck; 8–1–8 schedule. Romanian Whist follow-suit, mandatory-trump and scoring rules apply.",
                     "Pachet redus; program 8–1–8. Se aplică regulile de Whist românesc privind culoarea, atuul obligatoriu și punctajul.");
             case OH_HELL -> choose(
-                    "Builds up to the table limit, then comes back down. Follow suit; when void, discard or trump. Each trick is one point; an exact bid adds ten.",
-                    "Mâinile cresc până la limita mesei, apoi scad. Respectă culoarea; când nu o ai, poți decarta sau tăia cu atu. Fiecare levată valorează un punct; contractul exact adaugă zece.");
+                    "Hand size decreases to one, then increases again (4 players: 10–1–10, 6 players: 8–1–8). Follow suit; when void, discard or trump. Each trick is one point; an exact bid adds ten.",
+                    "Numărul de cărți scade până la una, apoi crește (4 jucători: 10–1–10, 6 jucători: 8–1–8). Respectă culoarea; când nu o ai, poți decarta sau tăia cu atu. Fiecare levată valorează un punct; contractul exact adaugă zece.");
             case DESCENDING -> choose(
                     "Starts at the largest hand that fits the deck and decreases to one. Trump changes each hand. Follow suit; when void, discard or trump.",
                     "Începe cu cea mai mare mână care încape în pachet și scade până la una. Atuul se schimbă la fiecare mână. Respectă culoarea; când nu o ai, poți decarta sau tăia cu atu.");
             case DOWN_AND_UP -> choose(
                     "Starts at the largest hand that fits the deck, decreases to one and rises again. Trump changes each hand; an exact bid adds ten.",
                     "Începe cu cea mai mare mână care încape în pachet, scade până la una și apoi crește. Atuul se schimbă la fiecare mână; contractul exact adaugă zece.");
-            case MAXIMUM -> choose(
-                    "Ten hands at the largest size that fits the deck and table. Trump changes each hand; an exact bid adds ten.",
-                    "Zece mâini cu cel mai mare număr de cărți care încape la masă. Atuul se schimbă la fiecare mână; contractul exact adaugă zece.");
             case REVERSE_OH_HELL -> choose(
                     "Starts with one card and grows to the table limit, then decreases. An undealt turned card sets trump; an exact bid adds ten.",
                     "Începe cu o carte, crește până la limita mesei, apoi scade. O carte întoarsă și neîmpărțită stabilește atuul; contractul exact adaugă zece.");
-            case PRACTICE_HAND -> choose(
-                    "One card per player: practise a complete trick, bidding and scoring.",
-                    "O carte pentru fiecare jucător: exersează licitarea, o levată completă și punctajul.");
         };
     }
 

@@ -12,7 +12,6 @@ public class OriginalVariantContractTest {
     @Test public void oi22DownAndUpHasOneMinimumAndTwoMaximumHands(){
         for(int n=3;n<=6;n++){int max=52/n;var sizes=GameRules.handSizes(GameMode.DOWN_AND_UP,n);assertEquals(2*max-1,sizes.size());assertEquals(1,Collections.frequency(sizes,1));assertEquals(2,Collections.frequency(sizes,max));for(int h=0;h<sizes.size();h++)assertEquals(Math.abs(h-max+1)+1,sizes.get(h).intValue());}
     }
-    @Test public void oi23MaximumHasExactlyTenFullHands(){for(int n=3;n<=6;n++)assertEquals(Collections.nCopies(10,52/n),GameRules.handSizes(GameMode.MAXIMUM,n));}
     @Test public void oi24RomanianPlateausHaveOneRoundPerSeatAtBothEndsAndTheTurningPoint(){
         for(int n=3;n<=6;n++){var sizes=GameRules.handSizes(GameMode.ROMANIAN_WHIST,n);assertEquals(3*n+12,sizes.size());assertEquals(Collections.nCopies(n,1),sizes.subList(0,n));assertEquals(Collections.nCopies(n,8),sizes.subList(n+6,2*n+6));assertEquals(Collections.nCopies(n,1),sizes.subList(2*n+12,3*n+12));for(int h=0;h<sizes.size();h++)assertEquals(sizes.get(h),sizes.get(sizes.size()-1-h));}
     }

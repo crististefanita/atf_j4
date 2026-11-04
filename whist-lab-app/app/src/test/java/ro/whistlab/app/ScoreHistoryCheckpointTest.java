@@ -8,6 +8,12 @@ import org.junit.Test;
 import ro.whistlab.core.*;
 
 public class ScoreHistoryCheckpointTest {
+    @Test public void unsupportedSavedProfileHasItsOwnRecoverableLoadError() throws Exception {
+        var payload = GameSessionStore.encode(newMatch().saveState());
+        payload.put("mode", "UNAVAILABLE_PROFILE");
+        assertThrows(GameSessionStore.UnsupportedSavedMode.class, () -> GameSessionStore.fromJson(payload.toString()));
+    }
+
     @Test public void legacyMidHandCarriesOnlyKnownBalanceAndKeepsSubsequentRows() throws Exception {
         GameSession game = newMatch();
         finish(game);

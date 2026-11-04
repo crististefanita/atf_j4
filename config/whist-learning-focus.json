@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "id": "WHIST_LEARNING_FOCUS_28_V1",
+  "status": "DIAGNOSTIC_NOT_OPTIMAL_ACTION_REGRESSIONS",
+  "partition": "development",
+  "purpose": "Small explicit source set for understanding large contract errors and deriving separately justified component cases; no fitting or strength acceptance follows from observed outcomes.",
+  "source": {
+    "activePointer": "C:/work/whist_back/whist-learning/current.json",
+    "activePointerSha256": "520c996aba5eeee6c84b9fc491614aeefb4564e3eaa8a57f159a495a2625566f",
+    "manifest": "C:/work/whist_back/whist-learning/active-20261103-r12-final/manifest.json",
+    "manifestSha256": "c98e5737dccada7801d9e4657e1ddd95749a855600bc594cde7a4e4a615ef50c",
+    "folder": "C:/work/whist_back/whist-learning/active-20261103-r12-final",
+    "activeGames": 100,
+    "activeBytes": 6223703
+  },
+  "selection": {
+    "algorithm": "Greedy maximum number of uncovered requested labels; ties retain the exact hashed parent-manifest game order. No scan of raw archival or heldout games.",
+    "requestedLabelPattern": "<expert|independent>/<2..8>/large-error/<over|under>",
+    "largeErrorAbsoluteBidErrorAtLeast": 2,
+    "requestedFocusLessons": [
+      "expert/2/large-error/over",
+      "expert/2/large-error/under",
+      "expert/3/large-error/over",
+      "expert/3/large-error/under",
+      "expert/4/large-error/over",
+      "expert/4/large-error/under",
+      "expert/5/large-error/over",
+      "expert/5/large-error/under",
+      "expert/6/large-error/over",
+      "expert/6/large-error/under",
+      "expert/7/large-error/over",
+      "expert/7/large-error/under",
+      "expert/8/large-error/over",
+      "expert/8/large-error/under",
+      "independent/2/large-error/over",
+      "independent/2/large-error/under",
+      "independent/3/large-error/over",
+      "independent/3/large-error/under",
+      "independent/4/large-error/over",
+      "independent/4/large-error/under",
+      "independent/5/large-error/over",
+      "independent/5/large-error/under",
+      "independent/6/large-error/over",
+      "independent/6/large-error/under",
+      "independent/7/large-error/over",
+      "independent/7/large-error/under",
+      "independent/8/large-error/over",
+      "independent/8/large-error/under"
+    ],
+    "coveredFocusLessons": [
+      "expert/2/large-error/over",
+      "expert/2/large-error/under",
+      "expert/3/large-error/over",
+      "expert/3/large-error/under",
+      "expert/4/large-error/over",
+      "expert/4/large-error/under",
+      "expert/5/large-error/over",
+      "expert/5/large-error/under",
+      "expert/6/large-error/over",
+      "expert/6/large-error/under",
+      "expert/7/large-error/over",
+      "expert/7/large-error/under",
+      "expert/8/large-error/over",
+      "expert/8/large-error/under",
+      "independent/2/large-error/over",
+      "independent/2/large-error/under",
+      "independent/3/large-error/over",
+      "independent/3/large-error/under",
+      "independent/4/large-error/over",
+      "independent/4/large-error/under",
+      "independent/5/large-error/over",
+      "independent/5/large-error/under",
+      "independent/6/large-error/over",
+      "independent/6/large-error/under",
+      "independent/7/large-error/over",
+      "independent/7/large-error/under",
+      "independent/8/large-error/over",
+      "independent/8/large-error/under"
+    ],
+    "missingFocusLessons": [],
+    "gameCount": 9,
+    "seedClusterCount": 8,
+    "seedClusters": [
+      "5501",
+      "6402",
+      "6703",
+      "6704",
+      "6705",
+      "7100",
+      "7106",
+      "76200"
+    ],
+    "bytes": 561259
+  },
+  "execution": {
+    "defaultRun": false,
+    "defaultLearningTournament": false,
+    "aiRerunsDuringSelection": 0,
+    "heldoutRead": false,
+    "gamesCopied": false,
+    "activePointerChanged": false,
+    "acceptance": "Verify each listed SHA and independently replay rules/score before extracting own/public decision contexts. Observed actions and final losses do not provide optimal-action assertions."
+  },
+  "games": [
+    {
+      "id": "arena-safety10-arena-mixed-seed7100-seating4",
+      "file": "games/arena-safety10-arena-mixed-seed7100-seating4.json",
+      "archiveFile": "games/development/arena-safety10-arena-mixed-seed7100-seating4.json",
+      "seed": "7100",
+      "sha256": "a11815317d7ba1f384cb7f7229331b8a9efc88df169ef44c9eda687e57b23858",
+      "bytes": 66547,
+      "introducedFocusLessons": [
+        "expert/4/large-error/under",
+        "expert/6/large-error/under",
+        "expert/7/large-error/under",
+        "expert/8/large-error/over",
+        "independent/2/large-error/over",
+        "independent/6/large-error/under",
+        "independent/7/large-error/over",
+        "independent/8/large-error/over"
+      ],
+      "coveredFocusLessons": [
+        "expert/4/large-error/under",
+        "expert/6/large-error/under",
+        "expert/7/large-error/under",
+        "expert/8/large-error/over",
+        "independent/2/large-error/over",
+        "independent/6/large-error/under",
+        "independent/7/large-error/over",
+        "independent/8/large-error/over"
+      ]
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76200-seat2-after",
+      "file": "games/round11-enum16-development-player-expert_v10-seed76200-seat2-after.json",
+      "archiveFile": "games/development/round11-enum16-development-player-expert_v10-seed76200-seat2-after.json",
+      "seed": "76200",
+      "sha256": "aaaa7814be4fd3bc21bfe9c1a66ec17c2f0700427bfbb900bb3eeafb474f4e59",
+      "bytes": 66324,
+      "introducedFocusLessons": [
+        "expert/4/large-error/over",
+        "expert/6/large-error/over",
+        "expert/7/large-error/over",
+        "expert/8/large-error/under",
+        "independent/5/large-error/over",
+        "independent/6/large-error/over"
+      ],
+      "coveredFocusLessons": [
+        "expert/4/large-error/over",
+        "expert/6/large-error/over",
+        "expert/7/large-error/over",
+        "expert/8/large-error/over",
+        "expert/8/large-error/under",
+        "independent/5/large-error/over",
+        "independent/6/large-error/over"
+      ]
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7106-seating3",
+      "file": "games/arena-safety10-arena-factorial-seed7106-seating3.json",
+      "archiveFile": "games/development/arena-safety10-arena-factorial-seed7106-seating3.json",
+      "seed": "7106",
+      "sha256": "e4ee59491597d3a7934f35316cbdaa513bee7987dbe71407c2261d9c9fbac0c3",
+      "bytes": 66526,
+      "introducedFocusLessons": [
+        "independent/3/large-error/under",
+        "independent/4/large-error/over",
+        "independent/5/large-error/under",
+        "independent/8/large-error/under"
+      ],
+      "coveredFocusLessons": [
+        "independent/3/large-error/under",
+        "independent/4/large-error/over",
+        "independent/5/large-error/over",
+        "independent/5/large-error/under",
+        "independent/7/large-error/over",
+        "independent/8/large-error/over",
+        "independent/8/large-error/under"
+      ]
+    },
+    {
+      "id": "round7-rollout01-development-expert-expert_v6-seed6705-seat1-after",
+      "file": "games/round7-rollout01-development-expert-expert_v6-seed6705-seat1-after.json",
+      "archiveFile": "games/development/round7-rollout01-development-expert-expert_v6-seed6705-seat1-after.json",
+      "seed": "6705",
+      "sha256": "5b11621457b4ef214513ece3010ce7bdac97684d069420b7129acee74aff3dc9",
+      "bytes": 59082,
+      "introducedFocusLessons": [
+        "expert/2/large-error/under",
+        "expert/3/large-error/over",
+        "expert/5/large-error/under"
+      ],
+      "coveredFocusLessons": [
+        "expert/2/large-error/under",
+        "expert/3/large-error/over",
+        "expert/4/large-error/over",
+        "expert/5/large-error/under",
+        "expert/6/large-error/under",
+        "expert/8/large-error/over"
+      ]
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7100-seating0",
+      "file": "games/arena-safety10-arena-factorial-seed7100-seating0.json",
+      "archiveFile": "games/development/arena-safety10-arena-factorial-seed7100-seating0.json",
+      "seed": "7100",
+      "sha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986",
+      "bytes": 66526,
+      "introducedFocusLessons": [
+        "independent/3/large-error/over",
+        "independent/7/large-error/under"
+      ],
+      "coveredFocusLessons": [
+        "independent/3/large-error/over",
+        "independent/5/large-error/over",
+        "independent/7/large-error/over",
+        "independent/7/large-error/under",
+        "independent/8/large-error/over",
+        "independent/8/large-error/under"
+      ]
+    },
+    {
+      "id": "round5-large01-development-player-expert_v4-seed5501-seat0-before",
+      "file": "games/round5-large01-development-player-expert_v4-seed5501-seat0-before.json",
+      "archiveFile": "games/development/round5-large01-development-player-expert_v4-seed5501-seat0-before.json",
+      "seed": "5501",
+      "sha256": "902ae6f2a0cf5803957b657c4c8623dcf4821cc6ab5dc6be9b7b5cf8c93289ff",
+      "bytes": 58951,
+      "introducedFocusLessons": [
+        "expert/2/large-error/over",
+        "expert/5/large-error/over"
+      ],
+      "coveredFocusLessons": [
+        "expert/2/large-error/over",
+        "expert/5/large-error/over",
+        "expert/7/large-error/over",
+        "expert/8/large-error/over",
+        "expert/8/large-error/under",
+        "independent/7/large-error/over"
+      ]
+    },
+    {
+      "id": "round7-mixed08-development-expert-player_v6-seed6703-seat0-after",
+      "file": "games/round7-mixed08-development-expert-player_v6-seed6703-seat0-after.json",
+      "archiveFile": "games/development/round7-mixed08-development-expert-player_v6-seed6703-seat0-after.json",
+      "seed": "6703",
+      "sha256": "37e7198229b1804bb305932b23cbf23bf6088af3f7dc47d25e3a67f673c9747d",
+      "bytes": 59114,
+      "introducedFocusLessons": [
+        "independent/4/large-error/under"
+      ],
+      "coveredFocusLessons": [
+        "expert/4/large-error/over",
+        "expert/8/large-error/over",
+        "independent/4/large-error/under",
+        "independent/8/large-error/over",
+        "independent/8/large-error/under"
+      ]
+    },
+    {
+      "id": "round7-mixed08-development-expert-expert_v6-seed6704-seat1-after",
+      "file": "games/round7-mixed08-development-expert-expert_v6-seed6704-seat1-after.json",
+      "archiveFile": "games/development/round7-mixed08-development-expert-expert_v6-seed6704-seat1-after.json",
+      "seed": "6704",
+      "sha256": "5766fea1a5177f707919f67fec2a113aeb7cbeb84a47054ad3599a34e0bf1b1e",
+      "bytes": 59070,
+      "introducedFocusLessons": [
+        "expert/3/large-error/under"
+      ],
+      "coveredFocusLessons": [
+        "expert/3/large-error/under",
+        "expert/6/large-error/under",
+        "expert/7/large-error/over",
+        "expert/8/large-error/over",
+        "expert/8/large-error/under"
+      ]
+    },
+    {
+      "id": "round6-belief02-development-player-player_v4-seed6402-seat2-after",
+      "file": "games/round6-belief02-development-player-player_v4-seed6402-seat2-after.json",
+      "archiveFile": "games/development/round6-belief02-development-player-player_v4-seed6402-seat2-after.json",
+      "seed": "6402",
+      "sha256": "f516a473511613afdbbec51661185972f38dcb677f7005fbd6004c0952e2d72c",
+      "bytes": 59119,
+      "introducedFocusLessons": [
+        "independent/2/large-error/under"
+      ],
+      "coveredFocusLessons": [
+        "independent/2/large-error/over",
+        "independent/2/large-error/under",
+        "independent/3/large-error/over",
+        "independent/4/large-error/over",
+        "independent/6/large-error/over",
+        "independent/8/large-error/over"
+      ]
+    }
+  ],
+  "priorityContrastSource": {
+    "file": "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/protocol/bid-and-card-losses.json",
+    "sha256": "c26712d4db54de7786b38f4058b806e7b607e119ec6055864f729f3b0d7dc91f",
+    "scope": "Rejected R15_B consumed development data; frozen historical behavior, before the accepted current-table quota correction."
+  },
+  "priorityContrasts": [
+    {
+      "status": "PRIORITY_CONTRAST_NOT_PROVEN_ERROR",
+      "experiment": "R15_B_REJECTED_PRE_QUOTA_FIX",
+      "seed": "15100",
+      "observerSeat": 0,
+      "handNumber": 9,
+      "handSize": 6,
+      "sourceInvocationId": "development-bid-and-card-evidence-expert-expert_v14-seed15100-seat0",
+      "gameIds": {
+        "before": "round15-bid-and-card-evidence-development-bid-and-card-evidence-expert-expert_v14-seed15100-seat0-before",
+        "after": "round15-bid-and-card-evidence-development-bid-and-card-evidence-expert-expert_v14-seed15100-seat0-after"
+      },
+      "firstChangedCard": {
+        "before": "JS",
+        "after": "QH"
+      },
+      "lostContract": {
+        "handNumber": 9,
+        "size": 6,
+        "before": {
+          "bid": 0,
+          "won": 0
+        },
+        "after": {
+          "bid": 0,
+          "won": 1
+        },
+        "ownBidChanged": false,
+        "direction": "OVERSHOOT"
+      },
+      "contextReference": "The source casebook firstDifference.context contains only the observer hand and public facts at that action. Never supply actual opponent holdings to a decision API.",
+      "interpretation": "The first card difference and newly lost exact contract are in the same hand. That is a priority for diagnosis, not causal proof, an optimal-action label or a regression expectation."
+    },
+    {
+      "status": "PRIORITY_CONTRAST_NOT_PROVEN_ERROR",
+      "experiment": "R15_B_REJECTED_PRE_QUOTA_FIX",
+      "seed": "15104",
+      "observerSeat": 2,
+      "handNumber": 7,
+      "handSize": 4,
+      "sourceInvocationId": "development-bid-and-card-evidence-expert-expert_v14-seed15104-seat2",
+      "gameIds": {
+        "before": "round15-bid-and-card-evidence-development-bid-and-card-evidence-expert-expert_v14-seed15104-seat2-before",
+        "after": "round15-bid-and-card-evidence-development-bid-and-card-evidence-expert-expert_v14-seed15104-seat2-after"
+      },
+      "firstChangedCard": {
+        "before": "QD",
+        "after": "8D"
+      },
+      "lostContract": {
+        "handNumber": 7,
+        "size": 4,
+        "before": {
+          "bid": 1,
+          "won": 1
+        },
+        "after": {
+          "bid": 1,
+          "won": 2
+        },
+        "ownBidChanged": false,
+        "direction": "OVERSHOOT"
+      },
+      "contextReference": "The source casebook firstDifference.context contains only the observer hand and public facts at that action. Never supply actual opponent holdings to a decision API.",
+      "interpretation": "The first card difference and newly lost exact contract are in the same hand. That is a priority for diagnosis, not causal proof, an optimal-action label or a regression expectation."
+    },
+    {
+      "status": "PRIORITY_CONTRAST_NOT_PROVEN_ERROR",
+      "experiment": "R15_B_REJECTED_PRE_QUOTA_FIX",
+      "seed": "15105",
+      "observerSeat": 2,
+      "handNumber": 6,
+      "handSize": 3,
+      "sourceInvocationId": "development-bid-and-card-evidence-expert-expert_v14-seed15105-seat2",
+      "gameIds": {
+        "before": "round15-bid-and-card-evidence-development-bid-and-card-evidence-expert-expert_v14-seed15105-seat2-before",
+        "after": "round15-bid-and-card-evidence-development-bid-and-card-evidence-expert-expert_v14-seed15105-seat2-after"
+      },
+      "firstChangedCard": {
+        "before": "KH",
+        "after": "QC"
+      },
+      "lostContract": {
+        "handNumber": 6,
+        "size": 3,
+        "before": {
+          "bid": 0,
+          "won": 0
+        },
+        "after": {
+          "bid": 0,
+          "won": 1
+        },
+        "ownBidChanged": false,
+        "direction": "OVERSHOOT"
+      },
+      "contextReference": "The source casebook firstDifference.context contains only the observer hand and public facts at that action. Never supply actual opponent holdings to a decision API.",
+      "interpretation": "The first card difference and newly lost exact contract are in the same hand. That is a priority for diagnosis, not causal proof, an optimal-action label or a regression expectation."
+    }
+  ]
+}

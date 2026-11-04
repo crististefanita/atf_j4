@@ -165,7 +165,7 @@ public final class RoundElevenMonteCarloAi {
     private static long seed(View view,int sample) {
         // Neither wall-clock time nor hidden hands influence decisions. Replays are reproducible.
         long seed=0x51A7C0DEL+sample*0x9E3779B97F4A7C15L;
-        seed=seed*31+view.mode().ordinal();seed=seed*31+view.trump().ordinal();seed=seed*31+view.seat();
+        seed=seed*31+view.mode().samplingId();seed=seed*31+view.trump().ordinal();seed=seed*31+view.seat();
         seed=seed*31+view.dealer();seed=seed*31+view.handSize();
         for(Card c:view.hand()){seed=seed*31+c.suit().ordinal();seed=seed*31+c.rank();}
         for(Seat s:view.seats()){seed=seed*31+s.remaining();seed=seed*31+(s.bid()==null?-1:s.bid());seed=seed*31+s.won();seed=seed*31+s.total();}

@@ -18,9 +18,11 @@ class WhistExtentFeedbackTest {
         WhistExtentFeedback.publish(feedback, first, "Pilot", "PASS");
         WhistExtentFeedback.publish(feedback, second, "Scor", "FAIL");
         String index = Files.readString(feedback.resolve("whist-extent/README.md"));
-        assertTrue(index.contains("<" + second.toUri().toASCIIString() + ">"));
+        assertTrue(index.contains("<../../scor%20nou%20%28RO%29.html>"));
+        assertFalse(index.contains("[Deschide ultimul raport de execuție](<file:"));
+        assertTrue(index.contains("## Pe scurt"));
         assertTrue(index.contains("Scor") && index.contains("FAIL"));
-        assertFalse(index.contains(first.toUri().toString()));
+        assertFalse(index.contains("../../pilot.html"));
         assertThrows(java.io.IOException.class, () -> WhistExtentFeedback.publish(feedback,
                 temp.resolve("absent.html"), "Incomplet", "PASS"));
         assertEquals(index, Files.readString(feedback.resolve("whist-extent/README.md")));
@@ -32,7 +34,8 @@ class WhistExtentFeedbackTest {
         Path report = Files.writeString(runs.resolve("dense.html"), "dense");
         Path foreign = Files.writeString(temp.resolve("other.html"), "other");
         Path feedback = temp.resolve("feedback");
-        var values = Map.of("atf.android.enabled", "true", "atf.android.artifacts", runs.toString(),
+        Path archive = Path.of("Z:/Whist archive (UI)");
+        var values = Map.of("atf.android.handoffRoot", archive.toString(), "atf.android.enabled", "true", "atf.android.artifacts", runs.toString(),
                 "atf.match.evidenceDir", runs.toString(), "atf.android.feedbackDirectory", feedback.toString());
         var previous = new HashMap<String, String>();
         values.forEach((name, value) -> previous.put(name, System.setProperty(name, value)));
@@ -43,6 +46,10 @@ class WhistExtentFeedbackTest {
             WhistExtentFeedback.afterAudit(report, "ro.whistlab.app", "Layout", "PASS");
             Path index = feedback.resolve("whist-extent/README.md");
             String expected = Files.readString(index);
+            if (archive.isAbsolute() && !archive.getRoot().equals(temp.getRoot())) {
+                String uri = archive.resolve("whist-lab/latest-accepted.html").toUri().toASCIIString();
+                assertTrue(expected.contains("<" + uri.replace("(", "%28").replace(")", "%29") + ">"));
+            }
             System.setProperty("atf.android.enabled", "false");
             WhistExtentFeedback.afterAudit(report, "ro.whistlab.app", "Offline", "FAIL");
             assertEquals(expected, Files.readString(index));

@@ -1,0 +1,551 @@
+{
+  "schemaVersion": 1,
+  "id": "observed-bid-evidence-r15",
+  "featureNames": [
+    "bias",
+    "size",
+    "trumps",
+    "masterTrumps",
+    "sideAces",
+    "sideKings",
+    "sideQueens",
+    "sideJacks",
+    "coveredKings",
+    "coveredQueens",
+    "trumpVoidInteraction",
+    "sideVoids",
+    "sideAceKing",
+    "longestSuit",
+    "noTrump",
+    "position",
+    "priorBids",
+    "overbookedPrefix",
+    "sideAceDensity",
+    "coveredKingDensity",
+    "trumpDensity"
+  ],
+  "coefficients": [
+    0.000779305639725854,
+    -0.11731296053106963,
+    0.5495693244358337,
+    0.33240848162718184,
+    0.34164195853808826,
+    0.27531123783129724,
+    0.14542387697852405,
+    0.0259289754140288,
+    0,
+    0,
+    0.1903145205546891,
+    0,
+    0.22276623470806728,
+    0,
+    0.14347008240582684,
+    0.06550434607845218,
+    -0.10985000062054467,
+    -0.009259007650447132,
+    0.42191225207145355,
+    0,
+    0.3208351931603436
+  ],
+  "sigma": [
+    0.85,
+    0.85,
+    0.6420747708439385,
+    0.6420253760087137,
+    0.6956119109207529,
+    0.7114064188179886,
+    0.7369671352004411,
+    0.7547346009962933,
+    1.0307417677646005
+  ],
+  "strength": 0.25,
+  "lambda": 0.0860000000000011,
+  "nonnegativeCardFeatures": true,
+  "sourceManifestSha256": "c98e5737dccada7801d9e4657e1ddd95749a855600bc594cde7a4e4a615ef50c",
+  "sourceGames": [
+    {
+      "id": "arena-safety10-arena-mixed-seed7107-seating3",
+      "sha256": "2bedf7a343bfe07942f688418b4eb5fdc8156308d361c2717fdbf3848cf15f4f"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7106-seating3",
+      "sha256": "e4ee59491597d3a7934f35316cbdaa513bee7987dbe71407c2261d9c9fbac0c3"
+    },
+    {
+      "id": "round7-mixed08-development-expert-expert_v6-seed6700-seat0-after",
+      "sha256": "1f45c270eef23e9b8187ef24e5916d3fe6aebd7eb374d4cae3dcdd60bb89ad7f"
+    },
+    {
+      "id": "round7-mixed08-development-expert-player_v6-seed6703-seat0-after",
+      "sha256": "37e7198229b1804bb305932b23cbf23bf6088af3f7dc47d25e3a67f673c9747d"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7107-seating2",
+      "sha256": "22a3c623d2a0d9a4f0261f57b9cfa2e4c0391850ffb8a549f6bfb150cefccde6"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7103-seating0",
+      "sha256": "72da38b6179d284badb7c8a52faa2c770b81022ba280ea4666a3594d339e1f66"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76200-seat2-after",
+      "sha256": "aaaa7814be4fd3bc21bfe9c1a66ec17c2f0700427bfbb900bb3eeafb474f4e59"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76201-seat1-after",
+      "sha256": "23d1be26165e929fcee3644516b5d1f9a107ffdf7972232373bc75b9a6247078"
+    },
+    {
+      "id": "round5-large01-development-expert-player_v4-seed5502-seat2-before",
+      "sha256": "7673fa754b8d0c8641010035d068b6efa6cb49ee3ebfb81169971334dad8aaf9"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7100-seating0",
+      "sha256": "695021a7a70e7b20b58b57c87efe1576633dafc1496e031df22e34c899c81986"
+    },
+    {
+      "id": "round7-mixed08-development-expert-player_v6-seed6701-seat1-after",
+      "sha256": "83bc600eaef2755e38a82c9f30a99f3b9d7a1fbb0f87b9b0952ce3f925471c0e"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7104-seating7",
+      "sha256": "b21d6b6f5c1600cf679e78114f99582f61773fe8b0122093b6452512e667b784"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7107-seating7",
+      "sha256": "3acdf9b7073f0c60acc54ff6db1b3c1ef4e6ce1a5498767cbdd1f1c6bf0aff95"
+    },
+    {
+      "id": "round7-mixed08-development-expert-expert_v6-seed6701-seat2-after",
+      "sha256": "82b686db6cf11c2d7da5334b46e5785d3d655ec31153360d53258db7d7acb09d"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7103-seating5",
+      "sha256": "69c3d42b28d9bd96f67bb1e7208b6b30b429309ab3ae78c4bf9b93f8a24b9188"
+    },
+    {
+      "id": "round7-mixed08-development-expert-expert_v6-seed6704-seat1-after",
+      "sha256": "5766fea1a5177f707919f67fec2a113aeb7cbeb84a47054ad3599a34e0bf1b1e"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76201-seat3-after",
+      "sha256": "a0632e48a4d99212722025fa8e457410796157143f1080863bc210672658da57"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76203-seat1-after",
+      "sha256": "ea8852a0cbaef6a18558f3c5201c8a8c750685eff2da0f6c95242aebad750133"
+    },
+    {
+      "id": "round7-margin07-development-player-expert_v6-seed6700-seat0-after",
+      "sha256": "73fd20b1e51d37c635eca5f87c53f4efcc1729c9831c885eb4c63e49c320ccd3"
+    },
+    {
+      "id": "round7-margin07-development-player-player_v6-seed6703-seat3-after",
+      "sha256": "1a709b4126464bbe2bc37f98e8a4872e1fee1e1bc0a3d9a080196c9f23227096"
+    },
+    {
+      "id": "round7-mixed08-development-expert-expert_v6-seed6701-seat1-after",
+      "sha256": "1dbe728e6997d0a0b9ad63c8528d58dd469e255a709c4a4da861985487f8536b"
+    },
+    {
+      "id": "round5-large01-development-player-player_v4-seed5503-seat0-before",
+      "sha256": "7741e87cdee7404b350eede76af1edb64950a76b5c6499bed887d97c8aae5c7b"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7100-seating4",
+      "sha256": "a11815317d7ba1f384cb7f7229331b8a9efc88df169ef44c9eda687e57b23858"
+    },
+    {
+      "id": "round5-large01-development-expert-player_v4-seed5507-seat0-before",
+      "sha256": "0a9301dc2872233948cc33ff3fb16e527caecd6f07113922f8857ee1161b2e99"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7101-seating3",
+      "sha256": "2831ea22b067335b2a1eec9457b84ef8b559c2f7fd86aa7b9f1f032622b16ee8"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7105-seating2",
+      "sha256": "f16ec0e9e3de82b380dac724cad2df30efb2e3d832f06a39e1143a35da87b552"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76206-seat2-after",
+      "sha256": "28a64d10a69b6e8eb385621877de985cd579faae42bf8ca2b31d64d44e8adb97"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7103-seating3",
+      "sha256": "370521a1b91381642ffe9c8dad37997368a3d7f5cc00f8e7bbf11aec11833850"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7107-seating0",
+      "sha256": "4b4e131539742d69238e49f132e936607ee844cb9ad825d3d2392da27775a8f5"
+    },
+    {
+      "id": "round5-large01-development-player-player_v4-seed5507-seat0-before",
+      "sha256": "fea9c7414e496dd7130a4d58c8f8bfae0fe5351a622472663451e363acbcc631"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76205-seat3-after",
+      "sha256": "5da6ed94d0139b98102ec92905f2964130760de2a2c8c3e9f773113e574a60be"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7100-seating1",
+      "sha256": "e19a6795691e88b9e636dd071d4b6cc9f22a0f97e2356a96a0d959f97179976e"
+    },
+    {
+      "id": "round7-margin07-development-player-expert_v6-seed6703-seat1-after",
+      "sha256": "ed6d327a5559d993d07801ab42b1f9fd0f6b1ecf8453b3dd6ebc24f8644ea3ef"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7101-seating5",
+      "sha256": "877c79560ee9acf731ff1853b67531450656f9d1ffb468f0eb76c46f6c9f5320"
+    },
+    {
+      "id": "round7-mixed08-development-player-player_v6-seed6703-seat1-after",
+      "sha256": "8a1841fee8d91299cd9eeffa38609050cf5e7944c0aad7c3c0c918ad8ccff8b2"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7100-seating1",
+      "sha256": "19ceea5e5738acf62e5c9303b8dc7923ff73cdd75c126ac47a8f53f1b7728965"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7103-seating2",
+      "sha256": "64831e5f353d27b55776e9a920a295bf24ea0828460fa5a46a11a3977f46ca8d"
+    },
+    {
+      "id": "round11-enum16-development-player-expert_v10-seed76200-seat0-after",
+      "sha256": "9db1e678697bb9fddaff02b084f1699ddc14f5b67ebe8625c063e2547dfc55b8"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7101-seating3",
+      "sha256": "63613bd283a5aa5df99feb5fa9d5ddf66017e304adb06c8eef91677838450148"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7103-seating4",
+      "sha256": "1f69da489797a58769f86924ca7a539e58993bcc64c5c7d1dc394a47ed171dc2"
+    },
+    {
+      "id": "round7-mixed08-development-expert-player_v6-seed6703-seat1-after",
+      "sha256": "282d9b5ebbab86229ffe83c218330f7cbd4a4f5b7190931204ef35317196ec81"
+    },
+    {
+      "id": "round7-mixed08-development-player-expert_v6-seed6700-seat1-after",
+      "sha256": "b4a5090b50c053df20c08964a65a9ff1d490e9ef301913203ddfdefe01db0dec"
+    },
+    {
+      "id": "round5-large01-development-expert-player_v4-seed5503-seat1-before",
+      "sha256": "5bcd7a6a091624d15ba3c34333f2f6d9d013f9af9e1f9c36e725bd06840be3e8"
+    },
+    {
+      "id": "round7-mixed08-development-player-player_v6-seed6705-seat3-after",
+      "sha256": "2bc681ae5f3942a59bd891b36faa4fb9cb1c22dd48a266e71078f9a1a1e56c92"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7107-seating6",
+      "sha256": "2e874931b31ac67d9dd3be5cfcb0a9fcb5960c763aa184bb2a7a2ab5918ad9a8"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7100-seating2",
+      "sha256": "9756075354251da985149a2d0d2052c937ea86f11e65b3da8c45f086d591d7da"
+    },
+    {
+      "id": "arena-safety10-arena-mixed-seed7104-seating2",
+      "sha256": "a30cd81cedb1302786eb3f82e11315e9f1eb05ea1745a4540a501947e0d01ac8"
+    },
+    {
+      "id": "round5-large01-development-expert-expert_v4-seed5502-seat0-before",
+      "sha256": "4b5a5f86257d1695ae130f1d0de25451269b168a473851056211d1daae8f0a07"
+    },
+    {
+      "id": "round7-mixed08-development-expert-expert_v6-seed6703-seat1-after",
+      "sha256": "3b01255b2e46a1a72d992b3196f0270ec4c29a3b6d67f0123844330834a2c1cc"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7100-seating3",
+      "sha256": "3d80b35d53d7a6b3fbe344d1c6057604469c5609c480cacca9bf6e827fc089d2"
+    },
+    {
+      "id": "round11-enum16-development-player-player_v8-seed76207-seat0-before",
+      "sha256": "dda004fef1d6b63c61b01bbee5217092e25d514cee60d07cbb9e9078feb4861a"
+    },
+    {
+      "id": "arena-safety10-arena-factorial-seed7103-seating3",
+      "sha256": "4c7433205feae187ab399dd6cb2057e9874020d39117bb4837749105ee03e035"
+    },
+    {
+      "id": "round11-enum16-development-player-player_v8-seed76207-seat0-after",
+      "sha256": "2ae8d8362b062d5c715f10ec8608e9c14aca372f9b1b2eb727e36fbf717fadfd"
+    },
+    {
+      "id": "round5-large01-development-player-expert_v4-seed5501-seat0-before",
+      "sha256": "902ae6f2a0cf5803957b657c4c8623dcf4821cc6ab5dc6be9b7b5cf8c93289ff"
+    },
+    {
+      "id": "round7-rollout01-development-expert-expert_v6-seed6703-seat2-after",
+      "sha256": "d6a47bd6efa8a48acc60f12b3bc6528db84a2ad528cca34aab7e84844882eebd"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-expert-player_v11-seed77013-seat1-after",
+      "sha256": "94b1e48b6dafe876e145db17526684ff3547d70a31665b3386a8fdf654169d91"
+    },
+    {
+      "id": "round7-safety10-development-player-expert_v6-seed6905-seat0-before",
+      "sha256": "e11c1a1381724880eeacfbfd3a56359cb0ebe7c609d46810152026054b194b4b"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-player-player_v11-seed77014-seat2-after",
+      "sha256": "3f78732983f0ca8e423b393467487bf73b5ebfd054de6880953d441d24262e78"
+    },
+    {
+      "id": "round5-large01-development-player-player_v4-seed5506-seat3-after",
+      "sha256": "f3572a59cb84d229cf85f0e46ffb7fc1038a00b6941d722fbb4936c34ae48aeb"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed839-hero2",
+      "sha256": "779a0de68799ef1619c9de60b1a3a8d4143b48389751911b996a0e99b803cebc"
+    },
+    {
+      "id": "round6-belief02-development-player-player_v4-seed6402-seat2-after",
+      "sha256": "f516a473511613afdbbec51661185972f38dcb677f7005fbd6004c0952e2d72c"
+    },
+    {
+      "id": "round4-bid01-development-player-expert_v3-seed4504-seat0-before",
+      "sha256": "7680ef5211740b642d5001e577cebbac7355b8146cd8b91da8bae2b99b9c397b"
+    },
+    {
+      "id": "round5-large04-development-expert-player_v4-seed5501-seat0-after",
+      "sha256": "504ee105be88c9e6f78c4453875f4e53d3b7fd171f493afdd02b7f5e2270b62c"
+    },
+    {
+      "id": "round5-large03-development-expert-expert_v4-seed5505-seat3-after",
+      "sha256": "6884d007ea1efc3bf8694ff5de23a23c8174572e7d67279d09f42f687e5ebf38"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-expert-player_v11-seed77015-seat1-after",
+      "sha256": "83ad8aa13d8e434c8e79045b0822b392238f6e39ab0b47d24e434eaab8325264"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed822-hero0",
+      "sha256": "6e3a623a6fbf97bc04e83d12223c6e8e0ebc947074e57e23a39146f186576d8d"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-expert-player_v11-seed77013-seat2-before",
+      "sha256": "c8a278e08243547932a91458e13a3589e6b5b03e3b38a6b08fcf820c0d9c9c94"
+    },
+    {
+      "id": "round4-bid01-development-expert-player_v3-seed4505-seat1-after",
+      "sha256": "39cf3b3fe392e5c55b08c5c400a0c3ee7a4c2e7ce4355a61612359734827ec48"
+    },
+    {
+      "id": "round7-safety10-development-expert-player_v6-seed6905-seat0-before",
+      "sha256": "82deb0d0a293f4d2b6a3320d4ff56348c0ab387998ca1ae2c1931b31c8d5fc6b"
+    },
+    {
+      "id": "round7-rollout01-development-expert-expert_v6-seed6705-seat1-after",
+      "sha256": "5b11621457b4ef214513ece3010ce7bdac97684d069420b7129acee74aff3dc9"
+    },
+    {
+      "id": "round4-bid01-development-player-expert_v3-seed4500-seat0-before",
+      "sha256": "96eb81f1afc854fbfaa8a645b5a9099d3948a629a9711babb1ed36d3080cca86"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-expert-expert_v11-seed77009-seat2-after",
+      "sha256": "f40876aab2046f6f06421a08c8e0235997be5d5114e7038b9d1ab103b2882b7b"
+    },
+    {
+      "id": "round4-bid01-development-expert-player_v3-seed4504-seat2-after",
+      "sha256": "298161acb57dfb3efb1f747e9ca7ca37f0c7b92d4d36567ad9b3299e8186077d"
+    },
+    {
+      "id": "learning-candidate01-player-vs-expert_v2-seed2004-hero1",
+      "sha256": "e0756fc7a05c12c8dc2a89f1fa6700e6054eeabf560491edc58a8a3a05ff82bf"
+    },
+    {
+      "id": "round11-forecast12-full-development-player-player_v8-seed76000-seat0-after",
+      "sha256": "54369c96455c2cde31b64514393f07aa6ed24e81f56ac4051c4891ee42901e44"
+    },
+    {
+      "id": "round4-bid01-development-expert-expert_v3-seed4501-seat0-before",
+      "sha256": "6002174ca632474bed72458f53127203520e9c44a1bbd7b65c20db47a25e7069"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-player-expert_v11-seed77008-seat2-after",
+      "sha256": "59877076f45f41bd18265764bdba683660063305c47472065639d3717b4a7fc4"
+    },
+    {
+      "id": "learning-candidate01-player-vs-expert_v2-seed2006-hero2",
+      "sha256": "d3d645a01c7e770c8ce95dc9e34297e83fefcd54ad0f8727a1c3dae9559c8ddb"
+    },
+    {
+      "id": "learning-candidate03-expert-vs-player_v2-seed2003-hero3",
+      "sha256": "af9f8325d1c3f0a8b03f74fdd5118d0a056f1e4a331e4eaee087bac2988e4d0f"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-expert-player_v11-seed77009-seat0-after",
+      "sha256": "a7c93bcb0d661bce0b1088f002b8a3e76865130f2abc7cf19514b459f4275236"
+    },
+    {
+      "id": "round7-safety10-development-expert-player_v6-seed6902-seat0-before",
+      "sha256": "e13a1d79b4b52994a28d9b4be932193ec1e02bd48166ee0a91a53dc457c66453"
+    },
+    {
+      "id": "round7-bid03-development-player-expert_v6-seed6700-seat3-before",
+      "sha256": "98c315706ba6185a3456a03510a4694526358bad441cfe885a587004e6dd78e6"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed814-hero1",
+      "sha256": "a465208ab0b51135c33032cc2b8aae2bc6a6ac969bf0945b66b7a3595b0a3ae0"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed807-hero2",
+      "sha256": "673906a9d827c92e7bae0b4c63ac16b1471a04c260cdcf584a101b0455779d26"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-player-expert_v11-seed77015-seat2-before",
+      "sha256": "5e04ed146cb4e9e65c7c9b275526fa88e45b425ce02883528f6f3aa0a4909343"
+    },
+    {
+      "id": "learning-candidate05-expert-vs-expert_v2-seed2000-hero2",
+      "sha256": "3518fcd89a8385081fc6150dca0b11d3fc063e34833e5380c26a2f47ce4a33cb"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed855-hero2",
+      "sha256": "a610254ddf77daa8a4dd29538be5a9bd8361a8cb1d7d0c920fca4c7f9f1693b1"
+    },
+    {
+      "id": "learning-candidate04-expert-vs-player_v2-seed2006-hero3",
+      "sha256": "9c8ecd601fa478636d7292609390e2dc845c8cbb215844294e3238bf271d5ad9"
+    },
+    {
+      "id": "learning-candidate01-player-vs-expert_v2-seed2003-hero0",
+      "sha256": "f86a5c1fd8f30c3eacec68c314e7f3730af71910e450bdeac99c92aa335a4cb3"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed829-hero1",
+      "sha256": "839fb4ba0288ded338ded87bd741b1920f99bf7d7a00751c3d22c38ede58b278"
+    },
+    {
+      "id": "round5-large01-development-expert-player_v4-seed5501-seat1-before",
+      "sha256": "3130bcc9d69f378518dce54e74f5ae199e63492d28ffda0af1369dc465319222"
+    },
+    {
+      "id": "round12-paired-sampling-extra8-development-player-player_v11-seed77012-seat3-after",
+      "sha256": "d766882a760a971c987f13e585061442b860962fe6aa7abdc13855a677c67256"
+    },
+    {
+      "id": "learning-candidate05-player-vs-expert_v2-seed2006-hero0",
+      "sha256": "0439e5988ae77ad186074e2bf353960c084beddce89e47dfcc456c20181488f0"
+    },
+    {
+      "id": "round5-large01-development-player-expert_v4-seed5501-seat1-after",
+      "sha256": "5491edf83768887d0b62f825eb88ffc6ff137a19391ee32fd206d4a7c483da43"
+    },
+    {
+      "id": "learning-baseline-player-vs-expert_v2-seed2004-hero3",
+      "sha256": "ec52609965a1d267b579181597ef7d894b12ddb4c667bd2b1af2c598f3ec05ab"
+    },
+    {
+      "id": "component-v2_baseline-expert_v2-seed846-hero2",
+      "sha256": "9564c8b60a8dd72b463b656a7977144f9cee1003c0bf845cad0fddde2a0f6b5c"
+    },
+    {
+      "id": "round7-margin07-development-expert-player_v6-seed6705-seat1-after",
+      "sha256": "afc6f611ca9c4841ac5d473f171178a29f97a6ffad1eac505f169789533b832a"
+    },
+    {
+      "id": "round7-margin07-development-expert-player_v6-seed6703-seat2-after",
+      "sha256": "63c4b79587d518644b24a8a3fe97a1e4f51030ef878e697e00c5efb25fa23087"
+    },
+    {
+      "id": "round7-rollout01-development-player-player_v6-seed6705-seat1-after",
+      "sha256": "7d73802126e48b28030e96c514bd6a1bbc9f642b51ec94d8c2aff6a85b7a492d"
+    },
+    {
+      "id": "round7-margin07-development-player-player_v6-seed6704-seat3-after",
+      "sha256": "96ed0a4e38a55f99e8abcf88f5159394b4be5911979c158209752bd0c545d732"
+    }
+  ],
+  "split": {
+    "trainingSeeds": [
+      "2000",
+      "2003",
+      "2004",
+      "2006",
+      "4500",
+      "4501",
+      "4504",
+      "4505",
+      "5501",
+      "5502",
+      "5503",
+      "5505",
+      "5507",
+      "6402",
+      "6700",
+      "6701",
+      "6704",
+      "6705",
+      "6902",
+      "6905",
+      "7100",
+      "7101",
+      "7103",
+      "7106",
+      "7107",
+      "76000",
+      "76200",
+      "76201",
+      "76203",
+      "76205",
+      "76206",
+      "76207",
+      "77008",
+      "77009",
+      "77012",
+      "77014",
+      "807",
+      "814",
+      "822",
+      "829",
+      "839",
+      "846",
+      "855"
+    ],
+    "validationSeeds": [
+      "5506",
+      "6703",
+      "7104",
+      "7105",
+      "77013",
+      "77015"
+    ],
+    "rule": "SHA256(seed) byte0 modulo5 equals0 selects validation; complete seed clusters never split."
+  },
+  "training": {
+    "rows": 3509,
+    "seedWeight": 43.000000000000554,
+    "negativeLogLikelihood": 1.42361049595713,
+    "uniformNll": 1.752070865259364,
+    "relativeNllImprovement": 0.18746979692149102,
+    "modeAccuracy": 0.6128873391348941
+  },
+  "validation": {
+    "rows": 536,
+    "seedWeight": 6.000000000000011,
+    "negativeLogLikelihood": 1.4414183767353608,
+    "uniformNll": 1.77613375793842,
+    "relativeNllImprovement": 0.18845167471596697,
+    "modeAccuracy": 0.6210072212312688
+  },
+  "interpretation": "Observed bidding behavior, not optimal bids or a causal honor valuation. Runtime hand hypotheses are not actual private hands.",
+  "runtimeLimits": {
+    "originalContextOnly": true,
+    "softPriorFloor": 0.75,
+    "worldRatioRange": [
+      0.25,
+      4
+    ],
+    "essFractionMinimum": 0.5,
+    "firstBidUniformFallback": true
+  },
+  "predictiveGate": "PASS"
+}

@@ -1,0 +1,37 @@
+schema_version: 1
+id: "LEGAL_COMPONENT_WITNESS_R17"
+configuration_kind: "CODE_BOUND_EVIDENCE_CONTRACT"
+runtime_weight_influence: 0
+scope: "Romanian four-player component examples; explanatory fixtures must be reachable before their policy conclusions are trusted."
+implementation: "ContextualHonorDiscardTest independent witness audit"
+rules:
+  - id: "DEAL_BEFORE_POLICY"
+    rule_ro: "Mai întâi dovedește distribuția: patru mâini de aceeași mărime, cărți distincte din pachetul7..A."
+    rule_en: "First prove the deal: four equal-sized hands with distinct cards from the7..A reduced deck."
+  - id: "TURNED_CARD_IS_REAL_TRUMP"
+    rule_ro: "Sub opt cărți, cartea întoarsă trebuie să fie neîmpărțită și de culoarea atuului. La opt cărți nu există atu sau carte întoarsă."
+    rule_en: "Below eight cards, the undealt turned card must match trump; at eight cards there is no trump or turned card."
+  - id: "LEGAL_AUCTION_PREFIX"
+    rule_ro: "Ofertele publice trebuie să respecte ordinea dealerului și restricția ultimului ofertant."
+    rule_en: "Public bids must follow dealer order and the last bidder's unequal-total restriction."
+  - id: "REPLAY_EVERY_PUBLIC_CARD"
+    rule_ro: "Reconstruiește fiecare actor, carte ținută, culoare obligatorie, tăiere obligatorie și câștigător înainte de a verifica regula strategică."
+    rule_en: "Reconstruct each actor, card ownership, follow suit, mandatory trump and trick winner before evaluating a strategy claim."
+  - id: "COUNTERS_FROM_HISTORY"
+    rule_ro: "Mâinile rămase și levatele câștigate se deduc din istoricul legal; masa curentă este sufixul lui și nu se numără de două ori."
+    rule_en: "Remaining cards and won tricks derive from legal history; the current table is its suffix and is counted once."
+  - id: "OBSERVER_IS_NOT_ALWAYS_ACTOR"
+    rule_ro: "Poți observa cota unui jucător înainte să-i vină rândul. O alegere efectivă de carte cere însă ca el să fie actorul curent."
+    rule_en: "Quota may be observed off-turn; an actual card decision requires the observer to be the current actor."
+  - id: "WITNESS_IS_NOT_PRIVATE_AI_INPUT"
+    rule_ro: "Distribuția martor dovedește că exemplul poate exista. Ea rămâne în oracol și nu este dată AI-ului."
+    rule_en: "A witness deal proves reachability; it remains in the oracle and is not provided to the AI."
+  - id: "LOSS_IS_NOT_AN_OPTIMAL_LABEL"
+    rule_ro: "O mână pierdută din corpus este o lecție de analizat, nu dovada că o anumită carte era optimă."
+    rule_en: "A lost corpus hand is a diagnostic lesson, not an optimal-card label."
+qualification:
+  expected_methods: 6
+  expected_whole_context_captures: 9
+  source_scope: "Test/evidence repair and focused collections; Hard and independent runtime policies are unchanged."
+  correction: "The earlier underbooked four-card fixture used turned7D with spade trump. Replace it with unused7S and independently replay its witness. Preserve the historical report and attach an explicit erratum."
+  validation: "The new measured native run and capture inventory, not this manifest, determine PASS."

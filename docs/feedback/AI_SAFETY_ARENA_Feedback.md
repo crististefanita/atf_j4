@@ -1,6 +1,6 @@
 # AI / colecții / input Reporting — feedback constructiv
 
-Revizie: 3 noiembrie 2026. Owner: J4 pentru domeniu, algoritmi, colecții și input; J0 pentru biblioteca Reporting. Interfața nu este modificată în această iterație.
+Revizie: 3 noiembrie 2026. Owner: Whist Lab pentru domeniu, algoritmi, colecții și input; modulul de biblioteci comune pentru biblioteca Reporting. Interfața nu este modificată în această iterație.
 
 | Prioritate / problemă | Dovadă și decizie | Criteriu verificabil |
 |---|---|---|
@@ -12,17 +12,24 @@ Revizie: 3 noiembrie 2026. Owner: J4 pentru domeniu, algoritmi, colecții și in
 | P1 — câștigul observat devine golden arbitrar | Casebook-ul de 24 de exemple include erori și succese; starea este NEEDS_INDEPENDENT_EXPECTATION. | Regresia cere expected independent și caz minim. Paritatea de snapshot dovedește binding-ul profilului, nu optimalitatea. |
 | P1 — execuție întreruptă tratată ca PASS | Două JSON-uri corupte după întrerupere sunt în quarantine; tentativele originale sunt păstrate. | Audit separat, SHA și inventar; se reiau doar cazurile neînchise. Un FAIL închis nu dispare prin retry. |
 | P1 — raport mare din input redundant | Colectarea curentă furnizează 56 de capturi întregi din 426 de surse, cu inventar complet și audit independent pe 578 de jocuri. | Nu rescrieți capturi, nu eliminați eșecuri din cohorte acceptate. Declarați populația, detaliile selectate, omisiunile și motivul lor. |
-| P1 — checkpoint-uri cu același owner în capturile de arenă | Prima publicare a fost refuzată. Cele 128 de capturi istorice păstrează defectul și sunt inventariate ca NOT_PUBLISHABLE. Două exemple au fost reexecutate după corecția producătorului J4. | Owner distinct pentru profiluri și programul jocului; validare în producător și colector. Nu rescrieți datele vechi și nu relaxați contractul Java/J0. |
-| P2 — J4-RPT-14: heap încărcare | Inputul curent este limitat înainte de Java. Loaderul generic continuă să materializeze toate capturile pe care le primește. | Îmbunătățire parțială în J4; nu închideți cerința generică de streaming și nu cereți J0 o schimbare de renderer pentru această problemă de input. |
-| P2 — „V4” hardcodat în descrierea domeniului | Textul J4 al reader guide/checkpoint numea greșit baseline-ul. | Textul trimite la versiunile din parametrii reali. JAR-ul și randarea J0 rămân nemodificate. |
+| P1 — checkpoint-uri cu același owner în capturile de arenă | Prima publicare a fost refuzată. Cele 128 de capturi istorice păstrează defectul și sunt inventariate ca NOT_PUBLISHABLE. Două exemple au fost reexecutate după corecția producătorului Whist Lab. | Owner distinct pentru profiluri și programul jocului; validare în producător și colector. Nu rescrieți datele vechi și nu relaxați contractul Java/modulul de biblioteci comune. |
+| P2 — Whist Lab-RPT-14: heap încărcare | Inputul curent este limitat înainte de Java. Loaderul generic continuă să materializeze toate capturile pe care le primește. | Îmbunătățire parțială în Whist Lab; nu închideți cerința generică de streaming și nu cereți modulul de biblioteci comune o schimbare de renderer pentru această problemă de input. |
+| P2 — „V4” hardcodat în descrierea domeniului | Textul Whist Lab al reader guide/checkpoint numea greșit baseline-ul. | Textul trimite la versiunile din parametrii reali. JAR-ul și randarea modulul de biblioteci comune rămân nemodificate. |
 
 Închis în această iterație: build JVM fără SDK, separare quick/regression/strategy/documentation/learning/arena, criterii explicite pe rol, protecția loturilor consumate, profiluri eterogene și trei reluări de binding, catalog RO/EN contextual și calibrare inactivă, selecție de input înainte de compoziție. Rezultatele native și statice rămân distincte de acceptanța interactivă.
 
 Pentru iterația următoare: deduceți teste mici din erorile casebook-ului, cu oracol independent; testați separat influența ponderilor de onoruri; folosiți un protocol și un lot nou. Nu lansați din nou toate turneele istorice pentru o corecție locală. Nu măriți continuu bugetul Monte Carlo fără un control de cost și o măsurare pe mâini 2–8.
 
-Nu a fost identificat un defect nou generic al bibliotecii Reporting în această iterație. Raportul consumă J17 distribuit de J0; cerințele de conținut și selecție de mai sus rămân în J4.
+Nu a fost identificat un defect nou generic al bibliotecii Reporting în această iterație.
+
+Raportul consumă J17 distribuit de modulul de biblioteci comune; cerințele de conținut și selecție de mai sus rămân în Whist Lab.
 
 
 ## R11 — rezultate offline noi
 
-[Analiza R11](../AI_LOSS11_ACCEPTANCE.md) și [feedbackul dedicat](AI_LOSS11_Feedback.md) păstrează variantele respinse, demonstrația locală cu 96 de distribuții și lotul nou de 512 partide. Nu există câștig statistic strict pentru noua gardă pe acest lot: ambele roluri au delte zero. Corecția locală este acceptată separat, fără regresii observate pe familii. Componentele rămân 520; turneele și diagnosticul de scor sunt opt-in. Noua publicare folosește J18, fără schimbări de JAR sau renderer.
+[Analiza R11](../AI_LOSS11_ACCEPTANCE.md) și [feedbackul dedicat](AI_LOSS11_Feedback.md) păstrează variantele respinse, demonstrația locală cu 96 de distribuții și lotul nou de 512 partide.
+
+- Nu există câștig statistic strict pentru noua gardă pe acest lot: ambele roluri au delte zero.
+- Corecția locală este acceptată separat, fără regresii observate pe familii.
+- Componentele rămân 520; turneele și diagnosticul de scor sunt opt-in.
+- Noua publicare folosește J18, fără schimbări de JAR sau renderer.

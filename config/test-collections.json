@@ -3,6 +3,13 @@
   "policy": "Learning determines candidate changes; it is not part of the default regression. Estimated time budgets are scheduling guidance, never a reason to turn unfinished work into PASS.",
   "collections": [
     {
+      "id": "context",
+      "task": ":game-core:contextRegressionTest",
+      "targetMinutes": 1,
+      "trigger": "Focused offline checks of contextual honor exits, quota, public-card distinctions and legal reachability witnesses",
+      "evidence": "Six component methods with nine whole captured cases; independently audited deal/prefix witnesses. No learning tournaments, UI actions or match-strength claim."
+    },
+    {
       "id": "quick",
       "task": ":game-core:quickRegressionTest",
       "targetMinutes": 2,
@@ -33,10 +40,10 @@
     },
     {
       "id": "learning",
-      "task": ":game-core:roundTwelveTest",
+      "task": "Protocol-dependent: run-whist-collection.ps1 dispatches the declared supported schema",
       "targetMinutes": 15,
       "trigger": "Explicit candidate experiment only",
-      "evidence": "All JSON games and original outcomes; explicit schema12 against frozen accepted Expert/Independent R11. Schema7/11 retained as historical explicit protocols. Final role-wise gate and development screening remain separate.",
+      "evidence": "The explicit protocol selects its frozen baselines and tournament task. Supported schemas are7/11/12/15/16/18; schema18 uses ExpertV17 and IndependentV11. Every JSON game and original outcome is retained externally. Development screening and untouched fresh evaluation remain separate.",
       "requires": [
         "Fresh candidate ID",
         "External corpus path",

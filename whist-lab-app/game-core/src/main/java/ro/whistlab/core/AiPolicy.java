@@ -29,13 +29,7 @@ public final class AiPolicy {
 
     public static Card chooseCard(GameSession.Snapshot game, int seat, AiDifficulty difficulty) {
         if (difficulty == AiDifficulty.HARD) return MonteCarloAi.chooseCard(MonteCarloAi.observe(game, seat)).card();
-        GameSession.PlayerSnapshot player = game.players().get(seat);
-        Suit ledSuit = game.currentTrick().isEmpty() ? null : game.currentTrick().get(0).card().suit();
-        List<Card> legal = GameRules.legalCards(player.hand(), ledSuit, game.trump(), game.mode());
-        if (legal.isEmpty()) {
-            throw new IllegalStateException("AI has no legal card");
-        }
-        return legal.stream().min(Comparator.comparingInt(Card::rank)).orElseThrow();
+        return NormalPlayPolicy.chooseCard(game, seat);
     }
 
     private static List<Integer> allowedBids(GameSession.Snapshot game) {

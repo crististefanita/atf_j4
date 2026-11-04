@@ -1,0 +1,148 @@
+schema_version: 1
+id: "PUBLIC_BID_EVIDENCE_R15"
+status: "RESEARCH_REJECTED_NOT_RUNTIME"
+runtime_influence: 0
+configuration_kind: "CODE_BOUND_MODEL_MANIFEST"
+execution: "Java constants generated from the declared model; editing YAML alone does not tune the engine."
+scope: "Romanian Whist, four players, initial hand sizes2..8; same Hard policy can act at every seat."
+source:
+  bid_only_source_archive: "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/candidates/bid-only-v2-source/whist-lab-app"
+  bid_and_card_source_archive: "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/candidates/bid-and-card-source/whist-lab-app"
+  model_file: "config/whist-bid-model.json"
+  model_sha256: "71b51b8a028768d2fecbcd34b97f22e88585c213953d844f074de68ea155f51d"
+  source_manifest_sha256: "c98e5737dccada7801d9e4657e1ddd95749a855600bc594cde7a4e4a615ef50c"
+  learner: "scripts/whist-bid-evidence.mjs"
+  generator: "scripts/whist-bid-evidence-codegen.mjs"
+  template: "scripts/templates/learned-bid-evidence.java"
+  candidate_java: "game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java"
+  action_java: "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+  active_runtime: "Accepted Hard R14; rejected R15 weights have runtime influence0."
+semantics:
+  rule_ro: "Licitația sugerează mâini plauzibile; nu dovedește că un adversar are sau nu are o carte."
+  rule_en: "A bid changes the plausibility of hypothetical holdings; it never proves card ownership."
+  target: "Observed bidding behavior, not optimal bids, intrinsic card values or perfect play."
+  evolution: "Fixed fitted coefficients; feasible worlds, public-card exclusions and action needs are recomputed from each observation."
+  uncertainty: "Approximate model-relative weighting; the matching sampler is not proven uniform over feasible deals. No calibrated full joint posterior claim."
+  covers: "A zero conditional coefficient does not prove that low covers are strategically useless; correlated features share explanatory power."
+information_contract:
+  allowed: ["own cards", "chronological public plays", "current table", "turned card", "preceding public bids", "won counts", "remaining counts", "public scores and streaks for action utility", "rules"]
+  forbidden: ["actual private opponent holdings", "future bids", "future plays", "fresh-evaluation labels for fitting"]
+  bid_time: "Reconstruct each sampled original holding from its remaining cards and that seat's public plays; deduplicate the current table already present in history."
+  bid_prefix: "For each observed bid use only bids preceding that actor; exclude the observer's own counterfactual bid as evidence."
+  later_context: "Later score, won-count and streak metadata are not retrospective features of the earlier observed bid."
+  undealt: "Unassigned pool cards remain undealt; do not force every unseen card into an opponent hand."
+objective_priority:
+  - "Follow suit and mandatory trump before strategy."
+  - "For Romanian sampled actions maximize estimated own exact-contract probability."
+  - "Then prefer own expected points, then reduce the strongest rival's estimated score."
+  - "Keep accepted universal contract and salvage guards; a likelihood estimate cannot certify a line."
+dynamic_context:
+  own_need: "own bid - own completed tricks won; preserve its sign."
+  opponent_need: "opponent bid - that opponent's completed tricks won; used as each actor's target minus won during continuation."
+  opportunities: "(sum remaining cards + cards on current table) / player count; incomplete trick counts once."
+  progress: "Public exclusions and proven voids accumulate after actual plays. Candidate weights are recomputed on newly feasible worlds."
+  bid_model_coefficients_change_during_hand: false
+  voluntary_play_likelihood_implemented: false
+  continuation_limit: "Accepted greedy rollout uses need>0 to take, otherwise to duck; it does not implement the rejected R13 pressure schedule or a learned opponent action policy."
+  small_endgame_limit: "Per-world MaxN is a declared possible-deal continuation, not proof of a globally optimal imperfect-information strategy."
+hard_facts:
+  - id: "PUBLIC_CARD_LEDGER"
+    rule_ro: "Exclude cărțile proprii, toate cărțile public jucate și cartea întoarsă din mâinile ascunse."
+    rule_en: "Exclude own, publicly played and turned cards from hidden holdings."
+    enforcement: "MonteCarloAi.unknownCards; existing active constraint."
+    tests: ["ai08TurnedCardAndEveryPubliclyPlayedCardAreExcludedFromHiddenDeals"]
+  - id: "PROVEN_VOIDS"
+    rule_ro: "Nerespectarea culorii dovedește lipsa ei; discardul lateral fără culoare în Whist românesc dovedește și lipsa atuului."
+    rule_en: "Failure to follow proves a void; a Romanian off-suit, off-trump discard also proves no trump."
+    enforcement: "MonteCarloAi.knownVoids and legal-card rules; valid session history includes current table as its suffix."
+  - id: "LAST_BID_LEGALITY"
+    rule_ro: "Ultimul jucător nu poate licita valoarea care egalizează totalul cu numărul de levate."
+    rule_en: "The last bidder cannot make total bids equal available tricks."
+    enforcement: "Zero likelihood only for the legally forbidden bid; normalize the remaining bids."
+    tests: ["lastBidRestrictionIsRenormalizedAtEveryHandSize"]
+soft_evidence:
+  model_strength: 0.25
+  uniform_mass: 0.75
+  mean: "clamp(8 * dot(features, coefficients), 0, initial_hand_size)"
+  likelihood: "0.75 / legal_bid_count + 0.25 * normalized_discrete_Gaussian(bid, mean, sigma[size])"
+  world_weight: "Product over observed opponents of legal_bid_count * likelihood(observed_bid), then clip to[0.25,4]."
+  world_weight_min: 0.25
+  world_weight_max: 4.0
+  effective_sample_size: "sum(weights)^2 / sum(weights^2)"
+  minimum_effective_sample_fraction: 0.5
+  variation_required: "max(weight) - min(weight) >1e-12"
+  fallback: "Keep the accepted unweighted estimate when support is too concentrated, all weights are constant, evidence is missing/inconsistent or scope is unsupported."
+  zero_bid: "Never hard-excludes master trumps or high cards."
+  first_bid: "No previous observed bids means uniform evidence; do not invent the future auction."
+  tests: ["zeroBidCannotExcludeMasterTrumps", "knownBidsSoftlyRankPossibleOpponentHands", "concentratedWeightsFallBackToTheAcceptedSamplerEstimate", "constantNonUnitLikelihoodCancelsInsteadOfInventingInformation", "playedCardsReconstructTheOriginalHandWithoutDoubleCountingTheCurrentTable", "actualHiddenOpponentCardsCannotChangeTheDecisionWithAKnownBidPrefix"]
+features:
+  - {name: "bias", coefficient: 0.000779305639725854, value: "1"}
+  - {name: "size", coefficient: -0.11731296053106963, value: "initial_hand_size/8"}
+  - {name: "trumps", coefficient: 0.5495693244358337, value: "trump_count/8"}
+  - {name: "masterTrumps", coefficient: 0.33240848162718184, value: "trumps with every higher rank held or turned, divided by8; bid-time context only"}
+  - {name: "sideAces", coefficient: 0.34164195853808826, value: "off-trump aces/8"}
+  - {name: "sideKings", coefficient: 0.27531123783129724, value: "off-trump kings/8"}
+  - {name: "sideQueens", coefficient: 0.14542387697852405, value: "off-trump queens/8"}
+  - {name: "sideJacks", coefficient: 0.0259289754140288, value: "off-trump jacks/8"}
+  - {name: "coveredKings", coefficient: 0, value: "off-trump K without A, at least one same-suit card rank<=10; count/8"}
+  - {name: "coveredQueens", coefficient: 0, value: "off-trump Q without A/K, at least two same-suit cards rank<=10; count/8"}
+  - {name: "trumpVoidInteraction", coefficient: 0.1903145205546891, value: "side_void_count * trumps_feature /3"}
+  - {name: "sideVoids", coefficient: 0, value: "side_void_count/(4 at no-trump, otherwise3)"}
+  - {name: "sideAceKing", coefficient: 0.22276623470806728, value: "off-trump suits holding A and K, divided by4"}
+  - {name: "longestSuit", coefficient: 0, value: "longest_suit_count/8"}
+  - {name: "noTrump", coefficient: 0.14347008240582684, value: "1 at no-trump, otherwise0"}
+  - {name: "position", coefficient: 0.06550434607845218, value: "zero-based auction position/3"}
+  - {name: "priorBids", coefficient: -0.10985000062054467, value: "preceding_bid_sum/(3*initial_hand_size)"}
+  - {name: "overbookedPrefix", coefficient: -0.009259007650447132, value: "max(0, preceding_bid_sum-initial_hand_size)/(2*initial_hand_size)"}
+  - {name: "sideAceDensity", coefficient: 0.42191225207145355, value: "off-trump_ace_count*initial_hand_size/64"}
+  - {name: "coveredKingDensity", coefficient: 0, value: "covered_king_count*initial_hand_size/64"}
+  - {name: "trumpDensity", coefficient: 0.3208351931603436, value: "trump_count*initial_hand_size/64"}
+sigma_by_initial_hand_size:
+  2: 0.6420747708439385
+  3: 0.6420253760087137
+  4: 0.6956119109207529
+  5: 0.7114064188179886
+  6: 0.7369671352004411
+  7: 0.7547346009962933
+  8: 1.0307417677646005
+training:
+  partition: "curated development manifest only;100 games"
+  seed_weighting: "Each seed cluster has total weight1; duplicate identical bid examples do not add weight."
+  split: "SHA256(seed) byte0 modulo5 equals0 selects validation; whole seeds never split across partitions."
+  training_seed_clusters: 43
+  training_rows: 3509
+  validation_seed_clusters: 6
+  validation_rows: 536
+  validation_nll: 1.4414183767353608
+  validation_uniform_nll: 1.77613375793842
+  validation_relative_nll_improvement: 0.18845167471596697
+  limit: "Small development validation; better bid prediction is not game-strength acceptance."
+r13_diagnostic:
+  source: "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/protocol/R13_DIAGNOSIS.json"
+  use: "Consumed R13 data, diagnostic only; excluded from R15 model fitting."
+  initial_development: {pairs: 64, first_bid_changes: 22, first_card_changes: 42, newly_lost_exact_2_to_8: 118, newly_gained_exact_2_to_8: 119, overshoots: 88, undershoots: 30}
+  blend_development: {pairs: 64, first_bid_changes: 0, first_card_changes: 60, identical_games: 4, newly_lost_exact_2_to_8: 64, newly_gained_exact_2_to_8: 60, overshoots: 48, undershoots: 16}
+  blend_fresh_consumed: {pairs: 128, first_bid_changes: 0, first_card_changes: 123, identical_games: 5, newly_lost_exact_2_to_8: 144, newly_gained_exact_2_to_8: 128, overshoots: 105, undershoots: 39, lost_with_later_changed_own_bid: 36}
+  inference_ro: "Tiparul sugerează continuări prea optimiste despre evitarea levatelor suplimentare; nu demonstrează că fiecare licitație modificată a fost greșită."
+  inference_en: "The pattern suggests overoptimistic avoidance of extra tricks; it does not establish that every changed bid was wrong."
+research_only:
+  runtime_influence: 0
+  rules:
+    - "Infer a hidden holding from a voluntary high discard, underplay, lead or refusal to overtake."
+    - "Learn per-player style and update action likelihood from signed quota, remaining opportunities and public cards."
+    - "Use a calibrated joint multi-opponent posterior rather than independent behavior factors."
+    - "Replace greedy continuation with an information-consistent opponent policy."
+  next_iteration: "Extract one first-divergence failure; create a tiny public-information counterexample; separate belief-only and policy-only ablations; fix rules and parameters before untouched paired evaluation."
+  r16_separate_candidate: "Replace only the fixed-honor estimate of as-yet-unsubmitted opponent bids with the conditioned learned bid mode; retain accepted rollout and public guards. Separate protocol; inactive and pending verification, no fresh-gain claim."
+development_outcomes:
+  phase: "Prespecified development15100..15107 only;64 paired comparisons per candidate,128 complete games per candidate."
+  bid_only_v1: {pairs: 64, point_delta: 30, win_share_delta: 1, exact_2_to_8_delta: 1, expert_v14_family_exact_2_to_8_delta: -2, verdict: "REJECTED_FAMILY_REGRESSION"}
+  bid_only_v2: {pairs: 64, point_delta: 30, win_share_delta: 1, exact_2_to_8_delta: 1, expert_v14_family_exact_2_to_8_delta: -2, verdict: "REJECTED_FAMILY_REGRESSION"}
+  bid_and_card: {pairs: 64, point_delta: -55, win_share_delta: -0.5, exact_2_to_8_delta: -5, verdict: "REJECTED_STRENGTH_REGRESSION"}
+  interpretation: "Aggregate gains in the bid-only variants do not override the unchanged opponent-family safety gate. Better observed-bid prediction did not establish an acceptable stronger Hard player."
+  corrected_native_tests: "Each corrected candidate passed506 native tests: the same492 accepted baseline tests plus14 new model controls. Passing model controls does not promote a regressed candidate."
+  fresh_evaluation: "115000..115015 was neither reserved nor opened for R15; no fresh-game gain is claimed."
+promotion:
+  status: "REJECTED_DEVELOPMENT"
+  criteria: "Full native components; unchanged SAFETY family gates; strict aggregate exact2..8 gain; nonnegative aggregate points and2..8 points; source freeze before untouched115000..115015."
+  claim_limit: "No perfect-play, UI, Android-device or Reporting-library claim."

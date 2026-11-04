@@ -44,7 +44,7 @@ for assertion rows.
 - Performance observations never turn a captured FAIL into PASS.
 
 [Current release acceptance](ATF_Reporting_J18_Verification.md) records source and physical-JAR
-checks, the large archived Android artifact and separate J1–J4 consumer sanity.
+checks, the large archived Android artifact and separate consumer integration checks.
 
 ## Cold startup and readiness
 
@@ -57,7 +57,7 @@ checks, the large archived Android artifact and separate J1–J4 consumer sanity
 | dynamic content | retain observers, revision invalidation and scheduled normalization for later mutations |
 | deadlines | readiness/action 10,000 ms; navigation 45,000 ms; existing API matrices retain 5,000 ms |
 
-J0 maintains ColdStartReadinessComponentTest, documented in
+Library maintenance covers ColdStartReadinessComponentTest, documented in
 [the local producer evidence](ATF_Reporting_J18_Verification.md).
 The permanent test checks five initial destinations, startup scenario deep links, native link
 repair, repeated load and failure/recovery. An external atf.cold.input runs
@@ -72,6 +72,6 @@ three fresh Chromium processes against the same complete artifact.
 | vendor upgrade | fail explicitly when the pinned native key expression changes, instead of silently publishing invalid script |
 | permanent proof | TimelineTitleEncodingComponentTest executes the real embedded script and rejects browser errors; timestamp regressions stay separate |
 
-[The release record](ATF_Reporting_J18_Verification.md) includes the current J4
+[The release record](ATF_Reporting_J18_Verification.md) includes the current Whist Lab
 Learning witness and neutral source/JAR contracts. The producer owns the
 implementation and permanent tests; consumers retain their own oracles.

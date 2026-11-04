@@ -12,6 +12,12 @@ import org.junit.Test;
 
 public class GameRulesTest {
     @Test
+    public void survivingProfilesKeepTheirHistoricalSamplingStreams() {
+        assertEquals(List.of(0, 1, 3, 4, 6, 7),
+                java.util.Arrays.stream(GameMode.values()).map(GameMode::samplingId).toList());
+    }
+
+    @Test
     public void standardDeckContainsEveryUniqueCard() {
         List<Card> deck = GameRules.standardDeck();
         assertEquals(52, deck.size());
@@ -24,7 +30,6 @@ public class GameRulesTest {
                 GameRules.handSizes(GameMode.DESCENDING, 4));
         assertEquals(10, GameRules.handSizes(GameMode.DESCENDING, 5).get(0).intValue());
         assertEquals(8, GameRules.handSizes(GameMode.DESCENDING, 6).get(0).intValue());
-        assertEquals(List.of(1), GameRules.handSizes(GameMode.PRACTICE_HAND, 3));
     }
 
     @Test

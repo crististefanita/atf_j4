@@ -55,6 +55,18 @@ final class GameSessionStore {
         }
     }
 
+    static final class UnsupportedSavedMode extends IllegalStateException {
+        UnsupportedSavedMode(String mode) { super("Unsupported saved mode: " + mode); }
+    }
+
+    private static GameMode savedMode(String name) {
+        try {
+            return GameMode.valueOf(name);
+        } catch (IllegalArgumentException unknown) {
+            throw new UnsupportedSavedMode(name);
+        }
+    }
+
     static void clear(Context context) {
         preferences(context).edit().remove(SAVE_KEY).commit();
     }
@@ -122,7 +134,7 @@ final class GameSessionStore {
 
     private static GameSession.SaveState decode(JSONObject root) throws JSONException {
         GameConfig config = new GameConfig(root.getInt("playerCount"),
-                GameMode.valueOf(root.getString("mode")),
+                savedMode(root.getString("mode")),
                 AiDifficulty.fromStoredName(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5));
         JSONArray encodedPlayers = root.getJSONArray("players");
         List<GameSession.PlayerState> players = new ArrayList<>(encodedPlayers.length());

@@ -33,6 +33,23 @@ public final class WhistExtentFeedback {
         }
     }
 
+    private static String link(Path from, Path target, String label) throws IOException {
+        Path directory = from.toAbsolutePath().normalize();
+        Path file = target.toAbsolutePath().normalize();
+        String encoded;
+        try {
+            if (directory.getRoot().equals(file.getRoot())) {
+                String relative = directory.relativize(file).toString().replace(java.io.File.separatorChar, '/');
+                encoded = new java.net.URI(null, null, relative, null).toASCIIString();
+            } else {
+                encoded = file.toUri().toASCIIString();
+            }
+        } catch (java.net.URISyntaxException invalidPath) {
+            throw new IOException("Invalid report link", invalidPath);
+        }
+        return "[" + label + "](<" + encoded.replace("(", "%28").replace(")", "%29") + ">)";
+    }
+
     static void publish(Path feedback, Path report, String scenario, String status) throws IOException {
         Path html = report.toRealPath();
         var modified = Files.getLastModifiedTime(html).toInstant();
@@ -42,13 +59,13 @@ public final class WhistExtentFeedback {
         String configuredArchive = System.getProperty("atf.android.handoffRoot", System.getenv("ATF_J4_UI_REPORTS"));
         Path archive = Path.of(configuredArchive == null || configuredArchive.isBlank()
                 ? "C:/work/whist_back/ui-reports" : configuredArchive).toAbsolutePath().resolve("whist-lab");
-        String markdown = "# Ultimul raport Extent Whist Lab\n\n"
-                + "[Deschide direct ultimul Extent acceptat](<" + archive.resolve("latest-accepted.html").toUri().toASCIIString() + ">)\n\n"
-                + "[Ultima acceptanță și ultima încercare arhivate](<" + archive.resolve("LATEST.md").toUri().toASCIIString() + ">)\n\n"
-                + "[Deschide ultimul raport de execuție](<" + html.toUri().toASCIIString() + ">)\n\n"
+        String markdown = "# Ultimul raport Extent Whist Lab\n\n## Pe scurt\n\n"
+                + link(folder, archive.resolve("latest-accepted.html"), "Deschide direct ultimul Extent acceptat") + "\n\n"
+                + link(folder, archive.resolve("LATEST.md"), "Ultima acceptanță și ultima încercare arhivate") + "\n\n"
+                + link(folder, html, "Deschide ultimul raport de execuție") + "\n\n"
                 + "**Scenariu** · " + title + "\n\n**Verdict** · " + status + "\n\n"
                 + "**Raport scris la** · " + modified + " (UTC)\n\n"
-                + "Link local către HTML-ul din directorul de dovezi al rulării. Actualizarea se face după auditul raportului. "
+                + "Indexul se actualizează după auditul raportului. "
                 + "Un scenariu eșuat cu diagnostic valid poate fi cel mai recent. Arhiva stabilă păstrează HTML-ul și trace-ul după verificarea offline.\n\n"
                 + "[Feedback UX](../WHIST_LAB_User_Experience_Feedback.md) · [Contractul Android](../../ATF_Android_Report_Contract.md)\n";
         Path temp = Files.createTempFile(folder, ".whist-extent-", ".tmp");

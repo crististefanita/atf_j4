@@ -18,7 +18,7 @@ public class OriginalVariantModelTest {
         for(int h=0;h<sizes.size();h++){
             var start=game.snapshot();int size=sizes.get(h);assertEquals(size,start.handSize());assertEquals(h,start.handIndex());assertEquals((initialDealer+h)%n,start.dealerSeat());
             assertEquals(h==sizes.size()-1,start.finalHand());
-            if(mode==GameMode.DESCENDING||mode==GameMode.DOWN_AND_UP||mode==GameMode.MAXIMUM||mode==GameMode.PRACTICE_HAND)assertEquals(Trump.values()[h%5],start.trump());
+            if(mode==GameMode.DESCENDING||mode==GameMode.DOWN_AND_UP)assertEquals(Trump.values()[h%5],start.trump());
             else if(mode.isRomanian()&&size==8){assertEquals(Trump.NO_TRUMP,start.trump());assertNull(start.turnedCard());}
             else{assertNotNull(start.turnedCard());assertEquals(start.trump().ordinal(),start.turnedCard().suit().ordinal());}
             var hands=new ArrayList<List<Card>>();Set<Card> unique=new HashSet<>();int minimum=mode.isRomanian()?15-2*n:2;
@@ -38,21 +38,25 @@ public class OriginalVariantModelTest {
             for(int s=0;s<n;s++){
                 boolean exact=won[s]==bids[s];int delta=mode.isRomanian()?(exact?5+won[s]:-Math.abs(won[s]-bids[s])):won[s]+(exact?10:0),bonus=0;
                 if(seriesReward!=0){int wins=Math.max(streaks[s],0),losses=Math.max(-streaks[s],0);if(exact){losses=0;if(size>1)wins++;}else{wins=0;if(size>1)losses++;}if(wins==5){bonus=seriesReward;wins=0;}if(losses==5){bonus=-5;losses=0;}streaks[s]=wins-losses;}
+                assertEquals(Integer.valueOf(bids[s]), game.scoreHistory().bid(h+1,s));
+                assertEquals(delta+bonus, game.scoreHistory().points(h+1,s));
                 totals[s]+=delta+bonus;assertEquals(totals[s],game.snapshot().players().get(s).totalScore());assertEquals(streaks[s],game.snapshot().players().get(s).streak());assertEquals(bonus,game.snapshot().players().get(s).streakPoints());
             }
             var finalScore=game.snapshot();game=GameSession.restoreComplete(game.saveState());assertEquals(finalScore,game.snapshot());
+            for(int seat=0;seat<n;seat++){
+                assertEquals(Integer.valueOf(bids[seat]),game.scoreHistory().bid(h+1,seat));
+                assertEquals(totals[seat],game.scoreHistory().total(h+1,seat));
+            }
             if(h+1<sizes.size())game.startNextHand();else {GameSession finished=game;assertThrows(IllegalStateException.class,finished::startNextHand);}
         }
     }
     private List<Integer> expectedSizes(){
         var r=new ArrayList<Integer>();
-        if(mode==GameMode.PRACTICE_HAND)return List.of(1);
         if(mode.isRomanian()){
             int first=mode==GameMode.LONG_ROMANIAN?8:1,last=9-first,step=first==1?1:-1;
             for(int i=0;i<n;i++)r.add(first);for(int size=first+step;size!=last;size+=step)r.add(size);for(int i=0;i<n;i++)r.add(last);for(int size=last-step;size!=first;size-=step)r.add(size);for(int i=0;i<n;i++)r.add(first);return r;
         }
         int max=mode==GameMode.OH_HELL||mode==GameMode.REVERSE_OH_HELL?(n==6?8:10):52/n;
-        if(mode==GameMode.MAXIMUM){for(int i=0;i<10;i++)r.add(max);return r;}
         if(mode==GameMode.REVERSE_OH_HELL){for(int i=1;i<=max;i++)r.add(i);for(int i=max-1;i>=1;i--)r.add(i);return r;}
         for(int i=max;i>=1;i--)r.add(i);if(mode==GameMode.OH_HELL||mode==GameMode.DOWN_AND_UP)for(int i=2;i<=max;i++)r.add(i);return r;
     }

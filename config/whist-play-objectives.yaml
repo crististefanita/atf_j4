@@ -1,0 +1,34 @@
+schema_version: 1
+id: "NORMAL_HARD_CONTRACT_OBJECTIVES_V1"
+status: "ACTIVE_CODE_BOUND_RULES"
+runtime_influence: "Implemented by AiPolicy, NormalPlayPolicy, MonteCarloAi, and PublicSalvage."
+profile: "Romanian Whist, legal moves only, four seats, public information."
+information: ["own hand", "public bids", "tricks already won", "current trick", "public card history", "turned card", "remaining opportunities", "public scores"]
+normal:
+  objective: "Pursue the player's own bid through the entire hand."
+  remaining_need: "own bid - own tricks already won; preserve the sign."
+  policy:
+    - id: "NORMAL_TAKE_WHILE_SHORT"
+      rule_ro: "Cât timp mai lipsesc levate, caută o carte care poate câștiga levata; dacă nu există, păstrează cea mai puternică posibilitate pentru următoarea levată."
+      rule_en: "While tricks are still needed, take the trick when the current position allows it; otherwise preserve the strongest future chance."
+      tests: ["normalLeadsWithStrengthWhileAContractRemains", "normalTakesAReachableTrickAndUsesTheSmallestCertainWinnerWhenLast"]
+    - id: "NORMAL_DUCK_AFTER_TARGET"
+      rule_ro: "După atingerea contractului, evită levatele suplimentare. Când toate cărțile pierd, folosește cartea cu putere mai mare pentru a reduce riscul ulterior."
+      rule_en: "After reaching the bid, avoid extra tricks. When the current trick is already lost, shed the higher exposed card to reduce later risk."
+      tests: ["normalShedsTheLowestRiskWhenNoTrickIsNeeded"]
+  limit: "Transparent local heuristic. No sampled opponent holdings or global-optimality claim."
+hard:
+  objective: "Maximize own exact-contract probability while the public state leaves a route to the bid."
+  switch_to_salvage_when: "The public lower bound on unavoidable wins exceeds remaining need, or remaining need exceeds remaining trick opportunities."
+  salvage:
+    rule_ro: "Dacă realizarea contractului este imposibilă din limite publice, caută doar o mutare certificată care păstrează punctele proprii în toate lumile fezabile și face să rateze mai mulți adversari."
+    rule_en: "When public bounds prove the contract impossible, prefer only a certified move that preserves own points in every feasible world and causes more opponents to miss."
+    certificate_scope: "Four-seat Romanian hands with two cards remaining; all feasible hidden deals and all legal continuations, bounded by the configured search limit."
+    tests: ["certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty", "recoverableContractCannotBeSacrificedForRivalDamage"]
+  fallback: "If the exhaustive public certificate is unavailable, retain the contract-first Monte Carlo decision."
+  limitations: ["Salvage certificate currently covers two-card endings only.", "No claim of perfect Hard play or universal perfect play."]
+evolution:
+  recompute_after: "Every public bid and every card played."
+  accepted_evidence: "Small legal component examples plus same-deal paired complete matches with seat balancing and a fresh reserved cohort."
+  rejected_experiments: "Keep outside runtime until all predeclared strength and non-regression gates pass."
+  private_information: "Never use actual opponent hands to choose a public strategy."

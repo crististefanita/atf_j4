@@ -9,7 +9,6 @@ public class MatchSummaryTest {
         assertTrue(MatchSummary.modeDescription(GameMode.ROMANIAN_WHIST).contains("trump if held"));
         assertTrue(MatchSummary.modeDescription(GameMode.OH_HELL).contains("discard or trump"));
         assertTrue(MatchSummary.modeDescription(GameMode.DESCENDING).contains("cycles"));
-        assertTrue(MatchSummary.modeDescription(GameMode.PRACTICE_HAND).contains("One card"));
     }
     @Test public void romanianProgressUsesTwentyFourHands(){assertEquals("Hand 1 / 24",MatchSummary.progress(game().snapshot()));}
     @Test public void leadExplanationDoesNotDemandTrump(){assertTrue(MatchSummary.playHint(game().snapshot()).startsWith("Lead any"));}
@@ -37,7 +36,7 @@ public class MatchSummaryTest {
         g.playCard(3,c(Suit.HEARTS,10));return g.snapshot();
     }
     private static GameSession.Snapshot newGameScore(){
-        var g=GameSession.fromDeal(new GameConfig(4,GameMode.PRACTICE_HAND,AiDifficulty.NORMAL,1),List.of(List.of(c(Suit.HEARTS,14)),List.of(c(Suit.HEARTS,13)),List.of(c(Suit.HEARTS,12)),List.of(c(Suit.HEARTS,11))),Trump.SPADES,3);
+        var g=GameSession.fromDeal(new GameConfig(4,GameMode.REVERSE_OH_HELL,AiDifficulty.NORMAL,1),List.of(List.of(c(Suit.HEARTS,14)),List.of(c(Suit.HEARTS,13)),List.of(c(Suit.HEARTS,12)),List.of(c(Suit.HEARTS,11))),Trump.SPADES,3);
         g.submitBid(0,1);g.submitBid(1,0);g.submitBid(2,0);g.submitBid(3,1);
         for(int seat=0;seat<4;seat++)g.playCard(seat,c(Suit.HEARTS,14-seat));return g.snapshot();
     }

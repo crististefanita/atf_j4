@@ -14,9 +14,7 @@ public final class MatchSummary {
             case OH_HELL -> "10-1-10 schedule (8-1-8 with six players). Follow suit; when void, discard or trump. Exact bid adds ten.";
             case DESCENDING -> "Hand sizes decrease to one. Trump cycles each hand. Follow suit; when void, discard or trump.";
             case DOWN_AND_UP -> "Maximum to one, then back to maximum. Trump cycles each hand. Exact bid adds ten.";
-            case MAXIMUM -> "Ten hands at the maximum size allowed by 52 cards. Trump cycles each hand. Exact bid adds ten.";
             case REVERSE_OH_HELL -> "1-10-1 schedule (1-8-1 with six players). An undealt card determines trump. Exact bid adds ten.";
-            case PRACTICE_HAND -> "One card per player: practise a complete trick, bidding and scoring.";
         };
     }
     public static String progress(GameSession.Snapshot state) {

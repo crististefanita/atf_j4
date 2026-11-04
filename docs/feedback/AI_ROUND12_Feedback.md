@@ -1,6 +1,6 @@
 # R12 — respingeri și cerințe pentru următoarea îmbunătățire
 
-Owner J4. Offline, 3 noiembrie 2026. Nu se cere modificarea JAR-ului sau rendererului în J0.
+Owner Whist Lab. Offline, 3 noiembrie 2026. Nu se cere modificarea JAR-ului sau rendererului în modulul de biblioteci comune.
 
 | Prioritate | Dovadă | Cerință verificabilă |
 |---|---|---|
@@ -13,10 +13,17 @@ Owner J4. Offline, 3 noiembrie 2026. Nu se cere modificarea JAR-ului sau rendere
 | P2 | La 55 de origini protejate, selecția greedy la 96 de jocuri omite șase categorii. | Schimburi de acoperire fără pierderea originilor; trei controale pentru cap, determinism și alias protejat. Declarați capul final și lacunele efective. |
 | P2 deschis | Șapte contraexemple de dependență a RNG de translația comună a scorului rămân în cercetare. | Nu declarați invarianta rezolvată și nu reactivați varianta de normalizare respinsă anterior. |
 
-J18 fizic este consumat fără modificări de bibliotecă. Noile costuri și selecții sunt responsabilitatea inputului J4. Nu a fost reprodus un defect nou generic Reporting. Interfața și acceptanța Android rămân la iterația și ownerul lor.
+J18 fizic este consumat fără modificări de bibliotecă.
+
+Noile costuri și selecții sunt responsabilitatea inputului Whist Lab. Nu a fost reprodus un defect nou generic Reporting. Interfața și acceptanța Android rămân la iterația și ownerul lor.
 
 ## Închiderea contractului Normal/Hard
 
-Cerința nouă de două niveluri este implementată și verificată separat: 486 componente de domeniu, quick 162 ca subset, 7 research, 17 app JVM și o pereche completă Hard/R11. `EXPERT` este numai compatibilitate de sursă/salvare. Perfecțiunea generală rămâne nedemonstrată; nu folosiți acest adjectiv în interfață sau în acceptanță. J18 publică 27 capturi/2.802 comparații în 6.272.901 bytes, cu FAIL-ul real al evaluării de forță păstrat și auditul structural trecut. Nu este cerut un patch Reporting.
+Cerința nouă de două niveluri este implementată și verificată separat: 486 componente de domeniu, quick 162 ca subset, 7 research, 17 app JVM și o pereche completă Hard/R11.
+
+- `EXPERT` este numai compatibilitate de sursă/salvare.
+- Perfecțiunea generală rămâne nedemonstrată; nu folosiți acest adjectiv în interfață sau în acceptanță.
+- J18 publică 27 capturi/2.802 comparații în 6.272.901 bytes, cu FAIL-ul real al evaluării de forță păstrat și auditul structural trecut.
+- Nu este cerut un patch Reporting.
 
 [Contract și dovezi Normal/Hard](../TWO_GAME_LEVELS.md). Sursele APK 0.1.1 sunt delimitate de integrarea UI 0.1.2 modificată concurent; aceste schimbări nu au fost suprascrise și nu sunt prezentate ca verificate pe Android de această iterație.

@@ -124,7 +124,7 @@ final class OriginalWhistState {
                 + List.of("♠","♥","♣","♦").get(id/13);
     }
     String summary() {return "serialized hand index="+handIndex+"; played/current cards="+handSize+"; serialized size="+serializedHandSize+"; mode="+mode+"; dealer="+dealer
-            +"; trump="+trump+"; turned card="+card(trumpCard)+"; bids="+Arrays.toString(bids)
+            +"; trump="+trump+"; turned card="+(trump>=4?"none":trumpCard>=0&&trumpCard<52?card(trumpCard):"invalid("+trumpCard+")")+"; bids="+Arrays.toString(bids)
             +"; won="+Arrays.toString(won)+"; remaining="+Arrays.toString(remaining)+"; plays="+plays().size()
             +"; handOver="+handOver+"; bidding="+bidding+"; scores="+Arrays.deepToString(scores);}
     private static int signedLow(int i){int n=i&65535;return n==65535?-1:n;}

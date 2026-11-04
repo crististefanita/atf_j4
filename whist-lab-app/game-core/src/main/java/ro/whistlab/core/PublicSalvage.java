@@ -13,13 +13,23 @@ final class PublicSalvage {
     static Quota quota(MonteCarloAi.View v) {
         var own=v.seats().get(v.seat());
         int left=(v.seats().stream().mapToInt(MonteCarloAi.Seat::remaining).sum()+v.trick().size())/v.seats().size();
-        int need=own.bid()==null?0:own.bid()-own.won(), masters=0;
+        int need=own.bid()==null?0:own.bid()-own.won();
+        var masters=new ArrayList<Card>();
         if(v.trump()!=Trump.NO_TRUMP) {
             var unseen=MonteCarloAi.unknownCards(v);
             for(Card c:v.hand())if(c.suit().ordinal()==v.trump().ordinal()
-                    &&unseen.stream().noneMatch(u->u.suit()==c.suit()&&u.rank()>c.rank()))masters++;
+                    &&unseen.stream().noneMatch(u->u.suit()==c.suit()&&u.rank()>c.rank()))masters.add(c);
         }
-        return new Quota(need,left,masters,own.bid()!=null&&(need<masters||need>left));
+        int forced=masters.size();
+        if(forced>0&&!v.trick().isEmpty()) {
+            var legal=GameRules.legalCards(v.hand(),v.trick().get(0).card().suit(),v.trump(),v.mode());
+            // A trump on the unfinished table is removed from the unknown pool, but is still active.
+            // One legally playable master may be spent losing beneath it; the retained masters remain wins.
+            boolean canLoseOne=masters.stream().filter(legal::contains).anyMatch(c->v.trick().stream()
+                    .anyMatch(p->p.card().suit()==c.suit()&&p.card().rank()>c.rank()));
+            if(canLoseOne)forced--;
+        }
+        return new Quota(need,left,forced,own.bid()!=null&&(need<forced||need>left));
     }
 
     static Proof choose(MonteCarloAi.View v,Card selected) { return choose(v,selected,NODE_LIMIT); }

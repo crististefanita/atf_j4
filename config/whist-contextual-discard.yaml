@@ -1,0 +1,58 @@
+schema_version: 1
+id: "CONTEXTUAL_HONORS_AND_QUOTA_BOUNDARY"
+configuration_kind: "CODE_BOUND_RULE_AND_TEST_MANIFEST"
+scope: "Romanian Whist; legality, own/public cards, current table, submitted contracts, remaining opportunities."
+implementation:
+  hard: "MonteCarloAi; ContractGuarantee; PublicSalvage.quota"
+  independent: "IndependentPlayer; its independent ContractGuarantee"
+  component: "ContextualHonorDiscardTest"
+  numeric_weight_engine: "No new fitted weights or opponent-action model is activated by this manifest."
+context:
+  need: "bid - completed tricks won; keep the signed value."
+  opportunities: "(sum remaining cards + unfinished table size) / player count; count the current trick once."
+  need_density: "need / opportunities when opportunities>0; a contextual feature, not a guaranteed success probability."
+  signed_table_difference: "sum(all signed needs) - opportunities = sum(original bids) - original hand size. This difference stays constant within one hand."
+  positive_demand: "sum(max(0, remaining need)); changes differently from signed demand after a player overshoots."
+  progression: "Information, feasible holdings, individual needs and normalized urgency change as cards are played; fixed auction imbalance does not itself change."
+rules:
+  - id: "OFF_SUIT_HONOR_IS_AN_EXIT_CANDIDATE"
+    rule_ro: "Un AS sau K lateral poate fi aruncat când nu ai culoarea cerută și nici atu. Nu îl considera automat o levată."
+    rule_en: "An off-suit ace or king may be discarded when void in the led suit and holding no trump; it is not automatically a trick."
+    condition: "The honor is legal and cannot win the current trick; a discard opportunity must actually exist."
+    test: "sideHonorsCanBeDiscardedAfterTheContractIsMade"
+  - id: "QUOTA_REVERSES_THE_SAME_CARD_CHOICE"
+    rule_ro: "La necesar zero elimină levata nedorită; la necesar unu păstrează cartea care poate furniza ultima levată sigură."
+    rule_en: "At zero remaining need shed an unwanted winner; at need one retain the card supplying the required final trick."
+    fixture: "Same AS/7H or KS/7H and same legal public prefix; only own contract changes. Six compatible remaining worlds prove the opposite unique choices."
+    tests: ["sideHonorsCanBeDiscardedAfterTheContractIsMade", "theSameHonorMustBeRetainedWhenOneTrickIsStillNeeded"]
+  - id: "MANDATORY_TRUMP_DOMINATES_INTENTION"
+    rule_ro: "Dacă nu ai culoarea, dar ai atu, tai obligatoriu chiar când ți-ai realizat contractul. Nu poți folosi discardul lateral pentru a evita regula."
+    rule_en: "When void in the led suit but holding trump, mandatory trump applies even after the contract is met."
+    test: "mandatoryTrumpPreventsTheSideHonorDiscardEvenAtZero"
+  - id: "CURRENT_HIGH_TRUMP_REMAINS_ACTIVE"
+    rule_ro: "Un AS încă pe masă poate consuma un K sau Q propriu fără să câștigi levata. Numără numai atuurile majore care rămân levate inevitabile."
+    rule_en: "An ace still on the table can consume an own king or queen without an own trick; count only unavoidable retained wins."
+    implementation: "Subtract one from the public master-trump lower bound iff a legally playable master can lose under a higher trump on the unfinished table."
+    test: "aHigherTrumpStillOnTheTableCanConsumeOneHeldMaster"
+  - id: "EXPOSED_COMPLETED_AND_CURRENT_ARE_DISTINCT"
+    rule_ro: "AS întors, AS dintr-o levată încheiată și AS încă pe masă au efecte diferite. Numai ultimul mai poate câștiga levata curentă."
+    rule_en: "Turned, completed-trick and current-table aces have distinct effects; only the current-table ace can still win this trick."
+    test: "completedOrTurnedAcesDoNotConsumeARetainedMaster"
+  - id: "UNDERBOOKED_TABLE_IS_NOT_AN_ORDER_TO_DUCK"
+    rule_ro: "O masă sublicitată nu înseamnă că toți trebuie să arunce câștigătorii. Un jucător cu necesar2 din2 trebuie să le câștige pe ambele, chiar dacă altul a depășit deja zero."
+    rule_en: "An underbooked table does not tell every seat to duck; a player needing two of two must still take both."
+    example: {initial_hand_size: 4, bids: [2, 1, 0, 0], won: [0, 0, 2, 0], opportunities: 2, signed_difference: -1, positive_demand: 3}
+    test: "anUnderbookedTableDoesNotOverrideNeedingEveryRemainingTrick"
+    status: "Component-verified counterexample; no blanket underbooking scalar is activated."
+objective_priority:
+  legality: "Hard filter; no score or intention permits an illegal action."
+  hard_recoverable: "Current Hard prefers estimated exact-contract likelihood, then own expected points, then the strongest rival score. This is stricter risk preference than pure expected-point maximization."
+  independent: "The independent planner has its separately implemented point utility and contract certificate; do not assume identical opponent policies."
+  universal_certificate: "A fully checked exact-contract line may replace a sampled proposal. It is not a perfect-play claim for arbitrary hidden-information states."
+  irrecoverable_hard: "At two own cards, certified salvage may increase opponent misses only with pointwise no-worse own points across every feasible world and all legal replies."
+  sole_miss: "Avoiding the sole miss is conditional on actual feasibility and own-point protection, not a hard card-ownership deduction or permission to sacrifice a recoverable contract."
+research_only:
+  runtime_influence: 0
+  proposed_context_features: ["per-seat signed need", "need density", "positive demand", "normalized fixed table imbalance", "remaining safe winners", "legal discard exits", "proven voids", "score and series incentives"]
+  opponent_inference: "Condition voluntary action likelihood on the acting seat's available information, legal choices, objective and remaining need. Forced play does not prove a desire to win or duck; rule deductions still apply."
+  qualification: "Small independently expected cases first; separate belief and continuation ablations; freeze a policy before untouched paired evaluation; retain failed family gates."

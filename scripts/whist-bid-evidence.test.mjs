@@ -12,7 +12,7 @@ test('Covered king and covered queen are contextual, not independent guaranteed 
     assert.equal(bidFeatures(['AH','KH','7H'],3,'S','8S',0,0)[8],0);
     assert.equal(bidFeatures(['QH','7H','8H'],3,'S','8S',0,0)[9],1/8);
 });
-test('Last-bid restriction renormalizes likelihood and never treats a forced singleton as evidence',()=>{
+test('Last-bid restriction renormalizes likelihood over the remaining legal bids',()=>{
     assert.deepEqual(legalBids(2,3,1),[0,2]);const p=bidDistribution(model(),['AS','KS'],2,'S','7S',3,1);
     assert.equal(p[1],0);assert.ok(Math.abs(p.reduce((a,b)=>a+b,0)-1)<1e-12);
 });

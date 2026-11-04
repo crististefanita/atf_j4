@@ -18,6 +18,17 @@ import ro.whistlab.core.HowToPlay;
 import ro.whistlab.core.Suit;
 
 public final class WhistUiTextTest {
+    @Test public void ohHellHelpUsesTheActualScheduleAtFourAndSixSeats() {
+        for (int seats : new int[]{4, 6}) {
+            List<Integer> schedule = GameRules.handSizes(GameMode.OH_HELL, seats);
+            int midpoint = schedule.size() / 2;
+            String example = schedule.get(0) + "–" + schedule.get(midpoint) + "–" + schedule.get(schedule.size() - 1);
+            String en = new WhistUiText(HowToPlay.Language.EN).modeDescription(GameMode.OH_HELL);
+            String ro = new WhistUiText(HowToPlay.Language.RO).modeDescription(GameMode.OH_HELL);
+            assertTrue(en.contains(seats + " players: " + example));
+            assertTrue(ro.contains(seats + " jucători: " + example));
+        }
+    }
     @Test public void centralBidGridAdaptsColumnsAndReservesSpaceForEveryRow() {
         assertEquals(0, BidGridMetrics.rowCount(0, 353));
         assertEquals(1, BidGridMetrics.rowCount(1, 353));

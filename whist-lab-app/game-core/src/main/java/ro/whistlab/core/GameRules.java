@@ -15,9 +15,6 @@ public final class GameRules {
         if (playerCount < 3 || playerCount > 6) {
             throw new IllegalArgumentException("Player count must be between 3 and 6");
         }
-        if (mode == GameMode.PRACTICE_HAND) {
-            return Collections.singletonList(1);
-        }
         if (mode.isRomanian()) {
             List<Integer> sizes = new ArrayList<>();
             for (int i = 0; i < playerCount; i++) sizes.add(1);
@@ -32,7 +29,6 @@ public final class GameRules {
         }
         int maximum = mode == GameMode.OH_HELL || mode == GameMode.REVERSE_OH_HELL
                 ? Math.min(10, 52 / playerCount) : 52 / playerCount;
-        if (mode == GameMode.MAXIMUM) return immutableCopy(Collections.nCopies(10, maximum));
         List<Integer> sizes = new ArrayList<>(maximum);
         for (int size = maximum; size >= 1; size--) {
             sizes.add(size);

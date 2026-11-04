@@ -1,34 +1,55 @@
 # Normal și Hard
 
-Meniul are exact două niveluri. `AiDifficulty.values()` expune numai `NORMAL` și `HARD`; lista din ecranul de configurare se construiește din aceste valori, fără schimbări de layout.
+[Enum-ul AiDifficulty](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/AiDifficulty.java) expune exact `NORMAL` și `HARD`. [Meniul](../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java) construiește selectorul din `AiDifficulty.values()`, iar [textele interfeței](../whist-lab-app/app/src/main/java/ro/whistlab/app/WhistUiText.java) oferă etichetele în limba aleasă.
 
-- **Normal** păstrează estimarea simplă și alegerea celei mai mici cărți legale.
-- **Hard** folosește motorul Expert R11 acceptat, inclusiv posteriorul de o carte, planificarea de contract și certificatul public de final. Modelele experimentale R12 respinse nu sunt activate.
+| Valoare salvată | Engleză | Română | Politică |
+|---|---|---|---|
+| `NORMAL` | Normal | Normal | Estimare simplă a licitației și alegerea unei cărți legale prin rang |
+| `HARD` | Hard | Dificil | Motorul de decizie `MonteCarloAi` și gărzile sale publice |
 
-Numele vechi `EXPERT` din salvări JSON este migrat la `HARD`. Aliasul Java deprecated `AiDifficulty.EXPERT` păstrează compatibilitatea adaptoarelor vechi, dar nu este o valoare enum sau o a treia opțiune. Valorile necunoscute sunt respinse, fără a reseta silențios dificultatea. Celelalte date ale partidei nu sunt rescrise de această migrare.
+Ambele niveluri respectă același [GameConfig](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/GameConfig.java) și aceleași [reguli](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/GameRules.java). Dificultatea schimbă decizia AI, nu obligația de culoare, atu, domeniul licitației sau scorul.
 
-## Ce este demonstrat
+## Dispatch și informație disponibilă
 
-La o carte, AH conduce pe atu pică, cu 7S întors și fără licitații anterioare. Dintre cele 30 de cărți necunoscute, 23 nu sunt atu. Exact 1.771 dintre cele 4.060 de triple neordonate ale adversarilor nu au atu. Probabilitatea de câștig este sub 1/2, deci contractul 0 este optim pentru șansa de exactitate sub priorul uniform declarat. Hard alege 0; Normal păstrează estimarea sa 1.
+[AiPolicy](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/AiPolicy.java) trimite `HARD` către `MonteCarloAi`. Supraîncărcările fără un argument de dificultate folosesc `NORMAL`.
 
-AS și KS la atu pică garantează două levate. Hard licitează 2. Cazul de discard cu contractul 1 deja realizat păstrează exact contractul cu 10D, în toate cele 96 de distribuții fezabile și toate continuările legale; QH admite o levată în plus.
+Normal estimează puterea propriei mâini și alege dintre licitațiile permise. La joc, aplică întâi regulile și apoi preferă rangul mic dintre cărțile legale. Nu folosește certificatele de căutare ale nivelului Hard.
 
-Acestea sunt demonstrații pe domenii finite. **Perfecțiunea generală a jocului cu informație ascunsă nu este demonstrată.** Pe celelalte stări, Hard folosește cel mai puternic motor acceptat; eticheta Hard nu transformă o estimare în certitudine.
+Hard observă mâna proprie, licitațiile, numărul de cărți și levate, scorurile publice, cărțile jucate, levata în curs și atuul întors.
 
-## Verificare offline
+Mâinile private reale ale adversarilor nu fac parte din `MonteCarloAi.View`. Distribuțiile ipotetice sunt construite din informația disponibilă, inclusiv lipsurile de culoare demonstrate public.
 
-486 de componente de domeniu, 7 de cercetare separate și 17 teste ale aplicației trec. Reducerea față de vechiul număr de cazuri reflectă eliminarea celor 40 de combinații parametrizate ale celei de-a treia dificultăți, plus șase contracte noi pentru niveluri/migrare/dispatch. O partidă completă de 24 de mâini produce aceleași licitații, cărți și scoruri în Hard și în motorul Expert R11 înghețat.
+În profilul românesc, licitarea prioritizează șansa estimată de contract exact, apoi punctele.
 
-APK debug 0.1.1 este construit offline în staging propriu. Build-ul și testele JVM nu sunt prezentate drept execuție Android pe device. Interfața păstrează layoutul lucrat separat; numai maparea etichetelor și citirea dificultății salvate au fost adaptate.
+Alegerea cărții prioritizează exactitatea, apoi punctele proprii și scorul rivalului dominant. Aceste priorități sunt implementate în motor; eticheta Hard nu înseamnă joc perfect sau o garanție de victorie.
 
-Rezultatele experimentelor de forță R12 rămân [respinse și auditate separat](AI_ROUND12_ANALYSIS.md).
+## Estimări și certificate
 
-## Dovezi livrate
+[MonteCarloAi](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java) folosește estimări limitate și, unde se aplică, analiză pe un domeniu mic complet. [LateDiscard](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/LateDiscard.java), [ContractGuarantee](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java) și [PublicSalvage](../whist-lab-app/game-core/src/main/java/ro/whistlab/core/PublicSalvage.java) au condiții proprii, distincte de estimările statistice.
 
-[Raportul Extent J18](C:/work/whist_back/ai-training/20261103-r12/reports/final-extent-report.html) conține 27 de capturi selectate din 365, 2.802 comparații și inventarele sursă. La pregătirea inputului sunt reluate independent 514 înregistrări de partidă: 512 din evaluarea finală R12 și perechea completă Hard/R11. Raportul are 6.272.901 bytes. Auditul structural trece; acceptanța vizuală interactivă nu a fost rulată. FAIL-ul capturat este cel real al gate-ului de forță R12, nu un eșec al migrării Normal/Hard.
+Certificatele curente de contract și salvare sunt limitate la finaluri românești cu patru jucători și două cărți proprii. Un rezultat parțial sau o căutare care depășește bugetul nu devine certitudine. Garda de salvare cere imposibilitatea contractului și dominanță fără deteriorarea punctelor proprii; nu sacrifică un contract realizabil pentru a produce ratări adverse.
 
-[APK-ul debug 0.1.1 verificat](C:/work/whist_back/ai-training/20261103-r12/two-levels/WhistLab-0.1.1-normal-hard-debug.apk) și [sursele exacte](C:/work/whist_back/ai-training/20261103-r12/two-levels/source/whist-lab-app) sunt păstrate extern. Acest APK este snapshotul testat, nu distribuția curentă a lucrului de UI: între timp, ownerul interfeței a modificat integrarea pauzei levatei în MainActivity și versiunea la 0.1.2. Aceste schimbări concurente au fost păstrate. Enum-ul, dispatchul, etichetele și parserul salvării coincid byte-cu-byte cu snapshotul testat. Nu s-a instalat sau înlocuit APK-ul de pe device.
+La calculul levatelor inevitabile, un atu superior încă pe masă rămâne activ.
 
-## R14 — motorul curent
+O carte întoarsă sau dintr-o levată deja încheiată nu poate consuma încă o carte majoră păstrată. Se verifică legalitatea răspunsului înainte de a aplica această distincție.
 
-Hard păstrează motorul R11 și adaugă numai [garda de dominanță publică certificată](AI_CONTRACT_SALVAGE_R14.md). Regresia curentă este492; modelele ponderate R13 sunt respinse și numai în research21. Normal și migrarea EXPERT→HARD rămân neschimbate. APK-ul0.1.1 de mai sus este un snapshot istoric; această iterație modifică numai algoritmul JVM și nu livrează un APK nou.
+Prototipurile din afara surselor de producție și candidații aplicați prin overlay nu devin automat comportamentul Hard.
+
+Testele de componentă, comparația pe partide noi și integrarea în sursele curente sunt calificări separate.
+
+## Salvări și compatibilitate
+
+`AiDifficulty.fromStoredName` convertește numele vechi `EXPERT` în `HARD`. Aliasul Java deprecated `AiDifficulty.EXPERT` este aceeași instanță ca `HARD`; nu apare în `values()` și nu creează o a treia opțiune de meniu. Numele necunoscute sunt respinse.
+
+[GameSessionStore](../whist-lab-app/app/src/main/java/ro/whistlab/app/GameSessionStore.java) citește dificultatea prin acest parser și validează separat checkpoint-ul și istoricul de scor. Conversia numelui nu inventează date lipsă și nu schimbă regulile sau setările seriilor. O salvare invalidă nu este calificată prin înlocuirea silențioasă a dificultății.
+
+## Verificare
+
+[DifficultyContractTest](../whist-lab-app/game-core/src/test/java/ro/whistlab/core/DifficultyContractTest.java) verifică selectorul, aliasul, migrarea și dispatch-ul. Exemplele cu un posterior declarat sau un certificat finit verifică numai domeniul și ipotezele respective; nu sunt etichete universale pentru toate mâinile ascunse.
+
+```powershell
+.\scripts\run-whist-collection.ps1 -Collection quick
+.\scripts\run-whist-collection.ps1 -Collection regression
+```
+
+Aceste execuții verifică JVM-ul fără emulator. Pentru instalare și acceptanță pe dispozitiv, folosește separat [ANDROID_TESTING](ANDROID_TESTING.md).

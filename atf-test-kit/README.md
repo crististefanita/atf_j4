@@ -1,22 +1,25 @@
-# atf-test-kit — baza comună în J3
+# Kit comun pentru teste
 
 ## Pe scurt
 
-Modulul păstrează clasificarea și auditul runnerului, fără renderer.
-Sursele și testele au fost preluate selectiv din referința J0.
-`bootstrap-provenance.json` păstrează snapshot-ul inițial; sincronizările
-ulterioare sunt reconciliate separat și nu rescriu istoricul.
+Modulul oferă clasificarea testelor, scope-uri, configurare și auditul
+aserțiunilor, fără un renderer sau reguli ale jocului. Adaptoarele JUnit sunt
+suport de test; nu fac parte din motorul Whist.
 
-## Ownership și limită
+## API-uri principale
 
-Implementarea comună are owner în J0. Kit este folosit de adaptorul JUnit din
-source-set-ul de test; produsul Speech și comanda operațională rămân fără JUnit.
-Modulul nu primește modele audio, decoder ASR sau logică de transcriere
-pentru a evita ownerul Speech.
+- [Adnotările de clasificare](src/main/java/atf/testkit/) separă unit, component,
+  integration și e2e.
+- [TestRunScope](src/main/java/atf/testkit/scope/TestRunScope.java) și
+  [resursele scoped](src/main/java/atf/testkit/scope/) controlează ciclul de viață.
+- [ComponentAssertionAudit](src/main/java/atf/testkit/assertions/ComponentAssertionAudit.java)
+  păstrează fazele, comparațiile evaluate și cauza originală.
+- [ComponentAuditExtension](src/main/java/atf/testkit/assertions/ComponentAuditExtension.java)
+  adaptează auditul la JUnit; consumerul furnizează publicarea.
+- [AtfTestKitConfigurationLoader](src/main/java/atf/testkit/config/AtfTestKitConfigurationLoader.java)
+  definește descoperirea și citirea configurației.
 
-[Arhitectura J3](../docs/ATF_Speech_Architecture.md) delimitează consumerul.
-[Sync-ul selectiv](../docs/ATF_Workspace_Synchronization.md) păstrează
-diferențele locale și interzice mirror-ul altui deployment.
+## Aserțiuni și audit
 
 ### Toleranță numerică auditată
 
@@ -54,6 +57,19 @@ adaptorul fiecărui consumer; unit-urile obișnuite nu primesc această cerinț�
 
 | Responsabilitate | Owner al probei |
 |---|---|
-| politica neutră ANY_PHASE / TEST_BODY | src/test/java/atf/testkit/assertions/requirement; aceleași zece cazuri, prin API-ul public |
+| politica neutră ANY_PHASE / TEST_BODY | src/test/java/atf/testkit/assertions/requirement; contracte prin API-ul public |
 | eșecul controlat al fixture-urilor | Launcher explicit; nested fixtures nu sunt selectate independent prin wildcard |
-| coeziune | cele opt clase generale rămân în assertions, iar cele două probe de requirement au subpachet propriu |
+| coeziune | cazurile generale rămân în assertions; probele requirement au subpachet propriu |
+
+## Verificare
+
+Rulați dintr-o copie proprie din `%TEMP%`, cu POM-ul părinte și dependențele
+locale ale reactorului:
+
+```powershell
+mvn -B -pl atf-test-kit -am test
+```
+
+[POM-ul modulului](pom.xml) și [sursele testelor](src/test/java/) definesc
+dependențele și contractele efective. Aceste comenzi nu sunt dovada unei execuții
+deja trecute.

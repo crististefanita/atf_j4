@@ -107,6 +107,8 @@ public final class MainActivity extends Activity {
             try {
                 game = GameSessionStore.load(this);
                 if (game != null) lastConfig = game.config();
+            } catch (GameSessionStore.UnsupportedSavedMode unavailable) {
+                Toast.makeText(this, copy.unsupportedSavedMode(), Toast.LENGTH_LONG).show();
             } catch (IllegalStateException invalidSave) {
                 GameSessionStore.clear(this);
                 Toast.makeText(this, copy.noSavedGame(), Toast.LENGTH_LONG).show();
@@ -550,7 +552,7 @@ public final class MainActivity extends Activity {
     }
 
     private void openOneTrickFixture(boolean persistFixture) {
-        GameConfig config = new GameConfig(4, GameMode.PRACTICE_HAND, AiDifficulty.NORMAL, 20261101L);
+        GameConfig config = new GameConfig(4, GameMode.REVERSE_OH_HELL, AiDifficulty.NORMAL, 20261101L);
         List<List<Card>> hands = Arrays.asList(
                 java.util.Collections.singletonList(new Card(Suit.HEARTS, 14)),
                 java.util.Collections.singletonList(new Card(Suit.HEARTS, 13)),

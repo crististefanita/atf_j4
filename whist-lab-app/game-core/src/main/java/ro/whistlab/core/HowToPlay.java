@@ -48,7 +48,13 @@ public final class HowToPlay {
     }
     public static String markdown(Language language) {
         var text=new StringBuilder("# ").append(title(language)).append("\n\n");
-        for(var section:sections(language))text.append("## ").append(section.title()).append("\n\n").append(section.explanation()).append("\n\n");
+        for (var section : sections(language)) {
+            text.append("## ").append(section.title()).append("\n\n");
+            for (String sentence : section.explanation().split("(?<=[.!?])\\s+")) {
+                text.append("- ").append(sentence).append('\n');
+            }
+            text.append('\n');
+        }
         return text.toString();
     }
 }

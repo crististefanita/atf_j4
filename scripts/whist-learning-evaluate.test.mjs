@@ -44,3 +44,26 @@ test('a positive aggregate safety gain cannot hide an exact-contract loss in one
  const f=await fixture(r=>{if(r.parameters.role==='player'){if(r.parameters.opponent==='EXPERT_V4')r.results[1].byHandSize[2].exact=0;else r.results[0].byHandSize[3].exact=1;for(const result of r.results)result.exact=Object.values(result.byHandSize).reduce((n,m)=>n+m.exact,0);}},5);
  try{const result=await evaluateLearning(f,'development',['expert','player'],safetyProtocol);assert.ok(result.roles.player.largeHandExactDelta>0);assert.equal(result.roles.player.accepted,false);const gate=JSON.parse(await fs.readFile(path.join(f,'quality-invocations/development.json')));assert.ok(gate.checkpoints.some(c=>c.comparisons.some(a=>a.name.includes('exact-contract loss')&&!a.passed)));}finally{await dispose(f);}
 });
+
+const round15={...safetyProtocol,version:15,opponents:['EXPERT_V4','PLAYER_V4'],additionalPromotionGuard:'Prespecified: aggregate pointDelta and2..8 pointDelta must be nonnegative.'};
+test('R15 additional guard rejects a score loss even when exact-contract SAFETY improves',async()=>{
+ const f=await fixture(r=>{r.results[1].points=99;r.results[1].byHandSize[1].points=99;r.results[1].byHandSize[2].points=0;},5);
+ try{const result=await evaluateLearning(f,'development',['expert','player'],round15);assert.equal(result.status,'REGRESSION');assert.ok(result.roles.expert.strictGain);assert.equal(result.roles.expert.nonnegativePointGuard,false);const gate=JSON.parse(await fs.readFile(path.join(f,'quality-invocations/development.json')));assert.ok(gate.checkpoints.some(c=>c.title.startsWith('Prespecified')&&c.comparisons.some(a=>!a.passed)));}finally{await dispose(f);}
+});
+test('R15 additional guard catches2..8 score loss concealed by one-card gain',async()=>{
+ const f=await fixture(r=>{r.results[1].byHandSize[1].points=102;r.results[1].byHandSize[2].points=-1;},5);
+ try{const result=await evaluateLearning(f,'development',['expert','player'],round15);assert.equal(result.status,'REGRESSION');assert.ok(result.roles.expert.pointDelta>0);assert.ok(result.roles.expert.largeHandPointDelta<0);assert.equal(result.roles.expert.accepted,false);}finally{await dispose(f);}
+});
+test('R15 nonnegative score guard accepts zero points with strict exact-contract progress',async()=>{
+ const f=await fixture(r=>{r.results[1].points=100;r.results[1].byHandSize[2].points=0;},5);
+ try{const result=await evaluateLearning(f,'development',['expert','player'],round15);assert.equal(result.status,'PASS');assert.equal(result.roles.expert.pointDelta,0);assert.equal(result.roles.expert.largeHandPointDelta,0);assert.equal(result.roles.expert.nonnegativePointGuard,true);}finally{await dispose(f);}
+});
+test('R15 guard is explicit and quality IDs distinguish candidate folders; legacy IDs stay stable',async()=>{
+ const first=await fixture(null,5),second=await fixture(null,5);try{
+  for(const f of [first,second])assert.equal((await evaluateLearning(f,'development',['expert','player'],round15)).status,'PASS');
+  const gate=async f=>JSON.parse(await fs.readFile(path.join(f,'quality-invocations/development.json')));
+  assert.notEqual((await gate(first)).invocationId,(await gate(second)).invocationId);assert.equal((await gate(first)).invocationId,'development-'+path.basename(first)+'-quality-gate');
+  const noGuard={...round15};delete noGuard.additionalPromotionGuard;const result=await evaluateLearning(first,'development',['expert','player'],noGuard);assert.equal(result.roles.expert.nonnegativePointGuard,undefined);assert.ok(!(await gate(first)).checkpoints.some(c=>c.title.startsWith('Prespecified')));
+  await evaluateLearning(first,'development',['expert','player'],safetyProtocol);assert.equal((await gate(first)).invocationId,'development-quality-gate');
+ }finally{await dispose(first);await dispose(second);}
+});

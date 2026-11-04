@@ -1,23 +1,23 @@
-# atf-validation — baza comună în J3
+# Validare semantică API
 
 ## Pe scurt
 
-Modulul păstrează validarea semantică a răspunsurilor API.
-Sursele și testele au fost preluate selectiv din referința J0.
-`bootstrap-provenance.json` păstrează snapshot-ul inițial; sincronizările
-ulterioare sunt reconciliate separat și nu rescriu istoricul.
+Modulul evaluează contracte de răspuns și produce comparații și decizii de
+validare independente de renderer. Nu deține transportul și nu verifică
+regulile Whist în locul motorului sau al oracolului jocului.
 
-## Ownership și limită
+## Puncte de intrare
 
-Implementarea comună are owner în J0. Validatorul API și WER sunt contracte separate.
-Fluxul ASR actual folosește evaluatorul din Speech. Contractele JSON comune
-sunt reconciliate la owner și verificate separat în acest deployment.
-Modulul nu primește modele audio, decoder ASR sau logică de transcriere
-pentru a evita ownerul Speech.
+[ResponseContract](src/main/java/atf/validation/contract/ResponseContract.java)
+grupează regulile, iar
+[ValidationEvaluator](src/main/java/atf/validation/evaluation/ValidationEvaluator.java)
+aplică politica strictă sau warning asupra tabelului evaluat. Limita de afișare
+nu înlocuiește valoarea folosită pentru verdict.
 
-[Arhitectura J3](../docs/ATF_Speech_Architecture.md) delimitează consumerul.
-[Sync-ul selectiv](../docs/ATF_Workspace_Synchronization.md) păstrează
-diferențele locale și interzice mirror-ul altui deployment.
+[JsonSchemaCapabilities](src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java)
+definește subsetul de schemă acceptat și refuză keyword-urile nesuportate.
+[Modelele AI](src/main/java/atf/validation/ai/) descriu așteptări și observații
+neutre; nu sunt algoritmul adversarilor din Whist Lab.
 
 ## Contract JSON și subset de schemă
 
@@ -52,8 +52,8 @@ păstrează preview-ul 240, fără reevaluare în renderer.
 
 Regresii permanente: [prezență și containere](src/test/java/atf/validation/JsonPresenceContractTest.java)
 și [subsetul schemei](src/test/java/atf/validation/JsonSchemaContractTest.java).
-Acceptanța API sintetică în Extent/fallback verifică separat verdictul,
-rândurile și preview-ul; nu demonstrează transport real sau acuratețe speech.
+Fixture-urile API verifică separat verdictul, rândurile și preview-ul;
+nu demonstrează transportul unui serviciu real.
 
 ### Content-Type — clasificare semantică JSON
 
@@ -79,11 +79,24 @@ păstrează headerul observat, redactat și limitat după evaluare.
   Regulile JSON verifică separat documentul și câmpurile cerute.
 
 [JsonMediaTypeContractTest](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java)
-protejează cele cinci contracte, strict/warning, nominale și parametri
+protejează contractele strict/warning, cazurile nominale și parametrii
 înșelători; acceptanța portului neutru și a artifactului rămâne la consumer.
 
 ### Parser comun și proprietatea datelor
 
-Documentele complete folosesc JsonDocuments din Core C2: fără duplicate ori
+Documentele complete folosesc JsonDocuments din Core: fără duplicate ori
 trailing content, cu decimale exacte. Validation păstrează diagnosticele și
 politica proprie pentru null; nu deține un mapper strict paralel.
+
+## Verificare
+
+Rulați dintr-o copie proprie din `%TEMP%`, cu POM-ul părinte și dependențele
+locale ale reactorului:
+
+```powershell
+mvn -B -pl atf-validation -am test
+```
+
+[POM-ul modulului](pom.xml) și [sursele testelor](src/test/java/) definesc
+dependențele și contractele efective. Aceste comenzi nu sunt dovada unei execuții
+deja trecute.
