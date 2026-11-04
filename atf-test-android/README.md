@@ -56,7 +56,11 @@ Dintr-o copie temporară proprie de lucru, cu POM-ul părinte și bibliotecile c
 mvn -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
 ```
 
-Profilul `responsive-sanity` compilează numai suportul și testele necesare verificării pe ecrane de dimensiuni diferite. Comenzile care solicită întregul set de componente folosesc configurația normală a modulului.
+Profilul `responsive-sanity` compilează numai suportul și testele necesare pe ecrane diferite.
+
+- Matricea standard verifică meniul, atuul, cartea jucată, mâna de 13 cărți și cele nouă opțiuni de licitare pe fiecare profil.
+- `-IncludeGameFlow` activează opțional un singur flux pe primul profil.
+- Setul complet de componente folosește configurația normală a modulului.
 
 ## Fluxuri Android
 
@@ -66,7 +70,7 @@ Scenariile pe dispozitiv se activează explicit, cu identificator de dispozitiv 
 - Matricea vizuală verifică locurile și derulează până când cartea, locul activ și cărțile jucabile legal pot fi verificate pe ecranele compacte.
 - Construirea APK-ului și acceptanța instalării au contracte separate.
 
-[Verificarea jocului](../docs/testing/gameplay/README.md) · [Testarea Android](../docs/testing/android/README.md) · [Temporizare](../docs/ATF_Android_Phase_Timing.md) · [Publicare](../docs/ATF_Android_Report_Contract.md)
+[Verificarea jocului](../docs/testing/ATF_Gameplay.md) · [Testarea Android](../docs/testing/ATF_Android.md) · [Temporizare](../docs/reporting/ATF_PhaseTiming.md) · [Publicare](../docs/reporting/ATF_Android.md)
 
 ## Niveluri de testare
 
@@ -76,4 +80,4 @@ Scenariile pe dispozitiv se activează explicit, cu identificator de dispozitiv 
 | Componentă | ADB controlat, capturi, oracole, geometrie și publicare fără dispozitiv. |
 | E2E | Interacțiuni noi în aplicația instalată, cu rezervarea dispozitivului. |
 
-[Arhitectura testării](../docs/testing/architecture/README.md) separă nivelul, colecția, mediul și publicarea. Un jurnal reluat nu reprezintă o nouă execuție Android.
+[Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Un jurnal reluat nu reprezintă o nouă execuție Android.

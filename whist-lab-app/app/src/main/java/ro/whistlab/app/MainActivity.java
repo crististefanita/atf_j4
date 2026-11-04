@@ -1,5 +1,17 @@
 package ro.whistlab.app;
 
+import ro.whistlab.app.bidding.DropdownBackground;
+import ro.whistlab.app.fixtures.DisplayFixtureDeals;
+import ro.whistlab.app.fixtures.OriginalMatchReplay;
+import ro.whistlab.app.lifecycle.CompletedTrickPause;
+import ro.whistlab.app.localization.WhistUiText;
+import ro.whistlab.app.persistence.GameSessionStore;
+import ro.whistlab.app.score.ScoreHistoryView;
+import ro.whistlab.app.score.ScoreTableView;
+import ro.whistlab.app.table.GameTablePanel;
+import ro.whistlab.app.table.TrumpIndicatorView;
+import ro.whistlab.app.theme.WhistUiPalette;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -28,19 +40,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import ro.whistlab.core.HowToPlay;
-import ro.whistlab.core.AiDifficulty;
-import ro.whistlab.core.AiPolicy;
-import ro.whistlab.core.Card;
-import ro.whistlab.core.GameConfig;
-import ro.whistlab.core.GameMode;
-import ro.whistlab.core.GamePhase;
-import ro.whistlab.core.GameRules;
-import ro.whistlab.core.GameSession;
-import ro.whistlab.core.PlayedCard;
-import ro.whistlab.core.ScoreHistory;
-import ro.whistlab.core.Suit;
-import ro.whistlab.core.Trump;
+import ro.whistlab.core.rules.HowToPlay;
+import ro.whistlab.core.config.AiDifficulty;
+import ro.whistlab.core.ai.policy.AiPolicy;
+import ro.whistlab.core.model.Card;
+import ro.whistlab.core.config.GameConfig;
+import ro.whistlab.core.rules.GameMode;
+import ro.whistlab.core.session.GamePhase;
+import ro.whistlab.core.rules.GameRules;
+import ro.whistlab.core.session.GameSession;
+import ro.whistlab.core.model.PlayedCard;
+import ro.whistlab.core.session.ScoreHistory;
+import ro.whistlab.core.model.Suit;
+import ro.whistlab.core.model.Trump;
 
 public final class MainActivity extends Activity {
     private static final long COMPLETED_TRICK_DISPLAY_MILLIS = 1_500L;

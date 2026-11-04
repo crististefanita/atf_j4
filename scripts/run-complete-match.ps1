@@ -109,11 +109,11 @@ try {
     Get-ChildItem -LiteralPath (Join-Path $root 'lib') -Filter '*.jar' | Get-FileHash -Algorithm SHA256 |
         Select-Object Path, Algorithm, Hash | ConvertTo-Json | Set-Content (Join-Path $RunRoot 'library-binaries.json')
     Invoke-MatchStage 'complete-report-value-controls' @('-q', '-pl', 'atf-tests', 'test', '-Dtest=ReportTextValueMatcherTest')
-    Save-MatchXml 'atf-tests' @('atf.tests.ReportTextValueMatcherTest')
+    Save-MatchXml 'atf-tests' @('atf.tests.reporting.text.ReportTextValueMatcherTest')
     Invoke-MatchStage 'android-adapter-components' @('-q', '-pl', 'atf-test-android', 'test', '-Dtest=AndroidComponentSuite')
     Save-MatchXml 'atf-test-android' @('atf.android.AdbClientContractTest', 'atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
     Invoke-MatchStage 'whist-lab-observation-components' @('-q', '-pl', 'atf-test-android', 'test', '-Dtest=AndroidHierarchyFreshnessTest,OriginalWhistStateTest,OriginalMatchOracleTest,WhistLabContinuationTest')
-    Save-MatchXml 'atf-test-android' @('atf.android.e2e.AndroidHierarchyFreshnessTest', 'atf.android.e2e.OriginalWhistStateTest', 'atf.android.e2e.OriginalMatchOracleTest', 'atf.android.e2e.WhistLabContinuationTest')
+    Save-MatchXml 'atf-test-android' @('atf.android.e2e.driver.AndroidHierarchyFreshnessTest', 'atf.android.e2e.oracle.recorded.OriginalWhistStateTest', 'atf.android.e2e.oracle.recorded.OriginalMatchOracleTest', 'atf.android.e2e.gameplay.WhistLabContinuationTest')
 
     Push-Location (Join-Path $stage 'whist-lab-app')
     try {
@@ -139,9 +139,9 @@ try {
     Copy-Item -Path (Join-Path $stage 'whist-lab-app\game-core\build\test-results\originalReplayTest\TEST-*.xml') -Destination $replayResults -Force
 
     Invoke-MatchStage 'whist-lab-reference-replay-e2e' @('-q', '-pl', 'atf-test-android', 'test', '-Dtest=CompleteWhistLabMatchE2eTest', '-Datf.android.enabled=true', '-Datf.android.fullMatch=true', "-Datf.match.evidenceDir=$evidence")
-    Save-MatchXml 'atf-test-android' @('atf.android.e2e.CompleteWhistLabMatchE2eTest')
+    Save-MatchXml 'atf-test-android' @('atf.android.e2e.gameplay.CompleteWhistLabMatchE2eTest')
     Invoke-MatchStage 'whist-lab-romanian-expert-e2e' @('-q', '-pl', 'atf-test-android', 'test', '-Dtest=WhistLabRomanianExpertE2eTest', '-Datf.android.enabled=true', "-Datf.match.evidenceDir=$evidence")
-    Save-MatchXml 'atf-test-android' @('atf.android.e2e.WhistLabRomanianExpertE2eTest')
+    Save-MatchXml 'atf-test-android' @('atf.android.e2e.gameplay.WhistLabRomanianExpertE2eTest')
     $report = Join-Path $RunRoot 'final-extent-report.html'
     Invoke-MatchStage 'whist-lab-extent-publisher' @('-q', '-pl', 'atf-tests', 'test', '-Dtest=FullMatchExtentReportTest', '-Datf.match.publish=true', "-Datf.test.heap.max=$ReportHeap", "-Datf.match.evidenceDir=$evidence", "-Datf.match.reportPath=$report")
     Write-Host "Whist Lab report: $report"

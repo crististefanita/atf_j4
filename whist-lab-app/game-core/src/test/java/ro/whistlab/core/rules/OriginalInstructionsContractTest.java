@@ -1,0 +1,42 @@
+package ro.whistlab.core.rules;
+
+import ro.whistlab.core.ai.policy.AiPolicy;
+import ro.whistlab.core.config.AiDifficulty;
+import ro.whistlab.core.config.GameConfig;
+import ro.whistlab.core.model.Card;
+import ro.whistlab.core.model.PlayedCard;
+import ro.whistlab.core.model.Suit;
+import ro.whistlab.core.model.Trump;
+import ro.whistlab.core.session.GamePhase;
+import ro.whistlab.core.session.GameSession;
+import ro.whistlab.core.session.MatchSummary;
+
+import static org.junit.Assert.*;
+import java.util.*;
+import org.junit.Test;
+
+/** Semantic component coverage of the original menu text, distinct from the classic Romanian profile. */
+public class OriginalInstructionsContractTest {
+    @Test public void oi01StandardDeckHasFiftyTwoUniqueCardsForEverySupportedTable(){for(int n=3;n<=6;n++){assertEquals(52,new HashSet<>(GameRules.deck(GameMode.OH_HELL,n)).size());assertEquals(n,GameSession.newGame(new GameConfig(n,GameMode.OH_HELL,AiDifficulty.NORMAL,1)).snapshot().players().size());}}
+    @Test public void oi02BidsCoverTheExactWholeDomainIncludingHighBids(){for(int size=1;size<=17;size++){var domain=GameRules.allowedBids(size,0,false);assertEquals(size+1,domain.size());assertEquals(Integer.valueOf(0),domain.get(0));assertEquals(Integer.valueOf(size),domain.get(size));}}
+    @Test public void oi03OnlyTheLastBidHasTheExactSumExclusion(){for(int size=1;size<=17;size++)for(int sum=0;sum<=size*5;sum++)for(int bid=0;bid<=size;bid++){assertTrue(GameRules.allowedBids(size,sum,false).contains(bid));assertEquals(sum+bid!=size,GameRules.allowedBids(size,sum,true).contains(bid));}}
+    @Test public void oi04ExactIsNotAMinimumContract(){assertEquals(3,GameRules.scoreDelta(3,1,GameMode.OH_HELL));assertEquals(13,GameRules.scoreDelta(3,3,GameMode.OH_HELL));assertEquals(1,GameRules.scoreDelta(1,3,GameMode.OH_HELL));}
+    @Test public void oi05ZeroContractGetsTenBonusWhenExact(){assertEquals(10,GameRules.scoreDelta(0,0,GameMode.OH_HELL));assertEquals(0,GameRules.scoreDelta(0,1,GameMode.OH_HELL));assertEquals(1,GameRules.scoreDelta(1,0,GameMode.OH_HELL));}
+    @Test public void oi06EveryOhHellScoreCombinationUsesTricksPlusExactTen(){for(int bid=0;bid<=17;bid++)for(int won=0;won<=17;won++)assertEquals(won+(won==bid?10:0),GameRules.scoreDelta(won,bid,GameMode.OH_HELL));}
+    @Test public void oi07BiddingAndFirstLeaderStartAtDealersLeft(){for(int n=3;n<=6;n++)for(int dealer=0;dealer<n;dealer++){var hands=new ArrayList<List<Card>>();for(int seat=0;seat<n;seat++)hands.add(List.of(c(0,2+seat),c(1,2+seat)));var g=GameSession.fromDeal(new GameConfig(n,GameMode.OH_HELL,AiDifficulty.NORMAL,1),hands,Trump.SPADES,dealer);assertEquals((dealer+1)%n,g.snapshot().biddingSeat());for(int i=0;i<n;i++)g.submitBid(g.snapshot().biddingSeat(),0);assertEquals((dealer+1)%n,g.snapshot().currentSeat());}}
+    @Test public void oi08LeaderMayChooseAnyHeldCard(){var h=List.of(c(0,14),c(1,2),c(2,7));assertEquals(h,GameRules.legalCards(h,null,Trump.SPADES,GameMode.OH_HELL));}
+    @Test public void oi09FollowingSuitHasPriorityAfterAnotherPlayerTrumps(){var hand=List.of(c(1,7),c(0,14));assertEquals(List.of(c(1,7)),GameRules.legalCards(hand,Suit.HEARTS,Trump.SPADES,GameMode.OH_HELL));}
+    @Test public void oi10OhHellAllowsDiscardEvenWithTrumpAvailable(){var hand=List.of(c(0,7),c(2,14));assertEquals(hand,GameRules.legalCards(hand,Suit.HEARTS,Trump.SPADES,GameMode.OH_HELL));assertEquals(List.of(c(0,7)),GameRules.legalCards(hand,Suit.HEARTS,Trump.SPADES,GameMode.ROMANIAN_WHIST));}
+    @Test public void oi11HighestLedSuitWinsAndOffSuitAceCannotWin(){assertEquals(2,GameRules.winningSeat(List.of(p(0,1,7),p(1,2,14),p(2,1,13),p(3,3,14)),Trump.NO_TRUMP));}
+    @Test public void oi12AnyTrumpBeatsTheLedSuitAndHighestTrumpWins(){assertEquals(3,GameRules.winningSeat(List.of(p(0,1,14),p(1,0,7),p(2,2,14),p(3,0,8)),Trump.SPADES));}
+    @Test public void oi13NoTrumpDoesNotTreatSpadesAsAnImplicitTrump(){assertEquals(0,GameRules.winningSeat(List.of(p(0,1,7),p(1,0,14),p(2,2,14),p(3,3,14)),Trump.NO_TRUMP));}
+    @Test public void oi14DocumentedFiveSuitCycleAppliesToTheDescendingProfile(){for(int h=0;h<30;h++)assertEquals(Trump.values()[h%5],Trump.forHandIndex(h));}
+    @Test public void oi15TrickWinnerLeadsTheNextTrick(){var g=GameSession.fromDeal(new GameConfig(4,GameMode.OH_HELL,AiDifficulty.NORMAL,1),List.of(List.of(c(1,7),c(2,7)),List.of(c(1,14),c(2,8)),List.of(c(1,8),c(2,9)),List.of(c(1,9),c(2,10))),Trump.SPADES,3);for(int s=0;s<4;s++)g.submitBid(s,0);g.playCard(0,c(1,7));g.playCard(1,c(1,14));g.playCard(2,c(1,8));g.playCard(3,c(1,9));assertEquals(1,g.snapshot().lastTrickWinnerSeat());assertEquals(1,g.snapshot().currentSeat());}
+    @Test public void oi16AHandScoresOnlyAfterEveryLastCard(){var g=one();for(int s=0;s<4;s++)g.submitBid(s,0);for(int s=0;s<3;s++){g.playCard(s,c(1,14-s));assertTrue(g.snapshot().players().stream().allMatch(p->p.totalScore()==0));}g.playCard(3,c(1,11));assertEquals(GamePhase.SCORE,g.snapshot().phase());assertEquals(List.of(1,10,10,10),g.snapshot().players().stream().map(GameSession.PlayerSnapshot::totalScore).toList());}
+    @Test public void oi17NextHandPreservesCumulativeScoresAndResetsBidsAndWonCounters(){var g=GameSession.newGame(new GameConfig(4,GameMode.OH_HELL,AiDifficulty.NORMAL,35));while(g.snapshot().phase()==GamePhase.BIDDING)g.submitBid(g.snapshot().biddingSeat(),0);while(g.snapshot().phase()==GamePhase.PLAYING){var s=g.snapshot();g.playCard(s.currentSeat(),AiPolicy.chooseCard(s,s.currentSeat(),AiDifficulty.NORMAL));}var before=g.snapshot().players().stream().map(GameSession.PlayerSnapshot::totalScore).toList();g.startNextHand();assertEquals(before,g.snapshot().players().stream().map(GameSession.PlayerSnapshot::totalScore).toList());assertTrue(g.snapshot().players().stream().allMatch(p->p.bid()==null&&p.tricksWon()==0));}
+    @Test public void oi18PlayCannotStartBeforeAllBidsAndScoringCannotBeAppliedTwice(){var g=one();assertThrows(IllegalStateException.class,()->g.playCard(0,c(1,14)));for(int s=0;s<4;s++)g.submitBid(s,0);for(int s=0;s<4;s++)g.playCard(s,c(1,14-s));var before=g.snapshot();assertThrows(IllegalStateException.class,()->g.playCard(0,c(1,14)));assertEquals(before,g.snapshot());}
+    @Test public void oi19CurrentAndLastTrickRetainTheActualPlayOrderAndCannotBeMutated(){var g=one();for(int s=0;s<4;s++)g.submitBid(s,0);for(int s=0;s<3;s++)g.playCard(s,c(1,14-s));var during=g.snapshot();assertEquals(List.of(0,1,2),during.currentTrick().stream().map(PlayedCard::seat).toList());assertThrows(UnsupportedOperationException.class,()->during.currentTrick().clear());g.playCard(3,c(1,11));assertEquals(List.of(0,1,2,3),g.snapshot().lastTrick().stream().map(PlayedCard::seat).toList());assertEquals(g.snapshot().lastTrick(),g.snapshot().history());assertEquals(0,g.snapshot().lastTrickWinnerSeat());assertThrows(UnsupportedOperationException.class,()->g.snapshot().history().clear());}
+    @Test public void oi20BidBalanceDistinguishesUnderEqualAndOverWithoutBanningAnEarlyEqualSum(){var g=GameSession.fromDeal(new GameConfig(4,GameMode.OH_HELL,AiDifficulty.NORMAL,1),List.of(List.of(c(0,2),c(1,2)),List.of(c(0,3),c(1,3)),List.of(c(0,4),c(1,4)),List.of(c(0,5),c(1,5))),Trump.SPADES,3);assertEquals("-2",MatchSummary.bidBalance(g.snapshot()));g.submitBid(0,2);assertEquals("0",MatchSummary.bidBalance(g.snapshot()));g.submitBid(1,2);assertEquals("+2",MatchSummary.bidBalance(g.snapshot()));g.submitBid(2,0);g.submitBid(3,0);assertEquals(GamePhase.PLAYING,g.snapshot().phase());}
+    private static GameSession one(){return GameSession.fromDeal(new GameConfig(4,GameMode.OH_HELL,AiDifficulty.NORMAL,1),List.of(List.of(c(1,14)),List.of(c(1,13)),List.of(c(1,12)),List.of(c(1,11))),Trump.SPADES,3);}
+    private static Card c(int s,int r){return new Card(Suit.values()[s],r);}private static PlayedCard p(int seat,int s,int r){return new PlayedCard(seat,c(s,r));}
+}

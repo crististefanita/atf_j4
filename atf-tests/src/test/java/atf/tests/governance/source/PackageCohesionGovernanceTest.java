@@ -15,6 +15,8 @@ class PackageCohesionGovernanceTest {
     @Test void oversizedPackagesRequireAnExactReviewedInventoryAndAnAction() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var policy = GovernanceProject.policy(root);
+        assertEquals(0, policy.required("reviewedPackages").size(),
+                "The current package layout must remain within the cohesion limit without waivers");
         var inventory = SourceQualityRules.packageInventory(GovernanceProject.sources(root));
         var violations = check(inventory, policy.required("packageLimit").asInt(), policy.required("reviewedPackages"));
         assertTrue(violations.isEmpty(), () -> String.join("\n", violations));

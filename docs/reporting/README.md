@@ -33,6 +33,14 @@ Selecția și comparațiile aplicației aparțin consumatorului. Biblioteca păs
 
 ## Configurare și responsabilități
 
-[Politica de prezentare](../ATF_Game_Report_Presentation.md) definește volumul și selecția datelor de intrare. [Contractul Android](../ATF_Android_Report_Contract.md) definește relația acțiune–observație–comparație, iar [predarea rezultatelor](../WHIST_UI_REPORT_HANDOFF.md) definește publicarea atomică.
+| Mecanism | Contract responsabil |
+|---|---|
+| Selecție, grupare și navigare | [Politica prezentării](ATF_Presentation.md) |
+| Acțiuni, comparații și imagini | [Contractul Android](ATF_Android.md) |
+| Execuție originală și republicare | [Măsurarea timpilor](ATF_PhaseTiming.md) |
+| Înregistrare și acceptare pe scop | [Predarea rezultatelor](ATF_Handoff.md) |
+| Integritate și acces la conținut | [Auditul publicării](ATF_Audit.md) |
+
+[Politica de prezentare](ATF_Presentation.md) definește volumul și selecția datelor de intrare. [Contractul Android](ATF_Android.md) definește relația acțiune–observație–comparație, iar [predarea rezultatelor](ATF_Handoff.md) definește publicarea atomică.
 
 Defectele de date de intrare se corectează în consumator; cerințele generice ale bibliotecii sunt direcționate prin [feedback](../feedback/README.md). Identitatea binară se citește din configurația și proveniența livrării, fără versiuni sau rezultate copiate în acest ghid.

@@ -22,7 +22,7 @@ try {
         "-Pwhist.offlinePerspective.output=$match" --console=plain *> $log
     if ($LASTEXITCODE -ne 0) { Get-Content -LiteralPath $log -Tail 30; throw 'Offline perspective replay failed' }
     $result = Get-Content -LiteralPath $match -Raw | ConvertFrom-Json
-    $xmlPath = 'game-core/build/test-results/offlinePerspectiveMatchTest/TEST-ro.whistlab.core.OfflinePerspectiveMatchTest.xml'
+    $xmlPath = 'game-core/build/test-results/offlinePerspectiveMatchTest/TEST-ro.whistlab.core.match.OfflinePerspectiveMatchTest.xml'
     $xml = [xml](Get-Content -LiteralPath $xmlPath -Raw)
     if ($result.runs -ne 6 -or $result.handsPerRun -ne 24 -or
         !$result.sameDistributionAndOrder -or $result.privateDealsIncluded -or
@@ -65,9 +65,9 @@ try {
         })
         rosterTotalsInterpretation = 'Aggregates by policy label; in a one-Hard roster, normalPoints sums the three opponents. Use sameSeatComparisons for focal-seat performance.'
         deviceExecuted = $false
-        sourceSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/AiPolicy.java')).Hash.ToLowerInvariant()
-        normalPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/NormalPlayPolicy.java')).Hash.ToLowerInvariant()
-        hardPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java')).Hash.ToLowerInvariant()
+        sourceSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java')).Hash.ToLowerInvariant()
+        normalPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/policy/NormalPlayPolicy.java')).Hash.ToLowerInvariant()
+        hardPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java')).Hash.ToLowerInvariant()
         objectivesYamlSha256 = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'config/whist-play-objectives.yaml')).Hash.ToLowerInvariant()
         matchSha256 = (Get-FileHash -LiteralPath $match).Hash.ToLowerInvariant()
         nativeTestXml = $xmlPath

@@ -589,10 +589,12 @@
       "atf-mock"
     ],
     "consumerSourceModules": 4,
-    "contract": "docs/ATF_Platform_Libraries.md",
+    "contract": "lib/README.md",
     "nativeTestRetention": "Complete matching producer catalogs retained in J0; consumer source retirement is recoverable in owned TMP",
     "acceptanceEvidence": "C:/Users/Cristi/AppData/Local/Temp/ATF_CONSOLE_MOCK_ACTIVE_DO_NOT_CLEAN_74b0e613",
     "rendering": "Five Chromium-reviewed Extent artifacts; targeted expansion only",
-    "qualification": "Independent source/JAR integration and complete-reactor compilation pass; external/device acceptance remains separate"
+    "qualification": "Independent source/JAR integration and complete-reactor compilation pass; external/device acceptance remains separate",
+    "feedbackOwner": "atf_j0",
+    "feedbackRegistry": "atf_j0/docs/feedback/README.md"
   }
 }

@@ -11,7 +11,7 @@ test; [POM-ul testelor Android](../../atf-test-android/pom.xml) îl include prin
 
 [IndependentPlayer.Position](src/main/java/ro/whistlab/coach/IndependentPlayer.java) conține mâna proprie și fapte publice: numărul de cărți rămase, contractele, levatele, totalurile, seriile, cărțile jucate, levata curentă și cartea întoarsă.
 
-Nu există câmp pentru mâinile reale ale adversarilor sau valoarea de inițializare a împărțirii. Adaptoarele trebuie să construiască această proiecție înainte de a apela AI-ul. În testele Android, această limită este aplicată de [WhistChallenger](../../atf-test-android/src/test/java/atf/android/e2e/WhistChallenger.java).
+Nu există câmp pentru mâinile reale ale adversarilor sau valoarea de inițializare a împărțirii. Adaptoarele trebuie să construiască această proiecție înainte de a apela AI-ul. În testele Android, această limită este aplicată de [WhistChallenger](../../atf-test-android/src/test/java/atf/android/e2e/player/WhistChallenger.java).
 
 Cărțile numerice folosesc `13 × suit + rank - 2`, cu ordinea culorilor pică,
 cupă, treflă, caro. Regula de urmărire a culorii, atuul obligatoriu, câștigătorul
@@ -53,7 +53,7 @@ este presupusă.
 
 O enumerare incompletă sau un buget epuizat păstrează propunerea inițială. Lumile ipotetice folosite intern și mâinile reale de după partidă au roluri diferite; ultimele nu intră în API-ul deciziei.
 
-[RolloutPlanner](src/main/java/ro/whistlab/coach/RolloutPlanner.java) este un model de continuare, iar politicile din `baseline` sunt referințe înghețate pentru comparații.
+[RolloutPlanner](src/main/java/ro/whistlab/coach/RolloutPlanner.java) este un model de continuare. Politicile de referință înghețate sunt separate în [sursele de test ale motorului](../game-core/src/test/java/ro/whistlab/coach/baseline), fără a intra în sursele active ale jucătorului independent.
 
 Niciuna dintre acestea nu înseamnă un jucător perfect.
 
@@ -62,12 +62,12 @@ Niciuna dintre acestea nu înseamnă un jucător perfect.
 Dintr-o copie temporară proprie a `whist-lab-app`:
 
 ```powershell
-.\gradlew.bat -p algorithm-build :game-core:test --tests ro.whistlab.coach.IndependentPlayerModelTest --tests ro.whistlab.core.CertifiedContractRegressionTest --offline --no-daemon
+.\gradlew.bat -p algorithm-build :game-core:test --tests ro.whistlab.coach.IndependentPlayerModelTest --tests ro.whistlab.core.ai.engine.CertifiedContractRegressionTest --offline --no-daemon
 ```
 
 [IndependentPlayerModelTest](../game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java)
 verifică generatorul de distribuții, proprietatea cărților și modelele finite.
-[CertifiedContractRegressionTest](../game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java)
+[CertifiedContractRegressionTest](../game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java)
 separă un certificat valid de lipsa garanției și de varianta de rezervă.
 
 Turneele se rulează numai prin colecțiile și protocoalele explicite din [lansator](../../scripts/run-whist-collection.ps1).

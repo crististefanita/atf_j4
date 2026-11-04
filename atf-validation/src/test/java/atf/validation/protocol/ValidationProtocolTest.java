@@ -1,5 +1,9 @@
 package atf.validation.protocol;
 
+import atf.validation.evaluation.ApiValidationException;
+import atf.validation.evaluation.ValidationDecision;
+import atf.validation.evaluation.ValidationTable;
+
 import atf.core.http.response.ApiResponse;
 import atf.core.reporting.contract.*;
 import atf.core.reporting.inventory.ValidationSink;

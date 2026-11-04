@@ -45,8 +45,8 @@ try{
     Invoke-Stage 'bootstrap-binaries' { & mvn -q -DskipTests install }
     Invoke-Stage 'android-report-components' { & mvn -q -pl atf-test-android,atf-tests -am test '-Dtest=AdbClientContractTest,AndroidScreenshotEvidenceComponentTest,CoreReportingConsumerContractTest,AndroidInlineScreenshotReportContractTest,ReportTextValueMatcherTest,RomanianMatchOracleTest' '-Dsurefire.failIfNoSpecifiedTests=false' }
     Save-Xml 'atf-test-android' @('atf.android.AdbClientContractTest','atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
-    Save-Xml 'atf-tests' @('atf.tests.CoreReportingConsumerContractTest','atf.tests.AndroidInlineScreenshotReportContractTest','atf.tests.ReportTextValueMatcherTest')
-    Save-Xml 'atf-test-android' @('atf.android.e2e.RomanianMatchOracleTest')
+    Save-Xml 'atf-tests' @('atf.tests.publishing.CoreReportingConsumerContractTest','atf.tests.contracts.AndroidInlineScreenshotReportContractTest','atf.tests.reporting.text.ReportTextValueMatcherTest')
+    Save-Xml 'atf-test-android' @('atf.android.e2e.oracle.romanian.RomanianMatchOracleTest')
     Invoke-Stage 'component-extent-publisher' { & mvn -q -pl atf-tests test '-Dtest=RuleComponentExtentReportTest' '-Datf.rules.publish=true' "-Datf.rules.runDir=$component" }
     Connect-AtfAndroidDevice -AdbExecutable $AdbExecutable -Serial $Serial `
         -ServerSocket $AdbServerSocket -TimeoutSeconds 15 | Out-Null
@@ -64,10 +64,10 @@ try{
     $state.status='ANDROID_RUNNING';$state | ConvertTo-Json | Set-Content "$RunRoot\WORKING_STATE.json"
     $gameFailure=$null
     try{Invoke-Stage 'romanian-live-match-android' { & mvn -q -pl atf-test-android test '-Dtest=CompleteRomanianExpertE2eTest' '-Datf.android.enabled=true' '-Datf.android.fullMatch=true' "-Datf.match.evidenceDir=$evidence" }}catch{$gameFailure=$_}
-    Save-Xml 'atf-test-android' @('atf.android.e2e.CompleteRomanianExpertE2eTest')
+    Save-Xml 'atf-test-android' @('atf.android.e2e.gameplay.CompleteRomanianExpertE2eTest')
     if(-not $gameFailure){
         try{Invoke-Stage 'recorded-romanian-audit' { & mvn -q -pl atf-test-android test '-Dtest=RecordedRomanianMatchAuditTest' '-Datf.romanian.audit=true' "-Datf.match.evidenceDir=$evidence" }}catch{$gameFailure=$_}
-        Save-Xml 'atf-test-android' @('atf.android.e2e.RecordedRomanianMatchAuditTest')
+        Save-Xml 'atf-test-android' @('atf.android.e2e.oracle.recorded.RecordedRomanianMatchAuditTest')
     }
     $publicationFailure=$null
     try{Invoke-Stage 'romanian-expert-extent' { & mvn -q -pl atf-tests test '-Dtest=RomanianExpertExtentReportTest' '-Datf.romanian.publish=true' "-Datf.romanian.runDir=$RunRoot" "-Datf.test.heap.max=$ReportHeap" }}catch{$publicationFailure=$_}

@@ -1,6 +1,6 @@
 param(
     [string]$Profiles = '720x1280@360,1080x1920@440,1080x2448@440,1200x1920@320',
-    [ValidateRange(1,5)][int]$HandsPerProfile = 2,
+    [Alias('HandsPerProfile')][ValidateRange(1,5)][int]$Hands = 1,
     [string]$Serial = '127.0.0.1:5555',
     [string]$AdbServerSocket = 'tcp:192.168.56.1:5038',
     [string]$AdbExecutable = 'C:\tools\whist-android-sdk\platform-tools\adb.exe',
@@ -8,6 +8,7 @@ param(
     [string]$MavenRepository = 'C:\Users\Cristi\.m2\repository',
     [string]$JavaHome = 'C:\tools\Java21\jdk-21.0.12.1+1',
     [switch]$HardAiCompatibility,
+    [switch]$IncludeGameFlow,
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -61,7 +62,8 @@ $state = [ordered]@{
     buildRoot=$stage
     serial=$Serial
     profiles=$Profiles
-    handsPerProfile=$HandsPerProfile
+    hands=$Hands
+    includeGameFlow=$IncludeGameFlow.IsPresent
     status='STAGED'
     startedAt=[DateTimeOffset]::UtcNow.ToString('o')
 }
@@ -212,7 +214,8 @@ $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot '
         "-Datf.android.serial=$Serial",
         "-Datf.android.api=$api",
         "-Datf.android.sanity.profiles=$Profiles",
-        "-Datf.android.sanity.handsPerProfile=$HandsPerProfile",
+        "-Datf.android.sanity.hands=$Hands",
+        "-Datf.android.sanity.includeGameFlow=$($IncludeGameFlow.IsPresent.ToString().ToLowerInvariant())",
         "-Datf.android.sanity.hardAiCompatibility=$($HardAiCompatibility.IsPresent.ToString().ToLowerInvariant())"))
 
     $report = Join-Path $artifacts 'responsive-ui-sanity\responsive-ui-sanity.html'

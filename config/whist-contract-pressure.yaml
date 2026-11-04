@@ -4,7 +4,7 @@ status: "RESEARCH_REJECTED_NOT_RUNTIME"
 runtime_influence: 0
 configuration_kind: "CODE_BOUND_RULE_MANIFEST"
 execution: "Java constants; YAML documents and verifies them, editing YAML alone does not tune the engine."
-source: "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ContractPressure.java"
+source: "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java"
 objective_priority:
   - "Obey follow-suit and mandatory trump rules."
   - "Maximize own exact-contract chance while recoverable."

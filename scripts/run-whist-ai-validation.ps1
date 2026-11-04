@@ -38,7 +38,8 @@ try{
     $env:ANDROID_HOME=$AndroidSdk;$env:ANDROID_SDK_ROOT=$AndroidSdk
     $env:ADB_SERVER_SOCKET=$AdbServerSocket;$env:ATF_ANDROID_ADB="$AndroidSdk\platform-tools\adb.exe";$env:ATF_ANDROID_SERIAL=$Serial;$env:ATF_ANDROID_TIMEOUT_SECONDS='90'
     Get-ChildItem "$stage\lib" -File | Get-FileHash -Algorithm SHA256 | Select-Object Path,Hash | ConvertTo-Json | Set-Content "$RunRoot\library-binaries.json"
-    Copy-Item -LiteralPath "$root\docs\GAME_RULE_PROFILES.md","$root\docs\AI_TRAINING_PROTOCOL.md" -Destination "$RunRoot\rule-docs"
+    Copy-Item -LiteralPath "$root\docs\game\README.md" -Destination "$RunRoot\rule-docs\game-rules.md"
+    Copy-Item -LiteralPath "$root\docs\learning\README.md" -Destination "$RunRoot\rule-docs\learning-protocol.md"
     Get-ChildItem "$stage\whist-lab-app" -Recurse -File | Where-Object {$_.Extension -in '.java','.gradle','.xml','.properties'} | Get-FileHash -Algorithm SHA256 | Select-Object Path,Hash | ConvertTo-Json | Set-Content "$RunRoot\source-hashes.json"
     Push-Location "$stage\whist-lab-app"
     try{Invoke-Checked 'components-and-apk' { & .\gradlew.bat --no-daemon --console=plain :game-core:test :game-core:jacocoTestReport :app:assembleDebug "-Pwhist.componentEvidence=$RunRoot\evidence\components" }}finally{Pop-Location}
@@ -46,7 +47,7 @@ try{
     Copy-Item -Path "$stage\whist-lab-app\game-core\build\reports\jacoco\test\*" -Destination "$RunRoot\coverage" -Recurse
     Invoke-Checked 'bootstrap-flat-binaries' { & mvn -q -DskipTests install }
     Invoke-Checked 'adapter-components' { & mvn -q -pl atf-test-android,atf-tests -am test '-Dtest=WhistChallengerTest,RomanianMatchOracleTest,RomanianMatchOracleSeriesTest,ReportTextValueMatcherTest,AndroidInlineScreenshotReportContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' }
-    foreach($name in @('WhistChallengerTest','RomanianMatchOracleTest','RomanianMatchOracleSeriesTest')){Save-Suite 'atf-test-android' "atf.android.e2e.$name"}
+    foreach($test in @('atf.android.e2e.player.WhistChallengerTest','atf.android.e2e.oracle.romanian.RomanianMatchOracleTest','atf.android.e2e.oracle.romanian.RomanianMatchOracleSeriesTest')){Save-Suite 'atf-test-android' $test}
     foreach($name in @('ReportTextValueMatcherTest','AndroidInlineScreenshotReportContractTest')){Save-Suite 'atf-tests' "atf.tests.$name"}
     Invoke-Training 'classic-regression-holdout' 0 'heldout' 16 "$RunRoot\evidence\components"
     Invoke-Training 'series-development' $PositiveSeriesBonus 'development' 4 "$RunRoot\series-development\evidence"
@@ -73,12 +74,12 @@ try{
         Invoke-Checked 'original-instructions' { & mvn -q -pl atf-test-android test '-Dtest=OriginalInstructionReviewE2eTest' '-Datf.android.enabled=true' "-Datf.android.artifacts=$RunRoot\original-instructions-final" }
         Save-Suite 'atf-test-android' 'atf.android.e2e.OriginalInstructionReviewE2eTest'
         Invoke-Checked 'android-menu' { & mvn -q -pl atf-test-android test '-Dtest=RomanianMenuOptionsE2eTest' '-Datf.android.enabled=true' "-Datf.match.evidenceDir=$RunRoot\android-menu" }
-        Save-Suite 'atf-test-android' 'atf.android.e2e.RomanianMenuOptionsE2eTest'
+        Save-Suite 'atf-test-android' 'atf.android.e2e.gameplay.RomanianMenuOptionsE2eTest'
         $game="$RunRoot\android-expert-01"
         Invoke-Checked 'android-hard-challenge' { & mvn -q -pl atf-test-android test '-Dtest=CompleteRomanianExpertE2eTest' '-Datf.android.enabled=true' '-Datf.android.fullMatch=true' '-Datf.android.aiChallenge=true' '-Datf.android.aiDifficulty=HARD' "-Datf.android.streakBonus=$PositiveSeriesBonus" "-Datf.match.evidenceDir=$game" }
-        Save-Suite 'atf-test-android' 'atf.android.e2e.CompleteRomanianExpertE2eTest'
+        Save-Suite 'atf-test-android' 'atf.android.e2e.gameplay.CompleteRomanianExpertE2eTest'
         Invoke-Checked 'offline-game-audit' { & mvn -q -pl atf-test-android test '-Dtest=RecordedRomanianMatchAuditTest' '-Datf.romanian.audit=true' "-Datf.match.evidenceDir=$game" }
-        Save-Suite 'atf-test-android' 'atf.android.e2e.RecordedRomanianMatchAuditTest'
+        Save-Suite 'atf-test-android' 'atf.android.e2e.oracle.recorded.RecordedRomanianMatchAuditTest'
         Invoke-Checked 'native-extent' { & mvn -q -pl atf-tests test '-Dtest=WhistAiTrainingExtentReportTest' '-Datf.ai.publish=true' "-Datf.ai.expectedBonus=$PositiveSeriesBonus" "-Datf.ai.runDir=$RunRoot" '-Datf.test.heap.max=2g' }
         $state.status='PASS';Write-Output "$RunRoot\whist-ai-extent-report.html"
     }else{Write-Output "Offline component and paired AI results: $RunRoot"}

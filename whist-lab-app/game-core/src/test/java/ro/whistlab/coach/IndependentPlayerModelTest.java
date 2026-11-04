@@ -1,9 +1,18 @@
 package ro.whistlab.coach;
 
+import ro.whistlab.core.config.AiDifficulty;
+import ro.whistlab.core.model.Card;
+import ro.whistlab.core.config.GameConfig;
+import ro.whistlab.core.rules.GameMode;
+import ro.whistlab.core.session.GamePhase;
+import ro.whistlab.core.rules.GameRules;
+import ro.whistlab.core.session.GameSession;
+import ro.whistlab.core.model.Suit;
+import ro.whistlab.core.model.Trump;
+
 import static org.junit.Assert.*;
 import java.util.*;
 import org.junit.Test;
-import ro.whistlab.core.*;
 
 public class IndependentPlayerModelTest {
     @Test public void hallFeasibilityMatchesExhaustiveAllocationOnTwoThousandSmallConstrainedWorlds(){

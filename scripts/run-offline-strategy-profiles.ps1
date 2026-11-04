@@ -22,7 +22,7 @@ try {
         "-Pwhist.offlineStrategy.output=$match" --console=plain *> $log
     if ($LASTEXITCODE -ne 0) { Get-Content -LiteralPath $log -Tail 30; throw "Offline strategy profile replay failed for seed $Seed" }
     $result = Get-Content -LiteralPath $match -Raw | ConvertFrom-Json
-    $xmlPath = 'game-core/build/test-results/offlineStrategyProfileMatchTest/TEST-ro.whistlab.core.OfflineStrategyProfileMatchTest.xml'
+    $xmlPath = 'game-core/build/test-results/offlineStrategyProfileMatchTest/TEST-ro.whistlab.core.match.OfflineStrategyProfileMatchTest.xml'
     $xml = [xml](Get-Content -LiteralPath $xmlPath -Raw)
     $expectedProfiles = @('CURRENT','PRUDENT_BID_04','PRUDENT_BID','PRUDENT_BID_12','SCORE_FIRST','BURN_IF_DOOMED')
     $expectedNames = @()
@@ -49,9 +49,9 @@ try {
         bidOptionsLogged = $true
         cardChoicesComparedToCurrent = $true
         deviceExecuted = $false
-        aiPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/AiPolicy.java')).Hash.ToLowerInvariant()
-        monteCarloSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java')).Hash.ToLowerInvariant()
-        profileEnumSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/HardStrategyProfile.java')).Hash.ToLowerInvariant()
+        aiPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java')).Hash.ToLowerInvariant()
+        monteCarloSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java')).Hash.ToLowerInvariant()
+        profileEnumSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/profile/HardStrategyProfile.java')).Hash.ToLowerInvariant()
         objectivesYamlSha256 = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'config/whist-play-objectives.yaml')).Hash.ToLowerInvariant()
         matchSha256 = (Get-FileHash -LiteralPath $match).Hash.ToLowerInvariant()
         nativeTestXml = $xmlPath

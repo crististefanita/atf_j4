@@ -13,7 +13,7 @@ source:
   generator: "scripts/whist-bid-evidence-codegen.mjs"
   template: "scripts/templates/learned-bid-evidence.java"
   candidate_java: "research/ai-bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java"
-  action_java: "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
+  action_java: "game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java"
   active_runtime: "Accepted Hard policy; this experimental model has runtime influence zero."
 semantics:
   rule_ro: "Licitația sugerează mâini plauzibile; nu dovedește că un adversar are sau nu are o carte."

@@ -14,11 +14,11 @@
       "ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java" : "2959db5d9dc20ea64c10e41b2ac162519e1bf9cef417e9f42eea7c4275e7b50c",
       "ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java" : "20ae1a34a70c335f5c8ad05d2b410dcabf6b2985e31402e11ac589ab4966850a",
       "ai-lab/src/main/java/ro/whistlab/coach/RolloutPlanner.java" : "2f894d9542a2cce309855a4d271da766b88fface9fbb6a5b8f915b585e6de1f1",
-      "game-core/src/main/java/ro/whistlab/core/AiPolicy.java" : "37b345ee5aa589390e029364dc93f680c1d3742c849cdaac5c388f50710d0872",
-      "game-core/src/main/java/ro/whistlab/core/ContractEndgame.java" : "d52e4a5caabd4082d0328c00f437105750f9a741d8d2339d94541dcaed008f14",
-      "game-core/src/main/java/ro/whistlab/core/LateDiscard.java" : "033f76a41bfaf55f7446da37511b42bdbf6f346176219934426b6cdd834d7cad",
-      "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java" : "960011f453c9bc9c92b03fc1ec9edfef5a5e4064d9610f641e8fc4ae62261b7e",
-      "game-core/src/main/java/ro/whistlab/core/OneCardBidBelief.java" : "2094ab095ee87c59d49d9f41f8ee2ba5a78b969f6c095cade172663bd9bf6ccc",
+      "game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java" : "37b345ee5aa589390e029364dc93f680c1d3742c849cdaac5c388f50710d0872",
+      "game-core/src/main/java/ro/whistlab/core/ai/engine/ContractEndgame.java" : "d52e4a5caabd4082d0328c00f437105750f9a741d8d2339d94541dcaed008f14",
+      "game-core/src/main/java/ro/whistlab/core/ai/engine/LateDiscard.java" : "033f76a41bfaf55f7446da37511b42bdbf6f346176219934426b6cdd834d7cad",
+      "game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java" : "960011f453c9bc9c92b03fc1ec9edfef5a5e4064d9610f641e8fc4ae62261b7e",
+      "game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java" : "2094ab095ee87c59d49d9f41f8ee2ba5a78b969f6c095cade172663bd9bf6ccc",
       "game-core/src/main/java/ro/whistlab/core/RolloutPolicy.java" : "05a4a2f3d1e87183100b98378f6836091716254d8bfa7e6e0d0f6420ecbeb62f"
     }
   },

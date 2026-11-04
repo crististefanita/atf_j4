@@ -3,12 +3,12 @@ package ro.whistlab.coach;
 import java.util.*;
 
 /** Independent numerical implementation of a calibrated public-bid posterior. */
-final class OneCardBidBelief {
+public final class OneCardBidBelief {
     static final String TRAINING_DIGEST="e676fd9778a9459d8c3528e8f8193c24c07e2fecd0cf1009fb9c9e42b8e986f2";
     private static final double[][] BID_ONE={{0.50000000000000000,0.50000000000000000,0.01,0.01,0.01,0.01,0.099173553719008267,0.074074074074074070,0.16071428571428573,0.66666666666666663,0.50000000000000000,0.88095238095238093,0.94545454545454544,0.50000000000000000,0.93548387096774188,0.50000000000000000,0.99,0.50000000000000000,0.99,0.99},
         {0.01,0.01,0.01,0.50000000000000000,0.50000000000000000,0.50000000000000000,0.50000000000000000,0.50000000000000000,0.50000000000000000,0.77272727272727271,0.50000000000000000,0.94936708860759489,0.92857142857142860,0.50000000000000000,0.99,0.50000000000000000,0.99,0.50000000000000000,0.99,0.99}};
     private OneCardBidBelief(){}
-    static double probability(IndependentPlayer.Position p){
+    public static double probability(IndependentPlayer.Position p){
         int lead=(p.dealer()+1)%4;double[][] weights=new double[4][52];boolean informative=false;
         for(int s=0;s<4;s++){Arrays.fill(weights[s],1);Integer bid=p.seats().get(s).bid();if(s==p.seat()||bid==null)continue;int order=(s-lead+4)%4,sum=0;for(int i=0;i<order;i++){Integer b=p.seats().get((lead+i)%4).bid();if(b!=null)sum+=b;}if(order==3&&sum<2)continue;informative=true;
             for(int suit=0;suit<4;suit++)for(int rank=5;rank<13;rank++){int card=suit*13+rank;if(card==p.turnedCard())continue;var view=new IndependentPlayer.Position(s,p.dealer(),1,p.trump(),List.of(card),p.seats(),List.of(),List.of(),p.turnedCard());double prior=IndependentPlayer.oneCardWinChance(view),q=BID_ONE[s==lead?0:1][Math.min(19,(int)(prior*20))];weights[s][card]=bid==1?q:1-q;}

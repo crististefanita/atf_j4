@@ -1,12 +1,16 @@
 # Whist Lab și testarea Android
 
+## Pe scurt
+
 Whist Lab este un joc Android cu motor Java independent de interfață. Include
 jucători automați, verificarea regulilor și a scorului prin teste de componentă,
 evaluări offline și scenarii UI proprii. Experimentele compară politici pe distribuții controlate și observații publice.
 
+[Bibliotecile comune](lib/README.md) au un responsabil comun al codului și feedback-ului; aici păstrăm adaptoarele și acceptanța domeniului.
+
 ## Jocul
 
-[Instalare APK 0.1.5](dist/WhistLab-0.1.5.apk) · [Verificarea jocului pe mai multe ecrane](docs/testing/android/display/README.md)
+[Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
 Profilul principal este Whist românesc, patru jucători, cu programul 1–8–1.
 Jucătorul urmează culoarea cerută; când nu o are, joacă atu dacă are atu.
@@ -22,7 +26,7 @@ Interfața și instrucțiunile sunt disponibile în română și engleză.
 
 Jocul are două niveluri. **Normal** urmărește levatele licitate și evită să treacă peste contract. **Hard** evaluează șansa contractului din informația publică, apoi poate căuta ratări la adversari când limitele jocului îi arată că propriul contract a devenit imposibil.
 
-[Regulile și limitele variantelor](docs/GAME_RULE_PROFILES.md) explică diferențele de profil.
+[Regulile și limitele variantelor](docs/game/README.md) explică diferențele de profil.
 
 [Motorul jocului](whist-lab-app/game-core/README.md) leagă comportamentele de implementare și teste.
 
@@ -84,9 +88,9 @@ Pentru regresia completă a componentelor:
 Lansatorul pregătește sursele într-un director temporar și păstrează rezultatele
 în depozitul extern de dovezi. Aceste colecții nu comandă emulatorul.
 Parametrii și delimitarea colecțiilor sunt în
-[catalogul colecțiilor](docs/testing/collections/README.md).
+[catalogul colecțiilor](docs/testing/ATF_Collections.md).
 
-[Arhitectura testării](docs/testing/architecture/README.md) explică nivelurile unitar, componentă, integrare și E2E, cu o matrice verificată față de cod. [Guvernanța calității](docs/testing/governance/README.md) descrie verificările surselor și documentației.
+[Arhitectura testării](docs/testing/ATF_Architecture.md) explică nivelurile unitar, componentă, integrare și E2E, cu o matrice verificată față de cod. [Guvernanța calității](docs/governance/README.md) descrie verificările surselor și documentației.
 
 ## Cum dezvoltăm jucătorii
 
@@ -105,7 +109,7 @@ Jucătorul primește propria mână și informația publică; cărțile ascunse 
 aceleași distribuiri la fiecare loc; după prima licitație sau carte diferită,
 starea publică evoluează firesc pe linia acelui profil.
 
-[Arhitectura învățării](docs/AI_LEARNING_ARCHITECTURE.md), [modelul deciziei](docs/AI_DECISION_MODEL.md), [regulile și ponderile](docs/AI_RULES_AND_CONFIGURATION.md), [corpusul de partide](docs/AI_CORPUS.md), [selecția pentru învățare](docs/AI_LEARNING_FOCUS.md) și [catalogul regulilor AI](docs/rules/AI_HAND_PATTERNS_RO.md) descriu fluxul.
+[Arhitectura învățării](docs/ai/README.md), [modelul deciziei](docs/ai/ATF_DecisionModel.md), [regulile și ponderile](docs/ai/ATF_RulesConfiguration.md), [corpusul de partide](docs/learning/ATF_Corpus.md), [selecția pentru învățare](docs/learning/ATF_Selection.md) și [catalogul regulilor AI](docs/ai/ATF_HandPatternsRo.md) descriu fluxul.
 
 Aceste evaluări măsoară comportamente pe domenii declarate, fără garanția că Hard va câștiga orice partidă cu informație ascunsă.
 
@@ -113,7 +117,7 @@ Aceste evaluări măsoară comportamente pe domenii declarate, fără garanția 
 
 Testele pe dispozitiv urmează verificărilor offline și cer un dispozitiv
 identificat explicit, conectivitate ADB și acces exclusiv pe durata scenariului.
-[Ghidul Android](docs/testing/android/README.md) descrie pregătirea și comenzile;
+[Ghidul Android](docs/testing/ATF_Android.md) descrie pregătirea și comenzile;
 [aplicația](whist-lab-app/README.md) descrie procesul de construire și salvările.
 
 Sursele rămân în proiect, compilările intermediare în directoare temporare,
@@ -128,4 +132,4 @@ de actualizarea ghidului relevant și de o verificare potrivită acelui comporta
 
 ## Biblioteci comune
 
-Reactorul păstrează modulele locale de testare și adaptoarele Android. [Contractul bibliotecilor comune](docs/ATF_Platform_Libraries.md) explică perechile binare din `lib`, identitatea lor și limitele acceptanței locale.
+Reactorul păstrează modulele locale de testare și adaptoarele Android. [Contractul bibliotecilor comune](docs/platform/README.md) explică perechile binare din `lib`, identitatea lor și limitele acceptanței locale.

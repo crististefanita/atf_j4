@@ -3,9 +3,9 @@ package ro.whistlab.coach;
 import java.util.*;
 
 /** Independent numeric trick-bound policy for simulated deals only. */
-final class RolloutPlanner {
+public final class RolloutPlanner {
     private RolloutPlanner() { }
-    static int choose(IndependentPlayer.Position p,List<List<Integer>> hands,List<IndependentPlayer.Play> trick,int actor,int needed,Random random){
+    public static int choose(IndependentPlayer.Position p,List<List<Integer>> hands,List<IndependentPlayer.Play> trick,int actor,int needed,Random random){
         int trump=p.trump(),led=trick.isEmpty()?-1:trick.get(0).card()/13;
         var cards=IndependentPlayer.legal(hands.get(actor),led,trump);var strong=new ArrayList<Integer>();var viable=new ArrayList<Integer>();
         for(int c:cards){int suit=led<0?c/13:led;int strength=power(c,suit,trump);boolean owns=true;for(var play:trick)if(power(play.card(),suit,trump)>strength)owns=false;

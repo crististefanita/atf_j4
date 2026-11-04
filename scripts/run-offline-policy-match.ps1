@@ -18,7 +18,7 @@ try {
     & 'C:\tools\gradle\gradle-9.6.1\bin\gradle.bat' --offline --no-daemon --max-workers=1 '-Dorg.gradle.jvmargs=-Xmx512m -XX:ActiveProcessorCount=2' :game-core:offlineMockMatchTest "-Pwhist.offlineMatch.seed=$Seed" "-Pwhist.offlineMatch.output=$match" --console=plain *> $log
     if ($LASTEXITCODE -ne 0) { Get-Content -LiteralPath $log -Tail 25; throw 'Offline match failed' }
     $result = Get-Content -LiteralPath $match -Raw | ConvertFrom-Json
-    $xmlPath = 'game-core/build/test-results/offlineMockMatchTest/TEST-ro.whistlab.core.OfflineMockMatchTest.xml'
+    $xmlPath = 'game-core/build/test-results/offlineMockMatchTest/TEST-ro.whistlab.core.match.OfflineMockMatchTest.xml'
     $xml = [xml](Get-Content -LiteralPath $xmlPath -Raw)
     if (!$result.complete -or $result.handsPlayed -ne 24 -or $result.publicCardDecisions -ne 376 -or [int]$xml.testsuite.failures -or [int]$xml.testsuite.errors) {
         throw 'Mock match receipt failed its independent final checks'
@@ -45,9 +45,9 @@ try {
         hardQuotaImpossibleNoChoice = $result.hardQuotaImpossibleNoChoice
         hardCertifiedSalvageDecisions = $result.hardSalvageCertificateDecisions
         deviceExecuted = $false
-        sourceSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/AiPolicy.java')).Hash
-        normalPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/NormalPlayPolicy.java')).Hash
-        hardPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java')).Hash
+        sourceSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java')).Hash
+        normalPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/policy/NormalPlayPolicy.java')).Hash
+        hardPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java')).Hash
         rulesSha256 = (Get-FileHash -LiteralPath (Join-Path $projectRoot 'config/whist-play-objectives.yaml')).Hash
         matchSha256 = (Get-FileHash -LiteralPath $match).Hash
         nativeTest = $xmlPath

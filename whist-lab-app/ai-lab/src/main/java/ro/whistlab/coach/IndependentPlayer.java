@@ -176,7 +176,7 @@ public final class IndependentPlayer {
         return needed>0?preferred.stream().min(power).orElseThrow():preferred.stream().max(power).orElseThrow();
     }
     public static List<Integer> legal(List<Integer> hand,int led,int trump){if(led<0)return hand;var follows=hand.stream().filter(c->c/13==led).toList();if(!follows.isEmpty())return follows;var cuts=hand.stream().filter(c->c/13==trump).toList();return cuts.isEmpty()?hand:cuts;}
-    static int winner(List<Play> t,int trump){Play best=t.get(0);int led=best.card/13;for(Play p:t)if(strength(p.card,led,trump)>strength(best.card,led,trump))best=p;return best.seat;}
+    public static int winner(List<Play> t,int trump){Play best=t.get(0);int led=best.card/13;for(Play p:t)if(strength(p.card,led,trump)>strength(best.card,led,trump))best=p;return best.seat;}
     private static int strength(int c,int led,int trump){return (c/13==trump?200:c/13==led?100:0)+c%13;}
     private static int score(Position p,int seat,int won,int bid){
         int base=won==bid?5+won:-Math.abs(won-bid);

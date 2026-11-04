@@ -5,6 +5,17 @@ plugins {
 
 jacoco { toolVersion = "0.8.14" }
 
+// Resolve collection entries from declared source packages, never from a fixed root namespace.
+def coreTestClass = { String simpleName ->
+    def matches = fileTree("src/test/java/ro/whistlab/core") { include "**/" + simpleName + ".java" }.files
+    if (matches.size() != 1) throw new GradleException("Expected one core test source for " + simpleName)
+    def declaration = (matches.first().getText("UTF-8") =~ /(?m)^\s*package\s+([\w.]+)\s*;/)
+    if (!declaration.find()) throw new GradleException("Missing test package for " + simpleName)
+    return declaration.group(1) + "." + simpleName
+}
+
+
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -44,26 +55,26 @@ tasks.named("test", Test) {
 tasks.register("corpusTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.ComponentCorpusCollectorTest" }
+    filter { includeTestsMatching "ro.whistlab.core.learning.mining.ComponentCorpusCollectorTest" }
     for (def key : ["whist.corpusDir", "whist.corpusSeeds", "whist.corpusFirstSeed", "whist.corpusVariant", "whist.corpusOpponent"])
         systemProperty key, providers.gradleProperty(key).getOrElse("")
 }
 tasks.register("freezeParityTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.RoundTwoFreezeParityTest" }
+    filter { includeTestsMatching "ro.whistlab.core.learning.reference.RoundTwoFreezeParityTest" }
 }
 tasks.register("dualLearningTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.DualLearningTournamentTest" }
+    filter { includeTestsMatching "ro.whistlab.core.learning.tournament.DualLearningTournamentTest" }
     for (def key : ["whist.corpusDir", "whist.learningOutput", "whist.learningCandidate", "whist.learningPhase", "whist.learningRole"])
         systemProperty key, providers.gradleProperty(key).getOrElse("")
 }
 tasks.register("roundFourTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.RoundFourTournamentTest" }
+    filter { includeTestsMatching "ro.whistlab.core.learning.tournament.RoundFourTournamentTest" }
     for (def key : ["whist.round4.output", "whist.round4.corpus", "whist.round4.candidate", "whist.round4.phase", "whist.round4.role"])
         systemProperty key, providers.gradleProperty(key).getOrElse(key=="whist.round4.phase"?"development":"")
     outputs.upToDateWhen { false }
@@ -71,7 +82,7 @@ tasks.register("roundFourTest", Test) {
 tasks.register("aiTrainingTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.AiTrainingTournamentTest" }
+    filter { includeTestsMatching "ro.whistlab.core.learning.tournament.AiTrainingTournamentTest" }
     systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
     systemProperty "whist.aiTrainingPhase", providers.gradleProperty("whist.aiTrainingPhase").getOrElse("development")
     systemProperty "whist.aiTrainingSeeds", providers.gradleProperty("whist.aiTrainingSeeds").getOrElse("8")
@@ -83,7 +94,7 @@ tasks.register("aiTournamentTest", Test) {
     description = "Pairs Expert and Hard on declared held-out deals with rotated seats."
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.AiTournamentTest" }
+    filter { includeTestsMatching "ro.whistlab.core.learning.tournament.AiTournamentTest" }
     systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
     systemProperty "whist.aiBenchmarkSeeds", providers.gradleProperty("whist.aiBenchmarkSeeds").getOrElse("8")
 }
@@ -92,7 +103,7 @@ tasks.register("originalReplayTest", Test) {
     description = "Replays retained original game inputs through the normal rules engine."
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.ObservedOriginalReplayTest" }
+    filter { includeTestsMatching "ro.whistlab.core.match.ObservedOriginalReplayTest" }
     systemProperty "whist.originalReplay", providers.gradleProperty("whist.originalReplay").getOrElse("")
     systemProperty "whist.allowPartialReplay", providers.gradleProperty("whist.allowPartialReplay").getOrElse("false")
     inputs.file(providers.gradleProperty("whist.originalReplay")).withPropertyName("observedOriginalMatch")
@@ -103,7 +114,7 @@ tasks.register("regressionTest") { dependsOn tasks.named("test") }
 tasks.register("legacyRoundFiveTest", Test) {
  testClassesDirs=sourceSets.test.output.classesDirs
  classpath=sourceSets.test.runtimeClasspath
- filter { includeTestsMatching "ro.whistlab.core.RoundFiveTournamentTest" }
+ filter { includeTestsMatching "ro.whistlab.core.learning.tournament.RoundFiveTournamentTest" }
  for(def key:["whist.round5.output","whist.round5.corpus","whist.round5.candidate","whist.round5.phase","whist.round5.role"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round5.phase"?"development":"")
  outputs.upToDateWhen { false }
 }
@@ -114,73 +125,73 @@ tasks.register("learningTest") { dependsOn "roundFifteenTest" }
 tasks.register("quickRegressionTest", Test) {
     testClassesDirs=sourceSets.test.output.classesDirs
     classpath=sourceSets.test.runtimeClasspath
-    filter { for(def name:["GameRulesBoundaryTest","RomanianWhistRulesTest","RomanianStreakContractTest","GameCheckpointRejectionTest","HowToPlayDocumentationTest","OneCardBidBeliefTest","LostGameContractRegressionTest","LateDiscardBoundaryTest","ObservedLateMissRegressionTest","SafetyPreferenceTest","SafetyPlanningCasesTest","ContextualHonorGuaranteeTest"])includeTestsMatching "ro.whistlab.core."+name }
+    filter { for(def name:["GameRulesBoundaryTest","RomanianWhistRulesTest","RomanianStreakContractTest","GameCheckpointRejectionTest","HowToPlayDocumentationTest","OneCardBidBeliefTest","LostGameContractRegressionTest","LateDiscardBoundaryTest","ObservedLateMissRegressionTest","SafetyPreferenceTest","SafetyPlanningCasesTest","ContextualHonorGuaranteeTest"])includeTestsMatching coreTestClass(name) }
 }
 tasks.register("documentationTest", Test) {
     testClassesDirs=sourceSets.test.output.classesDirs
     classpath=sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.HowToPlayDocumentationTest" }
+    filter { includeTestsMatching "ro.whistlab.core.rules.HowToPlayDocumentationTest" }
     for(def key:["whist.documentationEvidence","whist.documentationMarkdown","whist.documentationRunId"])systemProperty key,providers.gradleProperty(key).getOrElse("")
     outputs.upToDateWhen { false }
 }
 
-tasks.register("lossMiningTest",Test) { testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter {includeTestsMatching "ro.whistlab.core.LossMiningTest"};for(def key:["whist.mine.receipts","whist.mine.corpus","whist.mine.output"])systemProperty key,providers.gradleProperty(key).getOrElse("");outputs.upToDateWhen{false} }
+tasks.register("lossMiningTest",Test) { testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter {includeTestsMatching "ro.whistlab.core.learning.mining.LossMiningTest"};for(def key:["whist.mine.receipts","whist.mine.corpus","whist.mine.output"])systemProperty key,providers.gradleProperty(key).getOrElse("");outputs.upToDateWhen{false} }
 
-tasks.register("roundSixTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundSixTournamentTest"};for(def key:["whist.round6.output","whist.round6.corpus","whist.round6.candidate","whist.round6.phase","whist.round6.role","whist.round6.firstSeed","whist.round6.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round6.phase"?"development":"");outputs.upToDateWhen{false}}
+tasks.register("roundSixTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.tournament.RoundSixTournamentTest"};for(def key:["whist.round6.output","whist.round6.corpus","whist.round6.candidate","whist.round6.phase","whist.round6.role","whist.round6.firstSeed","whist.round6.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round6.phase"?"development":"");outputs.upToDateWhen{false}}
 
-tasks.register("bidEvidenceResearchTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.BidEvidenceTest"}}
+tasks.register("bidEvidenceResearchTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.research.bidding.BidEvidenceTest"}}
 
-tasks.register("roundSevenTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundSevenTournamentTest"};for(def key:["whist.round7.output","whist.round7.corpus","whist.round7.candidate","whist.round7.phase","whist.round7.role","whist.round7.playerBaseline","whist.round7.opponent","whist.round7.seat","whist.round7.casesFile","whist.round7.firstSeed","whist.round7.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round7.phase"?"development":"");outputs.upToDateWhen{false}}
+tasks.register("roundSevenTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.tournament.RoundSevenTournamentTest"};for(def key:["whist.round7.output","whist.round7.corpus","whist.round7.candidate","whist.round7.phase","whist.round7.role","whist.round7.playerBaseline","whist.round7.opponent","whist.round7.seat","whist.round7.casesFile","whist.round7.firstSeed","whist.round7.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round7.phase"?"development":"");outputs.upToDateWhen{false}}
 
 tasks.named("roundSevenTest", Test){ jacoco.enabled=false }
 
-tasks.register("algorithmGuideTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{for(def name:["RolloutPolicyRegressionTest","RolloutBoundsOracleTest","DominantBidContractTest","FrozenContinuationContractTest","SafetyPreferenceTest","SafetyPlanningCasesTest","FrozenV8ParityTest"])includeTestsMatching "ro.whistlab.core."+name};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")}
+tasks.register("algorithmGuideTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{for(def name:["RolloutPolicyRegressionTest","RolloutBoundsOracleTest","DominantBidContractTest","FrozenContinuationContractTest","SafetyPreferenceTest","SafetyPlanningCasesTest","FrozenV8ParityTest"])includeTestsMatching coreTestClass(name)};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")}
 
-tasks.register("strategyArenaTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.StrategyArenaTest"};for(def key:["whist.arena.protocol","whist.arena.output","whist.arena.corpus"])systemProperty key,providers.gradleProperty(key).getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("strategyArenaTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.evaluation.StrategyArenaTest"};for(def key:["whist.arena.protocol","whist.arena.output","whist.arena.corpus"])systemProperty key,providers.gradleProperty(key).getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
-tasks.register("arenaContractTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ArenaProfileReplayTest";includeTestsMatching "ro.whistlab.core.FrozenV8ParityTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")}
+tasks.register("arenaContractTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.evaluation.ArenaProfileReplayTest";includeTestsMatching "ro.whistlab.core.learning.reference.FrozenV8ParityTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")}
 
 tasks.named("strategyArenaTest",Test){ dependsOn "arenaContractTest" }
 
 tasks.named("test",Test){exclude "**/RoundElevenTournamentTest.class";exclude "**/ArenaLossMiningTest.class"}
-tasks.register("roundElevenTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundElevenTournamentTest"};for(def key:["whist.round11.output","whist.round11.corpus","whist.round11.candidate","whist.round11.phase","whist.round11.role","whist.round11.playerBaseline","whist.round11.opponent","whist.round11.seat","whist.round11.casesFile","whist.round11.firstSeed","whist.round11.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round11.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("roundElevenTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.evaluation.RoundElevenTournamentTest"};for(def key:["whist.round11.output","whist.round11.corpus","whist.round11.candidate","whist.round11.phase","whist.round11.role","whist.round11.playerBaseline","whist.round11.opponent","whist.round11.seat","whist.round11.casesFile","whist.round11.firstSeed","whist.round11.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round11.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
-tasks.register("arenaLossMiningTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ArenaLossMiningTest"};for(def key:["whist.loss.positions","whist.loss.output"])systemProperty key,providers.gradleProperty(key).getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("arenaLossMiningTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.mining.ArenaLossMiningTest"};for(def key:["whist.loss.positions","whist.loss.output"])systemProperty key,providers.gradleProperty(key).getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
-tasks.named("quickRegressionTest",Test){filter{for(def name:["PromotedMasterLossTest","BidForecastContractTest","LearningBaselineOptionTest"])includeTestsMatching "ro.whistlab.core."+name}}
+tasks.named("quickRegressionTest",Test){filter{for(def name:["PromotedMasterLossTest","BidForecastContractTest","LearningBaselineOptionTest"])includeTestsMatching coreTestClass(name)}}
 
 tasks.named("test",Test){exclude "**/ScoreTranslationRegressionTest.class"}
-tasks.register("scoreConsistencyDiagnosticTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ScoreTranslationRegressionTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("scoreConsistencyDiagnosticTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.session.ScoreTranslationRegressionTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
-tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.SmallWorldEnumerationTest";includeTestsMatching "ro.whistlab.core.EnumerationBudgetTest"}}
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ai.information.SmallWorldEnumerationTest";includeTestsMatching "ro.whistlab.core.ai.information.EnumerationBudgetTest"}}
 
-tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.CertifiedContractRegressionTest"}}
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ai.engine.CertifiedContractRegressionTest"}}
 
 tasks.named("test",Test){exclude "**/RoundTwelveTournamentTest.class"}
-tasks.register("roundTwelveTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundTwelveTournamentTest"};for(def key:["whist.round12.output","whist.round12.corpus","whist.round12.candidate","whist.round12.phase","whist.round12.role","whist.round12.playerBaseline","whist.round12.opponent","whist.round12.seat","whist.round12.casesFile","whist.round12.firstSeed","whist.round12.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round12.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("roundTwelveTest", Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.evaluation.RoundTwelveTournamentTest"};for(def key:["whist.round12.output","whist.round12.corpus","whist.round12.candidate","whist.round12.phase","whist.round12.role","whist.round12.playerBaseline","whist.round12.opponent","whist.round12.seat","whist.round12.casesFile","whist.round12.firstSeed","whist.round12.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round12.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
 // Rejected model prototypes remain opt-in and outside the default regression.
 tasks.named("test",Test){exclude "**/PublicTailInformationTest.class";exclude "**/OpeningBidEvidenceTest.class"}
-tasks.register("informationResearchTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.PublicTailInformationTest";includeTestsMatching "ro.whistlab.core.OpeningBidEvidenceTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("");systemProperty "whist.componentCollection","research"}
+tasks.register("informationResearchTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.ai.information.PublicTailInformationTest";includeTestsMatching "ro.whistlab.core.ai.information.OpeningBidEvidenceTest"};systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("");systemProperty "whist.componentCollection","research"}
 
-tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.DifficultyContractTest"}}
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ai.policy.DifficultyContractTest"}}
 
 // Rejected R13 pressure forecasts are opt-in; the certified salvage feature has separate tests.
 tasks.named("test",Test){exclude "**/ContractPressureTest.class"}
-tasks.named("informationResearchTest",Test){filter{includeTestsMatching "ro.whistlab.core.ContractPressureTest"}}
+tasks.named("informationResearchTest",Test){filter{includeTestsMatching "ro.whistlab.core.research.bidding.ContractPressureTest"}}
 
-tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.PublicSalvageTest"}}
-tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ContextualHonorDiscardTest"}}
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ai.engine.PublicSalvageTest"}}
+tasks.named("quickRegressionTest",Test){filter{includeTestsMatching "ro.whistlab.core.ai.engine.ContextualHonorDiscardTest"}}
 
 // Explicit offline experiments against the accepted R14 baseline; never a default tournament.
 tasks.named("test",Test){exclude "**/RoundFifteenTournamentTest.class"}
-tasks.register("roundFifteenTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundFifteenTournamentTest"};for(def key:["whist.round15.output","whist.round15.corpus","whist.round15.candidate","whist.round15.phase","whist.round15.role","whist.round15.playerBaseline","whist.round15.opponent","whist.round15.seat","whist.round15.casesFile","whist.round15.firstSeed","whist.round15.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round15.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("roundFifteenTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.evaluation.RoundFifteenTournamentTest"};for(def key:["whist.round15.output","whist.round15.corpus","whist.round15.candidate","whist.round15.phase","whist.round15.role","whist.round15.playerBaseline","whist.round15.opponent","whist.round15.seat","whist.round15.casesFile","whist.round15.firstSeed","whist.round15.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round15.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
 tasks.register("contextRegressionTest",Test){
     description="Focused contextual rules with independent legal reachability witnesses; no game tournament or device."
     testClassesDirs=sourceSets.test.output.classesDirs
     classpath=sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.ContextualHonorDiscardTest" }
+    filter { includeTestsMatching "ro.whistlab.core.ai.engine.ContextualHonorDiscardTest" }
     systemProperty "whist.componentEvidence",providers.gradleProperty("whist.componentEvidence").getOrElse("")
     systemProperty "whist.componentCollection","context"
     outputs.upToDateWhen { false }
@@ -188,27 +199,27 @@ tasks.register("contextRegressionTest",Test){
 
 // R18 compares against the accepted current-table quota correction; older schemas retain their own baselines.
 tasks.named("test",Test){exclude "**/RoundEighteenTournamentTest.class"}
-tasks.register("roundEighteenTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.RoundEighteenTournamentTest"};for(def key:["whist.round18.output","whist.round18.corpus","whist.round18.candidate","whist.round18.phase","whist.round18.role","whist.round18.playerBaseline","whist.round18.opponent","whist.round18.seat","whist.round18.casesFile","whist.round18.firstSeed","whist.round18.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round18.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
+tasks.register("roundEighteenTest",Test){testClassesDirs=sourceSets.test.output.classesDirs;classpath=sourceSets.test.runtimeClasspath;filter{includeTestsMatching "ro.whistlab.core.learning.evaluation.RoundEighteenTournamentTest"};for(def key:["whist.round18.output","whist.round18.corpus","whist.round18.candidate","whist.round18.phase","whist.round18.role","whist.round18.playerBaseline","whist.round18.opponent","whist.round18.seat","whist.round18.casesFile","whist.round18.firstSeed","whist.round18.seeds"])systemProperty key,providers.gradleProperty(key).getOrElse(key=="whist.round18.phase"?"development":"");jacoco.enabled=false;outputs.upToDateWhen{false}}
 
 tasks.named("quickRegressionTest", Test) {
-    filter { includeTestsMatching "ro.whistlab.core.NormalContractPursuitTest" }
+    filter { includeTestsMatching "ro.whistlab.core.ai.policy.NormalContractPursuitTest" }
 }
 
 tasks.named("quickRegressionTest", Test) {
-    filter { includeTestsMatching "ro.whistlab.core.BlindPolicyObservationTest" }
+    filter { includeTestsMatching "ro.whistlab.core.ai.information.BlindPolicyObservationTest" }
 }
 tasks.named("quickRegressionTest", Test) {
-    filter { includeTestsMatching "ro.whistlab.core.HardStrategyProfileTest" }
+    filter { includeTestsMatching "ro.whistlab.core.ai.profile.HardStrategyProfileTest" }
 }
 tasks.named("quickRegressionTest", Test) {
-    filter { includeTestsMatching "ro.whistlab.core.ContractEndgameTest.currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored" }
+    filter { includeTestsMatching "ro.whistlab.core.ai.engine.ContractEndgameTest.currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored" }
 }
 
 tasks.register("offlineMockMatchTest", Test) {
     description = "Plays and records a complete deterministic Romanian 1-8-1 match offline."
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.OfflineMockMatchTest" }
+    filter { includeTestsMatching "ro.whistlab.core.match.OfflineMockMatchTest" }
     systemProperty "whist.offlineMatch.seed", providers.gradleProperty("whist.offlineMatch.seed").getOrElse("20261104")
     systemProperty "whist.offlineMatch.roster", providers.gradleProperty("whist.offlineMatch.roster").getOrElse("NORMAL,HARD,NORMAL,HARD")
     systemProperty "whist.offlineMatch.output", providers.gradleProperty("whist.offlineMatch.output").getOrElse("")
@@ -219,7 +230,7 @@ tasks.register("offlinePerspectiveMatchTest", Test) {
     description = "Replays one hidden deal sequence with Normal/Hard policies rotated across all four seats."
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.OfflinePerspectiveMatchTest" }
+    filter { includeTestsMatching "ro.whistlab.core.match.OfflinePerspectiveMatchTest" }
     systemProperty "whist.offlinePerspective.seed", providers.gradleProperty("whist.offlinePerspective.seed").getOrElse("20261104")
     systemProperty "whist.offlinePerspective.output", providers.gradleProperty("whist.offlinePerspective.output").getOrElse("")
     jacoco.enabled = false
@@ -229,14 +240,14 @@ tasks.register("offlineStrategyProfileMatchTest", Test) {
     description = "Compares cautious, score-first and rival-burn decisions over the same Romanian deals at one fixed seat."
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.OfflineStrategyProfileMatchTest" }
+    filter { includeTestsMatching "ro.whistlab.core.match.OfflineStrategyProfileMatchTest" }
     systemProperty "whist.offlineStrategy.seed", providers.gradleProperty("whist.offlineStrategy.seed").getOrElse("20261104")
     systemProperty "whist.offlineStrategy.output", providers.gradleProperty("whist.offlineStrategy.output").getOrElse("")
     jacoco.enabled = false
     outputs.upToDateWhen { false }
 }
 tasks.named("quickRegressionTest", Test) {
-    filter { includeTestsMatching "ro.whistlab.core.HardSalvageObjectiveTest" }
+    filter { includeTestsMatching "ro.whistlab.core.ai.contract.HardSalvageObjectiveTest" }
 }
 tasks.named("quickRegressionTest", Test) {
     filter {

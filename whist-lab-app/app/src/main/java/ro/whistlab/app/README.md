@@ -32,14 +32,16 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
 | Mâna | HandLayoutMetrics distribuie cărțile în zona disponibilă. |
 | Scor | ScoreTableView compară locurile. ScoreHistoryColumn furnizează licitația, punctele și totalul afișate în ScoreHistoryView pentru locul selectat. |
 
+Componentele de mai jos dețin geometria, interacțiunea și prezentarea acestor suprafețe. Invarianta fiecăreia se verifică separat de regulile și scorul motorului.
+
 | Intrare | Responsabilitate și invariantă |
 |---|---|
 | `MainActivity` | Tranziții, persistență, meniu, limbă, pauza levatei; nu calculează coordonatele scaunelor. |
 | `GameBoardLayout` | Măsoară scaunele și banda sigură. În joc, stratul transparent folosește lățimea mesei; la licitare, centrul rămâne exclusiv. |
 | `TableGeometry` | Dreptunghiuri pentru scaune și banda sigură; omul rămâne sud. În joc, scaunele diagonale stau în afara rândurilor cărților. |
-| `TrickCardMetrics` | Rezervă rândurile levatei și fixează pozițiile cărților după ancorele scaunelor. La patru jucători formează crucea, cu cartea omului jos și centrată. Fața are 104 dp; lățimea urmează spațiul. |
-| `WhistUiPalette.seatFrame` | Furnizează același fundal și contur pentru scaunul activ și indicatorul de atu. `TrumpIndicatorView` primește starea turei de la `MainActivity`; E2E compară pixeli din captură în coordonate fizice. |
-| `TableViewportPolicy` | Recuperează spațiu decorativ pe ferestre scunde; nu reduce țintele de 48 dp, înălțimea fețelor din mână de 98 dp sau fețele jucate de 104 dp. Când combinația masă–mână nu încape, zona vizibilă rămâne derulabilă. |
+| `TrickCardMetrics` | Rezervă rândurile levatei și fixează pozițiile cărților după ancorele scaunelor. La patru jucători formează crucea, cu cartea omului jos și centrată. Fața are 104 dp pe ferestre normale și 96 dp sub 600 dp înălțime logică; ține cont de etichete și spațiu. |
+| `WhistUiPalette.seatFrame` | Furnizează același fundal și contur pentru scaunul activ și indicatorul de atu. `TrumpIndicatorView` adaptează textul și simbolul la contrastul ramei; E2E compară umplerea și lizibilitatea în captura fizică. |
+| `TableViewportPolicy` | Recuperează spațiu decorativ și compactează rame/levată pe ferestre scunde; nu reduce țintele de 48 dp sau fețele din mână de 98 dp. Pe ferestre compacte, cărțile din levată au 96 dp; pe celelalte, 104 dp. |
 | `HandLayoutMetrics` | Păstrează un rând și un avans cel puțin egal cu banda măsurată a indicelui; textul mărit poate necesita derulare orizontală. |
 | `CardFaceBackground` | Desenează simbolul central și colțul inversat. Semantica și indicele principal rămân în elementul vizual accesibil. |
 | `DropdownBackground` | Săgeată vizibilă pe selectorul Android nativ; nu înlocuiește interacțiunile, focalizarea sau semantica acestuia. |
@@ -53,6 +55,11 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
 - Pâslă continuă, fără oval decorativ; tabla și decizia curentă sunt dominante.
 - Nume, licitat și levate formează un grup compact. Valoarea este aliniată
   separat de etichetă; indicatorul turei folosește și text, nu numai culoare.
+- Zona de licitare folosește banda măsurată dintre jucătorii de sus și omul de
+  jos. Când rămâne spațiu, coboară 62% din surplus către locul omului; cu o
+  fereastră scurtă, păstrează distanța sigură și toate țintele de 48 dp.
+  Pe ferestre compacte se elimină numai spațiu decorativ deasupra numelui și
+  din interiorul ramei, fără a micșora numele sau valorile licitate/levate.
 - Mâna omului stă jos, centrată după lățimea reală a ferestrei. La două sau
   trei cărți, avansul se oprește la 72% din lățimea feței. Dacă indicii cer
   derulare, vederea inițială pornește din mijloc, iar jucătorul poate ajunge
@@ -64,7 +71,8 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
   omului rămâne fix chiar dacă ordinea cărților jucate diferă. Rândurile
   libere sunt rezervate dinainte, astfel încât cărțile să nu sară între ture.
   Pe ecranele scunde, masa completă poate cere o derulare verticală; fața de
-  104 dp trebuie să rămână întreagă după aducerea levatei în zona vizibilă.
+  96 dp (compact) sau 104 dp trebuie să rămână întreagă după aducerea levatei
+  în zona vizibilă.
 - Atuul își măsoară chenarul după text și păstrează spațiu față de titlu și masă. Cartea întoarsă apare pe un fond ivoire, cu rang și simbol. Când regulile stabilesc doar culoarea, indicatorul o afișează cu explicația localizată.
   Fundalul și conturul indicatorului de atu urmează exact stilul scaunului al
   cărui rând este. Centrul mesei este al licitației sau al levatei.
@@ -78,7 +86,7 @@ Diagrama descrie prezentarea și interacțiunea. Motorul validează orice comand
 ## Cum verificăm
 
 `TrickCardMetricsComponentTest` verifică pozițiile ancorate, crucea cu patru
-jucători, înălțimea de 104 dp, lipsa intersecțiilor cu scaunele și lățimi de
+jucători, înălțimile responsive de 96/104 dp, lipsa intersecțiilor cu scaunele și lățimi de
 240–760 dp la trei scări de text. `GameTableLayoutComponentTest` verifică intersecțiile regiunilor, iar
 `TableViewportPolicyTest` verifică ferestrele scunde și rotunjirea dp–pixeli.
 `DisplayFixtureDealsTest` verifică unicitatea și diversitatea indicilor.
@@ -91,7 +99,7 @@ certifica singur frumusețea interfeței sau identitatea optică a fiecărui sim
 
 `WhistMenuLayoutE2eTest` parcurge meniurile normale în EN/RO.
 
-- `WhistResponsivePlaySanityE2eTest` verifică profilurile, fața jucată de 104 dp, poziția sudică, distanța față de rame și culoarea atuului. Pentru ecrane scunde, capturează separat starea de stil și zona derulată complet.
+- `WhistResponsivePlaySanityE2eTest` verifică profilurile, fața din mână de 98 dp, cărțile jucate de 96/104 dp după înălțimea logică, licitarea mai apropiată de locul omului, poziția sudică, distanța față de rame și contrastul atuului. Matricea nu repetă fluxul de joc la fiecare profil.
 - Strategia Hard are o verificare separată de geometrie, cu bugetul de calcul declarat.
 - Pilotul românesc joacă mâini normale și verifică scorul independent.
 - Compilările rămân în TMP, iar rezultatele execuției în depozitul extern configurat.

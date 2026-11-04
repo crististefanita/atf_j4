@@ -25,4 +25,4 @@ O modificare a acestui mecanism cere regresii pentru datele publice, o bază în
 
 Contractele pentru [motor](engine/EstimatedBidPrior.java) și [jucătorul independent](independent/EstimatedBidPrior.java) se păstrează separat pentru a controla influența asupra fiecărei politici.
 
-[Protocolul de învățare](../../../../docs/AI_TRAINING_PROTOCOL.md) definește criteriile de promovare.
+[Protocolul de învățare](../../../../docs/learning/README.md) definește criteriile de promovare.

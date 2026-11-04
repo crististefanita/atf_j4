@@ -26,4 +26,4 @@ Regresiile cu activare explicită verifică ipoteze mici și limitele lor. Compa
 
 [Sarcina Gradle de cercetare](../../../game-core/build.gradle) selectează componentele explicite; directorul acesta este un punct de orientare, fără surse proprii pentru execuția aplicației.
 
-[Arhitectura învățării](../../../../docs/AI_LEARNING_ARCHITECTURE.md) definește fluxul de la ipoteză la promovare.
+[Arhitectura învățării](../../../../docs/ai/README.md) definește fluxul de la ipoteză la promovare.

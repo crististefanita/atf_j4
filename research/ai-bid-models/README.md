@@ -32,4 +32,4 @@ Suprapunerea de surse se aplică exclusiv în copia temporară și numai după v
 - Păstrați jocurile, calibrările, rezultatele și registrele de lot în arhiva externă.
 - Păstrați în sursă mecanismul și regresiile minime justificate, cu limitele lor explicite.
 
-[Arhitectura învățării](../../docs/AI_LEARNING_ARCHITECTURE.md) și [protocolul](../../docs/AI_TRAINING_PROTOCOL.md) definesc procesul comun.
+[Arhitectura învățării](../../docs/ai/README.md) și [protocolul](../../docs/learning/README.md) definesc procesul comun.

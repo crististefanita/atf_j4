@@ -1,7 +1,7 @@
 package atf.tests.learning;
 
 import java.util.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 /** Selects whole measured invocations, retaining all non-PASS and every quality gate. */
 public record EvidenceSelection(List<LearningRunReport.Input> inputs,Map<String,Object> scope,EvidencePolicy policy) {

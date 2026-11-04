@@ -1,5 +1,11 @@
 package atf.testkit.assertions.requirements;
 
+import atf.testkit.assertions.AssertionValueDisplay;
+import atf.testkit.assertions.ComponentAssertionAudit;
+import atf.testkit.assertions.ComponentAuditAdapter;
+import atf.testkit.assertions.ComponentAuditExtension;
+import atf.testkit.assertions.RecordedAssertions;
+
 import atf.testkit.assertions.*;
 
 import atf.testkit.AtfComponentTest;

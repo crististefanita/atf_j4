@@ -29,13 +29,13 @@ Regulile filtrează toate acțiunile, inclusiv cele propuse de AI. Starea captur
 
 | Sursă | Contract |
 |---|---|
-| [GameConfig](src/main/java/ro/whistlab/core/GameConfig.java) | Număr de jucători, variantă, nivel, valoare de inițializare și configurarea seriilor. |
-| [GameMode](src/main/java/ro/whistlab/core/GameMode.java) | Variante distincte și alegerea profilului românesc. |
-| [GameRules](src/main/java/ro/whistlab/core/GameRules.java) | Pachet, program, oferte legale, cărți legale, câștigător și scor de bază. |
-| [RomanianScoring](src/main/java/ro/whistlab/core/RomanianScoring.java) | Punctele contractului, bonusul de serie și contorul următor. |
-| [GameSession](src/main/java/ro/whistlab/core/GameSession.java) | Tranzițiile sesiunii, istoricul public și validarea restaurării. |
-| [ScoreHistory](src/main/java/ro/whistlab/core/ScoreHistory.java) | Licitațiile pe locuri, punctele mâinii și totalurile după fiecare mână încheiată. Salvările vechi păstrează numai informația cunoscută. |
-| [HowToPlay](src/main/java/ro/whistlab/core/HowToPlay.java) | Regulile și programul afișate în română și engleză. |
+| [GameConfig](src/main/java/ro/whistlab/core/config/GameConfig.java) | Număr de jucători, variantă, nivel, valoare de inițializare și configurarea seriilor. |
+| [GameMode](src/main/java/ro/whistlab/core/rules/GameMode.java) | Variante distincte și alegerea profilului românesc. |
+| [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Pachet, program, oferte legale, cărți legale, câștigător și scor de bază. |
+| [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Punctele contractului, bonusul de serie și contorul următor. |
+| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Tranzițiile sesiunii, istoricul public și validarea restaurării. |
+| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile pe locuri, punctele mâinii și totalurile după fiecare mână încheiată. Salvările vechi păstrează numai informația cunoscută. |
+| [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Regulile și programul afișate în română și engleză. |
 
 ## Whist românesc
 
@@ -76,14 +76,14 @@ inclusiv punctele seriei.
 
 `GameSession.restoreComplete` cere istoricul public complet.
 
-Restaurarea de compatibilitate poate accepta o salvare veche cu istoric limitat și păstrează originea cunoscută a scorului. Ea nu justifică inventarea unor cărți sau scoruri anterioare. Schema JSON Android este responsabilitatea [GameSessionStore](../app/src/main/java/ro/whistlab/app/GameSessionStore.java).
+Restaurarea de compatibilitate poate accepta o salvare veche cu istoric limitat și păstrează originea cunoscută a scorului. Ea nu justifică inventarea unor cărți sau scoruri anterioare. Schema JSON Android este responsabilitatea [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
 
 ## AI și componente
 
-[AiDifficulty](src/main/java/ro/whistlab/core/AiDifficulty.java) expune Normal și Hard.
+[AiDifficulty](src/main/java/ro/whistlab/core/config/AiDifficulty.java) expune Normal și Hard.
 
 - `EXPERT` este un alias de compatibilitate, migrat la Hard la citirea unei salvări vechi.
-- [AiPolicy](src/main/java/ro/whistlab/core/AiPolicy.java) alege politica activă pentru nivelul configurat.
+- [AiPolicy](src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) alege politica activă pentru nivelul configurat.
 - Politicile primesc o observație izolată: mâna proprie, licitațiile, levatele câștigate, masa și istoricul public. Nu primesc listele de cărți ale celorlalți jucători.
 - Hard folosește ofertele publice drept ținte de contract în simulări și exclude cărțile deja jucate și atuul întors din pachetul necunoscut; împărțirea necunoscută nu este încă ponderată cu probabilitatea ca acel loc să fi făcut oferta observată. Acesta este un candidat separat de cercetare, nu o capabilitate deja implementată.
 - Estimările probabilistice și verificările de final cu domeniu finit nu demonstrează joc perfect cu informație ascunsă.
@@ -143,4 +143,4 @@ Parametrii și profilurile experimentale sunt definite în lansator și protocol
 
 După schimbarea unei licitații sau cărți, stările publice ulterioare pot diverge. Comparația pereche păstrează distribuția și locul, iar analiza locală reconstruiește prima decizie divergentă folosind numai informația disponibilă actorului.
 
-[Arhitectura învățării](../../docs/AI_LEARNING_ARCHITECTURE.md) și [protocolul](../../docs/AI_TRAINING_PROTOCOL.md) definesc separarea dezvoltării de evaluare și criteriile promovării.
+[Arhitectura învățării](../../docs/ai/README.md) și [protocolul](../../docs/learning/README.md) definesc separarea dezvoltării de evaluare și criteriile promovării.

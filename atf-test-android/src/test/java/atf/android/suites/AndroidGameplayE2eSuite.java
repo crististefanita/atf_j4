@@ -1,6 +1,6 @@
 package atf.android.suites;
 
-import atf.android.e2e.WhistLabGameplayE2eTest;
+import atf.android.e2e.gameplay.WhistLabGameplayE2eTest;
 import atf.testkit.AtfE2eTest;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;

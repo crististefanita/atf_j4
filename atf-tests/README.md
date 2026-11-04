@@ -38,7 +38,7 @@ Modulul pregătește datele, iar biblioteca comună construiește prezentarea HT
 | [LearningReportHtmlAudit](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Verificarea identității punctelor de control, rândurilor și valorilor publicate. |
 
 Politica efectivă și sensul modurilor de prezentare sunt în
-[contractul de prezentare](../docs/ATF_Game_Report_Presentation.md). Componentele
+[contractul de prezentare](../docs/reporting/ATF_Presentation.md). Componentele
 reutilizabile sunt în `src/main/java`; intrările JUnit sunt în `src/test/java`.
 
 ## Contracte importante
@@ -68,7 +68,7 @@ Selecțiile din surse au responsabilități distincte:
 - `CoreReportingConsumerContractTest` și `AndroidInlineScreenshotReportContractTest`:
   contractele binarelor și ale adaptorului PNG.
 
-[LearningRunReportTest](src/test/java/atf/tests/LearningRunReportTest.java)
+[LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java)
 consumă o selecție capturată explicit. `DeepSuiteExtentReportTest` este o intrare
 agregată cu activare explicită. Pentru o modificare punctuală se aleg contractele afectate.
 
@@ -76,7 +76,7 @@ Contractele curente se consultă din [indexul documentației](../docs/). Datele 
 
 ## Intervalele Android la republicare
 
-[Contractul măsurării timpilor Android](../docs/ATF_Android_Phase_Timing.md) se aplică și jurnalelor agregate. `GameReportComponentSuite` respinge intervalele originale lipsă sau atribuite altei acțiuni, în ambele variante de publicare.
+[Contractul măsurării timpilor Android](../docs/reporting/ATF_PhaseTiming.md) se aplică și jurnalelor agregate. `GameReportComponentSuite` respinge intervalele originale lipsă sau atribuite altei acțiuni, în ambele variante de publicare.
 
 ## Niveluri și guvernanță
 
@@ -85,6 +85,6 @@ Contractele curente se consultă din [indexul documentației](../docs/). Datele 
 | Componentă | Politica selecției, adaptoare și contracte de publicare; verificarea surselor și documentației. |
 | Integrare | Perechile fizice JAR/POM, configurația și compoziția modulelor. |
 
-[Arhitectura testării](../docs/testing/architecture/README.md) definește matricea comună. [Suita de calitate](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) verifică pachetele, importurile, limitele modulelor, nivelurile și documentația.
+[Arhitectura testării](../docs/testing/ATF_Architecture.md) definește matricea comună. [Suita de calitate](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) verifică pachetele, importurile, limitele modulelor, nivelurile și documentația.
 
-Lansatorul [run-atf-governance.ps1](../scripts/run-atf-governance.ps1) construiește o copie temporară și păstrează rezultatele în afara proiectului. [Ghidul guvernanței](../docs/testing/governance/README.md) precizează perimetrul, excepțiile și limitele verificării.
+Lansatorul [run-atf-governance.ps1](../scripts/run-atf-governance.ps1) construiește o copie temporară și păstrează rezultatele în afara proiectului. [Ghidul guvernanței](../docs/governance/README.md) precizează perimetrul, excepțiile și limitele verificării.

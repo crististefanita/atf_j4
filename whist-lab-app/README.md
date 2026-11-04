@@ -13,7 +13,7 @@ Configurarea permite alegerea variantei, a unei mese de 3–6 jucători și a ni
 
 Variantele disponibile sunt definite în catalogul de reguli.
 
-O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizatorul pornește o partidă nouă. Tipurile de reguli sunt definite în [GameMode](game-core/src/main/java/ro/whistlab/core/GameMode.java), iar textele și etichetele efective în [WhistUiText](app/src/main/java/ro/whistlab/app/WhistUiText.java). Regulile afișate se construiesc în [HowToPlay](game-core/src/main/java/ro/whistlab/core/HowToPlay.java) pentru varianta, limba și numărul de jucători selectate.
+O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizatorul pornește o partidă nouă. Tipurile de reguli sunt definite în [GameMode](game-core/src/main/java/ro/whistlab/core/rules/GameMode.java), iar textele și etichetele efective în [WhistUiText](app/src/main/java/ro/whistlab/app/localization/WhistUiText.java). Regulile afișate se construiesc în [HowToPlay](game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) pentru varianta, limba și numărul de jucători selectate.
 
 În Whistul românesc se urmează culoarea cerută; dacă lipsește și există atu, tăierea este obligatorie.
 
@@ -24,7 +24,7 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 
 `Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează licitația, punctele și totalul fiecărei mâini pentru jucătorul ales.
 
-Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/GameSessionStore.java).
+Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
 
 ## Flux și responsabilități
 
@@ -57,7 +57,7 @@ GameSession validează comenzile înaintea schimbării stării; UI-ul redă star
 Versiunea aplicației, SDK-urile și identificatorul pachetului au ca sursă
 [configurația Gradle a aplicației](app/build.gradle). Un APK construit din sursele curente și un
 APK instalat anterior au proveniențe distincte; versiunea sursei nu dovedește
-ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/testing/android/README.md)
+ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/testing/ATF_Android.md) definește verificarea binarului identificat.
 
 ## Construire și verificare
 

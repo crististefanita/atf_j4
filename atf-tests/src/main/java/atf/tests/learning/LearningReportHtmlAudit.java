@@ -3,7 +3,7 @@ package atf.tests.learning;
 import com.fasterxml.jackson.databind.*;
 import java.nio.file.*;
 import java.util.*;
-import org.jsoup.Jsoup;
+
 import org.jsoup.nodes.*;
 
 /** Consumer audit of canonical scenario owners, ordered rows, typed context and actual execution timing. */

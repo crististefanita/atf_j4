@@ -2,7 +2,7 @@ schema_version: 1
 id: "CERTIFIED_PUBLIC_SALVAGE"
 status: "ACTIVE_CERTIFIED_FEATURE_NOT_GENERAL_STRENGTH_GAIN"
 configuration_kind: "CODE_BOUND_PROOF_MANIFEST"
-source: "whist-lab-app/game-core/src/main/java/ro/whistlab/core/PublicSalvage.java"
+source: "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java"
 node_limit: 40000
 scope: "Romanian Whist; four players; two own cards; complete compatible worlds and every legal continuation."
 priority:

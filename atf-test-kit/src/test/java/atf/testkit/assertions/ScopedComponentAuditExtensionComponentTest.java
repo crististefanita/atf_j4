@@ -4,7 +4,7 @@ import atf.testkit.AtfComponentTest;
 import atf.testkit.scope.TestRunScope;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
+
 import org.junit.platform.launcher.core.*;
 import org.junit.platform.launcher.listeners.*;
 import java.util.List;
