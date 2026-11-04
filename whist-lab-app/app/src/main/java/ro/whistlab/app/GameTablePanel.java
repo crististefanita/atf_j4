@@ -9,7 +9,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.TextView;
@@ -125,7 +124,7 @@ final class GameTablePanel extends LinearLayout {
             params.topMargin = dp(4);
             addView(hintSlot, params);
         }
-        LayoutParams handParams = new LayoutParams(dp(handWidthDp()), dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding))));
+        LayoutParams handParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding))));
         handParams.gravity = Gravity.CENTER_HORIZONTAL;
         addView(buildHand(), handParams);
     }
@@ -342,16 +341,15 @@ final class GameTablePanel extends LinearLayout {
     }
 
     private View buildHand() {
-        HorizontalScrollView hand = new HorizontalScrollView(context);
-        hand.setHorizontalScrollBarEnabled(false);
-        hand.setFillViewport(false);
-        hand.setClipToPadding(false);
-        hand.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        int cardCount = state.players().get(0).hand().size();
-        hand.setContentDescription(copy.handAccessibility(cardCount));
+        int count = state.players().get(0).hand().size();
+        CenteredHandView hand = new CenteredHandView(context, dp(HandLayoutMetrics.maxViewportWidthDp()),
+                width -> buildFan(count, width));
+        hand.setContentDescription(copy.handAccessibility(count));
         hand.setTag("player-hand");
-        if (cardCount == 0) return hand;
-        int availableWidthDp = handWidthDp();
+        return hand;
+    }
+
+    private View buildFan(int cardCount, int widthPx) {
         float fontScale = getResources().getConfiguration().fontScale;
         FrameLayout fan = new FrameLayout(context);
         fan.setClipChildren(false);
@@ -360,11 +358,10 @@ final class GameTablePanel extends LinearLayout {
         float widestIndex = measurement.getPaint().measureText("10");
         for (String symbol : List.of("♠", "♥", "♣", "♦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
         int indexWidthDp = (int) Math.ceil(widestIndex / getResources().getDisplayMetrics().density) + 4;
-        int advanceDp = HandLayoutMetrics.horizontalAdvanceDp(cardCount, availableWidthDp, fontScale, indexWidthDp);
-        int cardWidthDp = HandLayoutMetrics.cardWidthDp(cardCount, availableWidthDp, fontScale);
-        int handContentWidthDp = (cardCount - 1) * advanceDp + cardWidthDp;
-        int fanWidthDp = Math.max(availableWidthDp, handContentWidthDp);
-        int handLeadingInsetDp = Math.max(0, (fanWidthDp - handContentWidthDp) / 2);
+        if (cardCount == 0) return fan;
+        HandLayoutMetrics.Fan layout = HandLayoutMetrics.fan(cardCount, widthPx,
+                getResources().getDisplayMetrics().density, fontScale, dp(indexWidthDp));
+        fan.setMinimumWidth(layout.width());
         int cardHeightDp = HandLayoutMetrics.cardHeightDp();
         int liftClearanceDp = viewport.handClearanceDp(bidding);
         fan.setTag("player-hand-fan");
@@ -384,7 +381,7 @@ final class GameTablePanel extends LinearLayout {
             slot.setClickable(playable);
             slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
             FrameLayout face = cardFace(card, playable, indexWidthDp);
-            FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(dp(cardWidthDp),
+            FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(layout.cardWidth(),
                     dp(cardHeightDp), Gravity.TOP | Gravity.START);
             faceParams.topMargin = dp(liftClearanceDp);
             slot.addView(face, faceParams);
@@ -401,14 +398,12 @@ final class GameTablePanel extends LinearLayout {
                 });
             }
             FrameLayout.LayoutParams slotParams = new FrameLayout.LayoutParams(
-                    dp(index == cardCount - 1 ? cardWidthDp : advanceDp),
+                    index == cardCount - 1 ? layout.cardWidth() : layout.advance(),
                     dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding))));
-            slotParams.leftMargin = dp(handLeadingInsetDp + index * advanceDp);
+            slotParams.leftMargin = layout.left(index);
             fan.addView(slot, slotParams);
         }
-        hand.addView(fan, new FrameLayout.LayoutParams(dp(fanWidthDp),
-                dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding)))));
-        return hand;
+        return fan;
     }
 
     private FrameLayout cardFace(Card card, boolean playable, int indexWidthDp) {
@@ -464,10 +459,6 @@ final class GameTablePanel extends LinearLayout {
 
     private int dp(int value) {
         return Math.round(value * getResources().getDisplayMetrics().density);
-    }
-
-    private int handWidthDp() {
-        return Math.min(availableContentWidthDp(), HandLayoutMetrics.maxViewportWidthDp());
     }
 
     private int availableContentWidthDp() {

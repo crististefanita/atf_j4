@@ -60,7 +60,26 @@ final class HandLayoutMetrics {
         int minimumAdvance = cardCount <= MAX_PLAYABLE_HAND_SIZE
                 ? Math.round(DENSE_HAND_MIN_ADVANCE_DP * Math.min(fontScale, 1.5f))
                 : minVisibleAdvanceDp(fontScale);
-        return Math.max(measuredIndexWidthDp, Math.max(minimumAdvance, fitAdvance));
+        return Math.max(measuredIndexWidthDp, Math.max(minimumAdvance, Math.min(fitAdvance, Math.round(cardWidth * 0.72f))));
+    }
+
+    record Fan(int width, int first, int advance, int cardWidth) {
+        int left(int index) { return first + index * advance; }
+    }
+
+    static Fan fan(int count, int viewportPx, float density, float fontScale, int indexWidthPx) {
+        int widthDp = Math.max(1, Math.round(viewportPx / density));
+        int card = Math.round(cardWidthDp(count, widthDp, fontScale) * density);
+        int indexDp = (int) Math.ceil(indexWidthPx / density);
+        int advance = Math.round(horizontalAdvanceDp(count, widthDp, fontScale, indexDp) * density);
+        if (count > 1) {
+            int minimum = Math.max(indexWidthPx, Math.round((count > MAX_PLAYABLE_HAND_SIZE
+                    ? minVisibleAdvanceDp(fontScale) : DENSE_HAND_MIN_ADVANCE_DP * Math.min(fontScale, 1.5f)) * density));
+            advance = Math.max(minimum, Math.min(advance, (viewportPx - card) / (count - 1)));
+        }
+        int content = card + (count - 1) * advance;
+        int width = Math.max(content, viewportPx);
+        return new Fan(width, (width - content) / 2, advance, card);
     }
 
     static int contentWidthDp(int cardCount, int availableWidthDp, float fontScale) {

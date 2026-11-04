@@ -31,7 +31,7 @@ final class ScoreHistoryView extends LinearLayout {
         opening.setGravity(Gravity.START);
         addView(opening, new LayoutParams(-1, -2));
         if (!history.closingTotals().isEmpty()) {
-            addView(row(copy.historyHand(), copy.historyPoints(), copy.scoreColumnTotal(), true), new LayoutParams(-1, -2));
+            addView(row(copy.historyHand(), copy.bidLabel(), copy.historyPoints(), copy.scoreColumnTotal(), true), new LayoutParams(-1, -2));
         }
         scroll = new ScrollView(context);
         rows = new LinearLayout(context);
@@ -53,7 +53,7 @@ final class ScoreHistoryView extends LinearLayout {
         opening.setVisibility(column.opening().isEmpty() ? GONE : VISIBLE);
         rows.removeAllViews();
         for (ScoreHistoryColumn.Row result : column.rows()) {
-            LinearLayout line = row(result.hand(), result.points(), result.total(), false);
+            LinearLayout line = row(result.hand(), result.bid(), result.points(), result.total(), false);
             if (rows.getChildCount() % 2 == 0) line.setBackgroundColor(0xfff1f5ef);
             line.setContentDescription(result.description());
             line.setFocusable(true);
@@ -62,10 +62,11 @@ final class ScoreHistoryView extends LinearLayout {
         scroll.scrollTo(0, 0);
     }
 
-    private LinearLayout row(String hand, String points, String total, boolean header) {
+    private LinearLayout row(String hand, String bid, String points, String total, boolean header) {
         LinearLayout line = new LinearLayout(getContext());
         line.setGravity(Gravity.CENTER_VERTICAL);
         cell(line, hand, header, header, Gravity.START);
+        cell(line, bid, header, header, Gravity.END);
         cell(line, points, header, header, Gravity.END);
         cell(line, total, header, true, Gravity.END);
         return line;
@@ -81,7 +82,7 @@ final class ScoreHistoryView extends LinearLayout {
 
     private TextView label(boolean bold) {
         TextView text = new TextView(getContext());
-        text.setPadding(dp(8), dp(6), dp(8), dp(6));
+        text.setPadding(dp(3), dp(6), dp(3), dp(6));
         text.setMinHeight(dp(36));
         text.setTextColor(0xff29362e);
         text.setTextSize(14);

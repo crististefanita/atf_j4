@@ -16,9 +16,9 @@ anterioară rămâne disponibilă în Git la `ac4edf8`, în acest fișier.
 | Selectorul de limbă nu sugera deschiderea, iar opțiunile românești împingeau ieșirea sub ecran. | Chevron pe spinnerul nativ, serie și valoare pe un singur rând, program complet la cerere. Verificarea pornește din Home și cere întreaga țintă Back în primul viewport. |
 | Explicațiile împingeau rezultatele sub primul ecran de scor. | Tabelul apare înaintea detaliilor de calcul. Continuarea mâinii rămâne acțiunea principală. |
 
-## Istoricul scorului în sursele 0.1.4
+## Istoricul scorului în 0.1.5
 
-Foaia consultativă și ecranul de rezultat oferă un istoric per jucător. Cea mai recentă mână apare prima, cu punctele câștigate sau pierdute și totalul după acea mână. La migrare apare soldul cunoscut pentru perioada fără detaliu. [Contract, pilot și reluare offline](../WHIST_SCORE_HISTORY.md)
+Foaia consultativă și ecranul de rezultat oferă un istoric per jucător. Cea mai recentă mână apare prima, cu licitația, punctele și totalul după acea mână. La migrare apare soldul cunoscut pentru perioada fără detaliu. [Contract, pilot și reluare offline](../WHIST_SCORE_HISTORY.md)
 
 ## Priorități deschise
 
@@ -34,8 +34,9 @@ etichetele în limba selectată.
 
 | Prioritate | Problemă pentru jucător | Criteriu de închidere |
 |---|---|---|
-| P2 | Istoricul nou are probă de componentă. Randarea și revenirea la selecția de pe masă așteaptă acceptanța Android pe 0.1.4. | Dintr-o licitație sau cu o carte ridicată, deschideți istoricul, consultați ultimul jucător, reveniți și verificați aceeași selecție. La șase locuri, text 150%, verificați primul și ultimul rând, butonul Închide și citirea unei valori negative cu TalkBack. |
+| P2 | Istoricul celor patru locuri este verificat pe emulator după repornire. Rămân de evaluat selecția de pe masa activă, textul mărit și focusul asistat. | Dintr-o licitație sau cu o carte ridicată, deschideți istoricul, consultați ultimul jucător, reveniți și verificați aceeași selecție. La șase locuri, text 150%, verificați primul și ultimul rând, butonul Închide și citirea unei valori negative cu TalkBack. |
 | P2 | La ultima licitație lipsește uneori o valoare fără motiv vizibil. Un jucător nou poate interpreta lipsa ca defect al grilei. | Explicați contextual regula numai când se exclude o valoare. Proba trebuie să distingă valoarea exclusă, zero legal și un total legal mai mare decât numărul cărților. |
+| P2 | Pe emulator, pică fără carte întoarsă folosește glifa Android închisă pe fond verde. | Verificați contrastul simbolului pe telefon și la lumină puternică. Comparați un fundal deschis pentru simbol cu varianta actuală, păstrând distincția față de cartea întoarsă și spațiul față de titlu. |
 | P2 | Abrevierile scorului la lățime mică necesită confirmare cu jucători. | Cereți identificarea punctelor ultimei mâini și a totalului la patru și șase locuri, inclusiv la text mărit. Măsurați dacă încape cuvântul întreg înainte de extinderea antetului. |
 | P2 | La font mare sau la 14–17 cărți, vederea parțială trebuie să comunice că mâna derulează. Contrastul descrierilor accesibile trebuie verificat și cu utilizare reală. | La 130% și 150%, ajungeți la prima și ultima carte prin gest și focus, cu identitatea întreagă. Parcurgeți licitare, carte legală și scor cu TalkBack. |
 | P2 | Profilul logic ROG 7 diferă de telefonul real prin bare, gesturi și densitate. | Măsurați pe telefonul fizic zona sigură, cartea selectată și revenirea din scor. Păstrați valoarea reală a densității și captura originală. |
@@ -43,6 +44,8 @@ etichetele în limba selectată.
 | P3 | Un E2E care compară numai bounds poate rata contrastul slab, schimbarea ordinii desenării sau un caracter greșit. | Păstrați captură și XML din aceeași stare. Pentru un nou defect vizual adăugați un negativ care îl reproduce și o verificare de pixeli focalizată. |
 
 ## Cum citim probele
+
+Pentru meniul simplificat, chenarul de atu, mâna centrată și istoricul bid–puncte–total consultați [capturile și bilanțul 0.1.5](../WHIST_UI_015_ACCEPTANCE.md).
 
 Pentru handoff către componente și AI, acceptanța de șase mâini se poate relua
 offline din trace-ul public. Arhiva distinge încercarea eșuată, ultimul rezultat

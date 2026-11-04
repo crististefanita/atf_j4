@@ -21,8 +21,10 @@ final class TrumpIndicatorView extends LinearLayout {
         super(context);
         float density = getResources().getDisplayMetrics().density;
         setOrientation(VERTICAL);
+        setMinimumWidth(dp(density, 76));
+        setMinimumHeight(dp(density, 48));
         setGravity(Gravity.CENTER);
-        setPadding(dp(density, 6), dp(density, 3), dp(density, 6), dp(density, 3));
+        setPadding(dp(density, 6), dp(density, 4), dp(density, 6), dp(density, 4));
         setBackground(background(density));
         setTag("trump-indicator");
         setContentDescription(copy.trumpAccessibility(state));
@@ -36,28 +38,38 @@ final class TrumpIndicatorView extends LinearLayout {
         heading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         heading.setGravity(Gravity.CENTER);
         heading.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        addView(heading, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        addView(heading, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         TextView value = new TextView(context);
         value.setText(trumpValue(state));
-        value.setTextSize(22);
-        value.setTextColor(isRed(state) ? HEART_RED : IVORY);
+        value.setTextSize(20);
+        if (state.turnedCard() != null) {
+            GradientDrawable card = new GradientDrawable();
+            card.setColor(IVORY);
+            card.setCornerRadius(dp(density, 5));
+            value.setBackground(card);
+            value.setPadding(dp(density, 7), 0, dp(density, 7), 0);
+        }
+        value.setTextColor(state.turnedCard() == null ? (isRed(state) ? HEART_RED : IVORY)
+                : (isRed(state) ? Color.rgb(157, 45, 54) : Color.rgb(37, 50, 44)));
         value.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         value.setGravity(Gravity.CENTER);
         value.setSingleLine(true);
         value.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        addView(value, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        LayoutParams valueParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        valueParams.topMargin = dp(density, 2);
+        addView(value, valueParams);
 
         TextView status = new TextView(context);
         status.setText(copy.trumpIndicatorStatus(state));
-        status.setTextSize(6);
+        status.setTextSize(9);
         status.setTextColor(Color.rgb(211, 239, 226));
         status.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         status.setGravity(Gravity.CENTER);
         status.setSingleLine(true);
         status.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         if (state.turnedCard() != null) status.setVisibility(GONE);
-        addView(status, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        addView(status, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }
 
     private String trumpValue(GameSession.Snapshot state) {

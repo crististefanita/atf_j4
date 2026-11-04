@@ -5,13 +5,25 @@ import java.util.Collections;
 import java.util.List;
 
 /** Closing balances by seat. A migrated checkpoint can have an opening balance after earlier hands. */
-public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<List<Integer>> closingTotals) {
+public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<List<Integer>> closingTotals,
+        List<List<Integer>> recordedBids) {
+    /** Older balances may precede the first hand with recorded bids. */
+    public ScoreHistory(int priorHands, List<Integer> openingTotals, List<List<Integer>> closingTotals) {
+        this(priorHands, openingTotals, closingTotals, Collections.emptyList());
+    }
+
     public ScoreHistory {
         if (priorHands < 0 || openingTotals.isEmpty()) throw new IllegalArgumentException("Invalid score history origin");
         openingTotals = balances(openingTotals, openingTotals.size());
-        List<List<Integer>> rows = new ArrayList<>(closingTotals.size());
-        for (List<Integer> row : closingTotals) rows.add(balances(row, openingTotals.size()));
-        closingTotals = Collections.unmodifiableList(rows);
+        closingTotals = vectors(closingTotals, openingTotals.size());
+        recordedBids = vectors(recordedBids, openingTotals.size());
+        if (recordedBids.size() > closingTotals.size()) throw new IllegalArgumentException("Too many bid rows");
+    }
+
+    private static List<List<Integer>> vectors(List<List<Integer>> values, int seats) {
+        List<List<Integer>> rows = new ArrayList<>(values.size());
+        for (List<Integer> row : values) rows.add(balances(row, seats));
+        return Collections.unmodifiableList(rows);
     }
 
     public static ScoreHistory newMatch(int seats) {
@@ -31,11 +43,19 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
         return Math.subtractExact(total(hand, seat), previous);
     }
 
-    ScoreHistory finish(int hand, List<Integer> totals) {
+    public Integer bid(int hand, int seat) {
+        row(hand);
+        int index = recordedBids.size() - (completedHands() - hand) - 1;
+        return index < 0 ? null : recordedBids.get(index).get(seat);
+    }
+
+    ScoreHistory finish(int hand, List<Integer> totals, List<Integer> bids) {
         if (hand != completedHands() + 1) throw new IllegalArgumentException("Score history must advance by one hand");
         List<List<Integer>> rows = new ArrayList<>(closingTotals);
         rows.add(totals);
-        return new ScoreHistory(priorHands, openingTotals, rows);
+        List<List<Integer>> contracts = new ArrayList<>(recordedBids);
+        contracts.add(bids);
+        return new ScoreHistory(priorHands, openingTotals, rows, contracts);
     }
 
     private List<Integer> row(int hand) {

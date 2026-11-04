@@ -14,6 +14,8 @@ import ro.whistlab.core.Trump;
 
 /** Player-facing copy for the Android UI. Rule calculations stay in game-core. */
 final class WhistUiText {
+    static final List<GameMode> MENU_MODES = List.of(GameMode.OH_HELL, GameMode.DESCENDING, GameMode.ROMANIAN_WHIST,
+            GameMode.DOWN_AND_UP, GameMode.LONG_ROMANIAN, GameMode.REVERSE_OH_HELL);
     private final HowToPlay.Language language;
 
     WhistUiText(HowToPlay.Language language) {
@@ -58,6 +60,7 @@ final class WhistUiText {
     String placeBid() { return choose("Place bid", "Licitează"); }
     String scoreSheet() { return choose("Score sheet", "Scorul partidei"); }
     String scoreHistory() { return choose("Score history", "Istoricul scorului"); }
+    String unknownBid() { return choose("unrecorded", "neînregistrat"); }
     String historyHand() { return choose("Hand", "Mână"); }
     String historyPoints() { return choose("Points", "Puncte"); }
     String earlierBalance(int hand, int total) {

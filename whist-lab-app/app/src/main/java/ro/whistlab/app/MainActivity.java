@@ -51,6 +51,7 @@ public final class MainActivity extends Activity {
     private static final int SURFACE = Color.rgb(255, 254, 248);
     private static final int BACKGROUND = Color.rgb(246, 245, 237);
 
+
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final CompletedTrickPause completedTrickPause = new CompletedTrickPause();
     private GameSession game;
@@ -175,9 +176,9 @@ public final class MainActivity extends Activity {
         players.setSelection(setupPlayerCount - 3);
         addSetupSelector(page, copy.players(), players);
 
-        Spinner modes = spinner(Arrays.stream(GameMode.values()).map(copy::modeName).collect(Collectors.toList()),
+        Spinner modes = spinner(WhistUiText.MENU_MODES.stream().map(copy::modeName).collect(Collectors.toList()),
                 "game-type");
-        modes.setSelection(setupMode.ordinal());
+        modes.setSelection(WhistUiText.MENU_MODES.indexOf(setupMode));
         LinearLayout.LayoutParams modeParams = matchWrap();
         modeParams.topMargin = dp(4);
         page.addView(modes, modeParams);
@@ -226,7 +227,7 @@ public final class MainActivity extends Activity {
         updateModeDetails.run();
         modes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
-                setupMode = GameMode.values()[position];
+                setupMode = WhistUiText.MENU_MODES.get(position);
                 updateModeDetails.run();
             }
             public void onNothingSelected(AdapterView<?> parent) { }
@@ -244,7 +245,7 @@ public final class MainActivity extends Activity {
         });
         addButton(page, copy.startGame(), "btn_start_game", true, () -> {
             int playerCount = Integer.parseInt(String.valueOf(players.getSelectedItem()));
-            GameMode mode = GameMode.values()[modes.getSelectedItemPosition()];
+            GameMode mode = WhistUiText.MENU_MODES.get(modes.getSelectedItemPosition());
             AiDifficulty ai = AiDifficulty.values()[difficulty.getSelectedItemPosition()];
             recordedReplay = null;
             selectedBid = null;
@@ -331,6 +332,7 @@ public final class MainActivity extends Activity {
         status.setPadding(dp(8), 0, 0, 0);
         TextView title = text(copy.gameTitle(state.mode()), 14, Color.rgb(245, 248, 240), true);
         title.setSingleLine(true);
+        title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         title.setTag("game-title");
         TextView progress = text(copy.progress(state), 11, Color.rgb(229, 239, 230), true);
         TextView summary = text(copy.bidSummary(state), 9, Color.rgb(194, 216, 199), false);
@@ -340,8 +342,10 @@ public final class MainActivity extends Activity {
         status.addView(summary, matchWrap());
         header.addView(status, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        header.addView(new TrumpIndicatorView(this, state, copy),
-                new LinearLayout.LayoutParams(dp(82), dp(56)));
+        LinearLayout.LayoutParams trumpParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        trumpParams.leftMargin = dp(8);
+        header.addView(new TrumpIndicatorView(this, state, copy), trumpParams);
 
         LinearLayout.LayoutParams params = matchWrap();
         params.bottomMargin = dp(4);

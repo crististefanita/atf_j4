@@ -7,7 +7,7 @@ cărți. Mâna rămâne pe un rând. La patru locuri, toate cele nouă valori le
 încap în centrul mesei. Alegerea valorii 8 păstrează poziția fiecărui scaun.
 Spațiul dintre regiuni provine din dimensiunile măsurate ale copiilor Android.
 
-[APK](../dist/WhistLab-0.1.3-debug.apk) · [Sumă SHA-256](../dist/WhistLab-0.1.3-debug.apk.sha256) · [Atlas de layout](../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
+APK-ul istoric și suma lui sunt disponibile în Git la `a51bb15:dist/` · [Atlas de layout](../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
 
 ## Proveniența binarului
 

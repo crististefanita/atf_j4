@@ -596,11 +596,11 @@ public class WhistLabGameplayE2eTest {
             ui.tapText("New game");
             ui.awaitText("Start game", Duration.ofSeconds(12));
             ui.selectNamedSpinnerOption("player-count", "4");
-            ui.selectNamedSpinnerOption("game-type", "Practice hand");
+            ui.selectNamedSpinnerOption("game-type", "Romanian (1–8–1)");
             String oneCardSetup = ui.awaitText("Start game", Duration.ofSeconds(10));
             assertTrue(ui.spinnerValue(oneCardSetup, "Players").equals("4")
-                            && ui.spinnerValue(oneCardSetup, "Game type").equals("Practice hand"),
-                    "The centered one-card hand check must use the normal four-player Practice hand setup");
+                            && ui.spinnerValue(oneCardSetup, "Game type").equals("Romanian (1–8–1)"),
+                    "The centered one-card hand check must use the normal four-player Romanian Whist setup");
             ui.revealText("Start game");
             ui.tapText("Start game");
             String oneCardBidding = ui.awaitText("Place bid", Duration.ofSeconds(20));
@@ -612,9 +612,9 @@ public class WhistLabGameplayE2eTest {
             List<Path> oneCardBidEvidence = ui.capture("whist-lab-single-card-bidding-center");
             evidence.addAll(oneCardBidEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.AND,
-                    "Center the single-card hand at the bottom of the Practice hand bidding screen",
-                    "Four-player Practice hand · one card", oneCardBidEvidence,
-                    "open normal Practice hand setup and inspect the one-card hand bounds",
+                    "Center the single-card hand at the bottom of the Romanian Whist bidding screen",
+                    "Four-player Romanian Whist · one card", oneCardBidEvidence,
+                    "open normal Romanian Whist setup and inspect the one-card hand bounds",
                     "the only card is centered within its full-width bottom hand viewport",
                     "hand=" + oneCardBidViewport + "; card bounds=" + oneCardBidBounds,
                     Duration.ofNanos(System.nanoTime() - oneCardStarted).toMillis(),
@@ -627,7 +627,7 @@ public class WhistLabGameplayE2eTest {
                     + oneCardBidViewport + "; card=" + oneCardBidBounds);
 
             oneCardStarted = System.nanoTime();
-            ui.selectBid(1);
+            ui.selectBid(ui.numericButtonValues(oneCardBidding).getFirst());
             ui.tapText("Place bid");
             ui.awaitText("PLAY NOW", Duration.ofSeconds(15));
             String oneCardPlay = ui.awaitDescriptionContaining("Your hand, 1 cards.", Duration.ofSeconds(10));
@@ -639,8 +639,8 @@ public class WhistLabGameplayE2eTest {
             evidence.addAll(oneCardPlayEvidence);
             checkpoint(trace, "TEST BODY", AtfGherkinKeyword.THEN,
                     "Keep the single card centered at the bottom after bidding enters play",
-                    "Practice hand · PLAY NOW · one card", oneCardPlayEvidence,
-                    "submit one bid and inspect the human lead before playing the card",
+                    "Romanian Whist · PLAY NOW · one card", oneCardPlayEvidence,
+                    "submit one bid and inspect the human turn before playing the card",
                     "PLAY NOW is visible and the single card remains centered in the bottom hand row",
                     "hand=" + oneCardPlayViewport + "; card bounds=" + oneCardPlayBounds,
                     Duration.ofNanos(System.nanoTime() - oneCardStarted).toMillis(),
@@ -659,7 +659,7 @@ public class WhistLabGameplayE2eTest {
                     + "was exercised at " + String.join(", ", profiles.stream().map(DisplayProfile::name).toList()) + ". Each checkpoint "
                     + "audited every card face, every legal bid, table/seat/button geometry, 48 dp targets, and a "
                     + "full-resolution inline screenshot; no thirteen-card bid was submitted. A normal one-card "
-                    + "Practice hand was then checked at bidding and play, with its card centered at the bottom.";
+                    + "Romanian Whist was then checked at bidding and play, with its card centered at the bottom.";
         } catch (Throwable failure) {
             outcome = AtfReportStatus.FAIL;
             try {
@@ -980,11 +980,12 @@ public class WhistLabGameplayE2eTest {
             ui.selectNamedSpinnerOption("interface-language", "English");
             ui.tapText("New game");
             String setup = ui.awaitText("Start game", Duration.ofSeconds(10));
-            ui.tapSpinner(1);
+            ui.tapDescription("Game type");
             String modeOptions = ui.awaitText("Descending", Duration.ofSeconds(10));
             List<String> modeChoiceLabels = ui.texts(modeOptions);
             boolean otherModesAvailable = ui.hasText(modeOptions, "Descending")
-                    && ui.hasText(modeOptions, "Practice hand");
+                    && modeChoiceLabels.containsAll(List.of("Oh Hell", "Romanian (1–8–1)", "Down & Up", "Long Romanian (8-1-8)", "Reverse Oh Hell"))
+                    && !modeChoiceLabels.contains("Practice hand") && !modeChoiceLabels.contains("Maximum");
             ui.back();
             setup = ui.awaitText("Start game", Duration.ofSeconds(10));
             List<String> setupLabels = ui.texts(setup);
@@ -993,12 +994,12 @@ public class WhistLabGameplayE2eTest {
             checkpoint(trace, "SETUP", AtfGherkinKeyword.GIVEN,
                     "Verify Oh Hell is the local app's default and alternatives remain selectable",
                     "New game setup", setupEvidence, "open New game without changing the selected mode",
-                    "Oh Hell selected; Descending and Practice hand available",
+                    "Oh Hell selected; six public modes; Maximum and Practice hand absent",
                     "selected setup=" + setupLabels + "; opened mode options=" + modeChoiceLabels,
                     Duration.ofNanos(System.nanoTime() - started).toMillis(),
                     List.of(new AtfAssertion("Default ruleset matches the original app selection", "Oh Hell",
                                     Boolean.toString(defaultMode), defaultMode),
-                            new AtfAssertion("Alternative modes remain selectable", "Descending and Practice hand",
+                            new AtfAssertion("Alternative modes remain selectable", "Six public game types",
                                     modeChoiceLabels.toString(), otherModesAvailable)),
                     defaultMode && otherModesAvailable ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
             assertTrue(defaultMode && otherModesAvailable,
@@ -1011,7 +1012,7 @@ public class WhistLabGameplayE2eTest {
                     .filter(label -> label.startsWith("Trump"))
                     .findFirst().orElse("");
             boolean recognizedTrump = trumpDescription.matches(
-                    "Trump (?:: (?:spades|hearts|clubs|diamonds)|set by turned card: .+)");
+                    "Trump (?:suit only, no turned card: (?:spades|hearts|clubs|diamonds)|set by turned card: .+)");
             boolean tenCardHand = ui.hasDescription(bidding, "Your hand, 10 cards.");
             boolean biddingReady = ui.hasText(bidding, "Hand 1 / 19")
                     && ui.hasText(bidding, "Place bid") && ui.hasText(bidding, "Whist · Oh Hell")

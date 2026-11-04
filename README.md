@@ -283,20 +283,16 @@ comenzile individuale, vezi [organizarea testelor Android](docs/ANDROID_TESTING.
 
 ## APK Whist Lab pentru instalare directă
 
-[WhistLab-0.1.3-debug.apk](dist/WhistLab-0.1.3-debug.apk) are codul 4,
+[WhistLab-0.1.5-debug.apk](dist/WhistLab-0.1.5-debug.apk) are codul 6,
 `minSdk 24` și `targetSdk 36`. Pachetul conține aplicația completă.
-Directorul `dist` păstrează o singură versiune și [suma ei SHA-256](dist/WhistLab-0.1.3-debug.apk.sha256).
+Directorul `dist` păstrează o singură versiune și [suma ei SHA-256](dist/WhistLab-0.1.5-debug.apk.sha256).
 
-Build-ul include motorul AI local și interfața verificată în J4. Fișa de
-acceptanță identifică separat sursa AI, binarul instalat și probele de pe emulator.
-Pilotul a parcurs șase mâini pe Hard, inclusiv reluarea după repornirea procesului.
-Verificarea de afișare măsoară indicii celor 13 cărți și spațiul dintre cele nouă
-opțiuni de licitare și scaune. [Acceptanța 0.1.3](docs/WHIST_UI_013_ACCEPTANCE.md) · [Atlasul interfeței](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
+APK-ul include motorul AI local. Pe emulator s-au verificat meniul, cartea întoarsă, centrarea mâinilor de 1, 2 și 13 cărți și istoricul celor patru locuri după repornire. Pilotul anterior cu șase mâini este verificat separat prin replay offline. [Acceptanța 0.1.5 și rapoartele Extent](docs/WHIST_UI_015_ACCEPTANCE.md) · [Atlasul interfeței](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
 
 ```powershell
 $env:ADB_SERVER_SOCKET = 'tcp:192.168.56.1:5038'
 & 'C:\tools\whist-android-sdk\platform-tools\adb.exe' -s 127.0.0.1:5555 `
-  install -r 'dist/WhistLab-0.1.3-debug.apk'
+  install -r 'dist/WhistLab-0.1.5-debug.apk'
 ```
 
 Actualizarea peste o instalare existentă cere aceeași cheie de semnare.

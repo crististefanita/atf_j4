@@ -22,7 +22,7 @@ import ro.whistlab.core.Trump;
 final class GameSessionStore {
     private static final String PREFERENCES = "whist_lab_game";
     private static final String SAVE_KEY = "current_session_v1";
-    private static final int VERSION = 4;
+    private static final int VERSION = 5;
 
     private GameSessionStore() { }
 
@@ -108,6 +108,9 @@ final class GameSessionStore {
         JSONArray rows = new JSONArray();
         for (List<Integer> totals : ledger.closingTotals()) rows.put(new JSONArray(totals));
         scores.put("hands", rows);
+        JSONArray bids = new JSONArray();
+        for (List<Integer> contracts : ledger.recordedBids()) bids.put(new JSONArray(contracts));
+        scores.put("bids", bids);
         root.put("scores", scores);
         root.put("currentTrick", encodeTrick(state.currentTrick()));
         root.put("lastTrick", encodeTrick(state.lastTrick()));
@@ -145,16 +148,25 @@ final class GameSessionStore {
                 root.getInt("biddingSeat"), root.getInt("currentSeat"), root.getInt("bidsSubmitted"),
                 root.getInt("bidTotal"), Trump.valueOf(root.getString("trump")),
                 root.getInt("lastTrickWinnerSeat"), players,
-                current, last, history, turned, decodeScoreHistory(root));
+                current, last, history, turned, decodeScoreHistory(root, players));
     }
 
-    private static ScoreHistory decodeScoreHistory(JSONObject root) throws JSONException {
-        if (root.getInt("version") < VERSION && !root.has("scores")) return null;
+    private static ScoreHistory decodeScoreHistory(JSONObject root, List<GameSession.PlayerState> players) throws JSONException {
+        if (root.getInt("version") < 4 && !root.has("scores")) return null;
         JSONObject scores = root.getJSONObject("scores");
         JSONArray hands = scores.getJSONArray("hands");
         List<List<Integer>> rows = new ArrayList<>(hands.length());
         for (int i = 0; i < hands.length(); i++) rows.add(scoreVector(hands.getJSONArray(i)));
-        return new ScoreHistory(scoreInt(scores.get("priorHands")), scoreVector(scores.getJSONArray("opening")), rows);
+        List<List<Integer>> bids = new ArrayList<>();
+        boolean settled = GamePhase.SCORE.name().equals(root.getString("phase"));
+        if (root.getInt("version") >= 5 || scores.has("bids")) {
+            JSONArray contracts = scores.getJSONArray("bids");
+            for (int i = 0; i < contracts.length(); i++) bids.add(scoreVector(contracts.getJSONArray(i)));
+            if (settled && bids.isEmpty()) throw new JSONException("Missing completed hand bids");
+        } else if (settled) {
+            bids.add(players.stream().map(GameSession.PlayerState::bid).collect(java.util.stream.Collectors.toList()));
+        }
+        return new ScoreHistory(scoreInt(scores.get("priorHands")), scoreVector(scores.getJSONArray("opening")), rows, bids);
     }
 
     private static List<Integer> scoreVector(JSONArray values) throws JSONException {

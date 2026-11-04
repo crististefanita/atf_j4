@@ -88,7 +88,9 @@ public class ScoreHistoryCheckpointTest {
             var other = ScoreHistoryColumn.forPlayer(history, 2, copy).rows().get(0);
             assertEquals("-1", other.points());
             assertEquals("4", other.total());
-            assertEquals(language == HowToPlay.Language.RO ? "Mână 2, Puncte -1, Total 4" : "Hand 2, Points -1, Total 4", other.description());
+            assertEquals("—", other.bid());
+            assertTrue(other.description().contains(copy.bidLabel() + " " + copy.unknownBid()));
+            assertTrue(other.description().endsWith(copy.historyPoints() + " -1, Total 4"));
         }
     }
 
@@ -119,6 +121,28 @@ public class ScoreHistoryCheckpointTest {
                 assertEquals(0, GameSession.newGame(config).scoreHistory().completedHands());
             }
         }
+    }
+
+    @Test public void v4RecoversOnlyProvableBidsAndV5RejectsLostOrContradictoryContracts() throws Exception {
+        GameSession game = newMatch();
+        finish(game);
+        game.startNextHand();
+        finish(game);
+        JSONObject old = GameSessionStore.encode(game.saveState()).put("version", 4);
+        old.getJSONObject("scores").remove("bids");
+        GameSession loaded = GameSessionStore.fromJson(old.toString());
+        for (var player : loaded.snapshot().players()) {
+            assertNull(loaded.scoreHistory().bid(1, player.seat()));
+            assertEquals(player.bid(), loaded.scoreHistory().bid(2, player.seat()));
+        }
+        loaded.startNextHand();
+        finish(loaded);
+        assertEquals(loaded.scoreHistory(), restore(loaded).scoreHistory());
+        JSONObject broken = GameSessionStore.encode(loaded.saveState());
+        broken.getJSONObject("scores").getJSONArray("bids").getJSONArray(1).put(0, 1);
+        rejects(broken);
+        broken.getJSONObject("scores").remove("bids");
+        rejects(broken);
     }
 
     private static void rejects(JSONObject state) {

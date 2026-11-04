@@ -33,7 +33,7 @@ flowchart TD
 | `DropdownBackground` | Chevron vizibil pe selectorul Android nativ; nu înlocuiește interacțiunile, focusul sau semantica acestuia. |
 | `DisplayFixtureDeals` | Date deterministe pentru intent-uri protejate de `BuildConfig.DEBUG`; cele patru culori de 10 apar fără cărți duplicate. Nu sunt distribuții ale pilotului normal. |
 | `ScoreHistoryView` | Păstrează selectorul și antetele deasupra listei. Doar rândurile se derulează. Deschiderea din foaia consultativă păstrează masa dedesubt. |
-| `ScoreHistoryColumn` | Produce aceeași ordine și aceleași valori pentru afișare, citire asistată și replay-ul de componentă. |
+| `ScoreHistoryColumn` | Asociază licitația locului selectat cu punctele și totalul de la încheierea mâinii. Produce aceeași ordine și aceleași valori pentru afișare, citire asistată și replay-ul de componentă. |
 | `WhistUiText` | Localizarea EN/RO; engleza este implicită la prima instalare. |
 
 ## Principii de layout
@@ -41,10 +41,10 @@ flowchart TD
 - Pâslă continuă, fără oval decorativ; tabla și decizia curentă sunt dominante.
 - Nume, licitat și levate formează un grup compact. Valoarea este aliniată
   separat de etichetă; indicatorul turei folosește și text, nu numai culoare.
-- Mâna omului stă jos. O singură carte este centrată; treisprezece cărți au
+- Mâna omului stă jos, centrată după lățimea reală a ferestrei. La două sau trei cărți, avansul se oprește la 72% din lățimea feței. Dacă indicii cer derulare, vederea inițială pornește din mijloc, iar jucătorul poate ajunge la ambele capete. Treisprezece cărți au
   indici verticali expuși. Cartea selectată se ridică în spațiul rezervat și
   rămâne în spatele vecinelor; selectarea nu mută scaunul omului.
-- Atuul este în antet, cu rang și culoare când există o carte întoarsă.
+- Atuul își măsoară chenarul după text și păstrează spațiu față de titlu și masă. Cartea întoarsă apare pe un fond ivoire, cu rang și simbol. Când regulile stabilesc doar culoarea, indicatorul o afișează cu explicația localizată.
   Centrul mesei este al licitației sau al levatei.
 - Selectorul limbii este dropdown. Configurarea păstrează opțiunile relevante,
   iar regulile și programul complet se consultă la cerere.

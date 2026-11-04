@@ -196,7 +196,7 @@ public final class GameSession {
                 for (Player player : players) opening.set(player.seat, Math.subtractExact(player.score, earned(player)));
             }
             recorded = new ScoreHistory(handIndex, opening, Collections.emptyList());
-            if (phase == GamePhase.SCORE) recorded = recorded.finish(completed, totals);
+            if (phase == GamePhase.SCORE) recorded = recorded.finish(completed, totals, playerBids());
         }
         if (recorded.completedHands() != completed || !recorded.latestTotals().equals(totals)
                 || (phase == GamePhase.SCORE && recorded.closingTotals().isEmpty())) {
@@ -207,19 +207,32 @@ public final class GameSession {
             boolean series = config.streakBonuses() && size > 1;
             int minimum = config.mode().isRomanian() ? -size - (series ? 5 : 0) : 0;
             int maximum = size + (config.mode().isRomanian() ? 5 : 10) + (series ? config.streakBonusPoints() : 0);
+            int bidTotalForHand = 0;
             for (Player player : players) {
+                Integer contract = recorded.bid(hand, player.seat);
+                if (contract != null) {
+                    if (contract < 0 || contract > size || (phase == GamePhase.SCORE && hand == completed && !contract.equals(player.bid)))
+                        throw new IllegalArgumentException("Invalid recorded bid");
+                    bidTotalForHand += contract;
+                }
                 int points = recorded.points(hand, player.seat);
                 if (points < minimum || points > maximum)
                     throw new IllegalArgumentException("Score history exceeds the hand's scoring range");
                 if (phase == GamePhase.SCORE && hand == completed && points != earned(player))
                     throw new IllegalArgumentException("Score history does not match the completed contract");
             }
+            if (recorded.bid(hand, 0) != null && bidTotalForHand == size)
+                throw new IllegalArgumentException("Recorded bids violate the last bidder rule");
         }
         scoreHistory = recorded;
     }
 
     private int earned(Player player) {
         return GameRules.scoreDelta(player.tricksWon, player.bid, config.mode()) + player.streakPoints;
+    }
+
+    private List<Integer> playerBids() {
+        return players.stream().map(player -> player.bid).collect(java.util.stream.Collectors.toList());
     }
 
     private List<Integer> playerTotals() {
@@ -454,7 +467,7 @@ public final class GameSession {
                 player.streakPoints = result.streakPoints();
             } else player.score += GameRules.scoreDelta(player.tricksWon, player.bid, config.mode());
         }
-        scoreHistory = scoreHistory.finish(handIndex + 1, playerTotals());
+        scoreHistory = scoreHistory.finish(handIndex + 1, playerTotals(), playerBids());
         phase = GamePhase.SCORE;
     }
 

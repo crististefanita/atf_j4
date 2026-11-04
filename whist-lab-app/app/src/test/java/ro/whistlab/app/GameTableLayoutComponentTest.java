@@ -6,6 +6,34 @@ import org.junit.Test;
 
 /** Tests occupied regions together, including the nine-option regression. */
 public final class GameTableLayoutComponentTest {
+    @Test public void allHandCountsRemainCenteredWithoutGapsAtActualWindowDensities() {
+        for (int width : new int[]{280, 313, 353, 560, 760}) for (float density : new float[]{1, 2, 2.625f, 2.75f}) {
+            int pixels = Math.round(width * density);
+            for (float scale : new float[]{1, 1.3f, 1.5f}) for (int count = 1; count <= 17; count++) {
+                int index = Math.round(19 * scale * density);
+                var fan = HandLayoutMetrics.fan(count, pixels, density, scale, index);
+                int end = fan.left(count - 1) + fan.cardWidth();
+                assertEquals(fan.first(), fan.width() - end, 1);
+                assertTrue(fan.advance() <= fan.cardWidth());
+                if (count > 1) assertTrue(fan.advance() >= index);
+                if (count <= 3) {
+                    assertEquals(pixels, fan.width());
+                    if (count > 1) assertTrue(fan.advance() < fan.cardWidth());
+                }
+            }
+        }
+    }
+
+    @Test public void newGameListsSixModesWithStableSelectionInBothLanguages() {
+        var modes = WhistUiText.MENU_MODES;
+        assertEquals(java.util.List.of("OH_HELL", "DESCENDING", "ROMANIAN_WHIST", "DOWN_AND_UP", "LONG_ROMANIAN", "REVERSE_OH_HELL"),
+                modes.stream().map(Enum::name).toList());
+        for (var language : ro.whistlab.core.HowToPlay.Language.values()) {
+            var copy = new WhistUiText(language);
+            assertEquals(6, modes.stream().map(copy::modeName).distinct().count());
+        }
+    }
+
     @Test public void everyMeasuredTableRegionFitsWithoutCoveringAnotherRegion() {
         for (int width : new int[]{280, 313, 353, 560, 760}) {
             for (int players = 3; players <= 6; players++) {

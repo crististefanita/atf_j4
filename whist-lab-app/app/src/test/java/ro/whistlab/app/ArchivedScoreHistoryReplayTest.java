@@ -79,6 +79,13 @@ public class ArchivedScoreHistoryReplayTest {
                 int total = hand.getJSONObject("exPost").getJSONArray("scores").getInt(seat);
                 int points = total - hand.getJSONArray("beforeTotals").getInt(seat);
                 var row = column.rows().get(completed - h);
+                JSONArray contracts = hand.getJSONObject("exPost").getJSONArray("bids");
+                java.util.Map<Integer, Integer> bySeat = new java.util.HashMap<>();
+                for (int i = 0; i < contracts.length(); i++) {
+                    JSONArray contract = contracts.getJSONArray(i);
+                    assertNull(bySeat.put(contract.getInt(0), contract.getInt(1)));
+                }
+                assertEquals(Integer.toString(bySeat.get(seat)), row.bid());
                 assertEquals(Integer.toString(h), row.hand());
                 assertEquals(points > 0 ? "+" + points : Integer.toString(points), row.points());
                 assertEquals(Integer.toString(total), row.total());
