@@ -23,7 +23,7 @@ sunt variante distincte, nu excepții ascunse în acest profil.
 | RW04 | Ai culoarea cerută: o urmezi. Nu o ai, dar ai atu: tai obligatoriu. Nici culoare, nici atu: decartezi. Fără atu, nu există obligația de tăiere. |
 | RW05 | Câștigă cel mai mare atu sau cea mai mare carte din culoarea cerută. Câștigătorul conduce următoarea levată. Nu adăugăm obligația de supratăiere. |
 | RW06 | Exact: `5 + levate`. Inexact: `-abs(levate - ofertă)`. Scorul se adaugă o dată, după ultima carte. Totalurile negative sunt valide. |
-| RW07 | Starea păstrează cărțile, ofertele, levatele, scorurile și istoricul public la salvare/reluare. Jocul se oprește după ultima mână. |
+| RW07 | La ultima carte, motorul înregistrează o singură dată soldurile tuturor locurilor în `ScoreHistory`. Reluarea și trecerea la mâna următoare păstrează registrul. [Schema și probele](../../docs/WHIST_SCORE_HISTORY.md) |
 
 La 4 jucători secvența are **24 de mâini, 94 de levate, 376 de cărți jucate**.
 Nu se aplică regula Oh Hell `levate + 10 dacă exact`.

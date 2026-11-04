@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import ro.whistlab.core.GamePhase;
-import ro.whistlab.core.GameRules;
+import ro.whistlab.core.ScoreHistory;
 import ro.whistlab.core.GameSession;
 
 /** Compact current-hand score table shared by the live view and hand-result screen. */
@@ -22,8 +22,11 @@ final class ScoreTableView extends LinearLayout {
     private static final int HUMAN_ROW = Color.rgb(235, 243, 232);
     private static final int RULE = Color.rgb(218, 226, 216);
 
-    ScoreTableView(Context context, GameSession.Snapshot state, WhistUiText copy) {
+    private final ScoreHistory history;
+
+    ScoreTableView(Context context, GameSession.Snapshot state, WhistUiText copy, ScoreHistory history) {
         super(context);
+        this.history = history;
         setOrientation(VERTICAL);
         setBackground(rounded(PAPER, RULE, 12));
 
@@ -91,13 +94,8 @@ final class ScoreTableView extends LinearLayout {
 
     private String handValue(GameSession.PlayerSnapshot player, GameSession.Snapshot state) {
         if (state.phase() != GamePhase.SCORE) return "—";
-        int delta = handDelta(player, state);
+        int delta = history.points(state.handNumber(), player.seat());
         return (delta > 0 ? "+" : "") + delta;
-    }
-
-    private int handDelta(GameSession.PlayerSnapshot player, GameSession.Snapshot state) {
-        return GameRules.scoreDelta(player.tricksWon(), player.bid() == null ? 0 : player.bid(), state.mode())
-                + player.streakPoints();
     }
 
     private GradientDrawable rounded(int fill, int stroke, int radius) {

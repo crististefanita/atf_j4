@@ -7,8 +7,8 @@ separat și nemodificat.
 
 ## Distribuție și acceptanță
 
-Versiunea 0.1.3 folosește `targetSdk 36`, `minSdk 24` și codul de versiune 4.
-În `dist` se păstrează ultimul APK verificat și suma sa SHA-256. Pentru binarul
+Versiunea acceptată pe Android, 0.1.3, folosește `targetSdk 36`, `minSdk 24` și codul de versiune 4.
+Sursele 0.1.4 (cod 5) adaugă istoricul scorului. În `dist` se păstrează ultimul APK verificat și suma sa SHA-256. Pentru binarul
 instalat, matricea Android și limitele probei, consultați [acceptanța versiunii](../docs/WHIST_UI_013_ACCEPTANCE.md).
 
 [Atlasul interfeței](app/src/main/java/ro/whistlab/app/README.md) leagă fiecare
@@ -69,7 +69,7 @@ păstrează prioritățile și criteriile de închidere.
 | Cât licitez? | Opțiunile legale și confirmarea sunt în centru. Ținta tactilă are cel puțin 48 dp. Grila și cele 3–6 scaune se măsoară împreună. |
 | Ce carte joc? | Mâna stă jos pe un singur rând. Rangul este deasupra simbolului în banda expusă. La selectare, cartea se ridică în spatele vecinelor. |
 | Unde urmăresc levata? | Cărțile publice apar în centru și ultima levată completă rămâne 1.500 ms înainte de continuare. |
-| Cum văd scorul? | Meniul din stânga sus deschide foaia consultativă. După mână apar întâi rezultatele, apoi detaliile de calcul și următoarea mână. |
+| Cum văd scorul? | Deschideți **Meniu joc → Scorul partidei → Istoricul scorului**. Alegeți un jucător pentru punctele fiecărei mâini și totalul de atunci. Aceeași opțiune apare după încheierea mâinii. |
 
 Pâsla este continuă. Omul rămâne în sud, iar adversarii formează conturul în
 jurul zonei centrale. La patru jucători, flancurile stau la vest și est când
@@ -102,11 +102,11 @@ capturate ale versiunii 145, verificate cu un oracol independent pentru cărți
 secțiunile specifice variantei și seria de cinci mâini. Acoperirea instrucțiunilor
 separă valoarea originală 5, valoarea cerută 10 și profilul clasic fără serie.
 Checkpoint-urile folosesc JSON versionat în `SharedPreferences` privat și sunt
-validate la restaurare. Versiunea 3 adaugă configurarea regulilor, contoarele
-seriei și punctele acordate; versiunea 2, cu istoricul public complet al levatelor
-mâinii active, rămâne lizibilă. Acest istoric nu este registru de scor pe mâini:
-checkpoint-ul păstrează totalurile cumulative, dar nu rezultatele mâinilor deja
-încheiate.
+validate la restaurare. Versiunea 4 păstrează totalurile fiecărui loc după fiecare mână încheiată.
+Diferența dintre două totaluri succesive include și punctele seriei. O salvare
+v1–v3 păstrează soldul anterior cunoscut. Dacă mâna salvată tocmai s-a încheiat,
+tabela recuperează și punctele ei din licitație, levate și bonusul înregistrat.
+[Contractul și replay-ul pe pilotul Android](../docs/WHIST_SCORE_HISTORY.md) descriu migrarea.
 Versiunea 1 păstrează doar levata cunoscută, curentă sau ultima. Multiplayer-ul
 online și clasamentele nu fac parte din acceptanță. Fixture-ul de test este
 disponibil numai în build-ul de depanare și folosește o distribuție fixă: A♥
@@ -194,7 +194,7 @@ $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
 ```
 
 Configurația curentă a APK-ului este `minSdk 24`, `compileSdk 36`,
-`targetSdk 36`, `versionCode 4` / `versionName 0.1.3`. `targetSdk 36`
+`targetSdk 36`, `versionCode 5` / `versionName 0.1.4`. `targetSdk 36`
 înlocuiește API 28: țintele cu peste două niveluri API sub versiunea Android a
 telefonului pot declanșa avertizarea Play Protect „Unsafe app blocked / built
 for an older version of Android”. Ridică `targetSdk` la nivelul cerut la acea

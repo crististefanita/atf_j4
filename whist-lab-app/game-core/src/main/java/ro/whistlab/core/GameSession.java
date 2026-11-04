@@ -16,6 +16,7 @@ public final class GameSession {
     private final GameConfig config;
     private final List<Integer> handSizes;
     private final List<Player> players;
+    private ScoreHistory scoreHistory;
     private int handIndex;
     private int handSize;
     private int dealerSeat;
@@ -35,6 +36,7 @@ public final class GameSession {
         this.config = Objects.requireNonNull(config, "config");
         this.handSizes = GameRules.handSizes(config.mode(), config.playerCount());
         this.players = new ArrayList<>(config.playerCount());
+        this.scoreHistory = ScoreHistory.newMatch(config.playerCount());
         players.add(new Player(0, "You", true));
         for (int seat = 1; seat < config.playerCount(); seat++) {
             players.add(new Player(seat, AI_NAMES.get(seat - 1), false));
@@ -181,8 +183,50 @@ public final class GameSession {
             throw new IllegalArgumentException("Saved score screen is incomplete");
         }
         session.validateRestoredRules();
+        session.restoreScoreHistory(saved.scoreHistory());
         return session;
     }
+
+    private void restoreScoreHistory(ScoreHistory recorded) {
+        List<Integer> totals = playerTotals();
+        int completed = handIndex + (phase == GamePhase.SCORE ? 1 : 0);
+        if (recorded == null) {
+            List<Integer> opening = new ArrayList<>(totals);
+            if (phase == GamePhase.SCORE) {
+                for (Player player : players) opening.set(player.seat, Math.subtractExact(player.score, earned(player)));
+            }
+            recorded = new ScoreHistory(handIndex, opening, Collections.emptyList());
+            if (phase == GamePhase.SCORE) recorded = recorded.finish(completed, totals);
+        }
+        if (recorded.completedHands() != completed || !recorded.latestTotals().equals(totals)
+                || (phase == GamePhase.SCORE && recorded.closingTotals().isEmpty())) {
+            throw new IllegalArgumentException("Score history does not match the saved hand and totals");
+        }
+        for (int hand = recorded.priorHands() + 1; hand <= completed; hand++) {
+            int size = handSizes.get(hand - 1);
+            boolean series = config.streakBonuses() && size > 1;
+            int minimum = config.mode().isRomanian() ? -size - (series ? 5 : 0) : 0;
+            int maximum = size + (config.mode().isRomanian() ? 5 : 10) + (series ? config.streakBonusPoints() : 0);
+            for (Player player : players) {
+                int points = recorded.points(hand, player.seat);
+                if (points < minimum || points > maximum)
+                    throw new IllegalArgumentException("Score history exceeds the hand's scoring range");
+                if (phase == GamePhase.SCORE && hand == completed && points != earned(player))
+                    throw new IllegalArgumentException("Score history does not match the completed contract");
+            }
+        }
+        scoreHistory = recorded;
+    }
+
+    private int earned(Player player) {
+        return GameRules.scoreDelta(player.tricksWon, player.bid, config.mode()) + player.streakPoints;
+    }
+
+    private List<Integer> playerTotals() {
+        return players.stream().map(player -> player.score).collect(java.util.stream.Collectors.toList());
+    }
+
+    public ScoreHistory scoreHistory() { return scoreHistory; }
 
     private void validateRestoredRules() {
         int n=players.size();
@@ -348,7 +392,7 @@ public final class GameSession {
                 .collect(java.util.stream.Collectors.toList());
         return new SaveState(config, phase, handIndex, handSize, dealerSeat, biddingSeat,
                 currentSeat, bidsSubmitted, bidTotal, trump, lastTrickWinnerSeat,
-                savedPlayers, trick, lastTrick, history, turnedCard);
+                savedPlayers, trick, lastTrick, history, turnedCard, scoreHistory);
     }
 
     public GameConfig config() {
@@ -410,6 +454,7 @@ public final class GameSession {
                 player.streakPoints = result.streakPoints();
             } else player.score += GameRules.scoreDelta(player.tricksWon, player.bid, config.mode());
         }
+        scoreHistory = scoreHistory.finish(handIndex + 1, playerTotals());
         phase = GamePhase.SCORE;
     }
 
@@ -490,7 +535,15 @@ public final class GameSession {
     public record SaveState(GameConfig config, GamePhase phase, int handIndex, int handSize,
             int dealerSeat, int biddingSeat, int currentSeat, int bidsSubmitted, int bidTotal,
             Trump trump, int lastTrickWinnerSeat, List<PlayerState> players,
-            List<PlayedCard> currentTrick, List<PlayedCard> lastTrick, List<PlayedCard> history, Card turnedCard) {
+            List<PlayedCard> currentTrick, List<PlayedCard> lastTrick, List<PlayedCard> history, Card turnedCard,
+            ScoreHistory scoreHistory) {
+        public SaveState(GameConfig config, GamePhase phase, int handIndex, int handSize,
+                int dealerSeat, int biddingSeat, int currentSeat, int bidsSubmitted, int bidTotal,
+                Trump trump, int lastTrickWinnerSeat, List<PlayerState> players,
+                List<PlayedCard> currentTrick, List<PlayedCard> lastTrick, List<PlayedCard> history, Card turnedCard) {
+            this(config, phase, handIndex, handSize, dealerSeat, biddingSeat, currentSeat, bidsSubmitted,
+                    bidTotal, trump, lastTrickWinnerSeat, players, currentTrick, lastTrick, history, turnedCard, null);
+        }
         public SaveState(GameConfig config, GamePhase phase, int handIndex, int handSize,
                 int dealerSeat, int biddingSeat, int currentSeat, int bidsSubmitted, int bidTotal,
                 Trump trump, int lastTrickWinnerSeat, List<PlayerState> players,

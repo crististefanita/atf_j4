@@ -40,6 +40,12 @@ public class RomanianStreakContractTest {
         var game=fixture(value,true,new int[]{4,4,-4,-4});String input=game.snapshot().toString();while(game.snapshot().phase()==GamePhase.BIDDING){int s=game.snapshot().biddingSeat();game.submitBid(s,new int[]{2,0,0,1}[s]);}
         for(int i=0;i<8;i++){var s=game.snapshot();assertTrue(s.players().stream().allMatch(p->p.totalScore()==0));game.playCard(s.currentSeat(),s.players().get(s.currentSeat()).hand().get(0));if(i==6)game=GameSession.restoreComplete(game.saveState());}
         assertEquals(List.of(7+value,5+value,5,-6),game.snapshot().players().stream().map(GameSession.PlayerSnapshot::totalScore).toList());
+        var ledger = GameSession.restoreComplete(game.saveState()).scoreHistory();
+        for (int seat = 0; seat < 4; seat++) {
+            int earned = List.of(7 + value, 5 + value, 5, -6).get(seat);
+            assertEquals(earned, ledger.points(20, seat));
+            assertEquals(earned, ledger.total(20, seat));
+        }
         assertEquals(List.of(0,0,1,0),game.snapshot().players().stream().map(GameSession.PlayerSnapshot::streak).toList());
         assertEquals(List.of(value,value,0,-5),game.snapshot().players().stream().map(GameSession.PlayerSnapshot::streakPoints).toList());
         var complete=game.snapshot();game=GameSession.restoreComplete(game.saveState());assertEquals(complete,game.snapshot());var scored=game;assertThrows(IllegalStateException.class,()->scored.playCard(0,new Card(Suit.HEARTS,14)));assertEquals(complete,game.snapshot());

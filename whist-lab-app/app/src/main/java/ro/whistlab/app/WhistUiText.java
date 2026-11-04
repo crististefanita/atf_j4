@@ -57,6 +57,13 @@ final class WhistUiText {
     String back() { return choose("Back", "Înapoi"); }
     String placeBid() { return choose("Place bid", "Licitează"); }
     String scoreSheet() { return choose("Score sheet", "Scorul partidei"); }
+    String scoreHistory() { return choose("Score history", "Istoricul scorului"); }
+    String historyHand() { return choose("Hand", "Mână"); }
+    String historyPoints() { return choose("Points", "Puncte"); }
+    String earlierBalance(int hand, int total) {
+        return choose("Total after hand " + hand + ": " + total + ". Earlier hand scores are unavailable.",
+                "Total după mâna " + hand + ": " + total + ". Punctajele anterioare pe mâini nu sunt disponibile.");
+    }
     String mainMenu() { return choose("Main menu", "Meniu principal"); }
     String gameMenu() { return choose("Game menu", "Meniu joc"); }
     String nextHand() { return choose("Next hand", "Mâna următoare"); }
@@ -83,6 +90,7 @@ final class WhistUiText {
         return switch (id) {
             case "interface-language" -> languageLabel();
             case "player-count" -> players();
+            case "history-player" -> scoreColumnPlayer();
             case "game-type" -> gameType();
             case "ai-level" -> aiLevel();
             case "romanian-streak-value" -> streakBonusLabel();

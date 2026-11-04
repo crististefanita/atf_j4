@@ -38,6 +38,7 @@ import ro.whistlab.core.GamePhase;
 import ro.whistlab.core.GameRules;
 import ro.whistlab.core.GameSession;
 import ro.whistlab.core.PlayedCard;
+import ro.whistlab.core.ScoreHistory;
 import ro.whistlab.core.Suit;
 import ro.whistlab.core.Trump;
 
@@ -88,7 +89,7 @@ public final class MainActivity extends Activity {
         if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_replay", false)) {
             try {
                 recordedReplay = new OriginalMatchReplay(getFilesDir());
-                game = recordedReplay.startHand(0, Arrays.asList(0, 0, 0, 0));
+                game = recordedReplay.startHand(0, ScoreHistory.newMatch(4));
                 lastConfig = game.config();
                 persistGame();
                 driveAutomatedTurns();
@@ -379,21 +380,33 @@ public final class MainActivity extends Activity {
         }
         ScrollView scoreScroll = new ScrollView(this);
         scoreScroll.setFillViewport(false);
-        scoreScroll.addView(new ScoreTableView(this, state, copy),
+        scoreScroll.addView(new ScoreTableView(this, state, copy, game.scoreHistory()),
                 new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
         content.addView(scoreScroll, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(copy.currentScores(state.handNumber()))
                 .setView(content)
-                .setPositiveButton(copy.close(), null)
-                .create();
+                .setPositiveButton(copy.close(), null);
+        ScoreHistory history = game.scoreHistory();
+        if (history.completedHands() > 0) builder.setNeutralButton(copy.scoreHistory(), null);
+        AlertDialog dialog = builder.create();
         dialog.setOnDismissListener(ignored -> {
             scoreDialogShowing = false;
             if (resumeAutomatedTurn && tableVisible && game != null) driveAutomatedTurns();
         });
         dialog.show();
+        if (history.completedHands() > 0) {
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(view -> showScoreHistory(state, history));
+        }
+    }
+
+    private void showScoreHistory(GameSession.Snapshot state, ScoreHistory history) {
+        Spinner players = spinner(state.players().stream().map(copy::playerName).collect(Collectors.toList()), "history-player");
+        new AlertDialog.Builder(this).setTitle(copy.scoreHistory())
+                .setView(new ScoreHistoryView(this, history, copy, players))
+                .setPositiveButton(copy.close(), null).show();
     }
 
     private void playHumanCard(Card card) {
@@ -420,7 +433,7 @@ public final class MainActivity extends Activity {
 
         LinearLayout.LayoutParams scoreTableParams = matchWrap();
         scoreTableParams.setMargins(0, 0, 0, dp(8));
-        page.addView(new ScoreTableView(this, state, copy), scoreTableParams);
+        page.addView(new ScoreTableView(this, state, copy, game.scoreHistory()), scoreTableParams);
         addQuietButton(page, copy.scoringDetails(), () -> new AlertDialog.Builder(this)
                 .setTitle(copy.scoringDetails()).setMessage(copy.scoreRule(state)
                         + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : ""))
@@ -429,8 +442,7 @@ public final class MainActivity extends Activity {
         if (!state.finalHand()) {
             addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
                 if (recordedReplay != null) {
-                    game = recordedReplay.startHand(state.handIndex() + 1,
-                            state.players().stream().map(GameSession.PlayerSnapshot::totalScore).collect(Collectors.toList()));
+                    game = recordedReplay.startHand(state.handIndex() + 1, game.scoreHistory());
                 } else game.startNextHand();
                 persistGame();
                 driveAutomatedTurns();
@@ -444,6 +456,7 @@ public final class MainActivity extends Activity {
                 driveAutomatedTurns();
             }, true);
         }
+        addQuietButton(page, copy.scoreHistory(), () -> showScoreHistory(state, game.scoreHistory()));
         addQuietButton(page, copy.mainMenu(), this::renderHome);
     }
 

@@ -14,6 +14,7 @@ import ro.whistlab.core.GameMode;
 import ro.whistlab.core.GamePhase;
 import ro.whistlab.core.GameSession;
 import ro.whistlab.core.PlayedCard;
+import ro.whistlab.core.ScoreHistory;
 import ro.whistlab.core.Suit;
 import ro.whistlab.core.Trump;
 
@@ -21,7 +22,7 @@ import ro.whistlab.core.Trump;
 final class GameSessionStore {
     private static final String PREFERENCES = "whist_lab_game";
     private static final String SAVE_KEY = "current_session_v1";
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
 
     private GameSessionStore() { }
 
@@ -38,6 +39,10 @@ final class GameSessionStore {
     static GameSession load(Context context) {
         String encoded = preferences(context).getString(SAVE_KEY, null);
         if (encoded == null || encoded.isBlank()) return null;
+        return fromJson(encoded);
+    }
+
+    static GameSession fromJson(String encoded) {
         try {
             JSONObject root = new JSONObject(encoded);
             if (root.getInt("version") < 1 || root.getInt("version") > VERSION) {
@@ -45,7 +50,7 @@ final class GameSessionStore {
             }
             GameSession.SaveState state=decode(root);
             return root.getInt("version")>=2?GameSession.restoreComplete(state):GameSession.restore(state);
-        } catch (JSONException | IllegalArgumentException failure) {
+        } catch (JSONException | IllegalArgumentException | ArithmeticException failure) {
             throw new IllegalStateException("Saved game is invalid and cannot be resumed", failure);
         }
     }
@@ -58,11 +63,11 @@ final class GameSessionStore {
         return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
     }
 
-    private static JSONObject encode(GameSession.SaveState state) throws JSONException {
+    static JSONObject encode(GameSession.SaveState state) throws JSONException {
         JSONObject root = new JSONObject();
         int remaining=state.players().stream().mapToInt(p->p.hand().size()).sum();
         // A resumed v1 hand cannot invent its missing early history. Keep its legacy
-        // marker until the next fresh deal; only complete checkpoints claim v2.
+        // marker until the next fresh deal. The score ledger is independent of this marker.
         root.put("version",state.history().size()==state.handSize()*state.config().playerCount()-remaining?VERSION:1);
         root.put("playerCount", state.config().playerCount());
         root.put("mode", state.config().mode().name());
@@ -96,6 +101,14 @@ final class GameSessionStore {
             players.put(item);
         }
         root.put("players", players);
+        ScoreHistory ledger = state.scoreHistory();
+        JSONObject scores = new JSONObject();
+        scores.put("priorHands", ledger.priorHands());
+        scores.put("opening", new JSONArray(ledger.openingTotals()));
+        JSONArray rows = new JSONArray();
+        for (List<Integer> totals : ledger.closingTotals()) rows.put(new JSONArray(totals));
+        scores.put("hands", rows);
+        root.put("scores", scores);
         root.put("currentTrick", encodeTrick(state.currentTrick()));
         root.put("lastTrick", encodeTrick(state.lastTrick()));
         root.put("history", encodeTrick(state.history()));
@@ -132,7 +145,27 @@ final class GameSessionStore {
                 root.getInt("biddingSeat"), root.getInt("currentSeat"), root.getInt("bidsSubmitted"),
                 root.getInt("bidTotal"), Trump.valueOf(root.getString("trump")),
                 root.getInt("lastTrickWinnerSeat"), players,
-                current, last, history, turned);
+                current, last, history, turned, decodeScoreHistory(root));
+    }
+
+    private static ScoreHistory decodeScoreHistory(JSONObject root) throws JSONException {
+        if (root.getInt("version") < VERSION && !root.has("scores")) return null;
+        JSONObject scores = root.getJSONObject("scores");
+        JSONArray hands = scores.getJSONArray("hands");
+        List<List<Integer>> rows = new ArrayList<>(hands.length());
+        for (int i = 0; i < hands.length(); i++) rows.add(scoreVector(hands.getJSONArray(i)));
+        return new ScoreHistory(scoreInt(scores.get("priorHands")), scoreVector(scores.getJSONArray("opening")), rows);
+    }
+
+    private static List<Integer> scoreVector(JSONArray values) throws JSONException {
+        List<Integer> row = new ArrayList<>(values.length());
+        for (int i = 0; i < values.length(); i++) row.add(scoreInt(values.get(i)));
+        return row;
+    }
+
+    private static int scoreInt(Object value) throws JSONException {
+        if (!(value instanceof Integer)) throw new JSONException("Score history requires integer values");
+        return (Integer) value;
     }
 
     private static JSONArray encodeCards(List<Card> cards) throws JSONException {

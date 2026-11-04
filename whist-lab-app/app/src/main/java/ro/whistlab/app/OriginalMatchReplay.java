@@ -16,7 +16,7 @@ final class OriginalMatchReplay {
         if(!"true".equals(recorded.getProperty("match.complete")))throw new IOException("Original match is incomplete");
         observedFile=new File(directory,"replay-observed.properties");
     }
-    GameSession startHand(int index,List<Integer> priorScores) {
+    GameSession startHand(int index,ScoreHistory scores) {
         hand=index;actualMoves.clear();
         GameConfig config=new GameConfig(4,GameMode.OH_HELL,AiDifficulty.NORMAL,20261101L);
         List<List<Card>> hands=new ArrayList<>();
@@ -25,10 +25,10 @@ final class OriginalMatchReplay {
         GameSession.SaveState saved=base.saveState();
         List<GameSession.PlayerState> players=new ArrayList<>();
         for(GameSession.PlayerState p:saved.players())players.add(new GameSession.PlayerState(p.seat(),p.name(),p.human(),
-                p.hand(),null,0,priorScores.get(p.seat())));
+                p.hand(),null,0,scores.latestTotals().get(p.seat())));
         return GameSession.restore(new GameSession.SaveState(config,GamePhase.BIDDING,index,number("size"),
                 saved.dealerSeat(),saved.biddingSeat(),saved.currentSeat(),0,0,saved.trump(),-1,players,
-                Collections.emptyList(),Collections.emptyList()));
+                Collections.emptyList(),Collections.emptyList(),Collections.emptyList(),null,scores));
     }
     int bid(int seat){return numbers("bids").get(seat);}
     Card nextCard(){return card(numbers("plays").get(actualMoves.size()));}

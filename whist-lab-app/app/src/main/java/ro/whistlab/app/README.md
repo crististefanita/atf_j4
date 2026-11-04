@@ -17,6 +17,9 @@ flowchart TD
     G[Lățimea reală a rangului și simbolului] --> F
     F --> H[Indice vertical accesibil și față decorativă]
     A --> I[ScoreTableView: comparație între jucători]
+    J[GameSession: solduri după fiecare mână] --> I
+    J --> K[ScoreHistoryColumn: puncte și total pentru un loc]
+    K --> L[ScoreHistoryView: selector de jucător și rânduri]
 ```
 
 | Intrare | Responsabilitate și invariantă |
@@ -29,6 +32,8 @@ flowchart TD
 | `CardFaceBackground` | Desenează simbolul central și colțul inversat. Semantica și indicele principal rămân în view-ul accesibil. |
 | `DropdownBackground` | Chevron vizibil pe selectorul Android nativ; nu înlocuiește interacțiunile, focusul sau semantica acestuia. |
 | `DisplayFixtureDeals` | Date deterministe pentru intent-uri protejate de `BuildConfig.DEBUG`; cele patru culori de 10 apar fără cărți duplicate. Nu sunt distribuții ale pilotului normal. |
+| `ScoreHistoryView` | Păstrează selectorul și antetele deasupra listei. Doar rândurile se derulează. Deschiderea din foaia consultativă păstrează masa dedesubt. |
+| `ScoreHistoryColumn` | Produce aceeași ordine și aceleași valori pentru afișare, citire asistată și replay-ul de componentă. |
 | `WhistUiText` | Localizarea EN/RO; engleza este implicită la prima instalare. |
 
 ## Principii de layout
