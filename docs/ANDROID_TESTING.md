@@ -1,6 +1,6 @@
 # Testarea Whist Lab pe Android
 
-J4 deține testarea offline a motorului Whist Lab și acceptanța interfeței proprii.
+Proiectul verifică offline motorul Whist Lab și acceptanța interfeței proprii.
 Testele offline nu depind de emulator; testele UI pornesc explicit aplicația
 ro.whistlab.app și acționează controalele vizibile.
 
@@ -9,29 +9,28 @@ ro.whistlab.app și acționează controalele vizibile.
 | Suprafață | Sursă | Ce verifică |
 |---|---|---|
 | Motor și AI | whist-lab-app/game-core și ai-lab | Reguli, licitații, levate, scor, persistență și evaluări repetabile. |
-| Adaptor Android | atf-android | Comenzi ADB delimitate, capturi și contracte pentru dispozitiv. |
+| Adaptor Android | atf-test-android | Comenzi ADB delimitate, capturi și contracte pentru dispozitiv. |
 | UI și Extent | atf-test-android | Meniu, masă, licitare, cărți, scor, acțiuni, aserțiuni și capturi ale aplicației proprii. |
 
 ## Verificări offline
 
-Din rădăcina J4: run-whist-collection.ps1 -Collection context și
+Din rădăcina proiectului: run-whist-collection.ps1 -Collection context și
 run-whist-collection.ps1 -Collection regression.
 
 Colecțiile JVM și limitele lor sunt descrise în
-[TEST_COLLECTIONS.md](TEST_COLLECTIONS.md). Validarea AI și build-ul APK au
-runner separat în scripts/run-whist-ai-validation.ps1. Runner-ele pregătesc
-sursele și rezultatele în directoare temporare sau externe, conform ghidului
-proiectului.
+[TEST_COLLECTIONS.md](TEST_COLLECTIONS.md). Runnerul agregat scripts/run-whist-ai-validation.ps1 orchestrează build-ul și verificările de integrare, cu selecțiile sale explicite.
+
+Promovarea strategică urmează separat protocolul de învățare, candidatul înghețat și registrul loturilor rezervate. Sursele de build și rezultatele se pregătesc în directoare temporare sau externe, conform ghidului proiectului.
 
 ## E2E-ul Whist Lab
 
-[run-whist-responsive-sanity.ps1](../scripts/run-whist-responsive-sanity.ps1)
-pornește din meniul normal și verifică layout-ul pe profile de ecran.
-[run-romanian-expert.ps1](../scripts/run-romanian-expert.ps1) joacă mâini
-normale în jocul nostru. [run-complete-match.ps1](../scripts/run-complete-match.ps1)
-reia în Whist Lab o partidă înregistrată și verifică regulile, mutările și
-scorul. Acest replay folosește fixture-uri J5 numai ca intrări; interacțiunile
-live cu aplicația-model aparțin J5.
+| Runner | Mecanism |
+|---|---|
+| [Sanity responsive](../scripts/run-whist-responsive-sanity.ps1) | Meniu și joc normal pe profile declarate; preflight-ul precede rezervarea dispozitivului. |
+| [Joc românesc](../scripts/run-romanian-expert.ps1) | Mâini normale, cu decizii și scor verificate independent. |
+| [Replay complet](../scripts/run-complete-match.ps1) | Reia intrări externe în Whist Lab și verifică regulile, mutările și scorul. |
+
+[Contractul responsive](WHIST_RESPONSIVE_UI_SANITY.md) definește limitele profilului și configurarea execuției.
 
 E2E-urile de produs selectează semantic elementele afișate, verifică după
 acțiune tranziția observată și păstrează captura aceleiași stări. Un tap ADB
@@ -43,9 +42,8 @@ vizuală și obiectivul partidei rămân verdicte distincte.
 Pentru un test live, identifică serialul, verifică disponibilitatea exclusivă a
 emulatorului și folosește runnerul dedicat. Niciun test dezactivat sau sărit nu
 este acceptanță UI. Rapoartele și capturile se păstrează în directorul extern
-configurat; sursele J4 nu sunt destinație pentru artefacte.
+configurat; sursele proiectului nu sunt destinație pentru artefacte.
 
-Dacă o comparație generică din Extent sau din fallback nu respectă contractul
-public al bibliotecii Reporting, înregistrează problema în
-[J0 Reporting feedback](../../atf_j0/docs/feedback/README.md). J4 păstrează
-așteptările specifice jocului și dovada consumerului.
+Dacă rendererul sau fallback-ul nu respectă contractul comun, înregistrează
+problema prin [feedback-ul de raportare](feedback/README.md). Aici rămân
+așteptările specifice jocului și verificarea consumerului.

@@ -1,38 +1,58 @@
 # Feedback Whist Lab
 
-Acest index păstrează lacunele de produs și de testare ale Whist Lab. J4
-deține regulile, AI-ul, salvările, UI-ul, acțiunile Android și integrarea
-consumerului cu rapoartele.
+## Pe scurt
+
+Acest index păstrează lacunele de produs și de testare ale Whist Lab. Proiectul
+definește regulile, AI-ul, salvările, UI-ul, acțiunile Android și așteptările
+consumatorului pentru verificare și publicare.
 
 ## Proprietatea schimbărilor
 
-Defectele neutre Core sau Reporting, inclusiv contractul HTML și rendererul
-Extent/fallback, aparțin J0 și se înregistrează în
-[feedback-ul J0](../../../atf_j0/docs/feedback/README.md). J4 păstrează
-așteptările proprii jocului și verifică raportul consumatorului cu acțiuni,
-stări, aserțiuni și capturi reale. Testele și feedback-ul despre Contract
-Whist sunt în [J5](../../../atf_j5/README.md).
+Defectele neutre ale componentelor Core și Reporting, inclusiv contractul HTML
+și componentele de randare principală și de rezervă, aparțin modulului comun și se înregistrează în
+[feedback-ul responsabilului atf_j0](../../../atf_j0/docs/feedback/README.md).
+Feedback-ul Whist Lab definește contractele jocului prin acțiuni, stări, aserțiuni și capturi reale.
+
+## Rutarea cerințelor
+
+```mermaid
+flowchart LR
+ISSUE[Problemă identificată] -->|ține de joc| DOMAIN[Whist Lab]
+ISSUE -->|ține de API generic| LIB[Responsabil bibliotecă]
+DOMAIN -->|definește| CRITERIA[Criterii de închidere]
+LIB -->|definește| CRITERIA
+```
+
+<details>
+<summary>Legendă și limite</summary>
+
+Feedback-ul descrie problema generalizabilă, responsabilitatea și criteriul de rezolvare. Datele unei execuții și rapoartele aferente rămân externe.
+
+</details>
 
 ## Feedback activ
 
 | Subiect | Document |
 |---|---|
-| Claritatea dovezii de joc în rapoartele Whist Lab | [Așteptări consumer Android](ATF_Android_Alignment_Feedback.md) |
-| Pointer stabil și handoff pentru ultimul raport Whist Lab | [Handoff UI](UI_REPORT_HANDOFF_Feedback.md) |
+| Coeziunea pachetelor, limitele modulelor și verificatoare reutilizabile | [Guvernanța calității](ATF_QUALITY_GOVERNANCE_Feedback.md) |
+| Intervale Android, atribuirea acțiunilor și limitele publicării | [Contracte consumator](ATF_Android_Reporting_Feedback.md) |
+| Semantica verificărilor de joc și datele de intrare pentru publicare | [Așteptări consumator Android](ATF_Android_Alignment_Feedback.md) |
+| Guvernanță reutilizabilă pentru README-urile consumatorilor | [Cerință către modulul comun](DOCUMENTATION_GOVERNANCE_CONSUMER_Feedback.md) |
+| Publicare atomică, scopuri și stările predării rezultatelor | [Predarea rezultatelor UI](UI_REPORT_HANDOFF_Feedback.md) |
+| Partiții, retenție și integritatea datelor externe | [Guvernanța datelor](EVIDENCE_RETENTION_Feedback.md) |
 | Meniu, atu, cărți și istoricul scorului | [Utilizarea aplicației](WHIST_LAB_User_Experience_Feedback.md) |
 | Contractele meniului și registrul partidei | [Criterii de integrare](MENU_AND_SCORE_HISTORY_Feedback.md) |
-| Modele AI experimentale și limitele lor | [Cercetarea AI](AI_PUBLIC_BELIEFS_R15_R16_Feedback.md) |
-| Colecții, input și criterii de acceptanță AI | [Feedback R11](AI_LOSS11_Feedback.md), [feedback R13/R14](AI_CONTRACT_PRESSURE_R13_Feedback.md), [feedback R12](AI_ROUND12_Feedback.md) |
+| Inferență publică, coeficienți și limite ale modelelor | [Contractul informației](AI_INFORMATION_MODEL_Feedback.md) |
+| Promovarea politicilor, variante de rezervă și criterii independente | [Guvernanța AI](AI_POLICY_GOVERNANCE_Feedback.md) |
 
-[README-ul rapoartelor Whist Lab](../reporting/README.md) leagă ultima
-acceptanță și încercările. [Indexul documentației](../README.md) leagă
+[Arhitectura publicării](../reporting/README.md) definește responsabilitățile consumatorului și contractele bibliotecii. [Indexul documentației](../README.md) leagă
 contractele curente de implementare și teste.
 
 ## Închiderea unei cerințe
 
 - Reproducerea numește versiunea, profilul și intrările afectate.
-- Testul păstrează un expected independent și cazul negativ relevant.
-- Rezultatul separă componentele, build-ul APK, interacțiunea UI, auditul
+- Testul păstrează un rezultat așteptat independent și cazul negativ relevant.
+- Rezultatul separă componentele, construirea APK-ului, interacțiunea UI, auditul
   capturilor și obiectivul jocului.
 - Un raport nou nu rescrie o încercare anterioară și nu transformă lipsa de
   dovadă într-un PASS.

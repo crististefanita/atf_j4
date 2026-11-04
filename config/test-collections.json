@@ -7,7 +7,7 @@
       "task": ":game-core:contextRegressionTest",
       "targetMinutes": 1,
       "trigger": "Focused offline checks of contextual honor exits, quota, public-card distinctions and legal reachability witnesses",
-      "evidence": "Six component methods with nine whole captured cases; independently audited deal/prefix witnesses. No learning tournaments, UI actions or match-strength claim."
+      "evidence": "Verificări contextuale cu martori legali independenți și capturi complete ale cazurilor; fără turnee sau acțiuni Android."
     },
     {
       "id": "quick",
@@ -36,7 +36,7 @@
       "task": ":game-core:documentationTest",
       "targetMinutes": 1,
       "trigger": "Rules/help or report reader contract changes",
-      "evidence": "32 bilingual examples, actual comparisons, generated RO/EN help and selected native Extent."
+      "evidence": "Exemple bilingve ale regulilor, comparații evaluate și ajutor RO/EN generat; publicare numai când este selectată explicit."
     },
     {
       "id": "learning",
@@ -81,7 +81,7 @@
       "task": ":game-core:informationResearchTest",
       "targetMinutes": 2,
       "trigger": "Explicit examination of rejected information/decision models",
-      "evidence": "21 opt-in components: seven rejected R12 information models and14 R13 quota/public-memory/pressure cases. Test-only models, no runtime activation or stronger-play claim."
+      "evidence": "Componente de cercetare activate explicit, pentru ipoteze și limite de model; fără activare automată în aplicație sau afirmație implicită de progres."
     }
   ],
   "algorithmBuild": "whist-lab-app/algorithm-build: pure JVM, cached dependencies, no SDK/device configuration",

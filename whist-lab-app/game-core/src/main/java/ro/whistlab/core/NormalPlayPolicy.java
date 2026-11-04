@@ -25,7 +25,7 @@ final class NormalPlayPolicy {
         return new Observation(game.mode(), game.trump(), seat, game.dealerSeat(), game.handSize(),
                 own.hand(), game.players().stream()
                         .map(player -> new PublicSeat(player.hand().size(), player.bid(), player.tricksWon()))
-                        .toList(), game.currentTrick());
+                        .collect(java.util.stream.Collectors.toList()), game.currentTrick());
     }
 
     static Card chooseCard(Observation game) {

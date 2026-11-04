@@ -55,6 +55,8 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — eight-card table, compact bidding, and hamburger navigation",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "e2e", "ui", "table-layout", "navigation", "sanity"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         AtfReportStatus outcome = AtfReportStatus.FAIL;
@@ -109,6 +111,7 @@ public class WhistLabGameplayE2eTest {
                             new AtfAssertion("Setup controls fit without scrolling", "all content inside viewport",
                                     Boolean.toString(setupFitsWithoutScrolling), setupFitsWithoutScrolling)),
                     AtfReportStatus.PASS);
+            trace.beginPhase("TEST BODY");
 
             started = System.nanoTime();
             ui.tapTextIn(setup, "Start game");
@@ -339,6 +342,8 @@ public class WhistLabGameplayE2eTest {
                                     summaryAfterScore, bidSummaryPersisted)),
                     AtfReportStatus.PASS);
 
+
+            trace.beginPhase("TEARDOWN");
             started = System.nanoTime();
             ui.tapDescription("Game menu");
             ui.tapText("Main menu");
@@ -371,6 +376,7 @@ public class WhistLabGameplayE2eTest {
             if (failure instanceof Error error) throw error;
             throw new RuntimeException(failure);
         } finally {
+            trace.beginPhase("TEARDOWN");
             try { adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess(); }
             catch (Exception teardownFailure) {
                 boolean alreadyFailed = outcome == AtfReportStatus.FAIL;
@@ -402,6 +408,8 @@ public class WhistLabGameplayE2eTest {
                 "Whist · Descending — thirteen-card bid screen across portrait display sizes",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "e2e", "ui", "13-cards", "bidding", "resolution", "responsive"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("TEST BODY");
         ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         AtfReportStatus outcome = AtfReportStatus.FAIL;
@@ -682,6 +690,7 @@ public class WhistLabGameplayE2eTest {
             if (failure instanceof Error error) throw error;
             throw new RuntimeException(failure);
         } finally {
+            trace.beginPhase("TEARDOWN");
             try {
                 restoreDisplay(adb, ui, originalSizeOverride, originalDensityOverride);
                 String home = ui.restartToActivity(PACKAGE, ".MainActivity", "--es", "debug_language", "EN");
@@ -737,6 +746,8 @@ public class WhistLabGameplayE2eTest {
                 "Whist · Descending — thirteen-card fan and one-card play",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "e2e", "ui", "card-fan", "single-row", "click-flow"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         List<AtfAssertion> assertions = new ArrayList<>();
@@ -845,6 +856,7 @@ public class WhistLabGameplayE2eTest {
                     List.copyOf(assertions), oneVisibleRow && finalCardFitsViewport
                             && identityAndTrump && fourPlayerMockRingRendered && tableAndHandVerticallyBalanced
                             ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            trace.beginPhase("TEST BODY");
             assertTrue(oneVisibleRow, "Expected thirteen accessible card slots in one row: " + legalCards);
             assertTrue(finalCardFitsViewport, "The terminal card is clipped by the hand viewport: "
                     + cardSlots.getLast() + " in " + handBoundsBefore);
@@ -940,6 +952,7 @@ public class WhistLabGameplayE2eTest {
             if (failure instanceof Error error) throw error;
             throw new RuntimeException(failure);
         } finally {
+            trace.beginPhase("TEARDOWN");
             try { adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess(); }
             catch (Exception teardownFailure) {
                 boolean alreadyFailed = outcome == AtfReportStatus.FAIL;
@@ -971,6 +984,8 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — default Oh Hell setup matches the observed four-player deal",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "api-28", "parallel-app", "e2e", "oh-hell", "deal-size"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         AtfReportStatus result = AtfReportStatus.FAIL;
         try {
@@ -1002,6 +1017,7 @@ public class WhistLabGameplayE2eTest {
                             new AtfAssertion("Alternative modes remain selectable", "Six public game types",
                                     modeChoiceLabels.toString(), otherModesAvailable)),
                     defaultMode && otherModesAvailable ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            trace.beginPhase("TEST BODY");
             assertTrue(defaultMode && otherModesAvailable,
                     "Local game setup did not expose the expected modes; labels=" + setupLabels);
 
@@ -1045,6 +1061,7 @@ public class WhistLabGameplayE2eTest {
             if (failure instanceof Error error) throw error;
             throw new RuntimeException(failure);
         } finally {
+            trace.beginPhase("TEARDOWN");
             try { adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess(); }
             catch (Exception teardownFailure) {
                 boolean alreadyFailed = result == AtfReportStatus.FAIL;
@@ -1072,6 +1089,8 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — deterministic bid, process death, resume, and exact-bid score",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "api-28", "parallel-app", "e2e", "resume", "scoring"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         AtfReportStatus outcome = AtfReportStatus.FAIL;
         String checks = "The deterministic game flow did not complete.";
@@ -1100,6 +1119,7 @@ public class WhistLabGameplayE2eTest {
                                     ui.hasDescriptionContaining(bidding,
                                             "Trump suit only, no turned card: spades"))),
                     AtfReportStatus.PASS);
+            trace.beginPhase("TEST BODY");
 
             actionStarted = System.nanoTime();
             ui.selectBid(1);
@@ -1205,6 +1225,7 @@ public class WhistLabGameplayE2eTest {
             if (failure instanceof Error error) throw error;
             throw new RuntimeException(failure);
         } finally {
+            trace.beginPhase("TEARDOWN");
             try {
                 long homeStarted = System.nanoTime();
                 ui.tapText("Main menu");
@@ -1274,6 +1295,8 @@ public class WhistLabGameplayE2eTest {
                 "Whist Lab — four played cards remain visible before the next trick",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE,
                 List.of("android", "api-28", "parallel-app", "e2e", "trick-display", "timing"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         AtfReportStatus outcome = AtfReportStatus.FAIL;
@@ -1299,6 +1322,7 @@ public class WhistLabGameplayE2eTest {
                             new AtfAssertion("Bidding control is available", "Place bid",
                                     Boolean.toString(ui.hasText(bidding, "Place bid")), ui.hasText(bidding, "Place bid"))),
                     AtfReportStatus.PASS);
+            trace.beginPhase("TEST BODY");
 
             started = System.nanoTime();
             ui.selectBid(0);
@@ -1408,6 +1432,7 @@ public class WhistLabGameplayE2eTest {
             if (failure instanceof Error error) throw error;
             throw new RuntimeException(failure);
         } finally {
+            trace.beginPhase("TEARDOWN");
             try {
                 if (sampler != null) adb.run("shell", "rm", "-rf", sampler.remoteDirectory()).requireSuccess();
                 adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess();

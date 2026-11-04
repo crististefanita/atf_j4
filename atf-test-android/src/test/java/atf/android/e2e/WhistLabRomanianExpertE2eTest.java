@@ -20,6 +20,9 @@ class WhistLabRomanianExpertE2eTest {
         AndroidUiFlowTrace trace=new AndroidUiFlowTrace(out,"romanian-expert-smoke",
                 "Whist Lab — leave scripted replay and play a normal Romanian hand with Expert AI",
                 getClass().getSimpleName(),"atf.android.e2e","ro.whistlab.app",List.of("normal-game","romanian-whist","expert-ai","mobile"));
+        ui.recordActionsAs(trace::recordAction);
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         try {
             adb.run("shell","am","force-stop","ro.whistlab.app").requireSuccess();
             adb.run("shell","am","start","-W","-n","ro.whistlab.app/.MainActivity","--ez","debug_replay","true").requireSuccess();
@@ -31,6 +34,7 @@ class WhistLabRomanianExpertE2eTest {
                     "romanian-expert-setup","4 players / Romanian Whist / Expert",List.of(
                             new AtfAssertion("Explicit normal game profile","Romanian (1–8–1) / Expert (simulation)",
                                     ui.texts(setup).toString(),ui.hasText(setup,"Romanian (1–8–1)")&&ui.hasText(setup,"Expert (simulation)"))));
+            trace.beginPhase("TEST BODY");
             ui.tapText("Start game");ui.awaitText("Place your bid",Duration.ofSeconds(25));
             JsonNode bidding=saved(adb,out,"romanian-expert-bidding");
             List<AtfAssertion> checks=new ArrayList<>();
@@ -73,6 +77,7 @@ class WhistLabRomanianExpertE2eTest {
             assertEquals(1,totalWon);ui.capture("romanian-expert-score");
             WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Normal Expert opponents finish the hand and Romanian scores match the rules",
                     "romanian-expert-score",score.toString(),checks);
+            trace.beginPhase("TEARDOWN");
             ui.tapText("Next hand");ui.awaitText("Place your bid",Duration.ofSeconds(25));
             JsonNode next=saved(adb,out,"romanian-expert-ready");checks=new ArrayList<>();
             check(checks,"Next scheduled hand starts","1",next.path("handIndex").asText());

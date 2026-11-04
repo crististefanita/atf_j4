@@ -20,6 +20,12 @@ final class TableGeometry {
 
     static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight,
             int centerWidth, int centerHeight, int gap) {
+        return arrange(width, height, players, seatWidth, seatHeight, centerWidth,
+                centerHeight, gap, false);
+    }
+
+    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight,
+            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows) {
         requirePlayers(players);
         if (gap < 1 || seatWidth < 1 || seatHeight < 1 || centerWidth < 1 || centerHeight < 1
                 || width < 3 * seatWidth + 2 * gap || centerWidth > width
@@ -34,7 +40,7 @@ final class TableGeometry {
         int centerTop = (height - centerHeight) / 2;
         int flankClearance = wideCenter ? centerTop - seatHeight - gap
                 : (height - 2 * seatHeight - gap) / 2;
-        int stagger = Math.min(height / 5, flankClearance);
+        int stagger = fullWidthCardRows ? 0 : Math.min(height / 5, flankClearance);
         List<Rect> seats = new ArrayList<>();
         for (var anchor : anchors) {
             int x = switch (anchor) {

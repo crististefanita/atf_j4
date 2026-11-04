@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportTextAudit;
 import atf.tests.reporting.GameReportPhase;
@@ -15,6 +17,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Publishes the same ATF UI contract used by the aggregate report; no separate HTML renderer. */
+@AtfComponentTest
 class FullMatchExtentReportTest {
     @Test void publishesEveryOriginalAndParallelMatchCheckpointInline()throws Exception {
         assumeTrue(Boolean.getBoolean("atf.match.publish"));

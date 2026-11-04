@@ -1,5 +1,7 @@
 package atf.tests.reporting;
 
+import atf.testkit.AtfComponentTest;
+
 import atf.tests.learning.EvidencePolicy;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+@AtfComponentTest
 class GameReportPublicationContractTest {
     @TempDir Path folder;
     static Stream<Arguments> selections() {

@@ -23,12 +23,17 @@ class WhistMenuLayoutE2eTest {
         var ui = new AndroidUiDriver(adb, output);
         var trace = new AndroidUiFlowTrace(output, "menu-layout", "Whist — normal navigation, EN/RO and compact setup",
                 getClass().getSimpleName(), "atf.android.e2e", "ro.whistlab.app", List.of("android", "e2e", "menu", "EN", "RO"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
-        String size = prior(adb.run("shell", "wm", "size").output(), "size");
-        String density = prior(adb.run("shell", "wm", "density").output(), "density");
+        String size = null;
+        String density = null;
         var evidence = new ArrayList<Path>();
         var outcome = AtfReportStatus.FAIL;
         try {
+            size = prior(adb.run("shell", "wm", "size").output(), "size");
+            density = prior(adb.run("shell", "wm", "density").output(), "density");
+            trace.beginPhase("TEST BODY");
             for (String profile : List.of("720x1280", "794x1412", "884x1572")) {
                 adb.run("shell", "wm", "size", profile).requireSuccess();
                 adb.run("shell", "wm", "density", "360").requireSuccess();
@@ -78,8 +83,8 @@ class WhistMenuLayoutE2eTest {
         } catch (Throwable failure) { trace.fail(failure); throw failure; }
         finally {
             try {
-                adb.run("shell", "wm", "size", size).requireSuccess();
-                adb.run("shell", "wm", "density", density).requireSuccess();
+                if (size != null) adb.run("shell", "wm", "size", size).requireSuccess();
+                if (density != null) adb.run("shell", "wm", "density", density).requireSuccess();
                 adb.run("shell", "am", "force-stop", "ro.whistlab.app").requireSuccess();
             } catch (Throwable failure) { outcome = AtfReportStatus.FAIL; trace.fail(failure); throw failure; }
             finally {
@@ -94,7 +99,7 @@ class WhistMenuLayoutE2eTest {
         var capture = ui.capture(id); evidence.addAll(capture);
         boolean passed = checks.stream().allMatch(AtfAssertion::passed);
         var status = passed ? AtfReportStatus.PASS : AtfReportStatus.FAIL;
-        trace.checkpoint("TEST BODY", trace.phaseSnapshots().isEmpty() ? "GIVEN" : "AND", id, "Current screen",
+        trace.checkpoint("TEST BODY", trace.phaseSnapshots().stream().allMatch(value -> value.checkpoints().isEmpty()) ? "GIVEN" : "AND", id, "Current screen",
                 capture.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow(),
                 List.of(new AtfUiActionRecord(trace.nextActionSequence(), "Inspect visible menu", id,
                         "Readable controls, complete content and working navigation", passed ? "All comparisons passed" : "Failed comparison retained",

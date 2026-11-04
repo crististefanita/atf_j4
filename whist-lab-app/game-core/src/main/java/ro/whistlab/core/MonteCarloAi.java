@@ -111,7 +111,10 @@ public final class MonteCarloAi {
             for(int a:allowed)for(int b:allowed){double d=safety?exact[a]-exact[b]:scores[a]-scores[b];squaredDifferences[a][b]+=d*d;}count++;
         }
         int best(){int best=allowed.get(0);for(int bid:allowed)if(primary[bid]>primary[best]+1e-12||Math.abs(primary[bid]-primary[best])<1e-12&&points[bid]>points[best]+1e-12)best=bid;return best;}
-        List<BidOption> options(){return allowed.stream().map(bid->new BidOption(bid,count==0?0.0:exactTotals[bid]/count,count==0?0.0:points[bid]/count,count)).toList();}
+        List<BidOption> options(){return Collections.unmodifiableList(allowed.stream()
+                .map(bid->new BidOption(bid,count==0?0.0:exactTotals[bid]/count,
+                        count==0?0.0:points[bid]/count,count))
+                .collect(java.util.stream.Collectors.toList()));}
         boolean enough(){
             if(count<32)return false;if(count>=128||allowed.size()==1)return true;int leader=best();
             for(int rival:allowed)if(rival!=leader){double gap=(primary[leader]-primary[rival])/count;double variance=Math.max(0,(squaredDifferences[leader][rival]-count*gap*gap)/(count-1));if(variance>1e-15&&gap<=2*Math.sqrt(variance/count))return false;}return true;

@@ -3,6 +3,9 @@ package atf.android.e2e.support;
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.ui.model.AtfUiActionRecord;
+import atf.android.evidence.timing.AndroidPhaseClock;
+import atf.android.evidence.timing.AndroidPhaseTiming;
+import atf.android.evidence.timing.AndroidPhaseTimingCodec;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -26,17 +29,28 @@ public final class AndroidUiFlowTrace {
     private final String testPackage;
     private final String appPackage;
     private final List<String> tags;
+    private final AndroidPhaseClock clock;
     private final Map<String, List<Checkpoint>> phases = new LinkedHashMap<>();
     private final List<AtfUiActionRecord> pendingActions = new ArrayList<>();
+    private final List<AtfUiActionRecord> failedActions = new ArrayList<>();
+    private String activePhase = "";
+    private String failurePhase = "";
     private int actionSequence;
     private AtfReportStatus status = AtfReportStatus.WARNING;
     private String failure = "";
 
     public AndroidUiFlowTrace(Path outputDirectory, String id, String name,
             String testClass, String testPackage, String appPackage, List<String> tags) throws IOException {
+        this(outputDirectory, id, name, testClass, testPackage, appPackage, tags, System::nanoTime);
+    }
+
+    public AndroidUiFlowTrace(Path outputDirectory, String id, String name,
+            String testClass, String testPackage, String appPackage, List<String> tags,
+            java.util.function.LongSupplier ticks) throws IOException {
         this.outputDirectory = Objects.requireNonNull(outputDirectory).toAbsolutePath().normalize();
         Files.createDirectories(this.outputDirectory);
         this.id = required(id, "id");
+        this.clock = new AndroidPhaseClock(this.id, ticks);
         this.name = required(name, "name");
         this.testClass = required(testClass, "testClass");
         this.testPackage = required(testPackage, "testPackage");
@@ -45,6 +59,18 @@ public final class AndroidUiFlowTrace {
         this.manifest = this.outputDirectory.resolve("ui-flow-" + id + ".properties");
         flush();
     }
+
+    /** Must precede the first action of a phase; checkpoints never reconstruct its start. */
+    public synchronized void beginPhase(String name) throws IOException {
+        String phase = required(name, "phase");
+        phases.computeIfAbsent(phase, ignored -> new ArrayList<>());
+        clock.enter(phase, new ArrayList<>(phases.keySet()).indexOf(phase));
+        activePhase = phase;
+        flush();
+    }
+
+    public synchronized AndroidPhaseClock.Scope capture() { return clock.capture(); }
+    public synchronized boolean hasOpenPhase() { return phases.keySet().stream().anyMatch(clock::running); }
 
     public synchronized int nextActionSequence() {
         return ++actionSequence;
@@ -61,6 +87,9 @@ public final class AndroidUiFlowTrace {
             Path screenshot, List<AtfUiActionRecord> actions, List<AtfAssertion> assertions,
             AtfReportStatus checkpointStatus, List<Path> supportingArtifacts) throws IOException {
         String phaseName = required(phase, "phase");
+        if (phases.keySet().stream().anyMatch(clock::running) && !clock.running(phaseName)) {
+            throw new IllegalStateException("Checkpoint does not belong to the active Android phase: " + phaseName);
+        }
         List<Checkpoint> steps = phases.computeIfAbsent(phaseName, ignored -> new ArrayList<>());
         String screenshotName = artifactName(screenshot);
         List<String> artifactNames = supportingArtifacts == null ? List.of()
@@ -76,6 +105,7 @@ public final class AndroidUiFlowTrace {
 
     public synchronized void finish(AtfReportStatus finalStatus) throws IOException {
         Objects.requireNonNull(finalStatus);
+        clock.stop(false);
         boolean recordedFailure = status == AtfReportStatus.FAIL || !failure.isBlank()
                 || pendingActions.stream().anyMatch(action -> action.status() == AtfReportStatus.FAIL)
                 || phases.values().stream().flatMap(List::stream).anyMatch(checkpoint ->
@@ -87,6 +117,10 @@ public final class AndroidUiFlowTrace {
     }
 
     public synchronized void fail(Throwable cause) throws IOException {
+        clock.stop(true);
+        if (failurePhase.isBlank()) failurePhase = activePhase;
+        failedActions.addAll(pendingActions);
+        pendingActions.clear();
         status = AtfReportStatus.FAIL;
         String detail = cause == null ? "Unknown test failure" : cause.getClass().getSimpleName() + ": "
                 + String.valueOf(cause.getMessage());
@@ -104,7 +138,12 @@ public final class AndroidUiFlowTrace {
     public List<String> tags() { return tags; }
     public synchronized AtfReportStatus status() { return status; }
     public synchronized String failure() { return failure; }
-    public synchronized List<AtfUiActionRecord> pendingActions() { return List.copyOf(pendingActions); }
+    public synchronized String failurePhase() { return failurePhase; }
+    public synchronized List<AtfUiActionRecord> pendingActions() {
+        var retained = new ArrayList<>(failedActions);
+        retained.addAll(pendingActions);
+        return List.copyOf(retained);
+    }
 
     /** Immutable in-memory projection used to publish each checkpoint through the public UI report API. */
     public synchronized List<PhaseSnapshot> phaseSnapshots() {
@@ -114,7 +153,7 @@ public final class AndroidUiFlowTrace {
                                 checkpoint.target(), resolveArtifact(checkpoint.screenshot()),
                                 checkpoint.actions(), checkpoint.assertions(), checkpoint.status(),
                                 checkpoint.artifacts().stream().map(this::resolveArtifact).toList()))
-                        .toList()))
+                        .toList(), clock.snapshot(entry.getKey())))
                 .toList();
     }
 
@@ -146,6 +185,10 @@ public final class AndroidUiFlowTrace {
     }
 
     private void flush() throws IOException {
+        clock.journal(this::writeManifest);
+    }
+
+    private void writeManifest() throws IOException {
         Properties properties = new Properties();
         properties.setProperty("format.version", "1");
         properties.setProperty("flow.id", id);
@@ -156,11 +199,15 @@ public final class AndroidUiFlowTrace {
         properties.setProperty("flow.tags", String.join(",", tags));
         properties.setProperty("flow.status", status.name());
         properties.setProperty("flow.failure", failure);
+        properties.setProperty("flow.failurePhase", failurePhase);
         properties.setProperty("flow.phaseCount", Integer.toString(phases.size()));
         int phaseIndex = 0;
         for (var entry : phases.entrySet()) {
-            String phasePrefix = "phase." + phaseIndex++;
+            int ordinal = phaseIndex++;
+            String phasePrefix = "phase." + ordinal;
             properties.setProperty(phasePrefix + ".name", entry.getKey());
+            clock.snapshot(entry.getKey()).ifPresent(timing -> AndroidPhaseTimingCodec.write(properties, phasePrefix + ".timing", timing));
+            if (clock.running(entry.getKey())) AndroidPhaseTimingCodec.running(properties, phasePrefix + ".timing", id, entry.getKey(), ordinal);
             properties.setProperty(phasePrefix + ".stepCount", Integer.toString(entry.getValue().size()));
             for (int stepIndex = 0; stepIndex < entry.getValue().size(); stepIndex++) {
                 Checkpoint checkpoint = entry.getValue().get(stepIndex);
@@ -200,9 +247,10 @@ public final class AndroidUiFlowTrace {
                 }
             }
         }
-        properties.setProperty("flow.pendingActionCount", Integer.toString(pendingActions.size()));
-        for (int index = 0; index < pendingActions.size(); index++) {
-            AtfUiActionRecord action = pendingActions.get(index);
+        List<AtfUiActionRecord> retainedPending = pendingActions();
+        properties.setProperty("flow.pendingActionCount", Integer.toString(retainedPending.size()));
+        for (int index = 0; index < retainedPending.size(); index++) {
+            AtfUiActionRecord action = retainedPending.get(index);
             String prefix = "flow.pendingAction." + index;
             properties.setProperty(prefix + ".sequence", Integer.toString(action.sequence()));
             properties.setProperty(prefix + ".operation", action.operation());
@@ -233,7 +281,8 @@ public final class AndroidUiFlowTrace {
             List<AtfUiActionRecord> actions, List<AtfAssertion> assertions,
             AtfReportStatus status, List<String> artifacts) { }
 
-    public record PhaseSnapshot(String name, List<CheckpointSnapshot> checkpoints) {
+    public record PhaseSnapshot(String name, List<CheckpointSnapshot> checkpoints, java.util.Optional<AndroidPhaseTiming> timing) {
+        public PhaseSnapshot(String name, List<CheckpointSnapshot> checkpoints) { this(name, checkpoints, java.util.Optional.empty()); }
         public PhaseSnapshot { checkpoints = List.copyOf(checkpoints); }
     }
 

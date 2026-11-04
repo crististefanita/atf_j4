@@ -6,17 +6,15 @@ configuration_kind: "CODE_BOUND_MODEL_MANIFEST"
 execution: "Java constants generated from the declared model; editing YAML alone does not tune the engine."
 scope: "Romanian Whist, four players, initial hand sizes2..8; same Hard policy can act at every seat."
 source:
-  bid_only_source_archive: "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/candidates/bid-only-v2-source/whist-lab-app"
-  bid_and_card_source_archive: "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/candidates/bid-and-card-source/whist-lab-app"
   model_file: "config/whist-bid-model.json"
   model_sha256: "71b51b8a028768d2fecbcd34b97f22e88585c213953d844f074de68ea155f51d"
   source_manifest_sha256: "c98e5737dccada7801d9e4657e1ddd95749a855600bc594cde7a4e4a615ef50c"
   learner: "scripts/whist-bid-evidence.mjs"
   generator: "scripts/whist-bid-evidence-codegen.mjs"
   template: "scripts/templates/learned-bid-evidence.java"
-  candidate_java: "game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java"
+  candidate_java: "research/ai-bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java"
   action_java: "game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java"
-  active_runtime: "Accepted Hard R14; rejected R15 weights have runtime influence0."
+  active_runtime: "Accepted Hard policy; this experimental model has runtime influence zero."
 semantics:
   rule_ro: "Licitația sugerează mâini plauzibile; nu dovedește că un adversar are sau nu are o carte."
   rule_en: "A bid changes the plausibility of hypothetical holdings; it never proves card ownership."
@@ -106,25 +104,10 @@ sigma_by_initial_hand_size:
   7: 0.7547346009962933
   8: 1.0307417677646005
 training:
-  partition: "curated development manifest only;100 games"
+  partition: "curated external development manifest only"
   seed_weighting: "Each seed cluster has total weight1; duplicate identical bid examples do not add weight."
   split: "SHA256(seed) byte0 modulo5 equals0 selects validation; whole seeds never split across partitions."
-  training_seed_clusters: 43
-  training_rows: 3509
-  validation_seed_clusters: 6
-  validation_rows: 536
-  validation_nll: 1.4414183767353608
-  validation_uniform_nll: 1.77613375793842
-  validation_relative_nll_improvement: 0.18845167471596697
   limit: "Small development validation; better bid prediction is not game-strength acceptance."
-r13_diagnostic:
-  source: "C:/work/whist_back/ai-training/20261103-r15-bid-evidence/protocol/R13_DIAGNOSIS.json"
-  use: "Consumed R13 data, diagnostic only; excluded from R15 model fitting."
-  initial_development: {pairs: 64, first_bid_changes: 22, first_card_changes: 42, newly_lost_exact_2_to_8: 118, newly_gained_exact_2_to_8: 119, overshoots: 88, undershoots: 30}
-  blend_development: {pairs: 64, first_bid_changes: 0, first_card_changes: 60, identical_games: 4, newly_lost_exact_2_to_8: 64, newly_gained_exact_2_to_8: 60, overshoots: 48, undershoots: 16}
-  blend_fresh_consumed: {pairs: 128, first_bid_changes: 0, first_card_changes: 123, identical_games: 5, newly_lost_exact_2_to_8: 144, newly_gained_exact_2_to_8: 128, overshoots: 105, undershoots: 39, lost_with_later_changed_own_bid: 36}
-  inference_ro: "Tiparul sugerează continuări prea optimiste despre evitarea levatelor suplimentare; nu demonstrează că fiecare licitație modificată a fost greșită."
-  inference_en: "The pattern suggests overoptimistic avoidance of extra tricks; it does not establish that every changed bid was wrong."
 research_only:
   runtime_influence: 0
   rules:
@@ -133,16 +116,8 @@ research_only:
     - "Use a calibrated joint multi-opponent posterior rather than independent behavior factors."
     - "Replace greedy continuation with an information-consistent opponent policy."
   next_iteration: "Extract one first-divergence failure; create a tiny public-information counterexample; separate belief-only and policy-only ablations; fix rules and parameters before untouched paired evaluation."
-  r16_separate_candidate: "Replace only the fixed-honor estimate of as-yet-unsubmitted opponent bids with the conditioned learned bid mode; retain accepted rollout and public guards. Separate protocol; inactive and pending verification, no fresh-gain claim."
-development_outcomes:
-  phase: "Prespecified development15100..15107 only;64 paired comparisons per candidate,128 complete games per candidate."
-  bid_only_v1: {pairs: 64, point_delta: 30, win_share_delta: 1, exact_2_to_8_delta: 1, expert_v14_family_exact_2_to_8_delta: -2, verdict: "REJECTED_FAMILY_REGRESSION"}
-  bid_only_v2: {pairs: 64, point_delta: 30, win_share_delta: 1, exact_2_to_8_delta: 1, expert_v14_family_exact_2_to_8_delta: -2, verdict: "REJECTED_FAMILY_REGRESSION"}
-  bid_and_card: {pairs: 64, point_delta: -55, win_share_delta: -0.5, exact_2_to_8_delta: -5, verdict: "REJECTED_STRENGTH_REGRESSION"}
-  interpretation: "Aggregate gains in the bid-only variants do not override the unchanged opponent-family safety gate. Better observed-bid prediction did not establish an acceptable stronger Hard player."
-  corrected_native_tests: "Each corrected candidate passed506 native tests: the same492 accepted baseline tests plus14 new model controls. Passing model controls does not promote a regressed candidate."
-  fresh_evaluation: "115000..115015 was neither reserved nor opened for R15; no fresh-game gain is claimed."
+  future_auction_model: "Replace only the fixed-honor estimate of as-yet-unsubmitted opponent bids with the conditioned learned bid mode; retain accepted rollout and public guards. Separate protocol; inactive and pending verification, no fresh-gain claim."
 promotion:
   status: "REJECTED_DEVELOPMENT"
-  criteria: "Full native components; unchanged SAFETY family gates; strict aggregate exact2..8 gain; nonnegative aggregate points and2..8 points; source freeze before untouched115000..115015."
+  criteria: "Full native components; unchanged SAFETY family gates; strict aggregate exact2..8 gain; nonnegative aggregate points and2..8 points; source freeze before opening untouched reserved games."
   claim_limit: "No perfect-play, UI, Android-device or Reporting-library claim."

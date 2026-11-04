@@ -1,78 +1,51 @@
-# Honors, low-card covers and contract safety
+# Honors, covers and contract safety
 
-This guide explains strategy hypotheses for Romanian Whist. Mandatory rules are in [How to play](WHIST_EN.md).
+This guide describes general strategy principles for Romanian Whist. Mandatory rules belong to [How to play](WHIST_EN.md), while the [learning architecture](../AI_LEARNING_ARCHITECTURE.md) defines how hypotheses become tested policy changes.
 
-## Catalog and producing code
+## Sources and responsibilities
 
 | Source | Responsibility |
 |---|---|
-| [YAML catalog](../../config/whist-hand-patterns.yaml) | 19 holding families, required context and each hint's status |
-| [Holding extraction](../../scripts/whist-hand-patterns.mjs) | `describeHolding`, `PATTERNS` and the `catalog` generator |
-| [Calibration](../../scripts/whist-heuristic-calibrate.mjs) | Descriptive observations from validated development games |
-| [Context manifest](../../config/whist-contextual-discard.yaml) | Rules and tests for quota, discards and the current-table trump |
+| [Pattern catalog](../../config/whist-hand-patterns.yaml) | Holding classes, required context, hint scope and research status. |
+| [Pattern extraction](../../scripts/whist-hand-patterns.mjs) | Derives holding descriptors from the actor's cards. |
+| [Calibration](../../scripts/whist-heuristic-calibrate.mjs) | Descriptive associations from validated development games. |
+| [Context manifest](../../config/whist-contextual-discard.yaml) | Conditional rules, information boundaries, implementations and tests. |
+| [Policy objectives](../../config/whist-play-objectives.yaml) | Active priorities and isolated experimental alternatives. |
 
-The catalog declares `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION` and `runtime_prior_influence: 0`. Editing its weights does not automatically change the AI.
+## General principles
 
-## What a low cover means
+- Low covers can help consume higher ranks; promotion still depends on lead, entries, distribution and ruffing.
+- Evaluate honor sequences jointly and avoid counting the same card through overlapping patterns.
+- Distinguish card rank, suit length and the number of tricks a suit can produce.
+- A side honor can be ruffed or legally discarded; its rank alone does not guarantee a trick.
+- Mandatory trump can force an unwanted trick after the target has been reached.
+- Turned cards, completed-trick cards and cards still on the table have different effects.
+- Recompute signed remaining need and feasible opportunities after each public action.
+- The table's aggregate auction imbalance never replaces an individual attainable contract.
 
-A low card in the same suit can absorb a round while opponents consume higher honors. Promotion depends on the lead, entries, distribution and ruffing opportunities.
+## Information and inference
 
-| Holding | Useful hypothesis | Limitation |
-|---|---|---|
-| K + low | The king may become a winner after the ace | The ace may be retained; the king may be ruffed or discarded |
-| Q + two lows | The queen may survive the consumption of A/K | Higher honors may fall together or in separate rounds |
-| J + three lows / 10 + four lows | Promotion may occur in a long suit | Required rounds or entries may be unavailable |
-| Side A | Highest rank of its suit | It may be ruffed or discarded to avoid a trick |
-| Trump A | Wins the trick in which it is played | Other cards may produce unwanted tricks |
-| Trump K after public removal of A | Highest remaining trump | An ace still on the unfinished table remains active |
-| A-K / A-K-Q | Evaluate the sequence jointly | Do not add separate K/Q hints to the sequence again |
-| Low trumps and a side void | Potential ruffs | Mandatory trump may force an unwanted trick |
-
-- Simple K+x and Q+xx families exclude certain higher own honor sequences.
-- `HIGHEST_CARD_CAPTURE` describes capture with the highest honor.
-- `SUIT_TRICKS` describes tricks won in the suit, a different quantity.
-- `trick_hint` is contextual and is not independently additive across honors.
-
-## Available context
-
-| Stage | Observable information |
-|---|---|
-| Deal | Own cards, player count, hand size and the turned card |
-| Bidding | Only the already submitted bid prefix |
-| Play | All contracts, public history, current table, remaining needs and scores |
-| Small ending | Feasible worlds and legal continuations, when enumeration is complete |
-
-- With 3–6 players, the minimum rank is `15 − 2 × players`.
-- Own and public cards cannot be assigned to fictional opponent holdings.
-- A turned trump is undealt; a trump still on the table can win the current trick.
-- Signed remaining need is `bid − completed tricks won`.
-- Safety targets the exact contract, including zero.
-
-## What calibration measures
-
-The [calibrator](../../scripts/whist-heuristic-calibrate.mjs) accepts games from the development partition only. Actual game and context counts belong to each execution, not to an engine constant.
-
-1. Validate each game's rules and score.
-2. Deduplicate identical action traces.
-3. Group observations by initial world, seat and suit.
-4. Average policy observations inside each group before aggregation.
-5. Apply evidence weight `n / (n + 20)`.
-6. Export at most 128 cells supported by at least 20 worlds each.
-
-An observed king-capture rate depends on the player's policy, including deliberate discards. It is not an intrinsic or counterfactual win probability for K+x.
-
-```powershell
-node scripts/whist-hand-patterns-cli.mjs catalog <fresh-output.yaml>
-node --test scripts/whist-hand-patterns.test.mjs scripts/whist-heuristic-calibrate.test.mjs
+```mermaid
+flowchart LR
+    OWN[Own hand] -->|combines with| OBS[Legal observation]
+    PUBLIC[Public prefix] -->|constrains| OBS
+    OBS -->|supports| WORLDS[Compatible worlds]
+    WORLDS -->|estimates| POLICY[Contract decisions]
 ```
 
-## Relationship to the current engine
+<details>
+<summary>Legend: observable information</summary>
 
-- [Hard](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java) evaluates cards through its model and bounded public guards.
-- The [contract certificate](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java) checks two-own-card endings and all continuations within its limits.
-- [Public salvage](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/PublicSalvage.java) requires an impossible contract and dominance without worsening own points.
-- The [independent player](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) has a separate implementation and utility.
+Actual opponent hands and future actions are absent from the policy input. Legal deductions restrict possible worlds; bid-conditioned behavioral likelihood is a separate model hypothesis requiring qualification.
 
-In the [contextual cases](../AI_CONTEXTUAL_DISCARD.md), the same AS/7H calls for discarding the ace at zero need and retaining it at need one. A lower card is not automatically safer.
+</details>
 
-Activating a new hint requires independently justified components, frozen source and a separate evaluation on games unused for development. The catalog makes no perfect-play or exhaustive-state-space claim.
+An observed capture frequency depends on the policy that generated it, including deliberate discards. It is not an intrinsic or counterfactual probability for the holding.
+
+## YAML and policy changes
+
+The pattern catalog declares zero direct runtime influence. Changing a hint requires an explicit code consumer, independently justified components and separate evaluation of a frozen candidate.
+
+Development games, fitted outputs, concrete selections and evaluation results remain in the external archive. Stable documentation records the mechanism, the generalized conditions and their limits.
+
+[Romanian guide](AI_HAND_PATTERNS_RO.md) · [Training protocol](../AI_TRAINING_PROTOCOL.md) · [Contextual decisions](../AI_CONTEXTUAL_DISCARD.md)

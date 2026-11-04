@@ -1,5 +1,7 @@
 package atf.tests.reporting;
 
+import atf.testkit.AtfComponentTest;
+
 import atf.tests.learning.EvidencePolicy;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,6 +10,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+@AtfComponentTest
 class GameReportPolicyContractTest {
     @TempDir Path folder;
     private static final String BASE = "detailLevel: AUTO\nmaxDetailedInvocations: 64\nmaxDetailedComparisons: 10000\n"

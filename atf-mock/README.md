@@ -1,50 +1,52 @@
-# Transport API mock
+# Transport API simulat
 
 ## Pe scurt
 
-Modulul implementează transport API determinist pentru verificări offline.
-Catalogul de rute aparține mock-ului; el nu schimbă setările transportului real
-și nu implementează regulile jocului.
+Modulul implementează un transport API determinist pentru verificări fără serviciu extern. Catalogul de rute definește răspunsurile controlate; regulile și simularea partidelor aparțin motorului Whist.
 
-## Configurare și selecție
+## Responsabilități
 
-[AtfMockTransport](src/main/java/atf/mock/AtfMockTransport.java) returnează răspunsul
-rutei potrivite sau fallback-ul declarat.
-[AtfMockConfigurationLoader](src/main/java/atf/mock/AtfMockConfigurationLoader.java)
-acceptă o cale explicită și definește descoperirea fișierelor YAML. Prioritatea
-configurației și valorile implicite se citesc din acest loader.
+```mermaid
+flowchart LR
+YAML[Catalog rute] -->|configurează| MOCK[AtfMockTransport]
+REQ[Cerere] -->|potrivește| MOCK
+MOCK -->|returnează| RESPONSE[Răspuns configurat]
+MOCK -->|aplică la nepotrivire| FALLBACK[Variantă de rezervă]
+```
 
-[MockRoute](src/main/java/atf/mock/MockRoute.java) definește potrivirea metodei,
-căii, parametrilor, headerelor și corpului. Fallback-ul este un rezultat
-configurat, nu dovada că s-a apelat un serviciu extern.
+<details>
+<summary>Legendă: răspuns controlat</summary>
 
-## JSON strict și potrivire numerică exactă
+Transportul răspunde din catalog sau din configurația de rezervă. Acest rezultat nu dovedește apelarea unui serviciu real.
 
-Catalogul și request-ul sunt documente complete. Trailing content, rădăcini
-multiple și duplicate nested sunt refuzate; scalarul null este JSON valid.
-Un expected absent în YAML nu echivalează cu textul JSON null, iar obiectele
-sau array-urile YAML nu sunt convertite tacit în absența constrângerii.
+</details>
 
-| Potrivire | Contract verificat |
+[AtfMockTransport](src/main/java/atf/mock/AtfMockTransport.java) aplică ruta potrivită. [Încărcătorul](src/main/java/atf/mock/AtfMockConfigurationLoader.java) definește calea explicită, descoperirea și prioritatea configurației.
+
+[MockRoute](src/main/java/atf/mock/MockRoute.java) compară metoda, calea, parametrii, antetele și corpul cererii. Răspunsul configurat rămâne neschimbat.
+
+## JSON și precizie numerică
+
+| Suprafață | Contract |
 |---|---|
-| precizie | JSON și scalarul numeric YAML folosesc BigDecimal, fără narrowing prin Double |
-| valori distincte | vecinii peste 2^53, fracțiile lungi, exponenții extremi și underflow-ul ajung la fallback |
-| nominale | formele decimal egale și zerourile rămân eligibile; integer/decimal și număr/string păstrează distincțiile |
-| wire | body-ul și răspunsul configurat nu sunt rescrise |
+| Document complet | Conținutul după rădăcină, rădăcinile multiple și cheile duplicate imbricate sunt refuzate. |
+| Absență | Așteptarea absentă în YAML diferă de valoarea JSON `null`. |
+| Tipuri | Obiectele și tablourile YAML nu devin tacit absența constrângerii. |
+| Precizie | Numerele JSON și YAML se compară prin `BigDecimal`, fără conversie intermediară la `Double`. |
+| Egalitate | Formele zecimale egale sunt eligibile; numărul și șirul rămân distincte. |
+| Nepotrivire | Diferențele de precizie ori magnitudine ajung la răspunsul de rezervă. |
+| Transport | Corpul cererii și răspunsul configurat nu sunt rescrise. |
 
-[Contractele de componentă](src/test/java/atf/mock/json/MockNumericContractComponentTest.java)
-folosesc API-ul public, expected independent și transportul mock. Ele verifică
-fallback-ul, răspunsul original și încărcarea YAML, fără serviciu extern.
+## Nivel și verificare
 
-## Verificare
+| Nivel | Contract |
+|---|---|
+| Componentă | API-ul transportului, catalogul YAML și potrivirea exactă, cu așteptări independente. |
 
-Rulați dintr-o copie proprie din `%TEMP%`, cu POM-ul părinte și dependențele
-locale ale reactorului:
+[Arhitectura testării](../docs/TESTING_ARCHITECTURE.md) definește matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
 
 ```powershell
 mvn -B -pl atf-mock -am test
 ```
 
-[POM-ul modulului](pom.xml) și [sursele testelor](src/test/java/) definesc
-dependențele și contractele efective. Aceste comenzi nu sunt dovada unei execuții
-deja trecute.
+[Contractele numerice](src/test/java/atf/mock/json/MockNumericContractComponentTest.java) verifică și răspunsul de rezervă. [POM-ul](pom.xml) definește dependențele.

@@ -117,6 +117,8 @@ class WhistTableAndScoreSanityE2eTest {
         var ui = new AndroidUiDriver(adb, out);
         var trace = new AndroidUiFlowTrace(out, id, name, getClass().getSimpleName(), "atf.android.e2e",
                 APP, List.of("android", "sanity", "display"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("TEST BODY");
         ui.recordActionsAs(trace::recordAction);
         var evidence = new ArrayList<Path>();
         var result = AtfReportStatus.FAIL;
@@ -128,7 +130,9 @@ class WhistTableAndScoreSanityE2eTest {
             try { evidence.addAll(ui.capture("failure")); } catch (Exception diagnostic) { failure.addSuppressed(diagnostic); }
             throw failure;
         } finally {
+            trace.beginPhase("TEARDOWN");
             try { adb.run("shell", "am", "force-stop", APP).requireSuccess(); }
+            catch (Throwable cleanup) { result = AtfReportStatus.FAIL; trace.fail(cleanup); throw cleanup; }
             finally {
                 trace.finish(result);
                 evidence.add(trace.manifest());

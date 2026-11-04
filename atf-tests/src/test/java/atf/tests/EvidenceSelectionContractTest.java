@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import atf.tests.learning.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.*;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
+@AtfComponentTest
 class EvidenceSelectionContractTest {
     @TempDir Path folder;private static final ObjectMapper JSON=new ObjectMapper();
     @org.junit.jupiter.api.BeforeEach void retain(org.junit.jupiter.api.TestInfo info)throws Exception {String out=System.getProperty("atf.learning.contractOutput","");if(!out.isBlank()){folder=Path.of(out,info.getTestMethod().orElseThrow().getName());Files.createDirectories(folder);}}

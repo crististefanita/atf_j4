@@ -99,6 +99,10 @@ public final class MainActivity extends Activity {
             openOneTrickFixture(getIntent().getBooleanExtra("persist_fixture", false));
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_trick_pause_fixture", false)) {
             openTrickPauseFixture();
+        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_played_card_fixture", false)) {
+            openPlayedCardFixture();
+        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hard_ai_bid_fixture", false)) {
+            openHardAiBidFixture();
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hand_fan_fixture", false)) {
             openDisplayFixture(13, true);
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_nine_bids_fixture", false)) {
@@ -263,7 +267,7 @@ public final class MainActivity extends Activity {
         applyTableWindowChrome();
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = gamePage();
-        addGameHeader(page, state);
+        addGameHeader(page, state, true);
         boolean lastBid = state.bidsSubmitted() == state.players().size() - 1;
         List<Integer> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(), lastBid);
         if (selectedBid == null || !choices.contains(selectedBid)) selectedBid = choices.get(0);
@@ -293,7 +297,7 @@ public final class MainActivity extends Activity {
         applyTableWindowChrome();
         GameSession.Snapshot state = game.snapshot();
         LinearLayout page = gamePage();
-        addGameHeader(page, state);
+        addGameHeader(page, state, !pauseActive);
         boolean humanTurn = !pauseActive && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
         List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
@@ -305,7 +309,8 @@ public final class MainActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
     }
 
-    private void addGameHeader(LinearLayout page, GameSession.Snapshot state) {
+    private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
+            boolean currentPlayerHighlighted) {
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
@@ -347,7 +352,7 @@ public final class MainActivity extends Activity {
         LinearLayout.LayoutParams trumpParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         trumpParams.leftMargin = dp(8);
-        header.addView(new TrumpIndicatorView(this, state, copy), trumpParams);
+        header.addView(new TrumpIndicatorView(this, state, copy, currentPlayerHighlighted), trumpParams);
 
         LinearLayout.LayoutParams params = matchWrap();
         params.bottomMargin = dp(4);
@@ -574,6 +579,39 @@ public final class MainActivity extends Activity {
         game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
         lastConfig = config;
         persistGame();
+        driveAutomatedTurns();
+    }
+
+    private void openPlayedCardFixture() {
+        GameConfig config = new GameConfig(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 20261104L);
+        List<List<Card>> hands = Arrays.asList(
+                Arrays.asList(new Card(Suit.HEARTS, 14), new Card(Suit.CLUBS, 14)),
+                Arrays.asList(new Card(Suit.HEARTS, 13), new Card(Suit.CLUBS, 13)),
+                Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
+                Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
+        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
+        while (game.snapshot().phase() == GamePhase.BIDDING) {
+            game.submitBid(game.snapshot().biddingSeat(), 0);
+        }
+        GameSession.Snapshot state = game.snapshot();
+        if (state.currentSeat() != 0) {
+            throw new IllegalStateException("Played-card fixture must begin with the human lead");
+        }
+        game.playCard(0, new Card(Suit.HEARTS, 14));
+        lastConfig = config;
+        driveAutomatedTurns();
+    }
+
+    private void openHardAiBidFixture() {
+        GameConfig config = new GameConfig(4, GameMode.OH_HELL, AiDifficulty.HARD, 20261104L);
+        List<List<Card>> hands = Arrays.asList(
+                Arrays.asList(new Card(Suit.HEARTS, 14), new Card(Suit.CLUBS, 14)),
+                Arrays.asList(new Card(Suit.HEARTS, 13), new Card(Suit.CLUBS, 13)),
+                Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
+                Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
+        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
+        selectedBid = 0;
+        lastConfig = config;
         driveAutomatedTurns();
     }
 

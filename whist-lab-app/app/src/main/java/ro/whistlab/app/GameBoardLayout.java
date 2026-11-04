@@ -10,15 +10,18 @@ final class GameBoardLayout extends ViewGroup {
     private final int centerWidthDp;
     private final int minimumHeightDp;
     private final int regionGapDp;
+    private final boolean centerUsesFullWidth;
     private int seatWidth;
     private int seatHeight;
 
-    GameBoardLayout(Context context, int players, int centerWidthDp, TableViewportPolicy viewport) {
+    GameBoardLayout(Context context, int players, int centerWidthDp, TableViewportPolicy viewport,
+            boolean centerUsesFullWidth) {
         super(context);
         this.players = players;
         this.centerWidthDp = centerWidthDp;
         this.minimumHeightDp = viewport.minimumBoardHeightDp();
         this.regionGapDp = viewport.regionGapDp();
+        this.centerUsesFullWidth = centerUsesFullWidth;
         setClipChildren(false);
     }
 
@@ -34,7 +37,8 @@ final class GameBoardLayout extends ViewGroup {
             seatHeight = Math.max(seatHeight, seat.getMeasuredHeight());
         }
         View center = getChildAt(players);
-        center.measure(MeasureSpec.makeMeasureSpec(Math.min(width, dp(centerWidthDp)), MeasureSpec.EXACTLY),
+        int measuredCenterWidth = centerUsesFullWidth ? width : Math.min(width, dp(centerWidthDp));
+        center.measure(MeasureSpec.makeMeasureSpec(measuredCenterWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         int minimum = Math.max(dp(minimumHeightDp),
                 TableGeometry.minimumHeight(players, seatHeight, center.getMeasuredHeight(), gap));
@@ -44,9 +48,14 @@ final class GameBoardLayout extends ViewGroup {
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         View center = getChildAt(players);
         var plan = TableGeometry.arrange(right - left, bottom - top, players, seatWidth, seatHeight,
-                center.getMeasuredWidth(), center.getMeasuredHeight(), dp(regionGapDp));
+                dp(centerWidthDp), center.getMeasuredHeight(), dp(regionGapDp), centerUsesFullWidth);
         for (int index = 0; index < players; index++) place(getChildAt(index), plan.seats().get(index));
-        place(center, plan.center());
+        if (centerUsesFullWidth) {
+            place(center, new TableGeometry.Rect(0, plan.center().top(), right - left,
+                    plan.center().bottom()));
+        } else {
+            place(center, plan.center());
+        }
     }
 
     private static void place(View view, TableGeometry.Rect box) {

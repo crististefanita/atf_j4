@@ -47,17 +47,30 @@ class WhistResponsivePlaySanityE2eTest {
                 "Whist Lab — menu, live deals and compact display checks",
                 getClass().getSimpleName(), "atf.android.e2e", APP,
                 List.of("android", "e2e", "ui", "responsive", "sanity"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         List<Path> evidence = new ArrayList<>();
         AtfReportStatus outcome = AtfReportStatus.FAIL;
         Throwable failure = null;
-        String originalSize = adb.run("shell", "wm", "size").output();
-        String originalDensity = adb.run("shell", "wm", "density").output();
+        String originalSize = null;
+        String originalDensity = null;
+        boolean hardAiCompatibilityRequested = Boolean.getBoolean(
+                "atf.android.sanity.hardAiCompatibility");
 
         try {
+            originalSize = adb.run("shell", "wm", "size").output();
+            originalDensity = adb.run("shell", "wm", "density").output();
+            trace.beginPhase("TEST BODY");
+            boolean hardAiCompatibilityChecked = !hardAiCompatibilityRequested;
             for (ResponsiveDisplayProfile profile : profiles) {
                 applyProfile(adb, ui, profile);
                 Thread.sleep(700);
+                if (!hardAiCompatibilityChecked) {
+                    inspectHardAiBid(adb, ui, trace, evidence, profile);
+                    hardAiCompatibilityChecked = true;
+                }
+                inspectPlayedCard(adb, ui, trace, evidence, profile);
                 playShortGame(adb, ui, trace, evidence, profile, hands);
                 inspectThirteenCardFan(adb, ui, trace, evidence, profile);
                 inspectNineBidTable(adb, ui, trace, evidence, profile);
@@ -68,8 +81,9 @@ class WhistResponsivePlaySanityE2eTest {
             trace.fail(caught);
         }
 
+        trace.beginPhase("TEARDOWN");
         try {
-            restoreDisplay(adb, ui, originalSize, originalDensity);
+            if (originalSize != null && originalDensity != null) restoreDisplay(adb, ui, originalSize, originalDensity);
             adb.run("shell", "am", "force-stop", APP).requireSuccess();
         } catch (Throwable cleanup) {
             trace.fail(cleanup);
@@ -85,7 +99,9 @@ class WhistResponsivePlaySanityE2eTest {
                     System.getProperty("atf.android.serial", System.getenv("ATF_ANDROID_SERIAL")),
                     System.getProperty("atf.android.api", "read from Android at runtime"),
                     "Configured portrait profiles; " + hands + " completed real hands per profile. "
-                            + "The 13-card hand and nine-bid views use deterministic display fixtures.",
+                            + "The 13-card hand and nine-bid views use deterministic display fixtures. "
+                            + "Hard-AI runtime compatibility fixture requested: "
+                            + hardAiCompatibilityRequested + ".",
                     evidence, trace);
         } catch (Throwable publishing) {
             if (failure == null) failure = publishing;
@@ -138,7 +154,7 @@ class WhistResponsivePlaySanityE2eTest {
 
             int played = 0;
             while (played < handSize) {
-                String turn = ui.awaitText("PLAY NOW", WAIT);
+                String turn = awaitPlayableTurn(adb, ui);
                 String card = ui.firstLegalCardDescription(turn);
                 if (played == 0) {
                     record(ui, adb, trace, evidence, profile,
@@ -234,7 +250,7 @@ class WhistResponsivePlaySanityE2eTest {
             List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
         ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_hand_fan_fixture", "true",
                 "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-        String xml = ui.awaitDescriptionContaining("Your hand, 13 cards.", WAIT);
+        String xml = scrollUntilVisible(adb, ui, profile, "Your hand, 13 cards.", true);
         List<Path> capture = ui.capture(profile.id() + "-thirteen-card-fan");
         evidence.addAll(capture);
         var faces = ui.handCardFaceBounds(xml).stream()
@@ -267,11 +283,245 @@ class WhistResponsivePlaySanityE2eTest {
         publishCheckpoint(ui, trace, profile, "Inspect the full thirteen-card fan", capture, checks);
     }
 
+    private static void inspectPlayedCard(AdbClient adb, AndroidUiDriver ui, AndroidUiFlowTrace trace,
+            List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
+        ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_played_card_fixture", "true",
+                "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
+        String xml = ui.awaitDescriptionContaining("You played ", WAIT);
+        List<String> playedCards = ui.descriptions(xml).stream()
+                .filter(description -> description.startsWith("You played ")).toList();
+        if (playedCards.size() != 1) {
+            throw new IllegalStateException("Expected one deterministic card in the current trick: " + playedCards);
+        }
+        xml = revealCompletePlayedCard(adb, ui, playedCards.getFirst(), profile, xml);
+        AndroidUiDriver.Bounds cardSlot = ui.boundsForDescription(xml, playedCards.getFirst());
+        AndroidUiDriver.Bounds cardFace = ui.boundsForText(xml, "A♥");
+        AndroidUiDriver.Bounds board = ui.boundsForDescription(xml, "Playing surface");
+        AndroidUiDriver.Bounds currentSeat = ui.boundsForDescriptionContaining(xml, "Current turn.");
+        AndroidUiDriver.Bounds trump = ui.boundsForDescriptionContaining(xml, "Trump");
+        List<String> initialSeatDescriptions = seatDescriptions(ui, xml);
+        double density = profile.density() / 160.0;
+        int doubledFaceHeight = (int) Math.round(104 * density);
+        boolean faceHeightReserved = height(cardFace) >= doubledFaceHeight;
+        boolean cardInsideTable = contains(board, cardSlot);
+        boolean centered = Math.abs(centerX(cardSlot) - centerX(board)) <= width(board) * 0.12;
+        List<Path> styleCapture = ui.capture(profile.id() + "-doubled-played-card-style");
+        evidence.addAll(styleCapture);
+        Path screenshot = styleCapture.stream().filter(path -> path.toString().endsWith(".png"))
+                .findFirst().orElseThrow();
+        BufferedImage image = ImageIO.read(screenshot.toFile());
+        int seatFill = sampleFrameFill(image, currentSeat, profile);
+        int trumpFill = sampleFrameFill(image, trump, profile);
+        boolean trumpMatchesCurrentSeat = seatFill == trumpFill;
+        List<AtfAssertion> styleChecks = new ArrayList<>(List.of(
+                check("Played-card slot reserves the doubled 104 dp face height",
+                        doubledFaceHeight + " px minimum at " + profile.density() + " dpi",
+                        height(cardFace) + " px", faceHeightReserved),
+                check("Played card stays centered on the table", "within 12% of table width",
+                        Math.abs(centerX(cardSlot) - centerX(board)) + " px",
+                        centered),
+                check("Played card remains inside the table surface", "contained", cardSlot,
+                        cardInsideTable),
+                check("Trump frame matches the current player's frame fill", "same rendered color",
+                        String.format("seat #%06X, trump #%06X", seatFill, trumpFill),
+                        trumpMatchesCurrentSeat)));
+        checkCaptureSize(adb, styleCapture, profile, styleChecks);
+        publishCheckpoint(ui, trace, profile,
+                "Inspect doubled card height and matching active trump frame", styleCapture, styleChecks);
+
+        xml = revealSeatCross(adb, ui, playedCards.getFirst(), profile, xml);
+        cardSlot = ui.boundsForDescription(xml, playedCards.getFirst());
+        cardFace = ui.boundsForText(xml, "A♥");
+        board = ui.boundsForDescription(xml, "Playing surface");
+        List<String> visibleSeatDescriptions = seatDescriptions(ui, xml);
+        List<AndroidUiDriver.Bounds> seats = seatBounds(ui, xml);
+        boolean fullFaceStillVisible = height(cardFace) >= doubledFaceHeight;
+        boolean completeCardRowVisible = height(cardSlot) >= (int) Math.round(122 * density);
+        boolean humanSeatVisible = visibleSeatDescriptions.stream()
+                .anyMatch(description -> description.startsWith("You. Bid "));
+        java.util.Set<String> observedPlayers = new java.util.LinkedHashSet<>(initialSeatDescriptions);
+        observedPlayers.addAll(visibleSeatDescriptions);
+        boolean allSeatsObserved = observedPlayers.size() == 4 && humanSeatVisible;
+        AndroidUiDriver.Bounds auditedCardSlot = cardSlot;
+        int overlapCount = (int) seats.stream().filter(seat -> overlaps(auditedCardSlot, seat)).count();
+        boolean clearOfSeats = humanSeatVisible && !seats.isEmpty() && overlapCount == 0;
+        AndroidUiDriver.Bounds humanSeat = ui.boundsForDescription(xml, visibleSeatDescriptions.stream()
+                .filter(description -> description.startsWith("You. Bid ")).findFirst().orElseThrow());
+        int horizontalOffset = Math.abs(centerX(cardSlot) - centerX(humanSeat));
+        boolean alignedWithHuman = horizontalOffset <= width(humanSeat) * 0.15;
+        List<Path> seatCapture = ui.capture(profile.id() + "-seat-oriented-card-clearance");
+        evidence.addAll(seatCapture);
+        List<AtfAssertion> seatChecks = new ArrayList<>(List.of(
+                check("Complete doubled-height card remains visible beside the player cross",
+                        doubledFaceHeight + " px minimum", height(cardFace) + " px",
+                        fullFaceStillVisible),
+                check("Card face and player label are fully inside the table viewport",
+                        (int) Math.round(122 * density) + " px full row", height(cardSlot) + " px",
+                        completeCardRowVisible),
+                check("All four player frames are accounted for across the scrollable table",
+                        "4 player frames",
+                        observedPlayers.size() + "/4 unique seats including You", allSeatsObserved),
+                check("The bottom card remains aligned with the human seat", "same horizontal center",
+                        "center offset=" + horizontalOffset + " px; human seat visible=" + humanSeatVisible,
+                        humanSeatVisible && alignedWithHuman),
+                check("Played card and player labels do not cover a seat frame",
+                        "no rectangle intersections", "visible seats=" + seats.size()
+                                + "; overlapping frames=" + overlapCount,
+                        clearOfSeats),
+                check("Played card remains within the visible table surface", "contained", cardSlot,
+                        contains(board, auditedCardSlot))));
+        checkCaptureSize(adb, seatCapture, profile, seatChecks);
+        publishCheckpoint(ui, trace, profile, "Audit card clearance around all four player frames",
+                seatCapture, seatChecks);
+    }
+
+    private static String revealSeatCross(AdbClient adb, AndroidUiDriver ui, String cardDescription,
+            ResponsiveDisplayProfile profile, String latest) throws Exception {
+        int[] dimensions = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
+        for (int attempt = 0; attempt < 6; attempt++) {
+            AndroidUiDriver.Bounds cardSlot = ui.boundsForDescription(latest, cardDescription);
+            boolean fullCardRowVisible = height(cardSlot)
+                    >= (int) Math.round(122 * profile.density() / 160.0);
+            if (fullCardRowVisible && humanSeatFullyVisible(ui, latest)) return latest;
+            int distance = Math.max(96, Math.round(dimensions[1] * 0.12f));
+            int startY = dimensions[1] * 90 / 100;
+            int endY = Math.max(1, startY - distance);
+            long started = System.nanoTime();
+            adb.run("shell", "input", "swipe", Integer.toString(dimensions[0] / 2),
+                    Integer.toString(startY), Integer.toString(dimensions[0] / 2),
+                    Integer.toString(endY), "300").requireSuccess();
+            ui.recordAction("Swipe", "Scrollable game table", "Expose the full player cross",
+                    "Scrolled the table viewport by " + distance + " px for profile " + profile.id(),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(), AtfReportStatus.PASS);
+            Thread.sleep(250);
+            latest = ui.dump();
+            if (!ui.hasDescription(latest, cardDescription)) {
+                throw new IllegalStateException("Played card left the visible table while exposing seats");
+            }
+        }
+        return latest;
+    }
+
+    private static String awaitPlayableTurn(AdbClient adb, AndroidUiDriver ui) throws Exception {
+        int[] dimensions = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
+        boolean playControlObserved = false;
+        for (int attempt = 0; attempt < 8; attempt++) {
+            String latest = ui.dump();
+            playControlObserved |= ui.hasText(latest, "PLAY NOW");
+            if (playControlObserved && !ui.legalCardDescriptions(latest).isEmpty()) return latest;
+            int distance = Math.max(96, Math.round(dimensions[1] * 0.12f));
+            int startY = dimensions[1] * 88 / 100;
+            int endY = Math.max(1, startY - distance);
+            long started = System.nanoTime();
+            adb.run("shell", "input", "swipe", Integer.toString(dimensions[0] / 2),
+                    Integer.toString(startY), Integer.toString(dimensions[0] / 2),
+                    Integer.toString(endY), "300").requireSuccess();
+            ui.recordAction("Swipe", "Scrollable game table", "Reveal the active player and legal hand",
+                    "Scrolled the compact viewport by " + distance + " px",
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(), AtfReportStatus.PASS);
+            Thread.sleep(250);
+        }
+        throw new IllegalStateException("Active play control remained outside the viewport after scrolling");
+    }
+
+    private static String scrollUntilVisible(AdbClient adb, AndroidUiDriver ui,
+            ResponsiveDisplayProfile profile, String expected, boolean description) throws Exception {
+        int[] dimensions = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
+        int distance = Math.max(96, Math.round(dimensions[1] * 0.12f));
+        for (int attempt = 0; attempt < 8; attempt++) {
+            String latest = ui.dump();
+            boolean visible = description
+                    ? ui.hasDescriptionContaining(latest, expected) : ui.hasText(latest, expected);
+            if (visible) return latest;
+            if (attempt == 7) break;
+            int startY = dimensions[1] * 90 / 100;
+            int endY = Math.max(1, startY - distance);
+            long started = System.nanoTime();
+            adb.run("shell", "input", "swipe", Integer.toString(dimensions[0] / 2),
+                    Integer.toString(startY), Integer.toString(dimensions[0] / 2),
+                    Integer.toString(endY), "300").requireSuccess();
+            ui.recordAction("Swipe", "Scrollable game table", "Reveal " + expected,
+                    "Scrolled the " + profile.id() + " viewport by " + distance + " px",
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(), AtfReportStatus.PASS);
+            Thread.sleep(250);
+        }
+        throw new IllegalStateException("UI did not expose the requested game control after scrolling: "
+                + expected);
+    }
+
+    private static boolean humanSeatFullyVisible(AndroidUiDriver ui, String xml) throws Exception {
+        List<String> descriptions = seatDescriptions(ui, xml);
+        String human = descriptions.stream().filter(description -> description.startsWith("You. Bid "))
+                .findFirst().orElse(null);
+        if (human == null) return false;
+        int tallestOtherSeat = 0;
+        for (String description : descriptions) {
+            if (!description.startsWith("You. Bid ")) {
+                tallestOtherSeat = Math.max(tallestOtherSeat,
+                        height(ui.boundsForDescription(xml, description)));
+            }
+        }
+        return tallestOtherSeat > 0
+                && height(ui.boundsForDescription(xml, human)) >= tallestOtherSeat;
+    }
+
+    private static String revealCompletePlayedCard(AdbClient adb, AndroidUiDriver ui, String description,
+            ResponsiveDisplayProfile profile, String latest) throws Exception {
+        int expectedFaceHeight = (int) Math.round(104 * profile.density() / 160.0);
+        int[] dimensions = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
+        for (int attempt = 0; attempt < 3; attempt++) {
+            AndroidUiDriver.Bounds face = ui.boundsForText(latest, "A♥");
+            if (height(face) >= expectedFaceHeight) return latest;
+            int distance = Math.max(64, Math.round(dimensions[1] * 0.05f));
+            int startY = dimensions[1] * 88 / 100;
+            int endY = Math.max(1, startY - distance);
+            long started = System.nanoTime();
+            adb.run("shell", "input", "swipe", Integer.toString(dimensions[0] / 2),
+                    Integer.toString(startY), Integer.toString(dimensions[0] / 2),
+                    Integer.toString(endY), "300").requireSuccess();
+            ui.recordAction("Swipe", "Scrollable game table", "Reveal the complete played-card face",
+                    "Scrolled the table viewport by " + distance + " px for profile " + profile.id(),
+                    Duration.ofNanos(System.nanoTime() - started).toMillis(), AtfReportStatus.PASS);
+            Thread.sleep(250);
+            latest = ui.dump();
+            if (!ui.hasDescription(latest, description)) {
+                throw new IllegalStateException("Played card left the visible table after scrolling");
+            }
+        }
+        throw new IllegalStateException("Played-card face remained clipped after three small table scrolls: "
+                + ui.boundsForText(latest, "A♥"));
+    }
+
+    private static void inspectHardAiBid(AdbClient adb, AndroidUiDriver ui, AndroidUiFlowTrace trace,
+            List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
+        ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_hard_ai_bid_fixture", "true",
+                "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
+        String bidding = ui.awaitText("Place bid", WAIT);
+        boolean startsWithTwoCards = ui.hasDescription(bidding, "Your hand, 2 cards.");
+        if (!startsWithTwoCards) {
+            throw new IllegalStateException("Hard-AI compatibility fixture must use two-card deals: "
+                    + ui.descriptions(bidding));
+        }
+        record(ui, adb, trace, evidence, profile, "Open the two-card Hard-AI bidding fixture",
+                List.of(check("Hard-AI fixture starts with two cards", "Your hand, 2 cards.",
+                        startsWithTwoCards)));
+
+        ui.tapText("Place bid");
+        String play = ui.awaitText("PLAY NOW", Duration.ofSeconds(90));
+        int visibleSeats = seatCount(ui, play);
+        record(ui, adb, trace, evidence, profile, "Complete Hard-AI bids on the Android runtime",
+                List.of(check("All four seats finish bidding without a runtime crash", "4 seats",
+                                visibleSeats, visibleSeats == 4),
+                        check("Human receives a playable turn", "PLAY NOW and two cards",
+                                ui.hasText(play, "PLAY NOW") && ui.hasDescription(play, "Your hand, 2 cards."),
+                                ui.hasText(play, "PLAY NOW") && ui.hasDescription(play, "Your hand, 2 cards."))));
+    }
+
     private static void inspectNineBidTable(AdbClient adb, AndroidUiDriver ui, AndroidUiFlowTrace trace,
             List<Path> evidence, ResponsiveDisplayProfile profile) throws Exception {
         ui.restartToActivity(APP, ".MainActivity", "--ez", "debug_nine_bids_fixture", "true",
                 "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-        String xml = ui.awaitText("Place bid", WAIT);
+        String xml = scrollUntilVisible(adb, ui, profile, "Place bid", false);
         List<Path> capture = ui.capture(profile.id() + "-nine-bid-controls");
         evidence.addAll(capture);
         List<Integer> bids = ui.numericButtonValues(xml);
@@ -395,12 +645,17 @@ class WhistResponsivePlaySanityE2eTest {
     private static List<AndroidUiDriver.Bounds> seatBounds(AndroidUiDriver ui, String xml)
             throws Exception {
         List<AndroidUiDriver.Bounds> seats = new ArrayList<>();
-        for (String description : ui.descriptions(xml)) {
-            if (description.contains(". Bid ") && description.contains(". Score ")) {
-                seats.add(ui.boundsForDescription(xml, description));
-            }
+        for (String description : seatDescriptions(ui, xml)) {
+            seats.add(ui.boundsForDescription(xml, description));
         }
         return seats;
+    }
+
+    private static List<String> seatDescriptions(AndroidUiDriver ui, String xml) throws Exception {
+        return ui.descriptions(xml).stream()
+                .filter(description -> description.contains(". Bid ")
+                        && description.contains(". Score "))
+                .toList();
     }
 
     private static void record(AndroidUiDriver ui, AdbClient adb, AndroidUiFlowTrace trace,
@@ -443,7 +698,7 @@ class WhistResponsivePlaySanityE2eTest {
             ResponsiveDisplayProfile profile, String title, List<Path> capture,
             List<AtfAssertion> checks) throws Exception {
         boolean passed = checks.stream().allMatch(AtfAssertion::passed);
-        trace.checkpoint("TEST BODY", trace.phaseSnapshots().isEmpty() ? "GIVEN" : "AND",
+        trace.checkpoint("TEST BODY", trace.phaseSnapshots().stream().allMatch(value -> value.checkpoints().isEmpty()) ? "GIVEN" : "AND",
                 profile.id() + " — " + title, "Rendered Android screen",
                 capture.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow(),
                 List.of(new AtfUiActionRecord(trace.nextActionSequence(), "Inspect rendered screen",
@@ -471,6 +726,19 @@ class WhistResponsivePlaySanityE2eTest {
     private static boolean contains(AndroidUiDriver.Bounds parent, AndroidUiDriver.Bounds child) {
         return child.left() >= parent.left() && child.top() >= parent.top()
                 && child.right() <= parent.right() && child.bottom() <= parent.bottom();
+    }
+
+    private static int width(AndroidUiDriver.Bounds bounds) { return bounds.right() - bounds.left(); }
+    private static int height(AndroidUiDriver.Bounds bounds) { return bounds.bottom() - bounds.top(); }
+    private static int centerX(AndroidUiDriver.Bounds bounds) { return (bounds.left() + bounds.right()) / 2; }
+    private static int sampleFrameFill(BufferedImage image, AndroidUiDriver.Bounds bounds,
+            ResponsiveDisplayProfile profile) {
+        double density = profile.density() / 160.0;
+        int[] point = AndroidUiDriver.screenshotPoint(image,
+                bounds.left() + 8 * density,
+                bounds.top() + (bounds.bottom() - bounds.top()) / 2.0,
+                profile.width(), profile.height());
+        return image.getRGB(point[0], point[1]) & 0x00FFFFFF;
     }
 
     private static boolean overlaps(AndroidUiDriver.Bounds left, AndroidUiDriver.Bounds right) {

@@ -33,6 +33,8 @@ class CompleteRomanianExpertE2eTest {
         AndroidUiFlowTrace trace=new AndroidUiFlowTrace(out,"romanian-expert-complete",
                 "Whist romanesc — "+limit+" Android hands with "+displayLevel+", every move and score audited",
                 getClass().getSimpleName(),"atf.android.e2e",APP_PACKAGE,List.of("android","romanian-whist",level.toLowerCase(),limit==24?"full-match":"pilot","rules","score"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
         Properties result=new Properties(),coverage=new Properties();int[] totals=new int[4],streaks=new int[4];int moves=0,tricks=0,humanActions=0;boolean resumed=false,backReviewed=false;
         try {
@@ -51,6 +53,7 @@ class CompleteRomanianExpertE2eTest {
             RomanianMatchOracle.truth(checks,"Selected series value in setup",expectedSeries,observedSeries,
                     seriesReward==0||expectedSeries.equals(observedSeries));
             checkpoint(trace,out,"SETUP","Select normal four-seat Romanian Whist and "+displayLevel,"ro-setup","No debug replay, seed or deal is supplied",checks,List.of());
+            trace.beginPhase("TEST BODY");
             ui.revealText("Start game");ui.tapText("Start game");JsonNode start=stable(adb);long seed=start.path("seed").asLong();int initialDealer=start.path("dealerSeat").asInt();
             result.setProperty("seed",Long.toString(seed));result.setProperty("initialDealer",Integer.toString(initialDealer));
             var schedule=RomanianMatchOracle.schedule(4);
@@ -127,6 +130,7 @@ class CompleteRomanianExpertE2eTest {
                 result.setProperty("hand."+h+".totals",Arrays.toString(totals));result.setProperty("hand."+h+".size",""+size);
                 result.setProperty("hand."+h+".trump",state.path("trump").asText());result.setProperty("handsCompleted",""+(h+1));
                 for(String key:oracle.coverage.stringPropertyNames())coverage.setProperty(key,""+(Integer.parseInt(coverage.getProperty(key,"0"))+Integer.parseInt(oracle.coverage.getProperty(key))));
+                if(h==limit-1) trace.beginPhase("TEARDOWN");
                 save(out,prefix+"-score",state);ui.capture(prefix+"-score");
                 checkpoint(trace,out,h==limit-1?"TEARDOWN":"TEST BODY","Hand "+(h+1)+" / "+limit+": independently reconciled Romanian score and visible totals",prefix+"-score",state.toPrettyString(),checks,List.of());
                 store(result,out.resolve("romanian-match-result.properties"));store(coverage,out.resolve("romanian-rule-coverage.properties"));

@@ -1,30 +1,35 @@
-# Rejected bid-model research overlays
+# Experimente izolate pentru modelarea licitațiilor
 
 ## Pe scurt
 
-These sources preserve the corrected R15 and R16 experiments. They are outside every production and default test source set. The accepted Hard engine remains R14.
+Acest director păstrează implementări alternative și mecanisme de calificare pentru cercetarea AI. Sursele sale sunt excluse din aplicație și din selecția implicită a testelor.
 
-`config/whist-research-candidates.json` binds each overlay file to its target path and SHA-256, and guards the accepted baseline before use. The collection runner applies an explicitly selected overlay only in its temporary copy.
+## Aplicarea unei alternative
 
-```powershell
-.\scripts\run-whist-collection.ps1 -Collection regression -ResearchCandidate r16-bid-forecast -RunRoot <evidence-root>/collections\fresh-r16-qualification
+```mermaid
+flowchart LR
+CAT[Catalog candidat] -->|declară fișiere| GUARD[Verificare hash-uri]
+BASE[Sursă de bază] -->|trece verificarea| GUARD
+GUARD -->|permite suprapunere de surse| TEMP[Copie temporară]
+TEMP -->|rulează| GATES[Componente și protocol]
+GATES -->|informează| REVIEW[Decizie de promovare]
 ```
 
-Supported research selections are `r15-bid-only-v2`, `r15-bid-and-card` and `r16-bid-forecast`.
+<details>
+<summary>Legendă și limite</summary>
 
-Learning additionally requires the matching protocol15/16 and a candidate ID equal to its declared prefix or beginning with that prefix plus a hyphen. Keep every run in a fresh external folder. Do not reuse consumed development or heldout seeds as fresh evidence.
+Suprapunerea de surse se aplică exclusiv în copia temporară și numai după verificarea bazei și a fișierelor declarate. Rezultatul evaluării nu activează automat alternativa în aplicație.
 
-R15A changes bid weighting; R15B also changes card weighting and separates estimator-version snapshots from physical utility bounds.
+</details>
 
-- R16 changes predictions of future unknown auction targets.
-- All share the same observed-bid likelihood, its14 component tests and6 golden fixtures.
-- The shared test uses R16's narrower description of the unchanged future-bid assertion: it checks the likelihood helper, not the whole chooseBid API.
-- The learned model predicts recorded behavior; it does not establish optimal bids or calibrated hidden-card probabilities.
+[Catalogul candidaților](../../config/whist-research-candidates.json) definește identitatea, fișierele, rolurile și colecțiile permise. [Lansatorul](../../scripts/run-whist-collection.ps1) refuză o bază modificată în loc să actualizeze tacit hash-urile.
 
-Native qualification and complete rules/scoring replay do not imply strength acceptance.
+## Principii
 
-All three candidates were rejected by their prespecified development criteria. Historical qualification counts are506/506/510 respectively; these are reference counts, never a substitute for executing the current source.
+- Modificați separat modelul licitației, modelul mâinilor ascunse și politica de continuare pentru a putea interpreta cauza progresului.
+- Predicția comportamentului observat nu demonstrează o decizie optimă sau o probabilitate calibrată a cărților ascunse.
+- Înghețați alternativa și criteriile înaintea lotului rezervat; aplicați aceeași distribuție și același loc în comparațiile pereche.
+- Păstrați jocurile, calibrările, rezultatele și registrele de lot în arhiva externă.
+- Păstrați în sursă mecanismul și regresiile minime justificate, cu limitele lor explicite.
 
-The baseline guards cover all30 accepted policy/core sources.
-
-Following the current-table trump quota correction, new temporary replays use that corrected base and include the later contextual regressions. They are new source identities; do not relabel the original R14-based results or expect the historical native counts to describe a new replay. The original full source archives and receipts remain in the external R15/R16 evidence folders.
+[Arhitectura învățării](../../docs/AI_LEARNING_ARCHITECTURE.md) și [protocolul](../../docs/AI_TRAINING_PROTOCOL.md) definesc procesul comun.

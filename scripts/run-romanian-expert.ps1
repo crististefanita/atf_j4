@@ -18,7 +18,7 @@ $evidence=Join-Path $RunRoot 'evidence\android'
 New-Item -ItemType Directory -Force $stage,$evidence,"$RunRoot\components","$component\components","$component\evidence","$component\coverage" | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'pom.xml') -Destination $stage
 Copy-Item -LiteralPath (Join-Path $root 'lib') -Destination $stage -Recurse
-foreach($module in @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-android','atf-test-android','atf-tests','whist-lab-app')){
+foreach($module in @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-test-android','atf-tests','whist-lab-app')){
     & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if($LASTEXITCODE -ge 8){throw "Could not stage $module"}
 }
@@ -44,7 +44,7 @@ try{
     Copy-Item -Path "$stage\whist-lab-app\game-core\build\reports\jacoco\test\*" -Destination "$component\coverage" -Recurse
     Invoke-Stage 'bootstrap-binaries' { & mvn -q -DskipTests install }
     Invoke-Stage 'android-report-components' { & mvn -q -pl atf-test-android,atf-tests -am test '-Dtest=AdbClientContractTest,AndroidScreenshotEvidenceComponentTest,CoreReportingConsumerContractTest,AndroidInlineScreenshotReportContractTest,ReportTextValueMatcherTest,RomanianMatchOracleTest' '-Dsurefire.failIfNoSpecifiedTests=false' }
-    Save-Xml 'atf-android' @('atf.android.AdbClientContractTest','atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
+    Save-Xml 'atf-test-android' @('atf.android.AdbClientContractTest','atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
     Save-Xml 'atf-tests' @('atf.tests.CoreReportingConsumerContractTest','atf.tests.AndroidInlineScreenshotReportContractTest','atf.tests.ReportTextValueMatcherTest')
     Save-Xml 'atf-test-android' @('atf.android.e2e.RomanianMatchOracleTest')
     Invoke-Stage 'component-extent-publisher' { & mvn -q -pl atf-tests test '-Dtest=RuleComponentExtentReportTest' '-Datf.rules.publish=true' "-Datf.rules.runDir=$component" }

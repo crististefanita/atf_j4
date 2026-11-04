@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import static org.junit.jupiter.api.Assertions.*;
 import atf.tests.learning.*;
 import atf.tests.reporting.*;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.io.TempDir;
 
+@AtfComponentTest
 class LearningRunReportContractTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     @TempDir Path folder;

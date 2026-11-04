@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import static org.junit.jupiter.api.Assertions.*;
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportTextAudit;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /** Consumer manifest bridge, not a new Android/device execution. */
+@AtfComponentTest
 class LegacyUiMediaReportContractTest {
     @TempDir Path folder;
     @Test void observationOnlyFramesKeepOneKeywordExactBytesAndZeroInventedComparisons() throws Exception {

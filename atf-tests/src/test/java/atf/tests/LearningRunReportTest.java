@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import atf.tests.learning.*;
@@ -8,6 +10,7 @@ import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 
+@AtfComponentTest
 class LearningRunReportTest {
     @Test void publishesOnlyCapturedInvocationsThroughThePhysicalReportingJar()throws Exception{
         assumeTrue(Boolean.getBoolean("atf.learning.publish"));Path folder=Path.of(System.getProperty("atf.learning.folder")),manifest=Path.of(System.getProperty("atf.learning.manifest")),report=Path.of(System.getProperty("atf.learning.report"));

@@ -19,14 +19,28 @@ normal:
   information_boundary: "The policy input contains its own hand and public seat state only; opponent card lists are removed before the decision method is called."
   tests: ["bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates"]
   limit: "Transparent local heuristic. No sampled opponent holdings or global-optimality claim."
+independent:
+  scope: "Test-only independent implementation; it does not call the Hard engine."
+  objective: ["own expected Romanian points", "lower strongest rival score"]
+  public_context:
+    remaining_need: "For every seat, recompute bid - tricks already won after each completed trick."
+    voids: "Combine completed public history with the unfinished table; an off-suit non-trump Romanian discard proves no led suit and no trump."
+    bids: "Submitted bids are literal continuation targets. They do not yet weight the hidden-hand assignment model."
+  hidden_worlds:
+    small_endgame: "The independent contract certifier enumerates every compatible assignment for four seats when each opponent has at most two cards, the unseen pool has at most ten cards, and the complete set is at most 256 worlds."
+    card_planner: "Independent card choices use constrained sampled worlds; complete enumeration supplies the bounded contract certifier."
+    otherwise: "The 48 constrained samples are not a calibrated uniform posterior."
+  continuation: "The card planner uses heuristic rollouts; exhaustive hidden-world certification does not mean perfect-information play or perfect strategy."
+  tests: ["currentTrickDiscardConstrainsIndependentWorldsEvenWhenHistoryOmitsItsSuffix", "independentCardOrderEnumeratesEverySmallPubliclyFeasibleWorld", "bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates"]
+  limitations: ["No bid-conditioned hidden-hand likelihood.", "Large information sets still use constrained samples.", "No perfect-play claim."]
 hard:
   objective: "Maximize own exact-contract probability while the public state leaves a route to the bid."
   switch_to_salvage_when: "The public lower bound on unavoidable wins exceeds remaining need, or remaining need exceeds remaining trick opportunities."
   salvage:
-    rule_ro: "Când limitele publice dovedesc că propriul contract nu mai poate fi realizat, păstrează mai întâi punctajul propriu estimat, apoi maximizează numărul estimat de adversari care ratează. Dacă certificatul exhaustiv găsește o mutare fără pierdere proprie și cu mai multe ratări în toate lumile fezabile, aceasta are prioritate."
-    rule_en: "When public bounds prove the own contract unreachable, preserve estimated own points first, then maximize the estimated number of opponents who miss. Prefer a certified move only when exhaustive proof shows no own-point loss and more misses across every feasible world."
+    rule_ro: "Când limitele publice dovedesc că propriul contract nu mai poate fi realizat, păstrează mai întâi punctajul propriu estimat, apoi maximizează numărul estimat de adversari care ratează. Certificatul compară limitele tuturor răspunsurilor: în fiecare lume candidatul este neinferior la puncte proprii și ratări adverse, cu cel puțin o îmbunătățire strictă într-o lume."
+    rule_en: "When public bounds prove the own contract unreachable, preserve estimated own points first, then maximize the estimated number of opponents who miss. A certified move requires non-worse own-point and rival-miss bounds in every feasible world, with at least one strict bound improvement in at least one world."
     certificate_scope: "Four-seat Romanian hands with two cards remaining; all feasible hidden deals and all legal continuations, bounded by the configured search limit."
-    tests: ["certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty", "recoverableContractCannotBeSacrificedForRivalDamage"]
+    tests: ["certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty", "recoverableContractCannotBeSacrificedForRivalDamage", "anImpossibleContractUsesRivalMissPriorityWithoutClaimingProof"]
   fallback: "For a publicly unreachable contract without a complete certificate, preserve expected own points, then maximize the rollout-estimated number of opponent contract misses; use the strongest rival score only as a final tie break."
   ranking:
     feasible: ["exact_contract_probability", "own_expected_points", "lower_strongest_rival_score"]
@@ -34,7 +48,7 @@ hard:
     weighting: "State-dependent lexicographic priorities, not learned numeric weights. Recomputed after every public bid or played card."
   inference:
     unseen_pool: "Remove own cards, publicly played cards, current-trick cards, and the turned-up trump."
-    ownership_constraints: "Sample only deals consistent with inferred suit voids."
+    ownership_constraints: "Sample only deals consistent with inferred suit voids from the full public history and current table."
     public_bids: "Use known bids as contract targets and scoring outcomes during rollouts."
     bid_conditioned_hand_likelihood: "Not implemented: unknown hand assignments are not weighted by a seat-specific likelihood of making the observed bid. Test this as a separate paired candidate before runtime promotion."
     information_boundary: "The Hard decision view likewise contains only the actor's own hand and public information; simulated hidden deals are generated after observation and never expose the actual opponent holdings."

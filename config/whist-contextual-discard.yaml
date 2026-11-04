@@ -4,9 +4,16 @@ configuration_kind: "CODE_BOUND_RULE_AND_TEST_MANIFEST"
 scope: "Romanian Whist; legality, own/public cards, current table, submitted contracts, remaining opportunities."
 implementation:
   hard: "MonteCarloAi; ContractGuarantee; PublicSalvage.quota"
-  independent: "IndependentPlayer; its independent ContractGuarantee"
+  independent: "IndependentPlayer.knownVoids; exhaustive smallDeals; its independent ContractGuarantee"
   component: "ContextualHonorDiscardTest"
   numeric_weight_engine: "No new fitted weights or opponent-action model is activated by this manifest."
+independent_worlds:
+  exact_enumeration: "The independent contract certifier enumerates every compatible assignment for four seats when each opponent has at most two cards, the unseen pool has at most ten cards, and the full assignment set has at most 256."
+  card_planner: "IndependentPlayer still evaluates 48 constrained sampled assignments for heuristic card rollouts; exact hand enumeration has not replaced this accepted planner."
+  fallback: "The 48 constrained assignments are not claimed to be uniform over all legal assignments."
+  current_table: "Infer voids from the unfinished trick even when the caller supplies only completed tricks in history. Repeated evidence is idempotent."
+  public_bids: "Known bids set remaining targets in continuation; bids are not used as a calibrated hidden-hand likelihood."
+  action_model: "Future play remains a heuristic rollout. Enumerating possible hands never reveals actual opponent cards or future order to the decision policy."
 context:
   need: "bid - completed tricks won; keep the signed value."
   opportunities: "(sum remaining cards + unfinished table size) / player count; count the current trick once."
@@ -23,7 +30,7 @@ rules:
   - id: "QUOTA_REVERSES_THE_SAME_CARD_CHOICE"
     rule_ro: "La necesar zero elimină levata nedorită; la necesar unu păstrează cartea care poate furniza ultima levată sigură."
     rule_en: "At zero remaining need shed an unwanted winner; at need one retain the card supplying the required final trick."
-    fixture: "Same AS/7H or KS/7H and same legal public prefix; only own contract changes. Six compatible remaining worlds prove the opposite unique choices."
+    condition: "Hold the legal card set, public prefix and remaining opportunities fixed; vary only own remaining need to verify that the preferred card can reverse."
     tests: ["sideHonorsCanBeDiscardedAfterTheContractIsMade", "theSameHonorMustBeRetainedWhenOneTrickIsStillNeeded"]
   - id: "MANDATORY_TRUMP_DOMINATES_INTENTION"
     rule_ro: "Dacă nu ai culoarea, dar ai atu, tai obligatoriu chiar când ți-ai realizat contractul. Nu poți folosi discardul lateral pentru a evita regula."
@@ -34,6 +41,21 @@ rules:
     rule_en: "An ace still on the table can consume an own king or queen without an own trick; count only unavoidable retained wins."
     implementation: "Subtract one from the public master-trump lower bound iff a legally playable master can lose under a higher trump on the unfinished table."
     test: "aHigherTrumpStillOnTheTableCanConsumeOneHeldMaster"
+  - id: "CURRENT_TABLE_UPDATES_INDEPENDENT_WORLDS"
+    rule_ro: "Decartarea vizibilă din levata neterminată restrânge imediat mâinile posibile. Fără culoare și fără atu în Whist românesc dovedește ambele voiduri; o tăiere cu atu dovedește doar lipsa culorii cerute."
+    rule_en: "A visible discard in the unfinished trick immediately constrains possible holdings. In Romanian Whist, an off-suit non-trump discard proves both voids; a trump cut proves only the led-suit void."
+    enforcement: "IndependentPlayer.knownVoids combines completed history with the current table; Hard also includes the current table in its public inference."
+    test: "currentTrickDiscardConstrainsIndependentWorldsEvenWhenHistoryOmitsItsSuffix"
+  - id: "ENUMERATE_SMALL_INFORMATION_SETS"
+    rule_ro: "Certificatorul enumeră toate mâinile ascunse compatibile când încap în limita declarată; plannerul de cărți păstrează eșantionarea acceptată până când un candidat trece comparațiile pe partide noi."
+    rule_en: "The contract certifier enumerates every compatible hidden hand within the declared limit; the card planner retains accepted sampling until a candidate passes fresh-match comparisons."
+    enforcement: "IndependentPlayer.smallDeals supplies the exact contract certifier; IndependentPlayer.modelCard remains on 48 constrained samples."
+    test: "independentCardOrderEnumeratesEverySmallPubliclyFeasibleWorld"
+  - id: "IMPOSSIBLE_CONTRACT_RIVAL_MISS_PRIORITY"
+    rule_ro: "Dacă necesarul depășește levatele rămase, nu mai promite realizarea contractului. Păstrează mai întâi punctele proprii estimate; la egalitate preferă cartea care estimează mai mulți adversari cu contract ratat. Fără certificat, aceasta rămâne o estimare, nu o garanție."
+    rule_en: "If remaining need exceeds remaining tricks, stop claiming the contract is reachable. Preserve estimated own points first; on a tie prefer the card forecast to make more opponents miss. Without a certificate this remains an estimate, not a guarantee."
+    enforcement: "MonteCarloAi.prefer uses the publicly-impossible lexicographic objective: own expected points, expected rival misses, then strongest-rival score."
+    test: "anImpossibleContractUsesRivalMissPriorityWithoutClaimingProof"
   - id: "EXPOSED_COMPLETED_AND_CURRENT_ARE_DISTINCT"
     rule_ro: "AS întors, AS dintr-o levată încheiată și AS încă pe masă au efecte diferite. Numai ultimul mai poate câștiga levata curentă."
     rule_en: "Turned, completed-trick and current-table aces have distinct effects; only the current-table ace can still win this trick."
@@ -41,7 +63,7 @@ rules:
   - id: "UNDERBOOKED_TABLE_IS_NOT_AN_ORDER_TO_DUCK"
     rule_ro: "O masă sublicitată nu înseamnă că toți trebuie să arunce câștigătorii. Un jucător cu necesar2 din2 trebuie să le câștige pe ambele, chiar dacă altul a depășit deja zero."
     rule_en: "An underbooked table does not tell every seat to duck; a player needing two of two must still take both."
-    example: {initial_hand_size: 4, bids: [2, 1, 0, 0], won: [0, 0, 2, 0], opportunities: 2, signed_difference: -1, positive_demand: 3}
+    condition: "Evaluate each seat's signed need and remaining opportunities independently; aggregate table imbalance never overrides an attainable individual contract."
     test: "anUnderbookedTableDoesNotOverrideNeedingEveryRemainingTrick"
     status: "Component-verified counterexample; no blanket underbooking scalar is activated."
 objective_priority:
@@ -56,3 +78,17 @@ research_only:
   proposed_context_features: ["per-seat signed need", "need density", "positive demand", "normalized fixed table imbalance", "remaining safe winners", "legal discard exits", "proven voids", "score and series incentives"]
   opponent_inference: "Condition voluntary action likelihood on the acting seat's available information, legal choices, objective and remaining need. Forced play does not prove a desire to win or duck; rule deductions still apply."
   qualification: "Small independently expected cases first; separate belief and continuation ablations; freeze a policy before untouched paired evaluation; retain failed family gates."
+  offline_learning_protocol:
+    evidence_root: "Configured outside the ATF source tree; local default is C:/work/whist_back/offline-mock."
+    yaml_roles:
+      whist_play_objectives: "Formal contract objectives, rule priority, implementation ownership and component coverage; it does not supply learned numeric weights."
+      whist_contextual_discard: "Formal contextual rule conditions, public-information limits, code/test links and research-only hypotheses."
+      whist_hand_patterns: "Descriptive combination catalog; runtime influence remains zero until a tested code consumer is promoted."
+    each_run_records: ["seed and paired-deal verification", "source and YAML hashes", "seat/profile assignment", "public bids and played-card order", "contract outcomes and score components"]
+    policy_information: "The decision sees only its own hand and the public prefix. Complete public traces may be analyzed after the match; initial hidden-hand arrays are not policy input."
+    pairing: "Replay the same deal sequence with the candidate and current policy at the same focal seat; rotate the focal seat through the full table. Compare whole-match effects after trajectories diverge."
+    partitions: "Use development games to find failure families; reserve untouched seeds for promotion checks. Never promote from the same games used to select the rule."
+    failure_to_rule: "Trace the earliest differing legal decision, separate hard deductions from bid/action likelihood, then reduce the issue to a component fixture with an independent expected result."
+    summary_metrics: ["exact contracts", "points with streak bonuses separated", "overtricks", "undertricks", "bid changes", "card-order changes", "seat and hand-size strata"]
+    promotion: "Require component coverage, stable gains across fresh seeds and all seats, and no rule/score regression. Keep run-specific outcomes and examples in the external evidence root, not stable project documentation."
+    opponent_model_next: "Condition voluntary bid likelihood on hand, auction prefix and a policy model; forced card choices contribute legality/void facts, not inferred intent."

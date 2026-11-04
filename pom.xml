@@ -15,7 +15,6 @@
         <module>atf-mock</module>
         <module>atf-validation</module>
         <module>atf-console</module>
-        <module>atf-android</module>
         <module>atf-test-android</module>
         <module>atf-tests</module>
     </modules>
@@ -27,7 +26,7 @@
         <jackson.version>2.17.2</jackson.version>
         <atf.consumer.profile>android</atf.consumer.profile>
         <atf.core.version>1.0.0-c3</atf.core.version>
-        <atf.reporting.version>1.0.0-j18</atf.reporting.version>
+        <atf.reporting.version>1.0.0-j20</atf.reporting.version>
         <atf.test.heap.max>1g</atf.test.heap.max>
     </properties>
 

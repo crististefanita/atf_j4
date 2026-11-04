@@ -13,11 +13,11 @@ import ro.whistlab.core.Suit;
 
 /** Persistent, accessible trump tile kept in the game header above the table. */
 final class TrumpIndicatorView extends LinearLayout {
-    private static final int GOLD = Color.rgb(220, 181, 105);
     private static final int IVORY = Color.rgb(255, 254, 248);
     private static final int HEART_RED = Color.rgb(255, 177, 177);
 
-    TrumpIndicatorView(Context context, GameSession.Snapshot state, WhistUiText copy) {
+    TrumpIndicatorView(Context context, GameSession.Snapshot state, WhistUiText copy,
+            boolean currentPlayerHighlighted) {
         super(context);
         float density = getResources().getDisplayMetrics().density;
         setOrientation(VERTICAL);
@@ -25,7 +25,7 @@ final class TrumpIndicatorView extends LinearLayout {
         setMinimumHeight(dp(density, 48));
         setGravity(Gravity.CENTER);
         setPadding(dp(density, 6), dp(density, 4), dp(density, 6), dp(density, 4));
-        setBackground(background(density));
+        setBackground(WhistUiPalette.seatFrame(context, currentPlayerHighlighted));
         setTag("trump-indicator");
         setContentDescription(copy.trumpAccessibility(state));
         setFocusable(true);
@@ -82,14 +82,6 @@ final class TrumpIndicatorView extends LinearLayout {
         Card turned = state.turnedCard();
         return turned != null ? turned.suit().red()
                 : state.trump().suit().map(Suit::red).orElse(false);
-    }
-
-    private static GradientDrawable background(float density) {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setColor(Color.rgb(28, 91, 67));
-        shape.setCornerRadius(dp(density, 13));
-        shape.setStroke(dp(density, 1), GOLD);
-        return shape;
     }
 
     private static int dp(float density, int value) {

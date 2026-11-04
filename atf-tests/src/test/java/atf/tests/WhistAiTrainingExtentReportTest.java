@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportTextAudit;
 import atf.tests.reporting.GameReportPhase;
@@ -15,6 +17,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** J4 evidence composition using the J0 binary and native UI-flow observations. */
+@AtfComponentTest
 class WhistAiTrainingExtentReportTest {
     @Test void publishesRulesEveryAcceptedComponentAndTheDeclaredAndroidDuel()throws Exception{
         assumeTrue(Boolean.getBoolean("atf.ai.publish"));

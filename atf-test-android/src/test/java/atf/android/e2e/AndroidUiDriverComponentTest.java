@@ -1,10 +1,14 @@
 package atf.android.e2e;
 
+import atf.testkit.AtfComponentTest;
+
+import java.awt.image.BufferedImage;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@AtfComponentTest
 class AndroidUiDriverComponentTest {
     @Test
     void enabledNumericBidsAreResolvedAsButtonsDespiteRepeatedSeatLabels() throws Exception {
@@ -18,5 +22,15 @@ class AndroidUiDriverComponentTest {
                 """;
 
         assertEquals(List.of(0, 2), AndroidUiDriver.enabledNumericButtonValues(hierarchy));
+    }
+
+    @Test
+    void screenshotPointScalesLogicalBoundsToPhysicalCapturePixels() {
+        BufferedImage physicalCapture = new BufferedImage(1080, 1920, BufferedImage.TYPE_INT_RGB);
+
+        assertEquals(95, AndroidUiDriver.screenshotPoint(
+                physicalCapture, 63, 768.5, 720, 1280)[0]);
+        assertEquals(1153, AndroidUiDriver.screenshotPoint(
+                physicalCapture, 63, 768.5, 720, 1280)[1]);
     }
 }

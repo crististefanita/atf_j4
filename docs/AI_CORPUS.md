@@ -1,28 +1,49 @@
-# Corpus de partide
+# Contractul corpusului de partide
 
-O partidă completă este un fișier JSON. Fiecare mână înregistrează dealerul, distribuția, cartea întoarsă, licitațiile în ordinea depunerii, levatele și scorurile pe locuri.
+Corpusul este o intrare externă pentru replay, selecție și analiză offline. Proiectul deține schema și validatoarele; fișierele partidelor, manifestele concrete și registrele loturilor rămân în depozitul extern configurat.
 
-| Întrebare | Câmpuri sau verificare |
+## Modelul datelor
+
+| Entitate | Contract |
 |---|---|
-| Ce știa jucătorul înainte de decizie? | Mâna proprie, ofertele deja anunțate, cărțile publice, levatele câștigate și scorul. |
-| Ce poate verifica oracolul după partidă? | Identitatea și proprietatea cărților, ordinea, urmarea culorii, obligația de atu, câștigătorul, plata seriei și fiecare total. |
-| Cum se compară două politici? | Aceeași distribuție, același loc, aceiași adversari și profil. Seed-ul se păstrează ca șir pentru a conserva valoarea Java long. |
-| Ce intră în regresia zilnică? | Exemple mici cu așteptare independentă. Selecția de învățare pornește dintr-un manifest cu hash-uri. |
+| Partidă | Identitate, partiție, profil de reguli, politici și ordinea mâinilor. |
+| Mână | Dealer, distribuție, atu și carte întoarsă, licitații ordonate, levate și închiderea scorului. |
+| Observație | Mâna actorului și prefixul public disponibil la decizie. |
+| Manifest | Fișiere selectate, hash-uri, identitatea părintelui și scopul selecției. |
+| Registru de lot | Separarea dezvoltării de evaluare și evidența intervalelor deja consumate. |
 
-## Date pentru învățare și verificare
-
-- Directorul `games/development` conține partidele permise pentru analiză și export de exemple.
-- Directorul `games/heldout` conține evaluările rezervate. Un lot deschis se înregistrează ca expus.
-- Directorul `games/reference` păstrează referințele. Replay-ul citește fișierul ales, iar validarea întregului corpus parcurge arhiva.
-- Exportul de exemple separă observația de acțiune și rezultat. Cărțile reale ascunse ale adversarilor rămân disponibile oracolului după partidă.
-
-## Comenzi
-
-```powershell
-$corpus = Join-Path $env:WHIST_EVIDENCE_ROOT 'training-corpus'
-$game = Join-Path $corpus 'games/development/android-round-v2-21049369348797.json'
-node scripts/whist-corpus-cli.mjs replay $game
-node --test scripts/whist-corpus.test.mjs
+```mermaid
+flowchart LR
+    FILE[Partidă externă] -->|validează| ORACLE[Validator independent]
+    ORACLE -->|admite în partiție| MANIFEST[Manifest verificat]
+    MANIFEST -->|selectează explicit| REPLAY[Replay și analiză]
+    REPLAY -->|proiectează| OBS[Observații pentru diagnostic]
 ```
 
-[Selecția de nouă partide](AI_LEARNING_FOCUS.md) și [protocolul evaluării](AI_TRAINING_PROTOCOL.md) descriu trecerea de la pierdere observată la regresie justificată.
+<details>
+<summary>Legendă: accesul la date</summary>
+
+Validatorul poate verifica proprietatea tuturor cărților după încheierea jocului. Politica primește proiecția permisă la decizie, iar analiza nu transformă mâinile adverse reale în intrări ale acelei politici.
+
+</details>
+
+## Partiții și integritate
+
+- Development permite analiza și ajustarea; selecția activă citește numai manifestul declarat.
+- Heldout este rezervat evaluării candidatului înghețat și se înregistrează ca expus la deschidere.
+- Reference păstrează intrări de compatibilitate; ele nu justifică o afirmație despre puterea actuală a unei politici.
+- Repetările aceleiași distribuții sau urme nu se numără drept observații independente.
+- Seed-ul se serializează fără pierderea preciziei tipului Java long.
+- Identitatea, partiția, căile și SHA-256 se verifică înainte de utilizare.
+
+## Utilizare
+
+[Configurația corpusului](../config/learning-corpus.json) indică arhiva și pointerul activ. [Validatorul](../scripts/whist-corpus.mjs) verifică regulile și scorul, iar [selectorul activ](../scripts/whist-active-corpus.mjs) controlează selecția.
+
+```powershell
+$gamePath = Read-Host 'Fișierul JSON extern pentru replay'
+node scripts/whist-corpus-cli.mjs replay $gamePath
+node scripts/whist-active-corpus.mjs verify-current
+```
+
+[Criteriile selecției](AI_LEARNING_FOCUS.md) și [protocolul evaluării](AI_TRAINING_PROTOCOL.md) explică folosirea corpusului pentru îmbunătățirea politicilor.

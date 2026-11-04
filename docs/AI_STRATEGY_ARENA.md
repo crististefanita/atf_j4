@@ -1,21 +1,47 @@
 # Compararea strategiilor la aceeași masă
 
-Arena rulează partide românești complete cu patru locuri și profilul de serie +10. Configurația stabilește seed-urile, strategiile și permutările locurilor.
+Arena compară politici pe partide românești complete. Protocolul declară distribuțiile, ordinea, rolurile, strategiile de bază, rotația locurilor și regulile de scor înainte de evaluare.
 
-## Cum se citește rezultatul
+## Principii de comparare
 
-| Observație | Interpretare |
+| Principiu | Interpretare |
 |---|---|
-| Patru profiluri la aceeași masă | Fiecare primește propria mână și informația publică disponibilă la decizie. |
-| Același seed, alte locuri | Rotația reduce avantajul locului. Partidele din același grup împart distribuțiile. |
-| Contract ratat | Se verifică licitația, levatele câștigate, cărțile rămase și prima decizie care diferă. |
-| Câștig într-o ligă | Este un rezultat de dezvoltare. Promovarea cere un lot rezervat și comparații în perechi pentru rolul evaluat. |
+| Aceeași lume inițială | Candidatul și baza pornesc de la aceleași distribuții și aceeași ordine. |
+| Aceleași informații publice | Fiecare decizie folosește numai mâna proprie și prefixul public disponibil atunci. |
+| Rotația locurilor | Evaluarea din locuri diferite măsoară sensibilitatea la poziție și reduce confundarea avantajului locului cu efectul politicii. |
+| Partidă completă | Scorul final include consecințele tuturor licitațiilor, cărților și regulilor de scor declarate. |
+| Lot rezervat | Evaluarea de promovare folosește distribuții care nu au fost folosite la alegerea candidatului. |
 
-## Dintr-o pierdere într-un test mic
+## Limitele interpretării
 
-1. Reconstruiți starea observabilă chiar înaintea mutării.
-2. Separați restricțiile certe de ipotezele sugerate de licitații.
-3. Construiți o situație de control în care aceeași carte mare trebuie păstrată sau eliminată din alt motiv.
-4. Verificați cazul cu un oracol independent și comparați politica pe distribuții noi.
+După prima divergență, partida compară trasee complete și nu izolează efectul unei singure mutări, deoarece acțiunile schimbă starea publică ulterioară.
 
-[Protocolul arenei](../config/strategy-arena.json) · [Colecțiile disponibile](TEST_COLLECTIONS.md) · [Reguli contextuale](rules/AI_HAND_PATTERNS_RO.md)
+Raportați separat rolul, locul, familia adversă, mărimea mâinii, punctele, contractele exacte și componentele scorului, inclusiv bonusurile de serie.
+
+O partidă câștigată sau o rată agregată nu dovedește singură superioritatea unei reguli; evaluarea folosește criteriile stabilite înaintea lotului rezervat.
+
+## Din observație într-o regulă verificabilă
+
+1. Reconstruiți numai starea disponibilă public înaintea deciziei.
+2. Separați deducțiile certe din reguli de ipotezele despre intenția sau cărțile adversarilor.
+3. Formulați condiția generală, condițiile-limită și cazurile în care regula nu se aplică.
+4. Reduceți observația la o componentă cu rezultat așteptat justificat de o regulă, invariant sau oracol independent.
+5. Rulați regresia de domeniu, apoi comparați candidatul înghețat pe aceleași distribuții și locuri.
+6. Păstrați rezultatele fiecărei rulări în afara codului sursă și rezervați date noi pentru promovare.
+
+## Informație și artefacte
+
+Mâinile adverse reale și ordinea viitoare a cărților nu sunt intrări ale deciziei. Simulările pot crea lumi compatibile cu informația publică, dar nu pot substitui cărțile reale ale adversarilor în observația jucătorului.
+
+Rularea păstrează metadatele de reproducere, hash-urile surselor și configurației, rolurile, licitațiile publice, cărțile jucate și rezultatele. Directorul de dovezi este în afara ATF; locația implicită este configurată de runner și poate fi suprascrisă.
+
+```powershell
+$firstSeed = [long](Get-Date -Format 'yyyyMMddHHmmss')
+$seeds = @($firstSeed, $firstSeed + 1)
+foreach ($seed in $seeds) { .\scripts\run-offline-strategy-profiles.ps1 -Seed $seed }
+.\scripts\summarize-offline-strategy-profiles.ps1 -Seeds $seeds
+```
+
+Folosiți o singură înregistrare de rulare pentru fiecare seed dintr-un rezumat. Pentru promovare, înghețați candidatul și protocolul înainte să selectați lotul neatins.
+
+[Protocolul arenei](../config/strategy-arena.json) · [Colecțiile disponibile](TEST_COLLECTIONS.md) · [Reguli contextuale](rules/AI_HAND_PATTERNS_RO.md) · [Protocolul de învățare](AI_TRAINING_PROTOCOL.md)

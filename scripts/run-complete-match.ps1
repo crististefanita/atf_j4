@@ -64,7 +64,7 @@ $referenceRecord = [ordered]@{
 Set-Content -LiteralPath (Join-Path $RunRoot 'reference-input.json') -Value $referenceRecord -Encoding utf8
 
 Copy-Item -LiteralPath (Join-Path $root 'pom.xml'), (Join-Path $root 'atf.yaml'), (Join-Path $root 'lib'), (Join-Path $root 'config') -Destination $stage -Recurse
-$modules = @('atf-test-kit', 'atf-mock', 'atf-validation', 'atf-console', 'atf-android', 'atf-test-android', 'atf-tests')
+$modules = @('atf-test-kit', 'atf-mock', 'atf-validation', 'atf-console', 'atf-test-android', 'atf-tests')
 foreach ($module in $modules) {
     & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "Could not stage J4 module $module." }
@@ -110,8 +110,8 @@ try {
         Select-Object Path, Algorithm, Hash | ConvertTo-Json | Set-Content (Join-Path $RunRoot 'library-binaries.json')
     Invoke-MatchStage 'complete-report-value-controls' @('-q', '-pl', 'atf-tests', 'test', '-Dtest=ReportTextValueMatcherTest')
     Save-MatchXml 'atf-tests' @('atf.tests.ReportTextValueMatcherTest')
-    Invoke-MatchStage 'android-adapter-components' @('-q', '-pl', 'atf-android', 'test', '-Dtest=AndroidComponentSuite')
-    Save-MatchXml 'atf-android' @('atf.android.AdbClientContractTest', 'atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
+    Invoke-MatchStage 'android-adapter-components' @('-q', '-pl', 'atf-test-android', 'test', '-Dtest=AndroidComponentSuite')
+    Save-MatchXml 'atf-test-android' @('atf.android.AdbClientContractTest', 'atf.android.evidence.AndroidScreenshotEvidenceComponentTest')
     Invoke-MatchStage 'whist-lab-observation-components' @('-q', '-pl', 'atf-test-android', 'test', '-Dtest=AndroidHierarchyFreshnessTest,OriginalWhistStateTest,OriginalMatchOracleTest,WhistLabContinuationTest')
     Save-MatchXml 'atf-test-android' @('atf.android.e2e.AndroidHierarchyFreshnessTest', 'atf.android.e2e.OriginalWhistStateTest', 'atf.android.e2e.OriginalMatchOracleTest', 'atf.android.e2e.WhistLabContinuationTest')
 

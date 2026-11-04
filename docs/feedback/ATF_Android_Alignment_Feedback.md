@@ -1,10 +1,10 @@
 # Așteptări de acceptanță pentru rapoartele Whist Lab
 
-Acest feedback aparține producerului de teste al jocului din J4. Defectele
+Acest feedback aparține producerului de teste al jocului. Defectele
 neutre ale contractului HTML, Extent sau fallback-ului aparțin
-[feedback-ului Reporting din J0](../../../atf_j0/docs/feedback/README.md).
+modulului comun de raportare, prin [indexul de feedback](README.md).
 
-| Prioritate | Risc specific jocului | Probă cerută în J4 |
+| Prioritate | Risc specific jocului | Probă cerută |
 |---|---|---|
 | P0 | Un tap este confundat cu o mutare acceptată. | Receipt-ul compară controlul selectat cu exact o schimbare semantică observată în starea Whist Lab. |
 | P0 | Scorul final ascunde o mână sau un jucător atribuit greșit. | Replay-ul compară pe fiecare mână jucătorul, licitația, levatele, punctele și totalul cu oracolul independent. |

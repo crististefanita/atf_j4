@@ -2,18 +2,20 @@
 
 [Catalogul colecțiilor](../config/test-collections.json), [runnerul](../scripts/run-whist-collection.ps1) și [task-urile Gradle](../whist-lab-app/game-core/build.gradle) definesc execuția curentă. Numărul de cazuri se citește din rezultatele native ale fiecărei rulări, nu dintr-un inventar fixat în documentație.
 
+[Arhitectura testării](TESTING_ARCHITECTURE.md) definește nivelurile și matricea executabilă. Colecția alege scopul și costul; numele ei nu schimbă nivelul verificării.
+
 ## Alegerea colecției
 
 | Colecție | Scop | Execuție |
 |---|---|---|
-| `context` | Onoruri, necesar de levate, atu întors sau încă pe masă, legalitatea prefixelor | Componente JVM restrânse |
+| `context` | Onoruri, necesar de levate, atu întors sau încă pe masă, legalitatea prefixelor | Verificări JVM restrânse |
 | `quick` | Reguli, scor, serii, checkpoint-uri și gărzi de decizie | Subset al regresiei |
-| `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Componente JVM, fără turnee |
+| `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Regresie JVM, fără turnee |
 | `strategy` | Invariante și contraexemple mici pentru licitare și joc | Componente JVM selectate |
-| `documentation` | Exemple de reguli și ajutor în română/engleză | Componente și documente generate |
+| `documentation` | Exemple de reguli și ajutor în română/engleză | Reguli și ajutor bilingv generate |
 | `learning` | Comparație între un candidat și politici înghețate | Partide complete definite prin protocol |
 | `arena` | Strategii distincte la aceeași masă și locuri rotite | Ligă virtuală definită prin protocol |
-| `research` | Modele experimentale izolate de regresia implicită | Componente opt-in |
+| `research` | Modele experimentale izolate de regresia implicită | Cercetare JVM activată explicit |
 
 Catalogul descrie separat și acceptanța `e2e`. Aceasta folosește runner-ele Android; `e2e` nu este o valoare acceptată de parametrul `-Collection`.
 
@@ -63,7 +65,7 @@ O execuție fără erori de reguli nu dovedește progres statistic. Un rezultat 
 
 ## Din observație în regresie
 
-[Configurația corpusului](../config/learning-corpus.json) indică manifestul activ. [Selecția focalizată](../config/whist-learning-focus.json) este un subset diagnostic explicit, fără turneu implicit și fără traversarea arhivei brute. Verifică SHA-urile înainte de a folosi partidele selectate.
+[Configurația corpusului](../config/learning-corpus.json) indică manifestul activ. [Selecția focalizată](AI_LEARNING_FOCUS.md) definește un subset diagnostic extern explicit, fără turneu implicit și fără traversarea arhivei brute. Verifică SHA-urile înainte de a folosi partidele selectate.
 
 Un rezultat observat, o licitație sau o carte aleasă nu reprezintă automat acțiunea optimă.
 
@@ -72,6 +74,16 @@ Pentru o regresie implicită, redu cazul și stabilește un expected independent
 Rezultatele și eșecurile originale rămân păstrate.
 
 Un lot de evaluare consumat nu devine din nou o evaluare neatinsă prin schimbarea numelui.
+
+## Guvernanța proiectului
+
+Calitatea surselor și documentației se verifică separat de colecțiile jocului:
+
+```powershell
+.\scripts\run-atf-governance.ps1
+```
+
+[Contractul guvernanței](ATF_QUALITY_GOVERNANCE.md) definește inventarul, excepțiile și controalele negative. Această verificare nu joacă partide și nu comandă emulatorul.
 
 ## Reguli, ajutor și Android
 

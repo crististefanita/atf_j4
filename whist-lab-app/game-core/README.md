@@ -6,11 +6,30 @@ Bibliotecă Java fără dependență de Android. Același motor este consumat de
 aplicație și de testele JVM; verificările independente ale testelor nu trebuie
 să împrumute verdictul motorului verificat.
 
+## Fluxul domeniului
+
+```mermaid
+flowchart LR
+CMD[Comandă] -->|validează| SESSION[GameSession]
+SESSION -->|aplică| RULES[GameRules]
+RULES -->|calculează| SCORE[Scor și serii]
+SESSION -->|expune| SNAP[Stare publică]
+SNAP -->|informează| POLICY[Politică AI]
+POLICY -->|propune| CMD
+```
+
+<details>
+<summary>Legendă și limite</summary>
+
+Regulile filtrează toate acțiunile, inclusiv cele propuse de AI. Starea capturată furnizată politicii conține mâna actorului și faptele publice; istoricul scorului aparține domeniului, nu geometriei Android.
+
+</details>
+
 ## Contracte în cod
 
 | Sursă | Contract |
 |---|---|
-| [GameConfig](src/main/java/ro/whistlab/core/GameConfig.java) | Număr de jucători, variantă, nivel, seed și configurarea seriilor. |
+| [GameConfig](src/main/java/ro/whistlab/core/GameConfig.java) | Număr de jucători, variantă, nivel, valoare de inițializare și configurarea seriilor. |
 | [GameMode](src/main/java/ro/whistlab/core/GameMode.java) | Variante distincte și alegerea profilului românesc. |
 | [GameRules](src/main/java/ro/whistlab/core/GameRules.java) | Pachet, program, oferte legale, cărți legale, câștigător și scor de bază. |
 | [RomanianScoring](src/main/java/ro/whistlab/core/RomanianScoring.java) | Punctele contractului, bonusul de serie și contorul următor. |
@@ -46,7 +65,7 @@ Contractul exact acordă `5 + levate`; ratarea acordă `-abs(levate - contract)`
 
 Oh Hell și celelalte variante folosesc profilul lor de pachet, program, atu și scor.
 
-De exemplu, obligația de a tăia din profilul românesc nu se transferă automat în Oh Hell. Alegeți întotdeauna `GameMode` în fixture și în scenariu.
+De exemplu, obligația de a tăia din profilul românesc nu se transferă automat în Oh Hell. Alegeți întotdeauna `GameMode` în datele de test și în scenariu.
 
 ## Sesiune și salvare
 
@@ -64,16 +83,16 @@ Restaurarea de compatibilitate poate accepta o salvare veche cu istoric limitat 
 [AiDifficulty](src/main/java/ro/whistlab/core/AiDifficulty.java) expune Normal și Hard.
 
 - `EXPERT` este un alias de compatibilitate, migrat la Hard la citirea unei salvări vechi.
-- [AiPolicy](src/main/java/ro/whistlab/core/AiPolicy.java) definește dispatch-ul actual.
+- [AiPolicy](src/main/java/ro/whistlab/core/AiPolicy.java) alege politica activă pentru nivelul configurat.
 - Politicile primesc o observație izolată: mâna proprie, licitațiile, levatele câștigate, masa și istoricul public. Nu primesc listele de cărți ale celorlalți jucători.
 - Hard folosește ofertele publice drept ținte de contract în simulări și exclude cărțile deja jucate și atuul întors din pachetul necunoscut; împărțirea necunoscută nu este încă ponderată cu probabilitatea ca acel loc să fi făcut oferta observată. Acesta este un candidat separat de cercetare, nu o capabilitate deja implementată.
 - Estimările probabilistice și garzile de final cu domeniu finit nu demonstrează joc perfect cu informație ascunsă.
 - Codul experimental extern nu este activat automat.
 
-Testele de reguli, sesiune, scor, checkpoint și AI se găsesc în
-[src/test/java](src/test/java/ro/whistlab/core/). Cazurile cu expected finit trebuie
+Testele de reguli, sesiune, scor, punct de control și AI se găsesc în
+[src/test/java](src/test/java/ro/whistlab/core/). Cazurile cu rezultat așteptat demonstrabil pe un domeniu finit trebuie
 să aibă un oracol separat sau un invariant justificat; o mutare istorică a
-câștigătorului nu este singură un expected corect.
+câștigătorului nu este singură un rezultat așteptat corect.
 
 ## Rulare offline
 
@@ -85,69 +104,43 @@ Dintr-o copie proprie din `%TEMP%` a `whist-lab-app`:
 .\gradlew.bat -p algorithm-build :game-core:contextRegressionTest --offline --no-daemon
 ```
 
-[build.gradle](build.gradle) definește selecțiile efective și excluderile testului implicit.
+[configurația Gradle](build.gradle) definește selecțiile efective și excluderile testului implicit.
 
-- Quick este o selecție, nu o populație care se adună la regresia completă.
+- `quick` este o selecție, nu o populație care se adună la regresia completă.
 - Colecția `context` urmărește finaluri mici cu martori legali independenți.
-- `documentation` verifică regulile afișate; `strategy` și `research` au scope-uri separate.
+- `documentation` verifică regulile afișate; `strategy` și `research` au scopuri distincte.
 - Turneele `learning` și `arena` se activează explicit, cu identitate de candidat și protocol, nu prin testul implicit.
 
 [Catalogul colecțiilor](../../config/test-collections.json) și
-[runnerul](../../scripts/run-whist-collection.ps1) sunt sursele selecției și
-parametrilor actuali. Native XML și datele de comparație se păstrează în
+[lansatorul](../../scripts/run-whist-collection.ps1) sunt sursele selecției și
+parametrilor actuali. Rezultatele XML native și datele de comparație se păstrează în
 directorul extern al execuției. Un rezultat JVM nu reprezintă o execuție Android.
 
 ## Politica Normal și Hard
 
-[Manifestul regulilor de joc](../../config/whist-play-objectives.yaml) fixează
-obiectivele observabile pentru cele două niveluri. Normal conduce cu forță cât timp
-mai are levate de făcut și evită levatele în plus după contract. Hard maximizează
-șansa propriului contract folosind licitațiile și cărțile publice. Când limitele
-publice arată că exactul este imposibil, Hard păstrează mai întâi punctele proprii
-estimate, apoi maximizează numărul estimat de adversari care ratează. Scorul celui
-mai puternic rival departajează egalitățile. Un certificat complet poate înlocui
-această estimare doar dacă nu reduce punctele proprii în nicio continuare legală și
-provoacă mai multe ratări în fiecare lume public fezabilă. Certificatul actual
-acoperă finalurile cu două cărți la patru locuri.
+[Manifestul regulilor de joc](../../config/whist-play-objectives.yaml) fixează obiectivele observabile pentru cele două niveluri.
 
-Rulați o partidă mock completă, deterministă și offline cu:
+| Politică sau stare | Prioritate |
+|---|---|
+| Normal înaintea contractului | Caută levatele necesare și păstrează oportunități pentru cele viitoare. |
+| Normal după contract | Evită levatele suplimentare în limitele legalității. |
+| Hard cu contract recuperabil | Șansa exactului, punctele proprii și departajarea prin scorul rivalului principal. |
+| Hard cu imposibilitate dovedită public | Punctele proprii estimate, apoi ratările adverse estimate și scorul rivalului principal. |
+| Certificat complet | Înlocuiește estimarea numai cu protecția punctelor proprii în toate lumile și continuările relevante. |
 
-```powershell
-.\scripts\run-offline-policy-match.ps1 -Seed 20261104
-```
+Domeniul și bugetul certificatului sunt definite de implementare; epuizarea bugetului păstrează propunerea de bază.
 
-Pentru comparația aceleiași succesiuni de distribuții, cu Hard mutat prin fiecare loc:
+## Simulare și îmbunătățire offline
 
-```powershell
-.\scripts\run-offline-perspectives.ps1 -Seed 20261104
-```
+| Mecanism | Intrare controlată | Scop |
+|---|---|---|
+| `run-offline-policy-match.ps1` | Valoare de inițializare și politici explicite | Partidă completă pentru diagnostic și verificarea tranzițiilor. |
+| `run-offline-perspectives.ps1` | Aceeași distribuție, locuri rotite | Sensibilitatea rezultatului la poziția politicii evaluate. |
+| `run-offline-strategy-profiles.ps1` | Aceleași distribuții și alternative de decizie | Comparații pereche între politici candidate și politica de bază. |
+| `run-whist-collection.ps1` | Colecție, protocol și candidat | Componente, regresie sau calificare controlată a unei politici. |
 
-Rularea înregistrează șase mese: toți Normal, fiecare dintre cele patru locuri Hard pe rând contra Normal, apoi toți Hard. În test, fiecare început de mână primește o amprentă opacă calculată intern; valorile sunt comparate între mese, dar amprentele și mâinile ascunse nu sunt scrise în rezultat. Jucătorii văd numai observația lor legală.
+Parametrii și profilurile experimentale sunt definite în lansator și protocol; documentația nu fixează inventarul unui lot sau rezultatele lui. Datele jocurilor rămân în arhiva externă, iar regresia de componentă păstrează doar cazuri minime cu așteptare justificată independent.
 
-Pentru a compara decizii alternative ale aceluiași Hard pe aceleași distribuiri, la fiecare loc:
+După schimbarea unei licitații sau cărți, stările publice ulterioare pot diverge. Comparația pereche păstrează distribuția și locul, iar analiza locală reconstruiește prima decizie divergentă folosind numai informația disponibilă actorului.
 
-```powershell
-.\scripts\run-offline-strategy-profiles.ps1 -Seed 20261104
-```
-
-Matricea rulează reperul Normal și, pentru fiecare loc, Hard curent, trei toleranțe
-de licitare prudentă (4, 8 și 12 puncte procentuale), puncte estimate înainte și
-atacarea contractelor rivale numai după ce propriul contract devine imposibil din
-informația publică. Înregistrarea păstrează probabilitatea și
-punctele estimate pentru fiecare licitație legală, opțiunile de carte evaluate, mutarea
-aleasă, ratările/depășirile și diferența față de Hard curent. Mâinile ascunse și
-amprentele interne ale distribuirilor nu sunt scrise în JSON.
-
-Aceste profiluri sunt variante de experiment și nu schimbă nivelul Hard din aplicație.
-Recomandarea de promovare cere seed-uri noi și rezultat favorabil la toate cele patru
-locuri; o singură partidă câștigată nu este suficientă.
-
-Suita parcurge toate cele 24 de mâini românești 1–8–1, verifică legalitatea prin
-tranzițiile reale ale `GameSession` și înregistrează licitațiile, cărțile public
-jucate, necesarul rămas pe tură, deciziile explicate de AI și punctajul fiecărui
-loc. Locurile impare folosesc Hard, iar cele pare Normal, pentru a observa ambele
-politici la aceeași masă. Rezultatul JSON și receipt-ul hash-uit apar sub
-`C:\work\whist_back\offline-mock`.
-
-Acesta este un instrument de simulare și diagnostic. Rezultatul unei singure
-partide descrie linia jucată; nu certifică joc perfect sau un câștig general.
+[Arhitectura învățării](../../docs/AI_LEARNING_ARCHITECTURE.md) și [protocolul](../../docs/AI_TRAINING_PROTOCOL.md) definesc separarea dezvoltării de evaluare și criteriile promovării.

@@ -19,8 +19,12 @@ try {
     if(Test-Path 'whist-lab-app\game-core\build\reports\jacoco\test\jacocoTestReport.xml') {
         Copy-Item -Path 'whist-lab-app\game-core\build\reports\jacoco\test\*' -Destination (Join-Path $RunRoot 'coverage') -Recurse
     }
+    $installLog=Join-Path $RunRoot 'reactor-install.log'
+    & mvn -DskipTests install *> $installLog
+    if($LASTEXITCODE -ne 0){throw "Local reactor install failed before Extent publication. See $installLog"}
     & mvn -q -pl atf-tests test '-Dtest=RuleComponentExtentReportTest' '-Datf.rules.publish=true' "-Datf.rules.runDir=$RunRoot" *> (Join-Path $RunRoot 'extent-publisher.log')
-    if($gradleExit -ne 0 -or $LASTEXITCODE -ne 0){throw "Component acceptance failed. See retained evidence and logs in $RunRoot"}
+    $publisherExit=$LASTEXITCODE
+    if($gradleExit -ne 0 -or $publisherExit -ne 0){throw "Component acceptance failed. See retained evidence and logs in $RunRoot"}
     Set-Content -LiteralPath (Join-Path (Split-Path -Parent $RunRoot) 'latest-run.txt') -Value $RunRoot -Encoding utf8
     Write-Output (Join-Path $RunRoot 'component-extent-report.html')
 }finally{

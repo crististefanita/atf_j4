@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfIntegrationTest;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,7 +17,46 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+@AtfIntegrationTest
 class CoreReportingConsumerContractTest {
+    @Test
+    void androidInfrastructureAndGameEvidenceLoadFromTheSameModule() {
+        var owner = atf.android.whist.evidence.WhistExtentFeedback.class
+                .getProtectionDomain().getCodeSource().getLocation();
+        for (Class<?> type : List.of(atf.android.AdbClient.class,
+                atf.android.evidence.AndroidScreenshotEvidence.class,
+                atf.android.evidence.timing.AndroidPhaseClock.class,
+                atf.android.evidence.timing.AndroidPhaseTiming.class,
+                atf.android.evidence.timing.AndroidPhaseTimingCodec.class,
+                atf.android.evidence.timing.AndroidPhaseReportTiming.class)) {
+            assertEquals(owner, type.getProtectionDomain().getCodeSource().getLocation(),
+                    "Android infrastructure must belong to the consumer module: " + type.getName());
+        }
+    }
+
+    @Test
+    void bothLibrariesLoadTheDeclaredSingleFlatJar() throws Exception {
+        Path root = Path.of("").toAbsolutePath();
+        while (root != null && !Files.isRegularFile(root.resolve("library-provenance.json"))) root = root.getParent();
+        if (root == null) throw new IllegalStateException("Missing J4 library provenance root");
+        String pom = Files.readString(root.resolve("pom.xml"));
+        for (String artifact : List.of("core", "reporting")) {
+            var version = java.util.regex.Pattern.compile("<atf\\." + artifact + "\\.version>([^<]+)</atf\\." + artifact + "\\.version>").matcher(pom);
+            assertTrue(version.find(), "Declared library coordinate: " + artifact);
+            String name = "atf-" + artifact + "-" + version.group(1) + ".jar";
+            Class<?> entry = artifact.equals("core") ? AtfDurationParser.class : ExtentReportSession.class;
+            Path loaded = Path.of(entry.getProtectionDomain().getCodeSource().getLocation().toURI());
+            assertTrue(Files.isRegularFile(loaded), "Consumer must load a physical JAR: " + loaded);
+            assertEquals(name, loaded.getFileName().toString());
+            var digest = java.security.MessageDigest.getInstance("SHA-256");
+            assertEquals(java.util.HexFormat.of().formatHex(digest.digest(Files.readAllBytes(root.resolve("lib").resolve(name)))),
+                    java.util.HexFormat.of().formatHex(digest.digest(Files.readAllBytes(loaded))));
+            try (var files = Files.list(root.resolve("lib"))) {
+                assertEquals(1, files.filter(file -> file.getFileName().toString().matches("atf-" + artifact + "-.*\\.jar")).count());
+            }
+        }
+    }
+
     @Test
     void consumesCoreDurationParsingContract() {
         assertEquals(62_003L, AtfDurationParser.parse("01:02:003").orElseThrow());

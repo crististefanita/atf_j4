@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
-/** Links the latest audited Whist Lab run from the documentation, leaving the report in its evidence directory. */
+/** Publishes a generated execution index outside source checkouts. */
 public final class WhistExtentFeedback {
     private WhistExtentFeedback() { }
 
@@ -20,15 +20,26 @@ public final class WhistExtentFeedback {
         if (!inRun) return;
 
         String configured = System.getProperty("atf.android.feedbackDirectory", System.getenv("ATF_J4_FEEDBACK_DIRECTORY"));
-        if (configured != null && !configured.isBlank()) {
-            publish(Path.of(configured), output, scenario, status);
-            return;
-        }
-        for (Path root = Path.of("").toAbsolutePath(); root != null; root = root.getParent()) {
-            if (Files.exists(root.resolve(".git")) && Files.isDirectory(root.resolve("whist-lab-app"))
-                    && Files.isDirectory(root.resolve("docs/feedback"))) {
-                publish(root.resolve("docs/feedback"), output, scenario, status);
-                return;
+        Path indexRoot = configured != null && !configured.isBlank()
+                ? Path.of(configured) : externalArchive().resolve("indexes");
+        publish(indexRoot, output, scenario, status);
+    }
+
+    private static Path externalArchive() {
+        String configured = System.getProperty("atf.android.handoffRoot", System.getenv("ATF_J4_UI_REPORTS"));
+        return Path.of(configured == null || configured.isBlank()
+                ? "C:/work/whist_back/ui-reports" : configured).toAbsolutePath().normalize().resolve("whist-lab");
+    }
+
+    private static void requireExternalDestination(Path destination) throws IOException {
+        Path absolute = destination.toAbsolutePath().normalize();
+        Path existing = absolute;
+        while (existing != null && !Files.exists(existing)) existing = existing.getParent();
+        if (existing != null) absolute = existing.toRealPath().resolve(existing.relativize(absolute));
+        for (Path root = absolute; root != null; root = root.getParent()) {
+            if (Files.exists(root.resolve(".git"))
+                    || (Files.isRegularFile(root.resolve("pom.xml")) && Files.isDirectory(root.resolve("whist-lab-app")))) {
+                throw new IOException("Generated run indexes must be outside source checkouts: " + destination);
             }
         }
     }
@@ -51,14 +62,13 @@ public final class WhistExtentFeedback {
     }
 
     static void publish(Path feedback, Path report, String scenario, String status) throws IOException {
+        requireExternalDestination(feedback);
         Path html = report.toRealPath();
         var modified = Files.getLastModifiedTime(html).toInstant();
         Path folder = Files.createDirectories(feedback.resolve("whist-extent"));
         Path readme = folder.resolve("README.md");
         String title = scenario.replaceAll("[\\p{Cntrl}]+", " ").strip();
-        String configuredArchive = System.getProperty("atf.android.handoffRoot", System.getenv("ATF_J4_UI_REPORTS"));
-        Path archive = Path.of(configuredArchive == null || configuredArchive.isBlank()
-                ? "C:/work/whist_back/ui-reports" : configuredArchive).toAbsolutePath().resolve("whist-lab");
+        Path archive = externalArchive();
         String markdown = "# Ultimul raport Extent Whist Lab\n\n## Pe scurt\n\n"
                 + link(folder, archive.resolve("latest-accepted.html"), "Deschide direct ultimul Extent acceptat") + "\n\n"
                 + link(folder, archive.resolve("LATEST.md"), "Ultima acceptanță și ultima încercare arhivate") + "\n\n"
@@ -67,7 +77,7 @@ public final class WhistExtentFeedback {
                 + "**Raport scris la** · " + modified + " (UTC)\n\n"
                 + "Indexul se actualizează după auditul raportului. "
                 + "Un scenariu eșuat cu diagnostic valid poate fi cel mai recent. Arhiva stabilă păstrează HTML-ul și trace-ul după verificarea offline.\n\n"
-                + "[Feedback UX](../WHIST_LAB_User_Experience_Feedback.md) · [Contractul Android](../../ATF_Android_Report_Contract.md)\n";
+                + "Acesta este un index generat al execuțiilor, păstrat în arhiva externă.\n";
         Path temp = Files.createTempFile(folder, ".whist-extent-", ".tmp");
         try {
             Files.writeString(temp, markdown);

@@ -30,6 +30,23 @@ try {
         @($result.perspectives).Count -ne 6 -or [int]$xml.testsuite.failures -or [int]$xml.testsuite.errors) {
         throw 'Perspective replay receipt failed its independent final checks'
     }
+    $normalBaseline = $result.perspectives | Where-Object { $_.name -eq 'normal-all' } | Select-Object -First 1
+    $sameSeatComparisons = @(
+        foreach ($seat in 0..3) {
+            $hardPerspective = $result.perspectives | Where-Object { $_.name -eq "hard-seat-$seat" } | Select-Object -First 1
+            $hardRows = @($hardPerspective.match.hands | ForEach-Object { $_.results | Where-Object { [int]$_.seat -eq $seat } })
+            $normalRows = @($normalBaseline.match.hands | ForEach-Object { $_.results | Where-Object { [int]$_.seat -eq $seat } })
+            $hardPoints = ($hardRows | Measure-Object -Property points -Sum).Sum
+            $normalPoints = ($normalRows | Measure-Object -Property points -Sum).Sum
+            $hardExact = @($hardRows | Where-Object { [int]$_.bid -eq [int]$_.tricksWon }).Count
+            $normalExact = @($normalRows | Where-Object { [int]$_.bid -eq [int]$_.tricksWon }).Count
+            [ordered]@{
+                seat = $seat; hardPoints = $hardPoints; normalPointsSameSeat = $normalPoints
+                pointsDelta = $hardPoints - $normalPoints; hardExact = $hardExact
+                normalExactSameSeat = $normalExact; exactDelta = $hardExact - $normalExact
+            }
+        }
+    )
     $receipt = [ordered]@{
         status = 'PASS'
         kind = 'SAME_DEALS_SEAT_ROTATED_NORMAL_HARD'
@@ -41,10 +58,12 @@ try {
         privateDealsIncluded = $false
         publicCardDecisions = @($result.perspectives | ForEach-Object { $_.match.publicCardDecisions } | Measure-Object -Sum).Sum
         rosters = @($result.perspectives | ForEach-Object { $_.roster })
-        hardPointsByPerspective = @($result.perspectives | ForEach-Object {
+        sameSeatComparisons = $sameSeatComparisons
+        rosterTotalsByPerspective = @($result.perspectives | ForEach-Object {
             [ordered]@{ name = $_.name; hardPoints = $_.hardPoints; normalPoints = $_.normalPoints;
                 hardExactContracts = $_.hardExactContracts; normalExactContracts = $_.normalExactContracts }
         })
+        rosterTotalsInterpretation = 'Aggregates by policy label; in a one-Hard roster, normalPoints sums the three opponents. Use sameSeatComparisons for focal-seat performance.'
         deviceExecuted = $false
         sourceSha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/AiPolicy.java')).Hash.ToLowerInvariant()
         normalPolicySha256 = (Get-FileHash -LiteralPath (Join-Path $repo 'game-core/src/main/java/ro/whistlab/core/NormalPlayPolicy.java')).Hash.ToLowerInvariant()

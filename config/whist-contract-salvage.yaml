@@ -13,7 +13,7 @@ priority:
 quota:
   needed: "bid - won"
   opportunities: "(sum remaining card counts + current table size) / players"
-  forced_lower_bound: "Held trumps with no higher card outside own/public cards; turned card is public, never an opponent card."
+  forced_lower_bound: "Held master trumps form a public lower bound; subtract one when a legal held master can lose under a higher trump still on the unfinished table. Turned and completed-trick cards cannot win that trick."
   impossible: "needed < forced_lower_bound OR needed > opportunities"
 proof:
   known_cards: "Exclude own hand, all public history, current table and turned card."
@@ -21,10 +21,9 @@ proof:
   response_scope: "All legal responses of every player, including every own later choice. No fitted opponent policy."
   own_condition: "For each world: candidate minimum own points >= baseline maximum own points."
   rival_condition: "For each world: candidate minimum opponent misses >= baseline maximum opponent misses."
+  strictness: "At least one own-point or rival-miss bound is strictly improved in at least one feasible world; all other required per-world bounds remain non-worse."
   certainty: "Never derived from a sample or an exhausted search."
   fallback: "Preserve the original decision and uncertified status."
-example_ro: "Fără atu: după istoricul public rămân 7S/7H la noi, AS/8S la adversarul1, AH/8H la2 și AC/8C la3. Am ratat0 cu4 levate. Deschiderea7H arde3 adversari în loc de2, cu aceeași penalizare proprie-4."
-example_en: "A public no-trump two-card ending: lead7H instead of7S; rival misses rise2to3 with unchanged own penalty-4 in every legal response."
 tests:
   - "certifiedLeadBurnsThreeRivalsInsteadOfTwoWithoutWorseningOwnPenalty"
   - "independentlyTracedFinalTricksReproduceBothRivalMissCounts"
@@ -32,4 +31,4 @@ tests:
   - "aPartialSearchCannotClaimDominance"
   - "equalExpectedPenaltyIsWeakerThanPointwiseDominance"
   - "turnedAceAndHeldTopTrumpsGiveAPublicLowerBound"
-acceptance: "Separate feature proof plus unused113000..113007 non-regression; no general stronger-play or perfect-play claim. Rejected probabilistic pressure models remain rejected."
+acceptance: "Complete bounded proof plus independently justified components and prespecified non-regression on unused games; no general perfect-play claim."

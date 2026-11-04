@@ -26,11 +26,75 @@ import org.jsoup.Jsoup;
 
 @AtfComponentTest
 class AndroidUiFlowReportPublisherTest {
+    @Test
+    void refusesFalseDriverTitleWithIdenticalRowsComparisonsAndPng(@TempDir Path output) throws Exception {
+        Path screenshot = output.resolve("captured.png");
+        Files.write(screenshot, Base64.getDecoder().decode(ONE_PIXEL_PNG));
+        var trace = attributionTrace(output, screenshot, false, false);
+        Path report = AndroidUiFlowReportPublisher.publish(output.resolve("provenance.html"),
+                "package:/fixture.apk", "mock-device", "28", "Mocked Android publication", List.of(screenshot), trace);
+        String original = Files.readString(report);
+        String mutated = original.replace("UI action sequence (2 entries)", "Playwright action sequence (2 entries)");
+        assertFalse(original.equals(mutated));
+        var before = Jsoup.parse(original);
+        var after = Jsoup.parse(mutated);
+        assertEquals(before.select("table.atf-ui-action-table").outerHtml(), after.select("table.atf-ui-action-table").outerHtml());
+        assertEquals(before.select(".atf-ui-assertions").outerHtml(), after.select(".atf-ui-assertions").outerHtml());
+        assertEquals(before.select("a[data-atf-screenshot],a[data-atf-screenshot-ref]").eachAttr("href"),
+                after.select("a[data-atf-screenshot],a[data-atf-screenshot-ref]").eachAttr("href"));
+        Files.writeString(report, mutated);
+        var refusal = assertThrows(IllegalStateException.class, () -> AndroidUiFlowReportPublisher.auditPublishedReport(
+                report, trace, AtfReportConfigurationLoader.load().reportingSettings()));
+        assertTrue(refusal.getMessage().contains("false driver attribution"), refusal.getMessage());
+    }
+
+    @ParameterizedTest
+    @org.junit.jupiter.params.provider.CsvSource({"true,false", "false,true"})
+    void dispatchAndUiComparisonKeepTheirOwnResults(boolean dispatchFailed, boolean comparisonFailed,
+            @TempDir Path output) throws Exception {
+        Path screenshot = output.resolve("complete-frame.png");
+        Files.write(screenshot, Base64.getDecoder().decode(ONE_PIXEL_PNG));
+        var trace = attributionTrace(output, screenshot, dispatchFailed, comparisonFailed);
+        assertEquals(AtfReportStatus.FAIL, trace.status(), "A later PASS cannot replace either captured failure");
+        Path report = AndroidUiFlowReportPublisher.publish(output.resolve("failure.html"),
+                "package:/fixture.apk", "mock-device", "28", "Mocked dispatch and comparison", List.of(screenshot), trace);
+        var document = Jsoup.parse(Files.readString(report));
+        var rows = document.select("table.atf-ui-action-table:not(.atf-ui-observation-table) > tbody > tr");
+        assertEquals(2, rows.size());
+        assertEquals(dispatchFailed ? 1 : 2, rows.select(".atf-ui-action-result-pass").size());
+        assertEquals(dispatchFailed ? 1 : 0, rows.select(".atf-ui-action-result-fail").size());
+        assertTrue(rows.get(1).text().contains("text=Continue"));
+        if (dispatchFailed) assertTrue(rows.get(1).text().contains("ADB dispatch rejected at Continue"));
+        var comparisons = document.selectFirst(".atf-ui-assertions");
+        assertNotNull(comparisons);
+        assertEquals(comparisonFailed ? "fail" : "pass", comparisons.attr("data-atf-evidence-status"));
+        assertTrue(document.selectFirst("details.atf-ui-action-sequence > summary").text().contains("UI action sequence"));
+    }
+
+    private static AndroidUiFlowTrace attributionTrace(Path output, Path screenshot,
+            boolean dispatchFailed, boolean comparisonFailed) throws Exception {
+        var trace = new AndroidUiFlowTrace(output, "dispatch-ui-attribution", "Mocked Android dispatch and state",
+                "AndroidUiFlowReportPublisherTest", "atf.android.e2e.support", "ro.whistlab.app",
+                List.of("android", "ui", "component", "mock"));
+        trace.recordAction(new AtfUiActionRecord(1, "Tap", "text=Start", "Dispatch accepted", "ADB accepted Start", 7,
+                AtfReportStatus.PASS));
+        trace.recordAction(new AtfUiActionRecord(2, "Tap", "text=Continue", "Dispatch accepted",
+                dispatchFailed ? "ADB dispatch rejected at Continue" : "ADB accepted Continue", 11,
+                dispatchFailed ? AtfReportStatus.FAIL : AtfReportStatus.PASS));
+        trace.checkpoint("TEST BODY", "THEN", "The captured state has its independent verdict", "Continue", screenshot,
+                List.of(new AtfUiActionRecord(3, "Inspect", "screen", "ready", comparisonFailed ? "menu" : "ready", 0,
+                        comparisonFailed ? AtfReportStatus.FAIL : AtfReportStatus.PASS, AtfUiEvidenceSource.OBSERVE)),
+                List.of(new AtfAssertion("State after dispatch", "ready", comparisonFailed ? "menu" : "ready", !comparisonFailed)),
+                dispatchFailed || comparisonFailed ? AtfReportStatus.FAIL : AtfReportStatus.PASS, List.of());
+        trace.finish(AtfReportStatus.PASS);
+        return trace;
+    }
+
     private static final String ONE_PIXEL_PNG =
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 
     @Test
-    void publishesEachAndroidCheckpointWithPlaywrightUiTablesAndInlineScreenshot(
+    void publishesEachAndroidCheckpointWithStandardUiTablesAndInlineScreenshot(
             @TempDir Path output)
             throws Exception {
         Path screenshot = output.resolve("bidding-state.png");
@@ -63,7 +127,7 @@ class AndroidUiFlowReportPublisherTest {
         assertTrue(html.contains("Configure the six-player game"));
         assertTrue(html.contains("class=\"atf-ui-action-sequence\""));
         assertTrue(html.contains("class=\"atf-ui-action-table"));
-        assertTrue(html.contains("Playwright action sequence (2 entries)"));
+        assertTrue(html.contains("UI action sequence (2 entries)"));
         assertTrue(html.contains("text=New game"));
         assertTrue(html.contains("class=\"atf-ui-observations\""));
         assertTrue(html.contains("class=\"atf-ui-assertions\""));

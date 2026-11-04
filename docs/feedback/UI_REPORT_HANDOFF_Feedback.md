@@ -1,13 +1,31 @@
-# Publicarea dovezilor UI
+# Contractul handoff-ului Android
 
-Directorul extern al aplicației păstrează ultima încercare și ultima acceptanță pentru fiecare scop. Pointerele sunt ordonate după timpul execuției, iar fiecare arhivă este identificată prin run ID și SHA-256.
+## Responsabilitate
 
-| Cerință | Stare și verificare |
+Publicatorul consumerului și runnerul Android dețin înregistrarea execuției și pointerele externe. Rendererul generic primește contractul tipizat și nu compensează lipsa indexării consumerului.
+
+## Lacune de proiectare
+
+- Tipul de republicare offline nu poate reprezenta implicit o execuție Android nouă.
+- Trecerea JUnit și a auditului structural nu produce automat acceptanță interactivă.
+- Execuția din staging poate pierde contextul checkout-ului; destinațiile trebuie transmise explicit.
+- Publicarea rezultatelor trebuie să scrie în arhiva externă, fără a genera inventare de rulări în README-urile proiectului.
+
+## Contract cerut
+
+| Suprafață | Cerință |
 |---|---|
-| Link stabil pentru cititor | Implementat pentru Whist Lab. README-ul rapoartelor indică HTML-ul acceptat și istoricul încercărilor. |
-| Separarea scenariilor | Un pilot de șase mâini, o verificare de meniu și o partidă completă au scopuri distincte. Consultați pointerul scopului cerut. |
-| Replay offline | Trace-ul public al mâinilor încheiate permite verificarea licitațiilor, levatelor și scorurilor. |
-| Date lipsă | Marcați explicit absența orei, a identității binare la execuție sau a observației necesare. |
-| Criteriu pentru următoarea partidă completă | Publicați profilul efectiv, toate mâinile și scorurile, verdictul jocului, versiunea aplicației și metadatele acelui HTML. |
+| Încercare | Verdictul observat, identitatea scenariului, dispozitivului și aplicației. |
+| Publicare | Inputul original, integritatea HTML-ului și proprietatea checkpoint-urilor. |
+| Acceptanță | Reviziile cerute de scop, legate de același conținut publicat. |
+| Staging | Rădăcină de publicare configurată explicit, independentă de descoperirea Git. |
+| Pointere | Ultima încercare și ultima acceptanță independente, ordonate după execuție. |
 
-[Ultimele rapoarte](whist-extent/README.md) · [Handoff și arhivare](../WHIST_UI_REPORT_HANDOFF.md) · [Contractul de publicare](../reporting/README.md)
+## Criterii de închidere
+
+- Refuzați identități incompatibile, hash schimbat, raport lipsă și verdict nativ inconsecvent.
+- Înregistrați timeout-ul și eșecul fără acceptanță implicită.
+- Verificați că o republicare veche nu devine ultima execuție nouă.
+- Verificați că publicarea nu rescrie documentația editorială a proiectului.
+
+[Mecanismul de handoff](../WHIST_UI_REPORT_HANDOFF.md) · [Arhitectura publicării](../reporting/README.md)

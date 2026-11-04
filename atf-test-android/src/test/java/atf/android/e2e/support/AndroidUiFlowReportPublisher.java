@@ -1,6 +1,7 @@
 package atf.android.e2e.support;
 
 import atf.android.evidence.AndroidScreenshotEvidence;
+import atf.android.evidence.timing.AndroidPhaseReportTiming;
 import atf.android.whist.evidence.WhistExtentFeedback;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.contract.AtfReportPorts;
@@ -33,8 +34,14 @@ public final class AndroidUiFlowReportPublisher {
 
     public static Path publish(Path report, String installedPackage, String device, String androidApi,
             String summary, List<Path> files, AndroidUiFlowTrace trace) throws Exception {
+        return publish(report, installedPackage, device, androidApi, summary, files, trace, System::nanoTime);
+    }
+
+    static Path publish(Path report, String installedPackage, String device, String androidApi,
+            String summary, List<Path> files, AndroidUiFlowTrace trace, java.util.function.LongSupplier publicationTicks) throws Exception {
         Objects.requireNonNull(report, "report");
         Objects.requireNonNull(trace, "trace");
+        if (trace.hasOpenPhase()) throw new IllegalStateException("Cannot publish an unfinished Android phase");
         List<Path> evidenceFiles = files == null ? List.of() : List.copyOf(files);
         Path output = report.toAbsolutePath().normalize();
         Files.createDirectories(output.getParent());
@@ -50,13 +57,21 @@ public final class AndroidUiFlowReportPublisher {
             var ui = UiExtentReportSession.adaptScenario(raw,
                     ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
                     trace.name());
+            int ordinal = 0;
             for (AndroidUiFlowTrace.PhaseSnapshot phaseSnapshot : trace.phaseSnapshots()) {
                 try (var phase = ui.startPhase(phaseSnapshot.name())) {
+                    long dispatch = phaseSnapshot.checkpoints().stream().flatMap(checkpoint -> checkpoint.actions().stream())
+                            .filter(action -> action.source().name().equals("ACTION")).mapToLong(action -> action.durationMillis()).sum();
+                    try (var timing = new AndroidPhaseReportTiming(phase, trace.id(), phaseSnapshot.name(), ordinal,
+                            phaseSnapshot.timing(), dispatch, publicationTicks)) {
                     for (var checkpoint : phaseSnapshot.checkpoints()) {
                         publishCheckpoint(phase, checkpoint);
                     }
-                    phase.complete(phaseStatus(phaseSnapshot.checkpoints()));
+                    }
+                    phase.complete(phaseSnapshot.timing().map(value -> value.partial()).orElse(false)
+                            ? AtfReportStatus.FAIL : phaseStatus(phaseSnapshot.checkpoints()));
                 }
+                ordinal++;
             }
             if (!trace.failure().isBlank()) {
                 try (var failurePhase = ui.startPhase("EXECUTION DIAGNOSTICS")) {
@@ -120,12 +135,26 @@ public final class AndroidUiFlowReportPublisher {
                 .reduce(AtfReportStatus.INFO, AtfReportStatus::worst);
     }
 
+    private static void auditActionAttribution(Document document) {
+        int ordinal = 0;
+        for (Element action : document.select("details.atf-ui-action-sequence")) {
+            ordinal++;
+            Element summary = action.children().stream()
+                    .filter(child -> child.normalName().equals("summary")).findFirst().orElse(null);
+            String title = summary == null ? "" : summary.text();
+            require(title.contains("UI action sequence") && !title.contains("Playwright action sequence"),
+                    "Android ACTION table #" + ordinal + " has false driver attribution: " + title);
+        }
+    }
+
     static void auditPublishedReport(Path report, AndroidUiFlowTrace trace,
             ReportingSettings settings) throws Exception {
         require(Files.isRegularFile(report) && Files.size(report) > 2_000,
                 "Android UI Extent report was not published: " + report);
         String html = Files.readString(report);
         Document document = Jsoup.parse(html);
+        auditActionAttribution(document);
+        AndroidPhaseTimingAudit.verify(document, trace.phaseSnapshots());
         require(html.contains("Device, run receipt, and supporting Android evidence"),
                 "Extent omitted the Android execution receipt");
         require(containsText(html, trace.id())

@@ -2,19 +2,36 @@
 
 ## Pe scurt
 
-Acest index separă ghidurile curente, contractele de testare și dovezile unei
-execuții închise. Regulile descrise trebuie să corespundă motorului și profilului
-ales, iar orice afirmație de acceptanță trebuie legată de versiunea verificată.
+Acest index orientează cititorul prin arhitectura, regulile, mecanismele de învățare și guvernanța proiectului. Ghidurile descriu responsabilități și contracte verificabile față de cod.
+
+## Harta documentației
+
+```mermaid
+flowchart LR
+INDEX[Index] -->|orientează| ARCH[Arhitectură]
+INDEX -->|explică| GAME[Reguli și motor]
+INDEX -->|descrie| LEARN[Învățare offline]
+GOV[Guvernanță] -->|controlează| ARCH
+GOV -->|controlează| LEARN
+```
+
+<details>
+<summary>Legendă și limite</summary>
+
+Ghidurile definesc responsabilități, contracte și principii. Datele de rulare aparțin arhivei externe; navigarea documentației nu este un inventar de acceptanțe.
+
+</details>
 
 ## Joc, motor și aplicație
 
 | Întrebare | Ghid |
 |---|---|
 | Cum este organizat proiectul? | [Prezentarea proiectului](../README.md) |
+| Cum se livrează aplicația? | [Contractul livrării Android](ANDROID_DELIVERY_CONTRACT.md) |
 | Cum se construiește aplicația și cum se păstrează partida? | [Aplicația Android](../whist-lab-app/README.md) |
 | Unde sunt regulile și tranzițiile jocului? | [Motorul Java](../whist-lab-app/game-core/README.md) |
-| Cum diferă profilurile original și românesc? | [Contractele de reguli](CONTRACT_WHIST_RULE_RECONSTRUCTION.md) |
-| Cum se joacă? | [Română](rules/WHIST_RO.md) · [English](rules/WHIST_EN.md) |
+| Cum se delimitează variantele jocului? | [Contractele de reguli](GAME_RULE_PROFILES.md) |
+| Cum se joacă? | [Română](rules/WHIST_RO.md) · [Engleză](rules/WHIST_EN.md) |
 | Ce se păstrează în tabela de scor? | [Istoricul scorului](WHIST_SCORE_HISTORY.md) |
 | Ce înseamnă cele două niveluri? | [Normal și Hard](TWO_GAME_LEVELS.md) |
 
@@ -22,29 +39,36 @@ ales, iar orice afirmație de acceptanță trebuie legată de versiunea verifica
 
 | Activitate | Ghid |
 |---|---|
+| Alegerea nivelului unitar, componentă, integrare sau E2E | [Arhitectura testării și matricea modulelor](TESTING_ARCHITECTURE.md) |
+| Calitatea pachetelor, limitelor și documentației | [Guvernanța ATF](ATF_QUALITY_GOVERNANCE.md) |
 | Alegerea unei colecții mici sau a regresiei complete | [Colecțiile de teste](TEST_COLLECTIONS.md) |
-| Build fără SDK Android | [Build-ul algoritmului](../whist-lab-app/algorithm-build/README.md) |
+| Construire fără SDK Android | [Construirea algoritmului](../whist-lab-app/algorithm-build/README.md) |
 | Formatul partidelor și validarea independentă | [Corpusul](AI_CORPUS.md) |
 | Selecția diagnostică a partidelor utile | [Focusul de învățare](AI_LEARNING_FOCUS.md) |
+| Modelul observației, simulării și alegerii | [Decizia AI](AI_DECISION_MODEL.md) |
+| Semantica YAML-urilor și influența ponderilor | [Reguli și configurare](AI_RULES_AND_CONFIGURATION.md) |
+| Componente cu așteptări independente | [Proiectarea testelor AI](AI_TEST_DESIGN.md) |
+| Arhitectura mecanismelor de învățare | [Fluxul de îmbunătățire AI](AI_LEARNING_ARCHITECTURE.md) |
 | Separarea dezvoltării de evaluarea nouă | [Protocolul AI](AI_TRAINING_PROTOCOL.md) |
 | Comparații între strategii și locuri la masă | [Arena](AI_STRATEGY_ARENA.md) |
-| Onoruri, acoperiri și reguli contextuale | [Română](rules/AI_HAND_PATTERNS_RO.md) · [English](rules/AI_HAND_PATTERNS_EN.md) |
+| Onoruri, acoperiri și reguli contextuale | [Română](rules/AI_HAND_PATTERNS_RO.md) · [Engleză](rules/AI_HAND_PATTERNS_EN.md) |
 | Decizia de aruncare a unei cărți mari | [Context și limite](AI_CONTEXTUAL_DISCARD.md) |
 
-## Android și dovezi
+## Android și infrastructură
 
 | Activitate | Ghid |
 |---|---|
-| Pregătirea dispozitivului și alegerea runnerului | [Testarea Android](ANDROID_TESTING.md) |
+| Contractul verificării unei partide | [Verificarea jocului](GAMEPLAY_VERIFICATION.md) |
+| Pregătirea dispozitivului și alegerea lansatorului | [Testarea Android](ANDROID_TESTING.md) |
 | Meniu, masă și scor pe mai multe ecrane | [Verificarea pe profiluri de ecran](WHIST_RESPONSIVE_UI_SANITY.md) |
-| Ce s-a verificat pe versiunea 0.1.5? | [Acceptanța interfeței](WHIST_UI_015_ACCEPTANCE.md) |
-| Testele și oracolele aplicațiilor | [Modulul Android](../atf-test-android/README.md) |
-| Observații și teste pentru aplicația-model | [Proiectul separat J5](../../atf_j5/README.md) |
-| Cerințe pentru un raport inteligibil separat de surse | [Contractul dovezilor](ATF_Android_Report_Contract.md) |
-| Ultimul raport acceptat și ultima încercare, pe scop | [README-ul raportării](reporting/README.md) |
-| Publicarea și reluarea offline a unui trace UI | [Handoff UI](WHIST_UI_REPORT_HANDOFF.md) |
+| Testele și oracolele jocului | [Modulul Android](../atf-test-android/README.md) |
+| Contractul acțiunilor și publicării Android | [Contractul publicării](ATF_Android_Report_Contract.md) |
+| Integrarea binarelor comune | [Contractul bibliotecilor](LIBRARY_INTEGRATION.md) |
+| Verificarea datelor și navigării rezultatului publicat | [Auditul publicării](REPORTING_AUDIT_CONTRACT.md) |
+| Responsabilitățile și datele de intrare pentru publicare | [Arhitectura raportării](reporting/README.md) |
+| Publicarea și reluarea offline a unui jurnal UI | [Predarea rezultatelor UI](WHIST_UI_REPORT_HANDOFF.md) |
 | Probleme, responsabilități și criterii de închidere | [Feedback](feedback/README.md) |
-| Rezultate ale unor versiuni anterioare | [Dovezile istorice](history/README.md) |
+| Retenție și roluri ale datelor externe | [Guvernanța arhivării](history/README.md) |
 
 ## Întreținerea documentației
 
@@ -57,3 +81,6 @@ ales, iar orice afirmație de acceptanță trebuie legată de versiunea verifica
   tratarea datelor care lipsesc din salvări vechi.
 - Guvernanța verifică structura, lizibilitatea, diagramele, linkurile și căile
   relocabile; ea completează verificarea factuală a documentelor față de cod.
+
+
+[Principiile și contractele documentației](DOCUMENTATION_GOVERNANCE.md) definesc structura ghidurilor, diagramele, verificarea factuală și guvernanța editorială.

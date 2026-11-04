@@ -3,8 +3,7 @@
 ## Pe scurt
 
 Aplicație Android locală de Whist, cu motor Java separat și adversari AI.
-Pachetul `ro.whistlab.app` este distinct de aplicația originală
-`com.qsoft.android.whist`.
+Identificatorul pachetului și configurația de construire sunt definite în Gradle.
 
 ## Folosire
 
@@ -12,7 +11,7 @@ Configurarea permite alegerea variantei, a unei mese de 3–6 jucători și a ni
 
 În română, Hard este afișat ca „Dificil”. Limba EN/RO se schimbă din selectorul interfeței și se păstrează între porniri. Regulile și programul mâinilor sunt disponibile din `Rules & schedule` / `Reguli și program`.
 
-Meniul oferă șase moduri.
+Variantele disponibile sunt definite în catalogul de reguli.
 
 O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizatorul pornește o partidă nouă. Tipurile de reguli sunt definite în [GameMode](game-core/src/main/java/ro/whistlab/core/GameMode.java), iar textele și etichetele efective în [WhistUiText](app/src/main/java/ro/whistlab/app/WhistUiText.java). Regulile afișate se construiesc în [HowToPlay](game-core/src/main/java/ro/whistlab/core/HowToPlay.java) pentru varianta, limba și numărul de jucători selectate.
 
@@ -27,6 +26,24 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 
 Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/GameSessionStore.java).
 
+## Flux și responsabilități
+
+```mermaid
+flowchart LR
+UI[Interacțiune Android] -->|trimite comenzi| SESSION[GameSession]
+SESSION -->|produce| VIEW[Stare capturată]
+VIEW -->|alimentează| UI
+SESSION -->|solicită decizii| AI[AiPolicy]
+STORE[Salvare locală] -->|restaurează| SESSION
+```
+
+<details>
+<summary>Legendă și limite</summary>
+
+GameSession validează comenzile înaintea schimbării stării; UI-ul redă starea capturată. Persistența restaurează numai informația disponibilă în schema salvării.
+
+</details>
+
 ## Organizare
 
 | Componentă | Responsabilitate |
@@ -38,13 +55,13 @@ Registrul păstrează totalurile după mâinile încheiate și derivă punctele 
 | [atf-test-android](../atf-test-android/README.md) | Componente de verificare și scenarii Android activate explicit. |
 
 Versiunea aplicației, SDK-urile și identificatorul pachetului au ca sursă
-[app/build.gradle](app/build.gradle). Un APK construit din sursele curente și un
+[configurația Gradle a aplicației](app/build.gradle). Un APK construit din sursele curente și un
 APK instalat anterior au proveniențe distincte; versiunea sursei nu dovedește
-ce binar rulează pe dispozitiv. [APK 0.1.5, probele Android și rapoartele Extent](../docs/WHIST_UI_015_ACCEPTANCE.md)
+ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/ANDROID_TESTING.md)
 
-## Build și verificare
+## Construire și verificare
 
-Executați build-urile într-o copie de lucru proprie din `%TEMP%`. Din acea copie
+Executați compilările într-o copie de lucru proprie din `%TEMP%`. Din acea copie
 a directorului `whist-lab-app`:
 
 ```powershell
@@ -53,10 +70,10 @@ a directorului `whist-lab-app`:
 ```
 
 Prima comandă necesită JDK și dependențele JVM disponibile local. A doua cere și
-SDK-ul Android declarat de build; APK-ul este produs în `app/build/outputs/apk`
+SDK-ul Android declarat în configurație; APK-ul este produs în `app/build/outputs/apk`
 din copia de lucru. `--offline` refuză dependențele care nu sunt deja în cache.
 
-Din rădăcina proiectului, [runnerul colecțiilor](../scripts/run-whist-collection.ps1)
+Din rădăcina proiectului, [lansatorul colecțiilor](../scripts/run-whist-collection.ps1)
 creează propria copie temporară și acceptă selecții explicite precum `quick`,
 `regression`, `context` și `documentation`:
 
@@ -69,4 +86,4 @@ distincte. Candidații experimentali externi nu schimbă aplicația activă prin
 simpla lor existență. Accesul la un dispozitiv și instalarea unui APK sunt pași
 separați, activați explicit.
 
-Contractele tematice și istoricul verificărilor sunt în [documentație](../docs/).
+Contractele și mecanismele curente sunt în [documentație](../docs/).

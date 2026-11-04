@@ -1,6 +1,7 @@
 package ro.whistlab.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,17 @@ public final class NormalContractPursuitTest {
                 new PlayedCard(1, card(Suit.SPADES, 9)), new PlayedCard(2, card(Suit.SPADES, 10)));
         var game = position(1, 0, 3, List.of(card(Suit.SPADES, 12), card(Suit.SPADES, 14)), table);
         assertEquals(card(Suit.SPADES, 12), AiPolicy.chooseCard(game, 3, AiDifficulty.NORMAL));
+    }
+
+    @Test public void normalObservationKeepsItsPublicSeatSnapshotImmutable() {
+        var game = GameSession.newGame(new GameConfig(4, GameMode.ROMANIAN_WHIST,
+                AiDifficulty.NORMAL, 20261104L));
+
+        NormalPlayPolicy.Observation observation = NormalPlayPolicy.observe(game.snapshot(), 0);
+
+        assertEquals(4, observation.seats().size());
+        assertEquals(game.snapshot().players().get(0).hand().size(), observation.seats().get(0).remaining());
+        assertThrows(UnsupportedOperationException.class, () -> observation.seats().clear());
     }
 
     private static GameSession.Snapshot position(int bid, int won, int seat,

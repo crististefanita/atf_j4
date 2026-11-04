@@ -49,14 +49,14 @@ public final class IndependentPlayer {
             }
         }
         int best=0;for(int c=1;c<allowed.size();c++)if(values[c]>values[best]+1e-8||Math.abs(values[c]-values[best])<1e-8&&rivals[c]<rivals[best])best=c;
-        return new Choice(allowed.get(best),"Independent planner; "+samples+" possible deals; candidates="+allowed+"; contract sums="+Arrays.toString(values)+"; strongest-rival sums="+Arrays.toString(rivals));
+        return new Choice(allowed.get(best),"Independent planner; "+samples+" constrained sampled deals; candidates="+allowed+"; contract sums="+Arrays.toString(values)+"; strongest-rival sums="+Arrays.toString(rivals));
     }
     /** Every feasible unordered hand assignment, including undealt cards, or an explicit fallback. Never a partial prefix. */
     static List<List<List<Integer>>> smallDeals(Position p){
      if(p.seats.size()!=4||p.seats.stream().anyMatch(s->s.remaining>2))return List.of();
      boolean[] used=new boolean[52];for(int c:p.hand)used[c]=true;for(Play x:p.history)used[x.card]=true;for(Play x:p.trick)used[x.card]=true;if(p.turnedCard>=0)used[p.turnedCard]=true;
      var pool=new ArrayList<Integer>();for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++)if(!used[suit*13+rank])pool.add(suit*13+rank);if(pool.size()>10)return List.of();
-     boolean[][] voids=new boolean[p.seats.size()][4];for(int i=0;i<p.history.size();i++){Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;if(play.card/13!=led){voids[play.seat][led]=true;if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;}}
+     boolean[][] voids=knownVoids(p);
      var hands=new ArrayList<List<Integer>>();for(int s=0;s<p.seats.size();s++)hands.add(new ArrayList<>());hands.set(p.seat,new ArrayList<>(p.hand));var results=new ArrayList<List<List<Integer>>>();enumerate(p,pool,voids,hands,0,results);return results.size()>256?List.of():List.copyOf(results);
     }
     private static void enumerate(Position p,List<Integer> available,boolean[][] voids,List<List<Integer>> hands,int seat,List<List<List<Integer>>> out){
@@ -100,8 +100,7 @@ public final class IndependentPlayer {
     static List<List<Integer>> deal(Position p,Random r){
         boolean[] used=new boolean[52];for(int c:p.hand)used[c]=true;for(Play x:p.history)used[x.card]=true;for(Play x:p.trick)used[x.card]=true;if(p.turnedCard>=0)used[p.turnedCard]=true;
         var pool=new ArrayList<Integer>();for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++)if(!used[suit*13+rank])pool.add(suit*13+rank);
-        boolean[][] voids=new boolean[p.seats.size()][4];for(int i=0;i<p.history.size();i++){Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;
-            if(play.card/13!=led){voids[play.seat][led]=true;if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;}}
+        boolean[][] voids=knownVoids(p);
         // Preserve the established distribution on easy states; the Hall fallback guarantees
         // an assignment when a feasible late deal defeats bounded rejection sampling.
         for(int attempt=0;attempt<64;attempt++){
@@ -116,8 +115,7 @@ public final class IndependentPlayer {
     static List<List<Integer>> feasibleDeal(Position p,Random r){
         boolean[] used=new boolean[52];for(int c:p.hand)used[c]=true;for(Play x:p.history)used[x.card]=true;for(Play x:p.trick)used[x.card]=true;if(p.turnedCard>=0)used[p.turnedCard]=true;
         var pool=new ArrayList<Integer>();for(int suit=0;suit<4;suit++)for(int rank=13-2*p.seats.size();rank<13;rank++)if(!used[suit*13+rank])pool.add(suit*13+rank);
-        boolean[][] voids=new boolean[p.seats.size()][4];for(int i=0;i<p.history.size();i++){Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;
-            if(play.card/13!=led){voids[play.seat][led]=true;if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;}}
+        boolean[][] voids=knownVoids(p);
         var hands=new ArrayList<List<Integer>>();int[] need=new int[p.seats.size()],suits=new int[4];
         for(int s=0;s<p.seats.size();s++){hands.add(new ArrayList<>());if(s!=p.seat)need[s]=p.seats.get(s).remaining;}hands.set(p.seat,new ArrayList<>(p.hand));for(int c:pool)suits[c/13]++;
         if(!feasible(need,suits,voids))return null;
@@ -128,6 +126,24 @@ public final class IndependentPlayer {
             for(int i=0;i<pool.size();i++){int c=pool.get(i);if(voids[seat][c/13])continue;suits[c/13]--;if(feasible(need,suits,voids)){hands.get(seat).add(c);pool.remove(i);placed=true;break;}suits[c/13]++;}
             if(!placed)throw new IllegalStateException("Hall-feasible deal lost a viable assignment");
         }return hands;
+    }
+    /** Public suit inferences come from completed history and the unfinished table independently. */
+    static boolean[][] knownVoids(Position p){
+        boolean[][] voids=new boolean[p.seats.size()][4];
+        for(int i=0;i<p.history.size();i++){
+            Play play=p.history.get(i);int led=p.history.get(i-i%p.seats.size()).card/13;
+            markVoid(p,voids,play,led);
+        }
+        if(!p.trick.isEmpty()){
+            int led=p.trick.get(0).card/13;
+            for(Play play:p.trick)markVoid(p,voids,play,led);
+        }
+        return voids;
+    }
+    private static void markVoid(Position p,boolean[][] voids,Play play,int led){
+        if(play.card/13==led)return;
+        voids[play.seat][led]=true;
+        if(p.trump>=0&&p.trump<4&&play.card/13!=p.trump)voids[play.seat][p.trump]=true;
     }
     /** Hall conditions over groups of identical seat slots; at most 63 subsets for six seats. */
     static boolean feasible(int[] need,int[] counts,boolean[][] voids){

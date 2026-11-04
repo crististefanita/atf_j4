@@ -7,6 +7,7 @@ param(
     [string]$Maven = 'C:\tools\Maven\apache-maven-3.10.0\bin\mvn.cmd',
     [string]$MavenRepository = 'C:\Users\Cristi\.m2\repository',
     [string]$JavaHome = 'C:\tools\Java21\jdk-21.0.12.1+1',
+    [switch]$HardAiCompatibility,
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -36,7 +37,7 @@ New-Item -ItemType Directory -Path $stage,$artifacts | Out-Null
 
 Copy-Item -LiteralPath (Join-Path $root 'pom.xml'),(Join-Path $root 'atf.yaml') -Destination $stage
 Copy-Item -LiteralPath (Join-Path $root 'lib'),(Join-Path $root 'config') -Destination $stage -Recurse
-$modules = @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-android','atf-test-android')
+$modules = @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-test-android')
 foreach ($module in $modules) {
     & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "Could not stage source module $module" }
@@ -65,8 +66,14 @@ foreach ($name in @('JAVA_HOME','Path','MAVEN_OPTS','ADB_SERVER_SOCKET','ATF_AND
 function Invoke-SanityMaven {
     param([string]$Label,[string[]]$Arguments)
     $log = Join-Path $RunRoot ($Label + '.log')
-    & $Maven @Arguments *> $log
-    if ($LASTEXITCODE -ne 0) { throw "$Label failed. See $log" }
+    Push-Location $stage
+    try {
+        & $Maven @Arguments *> $log
+        $exitCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($exitCode -ne 0) { throw "$Label failed. See $log" }
 }
 
 function Acquire-DeviceLease {
@@ -128,25 +135,46 @@ try {
     $env:MAVEN_OPTS = '-Xms32m -Xmx768m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -XX:ActiveProcessorCount=2'
 
 
-$coreSource = Join-Path $stage 'lib\atf-core-1.0.0-c3.jar'
-$reportingSource = Join-Path $stage 'lib\atf-reporting-1.0.0-j18.jar'
-$coreLocal = Join-Path $MavenRepository 'atf\api\atf-core\1.0.0-c3\atf-core-1.0.0-c3.jar'
-$reportingLocal = Join-Path $MavenRepository 'atf\api\atf-reporting\1.0.0-j18\atf-reporting-1.0.0-j18.jar'
-$libraryHashes = [ordered]@{
-    coreSource=(Get-FileHash $coreSource).Hash.ToLowerInvariant()
-    coreMaven=(Get-FileHash $coreLocal).Hash.ToLowerInvariant()
-    reportingSource=(Get-FileHash $reportingSource).Hash.ToLowerInvariant()
-    reportingMaven=(Get-FileHash $reportingLocal).Hash.ToLowerInvariant()
+$pom = [xml][IO.File]::ReadAllText((Join-Path $stage 'pom.xml'))
+$namespace = [Xml.XmlNamespaceManager]::new($pom.NameTable)
+$namespace.AddNamespace('m', 'http://maven.apache.org/POM/4.0.0')
+$versions = [ordered]@{}
+foreach ($property in @(
+        @{Key='core'; Name='atf.core.version'},
+        @{Key='reporting'; Name='atf.reporting.version'})) {
+    $node = $pom.SelectSingleNode("/m:project/m:properties/m:$($property.Name)", $namespace)
+    if ($null -eq $node -or [string]::IsNullOrWhiteSpace($node.InnerText)) {
+        throw "The project POM does not declare $($property.Name)."
+    }
+    $versions[$property.Key] = $node.InnerText.Trim()
 }
-if($libraryHashes.coreSource -ne $libraryHashes.coreMaven -or
-        $libraryHashes.reportingSource -ne $libraryHashes.reportingMaven) {
-    throw 'The Maven cache must contain the same Core and Reporting JARs as J4 lib.'
+$libraryHashes = [ordered]@{}
+foreach ($library in @(
+        @{Key='core'; Artifact='atf-core'},
+        @{Key='reporting'; Artifact='atf-reporting'})) {
+    $version = $versions[$library.Key]
+    $jar = "$($library.Artifact)-$version.jar"
+    $source = Join-Path $stage "lib\$jar"
+    $local = Join-Path $MavenRepository "atf\api\$($library.Artifact)\$version\$jar"
+    foreach ($path in @($source, $local)) {
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            throw "Required $($library.Artifact) $version JAR is missing: $path"
+        }
+    }
+    $sourceHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
+    $localHash = (Get-FileHash -LiteralPath $local -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($sourceHash -ne $localHash) {
+        throw "The staged and Maven-cache $($library.Artifact) $version JARs differ."
+    }
+    $libraryHashes["$($library.Key)Version"] = $version
+    $libraryHashes["$($library.Key)Source"] = $sourceHash
+    $libraryHashes["$($library.Key)Maven"] = $localHash
 }
 $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot 'library-binaries.json') -Encoding utf8
     $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test','-Presponsive-sanity',
         "-Dmaven.repo.local=$MavenRepository",'-Dsurefire.failIfNoSpecifiedTests=false')
     Invoke-SanityMaven 'display-profile-components' ($common + @(
-        '-Dtest=ResponsiveDisplayProfileComponentTest,AndroidUiDriverComponentTest',
+        '-Dtest=ResponsiveDisplayProfileComponentTest,AndroidUiDriverComponentTest,AndroidUiFlowReportPublisherTest',
         '-Datf.android.enabled=false'))
 
     Acquire-DeviceLease
@@ -176,7 +204,8 @@ $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot '
         "-Datf.android.serial=$Serial",
         "-Datf.android.api=$api",
         "-Datf.android.sanity.profiles=$Profiles",
-        "-Datf.android.sanity.handsPerProfile=$HandsPerProfile"))
+        "-Datf.android.sanity.handsPerProfile=$HandsPerProfile",
+        "-Datf.android.sanity.hardAiCompatibility=$($HardAiCompatibility.IsPresent.ToString().ToLowerInvariant())"))
 
     $report = Join-Path $artifacts 'responsive-ui-sanity\responsive-ui-sanity.html'
     if (-not (Test-Path -LiteralPath $report -PathType Leaf)) {

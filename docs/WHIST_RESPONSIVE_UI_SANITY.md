@@ -1,88 +1,61 @@
-# Suita sanity Whist Lab pentru mai multe ecrane
+# Verificarea interfeței pe profile de ecran
 
-## Pe scurt
+Suita verifică mecanismele de configurare, licitare, joc și reluare pe profile de afișaj declarate. Scopul și numărul de mâini sunt parametri ai scenariului, cu limitele validate de runner.
 
-Suita pornește din meniul normal, configurează Whist românesc și joacă un număr
-limitat de mâini reale pe fiecare profil. Implicit joacă primele două mâini
-reale, fiecare cu o carte, deci două levate per profil. Primele patru mâini ale
-programului românesc au câte o carte; a cincea are două. Valoarea maximă 5
-permite verificarea primului joc real cu două cărți fără a porni partida
-completă.
+## Fluxul execuției
 
-Verifică apoi ecranul reluat, mâna deterministă cu 13 cărți și
-masa de licitare cu valorile 0–8.
-
-## Pornire
-
-Rulați din rădăcina proiectului, cu emulatorul conectat și Whist Lab instalat.
-
-```powershell
-.\scripts\run-whist-responsive-sanity.ps1
+```mermaid
+flowchart LR
+    CONFIG[Profile și parametri] -->|validează| PREFLIGHT[Preflight fără dispozitiv]
+    PREFLIGHT -->|permite rezervare| LEASE[Lease exclusiv]
+    LEASE -->|configurează| RUN[Scenariu Android]
+    RUN -->|capturează| TRACE[Checkpoint-uri]
+    RUN -->|restaurează în finally| DISPLAY[Afișaj inițial]
+    TRACE -->|mapează bounds logice la pixeli| PIXELS[Audit vizual]
+    PIXELS -->|compară| STYLE[Atu și loc activ]
+    PIXELS -->|verifică| SEATS[Carte, mână și rame]
 ```
 
-Profilurile implicite sunt 720×1280 la 360 dpi, 1080×1920 la 440 dpi,
-1080×2448 la 440 dpi și 1200×1920 la 320 dpi. Ultimul profil verifică
-o suprafață de tabletă.
+<details>
+<summary>Legendă: pregătire și restaurare</summary>
 
-Runnerul primește o listă configurabilă și 1–5 mâini:
+Validarea parametrilor și a contractelor componente precede controlul dispozitivului. Runnerul păstrează rezoluția și densitatea inițiale pentru restaurare, inclusiv după eșec.
 
-```powershell
-.\scripts\run-whist-responsive-sanity.ps1 -Profiles '720x1280@360,1080x2448@440' -HandsPerProfile 5
-```
+</details>
 
-Fiecare profil are formatul `LĂȚIMExÎNĂLȚIME@DPI`. Profilurile trebuie să
-fie portret, distincte și să ofere cel puțin 320 dp pe lățime. Parametrii
-nevalizi sunt respinși înainte de prima comandă către emulator.
+## Intrări
 
-`-HandsPerProfile 5` ajunge la prima mână reală de două cărți. Pentru verificarea
-rapidă a meniului, licitării, jocului și istoricului, valoarea implicită rămâne
-2. Programul verifică mărimea fiecărei mâini folosind numărul afișat și
-secvența reală 1–8–1.
+| Parametru | Contract |
+|---|---|
+| Profiles | Listă de forme LĂȚIMExÎNĂLȚIME@DPI, portret și fără duplicate, în limitele componentei de profil. |
+| HandsPerProfile | Număr explicit de mâini normale pentru fiecare profil; nu se presupune o partidă completă. |
+| Serial | Dispozitivul Android rezervat pentru scenariu. |
+| AdbServerSocket | Serverul ADB configurat pentru stație sau VM. |
+| Director de rezultate | Destinație externă pentru trace-ul și rezultatele execuției. |
 
-## Ce verifică
+[Runnerul](../scripts/run-whist-responsive-sanity.ps1) și componentele sale definesc valorile implicite și limitele efective.
+Mărimea mâinii se verifică prin programul profilului; fixture-urile de display au un scop separat de jocul normal.
 
-- Meniul și configurarea încap în primul viewport, fără derulare.
-- Mâna reală este centrată jos, într-un singur rând, în containerul complet
-  al mesei. Butoanele de licitare rămân în zona centrală și nu acoperă locurile
-  jucătorilor.
-- Runnerul joacă fiecare carte legală până la scorul mâinii. După mâini,
-  procesul aplicației este repornit și istoricul rămâne accesibil.
-- Profilurile extreme verifică separat indicii fiecărei cărți din mâna de 13
-  și cele nouă opțiuni de licitare. Aceste două ecrane folosesc fixture-uri
-  deterministe.
-- Fiecare captură păstrează întregul ecran fizic raportat de Android. O
-  aserțiune separată confirmă că rezoluția logică activă este profilul cerut;
-  capturile brute nu sunt redimensionate. Pe emulatorul folosit aici, suprafața
-  fizică rămâne 1080×1920. Profilul logic 1080×2448 produce benzi laterale când
-  Android încadrează suprafața logică pe ecranul fizic; este o limită a simulării
-  `wm size`, nu dovadă de randare nativă pe un panou 1080×2448. Raportul Extent
-  păstrează acțiunile, aserțiunile și capturile în checkpoint-ul corespunzător.
+## Invariante vizuale și de interacțiune
 
-Un singur scenariu Extent păstrează toate profilurile, acțiunile și capturile
-în ordinea execuției.
+- Meniul păstrează configurarea accesibilă în viewport.
+- Mâna este poziționată după spațiul disponibil, cu indicii vizibili și derulare accesibilă când este necesară.
+- Licitarea nu acoperă locurile jucătorilor; selecția semantică distinge etichetele duplicate.
+- Fiecare acțiune este confruntată cu starea observată după ea.
+- Reluarea păstrează registrul scorului și informația cunoscută.
+- Captura păstrează ecranul fizic original; rezoluția logică cerută se verifică separat.
+- La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Fața jucată păstrează 104 dp.
+- Rama atuului folosește aceeași fabrică de fundal și contur ca locul activ. Comparația de pixeli mapează întâi coordonatele UIAutomator la captura fizică.
+- Pe 720×1280, raportul separă captura atuului activ de captura derulată cu cartea, eticheta și locul sudic vizibile complet. Verificarea de intersecții folosește dreptunghiurile reale ale cadrelor accesibile.
+- La jocul normal, scenariul derulează până când observă întâi controlul turei și apoi o carte legală clicabilă; acțiunea rămâne verificată în viewport-ul efectiv.
+- Simularea unei rezoluții logice nu dovedește proprietățile unui panou fizic de aceeași dimensiune.
 
-Build-ul Maven și sursele copiate de runner rămân în
-`%TEMP%`. Raportul, logurile și fingerprint-ul APK-ului instalat se păstrează
-în `ui-reports/whist-lab/runs` din depozitul extern de dovezi.
+## Guvernanța execuției
 
-Runnerul verifică lease-ul comun Android și refuză să controleze un emulator
-ocupat. Citește rezoluția și densitatea curente și le restaurează în `finally`,
-inclusiv la un eșec de test.
+1. Verificați parametrii, binarele configurate și contractele profilului, driverului și publicatorului.
+2. Rezervați dispozitivul și consemnați starea inițială.
+3. Executați numai scenariul declarat, capturând relația acțiune–observație–comparație.
+4. Restaurați setările de afișaj și eliberați rezervarea.
+5. Publicați rezultatul în scopul executat, cu limitele sale.
 
-PASS se aplică profilurilor și numărului de mâini consemnate în metadate.
-
-Verificați raportul și auditul vizual înainte de a publica linkul ca ultimă acceptanță.
-
-## Configurație Maven directă
-
-Pentru depanare, testul acceptă aceleași proprietăți:
-
-- `atf.android.sanity.profiles`
-- `atf.android.sanity.handsPerProfile`
-- `atf.android.artifacts`
-- `atf.android.serial`
-- `atf.android.api`
-
-Componentele ResponsiveDisplayProfileComponentTest și AndroidUiDriverComponentTest
-verifică profilurile, numărul de mâini configurat și rezolvarea butoanelor de bid
-cu etichete duplicate înainte ca runnerul să atingă dispozitivul.
+[Contractul Android](ATF_Android_Report_Contract.md) · [Pregătirea dispozitivului](ANDROID_TESTING.md) · [Handoff](WHIST_UI_REPORT_HANDOFF.md)

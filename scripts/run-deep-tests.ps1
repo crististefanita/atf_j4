@@ -22,7 +22,7 @@ $evidenceDir = Join-Path $runRoot 'evidence'
 $logsDir = Join-Path $runRoot 'logs'
 $componentLogsDir = Join-Path $componentResults 'logs'
 $report = Join-Path $runRoot 'final-extent-report.html'
-$modules = @('atf-test-kit', 'atf-mock', 'atf-validation', 'atf-console', 'atf-android', 'atf-tests', 'atf-test-android')
+$modules = @('atf-test-kit', 'atf-mock', 'atf-validation', 'atf-console', 'atf-tests', 'atf-test-android')
 $failures = [System.Collections.Generic.List[string]]::new()
 $oldEnvironment = @{
     ADB_SERVER_SOCKET = $env:ADB_SERVER_SOCKET
@@ -106,10 +106,8 @@ try {
     }
 
     foreach ($module in $modules) {
-        if ($module -eq 'atf-android') {
-            $args = @('-pl', $module, '-Dtest=AndroidComponentSuite', 'test')
-        } elseif ($module -eq 'atf-test-android') {
-            $args = @('-pl', $module, '-Dtest=AndroidGameplayE2eSuite', 'test')
+        if ($module -eq 'atf-test-android') {
+            $args = @('-pl', $module, '-Dtest=AndroidComponentSuite,AndroidGameplayE2eSuite', 'test')
             $args += @('-Datf.android.enabled=true', "-Datf.android.commandTimeoutSeconds=$AdbTimeoutSeconds",
                 "-Datf.android.artifacts=$evidenceDir")
         } else {

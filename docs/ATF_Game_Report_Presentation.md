@@ -12,29 +12,8 @@ tables, disclosures and screenshot viewer.
 | atf.yaml / atf.yml | generic assertion preview and body budget; explicit override: atf.report.config |
 | EvidencePolicy / GameReportConfiguration | resolve both once at composition; later file/property changes do not alter the captured run |
 
-The evidence YAML keeps its six existing required keys and adds three optional presentation
-keys with backward-compatible defaults. Unknown keys, duplicate keys, multiple documents,
+The evidence YAML declares required selection fields and optional presentation fields with explicit defaults. Unknown keys, duplicate keys, multiple documents,
 invalid enums/types, overflow and nonpositive limits are refused.
-
-```yaml
-# config/game-evidence.yml
-detailLevel: AUTO
-maxDetailedInvocations: 64
-maxDetailedComparisons: 10000
-maxDetailedContextCharacters: 250000
-passingExamplesPerFamily: 1
-optionalContextBudgetCharacters: 65536
-rowsPerGroup: 100
-fieldsPerGroup: 20
-optionalMaxItems: 32
-```
-
-```yaml
-# atf.yaml: the shared Reporting vocabulary stays unchanged
-reporting:
-  assertionMaxDisplayCharacters: 240
-  bodyMaxDisplayCharacters: 32768
-```
 
 The current defaults are in [game-evidence.yml](../config/game-evidence.yml).
 
@@ -46,7 +25,7 @@ The current defaults are in [game-evidence.yml](../config/game-evidence.yml).
 | SUMMARY | representative whole passing examples, all non-PASS and quality gates; declared original/retained/omitted IDs | omit optional context and fingerprints; retain all required facts in the declared scope |
 | FULL | every supplied invocation and checkpoint | retain requested optional detail within positive budgets or refuse complete-audit acceptance |
 
-- The five legacy publishers retain their original selected invocation scope; no receipt is sampled implicitly from an aggregate report.
+- Each producer declares its selected invocation scope; no receipt is sampled implicitly from an aggregate report.
 - All comparisons in the declared scope retain original names, expected/actual, verdict and order; the display policy does not run the game or recalculate an oracle.
 - A selected learning HTML explicitly states that omitted passing games are not individually audited by that artifact.
 
@@ -87,7 +66,7 @@ The composition layer lives in atf-tests main Java. Existing business producers 
 independent oracles remain at their owners; Runtime renderer maintenance and generic browser regressions follow the
 [ownership contract](feedback/README.md).
 
-[Owner contracts](../atf-tests/README.md) and [verification evidence](ATF_Game_Report_Verification.md)
+[Owner contracts](../atf-tests/README.md) and [publication verification](REPORTING_AUDIT_CONTRACT.md)
 separate source tests, physical-JAR rendering, archived execution data and new live journeys.
 [Active feedback](feedback/ATF_Android_Alignment_Feedback.md) retains the remaining receipt,
 legacy business-audit, timing and device criteria.

@@ -10,10 +10,10 @@ model:
   sha256: "71b51b8a028768d2fecbcd34b97f22e88585c213953d844f074de68ea155f51d"
   features_and_coefficients: "config/whist-public-beliefs.yaml"
   target: "Observed bids, not optimal bids or certified trick counts."
-  refit_from_r13_or_r15_outcomes: false
+  refit_from_evaluation_outcomes: false
 sources:
   candidate: "research/ai-bid-models (explicit isolated overlays; never the active engine)"
-  forecast: "game-core/src/main/java/ro/whistlab/core/BidForecast.java"
+  forecast: "research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java"
   integration: "MonteCarloAi.biddingTargets"
 rules:
   - id: "LITERAL_OBSERVED_CONTRACTS"
@@ -49,14 +49,5 @@ action_context:
   accepted_utility: "Own exact-contract likelihood, then own score, then strongest rival score. Accepted public guarantees and salvage guard unchanged."
   runtime_changes_in_this_candidate: "Only unknown future target estimation at bid time. No played-card behavior likelihood, new dynamic card policy, R15 world reweighting, or online coefficient updates."
 qualification:
-  components: "510/510 candidate native tests passed: 492 existing, 14 model controls, four future-auction contracts. Overlapping populations, not additive to other candidates."
-  development: "15200..15207, 64 pairs/128 complete games: +100 points, +1.5 weighted wins, +6 exact2..8. Rejected: Hard family loses one weighted win; Independent family loses one exact2..8."
-  untouched_fresh: "116000..116015 was neither reserved nor opened; development gate failed."
-  promotion: "Every opponent family passes unchanged SAFETY gate; strict aggregate exact2..8 gain; nonnegative total and2..8 points. No changes after fresh results."
-  claim_limit: "No perfect-play, calibrated card-posterior, UI or Android acceptance claim."
-outcomes:
-  verdict: "REJECTED_FAMILY_REGRESSION"
-  total: {point_delta: 100, win_share_delta: 1.5, exact_2_to_8_delta: 6}
-  hard_v14_family: {point_delta: 87, win_share_delta: -1, exact_2_to_8_delta: 7}
-  independent_v11_family: {point_delta: 13, win_share_delta: 2.5, exact_2_to_8_delta: -1}
-  active_runtime: "Hard R14 unchanged; no post-outcome tuning or fresh-range consumption."
+  promotion: "Independent components, isolated continuation ablation, prespecified paired development and untouched evaluation; every required role and opponent family must pass."
+  claim_limit: "No calibrated joint posterior, perfect-play or device claim. Model and thresholds remain frozen before reserved evaluation."

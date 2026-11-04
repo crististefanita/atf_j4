@@ -28,6 +28,9 @@ public class CompleteWhistLabMatchE2eTest {
                 "Whist Lab — replay the same 19 original deals, bids and 436 card inputs",
                 getClass().getSimpleName(),"atf.android.e2e","ro.whistlab.app",
                 List.of("parallel-app","full-match","recorded-inputs","rules","score"));
+        ui.recordActionsAs(trace::recordAction);
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         try {
             if(continuing) {
                 assertTrue(retainedHands>0&&retainedHands<19,"Continuation needs completed retained hands and an unfinished next hand");
@@ -73,6 +76,7 @@ public class CompleteWhistLabMatchE2eTest {
                         prefix+"-bidding","Original outcomes are not injected into the game engine",List.of(
                                 new AtfAssertion("Complete fixture", "19 hands / 436 card inputs",recording.getProperty("match.handCount")+" / "+recording.getProperty("match.moves"),
                                         "19".equals(recording.getProperty("match.handCount"))&&"436".equals(recording.getProperty("match.moves")))));
+            trace.beginPhase("TEST BODY");
                 WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Hand "+(h+1)+": load the same real distribution and trump",
                         prefix+"-bidding","Recorded original inputs; actual engine state is read from the debug observation port",bidChecks);
                 if(deal.dealer==0) {
@@ -132,6 +136,7 @@ public class CompleteWhistLabMatchE2eTest {
                 System.out.println("LAB MATCH hand="+(h+1)+"/19; moves="+oracle.plays.size()+"; totals="+Arrays.toString(totals));
                 if(h<18&&!retained)ui.tapText("Next hand");
             }
+            trace.beginPhase("TEARDOWN");
             assertEquals(436,moveCount);
             ui.capture("whist-lab-full-match-teardown");
             WhistTestEvidence.checkpoint(trace,out,"TEARDOWN","Retain Whist Lab's final independently calculated score",

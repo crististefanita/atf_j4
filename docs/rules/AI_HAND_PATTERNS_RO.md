@@ -1,78 +1,63 @@
 # Onoruri, acoperiri și siguranța contractului
 
-Acest ghid explică ipoteze de strategie pentru Whist românesc. Regulile obligatorii sunt în [Cum se joacă](WHIST_RO.md).
+Acest ghid formalizează indicii strategice pentru Whist românesc. Regulile jocului sunt definite în [Cum se joacă](WHIST_RO.md); catalogul de mai jos nu le poate modifica.
 
-## Catalogul și codul care îl produce
+## Responsabilități și statut
 
 | Sursă | Responsabilitate |
 |---|---|
-| [Catalogul YAML](../../config/whist-hand-patterns.yaml) | 19 familii de combinații, contextul cerut și statutul fiecărui indiciu |
-| [Extragerea combinațiilor](../../scripts/whist-hand-patterns.mjs) | `describeHolding`, `PATTERNS` și generatorul `catalog` |
-| [Calibrarea](../../scripts/whist-heuristic-calibrate.mjs) | Observații descriptive din partide de dezvoltare validate |
-| [Manifestul contextual](../../config/whist-contextual-discard.yaml) | Reguli și teste pentru necesar, discard și atuul de pe masă |
+| [Catalogul de tipare](../../config/whist-hand-patterns.yaml) | Descrie clase de combinații, contextul relevant, aria indiciului și statutul cercetării. |
+| [Extragerea tiparelor](../../scripts/whist-hand-patterns.mjs) | Derivă descrieri și categorii din mâna vizibilă jucătorului. |
+| [Calibrarea](../../scripts/whist-heuristic-calibrate.mjs) | Analizează asocieri descriptive din jocurile alocate dezvoltării. |
+| [Manifestul contextual](../../config/whist-contextual-discard.yaml) | Leagă reguli condiționale, limite de informație, implementări și teste. |
+| [Obiectivele jucătorilor](../../config/whist-play-objectives.yaml) | Definește prioritățile Normal și Hard și distinge regulile active de experimente. |
 
-Catalogul declară `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION` și `runtime_prior_influence: 0`. Editarea ponderilor sale nu schimbă automat AI-ul.
+Catalogul de tipare este marcat `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`, iar influența lui directă asupra runtime-ului este zero. Modificarea catalogului nu schimbă de la sine politica jucătorului.
 
-## Ce înseamnă o acoperire
+## Reguli generale de interpretare
 
-O carte mică din aceeași culoare poate absorbi un tur în care adversarii consumă un onor superior. Promovarea depinde de conducere, reintrări, distribuție și posibilitatea de tăiere.
+- Un rang superior poate deveni câștigător după ce rangurile care îl bat au fost jucate sau au devenit imposibil de păstrat. Acoperirile oferă ocazii de a consuma aceste ranguri, nu levate garantate.
+- Secvențele de onoruri se evaluează împreună. Același rang nu primește credit separat pentru fiecare tipar care îl conține.
+- Numărul de cărți dintr-o culoare, rangurile lor și numărul de levate posibile în acea culoare sunt mărimi diferite.
+- O carte mare poate pierde prin tăiere sau poate fi aruncată legal când jucătorul nu are culoarea cerută și nu este obligat să taie.
+- O tăiere cu atu este supusă regulii de joc și poate produce o levată nedorită după realizarea contractului.
+- Atuul întors, atuul jucat într-o levată terminată și atuul încă pe masa curentă au efecte distincte asupra cărților care mai pot câștiga.
+- Orice indiciu despre promovare sau capturare se condiționează de poziția la masă, istoricul public, cărțile rămase, necesarul fiecărui jucător și posibilitățile de intrare.
 
-| Combinație | Ipoteză utilă | Limită |
-|---|---|---|
-| K + mică | Regele poate deveni câștigător după as | Asul poate fi păstrat; regele poate fi tăiat sau aruncat |
-| Q + două mici | Dama poate supraviețui consumării A/K | Onorurile pot cădea împreună sau în tururi separate |
-| J + trei mici / 10 + patru mici | Promovare posibilă într-o culoare lungă | Pot lipsi tururile sau reintrările necesare |
-| A lateral | Cel mai mare rang al culorii | Poate fi tăiat sau aruncat pentru a evita o levată |
-| A la atu | Câștigă levata în care este jucat | Celelalte cărți pot produce levate nedorite |
-| K la atu după eliminarea publică a A | Cel mai mare atu rămas | Un A încă pe masa neterminată rămâne activ |
-| A-K / A-K-Q | Secvența se evaluează împreună | Indiciile K/Q nu se adună din nou peste secvență |
-| Atuuri mici și lipsă de culoare | Posibilități de tăiere | Atuul obligatoriu poate forța o levată nedorită |
+## Informația permisă
 
-- Familiile simple K+x și Q+xx exclud anumite secvențe proprii superioare.
-- `HIGHEST_CARD_CAPTURE` descrie capturarea cu onorul cel mai mare.
-- `SUIT_TRICKS` descrie levatele culorii, o cantitate diferită.
-- `trick_hint` este contextual, fără adunare independentă între onoruri.
-
-## Contextul disponibil
-
-| Moment | Informație utilizabilă |
+| Etapa | Date disponibile politicii |
 |---|---|
-| Împărțire | Cărțile proprii, numărul jucătorilor, mărimea mâinii și cartea întoarsă |
-| Licitare | Numai prefixul licitațiilor deja depuse |
-| Joc | Toate contractele, istoricul public, masa curentă, necesarul și scorurile |
-| Final mic | Lumile compatibile și continuările legale, dacă enumerarea este completă |
+| Licitare | Mâna proprie, regulile active și prefixul licitațiilor deja depuse. |
+| Joc | Mâna proprie, toate contractele depuse, levatele câștigate, istoricul public, masa curentă, atuul și scorurile publice. |
+| Simulare | Numai lumi compatibile cu informația de mai sus; mâinile reale ale adversarilor rămân ascunse. |
 
-- Pentru 3–6 jucători, rangul minim este `15 − 2 × jucători`.
-- Cărțile proprii și cele publice nu pot fi distribuite fictiv adversarilor.
-- Atuul întors este nedistribuit; atuul încă pe masă poate câștiga levata curentă.
-- Necesarul semnat este `licitat − levate câștigate`.
-- Siguranța urmărește contractul exact, inclusiv zero.
+Necesarul semnat al unui jucător este contractul său minus levatele câștigate. O valoare pozitivă cere levate, zero cere evitarea lor, iar o valoare negativă arată depășirea contractului. Nevoile individuale se evaluează separat; dezechilibrul total al licitațiilor nu înlocuiește obiectivul realizabil al unui jucător.
 
-## Ce măsoară calibrarea
+Numărul de levate încă posibile se calculează din cărțile rămase și din levata neterminată, numărată o singură dată. Necesarul raportat la oportunitățile rămase este un indicator contextual, nu o probabilitate de reușită.
 
-[Calibratorul](../../scripts/whist-heuristic-calibrate.mjs) acceptă numai partide din partiția de dezvoltare. Numărul efectiv de partide și celule aparține fiecărei execuții, nu unei constante a motorului.
+## Cum se interpretează observațiile
 
-1. Validează regulile și scorul fiecărei partide.
-2. Elimină urmele de acțiuni identice.
-3. Grupează observațiile după lume inițială, loc și culoare.
-4. Mediază politicile în fiecare grup înainte de agregare.
-5. Aplică greutatea dovezii `n / (n + 20)`.
-6. Exportă cel mult 128 de celule cu minimum 20 de lumi fiecare.
+Frecvența cu care o combinație a câștigat depinde de strategia care a jucat-o, inclusiv de alegerile deliberate de a păstra sau arunca ranguri. Asocierea observată nu este probabilitatea intrinsecă a combinației și nu dovedește ce s-ar fi întâmplat într-o acțiune alternativă.
 
-O rată observată de capturare cu K depinde de politica jucătorului, inclusiv de discardul intenționat. Nu reprezintă probabilitatea intrinsecă sau contrafactuală a combinației K+x.
+Calibrarea folosește numai datele permise pentru dezvoltare, grupează observațiile dependente și păstrează separat lotul rezervat. Mărimea eșantionului, partiția, filtrele și pragurile se citesc din protocolul și artefactul rulării, nu se copiază ca rezultate permanente în acest ghid.
+
+## YAML și experimente
+
+Rolul fiecărui YAML, ciclul de analiză și limita dintre regulile stabile și datele variabile sunt definite în [protocolul de învățare offline](../AI_TRAINING_PROTOCOL.md). Acest catalog exprimă doar clase generale de cărți și indicii; el nu este un jurnal de partide sau de rezultate.
+
+Partidele și rapoartele de evaluare rămân în directorul de dovezi din afara ATF. Un rezultat concret poate motiva o regulă, dar intră în documentația stabilă numai după ce a fost generalizat, justificat și acoperit prin teste.
+
+## Legătura cu implementarea
+
+- [Hard](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java) evaluează cărțile prin simulări constrânse de informația publică și reguli de siguranță.
+- [Certificatul de contract](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java) verifică exhaustiv numai domeniul și limitele declarate de implementare.
+- [Salvarea publică](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/PublicSalvage.java) tratează separat protejarea punctelor proprii și ratarea contractelor adverse.
+- [Independentul](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) folosește o implementare și o utilitate distincte; asemănarea numelui obiectivului nu dovedește echivalența politicilor.
 
 ```powershell
-node scripts/whist-hand-patterns-cli.mjs catalog <fresh-output.yaml>
+node scripts/whist-hand-patterns-cli.mjs catalog <output.yaml>
 node --test scripts/whist-hand-patterns.test.mjs scripts/whist-heuristic-calibrate.test.mjs
 ```
 
-## Legătura cu motorul curent
-
-- [Hard](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java) evaluează cărțile prin modelul său și prin gărzi publice limitate.
-- [Certificatul de contract](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ContractGuarantee.java) verifică finaluri cu două cărți proprii și toate continuările, în limitele sale.
-- [Salvarea publică](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/PublicSalvage.java) cere contract imposibil și dominanță fără deteriorarea punctelor proprii.
-- [Independentul](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) are implementare și utilitate separate.
-
-În [cazurile contextuale](../AI_CONTEXTUAL_DISCARD.md), același AS/7H cere discardul asului la necesar zero și păstrarea lui la necesar unu. O carte mai mică nu este automat mai sigură.
-
-Activarea unui indiciu nou cere componente justificate independent, sursă înghețată și evaluare separată pe partide nefolosite la dezvoltare. Catalogul nu promite joc perfect sau acoperirea exhaustivă a tuturor stărilor.
+Catalogul nu promite joc perfect sau acoperire exhaustivă a tuturor stărilor. Afirmațiile despre optimalitate necesită un certificat complet în domeniul său; estimările din simulare rămân estimări.

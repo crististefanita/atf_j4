@@ -168,7 +168,7 @@ public class GameSessionTest {
     }
 
     @Test
-    public void hardUsesAcceptedPlannerWhileNormalRetainsItsBasicHeuristic() {
+    public void normalPursuesItsContractWhileHardUsesAcceptedPlanner() {
         GameSession oneCard = oneTrickFixture();
         assertEquals(0, AiPolicy.chooseBid(oneCard.snapshot(), 1, AiDifficulty.NORMAL));
         assertEquals(ro.whistlab.core.baseline.RoundElevenAiPolicy.chooseBid(oneCard.snapshot(), 1, AiDifficulty.EXPERT),
@@ -188,7 +188,8 @@ public class GameSessionTest {
         game.playCard(0, new Card(Suit.HEARTS, 10));
 
         GameSession.Snapshot state = game.snapshot();
-        assertEquals(new Card(Suit.HEARTS, 9), AiPolicy.chooseCard(state, 1, AiDifficulty.NORMAL));
+        assertEquals("Normal bid1 must take the reachable heart trick", new Card(Suit.HEARTS, 13),
+                AiPolicy.chooseCard(state, 1, AiDifficulty.NORMAL));
         assertEquals(ro.whistlab.core.baseline.RoundElevenAiPolicy.chooseCard(state, 1, AiDifficulty.EXPERT),
                 AiPolicy.chooseCard(state, 1, AiDifficulty.HARD));
     }

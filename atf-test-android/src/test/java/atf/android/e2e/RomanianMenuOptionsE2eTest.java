@@ -15,6 +15,9 @@ class RomanianMenuOptionsE2eTest {
         Path out=Path.of(System.getProperty("atf.match.evidenceDir")).toAbsolutePath();Files.createDirectories(out);
         var adb=AdbClient.fromSystemProperties();var ui=new AndroidUiDriver(adb,out);
         var trace=new AndroidUiFlowTrace(out,"romanian-menu-options","Romanian series: menu selects five/ten or classic, then exact resume",getClass().getSimpleName(),"atf.android.e2e","ro.whistlab.app",List.of("android","menu","series","persistence"));
+        ui.recordActionsAs(trace::recordAction);
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         try{
             adb.run("shell","am","force-stop","ro.whistlab.app").requireSuccess();adb.run("shell","am","start","-W","-n","ro.whistlab.app/.MainActivity").requireSuccess();
             ui.selectNamedSpinnerOption("interface-language", "English");
@@ -43,6 +46,7 @@ class RomanianMenuOptionsE2eTest {
             }
             ui.back();ui.selectNamedSpinnerOption("interface-language","English");ui.awaitText("New game",Duration.ofSeconds(12));
             for(int value:List.of(5,10,0)){
+                trace.beginPhase("SETUP");
                 ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.selectNamedSpinnerOption("ai-level","Hard");
                 ui.revealText("10 points");var setup=ui.dump();var checks=new ArrayList<AtfAssertion>();
                 RomanianMatchOracle.truth(checks,"New game defaults to positive series ten","10 points",ui.texts(setup).toString(),ui.hasText(setup,"10 points"));
@@ -51,12 +55,14 @@ class RomanianMenuOptionsE2eTest {
                 if(value==0){ui.back();ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.tapDescription("Romanian five-hand streaks (missed series: -5)");}
                 String label="menu-series-"+value;ui.revealText("Start game");ui.capture(label+"-setup");
                 WhistTestEvidence.checkpoint(trace,out,"SETUP","Select normal Romanian series profile "+value,label+"-setup","No checkpoint editing or injected cards",checks,List.of());
+                trace.beginPhase("TEST BODY");
                 ui.tapText("Start game");var state=CompleteRomanianExpertE2eTest.stable(adb);checks=new ArrayList<>();
                 RomanianMatchOracle.equal(checks,"Menu option reaches the engine",value!=0,state.path("streakBonuses").asBoolean());
                 RomanianMatchOracle.equal(checks,"Selected positive series points",value==0?10:value,state.path("streakBonusPoints").asInt());
                 RomanianMatchOracle.equal(checks,"Versioned checkpoint",3,state.path("version").asInt());
                 ui.capture(label+"-game");Files.writeString(out.resolve(label+"-state.json"),state.toPrettyString());
                 WhistTestEvidence.checkpoint(trace,out,"TEST BODY","Normal menu option saved in the active game "+value,label+"-game",state.toPrettyString(),checks,List.of());
+                trace.beginPhase("TEARDOWN");
                 adb.run("shell","am","force-stop","ro.whistlab.app").requireSuccess();adb.run("shell","am","start","-W","-n","ro.whistlab.app/.MainActivity").requireSuccess();ui.tapText("Resume game");var resumed=CompleteRomanianExpertE2eTest.stable(adb);
                 checks=new ArrayList<>();RomanianMatchOracle.equal(checks,"Process restart preserves every card, score and rule option",state.toString(),resumed.toString());ui.capture(label+"-resume");
                 WhistTestEvidence.checkpoint(trace,out,"TEARDOWN","Resume the same selected profile "+value,label+"-resume",resumed.toPrettyString(),checks,List.of());

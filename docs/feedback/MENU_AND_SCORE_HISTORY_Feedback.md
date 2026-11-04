@@ -22,7 +22,7 @@ documentația; filtrarea selectorului singură nu închide cerința.
 
 Motorul păstrează licitațiile pe locuri și soldurile după fiecare mână. Testele de partidă completă compară licitația și punctele mâinii cu oracolul, apoi compară licitația și totalul după restaurare.
 
-Acceptanța Android publicată pentru 0.1.5 și regresia offline a surselor ulterioare au versiuni și limite proprii.
+Contractele componentelor, persistenței și interfeței se verifică separat, cu configurații și limite explicite.
 
 - Componente: contracte exacte și ratate, scor negativ, serie +5 și +10,
   penalizare de serie, toate locurile și toate mâinile unui joc complet.

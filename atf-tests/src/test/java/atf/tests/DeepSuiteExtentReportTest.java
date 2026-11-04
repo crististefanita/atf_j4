@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfIntegrationTest;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -31,9 +33,10 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 /** Opt-in publisher for module and Whist Lab acceptance results. */
+@AtfIntegrationTest
 class DeepSuiteExtentReportTest {
     private static final List<String> MODULES = List.of(
-            "atf-test-kit", "atf-mock", "atf-validation", "atf-console", "atf-android", "atf-tests", "atf-test-android");
+            "atf-test-kit", "atf-mock", "atf-validation", "atf-console", "atf-tests", "atf-test-android");
     @Test
     void publishesCombinedComponentAndLiveGameplayReport() throws Exception {
         assumeTrue(Boolean.getBoolean("atf.deep.publish"), "Set -Datf.deep.publish=true after component runs to publish the final Extent report");
@@ -296,8 +299,13 @@ class DeepSuiteExtentReportTest {
             String phasePrefix = "phase." + phaseIndex;
             String phaseName = required(trace, phasePrefix + ".name");
             int stepCount = integer(trace, phasePrefix + ".stepCount");
-            AtfReportStatus phaseStatus = AtfReportStatus.PASS;
+            var originalTiming = atf.android.evidence.timing.AndroidPhaseTimingCodec.read(trace, phasePrefix + ".timing",
+                    trace.getProperty("flow.id", ""), phaseName, phaseIndex);
+            AtfReportStatus phaseStatus = originalTiming.map(value -> value.partial()).orElse(false) ? AtfReportStatus.FAIL : AtfReportStatus.PASS;
             try (var phase = ui.startPhase(phaseName)) {
+                try (var timing = new atf.android.evidence.timing.AndroidPhaseReportTiming(phase,
+                        trace.getProperty("flow.id", ""), phaseName, phaseIndex, originalTiming,
+                        dispatchTotal(trace, phasePrefix, stepCount), System::nanoTime)) {
                 for (int stepIndex = 0; stepIndex < stepCount; stepIndex++) {
                     String prefix = phasePrefix + ".step." + stepIndex;
                     String keyword = required(trace, prefix + ".keyword");
@@ -333,6 +341,7 @@ class DeepSuiteExtentReportTest {
                     } else phase.step(AtfGherkinKeyword.valueOf(keyword), title, target, base64Png,
                             assertions, actions, ReportScreenshotPolicy.CapturePoint.CHECKPOINT, status);
                 }
+                }
                 phase.complete(phaseStatus);
             }
         }
@@ -344,6 +353,20 @@ class DeepSuiteExtentReportTest {
         Properties properties = new Properties();
         try (var input = Files.newInputStream(file)) { properties.load(input); }
         return properties;
+    }
+
+    private static long dispatchTotal(Properties trace, String prefix, int steps) {
+        long total = 0;
+        for (int step = 0; step < steps; step++) {
+            String checkpoint = prefix + ".step." + step;
+            for (int index = 0; index < integer(trace, checkpoint + ".actionCount"); index++) {
+                String action = checkpoint + ".action." + index;
+                if (trace.getProperty(action + ".source", "ACTION").equals("ACTION")) {
+                    total = Math.addExact(total, Long.parseLong(required(trace, action + ".durationMillis")));
+                }
+            }
+        }
+        return total;
     }
 
     private static String required(Properties properties, String key) {

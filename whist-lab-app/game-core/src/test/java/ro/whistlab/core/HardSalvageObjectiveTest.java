@@ -14,6 +14,16 @@ public final class HardSalvageObjectiveTest {
                 0, -2, 2, 20));
     }
 
+    @Test public void noisyBurnForecastCannotOutrankOwnPointProtection() {
+        // Captured at seed 20261108, hand 15, seat 1 after the shared first trick.
+        // Q♣ forecasts more rival misses, but the completed continuation lost one
+        // extra own point and let one more rival hit contract.
+        assertFalse(MonteCarloAi.prefer(true, true, 0, -1.3125, 2.0, 40.0,
+                0, -1.21875, 1.78125, 40.0, HardStrategyProfile.CURRENT));
+        assertTrue(MonteCarloAi.prefer(true, true, 0, -1.3125, 2.0, 40.0,
+                0, -1.21875, 1.78125, 40.0, HardStrategyProfile.BURN_IF_DOOMED));
+    }
+
     @Test public void aRecoverableContractKeepsExactChanceAheadOfPointsOrRivalDamage() {
         assertTrue(MonteCarloAi.prefer(true, false, 0.6, -2, 3, 0,
                 0.5, 7, 0, -100));

@@ -1,5 +1,7 @@
 package atf.tests.reporting;
 
+import atf.testkit.AtfComponentTest;
+
 import static org.junit.jupiter.api.Assertions.*;
 import atf.reporting.model.ReportObservation;
 import atf.reporting.security.SensitiveDataRedactor;
@@ -7,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
+@AtfComponentTest
 class GameEvidenceBodiesContractTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     @Test void exactTextBoundariesRetainEveryCharacterAndUnicodeScalar() {

@@ -17,7 +17,7 @@ $leasePath='C:\work\whist_back\android-ui-lease.json'
 $leaseId=[guid]::NewGuid().ToString('N');$leased=$false
 New-Item -ItemType Directory -Force $stage,"$RunRoot\accepted-components","$RunRoot\coverage","$RunRoot\rule-docs" | Out-Null
 Copy-Item -LiteralPath "$root\pom.xml","$root\lib" -Destination $stage -Recurse
-foreach($module in @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-android','atf-test-android','atf-tests','whist-lab-app')){
+foreach($module in @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-test-android','atf-tests','whist-lab-app')){
     & robocopy "$root\$module" "$stage\$module" /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if($LASTEXITCODE -ge 8){throw "Staging failed: $module"}
 }
@@ -38,7 +38,7 @@ try{
     $env:ANDROID_HOME=$AndroidSdk;$env:ANDROID_SDK_ROOT=$AndroidSdk
     $env:ADB_SERVER_SOCKET=$AdbServerSocket;$env:ATF_ANDROID_ADB="$AndroidSdk\platform-tools\adb.exe";$env:ATF_ANDROID_SERIAL=$Serial;$env:ATF_ANDROID_TIMEOUT_SECONDS='90'
     Get-ChildItem "$stage\lib" -File | Get-FileHash -Algorithm SHA256 | Select-Object Path,Hash | ConvertTo-Json | Set-Content "$RunRoot\library-binaries.json"
-    Copy-Item -LiteralPath "$root\docs\CONTRACT_WHIST_RULE_RECONSTRUCTION.md","$root\docs\AI_TRAINING_PROTOCOL.md" -Destination "$RunRoot\rule-docs"
+    Copy-Item -LiteralPath "$root\docs\GAME_RULE_PROFILES.md","$root\docs\AI_TRAINING_PROTOCOL.md" -Destination "$RunRoot\rule-docs"
     Get-ChildItem "$stage\whist-lab-app" -Recurse -File | Where-Object {$_.Extension -in '.java','.gradle','.xml','.properties'} | Get-FileHash -Algorithm SHA256 | Select-Object Path,Hash | ConvertTo-Json | Set-Content "$RunRoot\source-hashes.json"
     Push-Location "$stage\whist-lab-app"
     try{Invoke-Checked 'components-and-apk' { & .\gradlew.bat --no-daemon --console=plain :game-core:test :game-core:jacocoTestReport :app:assembleDebug "-Pwhist.componentEvidence=$RunRoot\evidence\components" }}finally{Pop-Location}

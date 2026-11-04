@@ -2,74 +2,60 @@
 
 ## Pe scurt
 
-Modulul oferă clasificarea testelor, scope-uri, configurare și auditul
-aserțiunilor, fără un renderer sau reguli ale jocului. Adaptoarele JUnit sunt
-suport de test; nu fac parte din motorul Whist.
+Modulul oferă clasificarea testelor, configurare, resurse cu ciclu de viață controlat și auditul comparațiilor. Integrarea JUnit este suport al testelor; motorul Whist rămâne independent de acest modul.
 
-## API-uri principale
+## Responsabilități
 
-- [Adnotările de clasificare](src/main/java/atf/testkit/) separă unit, component,
-  integration și e2e.
-- [TestRunScope](src/main/java/atf/testkit/scope/TestRunScope.java) și
-  [resursele scoped](src/main/java/atf/testkit/scope/) controlează ciclul de viață.
-- [ComponentAssertionAudit](src/main/java/atf/testkit/assertions/ComponentAssertionAudit.java)
-  păstrează fazele, comparațiile evaluate și cauza originală.
-- [ComponentAuditExtension](src/main/java/atf/testkit/assertions/ComponentAuditExtension.java)
-  adaptează auditul la JUnit; consumerul furnizează publicarea.
-- [AtfTestKitConfigurationLoader](src/main/java/atf/testkit/config/AtfTestKitConfigurationLoader.java)
-  definește descoperirea și citirea configurației.
+```mermaid
+flowchart LR
+JUNIT[Ciclu JUnit] -->|deschide| SCOPE[TestRunScope]
+SCOPE -->|izolează| AUDIT[Audit aserțiuni]
+CHECK[Comparație evaluată] -->|înregistrează| AUDIT
+AUDIT -->|furnizează| PUB[Publicare consumator]
+```
 
-## Aserțiuni și audit
+<details>
+<summary>Legendă: evaluare și proprietate</summary>
 
-### Toleranță numerică auditată
+Kitul controlează resursele și înregistrează comparațiile evaluate. Testul deține semnificația verificării, iar adaptorul consumatorului deține publicarea.
 
-`AuditedAssertions.assertEquals(expected, actual, delta, message)` pentru
-`double` execută JUnit o singură dată și publică expected ± delta, actual
-și mesajul în assertion-step-ul standard. Nu reduce comparația la true/true;
-preview-ul rămâne 240, iar verdictul și cauza JUnit sunt păstrate.
+</details>
 
-## Audit obligatoriu în corpul testului
-
-`ComponentAssertionAudit.AssertionRequirement` este politică neutră, fără
-Reporting ori reguli de domeniu. Constructorii existenți și publicațiile
-existente păstrează `ANY_PHASE`; consumerul poate alege explicit `TEST_BODY`
-prin `ComponentAuditExtension.Publication.assertionRequirement()`.
-
-| Situație cu TEST_BODY | Rezultat |
+| API | Responsabilitate |
 |---|---|
-| Setup/teardown au checks, corpul nu are | FAIL; setup-ul nu înlocuiește dovada corpului |
-| JUnit direct ori numai observație în corp | FAIL dacă nu există comparație Kit evaluată |
-| Corp cu o comparație Kit reală | verdictul evaluat, fără reevaluare de renderer |
-| Failure original sau abort | cauza și FAIL/SKIP rămân primare; fără corp inventat după setup abort |
-| Handler JUnit consumă eroarea sau comparația e prinsă | failure-ul auditat rămâne FAIL |
+| [Adnotări](src/main/java/atf/testkit/) | Nivelul unitar, componentă, integrare sau E2E; canalul este o axă separată. |
+| [TestRunScope](src/main/java/atf/testkit/scope/TestRunScope.java) | Resurse deținute de clasa sau suita declarată, cu închidere controlată. |
+| [ComponentAssertionAudit](src/main/java/atf/testkit/assertions/ComponentAssertionAudit.java) | Faze, valori evaluate, verdict și cauză originală. |
+| [ComponentAuditExtension](src/main/java/atf/testkit/assertions/ComponentAuditExtension.java) | Legătura cu JUnit; publicarea este furnizată explicit. |
+| [Configurare](src/main/java/atf/testkit/config/AtfTestKitConfigurationLoader.java) | Descoperirea și citirea configurației tipizate. |
 
-Un succes fără comparație publică rândul structural
-`Audited assertion coverage / TEST BODY`: expected `at least 1 evaluated assertion`,
-actual `0`, verdict FAIL. Acesta diagnostichează lipsa dovezii, nu inventează
-o verificare business. Preview-ul rămâne 240; evaluarea folosește valorile complete.
+## Comparații și cerința corpului testului
 
-Probele permanente `TestBodyAssertionRequirementTest` și
-`TestBodyAssertionRequirementComponentTest` verifică politica, lifecycle-ul
-JUnit real și izolarea invocărilor template. Adoptarea strictă se decide în
-adaptorul fiecărui consumer; unit-urile obișnuite nu primesc această cerință.
+`AuditedAssertions` evaluează comparația JUnit o singură dată. Pentru numerele reale, așteptarea include toleranța; prezentarea păstrează valorile, mesajul și cauza, cu previzualizarea implicită limitată la 240 de caractere.
 
-### Regresii assertion requirement
+`AssertionRequirement` permite `ANY_PHASE` sau `TEST_BODY`. Cerința strictă se selectează explicit în adaptorul publicării și nu se aplică automat tuturor testelor unitare.
 
-| Responsabilitate | Owner al probei |
+| Situație cu `TEST_BODY` | Rezultat |
 |---|---|
-| politica neutră ANY_PHASE / TEST_BODY | src/test/java/atf/testkit/assertions/requirement; contracte prin API-ul public |
-| eșecul controlat al fixture-urilor | Launcher explicit; nested fixtures nu sunt selectate independent prin wildcard |
-| coeziune | cazurile generale rămân în assertions; probele requirement au subpachet propriu |
+| Pregătirea ori închiderea au comparații, corpul nu are | Eșec; comparațiile altor faze nu înlocuiesc corpul. |
+| Numai diagnostic sau apel JUnit neînregistrat | Eșec al cerinței de audit. |
+| Comparație Kit reală în corp | Verdictul comparației originale, fără reevaluare. |
+| Eșec ori întrerupere anterioară | Cauza și statutul original rămân primare. |
+| Eroare auditată interceptată ulterior | Eșecul auditat nu devine succes. |
 
-## Verificare
+Un succes fără comparații produce diagnosticul structural `Audited assertion coverage / TEST BODY`, cu așteptarea unei comparații și valoarea observată zero. Acest diagnostic nu inventează o verificare a aplicației.
 
-Rulați dintr-o copie proprie din `%TEMP%`, cu POM-ul părinte și dependențele
-locale ale reactorului:
+## Niveluri și verificare
+
+| Nivel | Contract |
+|---|---|
+| Unitar | Configurare, politici de audit, temporizare și resurse locale. |
+| Componentă | Ciclul JUnit real, izolarea invocărilor și extensiile de audit. |
+
+[Arhitectura testării](../docs/TESTING_ARCHITECTURE.md) definește nivelurile și matricea comună. Dintr-o copie temporară proprie, cu POM-ul părinte și dependențele reactorului:
 
 ```powershell
 mvn -B -pl atf-test-kit -am test
 ```
 
-[POM-ul modulului](pom.xml) și [sursele testelor](src/test/java/) definesc
-dependențele și contractele efective. Aceste comenzi nu sunt dovada unei execuții
-deja trecute.
+[POM-ul](pom.xml) și [testele](src/test/java/) definesc selecția efectivă. Clasele imbricate folosite pentru defecte controlate se execută prin lansatorul probei, fără selecție independentă accidentală.

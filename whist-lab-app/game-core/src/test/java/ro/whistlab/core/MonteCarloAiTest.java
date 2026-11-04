@@ -61,6 +61,17 @@ public class MonteCarloAiTest {
         assertThrows(UnsupportedOperationException.class,()->view.hand().clear());
     }
 
+    @Test public void ai09BidSampleOptionsRemainOrderedAndImmutable() {
+        MonteCarloAi.BidSamples samples = new MonteCarloAi.BidSamples(List.of(0, 1, 2), 3, false);
+        samples.add(new double[]{3.0, 5.0, 7.0}, new double[]{0.25, 0.5, 0.75});
+
+        List<MonteCarloAi.BidOption> options = samples.options();
+
+        assertEquals(List.of(0, 1, 2), options.stream().map(MonteCarloAi.BidOption::bid)
+                .collect(java.util.stream.Collectors.toList()));
+        assertThrows(UnsupportedOperationException.class, options::clear);
+    }
+
     private static GameSession realTwoCardHand() {
         GameSession game=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.NORMAL,3));
         while(game.snapshot().handSize()==1) {

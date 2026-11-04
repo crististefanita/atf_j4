@@ -34,6 +34,7 @@ final class AndroidUiDriver {
     private final Device adb;
     private final Path output;
     private Consumer<AtfUiActionRecord> actionSink = ignored -> { };
+    private java.util.function.Supplier<? extends AutoCloseable> captureScopes = () -> () -> { };
     private int actionSequence;
 
     AndroidUiDriver(AdbClient adb, Path output) throws Exception {
@@ -51,6 +52,10 @@ final class AndroidUiDriver {
 
     void recordActionsAs(Consumer<AtfUiActionRecord> sink) {
         actionSink = Objects.requireNonNull(sink, "sink");
+    }
+
+    void recordCapturesAs(java.util.function.Supplier<? extends AutoCloseable> scopes) {
+        captureScopes = Objects.requireNonNull(scopes, "scopes");
     }
 
     String dump() throws Exception {
@@ -366,7 +371,7 @@ final class AndroidUiDriver {
         return new int[]{width, height};
     }
 
-    private static int[] screenshotPoint(java.awt.image.BufferedImage image, double logicalX, double logicalY,
+    static int[] screenshotPoint(java.awt.image.BufferedImage image, double logicalX, double logicalY,
             int viewportWidth, int viewportHeight) {
         double scale = Math.min(image.getWidth() / (double) viewportWidth,
                 image.getHeight() / (double) viewportHeight);
@@ -652,18 +657,22 @@ final class AndroidUiDriver {
     }
 
     List<Path> capture(String label) throws Exception {
+        try (var capture = captureScopes.get()) {
         String xml = dump();
         Path xmlFile = output.resolve(label + ".xml");
         Path imageFile = output.resolve(label + ".png");
         Files.writeString(xmlFile, xml);
         capturePng(imageFile);
         return List.of(xmlFile, imageFile);
+        }
     }
 
     Path captureImage(String label) throws Exception {
+        try (var capture = captureScopes.get()) {
         Path image = output.resolve(label + ".png");
         capturePng(image);
         return image;
+        }
     }
 
     private void capturePng(Path imageFile) throws Exception {

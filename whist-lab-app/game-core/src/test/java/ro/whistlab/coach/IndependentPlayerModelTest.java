@@ -50,6 +50,43 @@ public class IndependentPlayerModelTest {
             assertEquals(p.hand(),hands.get(0));
         }
     }
+    @Test public void currentTrickDiscardConstrainsIndependentWorldsEvenWhenHistoryOmitsItsSuffix(){
+        var partial=List.of(new IndependentPlayer.Play(0,18),new IndependentPlayer.Play(1,44));
+        var offSuit=new IndependentPlayer.Position(2,3,2,0,List.of(31),seats(1),partial,List.of(),5);
+        var voids=IndependentPlayer.knownVoids(offSuit);
+        assertTrue(voids[1][1]);assertTrue(voids[1][0]);
+        for(int seed=0;seed<96;seed++)for(boolean hallOnly:List.of(false,true)){
+            var hands=hallOnly?IndependentPlayer.feasibleDeal(offSuit,new Random(seed)):IndependentPlayer.deal(offSuit,new Random(seed));
+            assertNotNull("seed="+seed+" hallOnly="+hallOnly,hands);
+            assertTrue(hands.get(1).stream().noneMatch(c->c/13==0||c/13==1));
+        }
+        var forcedTrump=new IndependentPlayer.Position(2,3,2,0,List.of(31),seats(1),
+                List.of(new IndependentPlayer.Play(0,18),new IndependentPlayer.Play(1,5)),List.of(),6);
+        var trumpVoids=IndependentPlayer.knownVoids(forcedTrump);
+        assertTrue(trumpVoids[1][1]);assertFalse(trumpVoids[1][0]);
+        boolean canStillHoldTrump=false;
+        for(int seed=0;seed<96;seed++)canStillHoldTrump|=IndependentPlayer.deal(forcedTrump,new Random(seed)).get(1).stream().anyMatch(c->c/13==0);
+        assertTrue("A forced trump proves the led-suit void, not a trump void",canStillHoldTrump);
+    }
+    @Test public void independentCardOrderEnumeratesEverySmallPubliclyFeasibleWorld(){
+        // Eight-card no-trump hand: after six completed tricks only six hidden cards remain.
+        // Public voids constrain 19 legal assignments across clubs, diamonds and spades.
+        var history=List.of(
+                new IndependentPlayer.Play(0,5),new IndependentPlayer.Play(1,18),new IndependentPlayer.Play(2,6),new IndependentPlayer.Play(3,7),
+                new IndependentPlayer.Play(0,31),new IndependentPlayer.Play(1,32),new IndependentPlayer.Play(2,33),new IndependentPlayer.Play(3,44),
+                new IndependentPlayer.Play(0,45),new IndependentPlayer.Play(1,19),new IndependentPlayer.Play(2,8),new IndependentPlayer.Play(3,46),
+                new IndependentPlayer.Play(0,47),new IndependentPlayer.Play(1,20),new IndependentPlayer.Play(2,9),new IndependentPlayer.Play(3,48),
+                new IndependentPlayer.Play(0,49),new IndependentPlayer.Play(1,21),new IndependentPlayer.Play(2,34),new IndependentPlayer.Play(3,50),
+                new IndependentPlayer.Play(0,51),new IndependentPlayer.Play(1,22),new IndependentPlayer.Play(2,23),new IndependentPlayer.Play(3,10));
+        var seats=List.of(new IndependentPlayer.Seat(2,0,0,0),new IndependentPlayer.Seat(2,0,0,0),
+                new IndependentPlayer.Seat(2,0,0,0),new IndependentPlayer.Seat(2,0,0,0));
+        var p=new IndependentPlayer.Position(0,3,8,4,List.of(35,36),seats,List.of(),history,-1);
+        var worlds=IndependentPlayer.smallDeals(p);
+        assertEquals(19,worlds.size());
+        for(var world:worlds){assertEquals(2,world.get(1).size());assertEquals(2,world.get(2).size());assertEquals(2,world.get(3).size());
+            assertTrue(world.get(1).stream().noneMatch(c->c/13==0||c/13==3));
+            assertTrue(world.get(3).stream().noneMatch(c->c/13==2||c/13==3));}
+    }
     @Test public void twoCardSolverMatchesAnOracleUsingRealEngineTransitionsAndTerminalScores(){
         var random=new Random(729);for(int k=0;k<24;k++){
             var deck=new ArrayList<>(GameRules.deck(GameMode.ROMANIAN_WHIST,4));Collections.shuffle(deck,random);var deal=new ArrayList<List<Card>>();for(int s=0;s<4;s++)deal.add(new ArrayList<>(deck.subList(2*s,2*s+2)));

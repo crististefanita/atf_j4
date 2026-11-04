@@ -30,8 +30,5 @@ rules:
     rule_ro: "O mână pierdută din corpus este o lecție de analizat, nu dovada că o anumită carte era optimă."
     rule_en: "A lost corpus hand is a diagnostic lesson, not an optimal-card label."
 qualification:
-  expected_methods: 6
-  expected_whole_context_captures: 9
-  source_scope: "Test/evidence repair and focused collections; Hard and independent runtime policies are unchanged."
-  correction: "The earlier underbooked four-card fixture used turned7D with spade trump. Replace it with unused7S and independently replay its witness. Preserve the historical report and attach an explicit erratum."
-  validation: "The new measured native run and capture inventory, not this manifest, determine PASS."
+  requirements: ["reachable legal witness", "independent public-prefix replay", "own/public policy projection", "positive and boundary properties", "complete oracle domain or explicit fallback"]
+  scope: "Component design contract; no runtime parameter activation."

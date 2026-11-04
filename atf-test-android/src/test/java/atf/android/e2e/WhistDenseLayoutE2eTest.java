@@ -28,12 +28,17 @@ class WhistDenseLayoutE2eTest {
         var ui = new AndroidUiDriver(adb, output);
         var trace = new AndroidUiFlowTrace(output, "dense-layout", "Whist — exposed indices and collision-free bidding",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE, List.of("android", "e2e", "display", "13-cards", "9-bids"));
+        ui.recordCapturesAs(trace::capture);
+        trace.beginPhase("SETUP");
         ui.recordActionsAs(trace::recordAction);
-        String size = override(adb.run("shell", "wm", "size").output(), "size");
-        String density = override(adb.run("shell", "wm", "density").output(), "density");
+        String size = null;
+        String density = null;
         var evidence = new ArrayList<Path>();
         var outcome = AtfReportStatus.FAIL;
         try {
+            size = override(adb.run("shell", "wm", "size").output(), "size");
+            density = override(adb.run("shell", "wm", "density").output(), "density");
+            trace.beginPhase("TEST BODY");
             for (var profile : List.of(new Profile("320dp", "720x1280", 360),
                     new Profile("353dp", "972x1728", 440), new Profile("ROG7-logical", "1080x2448", 440),
                     new Profile("600dp", "1200x1920", 320))) {
@@ -105,9 +110,10 @@ class WhistDenseLayoutE2eTest {
             trace.fail(failure);
             throw failure;
         } finally {
+            trace.beginPhase("TEARDOWN");
             try {
-                adb.run("shell", "wm", "size", size).requireSuccess();
-                adb.run("shell", "wm", "density", density).requireSuccess();
+                if (size != null) adb.run("shell", "wm", "size", size).requireSuccess();
+                if (density != null) adb.run("shell", "wm", "density", density).requireSuccess();
                 adb.run("shell", "am", "force-stop", PACKAGE).requireSuccess();
             } catch (Throwable cleanup) { outcome = AtfReportStatus.FAIL; trace.fail(cleanup); throw cleanup; }
             finally {
@@ -121,7 +127,7 @@ class WhistDenseLayoutE2eTest {
 
     private static void record(AndroidUiFlowTrace trace, String title, List<Path> evidence, List<AtfAssertion> checks) throws Exception {
         boolean passed = checks.stream().allMatch(AtfAssertion::passed);
-        trace.checkpoint("TEST BODY", trace.phaseSnapshots().isEmpty() ? "GIVEN" : "AND", title, "Rendered Android table",
+        trace.checkpoint("TEST BODY", trace.phaseSnapshots().stream().allMatch(value -> value.checkpoints().isEmpty()) ? "GIVEN" : "AND", title, "Rendered Android table",
                 evidence.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow(), List.of(new atf.reporting.ui.model.AtfUiActionRecord(trace.nextActionSequence(), "Inspect rendered geometry and pixels",
                         "Android table", "Visible, separate and legible regions", passed ? "All recorded comparisons passed" : "See failed comparison",
                         0, passed ? AtfReportStatus.PASS : AtfReportStatus.FAIL, atf.reporting.ui.model.AtfUiEvidenceSource.OBSERVE)), checks,

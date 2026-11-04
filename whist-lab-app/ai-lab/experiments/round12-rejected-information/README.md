@@ -1,20 +1,29 @@
-# R12 information-model experiments — rejected
+# Cercetarea modelelor de informație publică
 
 ## Pe scurt
 
-The accepted runtime remains R11. All final candidate sources and frozen baselines are archived at `<evidence-root>/ai-training/20261103-r12/candidates/selected-source/whist-lab-app`.
+Această zonă descrie experimente cu activare explicită privind interpretarea licitațiilor și a cărților jucate. Existența unui experiment sau a unui caz de componentă nu activează modelul în aplicație.
 
-The final candidate passed 527 native components, two sampling-budget controls and quick 163.
+## Separarea ipotezelor
 
-- On 512 fresh complete games, both roles failed the unchanged final SAFETY criterion.
-- Expert: +30 points / −0.5 win share / +2 exact contracts.
-- Independent: +24 / −7 / −4.
-- No candidate is activated.
+```mermaid
+flowchart LR
+PUBLIC[Prefix public] -->|restrânge legal| FEASIBLE[Lumi fezabile]
+PUBLIC -->|sugerează| LIKELIHOOD[Ipoteză de comportament]
+FEASIBLE -->|limitează| PLAN[Politică de continuare]
+LIKELIHOOD -->|ponderează experimental| PLAN
+PLAN -->|necesită| EVAL[Evaluare separată]
+```
 
-`informationResearchTest` contains seven small, test-only counterexamples for common information and common opening decisions.
+<details>
+<summary>Legendă și limite</summary>
 
-It is opt-in and excluded from the default regression. The numeric response oracle is separate in `scripts/whist-response-casebook.mjs`; the complete hypothetical world is analysis evidence, never real runtime input.
+Constrângerile din regulile jocului sunt certe; intenția estimată a unui adversar rămâne dependentă de model. Lumile complete folosite de oracol nu devin informație privată disponibilă politicii.
 
-See [the full analysis](../../../../docs/AI_ROUND12_ANALYSIS.md) and [feedback](../../../../docs/feedback/AI_ROUND12_Feedback.md).
+</details>
 
-The consumed heldout range 108000–108015 must not become training data or be called new evaluation again.
+Regresiile cu activare explicită verifică ipoteze mici și limitele lor. Comparațiile între politici folosesc surse înghețate, iar un lot rezervat deja deschis rămâne consumat în registrul extern.
+
+[Sarcina Gradle de cercetare](../../../game-core/build.gradle) selectează componentele explicite; directorul acesta este un punct de orientare, fără surse proprii pentru execuția aplicației.
+
+[Arhitectura învățării](../../../../docs/AI_LEARNING_ARCHITECTURE.md) definește fluxul de la ipoteză la promovare.

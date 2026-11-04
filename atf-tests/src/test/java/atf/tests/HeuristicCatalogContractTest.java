@@ -1,5 +1,8 @@
 package atf.tests;
+
+import atf.testkit.AtfComponentTest;
 import static org.junit.jupiter.api.Assertions.*;import com.fasterxml.jackson.databind.*;import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;import java.nio.file.*;import java.util.*;import org.junit.jupiter.api.Test;
+@AtfComponentTest
 class HeuristicCatalogContractTest {
  private JsonNode load()throws Exception{return new ObjectMapper(new YAMLFactory()).readTree(Files.readString(Path.of("..","config","whist-hand-patterns.yaml")));}
  @Test void generatedYamlSeparatesGuaranteedRulesAndConditionalNonAdditiveHints()throws Exception{

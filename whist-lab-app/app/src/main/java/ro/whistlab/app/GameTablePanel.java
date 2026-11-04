@@ -131,10 +131,14 @@ final class GameTablePanel extends LinearLayout {
 
     private View buildRoundTable() {
         int tableWidthDp = Math.min(availableContentWidthDp(), 760);
+        TrickCardMetrics.Layout trickLayout = bidding
+                ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp,
+                        getResources().getConfiguration().fontScale);
         int centerWidthDp = bidding
                 ? Math.max(132, Math.min(bidOptions.size(), BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp)) * 52)
-                : Math.max(state.players().size() > 4 ? 154 : 100, TableLayoutMetrics.centerPlayWidthDp(tableWidthDp));
-        GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp, viewport);
+                : TableLayoutMetrics.centerPlayWidthDp(tableWidthDp);
+        GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
+                viewport, !bidding);
         board.setBackgroundColor(Color.TRANSPARENT);
         board.setContentDescription(copy.boardSurface());
         board.setTag("game-board");
@@ -143,8 +147,7 @@ final class GameTablePanel extends LinearLayout {
         for (GameSession.PlayerSnapshot player : state.players()) {
             board.addView(buildSeat(player));
         }
-        View center = bidding ? buildBiddingCenter() : buildCurrentTrick();
-        if (!bidding) center.setMinimumHeight(dp(144));
+        View center = bidding ? buildBiddingCenter() : buildCurrentTrick(trickLayout);
         board.addView(center);
         return board;
     }
@@ -243,8 +246,7 @@ final class GameTablePanel extends LinearLayout {
         seat.setOrientation(VERTICAL);
         seat.setGravity(Gravity.CENTER);
         seat.setPadding(dp(6), dp(4), dp(6), dp(4));
-        seat.setBackground(rounded(active ? Color.rgb(241, 230, 200) : Color.rgb(31, 87, 67),
-                active ? GOLD : Color.rgb(76, 118, 96), 11));
+        seat.setBackground(WhistUiPalette.seatFrame(context, active));
         seat.setElevation(dp(active ? 1 : 0));
 
         FrameLayout actionSlot = new FrameLayout(context);
@@ -283,61 +285,67 @@ final class GameTablePanel extends LinearLayout {
         return seat;
     }
 
-    private View buildCurrentTrick() {
+    private View buildCurrentTrick(TrickCardMetrics.Layout layout) {
         List<PlayedCard> plays = state.currentTrick().isEmpty() && !completedTrickToDisplay.isEmpty()
                 ? completedTrickToDisplay : state.currentTrick();
-        if (plays.isEmpty()) {
-            TextView empty = text("", 13, Color.TRANSPARENT, false);
-            empty.setContentDescription(copy.noCardsYet());
-            empty.setTag("current-trick");
-            return empty;
-        }
-
-        LinearLayout cards = new LinearLayout(context);
-        cards.setOrientation(VERTICAL);
-        cards.setGravity(Gravity.CENTER);
+        FrameLayout cards = new FrameLayout(context);
         cards.setContentDescription(copy.currentTrick());
         cards.setTag("current-trick");
-        int columns = state.players().size() > 4 ? 3 : 2;
-        for (int start = 0; start < plays.size(); start += columns) {
-            LinearLayout row = new LinearLayout(context);
-            row.setOrientation(HORIZONTAL);
-            row.setGravity(Gravity.CENTER);
-            int end = Math.min(start + columns, plays.size());
-            for (int index = start; index < end; index++) {
-                PlayedCard play = plays.get(index);
-                GameSession.PlayerSnapshot player = state.players().get(play.seat());
-                LinearLayout item = new LinearLayout(context);
-                item.setOrientation(VERTICAL);
-                item.setGravity(Gravity.CENTER);
-                item.setPadding(dp(2), dp(2), dp(2), dp(2));
-                TextView card = text(play.card().shortLabel(), 14,
-                        play.card().suit().red() ? CARD_RED : CARD_DARK, true);
-                card.setGravity(Gravity.CENTER);
-                card.setPadding(dp(3), dp(4), dp(3), dp(4));
-                card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
-                card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-                item.addView(card, new LayoutParams(dp(TableLayoutMetrics.TRICK_CARD_WIDTH_DP),
-                        dp(TableLayoutMetrics.TRICK_CARD_HEIGHT_DP)));
-                TextView who = text(copy.trickPlayer(player), 10, Color.rgb(212, 223, 209), false);
-                who.setGravity(Gravity.CENTER);
-                who.setSingleLine(true);
-                who.setEllipsize(android.text.TextUtils.TruncateAt.END);
-                who.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-                item.addView(who, matchWrap());
-                item.setContentDescription(copy.trickCardAccessibility(player, play.card()));
-                item.setTag("trick-card:" + play.seat());
-                item.setFocusable(true);
-                item.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-                LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.setMargins(dp(1), 0, dp(1), 0);
-                row.addView(item, params);
-            }
-            cards.addView(row, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+        cards.setMinimumHeight(dp(layout.centerHeightDp()));
+        cards.setClipChildren(false);
+        cards.setClipToPadding(false);
+
+        PlayedCard[] bySeat = new PlayedCard[state.players().size()];
+        for (PlayedCard play : plays) bySeat[play.seat()] = play;
+        for (int rowIndex = 0; rowIndex < layout.rows(); rowIndex++) {
+            FrameLayout row = new FrameLayout(context);
+            FrameLayout.LayoutParams rowParams = new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(layout.cellHeightDp()),
+                    Gravity.TOP | Gravity.LEFT);
+            rowParams.topMargin = dp(rowIndex * layout.cellHeightDp());
+            cards.addView(row, rowParams);
+        }
+        for (int seat = 0; seat < bySeat.length; seat++) {
+            PlayedCard play = bySeat[seat];
+            if (play == null) continue;
+            TrickCardMetrics.Slot slot = layout.slotForSeat(seat);
+            GameSession.PlayerSnapshot player = state.players().get(seat);
+            LinearLayout item = new LinearLayout(context);
+            item.setOrientation(VERTICAL);
+            item.setGravity(Gravity.CENTER);
+            item.setPadding(0, dp(2), 0, dp(2));
+
+            TextView card = text(play.card().shortLabel(), layout.cardFaceTextSizeSp(),
+                    play.card().suit().red() ? CARD_RED : CARD_DARK, true);
+            card.setGravity(Gravity.CENTER);
+            card.setPadding(dp(2), dp(4), dp(2), dp(4));
+            card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
+            card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            item.addView(card, new LayoutParams(dp(layout.cardWidthDp()), dp(layout.cardHeightDp())));
+
+            TextView who = text(copy.trickPlayer(player), layout.playerLabelTextSizeSp(),
+                    Color.rgb(212, 223, 209), false);
+            who.setGravity(Gravity.CENTER);
+            who.setSingleLine(true);
+            who.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            who.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            item.addView(who, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(layout.playerLabelHeightDp())));
+
+            item.setContentDescription(copy.trickCardAccessibility(player, play.card()));
+            item.setTag("trick-card:" + seat);
+            item.setFocusable(true);
+            item.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            FrameLayout.LayoutParams itemParams = new FrameLayout.LayoutParams(
+                    dp(layout.cardWidthDp()), dp(layout.cellHeightDp()), Gravity.TOP | Gravity.LEFT);
+            itemParams.leftMargin = dp(slot.leftDp());
+            rowFor(cards, slot.row()).addView(item, itemParams);
         }
         return cards;
+    }
+
+    private FrameLayout rowFor(FrameLayout cards, int index) {
+        return (FrameLayout) cards.getChildAt(index);
     }
 
     private View buildHand() {

@@ -1,24 +1,32 @@
-# Ultimul raport Extent Whist Lab
+# Guvernanța predării rezultatelor Whist
 
 ## Pe scurt
 
-[Deschide direct ultimul Extent acceptat](<../../../../../whist_back/ui-reports/whist-lab/latest-accepted.html>)
+Acest director descrie contractul dintre publicarea unei execuții și acceptarea ei pentru un scop declarat. Inventarul rulărilor și locațiile rapoartelor sunt date gestionate în depozitul extern.
 
-[Ultima acceptanță și ultima încercare arhivate](<../../../../../whist_back/ui-reports/whist-lab/LATEST.md>)
+## Stări și responsabilități
 
-## Acceptanțe responsive UI
+```mermaid
+flowchart LR
+TRACE[Jurnal original] -->|publică| ATTEMPT[Încercare înregistrată]
+ATTEMPT -->|verifică scopul| CHECK[Control de acceptare]
+CHECK -->|admite sau refuză| STATE[Statut pe scop]
+STATE -->|actualizează atomic| POINTER[Referință externă]
+```
 
-| Rulare | Scop și verdict | Raport Extent | SHA-256 |
-|---|---|---|---|
-| `20261104-responsive-final-matrix` | 4 profiluri × 2 mâini reale; 44 capturi, 276 aserțiuni, toate PASS | [Deschide raportul](<../../../../../whist_back/ui-reports/whist-lab/runs/20261104-responsive-final-matrix/android-artifacts/responsive-ui-sanity/responsive-ui-sanity.html>) | `3ba9b66819978d28794fecc03fb235255ac1f2d520ab36090736fe5665313c2f` |
-| `20261104-responsive-two-card-probe` | 720×1280; 5 mâini reale până la prima mână de 2 cărți; 20 capturi, 117 aserțiuni, toate PASS | [Deschide raportul](<../../../../../whist_back/ui-reports/whist-lab/runs/20261104-responsive-two-card-probe/android-artifacts/responsive-ui-sanity/responsive-ui-sanity.html>) | `d35b0d8af3cbdbc8ebb66f74a120bcf173a9b7e5f9961d9b46b1c1efc09e3799` |
+<details>
+<summary>Legendă și limite</summary>
 
-Ultimul raport Extent din această suită este proba compactă de 5 mâini.
-Rapoartele acoperă layout-ul și fluxurile scurte. Partida completă și strategia
-AI au acceptanțe distincte. Capturile păstrează PNG-ul fizic al emulatorului,
-iar raportul consemnează separat profilul logic.
+O încercare și o acceptanță sunt entități diferite. Admiterea ține cont de scop, identitatea aplicației, integritatea datelor de intrare și verificările cerute; data copierii nu schimbă ordinea execuțiilor.
 
-Indexul global `latest-accepted.html` rămâne separat de această acceptanță
-responsive. Păstrăm aici run ID-ul și hash-ul fiecărui raport pentru audit.
+</details>
 
-[Feedback UX](../WHIST_LAB_User_Experience_Feedback.md) · [Contractul Android](../../ATF_Android_Report_Contract.md)
+## Invariante
+
+- Identificatorul unei execuții este imuabil; un reimport identic este idempotent.
+- Referințele ultimei încercări și ultimei acceptanțe sunt separate pentru fiecare scop.
+- Refuzul sau absența unei verificări nu produce acceptanță implicită.
+- Actualizarea referințelor folosește un singur blocaj exclusiv și înlocuire atomică.
+- Publicarea nu reconstruiește interacțiuni sau intervale temporale care nu au fost capturate.
+
+[Mecanismul de predare a rezultatelor](../../WHIST_UI_REPORT_HANDOFF.md) · [Arhitectura publicării](../../reporting/README.md) · [Responsabilități](../README.md)

@@ -1,5 +1,7 @@
 package atf.tests;
 
+import atf.testkit.AtfComponentTest;
+
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportTextAudit;
 import atf.tests.reporting.GameReportPhase;
@@ -19,6 +21,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Offline learning evidence, composed exclusively through the J0 reporting binary. */
+@AtfComponentTest
 class WhistCorpusExtentReportTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     @Test void publishesEveryCorpusAuditAndDetailedIndependentReplayWithHonestLearningOutcomes()throws Exception{

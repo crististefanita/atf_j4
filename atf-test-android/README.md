@@ -1,64 +1,79 @@
-# Testele Android Whist Lab
+# Infrastructura și testele Android Whist Lab
 
-Acest modul verifică jocul nostru: testele fără emulator pentru componentele
-și oracolele Whist Lab, plus scenarii UI activate explicit care acționează
-elementele afișate în aplicația ro.whistlab.app. Interacțiunile cu aplicația
-Contract Whist sunt în proiectul J5.
+## Pe scurt
 
-## Organizare
+Modulul reunește adaptorul ADB, captura și temporizarea Android, audituri reutilizabile și scenariile Whist Lab.
+Componentele fără dispozitiv și fluxurile E2E au selecții explicite și păstrează limita dintre acțiune,
+observație și verificarea independentă.
+
+## Flux și responsabilități
+
+```mermaid
+flowchart LR
+    SCENARIO[Scenariu] -->|trimite acțiuni| DRIVER[AndroidUiDriver]
+    DRIVER -->|execută prin| ADB[AdbClient]
+    DRIVER -->|capturează| TRACE[Punct de control și timp]
+    ORACLE[Oracol independent] -->|compară| TRACE
+    TRACE -->|alimentează| PUBLISH[Publicare consumator]
+```
+
+<details>
+<summary>Legendă: infrastructură și domeniu în același modul</summary>
+
+Adaptorul execută comenzi delimitate și păstrează rezultatul original. Driverul de scenariu interpretează interfața, iar oracolul verifică regulile; biblioteca comună primește datele de intrare tipizate pentru publicare.
+
+</details>
+
+## Organizarea surselor
 
 | Zonă | Responsabilitate |
 |---|---|
-| src/main/java | Audituri Whist Lab reutilizabile și validări pure fără ADB. |
-| AndroidUiDriver | Acțiuni Android, ierarhie proaspătă, capturi și măsurarea inputului. |
-| AndroidUiFlowTrace | Checkpoint-uri ordonate, observații, comparații și receipt parțial la eșec. |
-| WhistTestEvidence | Proiecția checkpoint-urilor și aserțiunilor jocului în raport. |
-| RomanianMatchOracle | Așteptări independente pentru reguli și scorul românesc. |
-| OriginalWhistState + OriginalMatchOracle | Adaptor de snapshot J5 și oracol comparativ folosite numai pentru replay-ul Whist Lab; fără input în aplicația-model. |
-| WhistChallenger | Decizie own/public pentru adversarul de verificare offline. |
-| Suitele Android | Selecții explicite pentru scenariile Whist Lab. |
+| [AdbClient](src/main/java/atf/android/AdbClient.java) | Identificator de dispozitiv explicit, termen finit și rezultate text sau binare. |
+| [AndroidScreenshotEvidence](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) | PNG-ul original transmis prin API-ul public al raportării. |
+| [Temporizare](src/main/java/atf/android/evidence/timing/) | Ceas monoton, intervale, codec și proiecție, fără interpretarea regulilor jocului. |
+| [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Validări pure și indexare externă reutilizabilă. |
+| [Contracte de infrastructură](src/test/java/atf/android/) | ADB, captură și temporizare, verificate fără emulator. |
+| [Scenarii și oracole](src/test/java/atf/android/e2e/) | Navigare, extragerea stării și comparații independente ale jocului. |
+| [Suport de flux](src/test/java/atf/android/e2e/support/) | Puncte de control, jurnal parțial și contractele publicării individuale sau agregate. |
 
-POM-ul modulului adaugă sursele game-core și ai-lab numai la testele obișnuite.
-Profilul responsive-sanity izolează clasele necesare capturilor de layout și
-verifică APK-ul instalat; nu reconstruiește aplicația.
+Codul reutilizabil se află în sursele principale ale acestui modul, cu pachetele atf.android păstrate. Sursele game-core și ai-lab sunt adăugate numai la calea de clase a testelor care le folosesc.
 
-## Testare fără emulator
+## Contracte de execuție
 
-Dintr-o copie temporară a proiectului, cu POM-ul părinte, bibliotecile locale
-și config:
+- Un identificator de dispozitiv explicit și un termen finit delimitează fiecare comandă ADB.
+- Rezultatul trimiterii comenzii și tranziția semantică observată au verdicte distincte.
+- PNG-ul integral și ierarhia aparțin aceluiași punct de control verificat.
+- Dreptunghiurile UIAutomator sunt logice; aserțiunile de pixeli le mapează la rasterul PNG fizic înainte de comparație.
+- Ceasul fazei pornește înainte de prima acțiune și păstrează intervalele parțiale la eșec.
+- Execuția, captura, persistența jurnalului și publicarea sunt axe temporale separate.
+- Rapoartele și indexurile generate se scriu în depozitul extern; arborele de surse și copia temporară sunt refuzate ca destinații de indexare.
 
-    mvn -B -pl atf-test-android -am "-Dtest=RomanianMatchOracleTest,WhistChallengerTest" "-Dsurefire.failIfNoSpecifiedTests=false" test
+## Verificare fără dispozitiv
 
-Aceste teste validează calcule și contracte. Nu pretind o partidă pe Android,
-o captură live sau acceptanță vizuală. Motorul complet și evaluările offline
-sunt documentate în game-core/README.md și TEST_COLLECTIONS.md.
+Dintr-o copie temporară proprie de lucru, cu POM-ul părinte și bibliotecile configurate:
 
-## E2E pentru Whist Lab
+```powershell
+mvn -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
+```
 
-CompleteRomanianExpertE2eTest joacă mâini normale prin meniul Whist Lab.
-WhistResponsivePlaySanityE2eTest pornește din meniul normal și verifică profile
-de ecran, primul joc real și layout-urile-limită. CompleteWhistLabMatchE2eTest
-reia în UI-ul Whist Lab intrările unei partide înregistrate și confruntă
-mutările, levatele și scorul cu un oracol independent.
+Profilul responsive-sanity compilează numai suportul și testele necesare fluxului responsive. Comenzile care solicită întregul set de componente folosesc configurația normală a modulului.
 
-Replay-ul comparativ consumă date J5 numai ca fixture-uri. Nu pornește
-Contract Whist și nu folosește cărți ascunse ca intrări pentru AI-ul Whist Lab.
+## Fluxuri Android
 
-Pentru fiecare acțiune UI, raportul păstrează acțiunea trimisă separat de
-starea observată după ea. Captura și aserțiunile aparțin aceluiași checkpoint.
-Un tap ADB reușit nu dovedește singur că jocul a acceptat licitația sau cartea.
+Scenariile pe dispozitiv se activează explicit, cu identificator de dispozitiv și rezervare exclusivă.
 
-## Rapoarte
+- Lansatorul responsive verifică precondițiile și profilele înainte de acces.
+- Matricea vizuală verifică locurile și derulează până când cartea, locul activ și mâna legală pot fi auditate pe profile compacte.
+- Construirea APK-ului și acceptanța instalării au contracte separate.
 
-[Contractul de raportare pentru consumerul Whist Lab](../docs/ATF_Android_Report_Contract.md)
-definește dovezile cerute jocului. Rapoartele, capturile și trace-urile sunt
-salvate în directorul extern configurat, nu în surse sau target. Defectele
-generice ale contractului ori rendererului Reporting se raportează la
-[J0 feedback](../../atf_j0/docs/feedback/README.md); J4 păstrează numai
-comportamentul și verificările proprii jocului.
+[Verificarea jocului](../docs/GAMEPLAY_VERIFICATION.md) · [Testarea Android](../docs/ANDROID_TESTING.md) · [Temporizare](../docs/ATF_Android_Phase_Timing.md) · [Publicare](../docs/ATF_Android_Report_Contract.md)
 
-## Legături
+## Niveluri de testare
 
-[Verificarea UI pe mai multe profile](../docs/WHIST_RESPONSIVE_UI_SANITY.md) ·
-[Testarea Android a jocului](../docs/ANDROID_TESTING.md) ·
-[Feedback Whist Lab](../docs/feedback/README.md)
+| Nivel | Contract |
+|---|---|
+| Unitar | Ceasul monoton și serializarea intervalelor. |
+| Componentă | ADB controlat, capturi, oracole, geometrie și publicare fără dispozitiv. |
+| E2E | Interacțiuni noi în aplicația instalată, cu rezervarea dispozitivului. |
+
+[Arhitectura testării](../docs/TESTING_ARCHITECTURE.md) separă nivelul, colecția, mediul și publicarea. Un jurnal reluat nu reprezintă o nouă execuție Android.

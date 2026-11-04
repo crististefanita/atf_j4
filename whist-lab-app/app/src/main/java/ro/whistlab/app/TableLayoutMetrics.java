@@ -1,10 +1,7 @@
 package ro.whistlab.app;
 
-/** Widths for public information; vertical placement uses measured regions in TableGeometry. */
+/** Seat dimensions; played-card sizing belongs to TrickCardMetrics. */
 final class TableLayoutMetrics {
-    static final int TRICK_CARD_WIDTH_DP = 44;
-    static final int TRICK_CARD_HEIGHT_DP = 52;
-
     private TableLayoutMetrics() { }
 
     static int centerPlayWidthDp(int tableWidthDp) {
