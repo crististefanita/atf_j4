@@ -1,5 +1,6 @@
 """Publică offline dovezi J4 finalizate, fără ADB. Intrările sunt selectate explicit."""
 import argparse
+from html import escape
 from datetime import datetime, timezone
 import json
 import os
@@ -169,6 +170,10 @@ def publish_pointers(directory, record):
                 (datetime.fromisoformat(previous["endedAt"]), previous["runId"])):
             previous = record
         atomic_text(path, json.dumps(previous, ensure_ascii=False, indent=2) + "\n")
+        link = escape(previous["htmlUri"] + "#test-view", quote=True) if previous and previous.get("htmlUri") else None
+        shortcut = (f'<meta http-equiv="refresh" content="0;url={link}"><a href="{link}">Deschide raportul Extent</a>'
+                    if link else '<p>Niciun HTML disponibil pentru acest verdict.</p>')
+        atomic_text(directory / f"latest-{key}.html", '<!doctype html><meta charset="utf-8"><title>Whist Lab · Extent</title>' + shortcut)
         values[key] = previous
     lines = ["# Whist Lab · rapoarte Extent", "", "Raport acceptat pentru scopul declarat și ultima încercare finalizată.", ""]
     for key, title in (("accepted","Ultima acceptanță"),("attempt","Ultima încercare")):

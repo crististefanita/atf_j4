@@ -44,6 +44,7 @@ class WhistHandoffTest(unittest.TestCase):
                 publish_pointers(directory,candidate)
             self.assertEqual(json.loads((directory/"latest-attempt.json").read_text())["runId"],"b")
             self.assertEqual(json.loads((directory/"latest-accepted.json").read_text())["runId"],"a")
+            self.assertIn('http-equiv="refresh"',(directory/"latest-accepted.html").read_text(encoding="utf-8"))
 
     def test_unexecuted_attempt_has_no_html_no_acceptance_and_no_stale_lock(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -58,6 +59,7 @@ class WhistHandoffTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"Immutable"):
                 publish(root,dict(spec,reason="different"))
             self.assertFalse((root/"whist-lab/.publish.lock").exists())
+            self.assertNotIn('http-equiv="refresh"',(root/"whist-lab/latest-attempt.html").read_text(encoding="utf-8"))
             self.assertIsNone(json.loads((root/"whist-lab/scopes/pilot/latest-accepted.json").read_text()))
 
 

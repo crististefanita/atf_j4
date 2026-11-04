@@ -1,6 +1,6 @@
 # Whist Lab · handoff offline al rapoartelor UI
 
-[Ultima acceptanță și ultima încercare](<file:///C:/work/whist_back/ui-reports/whist-lab/LATEST.md>) · [Indexul din feedback](feedback/whist-extent/README.md)
+[Deschide ultimul Extent acceptat](<file:///C:/work/whist_back/ui-reports/whist-lab/latest-accepted.html>) · [Ultima acceptanță și ultima încercare](<file:///C:/work/whist_back/ui-reports/whist-lab/LATEST.md>) · [Indexul din feedback](feedback/whist-extent/README.md)
 
 Publicatorul Android actualizează linkul de execuție după auditul structural.
 După închiderea JUnit, ownerul UI arhivează raportul pentru consumatorii de
@@ -25,6 +25,7 @@ flowchart LR
 | Fișier în `whist-lab` | Întrebare |
 |---|---|
 | `LATEST.md` | Care sunt ultimul raport acceptat și ultima încercare înregistrată? |
+| `latest-accepted.html`, `latest-attempt.html` | Scurtături stabile, cu deschidere directă către bytes-ii originali ai raportului. În absența unui HTML, scurtătura explică lipsa. |
 | `scopes/<scope>/latest-accepted.json` | Există acceptanță pentru acest scop precis? JSON `null` înseamnă că nu există. O partidă completă cere o acceptanță proprie. |
 | `scopes/<scope>/latest-attempt.json` | Cum s-a încheiat ultima încercare? Un eșec sau un refuz al rulării are verdict propriu. |
 | `runs/<id>/metadata.json` | Cine a publicat, ce s-a executat, de unde provin timpul, binarul, bibliotecile și numărătorile? |

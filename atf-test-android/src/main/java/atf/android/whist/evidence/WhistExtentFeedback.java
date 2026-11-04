@@ -43,6 +43,7 @@ public final class WhistExtentFeedback {
         Path archive = Path.of(configuredArchive == null || configuredArchive.isBlank()
                 ? "C:/work/whist_back/ui-reports" : configuredArchive).toAbsolutePath().resolve("whist-lab");
         String markdown = "# Ultimul raport Extent Whist Lab\n\n"
+                + "[Deschide direct ultimul Extent acceptat](<" + archive.resolve("latest-accepted.html").toUri().toASCIIString() + ">)\n\n"
                 + "[Ultima acceptanță și ultima încercare arhivate](<" + archive.resolve("LATEST.md").toUri().toASCIIString() + ">)\n\n"
                 + "[Deschide ultimul raport de execuție](<" + html.toUri().toASCIIString() + ">)\n\n"
                 + "**Scenariu** · " + title + "\n\n**Verdict** · " + status + "\n\n"
