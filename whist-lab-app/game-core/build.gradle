@@ -204,3 +204,6 @@ tasks.register("offlineMockMatchTest", Test) {
     jacoco.enabled = false
     outputs.upToDateWhen { false }
 }
+tasks.named("quickRegressionTest", Test) {
+    filter { includeTestsMatching "ro.whistlab.core.HardSalvageObjectiveTest" }
+}
