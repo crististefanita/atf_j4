@@ -22,3 +22,10 @@ __pycache__/
 .classpath
 .project
 .settings/
+
+# Keep the current, auditable release evidence; other local artifacts stay ignored.
+!artifacts/
+artifacts/*
+!artifacts/reports/
+artifacts/reports/*
+!artifacts/reports/**

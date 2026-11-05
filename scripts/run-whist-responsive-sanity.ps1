@@ -1,5 +1,5 @@
 param(
-    [string]$Profiles = '720x1280@360,1080x1920@440,1080x2448@440,1200x1920@320',
+    [string]$Profiles = '',
     [Alias('HandsPerProfile')][ValidateRange(1,5)][int]$Hands = 1,
     [string]$Serial = '127.0.0.1:5555',
     [string]$AdbServerSocket = 'tcp:192.168.56.1:5038',
@@ -7,13 +7,21 @@ param(
     [string]$Maven = 'C:\tools\Maven\apache-maven-3.10.0\bin\mvn.cmd',
     [string]$MavenRepository = 'C:\Users\Cristi\.m2\repository',
     [string]$JavaHome = 'C:\tools\Java21\jdk-21.0.12.1+1',
+    [switch]$DenseLayout,
     [switch]$HardAiCompatibility,
     [switch]$IncludeGameFlow,
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
+Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
+if ([string]::IsNullOrWhiteSpace($Profiles)) {
+    $Profiles = if ($DenseLayout) {
+        '720x1280@360,972x1728@440,1080x2448@440,1200x1920@320'
+    } else {
+        '720x1280@360,1080x1920@440,1080x2448@440,1200x1920@320'
+    }
+}
 
 if ([string]::IsNullOrWhiteSpace($RunRoot)) {
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -207,8 +215,10 @@ $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot '
 
     $state.status = 'ANDROID_RUNNING'
     $state | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $RunRoot 'WORKING_STATE.json') -Encoding utf8
-    Invoke-SanityMaven 'responsive-ui-sanity' ($common + @(
-        '-Dtest=WhistResponsivePlaySanityE2eTest',
+    $testClass = if ($DenseLayout) { 'WhistDenseLayoutE2eTest' } else { 'WhistResponsivePlaySanityE2eTest' }
+    $testLabel = if ($DenseLayout) { 'dense-layout-sanity' } else { 'responsive-ui-sanity' }
+    Invoke-SanityMaven $testLabel ($common + @(
+        "-Dtest=$testClass",
         '-Datf.android.enabled=true',
         "-Datf.android.artifacts=$artifacts",
         "-Datf.android.serial=$Serial",
@@ -218,7 +228,11 @@ $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot '
         "-Datf.android.sanity.includeGameFlow=$($IncludeGameFlow.IsPresent.ToString().ToLowerInvariant())",
         "-Datf.android.sanity.hardAiCompatibility=$($HardAiCompatibility.IsPresent.ToString().ToLowerInvariant())"))
 
-    $report = Join-Path $artifacts 'responsive-ui-sanity\responsive-ui-sanity.html'
+    $report = if ($DenseLayout) {
+        Join-Path $artifacts 'dense-layout\dense-layout.html'
+    } else {
+        Join-Path $artifacts 'responsive-ui-sanity\responsive-ui-sanity.html'
+    }
     if (-not (Test-Path -LiteralPath $report -PathType Leaf)) {
         throw "The E2E report was not published: $report"
     }

@@ -19,10 +19,6 @@ import java.util.Random;
 import java.util.Set;
 
 public final class GameSession {
-    private static final List<String> AI_NAMES =
-            java.util.Collections.unmodifiableList(
-                    java.util.Arrays.asList("Ava", "Miles", "Grace", "Noah", "Lily"));
-
     private final GameConfig config;
     private final List<Integer> handSizes;
     private final List<Player> players;
@@ -47,9 +43,10 @@ public final class GameSession {
         this.handSizes = GameRules.handSizes(config.mode(), config.playerCount());
         this.players = new ArrayList<>(config.playerCount());
         this.scoreHistory = ScoreHistory.newMatch(config.playerCount());
-        players.add(new Player(0, "You", true));
+        var names = ro.whistlab.core.player.PlayerNames.forMatch(config.playerCount(), "You", config.seed());
+        players.add(new Player(0, names.get(0), true));
         for (int seat = 1; seat < config.playerCount(); seat++) {
-            players.add(new Player(seat, AI_NAMES.get(seat - 1), false));
+            players.add(new Player(seat, names.get(seat), false));
         }
         dealerSeat =
                 config.mode().usesTurnedTrump()
@@ -61,6 +58,20 @@ public final class GameSession {
         GameSession session = new GameSession(config);
         session.beginHand();
         return session;
+    }
+
+    public static GameSession newGame(GameConfig config, String humanName) {
+        GameSession session = newGame(config);
+        var names = ro.whistlab.core.player.PlayerNames.forMatch(config.playerCount(), humanName, config.seed());
+        for (int seat = 0; seat < names.size(); seat++) session.players.get(seat).name = names.get(seat);
+        return session;
+    }
+
+    public void renameHuman(String name) {
+        String normalized = ro.whistlab.core.player.PlayerNames.normalize(name);
+        if (players.stream().anyMatch(player -> !player.human && player.name.equalsIgnoreCase(normalized)))
+            throw new IllegalArgumentException("That name is already used at this table");
+        players.get(0).name = normalized;
     }
 
     public static GameSession fromDeal(
@@ -285,7 +296,7 @@ public final class GameSession {
                 history,
                 turnedCard,
                 config.streakBonuses(),
-                config.streakBonusPoints());
+                config.streakBonusPoints(), config.streakPenaltyPoints());
     }
 
     public SaveState saveState() {
@@ -384,7 +395,7 @@ public final class GameSession {
                                 player.bid,
                                 handSize,
                                 player.streak,
-                                config.streakBonusPoints());
+                                config.streakBonusPoints(), config.streakPenaltyPoints());
                 player.score += result.totalPoints();
                 player.streak = result.nextStreak();
                 player.streakPoints = result.streakPoints();
@@ -412,7 +423,7 @@ public final class GameSession {
 
     private static final class Player {
         private final int seat;
-        private final String name;
+        private String name;
         private final boolean human;
         private final List<Card> hand = new ArrayList<>();
         private Integer bid;
@@ -474,7 +485,31 @@ public final class GameSession {
             List<PlayedCard> history,
             Card turnedCard,
             boolean streakBonuses,
+            int streakBonusPoints, int streakPenaltyPoints) {
+        /** Legacy projections retain their historical five-point penalty. */
+        public Snapshot(
+            GamePhase phase,
+            int handIndex,
+            int handNumber,
+            int handSize,
+            Trump trump,
+            int dealerSeat,
+            int biddingSeat,
+            int currentSeat,
+            int bidsSubmitted,
+            int bidTotal,
+            List<PlayerSnapshot> players,
+            List<PlayedCard> currentTrick,
+            List<PlayedCard> lastTrick,
+            int lastTrickWinnerSeat,
+            boolean finalHand,
+            GameMode mode,
+            List<PlayedCard> history,
+            Card turnedCard,
+            boolean streakBonuses,
             int streakBonusPoints) {
+            this(phase, handIndex, handNumber, handSize, trump, dealerSeat, biddingSeat, currentSeat, bidsSubmitted, bidTotal, players, currentTrick, lastTrick, lastTrickWinnerSeat, finalHand, mode, history, turnedCard, streakBonuses, streakBonusPoints, 5);
+        }
         public Snapshot {
             players = ImmutableLists.copy(players);
             currentTrick = ImmutableLists.copy(currentTrick);

@@ -3,7 +3,7 @@ param(
     [string]$EvidenceRoot = 'C:\work\whist_back\offline-mock'
 )
 $ErrorActionPreference = 'Stop'
-$projectRoot = 'C:\work\1\atf_j4'
+$projectRoot = Split-Path -Parent $PSScriptRoot
 $repo = Join-Path $projectRoot 'whist-lab-app'
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $run = Join-Path $EvidenceRoot "strategy-profiles-romanian181-$stamp-seed$Seed"

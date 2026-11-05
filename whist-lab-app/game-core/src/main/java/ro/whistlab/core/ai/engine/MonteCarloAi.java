@@ -43,7 +43,23 @@ public final class MonteCarloAi {
             List<PlayedCard> history,
             Card turnedCard,
             boolean streakBonuses,
+            int streakBonusPoints, int streakPenaltyPoints) {
+        /** Legacy projections retain their historical five-point penalty. */
+        public View(
+            GameMode mode,
+            Trump trump,
+            int seat,
+            int dealer,
+            int handSize,
+            List<Card> hand,
+            List<Seat> seats,
+            List<PlayedCard> trick,
+            List<PlayedCard> history,
+            Card turnedCard,
+            boolean streakBonuses,
             int streakBonusPoints) {
+            this(mode, trump, seat, dealer, handSize, hand, seats, trick, history, turnedCard, streakBonuses, streakBonusPoints, 5);
+        }
         public View(
                 GameMode mode,
                 Trump trump,
@@ -157,7 +173,7 @@ public final class MonteCarloAi {
                 game.history(),
                 game.turnedCard(),
                 game.streakBonuses(),
-                game.streakBonusPoints());
+                game.streakBonusPoints(), game.streakPenaltyPoints());
     }
 
     public static int chooseBid(View view) {
@@ -624,7 +640,7 @@ public final class MonteCarloAi {
                                 bid,
                                 view.handSize(),
                                 view.seats().get(seat).streak(),
-                                view.streakBonusPoints())
+                                view.streakBonusPoints(), view.streakPenaltyPoints())
                         .totalPoints()
                 : GameRules.scoreDelta(won, bid, view.mode());
     }

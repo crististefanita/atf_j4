@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.localization.WhistUiTextTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-11-04T23:59:24.901Z" hostname="DESKTOP-BLFSO18" time="0.442">
+  <properties/>
+  <testcase name="unsetOrInvalidPreferenceDefaultsToEnglish" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.175"/>
+  <testcase name="cardFanStaysSingleRowAndScrollsOnlyWhenItsVisibleAdvanceCannotFit" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.009"/>
+  <testcase name="everyModeShowsTheExactScheduleLengthForThreeThroughSixPlayers" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.038"/>
+  <testcase name="configuredHumanNamesSurviveLanguageChangesWhileResetNamesStayLocalized" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.005"/>
+  <testcase name="homeAndSetupHeadingsStayConciseInBothLanguages" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.001"/>
+  <testcase name="centralBidGridAdaptsColumnsAndReservesSpaceForEveryRow" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.002"/>
+  <testcase name="trumpIndicatorShowsTheTurnedCardOrExplainsSuitOnlyRounds" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.146"/>
+  <testcase name="seatShowsNameSeparateFromBidAndTricksAndTurnBadgeIsLocalized" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.001"/>
+  <testcase name="biddingSummarySeparatesSubmittedCountFromBidTotal" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.017"/>
+  <testcase name="supportedHandsUseOneTallerFanRowUpToTheSeventeenCardRuleLimit" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.002"/>
+  <testcase name="ohHellHelpUsesTheActualScheduleAtFourAndSixSeats" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.001"/>
+  <testcase name="scoreTableUsesStableLocalizedColumnsAndAuditableRowValues" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.001"/>
+  <testcase name="bidSubmissionButtonUsesTheShortActionLabelInEachLanguage" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.001"/>
+  <testcase name="setupLabelsAndRuleDescriptionsAreAvailableInBothLanguages" classname="ro.whistlab.app.localization.WhistUiTextTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

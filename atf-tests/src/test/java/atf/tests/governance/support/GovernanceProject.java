@@ -45,11 +45,17 @@ public final class GovernanceProject {
             @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
                 String relative = relative(root, file);
                 if (attributes.isRegularFile() && (file.getFileName().toString().equalsIgnoreCase("README.md")
+                        || isLibraryGuide(root, file)
                         || relative.startsWith("docs/") && relative.endsWith(".md"))) result.add(file);
                 return FileVisitResult.CONTINUE;
             }
         });
         return result.stream().sorted().toList();
+    }
+
+    public static boolean isLibraryGuide(Path root, Path file) {
+        return file.getParent().equals(root.resolve("lib")) && Set.of("README.md", "README.Core.md",
+                "README.Reporting.md", "README.Console.md", "README.Mock.md").contains(file.getFileName().toString());
     }
 
     public static List<SourceFile> sources(Path root) throws Exception {

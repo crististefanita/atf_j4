@@ -39,6 +39,7 @@
                         <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
                         <testInclude>**/AndroidUiFlowReportPublisherTest.java</testInclude>
                         <testInclude>**/WhistResponsivePlaySanityE2eTest.java</testInclude>
+                        <testInclude>**/WhistDenseLayoutE2eTest.java</testInclude>
                     </testIncludes></configuration>
                 </plugin>
             </plugins></build>

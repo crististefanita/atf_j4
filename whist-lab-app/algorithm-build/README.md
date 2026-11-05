@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Această intrare Gradle construiește motorul și testele sale fără configurarea aplicației Android. [settings.gradle](settings.gradle) include directorul existent `game-core`; acesta deține sursele, dependențele și sarcinile de testare.
+Această intrare Gradle construiește modulele JVM fără configurarea aplicației Android. [settings.gradle](settings.gradle) include `game-core` și `ai-lab`; fiecare modul deține sursele, dependențele și verificările sale.
 
 Sunt necesare JDK 17 sau mai nou, lansatorul Gradle al proiectului și dependențele JVM în cache. Opțiunea `--offline` refuză dependențele lipsă; SDK-ul Android nu este necesar acestei intrări.
 
@@ -13,13 +13,14 @@ flowchart LR
     RUN[Lansator colecții] -->|izolează| COPY[Copie temporară]
     COPY -->|configurează| BUILD[Intrare JVM]
     BUILD -->|include| CORE[game-core]
+    BUILD -->|include| LAB[ai-lab]
     CORE -->|produce| RESULT[Rezultate native]
 ```
 
 <details>
 <summary>Legendă: o singură sursă a motorului</summary>
 
-Intrarea JVM folosește proiectul vecin, fără copierea lui într-un modul nou. `game-core` compilează producția separat de teste și adaugă jucătorul independent numai în setul de surse de test; lansatorul colecțiilor pregătește izolarea și arhivarea rezultatelor.
+Intrarea JVM folosește proiectele vecine. `game-core` consumă `ai-lab` numai prin dependența de test; sursele independente se compilează în modulul lor, iar lansatorul colecțiilor pregătește izolarea și arhivarea rezultatelor.
 
 </details>
 
@@ -35,7 +36,7 @@ Din rădăcina proiectului, [lansatorul colecțiilor](../../scripts/run-whist-co
 
 ## Folosirea directă a Gradle
 
-Într-o copie temporară proprie a directorului `whist-lab-app`:
+Din directorul `whist-lab-app` al unei copii temporare complete a proiectului:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon

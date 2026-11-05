@@ -12,7 +12,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
+Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 
 $root = [IO.Path]::GetFullPath($root)
 $referenceRun = [IO.Path]::GetFullPath($ReferenceRunRoot)
@@ -64,7 +64,7 @@ $referenceRecord = [ordered]@{
 Set-Content -LiteralPath (Join-Path $RunRoot 'reference-input.json') -Value $referenceRecord -Encoding utf8
 
 Copy-Item -LiteralPath (Join-Path $root 'pom.xml'), (Join-Path $root 'atf.yaml'), (Join-Path $root 'lib'), (Join-Path $root 'config') -Destination $stage -Recurse
-$modules = @('atf-test-kit', 'atf-mock', 'atf-validation', 'atf-console', 'atf-test-android', 'atf-tests')
+$modules = @(([xml](Get-Content -LiteralPath "$root\pom.xml" -Raw)).project.modules.module)
 foreach ($module in $modules) {
     & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "Could not stage J4 module $module." }

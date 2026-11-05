@@ -2,6 +2,7 @@ package atf.android.e2e.display.flow;
 
 import atf.android.e2e.activation.AndroidE2eTest;
 import atf.android.e2e.driver.AndroidUiDriver;
+import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 
 import atf.android.AdbClient;
 import atf.android.e2e.support.AndroidUiFlowReportPublisher;
@@ -18,12 +19,13 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.scrollUntilVisible;
+import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.checkCaptureSize;
 
 /** Audits the two previously missed intersections, using the actual rendered glyph bands and hit targets. */
 @AndroidE2eTest
 class WhistDenseLayoutE2eTest {
     private static final String PACKAGE = "ro.whistlab.app";
-    private record Profile(String id, String size, int density) { }
 
     @Test void thirteenIndicesAndNineBidChoicesRemainDistinctAcrossPortraitProfiles() throws Exception {
         var adb = AdbClient.fromSystemProperties();
@@ -42,15 +44,21 @@ class WhistDenseLayoutE2eTest {
             size = override(adb.run("shell", "wm", "size").output(), "size");
             density = override(adb.run("shell", "wm", "density").output(), "density");
             trace.beginPhase("TEST BODY");
-            for (var profile : List.of(new Profile("320dp", "720x1280", 360),
-                    new Profile("353dp", "972x1728", 440), new Profile("ROG7-logical", "1080x2448", 440),
-                    new Profile("600dp", "1200x1920", 320))) {
-                adb.run("shell", "wm", "size", profile.size).requireSuccess();
-                adb.run("shell", "wm", "density", Integer.toString(profile.density)).requireSuccess();
+            for (var profile : profiles(System.getProperty("atf.android.sanity.profiles"))) {
+                String profileSize = profile.width() + "x" + profile.height();
+                adb.run("shell", "wm", "size", profileSize).requireSuccess();
+                adb.run("shell", "wm", "density", Integer.toString(profile.density())).requireSuccess();
                 String xml = ui.restartToActivity(PACKAGE, ".MainActivity", "--ez", "debug_hand_fan_fixture", "true",
                         "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-                xml = ui.awaitDescriptionContaining("Your hand, 13 cards.", Duration.ofSeconds(15));
-                var capture = ui.capture(profile.id + "-13-indices"); evidence.addAll(capture);
+                xml = ui.awaitText("Whist · Descending", Duration.ofSeconds(15));
+                var titleCapture = ui.capture(profile.id() + "-game-title-before-hand-scroll");
+                evidence.addAll(titleCapture);
+                record(adb, profile, trace, profile.id() + " — game title before revealing the hand", titleCapture,
+                        List.of(check("Expected game title", "Whist · Descending",
+                                ui.hasText(xml, "Whist · Descending"),
+                                ui.hasText(xml, "Whist · Descending"))));
+                xml = scrollUntilVisible(adb, ui, profile, "Your hand, 13 cards.", true, 98);
+                var capture = ui.capture(profile.id() + "-13-indices"); evidence.addAll(capture);
                 var screenshot = capture.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow();
                 var image = ImageIO.read(screenshot.toFile());
                 int[] display = AndroidUiDriver.displayDimensions(adb.run("shell", "wm", "size").output());
@@ -58,9 +66,10 @@ class WhistDenseLayoutE2eTest {
                 var indices = ui.playingCardLabelBounds(xml).stream().sorted(Comparator.comparingInt(AndroidUiDriver.Bounds::left)).toList();
                 var faces = ui.handCardFaceBounds(xml).stream().sorted(Comparator.comparingInt(AndroidUiDriver.Bounds::left)).toList();
                 var checks = new ArrayList<AtfAssertion>();
-                checks.add(check("Effective display profile", profile.size + "@" + profile.density,
+                checks.add(check("Effective display profile", profileSize + "@" + profile.density(),
                         display[0] + "x" + display[1] + "@" + effectiveDensity(adb),
-                        profile.size.equals(display[0] + "x" + display[1]) && effectiveDensity(adb) == profile.density));
+                        profileSize.equals(display[0] + "x" + display[1])
+                                && effectiveDensity(adb) == profile.density()));
                 checks.add(check("13 indices include all four tens", "13; 10♠,10♥,10♣,10♦",
                         labels.stream().map(AndroidUiDriver.CardLabel::text).toList().toString(), labels.size() == 13 && labels.stream().map(AndroidUiDriver.CardLabel::text).toList()
                                 .containsAll(List.of("10♠", "10♥", "10♣", "10♦"))));
@@ -71,16 +80,24 @@ class WhistDenseLayoutE2eTest {
                             result.toString(), result.readable()));
                 }
                 checks.add(check("Complete card height inside viewport", "98 dp", "minimum px=" + faces.stream().mapToInt(b -> b.bottom() - b.top()).min().orElse(0),
-                        faces.stream().allMatch(face -> face.bottom() - face.top() >= Math.round(98 * profile.density / 160.0) - 1)));
+                        faces.stream().allMatch(face -> face.bottom() - face.top()
+                                >= Math.round(98 * profile.density() / 160.0) - 1)));
                 checks.add(check("Single row", "one top coordinate", labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().toList().toString(),
                         labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count() == 1));
-                record(trace, profile.id + " — all thirteen indices", capture, checks);
+                boolean faceRowVisible = faces.size() == 13 && faces.stream().allMatch(face ->
+                        face.top() >= 0 && face.bottom() <= display[1]
+                                && face.bottom() - face.top() >= Math.round(98 * profile.density() / 160.0) - 1);
+                checks.add(check("Thirteen full card faces are visible after recorded scrolling",
+                        "13 complete 98 dp faces", "fullFaces=" + faceRowVisible,
+                        faceRowVisible));
+                record(adb, profile, trace, profile.id() + " — all thirteen indices", capture, checks);
 
                 xml = ui.restartToActivity(PACKAGE, ".MainActivity", "--ez", "debug_nine_bids_fixture", "true",
                         "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-                xml = ui.awaitText("Place bid", Duration.ofSeconds(15));
-                capture = ui.capture(profile.id + "-9-bids"); evidence.addAll(capture);
+                xml = scrollUntilVisible(adb, ui, profile, "Place bid", false, 48);
+                capture = ui.capture(profile.id() + "-9-bids"); evidence.addAll(capture);
                 var seats = seats(ui, xml);
+                var bidZone = ui.boundsForDescriptionContaining(xml, "Choose your bid");
                 var controls = new ArrayList<AndroidUiDriver.Bounds>();
                 var bids = ui.numericButtonValues(xml);
                 for (int bid : bids) controls.add(ui.buttonBounds(xml, Integer.toString(bid)));
@@ -91,20 +108,28 @@ class WhistDenseLayoutE2eTest {
                 for (int i = 0; i < occupied.size(); i++) for (int j = i + 1; j < occupied.size(); j++) {
                     if (overlaps(occupied.get(i), occupied.get(j))) collisions++;
                 }
-                double scale = profile.density / 160.0;
+                double scale = profile.density() / 160.0;
                 boolean touch = controls.stream().allMatch(b -> b.right() - b.left() >= Math.floor(48 * scale)
                         && b.bottom() - b.top() >= Math.floor(48 * scale));
+                var human = ui.boundsForDescriptionContaining(xml, "You. Bid ");
+                int humanGap = human.top() - bidZone.bottom();
+                int upperGap = seats.stream().filter(seat -> !seat.equals(human)
+                                && seat.bottom() <= bidZone.top())
+                        .mapToInt(seat -> bidZone.top() - seat.bottom()).min().orElse(Integer.MIN_VALUE);
                 checks = new ArrayList<>(List.of(
                         check("Complete legal bid domain", "0..8", bids.toString(), bids.equals(java.util.stream.IntStream.rangeClosed(0, 8).boxed().toList())),
                         check("Four distinct seats", "4", seats.size(), seats.size() == 4),
                         check("No seat/control or control/control overlap", "0", collisions, collisions == 0),
                         check("All occupied regions remain inside the board", "inside", "regions=" + occupied.size(), occupied.stream().allMatch(b -> box(board).contains(box(b)))),
                         check("Accessible bid hit targets", ">=48 dp", "targets=" + controls.size() + "; full target=" + touch, touch)));
-                record(trace, profile.id + " — nine bids and four seats", capture, checks);
+                checks.add(check("Nine-bid selector remains closer to the human seat",
+                        "upper gap > human gap", "upper=" + upperGap + " px; human=" + humanGap + " px",
+                        upperGap > humanGap && humanGap >= 0));
+                record(adb, profile, trace, profile.id() + " — nine bids and four seats", capture, checks);
                 ui.selectBid(8);
                 String selected = ui.dump();
-                capture = ui.capture(profile.id + "-selected-bid"); evidence.addAll(capture);
-                record(trace, profile.id + " — select without moving seats", capture, List.of(
+                capture = ui.capture(profile.id() + "-selected-bid"); evidence.addAll(capture);
+                record(adb, profile, trace, profile.id() + " — select without moving seats", capture, List.of(
                         check("Bid 8 selected before confirmation", "selected", ui.isSelected(selected, "8"), ui.isSelected(selected, "8")),
                         check("Seat bounds stay fixed", digest(seats), digest(seats(ui, selected)), seats.equals(seats(ui, selected)))));
             }
@@ -128,15 +153,28 @@ class WhistDenseLayoutE2eTest {
         }
     }
 
-    private static void record(AndroidUiFlowTrace trace, String title, List<Path> evidence, List<AtfAssertion> checks) throws Exception {
-        boolean passed = checks.stream().allMatch(AtfAssertion::passed);
+    private static void record(AdbClient adb, ResponsiveDisplayProfile profile,
+            AndroidUiFlowTrace trace, String title, List<Path> evidence,
+            List<AtfAssertion> checks) throws Exception {
+        List<AtfAssertion> recordedChecks = new ArrayList<>(checks);
+        checkCaptureSize(adb, evidence, profile, recordedChecks);
+        boolean passed = recordedChecks.stream().allMatch(AtfAssertion::passed);
         trace.checkpoint("TEST BODY", trace.phaseSnapshots().stream().allMatch(value -> value.checkpoints().isEmpty()) ? "GIVEN" : "AND", title, "Rendered Android table",
                 evidence.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow(), List.of(new atf.reporting.ui.model.AtfUiActionRecord(trace.nextActionSequence(), "Inspect rendered geometry and pixels",
                         "Android table", "Visible, separate and legible regions", passed ? "All recorded comparisons passed" : "See failed comparison",
-                        0, passed ? AtfReportStatus.PASS : AtfReportStatus.FAIL, atf.reporting.ui.model.AtfUiEvidenceSource.OBSERVE)), checks,
+                        0, passed ? AtfReportStatus.PASS : AtfReportStatus.FAIL, atf.reporting.ui.model.AtfUiEvidenceSource.OBSERVE)), recordedChecks,
                 passed ? AtfReportStatus.PASS : AtfReportStatus.FAIL,
                 evidence.stream().filter(path -> path.toString().endsWith(".xml")).toList());
-        for (var check : checks) assertTrue(check.passed(), check.name() + ": " + check.actual());
+        for (var check : recordedChecks) assertTrue(check.passed(), check.name() + ": " + check.actual());
+    }
+    private static List<ResponsiveDisplayProfile> profiles(String configured) {
+        if (configured == null || configured.isBlank()) {
+            return List.of(new ResponsiveDisplayProfile(720, 1280, 360),
+                    new ResponsiveDisplayProfile(972, 1728, 440),
+                    new ResponsiveDisplayProfile(1080, 2448, 440),
+                    new ResponsiveDisplayProfile(1200, 1920, 320));
+        }
+        return ResponsiveDisplayProfile.parse(configured);
     }
     private static AtfAssertion check(String name, Object expected, Object actual, boolean passed) {
         return new AtfAssertion(name, String.valueOf(expected), String.valueOf(actual), passed);

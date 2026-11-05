@@ -11,6 +11,7 @@ Fiecare variantă are propriul contract pentru pachet, program, atu, licitare ș
 | Cum se joacă Whist românesc? | [Reguli în română](ATF_RulesRo.md) și [engleză](ATF_RulesEn.md). |
 | Ce schimbă nivelul jucătorului? | [Normal și Hard](ATF_Levels.md). |
 | Ce date păstrează fiecare mână încheiată? | [Istoricul scorului](ATF_ScoreHistory.md). |
+| Cum se configurează numele și se păstrează topurile? | [Profilul jucătorului și clasamentele locale](ATF_PlayerRecords.md). |
 
 ## Responsabilități
 

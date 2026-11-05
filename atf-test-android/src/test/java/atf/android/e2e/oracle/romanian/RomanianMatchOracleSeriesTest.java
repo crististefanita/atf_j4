@@ -11,6 +11,18 @@ import org.junit.jupiter.api.Test;
 
 @AtfComponentTest
 class RomanianMatchOracleSeriesTest {
+    @Test void symmetricPenaltiesAreVerifiedIndependentlyAndExposedToThePlayer() {
+        for (int magnitude : List.of(5,10)) {
+            var start = start(magnitude); start.put("streakPenaltyPoints", magnitude);
+            var actual = score(start,magnitude);
+            ((ObjectNode)actual.path("players").get(3)).put("streakPoints",-magnitude).put("totalScore",-1-magnitude);
+            var oracle = new RomanianMatchOracle(start,4,3,new int[4],"EXPERT",new int[]{4,4,-4,-4},true,magnitude,magnitude);
+            assertTrue(oracle.verify(actual).stream().allMatch(a -> a.passed()));
+            assertEquals(magnitude, WhistChallenger.position(start,0).streakPenaltyPoints());
+            actual.put("streakPenaltyPoints", magnitude == 5 ? 10 : 5);
+            assertTrue(oracle.verify(actual).stream().anyMatch(a -> !a.passed()));
+        }
+    }
     @Test void originalFiveAndSelectedTenReconcileTheSameCardsWithDifferentPositiveBonuses(){for(int value:List.of(5,10)){var start=start(value);var oracle=new RomanianMatchOracle(start,4,3,new int[4],"EXPERT",new int[]{4,4,-4,-4},true,value);assertTrue(oracle.start(start).stream().allMatch(a->a.passed()));assertTrue(oracle.verify(score(start,value)).stream().allMatch(a->a.passed()));assertArrayEquals(new int[]{7+value,5+value,5,-6},oracle.totals());assertArrayEquals(new int[]{0,0,1,0},oracle.streaks());}}
     @Test void wrongMenuValueCounterBonusOrCumulativeScoreIsRejectedByTheIndependentOracle(){for(String corruption:List.of("option","counter","bonus","total")){var start=start(10);var actual=score(start,10);switch(corruption){case "option"->actual.put("streakBonusPoints",5);case "counter"->((ObjectNode)actual.path("players").get(0)).put("streak",4);case "bonus"->((ObjectNode)actual.path("players").get(0)).put("streakPoints",5);case "total"->((ObjectNode)actual.path("players").get(0)).put("totalScore",12);}var oracle=new RomanianMatchOracle(start,4,3,new int[4],"EXPERT",new int[]{4,4,-4,-4},true,10);assertTrue(oracle.verify(actual).stream().anyMatch(a->!a.passed()),corruption);}}
     @Test void playerProjectionIncludesOnlyPublicSeriesConfigurationAndCounters(){var start=start(10);var p=WhistChallenger.position(start,0);assertTrue(p.streakBonuses());assertEquals(10,p.streakBonusPoints());assertEquals(List.of(4,4,-4,-4),p.seats().stream().map(ro.whistlab.coach.IndependentPlayer.Seat::streak).toList());}

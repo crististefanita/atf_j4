@@ -27,6 +27,6 @@ Arhiva păstrează proveniența, partiția și integritatea datelor. O selecție
 - Seturile pentru dezvoltare, referință și evaluare rezervată au roluri explicite.
 - Repetițiile fără lecții noi pot fi scoase din selecția activă fără a pierde registrul originii.
 - Referințele către selecția activă se actualizează separat de datele partidelor.
-- Documentele stabile conțin reguli și limite; scorurile, exemplele și evaluările editoriale apar în arhiva externă.
+- Documentele stabile conțin reguli și limite; scorurile de rulare, exemplele extrase din partide și evaluările editoriale apar în arhiva externă.
 
 [Arhitectura învățării](../ai/README.md) · [Guvernanța documentației](../governance/ATF_Documentation.md)

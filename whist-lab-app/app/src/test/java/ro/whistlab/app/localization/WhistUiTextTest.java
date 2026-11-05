@@ -164,7 +164,7 @@ public final class WhistUiTextTest {
         assertEquals("Won", english.scoreColumnTricks());
         assertEquals("Hand", english.scoreColumnHand());
         assertEquals("Total", english.scoreColumnTotal());
-        assertEquals("You | Bid: 1 | Tricks won: 1 | Hand: +11 | Total: 11",
+        assertEquals("Player | Bid: 1 | Tricks won: 1 | Hand: +11 | Total: 11",
                 english.scoreLine(player, 11));
         assertEquals("Jucător", romanian.scoreColumnPlayer());
         assertEquals("Lic.", romanian.scoreColumnBid());
@@ -194,5 +194,15 @@ public final class WhistUiTextTest {
                 .cardLabel(new Card(Suit.SPADES, 14)));
         assertEquals("As de pică", new WhistUiText(HowToPlay.Language.RO)
                 .cardLabel(new Card(Suit.SPADES, 14)));
+    }
+
+    @Test public void configuredHumanNamesSurviveLanguageChangesWhileResetNamesStayLocalized() {
+        var named = new GameSession.PlayerSnapshot(0, "Cristi", true, List.of(), null, 0, 0);
+        var reset = new GameSession.PlayerSnapshot(0, "You", true, List.of(), null, 0, 0);
+        var english = new WhistUiText(HowToPlay.Language.EN);
+        var romanian = new WhistUiText(HowToPlay.Language.RO);
+        assertEquals("Cristi", english.playerName(named)); assertEquals("Cristi", romanian.playerName(named));
+        assertEquals("You", english.playerName(reset)); assertEquals("Tu", romanian.playerName(reset));
+        assertTrue(english.tenPoints().contains("±10")); assertTrue(romanian.fivePointsOriginal().contains("±5"));
     }
 }

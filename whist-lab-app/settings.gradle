@@ -17,4 +17,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "whist-lab-app"
-include(":game-core", ":app")
+include(":game-core", ":ai-lab", ":app")

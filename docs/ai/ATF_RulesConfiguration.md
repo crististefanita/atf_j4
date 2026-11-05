@@ -10,7 +10,7 @@ O regulă definește condiția, acțiunea și limitele ei. O pondere are sens nu
 | Manifest legat de cod | Condiții, priorități, surse și teste | Documentează și verifică implementarea declarată. |
 | Parametru de estimator | Buget, mix de continuare sau prag de departajare | Influențează calculul numai prin consumatorul implementat. |
 | Catalog de tipare | Clase de combinații, indicii și statut | Descriere pentru cercetare, cu activare runtime explicită. |
-| Model învățat | Caracteristici, coeficienți, dispersie și identitate | Produce estimări prin cod generat sau încărcare definită. |
+| Model învățat | Caracteristici, coeficienți, dispersie și identitate | Produce estimări numai prin consumatorul implementat și domeniul calificat. |
 | Date de experiment | Partide, selecții concrete și rezultate | Intrări externe pentru dezvoltare și evaluare. |
 
 ## Cine consumă manifestele
@@ -43,6 +43,8 @@ Manifestele AI curente nu formează un interpretor general de reguli YAML. Fieca
 
 ## Cum se schimbă influența unei reguli
 
+Tabelul separă mecanisme posibile; nu afirmă că fiecare este activ în toate domeniile. [Modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor) precizează că modelul condiționat de o carte este activ, iar ponderarea generală a distribuirilor pentru 2–8 cărți rămâne experimentală.
+
 | Mecanism | Ce se schimbă în joc | Ce rămâne fix în politica înghețată |
 |---|---|---|
 | Activare condițională | Condiția poate deveni adevărată sau falsă după o carte. | Regula și ordinea priorităților. |
@@ -63,7 +65,7 @@ scor_contextual(acțiune, stare) =
 
 Această formă descrie un model aditiv numai acolo unde codul îl implementează. Prioritățile lexicografice și filtrele de legalitate au alte semantici, iar indiciile care se suprapun nu se însumează automat.
 
-Modelul experimental de [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) ajustează densitatea prin dezechilibru, progres și oportunități. El are ramuri distincte pentru necesar zero, rezervă suficientă și necesitatea tuturor levatelor, cu ponderi fixe asupra unor caracteristici care evoluează.
+Definițiile necesarului, oportunităților și dezechilibrului sunt în [modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia). Modelul experimental de [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) ajustează densitatea prin dezechilibru, progres și oportunități. El are ramuri distincte pentru necesar zero, rezervă suficientă și necesitatea tuturor levatelor, cu ponderi fixe asupra unor caracteristici care evoluează.
 
 ```text
 ρ = clamp(necesar / oportunități, 0, 1)
@@ -75,7 +77,9 @@ Corecția contextuală se aplică doar în ramura eligibilă a modelului experim
 
 ## Inferența comportamentului
 
-[Modelul experimental de licitații](../../research/ai-bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) folosește coeficienți fixați și caracteristici ale mâinii ipotetice originale și prefixului disponibil atunci. Cărțile rămase și cele jucate de același loc se reunesc fără dublarea mesei curente.
+Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Modelul runtime specializat de o carte și fallback-ul său sunt documentate în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor); manifestele agregate care omit această delimitare au [criteriu de reconciliere](../feedback/ATF_Ai.md).
+
+[Modelul experimental de licitații](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) folosește coeficienți fixați și caracteristici ale mâinii ipotetice originale și prefixului disponibil atunci. Cărțile rămase și cele jucate de același loc se reunesc fără dublarea mesei curente.
 
 ```text
 μ = clamp(scală × θ · φ(mână_inițială, prefix), 0, mărime)
@@ -100,7 +104,7 @@ eșantion_efectiv = suma_ponderilor² / suma_pătratelor_ponderilor
 Licitațiile deja depuse rămân fapte publice, iar contractul propriu evaluat este ținta ipotetică a acelei alternative. Estimarea următorilor actori folosește ordinea licitării și prefixul disponibil în continuarea simulată.
 
 - Politica acceptată folosește estimatorul din `MonteCarloAi.biddingTargets` pentru contractele încă necunoscute.
-- [Modelul condiționat experimental](../../research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java) actualizează prefixul după fiecare predicție și respectă restricția ultimului ofertant.
+- [Modelul condiționat experimental](../../whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java) actualizează prefixul după fiecare predicție și respectă restricția ultimului ofertant.
 - Alegerea modului unei distribuții produce o singură continuare a licitației; integrarea tuturor licitațiilor viitoare este un mecanism diferit.
 - O predicție este context de simulare și nu devine observație reală sau dovadă despre cărțile adverse.
 

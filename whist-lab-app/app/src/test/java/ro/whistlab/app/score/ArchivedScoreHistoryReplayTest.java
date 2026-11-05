@@ -41,7 +41,7 @@ public class ArchivedScoreHistoryReplayTest {
         JSONObject profile = manifest.getJSONObject("profile");
         GameConfig config = new GameConfig(profile.getInt("seats"), GameMode.ROMANIAN_WHIST,
                 AiDifficulty.fromStoredName(profile.getString("difficulty")), Long.parseLong(result.getProperty("seed")),
-                hands.getJSONObject(0).getBoolean("seriesEnabled"), profile.getInt("seriesBonus"));
+                hands.getJSONObject(0).getBoolean("seriesEnabled"), profile.getInt("seriesBonus"), profile.optInt("seriesPenalty",5));
         GameSession game = GameSession.newGame(config);
         int moves = 0;
         for (int index = 0; index < hands.length(); index++) {

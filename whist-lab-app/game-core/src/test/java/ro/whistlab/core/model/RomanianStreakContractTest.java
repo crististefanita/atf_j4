@@ -15,7 +15,7 @@ import java.util.*;
 import org.junit.Test;
 import ro.whistlab.coach.IndependentPlayer;
 
-/** Original Instructions series semantics plus the user-selectable positive reward. */
+/** Compatibility contract for retained asymmetric profiles; symmetric games have their own component suite. */
 public class RomanianStreakContractTest {
     @Test public void rs01OriginalFifthExactContractAddsFiveAndResets(){assertEquals(new RomanianScoring.Result(7,5,0),RomanianScoring.score(2,2,3,4,5));}
     @Test public void rs02SelectedTenReplacesOnlyThePositiveSeriesReward(){assertEquals(new RomanianScoring.Result(7,10,0),RomanianScoring.score(2,2,3,4,10));assertEquals(new RomanianScoring.Result(-2,-5,0),RomanianScoring.score(0,2,3,-4,10));}
@@ -93,7 +93,7 @@ public class RomanianStreakContractTest {
     }
     private static GameSession.SaveState change(GameSession.SaveState s,int seat,int streak,int bonus){var players=new ArrayList<>(s.players());var p=players.get(seat);players.set(seat,new GameSession.PlayerState(p.seat(),p.name(),p.human(),p.hand(),p.bid(),p.tricksWon(),p.totalScore(),streak,bonus));return new GameSession.SaveState(s.config(),s.phase(),s.handIndex(),s.handSize(),s.dealerSeat(),s.biddingSeat(),s.currentSeat(),s.bidsSubmitted(),s.bidTotal(),s.trump(),s.lastTrickWinnerSeat(),players,s.currentTrick(),s.lastTrick(),s.history(),s.turnedCard());}
     private static GameSession fixture(int value,boolean enabled,int[] streaks){
-        var config=new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,11,enabled,value);
+        var config=new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,11,enabled,value,5);
         var deal=GameSession.fromDeal(config,List.of(List.of(new Card(Suit.SPADES,14),new Card(Suit.SPADES,13)),List.of(c(12),c(11)),List.of(c(10),c(9)),List.of(c(8),c(7))),Trump.SPADES,3).saveState();
         var players=deal.players().stream().map(p->new GameSession.PlayerState(p.seat(),p.name(),p.human(),p.hand(),p.bid(),p.tricksWon(),p.totalScore(),streaks[p.seat()],0)).toList();
         return GameSession.restoreComplete(new GameSession.SaveState(config,deal.phase(),19,2,deal.dealerSeat(),deal.biddingSeat(),deal.currentSeat(),0,0,deal.trump(),-1,players,List.of(),List.of(),List.of(),new Card(Suit.SPADES,7)));

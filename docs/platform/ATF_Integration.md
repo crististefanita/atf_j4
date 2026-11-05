@@ -21,12 +21,15 @@ Coordonatele selectează livrarea, iar identitatea fizică a binarului se verifi
 
 ## Principii
 
-- [POM-ul](../../pom.xml) este sursa coordonatelor și versiunilor efective.
-- Metadatele livrării și hash-ul binarului disting configurația declarată de octeții utilizați.
-- Un adaptor traduce datele domeniului către tipurile API, păstrând identitatea și rezultatul original.
-- Contractele consumerului urmăresc suprafața publică folosită și cazurile de refuz.
-- Îmbunătățirea generică a bibliotecii se solicită prin [rutarea feedback-ului](../feedback/README.md).
-- Actualizarea bibliotecii cere reconcilierea API-ului și a testelor consumerului înainte de integrare.
+[Consumul bibliotecilor comune](README.md) deține inventarul binar, identitatea fizică și limitele producător–consumator. Integrarea unui API urmează un traseu distinct:
+
+1. Identificați contractul public folosit și dependența efectivă din POM.
+2. Construiți adaptorul cu tipurile API și semantica domeniului păstrată explicit.
+3. Verificați cazul nominal și refuzurile prin acceptanța independentă a consumatorului.
+4. Reconciliați schimbarea API-ului cu configurația, binarul încărcat și adaptoarele afectate.
+5. Direcționați schimbarea generică prin [feedback](../feedback/README.md), păstrând local acceptanța contractului folosit.
+
+[CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) verifică integrarea comună. Contractele de domeniu și [auditul publicării](../reporting/ATF_Audit.md) adaugă propriile oracole.
 
 ## Modificări concurente
 

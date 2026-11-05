@@ -8,7 +8,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
-Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
+Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 if(!$RunRoot){$RunRoot='C:\work\whist_back\ai-validation\'+(Get-Date -Format yyyyMMdd-HHmmss)}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
 if(Test-Path -LiteralPath $RunRoot){throw 'Choose a fresh evidence folder; previous runs are retained.'}
@@ -17,7 +17,8 @@ $leasePath='C:\work\whist_back\android-ui-lease.json'
 $leaseId=[guid]::NewGuid().ToString('N');$leased=$false
 New-Item -ItemType Directory -Force $stage,"$RunRoot\accepted-components","$RunRoot\coverage","$RunRoot\rule-docs" | Out-Null
 Copy-Item -LiteralPath "$root\pom.xml","$root\lib" -Destination $stage -Recurse
-foreach($module in @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-test-android','atf-tests','whist-lab-app')){
+$sourceModules = @(([xml](Get-Content -LiteralPath "$root\pom.xml" -Raw)).project.modules.module)
+foreach($module in ($sourceModules + @('whist-lab-app'))){
     & robocopy "$root\$module" "$stage\$module" /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if($LASTEXITCODE -ge 8){throw "Staging failed: $module"}
 }

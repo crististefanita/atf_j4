@@ -60,9 +60,9 @@
 
 ## Serii opționale de cinci mâini
 
-- În meniu alegi înaintea jocului bonusul +5 sau +10 (implicit +10), ori dezactivezi seriile.
+- În meniu alegi înaintea jocului ±5 sau ±10 puncte pentru serii (implicit ±10), ori dezactivezi seriile.
 - Numai mâinile de 2–8 cărți avansează seria.
-- Al cincilea contract exact adaugă bonusul ales; a cincea ratare scade 5.
+- Al cincilea contract exact adaugă valoarea aleasă; a cincea ratare scade aceeași valoare.
 - Seria se resetează după acordare.
 - O mână de o carte nu avansează o serie de același tip, dar un rezultat opus o întrerupe.
 - Bonusul de serie este separat de cele 5 puncte ale fiecărui contract exact.

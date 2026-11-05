@@ -30,7 +30,7 @@ Ambele politici folosesc aceeași variantă și observație permisă. Motorul ve
 | Hard cu contract recuperabil | Prioritizează șansa estimată a exactului, punctele proprii și scorul rivalului principal. |
 | Hard cu imposibilitate publică | Protejează mai întâi punctele proprii estimate, apoi urmărește ratările adverse estimate. |
 
-Bugetele, departajările și domeniile certificate sunt definite în [manifestul obiectivelor](../../config/whist-play-objectives.yaml) și implementarea sa. Un certificat se aplică numai universului complet și continuărilor din domeniul permis; depășirea bugetului păstrează fallback-ul.
+[Modelul deciziei](../ai/ATF_DecisionModel.md#prioritatea-obiectivelor) deține ordinea criteriilor, domeniile și certificatele runtime. [Manifestul obiectivelor](../../config/whist-play-objectives.yaml) leagă intenția de implementare și componente; parametrii și condițiile exacte se citesc din cod.
 
 ## Informație și adaptare
 
@@ -38,7 +38,7 @@ Bugetele, departajările și domeniile certificate sunt definite în [manifestul
 - Cărțile proprii, cele jucate, masa și cartea întoarsă sunt excluse din pool-ul ipotetic necorespunzător.
 - Lipsurile de culoare demonstrate restrâng mâinile fezabile.
 - Licitațiile cunoscute sunt ținte de contract în continuările simulate.
-- Ponderarea generală a mâinilor prin probabilitatea licitației observate rămâne cercetare izolată.
+- La 2–8 cărți, ponderarea generală după comportamentul advers rămâne cercetare; licitarea de o carte are deja modelul condiționat specializat și fallback-ul descrise în [modelul deciziei](../ai/ATF_DecisionModel.md#estimarea-alternativelor).
 - O estimare Monte Carlo și un certificat finit au niveluri diferite de certitudine.
 
 ## Compatibilitate

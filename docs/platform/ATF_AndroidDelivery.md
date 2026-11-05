@@ -22,10 +22,11 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 
 ## Condiții de livrare
 
-- Citiți identitatea pachetului, SDK-urile și versiunea din configurația Gradle.
+- Citiți identitatea pachetului, SDK-urile și versiunea din [configurația Gradle a aplicației](../../whist-lab-app/app/build.gradle).
 - Construiți într-o copie temporară proprie, cu dependențe identificate.
+- Verificați API-urile Java disponibile pe platforma Android vizată; nivelul `sourceCompatibility` nu adaugă metode absente din sistem. Configurați explicit desugaring-ul bibliotecilor de bază dacă produsul depinde de el.
 - Verificați integritatea, semnătura, alinierea și compatibilitatea cheii pentru upgrade.
-- Păstrați configurația și identitatea rezultatului în registrul extern al livrării.
+- Păstrați APK-ul curent și rapoartele Extent care îi justifică verificarea în [registrul local de dovezi release](../../artifacts/reports/README.md). Rapoartele istorice și build-urile intermediare rămân în directoarele externe de lucru.
 - Verificați binarul instalat înainte de a atribui unui scenariu comportamentul acelei livrări.
 - Distingeți build-ul local de distribuția prin magazin și de gestionarea cheilor de distribuție.
 

@@ -22,18 +22,45 @@ import ro.whistlab.core.model.Trump;
 public final class GameSessionStore {
     private static final String PREFERENCES = "whist_lab_game";
     private static final String SAVE_KEY = "current_session_v1";
-    private static final int VERSION = 5;
+    private static final int VERSION = 6;
 
     private GameSessionStore() { }
 
     public static void save(Context context, GameSession game) {
+        save(context, game, true);
+    }
+
+    public static void save(Context context, GameSession game, boolean rankingEligible) {
+        save(context, game, rankingEligible, Long.toUnsignedString(game.config().seed()));
+    }
+
+    public static void save(Context context, GameSession game, boolean rankingEligible, String matchId) {
         try {
             JSONObject root = encode(game.saveState());
+            root.put("rankingEligible", rankingEligible);
+            root.put("matchId", matchId);
             boolean stored = preferences(context).edit().putString(SAVE_KEY, root.toString()).commit();
             if (!stored) throw new IllegalStateException("Android could not save the current game");
         } catch (JSONException failure) {
             throw new IllegalStateException("Could not encode the current game", failure);
         }
+    }
+
+    public static boolean rankingEligible(Context context) {
+        try {
+            String json = preferences(context).getString(SAVE_KEY, null);
+            return json == null || new JSONObject(json).optBoolean("rankingEligible", true);
+        } catch (JSONException invalid) { throw new IllegalStateException("Invalid saved eligibility", invalid); }
+    }
+
+    public static String matchId(Context context) {
+        try {
+            String encoded = preferences(context).getString(SAVE_KEY, null);
+            String id = encoded == null ? java.util.UUID.randomUUID().toString()
+                    : new JSONObject(encoded).optString("matchId", java.util.UUID.randomUUID().toString());
+            if (id.isBlank() || id.length() > 128) throw new IllegalStateException("Invalid saved match identity");
+            return id;
+        } catch (JSONException invalid) { throw new IllegalStateException("Invalid saved match identity", invalid); }
     }
 
     public static GameSession load(Context context) {
@@ -87,6 +114,7 @@ public final class GameSessionStore {
         root.put("seed", state.config().seed());
         root.put("streakBonuses", state.config().streakBonuses());
         root.put("streakBonusPoints", state.config().streakBonusPoints());
+        root.put("streakPenaltyPoints", state.config().streakPenaltyPoints());
         root.put("phase", state.phase().name());
         root.put("handIndex", state.handIndex());
         root.put("handSize", state.handSize());
@@ -135,7 +163,7 @@ public final class GameSessionStore {
     private static GameSession.SaveState decode(JSONObject root) throws JSONException {
         GameConfig config = new GameConfig(root.getInt("playerCount"),
                 savedMode(root.getString("mode")),
-                AiDifficulty.fromStoredName(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5));
+                AiDifficulty.fromStoredName(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5), root.getInt("version") >= 6 || root.has("streakPenaltyPoints") ? root.getInt("streakPenaltyPoints") : 5);
         JSONArray encodedPlayers = root.getJSONArray("players");
         List<GameSession.PlayerState> players = new ArrayList<>(encodedPlayers.length());
         for (int index = 0; index < encodedPlayers.length(); index++) {

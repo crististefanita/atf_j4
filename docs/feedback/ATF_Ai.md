@@ -8,10 +8,21 @@ Responsabilul politicilor Whist deține aceste criterii de cercetare și calific
 
 | Prioritate | Subiect | Stare și criteriu de închidere |
 |---|---|---|
-| P1 | Inferența cărților din licitații | Ponderarea generală după comportamentul fiecărui adversar rămâne experimentală. Activarea cere model identificat, suport legal, regularizare și progres separat pe loturi noi. |
+| P1 | Inferența cărților la 2–8 cărți | Ponderarea generală după comportamentul fiecărui adversar rămâne experimentală. Activarea cere model identificat, suport legal, regularizare și progres separat pe loturi noi. Modelul activ de o carte are domeniu separat. |
 | P1 | Interpretarea probabilităților | Eșantionarea fezabilă și o medie de simulare nu certifică uniformitate sau calibrare. Declarați distribuția, bugetul și incertitudinea înainte de a folosi estimarea ca probabilitate. |
 | P1 | Cost și progres strategic | Calificați licitarea și jocul pe mărimi de mână, roluri, adversari și locuri, cu surse înghețate și buget de calcul declarat. |
 | P2 | Reproductibilitate între contexte | Scorurile absolute influențează inițializarea estimatorului. O eventuală invarianță la translația comună a scorurilor cere o cerință explicită și o calificare separată. |
+
+## Coordonarea evaluării și delimitarea mecanismelor
+
+| Prioritate | Lacună demonstrabilă în sursă | Criteriu de închidere |
+|---|---|---|
+| P1 | [Runnerul](../../scripts/run-whist-collection.ps1) rezervă intervalul sub corpusul transmis și verifică identitatea exactă a fișierului de rezervare. | Registru canonic comun, refuzul suprapunerilor parțiale și al expunerii din alte corpusuri, cu probe negative și concurente. |
+| P1 | Cardinalitatea bazei fixată în același runner nu coincide cu inventarul curent al surselor active. | Migrare explicită a contractului candidatului și inventar complet verificabil, păstrând refuzul surselor necunoscute și hash-urile înghețate. |
+| P2 | Manifestele agregate pot descrie lipsa inferenței din licitații fără a distinge modelul specializat de o carte. | Domeniu explicit pentru fiecare afirmație și componente care leagă manifestul de calea runtime; păstrarea coeficienților și a comportamentului calificat. |
+| P2 | Selecția generică de focus după categorii nu are un consumator calificat în sursele curente. | Selector cu manifest părinte, subset și hash-uri verificate, criterii de acoperire și refuzul loturilor rezervate; până atunci rămâne propunere. |
+
+Contractele implementate sunt explicate în [modelul deciziei](../ai/ATF_DecisionModel.md), [colecții](../testing/ATF_Collections.md) și [selecția pentru învățare](../learning/ATF_Selection.md). Aceste criterii rămân deschise până la verificarea mecanismului cerut.
 
 ## Criterii pentru modelul de informație
 

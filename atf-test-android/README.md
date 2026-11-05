@@ -59,7 +59,20 @@ mvn -B -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockT
 
 [Ghidul Android](../docs/testing/ATF_Android.md) definește dispozitivul, rezervarea exclusivă, activarea și starea inițială. [Matricea de ecrane](../docs/testing/ATF_Display.md) deține profilurile, distribuțiile controlate și fluxul de joc opțional; [verificarea jocului](../docs/testing/ATF_Gameplay.md) deține regulile și scorul.
 
-Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea în PNG și interacțiunea observată. Scenariile de pe ecrane compacte aduc regiunea necesară în zona vizibilă înaintea comparației.
+Pentru o verificare vizuală scurtă, runnerul suportă `-DenseLayout` și
+`-Profiles`: fixture-ul cu 13 cărți și cel cu 9 licitații rulează numai pe
+profilele declarate, păstrează imaginile și ierarhiile în Extent și nu joacă o
+partidă. Exemplu din rădăcina proiectului:
+
+```powershell
+pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -DenseLayout -Profiles '720x1280@360'
+```
+
+Runnerul necesită PowerShell 7 (`pwsh`), fiindcă adaptorul de proces ADB folosește
+`ProcessStartInfo.ArgumentList`. Build-ul și raportul rămân în locațiile temporară
+și externă documentate.
+
+Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea în PNG și interacțiunea observată. Pe ecranele compacte, DenseLayout păstrează o captură a titlului, înregistrează derularea controlată și verifică apoi fețele întregi ale celor 13 cărți; nu pretinde că titlul și mâna încap simultan în primul viewport.
 
 ## Niveluri de testare
 

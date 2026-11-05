@@ -30,7 +30,7 @@ flowchart LR
 | Masă și licitare | [GameBoardLayout](table/GameBoardLayout.java), [TableGeometry](table/TableGeometry.java) și [BidGridMetrics](bidding/BidGridMetrics.java) măsoară locurile și regiunea centrală. |
 | Mână | [HandLayoutMetrics](hand/HandLayoutMetrics.java) calculează evantaiul; [CenteredHandView](hand/CenteredHandView.java) gestionează poziția inițială a derulării. |
 | Levată și atu | [TrickCardMetrics](table/TrickCardMetrics.java) ancorează cărțile după loc; [TrumpIndicatorView](table/TrumpIndicatorView.java) afișează informația despre atu. |
-| Scor | [ScoreHistoryColumn](score/ScoreHistoryColumn.java) proiectează valorile pentru un loc; [ScoreHistoryView](score/ScoreHistoryView.java) le afișează cu aceeași descriere accesibilă. |
+| Scor | [ScoreHistoryTable](score/ScoreHistoryTable.java) proiectează programul complet pentru toate locurile; [ScoreHistoryView](score/ScoreHistoryView.java) îl afișează cu descrieri accesibile. |
 | Salvare și ciclu Android | [GameSessionStore](persistence/GameSessionStore.java) deține schema salvării; [CompletedTrickPause](lifecycle/CompletedTrickPause.java) delimitează pauza levatei. |
 | Texte și stil | [WhistUiText](localization/WhistUiText.java) deține EN/RO; [WhistUiPalette](theme/WhistUiPalette.java) furnizează stilurile comune. |
 
@@ -44,13 +44,17 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 - Evantaiul ține cont de lățime, densitate, scara textului și banda măsurată a indicelui; conținutul care depășește fereastra păstrează derularea.
 - Selecția unei cărți rezervă spațiul ridicării și păstrează locul omului; decorul cărții aparține [CardFaceBackground](cards/CardFaceBackground.java).
 - Indicatorul de atu și locul activ folosesc stilurile comune; textul și descrierile accesibile completează diferențierea vizuală.
-- Istoricul păstrează selectorul și antetele deasupra rândurilor derulabile, începând cu mâna cea mai recentă.
+- Istoricul are toate locurile în același tabel cronologic, cu antete fixe la derularea verticală și deplasare orizontală comună.
 
 ## Istoricul scorului
 
-Coloana locului ales conține mâna, licitația cunoscută, punctele și totalul după încheiere. O licitație necunoscută are marcaj explicit, iar o salvare veche păstrează soldul de deschidere disponibil.
+Tabelul conține toate mâinile programate, iar fiecare loc are licitația cunoscută, punctele și totalul după încheiere. O licitație necunoscută are marcaj explicit, iar o salvare veche păstrează soldul de deschidere disponibil.
 
 Punctele sunt derivate de domeniu din soldurile istoricului. Schema curentă nu stochează separat levatele câștigate pentru fiecare mână încheiată; [contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie limita și evoluția ei.
+
+## Profil și clasamente
+
+[PlayerPreferences](profile/PlayerPreferences.java) păstrează numele preferat și limita de afișare. [HighScoreRepository](highscores/HighScoreRepository.java) actualizează topul local la încheiere, iar [contractul înregistrărilor](../../../../../../../../docs/game/ATF_PlayerRecords.md) definește partiționarea, exemplele marcate și prevenirea dublurilor.
 
 ## Cum verificăm
 
@@ -68,7 +72,7 @@ Dintr-o copie temporară proprie a `whist-lab-app`, cu JDK, SDK Android și depe
 
 Componentele geometrice verifică relații calculate. Captura fizică și interacțiunea cer acceptanța separată pe dispozitiv; oracolul raster are propriul domeniu și nu certifică singur calitatea estetică.
 
-- Fixture-ul mâinii de 13 cărți verifică fețele întregi și titlul jocului în același ecran inițial, fără derulare verticală. [Matricea de ecrane](../../../../../../../../docs/testing/ATF_Display.md) deține valorile responsive și criteriile raster, în acord cu politicile și componentele curente.
+- Fixture-ul mâinii de 13 cărți păstrează titlul într-o captură separată, înregistrează derularea controlată și verifică apoi toate fețele întregi, centrate jos. [Matricea de ecrane](../../../../../../../../docs/testing/ATF_Display.md) deține profilurile responsive și criteriile raster curente.
 - [DisplayFixtureDeals](fixtures/DisplayFixtureDeals.java) furnizează date deterministe, activate prin căile protejate de `BuildConfig.DEBUG` din activitate. Aceste stări servesc acceptanței și se disting de distribuțiile unei partide normale.
 
 [Aplicația](../../../../../../../README.md) · [Testarea Android](../../../../../../../../docs/testing/ATF_Android.md) · [Regulile jocului](../../../../../../../../docs/game/README.md)

@@ -40,7 +40,7 @@ Console și Mock nu depind de Reporting, Validation sau modulele aplicației. PO
 ## Identitate și integritate
 
 - [POM-ul rădăcină](../../pom.xml) selectează coordonatele și versiunile efective.
-- `lib` conține o singură pereche fizică JAR/POM pentru fiecare bibliotecă, direct în director, alături de README-ul dedicat.
+- `lib` conține o singură pereche fizică JAR/POM pentru fiecare bibliotecă, direct în director, alături de indexul README și cele patru ghiduri de utilizare.
 - `library-provenance.json` păstrează hash-urile, intrările producătorului, catalogul testelor native și referința acceptanței curente.
 - POM-ul încorporat în JAR coincide octet cu octet cu POM-ul publicat alăturat.
 - Sursele paralele, versiunile suplimentare, perechile incomplete și depozitele imbricate sunt refuzate.

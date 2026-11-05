@@ -1,0 +1,21 @@
+plugins {
+    id "java-library"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Tool tests stay opt-in and run from the repository root for declared CLI inputs.
+tasks.register("testTools", Exec) {
+    group = "verification"
+    description = "Runs the AI laboratory's offline Node component tests."
+    workingDir projectDir.parentFile.parentFile
+    def tests = fileTree("tools") { include "**/*.test.mjs" }.files.sort { it.path }
+    inputs.files(fileTree("tools"))
+    commandLine([providers.gradleProperty("nodeExecutable").getOrElse("node"),
+            "--test", "--test-concurrency=1"] + tests.collect { it.absolutePath })
+}
+
+tasks.named("check") { dependsOn tasks.named("testTools") }

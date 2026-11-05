@@ -14,7 +14,7 @@ Corpusul este o intrare externă pentru replay, selecție și analiză offline. 
 
 ```mermaid
 flowchart LR
-    FILE[Partidă externă] -->|validează| ORACLE[Validator independent]
+    FILE[Partidă externă] -->|alimentează| ORACLE[Validator independent]
     ORACLE -->|admite în partiție| MANIFEST[Manifest verificat]
     MANIFEST -->|selectează explicit| REPLAY[Replay și analiză]
     REPLAY -->|proiectează| OBS[Observații pentru diagnostic]
@@ -33,17 +33,17 @@ Validatorul poate verifica proprietatea tuturor cărților după încheierea joc
 - Heldout este rezervat evaluării candidatului înghețat și se înregistrează ca expus la deschidere.
 - Reference păstrează intrări de compatibilitate; ele nu justifică o afirmație despre puterea actuală a unei politici.
 - Repetările aceleiași distribuții sau urme nu se numără drept observații independente.
-- Seed-ul se serializează fără pierderea preciziei tipului Java long.
+- În schema partidei, seed-ul este șir zecimal exact; parserul nu îl convertește printr-un număr JavaScript care ar pierde precizia tipului Java long.
 - Identitatea, partiția, căile și SHA-256 se verifică înainte de utilizare.
 
 ## Utilizare
 
-[Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ. [Validatorul](../../scripts/whist-corpus.mjs) verifică regulile și scorul, iar [selectorul activ](../../scripts/whist-active-corpus.mjs) controlează selecția.
+[Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ. [Validatorul](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs) verifică regulile și scorul, iar [selectorul activ](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) controlează selecția.
 
 ```powershell
 $gamePath = Read-Host 'Fișierul JSON extern pentru replay'
-node scripts/whist-corpus-cli.mjs replay $gamePath
-node scripts/whist-active-corpus.mjs verify-current
+node whist-lab-app/ai-lab/tools/corpus/whist-corpus-cli.mjs replay $gamePath
+node whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs verify-current
 ```
 
 [Criteriile selecției](ATF_Selection.md) și [protocolul evaluării](README.md) explică folosirea corpusului pentru îmbunătățirea politicilor.

@@ -64,7 +64,7 @@ class CompleteRomanianExpertE2eTest {
             var schedule=RomanianMatchOracle.schedule(4);
             for(int h=0;h<limit;h++){
                 String prefix=String.format("ro-h%02d",h+1);if(h>0)start=stable(adb);
-                RomanianMatchOracle oracle=new RomanianMatchOracle(start,h,(initialDealer+h)%4,totals,level,streaks,seriesReward!=0,seriesReward==0?5:seriesReward);
+                RomanianMatchOracle oracle=new RomanianMatchOracle(start,h,(initialDealer+h)%4,totals,level,streaks,seriesReward!=0,seriesReward==0?5:seriesReward,seriesReward==0?5:seriesReward);
                 checks=new ArrayList<>(oracle.start(start));RomanianMatchOracle.equal(checks,"Same normal match seed",seed,start.path("seed").asLong());
                 int size=schedule.get(h);String optionXml=ui.dump();
                 int sum=start.path("bidTotal").asInt();boolean last=start.path("bidsSubmitted").asInt()==3;

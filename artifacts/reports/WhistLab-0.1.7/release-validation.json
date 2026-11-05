@@ -1,0 +1,88 @@
+{
+  "release": {
+    "versionName": "0.1.7",
+    "versionCode": 8,
+    "packageName": "ro.whistlab.app",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "apkRelativePath": "../../../dist/WhistLab-0.1.7.apk",
+    "apkSha256": "14e88358e342ee5e8a123389a88e7ec1908d3a178c43b3381c216642f47c0b9b",
+    "signingCertificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+    "signatureSchemes": [
+      "v2",
+      "v3"
+    ],
+    "zipalign": "PASS"
+  },
+  "build": {
+    "stage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_J4_CURRENT_ead5b70b1220456fb2c35de6e0229224",
+    "tasks": [
+      ":app:testDebugUnitTest",
+      ":app:assembleDebug",
+      ":app:assembleRelease"
+    ],
+    "releaseLint": "PASS",
+    "appUnit": {
+      "tests": 54,
+      "passed": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    }
+  },
+  "atf": {
+    "preflight": {
+      "tests": 18,
+      "passed": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "classes": {
+        "ResponsiveDisplayProfileComponentTest": 5,
+        "AndroidUiDriverComponentTest": 4,
+        "AndroidUiFlowReportPublisherTest": 9
+      }
+    },
+    "responsiveE2e": {
+      "run": "20261105-022000-responsive-ui-017-retry1",
+      "status": "PASS",
+      "tests": 1,
+      "checkpoints": 16,
+      "assertions": 116,
+      "profiles": [
+        "720x1280@360",
+        "1080x2448@440"
+      ],
+      "installedDebugApkSha256": "7a9187305423812fd3def4f3e42da4020ac3b88ab239a0644d1c1b87dc24d6ac"
+    },
+    "denseLayoutE2e": {
+      "run": "20261105-023500-dense-layout-017-retry2",
+      "status": "PASS",
+      "tests": 1,
+      "checkpoints": 4,
+      "assertions": 35,
+      "profile": "720x1280@360"
+    },
+    "extentBrowserRendering": "NOT_CHECKED - file protocol was blocked by connected browser policy; HTML structure, statuses, embedded images and exported PNG/XML evidence were inspected statically"
+  },
+  "releaseSmoke": {
+    "status": "PASS",
+    "serial": "127.0.0.1:5555",
+    "api": 28,
+    "installedApkSha256": "14e88358e342ee5e8a123389a88e7ec1908d3a178c43b3381c216642f47c0b9b",
+    "installedHashMatchesBuild": true,
+    "mainActivity": "ro.whistlab.app/.MainActivity",
+    "activityLaunch": "OK",
+    "launchDurationMs": 1656,
+    "androidRuntimeFatalInCheckedTail": false,
+    "appDataCleared": false
+  },
+  "environmentLimits": {
+    "emulatorPhysicalDisplay": "1080x1920",
+    "logicalProfilesDoNotProvePhysicalPanel": true,
+    "rog7PhysicalDeviceTested": false,
+    "completeGamePlayed": false,
+    "gameCoreTest": "NOT_COMPLETED - earlier interrupted attempt reported AI failures in CertifiedContractRegressionTest, PublicSalvageTest, PromotedMasterLossTest"
+  }
+}

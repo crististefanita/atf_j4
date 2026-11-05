@@ -60,9 +60,9 @@
 
 ## Optional five-hand series
 
-- Before starting, choose a +5 or +10 series bonus in the menu (default +10), or disable series.
+- Before starting, choose ±5 or ±10 points for series (default ±10), or disable series.
 - Only 2–8-card hands advance a series.
-- The fifth exact contract adds the selected bonus; the fifth miss subtracts 5.
+- The fifth exact contract adds the selected value; the fifth miss subtracts the same value.
 - Reset after awarding.
 - A one-card hand does not advance a matching series, but an opposite outcome breaks it.
 - This bonus is separate from the 5 points awarded for each exact contract.

@@ -20,9 +20,11 @@ licitațiilor, restricția ultimei licitații și calculul scorului.
 Un contract românesc exact primește `5 + levate`; abaterea se penalizează cu
 numărul levatelor în plus sau în minus. Bonusul pentru o serie de cinci mâini eligibile
 reușite se alege înaintea partidei: **5 sau 10**, implicit **10**; seria de
-cinci ratări se penalizează cu **−5** când această opțiune este activă.
+cinci ratări se penalizează cu valoarea în oglindă: **−5 sau −10**.
 
-Interfața și instrucțiunile sunt disponibile în română și engleză.
+- Interfața și instrucțiunile sunt disponibile în română și engleză.
+- Numele omului se configurează din meniul inițial; adversarii primesc nume scurte aleatorii la fiecare partidă.
+- [Istoricul comun](docs/game/ATF_ScoreHistory.md) și [clasamentele locale](docs/game/ATF_PlayerRecords.md) păstrează separat evoluția partidei și cele mai bune rezultate.
 
 Jocul are două niveluri. **Normal** urmărește levatele licitate și evită să treacă peste contract. **Hard** evaluează șansa contractului din informația publică, apoi poate căuta ratări la adversari când limitele jocului îi arată că propriul contract a devenit imposibil.
 
@@ -56,11 +58,11 @@ Motorul deține regulile și tranzițiile. Aplicația deține interacțiunea, ia
 | `whist-lab-app/app` | Aplicația Android: configurare, masă, interacțiuni, salvare și localizare. |
 | `whist-lab-app/game-core` | Reguli, distribuire, licitare, levate, scor și politica de joc. |
 | `whist-lab-app/algorithm-build` | Construirea JVM a motorului pentru lucru offline, fără SDK Android. |
-| `whist-lab-app/ai-lab` | Experimente și evaluator independent; nu este inclus în aplicație. |
+| `whist-lab-app/ai-lab` | Modul JVM: jucător independent, unelte și experimente offline; dependență doar pentru teste. |
 | `atf-test-android` | Adaptor ADB, captură și temporizare Android, audituri reutilizabile, componente și E2E Whist Lab. |
 | `atf-test-kit`, `atf-validation` | Suportul comun al testelor, configurării și validării. |
 | `atf-tests` | Contracte ale adaptoarelor, integrarea bibliotecilor și guvernanța calității. |
-| `config`, `scripts` | Colecții, reguli declarative, selecție de partide și lansatoarele Whist Lab. |
+| `config`, `scripts` | Configurație declarativă și lansatoare comune; uneltele de domeniu sunt în modulele responsabile. |
 | `lib` | Biblioteci binare; versiunile efective sunt în POM, iar proveniența în `library-provenance.json`. |
 
 Aplicația se construiește cu Gradle; infrastructura de testare folosește Maven.
@@ -68,7 +70,7 @@ Sunt două procese de construire distincte, cu responsabilități și dependenț
 
 ## Început rapid offline
 
-Sunt necesare Java 21, PowerShell și Node.js pentru verificatoarele JSON.
+Sunt necesare Java 21, PowerShell 7 (`pwsh`) și Node.js pentru verificatoarele JSON.
 SDK-ul Android este necesar pentru aplicație și testele Android; verificările
 algoritmului au și o intrare JVM separată.
 

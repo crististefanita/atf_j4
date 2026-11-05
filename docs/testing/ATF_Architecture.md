@@ -54,11 +54,11 @@ Core, Reporting, Console și Mock sunt [biblioteci binare](../platform/README.md
 | Parcurs Android | [WhistLabGameplayE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabGameplayE2eTest.java) |
 | Calitatea surselor și documentelor | [AtfQualityGovernanceSuite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) |
 
-Bibliotecile binare nu apar ca module sursă în această matrice. Contractele lor de consum se verifică local, iar implementarea și testele native rămân la producător; [ghidul bibliotecilor comune](../platform/README.md) delimitează responsabilitățile.
-
 ## Motorul și interfața în Gradle
 
 Motorul folosește JUnit JVM prin [configurația proprie](../../whist-lab-app/game-core/build.gradle). Nu depinde de Test Kit și nu pretinde adnotările Maven.
+
+[ai-lab](../../whist-lab-app/ai-lab/README.md) este modul JVM consumat numai la testarea motorului. `:ai-lab:testTools` verifică uneltele Node.js ale laboratorului; experimentele păstrate sub `experiments` sunt excluse din sursele principale.
 
 | Zonă | Nivel semantic | Ce verifică | Execuție |
 |---|---|---|---|

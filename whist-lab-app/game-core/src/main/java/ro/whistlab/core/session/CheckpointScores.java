@@ -19,7 +19,9 @@ final class CheckpointScores {
         var phase = saved.phase();
         var players = saved.players();
         var recorded = saved.scoreHistory();
-        List<Integer> totals = players.stream().map(PlayerState::totalScore).toList();
+        List<Integer> totals = players.stream()
+                .map(PlayerState::totalScore)
+                .collect(java.util.stream.Collectors.toList());
         int completed = handIndex + (phase == GamePhase.SCORE ? 1 : 0);
         if (recorded == null) {
             List<Integer> opening = new ArrayList<>(totals);
@@ -48,7 +50,7 @@ final class CheckpointScores {
         for (int hand = recorded.priorHands() + 1; hand <= completed; hand++) {
             int size = handSizes.get(hand - 1);
             boolean series = config.streakBonuses() && size > 1;
-            int minimum = config.mode().isRomanian() ? -size - (series ? 5 : 0) : 0;
+            int minimum = config.mode().isRomanian() ? -size - (series ? config.streakPenaltyPoints() : 0) : 0;
             int maximum =
                     size
                             + (config.mode().isRomanian() ? 5 : 10)

@@ -7,8 +7,8 @@ Acest ghid formalizează indicii strategice pentru Whist românesc. Regulile joc
 | Sursă | Responsabilitate |
 |---|---|
 | [Catalogul de tipare](../../config/whist-hand-patterns.yaml) | Descrie clase de combinații, contextul relevant, aria indiciului și statutul cercetării. |
-| [Extragerea tiparelor](../../scripts/whist-hand-patterns.mjs) | Derivă descrieri și categorii din mâna vizibilă jucătorului. |
-| [Calibrarea](../../scripts/whist-heuristic-calibrate.mjs) | Analizează asocieri descriptive din jocurile alocate dezvoltării. |
+| [Extragerea tiparelor](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) | Derivă descrieri și categorii din mâna vizibilă jucătorului. |
+| [Calibrarea](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) | Analizează asocieri descriptive din jocurile alocate dezvoltării. |
 | [Manifestul contextual](../../config/whist-contextual-discard.yaml) | Leagă reguli condiționale, limite de informație, implementări și teste. |
 | [Obiectivele jucătorilor](../../config/whist-play-objectives.yaml) | Definește prioritățile Normal și Hard și distinge regulile active de experimente. |
 
@@ -32,9 +32,7 @@ Catalogul de tipare este marcat `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`, ia
 | Joc | Mâna proprie, toate contractele depuse, levatele câștigate, istoricul public, masa curentă, atuul și scorurile publice. |
 | Simulare | Numai lumi compatibile cu informația de mai sus; mâinile reale ale adversarilor rămân ascunse. |
 
-Necesarul semnat al unui jucător este contractul său minus levatele câștigate. O valoare pozitivă cere levate, zero cere evitarea lor, iar o valoare negativă arată depășirea contractului. Nevoile individuale se evaluează separat; dezechilibrul total al licitațiilor nu înlocuiește obiectivul realizabil al unui jucător.
-
-Numărul de levate încă posibile se calculează din cărțile rămase și din levata neterminată, numărată o singură dată. Necesarul raportat la oportunitățile rămase este un indicator contextual, nu o probabilitate de reușită.
+[Mărimile de stare](ATF_DecisionModel.md#starea-care-schimbă-decizia) definesc necesarul și oportunitățile. Interpretarea unui onor trebuie să folosească ținta individuală și ieșirile legale; puterea rangului sau dezechilibrul mesei nu sunt suficiente.
 
 ## Cum se interpretează observațiile
 
@@ -44,9 +42,9 @@ Calibrarea folosește numai datele permise pentru dezvoltare, grupează observa�
 
 ## YAML și experimente
 
-Rolul fiecărui YAML, ciclul de analiză și limita dintre regulile stabile și datele variabile sunt definite în [protocolul de învățare offline](../learning/README.md). Acest catalog exprimă doar clase generale de cărți și indicii; el nu este un jurnal de partide sau de rezultate.
+[Reguli și configurare](ATF_RulesConfiguration.md) deține rolurile și stările manifestelor, iar [protocolul offline](../learning/README.md) deține calificarea unui candidat. Catalogul de aici exprimă clase de cărți și indicii, fără a modifica politica prin simpla editare a YAML-ului.
 
-Partidele și rapoartele de evaluare rămân în directorul de dovezi din afara ATF. Un rezultat concret poate motiva o regulă, dar intră în documentația stabilă numai după ce a fost generalizat, justificat și acoperit prin teste.
+Calibrările produse, partidele și rezultatele sunt date externe. Parametrii versionați ai unui model identifică o implementare reproductibilă; activarea lor cere consumator și domeniu declarate.
 
 ## Legătura cu implementarea
 
@@ -56,8 +54,9 @@ Partidele și rapoartele de evaluare rămân în directorul de dovezi din afara 
 - [Independentul](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) folosește o implementare și o utilitate distincte; asemănarea numelui obiectivului nu dovedește echivalența politicilor.
 
 ```powershell
-node scripts/whist-hand-patterns-cli.mjs catalog <output.yaml>
-node --test scripts/whist-hand-patterns.test.mjs scripts/whist-heuristic-calibrate.test.mjs
+$output = Read-Host 'Fișierul YAML într-un director extern de rezultate'
+node whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns-cli.mjs catalog $output
+node --test whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.test.mjs whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.test.mjs
 ```
 
 Catalogul nu promite joc perfect sau acoperire exhaustivă a tuturor stărilor. Afirmațiile despre optimalitate necesită un certificat complet în domeniul său; estimările din simulare rămân estimări.

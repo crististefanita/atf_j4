@@ -68,26 +68,17 @@ Vizualizatorul păstrează proporțiile imaginii și oferă acces la dimensiunea
 
 ## Conținut autonom și bugete
 
-Cititorul trebuie să înțeleagă o verificare din HTML fără acces la checkout sau fișiere auxiliare. Contextul obligatoriu include regula aplicată, unitățile, intrarea comparată și limitele afirmației.
+HTML-ul trebuie să permită înțelegerea verificării fără acces la checkout: regula, unitățile, intrarea comparată, observația și limita afirmației rămân asociate proprietarului.
 
-| Suprafață | Invariantă |
-|---|---|
-| Comparații | Numele, valorile integrale și verdictul original rămân disponibile. |
-| Preview | Limita de afișare nu modifică valoarea evaluată. |
-| Fragmente | Părți JSON/TEXT complete, ordonate și legate de proprietarul inițial. |
-| Context opțional | Buget cumulativ, cu selecție și omisiuni explicite. |
-| Conținut obligatoriu | Datele necesare afirmației, cauza eșecului și capturile nu dispar prin selecția opțională. |
-| Refuz | Inputul incomplet sau indivizibil peste buget păstrează refuzul publicării complete. |
+[Politica prezentării](ATF_Presentation.md) deține selecția invocărilor, grupurile, fragmentele și bugetele. Captura originală și valorile care justifică rezultatul sunt date obligatorii; diagnosticul opțional are încadrare explicită.
 
-Checksum-ul descrie proveniența tehnică, fără să fie oracol de domeniu. Un link local, dump brut sau rezumat „replay reușit” nu înlocuiește comparațiile cerute în scopul publicat.
+Un hash dovedește identitatea octeților, fără a substitui oracolul de domeniu. Un link extern sau un rezumat al replay-ului nu înlocuiește comparațiile necesare scopului publicat.
 
 ## Timp și status
 
-- Execuția, dispatch-ul, capturarea, persistența trace-ului și publicarea au surse temporale distincte.
-- Intervalele originale aparțin flow-ului și fazei care le-au capturat.
-- Absența datelor vechi rămâne explicită; metadatele declarate și corupte sunt refuzate.
-- Republicarea păstrează identitatea și datele execuției originale.
-- Eșecul unei acțiuni, comparații sau al capturării nu este anulat de un apel ulterior de finalizare cu succes.
+[Contractul temporal](ATF_PhaseTiming.md) deține intervalele originale, axele și tratarea jurnalelor incomplete. [Predarea rezultatelor](ATF_Handoff.md) deține acceptanța unui scop și identitatea republicării.
+
+- Eșecul unei acțiuni, comparații sau capturi nu este anulat printr-o finalizare ulterioară cu succes.
 - Verdictul funcțional și rezultatul publicării sunt fapte distincte.
 - Zero invocări, date obligatorii lipsă sau numai SKIP nu închid un scop drept verificat.
 

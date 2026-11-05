@@ -1,11 +1,19 @@
-# Jucătorul independent pentru teste
+# Laboratorul AI și jucătorul independent
 
 ## Pe scurt
 
-Acest director este suport de test, fără importuri din motorul aplicației.
-[game-core/build.gradle](../game-core/build.gradle) îl include în sursele JVM de
-test; [POM-ul testelor Android](../../atf-test-android/pom.xml) îl include prin
-`generate-test-sources`. Nu este modul Android și nu este inclus în APK.
+Acest modul JVM reunește jucătorul independent, uneltele offline și experimentele AI. Sursele principale ale jucătorului rămân fără importuri din motor, Android sau ATF; experimentele au activare explicită și nu intră în artefactul principal.
+
+[game-core/build.gradle](../game-core/build.gradle) consumă modulul prin `testImplementation project(":ai-lab")`. [POM-ul Android](../../atf-test-android/pom.xml) compilează aceleași surse numai pentru acceptanța Maven; aplicația nu depinde de laborator în APK.
+
+## Organizarea modulului
+
+| Zonă | Responsabilitate |
+|---|---|
+| [src/main/java](src/main/java/) | Modelul independent și observația permisă actorului. |
+| [tools](tools/README.md) | Corpus, modele, diagnostic și calificare, cu teste Node.js alăturate. |
+| [experiments](experiments/) | Prototipuri și [surse alternative de licitare](experiments/bid-models/README.md), excluse din compilarea implicită. |
+| [build.gradle](build.gradle) | Limita Java a modulului și sarcina explicită `testTools`. |
 
 ## Intrare și informație disponibilă
 
@@ -59,7 +67,7 @@ Niciuna dintre acestea nu înseamnă un jucător perfect.
 
 ## Verificare și experimente
 
-Dintr-o copie temporară proprie a `whist-lab-app`:
+Din directorul `whist-lab-app` al unei copii temporare complete a proiectului:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:test --tests ro.whistlab.coach.IndependentPlayerModelTest --tests ro.whistlab.core.ai.engine.CertifiedContractRegressionTest --offline --no-daemon
@@ -71,5 +79,11 @@ verifică generatorul de distribuții, proprietatea cărților și modelele fini
 separă un certificat valid de lipsa garanției și de varianta de rezervă.
 
 Turneele se rulează numai prin colecțiile și protocoalele explicite din [lansator](../../scripts/run-whist-collection.ps1).
+
+Uneltele au verificare proprie, din aceeași copie temporară:
+
+```powershell
+.\gradlew.bat -p algorithm-build :ai-lab:check --offline --no-daemon
+```
 
 Păstrați separat cazurile de învățare, regresiile mici, sursa candidatului și partidele noi de evaluare. Corectitudinea unei componente sau un câștig într-o lume ipotetică nu reprezintă singure un progres al forței de joc. Alternativele externe nu schimbă sursele active și nu se promovează prin simpla trecere a unui test local.

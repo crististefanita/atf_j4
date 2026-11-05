@@ -30,6 +30,18 @@ O regulă stabilă are un singur document responsabil. Feedback-ul păstrează d
 
 Numele de orientare este `README.md`. Ghidurile descriptive folosesc `ATF_<PascalCase>.md`, cu nume scurt în contextul ariei; limba ori profilul se indică numai când disting contracte reale.
 
+## Contract unic și stadiu explicit
+
+Fiecare mecanism are un singur ghid responsabil pentru definiții și procedura completă. Un index sau un ghid vecin poate păstra sinteza necesară orientării, cu link către contract; formulele, inventarele și pașii se întrețin la proprietar.
+
+| Stadiu | Afirmație admisă |
+|---|---|
+| Implementat | Numește consumatorul, domeniul și limita din codul curent. |
+| Propus | Precizează mecanismul cerut, proprietarul și criteriul de calificare; rămâne distinct de capabilitatea existentă. |
+| Calificat | Identifică nivelul efectiv verificat; rezultatul și identitatea copiei se păstrează extern. |
+
+La o contradicție, confruntați codul și configurația, restrângeți afirmația la domeniul demonstrat și păstrați lacuna în feedback. O cerință de proces, un test structural trecut sau un câmp declarativ nu dovedesc singure implementarea mecanismului.
+
 ## Primul ecran
 
 | Întrebare | Conținut vizibil |

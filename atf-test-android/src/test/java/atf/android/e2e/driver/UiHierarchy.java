@@ -174,6 +174,7 @@ final class UiHierarchy {
                         .findFirst()
                         .orElseThrow(
                                 () -> new IllegalStateException("Screen has no scroll viewport"));
+        if (viewport.scrollable()) return false;
         int[] viewportBounds = bounds(viewport.bounds());
         return elements.stream()
                 .filter(
@@ -394,6 +395,7 @@ final class UiHierarchy {
                             Boolean.parseBoolean(element.getAttribute("clickable")),
                             Boolean.parseBoolean(element.getAttribute("enabled")),
                             Boolean.parseBoolean(element.getAttribute("selected")),
+                            Boolean.parseBoolean(element.getAttribute("scrollable")),
                             element.getAttribute("content-desc"),
                             element.getParentNode() instanceof Element parent
                                     ? parent.getAttribute("bounds")
@@ -456,6 +458,7 @@ final class UiHierarchy {
             boolean clickable,
             boolean enabled,
             boolean selected,
+            boolean scrollable,
             String description,
             String parentBounds) {}
 

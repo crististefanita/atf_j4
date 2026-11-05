@@ -37,20 +37,16 @@ Observația conține mâna actorului, contractele cunoscute, cărțile publice, 
 | Domeniu | Legalitate, distribuire, tranziții și scor | [game-core](../../whist-lab-app/game-core/README.md) |
 | Politică runtime | Licitare și alegerea cărții din observația permisă | `AiPolicy`, politicile Normal și `MonteCarloAi` |
 | Politică independentă | Model separat pentru verificare și comparații | [ai-lab](../../whist-lab-app/ai-lab/README.md) |
-| Corpus | Validarea jocurilor și selecția explicită a datelor de dezvoltare | [whist-corpus](../../scripts/whist-corpus.mjs), [whist-active-corpus](../../scripts/whist-active-corpus.mjs) |
+| Corpus | Validarea jocurilor și selecția explicită a datelor de dezvoltare | [whist-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs), [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) |
 | Tipare | Descrierea combinațiilor și calibrare descriptivă | [catalog și limite](ATF_HandPatternsRo.md) |
 | Experiment | Copie izolată, candidat identificat, comparații pereche | [runnerul colecțiilor](../../scripts/run-whist-collection.ps1), [arena](../learning/ATF_Arena.md) |
 | Promovare | Criterii fixate, lot neatins și păstrarea gărzilor de domeniu | [protocolul evaluării](../learning/README.md) |
 
 ## Rolul YAML-urilor
 
-| Manifest | Semnificație | Efect asupra execuției |
-|---|---|---|
-| [Obiective](../../config/whist-play-objectives.yaml) | Priorități Normal/Hard, condiții și teste asociate | Documentează comportamentul implementat; nu interpretează reguli arbitrare în timpul jocului. |
-| [Reguli contextuale](../../config/whist-contextual-discard.yaml) | Deducții certe, limite și ipoteze de cercetare | Leagă fiecare regulă de implementare și componentă. |
-| [Tipare de cărți](../../config/whist-hand-patterns.yaml) | Indicii contextuale cu statut explicit | Catalogul declară influență runtime zero până la un consumator implementat și promovat. |
+Manifestele leagă condiții și surse de verificare, iar efectul executabil depinde de consumatorul din cod. [Reguli și configurare](ATF_RulesConfiguration.md) este ghidul responsabil pentru statutul fiecărui manifest, parametrii fixați și activarea contextuală.
 
-O pondere are nevoie de definiția caracteristicii, domeniul ei, contextul de aplicare și un consumator de cod. Un fișier editat nu modifică implicit algoritmul; proprietatea `research_only` păstrează ipoteza în afara politicii acceptate.
+Catalogul de tipare rămâne un instrument de cercetare. [Ghidul onorurilor](ATF_HandPatternsRo.md) explică interpretarea lui, separat de politica runtime.
 
 ## Datele susțin mecanismul
 
@@ -79,16 +75,13 @@ Obligația de culoare sau atu permite deducții despre lipsa unei culori. Licita
 
 </details>
 
-Hard folosește contractele cunoscute drept ținte ale simulărilor și constrânge mâinile ipotetice prin cărțile publice și lipsurile deduse. Ponderarea generală a mâinilor ascunse prin probabilitatea licitației observate rămâne o ipoteză de cercetare, fără activare implicită în politica acceptată.
+La 2–8 cărți, Hard folosește contractele cunoscute ca ținte și constrânge lumile prin informația publică; ponderarea generală după comportamentul advers rămâne cercetare. La licitarea de o carte există deja un model specializat condiționat de ofertele observate, cu domeniu și fallback proprii, descris în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor).
 
 ## Condiții pentru progres
 
-1. Testul local dovedește proprietatea și cazurile în care ea încetează să fie valabilă.
-2. Comparația pereche controlează distribuția, locul, adversarii și bugetul de calcul.
-3. Rezultatul se separă după rol, loc și mărimea mâinii; un agregat favorabil nu compensează un criteriu obligatoriu eșuat.
-4. Candidatul și pragurile sunt înghețate înaintea lotului rezervat.
-5. Schimbările concurente invalidează calificarea copiei afectate și cer o nouă identitate de sursă.
-6. Promovarea actualizează codul, manifestele, regresiile și documentația generală în aceeași revizie.
+[Protocolul offline](../learning/README.md) deține ciclul diagnostic–componentă–candidat–evaluare rezervată–promovare. [Arena](../learning/ATF_Arena.md) deține comparațiile pe aceleași distribuții și locuri, iar [proiectarea componentelor](../testing/ATF_AiComponents.md) deține justificarea independentă a cazului mic.
+
+Schimbarea arhitecturii păstrează observația permisă și identitatea politicii evaluate. O modificare concurentă cere reconcilierea sursei înaintea calificării.
 
 ## Limite de transfer către alte sisteme
 

@@ -50,7 +50,7 @@ GameSession validează comenzile înaintea schimbării stării; UI-ul redă star
 |---|---|
 | [game-core](game-core/README.md) | Reguli, sesiune, scor, salvare și politica AI a aplicației; teste JVM. |
 | [app](app/src/main/java/ro/whistlab/app/) | Activitatea Android, configurarea mesei, prezentarea jocului și persistența locală. |
-| [ai-lab](ai-lab/README.md) | Jucător independent pentru teste; nu este inclus în APK. |
+| [ai-lab](ai-lab/README.md) | Modul JVM al jucătorului independent, uneltelor și experimentelor offline; consumat numai la testare. |
 | [algorithm-build](algorithm-build/README.md) | Intrare Gradle exclusiv JVM, fără configurarea aplicației Android. |
 | [atf-test-android](../atf-test-android/README.md) | Componente de verificare și scenarii Android activate explicit. |
 

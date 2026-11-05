@@ -54,6 +54,8 @@ La o extracție verificăm separat mutarea mecanică a logicii, observația perm
 
 ## Teste și învățare
 
+[Laboratorul AI](../../whist-lab-app/ai-lab/README.md) deține implementarea independentă, uneltele și experimentele. `game-core` îl consumă prin dependența Gradle de test, iar [lansatoarele comune](../../scripts/README.md) coordonează modulele fără a prelua algoritmii lor.
+
 | Zonă | Contract |
 |---|---|
 | Teste lângă regulă, sesiune sau politică | Proprietăți mici și așteptări independente, grupate după comportamentul verificat. |
@@ -78,6 +80,41 @@ O mutare schimbă identitatea sursei chiar când algoritmul și coeficienții r�
 | `atf.android.e2e.oracle`, `player`, `evidence` | Așteptări independente, proiecția actorului și capturarea datelor. |
 | `atf.android.e2e.display` și `gameplay` | Contracte vizuale și parcursuri de joc distincte. |
 | `atf.tests.contracts`, `learning`, `publishing`, `reporting.text` | Contracte de adaptor, selecție, compoziția publicării și compararea textului. |
+
+## Scenarii și suport de testare
+
+```mermaid
+flowchart LR
+    ENTRY[Metodă JUnit] -->|păstrează identitatea| SCENARIO[Scenariu de domeniu]
+    SCENARIO -->|comandă| DRIVER[Adaptor Android]
+    SCENARIO -->|înregistrează| TRACE[Flux de dovezi]
+    COMPONENT[Componentă offline] -->|verifică| OBSERVATION[Geometrie și analiză de cadre]
+    SCENARIO -->|confruntă| OBSERVATION
+    TRACE -->|este citit de| REPLAY[Replay tipizat]
+    NATIVE[Rezultate native] -->|se agregă în| COMPOSITION[Compunerea acceptanței]
+    REPLAY -->|alimentează| COMPOSITION
+```
+
+<details>
+<summary>Legendă: identitate stabilă și responsabilități distincte</summary>
+
+Metoda JUnit deține numele și metadatele cazului. Scenariul primește explicit proprietarul fluxului, astfel încât mutarea codului să nu schimbe identitatea dovezilor. Adaptorul execută interacțiuni; analiza imaginilor citește capturi. Verificarea unei componente a oracolului nu certifică randarea aplicației pe dispozitiv.
+
+</details>
+
+| Zonă | Responsabilitate |
+|---|---|
+| `gameplay.presentation`, `configuration`, `persistence`, `tricks` | Scenarii delimitate prin comportamentul verificat; metodele JUnit rămân puncte de intrare stabile. |
+| `support.flow` | Ținta aplicației, metadatele instalării și publicarea checkpoint-urilor. |
+| `display.support` | Geometrie comună, toleranțe explicite și comenzi de display trasate. |
+| `display.flow.responsive` | Coordonare, inspecții de meniu, parcurs de joc, stare vizibilă, dovezi și geometrie. |
+| `evidence.frames` | Colectarea cadrelor, analiza pixelilor și timpului, respectiv metadatele PNG fără alterarea pixelilor. |
+| `atf.tests.reporting.acceptance` | Citirea rezultatelor native și compunerea raportului de acceptanță. |
+| `atf.tests.reporting.replay` | Citirea fișierelor capturate și transformarea fluxurilor în intrări tipizate pentru raportare. |
+
+Clasele care citesc dovezi nu depind de coordonatorul raportului. Pragurile și toleranțele cu semnificații diferite rămân explicite, chiar dacă folosesc aceeași operație geometrică. Controalele de componentă confruntă date valide și mutanți invalizi; scenariile pe dispozitiv păstrează separat capturile și observațiile reale.
+
+La reorganizare verificăm identitățile descoperite de JUnit, ordinea operațiilor, aserțiunile și proprietarul fluxului. Schimbarea unei așteptări de acceptanță este o decizie distinctă de mutarea mecanică a codului.
 
 ## Evoluție și verificare
 

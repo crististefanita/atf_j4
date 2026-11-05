@@ -23,13 +23,49 @@ class DocumentationPolicyGovernanceTest {
         for (Path file : files) {
             assertFalse(file.getFileName().toString().matches("ATF_Reporting_J[0-9]+_Verification\\.md"),
                     () -> "Release chronology belongs in the external archive: " + file);
-            if (file.getFileName().toString().equalsIgnoreCase("README.md")) {
+            if (file.getFileName().toString().equalsIgnoreCase("README.md") || GovernanceProject.isLibraryGuide(root, file)) {
                 assertFalse(hasEnglishReadmeProse(Files.readString(file)), () -> "README prose must be Romanian: " + file);
             }
             String prose = deploymentProse(Files.readString(file));
+            prose = libraryMaintenanceProse(GovernanceProject.relative(root, file), prose);
             if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
             assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
                     () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
+        }
+    }
+
+    /** Only the named library guides may route maintenance to the source owner, in their footer. */
+    static String libraryMaintenanceProse(String relative, String source) {
+        if (!java.util.Set.of("lib/README.md", "lib/README.Core.md", "lib/README.Reporting.md",
+                "lib/README.Console.md", "lib/README.Mock.md").contains(relative)) return source;
+        String text = source.replace("\r\n", "\n");
+        int footer = relative.equals("lib/README.md") ? text.indexOf("\n## Mentenanță și feedback\n") : text.lastIndexOf("\n---\n");
+        if (footer < 0) return text;
+        return text.substring(0, footer) + text.substring(footer).replaceAll("(?<![A-Za-z0-9_])(?:atf_j0|J0)(?![A-Za-z0-9_])", "responsabil");
+    }
+
+    @Test void libraryMaintenanceFooterDoesNotExemptBodyOtherOwnersOrOtherFiles() {
+        String index = "## Pe scurt\nJ0 în corp\n## Mentenanță și feedback\natf_j0 și J0; J1 rămâne vizibil";
+        String filtered = libraryMaintenanceProse("lib/README.md", index);
+        assertTrue(filtered.contains("J0 în corp")); assertFalse(filtered.contains("atf_j0 și J0")); assertTrue(filtered.contains("J1 rămâne vizibil"));
+        String guide = "## Pe scurt\nJ0 în corp\n---\natf_j0 și J0; J2 rămâne vizibil";
+        for (String name : List.of("Core", "Reporting", "Console", "Mock")) {
+            filtered = libraryMaintenanceProse("lib/README." + name + ".md", guide);
+            assertTrue(filtered.contains("J0 în corp")); assertFalse(filtered.contains("atf_j0 și J0")); assertTrue(filtered.contains("J2 rămâne vizibil"));
+        }
+        for (String name : List.of("docs/README.md", "lib/verification.md", "lib/README.Other.md")) assertEquals(guide, libraryMaintenanceProse(name, guide));
+        assertEquals("J0 în corp", libraryMaintenanceProse("lib/README.Core.md", "J0 în corp"));
+    }
+
+    @Test void libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot(); var files = GovernanceProject.markdown(root);
+        for (String name : List.of("README.md", "README.Core.md", "README.Reporting.md", "README.Console.md", "README.Mock.md")) {
+            Path file = root.resolve("lib").resolve(name); assertTrue(files.contains(file), name);
+            String source = Files.readString(file); assertTrue(source.contains("atf_j0"), name);
+            String prose = libraryMaintenanceProse("lib/" + name, source);
+            assertFalse(java.util.regex.Pattern.compile("(?i)(?<![A-Za-z0-9_])(?:atf[_-]j[0-9]+|J[0-9]+)(?![A-Za-z0-9_])").matcher(prose).find(), name);
+            assertFalse(prose.contains("atf_j0"), name);
+            assertFalse(hasEnglishReadmeProse(source), name);
         }
     }
 

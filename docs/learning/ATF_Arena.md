@@ -23,7 +23,7 @@ Fiecare politică primește numai observația permisă actorului. Distribuția �
 | Principiu | Interpretare |
 |---|---|
 | Aceeași lume inițială | Candidatul și baza pornesc de la aceleași distribuții și aceeași ordine. |
-| Aceleași informații publice | Fiecare decizie folosește numai mâna proprie și prefixul public disponibil atunci. |
+| Aceeași limită de observație | Fiecare decizie folosește mâna proprie și prefixul acelei partide; prefixele pot diverge după prima alegere diferită. |
 | Rotația locurilor | Evaluarea din locuri diferite măsoară sensibilitatea la poziție și reduce confundarea avantajului locului cu efectul politicii. |
 | Partidă completă | Scorul final include consecințele tuturor licitațiilor, cărților și regulilor de scor declarate. |
 | Lot rezervat | Evaluarea de promovare folosește distribuții care nu au fost folosite la alegerea candidatului. |
@@ -38,26 +38,27 @@ O partidă câștigată sau o rată agregată nu dovedește singură superiorita
 
 ## Din observație într-o regulă verificabilă
 
-1. Reconstruiți numai starea disponibilă public înaintea deciziei.
-2. Separați deducțiile certe din reguli de ipotezele despre intenția sau cărțile adversarilor.
-3. Formulați condiția generală, condițiile-limită și cazurile în care regula nu se aplică.
-4. Reduceți observația la o componentă cu rezultat așteptat justificat de o regulă, invariant sau oracol independent.
-5. Rulați regresia de domeniu, apoi comparați candidatul înghețat pe aceleași distribuții și locuri.
-6. Păstrați rezultatele fiecărei rulări în afara codului sursă și rezervați date noi pentru promovare.
+[Protocolul offline](README.md#ciclul-de-îmbunătățire) deține etapele diagnosticării și promovării. Arena furnizează perechea comparabilă și prima divergență; [componenta AI](../testing/ATF_AiComponents.md) justifică proprietatea locală prin observație permisă și oracol independent.
+
+Efectul unei singure decizii se investighează separat de efectul întregii politici. După prima licitație sau carte diferită, comparația partidei măsoară și reacțiile ulterioare ale celorlalți actori.
 
 ## Informație și artefacte
 
-Mâinile adverse reale și ordinea viitoare a cărților nu sunt intrări ale deciziei. Simulările pot crea lumi compatibile cu informația publică, dar nu pot substitui cărțile reale ale adversarilor în observația jucătorului.
+Rularea păstrează sursele și configurația identificate, rolurile, distribuțiile și rezultatele în depozitul extern. [Contractul corpusului](ATF_Corpus.md) deține proiecția observației și separarea datelor complete de intrarea politicii.
 
-Rularea păstrează metadatele de reproducere, hash-urile surselor și configurației, rolurile, licitațiile publice, cărțile jucate și rezultatele. Directorul de dovezi este în afara ATF; locația implicită este configurată de runner și poate fi suprascrisă.
+| Intrare de execuție | Scop |
+|---|---|
+| [run-offline-strategy-profiles.ps1](../../scripts/run-offline-strategy-profiles.ps1) | Compară profilurile declarate pe aceeași distribuție, la fiecare loc, pentru diagnosticul de dezvoltare. |
+| Colecția `arena` | Folosește protocolul [strategy-arena](../../config/strategy-arena.json), validarea proprie și sarcina Gradle declarată în catalog. |
+| Colecția `learning` | Califică un candidat identificat conform protocolului de promovare și fazei declarate. |
+
+Din rădăcina proiectului, pentru un seed de dezvoltare ales explicit:
 
 ```powershell
-$firstSeed = [long](Get-Date -Format 'yyyyMMddHHmmss')
-$seeds = @($firstSeed, $firstSeed + 1)
-foreach ($seed in $seeds) { .\scripts\run-offline-strategy-profiles.ps1 -Seed $seed }
-.\scripts\summarize-offline-strategy-profiles.ps1 -Seeds $seeds
+$seed = [long](Read-Host 'Seed-ul declarat pentru diagnosticul de dezvoltare')
+.\scripts\run-offline-strategy-profiles.ps1 -Seed $seed
 ```
 
-Folosiți o singură înregistrare de rulare pentru fiecare seed dintr-un rezumat. Pentru promovare, înghețați candidatul și protocolul înainte să selectați lotul neatins.
+Alegerea unui seed din ceas nu dovedește că distribuția este nefolosită. Comparația de dezvoltare și evaluarea rezervată au registre și criterii distincte.
 
-[Protocolul arenei](../../config/strategy-arena.json) · [Colecțiile disponibile](../testing/ATF_Collections.md) · [Reguli contextuale](../ai/ATF_HandPatternsRo.md) · [Protocolul de învățare](README.md)
+[Comenzi și precondiții](../testing/ATF_Collections.md) · [Protocolul offline](README.md)

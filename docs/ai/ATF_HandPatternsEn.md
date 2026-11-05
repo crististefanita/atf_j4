@@ -7,8 +7,8 @@ This guide describes general strategy principles for Romanian Whist. Mandatory r
 | Source | Responsibility |
 |---|---|
 | [Pattern catalog](../../config/whist-hand-patterns.yaml) | Holding classes, required context, hint scope and research status. |
-| [Pattern extraction](../../scripts/whist-hand-patterns.mjs) | Derives holding descriptors from the actor's cards. |
-| [Calibration](../../scripts/whist-heuristic-calibrate.mjs) | Descriptive associations from validated development games. |
+| [Pattern extraction](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) | Derives holding descriptors from the actor's cards. |
+| [Calibration](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) | Descriptive associations from validated development games. |
 | [Context manifest](../../config/whist-contextual-discard.yaml) | Conditional rules, information boundaries, implementations and tests. |
 | [Policy objectives](../../config/whist-play-objectives.yaml) | Active priorities and isolated experimental alternatives. |
 
@@ -44,8 +44,9 @@ An observed capture frequency depends on the policy that generated it, including
 
 ## YAML and policy changes
 
-The pattern catalog declares zero direct runtime influence. Changing a hint requires an explicit code consumer, independently justified components and separate evaluation of a frozen candidate.
+The [configuration contract](ATF_RulesConfiguration.md) owns manifest roles and activation status. The holding catalog has zero direct runtime influence; using a hint requires an explicit code consumer and a qualified domain.
 
-Development games, fitted outputs, concrete selections and evaluation results remain in the external archive. Stable documentation records the mechanism, the generalized conditions and their limits.
+- The [decision model](ATF_DecisionModel.md#estimarea-alternativelor) distinguishes the active one-card bid-conditioned model from general multi-card behavioral inference under research. A holding hint alone provides neither model.
+- Development games, fitted outputs and evaluation results remain external. Versioned model parameters identify reproducible code; promotion follows the [offline protocol](../learning/README.md).
 
-[Romanian guide](ATF_HandPatternsRo.md) · [Training protocol](../learning/README.md) · [Contextual decisions](ATF_ContextualPlay.md)
+[Romanian guide](ATF_HandPatternsRo.md) · [Contextual decisions](ATF_ContextualPlay.md)

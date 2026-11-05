@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.fixtures.DisplayFixtureDealsTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-04T23:59:18.350Z" hostname="DESKTOP-BLFSO18" time="0.784">
+  <properties/>
+  <testcase name="denseDisplayContainsEveryTenWithoutDuplicatingCards" classname="ro.whistlab.app.fixtures.DisplayFixtureDealsTest" time="0.573"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

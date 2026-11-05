@@ -29,7 +29,22 @@ public final class IndependentPlayer {
             List<Play> history,
             int turnedCard,
             boolean streakBonuses,
+            int streakBonusPoints, int streakPenaltyPoints) {
+        /** Legacy projections retain their historical five-point penalty. */
+        public Position(
+            int seat,
+            int dealer,
+            int size,
+            int trump,
+            List<Integer> hand,
+            List<Seat> seats,
+            List<Play> trick,
+            List<Play> history,
+            int turnedCard,
+            boolean streakBonuses,
             int streakBonusPoints) {
+            this(seat, dealer, size, trump, hand, seats, trick, history, turnedCard, streakBonuses, streakBonusPoints, 5);
+        }
         public Position(
                 int seat,
                 int dealer,
@@ -59,7 +74,9 @@ public final class IndependentPlayer {
             h = h * 31 + trick.hashCode();
             h = h * 31 + history.hashCode();
             h = h * 31 + turnedCard;
-            return streakBonuses ? h * 31 + streakBonusPoints : h;
+            if (!streakBonuses) return h;
+            int classic = h * 31 + streakBonusPoints;
+            return streakPenaltyPoints == 5 ? classic : classic * 31 + streakPenaltyPoints;
         }
     }
 
@@ -429,7 +446,7 @@ public final class IndependentPlayer {
         if (!p.streakBonuses || p.size == 1) return base;
         int previous = p.seats.get(seat).streak;
         if (won == bid && previous == 4) return base + p.streakBonusPoints;
-        if (won != bid && previous == -4) return base - 5;
+        if (won != bid && previous == -4) return base - p.streakPenaltyPoints;
         return base;
     }
 

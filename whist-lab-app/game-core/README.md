@@ -6,6 +6,8 @@ Motorul Java deține configurarea, regulile, tranzițiile, istoricul scorului ș
 
 Testele verifică domeniul prin proprietăți și oracole independente. [Intrarea JVM](../algorithm-build/README.md) permite lucrul offline, iar [ghidul variantelor](../../docs/game/README.md) deține explicația completă a regulilor.
 
+- [Laboratorul AI](../ai-lab/README.md) este dependență Gradle numai pentru teste. Politica independentă se compilează în modulul ei; distribuția motorului păstrează doar sursele de producție proprii.
+
 ## Fluxul domeniului
 
 ```mermaid

@@ -29,7 +29,7 @@ Politica vede mâna proprie și prefixul public. Simulatorul poate construi mâi
 | Necesar individual nᵢ | contractᵢ − levate câștigateᵢ | Arată dacă actorul mai caută levate, este la țintă sau a depășit contractul. |
 | Oportunități R | (cărți rămase în mâini + cărți pe masa curentă) / jucători | Numără o singură dată levata neterminată. |
 | Dezechilibru Δ | suma necesarelor − R | După licitare rămâne constant în aceeași mână. |
-| Densitate nᵢ/R | Necesar raportat la oportunități | Exprimă urgența individuală; nu este o probabilitate. |
+| Densitate nᵢ/R, pentru R > 0 | Necesar raportat la oportunități | Exprimă urgența individuală; nu este o probabilitate și nu se aplică unei mâini încheiate. |
 | Progres | 1 − R / mărimea inițială | Măsoară consumarea mâinii, separat de numărul mâinii în partidă. |
 | Memorie publică | Cărți jucate, masă curentă și carte întoarsă | Restrânge pool-ul necunoscut și lipsele de culoare compatibile. |
 | Scor și serie | Totaluri și contoare publice | Schimbă utilitatea rezultatului prin regulile de scor configurate. |
@@ -38,23 +38,28 @@ Aceeași valoare Δ poate coexista cu necesare individuale foarte diferite. Pe m
 
 ## Estimarea alternativelor
 
-Pentru fiecare acțiune, motorul compară continuările pe aceleași lumi generate. Vectorul terminal conține punctele proprii, scorul rivalului principal, indicatorul contractului exact și numărul contractelor adverse ratate.
+Calea de evaluare depinde de domeniu. [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) coordonează selecția; [PossibleDeals](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java) construiește lumile, iar [RolloutPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java) continuă o lume ipotetică.
+
+| Domeniu | Evaluare și limită |
+|---|---|
+| Licitare de o carte | `OneCardBidBelief` condiționează enumerarea pe licitațiile deja observate în domeniul românesc de patru locuri cu carte întoarsă; în afara domeniului sau fără evidență eligibilă se folosește estimarea de bază. |
+| Licitare de 2–8 cărți | Alternativele legale folosesc aceleași lumi; contractele publice sunt păstrate, iar ofertele încă necunoscute sunt estimate în continuare. |
+| Jocul cărții | O singură acțiune legală sau o regulă de dominanță poate evita simularea; altfel cărțile candidate sunt comparate pe lumi comune. |
+| Finaluri mici | Enumerarea lumilor și căutarea continuărilor au domenii distincte; enumerarea completă nu transformă modelul continuării într-un certificat universal. |
+
+Modelul de o carte are [implementare în motor](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java) și [implementare independentă](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java). Enumerarea este exactă pentru modelul de plauzibilitate fixat; calibrarea lui față de orice adversar real nu rezultă automat.
+
+Pentru alternativele simulate, vectorul terminal conține punctele proprii, scorul rivalului principal, indicatorul contractului exact și numărul ratărilor adverse:
 
 ```text
-estimare(acțiune) =
-  suma_lumilor pondere(lume) × utilitate(continuare)
-  / suma_lumilor pondere(lume)
-
-utilitate_mixtă =
-  (1 − α) × utilitate_rollout
-  + α × utilitate_căutare_pe_lume
+estimare(acțiune) = suma ponderată a utilităților / suma ponderilor
+utilitate_mixtă = (1 − α) × utilitate_rollout + α × utilitate_MaxN
 ```
 
-- În politica Hard acceptată, lumile generate au aceeași pondere de agregare; samplerul nu este dovedit uniform peste toate distribuirile fezabile.
-- În finalurile eligibile, estimarea combină rollout-ul cu rezultatul căutării MaxN în lumea ipotetică; în afara domeniului mic se folosește rollout-ul.
-- α este un parametru al estimatorului, cu valoarea și condiția de aplicare definite în [MonteCarloAi.evaluate](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java).
-- Căutarea completă într-o lume ipotetică nu dovedește optimalitate pentru jucătorul care nu cunoaște acea lume.
-- Media indicatorului exact este o estimare dependentă de sampler și de continuare, fără garanție de calibrare față de adversarii reali.
+- Agregarea simulărilor generale folosește ponderi egale ale lumilor generate; samplerul nu este dovedit uniform peste toate distribuirile fezabile.
+- Amestecul cu MaxN se aplică numai în domeniul mic definit de `MonteCarloAi.evaluate`; în rest se folosește rollout-ul.
+- Căutarea pe o lume ipotetică poate folosi acea lume pentru consecințe, fără a demonstra optimalitatea strategiei cu informație ascunsă.
+- Frecvența exactului depinde de modelul lumilor și al continuării; condiționarea generală după licitații la 2–8 cărți este [cercetare separată](ATF_RulesConfiguration.md#inferența-comportamentului).
 
 ## Prioritatea obiectivelor
 
@@ -69,9 +74,11 @@ Ordinea de mai jos privește profilul românesc; celelalte variante folosesc uti
 | Hard, imposibilitate dovedită public | Punctele proprii estimate, ratările adverse estimate, apoi scorul rivalului principal. |
 | Jucător independent | Punctele proprii; la carte, scorul rivalului principal departajează egalitatea. |
 
-Ordinea lexicografică înseamnă că un criteriu ulterior nu compensează o pierdere în criteriul anterior. Schimbarea priorității la imposibilitatea contractului este o regulă de stare, cu gărzi publice explicite.
+Tabelul descrie profilul runtime `CURRENT`; profilurile experimentale pot schimba ordinea și se selectează explicit. Criteriile se aplică lexicografic, cu toleranțele numerice din comparator: un criteriu ulterior departajează valori considerate egale la nivelul anterior.
 
 ## Fezabilitate și certificate
+
+În [PublicSalvage.quota](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java), necesarul se compară cu oportunitățile și cu limita publică a atuurilor inevitabile. Un atu superior încă pe masă poate permite consumarea legală a unui atu propriu fără câștig; o carte întoarsă sau dintr-o levată încheiată are alt rol.
 
 ```mermaid
 flowchart LR

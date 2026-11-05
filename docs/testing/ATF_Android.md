@@ -35,19 +35,15 @@ Scenariul identifică aplicația și starea inițială înaintea acțiunilor. Re
 
 ## Verificări offline
 
-Din rădăcina proiectului: run-whist-collection.ps1 -Collection context și
-run-whist-collection.ps1 -Collection regression.
+[Colecțiile](ATF_Collections.md) dețin comenzile și precondițiile JVM. Verificarea adaptorului fără dispozitiv este descrisă în [modulul Android](../../atf-test-android/README.md#verificare-fără-dispozitiv).
 
-Colecțiile JVM și limitele lor sunt descrise în
-[catalogul colecțiilor](ATF_Collections.md). Lansatorul agregat `scripts/run-whist-ai-validation.ps1` orchestrează construirea și verificările de integrare, cu selecțiile sale explicite.
-
-Promovarea strategică urmează separat protocolul de învățare, candidatul înghețat și registrul loturilor rezervate. Sursele de build și rezultatele se pregătesc în directoare temporare sau externe, conform ghidului proiectului.
+[run-whist-ai-validation.ps1](../../scripts/run-whist-ai-validation.ps1) este un orchestrator separat de construire, componente și integrare, cu opțiuni proprii de dispozitiv. Folosirea lui se decide după selecția efectivă din script; acceptanța UI și promovarea strategică păstrează criterii distincte.
 
 ## E2E-ul Whist Lab
 
 | Runner | Mecanism |
 |---|---|
-| [Sanity responsive](../../scripts/run-whist-responsive-sanity.ps1) | Meniu și joc normal pe profile declarate; preflight-ul precede rezervarea dispozitivului. |
+| [Sanity responsive](../../scripts/run-whist-responsive-sanity.ps1) | Verifică afișarea pe fiecare profil; fluxul de joc este opțional și rulează numai pe primul profil. |
 | [Joc românesc](../../scripts/run-romanian-expert.ps1) | Mâini normale, cu decizii și scor verificate independent. |
 | [Replay complet](../../scripts/run-complete-match.ps1) | Reia intrări externe în Whist Lab și verifică regulile, mutările și scorul. |
 

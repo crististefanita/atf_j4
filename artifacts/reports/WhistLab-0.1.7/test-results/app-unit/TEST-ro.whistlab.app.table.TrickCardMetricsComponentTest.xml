@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.table.TrickCardMetricsComponentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-04T23:59:36.840Z" hostname="DESKTOP-BLFSO18" time="0.296">
+  <properties/>
+  <testcase name="compactPlayedCardsRemainSubstantiallyLargerThanTheirLegacyHeight" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.049"/>
+  <testcase name="outerSeatsRemainMappedToTheirSideOfTheTrickForThreeFiveAndSixPlayers" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.001"/>
+  <testcase name="doubledCardFacesKeepSeatAnchorsAndAvoidSeatsAcrossWidthsAndTextScales" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.097"/>
+  <testcase name="fourPlayersFormAStableCrossAroundTheHumanBottomSeat" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.014"/>
+  <testcase name="rejectsUnsupportedPlayerCountsInvalidFontScalesAndNarrowTables" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.062"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

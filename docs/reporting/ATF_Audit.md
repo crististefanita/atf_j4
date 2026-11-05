@@ -24,13 +24,16 @@ Auditul datelor verifică proprietatea și valorile publicate. Revizia interacti
 
 ## Invariante
 
-- Identitatea invocării și ordinea checkpoint-urilor rămân stabile.
-- Expected, actual, verdictul și cauza originală nu sunt reevaluate de renderer.
-- Selecția păstrează invocările întregi și toate rezultatele obligatorii.
-- Valorile lungi și fragmentele au ordine și conținut complet verificabile.
-- PNG-ul original aparține checkpoint-ului corect și rămâne încorporat în HTML.
-- Timpii execuției, capturii și publicării au axe și surse distincte.
-- O republicare declară proveniența execuției originale.
+Contractele verificate au proprietari expliciți; auditul le confruntă cu datele capturate:
+
+| Contract | Sursă responsabilă |
+|---|---|
+| Invocare, acțiune, comparație și PNG | [Contractul Android](ATF_Android.md). |
+| Populație, valori integrale, grupare și refuz | [Politica prezentării](ATF_Presentation.md). |
+| Interval original și axele sale | [Contractul temporal](ATF_PhaseTiming.md). |
+| Proveniență, pointer și acceptanță pe scop | [Predarea rezultatelor](ATF_Handoff.md). |
+
+Pentru fiecare proprietate, oracolul auditului citește sursa originală și localizează proprietarul exact în rezultat. Găsirea globală a unei valori sau a unui hash nu demonstrează asocierea corectă.
 
 ## Controale și mutații
 
@@ -42,6 +45,12 @@ Auditul datelor verifică proprietatea și valorile publicate. Revizia interacti
 | Timp | Intervalul atribuit altui flow sau faze este respins. |
 | Semantica acțiunii | Atribuirea falsă a driverului și confundarea dispatch-ului cu succesul UI sunt refuzate. |
 | Navigare | Valorile și imaginile rămân accesibile după deschidere, închidere și schimbarea proprietarului. |
+
+Implementarea verificării este legată de contractul exercitat:
+
+- [LearningReportHtmlAudit](../../atf-tests/src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) confruntă datele și scopul HTML-ului cu înregistrările selectate.
+- [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) verifică publicarea și mutațiile deliberate ale datelor.
+- [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) verifică încorporarea PNG prin contractul public.
 
 ## Limite
 

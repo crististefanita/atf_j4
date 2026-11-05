@@ -46,9 +46,9 @@ Estimările `targetMinutes` din catalog ajută planificarea. Ele nu înlocuiesc 
 .\scripts\run-whist-collection.ps1 -Collection regression
 ```
 
-Runnerul creează o copie proprie în directorul temporar și un director nou de rezultate, implicit sub `<evidence-root>/collections`. `-RunRoot` permite o altă destinație externă proiectului; o destinație existentă este refuzată. `-JavaHome` selectează JDK-ul.
+Runnerul creează o copie temporară proprie și un director nou de rezultate în arhiva externă implicită din script. `-RunRoot` selectează o altă destinație externă proiectului, iar o destinație existentă este refuzată; `-JavaHome` selectează JDK-ul.
 
-Build-ul [algorithm-build](../../whist-lab-app/algorithm-build/settings.gradle) include numai modulul de domeniu. Nu configurează pluginul Android, nu construiește APK-ul și nu trimite comenzi ADB. Dependențele Gradle trebuie să existe deja în cache pentru execuția `--offline`.
+Build-ul [algorithm-build](../../whist-lab-app/algorithm-build/settings.gradle) include motorul și laboratorul JVM; dependența motorului către laborator este numai pentru teste. Construirea aplicației Android și accesul ADB au intrări separate, iar dependențele Gradle trebuie să fie în cache pentru `--offline`.
 
 Fiecare execuție păstrează inventarul SHA-256 al surselor copiate, logul, rezultatele JUnit XML și `collection-result.json`.
 
@@ -56,41 +56,25 @@ Fiecare execuție păstrează inventarul SHA-256 al surselor copiate, logul, rez
 
 ## Experimente și surse înghețate
 
-`learning` cere `-Candidate`, `-CorpusRoot` și `-ProtocolFile`. Protocolul declară rolul, familiile adverse, baseline-urile și intervalele de seed-uri. Runnerul alege task-ul după versiunea protocolului; nu folosi direct task-ul implicit ca substitut pentru această validare.
+[Protocolul offline](../learning/README.md#ciclul-de-îmbunătățire) deține calificarea și criteriile; aici sunt precondițiile operaționale ale [runnerului](../../scripts/run-whist-collection.ps1).
 
-`-CandidateOverlay` aplică un manifest explicit numai în copia temporară. Validatorul verifică identitatea candidatului, rolul, setul și SHA-urile surselor de bază, fișierele declarate și limitele căilor. Manifestele de candidat sunt acceptate numai pentru `regression` și pentru formatul de protocol dedicat candidaților izolați, în `learning`.
+| Intrare | Precondiție efectivă |
+|---|---|
+| `learning` | `-Candidate`, `-CorpusRoot` și `-ProtocolFile`; schema declară roluri, adversari, politici de bază și intervalul fazei. |
+| `-CandidateOverlay` | Manifest extern de candidat înghețat, cu identitate, rol, căi și hash-uri; permis în `regression` sau în protocolul dedicat din `learning`. |
+| `-ResearchCandidate` | Intrare unică în catalogul cercetării, colecție permisă și bază compatibilă. |
+| `-CasesFile` | Selecție explicită pentru protocolul acceptat, cu surse identice între loturile compuse. |
+| `-Phase heldout` | Cere și `-CandidateFreeze`, cu identitate și hash-uri verificate înaintea rezervării. |
 
-`-ResearchCandidate` selectează o intrare din [catalogul de cercetare](../../config/whist-research-candidates.json).
-
-Nu poate fi combinat cu `-CandidateOverlay`. Niciuna dintre opțiuni nu activează automat cod în aplicație.
-
-Dacă sursele de bază s-au schimbat, păstrează modificarea și oprește calificarea acelei copii.
-
-Nu actualiza doar hash-urile pentru a continua același experiment. Pentru o cohortă deja înghețată, folosește driverul copiei calificate care reproduce exact sursele declarate. Integrarea cu sursele curente se verifică separat.
-
-`-CasesFile` selectează cazuri declarate și este legat de hash-urile politicii.
-
-Un screening urmat de cazurile rămase păstrează același candidat și aceleași surse; cazurile deja închise nu se rerulează pentru a ascunde un rezultat nefavorabil. [Compoziția loturilor](../../scripts/whist-learning-batches.mjs) verifică fiecare caz, fiecare partidă și fiecare sursă înainte de a reuni rezultatele.
-
-Pentru evaluarea finală, `-Phase heldout` cere și `-CandidateFreeze`, creat înainte de deschiderea lotului.
-
-Intervalul trebuie verificat și înregistrat în ledgerul global `holdout-use` al arhivei, inclusiv când rezultatele unui experiment sunt ținute într-un corpus separat. Modelul și pragurile rămân înghețate după deschidere.
-
-[Evaluatorul](../../scripts/whist-learning-evaluate.mjs) aplică obiectivul și gărzile declarate.
-
-O execuție fără erori de reguli nu dovedește progres statistic. Un rezultat neutru poate rata cerința de câștig strict; un rol sau o familie favorabilă nu compensează un gate eșuat în alt rol sau în altă familie.
+- **Surse:** modurile `CandidateOverlay` și `ResearchCandidate` sunt mutual exclusive. Suprapunerea se aplică numai copiei temporare, iar baza schimbată este refuzată; migrarea cere calificare explicită, fără simpla înlocuire a hash-urilor.
+- **Rezervare:** runnerul înregistrează identitatea intervalului în `holdout-use` sub `CorpusRoot`. Acest control local nu demonstrează lipsa suprapunerilor parțiale sau a expunerii prin alt corpus; coordonarea registrului comun rămâne un [criteriu deschis](../feedback/ATF_Ai.md).
+- **Compoziție:** [verificatorul loturilor](../../whist-lab-app/ai-lab/tools/learning/whist-learning-batches.mjs) confruntă perechile și sursele, păstrând eșecurile închise. [Evaluatorul](../../whist-lab-app/ai-lab/tools/learning/whist-learning-evaluate.mjs) aplică criteriile protocolului, separat de rezervarea datelor.
 
 ## Din observație în regresie
 
-[Configurația corpusului](../../config/learning-corpus.json) indică manifestul activ. [Selecția focalizată](../learning/ATF_Selection.md) definește un subset diagnostic extern explicit, fără turneu implicit și fără traversarea arhivei brute. Verifică SHA-urile înainte de a folosi partidele selectate.
+[Selecția pentru învățare](../learning/ATF_Selection.md) identifică mecanismele implementate și extinderile propuse. [Proiectarea componentelor](ATF_AiComponents.md) deține reducerea la o situație legală mică, cu observație permisă și așteptare independentă.
 
-Un rezultat observat, o licitație sau o carte aleasă nu reprezintă automat acțiunea optimă.
-
-Pentru o regresie implicită, redu cazul și stabilește un expected independent: regulă, invariant sau oracol complet pe un domeniu finit. Păstrează separat informația disponibilă la decizie și rezultatul ulterior. API-ul jucătorului primește numai propria mână și informația publică.
-
-Rezultatele și eșecurile originale rămân păstrate.
-
-Un lot de evaluare consumat nu devine din nou o evaluare neatinsă prin schimbarea numelui.
+Regresia implicită primește proprietăți justificate, iar jocurile și rezultatele complete rămân în corpusul extern. [Protocolul offline](../learning/README.md) deține trecerea de la diagnostic la candidat și promovare.
 
 ## Guvernanța proiectului
 

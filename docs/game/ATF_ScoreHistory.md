@@ -11,14 +11,14 @@ flowchart LR
     END[Mână încheiată] -->|calculează| SCORE[Reguli de scor și serii]
     SCORE -->|adaugă o înregistrare| HISTORY[ScoreHistory]
     HISTORY -->|persistă| STORE[Checkpoint JSON]
-    HISTORY -->|proiectează pe loc| COLUMN[ScoreHistoryColumn]
+    HISTORY -->|proiectează pe toate locurile| COLUMN[ScoreHistoryTable]
     COLUMN -->|afișează| VIEW[Istoricul UI]
 ```
 
 <details>
 <summary>Legendă: scor și prezentare</summary>
 
-Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrează totalurile și contractele în ordinea locurilor; proiecția UI poate afișa mâinile în ordine inversă fără schimbarea proprietății valorilor.
+Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrează totalurile și contractele în ordinea locurilor; tabelul UI urmează ordinea cronologică a programului, fără schimbarea proprietății valorilor.
 
 </details>
 
@@ -37,13 +37,14 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 
 [GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) definește migrarea fiecărei scheme și validarea checkpoint-ului. [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) definește integritatea registrului.
 
-- Selectorul de jucător și antetele rămân separate de rândurile derulabile.
+- Toți jucătorii au coloane proprii; antetele rămân deasupra rândurilor derulabile vertical și se deplasează împreună cu acestea la derularea orizontală.
+- Programul complet include mâinile încheiate, mâna curentă și mâinile viitoare; punctele neacordate se afișează ca necunoscute, fără totaluri inventate.
 - Contractul zero se afișează ca valoare, iar contractul necunoscut are marcaj și text accesibil distinct.
 - Istoricul rămâne disponibil după terminarea partidei.
 - Proiecția furnizează aceeași ordine și aceleași valori afișării și citirii asistate.
 
 ## Verificarea mecanismului
 
-Componentele verifică închiderea mâinii, migrarea, coruperea checkpoint-ului și proiecția pe loc. Replay-ul unui trace extern este opt-in și verifică asocierea contract–puncte–total după reîncărcare, cu identitatea și hash-ul intrării controlate.
+Componentele verifică închiderea mâinii, migrarea, coruperea checkpoint-ului și proiecția tuturor locurilor. Replay-ul unui trace extern este opt-in și verifică asocierea contract–puncte–total după reîncărcare, cu identitatea și hash-ul intrării controlate.
 
 [Motorul](../../whist-lab-app/game-core/README.md) · [Persistența și interfața](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

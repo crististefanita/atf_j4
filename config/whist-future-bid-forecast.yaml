@@ -12,8 +12,8 @@ model:
   target: "Observed bids, not optimal bids or certified trick counts."
   refit_from_evaluation_outcomes: false
 sources:
-  candidate: "research/ai-bid-models (explicit isolated overlays; never the active engine)"
-  forecast: "research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java"
+  candidate: "whist-lab-app/ai-lab/experiments/bid-models (explicit isolated overlays; never the active engine)"
+  forecast: "whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java"
   integration: "MonteCarloAi.biddingTargets"
 rules:
   - id: "LITERAL_OBSERVED_CONTRACTS"

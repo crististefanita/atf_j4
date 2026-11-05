@@ -35,10 +35,6 @@ public final class WhistUiText {
 
     public String languageLabel() { return choose("Language", "Limba"); }
     public String homeTitle() { return "Whist"; }
-    public String homeTagline() { return choose("Bid exactly. Follow suit. Win the tricks you call.",
-            "Licitează exact. Respectă culoarea. Câștigă levatele anunțate."); }
-    public String homeFootnote() { return choose("Play locally against computer opponents. Your game stays on this device.",
-            "Joacă local împotriva adversarilor controlați de calculator. Partida rămâne pe acest dispozitiv."); }
     public String newGame() { return choose("New game", "Joc nou"); }
     public String resumeGame() { return choose("Resume game", "Reia partida"); }
     public String help() { return choose("How to play", "Reguli de joc"); }
@@ -48,12 +44,11 @@ public final class WhistUiText {
     public String players() { return choose("Players", "Jucători"); }
     public String gameType() { return choose("Game type", "Varianta de joc"); }
     public String aiLevel() { return choose("AI level", "Nivelul adversarilor"); }
-    public String streakToggle() { return choose("Romanian five-hand streaks (missed series: -5)",
-            "Serii românești de cinci mâini (serie ratată: −5)"); }
-    public String streakBonusLabel() { return choose("Five-hand exact-contract bonus",
-            "Bonus pentru cinci contracte exacte eligibile"); }
-    public String fivePointsOriginal() { return choose("5 points (original)", "5 puncte (original)"); }
-    public String tenPoints() { return choose("10 points", "10 puncte"); }
+    public String streakToggle() { return choose("Romanian five-hand streaks (equal reward and penalty)",
+            "Serii românești de cinci mâini (bonus și penalizare egale)"); }
+    public String streakBonusLabel() { return choose("Five-hand reward / penalty", "Bonus / penalizare după cinci mâini"); }
+    public String fivePointsOriginal() { return choose("±5 points", "±5 puncte"); }
+    public String tenPoints() { return choose("±10 points", "±10 puncte"); }
     public String startGame() { return choose("Start game", "Începe partida"); }
     public String back() { return choose("Back", "Înapoi"); }
     public String placeBid() { return choose("Place bid", "Licitează"); }
@@ -238,14 +233,31 @@ public final class WhistUiText {
 
     public String streakSummary(GameSession.Snapshot state) {
         return choose("Five eligible exact contracts: +" + state.streakBonusPoints()
-                        + "; five misses: −5, then reset. One-card hands do not advance a streak; an opposite result breaks it.",
+                        + "; five misses: −" + state.streakPenaltyPoints() + ", then reset. One-card hands do not advance a streak; an opposite result breaks it.",
                 "Cinci contracte exacte eligibile: +" + state.streakBonusPoints()
-                        + "; cinci ratări: −5, apoi seria se resetează. Mâinile cu o carte nu avansează seria; un rezultat opus o întrerupe.");
+                        + "; cinci ratări: −" + state.streakPenaltyPoints() + ", apoi seria se resetează. Mâinile cu o carte nu avansează seria; un rezultat opus o întrerupe.");
     }
 
     public String playerName(GameSession.PlayerSnapshot player) {
-        return player.human() ? choose("You", "Tu") : player.name();
+        return displayName(player.name(), player.human());
     }
+
+    public String displayName(String name, boolean human) {
+        return human && (name.equals("You") || name.equals("Tu")) ? choose("You", "Tu") : name;
+    }
+
+    public String playerSettings() { return choose("Your name", "Numele tău"); }
+    public String nameHint() { return choose("1–10 letters or digits", "1–10 litere sau cifre"); }
+    public String nameError() { return choose("Use a short, unique name (1–10 characters).", "Alege un nume scurt și unic (1–10 caractere)."); }
+    public String save() { return choose("Save", "Salvează"); }
+    public String resetName() { return choose("Reset name", "Resetează numele"); }
+    public String highestScores() { return choose("High scores", "Clasamente"); }
+    public String sampleScore() { return choose("Sample", "Exemplu"); }
+    public String highScoreHint() { return choose("Local top 20 · sample entries are marked · AI scores included",
+            "Top 20 local · exemplele sunt marcate · include scoruri AI"); }
+    public String storageError() { return choose("Could not save locally. Please try again.", "Salvarea locală a eșuat. Încearcă din nou."); }
+    public String historyPending() { return choose("not completed", "neîncheiată"); }
+    public String cardsHeading() { return choose("Cards", "Cărți"); }
 
     public String bidLabel() { return choose("Bid", "Licitat"); }
     public String tricksLabel() { return choose("Tricks", "Levate"); }

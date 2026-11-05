@@ -7,9 +7,37 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @AtfComponentTest
 class AndroidUiDriverComponentTest {
+    @Test
+    void clippedScrollViewDoesNotPassAsACompleteFirstViewport() throws Exception {
+        String hierarchy = """
+                <hierarchy>
+                  <node class="android.widget.ScrollView" scrollable="true" bounds="[0,0][360,640]">
+                    <node class="android.widget.TextView" text="Clipped content" bounds="[0,620][360,640]" />
+                  </node>
+                </hierarchy>
+                """;
+
+        assertFalse(UiHierarchy.allContentFitsViewport(hierarchy));
+    }
+
+    @Test
+    void completeNonScrollableContentPassesTheFirstViewportContract() throws Exception {
+        String hierarchy = """
+                <hierarchy>
+                  <node class="android.widget.ScrollView" scrollable="false" bounds="[0,0][360,640]">
+                    <node class="android.widget.TextView" text="Visible content" bounds="[0,100][360,140]" />
+                  </node>
+                </hierarchy>
+                """;
+
+        assertTrue(UiHierarchy.allContentFitsViewport(hierarchy));
+    }
+
     @Test
     void enabledNumericBidsAreResolvedAsButtonsDespiteRepeatedSeatLabels() throws Exception {
         String hierarchy = """

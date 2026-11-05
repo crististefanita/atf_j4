@@ -31,6 +31,14 @@ O înregistrare poate descrie succes, eșec sau refuzul execuției. Acceptarea c
 
 Datele lipsă rămân marcate explicit. Un timp estimat, o identitate citită ulterior sau o distribuție întreruptă nu devin capturi originale complete.
 
+## Identitate și momentul măsurării
+
+Descriptorul separă datele capturate la execuție de cele verificate la revizia offline. În [whist_ui_handoff.py](../../atf-test-android/tools/whist_ui_handoff.py), un JAR identificat din classpath-ul nativ poate avea hash disponibil numai la revizie; acel hash nu devine retrospectiv o măsurătoare de la execuție.
+
+- Păstrați momentul și sursa fiecărei identități, inclusiv când informația originală lipsește.
+- Corelați revizia interactivă cu hash-ul exact al HTML-ului verificat.
+- Tratați acceptarea descriptorului de republicare și o nouă execuție Android ca înregistrări cu scop distinct.
+
 ## Spații de nume externe
 
 | Contract | Semnificație |
@@ -53,7 +61,7 @@ Datele lipsă rămân marcate explicit. Un timp estimat, o identitate citită ul
 
 ## Implementări și limite
 
-[whist_ui_handoff.py](../../scripts/whist_ui_handoff.py) implementează republicarea offline, cu descriptor și rădăcină externă. Tipul său de înregistrare nu trebuie folosit pentru a pretinde o nouă execuție Android.
+[whist_ui_handoff.py](../../atf-test-android/tools/whist_ui_handoff.py) implementează republicarea offline, cu descriptor și rădăcină externă. Tipul său de înregistrare nu trebuie folosit pentru a pretinde o nouă execuție Android.
 
 [WhistExtentFeedback](../../atf-test-android/src/main/java/atf/android/whist/evidence/WhistExtentFeedback.java) publică indexul unei rulări auditate în spațiul extern indexes. Rădăcina de handoff și directorul indexului sunt configurabile; directorul sursă nu este o destinație validă.
 

@@ -33,3 +33,27 @@ Transferul unei implementări către o bibliotecă păstrează toate contractele
 - Documentația curentă descrie limita de responsabilitate, fără liste istorice de teste șterse.
 
 [Guvernanța calității](README.md) verifică perimetrul curent și interzice sursele paralele ale bibliotecilor binare.
+
+
+<details>
+<summary><strong>Ghiduri ale bibliotecilor — index scurt și ghiduri per bibliotecă</strong></summary>
+
+```yaml
+testChanges:
+  - id: LIBRARY-USAGE-GUIDES-J4
+    status: VERIFIED
+    base: 52270cdbff4a7234c2cc6581c910d3431105f76e
+    expires: 2026-11-30
+    reason: Keep the exact flat binary inventory and require only the index plus four named usage guides; retain independent missing, directory and extra-file negatives, physical CodeSource and source/feedback ownership.
+    proof: 'mvn -B -ntp -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest,LibraryDocumentationExampleTest,DocumentationPolicyGovernanceTest#libraryMaintenanceFooterDoesNotExemptBodyOtherOwnersOrOtherFiles+libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter test'
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/support/GovernanceProject.java
+      - atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java
+      - atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java
+      - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
+```
+
+Exemplele sunt extrase din README-uri și verificate pe JAR-urile fizice. Schimbarea păstrează perechile publicate și oracolele existente.
+
+</details>

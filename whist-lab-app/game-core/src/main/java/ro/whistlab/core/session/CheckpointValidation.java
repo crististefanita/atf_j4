@@ -52,7 +52,7 @@ final class CheckpointValidation {
                 || source.streak() < -4
                 || source.streak() > 4
                 || source.streakPoints() != 0
-                        && source.streakPoints() != -5
+                        && source.streakPoints() != -saved.config().streakPenaltyPoints()
                         && source.streakPoints() != saved.config().streakBonusPoints()
                 || !saved.config().streakBonuses()
                         && (source.streak() != 0 || source.streakPoints() != 0)

@@ -4,6 +4,8 @@
 
 Fiecare candidat reprezintă o modificare identificată a licitării sau a alegerii cărții. Protocolul precizează rolul evaluat, sursele, familiile de adversari, profilul de scor și distribuțiile înaintea execuției.
 
+[Laboratorul AI](../../whist-lab-app/ai-lab/README.md) deține uneltele și sursele experimentale ale procesului. [Lansatoarele comune](../../scripts/README.md) selectează configurația și resursele pentru execuția izolată.
+
 - [Corpusul](ATF_Corpus.md) definește partidele și integritatea intrărilor.
 - [Selecția](ATF_Selection.md) restrânge analiza la lecții distincte.
 - [Arena](ATF_Arena.md) compară politici pe distribuții și locuri controlate.
@@ -28,17 +30,21 @@ Fiecare candidat reprezintă o modificare identificată a licitării sau a alege
 
 ## Reproducere
 
-Runnerul selectează turneul din schema protocolului și refuză candidații incompatibili cu sursele înghețate. Rezultatele vechi se reproduc din snapshot-ul lor.
+[Lansatorul colecțiilor](../../scripts/run-whist-collection.ps1) selectează turneul după schema protocolului și verifică sursele înghețate. [Ghidul comenzilor](../testing/ATF_Collections.md#experimente-și-surse-înghețate) deține parametrii, modurile de suprapunere și precondițiile efective.
 
-[Colecțiile și parametrii](../testing/ATF_Collections.md) · [Arena](ATF_Arena.md) · [Corpusul](ATF_Corpus.md) · [Guvernanța arhivării](ATF_Retention.md)
+- O copie executată este identificată prin sursele și configurația capturate; o modificare live nu o recalifică retrospectiv.
+- Reproducerea unei evaluări vechi folosește sursele ei păstrate și nu deschide o nouă evaluare neatinsă.
+- Politica cere un registru comun al loturilor; runnerul implementează în prezent rezervarea sub corpusul transmis, cu [limitele de coordonare](../feedback/ATF_Ai.md) declarate explicit.
 
 ## Reguli stabile și date de experiment
 
-YAML-urile descriu comportament și structură, nu rezultatele unor rulări particulare. `whist-play-objectives.yaml` definește obiectivele și prioritățile; `whist-contextual-discard.yaml` leagă condiții, limite de informație, cod și teste; `whist-hand-patterns.yaml` cataloghează indicii de cercetare fără activare runtime implicită.
+[Regulile și configurarea AI](../ai/ATF_RulesConfiguration.md) dețin inventarul manifestelor și efectul lor executabil. Codul, schema și parametrii versionați identifică mecanismul; partidele, selecțiile concrete și rezultatele aparțin depozitului extern.
 
-Partidele de dezvoltare, replay-urile, hash-urile, rezumatele și registrele de lot se păstrează în directorul de dovezi configurat în afara ATF. Documentația stabilă păstrează regulile generalizabile și procesul; seed-urile, scorurile de rulare și deciziile dintr-un caz concret rămân în acele artefacte.
+[Contractul corpusului](ATF_Corpus.md) definește formatul și partițiile, iar [retenția](ATF_Retention.md) definește păstrarea provenienței. Modificarea numelui sau locației unei selecții nu face un lot expus din nou neatins.
 
 ## Ciclul de îmbunătățire
+
+Aceasta este procedura responsabilă pentru promovarea unei politici; ghidurile arenei, componentelor și colecțiilor o specializează prin propriile contracte.
 
 ```mermaid
 flowchart LR
@@ -50,23 +56,20 @@ flowchart LR
 ```
 
 <details>
-<summary>Legendă: datele și politica au cicluri distincte</summary>
+<summary>Legendă: protocolul precede evaluarea</summary>
 
-Politica este înghețată înaintea evaluării rezervate. Datele de dezvoltare ajută la formularea regulii; rezultatul lotului rezervat informează decizia de promovare fără ajustarea retrospectivă a criteriilor.
+Rolurile, adversarii, scorul, distribuțiile, bugetele și criteriile sunt declarate înaintea lotului rezervat. Rezultatul acestuia informează promovarea fără ajustarea retrospectivă a candidatului sau a pragurilor.
 
 </details>
 
-1. Generați jocuri de dezvoltare cu intrări și politici declarate înaintea rulării.
-2. Validați legalitatea, regulile și scorul înainte de a analiza performanța.
-3. Găsiți prima decizie divergentă și reconstruiți numai informația publică disponibilă atunci.
-4. Formulați regula ca o condiție generală, cu limite și cazuri care o infirmă; separați deducțiile certe de estimările despre adversari.
-5. Reduceți problema la o regresie de componentă cu rezultat așteptat justificat independent.
-6. Rulați colecțiile de componentă și regresie pe surse identificate prin hash.
-7. Înghețați candidatul înaintea comparației pe distribuții noi și locuri rotite.
-8. Promovați numai după ce criteriile declarate sunt îndeplinite fără regresii de reguli sau scor.
+1. Validați regulile și scorul jocurilor de dezvoltare înaintea analizei performanței.
+2. Localizați prima divergență și reconstruiți observația permisă actorului la acel moment.
+3. Formulați condiția generală, frontierele și așteptarea independentă; păstrați o regresie mică.
+4. Verificați componentele și comparațiile pereche în domeniul declarat, apoi înghețați sursele și criteriile.
+5. Verificați disponibilitatea și rezervați lotul de evaluare înaintea deschiderii; expunerea lui rămâne înregistrată.
+6. Aplicați fiecare criteriu obligatoriu pe rol și familie, păstrând separat punctele, exactele și victoriile.
+7. Promovați explicit codul și contractele numai după progresul cerut, fără regresii de reguli sau scor.
 
-O schimbare de licitație sau carte poate schimba întregul traseu ulterior. De aceea comparațiile de partidă completă măsoară efectul politicii asupra jocului, iar testul de componentă verifică regula locală; niciuna nu o substituie pe cealaltă.
+O înfrângere localizează analiza, fără a demonstra singură o eroare. Mâinile complete sunt admise în auditul de după joc, în timp ce politica rămâne limitată la [observația permisă](../ai/ATF_DecisionModel.md#contractul-unei-decizii).
 
-Politica nu primește mâinile reale ale adversarilor. Replay-ul complet poate servi analizei după încheierea partidei, dar informația privată nu devine input pentru decizia care este evaluată.
-
-[Reguli și configurare](../ai/ATF_RulesConfiguration.md) · [Componente și oracole](../testing/ATF_AiComponents.md)
+[Arena](ATF_Arena.md) · [Componente AI](../testing/ATF_AiComponents.md) · [Comenzi](../testing/ATF_Collections.md)

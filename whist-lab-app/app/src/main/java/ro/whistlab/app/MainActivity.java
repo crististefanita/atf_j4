@@ -7,6 +7,12 @@ import ro.whistlab.app.lifecycle.CompletedTrickPause;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.persistence.GameSessionStore;
 import ro.whistlab.app.score.ScoreHistoryView;
+import ro.whistlab.app.highscores.AndroidHighScoreStorage;
+import ro.whistlab.app.highscores.HighScoreRepository;
+import ro.whistlab.app.highscores.HighScores;
+import ro.whistlab.app.highscores.HighScoresDialog;
+import ro.whistlab.app.profile.PlayerPreferences;
+import ro.whistlab.app.profile.PlayerSettingsDialog;
 import ro.whistlab.app.score.ScoreTableView;
 import ro.whistlab.app.table.GameTablePanel;
 import ro.whistlab.app.table.TrumpIndicatorView;
@@ -81,6 +87,10 @@ public final class MainActivity extends Activity {
     private boolean setupStreaks = true;
     private int setupStreakBonus = 10;
     private Integer selectedBid;
+    private PlayerPreferences playerPreferences;
+    private HighScoreRepository highScores;
+    private boolean rankingEligible;
+    private String matchId = java.util.UUID.randomUUID().toString();
 
     @Override protected void onResume(){super.onResume();if(tableVisible&&game!=null)driveAutomatedTurns();}
     @Override protected void onStop(){handler.removeCallbacksAndMessages(null);persistGame();super.onStop();}
@@ -96,6 +106,15 @@ public final class MainActivity extends Activity {
             selectedLanguage = getIntent().getStringExtra("debug_language");
         }
         copy = new WhistUiText(WhistUiText.parseLanguage(selectedLanguage));
+        playerPreferences = new PlayerPreferences(this);
+        highScores = new HighScoreRepository(new AndroidHighScoreStorage(this), new java.util.Random());
+        try { highScores.boards(); } catch (java.io.IOException failure) {
+            Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
+        }
+        rankingEligible = !BuildConfig.DEBUG || !java.util.stream.Stream.of("debug_replay", "debug_fixture",
+                "debug_trick_pause_fixture", "debug_played_card_fixture", "debug_hard_ai_bid_fixture",
+                "debug_hand_fan_fixture", "debug_nine_bids_fixture")
+                .anyMatch(key -> getIntent().getBooleanExtra(key, false));
         debugHoldAiTurns = BuildConfig.DEBUG
                 && getIntent().getBooleanExtra("debug_hold_ai_turns", false);
         applyStandardWindowChrome();
@@ -122,11 +141,18 @@ public final class MainActivity extends Activity {
         } else {
             try {
                 game = GameSessionStore.load(this);
-                if (game != null) lastConfig = game.config();
+                if (game != null) {
+                    lastConfig = game.config();
+                    rankingEligible = GameSessionStore.rankingEligible(this);
+                    matchId = GameSessionStore.matchId(this);
+                    persistGame();
+                }
             } catch (GameSessionStore.UnsupportedSavedMode unavailable) {
                 Toast.makeText(this, copy.unsupportedSavedMode(), Toast.LENGTH_LONG).show();
             } catch (IllegalStateException invalidSave) {
                 GameSessionStore.clear(this);
+                game = null;
+                lastConfig = null;
                 Toast.makeText(this, copy.noSavedGame(), Toast.LENGTH_LONG).show();
             }
             renderHome();
@@ -140,16 +166,15 @@ public final class MainActivity extends Activity {
         instructionsVisible=false;
         handler.removeCallbacksAndMessages(null);
         LinearLayout page = page(null, copy.homeTitle());
-        addText(page, copy.homeTagline(),
-                16, MUTED, false, 0, 20);
         addLanguagePicker(page);
+        addQuietButton(page, copy.playerSettings() + ": " + (playerPreferences.name().isBlank()
+                ? (copy.romanian() ? "Tu" : "You") : playerPreferences.name()), this::showPlayerSettings);
         addButton(page, copy.newGame(), "btn_new_game", true, this::renderSetup, true);
         addButton(page, copy.resumeGame(), "btn_resume_game", game != null,
                 this::renderCurrentState, false);
+        addQuietButton(page, copy.highestScores(), this::showHighScores);
         addButton(page, copy.help(), "btn_instructions", true,
                 this::renderInstructions, false);
-        addText(page, copy.homeFootnote(),
-                13, MUTED, false, 24, 0);
     }
 
     private void addLanguagePicker(LinearLayout parent) {
@@ -267,8 +292,10 @@ public final class MainActivity extends Activity {
             AiDifficulty ai = AiDifficulty.values()[difficulty.getSelectedItemPosition()];
             recordedReplay = null;
             selectedBid = null;
-            lastConfig = new GameConfig(playerCount, mode, ai, System.nanoTime(),mode.isRomanian()&&streakBonuses.isChecked(),streakValue.getSelectedItemPosition()==0?5:10);
-            game = GameSession.newGame(lastConfig);
+            lastConfig = GameConfig.newMatch(playerCount, mode, ai, System.nanoTime(),mode.isRomanian()&&streakBonuses.isChecked(),streakValue.getSelectedItemPosition()==0?5:10);
+            rankingEligible = true;
+            matchId = java.util.UUID.randomUUID().toString();
+            game = GameSession.newGame(lastConfig, playerPreferences.sessionName());
             persistGame();
             driveAutomatedTurns();
         }, true);
@@ -377,6 +404,8 @@ public final class MainActivity extends Activity {
             showLiveScoreboard();
             return true;
         });
+        menu.getMenu().add(copy.playerSettings()).setOnMenuItemClickListener(item -> { showPlayerSettings(); return true; });
+        menu.getMenu().add(copy.highestScores()).setOnMenuItemClickListener(item -> { showHighScores(); return true; });
         menu.getMenu().add(copy.mainMenu()).setOnMenuItemClickListener(item -> {
             renderHome();
             return true;
@@ -426,9 +455,8 @@ public final class MainActivity extends Activity {
     }
 
     private void showScoreHistory(GameSession.Snapshot state, ScoreHistory history) {
-        Spinner players = spinner(state.players().stream().map(copy::playerName).collect(Collectors.toList()), "history-player");
         new AlertDialog.Builder(this).setTitle(copy.scoreHistory())
-                .setView(new ScoreHistoryView(this, history, copy, players))
+                .setView(new ScoreHistoryView(this, state, history, copy))
                 .setPositiveButton(copy.close(), null).show();
     }
 
@@ -453,6 +481,7 @@ public final class MainActivity extends Activity {
         addText(page, state.finalHand() ? copy.gameComplete() : copy.handComplete(),
                 16, MUTED, false, 0, 12);
         if(state.finalHand())addText(page,copy.winner(state),18,ACCENT,true,0,12);
+        recordFinishedMatch();
 
         LinearLayout.LayoutParams scoreTableParams = matchWrap();
         scoreTableParams.setMargins(0, 0, 0, dp(8));
@@ -473,14 +502,50 @@ public final class MainActivity extends Activity {
         } else {
             addButton(page, copy.playAgain(), "btn_play_again", true, () -> {
                 recordedReplay = null;
-                game = GameSession.newGame(new GameConfig(lastConfig.playerCount(), lastConfig.mode(),
-                        lastConfig.aiDifficulty(), System.nanoTime(),lastConfig.streakBonuses(),lastConfig.streakBonusPoints()));
+                rankingEligible = true;
+                matchId = java.util.UUID.randomUUID().toString();
+                game = GameSession.newGame(GameConfig.newMatch(lastConfig.playerCount(), lastConfig.mode(),
+                        lastConfig.aiDifficulty(), System.nanoTime(),lastConfig.streakBonuses(),lastConfig.streakBonusPoints()), playerPreferences.sessionName());
+                lastConfig = game.config();
                 persistGame();
                 driveAutomatedTurns();
             }, true);
         }
         addQuietButton(page, copy.scoreHistory(), () -> showScoreHistory(state, game.scoreHistory()));
         addQuietButton(page, copy.mainMenu(), this::renderHome);
+    }
+
+    private void showPlayerSettings() {
+        handler.removeCallbacksAndMessages(null);
+        scoreDialogShowing = true;
+        AlertDialog dialog = PlayerSettingsDialog.show(this, copy, playerPreferences.name(), name -> {
+            if (game != null) game.renameHuman(name.isBlank() ? "You" : name);
+            playerPreferences.saveName(name);
+            persistGame();
+            if (!tableVisible) { if (menuSubpage) renderSetup(); else renderHome(); }
+        });
+        dialog.setOnDismissListener(ignored -> {
+            scoreDialogShowing = false;
+            if (tableVisible && game != null) driveAutomatedTurns();
+        });
+    }
+
+    private void showHighScores() {
+        handler.removeCallbacksAndMessages(null);
+        scoreDialogShowing = true;
+        try {
+            GameConfig config = lastConfig != null ? lastConfig : GameConfig.newMatch(setupPlayerCount, setupMode,
+                    setupDifficulty, 0, setupMode.isRomanian() && setupStreaks, setupStreakBonus);
+            AlertDialog dialog = HighScoresDialog.show(this, copy, highScores, HighScores.Profile.from(config), playerPreferences);
+            dialog.setOnDismissListener(ignored -> {
+                scoreDialogShowing = false;
+                if (tableVisible && game != null) driveAutomatedTurns();
+            });
+        } catch (java.io.IOException failure) {
+            scoreDialogShowing = false;
+            Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
+            if (tableVisible && game != null) driveAutomatedTurns();
+        }
     }
 
     private void renderInstructions() {
@@ -564,8 +629,15 @@ public final class MainActivity extends Activity {
     }
 
     private void persistGame() {
-        if (game != null) GameSessionStore.save(this, game);
+        if (game != null) GameSessionStore.save(this, game, rankingEligible, matchId);
+        recordFinishedMatch();
         if (recordedReplay != null) recordedReplay.export(game);
+    }
+
+    private void recordFinishedMatch() {
+        if (game == null || !rankingEligible) return;
+        try { highScores.record(matchId, game, System.currentTimeMillis()); }
+        catch (java.io.IOException failure) { Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show(); }
     }
 
     private void openOneTrickFixture(boolean persistFixture) {

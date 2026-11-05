@@ -21,7 +21,7 @@ class RecordedRomanianMatchAuditTest {
         JsonNode first=read(out,"ro-h01-deal");int dealer=first.path("dealerSeat").asInt();long seed=first.path("seed").asLong();
         for(int h=0;h<24;h++){
             String prefix=String.format("ro-h%02d",h+1);JsonNode start=read(out,prefix+"-deal");
-            var oracle=new RomanianMatchOracle(start,h,(dealer+h)%4,totals,first.path("difficulty").asText("EXPERT"),streaks,first.path("streakBonuses").asBoolean(),first.path("streakBonusPoints").asInt(5));pass(oracle.start(start));snapshots++;
+            var oracle=new RomanianMatchOracle(start,h,(dealer+h)%4,totals,first.path("difficulty").asText("EXPERT"),streaks,first.path("streakBonuses").asBoolean(),first.path("streakBonusPoints").asInt(5),first.path("streakPenaltyPoints").asInt(5));pass(oracle.start(start));snapshots++;
             assertEquals(seed,start.path("seed").asLong());pass(oracle.verify(read(out,prefix+"-bids")));snapshots++;
             int size=RomanianMatchOracle.schedule(4).get(h);
             for(int t=1;t<=size;t++){

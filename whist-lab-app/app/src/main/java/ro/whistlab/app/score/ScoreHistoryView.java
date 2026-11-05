@@ -1,96 +1,84 @@
 package ro.whistlab.app.score;
 
-import ro.whistlab.app.localization.WhistUiText;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.Gravity;
-import android.view.View;
-import android.widget.AdapterView;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
+import ro.whistlab.app.localization.WhistUiText;
+import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
 
-/** One player's complete column, newest hand first, without horizontal scrolling. */
-public final class ScoreHistoryView extends LinearLayout {
-    private final ScoreHistory history;
-    private final WhistUiText copy;
-    private final TextView opening;
-    private final LinearLayout rows;
-    private final ScrollView scroll;
-    private int shownSeat = -1;
-
-    public ScoreHistoryView(Context context, ScoreHistory history, WhistUiText copy, Spinner players) {
+/** All players share a chronological table; the header stays above the vertical viewport. */
+public final class ScoreHistoryView extends HorizontalScrollView {
+    public ScoreHistoryView(Context context, GameSession.Snapshot state, ScoreHistory history, WhistUiText copy) {
         super(context);
-        this.history = history;
-        this.copy = copy;
-        setOrientation(VERTICAL);
-        setPadding(dp(16), dp(4), dp(16), 0);
-        addView(players, new LayoutParams(-1, -2));
-        opening = label(false);
-        opening.setGravity(Gravity.START);
-        addView(opening, new LayoutParams(-1, -2));
-        if (!history.closingTotals().isEmpty()) {
-            addView(row(copy.historyHand(), copy.bidLabel(), copy.historyPoints(), copy.scoreColumnTotal(), true), new LayoutParams(-1, -2));
+        ScoreHistoryTable model = ScoreHistoryTable.forMatch(state, history, copy);
+        setTag("score-history-table");
+        setFillViewport(true);
+        LinearLayout table = new LinearLayout(context);
+        table.setOrientation(LinearLayout.VERTICAL);
+        table.setPadding(dp(8), dp(6), dp(8), dp(4));
+        int width = dp(66 + model.players().size() * 144);
+        addView(table, new LayoutParams(width, -2));
+        LinearLayout names = line(0xffdfeada);
+        text(names, copy.historyHand(), 66, true, true);
+        for (String name : model.players()) text(names, name, 144, true, true);
+        table.addView(names);
+        LinearLayout headings = line(0xffeef3ea);
+        text(headings, copy.cardsHeading(), 66, false, true);
+        for (String ignored : model.players()) {
+            text(headings, copy.scoreColumnBid(), 42, false, true);
+            text(headings, copy.historyPoints(), 52, false, true);
+            text(headings, copy.scoreColumnTotal(), 50, false, true);
         }
-        scroll = new ScrollView(context);
-        rows = new LinearLayout(context);
-        rows.setOrientation(VERTICAL);
-        scroll.addView(rows);
-        addView(scroll, new LayoutParams(-1, -2));
-        showPlayer(0);
-        players.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { showPlayer(position); }
-            @Override public void onNothingSelected(AdapterView<?> parent) { }
-        });
-    }
-
-    private void showPlayer(int seat) {
-        if (seat == shownSeat) return;
-        shownSeat = seat;
-        ScoreHistoryColumn column = ScoreHistoryColumn.forPlayer(history, seat, copy);
-        opening.setText(column.opening());
-        opening.setVisibility(column.opening().isEmpty() ? GONE : VISIBLE);
-        rows.removeAllViews();
-        for (ScoreHistoryColumn.Row result : column.rows()) {
-            LinearLayout line = row(result.hand(), result.bid(), result.points(), result.total(), false);
-            if (rows.getChildCount() % 2 == 0) line.setBackgroundColor(0xfff1f5ef);
-            line.setContentDescription(result.description());
-            line.setFocusable(true);
+        table.addView(headings);
+        ScrollView scroll = new ScrollView(context);
+        LinearLayout rows = new LinearLayout(context);
+        rows.setOrientation(LinearLayout.VERTICAL);
+        for (var row : model.rows()) {
+            int fill = row.status() == ScoreHistoryTable.Status.CURRENT ? 0xffe5eedc
+                    : row.hand() % 2 == 0 ? 0xfff1f5ee : 0xfffffef8;
+            LinearLayout line = line(fill);
+            text(line, row.hand() + " · " + row.cards(), 66, false, true);
+            for (var cell : row.cells()) {
+                LinearLayout group = new LinearLayout(context);
+                group.setGravity(Gravity.CENTER_VERTICAL);
+                group.setFocusable(true);
+                group.setContentDescription(cell.description());
+                text(group, cell.bid(), 42, false, false);
+                text(group, cell.points(), 52, false, false);
+                text(group, cell.total(), 50, true, false);
+                line.addView(group, new LinearLayout.LayoutParams(dp(144), -2));
+            }
             rows.addView(line);
         }
-        scroll.scrollTo(0, 0);
+        scroll.addView(rows);
+        int viewport = Math.min(dp(380), Math.max(dp(80), getResources().getDisplayMetrics().heightPixels - dp(260)));
+        table.addView(scroll, new LinearLayout.LayoutParams(-1, viewport));
     }
 
-    private LinearLayout row(String hand, String bid, String points, String total, boolean header) {
-        LinearLayout line = new LinearLayout(getContext());
-        line.setGravity(Gravity.CENTER_VERTICAL);
-        cell(line, hand, header, header, Gravity.START);
-        cell(line, bid, header, header, Gravity.END);
-        cell(line, points, header, header, Gravity.END);
-        cell(line, total, header, true, Gravity.END);
-        return line;
+    private LinearLayout line(int fill) {
+        LinearLayout row = new LinearLayout(getContext());
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setBackgroundColor(fill);
+        return row;
     }
-
-    private void cell(LinearLayout line, String value, boolean header, boolean bold, int gravity) {
-        TextView text = label(bold);
-        text.setGravity(Gravity.CENTER_VERTICAL | gravity);
-        text.setText(value);
-        if (!header) text.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        line.addView(text, new LayoutParams(0, -2, 1));
+    private void text(LinearLayout row, String value, int width, boolean bold, boolean accessible) {
+        TextView view = new TextView(getContext());
+        view.setText(value);
+        view.setTextSize(12);
+        view.setGravity(Gravity.CENTER);
+        view.setMinHeight(dp(40));
+        view.setPadding(dp(3), dp(6), dp(3), dp(6));
+        view.setTextColor(value.startsWith("-") || value.startsWith("−") ? 0xff97462e : 0xff29362e);
+        view.setSingleLine(true);
+        view.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        if (!accessible) view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(view, new LinearLayout.LayoutParams(dp(width), -2));
     }
-
-    private TextView label(boolean bold) {
-        TextView text = new TextView(getContext());
-        text.setPadding(dp(3), dp(6), dp(3), dp(6));
-        text.setMinHeight(dp(36));
-        text.setTextColor(0xff29362e);
-        text.setTextSize(14);
-        if (bold) text.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        return text;
-    }
-
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
 }

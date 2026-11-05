@@ -8,7 +8,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $PSScriptRoot
-Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
+Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 if([string]::IsNullOrWhiteSpace($RunRoot)){$RunRoot='C:\work\whist_back\romanian-expert\'+(Get-Date -Format 'yyyyMMdd-HHmmss')}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
 if(Test-Path -LiteralPath $RunRoot){throw 'Use a fresh run folder; completed evidence must stay immutable.'}
@@ -18,7 +18,8 @@ $evidence=Join-Path $RunRoot 'evidence\android'
 New-Item -ItemType Directory -Force $stage,$evidence,"$RunRoot\components","$component\components","$component\evidence","$component\coverage" | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'pom.xml') -Destination $stage
 Copy-Item -LiteralPath (Join-Path $root 'lib') -Destination $stage -Recurse
-foreach($module in @('atf-test-kit','atf-mock','atf-validation','atf-console','atf-test-android','atf-tests','whist-lab-app')){
+$sourceModules = @(([xml](Get-Content -LiteralPath "$root\pom.xml" -Raw)).project.modules.module)
+foreach($module in ($sourceModules + @('whist-lab-app'))){
     & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if($LASTEXITCODE -ge 8){throw "Could not stage $module"}
 }

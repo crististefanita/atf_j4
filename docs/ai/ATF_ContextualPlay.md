@@ -34,23 +34,16 @@ Legalitatea precedă orice intenție. Fezabilitatea folosește limite publice ș
 
 ## Mărimi de stare
 
-| Mărime | Definiție | Proprietate |
-|---|---|---|
-| Necesar semnat | contract − levate câștigate | Păstrează semnul după depășirea contractului. |
-| Oportunități | (cărți rămase în mâini + cărți pe masa neterminată) / jucători | Include levata curentă o singură dată. |
-| Diferență semnată a mesei | suma necesarelor − oportunități | Rămâne constantă în aceeași mână. |
-| Cerere pozitivă | suma valorilor max(0, necesar) | Nu compensează nevoile pozitive prin contracte deja depășite. |
-| Densitatea necesarului | necesar / oportunități, când există oportunități | Indicator contextual, fără interpretare automată drept probabilitate. |
+[Modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia) deține definițiile necesarului semnat, oportunităților, dezechilibrului și progresului. Condițiile din acest ghid folosesc aceleași unități și includ levata neterminată o singură dată.
+
+Cererea pozitivă însumează `max(0, necesar)` pentru fiecare loc: un contract deja depășit nu anulează nevoia altui jucător. Dezechilibrul agregat descrie masa, fără a înlocui ținta individuală sau legalitatea unei cărți.
 
 ## Garanții și estimări
 
-Hard prioritizează șansa estimată a contractului recuperabil, apoi punctele proprii și scorul rivalului principal. Dacă limitele publice dovedesc imposibilitatea, prioritizează punctele proprii estimate și folosește ratarea contractelor adverse drept criteriu ulterior.
+Ordinea runtime și cuantificatorii certificatelor sunt definiți în [modelul deciziei](ATF_DecisionModel.md#prioritatea-obiectivelor). [Regulile și configurarea](ATF_RulesConfiguration.md) disting aceste ramuri active de indicii și ponderi experimentale.
 
-Un certificat complet poate prefera o continuare numai în domeniul enumerat și cu protejarea punctelor proprii în toate lumile și răspunsurile relevante. Bugetul epuizat sau o lume neenumerată păstrează fallback-ul.
+- [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) verifică frontierele regulilor prin martori legali și schimbări controlate ale necesarului.
+- [Proiectarea componentelor](../testing/ATF_AiComponents.md) delimitează observația actorului și oracolul.
+- [Jucătorul independent](../../whist-lab-app/ai-lab/README.md) are implementare și utilitate separate.
 
-- [Independentul](../../whist-lab-app/ai-lab/README.md) are implementare și utilitate separate.
-- [Testele contextuale](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) verifică proprietățile, frontierele și schimbarea alegerii când se modifică necesarul.
-
-[Arhitectura AI](README.md) · [Obiectivele politicilor](../../config/whist-play-objectives.yaml)
-
-[Contractul parametrilor și priorităților](ATF_RulesConfiguration.md) explică diferența dintre regula activă, estimare și modelul experimental.
+O recomandare contextuală devine garanție numai dacă este demonstrată în domeniul declarat. Bugetul epuizat, o enumerare incompletă sau o simplă medie favorabilă păstrează statutul de estimare.

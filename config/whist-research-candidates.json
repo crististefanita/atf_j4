@@ -134,7 +134,7 @@
       "files": [
         {
           "sha256": "ddf5d6724f52882418634ad24141aa452ac11faa0ff825b268235b82ac061a1a",
-          "source": "research/ai-bid-models/r15-bid-only-v2/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-only-v2/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java",
           "target": "game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java"
         }
       ],
@@ -278,22 +278,22 @@
       "files": [
         {
           "sha256": "4c7b58d4c7d473ee5b6a0e13f5091252a04430149420b5a6eea2a7eade441734",
-          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-and-card/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java",
           "target": "game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java"
         },
         {
           "sha256": "fcdb49f22d31934f9f3c148fe4affda03dcf01a9940c639c5bb3fd4aab48c0df",
-          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/ai/policy/LargeHandStrategyTest.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java",
           "target": "game-core/src/test/java/ro/whistlab/core/ai/policy/LargeHandStrategyTest.java"
         },
         {
           "sha256": "3bc4cb1773b5b1cfb0b06b0232d1da0a05788f92401c12601ec68b84715777f1",
-          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java",
           "target": "game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java"
         },
         {
           "sha256": "dbaeb7a078496487bede9dd72a5f759baed32234254e84b61df136a8236d3799",
-          "source": "research/ai-bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/learning/reference/AcceptedBaselineViews.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/AcceptedBaselineViews.java",
           "target": "game-core/src/test/java/ro/whistlab/core/learning/reference/AcceptedBaselineViews.java"
         }
       ],
@@ -437,17 +437,17 @@
       "files": [
         {
           "sha256": "88416b6432f652cd5cbbdaf8de0d17f6956c47591a0093197a193e1e77f8fe8f",
-          "source": "research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/MonteCarloAi.java",
           "target": "game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java"
         },
         {
           "sha256": "584f4e3a4333481201f59451eed099dd2d913da5fe4b7cf58f25bb91996e5023",
-          "source": "research/ai-bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java",
           "target": "game-core/src/main/java/ro/whistlab/core/BidForecast.java"
         },
         {
           "sha256": "41e1f7da4ad8eff24552b051d47e9bcc2ba9206ed294fa83faebbd5061a32460",
-          "source": "research/ai-bid-models/r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java",
+          "source": "whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java",
           "target": "game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java"
         }
       ],
@@ -466,17 +466,17 @@
   "sharedFiles": [
     {
       "sha256": "135f001bd5a418d89d5a5fc307918086ad09c10bff0b26a13e5b4b187509bb2b",
-      "source": "research/ai-bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java",
+      "source": "whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java",
       "target": "game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java"
     },
     {
       "sha256": "f541fcf21ea803014674f453cc2172a7e89c09f4441cb17dbff56c339053b4e9",
-      "source": "research/ai-bid-models/shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java",
+      "source": "whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java",
       "target": "game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java"
     },
     {
       "sha256": "41209cd5eee41d8f6dfd030b3ff0eefe722998f3be1544101a59710d45cbe182",
-      "source": "research/ai-bid-models/shared/game-core/src/test/resources/regressions/bid-evidence/golden.json",
+      "source": "whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/test/resources/regressions/bid-evidence/golden.json",
       "target": "game-core/src/test/resources/regressions/bid-evidence/golden.json"
     }
   ],

@@ -10,7 +10,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-Import-Module (Join-Path $PSScriptRoot 'AndroidDeviceSetup.psm1') -Force
+Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 if ([string]::IsNullOrWhiteSpace($WhistLabProject)) {
     $WhistLabProject = Join-Path $root 'whist-lab-app'
 }
@@ -22,7 +22,7 @@ $evidenceDir = Join-Path $runRoot 'evidence'
 $logsDir = Join-Path $runRoot 'logs'
 $componentLogsDir = Join-Path $componentResults 'logs'
 $report = Join-Path $runRoot 'final-extent-report.html'
-$modules = @('atf-test-kit', 'atf-mock', 'atf-validation', 'atf-console', 'atf-tests', 'atf-test-android')
+$modules = @(([xml](Get-Content -LiteralPath "$root\pom.xml" -Raw)).project.modules.module)
 $failures = [System.Collections.Generic.List[string]]::new()
 $oldEnvironment = @{
     ADB_SERVER_SOCKET = $env:ADB_SERVER_SOCKET

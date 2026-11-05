@@ -20,7 +20,7 @@ public final class RomanianMatchOracle {
         var cuts=hand.stream().filter(c->c/13==trump).toList();return cuts.isEmpty()?List.copyOf(hand):cuts;
     }
     private final int n,size,index,dealer,trump;private final int[] prior,bids,won,priorStreaks;
-    private final boolean series;private final int seriesReward;
+    private final boolean series;private final int seriesReward,seriesPenalty;
     private final List<List<Integer>> hands=new ArrayList<>();
     private final List<Integer> history=new ArrayList<>(),actors=new ArrayList<>(),trick=new ArrayList<>(),trickSeats=new ArrayList<>();
     private List<Integer> last=List.of(),lastSeats=List.of();private int lastWinner=-1,actor;private boolean bidsKnown;
@@ -35,7 +35,11 @@ public final class RomanianMatchOracle {
         this(start,handIndex,expectedDealer,totals,difficulty,new int[4],false,5);
     }
     public RomanianMatchOracle(JsonNode start,int handIndex,int expectedDealer,int[] totals,String difficulty,int[] streaks,boolean series,int seriesReward){
-        this.series=series;this.seriesReward=seriesReward;this.priorStreaks=streaks.clone();
+        this(start,handIndex,expectedDealer,totals,difficulty,streaks,series,seriesReward,5);
+    }
+    public RomanianMatchOracle(JsonNode start,int handIndex,int expectedDealer,int[] totals,String difficulty,int[] streaks,boolean series,int seriesReward,int seriesPenalty){
+        if(seriesPenalty!=5&&seriesPenalty!=10)throw new IllegalArgumentException("Invalid series penalty");
+        this.series=series;this.seriesReward=seriesReward;this.seriesPenalty=seriesPenalty;this.priorStreaks=streaks.clone();
         this.difficulty=difficulty;
         n=4;size=schedule(n).get(handIndex);index=handIndex;dealer=expectedDealer;
         trump=SUITS.indexOf(start.path("trump").asText());prior=totals.clone();bids=new int[n];won=new int[n];actor=(dealer+1)%n;
@@ -58,7 +62,7 @@ public final class RomanianMatchOracle {
     public List<AtfAssertion> verify(JsonNode state){
         events.clear();var a=new ArrayList<AtfAssertion>();equal(a,"Hand identity",index,state.path("handIndex").asInt());
         equal(a,"Selected five-hand series option",series,state.path("streakBonuses").asBoolean());
-        if(series)equal(a,"Selected positive series reward",seriesReward,state.path("streakBonusPoints").asInt());
+        if(series){equal(a,"Selected positive series reward",seriesReward,state.path("streakBonusPoints").asInt());equal(a,"Selected negative series penalty",seriesPenalty,state.path("streakPenaltyPoints").asInt(5));}
         equal(a,"Fixed hand trump",trump,SUITS.indexOf(state.path("trump").asText()));
         int count=0,sum=0;
         for(int i=0;i<n;i++){int seat=(dealer+1+i)%n;JsonNode b=state.path("players").get(seat).path("bid");
@@ -113,7 +117,7 @@ public final class RomanianMatchOracle {
     private static List<Integer> seats(JsonNode a){var s=new ArrayList<Integer>();a.forEach(p->s.add(p.path("seat").asInt()));return s;}
     public int[] totals(){int[] t=prior.clone();for(int i=0;i<n;i++)t[i]+=delta(i);return t;}
     public int[] streaks(){int[] r=new int[n];for(int i=0;i<n;i++)r[i]=nextStreak(i);return r;}
-    public int seriesBonus(int seat){if(!series||size==1)return 0;return won[seat]==bids[seat]&&priorStreaks[seat]==4?seriesReward:won[seat]!=bids[seat]&&priorStreaks[seat]==-4?-5:0;}
+    public int seriesBonus(int seat){if(!series||size==1)return 0;return won[seat]==bids[seat]&&priorStreaks[seat]==4?seriesReward:won[seat]!=bids[seat]&&priorStreaks[seat]==-4?-seriesPenalty:0;}
     private int nextStreak(int seat){if(!series)return 0;int wins=Math.max(priorStreaks[seat],0),losses=Math.max(-priorStreaks[seat],0);if(won[seat]==bids[seat]){losses=0;if(size>1)wins++;}else{wins=0;if(size>1)losses++;}return wins==5||losses==5?0:wins-losses;}
     private int delta(int seat){return (won[seat]==bids[seat]?5+won[seat]:-Math.abs(won[seat]-bids[seat]))+seriesBonus(seat);}
     public void scoreCoverage(){for(int i=0;i<n;i++)hit(won[i]==bids[i]?(bids[i]==0?"exact-zero":"exact-positive"):won[i]<bids[i]?"bid-too-high":"bid-too-low");}

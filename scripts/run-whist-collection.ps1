@@ -63,7 +63,7 @@ if($ResearchCandidate){
     foreach($entry in $researchFiles){
         if($entry.target -notmatch '^game-core/src/(main/java|test/java|test/resources)/' -or $entry.sha256 -notmatch '^[a-f0-9]{64}$' -or $researchTargets.ContainsKey($entry.target)){throw 'Invalid or duplicate research overlay target.'}
         $researchTargets[$entry.target]=$true
-        $sourceFile=Resolve-ContainedResearchPath (Join-Path $sourceRoot 'research/ai-bid-models') ($entry.source -replace '^research/ai-bid-models/','')
+        $sourceFile=Resolve-ContainedResearchPath (Join-Path $sourceRoot 'whist-lab-app/ai-lab/experiments/bid-models') ($entry.source -replace '^whist-lab-app/ai-lab/experiments/bid-models/','')
         if(-not (Test-Path -LiteralPath $sourceFile -PathType Leaf) -or (Get-FileHash -LiteralPath $sourceFile -Algorithm SHA256).Hash.ToLowerInvariant() -ne $entry.sha256){throw "Research source digest differs: $($entry.source)"}
     }
     if(@($researchChoice.baselineGuards).Count -lt 1){throw 'Research candidate requires an accepted-baseline guard.'}
@@ -125,7 +125,7 @@ if($ResearchCandidate){
         if($guard.sha256 -notmatch '^[a-f0-9]{64}$' -or -not (Test-Path -LiteralPath $guardFile -PathType Leaf) -or (Get-FileHash -LiteralPath $guardFile -Algorithm SHA256).Hash.ToLowerInvariant() -ne $guard.sha256){throw "Accepted baseline changed; rebase and requalify research: $($guard.target)"}
     }
     foreach($entry in $researchFiles){
-        $sourceFile=Resolve-ContainedResearchPath (Join-Path $sourceRoot 'research/ai-bid-models') ($entry.source -replace '^research/ai-bid-models/','')
+        $sourceFile=Resolve-ContainedResearchPath (Join-Path $sourceRoot 'whist-lab-app/ai-lab/experiments/bid-models') ($entry.source -replace '^whist-lab-app/ai-lab/experiments/bid-models/','')
         $target=Resolve-ContainedResearchPath $stageApp $entry.target
         New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
         Copy-Item -LiteralPath $sourceFile -Destination $target

@@ -2,25 +2,28 @@
 
 Selecția focalizată reduce volumul de analiză la jocurile care aduc lecții distincte despre licitare și carte. Algoritmul, criteriile și validatoarele aparțin proiectului; selecția concretă și rezultatele ei sunt date externe.
 
-## Două niveluri de selecție
+## Mecanisme și stadiu
 
-| Nivel | Mecanism | Limită |
-|---|---|---|
-| Corpus activ | Urme deduplicate, origini protejate, acoperire ponderată prin raritatea lecțiilor și schimburi cu progres strict | Buget configurat și manifest extern explicit. |
-| Focus diagnostic | Acoperire greedy a categoriilor urmărite, cu egalități rezolvate în ordinea manifestului părinte | Nu parcurge arhiva brută sau loturile rezervate. |
+Selecția datelor pentru analiză are mecanisme distincte, cu statut explicit:
+
+| Mecanism | Implementare și limită |
+|---|---|
+| Corpus activ | [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs): deduplicare a urmelor, origini protejate, acoperire ponderată prin raritate și schimburi cu progres strict, în bugetul declarat. |
+| Exemple de diagnostic | [whist-casebook](../../whist-lab-app/ai-lab/tools/corpus/whist-casebook.mjs): selectează câștiguri și regresii pe familie, plus erori de contract pe mărimea mâinii; din partidele alese extrage primele observații eligibile ale actorului după mărime și tipul deciziei. |
+| Subset focalizat după categorii | Contract de extindere, fără selector generic calificat în proiect; cere manifest părinte, criterii explicite și [acceptanță proprie](../feedback/ATF_Ai.md). |
 
 ```mermaid
 flowchart LR
-    CORPUS[Arhivă development] -->|curatează| ACTIVE[Manifest activ]
-    ACTIVE -->|filtrează categorii| FOCUS[Selecție diagnostică]
-    FOCUS -->|localizează| DECISION[Decizie divergentă]
-    DECISION -->|generalizează| RULE[Regulă și regresie]
+    ARCH[Partide development] -->|curatează| ACTIVE[Manifest activ]
+    RUN[Invocări development] -->|selectează motive| CASE[Casebook]
+    ARCH -->|furnizează partidele| CASE
+    CASE -->|proiectează| OBS[Observații publice]
 ```
 
 <details>
-<summary>Legendă: selecția urmărește înțelegerea</summary>
+<summary>Legendă: varietatea datelor și corectitudinea deciziei</summary>
 
-Fiecare selecție păstrează identitatea și hash-ul sursei părinte. Categoriile acoperite descriu varietatea datelor; ele nu sunt acoperire de cod și nu etichetează automat o acțiune drept optimă.
+Curatorul produce corpusul activ, iar casebook-ul consumă separat invocări și partide de dezvoltare declarate. Ambele păstrează proveniența; categoriile și exemplele extrase nu sunt acoperire de cod și nu etichetează o acțiune drept optimă.
 
 </details>
 
@@ -34,13 +37,8 @@ Fiecare selecție păstrează identitatea și hash-ul sursei părinte. Categorii
 
 ## Invariante de proces
 
-1. Verificați partiția de dezvoltare și hash-ul fiecărei intrări înainte de replay.
-2. Recalculați independent legalitatea și scorul.
-3. Reconstruiți observația disponibilă actorului înainte de decizie.
-4. Separați rezultatul ulterior de informația utilizabilă în acel moment.
-5. Stabiliți regula și așteptarea printr-un invariant sau oracol independent.
-6. Păstrați cel mai mic caz care exprimă proprietatea și cazul-limită relevant.
+- [Corpusul](ATF_Corpus.md) deține partiția, identitatea, hash-urile și replay-ul independent înaintea analizei.
+- [Componentele AI](../testing/ATF_AiComponents.md) dețin martorul legal, proiecția actorului și așteptarea justificată.
+- [Protocolul offline](README.md#ciclul-de-îmbunătățire) deține înghețarea, lotul rezervat și promovarea.
 
-Selecția este diagnostică și nu schimbă politica activă, pointerul corpusului sau statutul loturilor rezervate. Promovarea unei strategii urmează [protocolul de evaluare](README.md).
-
-[Arhitectura învățării](../ai/README.md) · [Selectorul corpusului](../../scripts/whist-active-corpus.mjs) · [Contractul partidelor](ATF_Corpus.md)
+Selecția pentru învățare și [selecția pentru prezentare](../reporting/ATF_Presentation.md) au scopuri diferite. Alegerea unor exemple într-un HTML nu modifică populația executată, corpusul activ sau statutul datelor rezervate.
