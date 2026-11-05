@@ -1,9 +1,18 @@
 {
   "status": "PASS",
-  "notesSha256": "e6b35073daa14f05e2aa843ec2b7cb86a94ba28c062827ff6d9a16161af0667b",
+  "notesSha256": "36eb05fb5824ecf055f6ae4f1d830765ab6d969704d1e42d72f1cba405442158",
   "publishedBodyMatchesSnapshot": true,
-  "evidenceCommit": "79a96f277efc15edf7356919a616eae356911055",
+  "evidenceCommit": "fb0a513215b2b81a4f723ceba9f7d31e6eb3fe7b",
   "governanceTests": 17,
   "finalNotesRecheckTests": 5,
-  "newSuccessfulE2eRuns": 1
+  "newSuccessfulE2eRuns": 1,
+  "qualifiedNotesSha256": "e6b35073daa14f05e2aa843ec2b7cb86a94ba28c062827ff6d9a16161af0667b",
+  "documentationLinkOnlyUpdate": {
+    "previous": "https://github.com/crististefanita/atf_j4/blob/79a96f277efc15edf7356919a616eae356911055/artifacts/1.9.2/README.md",
+    "current": "https://github.com/crististefanita/atf_j4/blob/fb0a513215b2b81a4f723ceba9f7d31e6eb3fe7b/artifacts/1.9.2/README.md",
+    "immutableReadmeVerifiedViaApi": true,
+    "publishedBodyMatchesSnapshot": true,
+    "assetsUnchanged": true,
+    "additionalGameTests": 0
+  }
 }

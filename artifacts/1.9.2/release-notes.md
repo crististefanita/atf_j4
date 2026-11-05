@@ -13,4 +13,4 @@
 
 ## Documentație
 
-- [Rapoarte și proveniență](https://github.com/crististefanita/atf_j4/blob/79a96f277efc15edf7356919a616eae356911055/artifacts/1.9.2/README.md).
+- [Rapoarte și proveniență](https://github.com/crististefanita/atf_j4/blob/fb0a513215b2b81a4f723ceba9f7d31e6eb3fe7b/artifacts/1.9.2/README.md).
