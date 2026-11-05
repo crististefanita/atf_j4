@@ -28,7 +28,8 @@ Patch de mentenanță față de 0.1.9, construit din commit-ul `5ae98e8cc1863c75
 ## Distribuție
 
 - [Descărcarea autentificată prin API](github-download-verification.json): mărimea, SHA-256 și CRC coincid cu APK-ul semnat.
-- [Notele publicate](release-notes.md) au fost reverificate separat prin cele cinci teste de prezentare; browserul nu a fost retestat.
+- [Descărcarea autentificată în browserul MCP](github-authenticated-browser-download.json) a trecut: fișier complet, SHA-256 identic și CRC valid; release-ul este afișat ca **Latest**.
+- [Notele publicate](release-notes.md) au fost reverificate separat prin cele cinci teste de prezentare.
 
 ## Limitele verificării
 

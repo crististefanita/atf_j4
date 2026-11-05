@@ -133,6 +133,8 @@
   "distribution": {
     "status": "PASS",
     "channel": "authenticated GitHub API asset download",
-    "proof": "github-download-verification.json"
+    "proof": "github-download-verification.json",
+    "authenticatedBrowserDownload": "PASS",
+    "browserProof": "github-authenticated-browser-download.json"
   }
 }
