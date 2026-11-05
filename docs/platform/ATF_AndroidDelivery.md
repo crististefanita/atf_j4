@@ -100,7 +100,7 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 4. Actualizați manifestul și README-ul noii versiuni, `artifacts/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
 5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi confruntați prezentarea cu adresele efectiv publicate și verificați descărcarea. Faceți sync pentru metadatele finale; linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
 
-Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate.
+Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate. La publicare, trimiteți explicit tag-ul și commit-ul surselor și confruntați răspunsul cu identitatea APK-ului.
 
 ## Dosarul unei versiuni
 

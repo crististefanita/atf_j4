@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "notesSha256": "59123f874db89d723bcdccfa0f51ac70149b20041d0efaccf2d7d4c74940903b",
+  "publishedBodyMatchesSnapshot": true,
+  "evidenceCommit": "f4b4fa02b4620bceefe660b2961a1963de0f07ff",
+  "governanceTests": 14,
+  "finalNotesRecheckTests": 5,
+  "newE2eRuns": 0,
+  "publicationProof": "github-download-verification.json"
+}

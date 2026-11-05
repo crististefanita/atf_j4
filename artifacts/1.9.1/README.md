@@ -19,11 +19,16 @@ Patch de mentenanță față de 0.1.9, construit din commit-ul `5ae98e8cc1863c75
 |---|---|
 | Componente UI | 21 teste trecute: chenare, geometria mesei, cărțile levatei și coloanele istoricului; XML în `test-results/app/`. |
 | Controlul căutării AI | 4 teste trecute: buget, anulare, proprietarul scope-ului și conservarea deciziilor; XML în `test-results/core/`. |
-| Guvernanță | 14 teste trecute: dosare, note, linkuri, stil și proză; [jurnal](logs/release-governance.log), XML în `test-results/governance/`. |
+| Guvernanță | 14 teste distincte trecute pe snapshot; [execuția inițială](logs/governance-snapshot-external-links-diagnostic.log) și [rerularea linkurilor](logs/release-governance.log), XML în `test-results/governance/`. |
 | Construire | `assembleRelease` și `lintVitalRelease` trecute în TMP; [jurnal](logs/release-build.log). |
 | Pachet | CRC, identitate, [semnătură](logs/apk-verification.log), [aliniere](logs/apk-alignment.log) și cheia de upgrade verificate. |
 
 [Manifestul livrării](release-validation.json) păstrează selecția exactă, guvernanța și distribuția. [Proveniența surselor](source-provenance.json) identifică snapshot-ul construit și diferențele din copia de lucru paralelă.
+
+## Distribuție
+
+- [Descărcarea autentificată prin API](github-download-verification.json): mărimea, SHA-256 și CRC coincid cu APK-ul semnat.
+- [Notele publicate](release-notes.md) au fost reverificate separat prin cele cinci teste de prezentare; browserul nu a fost retestat.
 
 ## Limitele verificării
 

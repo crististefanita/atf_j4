@@ -116,7 +116,13 @@
     ],
     "basis": "14 distinct snapshot checks; the link test was rerun after copying its external owner-document dependencies",
     "initialSnapshotDiagnostic": "logs/governance-snapshot-external-links-diagnostic.log",
-    "snapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_191_b4b7c11505\\governance-project"
+    "snapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_191_b4b7c11505\\governance-project",
+    "finalNotesRecheck": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   },
   "native": {
     "status": "NOT_RUN",
@@ -125,6 +131,8 @@
     "previousApkEvidenceReusedAsCurrent": false
   },
   "distribution": {
-    "status": "PENDING"
+    "status": "PASS",
+    "channel": "authenticated GitHub API asset download",
+    "proof": "github-download-verification.json"
   }
 }

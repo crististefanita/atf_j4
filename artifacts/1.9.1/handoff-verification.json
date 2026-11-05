@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "releaseProfile": "maintenance",
+  "version": "1.9.1",
+  "sourceCommit": "5ae98e8cc1863c7513f0d7b8396087f19c0bc6cb",
+  "selectedAppAndCoreTests": 25,
+  "governanceDistinctTests": 14,
+  "publishedNotesRecheckTests": 5,
+  "apkBytes": 775288,
+  "apkSha256": "ada43f8d5673e1330bf6555abde727d2c4705baf5e25748b032a46b9cf33b7ab",
+  "debuggable": false,
+  "onlyLatestLocalApk": true,
+  "localLinksChecked": 34,
+  "previousReleaseHtmlReportsPreserved": 4,
+  "newNativeE2eRuns": 0
+}
