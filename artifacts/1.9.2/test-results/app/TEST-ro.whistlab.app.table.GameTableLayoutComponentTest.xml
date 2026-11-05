@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.table.GameTableLayoutComponentTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-11-05T15:26:53.766Z" hostname="DESKTOP-BLFSO18" time="0.703">
+  <properties/>
+  <testcase name="nineBidsAtFourSeatsCannotOverlapTheSideNames" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.038"/>
+  <testcase name="undersizedRegionsFailInsteadOfInventingAValidLayout" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.038"/>
+  <testcase name="invalidScalesAndMeasuredExtentsCannotInventAValidHand" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.042"/>
+  <testcase name="allHandCountsRemainCenteredWithoutGapsAtActualWindowDensities" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.039"/>
+  <testcase name="oneCardHasNoArtificialNeighbourOffsetAndEmptyHandsAreSeparate" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.002"/>
+  <testcase name="everyMeasuredTableRegionFitsWithoutCoveringAnotherRegion" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.325"/>
+  <testcase name="newGameListsSixModesWithStableSelectionInBothLanguages" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.079"/>
+  <testcase name="liftedCardKeepsItsClearanceAndRemainsBehindItsNeighbours" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.001"/>
+  <testcase name="cardHeightsApplyTheTenPercentReductionOnceWithOnePortraitProportion" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.027"/>
+  <testcase name="handIndicesReserveTheMeasuredGlyphBandAtEverySupportedWidth" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.002"/>
+  <testcase name="thirteenStandardFacesFitWithoutAccumulatingFractionalPixelAdvanceRounding" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.014"/>
+  <testcase name="denseBidsUseAvailableColumnsWithoutShrinkingTouchTargets" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.001"/>
+  <testcase name="sixSeatsUseTheAvailableArcBesideAWideBiddingGrid" classname="ro.whistlab.app.table.GameTableLayoutComponentTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

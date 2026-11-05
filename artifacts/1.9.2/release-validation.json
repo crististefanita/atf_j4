@@ -1,0 +1,111 @@
+{
+  "profile": "maintenance",
+  "createdUtc": "2026-11-05T15:47:01.035435+00:00",
+  "previousVersion": "1.9.1",
+  "sourceCommit": "6e8f3f38e94f0513597b197bc8fa60ce73ee371b",
+  "release": {
+    "versionName": "1.9.2",
+    "versionCode": 12,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "apkRelativePath": "../../dist/WhistLab-1.9.2.apk",
+    "apkBytes": 775288,
+    "apkSha256": "39d31c4433488ee8d77499f196a888eb8ef230ca5d36940bd66ee9ac5a3feb94",
+    "assetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v1.9.2/WhistLab-1.9.2.apk",
+    "checksumUrl": "https://github.com/crististefanita/atf_j4/releases/download/v1.9.2/WhistLab-1.9.2.apk.sha256",
+    "localApkTrackedInGit": false,
+    "signing": "Local Android development key; upgrade certificate unchanged; v2/v3 and 16KB zipalign verified"
+  },
+  "selectedTests": [
+    {
+      "class": "ro.whistlab.app.table.GameTableLayoutComponentTest",
+      "result": "test-results/app/TEST-ro.whistlab.app.table.GameTableLayoutComponentTest.xml",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "ro.whistlab.app.table.TrickCardMetricsComponentTest",
+      "result": "test-results/app/TEST-ro.whistlab.app.table.TrickCardMetricsComponentTest.xml",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "ro.whistlab.app.table.TableViewportPolicyTest",
+      "result": "test-results/app/TEST-ro.whistlab.app.table.TableViewportPolicyTest.xml",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "ro.whistlab.app.table.TableSeatOrderComponentTest",
+      "result": "test-results/app/TEST-ro.whistlab.app.table.TableSeatOrderComponentTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "atf.android.e2e.display.profile.ResponsiveDisplayProfileComponentTest",
+      "result": "test-results/atf/TEST-atf.android.e2e.display.profile.ResponsiveDisplayProfileComponentTest.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "atf.android.e2e.display.component.TableViewportObservationComponentTest",
+      "result": "test-results/atf/TEST-atf.android.e2e.display.component.TableViewportObservationComponentTest.xml",
+      "tests": 58,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "atf.android.e2e.display.HandGeometryDriverComponentTest",
+      "result": "test-results/atf/TEST-atf.android.e2e.display.HandGeometryDriverComponentTest.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "class": "atf.android.e2e.display.component.TableViewportAuditComponentTest",
+      "result": "test-results/atf/TEST-atf.android.e2e.display.component.TableViewportAuditComponentTest.xml",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "build": {
+    "assembleRelease": "PASS",
+    "lintVitalRelease": "PASS",
+    "location": "TMP"
+  },
+  "package": {
+    "crc": "PASS",
+    "identity": "PASS",
+    "signature": "PASS",
+    "alignment": "PASS",
+    "upgradeCertificate": "MATCH"
+  },
+  "governance": {
+    "status": "PENDING",
+    "tests": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "native": {
+    "status": "PENDING"
+  },
+  "distribution": {
+    "status": "PENDING"
+  }
+}
