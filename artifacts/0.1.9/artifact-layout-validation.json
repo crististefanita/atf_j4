@@ -2,8 +2,11 @@
   "version": "0.1.9",
   "status": "PASS",
   "movedOriginalFiles": 135,
-  "byteIdenticalOriginalFiles": 134,
+  "byteIdenticalOriginalFiles": 131,
   "updatedMetadata": [
+    "release-notes.md",
+    "release-presentation-validation.json",
+    "release-presentation.json",
     "release-validation.json"
   ],
   "localLinksChecked": 537,
@@ -263,7 +266,7 @@
     "atf-tests/src/test/java/atf/tests/governance/documentation/links/DocumentationLocalLinks.java": "d1e49b69afe004d5aa07ad4de709bcf879bd434970585a883871fcb015bf5bc0",
     "atf-tests/src/test/java/atf/tests/governance/documentation/links/MarkdownAnchorIndex.java": "6ad32d85a24f6010f0f97aa86d0f1baccb2a8b9f8e2923af6394642316ae22df",
     "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactCatalog.java": "8eed859386cc500f506b17a52785cb75fe76f874619c02bc45673c087c5e60da",
-    "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java": "1a22c4e3e515429a4ddc8e612307644c290c28aa710476e3b546fe23c10648d8",
-    "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java": "daa047dfd52d1d1bd44baf951625bc8186ca8dfc8c97a904b7cc70caa0ef4b42"
+    "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java": "183623d99d17ecb3d225c9e9d7f87c4defd5429411baed7b85e522c29feb70fc",
+    "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java": "d8a7b451c909294c83109f4607e7e32e058351eb9726c843fb72351d570d3127"
   }
 }

@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "releaseUrl": "https://github.com/crististefanita/atf_j4/releases/tag/v0.1.9",
+  "notesSha256": "e68881ddf014a0d7acf99b9dbdbf693c29e00c222a158e0b7a8453e84ab395f7",
+  "notesMode": "summary",
+  "publishedBodyMatchesSnapshot": true,
+  "assetsUnchanged": true,
+  "githubMarkdownRender": {
+    "headings": 3,
+    "bulletItems": 8,
+    "tables": 0
+  },
+  "governance": {
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "testSourceSha256": "9432452b59b0e7c04ffbfe2a14863215a06fcfb9409e6b37bfbc489555038c15",
+  "gameE2eRuns": 0,
+  "apkRebuilt": false
+}

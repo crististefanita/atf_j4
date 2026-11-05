@@ -86,7 +86,8 @@
 [INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\ATF_J4_COMPACT_d986d7118c0347c596c0f80c59c2fd24\atf-tests\src\test\resources
 [INFO] 
 [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ atf-tests ---
-[INFO] Nothing to compile - all classes are up to date.
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 16 source files with javac [debug release 21] to target\test-classes
 [INFO] 
 [INFO] --- surefire:3.5.2:test (default-test) @ atf-tests ---
 [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
@@ -95,25 +96,25 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running atf.tests.governance.documentation.DocumentationAnchorGovernanceTest
-[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.922 s -- in atf.tests.governance.documentation.DocumentationAnchorGovernanceTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.618 s -- in atf.tests.governance.documentation.DocumentationAnchorGovernanceTest
 [INFO] Running atf.tests.governance.documentation.DocumentationDiagramGovernanceTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.109 s -- in atf.tests.governance.documentation.DocumentationDiagramGovernanceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.370 s -- in atf.tests.governance.documentation.DocumentationDiagramGovernanceTest
 [INFO] Running atf.tests.governance.documentation.DocumentationPolicyGovernanceTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.535 s -- in atf.tests.governance.documentation.DocumentationPolicyGovernanceTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.221 s -- in atf.tests.governance.documentation.DocumentationPolicyGovernanceTest
 [INFO] Running atf.tests.governance.documentation.DocumentationProseGovernanceTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.512 s -- in atf.tests.governance.documentation.DocumentationProseGovernanceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.225 s -- in atf.tests.governance.documentation.DocumentationProseGovernanceTest
 [INFO] Running atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.674 s -- in atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.264 s -- in atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest
 [INFO] Running atf.tests.governance.documentation.DocumentationStyleGovernanceTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.436 s -- in atf.tests.governance.documentation.DocumentationStyleGovernanceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.251 s -- in atf.tests.governance.documentation.DocumentationStyleGovernanceTest
 [INFO] Running atf.tests.governance.documentation.DynamicPathDocumentationArchitectureTest
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.420 s -- in atf.tests.governance.documentation.DynamicPathDocumentationArchitectureTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.332 s -- in atf.tests.governance.documentation.DynamicPathDocumentationArchitectureTest
 [INFO] Running atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.574 s -- in atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.310 s -- in atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest
 [INFO] Running atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.538 s -- in atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.356 s -- in atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest
 [INFO] Running atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.417 s -- in atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.154 s -- in atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest
 [INFO] 
 [INFO] Results:
 [INFO] 
@@ -122,13 +123,13 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary for ATF J4 Android 1.0.0-SNAPSHOT:
 [INFO] 
-[INFO] ATF J4 Android ..................................... SUCCESS [  1.996 s]
-[INFO] ATF Test Kit ....................................... SUCCESS [  4.476 s]
-[INFO] ATF Android infrastructure and acceptance .......... SUCCESS [  1.400 s]
-[INFO] ATF J4 architecture and acceptance catalog ......... SUCCESS [ 13.824 s]
+[INFO] ATF J4 Android ..................................... SUCCESS [  1.895 s]
+[INFO] ATF Test Kit ....................................... SUCCESS [  2.306 s]
+[INFO] ATF Android infrastructure and acceptance .......... SUCCESS [  0.922 s]
+[INFO] ATF J4 architecture and acceptance catalog ......... SUCCESS [ 13.427 s]
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  42.650 s
-[INFO] Finished at: 2026-11-05T14:42:24+02:00
+[INFO] Total time:  19.634 s
+[INFO] Finished at: 2026-11-05T14:47:37+02:00
 [INFO] ------------------------------------------------------------------------

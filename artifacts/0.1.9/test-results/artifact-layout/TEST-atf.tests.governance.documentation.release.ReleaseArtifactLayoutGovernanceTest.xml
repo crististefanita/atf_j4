@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.538" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.356" tests="6" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="C:\tools\Java21\jdk-21.0.12.1+1\bin"/>
-    <property name="sun.java.command" value="C:\Users\Cristi\AppData\Local\Temp\surefire5670827588393109138\surefirebooter-20261105144211689_3.jar C:\Users\Cristi\AppData\Local\Temp\surefire5670827588393109138 2026-11-05T14-42-09_064-jvmRun1 surefire-20261105144211689_1tmp surefire_0-20261105144211689_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\Cristi\AppData\Local\Temp\surefire10823828297408466452\surefirebooter-20261105144730602_3.jar C:\Users\Cristi\AppData\Local\Temp\surefire10823828297408466452 2026-11-05T14-47-22_703-jvmRun1 surefire-20261105144730602_1tmp surefire_0-20261105144730602_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="atf.governance.root" value="C:\work\1\atf_j4"/>
     <property name="test" value="atf.tests.governance.documentation.*Test,atf.tests.governance.documentation.links.*Test,atf.tests.governance.documentation.release.*Test"/>
@@ -33,7 +33,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="atf.android.enabled" value="false"/>
-    <property name="surefire.real.class.path" value="C:\Users\Cristi\AppData\Local\Temp\surefire5670827588393109138\surefirebooter-20261105144211689_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Cristi\AppData\Local\Temp\surefire10823828297408466452\surefirebooter-20261105144730602_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.12.1+1-LTS"/>
@@ -65,9 +65,9 @@
     <property name="java.class.version" value="65.0"/>
   </properties>
   <testcase name="theTestingStrategyLinksTheCatalogWithoutFixingAReleaseOrItsResults" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.023"/>
-  <testcase name="twoVersionsRemainIndependentWhenTheCurrentPointerChanges" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.125"/>
-  <testcase name="registeredVersionsOwnTheirEvidenceAndHaveDiscoverableReadmes" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.023"/>
-  <testcase name="aLegacyReportsFolderCannotBeSilentlyExcludedFromThePopulation" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.078"/>
-  <testcase name="missingMetadataAndDivergentVersionOrTagCannotPass" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.131"/>
-  <testcase name="emptyDuplicateEscapingAndUnknownCurrentVersionsAreRejected" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.129"/>
+  <testcase name="twoVersionsRemainIndependentWhenTheCurrentPointerChanges" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.102"/>
+  <testcase name="registeredVersionsOwnTheirEvidenceAndHaveDiscoverableReadmes" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.035"/>
+  <testcase name="aLegacyReportsFolderCannotBeSilentlyExcludedFromThePopulation" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.061"/>
+  <testcase name="missingMetadataAndDivergentVersionOrTagCannotPass" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.085"/>
+  <testcase name="emptyDuplicateEscapingAndUnknownCurrentVersionsAreRejected" classname="atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest" time="0.034"/>
 </testsuite>

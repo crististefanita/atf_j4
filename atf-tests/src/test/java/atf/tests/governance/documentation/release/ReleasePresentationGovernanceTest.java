@@ -48,7 +48,7 @@ class ReleasePresentationGovernanceTest {
                     .anyMatch(row -> row.path("url").asText().equals(asset + ".sha256")), "Checksum asset must exist");
             assertEquals(version, presentation.required("version").asText());
             assertTrue(presentation.required("evidenceUrl").asText().matches(Pattern.quote(repository)
-                    + "/blob/[0-9a-f]{40}/artifacts/reports/README\\.md"), "Evidence belongs to an identified documentation commit");
+                    + "/blob/[0-9a-f]{40}/artifacts/" + Pattern.quote(version) + "/README\\.md"), "Evidence belongs to an identified documentation commit");
             var edition = new Edition(version, asset, asset + ".sha256", presentation.required("evidenceUrl").asText(),
                     presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                     java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
@@ -129,7 +129,7 @@ class ReleasePresentationGovernanceTest {
     private static Edition sample(String mode, String previous) {
         String asset = "https://github.com/example/game/releases/download/v1.2.0/Game-1.2.0.apk";
         return new Edition("1.2.0", asset, asset + ".sha256",
-                "https://github.com/example/game/blob/" + "a".repeat(40) + "/artifacts/reports/README.md",
+                "https://github.com/example/game/blob/" + "a".repeat(40) + "/artifacts/1.2.0/README.md",
                 mode, previous, List.of("Masă încadrată."));
     }
 
