@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "version": "1.9.2",
+  "sourceCommit": "9623d95b285291b0675a48e54610b56fcbe693c9",
+  "componentTests": 107,
+  "governanceTests": 17,
+  "publishedNotesRecheckTests": 5,
+  "finalLinkRecheckTests": 1,
+  "localLinksChecked": 30,
+  "historicalHtmlReportsPreserved": 4,
+  "nativeCompactApi28": "PASS",
+  "onlyLatestLocalApk": true,
+  "browserVerification": "BLOCKED",
+  "apkSha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
+  "apkBytes": 775288
+}

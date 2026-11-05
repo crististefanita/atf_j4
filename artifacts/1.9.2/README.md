@@ -33,6 +33,13 @@ Patch față de 1.9.1, construit în TMP din commit-ul `9623d95b285291b0675a48e5
 - [Smoke-ul APK-ului Release](reports/compact-api28/release-smoke.json) confruntă lansarea și hash-ul instalat cu binarul semnat. [Restaurarea](reports/compact-api28/app-data-restored.json) păstrează datele anterioare; arhiva privată nu este publicată.
 - [Guvernanța API-urilor Java](logs/java-api-governance.log): trei teste trecute, inclusiv apeluri interzise și colectori permiși.
 
+## Distribuție
+
+- [Descărcare prin API-ul GitHub autentificat](github-download-verification.json): mărimea, SHA-256 și CRC coincid cu APK-ul semnat.
+- [Structura statică a raportului](reports/compact-api28/report-structure-verification.json) păstrează cele patru payload-uri PNG, tabelele și secțiunile colapsabile; această inspecție nu execută interacțiunea din browser.
+- [Verificarea prin browserul MCP](browser-download-verification.json) este blocată: trei timeout-uri la inițializare și reconectare. Descărcarea și expandarea interactivă nu au fost confirmate în acest browser.
+- Cele cinci teste ale prezentării au trecut și pe adresele asset-urilor efectiv publicate. `dist` păstrează numai perechea curentă APK/checksum.
+
 ## Diagnostic și limite
 
 - [Candidatul cu banda rotunjită de două ori](diagnostics/rejected-pixel-candidate/responsive-ui-sanity.html) păstrează eșecul de lățime. Corecția măsoară indicii direct în pixeli și separă în oracol banda expusă de ultima față completă.

@@ -100,6 +100,14 @@ Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-2
 
 ## Automatizarea publicării
 
+### P1 — sursa tag-ului trebuie să existe și pe un branch remote
+
+Acceptanța nativă a versiunii publicate rămâne condiționată de proveniența completă: tag-ul identifică sursa declarată, iar același commit este accesibil din istoricul unui branch remote. Publicarea asset-ului și un commit ulterior cu documentele versiunii nu demonstrează această relație.
+
+- **Observație:** pentru `v1.9.2`, tag-ul identifică `9623d95b285291b0675a48e54610b56fcbe693c9`; enumerarea tuturor branch-urilor remote arată numai `master`, iar `git merge-base --is-ancestor` întoarce `1` pentru sursa tag-ului față de acel branch. APK-ul publicat și descărcat autentificat are identitate verificată; acesta nu este un defect al binarului.
+- **Criteriu de închidere:** proprietarul publicării păstrează sursa release-ului pe un branch remote; după `git fetch`, enumerarea branch-urilor și verificarea strămoșului trebuie să confirme exact commit-ul tag-ului. Nu rescrieți istoricul comun sau tag-ul publicat pentru a masca discrepanța.
+- **Dovadă externă:** [verificarea porții release-ului](C:/work/whist_back/release-acceptance/1.9.2/release-gate.json), împreună cu receipt-ul publicării și APK-ul arhivat în același dosar. Instalarea și rezervarea emulatorului nu au început.
+
 | Prioritate | Lacună rămasă | Criteriu de închidere |
 |---|---|---|
 | P2 | [Procesul versiunii](../platform/ATF_AndroidDelivery.md#procesul-unei-versiuni) este documentat, iar operațiile de publicare folosesc încă unelte temporare. | Un lansator versionat confruntă tag-ul, APK-ul, checksum-ul și notele înainte de publicare; reluarea unui draft verifică asset-urile existente, iar o versiune publicată nu este înlocuită implicit. Actualizează atomic dosarul versiunii, indexul și catalogul, cu linkul Release către auditul fixat pe commit. |

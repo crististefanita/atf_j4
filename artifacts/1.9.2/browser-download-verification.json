@@ -1,0 +1,18 @@
+{
+  "status": "BLOCKED",
+  "attempts": 3,
+  "channel": "MCP in-app browser",
+  "operations": [
+    "cua.getState",
+    "cua.createBrowserTab",
+    "cua.getBrowser"
+  ],
+  "observedErrors": [
+    "kernel timeout after 36s",
+    "kernel timeout after 62s",
+    "kernel timeout after 32s"
+  ],
+  "browserDownloadObserved": false,
+  "interactiveReportExpansionObserved": false,
+  "fallbackProof": "github-download-verification.json"
+}

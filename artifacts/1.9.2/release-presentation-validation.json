@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "notesSha256": "e6b35073daa14f05e2aa843ec2b7cb86a94ba28c062827ff6d9a16161af0667b",
+  "publishedBodyMatchesSnapshot": true,
+  "evidenceCommit": "79a96f277efc15edf7356919a616eae356911055",
+  "governanceTests": 17,
+  "finalNotesRecheckTests": 5,
+  "newSuccessfulE2eRuns": 1
+}

@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "channel": "authenticated GitHub API asset download",
+  "assetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v1.9.2/WhistLab-1.9.2.apk",
+  "assetId": 714158561,
+  "bytes": 775288,
+  "sha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
+  "crcValid": true,
+  "matchesSignedApk": true,
+  "browserDownloadRetested": false,
+  "anonymousDownloadRequired": false,
+  "tagCommit": "9623d95b285291b0675a48e54610b56fcbe693c9",
+  "publishedNotesMatchSnapshot": true
+}

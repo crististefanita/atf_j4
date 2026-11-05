@@ -146,7 +146,19 @@
       }
     ],
     "basis": "Identified release snapshot plus owned handoff metadata; initial stale-link/encoding diagnostic retained separately",
-    "snapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_CARD_GEOMETRY_8706104409\\governance-project"
+    "snapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_CARD_GEOMETRY_8706104409\\governance-project",
+    "finalNotesRecheck": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "finalLinksRecheck": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   },
   "native": {
     "status": "PASS",
@@ -173,7 +185,11 @@
     "signedReleaseVariant": "release; install/start smoke with restored user data"
   },
   "distribution": {
-    "status": "PENDING"
+    "status": "PASS",
+    "qualifiedChannel": "authenticated GitHub API asset download",
+    "apiProof": "github-download-verification.json",
+    "browserStatus": "BLOCKED",
+    "browserProof": "browser-download-verification.json"
   },
   "javaApiGuard": {
     "status": "PASS",
@@ -183,5 +199,6 @@
     "errors": 0,
     "skipped": 0,
     "result": "test-results/java-api/TEST-atf.tests.governance.source.AndroidJavaApiGovernanceTest.xml"
-  }
+  },
+  "qualifiedUtc": "2026-11-05T17:36:11.529153+00:00"
 }
