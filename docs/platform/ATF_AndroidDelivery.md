@@ -77,6 +77,29 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 [GitHub recomandă draftul înaintea atașării asset-urilor și publicării](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) pentru release-urile imuabile. Procesul proiectului folosește această ordine și păstrează diferența dintre politica stabilită și activarea opțiunii native de imutabilitate.
 
+## Release de mentenanță
+
+Un patch apropiat de versiunea precedentă folosește verificări țintite după diferența reală de cod. Numărul versiunii nu justifică singur reducerea verificărilor; schimbarea regulilor, salvărilor, SDK-urilor ori dependențelor poate cere calificare suplimentară.
+
+| Control | Minim pentru patch | Când se extinde |
+|---|---|---|
+| Surse și build | Commit identificat, copie în TMP, `assembleRelease` și `lintVitalRelease`. | Dependențe, platformă sau configurație de construire schimbate. |
+| Comportament | Componentele/regresiile zonei modificate și cazurile negative relevante. | Reguli, scor, salvări sau politică AI schimbate; selecția urmărește contractul afectat. |
+| Guvernanță | Dosare și prezentare release, plus linkuri și stil pentru documentele atinse. | Arhitectură ori convenții schimbate; se adaugă controalele ariei respective. |
+| APK | Identitate, SDK-uri, CRC, semnătură, aliniere, compatibilitatea cheii de upgrade și SHA-256. | Manifest, instalare ori compatibilitate Android schimbate; se adaugă smoke nativ. |
+| Interfață | Componentele geometriei; sanity scurt pentru interacțiunea schimbată, când dispozitivul este disponibil. | Un profil ori o tranziție nouă cere acceptanță distinctă; nu se repetă automat partida completă pe fiecare rezoluție. |
+| Distribuție | Asset și checksum, apoi descărcare în canalul cerut, cu mărime și SHA-256 confruntate. | Schimbarea canalului ori a semnării cere reverificarea distribuției. |
+
+Selecțiile executate trebuie să treacă; un eșec relevant blochează publicarea. O verificare nativă omisă se consemnează în dosarul tehnic împreună cu motivul, fără a prelua calificarea APK-ului anterior și fără a încărca pagina Release.
+
+### Predarea patch-ului
+
+1. Actualizați `versionName` și incrementați `versionCode` în Gradle; fixați commit-ul construit. Sursele relevante schimbate în paralel se confruntă înainte de publicare.
+2. Rulați selecția de mai sus în TMP; păstrați comenzile, rezultatele JUnit și jurnalele în `artifacts/<versionName>/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
+3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `dist`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
+4. Actualizați manifestul și README-ul noii versiuni, `artifacts/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
+5. Confruntați guvernanța, publicați tag-ul și asset-urile verificate, verificați descărcarea și faceți sync pentru metadatele finale. Linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
+
 ## Dosarul unei versiuni
 
 [Catalogul](../../artifacts/README.md) păstrează câte un dosar `artifacts/<versionName>/` pentru fiecare livrare înregistrată. Versiunea exactă separă dovezile; un reper dintr-o versiune anterioară rămâne etichetat ca reper, cu proveniența originală.
