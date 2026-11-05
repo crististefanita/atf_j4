@@ -6,7 +6,7 @@ Fiecare versiune are propriul dosar cu README, rapoarte, capturi și metadate. S
 
 ## Versiunea curentă
 
-[0.1.9 — rapoarte și proveniență](0.1.9/README.md)
+[1.9.1 — rapoarte și proveniență](1.9.1/README.md)
 
 ## Versiuni disponibile
 

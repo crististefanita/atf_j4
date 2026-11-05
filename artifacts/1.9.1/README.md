@@ -19,6 +19,7 @@ Patch de mentenanță față de 0.1.9, construit din commit-ul `5ae98e8cc1863c75
 |---|---|
 | Componente UI | 21 teste trecute: chenare, geometria mesei, cărțile levatei și coloanele istoricului; XML în `test-results/app/`. |
 | Controlul căutării AI | 4 teste trecute: buget, anulare, proprietarul scope-ului și conservarea deciziilor; XML în `test-results/core/`. |
+| Guvernanță | 14 teste trecute: dosare, note, linkuri, stil și proză; [jurnal](logs/release-governance.log), XML în `test-results/governance/`. |
 | Construire | `assembleRelease` și `lintVitalRelease` trecute în TMP; [jurnal](logs/release-build.log). |
 | Pachet | CRC, identitate, [semnătură](logs/apk-verification.log), [aliniere](logs/apk-alignment.log) și cheia de upgrade verificate. |
 
@@ -26,6 +27,7 @@ Patch de mentenanță față de 0.1.9, construit din commit-ul `5ae98e8cc1863c75
 
 ## Limitele verificării
 
+- [Diagnosticul draftului](logs/draft-url-governance-diagnostic.log) păstrează respingerea adreselor temporare `untagged` la prima verificare prematură a publicării; metadatele draftului și rezultatele publicării sunt separate.
 - Nu s-a rulat regresia completă și nu s-a ocupat emulatorul rezervat de altă execuție; această livrare nu are E2E sau capturi native noi.
 - [Rapoartele versiunii precedente](../0.1.9/README.md) rămân reper istoric, fără a califica implicit noul APK.
 - Modificările paralele încă necomise rămân separate de commit-ul construit; hash-urile surselor și tag-ul permit reproducerea binarului.

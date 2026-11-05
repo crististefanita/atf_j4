@@ -72,11 +72,51 @@
     "upgradeCertificate": "MATCH"
   },
   "governance": {
-    "status": "PENDING",
-    "tests": 0,
+    "status": "PASS",
+    "tests": 14,
     "failures": 0,
     "errors": 0,
-    "skipped": 0
+    "skipped": 0,
+    "results": [
+      {
+        "class": "atf.tests.governance.documentation.DocumentationProseGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.DocumentationStyleGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "basis": "14 distinct snapshot checks; the link test was rerun after copying its external owner-document dependencies",
+    "initialSnapshotDiagnostic": "logs/governance-snapshot-external-links-diagnostic.log",
+    "snapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_191_b4b7c11505\\governance-project"
   },
   "native": {
     "status": "NOT_RUN",

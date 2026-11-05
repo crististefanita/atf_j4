@@ -79,7 +79,7 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 ## Release de mentenanță
 
-Un patch apropiat de versiunea precedentă folosește verificări țintite după diferența reală de cod. Numărul versiunii nu justifică singur reducerea verificărilor; schimbarea regulilor, salvărilor, SDK-urilor ori dependențelor poate cere calificare suplimentară.
+Un patch apropiat de versiunea precedentă folosește verificări țintite după diferența reală de cod. Numărul versiunii nu justifică singur reducerea verificărilor; schimbarea regulilor, salvărilor, SDK-urilor ori dependențelor poate cere calificare suplimentară. Guvernanța folosește snapshot-ul de release și metadatele candidatului, păstrând lucrările paralele separate.
 
 | Control | Minim pentru patch | Când se extinde |
 |---|---|---|
@@ -98,7 +98,9 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 2. Rulați selecția de mai sus în TMP; păstrați comenzile, rezultatele JUnit și jurnalele în `artifacts/<versionName>/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
 3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `dist`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
 4. Actualizați manifestul și README-ul noii versiuni, `artifacts/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
-5. Confruntați guvernanța, publicați tag-ul și asset-urile verificate, verificați descărcarea și faceți sync pentru metadatele finale. Linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
+5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi confruntați prezentarea cu adresele efectiv publicate și verificați descărcarea. Faceți sync pentru metadatele finale; linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
+
+Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate.
 
 ## Dosarul unei versiuni
 
