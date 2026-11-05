@@ -3,6 +3,7 @@ package atf.android.e2e.display.flow;
 import atf.android.e2e.activation.AndroidE2eTest;
 import atf.android.e2e.driver.AndroidUiDriver;
 import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
+import static atf.android.e2e.display.profile.ResponsiveDisplayProfile.HAND_CARD_FACE_HEIGHT_DP;
 
 import atf.android.AdbClient;
 import atf.android.e2e.support.AndroidUiFlowReportPublisher;
@@ -79,16 +80,16 @@ class WhistDenseLayoutE2eTest {
                     checks.add(check("Exposed rank and suit " + labels.get(i).text(), "both glyphs; clear right padding; inside exposed face",
                             result.toString(), result.readable()));
                 }
-                checks.add(check("Complete card height inside viewport", "98 dp", "minimum px=" + faces.stream().mapToInt(b -> b.bottom() - b.top()).min().orElse(0),
-                        faces.stream().allMatch(face -> face.bottom() - face.top()
-                                >= Math.round(98 * profile.density() / 160.0) - 1)));
+                checks.add(check("Complete card height inside viewport", HAND_CARD_FACE_HEIGHT_DP + " dp", "minimum px=" + faces.stream().mapToInt(b -> b.bottom() - b.top()).min().orElse(0),
+                        faces.stream().allMatch(face -> Math.abs(face.bottom() - face.top()
+                                - Math.round(HAND_CARD_FACE_HEIGHT_DP * profile.density() / 160.0)) <= 1)));
                 checks.add(check("Single row", "one top coordinate", labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().toList().toString(),
                         labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count() == 1));
                 boolean faceRowVisible = faces.size() == 13 && faces.stream().allMatch(face ->
                         face.top() >= 0 && face.bottom() <= display[1]
-                                && face.bottom() - face.top() >= Math.round(98 * profile.density() / 160.0) - 1);
+                                && Math.abs(face.bottom() - face.top() - Math.round(HAND_CARD_FACE_HEIGHT_DP * profile.density() / 160.0)) <= 1);
                 checks.add(check("Thirteen full card faces are visible after recorded scrolling",
-                        "13 complete 98 dp faces", "fullFaces=" + faceRowVisible,
+                        "13 complete " + HAND_CARD_FACE_HEIGHT_DP + " dp faces", "fullFaces=" + faceRowVisible,
                         faceRowVisible));
                 record(adb, profile, trace, profile.id() + " — all thirteen indices", capture, checks);
 

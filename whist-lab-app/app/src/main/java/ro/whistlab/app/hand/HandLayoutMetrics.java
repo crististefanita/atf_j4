@@ -1,19 +1,19 @@
 package ro.whistlab.app.hand;
 
+import ro.whistlab.app.cards.CardFaceMetrics;
+
 /** Pure geometry for the one-row, overlapping hand fan. */
 public final class HandLayoutMetrics {
-    public static final int CARD_WIDTH_DP = 66;
-    public static final int CARD_HEIGHT_DP = 98;
+    public static final int CARD_HEIGHT_DP = 88;
+    public static final int CARD_WIDTH_DP = CardFaceMetrics.atHeight(CARD_HEIGHT_DP).widthDp();
     public static final int MIN_VISIBLE_ADVANCE_DP = 22;
     public static final int LIFT_CLEARANCE_DP = 28;
     public static final int CARD_LIFT_DP = 20;
     public static final int NEIGHBOR_Z_DP = 1;
     public static final int SELECTED_Z_DP = -1;
     public static final float CARD_LIFT_SCALE = 1.12f;
-    private static final int FULL_SIZE_HAND_CARD_LIMIT = 8;
     private static final int MAX_PLAYABLE_HAND_SIZE = 13;
-    private static final int MIN_DENSE_CARD_WIDTH_DP = 40;
-    public static final int DENSE_HAND_MIN_ADVANCE_DP = 19;
+    public static final int DENSE_HAND_MIN_ADVANCE_DP = 18;
     private static final int MIN_CARD_COUNT = 1;
     private static final int MAX_CARD_COUNT = 17;
 
@@ -24,18 +24,13 @@ public final class HandLayoutMetrics {
     }
 
     public static int cardWidthDp(float fontScale) {
-        return Math.max(CARD_WIDTH_DP, Math.round(CARD_WIDTH_DP * Math.min(fontScale, 1.5f)));
+        requireFontScale(fontScale);
+        return CARD_WIDTH_DP;
     }
 
     public static int cardWidthDp(int cardCount, int availableWidthDp, float fontScale) {
         requireHand(cardCount, availableWidthDp, fontScale);
-        int preferredWidth = cardWidthDp(fontScale);
-        if (cardCount <= FULL_SIZE_HAND_CARD_LIMIT || cardCount > MAX_PLAYABLE_HAND_SIZE) {
-            return preferredWidth;
-        }
-        int readableWidth = Math.round(MIN_DENSE_CARD_WIDTH_DP * Math.min(fontScale, 1.5f));
-        int halfOverlapWidth = (2 * availableWidthDp) / (cardCount + 1);
-        return Math.min(preferredWidth, Math.max(readableWidth, halfOverlapWidth));
+        return cardWidthDp(fontScale);
     }
 
     public static int cardLabelSizeSp() {
@@ -68,12 +63,14 @@ public final class HandLayoutMetrics {
     }
 
     public static Fan fan(int count, int viewportPx, float density, float fontScale, int indexWidthPx) {
+        if (viewportPx < 1 || indexWidthPx < 1 || !Float.isFinite(density) || density <= 0f)
+            throw new IllegalArgumentException("Hand viewport, density and measured index must be positive and finite");
         int widthDp = Math.max(1, Math.round(viewportPx / density));
         int card = Math.round(cardWidthDp(count, widthDp, fontScale) * density);
         int indexDp = (int) Math.ceil(indexWidthPx / density);
         int advance = Math.round(horizontalAdvanceDp(count, widthDp, fontScale, indexDp) * density);
         if (count > 1) {
-            int minimum = Math.max(indexWidthPx, Math.round((count > MAX_PLAYABLE_HAND_SIZE
+            int minimum = Math.max(indexWidthPx, (int) Math.floor((count > MAX_PLAYABLE_HAND_SIZE
                     ? minVisibleAdvanceDp(fontScale) : DENSE_HAND_MIN_ADVANCE_DP * Math.min(fontScale, 1.5f)) * density));
             advance = Math.max(minimum, Math.min(advance, (viewportPx - card) / (count - 1)));
         }
@@ -97,7 +94,7 @@ public final class HandLayoutMetrics {
     }
 
     public static int minVisibleAdvanceDp(float fontScale) {
-        if (fontScale <= 0f) throw new IllegalArgumentException("Font scale must be positive");
+        requireFontScale(fontScale);
         return Math.round(MIN_VISIBLE_ADVANCE_DP * Math.min(fontScale, 1.5f));
     }
 
@@ -107,8 +104,14 @@ public final class HandLayoutMetrics {
 
     private static void requireHand(int cardCount, int availableWidthDp, float fontScale) {
         if (!usesSingleRow(cardCount)) throw new IllegalArgumentException("Unsupported hand size: " + cardCount);
-        if (availableWidthDp <= 0 || fontScale <= 0f) {
-            throw new IllegalArgumentException("Hand width and font scale must be positive");
+        requireFontScale(fontScale);
+        if (availableWidthDp <= 0) {
+            throw new IllegalArgumentException("Hand width must be positive");
         }
+    }
+
+    private static void requireFontScale(float fontScale) {
+        if (!Float.isFinite(fontScale) || fontScale <= 0f)
+            throw new IllegalArgumentException("Font scale must be positive and finite");
     }
 }

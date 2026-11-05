@@ -20,7 +20,8 @@ public final class TableViewportObservation {
             int handCards,boolean completeTrick) throws Exception {
         double density=profile.density()/160.0;
         var expected=new TableViewportAudit.Requirements(4,handCards,completeTrick?4:0,
-                (int)Math.round(98*density),(int)Math.round(profile.playedCardFaceHeightDp()*density),
+                (int)Math.round(ResponsiveDisplayProfile.HAND_CARD_FACE_HEIGHT_DP*density),
+                (int)Math.round(profile.playedCardFaceHeightDp()*density),
                 (int)Math.floor(44*density));
         var snapshot = decode(ui,xml,profile);
         var checks = new ArrayList<>(TableViewportAudit.inspect(snapshot,expected));
@@ -30,10 +31,24 @@ public final class TableViewportObservation {
                 - box(ui.boundsForDescription(xml,trump.get())).left() : 0;
         checks.add(new AtfAssertion("Trump frame retains the declared narrow width","57 dp",
                 trumpWidth+" px",Math.abs(trumpWidth-Math.round(57*density))<=1));
+        for (int index=0;index<snapshot.handFaces().size();index++) {
+            var face=snapshot.handFaces().get(index);
+            int height=face.bottom()-face.top();
+            checks.add(new AtfAssertion("Requested hand-card height: "+index,
+                    expected.handFaceHeight()+" px",height+" px",Math.abs(height-expected.handFaceHeight())<=1));
+            int width=face.right()-face.left();
+            int expectedWidth=(int)Math.round(ResponsiveDisplayProfile.HAND_CARD_FACE_WIDTH_DP*density);
+            checks.add(new AtfAssertion("Requested hand-card width: "+index,
+                    expectedWidth+" px",width+" px",Math.abs(width-expectedWidth)<=1));
+        }
         for(var card:snapshot.playedCards()) {
             int height=card.face().bottom()-card.face().top();
             checks.add(new AtfAssertion("Requested played-card height: "+card.label(),
                     expected.playedFaceHeight()+" px",height+" px",Math.abs(height-expected.playedFaceHeight())<=1));
+            int width=card.face().right()-card.face().left();
+            int expectedWidth=(int)Math.round(profile.playedCardFaceWidthDp()*density);
+            checks.add(new AtfAssertion("Requested played-card width: "+card.label(),
+                    expectedWidth+" px",width+" px",Math.abs(width-expectedWidth)<=1));
         }
         return List.copyOf(checks);
     }

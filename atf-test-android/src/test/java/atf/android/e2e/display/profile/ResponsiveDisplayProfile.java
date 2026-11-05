@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public record ResponsiveDisplayProfile(int width, int height, int density) {
+    public static final int HAND_CARD_FACE_HEIGHT_DP = 88;
+    public static final int HAND_CARD_FACE_WIDTH_DP = 63;
     static final String DEFAULTS =
             "720x1280@360,1080x1920@440,1080x2448@440,1200x1920@320";
     private static final Pattern PROFILE = Pattern.compile("(\\d{3,4})x(\\d{3,4})@(\\d{3})");
@@ -69,7 +71,11 @@ public record ResponsiveDisplayProfile(int width, int height, int density) {
     }
 
     public int playedCardFaceHeightDp() {
-        return logicalHeightDp() < 600 ? 71 : 78;
+        return logicalHeightDp() < 600 ? 64 : 70;
+    }
+
+    public int playedCardFaceWidthDp() {
+        return Math.round(playedCardFaceHeightDp()*5f/7);
     }
 
     /** Minimum slot includes the complete face and padding; actor identity is audited semantically. */

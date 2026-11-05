@@ -57,15 +57,12 @@ final class TableGeometry {
                 || height < minimumHeight(players, seatHeight, centerHeight, gap)) {
             throw new IllegalArgumentException("Table regions do not fit the measured viewport");
         }
-        boolean wideCenter = centerWidth + 2 * seatWidth + 2 * gap > width;
+        boolean wideCenter = fullWidthCardRows || centerWidth + 2 * seatWidth + 2 * gap > width;
         TableSeatLayout.Anchor[] anchors = TableSeatLayout.positions(players);
-        if (players == 4 && wideCenter) anchors = new TableSeatLayout.Anchor[]{
-                TableSeatLayout.Anchor.SOUTH, TableSeatLayout.Anchor.NORTH_WEST,
-                TableSeatLayout.Anchor.NORTH, TableSeatLayout.Anchor.NORTH_EAST};
         int centerTop = (height - centerHeight) / 2;
-        int flankClearance = wideCenter ? centerTop - seatHeight - gap
+        int flankClearance = wideCenter || players == 4 ? centerTop - seatHeight - gap
                 : (height - 2 * seatHeight - gap) / 2;
-        int stagger = fullWidthCardRows ? 0 : Math.min(height / 5, flankClearance);
+        int stagger = fullWidthCardRows && players != 4 ? 0 : Math.min(height / 5, Math.max(0, flankClearance));
         List<Rect> seats = new ArrayList<>();
         for (var anchor : anchors) {
             int x = switch (anchor) {

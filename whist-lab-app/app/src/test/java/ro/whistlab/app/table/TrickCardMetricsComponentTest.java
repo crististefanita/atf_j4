@@ -8,6 +8,25 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public final class TrickCardMetricsComponentTest {
+    @Test public void threeToSixPlayersKeepTheSamePortraitFacesIncludingTheFivePlayerRegression() {
+        for (int width : new int[]{240, 280, 313, 353, 560, 760}) {
+            for (int height : new int[]{569, 600, 760, 818}) {
+                for (float scale : new float[]{1f, 1.3f, 1.5f, 2f}) {
+                    var viewport = new TableViewportPolicy(height, scale);
+                    var reference = TrickCardMetrics.forTable(4, width, scale, viewport);
+                    for (int players = 3; players <= 6; players++) {
+                        var layout = TrickCardMetrics.forTable(players, width, scale, viewport);
+                        assertEquals("Changing seats cannot resize the played faces", reference.cardWidthDp(), layout.cardWidthDp());
+                        assertEquals(reference.cardHeightDp(), layout.cardHeightDp());
+                        assertTrue("Played faces remain portrait, including at five seats", layout.cardWidthDp() * 4 <= layout.cardHeightDp() * 3);
+                        assertEquals(Math.round(layout.cardHeightDp()*5f/7),layout.cardWidthDp());
+                    }
+                }
+            }
+        }
+        assertEquals(50, TrickCardMetrics.forTable(5, 353).cardWidthDp());
+    }
+
     @Test public void shorterCardFacesKeepSeatAnchorsAndAvoidSeatsAcrossWidthsAndTextScales() {
         for (int width : new int[]{240, 280, 313, 353, 560, 760}) {
             for (int players = 3; players <= 6; players++) {
@@ -15,7 +34,7 @@ public final class TrickCardMetricsComponentTest {
                     TrickCardMetrics.Layout layout = TrickCardMetrics.forTable(players, width, fontScale);
                     int expectedRows = players == 4 ? 3 : 2;
                     assertEquals("Played-card faces retain the requested reduced height",
-                            78, layout.cardHeightDp());
+                            70, layout.cardHeightDp());
                     assertTrue(layout.cardWidthDp() >= TrickCardMetrics.MIN_CARD_WIDTH_DP);
                     assertTrue(layout.cardWidthDp() <= TrickCardMetrics.MAX_CARD_WIDTH_DP);
                     assertEquals(width, layout.centerWidthDp());
@@ -98,15 +117,15 @@ public final class TrickCardMetricsComponentTest {
         assertEquals(0, three.slotForSeat(2).row());
 
         var five = TrickCardMetrics.forTable(5, 353);
-        assertTrue(five.slotForSeat(1).leftDp() < five.slotForSeat(2).leftDp());
-        assertTrue(five.slotForSeat(4).leftDp() < five.slotForSeat(0).leftDp());
-        assertTrue(five.slotForSeat(0).leftDp() < five.slotForSeat(3).leftDp());
+        assertTrue(five.slotForSeat(2).leftDp() < five.slotForSeat(3).leftDp());
+        assertTrue(five.slotForSeat(1).leftDp() < five.slotForSeat(0).leftDp());
+        assertTrue(five.slotForSeat(0).leftDp() < five.slotForSeat(4).leftDp());
         assertEquals(1, five.slotForSeat(0).row());
 
         var six = TrickCardMetrics.forTable(6, 353);
-        assertTrue(six.slotForSeat(1).leftDp() < six.slotForSeat(2).leftDp());
         assertTrue(six.slotForSeat(2).leftDp() < six.slotForSeat(3).leftDp());
-        assertTrue(six.slotForSeat(4).leftDp() < six.slotForSeat(0).leftDp());
+        assertTrue(six.slotForSeat(3).leftDp() < six.slotForSeat(4).leftDp());
+        assertTrue(six.slotForSeat(1).leftDp() < six.slotForSeat(0).leftDp());
         assertTrue(six.slotForSeat(0).leftDp() < six.slotForSeat(5).leftDp());
     }
 
@@ -115,18 +134,25 @@ public final class TrickCardMetricsComponentTest {
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(7, 353));
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 0));
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, Float.NaN));
+        assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, Float.POSITIVE_INFINITY));
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 239));
-        assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 1f, 79));
+        assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 1f, 71));
+        assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 1f, 63));
     }
 
-    @Test public void shortWindowsReduceHeightWithoutReducingCardWidthOrLosingSlots() {
+    @Test public void shortWindowsScaleBothDimensionsWithoutLosingSeatSlots() {
         for (int players : new int[]{3, 4, 5, 6}) {
-            var layout = TrickCardMetrics.forTable(players, 320, 1f, 71, 2);
-            var tall = TrickCardMetrics.forTable(players, 320, 1f, 78, 2);
-            assertEquals(71, layout.cardHeightDp());
+            var layout = TrickCardMetrics.forTable(players, 320, 1f, 64, 2);
+            var tall = TrickCardMetrics.forTable(players, 320, 1f, 70, 2);
+            assertEquals(64, layout.cardHeightDp());
             assertEquals(2, layout.itemVerticalPaddingDp());
-            assertEquals(tall.cardWidthDp(), layout.cardWidthDp());
-            assertEquals(tall.slots(), layout.slots());
+            assertEquals(46, layout.cardWidthDp());
+            assertEquals(50, tall.cardWidthDp());
+            for (int seat=0;seat<players;seat++) {
+                assertEquals(tall.slotForSeat(seat).row(), layout.slotForSeat(seat).row());
+                assertEquals(tall.slotForSeat(seat).leftDp()+tall.cardWidthDp()/2.0,
+                        layout.slotForSeat(seat).leftDp()+layout.cardWidthDp()/2.0,1);
+            }
             assertEquals(layout.rows() * (layout.cardHeightDp() + layout.playerLabelHeightDp()
                             + layout.itemVerticalPaddingDp()), layout.centerHeightDp());
         }

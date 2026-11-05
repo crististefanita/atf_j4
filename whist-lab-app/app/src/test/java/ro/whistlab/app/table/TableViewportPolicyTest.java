@@ -13,7 +13,7 @@ public class TableViewportPolicyTest {
             var viewport=new TableViewportPolicy(818,fontScale);
             assertTrue(viewport.isCompact());
             assertFalse(viewport.showPlayHint());
-            assertEquals("Only the physical short-window threshold changes card height",78,viewport.playedCardFaceHeightDp());
+            assertEquals("Only the physical short-window threshold changes card height",70,viewport.playedCardFaceHeightDp());
             for(int players=3;players<=6;players++) {
                 var trick=TrickCardMetrics.forTable(players,353,fontScale,viewport);
                 int reference=ro.whistlab.app.seat.PlayerSeatMetrics.referenceFrameHeightPx(
@@ -96,19 +96,19 @@ public class TableViewportPolicyTest {
         assertEquals(12, compact.handClearanceDp(true));
         assertEquals(1, compact.seatVerticalPaddingDp());
         assertEquals(0, compact.outerVerticalPaddingDp());
-        assertEquals(71, compact.playedCardFaceHeightDp());
+        assertEquals(64, compact.playedCardFaceHeightDp());
         assertEquals(2, compact.playedCardItemVerticalPaddingDp());
-        assertEquals(98, HandLayoutMetrics.cardHeightDp());
+        assertEquals(88, HandLayoutMetrics.cardHeightDp());
         assertEquals(48, BidGridMetrics.CHOICE_TARGET_DP);
         var intermediate = new TableViewportPolicy(626);
         assertTrue(intermediate.isCompact());
-        assertEquals(78, intermediate.playedCardFaceHeightDp());
+        assertEquals(70, intermediate.playedCardFaceHeightDp());
         var roomy = new TableViewportPolicy(818);
         assertFalse(roomy.isCompact());
         assertTrue(roomy.showPlayHint());
         assertEquals(4, roomy.seatVerticalPaddingDp());
         assertEquals(4, roomy.outerVerticalPaddingDp());
-        assertEquals(78, roomy.playedCardFaceHeightDp());
+        assertEquals(70, roomy.playedCardFaceHeightDp());
         assertEquals(TrickCardMetrics.ITEM_VERTICAL_PADDING_DP, roomy.playedCardItemVerticalPaddingDp());
     }
 
@@ -141,7 +141,7 @@ public class TableViewportPolicyTest {
                             box.overlaps(occupied.get(second)));
                 }
             }
-            assertEquals(71, trick.cardHeightDp());
+            assertEquals(64, trick.cardHeightDp());
             assertEquals("Names remain in the seat frames and accessible card descriptions", 0, trick.playerLabelHeightDp());
         }
     }
@@ -175,13 +175,15 @@ public class TableViewportPolicyTest {
         }
     }
 
-    @Test public void pixelRoundingDoesNotChangeTheFourSeatPlayingRing() {
+    @Test public void pixelRoundingKeepsTheFourSeatOpponentArcClearOfThePlayingBand() {
         for (int width : new int[]{280, 313, 353, 560, 760}) for (float density : new float[]{1, 1.5f, 2, 2.25f, 2.75f, 3.5f}) {
             int w = Math.round(width * density), seat = Math.round(TableLayoutMetrics.seatWidthDp(width) * density);
             var plan = TableGeometry.arrange(w, Math.round(400 * density), 4, seat, Math.round(70 * density),
                     Math.round(TableLayoutMetrics.centerPlayWidthDp(width) * density), Math.round(144 * density), Math.round(8 * density));
-            assertEquals("west/east must stay centered at " + width + "@" + density,
-                    Math.round(400 * density) / 2.0, (plan.seats().get(1).top() + plan.seats().get(1).bottom()) / 2.0, 0.5);
+            assertTrue(plan.seats().get(1).bottom() <= plan.center().top());
+            assertTrue(plan.seats().get(3).bottom() <= plan.center().top());
+            assertEquals(plan.seats().get(1).top(), plan.seats().get(3).top());
+            assertEquals(Math.round(400*density),plan.seats().getFirst().bottom());
         }
     }
 }

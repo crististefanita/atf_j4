@@ -5,7 +5,8 @@ import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 /** Independent measured observations, not an implementation of the application's layout algorithm. */
 final class SyntheticTableHierarchy {
     enum Fault { NONE, MISSING_HUMAN, SHORT_SEAT, SHORT_FACE, SCROLL, ZERO_TITLE, ZERO_TRUMP, OVERLAP, OBSTRUCTED_WINDOW,
-        MISSING_ACTION, ACTION_BELOW_NAME, CUT_ACTION, TALL_PLAYED_FACE }
+        MISSING_ACTION, ACTION_BELOW_NAME, CUT_ACTION, TALL_PLAYED_FACE, TALL_HAND_FACE,
+        THIN_HAND_FACE, THIN_PLAYED_FACE, WIDE_PLAYED_FACE }
     private static final String[] INDICES={"3♠","4♠","5♠","6♠","7♠","8♠","9♠","10♠","J♠","Q♥","K♣","A♦","2♥"};
     private final ResponsiveDisplayProfile profile;
     private final double density;
@@ -46,19 +47,24 @@ final class SyntheticTableHierarchy {
                 int x=places[seat][0],y=places[seat][1];
                 if(seat==3&&fault==Fault.OVERLAP){x=133;y=355;}
                 int height=profile.playedCardFaceHeightDp();
+                int width=height==64?46:50;
+                if(seat==0&&fault==Fault.THIN_PLAYED_FACE)width=44;
+                if(seat==0&&fault==Fault.WIDE_PLAYED_FACE)width=88;
                 xml.append("<node class=\"android.widget.LinearLayout\" content-desc=\"AI").append(seat)
-                        .append(" played ").append(descriptions[seat]).append("\" bounds=\"").append(bounds(x,y,42,height+2)).append("\">")
-                        .append(node("android.widget.TextView",labels[seat],"",bounds(x,y+1,42,
+                        .append(" played ").append(descriptions[seat]).append("\" bounds=\"").append(bounds(x,y,width,height+2)).append("\">")
+                        .append(node("android.widget.TextView",labels[seat],"",bounds(x,y+1,width,
                                 height+(seat==0&&fault==Fault.TALL_PLAYED_FACE?1:0)))).append("</node>");
             }
         }
         xml.append("</node><node class=\"android.widget.FrameLayout\" content-desc=\"Your hand, ").append(count)
                 .append(" cards.\" bounds=\"").append(bounds(10,440,300,120)).append("\">");
-        int cardWidth=px(42),advance=count==1?0:Math.min(px(22),(px(300)-cardWidth)/(count-1));
+        int cardWidth=px(63),advance=count==1?0:Math.min(px(22),(px(300)-cardWidth)/(count-1));
         int start=origin+px(10)+(px(300)-cardWidth-(count-1)*advance)/2;
         for(int card=0;card<count;card++) {
-            int left=start+card*advance,top=px(450),height=px(fault==Fault.SHORT_FACE&&card==0?97:98);
-            String face="["+left+","+top+"]["+(left+cardWidth)+","+(top+height)+"]";
+            int heightDp=card==0&&fault==Fault.TALL_HAND_FACE?98:card==0&&fault==Fault.SHORT_FACE?87:88;
+            int left=start+card*advance,top=px(450),height=px(heightDp);
+            int faceWidth=card==0&&fault==Fault.THIN_HAND_FACE?px(42):cardWidth;
+            String face="["+left+","+top+"]["+(left+faceWidth)+","+(top+height)+"]";
             String index=INDICES[card];
             String label=index.substring(0,index.length()-1)+"&#10;"+index.substring(index.length()-1);
             xml.append("<node class=\"android.widget.FrameLayout\" bounds=\"").append(face).append("\">")

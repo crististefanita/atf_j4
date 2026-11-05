@@ -45,6 +45,10 @@ Fixture-ul descrie regiuni măsurate, fără să apeleze algoritmul de layout al
 - Verificarea acțiunii din [decodor](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) este comună observațiilor simulate și checkpoint-urilor E2E de joc și licitare. Controalele negative elimină acțiunea, îi schimbă textul sau o mută peste nume; pauza are explicit zero acțiuni active.
 - Distanța până la jucător se măsoară față de reuniunea chenarului și a acțiunii lui. Un spațiu liber până la chenar nu permite unui control să acopere eticheta aflată deasupra.
 - Dimensiunile declarate ale atuului și fețelor jucate au comparații în pixeli și toleranță de rotunjire. O față mai înaltă decât cea cerută nu trece doar pentru că depășește un prag minim.
+- [TrumpIndicatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java) verifică aceeași proiecție a atuului în toate modurile și limbile, lipsa rândului redundant, două regiuni de font complete și separarea conturului butonului de ținta tactilă. Măsurătorile injectate nu înlocuiesc randarea fontului Android.
+- [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java) deține proporția 5:7: 63×88 dp în mână, respectiv 46×64 sau 50×70 dp pe masă. Componentele verifică reducerea înălțimii cu 10%, rotunjirea, ridicarea și dimensiunile identice la 1–13 cărți și 3–6 locuri.
+- [Ordinea locurilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java) confruntă numele și cărțile cu aceeași parcurgere circulară; un test folosește licitația și prima levată efectivă din motor, pentru fiecare variantă și număr de jucători. La patru locuri, arcul adversarilor eliberează lățimea completă a levatei.
+- Oracolul de observație păstrează așteptări independente de calculul aplicației și compară ambele dimensiuni cu toleranță de un pixel. Probele negative includ mâna rămasă înaltă, cărți subțiate și fețe jucate prea late; depășirea unui minim nu substituie dimensiunea cerută.
 
 ## Colecții și comenzi
 

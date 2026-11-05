@@ -10,6 +10,24 @@ import org.junit.Test;
 
 /** Tests occupied regions together, including the nine-option regression. */
 public final class GameTableLayoutComponentTest {
+    @Test public void cardHeightsApplyTheTenPercentReductionOnceWithOnePortraitProportion() {
+        assertEquals(Math.round(98 * 0.9f), HandLayoutMetrics.cardHeightDp());
+        assertEquals(Math.round(78 * 0.9f), TrickCardMetrics.CARD_HEIGHT_DP);
+        assertEquals(63, HandLayoutMetrics.cardWidthDp(1f));
+        for (float scale : new float[]{1f, 1.3f, 1.5f, 2f}) {
+            assertEquals(Math.round(71 * 0.9f), new TableViewportPolicy(599, scale).playedCardFaceHeightDp());
+            assertEquals(Math.round(78 * 0.9f), new TableViewportPolicy(600, scale).playedCardFaceHeightDp());
+        }
+        assertEquals(116, HandLayoutMetrics.reservedHandHeightDp());
+        for (int width : new int[]{280, 313, 353, 560}) for (int cards=1;cards<=13;cards++) {
+            for (float scale : new float[]{1f,1.3f,1.5f,2f}) {
+                assertEquals("Only overlap changes with the hand size",63,HandLayoutMetrics.cardWidthDp(cards,width,scale));
+            }
+        }
+        assertEquals(88, HandLayoutMetrics.cardHeightDp());
+        assertThrows(IllegalArgumentException.class,()->ro.whistlab.app.cards.CardFaceMetrics.atHeight(0));
+    }
+
     @Test public void allHandCountsRemainCenteredWithoutGapsAtActualWindowDensities() {
         for (int width : new int[]{280, 313, 353, 560, 760}) for (float density : new float[]{1, 2, 2.625f, 2.75f}) {
             int pixels = Math.round(width * density);
@@ -26,6 +44,29 @@ public final class GameTableLayoutComponentTest {
                 }
             }
         }
+    }
+
+    @Test public void thirteenStandardFacesFitWithoutAccumulatingFractionalPixelAdvanceRounding() {
+        for (int width : new int[]{280,313,353,560}) for (float density : new float[]{1f,1.5f,2.25f,2.625f,2.75f,3.5f}) {
+            int viewport=Math.round(width*density),glyph=Math.round(17*density);
+            var fan=HandLayoutMetrics.fan(13,viewport,density,1f,glyph);
+            assertEquals("All thirteen faces fit the first viewport",viewport,fan.width());
+            assertEquals(Math.round(63*density),fan.cardWidth());
+            assertTrue(fan.first()>=0);
+            assertTrue(fan.left(12)+fan.cardWidth()<=viewport);
+            for(int card=1;card<13;card++)assertTrue(fan.left(card)-fan.left(card-1)>=glyph);
+        }
+    }
+
+    @Test public void invalidScalesAndMeasuredExtentsCannotInventAValidHand() {
+        for(float invalid:new float[]{0,-1,Float.NaN,Float.POSITIVE_INFINITY}) {
+            assertThrows(IllegalArgumentException.class,()->HandLayoutMetrics.fan(13,630,invalid,1f,38));
+            assertThrows(IllegalArgumentException.class,()->HandLayoutMetrics.cardWidthDp(invalid));
+            assertThrows(IllegalArgumentException.class,()->HandLayoutMetrics.minVisibleAdvanceDp(invalid));
+        }
+        assertThrows(IllegalArgumentException.class,()->HandLayoutMetrics.fan(13,0,2.25f,1f,38));
+        assertThrows(IllegalArgumentException.class,()->HandLayoutMetrics.fan(13,630,2.25f,1f,0));
+        assertThrows(IllegalArgumentException.class,()->new ro.whistlab.app.cards.CardFaceMetrics(-1));
     }
 
     @Test public void newGameListsSixModesWithStableSelectionInBothLanguages() {
@@ -80,8 +121,8 @@ public final class GameTableLayoutComponentTest {
 
     @Test public void sixSeatsUseTheAvailableArcBesideAWideBiddingGrid() {
         var plan = TableGeometry.arrange(971, 1160, 6, 281, 196, 720, 408, 22);
-        var leftShoulder = plan.seats().get(1);
-        var north = plan.seats().get(2);
+        var leftShoulder = plan.seats().get(2);
+        var north = plan.seats().get(3);
         assertTrue(leftShoulder.top() - north.top() >= 1160 * 0.13);
         assertEquals(22, plan.center().top() - leftShoulder.bottom());
     }
@@ -114,10 +155,16 @@ public final class GameTableLayoutComponentTest {
     }
 
     @Test public void liftedCardKeepsItsClearanceAndRemainsBehindItsNeighbours() {
-        assertEquals(98, HandLayoutMetrics.cardHeightDp());
+        assertEquals(88, HandLayoutMetrics.cardHeightDp());
         assertTrue(HandLayoutMetrics.LIFT_CLEARANCE_DP >= HandLayoutMetrics.CARD_LIFT_DP
                 + (int) Math.ceil(HandLayoutMetrics.CARD_HEIGHT_DP * (HandLayoutMetrics.CARD_LIFT_SCALE - 1) / 2));
         assertTrue(HandLayoutMetrics.SELECTED_Z_DP < HandLayoutMetrics.NEIGHBOR_Z_DP);
+        for (float density : new float[]{1f, 1.5f, 2.25f, 2.625f, 2.75f, 3.5f}) {
+            int scaledFace = Math.round(88 * density);
+            int liftedExtra = (int) Math.ceil(scaledFace * (HandLayoutMetrics.CARD_LIFT_SCALE - 1) / 2);
+            assertTrue(Math.round(HandLayoutMetrics.LIFT_CLEARANCE_DP * density)
+                    >= Math.round(HandLayoutMetrics.CARD_LIFT_DP * density) + liftedExtra);
+        }
     }
 
     @Test public void denseBidsUseAvailableColumnsWithoutShrinkingTouchTargets() {

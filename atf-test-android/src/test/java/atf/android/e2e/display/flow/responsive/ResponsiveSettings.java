@@ -11,7 +11,8 @@ public final class ResponsiveSettings {
 
     public static final Duration WAIT = Duration.ofSeconds(35);
 
-    public static final int HAND_CARD_FACE_HEIGHT_DP = 98;
+    public static final int HAND_CARD_FACE_HEIGHT_DP =
+            atf.android.e2e.display.profile.ResponsiveDisplayProfile.HAND_CARD_FACE_HEIGHT_DP;
 
     public static final String OUTPUT = "atf.android.artifacts";
 

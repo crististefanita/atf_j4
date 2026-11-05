@@ -2,16 +2,16 @@ package ro.whistlab.app.table;
 
 import java.util.ArrayList;
 import java.util.List;
+import ro.whistlab.app.cards.CardFaceMetrics;
 
 /** Stable, seat-oriented trick slots; the full number of rows is reserved before play. */
 final class TrickCardMetrics {
-    static final int CARD_HEIGHT_DP = 78;
-    static final int BASE_CARD_WIDTH_DP = 44;
-    static final int MIN_CARD_WIDTH_DP = 32;
-    static final int MAX_CARD_WIDTH_DP = 88;
+    static final int CARD_HEIGHT_DP = 70;
+    static final int SHORT_CARD_HEIGHT_DP = 64;
+    static final int MIN_CARD_WIDTH_DP = CardFaceMetrics.atHeight(SHORT_CARD_HEIGHT_DP).widthDp();
+    static final int MAX_CARD_WIDTH_DP = CardFaceMetrics.atHeight(CARD_HEIGHT_DP).widthDp();
     static final int PLAYER_LABEL_HEIGHT_DP = 14;
     static final int ITEM_VERTICAL_PADDING_DP = 4;
-    static final int ITEM_HORIZONTAL_INSET_DP = 6;
 
     record Slot(int seat, int row, int leftDp) { }
 
@@ -73,41 +73,34 @@ final class TrickCardMetrics {
         if (!Float.isFinite(fontScale) || fontScale <= 0) {
             throw new IllegalArgumentException("Font scale must be positive and finite");
         }
-        if (cardHeightDp < 1 || cardHeightDp > CARD_HEIGHT_DP) {
-            throw new IllegalArgumentException("Played-card height must be between 1 and " + CARD_HEIGHT_DP + " dp");
+        if (cardHeightDp < SHORT_CARD_HEIGHT_DP || cardHeightDp > CARD_HEIGHT_DP) {
+            throw new IllegalArgumentException("Played-card height must be between " + SHORT_CARD_HEIGHT_DP + " and " + CARD_HEIGHT_DP + " dp");
         }
         if (itemVerticalPaddingDp < 0 || itemVerticalPaddingDp > ITEM_VERTICAL_PADDING_DP) {
             throw new IllegalArgumentException("Played-card row padding must be between 0 and 4 dp");
         }
 
-        int safeCenterWidth = TableLayoutMetrics.centerPlayWidthDp(tableWidthDp, compact);
-        int maxEdgeCardWidth = Math.max(MIN_CARD_WIDTH_DP,
-                tableWidthDp / 3 - ITEM_HORIZONTAL_INSET_DP);
-        int cardWidth = Math.min(MAX_CARD_WIDTH_DP, maxEdgeCardWidth);
-        if (players == 4) {
-            int maxSideCardWidth = Math.max(MIN_CARD_WIDTH_DP,
-                    (safeCenterWidth - ITEM_HORIZONTAL_INSET_DP) / (compact ? 3 : 2));
-            cardWidth = Math.min(cardWidth, maxSideCardWidth);
-        }
+        int safeCenterWidth = tableWidthDp;
+        int cardWidth = CardFaceMetrics.atHeight(cardHeightDp).widthDp();
 
         int rows = players == 4 ? 3 : 2;
         int labelHeight = compact ? 0 : (int) Math.ceil(PLAYER_LABEL_HEIGHT_DP * fontScale);
         int cellHeight = cardHeightDp + labelHeight + itemVerticalPaddingDp;
         int rowStride = compact && players == 4 ? (cellHeight + 3) / 2 : cellHeight;
-        List<Slot> slots = seatSlots(players, tableWidthDp, safeCenterWidth, cardWidth, rows, compact);
+        List<Slot> slots = seatSlots(players, tableWidthDp, cardWidth, rows);
         return new Layout(3, rows, cardWidth, cardHeightDp, labelHeight, itemVerticalPaddingDp,
                 tableWidthDp, safeCenterWidth, cellHeight, rowStride,
                 cellHeight + (rows - 1) * rowStride, slots);
     }
 
-    private static List<Slot> seatSlots(int players, int width, int safeWidth,
-            int cardWidth, int rows, boolean compact) {
+    private static List<Slot> seatSlots(int players, int width, int cardWidth, int rows) {
         TableSeatLayout.Anchor[] anchors = TableSeatLayout.positions(players);
         List<Slot> slots = new ArrayList<>(java.util.Collections.nCopies(players, null));
         for (int row = 0; row < rows; row++) {
             List<Integer> seats = new ArrayList<>();
             for (int seat = 0; seat < anchors.length; seat++) {
-                if (rowFor(anchors[seat], rows) == row) seats.add(seat);
+                int cardRow = players == 4 ? (seat == 0 ? 2 : seat == 2 ? 0 : 1) : rowFor(anchors[seat], rows);
+                if (cardRow == row) seats.add(seat);
             }
             seats.sort((first, second) -> Integer.compare(
                     horizontalOrder(anchors[first]), horizontalOrder(anchors[second])));
@@ -115,9 +108,7 @@ final class TrickCardMetrics {
                 int seat = seats.get(index);
                 double center;
                 if (players == 4 && row == 1) {
-                    center = (width - safeWidth) / 2.0
-                            + safeWidth * (compact ? (index == 0 ? 1.0 / 6 : 5.0 / 6)
-                                    : (index + 0.5) / seats.size());
+                    center = width * (index == 0 ? 1.0 / 6 : 5.0 / 6);
                 } else if (seats.size() == 1) {
                     center = width / 2.0;
                 } else if (seats.size() == 2) {

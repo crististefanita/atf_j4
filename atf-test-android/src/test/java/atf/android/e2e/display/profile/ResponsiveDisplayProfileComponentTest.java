@@ -25,13 +25,17 @@ class ResponsiveDisplayProfileComponentTest {
 
     @Test
     void compactProfilesDeclareTheResponsivePlayedCardHeightContract() {
+        assertEquals(88, ResponsiveDisplayProfile.HAND_CARD_FACE_HEIGHT_DP);
+        assertEquals(63, ResponsiveDisplayProfile.HAND_CARD_FACE_WIDTH_DP);
         var profiles = ResponsiveDisplayProfile.parse("720x1280@360,1080x1920@440");
         assertEquals(569, profiles.get(0).logicalHeightDp());
-        assertEquals(71, profiles.get(0).playedCardFaceHeightDp());
-        assertEquals(73, profiles.get(0).minimumPlayedCardSlotHeightDp());
+        assertEquals(64, profiles.get(0).playedCardFaceHeightDp());
+        assertEquals(46, profiles.get(0).playedCardFaceWidthDp());
+        assertEquals(66, profiles.get(0).minimumPlayedCardSlotHeightDp());
         assertEquals(698, profiles.get(1).logicalHeightDp());
-        assertEquals(78, profiles.get(1).playedCardFaceHeightDp());
-        assertEquals(80, profiles.get(1).minimumPlayedCardSlotHeightDp());
+        assertEquals(70, profiles.get(1).playedCardFaceHeightDp());
+        assertEquals(50, profiles.get(1).playedCardFaceWidthDp());
+        assertEquals(72, profiles.get(1).minimumPlayedCardSlotHeightDp());
     }
 
     @Test

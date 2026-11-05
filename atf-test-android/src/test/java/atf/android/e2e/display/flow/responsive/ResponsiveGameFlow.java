@@ -362,7 +362,7 @@ public final class ResponsiveGameFlow {
         double density = profile.density() / 160.0;
         int playedCardFaceHeightDp = profile.playedCardFaceHeightDp();
         int playedCardFaceHeight = (int) Math.round(playedCardFaceHeightDp * density);
-        boolean faceHeightReserved = height(cardFace) >= playedCardFaceHeight;
+        boolean faceHeightReserved = Math.abs(height(cardFace) - playedCardFaceHeight) <= 1;
         boolean cardInsideTable = contains(board, cardSlot);
         boolean centered = Math.abs(centerX(cardSlot) - centerX(board)) <= width(board) * 0.12;
         List<Path> styleCapture = ui.capture(profile.id() + "-responsive-played-card-style");
@@ -378,8 +378,7 @@ public final class ResponsiveGameFlow {
         boolean trumpMatchesCurrentSeat = seatFill == trumpFill;
         int trumpHeadingInk = darkTextPixels(image, ui.boundsForText(xml, "TRUMP"), profile);
         int trumpSuitInk = darkTextPixels(image, ui.boundsForText(xml, "♠"), profile);
-        int trumpStatusInk =
-                darkTextPixels(image, ui.boundsForText(xml, "NO TURNED CARD"), profile);
+        boolean noRedundantTrumpStatus = !ui.hasText(xml, "NO TURNED CARD");
         List<AtfAssertion> styleChecks =
                 new ArrayList<>(
                         List.of(
@@ -420,10 +419,10 @@ public final class ResponsiveGameFlow {
                                         trumpSuitInk,
                                         trumpSuitInk >= 3),
                                 check(
-                                        "Active trump status has readable contrast",
-                                        "at least 3 dark text pixels",
-                                        trumpStatusInk,
-                                        trumpStatusInk >= 3)));
+                                        "Trump suit has no redundant status footer",
+                                        "NO TURNED CARD absent; title and suit checked separately",
+                                        noRedundantTrumpStatus,
+                                        noRedundantTrumpStatus)));
         checkCaptureSize(adb, styleCapture, profile, styleChecks);
         publishCheckpoint(
                 ui,
@@ -438,7 +437,7 @@ public final class ResponsiveGameFlow {
         board = ui.boundsForDescription(xml, "Playing surface");
         List<String> visibleSeatDescriptions = seatDescriptions(ui, xml);
         List<AndroidUiDriver.Bounds> seats = seatBounds(ui, xml);
-        boolean fullFaceStillVisible = height(cardFace) >= playedCardFaceHeight;
+        boolean fullFaceStillVisible = Math.abs(height(cardFace) - playedCardFaceHeight) <= 1;
         int fullCardRowHeight = profile.minimumPlayedCardSlotHeightDp();
         boolean completeCardRowVisible =
                 height(cardSlot) >= (int) Math.round(fullCardRowHeight * density);

@@ -160,8 +160,8 @@ public final class ResponsiveMenuChecks {
                                         face ->
                                                 face.top() >= viewport.top()
                                                         && face.bottom() <= viewport.bottom()
-                                                        && ScreenGeometry.height(face)
-                                                                >= expectedFaceHeight);
+                                                        && Math.abs(ScreenGeometry.height(face)
+                                                                - expectedFaceHeight) <= 1);
         long labelBaselines =
                 labels.stream().map(AndroidUiDriver.CardLabel::top).distinct().count();
         List<AtfAssertion> checks =

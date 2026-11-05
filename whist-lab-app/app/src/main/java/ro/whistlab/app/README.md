@@ -45,6 +45,7 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 ## Principii de aranjare
 
 - Locul omului rămâne sud; poziția cărții jucate depinde de locul actorului și de ordinea levatei.
+- [CardFaceMetrics](cards/CardFaceMetrics.java) păstrează proporția comună 5:7, scalată după rol; mâna schimbă suprapunerea, iar numărul jucătorilor schimbă pozițiile. [TableSeatLayout](table/TableSeatLayout.java) urmează ordinea circulară a motorului; la patru locuri adversarii ocupă un arc superior, fără îngustarea cărților jucate.
 - Licitarea și levata folosesc regiunea centrală; [TableViewportPolicy](table/TableViewportPolicy.java) adaptează spațiul decorativ și înălțimea fețelor pentru ferestre scunde.
 - Bugetul decorativ ține cont de înălțimea utilă și de scara fontului. Aranjarea compactă poate fi necesară și pe un ecran înalt cu text mărit; dimensiunea cărților din mână și a țintelor tactile rămâne constantă.
 - Fiecare tură de licitare este randată înaintea calculului automat. Controalele omului sunt inactive cât licitează un adversar; eticheta de acțiune rămâne asociată locului care deține tura.

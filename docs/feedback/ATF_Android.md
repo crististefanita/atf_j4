@@ -24,6 +24,12 @@ Nu rescrieți identitatea tehnică observată în dovezile brute pentru a anonim
 
 [Politicile și oracolele display](../testing/ATF_DisplayComponents.md) · [Scenariul nativ](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii)
 
+## Acceptanța nativă a proporțiilor și ordinii
+
+| Prioritate | Calificare rămasă | Criteriu de închidere |
+|---|---|---|
+| P1 | Randarea proporției comune și arcul celor trei adversari; componentele nu substituie fonturile și interacțiunea Android. | Sanity restrâns pe un profil compact și unul înalt: 13 cărți, levată completă la 4/5 locuri, nume și indicii lizibili, fără intersecții; confruntați succesiunea actorilor cu pozițiile numelor la 3–6 locuri. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
+
 ## Diferență de contract: levatele istorice
 
 [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează licitațiile și soldurile după mâini; punctele se derivă din diferența soldurilor. Levatele fiecărui loc nu sunt stocate separat în acest registru.

@@ -146,7 +146,7 @@ public final class GameTablePanel extends LinearLayout {
                         getResources().getConfiguration().fontScale, viewport);
         int centerWidthDp = bidding
                 ? Math.max(132, Math.min(bidOptions.size(), BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp)) * 52)
-                : TableLayoutMetrics.centerPlayWidthDp(tableWidthDp, viewport.isCompact());
+                : trickLayout.safeCenterWidthDp();
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
                 viewport, !bidding, bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
                         : TableGeometry.CenterAlignment.BALANCED);
@@ -366,7 +366,7 @@ public final class GameTablePanel extends LinearLayout {
         TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CARD_DARK, true);
         float widestIndex = measurement.getPaint().measureText("10");
         for (String symbol : List.of("♠", "♥", "♣", "♦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
-        int indexWidthDp = (int) Math.ceil(widestIndex / getResources().getDisplayMetrics().density) + 4;
+        int indexWidthDp = (int) Math.ceil(widestIndex / getResources().getDisplayMetrics().density) + 2;
         if (cardCount == 0) return fan;
         HandLayoutMetrics.Fan layout = HandLayoutMetrics.fan(cardCount, widthPx,
                 getResources().getDisplayMetrics().density, fontScale, dp(indexWidthDp));
@@ -425,7 +425,7 @@ public final class GameTablePanel extends LinearLayout {
                 card.suit().red() ? CARD_RED : CARD_DARK, true);
         label.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         label.setIncludeFontPadding(false);
-        label.setPadding(dp(2), dp(5), dp(2), 0);
+        label.setPadding(dp(1), dp(5), dp(1), 0);
         label.setTag("card-index");
         face.addView(label, new FrameLayout.LayoutParams(
                 dp(indexWidthDp), ViewGroup.LayoutParams.WRAP_CONTENT));
