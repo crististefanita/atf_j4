@@ -17,6 +17,7 @@ import ro.whistlab.app.profile.PlayerPreferences;
 import ro.whistlab.app.profile.PlayerSettingsDialog;
 import ro.whistlab.app.score.ScoreTableView;
 import ro.whistlab.app.table.GameTablePanel;
+import ro.whistlab.app.table.GameHeaderTypography;
 import ro.whistlab.app.table.TrumpIndicatorView;
 import ro.whistlab.app.theme.WhistUiPalette;
 import ro.whistlab.app.window.WindowContent;
@@ -391,12 +392,12 @@ public final class MainActivity extends Activity {
         LinearLayout status = new LinearLayout(this);
         status.setOrientation(LinearLayout.VERTICAL);
         status.setPadding(dp(8), 0, 0, 0);
-        TextView title = text(copy.gameTitle(state.mode()), 14, Color.rgb(245, 248, 240), true);
+        TextView title = text(copy.gameTitle(state.mode()), GameHeaderTypography.TITLE_SP, Color.rgb(245, 248, 240), true);
         title.setSingleLine(true);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         title.setTag("game-title");
-        TextView progress = text(copy.progress(state), 11, Color.rgb(229, 239, 230), true);
-        TextView summary = text(copy.bidSummary(state), 9, Color.rgb(194, 216, 199), false);
+        TextView progress = text(copy.progress(state), GameHeaderTypography.PROGRESS_SP, Color.rgb(229, 239, 230), true);
+        TextView summary = text(copy.bidSummary(state), GameHeaderTypography.BID_SUMMARY_SP, Color.rgb(194, 216, 199), false);
         summary.setSingleLine(false);
         status.addView(title, matchWrap());
         status.addView(progress, matchWrap());
@@ -805,7 +806,7 @@ public final class MainActivity extends Activity {
         parent.addView(view, params);
     }
 
-    private TextView text(String value, int size, int color, boolean bold) {
+    private TextView text(String value, float size, int color, boolean bold) {
         TextView view = new TextView(this);
         view.setText(value);
         view.setTextSize(size);
