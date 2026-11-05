@@ -1,0 +1,52 @@
+{
+  "status": "PUBLIC_DOWNLOAD_NOT_VERIFIED",
+  "anonymous": [
+    {
+      "url": "https://github.com/crististefanita",
+      "httpStatus": 404,
+      "responseBytes": 230257
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4",
+      "httpStatus": 404,
+      "responseBytes": 230267
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/tag/v0.1.9",
+      "httpStatus": 404,
+      "responseBytes": 230552
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk",
+      "httpStatus": 404,
+      "responseBytes": 230887
+    }
+  ],
+  "/releases/tags/v0.1.9": {
+    "id": 435027600,
+    "tag_name": "v0.1.9",
+    "draft": false,
+    "published_at": "2026-11-05T09:59:49Z",
+    "name": "Whist Lab 0.1.9",
+    "state": null,
+    "size": null,
+    "digest": null
+  },
+  "/releases/assets/712919432": {
+    "id": 712919432,
+    "tag_name": null,
+    "draft": null,
+    "published_at": null,
+    "name": "WhistLab-0.1.9.apk",
+    "state": "uploaded",
+    "size": 771391,
+    "digest": "sha256:811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066"
+  },
+  "authenticatedAssetDownload": {
+    "status": "PASS",
+    "httpStatus": 200,
+    "bytes": 771391,
+    "sha256": "811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066",
+    "allZipEntriesPassedCrc": true
+  }
+}

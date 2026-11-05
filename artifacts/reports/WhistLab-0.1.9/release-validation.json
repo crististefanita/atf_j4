@@ -179,5 +179,13 @@
   "infrastructure": {
     "sharedCacheBootstrapBlockedBeforeUi": true,
     "finalRunUsedPrivateAtfCoordinates": true
+  },
+  "distribution": {
+    "githubReleaseCreated": true,
+    "assetUploaded": true,
+    "authenticatedAssetDownload": "PASS",
+    "anonymousBrowserDownload": "BLOCKED_HTTP_404",
+    "publicDeliveryQualified": false,
+    "proof": "github-download-verification.json"
   }
 }

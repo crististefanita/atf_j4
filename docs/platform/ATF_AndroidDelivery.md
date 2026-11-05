@@ -51,6 +51,8 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 Fișierul local este copiat într-un nume temporar, verificat și apoi publicat prin redenumire atomică. Asset-ul GitHub este descărcat din nou și confruntat înainte de handoff; răspunsurile HTTP negative rămân erori, fără promovarea lor la pachet instalabil.
 
+Calificați separat accesul autentificat și accesul anonim. `visibility=public`, starea `uploaded` și digest-ul corect al asset-ului nu dovedesc că browserul unui vizitator poate descărca binarul. Proba păstrează codul HTTP, numărul de bytes și hash-ul copiei primite; un blocaj de vizibilitate rămâne deschis până la răspunsul public reușit.
+
 ## Fereastra și versiunile Android noi
 
 [WindowContent](../../whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowContent.java) protejează rădăcinile ecranelor față de bare, decupaj și tastatură pe sistemele cu afișare edge-to-edge impusă. Padding-ul pornește dintr-o bază imuabilă, fără acumulare la redistribuirea insets-urilor.

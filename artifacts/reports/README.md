@@ -17,7 +17,7 @@ La un release nou, înlocuiți pachetul și actualizați acest registru. Build-u
 
 APK-ul release este destinat instalării directe; cheia nu este una de publicare Google Play. [Manifestul release-ului](WhistLab-0.1.9/release-validation.json) leagă binarul, testele, restaurarea datelor și limitele verificării.
 
-[Descarcă APK-ul din GitHub Release](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk) · [SHA-256 publicat](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk.sha256). Copia locală este publicată atomic după verificarea CRC; descărcarea asset-ului este confruntată separat cu binarul original.
+**Distribuția anonimă GitHub este blocată de HTTP 404.** [Release-ul publicat](https://github.com/crististefanita/atf_j4/releases/tag/v0.1.9) conține APK-ul și checksum-ul; descărcarea autentificată prin API a trecut cu 771.391 bytes, același SHA-256 și toate CRC-urile valide. [Proba distribuției](WhistLab-0.1.9/github-download-verification.json) păstrează separat rezultatele. Folosiți copia locală verificată până la calificarea accesului anonim.
 
 ## Rapoarte Extent
 

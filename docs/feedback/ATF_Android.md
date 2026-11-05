@@ -73,4 +73,14 @@ Componentele JVM verifică mecanismele, iar [scenariile Android](../../atf-test-
 
 Publicarea E2E include poze inline base64 și legătura dintre configurație, acțiune, comparație și rezultat. Acest catalog nu înlocuiește rezultatul execuției pe dispozitiv.
 
+## Distribuție GitHub: accesul anonim
+
+| Prioritate | Blocaj observat | Criteriu de închidere |
+|---|---|---|
+| P1 extern | Profilul, repository-ul și asset-ul returnează 404 anonim; API-ul autentificat declară repository public și release publicat, iar asset-ul complet trece hash-ul și CRC. | Confirmați vizibilitatea contului cu GitHub Support; URL-ul public al asset-ului trebuie să răspundă 200 și să producă exact mărimea și SHA-256 ale binarului verificat. |
+
+[Proba actuală](../../artifacts/reports/WhistLab-0.1.9/github-download-verification.json) separă upload-ul, descărcarea autentificată și accesul anonim. Cauza exactă nu este confirmată de API; simptomul este compatibil cu ascunderea conținutului la nivel de cont, mecanism descris de [GitHub](https://github.blog/news-insights/policy-news-and-insights/2022-transparency-report/). Nu modificați APK-ul pentru a compensa un răspuns HTTP negativ.
+
+Date utile pentru suport: repository `crististefanita/atf_j4`, release `v0.1.9`, ID `435027600`, asset `712919432`; asset-ul are 771.391 bytes și digest identic cu [registrul release-ului](../../artifacts/reports/README.md). Verificarea autentificată este PASS; distribuția publică rămâne necalificată.
+
 [Testarea Android](../testing/ATF_Android.md) · [Profiluri de ecran](../testing/ATF_Display.md) · [Atlasul interfeței](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
