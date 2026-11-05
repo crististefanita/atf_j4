@@ -8,6 +8,9 @@ public final class BidGridMetrics {
     public static final int CHOICE_TARGET_DP = 48;
     public static final int CHOICE_ROW_DP = 50;
     public static final int SUBMIT_TARGET_DP = 48;
+    public static final int SUBMIT_WIDTH_DP = 119;
+    public static final int SUBMIT_TEXT_SP = 13;
+    public static final int SUBMIT_VISUAL_INSET_DP = 2;
     public static final int DENSE_MIN_WIDTH_DP = DENSE_COLUMNS * (CHOICE_TARGET_DP + 4);
     public static final int DENSE_MAX_WIDTH_DP = 400;
 

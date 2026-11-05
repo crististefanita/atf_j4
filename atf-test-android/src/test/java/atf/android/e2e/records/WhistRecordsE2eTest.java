@@ -8,6 +8,23 @@ import org.junit.jupiter.api.Test;
 /** One real Android journey; controlled preconditions and actual card/UI actions remain separately identified. */
 @AndroidE2eTest
 public class WhistRecordsE2eTest {
+    @Test void compactHistoryAndSlashedContractsRemainReadable() throws Throwable {
+        execute(new RecordsContext("compact-history-sanity",
+                "Whist Lab — istoric compact, contracte ratate și text mărit RO/EN", "compact-history"),c -> {
+            c.phase("SETUP — preserved data and identified compact-history APK");
+            c.sandbox();c.home("EN");c.ui.awaitText("New game",java.time.Duration.ofSeconds(15));
+            c.check("Installed APK is the component-qualified build",
+                    RecordsContext.equal("APK SHA-256",c.setup.path("requestedApkSha256").asText(),
+                            c.raw("shell","sha256sum",c.setup.path("installedPath").asText()).split("\\s+")[0]));
+            c.command("Set portrait resolution","1080x2448","shell","wm","size","1080x2448");
+            c.command("Set portrait density","440 dpi","shell","wm","density","440");
+            c.command("Select normal text","1.0","shell","settings","put","system","font_scale","1.0");
+            NameHistoryScenarios.history(c,"compact normal text");
+            c.command("Enlarge history text","1.3","shell","settings","put","system","font_scale","1.3");
+            NameHistoryScenarios.history(c,"compact enlarged text");
+        });
+    }
+
     @Test void historyPresentationAcrossDeclaredPortraitProfiles() throws Throwable {
         execute(new RecordsContext("history-portrait-profiles",
                 "Whist Lab — masă, acțiuni și istoric RO/EN pe profiluri portret","history-profiles"),c -> {

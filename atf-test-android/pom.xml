@@ -36,8 +36,8 @@
                         <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
                         <testInclude>**/display/component/*.java</testInclude>
                         <testInclude>**/display/profile/*ComponentTest.java</testInclude>
-                        <testInclude>**/display/HandGeometryDriverComponentTest.java</testInclude>
-                        <testInclude>**/e2e/driver/*.java</testInclude>
+                        <testInclude>**/display/*ComponentTest.java</testInclude>
+                        <testInclude>**/e2e/driver/**/*.java</testInclude>
                     </testIncludes></configuration>
                 </plugin>
             </plugins></build>
@@ -54,11 +54,11 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
                     <configuration><testIncludes>
-                        <testInclude>**/e2e/driver/*.java</testInclude>
+                        <testInclude>**/e2e/driver/**/*.java</testInclude>
                         <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
                         <testInclude>**/display/component/*.java</testInclude>
                         <testInclude>**/display/profile/*ComponentTest.java</testInclude>
-                        <testInclude>**/display/HandGeometryDriverComponentTest.java</testInclude>
+                        <testInclude>**/display/*ComponentTest.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
                         <testInclude>**/FrameFillAuditComponentTest.java</testInclude>

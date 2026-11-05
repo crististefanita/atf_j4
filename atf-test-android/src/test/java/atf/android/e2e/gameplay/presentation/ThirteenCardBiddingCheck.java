@@ -120,7 +120,7 @@ final class ThirteenCardBiddingCheck {
                         && minimumBidWidth >= Math.round(48 * densityScale * 0.95)
                         && minimumBidHeight >= Math.round(48 * densityScale * 0.95);
         boolean submitRemainsCompact =
-                submitSize.widthPixels() <= Math.round(144 * densityScale)
+                Math.abs(submitSize.widthPixels() - Math.round(119 * densityScale)) <= 1
                         && submitSize.heightPixels()
                                 >= Math.round(48 * densityScale * 0.95);
         AndroidUiDriver.Bounds humanSeat =
@@ -179,7 +179,9 @@ final class ThirteenCardBiddingCheck {
         boolean headerVisible =
                 ui.hasText(bidding, "Whist · Descending")
                         && ui.hasText(bidding, "TRUMP")
-                        && ui.hasText(bidding, "NO TURNED CARD");
+                        && ui.hasText(bidding, "♠")
+                        && !ui.hasText(bidding, "NO TURNED CARD")
+                        && ui.hasDescriptionContaining(bidding, "Trump suit only, no turned card: spades");
         List<Path> checkpointEvidence =
                 ui.capture("whist-lab-thirteen-card-bidding-" + profile.fileKey());
         evidence.addAll(checkpointEvidence);
@@ -298,7 +300,7 @@ final class ThirteenCardBiddingCheck {
                                 seatsFit && allControlsInsideTable && controlsAvoidSeats),
                         new AtfAssertion(
                                 "Place bid stays compact and above the hand",
-                                "<=144 dp wide; >=48 dp high; above hand",
+                                "119 dp wide; >=48 dp high; above hand",
                                 submitSize.widthPixels()
                                         + "x"
                                         + submitSize.heightPixels()
@@ -307,7 +309,7 @@ final class ThirteenCardBiddingCheck {
                                 submitRemainsCompact && submitAboveHand),
                         new AtfAssertion(
                                 "Variant and trump stay visible",
-                                "Whist · Descending; TRUMP; NO TURNED CARD",
+                                "Whist · Descending; TRUMP; ♠; full accessible trump identity; no status footer",
                                 "variant/trump=" + headerVisible,
                                 headerVisible),
                         new AtfAssertion(

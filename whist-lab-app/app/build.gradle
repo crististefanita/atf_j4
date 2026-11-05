@@ -31,6 +31,8 @@ android {
                 includeTestsMatching "ro.whistlab.app.window.*"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryTableComponentTest"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest"
+                includeTestsMatching "ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest"
+                includeTestsMatching "ro.whistlab.app.score.ScoreHistoryCheckpointTest"
                 includeTestsMatching "ro.whistlab.app.localization.WhistUiTextTest"
             }
         }

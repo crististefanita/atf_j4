@@ -11,7 +11,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 |---|---|
 | [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
-| [Publicare](ATF_Reporting.md) | Validarea timpurie a checkpoint-ului și costul intrărilor consumatorului. |
+| [Publicare](ATF_Reporting.md) | HTML autonom, componente auditabile și calificarea publicării. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
 
@@ -43,3 +43,7 @@ Principiile editoriale se aliniază cu [bunele practici documentare comune](../.
 - Fiecare lucrare deschisă are un singur registru responsabil; README-urile explică mecanismul și trimit la acel criteriu.
 - Păstrați controalele tehnice active până la reconcilierea lor explicită.
 - Actualizați toate referințele la consolidare; o schimbare de director nu dovedește rezolvarea comportamentului.
+
+## Contractul comun de autonomie
+
+[Criteriul comun de autonomie a raportului](../../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-artifact-autonomy-150--calificare-fără-dependențe-externe) aparține responsabilului bibliotecilor. [Feedback-ul consumatorului Android](ATF_Reporting.md) păstrează colectarea, publicarea și calificarea livrabilului propriu.

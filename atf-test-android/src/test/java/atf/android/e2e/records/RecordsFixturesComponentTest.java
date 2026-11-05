@@ -51,7 +51,7 @@ class RecordsFixturesComponentTest {
     @Test void bothSeriesFixturesReachLiteralSymmetricPaymentsFromLegalCards() {
         for(int magnitude:List.of(5,10)) {
             var fixture=RecordsFixtures.series(magnitude);
-            assertEquals(6,fixture.json().path("version").asInt());
+            assertEquals(7,fixture.json().path("version").asInt());
             assertEquals(magnitude,fixture.json().path("streakPenaltyPoints").asInt());
             RecordsFixtures.finishHand(fixture.game());var state=fixture.game().snapshot();
             assertEquals(GamePhase.SCORE,state.phase());

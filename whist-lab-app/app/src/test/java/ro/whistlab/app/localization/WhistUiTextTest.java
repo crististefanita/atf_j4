@@ -45,7 +45,7 @@ public final class WhistUiTextTest {
     @Test public void supportedHandsUseOneTallerFanRowUpToTheSeventeenCardRuleLimit() {
         for (int count = 1; count <= 17; count++) {
             assertTrue("hand of " + count, HandLayoutMetrics.usesSingleRow(count));
-            assertEquals(98, HandLayoutMetrics.cardHeightDp());
+            assertEquals(88, HandLayoutMetrics.cardHeightDp());
             assertEquals(13, HandLayoutMetrics.cardLabelSizeSp());
         }
         assertFalse(HandLayoutMetrics.usesSingleRow(0));
@@ -57,7 +57,7 @@ public final class WhistUiTextTest {
         assertFalse(HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1f));
         assertTrue(HandLayoutMetrics.requiresHorizontalScroll(17, 353, 1f));
         assertTrue(HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1.5f));
-        assertEquals(126, HandLayoutMetrics.reservedHandHeightDp());
+        assertEquals(116, HandLayoutMetrics.reservedHandHeightDp());
         assertEquals(760, HandLayoutMetrics.maxViewportWidthDp());
     }
 
@@ -136,7 +136,7 @@ public final class WhistUiTextTest {
         assertEquals("Licitează", new WhistUiText(HowToPlay.Language.RO).placeBid());
     }
 
-    @Test public void trumpIndicatorShowsTheTurnedCardOrExplainsSuitOnlyRounds() {
+    @Test public void trumpIndicatorShowsOneValueAndKeepsTheFullAccessibleIdentity() {
         GameSession.Snapshot turnedCard = GameSession.newGame(new GameConfig(6, GameMode.OH_HELL,
                 AiDifficulty.NORMAL, 401)).snapshot();
         GameSession.Snapshot suitOnly = GameSession.newGame(new GameConfig(4, GameMode.DESCENDING,
@@ -146,12 +146,12 @@ public final class WhistUiTextTest {
 
         assertNotNull(turnedCard.turnedCard());
         assertNull(suitOnly.turnedCard());
-        assertEquals("TURNED CARD", english.trumpIndicatorStatus(turnedCard));
+        assertEquals(turnedCard.turnedCard().shortLabel(), english.trumpIndicatorValue(turnedCard));
         assertTrue(english.trumpAccessibility(turnedCard).endsWith(english.cardLabel(turnedCard.turnedCard())));
-        assertEquals("NO TURNED CARD", english.trumpIndicatorStatus(suitOnly));
+        assertEquals("♠", english.trumpIndicatorValue(suitOnly));
         assertTrue(english.trumpAccessibility(suitOnly).contains("no turned card"));
-        assertEquals("CARTE ÎNTOARSĂ", romanian.trumpIndicatorStatus(turnedCard));
-        assertEquals("FĂRĂ CARTE", romanian.trumpIndicatorStatus(suitOnly));
+        assertEquals(turnedCard.turnedCard().shortLabel(), romanian.trumpIndicatorValue(turnedCard));
+        assertEquals("♠", romanian.trumpIndicatorValue(suitOnly));
     }
 
     @Test public void scoreTableUsesStableLocalizedColumnsAndAuditableRowValues() {

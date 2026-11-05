@@ -52,7 +52,7 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 - Masa folosește o fereastră cu înălțime măsurată, fără scroll vertical. Profilul compact decalează crucea levatei; acțiunea turei are o regiune proprie deasupra numelui, cu înălțimea integrală a textului și spațiu rezervat între ture.
 - Evantaiul ține cont de lățime, densitate, scara textului și banda măsurată a indicelui; o mână mai lată păstrează accesul orizontal. Masa nu recuperează prin scroll vertical o regiune tăiată.
 - Selecția unei cărți rezervă spațiul ridicării și păstrează locul omului; decorul cărții aparține [CardFaceBackground](cards/CardFaceBackground.java).
-- Indicatorul de atu și locul activ folosesc stilurile comune; textul și descrierile accesibile completează diferențierea vizuală.
+- Indicatorul de atu și locul activ folosesc stilurile comune. Atuul are două regiuni, titlu și valoare, iar dimensiunile sunt independente de modul jocului și de tipul valorii. Măsurarea comună a fontului păstrează înălțimea completă; descrierea accesibilă păstrează identitatea cărții sau a culorii.
 - Istoricul are toate locurile în același tabel cronologic, cu antete fixe la derularea verticală și deplasare orizontală comună.
 - Prima coloană a istoricului arată numărul de cărți; ordinea mâinii rămâne în model și în descrierile accesibile. [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aliniază separatoarele și grupurile jucătorilor la densități fracționare.
 
@@ -60,7 +60,7 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 
 Tabelul conține toate mâinile programate, iar fiecare loc are licitația cunoscută, punctele și totalul după încheiere. O licitație necunoscută are marcaj explicit, iar o salvare veche păstrează soldul de deschidere disponibil.
 
-Punctele sunt derivate de domeniu din soldurile istoricului. Schema curentă nu stochează separat levatele câștigate pentru fiecare mână încheiată; [contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie limita și evoluția ei.
+Punctele sunt derivate de domeniu din soldurile istoricului. Levatele și licitațiile cunoscute determină separat rezultatul contractului; o ratare primește tăietură oblică peste licitație. [Contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie migrarea prefixului necunoscut, conservarea levatelor și măsurarea coloanelor compacte.
 
 ## Profil și clasamente
 

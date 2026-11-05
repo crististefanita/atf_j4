@@ -38,6 +38,10 @@ public class ScoreHistoryTableComponentTest {
                     assertEquals(snapshot.players().get(seat).bid().toString(), row.cells().get(seat).bid());
                     assertEquals(Integer.toString(snapshot.players().get(seat).totalScore()), row.cells().get(seat).total());
                     assertEquals(Integer.parseInt(row.cells().get(seat).points().replace("+", "")), game.scoreHistory().points(snapshot.handNumber(), seat));
+                    assertEquals(snapshot.players().get(seat).tricksWon(), (int) game.scoreHistory().tricks(snapshot.handNumber(), seat));
+                    assertEquals(snapshot.players().get(seat).bid().equals(snapshot.players().get(seat).tricksWon())
+                            ? ro.whistlab.core.session.ScoreHistory.Outcome.EXACT : ro.whistlab.core.session.ScoreHistory.Outcome.MISSED,
+                            row.cells().get(seat).outcome());
                 }
                 assertEquals(checkpoint, game.saveState());
                 assertEquals(table, ScoreHistoryTable.forMatch(GameSession.restoreComplete(checkpoint).snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO)));
@@ -74,7 +78,7 @@ public class ScoreHistoryTableComponentTest {
     @Test public void savedRuleVersionPreservesOldPenaltyAndRoundTripsTheNewPenalty() throws Exception {
         var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.HARD, 8, true, 10));
         var json = GameSessionStore.encode(game.saveState());
-        assertEquals(6, json.getInt("version"));
+        assertEquals(7, json.getInt("version"));
         assertEquals(10, GameSessionStore.fromJson(json.toString()).config().streakPenaltyPoints());
         json.put("version", 5); json.remove("streakPenaltyPoints");
         var legacy = GameSessionStore.fromJson(json.toString());

@@ -10,7 +10,7 @@ import ro.whistlab.core.session.ScoreHistory;
 /** Complete chronological schedule, projected for every seat without inventing unfinished scores. */
 record ScoreHistoryTable(List<String> players, List<Row> rows) {
     enum Status { RECORDED, EARLIER, CURRENT, FUTURE }
-    record Cell(String bid, String points, String total, String description) { }
+    record Cell(String bid, String points, String total, String description, ScoreHistory.Outcome outcome) { }
     record Row(int hand, int cards, Status status, List<Cell> cells) {
         String cardLabel() { return Integer.toString(cards); }
     }
@@ -31,7 +31,7 @@ record ScoreHistoryTable(List<String> players, List<Row> rows) {
             for (int seat = 0; seat < state.players().size(); seat++) {
                 if (status == Status.RECORDED) {
                     var value = columns.get(seat).rows().get(history.completedHands() - hand);
-                    cells.add(new Cell(value.bid(), value.points(), value.total(), copy.playerName(state.players().get(seat)) + ", " + value.description()));
+                    cells.add(new Cell(value.bid(), value.points(), value.total(), copy.playerName(state.players().get(seat)) + ", " + value.description(), value.outcome()));
                 } else {
                     Integer bid = status == Status.CURRENT ? state.players().get(seat).bid() : null;
                     String total = status == Status.EARLIER && hand == history.priorHands()
@@ -40,7 +40,7 @@ record ScoreHistoryTable(List<String> players, List<Row> rows) {
                             + ", " + copy.bidLabel() + " " + (bid == null ? copy.unknownBid() : bid)
                             + ", " + copy.historyPoints() + " " + copy.unknownBid() + ", " + copy.scoreColumnTotal() + " " + total
                             + ", " + (status == Status.EARLIER ? copy.unknownBid() : copy.historyPending());
-                    cells.add(new Cell(bid == null ? "—" : bid.toString(), "—", total, description));
+                    cells.add(new Cell(bid == null ? "—" : bid.toString(), "—", total, description, ScoreHistory.Outcome.UNKNOWN));
                 }
             }
             rows.add(new Row(hand, schedule.get(hand - 1), status, List.copyOf(cells)));

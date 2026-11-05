@@ -4,6 +4,7 @@ import static atf.android.e2e.driver.UiHierarchy.matchesSpinnerLabel;
 import static atf.android.e2e.driver.UiHierarchy.nodes;
 
 import atf.android.AdbClient;
+import atf.android.e2e.driver.waiting.UiStateAwaiter;
 import atf.android.e2e.driver.UiHierarchy.Node;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.ui.model.AtfUiActionRecord;
@@ -39,6 +40,7 @@ public final class AndroidUiDriver {
     private final Device adb;
     private final Path output;
     private final UiDeviceCapture captures;
+    private final UiStateAwaiter waiter;
     private final LongSupplier nanoTime;
     private final Delay pause;
     private Consumer<AtfUiActionRecord> actionSink = ignored -> {};
@@ -72,6 +74,7 @@ public final class AndroidUiDriver {
         this.pause = Objects.requireNonNull(pause);
         Files.createDirectories(this.output);
         captures = new UiDeviceCapture(this.adb, this.output);
+        waiter = new UiStateAwaiter(this::dump, this.nanoTime, this.pause::sleep);
     }
 
     public void recordActionsAs(Consumer<AtfUiActionRecord> sink) {
@@ -369,72 +372,32 @@ public final class AndroidUiDriver {
     }
 
     String awaitSpinnerSelection(String expected, Duration timeout) throws Exception {
-        long deadline = nanoTime.getAsLong() + timeout.toNanos();
-        String latest;
-        do {
-            latest = dump();
-            if (hasText(latest, "START")
-                    && hasText(latest, expected)
-                    && !hasClass(latest, "android.widget.CheckedTextView")) return latest;
-            pause.sleep(250);
-        } while (nanoTime.getAsLong() < deadline);
-        throw new IllegalStateException(
-                "Spinner did not settle on '"
-                        + expected
-                        + "' with the setup dialog still open; visible texts="
-                        + texts(latest));
+        return waiter.await(timeout, 250,
+                xml -> hasText(xml, "START") && hasText(xml, expected)
+                        && !hasClass(xml, "android.widget.CheckedTextView"),
+                latest -> "Spinner did not settle on '" + expected
+                        + "' with the setup dialog still open; visible texts=" + texts(latest));
     }
 
     public String awaitText(String expected, Duration timeout) throws Exception {
-        long deadline = nanoTime.getAsLong() + timeout.toNanos();
-        String latest;
-        do {
-            latest = dump();
-            if (hasText(latest, expected)) return latest;
-            pause.sleep(300);
-        } while (nanoTime.getAsLong() < deadline);
-        throw new IllegalStateException(
-                "UI did not show text '" + expected + "' within " + timeout);
+        return waiter.await(timeout, 300, xml -> hasText(xml, expected),
+                latest -> "UI did not show text '" + expected + "' within " + timeout);
     }
 
     public String awaitDescriptionContaining(String fragment, Duration timeout) throws Exception {
-        long deadline = nanoTime.getAsLong() + timeout.toNanos();
-        String latest;
-        do {
-            latest = dump();
-            if (hasDescriptionContaining(latest, fragment)) return latest;
-            pause.sleep(250);
-        } while (nanoTime.getAsLong() < deadline);
-        throw new IllegalStateException(
-                "UI did not expose description containing '"
-                        + fragment
-                        + "' within "
-                        + timeout
-                        + "; descriptions="
-                        + descriptions(latest));
+        return waiter.await(timeout, 250, xml -> hasDescriptionContaining(xml, fragment),
+                latest -> "UI did not expose description containing '" + fragment + "' within "
+                        + timeout + "; descriptions=" + descriptions(latest));
     }
 
     public String awaitContains(String expected, Duration timeout) throws Exception {
-        long deadline = nanoTime.getAsLong() + timeout.toNanos();
-        String latest;
-        do {
-            latest = dump();
-            if (latest.contains(expected)) return latest;
-            pause.sleep(300);
-        } while (nanoTime.getAsLong() < deadline);
-        throw new IllegalStateException(
-                "UI hierarchy did not contain '" + expected + "' within " + timeout);
+        return waiter.await(timeout, 300, xml -> xml.contains(expected),
+                latest -> "UI hierarchy did not contain '" + expected + "' within " + timeout);
     }
 
     String awaitAbsent(String absent, Duration timeout) throws Exception {
-        long deadline = nanoTime.getAsLong() + timeout.toNanos();
-        String latest;
-        do {
-            latest = dump();
-            if (!hasText(latest, absent)) return latest;
-            pause.sleep(300);
-        } while (nanoTime.getAsLong() < deadline);
-        throw new IllegalStateException("UI still shows text '" + absent + "' after " + timeout);
+        return waiter.await(timeout, 300, xml -> !hasText(xml, absent),
+                latest -> "UI still shows text '" + absent + "' after " + timeout);
     }
 
     public void back() throws Exception {

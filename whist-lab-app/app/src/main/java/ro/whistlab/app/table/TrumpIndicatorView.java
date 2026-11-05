@@ -16,6 +16,7 @@ import ro.whistlab.core.model.Suit;
 
 /** Persistent, accessible trump tile kept in the game header above the table. */
 public final class TrumpIndicatorView extends LinearLayout {
+    private final TextView heading;
     private final TextView value;
     private static final int IVORY = Color.rgb(255, 254, 248);
     private static final int HEART_RED = Color.rgb(255, 177, 177);
@@ -27,26 +28,28 @@ public final class TrumpIndicatorView extends LinearLayout {
         float density = getResources().getDisplayMetrics().density;
         setOrientation(VERTICAL);
         setMinimumWidth(dp(density, TableLayoutMetrics.TRUMP_WIDTH_DP));
-        setMinimumHeight(dp(density, 48));
+        setMinimumHeight(dp(density, TableLayoutMetrics.TRUMP_MIN_HEIGHT_DP));
         setGravity(Gravity.CENTER);
-        setPadding(dp(density, 4), dp(density, 4), dp(density, 4), dp(density, 4));
+        int padding = dp(density, TableLayoutMetrics.TRUMP_PADDING_DP);
+        setPadding(padding, padding, padding, padding);
         setBackground(WhistUiPalette.seatFrame(context, currentPlayerHighlighted));
         setTag("trump-indicator");
         setContentDescription(copy.trumpAccessibility(state));
         setFocusable(true);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
-        TextView heading = new TextView(context);
+        heading = new TextView(context);
         heading.setText(copy.trumpHeading());
         heading.setTextSize(9);
         heading.setTextColor(frameText(currentPlayerHighlighted));
         heading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         heading.setGravity(Gravity.CENTER);
+        heading.setSingleLine(true);
         heading.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         addView(heading, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         value = new TextView(context);
-        value.setText(trumpValue(state));
+        value.setText(copy.trumpIndicatorValue(state));
         value.setTextSize(20);
         if (state.turnedCard() != null) {
             GradientDrawable card = new GradientDrawable();
@@ -61,39 +64,33 @@ public final class TrumpIndicatorView extends LinearLayout {
         value.setSingleLine(true);
         value.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         LayoutParams valueParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        valueParams.topMargin = dp(density, 2);
+        valueParams.topMargin = dp(density, TableLayoutMetrics.TRUMP_VALUE_GAP_DP);
         addView(value, valueParams);
-
-        TextView status = new TextView(context);
-        status.setText(copy.trumpIndicatorStatus(state));
-        status.setTextSize(9);
-        status.setTextColor(frameText(currentPlayerHighlighted));
-        status.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        status.setGravity(Gravity.CENTER);
-        status.setSingleLine(false);
-        status.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        if (state.turnedCard() != null) status.setVisibility(GONE);
-        addView(status, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
     }
 
     @Override protected void onMeasure(int widthSpec, int heightSpec) {
-        int width = resolveSize(dp(getResources().getDisplayMetrics().density,
-                TableLayoutMetrics.TRUMP_WIDTH_DP), widthSpec);
-        float nominalSize = 20 * getResources().getDisplayMetrics().scaledDensity;
-        android.graphics.Paint paint = new android.graphics.Paint(value.getPaint());
-        paint.setTextSize(nominalSize);
-        int available = width - getPaddingLeft() - getPaddingRight()
-                - value.getPaddingLeft() - value.getPaddingRight();
-        value.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,
-                TableLayoutMetrics.fitTextSizePx(nominalSize,
-                        paint.measureText(value.getText().toString()), available));
-        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), heightSpec);
+        var metrics = getResources().getDisplayMetrics();
+        int width = resolveSize(dp(metrics.density, TableLayoutMetrics.TRUMP_WIDTH_DP), widthSpec);
+        int headingHeight = fitLine(heading, 9 * metrics.scaledDensity, width);
+        int valueHeight = fitLine(value, 20 * metrics.scaledDensity, width);
+        int height = resolveSize(TableLayoutMetrics.trumpHeightPx(metrics.density,
+                headingHeight, valueHeight), heightSpec);
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
     }
 
-    private String trumpValue(GameSession.Snapshot state) {
-        Card turned = state.turnedCard();
-        if (turned != null) return turned.shortLabel();
-        return state.trump().suit().map(Suit::symbol).orElse("—");
+    private int fitLine(TextView line, float nominalSize, int width) {
+        android.graphics.Paint paint = new android.graphics.Paint(line.getPaint());
+        paint.setTextSize(nominalSize);
+        android.graphics.Paint.FontMetricsInt font = paint.getFontMetricsInt();
+        int height = font.bottom - font.top;
+        int available = width - getPaddingLeft() - getPaddingRight()
+                - line.getPaddingLeft() - line.getPaddingRight();
+        line.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,
+                TableLayoutMetrics.fitTextSizePx(nominalSize,
+                        paint.measureText(line.getText().toString()), available));
+        line.getLayoutParams().height = height;
+        return height;
     }
 
     private static boolean isRed(GameSession.Snapshot state) {

@@ -7,9 +7,18 @@ record ScoreHistoryGridMetrics(int handWidthPx, int bidWidthPx, int pointsWidthP
         if (players < 3 || players > 6 || !Float.isFinite(density) || density <= 0) {
             throw new IllegalArgumentException("History requires 3–6 players and a finite positive density");
         }
-        return new ScoreHistoryGridMetrics(Math.round(66 * density), Math.round(42 * density),
-                Math.round(52 * density), Math.round(50 * density), Math.max(1, Math.round(3 * density)),
-                Math.round(8 * density), players);
+        return new ScoreHistoryGridMetrics(Math.round(29.7f * density), Math.round(18.9f * density),
+                Math.round(23.4f * density), Math.round(22.5f * density), Math.max(1, Math.round(3 * density)),
+                Math.round(7.2f * density), players);
+    }
+
+    ScoreHistoryGridMetrics fitContent(int hand, int bid, int points, int total, int name) {
+        if (hand < 0 || bid < 0 || points < 0 || total < 0 || name < 0)
+            throw new IllegalArgumentException("Measured widths cannot be negative");
+        int b = Math.max(bidWidthPx, bid), p = Math.max(pointsWidthPx, points), t = Math.max(totalWidthPx, total);
+        t += Math.max(0, name - b - p - t);
+        return new ScoreHistoryGridMetrics(Math.max(handWidthPx, hand), b, p, t,
+                separatorWidthPx, outerPaddingPx, players);
     }
 
     int playerWidthPx() { return bidWidthPx + pointsWidthPx + totalWidthPx; }

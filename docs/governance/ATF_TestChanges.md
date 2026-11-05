@@ -88,6 +88,56 @@ Oracolul dimensiunilor urmează cerința de prezentare, iar controalele negative
 
 ## Mutarea proprietății unei verificări
 
+<details>
+<summary>Control activ: istoric compact și rezultatul explicit al contractului</summary>
+
+```yaml
+testChanges:
+  - id: COMPACT-HISTORY-EXPLICIT-CONTRACT-OUTCOME
+    status: VERIFIED
+    base: 6e8f3f38e94f0513597b197bc8fa60ce73ee371b
+    expires: 2026-12-05
+    reason: Aplică geometria compactă agreată și schema cu levate explicite; păstrează prefixul necunoscut, comparațiile independente de scor, conservarea levatelor și verificarea celulelor complete în ambele limbi.
+    proof: 'gradlew.bat :app:testDebugUnitTest :app:assembleDebug -Pwhist.displayComponents=true --offline --no-daemon; mvn -Dtest=RecordsFixturesComponentTest,RecordsRunContractComponentTest,AndroidUiFlowReportPublisherTest test; mvn -Dtest=WhistRecordsE2eTest#compactHistoryAndSlashedContractsRemainReadable -Datf.android.enabled=true test'
+    paths:
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryTableComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryOutcomeComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixtures.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java
+```
+
+Zero, ratarea cu puncte pozitive, datele necunoscute și o mână neîncheiată au rezultate distincte. Controalele negative refuză levatele fracționare, negative, neconservate sau contradictorii, iar măsurătorile injectate nu înlocuiesc randarea nativă.
+
+</details>
+
+<details>
+<summary>Control activ: indicator de atu comun și depunere discretă</summary>
+
+```yaml
+testChanges:
+  - id: UNIFORM-TRUMP-AND-COMPACT-BID-SUBMISSION
+    status: VERIFIED
+    base: e183df449ad54d4281925f905ce3a65cf4b6cdf3
+    expires: 2026-12-05
+    reason: Elimină rândul redundant despre cartea neîntoarsă și folosește aceeași ramă cu două regiuni în toate modurile; păstrează valoarea vizibilă, identitatea accesibilă și ținta tactilă. Sincronizează dimensiunile mâinii și indicii locurilor cu politica de afișaj modificată în paralel.
+    proof: 'gradlew.bat :app:testDebugUnitTest :app:assembleDebug -Pwhist.displayComponents=true --offline --no-daemon; pwsh -NoProfile -File scripts/run-whist-responsive-sanity.ps1 -ComponentsOnly'
+    paths:
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardBiddingCheck.java
+      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerBiddingCheck.java
+      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/FanSetupPhase.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveGameFlow.java
+```
+
+Controalele păstrează cartea sau culoarea, lizibilitatea, localizarea și descrierea accesibilă; absența textului redundant nu înlocuiește prezența valorii. Măsurătorile de font injectate califică politica comună, iar verificarea nativă compară aceeași geometrie în stări cu și fără atu.
+
+</details>
+
 Transferul unei implementări către o bibliotecă păstrează toate contractele native la producător. Consumatorul păstrează acceptanța API-ului folosit, identitatea JAR-ului încărcat și refuzurile pentru metadate ori livrări inconsistente.
 
 - Cererea de schimbare identifică sursele afectate, proprietarul nou, înlocuirea echivalentă și criteriile independente de acceptare.

@@ -88,7 +88,7 @@ final class RecordsFixtures {
     static ObjectNode encode(GameSession game, boolean eligible) {
         var state = game.saveState(); var config = state.config();
         ObjectNode json = JSON.createObjectNode();
-        json.put("version",6).put("playerCount",config.playerCount()).put("mode",config.mode().name())
+        json.put("version",7).put("playerCount",config.playerCount()).put("mode",config.mode().name())
                 .put("difficulty",config.aiDifficulty().name()).put("seed",config.seed())
                 .put("streakBonuses",config.streakBonuses()).put("streakBonusPoints",config.streakBonusPoints())
                 .put("streakPenaltyPoints",config.streakPenaltyPoints()).put("phase",state.phase().name())
@@ -107,6 +107,7 @@ final class RecordsFixtures {
         scores.set("opening",JSON.valueToTree(state.scoreHistory().openingTotals()));
         scores.set("hands",JSON.valueToTree(state.scoreHistory().closingTotals()));
         scores.set("bids",JSON.valueToTree(state.scoreHistory().recordedBids()));
+        scores.set("tricks",JSON.valueToTree(state.scoreHistory().recordedTricks()));
         return json;
     }
 

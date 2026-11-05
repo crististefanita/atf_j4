@@ -22,7 +22,7 @@ import ro.whistlab.core.model.Trump;
 public final class GameSessionStore {
     private static final String PREFERENCES = "whist_lab_game";
     private static final String SAVE_KEY = "current_session_v1";
-    private static final int VERSION = 6;
+    private static final int VERSION = 7;
 
     private GameSessionStore() { }
 
@@ -151,6 +151,9 @@ public final class GameSessionStore {
         JSONArray bids = new JSONArray();
         for (List<Integer> contracts : ledger.recordedBids()) bids.put(new JSONArray(contracts));
         scores.put("bids", bids);
+        JSONArray tricks = new JSONArray();
+        for (List<Integer> won : ledger.recordedTricks()) tricks.put(new JSONArray(won));
+        scores.put("tricks", tricks);
         root.put("scores", scores);
         root.put("currentTrick", encodeTrick(state.currentTrick()));
         root.put("lastTrick", encodeTrick(state.lastTrick()));
@@ -206,7 +209,15 @@ public final class GameSessionStore {
         } else if (settled) {
             bids.add(players.stream().map(GameSession.PlayerState::bid).collect(java.util.stream.Collectors.toList()));
         }
-        return new ScoreHistory(scoreInt(scores.get("priorHands")), scoreVector(scores.getJSONArray("opening")), rows, bids);
+        List<List<Integer>> tricks = new ArrayList<>();
+        if (root.getInt("version") >= 7 || scores.has("tricks")) {
+            JSONArray won = scores.getJSONArray("tricks");
+            for (int i = 0; i < won.length(); i++) tricks.add(scoreVector(won.getJSONArray(i)));
+            if (settled && tricks.isEmpty()) throw new JSONException("Missing completed hand tricks");
+        } else if (settled) {
+            tricks.add(players.stream().map(GameSession.PlayerState::tricksWon).collect(java.util.stream.Collectors.toList()));
+        }
+        return new ScoreHistory(scoreInt(scores.get("priorHands")), scoreVector(scores.getJSONArray("opening")), rows, bids, tricks);
     }
 
     private static List<Integer> scoreVector(JSONArray values) throws JSONException {

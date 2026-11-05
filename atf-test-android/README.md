@@ -88,6 +88,23 @@ Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea 
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.
 
+## Așteptarea unei stări
+
+[UiStateAwaiter](src/test/java/atf/android/e2e/driver/waiting/UiStateAwaiter.java)
+deține bucla comună a așteptărilor pasive. Driverul furnizează condiția,
+intervalul de interogare și diagnosticul; citirea produce o ierarhie proaspătă.
+
+| Contract | Comportament |
+|---|---|
+| Prima observație | Condiția se evaluează înaintea pauzei, inclusiv când termenul este deja expirat. |
+| Reluare | Ceasul monoton verifică termenul între încercări; citirea ADB păstrează propriul contract de terminare. |
+| Diagnostic | Expirarea folosește ultima ierarhie observată; eroarea sau întreruperea nu este înlocuită printr-un succes ori o reluare. |
+| Navigare | Buclele care închid meniuri sau activează controale rămân distincte; așteptarea pasivă nu introduce acțiuni. |
+
+Componentele folosesc ceas și pauze controlate, fără emulator sau praguri de
+performanță ale gazdei. [Guvernanța pachetelor](../docs/governance/ATF_Packages.md)
+delimitează mecanismul de interacțiuni și de capturarea dovezilor.
+
 ## Execuția delimitată a transportului
 
 [Driverul UI](src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) păstrează

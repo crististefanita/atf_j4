@@ -278,6 +278,20 @@ public final class WhistUiText {
     public String noCardsYet() { return choose("No cards have been played in this hand yet.", "Nu s-a jucat nicio carte în această mână."); }
     public String trumpHeading() { return choose("TRUMP", "ATU"); }
     public String noTrump() { return choose("No trump", "Fără atu"); }
+    public String historyBidHeading() { return choose("B", "L"); }
+    public String historyPointsHeading() { return "P"; }
+    public String historyTotalHeading() { return "T"; }
+    public String historyLegend() {
+        return choose("B Bid · P Points · T Total\nDiagonal slash: missed contract",
+                "L Licitat · P Puncte · T Total\nTăietură oblică: contract ratat");
+    }
+    public String historyContractOutcome(ro.whistlab.core.session.ScoreHistory.Outcome outcome) {
+        return switch (outcome) {
+            case EXACT -> choose("Contract made", "Contract realizat");
+            case MISSED -> choose("Missed contract", "Contract ratat");
+            case UNKNOWN -> choose("Contract outcome unknown", "Rezultat necunoscut");
+        };
+    }
     public String seatName(GameSession.PlayerSnapshot player) { return playerName(player); }
     public String seatWonLabel() { return choose("Won", "Levate"); }
     public String seatFacts(GameSession.PlayerSnapshot player) {
@@ -343,10 +357,9 @@ public final class WhistUiText {
                         "Atu de culoare, fără carte întoarsă: ") + suitName(suit))
                 .orElse(noTrump());
     }
-    public String trumpIndicatorStatus(GameSession.Snapshot state) {
-        if (state.turnedCard() != null) return choose("TURNED CARD", "CARTE ÎNTOARSĂ");
-        if (state.trump().suit().isPresent()) return choose("NO TURNED CARD", "FĂRĂ CARTE");
-        return choose("NO TRUMP", "FĂRĂ ATU");
+    public String trumpIndicatorValue(GameSession.Snapshot state) {
+        if (state.turnedCard() != null) return state.turnedCard().shortLabel();
+        return state.trump().suit().map(Suit::symbol).orElse(choose("NO TRUMP", "FĂRĂ ATU"));
     }
     public String tableAccessibility(int seats) {
         return romanian() ? "Masa de joc, " + seats + " jucători." : "Game table, " + seats + " players.";

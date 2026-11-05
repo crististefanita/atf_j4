@@ -94,4 +94,8 @@ Datele capturate, publicarea și auditul au contracte separate:
 
 Controalele urmăresc proprietarul exact, multiplicitatea, ultima comparație, ordinea fragmentelor și bytes-ii PNG. Căutarea globală a unei valori sau a unui hash nu demonstrează asocierea ei cu scenariul corect.
 
+- Cititorul este verificat și pe marcaje cu atribute suplimentare, păstrând aceleași etichete, ordine și imagini; delimitarea urmărește nodurile DOM, fără a depinde de serializarea unui tag.
+- Controlul negativ schimbă legătura imaginii din checkpoint-ul ales, folosind poziția exactă a nodului în sursă. Restul documentului rămâne intact, astfel încât refuzul să demonstreze defectul de asociere vizat.
+- Limita de previzualizare se citește din configurația activă și se confruntă cu metadatele comparațiilor publicate. Testele temporizării verifică efectul configurării, fără a fixa valoarea implicită a bibliotecii.
+
 [Politica de prezentare](ATF_Presentation.md) · [Timing original](ATF_PhaseTiming.md) · [Auditul publicării](ATF_Audit.md) · [Responsabilități](../feedback/README.md)

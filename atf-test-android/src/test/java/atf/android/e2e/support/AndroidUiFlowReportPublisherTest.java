@@ -141,7 +141,7 @@ class AndroidUiFlowReportPublisherTest {
             assertNotNull(actions.selectFirst("table.atf-ui-action-table"));
             assertTrue(actions.selectFirst("summary").text().contains("UI action sequence (2 entries)"));
             assertTrue(actions.text().contains("text=New game"));
-            var comparisons = document.selectFirst("details.atf-ui-assertions");
+            var comparisons = document.selectFirst(".atf-ui-assertions");
             assertNotNull(comparisons);
             assertTrue(comparisons.text().contains("Selected player count is six"));
             var headers = comparisons.select("thead th").eachText();
@@ -159,9 +159,9 @@ class AndroidUiFlowReportPublisherTest {
             assertEquals("android-report-contract", receiptValue(document, "FLOW ID"));
             assertEquals("1", receiptValue(document, "CHECKPOINT COUNT"));
             assertEquals("1", receiptValue(document, "INLINE CHECKPOINT SCREENSHOTS"));
-            for (var disclosure : List.of(actions, observations, comparisons)) {
-                assertFalse(disclosure.hasAttr("open"), "UI evidence must start collapsed");
-            }
+            assertTrue(document.select("details.atf-ui-action-sequence[open],"
+                    + "details.atf-ui-observations[open],details.atf-ui-assertions[open]").isEmpty(),
+                    "UI evidence disclosures must start collapsed");
             var fullObservation = observations.selectFirst("details.atf-ui-value pre");
             assertNotNull(fullObservation, "Long observations must retain their complete value");
             assertEquals(completeObservation, fullObservation.wholeText());
@@ -208,46 +208,23 @@ class AndroidUiFlowReportPublisherTest {
         String html = Files.readString(report);
         String actionPng = Base64.getEncoder().encodeToString(Files.readAllBytes(actionScreenshot));
         String observationPng = Base64.getEncoder().encodeToString(Files.readAllBytes(observationScreenshot));
-        assertTrue(html.contains("Open the bidding screen"));
-        assertTrue(html.contains("Visible bid options match the rule domain"));
-        assertTrue(html.contains("class=\"atf-ui-action-sequence\""),
-                "The real click should remain attached to its action checkpoint");
-        assertTrue(html.contains("class=\"atf-ui-observations\""));
-        assertTrue(html.contains("class=\"atf-ui-assertions\""));
-        assertTrue(html.contains("Capture UI observation"));
-        var document = Jsoup.parse(html);
-        assertEquals(1L, document.select("a[data-atf-screenshot=base64]").stream()
-                        .filter(anchor -> anchor.attr("href").equals("data:image/png;base64," + actionPng)).count(),
-                "The action checkpoint screenshot must be embedded exactly once");
-        assertEquals(1L, document.select("a[data-atf-screenshot=base64]").stream()
-                        .filter(anchor -> anchor.attr("href").equals("data:image/png;base64," + observationPng)).count(),
-                "The read-only checkpoint screenshot must be embedded exactly once");
-        int actionOwner = html.indexOf("<span>WHEN Open the bidding screen</span>");
-        int observationOwner = html.indexOf("<span>THEN Visible bid options match the rule domain</span>");
-        assertTrue(actionOwner >= 0 && observationOwner > actionOwner);
-        assertTrue(html.substring(actionOwner, observationOwner).contains("data:image/png;base64," + actionPng),
-                "The real UI action must own its own captured screen");
-        var observationLink = Jsoup.parseBodyFragment(html.substring(observationOwner))
-                .selectFirst("a[data-atf-screenshot-ref]");
-        assertNotNull(observationLink, "The read-only checkpoint must retain its own screenshot control");
-        String reference = observationLink.attr("data-atf-screenshot-ref");
-        var canonical = document.getElementById("atf-screenshot-" + reference);
-        assertNotNull(canonical, "The screenshot reference must resolve inside this report");
-        assertEquals("data:image/png;base64," + observationPng, canonical.attr("href"));
-        if (identicalCapture) {
-            assertEquals("#atf-screenshot-" + reference, observationLink.attr("href"));
-        } else {
-            assertEquals("data:image/png;base64," + observationPng, observationLink.attr("href"));
-        }
-        assertFalse(html.contains("<details class=\"atf-ui-observations\" open"));
-        assertFalse(html.contains("<details class=\"atf-ui-assertions\" open"));
-        int screenshotMarker = html.indexOf("data-atf-screenshot", observationOwner);
-        int linkStart = html.lastIndexOf("<a ", screenshotMarker);
-        int linkEnd = html.indexOf("</a>", linkStart) + "</a>".length();
+        var observationLink = assertObservationCheckpoint(html, actionPng, observationPng, identicalCapture);
+        String spacedMarkup = html
+                .replace("<span>WHEN Open the bidding screen</span>",
+                        "<span data-format-fixture=\"action\">WHEN Open the bidding screen</span>")
+                .replace("<span>THEN Visible bid options match the rule domain</span>",
+                        "<span data-format-fixture=\"observation\">THEN Visible bid options match the rule domain</span>");
+        assertNotEquals(html, spacedMarkup, "The owner control must exercise different markup");
+        assertObservationCheckpoint(spacedMarkup, actionPng, observationPng, identicalCapture);
+
+        var opening = observationLink.sourceRange();
+        var closing = observationLink.endSourceRange();
+        assertTrue(opening.isTracked() && closing.isTracked(), "The mutated anchor needs exact source bounds");
+        int linkStart = opening.startPos(), linkEnd = closing.endPos();
         String originalLink = html.substring(linkStart, linkEnd);
-        String brokenLink = originalLink.replace("href=\"" + observationLink.attr("href") + "\"",
-                "href=\"#atf-screenshot-missing\"");
-        assertFalse(originalLink.equals(brokenLink), "The negative probe must mutate this checkpoint's image link");
+        assertTrue(originalLink.startsWith("<a ") && originalLink.endsWith("</a>"));
+        String brokenLink = observationLink.clone().attr("href", "#atf-screenshot-missing").outerHtml();
+        assertNotEquals(originalLink, brokenLink, "The negative probe must mutate this checkpoint's image link");
         Files.writeString(report, html.substring(0, linkStart) + brokenLink + html.substring(linkEnd));
         IllegalStateException failure = assertThrows(IllegalStateException.class,
                 () -> AndroidUiFlowReportPublisher.auditPublishedReport(report, trace,
@@ -331,6 +308,47 @@ class AndroidUiFlowReportPublisherTest {
         }
         assertTrue(ImageIO.write(image, "png", path.toFile()), "The JDK PNG writer must be available");
     }
+    private static org.jsoup.nodes.Element assertObservationCheckpoint(
+            String markup, String actionPng, String observationPng, boolean identicalCapture) {
+        var document = Jsoup.parse(markup, "", org.jsoup.parser.Parser.htmlParser().setTrackPosition(true));
+        assertNotNull(document.selectFirst("details.atf-ui-action-sequence"),
+                "A real action checkpoint remains in the same flow");
+        assertNotNull(document.selectFirst("details.atf-ui-observations"));
+        assertNotNull(document.selectFirst(".atf-ui-assertions"));
+        assertTrue(document.text().contains("Capture UI observation"));
+        assertEquals(1L, document.select("a[data-atf-screenshot=base64]").stream()
+                .filter(anchor -> anchor.attr("href").equals("data:image/png;base64," + actionPng)).count(),
+                "The action checkpoint screenshot must be embedded exactly once");
+        assertEquals(1L, document.select("a[data-atf-screenshot=base64]").stream()
+                .filter(anchor -> anchor.attr("href").equals("data:image/png;base64," + observationPng)).count(),
+                "The read-only checkpoint screenshot must be embedded exactly once");
+        var actionOwner = checkpointLabel(document, "WHEN Open the bidding screen");
+        var observationOwner = checkpointLabel(document, "THEN Visible bid options match the rule domain");
+        var ordered = document.getAllElements();
+        int actionStart = ordered.indexOf(actionOwner), observationStart = ordered.indexOf(observationOwner);
+        assertTrue(actionStart >= 0 && observationStart > actionStart);
+        var actionEvidence = ordered.subList(actionStart, observationStart);
+        assertTrue(actionEvidence.stream().anyMatch(element -> element.normalName().equals("a")
+                && element.attr("href").equals("data:image/png;base64," + actionPng)),
+                "The real UI action must own its own captured screen");
+        var observationLink = ordered.subList(observationStart, ordered.size()).stream()
+                .filter(element -> element.normalName().equals("a") && element.hasAttr("data-atf-screenshot-ref"))
+                .findFirst().orElseThrow(() -> new AssertionError("The read-only checkpoint needs its own screenshot control"));
+        String reference = observationLink.attr("data-atf-screenshot-ref");
+        var canonical = document.getElementById("atf-screenshot-" + reference);
+        assertNotNull(canonical, "The screenshot reference must resolve inside this report");
+        assertEquals("data:image/png;base64," + observationPng, canonical.attr("href"));
+        assertEquals(identicalCapture ? "#atf-screenshot-" + reference : "data:image/png;base64," + observationPng,
+                observationLink.attr("href"));
+        assertTrue(document.select("details.atf-ui-observations[open],details.atf-ui-assertions[open]").isEmpty());
+        return observationLink;
+    }
+
+    private static org.jsoup.nodes.Element checkpointLabel(org.jsoup.nodes.Document document, String title) {
+        return document.select("span").stream().filter(span -> span.text().equals(title)).findFirst()
+                .orElseThrow(() -> new AssertionError("Missing checkpoint label: " + title));
+    }
+
     private static String receiptValue(org.jsoup.nodes.Document document, String label) {
         return document.select("tr").stream()
                 .filter(row -> row.childrenSize() == 2 && row.child(0).text().equals(label))

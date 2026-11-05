@@ -30,13 +30,13 @@ Nu rescrieți identitatea tehnică observată în dovezile brute pentru a anonim
 |---|---|---|
 | P1 | Randarea proporției comune și arcul celor trei adversari; componentele nu substituie fonturile și interacțiunea Android. | Sanity restrâns pe un profil compact și unul înalt: 13 cărți, levată completă la 4/5 locuri, nume și indicii lizibili, fără intersecții; confruntați succesiunea actorilor cu pozițiile numelor la 3–6 locuri. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
 
-## Diferență de contract: levatele istorice
+## Compatibilitatea istoricului
 
-[ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează licitațiile și soldurile după mâini; punctele se derivă din diferența soldurilor. Levatele fiecărui loc nu sunt stocate separat în acest registru.
+[ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează sufixele cunoscute ale licitațiilor și levatelor. Punctele se derivă din solduri, iar ratarea compară licitatul cu levatele; nu se deduce din culoare sau semnul punctajului.
 
 | Prioritate | Cerință rămasă | Criteriu de închidere |
 |---|---|---|
-| P1 | Istoricul complet solicitat include și levatele câștigate. | Definiți schema și migrarea, păstrați informația necunoscută în salvările vechi și verificați asocierea loc–mână–licitat–levate–puncte–total. |
+| P2 | Acceptanța nativă a importului unui registru vechi rămâne distinctă de componentele migrării. | Reluarea păstrează soldurile și prefixul necunoscut; numai rezultatul demonstrabil primește marcaj. Verificați asocierea loc–mână–licitat–levate–puncte–total. |
 
 Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lipsă. Contractul implementat și limita migrării rămân în [modelul istoricului](../game/ATF_ScoreHistory.md).
 
@@ -64,6 +64,9 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 - **Istoric:** verificați prima și ultima coloană după derulare, etichetele numerice ale cărților și continuitatea separatoarelor dintre jucători.
 
 O schimbare de geometrie sau stil se leagă de sursele și APK-ul inspectate. Calificarea pe dispozitiv și auditul componentelor sunt înregistrări distincte, păstrate extern.
+
+- **Atu comun:** sanity-ul compară dimensiunile ramei la aceeași densitate și scară de text, în toate modurile, cu o carte întoarsă, o culoare și lipsa atuului. Verifică cele două regiuni complete și identitatea accesibilă, fără un rând suplimentar despre absența cărții.
+- **Depunere:** verificați butonul cu textul RO/EN complet, la font normal și mărit; conturul retras rămâne separat de ținta tactilă. [Contractul display](../testing/ATF_Display.md) deține dimensiunile și criteriile comune.
 
 ## Acceptanță nativă Android 17
 

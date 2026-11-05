@@ -50,7 +50,11 @@ class AndroidUiFlowTimingComponentTest {
         String inline = document.selectFirst("a[data-atf-screenshot]").attr("href");
         assertArrayEquals(Base64.getDecoder().decode(PNG), Base64.getDecoder().decode(inline.substring(inline.indexOf(',') + 1)));
         assertEquals(3, document.select(".atf-ui-assertions tbody tr").size(), "Timing observations add no comparisons");
-        assertEquals(240, AtfReportConfigurationLoader.load().reportingSettings().assertionMaxDisplayCharacters());
+        String configuredPreview = Integer.toString(AtfReportConfigurationLoader.load()
+                .reportingSettings().assertionMaxDisplayCharacters());
+        assertEquals(List.of(configuredPreview, configuredPreview, configuredPreview),
+                document.select(".atf-ui-assertions").eachAttr("data-atf-preview-limit"),
+                "Every checkpoint must publish the active assertion preview limit");
         preserve(report, "individual.html");
     }
 

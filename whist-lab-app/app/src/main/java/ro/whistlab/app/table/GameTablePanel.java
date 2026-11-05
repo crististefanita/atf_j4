@@ -213,20 +213,25 @@ public final class GameTablePanel extends LinearLayout {
         Button submit = new Button(context);
         submit.setAllCaps(false);
         submit.setText(copy.placeBid());
-        submit.setTextSize(14);
+        submit.setTextSize(BidGridMetrics.SUBMIT_TEXT_SP);
         submit.setTextColor(Color.rgb(245, 248, 240));
         submit.setContentDescription(copy.placeBid());
         submit.setTag("btn_submit_bid");
         submit.setEnabled(state.biddingSeat() == 0);
         submit.setAlpha(state.biddingSeat() == 0 ? 1f : 0.5f);
         submit.setMinimumWidth(0);
-        submit.setMinHeight(dp(48));
+        submit.setMinHeight(dp(BidGridMetrics.SUBMIT_TARGET_DP));
+        submit.setPadding(dp(6), 0, dp(6), 0);
         submit.setStateListAnimator(null);
-        submit.setBackground(rounded(Color.TRANSPARENT, Color.rgb(194, 216, 199), 13));
+        submit.setBackground(new InsetDrawable(
+                rounded(Color.TRANSPARENT, Color.rgb(194, 216, 199), 12), 0,
+                dp(BidGridMetrics.SUBMIT_VISUAL_INSET_DP), 0,
+                dp(BidGridMetrics.SUBMIT_VISUAL_INSET_DP)));
         submit.setOnClickListener(ignored -> {
             if (onBidSubmitted != null) onBidSubmitted.run();
         });
-        row.addView(submit, new LayoutParams(dp(132), dp(48)));
+        row.addView(submit, new LayoutParams(dp(BidGridMetrics.SUBMIT_WIDTH_DP),
+                dp(BidGridMetrics.SUBMIT_TARGET_DP)));
         return row;
     }
 

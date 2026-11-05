@@ -39,13 +39,19 @@ final class CheckpointScores {
                                 totals,
                                 players.stream()
                                         .map(PlayerState::bid)
-                                        .collect(java.util.stream.Collectors.toList()));
+                                        .collect(java.util.stream.Collectors.toList()),
+                                players.stream().map(PlayerState::tricksWon).collect(java.util.stream.Collectors.toList()));
         }
         if (recorded.completedHands() != completed
                 || !recorded.latestTotals().equals(totals)
                 || (phase == GamePhase.SCORE && recorded.closingTotals().isEmpty())) {
             throw new IllegalArgumentException(
                     "Score history does not match the saved hand and totals");
+        }
+        if (phase == GamePhase.SCORE && recorded.tricks(completed, 0) == null) {
+            recorded = new ScoreHistory(recorded.priorHands(), recorded.openingTotals(),
+                    recorded.closingTotals(), recorded.recordedBids(),
+                    List.of(players.stream().map(PlayerState::tricksWon).collect(java.util.stream.Collectors.toList())));
         }
         for (int hand = recorded.priorHands() + 1; hand <= completed; hand++) {
             int size = handSizes.get(hand - 1);
@@ -56,6 +62,7 @@ final class CheckpointScores {
                             + (config.mode().isRomanian() ? 5 : 10)
                             + (series ? config.streakBonusPoints() : 0);
             int bidTotalForHand = 0;
+            int wonTotal = 0;
             for (PlayerState player : players) {
                 Integer contract = recorded.bid(hand, player.seat());
                 if (contract != null) {
@@ -68,6 +75,19 @@ final class CheckpointScores {
                     bidTotalForHand += contract;
                 }
                 int points = recorded.points(hand, player.seat());
+                Integer won = recorded.tricks(hand, player.seat());
+                if (won != null) {
+                    if (won > size || (phase == GamePhase.SCORE && hand == completed && won != player.tricksWon()))
+                        throw new IllegalArgumentException("Invalid recorded trick count");
+                    wonTotal += won;
+                    if (contract != null) {
+                        int base = GameRules.scoreDelta(won, contract, config.mode());
+                        int seriesPoints = points - base;
+                        if (seriesPoints != 0 && (!series || seriesPoints != (won.equals(contract)
+                                ? config.streakBonusPoints() : -config.streakPenaltyPoints())))
+                            throw new IllegalArgumentException("Recorded tricks contradict hand points");
+                    }
+                }
                 if (points < minimum || points > maximum)
                     throw new IllegalArgumentException(
                             "Score history exceeds the hand's scoring range");
@@ -79,6 +99,8 @@ final class CheckpointScores {
             }
             if (recorded.bid(hand, 0) != null && bidTotalForHand == size)
                 throw new IllegalArgumentException("Recorded bids violate the last bidder rule");
+            if (recorded.tricks(hand, 0) != null && wonTotal != size)
+                throw new IllegalArgumentException("Recorded tricks do not conserve the hand size");
         }
         return recorded;
     }

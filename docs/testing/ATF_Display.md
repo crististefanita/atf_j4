@@ -87,6 +87,8 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - Butonul de depunere are 119 dp lățime, text de 13 sp și țintă tactilă de 48 dp înălțime. Conturul este retras vertical cu 2 dp în interiorul țintei, iar rezumatul licitației separă depunerile și totalul printr-un rând nou.
 - La jocul normal, indicatorul turei și o carte legală trebuie să fie vizibile înaintea acțiunii. Sanity-ul compact nu acceptă derularea ca remediu pentru o regiune lipsă.
 - Simularea unei rezoluții logice nu dovedește proprietățile unui panou fizic de aceeași dimensiune.
+- Istoricul folosește antete scurte și legendă. Lățimile compacte preferate sunt 29,7 dp pentru cărți și 18,9/23,4/22,5 dp pentru licitat, puncte și total; separatoarele rămân de 3 dp. Textul măsurat poate extinde coloanele înaintea derulării, fără elipsă pe cifre.
+- Tăietura oblică traversează doar cifra licitației ratate, inclusiv zero. Componentele verifică încadrarea în coloană; sanity-ul verifică rezultatul accesibil, cifrele, legenda și captura nativă în RO/EN cu text normal și mărit.
 
 ## Guvernanța execuției
 

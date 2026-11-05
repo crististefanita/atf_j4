@@ -9,7 +9,7 @@ import ro.whistlab.core.session.ScoreHistory;
 
 /** The rows read on screen or by a screen reader for the selected player. */
 record ScoreHistoryColumn(String opening, List<Row> rows) {
-    record Row(String hand, String bid, String points, String total, String description) { }
+    record Row(String hand, String bid, String points, String total, String description, ScoreHistory.Outcome outcome) { }
 
     static ScoreHistoryColumn forPlayer(ScoreHistory history, int seat, WhistUiText copy) {
         String opening = history.priorHands() == 0 ? ""
@@ -21,10 +21,12 @@ record ScoreHistoryColumn(String opening, List<Row> rows) {
             String total = Integer.toString(history.total(hand, seat));
             Integer contract = history.bid(hand, seat);
             String bid = contract == null ? "—" : contract.toString();
+            ScoreHistory.Outcome outcome = history.outcome(hand, seat);
             String description = copy.historyHand() + " " + hand + ", " + copy.bidLabel() + " "
-                    + (contract == null ? copy.unknownBid() : bid) + ", " + copy.historyPoints() + " " + delta
+                    + (contract == null ? copy.unknownBid() : bid) + ", " + copy.historyContractOutcome(outcome)
+                    + ", " + copy.historyPoints() + " " + delta
                     + ", " + copy.scoreColumnTotal() + " " + total;
-            rows.add(new Row(Integer.toString(hand), bid, delta, total, description));
+            rows.add(new Row(Integer.toString(hand), bid, delta, total, description, outcome));
         }
         return new ScoreHistoryColumn(opening, Collections.unmodifiableList(rows));
     }

@@ -1,0 +1,12 @@
+{
+  "version": "1.9.2",
+  "mode": "changes",
+  "previousVersion": "1.9.1",
+  "sourceCommit": "6e8f3f38e94f0513597b197bc8fa60ce73ee371b",
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/7bf29683da653a251224b592251e580e5cd4827e/artifacts/1.9.2/README.md",
+  "points": [
+    "Etichetele de turÄƒ ale jucÄƒtorilor au spaÈ›iu separat de nume.",
+    "Coloanele fiecÄƒrui jucÄƒtor sunt delimitate Ã®n istoricul scorului.",
+    "Geometria mesei compacte este ajustatÄƒ pentru mÃ¢nÄƒ, atu È™i levatÄƒ."
+  ]
+}

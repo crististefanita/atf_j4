@@ -23,8 +23,55 @@ public final class ScoreHistoryGridMetricsComponentTest {
 
     @Test public void fractionalDensityKeepsTheExtraSubcolumnPixelRatherThanClippingIt() {
         var grid = ScoreHistoryGridMetrics.forDensity(4, 2.75f);
-        assertEquals(397, grid.playerWidthPx());
-        assertEquals(4 * (397 + 8) + 182 + 44, grid.tableWidthPx());
+        assertEquals(178, grid.playerWidthPx());
+        assertEquals(4 * (178 + 8) + 82 + 40, grid.tableWidthPx());
+    }
+
+    @Test public void preferredGridCompressesTheApprovedMockByAnotherTenPercent() {
+        var grid = ScoreHistoryGridMetrics.forDensity(4, 1);
+        assertEquals(30, grid.handWidthPx());
+        assertEquals(65, grid.playerWidthPx());
+        assertEquals(316, grid.tableWidthPx());
+        assertEquals(349 * 0.9, grid.tableWidthPx(), 3);
+        assertEquals(3, grid.separatorWidthPx());
+    }
+
+    @Test public void measuredDigitsLargeTextAndNamesExpandWithoutChangingHeaderBoundaries() {
+        for (int players = 3; players <= 6; players++) {
+            var base = ScoreHistoryGridMetrics.forDensity(players, 2.75f);
+            for (int measure : new int[]{0, 40, 90, 180}) {
+                var fit = base.fitContent(measure, measure, measure, measure, 4 * measure);
+                assertTrue(fit.handWidthPx() >= measure);
+                assertTrue(fit.bidWidthPx() >= measure);
+                assertTrue(fit.pointsWidthPx() >= measure);
+                assertTrue(fit.totalWidthPx() >= measure);
+                assertTrue(fit.playerWidthPx() >= 4 * measure);
+                assertEquals(fit.bidWidthPx() + fit.pointsWidthPx() + fit.totalWidthPx(), fit.playerWidthPx());
+                assertEquals(base.separatorWidthPx(), fit.separatorWidthPx());
+                assertEquals(base, base.fitContent(0, 0, 0, 0, 0));
+            }
+        }
+        assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(4, 1).fitContent(-1, 0, 0, 0, 0));
+    }
+
+    @Test public void diagonalStrikeCrossesZeroAndTwoDigitBidsWithoutEnteringTheirNeighbours() {
+        for (float density : new float[]{1, 1.5f, 2.625f, 2.75f, 3.5f}) {
+            for (float scale : new float[]{1, 1.15f, 1.3f, 1.5f}) {
+                for (int digits : new int[]{1, 2}) {
+                    float glyphWidth = digits * 7 * density * scale;
+                    float width = Math.max(19 * density, glyphWidth + 4 * density);
+                    float left = (width - glyphWidth) / 2;
+                    var line = BidStrikeGeometry.across(left, 4, left + glyphWidth, 4 + 12 * density * scale, width, density);
+                    assertTrue(line.left() <= left && line.right() >= left + glyphWidth);
+                    assertTrue(line.left() >= density && line.right() <= width - density);
+                    assertTrue(line.bottom() > line.top());
+                    assertTrue(line.top() > 4 && line.bottom() < 4 + 12 * density * scale);
+                }
+            }
+        }
+        assertThrows(IllegalArgumentException.class, () -> BidStrikeGeometry.across(5, 0, 4, 8, 20, 1));
+        assertThrows(IllegalArgumentException.class, () -> BidStrikeGeometry.across(0, 0, 4, 8, 2, 1));
+        assertThrows(IllegalArgumentException.class, () -> BidStrikeGeometry.across(0, 0, Float.NaN, 8, 20, 1));
     }
 
     @Test public void visibleLabelsContainOnlyCardsWhileRepeatedHandsKeepDistinctIdentities() {

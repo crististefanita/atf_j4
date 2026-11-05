@@ -402,7 +402,8 @@ public final class GameSession {
             } else
                 player.score += GameRules.scoreDelta(player.tricksWon, player.bid, config.mode());
         }
-        scoreHistory = scoreHistory.finish(handIndex + 1, playerTotals(), playerBids());
+        scoreHistory = scoreHistory.finish(handIndex + 1, playerTotals(), playerBids(),
+                players.stream().map(player -> player.tricksWon).collect(java.util.stream.Collectors.toList()));
         phase = GamePhase.SCORE;
     }
 

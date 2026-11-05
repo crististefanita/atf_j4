@@ -10,7 +10,12 @@ import java.util.List;
 
 /** Closing balances by seat. A migrated checkpoint can have an opening balance after earlier hands. */
 public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<List<Integer>> closingTotals,
-        List<List<Integer>> recordedBids) {
+        List<List<Integer>> recordedBids, List<List<Integer>> recordedTricks) {
+    public enum Outcome { EXACT, MISSED, UNKNOWN }
+    public ScoreHistory(int priorHands, List<Integer> openingTotals, List<List<Integer>> closingTotals,
+            List<List<Integer>> recordedBids) {
+        this(priorHands, openingTotals, closingTotals, recordedBids, Collections.emptyList());
+    }
     /** Older balances may precede the first hand with recorded bids. */
     public ScoreHistory(int priorHands, List<Integer> openingTotals, List<List<Integer>> closingTotals) {
         this(priorHands, openingTotals, closingTotals, Collections.emptyList());
@@ -21,7 +26,11 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
         openingTotals = balances(openingTotals, openingTotals.size());
         closingTotals = vectors(closingTotals, openingTotals.size());
         recordedBids = vectors(recordedBids, openingTotals.size());
+        recordedTricks = vectors(recordedTricks, openingTotals.size());
         if (recordedBids.size() > closingTotals.size()) throw new IllegalArgumentException("Too many bid rows");
+        if (recordedTricks.size() > closingTotals.size()
+                || recordedTricks.stream().flatMap(List::stream).anyMatch(value -> value < 0))
+            throw new IllegalArgumentException("Invalid recorded trick rows");
     }
 
     private static List<List<Integer>> vectors(List<List<Integer>> values, int seats) {
@@ -53,13 +62,31 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
         return index < 0 ? null : recordedBids.get(index).get(seat);
     }
 
+    public Integer tricks(int hand, int seat) {
+        row(hand);
+        int index = recordedTricks.size() - (completedHands() - hand) - 1;
+        return index < 0 ? null : recordedTricks.get(index).get(seat);
+    }
+
+    public Outcome outcome(int hand, int seat) {
+        Integer bid = bid(hand, seat), won = tricks(hand, seat);
+        return bid == null || won == null ? Outcome.UNKNOWN : bid.equals(won) ? Outcome.EXACT : Outcome.MISSED;
+    }
+
     ScoreHistory finish(int hand, List<Integer> totals, List<Integer> bids) {
+        return finish(hand, totals, bids, null);
+    }
+
+    ScoreHistory finish(int hand, List<Integer> totals, List<Integer> bids, List<Integer> won) {
         if (hand != completedHands() + 1) throw new IllegalArgumentException("Score history must advance by one hand");
         List<List<Integer>> rows = new ArrayList<>(closingTotals);
         rows.add(totals);
         List<List<Integer>> contracts = new ArrayList<>(recordedBids);
         contracts.add(bids);
-        return new ScoreHistory(priorHands, openingTotals, rows, contracts);
+        List<List<Integer>> tricks = new ArrayList<>(recordedTricks);
+        if (won != null) tricks.add(won);
+        else tricks.clear();
+        return new ScoreHistory(priorHands, openingTotals, rows, contracts, tricks);
     }
 
     private List<Integer> row(int hand) {

@@ -6,7 +6,7 @@ Fiecare versiune are propriul dosar cu README, rapoarte, capturi È™i metadate
 
 ## Versiunea curentÄƒ
 
-[1.9.1 â€” rapoarte È™i provenienÈ›Äƒ](1.9.1/README.md)
+[1.9.2 â€” rapoarte È™i provenienÈ›Äƒ](1.9.2/README.md)
 
 ## Versiuni disponibile
 
