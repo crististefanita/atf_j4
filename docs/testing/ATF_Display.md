@@ -63,7 +63,8 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - Licitarea nu acoperă locurile jucătorilor; selecția semantică distinge etichetele duplicate.
 - Fiecare acțiune este confruntată cu starea observată după ea.
 - Reluarea păstrează registrul scorului și informația cunoscută.
-- Captura păstrează ecranul fizic original; rezoluția logică cerută se verifică separat.
+- Captura păstrează PNG-ul nativ nemodificat. În funcție de dispozitiv, rasterul coincide exact cu dimensiunile fizice sau cu dimensiunile logice active din `wm size`; profilul logic este verificat separat.
+- [Oracolul rasterului](../../atf-test-android/src/main/java/atf/android/evidence/DisplayRaster.java) identifică explicit modul fizic sau logic. O axă mixtă, o tăiere de un pixel ori o scalare arbitrară sunt respinse; coordonatele sunt mapate la rasterul observat.
 - La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Mâna are fețe de 98 dp; politica ferestrei păstrează fețele jucate de 94/104 dp și spațiul vertical de 2/4 dp.
 - Zona licitației ocupă banda liberă dintre locurile de sus și cel al omului. Dacă geometria oferă spațiu suplimentar, centrul se deplasează 62% din surplus către jucător; verificarea raportează și compară distanțele față de locurile adverse și cel uman. Țintele tactile rămân de minimum 48 dp.
 - Rama atuului folosește aceeași fabrică de fundal și contur ca locul activ. E2E compară umplerea raster și verifică lizibilitatea titlului, simbolului și stării.

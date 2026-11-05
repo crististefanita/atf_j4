@@ -1,0 +1,183 @@
+{
+  "release": {
+    "versionName": "0.1.9",
+    "versionCode": 10,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "apkRelativePath": "../../../dist/WhistLab-0.1.9.apk",
+    "apkSha256": "811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066",
+    "apkBytes": 771391,
+    "signing": "Local Android development key; v2/v3 and zipalign verified"
+  },
+  "appUnit": {
+    "tests": 74,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "atfComponents": {
+    "tests": 38,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "compactLiveE2E": {
+    "status": "PASS",
+    "checkpoints": 4,
+    "assertions": 39,
+    "allComparisonsPassed": true,
+    "junitStatus": "PASS",
+    "profiles": [
+      "720x1280@360"
+    ],
+    "androidApi": 28
+  },
+  "compactLiveApi36": {
+    "status": "PASS",
+    "checkpoints": 4,
+    "assertions": 39,
+    "allComparisonsPassed": true,
+    "junit": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "profiles": [
+      "720x1280@360"
+    ],
+    "androidApi": 36
+  },
+  "recordedGeometryAudit": {
+    "sourceApkVersion": "0.1.8",
+    "nativeExecution": false,
+    "adbOperations": 0,
+    "assertions": 44,
+    "status": "PASS",
+    "captures": [
+      {
+        "capture": "720x1280-360dpi-See-thirteen-hand-cards-and-every-seat-without-scrolling.xml",
+        "sha256": "f7f17954874485eb8aca482c5fd33985052f7ba2d43cd74032963712b3db4e33",
+        "assertions": 9,
+        "status": "PASS"
+      },
+      {
+        "capture": "720x1280-360dpi-See-all-four-trick-cards,-twelve-hand-cards-and-four-seats-without-scrolling.xml",
+        "sha256": "86494739203d56d736a3e5857094fb238cdd9ccd25ea9629ff7747b9be7233d2",
+        "assertions": 13,
+        "status": "PASS"
+      },
+      {
+        "capture": "1080x1920-440dpi-See-thirteen-hand-cards-and-every-seat-without-scrolling.xml",
+        "sha256": "56d6f3ff7f338a5cee07054b5a48ceb07f828b8758ee5c2a583b0b15b0b02700",
+        "assertions": 9,
+        "status": "PASS"
+      },
+      {
+        "capture": "1080x1920-440dpi-See-all-four-trick-cards,-twelve-hand-cards-and-four-seats-without-scrolling.xml",
+        "sha256": "dcf0637658e884aaba7474da3660f1287655b6f0200f5de5c809010550c04766",
+        "assertions": 13,
+        "status": "PASS"
+      }
+    ]
+  },
+  "baselineMatrix": {
+    "status": "PASS",
+    "checkpoints": 20,
+    "assertions": 160,
+    "allComparisonsPassed": true,
+    "sourceApkVersion": "0.1.8",
+    "profiles": [
+      "720x1280@360",
+      "1080x1920@440"
+    ],
+    "provenance": {
+      "capturedUiStatus": "PASS",
+      "originalJUnitStatus": "ERROR",
+      "originalPublicationError": "assertion preview exceeded 240 characters",
+      "offlinePublication": "PASS",
+      "assertions": 160,
+      "adbOperations": 0,
+      "traceUnchanged": true
+    }
+  },
+  "releaseSmoke": {
+    "status": "PASS",
+    "launch": "Starting: Intent { cmp=ro.whistlab.app/.MainActivity }\r\nStatus: ok\r\nActivity: ro.whistlab.app/.MainActivity\r\nThisTime: 3132\r\nTotalTime: 3132\r\nWaitTime: 3269\r\nComplete\r\n",
+    "installedApkSha256": "811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066",
+    "expectedApkSha256": "811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066",
+    "api": 28,
+    "appDataCleared": false,
+    "resumedActivity": "mResumedActivity: ActivityRecord{3239368 u0 ro.whistlab.app/.MainActivity t961}",
+    "processId": "5862",
+    "fatalAndroidRuntimeForProcess": false
+  },
+  "appDataRestoredBeforeReleaseSmoke": {
+    "contentHashesMatch": true,
+    "files": 3,
+    "extraFixtureFilesRemoved": []
+  },
+  "sourcesMatchLive": true,
+  "sourceFilesChecked": 77,
+  "librariesMatchLive": true,
+  "windowProtection": {
+    "implemented": true,
+    "nativeNewSdkBranchValidated": true,
+    "nativeApi": 36,
+    "scope": "API35+ system bars/cutout/IME protection; API30+ usable WindowMetrics"
+  },
+  "android37": {
+    "status": "NOT_RUN_BY_USER_REQUEST",
+    "nativeDeviceAvailable": false,
+    "sdkContractMatchesTracked015Baseline": true,
+    "memoryLimiterConfigurationChanged": false
+  },
+  "reportAudit": [
+    {
+      "path": "api36-initial-diagnostic/responsive-ui-sanity.html",
+      "sha256": "22aac79bb4bad2875ed44bce5b65059d5f0f0f2a9c073d469b743d64afc6eeb9",
+      "details": 14,
+      "embeddedPngOccurrences": 4,
+      "interactiveBrowserVerified": false
+    },
+    {
+      "path": "api36-table/responsive-ui-sanity.html",
+      "sha256": "a99b234e5f9e0dd52dbc2230c8b0f9d37fb147505abdbc92cce0b01748608db9",
+      "details": 18,
+      "embeddedPngOccurrences": 7,
+      "interactiveBrowserVerified": false
+    },
+    {
+      "path": "baseline-0.1.8-matrix/responsive-ui-sanity-replayed.html",
+      "sha256": "f9a4918999dccee443c8937bd947236f04dec1f21f4f11f60c948f4e9623d50c",
+      "details": 283,
+      "embeddedPngOccurrences": 19,
+      "interactiveBrowserVerified": false
+    },
+    {
+      "path": "compact-table/responsive-ui-sanity.html",
+      "sha256": "4133da8e36fa870686fea0f1d5c94d8f6e398ca3093e375adc82376753bb0d9e",
+      "details": 18,
+      "embeddedPngOccurrences": 7,
+      "interactiveBrowserVerified": false
+    }
+  ],
+  "limits": {
+    "api28PhysicalRaster": "1080x1920",
+    "api36DisplayBefore": {
+      "size": "Physical size: 1080x2400",
+      "density": "Physical density: 420",
+      "fontScale": "1.0"
+    },
+    "physicalRog7Tested": false,
+    "completeMatchPlayedThisIteration": false,
+    "interactiveExtentExpansionVerified": false
+  },
+  "externalRunRoot": "C:\\work\\whist_back\\ui-reports\\whist-lab\\runs\\20261105-093323-compact-019",
+  "tmpBuildRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_J4_COMPACT_448067ce6ea54aae9b7169dfc386bccb",
+  "infrastructure": {
+    "sharedCacheBootstrapBlockedBeforeUi": true,
+    "finalRunUsedPrivateAtfCoordinates": true
+  }
+}

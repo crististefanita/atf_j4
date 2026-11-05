@@ -41,7 +41,7 @@ Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpret
 
 - Fiecare comandă are dispozitiv identificat și durată maximă; succesul transportului și tranziția semantică au verdicte distincte.
 - PNG-ul integral și ierarhia aparțin aceluiași punct de control verificat.
-- Dreptunghiurile logice UIAutomator sunt mapate la rasterul fizic înaintea comparațiilor de pixeli.
+- Dreptunghiurile logice UIAutomator sunt mapate la rasterul PNG observat înaintea comparațiilor de pixeli. [DisplayRaster](src/main/java/atf/android/evidence/DisplayRaster.java) cere dimensiuni fizice sau logice active exacte, fără toleranță pentru tăiere ori scalare arbitrară.
 - Ceasul fazei pornește înaintea primei acțiuni și păstrează intervalele parțiale la eșec.
 - Execuția, captura, jurnalul și publicarea păstrează axe temporale distincte.
 - Indexurile și rezultatele se scriu extern; [contractul publicării](../docs/reporting/ATF_Handoff.md) definește identitatea și acceptarea lor.

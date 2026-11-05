@@ -10,6 +10,8 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 ## Jocul
 
+[Descarcă APK-ul din ultima versiune publicată](https://github.com/crististefanita/atf_j4/releases/latest). Alege fișierul `.apk` din **Assets**; mărimea și SHA-256 sunt publicate împreună cu el și în [registrul verificării](artifacts/reports/README.md).
+
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
 Profilul principal este Whist românesc, patru jucători, cu programul 1–8–1.

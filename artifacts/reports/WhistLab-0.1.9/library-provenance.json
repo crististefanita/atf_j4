@@ -1,0 +1,20 @@
+[
+  {
+    "name": "atf-core-1.0.0-c3.jar",
+    "executedPath": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_M2_019_63f42690\\atf\\api\\atf-core\\1.0.0-c3\\atf-core-1.0.0-c3.jar",
+    "executedSha256": "605407b9d40e67c9c352ee6e94da758e50bd3cfb14cc0d7a0de3359c71088447",
+    "matchesLive": true
+  },
+  {
+    "name": "atf-reporting-1.0.0-j20.jar",
+    "executedPath": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_M2_019_63f42690\\atf\\api\\atf-reporting\\1.0.0-j20\\atf-reporting-1.0.0-j20.jar",
+    "executedSha256": "8ccb99955095873953ac3234cc1564452994b25dc7ab338d37719201a851f9fa",
+    "matchesLive": true
+  },
+  {
+    "name": "atf-console-1.0.0-c1.jar",
+    "executedPath": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_M2_019_63f42690\\atf\\api\\atf-console\\1.0.0-c1\\atf-console-1.0.0-c1.jar",
+    "executedSha256": "be71440c0f6bf9a6dbc3c6015ba8e58d5114a289cc4c4d88c434826b1b6423c1",
+    "matchesLive": true
+  }
+]

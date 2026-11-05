@@ -3,6 +3,7 @@ package atf.android.e2e.display.flow.responsive;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import atf.android.AdbClient;
+import atf.android.evidence.DisplayRaster;
 import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 import atf.android.e2e.driver.AndroidUiDriver;
 import atf.android.e2e.support.AndroidUiFlowTrace;
@@ -66,16 +67,16 @@ public final class ResponsiveEvidence {
                         logical[0] + "x" + logical[1],
                         profileApplied));
 
-        boolean fullSurface =
-                image != null
-                        && image.getWidth() == physical[0]
-                        && image.getHeight() == physical[1];
+        var physicalSize = new DisplayRaster.Size(physical[0], physical[1]);
+        var logicalSize = new DisplayRaster.Size(logical[0], logical[1]);
+        var mode = image == null ? DisplayRaster.Mode.MISMATCH : DisplayRaster.classify(
+                new DisplayRaster.Size(image.getWidth(), image.getHeight()), physicalSize, logicalSize);
         checks.add(
                 check(
-                        "PNG captures the full physical emulator surface",
-                        physical[0] + "x" + physical[1],
-                        image == null ? "invalid PNG" : image.getWidth() + "x" + image.getHeight(),
-                        fullSurface));
+                        "PNG captures a complete active display raster",
+                        physicalSize + " physical or " + logicalSize + " logical",
+                        image == null ? "invalid PNG" : image.getWidth() + "x" + image.getHeight() + " (" + mode + ")",
+                        mode != DisplayRaster.Mode.MISMATCH));
     }
 
     public static int[] physicalDisplayDimensions(String sizeOutput) throws IOException {

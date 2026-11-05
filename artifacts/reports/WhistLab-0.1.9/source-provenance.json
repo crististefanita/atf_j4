@@ -1,0 +1,390 @@
+{
+  "matchesLive": true,
+  "files": [
+    {
+      "path": "app/src/main/AndroidManifest.xml",
+      "liveSha256": "b373fc12bf435090973ef9404066b59adb7e7fcdacf5b4bd3d1a02657d190376",
+      "builtSha256": "b373fc12bf435090973ef9404066b59adb7e7fcdacf5b4bd3d1a02657d190376"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java",
+      "liveSha256": "0e24bbf0fea82150a4ded2e54e4639d8829794a1b861ecf2bebc790f7679956b",
+      "builtSha256": "0e24bbf0fea82150a4ded2e54e4639d8829794a1b861ecf2bebc790f7679956b"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/bidding/DropdownBackground.java",
+      "liveSha256": "01630873146f6ec9027a9225874c1aa383978ae3b92052110176f70a60ccf960",
+      "builtSha256": "01630873146f6ec9027a9225874c1aa383978ae3b92052110176f70a60ccf960"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/cards/CardFaceBackground.java",
+      "liveSha256": "a11b71bc32e63ae537418716fabd538092c212e63d9704f23d891acd14374325",
+      "builtSha256": "a11b71bc32e63ae537418716fabd538092c212e63d9704f23d891acd14374325"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+      "liveSha256": "0f85c6cb63bb88567fadbffdb953c4f41aee3d17b7d6536ef82cc2827bc06f3e",
+      "builtSha256": "0f85c6cb63bb88567fadbffdb953c4f41aee3d17b7d6536ef82cc2827bc06f3e"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+      "liveSha256": "35bb404cd788cc5619e18f793d01131f1673e6ce8c7320f2e68207d3cae5c5e4",
+      "builtSha256": "35bb404cd788cc5619e18f793d01131f1673e6ce8c7320f2e68207d3cae5c5e4"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/hand/CenteredHandView.java",
+      "liveSha256": "d9c09cd633e4dac33d91a2fe84fd9cf5559a20f77c506d99c35ecd7237a222a0",
+      "builtSha256": "d9c09cd633e4dac33d91a2fe84fd9cf5559a20f77c506d99c35ecd7237a222a0"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/hand/HandLayoutMetrics.java",
+      "liveSha256": "4c5cd3a32bcedd5bc1a28f260c8f135916e19b0ee9d4770c00cf84d35daa7e6c",
+      "builtSha256": "4c5cd3a32bcedd5bc1a28f260c8f135916e19b0ee9d4770c00cf84d35daa7e6c"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/highscores/AndroidHighScoreStorage.java",
+      "liveSha256": "951797fea9b36c99e2d132919b2ce109af36ef3b019e215816f6d5d0282a409f",
+      "builtSha256": "951797fea9b36c99e2d132919b2ce109af36ef3b019e215816f6d5d0282a409f"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/highscores/HighScoreCodec.java",
+      "liveSha256": "6b175c8063aff0ed3898c46a34aa16ca21b779fb04ea51e9cda42c30e3db0fdf",
+      "builtSha256": "6b175c8063aff0ed3898c46a34aa16ca21b779fb04ea51e9cda42c30e3db0fdf"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/highscores/HighScoreRepository.java",
+      "liveSha256": "430f29d88f3812f0d7c580709c24f6898bda741861e80385c419491ba17c9845",
+      "builtSha256": "430f29d88f3812f0d7c580709c24f6898bda741861e80385c419491ba17c9845"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/highscores/HighScores.java",
+      "liveSha256": "708b45f1d4e93b77b8cf2df8c6e5891548fc517d4c52154f9085cc7ee33ca5f6",
+      "builtSha256": "708b45f1d4e93b77b8cf2df8c6e5891548fc517d4c52154f9085cc7ee33ca5f6"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/highscores/HighScoresDialog.java",
+      "liveSha256": "c7f5978b7502f8bc97acbc9e4ceee94b54f8a90da6130de591ac1ed41ef90294",
+      "builtSha256": "c7f5978b7502f8bc97acbc9e4ceee94b54f8a90da6130de591ac1ed41ef90294"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/lifecycle/AiTurnCoordinator.java",
+      "liveSha256": "ef5089140924fdc8ecea7ee938f39e1a68b4354de6b4f2f32635e5383277e58b",
+      "builtSha256": "ef5089140924fdc8ecea7ee938f39e1a68b4354de6b4f2f32635e5383277e58b"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/lifecycle/AiTurnRequest.java",
+      "liveSha256": "9c348b59efdf86dc64b5fef0028f70a5e6786b208bb7b5f7820c69ddb1b44e3f",
+      "builtSha256": "9c348b59efdf86dc64b5fef0028f70a5e6786b208bb7b5f7820c69ddb1b44e3f"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/lifecycle/CompletedTrickPause.java",
+      "liveSha256": "396a0636883b375590db5581ee4b31def848cccce5797cc14edd80d693aa8eee",
+      "builtSha256": "396a0636883b375590db5581ee4b31def848cccce5797cc14edd80d693aa8eee"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/localization/WhistUiText.java",
+      "liveSha256": "16bef9b49481a6883b7738bd4cb6edffe166377766c8d341290b15eef91a5dfc",
+      "builtSha256": "16bef9b49481a6883b7738bd4cb6edffe166377766c8d341290b15eef91a5dfc"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/MainActivity.java",
+      "liveSha256": "fc9d2c721da2234417ab1fb2bf2c2c348198fa9170c4cb43a83355b50759d095",
+      "builtSha256": "fc9d2c721da2234417ab1fb2bf2c2c348198fa9170c4cb43a83355b50759d095"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java",
+      "liveSha256": "d0b9e7c5fbb98d32169f68da2702be83743497bdc13ae6cc4ba7b7692f47f889",
+      "builtSha256": "d0b9e7c5fbb98d32169f68da2702be83743497bdc13ae6cc4ba7b7692f47f889"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/profile/PlayerPreferences.java",
+      "liveSha256": "3afadd15f966fc3e5b3c573b558d775d6e2ffc51aa34df409549ecb46313bee5",
+      "builtSha256": "3afadd15f966fc3e5b3c573b558d775d6e2ffc51aa34df409549ecb46313bee5"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/profile/PlayerSettingsDialog.java",
+      "liveSha256": "daf651818e77ade4d326a95379adeac06704a05d7476efe6d3e25b161dc6d99e",
+      "builtSha256": "daf651818e77ade4d326a95379adeac06704a05d7476efe6d3e25b161dc6d99e"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java",
+      "liveSha256": "b472459d9714ad8bc893ba5c7903b39e26dfa51a54c401d392c543cb7927da98",
+      "builtSha256": "b472459d9714ad8bc893ba5c7903b39e26dfa51a54c401d392c543cb7927da98"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/score/ScoreHistoryTable.java",
+      "liveSha256": "e259e186c62c5d7971585ef64faebdbcb5e856c7d0e4df6cb3fc272c5b64d523",
+      "builtSha256": "e259e186c62c5d7971585ef64faebdbcb5e856c7d0e4df6cb3fc272c5b64d523"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java",
+      "liveSha256": "b0430b9f06cc5f417d780892ac32b75ff5a12dcbdfb784689642eb0d26750925",
+      "builtSha256": "b0430b9f06cc5f417d780892ac32b75ff5a12dcbdfb784689642eb0d26750925"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/score/ScoreTableView.java",
+      "liveSha256": "e823f0205a7d492d78edf7ae598deb4d4b6a37fbbe1e779d6a705fe8c7fbb494",
+      "builtSha256": "e823f0205a7d492d78edf7ae598deb4d4b6a37fbbe1e779d6a705fe8c7fbb494"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/GameBoardLayout.java",
+      "liveSha256": "23a63ecb8df1c77e538aee1a16817c48d24d508144b6db76afd68b76438875f0",
+      "builtSha256": "23a63ecb8df1c77e538aee1a16817c48d24d508144b6db76afd68b76438875f0"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+      "liveSha256": "0852f98804e752c1369a1227e66fa1b4ebbf127f814f25b1f0e12148deded416",
+      "builtSha256": "0852f98804e752c1369a1227e66fa1b4ebbf127f814f25b1f0e12148deded416"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/TableGeometry.java",
+      "liveSha256": "abbe933bad671d999e8262673b4dc1abc47da1d14d58da50fa273a360491976c",
+      "builtSha256": "abbe933bad671d999e8262673b4dc1abc47da1d14d58da50fa273a360491976c"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java",
+      "liveSha256": "daf50b2329fd1e253cbf6af57870af24b2d6f63f2ddd3a905dca63c777d05542",
+      "builtSha256": "daf50b2329fd1e253cbf6af57870af24b2d6f63f2ddd3a905dca63c777d05542"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/TableSeatLayout.java",
+      "liveSha256": "ff311efb3b98f8233ee2bd068414b6fb62876b9af276e2fbb9398b3af53de8bb",
+      "builtSha256": "ff311efb3b98f8233ee2bd068414b6fb62876b9af276e2fbb9398b3af53de8bb"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/TableViewportPolicy.java",
+      "liveSha256": "5fc70c56be07428ff3316f185d280d183cb370ad9ea5cefc8ea64abf6377080b",
+      "builtSha256": "5fc70c56be07428ff3316f185d280d183cb370ad9ea5cefc8ea64abf6377080b"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/TrickCardMetrics.java",
+      "liveSha256": "a70458e2244628a9d7479e2be99ddee7e1211f8adfd0879732b57879d8d254af",
+      "builtSha256": "a70458e2244628a9d7479e2be99ddee7e1211f8adfd0879732b57879d8d254af"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/table/TrumpIndicatorView.java",
+      "liveSha256": "dfdeb81c507957c59809fdaaa9b060101374ccc3e14c047b7f04ab05ce5698b6",
+      "builtSha256": "dfdeb81c507957c59809fdaaa9b060101374ccc3e14c047b7f04ab05ce5698b6"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/theme/WhistUiPalette.java",
+      "liveSha256": "ff4c1be8ec02790bb152abb4d1d7a7b674e53c91bdc95c6c737c83f94d2425bc",
+      "builtSha256": "ff4c1be8ec02790bb152abb4d1d7a7b674e53c91bdc95c6c737c83f94d2425bc"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/window/WindowContent.java",
+      "liveSha256": "acda8724720c4f69d91f9d905fb132c0d8fc0b9686f98d354d24a99a4eb28931",
+      "builtSha256": "acda8724720c4f69d91f9d905fb132c0d8fc0b9686f98d354d24a99a4eb28931"
+    },
+    {
+      "path": "app/src/main/java/ro/whistlab/app/window/WindowPadding.java",
+      "liveSha256": "bafb695b0356d828f059be7e782c118637f0fdf496fd44e299c88c7523e5a14b",
+      "builtSha256": "bafb695b0356d828f059be7e782c118637f0fdf496fd44e299c88c7523e5a14b"
+    },
+    {
+      "path": "app/src/main/res/values/strings.xml",
+      "liveSha256": "ea6b996e9383061531a8e5f15f6aeb03e9a24a101cc9986780f651ef58be9bbd",
+      "builtSha256": "ea6b996e9383061531a8e5f15f6aeb03e9a24a101cc9986780f651ef58be9bbd"
+    },
+    {
+      "path": "app/src/main/res/values/styles.xml",
+      "liveSha256": "9747600880d9712472424339ad536aa9e8d8b7825b0b9cb05e632fd3f64948d9",
+      "builtSha256": "9747600880d9712472424339ad536aa9e8d8b7825b0b9cb05e632fd3f64948d9"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/engine/ContractEndgame.java",
+      "liveSha256": "0f2c0ee0acb7bc29c453408bd113c9e87fb5d7357a626e9309ff81c21c47c772",
+      "builtSha256": "0f2c0ee0acb7bc29c453408bd113c9e87fb5d7357a626e9309ff81c21c47c772"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/engine/ContractGuarantee.java",
+      "liveSha256": "69e1fb7573b43b2c27539ea2d8f6b88da009ba8d493beab3ee12598ce088f2a7",
+      "builtSha256": "69e1fb7573b43b2c27539ea2d8f6b88da009ba8d493beab3ee12598ce088f2a7"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/engine/LateDiscard.java",
+      "liveSha256": "7976455852061e645264676f30e2fbec2239718c93e7f7705c00d1755cc324d0",
+      "builtSha256": "7976455852061e645264676f30e2fbec2239718c93e7f7705c00d1755cc324d0"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java",
+      "liveSha256": "0cca4a16aee2f07ceceda5e234920d8cc234481c9636b2daf9925a8e5a49f385",
+      "builtSha256": "0cca4a16aee2f07ceceda5e234920d8cc234481c9636b2daf9925a8e5a49f385"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java",
+      "liveSha256": "4b98693fd11e5139068204309114622ad797faf64fedb0b5d365e3fa901391b9",
+      "builtSha256": "4b98693fd11e5139068204309114622ad797faf64fedb0b5d365e3fa901391b9"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java",
+      "liveSha256": "9a9d4aca5a3c82528b222e0e29a160d7007e3cf39814215d55dc9976347c57ef",
+      "builtSha256": "9a9d4aca5a3c82528b222e0e29a160d7007e3cf39814215d55dc9976347c57ef"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/forecast/ExactContractRates.java",
+      "liveSha256": "22c9e9e67db5b93051067f35c5e7dd72556f2fdacef790eaa86c412cdd29ec00",
+      "builtSha256": "22c9e9e67db5b93051067f35c5e7dd72556f2fdacef790eaa86c412cdd29ec00"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/forecast/StreakForecast.java",
+      "liveSha256": "d2357396722806154d914f448464533faa89b44883f24bd41eca3a62a90fb386",
+      "builtSha256": "d2357396722806154d914f448464533faa89b44883f24bd41eca3a62a90fb386"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java",
+      "liveSha256": "50b8a852ec44e3a35a77c7f1d64d1cbee242e475857ad8d19d01ec1cf64b130a",
+      "builtSha256": "50b8a852ec44e3a35a77c7f1d64d1cbee242e475857ad8d19d01ec1cf64b130a"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/policy/NormalBidPolicy.java",
+      "liveSha256": "095d8d353ea187b62861a6269d8fed1e371370bfa3b28eea0f022d9b60302fa5",
+      "builtSha256": "095d8d353ea187b62861a6269d8fed1e371370bfa3b28eea0f022d9b60302fa5"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/policy/NormalPlayPolicy.java",
+      "liveSha256": "76ca9df532eef57e97043c95bb5ecabeb72a599ee318d91243605536634635f3",
+      "builtSha256": "76ca9df532eef57e97043c95bb5ecabeb72a599ee318d91243605536634635f3"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/profile/HardStrategyProfile.java",
+      "liveSha256": "66ec18cf9dd9ac089a9f552246565ff524a825039193a923855670543cdb5731",
+      "builtSha256": "66ec18cf9dd9ac089a9f552246565ff524a825039193a923855670543cdb5731"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java",
+      "liveSha256": "003a280a36e30eb4ef702543871cc3c8130b80d1dfce8d274f6b581d91d0d287",
+      "builtSha256": "003a280a36e30eb4ef702543871cc3c8130b80d1dfce8d274f6b581d91d0d287"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java",
+      "liveSha256": "7322830fe68294c385079fcaf1e4e04b8d25eabd12790b8c5a34cc387ed29263",
+      "builtSha256": "7322830fe68294c385079fcaf1e4e04b8d25eabd12790b8c5a34cc387ed29263"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java",
+      "liveSha256": "e299e71938814b2d086bdf0d1b8da9f7f95a8ac94762cad15db8ecbd69889c96",
+      "builtSha256": "e299e71938814b2d086bdf0d1b8da9f7f95a8ac94762cad15db8ecbd69889c96"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/config/AiDifficulty.java",
+      "liveSha256": "5bae33d0da148d6c64ddb27d52665497c03afe727898cd38df6d2832f5103801",
+      "builtSha256": "5bae33d0da148d6c64ddb27d52665497c03afe727898cd38df6d2832f5103801"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/config/GameConfig.java",
+      "liveSha256": "bddcb3fba0f210dd34d5f5e5f764c9f154df49a0d9604ae573ae8117655c1e9c",
+      "builtSha256": "bddcb3fba0f210dd34d5f5e5f764c9f154df49a0d9604ae573ae8117655c1e9c"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/model/Card.java",
+      "liveSha256": "67ebad08660d129f77441dd922de105fe52693debb120cad96cfc26321dec5b9",
+      "builtSha256": "67ebad08660d129f77441dd922de105fe52693debb120cad96cfc26321dec5b9"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/model/ImmutableLists.java",
+      "liveSha256": "02b32bcd091871eab1ee6874a2362b43f7b87356fe6ddc86e6b640fd4c908f84",
+      "builtSha256": "02b32bcd091871eab1ee6874a2362b43f7b87356fe6ddc86e6b640fd4c908f84"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/model/PlayedCard.java",
+      "liveSha256": "e0396af62b94470e9c3c3b620cad36d6b49654786d15d195fd214595407ddf84",
+      "builtSha256": "e0396af62b94470e9c3c3b620cad36d6b49654786d15d195fd214595407ddf84"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/model/Suit.java",
+      "liveSha256": "7e093dc265f040244ec3a681bc91eb27af76d27244e11f5930999496a5213640",
+      "builtSha256": "7e093dc265f040244ec3a681bc91eb27af76d27244e11f5930999496a5213640"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/model/Trump.java",
+      "liveSha256": "55b3303bb54ba632b2444f7912fa5316b35dc1e7fe98d1cad5e26911ae831d3b",
+      "builtSha256": "55b3303bb54ba632b2444f7912fa5316b35dc1e7fe98d1cad5e26911ae831d3b"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/player/PlayerNames.java",
+      "liveSha256": "2e8104e78d7f457ae2cebc3afa505757549c7281b9f8be391fc1f91b1968c0fc",
+      "builtSha256": "2e8104e78d7f457ae2cebc3afa505757549c7281b9f8be391fc1f91b1968c0fc"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/rules/GameMode.java",
+      "liveSha256": "cfdc5009f429dc1adce66583fd0cee209f8c7e9edc2e71a4b1e6748e4e2f4a0d",
+      "builtSha256": "cfdc5009f429dc1adce66583fd0cee209f8c7e9edc2e71a4b1e6748e4e2f4a0d"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/rules/GameRules.java",
+      "liveSha256": "8cbce6df2df6c07ecfd2bb63574a039f95521c81b3f52861ded2647e9106eb68",
+      "builtSha256": "8cbce6df2df6c07ecfd2bb63574a039f95521c81b3f52861ded2647e9106eb68"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java",
+      "liveSha256": "596a56fa657a889ead41f4f56c4d339394458ce974978599648f3afc1cb02a02",
+      "builtSha256": "596a56fa657a889ead41f4f56c4d339394458ce974978599648f3afc1cb02a02"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/rules/RomanianScoring.java",
+      "liveSha256": "47d236a8dec085b7cd0e9be9c52f5fc489fdc86410d77e2eb4ac82b3a89876d5",
+      "builtSha256": "47d236a8dec085b7cd0e9be9c52f5fc489fdc86410d77e2eb4ac82b3a89876d5"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/session/CheckpointScores.java",
+      "liveSha256": "b18b9c7151f17072eae1c041ad63ec03432e5eb631063ef1f392a98859695458",
+      "builtSha256": "b18b9c7151f17072eae1c041ad63ec03432e5eb631063ef1f392a98859695458"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/session/CheckpointValidation.java",
+      "liveSha256": "c35f7ac2e0f293c78745e35fa1df60440a541b9d89237efe2ad776201df9ccfd",
+      "builtSha256": "c35f7ac2e0f293c78745e35fa1df60440a541b9d89237efe2ad776201df9ccfd"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/session/GamePhase.java",
+      "liveSha256": "ae753707c59230a977a8f5a9357ecbb8b0dbbcfb8947c16bef10763abe92a5ba",
+      "builtSha256": "ae753707c59230a977a8f5a9357ecbb8b0dbbcfb8947c16bef10763abe92a5ba"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/session/GameSession.java",
+      "liveSha256": "ffa141438b37f5029cafaa21ff20956ab6b6683cb7a6e6ec4c15ffd793a072a7",
+      "builtSha256": "ffa141438b37f5029cafaa21ff20956ab6b6683cb7a6e6ec4c15ffd793a072a7"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/session/MatchSummary.java",
+      "liveSha256": "118c1c7cb57a212beedac9d88612731470af393a12b54f52c3fdfe949ebf6c06",
+      "builtSha256": "118c1c7cb57a212beedac9d88612731470af393a12b54f52c3fdfe949ebf6c06"
+    },
+    {
+      "path": "game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java",
+      "liveSha256": "c4a1f027133d432b24d51a1d244fd795c31112c18e587545235c888e99a89f8b",
+      "builtSha256": "c4a1f027133d432b24d51a1d244fd795c31112c18e587545235c888e99a89f8b"
+    },
+    {
+      "path": "app/build.gradle",
+      "liveSha256": "618f1e9ff585902ab4b69690bed63e2f2d974546c9cb3d178a14ec55ff065397",
+      "builtSha256": "618f1e9ff585902ab4b69690bed63e2f2d974546c9cb3d178a14ec55ff065397"
+    },
+    {
+      "path": "game-core/build.gradle",
+      "liveSha256": "be42111b2899bbfe02bec545bb5bdac5bf084ba7d48c79a7e4b973213c0d264c",
+      "builtSha256": "be42111b2899bbfe02bec545bb5bdac5bf084ba7d48c79a7e4b973213c0d264c"
+    },
+    {
+      "path": "build.gradle",
+      "liveSha256": "0a840e9b62d66246d8fe8b24510571467fb8a935b709917b3d8dc1f972c9c893",
+      "builtSha256": "0a840e9b62d66246d8fe8b24510571467fb8a935b709917b3d8dc1f972c9c893"
+    },
+    {
+      "path": "settings.gradle",
+      "liveSha256": "430a27e1869a8d8241be452cd414854a574e8fd8bfe8a8aed5be0c49bd9fab23",
+      "builtSha256": "430a27e1869a8d8241be452cd414854a574e8fd8bfe8a8aed5be0c49bd9fab23"
+    },
+    {
+      "path": "gradle.properties",
+      "liveSha256": "f11ad66a46a2310a3feee522481a9c3ddeec8796461434942b0c1d210d8e3dbe",
+      "builtSha256": "f11ad66a46a2310a3feee522481a9c3ddeec8796461434942b0c1d210d8e3dbe"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.properties",
+      "liveSha256": "89f62533208a72b7a8cc2892b6b3540c445fa6175508297d932dae57d653591a",
+      "builtSha256": "89f62533208a72b7a8cc2892b6b3540c445fa6175508297d932dae57d653591a"
+    }
+  ]
+}

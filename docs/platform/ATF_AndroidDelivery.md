@@ -10,6 +10,8 @@ flowchart LR
     BUILD -->|produce| APK[APK semnat]
     APK -->|verifică| STATIC[Pachet și integritate]
     STATIC -->|permite instalare| DEVICE[Aplicație instalată]
+    STATIC -->|publică binarul verificat| ASSET[Asset GitHub Release]
+    ASSET -->|descarcă și confruntă hash| DEVICE
     DEVICE -->|verifică separat| UI[Contracte Android]
 ```
 
@@ -33,6 +35,21 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 ## Compatibilitate și calificare
 
 Compatibilitatea unei versiuni Android noi se califică separat de alegerea `targetSdk`. Numărul SDK-ului din APK nu dovedește instalarea, afișarea ori stabilitatea pe acel sistem.
+
+## Distribuția prin GitHub
+
+[Registrul release-ului](../../artifacts/reports/README.md#apk-documentat) păstrează legăturile publice ale APK-ului și fișierului SHA-256 pentru versiunea documentată. Din pagina GitHub a unei versiuni, meniul **Assets** oferă intrarea de descărcare pentru telefon; binarul ales trebuie confruntat cu identitatea din registru.
+
+| Etapă | Criteriu de acceptare |
+|---|---|
+| Publicare | Upload-ul asset-ului are exact numărul de bytes al APK-ului semnat; checksum-ul identifică același fișier. |
+| Descărcare | URL-ul public al asset-ului răspunde cu succes, iar copia descărcată are mărimea și SHA-256 originale. |
+| Integritate | Arhiva ZIP trece CRC pentru toate intrările și conține manifestul Android și codul aplicației; semnătura și alinierea sunt verificate separat. |
+| Instalare | Verificarea folosește copia completă, cu identitatea pachetului și cheia de upgrade a release-ului. |
+
+Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișierului salvat. Reușita construirii și instalării locale nu dovedește reușita descărcării publice; integritatea și proveniența copiei descărcate se verifică separat.
+
+Fișierul local este copiat într-un nume temporar, verificat și apoi publicat prin redenumire atomică. Asset-ul GitHub este descărcat din nou și confruntat înainte de handoff; răspunsurile HTTP negative rămân erori, fără promovarea lor la pachet instalabil.
 
 ## Fereastra și versiunile Android noi
 

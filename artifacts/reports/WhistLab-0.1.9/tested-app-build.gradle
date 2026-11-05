@@ -1,0 +1,53 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "ro.whistlab.app"
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "ro.whistlab.app"
+        minSdk 24
+        targetSdk 36
+        versionCode 10
+        versionName "0.1.9"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    testOptions.unitTests.all {
+        def displaySelection = providers.gradleProperty("whist.displayComponents").getOrElse("false")
+        if (!(displaySelection in ["true", "false"])) {
+            throw new GradleException("whist.displayComponents must be true or false")
+        }
+        if (displaySelection == "true") {
+            filter {
+                includeTestsMatching "ro.whistlab.app.table.*"
+                includeTestsMatching "ro.whistlab.app.window.*"
+                includeTestsMatching "ro.whistlab.app.score.ScoreHistoryTableComponentTest"
+                includeTestsMatching "ro.whistlab.app.localization.WhistUiTextTest"
+            }
+        }
+        def archive = providers.gradleProperty("whist.scoreHistoryTraceDir").getOrElse("")
+        if (archive) {
+            def folder = rootProject.file(archive)
+            systemProperty "whist.scoreHistoryTraceDir", folder.absolutePath
+            inputs.files(["metadata.json", "public-trace.json", "game-result.properties"].collect { new File(folder, it) })
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation project(":game-core")
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.json:json:20240205"
+}
