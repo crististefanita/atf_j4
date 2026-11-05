@@ -1,0 +1,70 @@
+{
+  "source": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_PREPARE_010_f84b5e08a3\\native-final\\android-artifacts\\responsive-ui-sanity\\responsive-ui-sanity.html",
+  "htmlSha256": "ab6a28b0522f05931160daab7aa3939e72f759685d8b008fa121e984518a179f",
+  "scope": "Detached original HTML in automated Chromium; independent of MCP and Android execution",
+  "title": "ATF Report",
+  "details": 82,
+  "tables": 106,
+  "visibleControls": [
+    "Android UI execution receipt",
+    "Android phase timing — separate measured axes",
+    "UI action sequence (4 entries)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 39",
+    "UI action sequence (2 entries)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 49",
+    "UI action sequence (2 entries)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 9",
+    "UI action sequence (1 entry)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 5",
+    "Android phase timing — separate measured axes",
+    "Android phase timing — separate measured axes"
+  ],
+  "ownerMarkup": [
+    {
+      "tag": "DETAILS",
+      "cl": "atf-ui-action-sequence",
+      "id": ""
+    },
+    {
+      "tag": "TD",
+      "cl": "",
+      "id": ""
+    },
+    {
+      "tag": "TR",
+      "cl": "event-row",
+      "id": ""
+    },
+    {
+      "tag": "TBODY",
+      "cl": "",
+      "id": ""
+    },
+    {
+      "tag": "TABLE",
+      "cl": "table table-sm",
+      "id": ""
+    },
+    {
+      "tag": "DIV",
+      "cl": "card-body",
+      "id": ""
+    }
+  ],
+  "assertionsVisible": true,
+  "lastAssertionRow": "PNG captures a complete active display raster\t1080x1920 physical or 720x1280 logical\t1080x1920 (PHYSICAL)\t✅",
+  "visibleScreenshotLinks": 1,
+  "viewerImages": [
+    {
+      "width": 1080,
+      "height": 1920,
+      "complete": true
+    }
+  ],
+  "ownerOpenAfterViewer": true,
+  "status": "PASS"
+}

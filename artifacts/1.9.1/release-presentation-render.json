@@ -1,9 +1,0 @@
-{
-  "status": "PASS",
-  "headings": 3,
-  "bulletItems": 7,
-  "tables": 0,
-  "immutableEvidenceCommit": "f4b4fa02b4620bceefe660b2961a1963de0f07ff",
-  "immutableReadmeVerifiedViaApi": true,
-  "notesSha256": "dbd5592194d2b7fc4c22461cea915f49fb072f18da53e28680f28f13874d9cd1"
-}

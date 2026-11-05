@@ -11,8 +11,7 @@ public final class ScoreHistoryGridMetricsComponentTest {
                 int header = grid.handWidthPx(), cells = header;
                 for (int seat = 0; seat < players; seat++) {
                     header += grid.separatorWidthPx() + grid.playerWidthPx();
-                    cells += grid.separatorWidthPx() + grid.bidWidthPx()
-                            + grid.pointsWidthPx() + grid.totalWidthPx();
+                    cells += grid.separatorWidthPx() + grid.bidWidthPx() + grid.pointsWidthPx();
                     assertEquals("Player boundary at density " + density, header, cells);
                 }
                 assertEquals(grid.tableWidthPx(), cells + 2 * grid.outerPaddingPx());
@@ -23,16 +22,17 @@ public final class ScoreHistoryGridMetricsComponentTest {
 
     @Test public void fractionalDensityKeepsTheExtraSubcolumnPixelRatherThanClippingIt() {
         var grid = ScoreHistoryGridMetrics.forDensity(4, 2.75f);
-        assertEquals(178, grid.playerWidthPx());
-        assertEquals(4 * (178 + 8) + 82 + 40, grid.tableWidthPx());
+        assertEquals(116, grid.playerWidthPx());
+        assertEquals(4 * (116 + 8) + 82 + 40, grid.tableWidthPx());
     }
 
-    @Test public void preferredGridCompressesTheApprovedMockByAnotherTenPercent() {
+    @Test public void preferredGridContainsOnlyBidAndPointsForEveryPlayer() {
         var grid = ScoreHistoryGridMetrics.forDensity(4, 1);
         assertEquals(30, grid.handWidthPx());
-        assertEquals(65, grid.playerWidthPx());
-        assertEquals(316, grid.tableWidthPx());
-        assertEquals(349 * 0.9, grid.tableWidthPx(), 3);
+        assertEquals(19, grid.bidWidthPx());
+        assertEquals(23, grid.pointsWidthPx());
+        assertEquals(42, grid.playerWidthPx());
+        assertEquals(224, grid.tableWidthPx());
         assertEquals(3, grid.separatorWidthPx());
     }
 
@@ -40,18 +40,17 @@ public final class ScoreHistoryGridMetricsComponentTest {
         for (int players = 3; players <= 6; players++) {
             var base = ScoreHistoryGridMetrics.forDensity(players, 2.75f);
             for (int measure : new int[]{0, 40, 90, 180}) {
-                var fit = base.fitContent(measure, measure, measure, measure, 4 * measure);
+                var fit = base.fitContent(measure, measure, measure, 4 * measure);
                 assertTrue(fit.handWidthPx() >= measure);
                 assertTrue(fit.bidWidthPx() >= measure);
                 assertTrue(fit.pointsWidthPx() >= measure);
-                assertTrue(fit.totalWidthPx() >= measure);
                 assertTrue(fit.playerWidthPx() >= 4 * measure);
-                assertEquals(fit.bidWidthPx() + fit.pointsWidthPx() + fit.totalWidthPx(), fit.playerWidthPx());
+                assertEquals(fit.bidWidthPx() + fit.pointsWidthPx(), fit.playerWidthPx());
                 assertEquals(base.separatorWidthPx(), fit.separatorWidthPx());
-                assertEquals(base, base.fitContent(0, 0, 0, 0, 0));
+                assertEquals(base, base.fitContent(0, 0, 0, 0));
             }
         }
-        assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(4, 1).fitContent(-1, 0, 0, 0, 0));
+        assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(4, 1).fitContent(-1, 0, 0, 0));
     }
 
     @Test public void diagonalStrikeCrossesZeroAndTwoDigitBidsWithoutEnteringTheirNeighbours() {
@@ -90,5 +89,13 @@ public final class ScoreHistoryGridMetricsComponentTest {
         }
         assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(2, 1));
         assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(7, 1));
+    }
+
+    @Test public void extremeDensityAndMeasurementsCannotProduceCollapsedOrOverflowedColumns() {
+        assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(4, Float.MIN_VALUE));
+        assertThrows(IllegalArgumentException.class, () -> ScoreHistoryGridMetrics.forDensity(4, Float.MAX_VALUE));
+        var base = ScoreHistoryGridMetrics.forDensity(4, 1);
+        assertThrows(IllegalArgumentException.class, () -> base.fitContent(0, Integer.MAX_VALUE, 0, 0));
+        assertThrows(IllegalArgumentException.class, () -> new ScoreHistoryGridMetrics(0, 1, 1, 1, 0, 4));
     }
 }

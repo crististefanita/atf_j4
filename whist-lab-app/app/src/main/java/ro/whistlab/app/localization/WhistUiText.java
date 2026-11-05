@@ -280,10 +280,13 @@ public final class WhistUiText {
     public String noTrump() { return choose("No trump", "Fără atu"); }
     public String historyBidHeading() { return choose("B", "L"); }
     public String historyPointsHeading() { return "P"; }
-    public String historyTotalHeading() { return "T"; }
     public String historyLegend() {
-        return choose("B Bid · P Points · T Total\nDiagonal slash: missed contract",
-                "L Licitat · P Puncte · T Total\nTăietură oblică: contract ratat");
+        return choose("B Bid · P Hand points\nDiagonal slash: missed contract · Underline: series bonus or penalty",
+                "L Licitat · P Punctele mâinii\nTăietură oblică: contract ratat · Subliniere: bonus sau penalizare de serie");
+    }
+    public String historySeriesAdjustment(int points) {
+        return points > 0 ? choose("Series bonus +" + points, "Bonus de serie +" + points)
+                : choose("Series penalty " + points, "Penalizare de serie " + points);
     }
     public String historyContractOutcome(ro.whistlab.core.session.ScoreHistory.Outcome outcome) {
         return switch (outcome) {

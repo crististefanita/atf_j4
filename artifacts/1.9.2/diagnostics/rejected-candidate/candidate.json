@@ -1,6 +1,0 @@
-{
-  "sourceCommit": "6e8f3f38e94f0513597b197bc8fa60ce73ee371b",
-  "apkSha256": "39d31c4433488ee8d77499f196a888eb8ef230ca5d36940bd66ee9ac5a3feb94",
-  "status": "REJECTED",
-  "reason": "Stream.toList absent on API 28; reproduced fatal in TableGeometry.arrangeDisplay"
-}

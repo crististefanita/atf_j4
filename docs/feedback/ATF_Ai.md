@@ -32,6 +32,16 @@ Responsabilul modulului AI deține intrările și verificarea proprie. Testele d
 |---|---|---|
 | P2 | Costul și recuperarea uneltelor de corpus, selecție și compoziție cer calificare proprie, separată de registrul expunerii. | Componente cu duplicate, intrări incomplete, scriere întreruptă ori concurentă și volume controlate; buget și mediu declarate, cu păstrarea provenienței. |
 
+## Reutilizarea mecanismelor
+
+[Contractul transferului](../learning/ATF_GameTransfer.md) deține inventarul reutilizabil, lecțiile și admiterea unui domeniu nou. Extragerea unor mecanisme suplimentare rămâne condiționată de un consumator și de contracte independente; pregătirea metodei nu califică automat un al doilea joc.
+
+| Prioritate | Responsabil și frontieră | Criteriu de închidere |
+|---|---|---|
+| P2 | Laborator: identitatea sursei și admiterea evaluării combină contracte reutilizabile cu namespace-ul jocului. | Un al doilea adaptor păstrează proveniența, refuzul suprapunerii și recuperarea; migrarea registrului nu resetează expunerea și nu schimbă identitățile vechi implicit. |
+| P2 | Motor și laborator: comparația politicilor depinde de scorul și observația Whist. | Un contract comun separă observația, acțiunea, metrica și oracolul; două adaptoare reale demonstrează paritatea și păstrează acțiunile independente de datele ascunse. |
+| P2 | Testare produs nou: mock-ul poate conserva o ipoteză greșită despre cerință. | Registru cu stări confirmat/observat/presupus, controale negative și confruntare minimă cu sistemul real; o observație neconfirmată nu devine etichetă de succes. |
+
 ## Evoluția motorului
 
 | Prioritate | Responsabil și lucrare | Criteriu de închidere |

@@ -2,6 +2,7 @@ package ro.whistlab.app.persistence;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
@@ -26,23 +27,23 @@ public final class GameSessionStore {
 
     private GameSessionStore() { }
 
-    public static void save(Context context, GameSession game) {
+    public static void save(Context context, GameSession game) throws IOException {
         save(context, game, true);
     }
 
-    public static void save(Context context, GameSession game, boolean rankingEligible) {
+    public static void save(Context context, GameSession game, boolean rankingEligible) throws IOException {
         save(context, game, rankingEligible, Long.toUnsignedString(game.config().seed()));
     }
 
-    public static void save(Context context, GameSession game, boolean rankingEligible, String matchId) {
+    public static void save(Context context, GameSession game, boolean rankingEligible, String matchId) throws IOException {
         try {
             JSONObject root = encode(game.saveState());
             root.put("rankingEligible", rankingEligible);
             root.put("matchId", matchId);
             boolean stored = preferences(context).edit().putString(SAVE_KEY, root.toString()).commit();
-            if (!stored) throw new IllegalStateException("Android could not save the current game");
+            if (!stored) throw new IOException("Android could not save the current game");
         } catch (JSONException failure) {
-            throw new IllegalStateException("Could not encode the current game", failure);
+            throw new IOException("Could not encode the current game", failure);
         }
     }
 

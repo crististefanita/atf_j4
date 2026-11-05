@@ -37,7 +37,6 @@ public final class ScoreHistoryView extends HorizontalScrollView {
             separator(headings, grid);
             text(headings, copy.historyBidHeading(), grid.bidWidthPx(), false, true);
             text(headings, copy.historyPointsHeading(), grid.pointsWidthPx(), false, true);
-            text(headings, copy.historyTotalHeading(), grid.totalWidthPx(), false, true);
         }
         table.addView(headings);
         ScrollView scroll = new ScrollView(context);
@@ -55,8 +54,9 @@ public final class ScoreHistoryView extends HorizontalScrollView {
                 group.setFocusable(true);
                 group.setContentDescription(cell.description());
                 bid(group, cell, grid.bidWidthPx());
-                text(group, cell.points(), grid.pointsWidthPx(), false, false);
-                text(group, cell.total(), grid.totalWidthPx(), true, false);
+                TextView points = text(group, cell.points(), grid.pointsWidthPx(), false, false);
+                if (cell.underlinePoints()) points.setPaintFlags(points.getPaintFlags()
+                        | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
                 line.addView(group, new LinearLayout.LayoutParams(grid.playerWidthPx(), -2));
             }
             rows.addView(line);
@@ -78,26 +78,15 @@ public final class ScoreHistoryView extends HorizontalScrollView {
         probe.setTextSize(12);
         probe.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         android.graphics.Paint paint = probe.getPaint();
-        int padding = 2 * dp(1);
         TextView headingProbe = new TextView(getContext());
         headingProbe.setTextSize(11);
         headingProbe.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        int hand = width(headingProbe.getPaint(), copy.cardsHeading()) + padding;
-        int bid = width(paint, copy.historyBidHeading()) + padding;
-        int points = width(paint, copy.historyPointsHeading()) + padding;
-        int total = width(paint, copy.historyTotalHeading()) + padding;
-        int name = 0;
-        for (String value : model.players()) name = Math.max(name, width(paint, value) + padding);
-        for (var row : model.rows()) {
-            hand = Math.max(hand, width(paint, row.cardLabel()) + padding);
-            for (var cell : row.cells()) {
-                bid = Math.max(bid, width(paint, cell.bid()) + 4 * dp(1));
-                points = Math.max(points, width(paint, cell.points()) + padding);
-                total = Math.max(total, width(paint, cell.total()) + padding);
-            }
-        }
-        return ScoreHistoryGridMetrics.forDensity(model.players().size(), getResources().getDisplayMetrics().density)
-                .fitContent(hand, bid, points, total, name);
+        var measured = ScoreHistoryMeasure.measure(model,
+                new ScoreHistoryMeasure.Labels(copy.cardsHeading(), copy.historyBidHeading(),
+                        copy.historyPointsHeading()),
+                text -> width(paint, text), text -> width(headingProbe.getPaint(), text), dp(1));
+        return measured.fit(ScoreHistoryGridMetrics.forDensity(model.players().size(),
+                getResources().getDisplayMetrics().density));
     }
 
     private static int width(android.graphics.Paint paint, String text) {

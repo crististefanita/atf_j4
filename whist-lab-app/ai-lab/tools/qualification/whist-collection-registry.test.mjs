@@ -40,6 +40,7 @@ async function fixture(action) {
         await fs.copyFile(path.join(project,'scripts/run-whist-collection.ps1'),path.join(root,'scripts/run-whist-collection.ps1'));
         await fs.copyFile(path.join(project,'scripts/Register-WhistDevelopmentExposure.ps1'),path.join(root,'scripts/Register-WhistDevelopmentExposure.ps1'));
         await fs.copyFile(fileURLToPath(new URL('./whist-evaluation-registry.mjs',import.meta.url)),path.join(root,'whist-lab-app/ai-lab/tools/qualification/whist-evaluation-registry.mjs'));
+        await fs.copyFile(fileURLToPath(new URL('./half-open-interval.mjs',import.meta.url)),path.join(root,'whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs'));
         await fs.copyFile(fileURLToPath(new URL('./WhistEvaluationInputs.psm1',import.meta.url)),path.join(root,'whist-lab-app/ai-lab/tools/qualification/WhistEvaluationInputs.psm1'));
         await fs.writeFile(path.join(root,'whist-lab-app/gradlew.bat'),'@echo off\r\necho CONTROLLED_GRADLE_STARTED\r\necho %*\r\nexit /b 0\r\n');
         await fs.writeFile(path.join(root,'whist-lab-app/game-core/src/main/java/Policy.java'),'class Policy {}');
@@ -158,7 +159,7 @@ test('Diagnostic entry points register development reuse before any algorithm ex
         await assert.rejects(fs.access(path.join(refused.out,'execution.log')));
     });
 });
-test('An executable policy edit creates a different source identity and keeps development exposure',async()=>{
+test('Executable policy and shared interval edits each change source identity without resetting exposure',async()=>{
     await fixture(async({root,invoke})=>{
         const first=await invoke('before-change');assert.equal(first.code,0,first.text);
         await fs.appendFile(path.join(root,'whist-lab-app/game-core/src/main/java/Policy.java'),'\n// modified policy');
@@ -167,5 +168,14 @@ test('An executable policy edit creates a different source identity and keeps de
         const b=JSON.parse(await fs.readFile(path.join(next.out,'evaluation-reservation.json'),'utf8'));
         assert.notEqual(a.reservationId,b.reservationId);assert.equal(b.disposition,'DEVELOPMENT_REUSE');
         assert.notEqual(a.identity.sourceHashes['game-core/src/main/java/Policy.java'],b.identity.sourceHashes['game-core/src/main/java/Policy.java']);
+        const relative='ai-lab/tools/qualification/half-open-interval.mjs';
+        const file=path.join(root,'whist-lab-app',relative);
+        assert.equal(b.identity.sourceHashes[relative],crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex'));
+        await fs.appendFile(file,'\n// controlled executable source identity change\n');
+        const last=await invoke('after-shared-change');assert.equal(last.code,0,last.text);
+        const c=JSON.parse(await fs.readFile(path.join(last.out,'evaluation-reservation.json'),'utf8'));
+        assert.notEqual(b.reservationId,c.reservationId);assert.equal(c.disposition,'DEVELOPMENT_REUSE');
+        assert.notEqual(b.identity.sourceHashes[relative],c.identity.sourceHashes[relative]);
+        assert.equal(b.identity.sourceHashes['game-core/src/main/java/Policy.java'],c.identity.sourceHashes['game-core/src/main/java/Policy.java']);
     });
 });

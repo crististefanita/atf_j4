@@ -71,6 +71,15 @@ mvn -B -pl atf-test-kit -am test
 
 Primitivele resurselor au controale concurente, iar probele ciclului JUnit folosesc și execuție serială explicită. Calificarea partajării între invocări trebuie să includă și lansări Jupiter paralele reale.
 
-- `ScopedAcceptanceRun` serializează apelurile propriei metode; cititorii externi ai proprietăților globale nu sunt izolați de acel monitor. [Feedback-ul infrastructurii](../docs/feedback/ATF_TestInfrastructure.md#concurența-kitului) deține calificarea Jupiter paralelă și verificarea cititorului concurent.
+<details>
+<summary>Frontiera resursei partajate și a proprietăților globale</summary>
 
-- [Matricea testării](../docs/testing/ATF_Architecture.md) deține nivelul fiecărei probe. Afirmația despre suportul concurent se limitează la combinațiile de proprietar și ciclu efectiv verificate.
+`ScopedAcceptanceRun` serializează apelurile propriei metode; cititorii externi ai proprietăților globale nu sunt izolați de acel monitor. [Feedback-ul infrastructurii](../docs/feedback/ATF_TestInfrastructure.md#concurența-kitului) deține calificarea Jupiter paralelă și verificarea cititorului concurent.
+
+[Matricea testării](../docs/testing/ATF_Architecture.md) deține nivelul fiecărei probe. Afirmația despre suportul concurent se limitează la combinațiile de proprietar și ciclu efectiv verificate.
+
+</details>
+
+## Folosirea într-un alt domeniu
+
+Testul nou furnizează valorile așteptate, comparațiile și publicatorul; Kitul gestionează ciclul și auditul fără reguli Whist. [Admiterea unui joc nou](../docs/learning/ATF_GameTransfer.md) califică separat modelul, observația actorului și oracolul; reutilizarea Kitului nu califică aceste contracte.

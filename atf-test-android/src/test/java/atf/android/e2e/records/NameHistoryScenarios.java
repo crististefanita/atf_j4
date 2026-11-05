@@ -81,9 +81,10 @@ final class NameHistoryScenarios {
         c.home("EN");c.tap("Resume game");c.ui.awaitText("Game complete",Duration.ofSeconds(15));
         c.tap("Score history");
         String first=description(fixture.json(),1,0,false);
-        var reference=c.ui.boundsForDescription(c.ui.dump(),first);
-        var handHeading=c.ui.boundsForText(c.ui.dump(),"Cards");
-        var playerHeading=c.ui.boundsForText(c.ui.dump(),"HistUser");
+        String visible=c.ui.dump();
+        var reference=c.ui.boundsForDescription(visible,first);
+        var handHeading=c.ui.boundsForText(visible,"Cards");
+        var playerHeading=c.ui.boundsForText(visible,"HistUser");
         String densityText=c.raw("shell","wm","density");
         var dpi=java.util.regex.Pattern.compile("(?:Override|Physical) density:\\s*(\\d+)").matcher(densityText);
         int density=0;while(dpi.find())density=Integer.parseInt(dpi.group(1));
@@ -91,48 +92,53 @@ final class NameHistoryScenarios {
         int cellWidth=reference.right()-reference.left(),cellHeight=reference.bottom()-reference.top();
         c.check("First recorded hand is readable in the shared table",
                 equal("Declared precondition: 24 hands played by the JVM engine",24,fixture.game().scoreHistory().completedHands()),
-                equal("First hand, first seat, exact bid points and total",true,c.ui.hasDescription(c.ui.dump(),first)),
-                equal("Human column heading",true,c.ui.hasText(c.ui.dump(),"HistUser")),
-                equal("Hand column contains only card counts",true,RecordsRunContract.historyCardCounts(c.ui.dump(),"Cards",8)),
+                equal("First hand, first seat, exact bid points and total",true,c.ui.hasDescription(visible,first)),
+                equal("Human column heading",true,c.ui.hasText(visible,"HistUser")),
+                equal("Hand column contains only card counts",true,RecordsRunContract.historyCardCounts(visible,"Cards",8)),
                 equal("Player separator width",Math.round(3*density/160f),playerHeading.left()-handHeading.right()),
                 equal("Player heading and first cell left edge",playerHeading.left(),reference.left()),
                 equal("Player heading and first cell right edge",playerHeading.right(),reference.right()),
                 equal("Compact preferred player group, with measured text expansion",true,
                         cellWidth<=Math.round((scope.contains("enlarged")?105:72)*density/160f)),
                 equal("Missed contracts have explicit accessible outcomes",true,
-                        c.ui.descriptions(c.ui.dump()).stream().anyMatch(text->text.contains(", Missed contract, Points "))),
+                        c.ui.descriptions(visible).stream().anyMatch(text->text.contains(", Missed contract, Points "))),
                 equal("Exact contracts remain distinguishable",true,
-                        c.ui.descriptions(c.ui.dump()).stream().anyMatch(text->text.contains(", Contract made, Points "))),
-                equal("Compact bid heading",true,c.ui.hasText(c.ui.dump(),"B")),
-                equal("Diagonal slash legend",true,c.ui.hasTextContaining(c.ui.dump(),"Diagonal slash: missed contract")),
+                        c.ui.descriptions(visible).stream().anyMatch(text->text.contains(", Contract made, Points "))),
+                equal("Compact bid heading",true,c.ui.hasText(visible,"B")),
+                equal("Only bid and points headings are visible",true,
+                        c.ui.hasText(visible,"P")&&!c.ui.hasText(visible,"T")),
+                equal("Diagonal slash legend",true,c.ui.hasTextContaining(visible,"Diagonal slash: missed contract")),
+                equal("Series underline legend",true,c.ui.hasTextContaining(visible,"Underline: series bonus or penalty")),
                 equal("Final diagnostic fixture does not enter rankings",before,c.scores()));
         String last=description(fixture.json(),24,0,false);
-        c.revealDescription(last,false,cellHeight);
+        visible=c.revealDescription(last,false,cellHeight);
         c.check("Vertical scrolling reaches the final hand",
-                equal("Hand 24 values visible",true,c.ui.hasDescription(c.ui.dump(),last)),
+                equal("Hand 24 values visible",true,c.ui.hasDescription(visible,last)),
                 equal("Ledger still contains 24 completed hands",24,c.state().path("scores").path("hands").size()));
         for(int seat=1;seat<4;seat++) {
             String lastSeat=description(fixture.json(),24,seat,false);
-            c.revealDescription(lastSeat,true,cellWidth);
+            visible=c.revealDescription(lastSeat,true,cellWidth);
             String name=fixture.json().path("players").get(seat).path("name").asText();
             c.check("Horizontal scrolling verifies player column "+(seat+1)+" without losing row ownership",
-                    equal("Observed player heading",true,c.ui.hasText(c.ui.dump(),name)),
-                    equal("Hand 24 bid points and total",true,c.ui.hasDescription(c.ui.dump(),lastSeat)),
+                    equal("Observed player heading",true,c.ui.hasText(visible,name)),
+                    equal("Hand 24 bid points and total",true,c.ui.hasDescription(visible,lastSeat)),
                     equal("Fixture match identity preserved",fixture.json().path("matchId").asText(),c.state().path("matchId").asText()));
         }
         c.home("RO");c.tap("Reia partida");c.ui.awaitText("Partidă încheiată",Duration.ofSeconds(15));c.tap("Istoricul scorului");
+        visible=c.ui.dump();
         c.check("Romanian history uses the same complete table and values",
-                equal("Romanian card heading",true,c.ui.hasText(c.ui.dump(),"Cărți")),
-                equal("Romanian point heading",true,c.ui.hasText(c.ui.dump(),"P")),
-                equal("Romanian compact bid heading",true,c.ui.hasText(c.ui.dump(),"L")),
-                equal("Romanian diagonal slash legend",true,c.ui.hasTextContaining(c.ui.dump(),"Tăietură oblică: contract ratat")),
-                equal("Romanian hand column contains only card counts",true,RecordsRunContract.historyCardCounts(c.ui.dump(),"Cărți",8)),
-                equal("First-hand values localized",true,c.ui.hasDescription(c.ui.dump(),description(fixture.json(),1,0,true))),
+                equal("Romanian card heading",true,c.ui.hasText(visible,"Cărți")),
+                equal("Romanian point heading",true,c.ui.hasText(visible,"P")),
+                equal("Romanian compact bid heading",true,c.ui.hasText(visible,"L")),
+                equal("No third Romanian total heading",false,c.ui.hasText(visible,"T")),
+                equal("Romanian diagonal slash legend",true,c.ui.hasTextContaining(visible,"Tăietură oblică: contract ratat")),
+                equal("Romanian hand column contains only card counts",true,RecordsRunContract.historyCardCounts(visible,"Cărți",8)),
+                equal("First-hand values localized",true,c.ui.hasDescription(visible,description(fixture.json(),1,0,true))),
                 equal("History exploration does not change totals",totals(fixture.json()),totals(c.state())));
         c.revealDescription(description(fixture.json(),24,0,true),false,cellHeight);
-        c.revealDescription(description(fixture.json(),24,3,true),true,cellWidth);
+        visible=c.revealDescription(description(fixture.json(),24,3,true),true,cellWidth);
         c.check("Romanian scrolling reaches the final hand and final player",
-                equal("Romanian final-hand values localized",true,c.ui.hasDescription(c.ui.dump(),description(fixture.json(),24,3,true))),
+                equal("Romanian final-hand values localized",true,c.ui.hasDescription(visible,description(fixture.json(),24,3,true))),
                 equal("History remains unchanged",fixture.json().path("scores"),c.state().path("scores")));
     }
 
@@ -172,9 +178,21 @@ final class NameHistoryScenarios {
         int points=total-prior,bid=scores.path("bids").get(offset).get(seat).asInt();
         String name=state.path("players").get(seat).path("name").asText();
         if(seat==0&&name.equals("You"))name=romanian?"Tu":"You";
+        int won=scores.path("tricks").get(offset).get(seat).asInt();
+        var mode=ro.whistlab.core.rules.GameMode.valueOf(state.path("mode").asText());
+        int adjustment=0;
+        if(mode.isRomanian()&&state.path("streakBonuses").asBoolean()
+                &&ro.whistlab.core.rules.GameRules.handSizes(mode,state.path("players").size()).get(hand-1)!=1) {
+            int extra=points-(won==bid?5+won:-Math.abs(won-bid));
+            int expected=won==bid?state.path("streakBonusPoints").asInt():-state.path("streakPenaltyPoints").asInt();
+            if(extra==expected)adjustment=extra;
+        }
+        String series=adjustment==0?"":", "+(adjustment>0
+                ?(romanian?"Bonus de serie +":"Series bonus +")+adjustment
+                :(romanian?"Penalizare de serie ":"Series penalty ")+adjustment);
         return name+", "+(romanian?"Mână":"Hand")+" "+hand+", "+(romanian?"Licitat":"Bid")+" "+bid
                 +", "+(scores.path("tricks").get(offset).get(seat).asInt()==bid
                         ?(romanian?"Contract realizat":"Contract made"):(romanian?"Contract ratat":"Missed contract"))
-                +", "+(romanian?"Puncte":"Points")+" "+(points>0?"+":"")+points+", Total "+total;
+                +", "+(romanian?"Puncte":"Points")+" "+(points>0?"+":"")+points+", Total "+total+series;
     }
 }

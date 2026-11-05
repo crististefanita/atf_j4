@@ -4,6 +4,9 @@
 
 Prototipul estimează oferta unui adversar dintr-o mână ipotetică și prefixul licitației. Cele două implementări păstrează aceeași schemă numerică; integrarea în motorul curent este o lucrare explicită, separată de existența acestor surse.
 
+- Pentru inspectarea artefactului: [verificarea numerică](#compatibilitatea-surselor), fără motor sau arhivă.
+- Pentru o integrare: [adaptarea surselor și calificarea](#reutilizare-controlată), într-o copie identificată.
+
 ## Contractul modelului
 
 ```mermaid
@@ -31,7 +34,18 @@ flowchart LR
 
 ## Compatibilitatea surselor
 
+Verificarea artefactului este disponibilă separat, fără motor, Android sau arhiva partidelor. Din rădăcina proiectului, cu Node.js:
+
+```powershell
+node --test whist-lab-app/ai-lab/tools/bidding/whist-prototype-contract.test.mjs
+```
+
+[Contractul executabil](../../tools/bidding/whist-prototype-contract.test.mjs) verifică ordinea caracteristicilor, coeficienții finiți, identitatea numerică a celor două surse și refuzul metadatelor modificate. Este o probă a artefactului păstrat; execuția predictorului Java și integrarea în politica actuală au calificări distincte.
+
 Sursele din `experiments` sunt excluse din compilarea implicită a [laboratorului](../../build.gradle). Copierea lor într-un alt pachet schimbă identitatea candidatului și cere calificarea acelei copii.
+
+<details>
+<summary>Tipuri, acces și scalări care trebuie confruntate la integrare</summary>
 
 | Sursă | Formă păstrată | Ce trebuie rezolvat înaintea integrării |
 |---|---|---|
@@ -41,6 +55,8 @@ Sursele din `experiments` sunt excluse din compilarea implicită a [laboratorulu
 Metadatele identifică vocabularul, coeficienții și proveniența modelului. Metricile calibrării sunt date ale acelui artefact; nu certifică integrarea ori forța politicii curente și nu se copiază în ghid.
 
 Scalările sunt fixe în prototip, inclusiv `size/8` și `position/3`. Extinderea la alt domeniu cere validarea intrărilor și calificare; semnătura metodei nu declară singură compatibilitatea cu orice masă.
+
+</details>
 
 ## Reutilizare controlată
 

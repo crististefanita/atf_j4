@@ -1,6 +1,7 @@
 package ro.whistlab.app.table;
 
 import ro.whistlab.app.bidding.BidGridMetrics;
+import ro.whistlab.app.animation.TrickCollectionAnimator;
 import ro.whistlab.app.cards.CardFaceBackground;
 import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
@@ -57,6 +58,22 @@ public final class GameTablePanel extends LinearLayout {
     private final IntConsumer onBidSelected;
     private final Runnable onBidSubmitted;
     private int selectedBid;
+    private boolean collectionAttached;
+    private TrickCollectionAnimator collection;
+
+    public void cancelCollection() {
+        if (collection != null) { collection.cancel(); collection = null; }
+    }
+
+    public void collectCompletedTrick(long remainingMillis) {
+        if (collectionAttached || !interactionPaused || completedTrickToDisplay.isEmpty()
+                || !completedTrickToDisplay.equals(state.lastTrick()) || !state.currentTrick().isEmpty()
+                || completedTrickToDisplay.size() != state.players().size() || state.lastTrickWinnerSeat() < 0) return;
+        collectionAttached = true;
+        var seats = new ArrayList<Integer>();
+        for (var play : completedTrickToDisplay) seats.add(play.seat());
+        collection = TrickCollectionAnimator.attach((ViewGroup) getChildAt(0), state.lastTrickWinnerSeat(), seats, remainingMillis);
+    }
 
     public static GameTablePanel bidding(Context context, GameSession.Snapshot state,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
@@ -321,6 +338,7 @@ public final class GameTablePanel extends LinearLayout {
 
             TextView card = text(play.card().shortLabel(), layout.cardFaceTextSizeSp(),
                     play.card().suit().red() ? CARD_RED : CARD_DARK, true);
+            card.setTag("trick-face:" + seat);
             card.setGravity(Gravity.CENTER);
             card.setPadding(dp(2), dp(4), dp(2), dp(4));
             card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));

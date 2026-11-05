@@ -21,7 +21,8 @@ Fiecare arie are un singur README de orientare și ghiduri complementare, cu res
 ## Trasee uzuale
 
 - Pentru o regulă de joc: profilul variantei, motorul, componenta independentă și ajutorul bilingv.
-- Pentru o politică AI: observația permisă, modelul deciziei, regresia locală și protocolul evaluării.
+- Pentru o politică AI: [construirea și îmbunătățirea](learning/ATF_PolicyEvolution.md), observația permisă, modelul deciziei, regresia locală și protocolul evaluării.
+- Pentru alt joc: [inventarul transferului și admiterea domeniului](learning/ATF_GameTransfer.md), oracolul independent, adaptorul și componentele înaintea antrenării.
 - Pentru o modificare Android: aplicația identificată, componentele, scenariul pe dispozitiv și capturile aceleiași stări.
 - Pentru o reorganizare: proprietarul documentului, referințele din cod și documente, apoi guvernanța.
 

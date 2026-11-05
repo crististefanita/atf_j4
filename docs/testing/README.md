@@ -12,6 +12,7 @@ Nivelul exprimă limita verificată, iar colecția selectează cazurile și cost
 | Ce verific unitar, ca o componentă, prin integrare sau cap la cap? | [Arhitectură și matrice](ATF_Architecture.md) |
 | Ce selecție rulez pentru schimbarea mea? | [Colecții și comenzi](ATF_Collections.md) |
 | Cum justific o decizie AI fără mâinile adverse reale? | [Componente și oracole](ATF_AiComponents.md) |
+| Cum transfer lecțiile către alt joc sau un produs nou? | [Lecții, mock-uri și adaptoare](../learning/ATF_PolicyEvolution.md#lecții-transferabile-către-alte-jocuri-și-produse) |
 | Cum verific regulile și scorul unei partide? | [Verificarea jocului](ATF_Gameplay.md) |
 | Cum pregătesc și controlez dispozitivul? | [Testarea Android](ATF_Android.md) |
 | Cum verific geometria, derularea și capturile? | [Profiluri de ecran](ATF_Display.md) |
@@ -36,6 +37,8 @@ Testul stabilește așteptarea din regulă, invariant sau implementare independe
 
 O modificare de politică adaugă [evaluarea rezervată](../learning/README.md) după regresiile de domeniu. O modificare de publicare cere [auditul rezultatului](../reporting/ATF_Audit.md), iar reorganizarea se verifică prin [guvernanță](../governance/README.md).
 
+Pentru un alt joc, [admiterea domeniului](../learning/ATF_GameTransfer.md) cere reguli confirmate, observație permisă și oracol înaintea primelor componente. Colecțiile Whist și un mock al lor păstrează domeniul pentru care au fost construite; adaptorul nou își califică propriile stări și tranziții.
+
 ## Strategia comună
 
 | Schimbare | Verificare principală | Completare necesară |
@@ -55,6 +58,6 @@ Componentele folosesc un oracol independent de calculul verificat. Replay-ul cit
 
 ## Rezultate pe versiuni
 
-Acest ghid deține strategia aplicabilă oricărei versiuni. Numerele testelor, verdictele, capturile și limitele unei livrări se citesc din [catalogul artefactelor](../../artifacts/README.md), în dosarul versiunii exacte.
+Acest ghid deține strategia aplicabilă oricărei versiuni. Numerele testelor, verdictele, capturile și limitele ultimei livrări calificate se citesc din [catalogul artefactelor](../../artifacts/README.md) și [rapoartele active](../../artifacts/reports/README.md). Istoricul se arhivează conform [politicii de retenție](../platform/ATF_ReleaseRetention.md).
 
 Dosarul se selectează prin [indexul livrărilor](../../artifacts/index.json), fără codificarea versiunii curente în această strategie. [Procesul livrării](../platform/ATF_AndroidDelivery.md#dosarul-unei-versiuni) deține structura și condițiile de publicare; ghidurile matricei de mai sus dețin selecțiile executabile.

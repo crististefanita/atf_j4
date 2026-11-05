@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.core.session.CheckpointHistoryAuditTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-11-05T19:47:13.891Z" hostname="DESKTOP-BLFSO18" time="3.903">
+  <properties/>
+  <testcase name="incompleteLastTrickIsRejected" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="2.091"/>
+  <testcase name="validFullHistoryRestoresAtEveryBoundary" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.35"/>
+  <testcase name="eightCardRomanianCheckpointCannotInventTrump" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.733"/>
+  <testcase name="legacyLastTrickOnlyCheckpointRemainsReadable" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.256"/>
+  <testcase name="reorderedCompletedHistoryIsRejected" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.062"/>
+  <testcase name="restoreCannotLegalizeFailureToFollowHeldLedSuit" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.012"/>
+  <testcase name="extraHistoricalWinnerDuringPartialTrickIsRejected" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.058"/>
+  <testcase name="duplicateLastTrickIsRejected" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.033"/>
+  <testcase name="restoreCannotLegalizeAvoidingMandatoryTrump" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.003"/>
+  <testcase name="inventedLastWinnerIsRejected" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.04"/>
+  <testcase name="versionTwoCannotSilentlyLoseEarlierCompletedTricks" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.149"/>
+  <testcase name="wrongWinnerWithConservedTrickTotalIsRejected" classname="ro.whistlab.core.session.CheckpointHistoryAuditTest" time="0.048"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

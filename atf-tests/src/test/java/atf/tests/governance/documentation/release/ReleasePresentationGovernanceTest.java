@@ -26,16 +26,31 @@ class ReleasePresentationGovernanceTest {
         }
     }
 
-    @Test void everyPublishedHandoffKeepsSchematicNotesBoundToItsActualAsset() throws Exception {
+    @Test void everyHandoffKeepsSchematicNotesBoundToItsActualStateAndAsset() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var repository = GovernanceProject.policy(root).required("publicRepository").asText();
         int releases = 0;
         for (var folder : ReleaseArtifactCatalog.folders(root)) {
-            if (!Files.isRegularFile(folder.resolve("github-release.json"))) continue;
-            var published = JSON.readTree(folder.resolve("github-release.json").toFile());
             var validation = JSON.readTree(folder.resolve("release-validation.json").toFile());
             var presentation = JSON.readTree(folder.resolve("release-presentation.json").toFile());
             String version = validation.required("release").required("versionName").asText();
+            boolean prepared = ReleaseHandoffState.prepared(validation, Files.isRegularFile(folder.resolve("github-release.json")));
+            String evidence = ReleaseHandoffState.evidence(presentation, repository, version, prepared);
+            if (prepared) {
+                String asset = repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk";
+                var edition = new Edition(version, asset, asset + ".sha256", evidence,
+                        presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
+                        java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
+                assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.template.md"))), folder.toString());
+                assertFalse(Files.exists(folder.resolve("release-notes.md")), "Unbound notes remain a template");
+                releases++;
+                continue;
+            }
+            var published = JSON.readTree(folder.resolve("github-release.json").toFile());
+            assertFalse(published.required("draft").asBoolean(), "A draft is not a published handoff");
+            if (validation.path("publication").path("state").asText().equals("PUBLISHED"))
+                assertEquals(validation.required("source").required("sourceCommit").asText(),
+                        published.required("targetCommit").asText(), "Published tag targets the qualified source commit");
             String tag = published.required("tag").asText();
             assertEquals("v" + version, tag, folder.toString());
             var assets = new ArrayList<JsonNode>();
@@ -47,15 +62,42 @@ class ReleasePresentationGovernanceTest {
             assertTrue(java.util.stream.StreamSupport.stream(published.required("assets").spliterator(), false)
                     .anyMatch(row -> row.path("url").asText().equals(asset + ".sha256")), "Checksum asset must exist");
             assertEquals(version, presentation.required("version").asText());
-            assertTrue(presentation.required("evidenceUrl").asText().matches(Pattern.quote(repository)
-                    + "/blob/[0-9a-f]{40}/artifacts/" + Pattern.quote(version) + "/README\\.md"), "Evidence belongs to an identified documentation commit");
-            var edition = new Edition(version, asset, asset + ".sha256", presentation.required("evidenceUrl").asText(),
+            var edition = new Edition(version, asset, asset + ".sha256", evidence,
                     presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                     java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
             assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
             releases++;
         }
-        assertTrue(releases > 0, "The curated published-release population must not be empty");
+        assertTrue(releases > 0, "The curated handoff population must not be empty");
+    }
+
+    @Test void aPreparedCandidateCannotClaimPublicationOrInventASourceCommit() throws Exception {
+        var candidate = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree("""
+                {"publication":{"state":"PREPARED"},"source":{"sourceCommit":null,"workingTreeFingerprint":"%s"}}
+                """.formatted("a".repeat(64)));
+        assertTrue(ReleaseHandoffState.prepared(candidate, false));
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).put("sourceCommit", "a".repeat(40));
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(JSON.createObjectNode(), false));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("publication")).put("state", "PUBLISHED");
+        assertFalse(ReleaseHandoffState.prepared(candidate, true));
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).putNull("sourceCommit");
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
+    }
+
+    @Test void unboundEvidenceIsOnlyAcceptedAsAnExplicitLocalTemplate() throws Exception {
+        String repository = "https://github.com/example/game";
+        String template = repository + "/blob/{evidenceCommit}/artifacts/reports/1.2.0/README.md";
+        var presentation = JSON.createObjectNode().put("version", "1.2.0").put("evidenceUrlTemplate", template);
+        assertEquals(template, ReleaseHandoffState.evidence(presentation, repository, "1.2.0", true));
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.2.0", false));
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.1.0", true));
+        presentation.put("evidenceUrl", repository + "/blob/" + "a".repeat(40) + "/artifacts/reports/1.2.0/README.md");
+        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.2.0", true));
+        presentation.remove("evidenceUrlTemplate");
+        assertEquals(presentation.path("evidenceUrl").asText(), ReleaseHandoffState.evidence(presentation, repository, "1.2.0", false));
     }
 
     @Test void aSummaryDoesNotPretendToBeAnUnverifiedVersionComparison() {

@@ -1,0 +1,12 @@
+{
+  "mode": "LOCAL_PREPARATION_ONLY",
+  "version": "0.10.0",
+  "previousVersion": "1.9.2",
+  "archivedFiles": 68,
+  "archive": "C:\\work\\whist_back\\release-archives\\20261105T191620Z-before-010\\active-before-010.zip",
+  "archiveSha256": "abb67c34932b8c5ebe02e97ae0aa7a30fad9e20255fdd3a7172b58faeee6146d",
+  "allOriginalFileHashesVerified": true,
+  "gitHistoryChanged": false,
+  "remoteChangesPerformed": false,
+  "createdUtc": "2026-11-05T20:32:52.244404+00:00"
+}

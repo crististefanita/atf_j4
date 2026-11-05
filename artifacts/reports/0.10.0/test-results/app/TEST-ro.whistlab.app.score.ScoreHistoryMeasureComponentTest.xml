@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-05T20:17:53.439Z" hostname="DESKTOP-BLFSO18" time="0.103">
+  <properties/>
+  <testcase name="invalidMetricsAndOverflowFailBeforeLayout" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.018"/>
+  <testcase name="allDigitsSignsAndTheFullNameParticipateInWidthMeasurement" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.018"/>
+  <testcase name="theLastSeatAndLastRowCannotBeSkippedByAnOptimization" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.003"/>
+  <testcase name="hiddenTotalsNeverWidenTheTwoVisibleColumns" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.011"/>
+  <testcase name="aFontFailureKeepsItsOriginalCauseInsteadOfReturningZeroWidth" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.007"/>
+  <testcase name="captionAndNumericFontsHaveIndependentMeasurements" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.005"/>
+  <testcase name="enlargedFontsFitAtEverySupportedFractionalDensity" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.036"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

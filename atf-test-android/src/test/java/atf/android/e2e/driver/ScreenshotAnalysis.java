@@ -1,10 +1,10 @@
 package atf.android.e2e.driver;
 
-import static atf.android.e2e.driver.UiHierarchy.bounds;
-import static atf.android.e2e.driver.UiHierarchy.nodes;
+import static atf.android.e2e.driver.hierarchy.HierarchyDocument.bounds;
+import static atf.android.e2e.driver.hierarchy.HierarchyDocument.nodes;
 
 import atf.android.e2e.driver.AndroidUiDriver.Bounds;
-import atf.android.e2e.driver.UiHierarchy.Node;
+import atf.android.e2e.driver.hierarchy.HierarchyDocument.Node;
 
 import java.io.IOException;
 import java.nio.file.Path;

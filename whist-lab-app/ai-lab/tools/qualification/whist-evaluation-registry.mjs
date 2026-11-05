@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {intervalsOverlap} from './half-open-interval.mjs';
 
 const namespace = 'romanian4-seeded-deals';
 const sha = value => crypto.createHash('sha256').update(value).digest('hex');
@@ -29,7 +30,10 @@ function identity(request) {
         freezeSha256:request.phase === 'heldout' ? hash(request.freezeSha256,'freeze') : null,
         sourceHashes:sort(request.sourceHashes)};
 }
-function overlaps(a,b) { return a.firstSeed < b.firstSeed+b.seeds && b.firstSeed < a.firstSeed+a.seeds; }
+function overlaps(a,b) {
+    return intervalsOverlap({start:a.firstSeed,end:a.firstSeed+a.seeds},
+        {start:b.firstSeed,end:b.firstSeed+b.seeds});
+}
 
 async function physicalRoot(root) {
     const absolute = path.resolve(root);

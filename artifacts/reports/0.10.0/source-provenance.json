@@ -1,0 +1,29 @@
+{
+  "kind": "UNCOMMITTED_WORKING_TREE",
+  "sourceCommit": null,
+  "basisHead": "4fb60246dae4e7a3e4aa15e468fd28d3b561b7f2",
+  "apkInputsFingerprint": "d9ea2d43cc88d6295fe8f7c7a1c4804fc3262f9d19486eca24625ba6dec999f6",
+  "apkInputs": "apk-inputs.json",
+  "javaInputs": "tested-java-inputs.json",
+  "testCorrection": "ScoreHistoryInvariantTest uses the module-declared JUnit 4; all six contracts retained",
+  "historyTestObservation": "Thirty comparisons and five checkpoint definitions retained; fresh XML snapshot per stable UI state, renewed after navigation or scrolling",
+  "temporaryMavenProfiles": "Selection-only release-preparation profile added to staged POMs; live POMs unchanged",
+  "excludedScope": "Parallel AI-lab tool/doc changes are not APK inputs and are not qualified by this release selection",
+  "frozenSourceArchive": "source-freeze.json",
+  "laterLiveProductionInputsExcluded": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MatchSetup.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MenuScreens.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScoreScreens.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScreenViews.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/SetupScreen.java"
+  ],
+  "laterLiveChangedInputsExcluded": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/CompletedTrickPause.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java"
+  ]
+}

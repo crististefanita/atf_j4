@@ -27,10 +27,10 @@ __pycache__/
 .project
 .settings/
 
-# Keep registered, versioned release evidence; intermediate runs stay external.
+# Keep only the latest registered release evidence; historical runs stay external.
 !artifacts/
 /artifacts/*
 !/artifacts/README.md
 !/artifacts/index.json
-!/artifacts/[0-9]*/
-!/artifacts/[0-9]*/**
+!/artifacts/reports/
+!/artifacts/reports/**

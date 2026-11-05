@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-05T20:17:53.576Z" hostname="DESKTOP-BLFSO18" time="0.055">
+  <properties/>
+  <testcase name="legacyPointsAndKnownBidsNeverInventAnOutcome" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.0"/>
+  <testcase name="currentFormatRejectsMissingFractionalNegativeOrUnconservedTrickRows" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.011"/>
+  <testcase name="aConservedButFalseLatestWinnerIsRejected" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.004"/>
+  <testcase name="legacyInMemoryCheckpointsNormalizeBeforeWritingTheCurrentFormat" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.013"/>
+  <testcase name="anOldUnfinishedHandDoesNotAttributeItsTricksToThePreviousRound" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.011"/>
+  <testcase name="exactZeroMissedZeroAndPositivePointMissHaveIndependentOutcomes" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.006"/>
+  <testcase name="v6MigrationRecoversOnlyTheLastSettledHandAndPreservesTheUnknownPrefix" classname="ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

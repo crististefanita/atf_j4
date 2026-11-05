@@ -44,3 +44,14 @@ Selecția și comparațiile aplicației aparțin consumatorului. Biblioteca păs
 [Politica de prezentare](ATF_Presentation.md) definește volumul și selecția datelor de intrare. [Contractul Android](ATF_Android.md) definește relația acțiune–observație–comparație, iar [predarea rezultatelor](ATF_Handoff.md) definește publicarea atomică.
 
 Defectele de date de intrare se corectează în consumator; cerințele generice ale bibliotecii sunt direcționate prin [feedback](../feedback/README.md). Identitatea binară se citește din configurația și proveniența livrării, fără versiuni sau rezultate copiate în acest ghid.
+
+## Verificarea contractelor
+
+| Întrebare | Verificare responsabilă |
+|---|---|
+| Sunt păstrate eșecurile și omisiunile declarate? | [EvidenceSelectionContractTest](../../atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java) verifică selecția, limitele și configurația capturată. |
+| Valorile publicate corespund intrării? | [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) confruntă valorile și mutațiile deliberate. |
+| Captura rămâne în punctul ei de control? | [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) verifică PNG-ul inline, inclusiv observația fără aserții inventate. |
+| Se poate publica pentru alt joc? | [Admiterea domeniului](../learning/ATF_GameTransfer.md) cere adaptor semantic; existența API-ului generic nu stabilește sensul unui eveniment nou. |
+
+[Verificarea focalizată](../../atf-tests/README.md#verificare-focalizată) deține comanda de pornire. Contractele de date, structura HTML și interacțiunea în browser au calificări distincte; un rezultat static nu certifică navigarea interactivă.

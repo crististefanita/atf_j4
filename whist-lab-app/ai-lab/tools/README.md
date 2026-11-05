@@ -39,6 +39,9 @@ Validatorul verifică regulile și scorul înaintea interpretării rezultatelor.
 
 [Registrul expunerii](qualification/whist-evaluation-registry.mjs) coordonează loturile între corpusuri și păstrează reluarea ca expunere cunoscută. [Contractul registrului](../../../docs/learning/ATF_EvaluationRegistry.md) definește identitatea, importul istoricului, blocarea și recuperarea după întrerupere.
 
+- **Mecanism generic:** [intersecția intervalelor](qualification/half-open-interval.mjs) este pură și primește intervale întregi semi-deschise.
+- **Adaptor de domeniu:** Whist păstrează spațiul distribuțiilor, validarea seed-urilor și persistența; [lecțiile transferabile](../../../docs/learning/ATF_PolicyEvolution.md#lecții-transferabile-către-alte-jocuri-și-produse) explică această graniță.
+
 ## Verificare
 
 Din directorul `whist-lab-app` al unei copii temporare complete a proiectului, cu Java, Node.js și dependențele Gradle disponibile local:

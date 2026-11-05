@@ -15,6 +15,12 @@ Uneltele aparțin infrastructurii Android. Modulul PowerShell verifică transpor
 
 ## Verificare
 
+| Suprafață | Probă potrivită | Limită |
+|---|---|---|
+| Transport PowerShell | Parsarea modulului și, separat, conectarea prin `Connect-AtfAndroidDevice`. | Parsarea nu exercită timeout-ul, erorile procesului sau disponibilitatea dispozitivului. |
+| Replay și predare | [Contractele Python](test_whist_ui_handoff.py), cu directoare și înregistrări controlate. | Verifică datele capturate și republicarea, fără interacțiuni Android noi. |
+| Clientul Java ADB | [AdbClientContractTest](../src/test/java/atf/android/AdbClientContractTest.java), cu executor controlat. | Califică acel client; modulul PowerShell are implementare distinctă. |
+
 Din rădăcina proiectului, cu un interpretor Python 3 real disponibil:
 
 ```powershell
@@ -22,5 +28,7 @@ python -m unittest discover -s atf-test-android/tools -p test_whist_ui_handoff.p
 ```
 
 Importurile Python se rezolvă între fișierele aceluiași director. Rezultatele și pointerele sunt externe proiectului; o republicare păstrează identitatea execuției originale.
+
+Conectarea ADB poate schimba transportul; se execută în fluxul Android care deține rezervarea și configurația. [Calificarea lansatoarelor](../../docs/feedback/ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor) păstrează condițiile verificării prealabile și ale diagnosticului, separat de probele Python.
 
 [Predarea rezultatelor](../../docs/reporting/ATF_Handoff.md) · [Auditul publicării](../../docs/reporting/ATF_Audit.md) · [Modulul Android](../README.md)

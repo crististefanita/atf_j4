@@ -33,6 +33,7 @@ Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpret
 | [Captură](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) și [temporizare](src/main/java/atf/android/evidence/timing/) | PNG original, ceas monoton, intervale și serializare. |
 | [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Verificări pure și publicarea indexului extern. |
 | [Scenarii și oracole](src/test/java/atf/android/e2e/) | Navigare, extragerea stării, actori și comparații ale jocului. |
+| [Interpretarea ierarhiei](src/test/java/atf/android/e2e/driver/hierarchy/) | `HierarchyDocument` decodează XML și coordonate; `CardLabelText` păstrează notația cărților, iar `CardHierarchy` interpretează mâna, atuul și legalitatea accesibilă. |
 | [Suportul de flux](src/test/java/atf/android/e2e/support/) | Puncte de control, jurnal parțial și publicare individuală sau agregată. |
 
 [POM-ul](pom.xml) adaugă sursele motorului și ale jucătorului independent numai în setul de surse de test. Profilul `responsive-sanity` folosește selecția restrânsă declarată în POM; configurația normală rămâne intrarea pentru setul complet de componente.
@@ -40,6 +41,7 @@ Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpret
 ## Contracte de execuție
 
 - Fiecare comandă are dispozitiv identificat și durată maximă; succesul transportului și tranziția semantică au verdicte distincte.
+- Interpretarea XML primește o singură observație și nu comandă dispozitivul. Decodorul refuză declarațiile `DOCTYPE`; selectorii generici și cei de cărți folosesc același model de nod și aceeași normalizare.
 - PNG-ul integral și ierarhia aparțin aceluiași punct de control verificat.
 - Dreptunghiurile logice UIAutomator sunt mapate la rasterul PNG observat înaintea comparațiilor de pixeli. [DisplayRaster](src/main/java/atf/android/evidence/DisplayRaster.java) cere dimensiuni fizice sau logice active exacte, fără toleranță pentru tăiere ori scalare arbitrară.
 - Ceasul fazei pornește înaintea primei acțiuni și păstrează intervalele parțiale la eșec.
@@ -88,6 +90,27 @@ Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea 
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.
 
+## Mecanismele interacțiunii
+
+| Mecanism | Întrebarea verificată | Responsabil |
+|---|---|---|
+| Așteptare pasivă | A apărut starea cerută înaintea termenului? | `UiStateAwaiter`, cu citire proaspătă și ceas monoton. |
+| Captură | Ierarhia și PNG-ul aparțin observației curente? | `UiDeviceCapture`, cu transfer și interval măsurat. |
+| Transport | S-a încheiat comanda, inclusiv drenarea ieșirilor? | `AdbClient` și `CommandProcess`, cu un singur termen. |
+
+Driverul compune aceste mecanisme și înregistrează acțiunile. Componentele controlează procesele, ceasul și observațiile; scenariul nativ califică separat dispozitivul și interacțiunea.
+
+| Contract schimbat | Verificare fără dispozitiv |
+|---|---|
+| Prima observație și expirarea așteptării | [AndroidUiDriverComponentTest](src/test/java/atf/android/e2e/driver/AndroidUiDriverComponentTest.java), cu ceas și citiri controlate. |
+| Captură, transfer și interval | [AndroidUiDriverCaptureTimingTest](src/test/java/atf/android/e2e/driver/AndroidUiDriverCaptureTimingTest.java), cu procese și fișiere controlate. |
+| Pornire, terminare, drenare și curățare | [CommandProcessComponentTest](src/test/java/atf/android/process/CommandProcessComponentTest.java), cu procese locale controlate. |
+
+Transportul, intervalele și datele capturii pot susține altă aplicație. Selectorii cărților, interpretarea mesei și verificarea scorului păstrează semantica Whist; [transferul către alt joc](../docs/learning/ATF_GameTransfer.md) cere adaptor și oracol proprii.
+
+<details>
+<summary>Contractul așteptării pasive și diagnosticul expirării</summary>
+
 ## Așteptarea unei stări
 
 [UiStateAwaiter](src/test/java/atf/android/e2e/driver/waiting/UiStateAwaiter.java)
@@ -104,6 +127,11 @@ intervalul de interogare și diagnosticul; citirea produce o ierarhie proaspăt�
 Componentele folosesc ceas și pauze controlate, fără emulator sau praguri de
 performanță ale gazdei. [Guvernanța pachetelor](../docs/governance/ATF_Packages.md)
 delimitează mecanismul de interacțiuni și de capturarea dovezilor.
+
+</details>
+
+<details>
+<summary>Contractul transportului, capturii și curățării proceselor</summary>
 
 ## Execuția delimitată a transportului
 
@@ -125,3 +153,5 @@ Componentele transportului folosesc procese locale controlate. [Acceptanța Andr
 - Erorile curățării se adaugă cauzei inițiale; un descendent desprins înainte să poată fi observat nu are identitate garantată de API-ul Java.
 
 Bugetele de memorie pentru text și binar rămân [criteriu deschis al adaptorului](../docs/feedback/ATF_Android.md). [Responsabilitățile pachetelor](../docs/governance/ATF_Packages.md) dețin regulile extragerii mecanismelor fără schimbarea identității și ordinii scenariilor.
+
+</details>

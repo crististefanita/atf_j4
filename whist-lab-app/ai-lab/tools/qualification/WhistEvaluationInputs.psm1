@@ -13,7 +13,7 @@ function Get-WhistEvaluationSourceHashes {
             $relative -match '^algorithm-build/(settings\.gradle|build\.gradle|gradle\.properties)$' -or
             $relative -match '^gradle/wrapper/(gradle-wrapper\.jar|gradle-wrapper\.properties)$' -or
             $relative -match '^gradlew(\.bat)?$' -or
-            $relative -match '^ai-lab/tools/qualification/(whist-evaluation-registry\.mjs|WhistEvaluationInputs\.psm1)$'
+            $relative -match '^ai-lab/tools/qualification/(whist-evaluation-registry\.mjs|half-open-interval\.mjs|WhistEvaluationInputs\.psm1)$'
         if(-not $included){continue}
         if($file.Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Evaluation sources must be physical files.'}
         $hashes[$relative]=(Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()

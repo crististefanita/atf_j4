@@ -4,22 +4,22 @@
 
 Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul comun reutilizabil se solicită prin [responsabilitățile bibliotecilor](README.md), fără introducerea în consumator a implementărilor acestora.
 
-## Registrul livrărilor
-
-| Prioritate | Lacună | Criteriu de închidere |
-|---|---|---|
-| P1 | Verificările livrărilor semnalează `RELEASE-UNREGISTERED` pentru rădăcina artefactelor. | Reconciliați indexul structurat, dosarele de versiuni, metadatele și README-urile cu contractul validatorului, păstrând identitatea binarelor și rezultatele originale. |
-
-[Inventarul livrărilor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) și [legarea handoff-ului de asset](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) rămân controale distincte. Acceptanța unei componente nu închide o eroare a registrului de publicare.
-
 ## API reutilizabil pentru verificatoare
 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
 | P1 | Validatoarele comune nu au încă un contract împachetat independent de reactorul producătorului. | API sau CLI cu rădăcină explicită, inventar de documente și surse, module, rădăcini JVM suplimentare și excepții motivate. |
-| P1 | Descoperirea și unele verificări factuale presupun țintele producătorului. | Contractele factuale primesc sursa și afirmația de verificat; un profil Android valid este verificabil fără modulele altei aplicații. |
+| P1 | Descoperirea și unele verificări factuale presupun țintele producătorului ori directorul curent; [PlatformLibrarySurface.workspace](../../atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java) nu consumă rădăcina explicită a guvernanței. | Contractele factuale primesc sursa și afirmația de verificat; lansarea dintr-un staging exterior identifică același proiect sau refuză rădăcina greșită explicit. Un profil Android valid este verificabil fără modulele altei aplicații. |
 
 Integrarea locală păstrează verificatoarele adaptate și controalele lor negative până la demonstrarea echivalenței API-ului împachetat. Configurația Surefire nu substituie identificarea rădăcinii efectiv inspectate.
+
+## Costul inspecției sintactice
+
+| Prioritate | Observație și sursă | Criteriu de închidere |
+|---|---|---|
+| P2 | Profilarea inspecției straturilor surprinde inițializarea încărcătorului de procesoare și interogarea classpath-ului în [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), deși verificarea consumă arborele de sintaxă. | Calificați o configurare parse-only cu dependențe delimitate și măsurați costul pe același inventar. Păstrați adnotările compuse, importurile ambigue, erorile de sintaxă și ciclul de viață al parserului prin controale independente. |
+
+Profilarea și timpii concreți rămân în arhiva externă. Optimizarea parserului se califică separat de verificările funcționale ale aplicației.
 
 ## Criterii pentru contractul comun
 
@@ -42,7 +42,15 @@ Integrarea locală păstrează verificatoarele adaptate și controalele lor nega
 | Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
 |---|---|---|
 | P1 | Guvernanța documentară: verificările structurale nu confruntă automat toate afirmațiile despre profilul nou și cel istoric. | Controale factuale cu defecte injectate pentru scor, ajutor și documentație; fiecare afirmație identifică sursa și domeniul, fără deducerea comportamentului dintr-un cuvânt izolat. |
-| P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. |
+| P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. Pentru Python, detectați aliasul de instalare separat de un interpretor executabil; pentru [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verificați disponibilitatea, refuzul, timeout-ul și starea transportului cu proces controlat, separat de parsare și de clientul Java. |
+
+## Îmbunătățirea ghidurilor de orientare
+
+Grila editorială din [contractul documentației](../governance/ATF_Documentation.md#verificare-și-evaluare-editorială) evaluează documentul și limita lui, separat de maturitatea codului. Notele și inventarul evaluat rămân în auditul extern; aici păstrăm numai lucrările care pot îmbunătăți lectura sau reproducerea.
+
+| Prioritate | Responsabil și suprafață | Criteriu de închidere |
+|---|---|---|
+| P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul; prin [responsabilul comun](README.md), promovați un contract generic al acestor probe și sincronizați clarificările ghidurilor în livrările următoare. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
 
 ## Control tehnic activ
 

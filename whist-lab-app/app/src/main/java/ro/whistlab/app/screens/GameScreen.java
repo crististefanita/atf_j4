@@ -1,0 +1,126 @@
+package ro.whistlab.app.screens;
+
+import ro.whistlab.app.localization.WhistUiText;
+import ro.whistlab.app.table.GameTablePanel;
+import ro.whistlab.app.theme.GameHeaderTypography;
+import ro.whistlab.app.table.TrumpIndicatorView;
+import android.app.Activity;
+import android.graphics.Color;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.TextView;
+import java.util.Collections;
+import java.util.List;
+import ro.whistlab.core.model.Card;
+import ro.whistlab.core.session.GamePhase;
+import ro.whistlab.core.rules.GameRules;
+import ro.whistlab.core.session.GameSession;
+import ro.whistlab.core.model.PlayedCard;
+import ro.whistlab.core.model.Suit;
+
+/** Game table and header composition; decisions and navigation stay with their owners. */
+public final class GameScreen {
+    private GameTablePanel currentTable;
+
+    public void cancelCollection() {
+        if (currentTable != null) { currentTable.cancelCollection(); currentTable = null; }
+    }
+    private final ScreenViews views;
+    private final Activity activity;
+    public GameScreen(ScreenViews views) { this.views = views; this.activity = views.activity(); }
+    public record MenuActions(Runnable scoreboard, Runnable settings, Runnable scores, Runnable home) { }
+    public void bidding(WhistUiText copy, GameSession.Snapshot state, List<Integer> choices, int selectedBid,
+            java.util.function.IntConsumer selected, Runnable submitted, MenuActions actions) {
+        cancelCollection();
+        views.applyTableWindowChrome();
+        LinearLayout page = views.gamePage();
+        addGameHeader(page, state, true, copy, actions);
+        GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted, copy);
+        currentTable = table;
+        page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+    }
+    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick, boolean pauseActive, long remainingMillis, java.util.function.Consumer<Card> selected, MenuActions actions) {
+        cancelCollection();
+        views.applyTableWindowChrome();
+        LinearLayout page = views.gamePage();
+        addGameHeader(page, state, !pauseActive, copy, actions);
+        boolean humanTurn = !pauseActive && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
+        Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
+        List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
+        String instruction = humanTurn ? copy.playHint(state) : null;
+        GameTablePanel table = GameTablePanel.playing(activity, state,
+                humanTurn ? legal : java.util.Collections.emptyList(),
+                selected, instruction, completedTrick, pauseActive, copy);
+        currentTable = table;
+        page.addView(table, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        if (pauseActive && remainingMillis > 0) table.collectCompletedTrick(remainingMillis);
+    }
+    private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
+            boolean currentPlayerHighlighted, WhistUiText copy, MenuActions actions) {
+        LinearLayout header = new LinearLayout(activity);
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setTag("game-header");
+
+        FrameLayout menuButton = new FrameLayout(activity);
+        menuButton.setTag("btn_game_menu");
+        menuButton.setContentDescription(copy.gameMenu());
+        menuButton.setClickable(true);
+        menuButton.setFocusable(true);
+        menuButton.setBackground(views.roundedBackground(Color.TRANSPARENT, Color.TRANSPARENT, 24));
+        menuButton.setOnClickListener(ignored -> showMenu(menuButton, copy, actions));
+        for (int offset : new int[]{-6, 0, 6}) {
+            View line = new View(activity);
+            line.setBackground(views.roundedBackground(Color.rgb(225, 239, 228),
+                    Color.rgb(225, 239, 228), 2));
+            line.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            FrameLayout.LayoutParams lineParams = new FrameLayout.LayoutParams(views.dp(20), views.dp(2), Gravity.CENTER);
+            lineParams.topMargin = views.dp(offset);
+            menuButton.addView(line, lineParams);
+        }
+        header.addView(menuButton, new LinearLayout.LayoutParams(views.dp(48), views.dp(48)));
+
+        LinearLayout status = new LinearLayout(activity);
+        status.setOrientation(LinearLayout.VERTICAL);
+        status.setPadding(views.dp(8), 0, 0, 0);
+        TextView title = views.text(copy.gameTitle(state.mode()), GameHeaderTypography.TITLE_SP, Color.rgb(245, 248, 240), true);
+        title.setSingleLine(true);
+        title.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        title.setTag("game-title");
+        TextView progress = views.text(copy.progress(state), GameHeaderTypography.PROGRESS_SP, Color.rgb(229, 239, 230), true);
+        TextView summary = views.text(copy.bidSummary(state), GameHeaderTypography.BID_SUMMARY_SP, Color.rgb(194, 216, 199), false);
+        summary.setSingleLine(false);
+        status.addView(title, views.matchWrap());
+        status.addView(progress, views.matchWrap());
+        status.addView(summary, views.matchWrap());
+        header.addView(status, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        LinearLayout.LayoutParams trumpParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        trumpParams.leftMargin = views.dp(8);
+        header.addView(new TrumpIndicatorView(activity, state, copy, currentPlayerHighlighted), trumpParams);
+
+        LinearLayout.LayoutParams params = views.matchWrap();
+        params.bottomMargin = views.dp(4);
+        page.addView(header, params);
+    }
+    private void showMenu(View anchor, WhistUiText copy, MenuActions actions) {
+        PopupMenu menu = new PopupMenu(activity, anchor);
+        menu.getMenu().add(copy.scoreSheet()).setOnMenuItemClickListener(item -> {
+            actions.scoreboard().run();
+            return true;
+        });
+        menu.getMenu().add(copy.playerSettings()).setOnMenuItemClickListener(item -> { actions.settings().run(); return true; });
+        menu.getMenu().add(copy.highestScores()).setOnMenuItemClickListener(item -> { actions.scores().run(); return true; });
+        menu.getMenu().add(copy.mainMenu()).setOnMenuItemClickListener(item -> {
+            actions.home().run();
+            return true;
+        });
+        menu.show();
+    }
+}

@@ -1,0 +1,16 @@
+{
+  "state": "OPEN",
+  "id": "HISTORY-LEGEND-FONT-130",
+  "observation": "History legend extends beyond the visible right dialog edge",
+  "logicalProfile": "1080x2448@440",
+  "fontScale": 1.3,
+  "observedPngRaster": "1080x1920",
+  "capture": "e2e/history-api28/01-current-apk-resumes-the-same-completed-ledger-en.png",
+  "captureSha256": "0a46d670350819b1097a7a57158fd1afba9294d5b5ce0b47ce36c900cc578f69",
+  "capturedDebugApkSha256": "c83ed7b0dca1d6bc296e1d5f4da5dc7cc35e440eee23e978b720bb1e1438b5d6",
+  "releaseApkSha256": "99b9c39389fbd6be6db162db0c0a22279cbb8d697d74473a198304604e821a80",
+  "workingTreeFingerprint": "d9ea2d43cc88d6295fe8f7c7a1c4804fc3262f9d19486eca24625ba6dec999f6",
+  "owner": "docs/feedback/ATF_Android.md",
+  "functionalAssertionsPassed": true,
+  "visualFindingClosed": false
+}

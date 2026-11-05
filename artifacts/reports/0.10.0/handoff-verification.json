@@ -1,0 +1,57 @@
+{
+  "state": "PREPARED",
+  "version": "0.10.0",
+  "apkSha256": "99b9c39389fbd6be6db162db0c0a22279cbb8d697d74473a198304604e821a80",
+  "apkBytes": 783480,
+  "sourceFingerprint": "d9ea2d43cc88d6295fe8f7c7a1c4804fc3262f9d19486eca24625ba6dec999f6",
+  "qualifiedApkInputFilesVerifiedInSourceArchive": 89,
+  "gitHeadUnchanged": true,
+  "frozenSourceArchive": "source-freeze.json",
+  "laterLiveProductionInputsExcluded": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MatchSetup.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MenuScreens.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScoreScreens.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScreenViews.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/SetupScreen.java"
+  ],
+  "laterLiveChangedInputsExcluded": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/CompletedTrickPause.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java"
+  ],
+  "entireLiveTreeQualified": false,
+  "commitPerformed": false,
+  "pushPerformed": false,
+  "publicationPerformed": false,
+  "remoteDeletionPerformed": false,
+  "totalSelectedTests": 362,
+  "testGroups": {
+    "app": 147,
+    "core": 50,
+    "adapter": 134,
+    "governance": 29,
+    "native": 1,
+    "history": 1
+  },
+  "browserAcceptance": "PASS: selected owner, last assertion, full PNG and return in each detached report",
+  "mcpAcceptance": "Not established; prior attempt timed out",
+  "localLinksChecked": 37,
+  "knownVisualFinding": "HISTORY-LEGEND-FONT-130 remains OPEN",
+  "priorReleaseArchive": {
+    "mode": "LOCAL_PREPARATION_ONLY",
+    "version": "0.10.0",
+    "previousVersion": "1.9.2",
+    "archivedFiles": 68,
+    "archive": "C:\\work\\whist_back\\release-archives\\20261105T191620Z-before-010\\active-before-010.zip",
+    "archiveSha256": "abb67c34932b8c5ebe02e97ae0aa7a30fad9e20255fdd3a7172b58faeee6146d",
+    "allOriginalFileHashesVerified": true,
+    "gitHistoryChanged": false,
+    "remoteChangesPerformed": false,
+    "createdUtc": "2026-11-05T20:32:52.244404+00:00"
+  },
+  "verifiedUtc": "2026-11-05T20:45:22.872303+00:00"
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-05T20:17:51.308Z" hostname="DESKTOP-BLFSO18" time="0.217">
+  <properties/>
+  <testcase name="illegalBidDoesNotRunAnyAcceptedStageOrChangeTheSession" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.029"/>
+  <testcase name="acceptedBidIsCommittedBeforeBookkeepingSaveAndContinuation" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.027"/>
+  <testcase name="continuationFailureIsNotConvertedToARefusalOrAnExtraSave" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.009"/>
+  <testcase name="replayFailureAfterAValidCardIsNeverReportedAsAnIllegalCard" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.021"/>
+  <testcase name="phaseRefusalKeepsItsOriginalCauseAndNeverSaves" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.043"/>
+  <testcase name="persistenceFailureKeepsTheAcceptedBidAndDoesNotRepeatOrAdvanceIt" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.041"/>
+  <testcase name="acceptedCardReachesReplayAndCheckpointExactlyOnce" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.01"/>
+  <testcase name="anUnexpectedCommandDefectIsNotTreatedAsADomainRefusal" classname="ro.whistlab.app.lifecycle.GameCommandFlowComponentTest" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

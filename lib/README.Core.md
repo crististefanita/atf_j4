@@ -38,6 +38,16 @@ var total = body.path("total").decimalValue();
 - Păstrați modelul original pentru comparație; redactarea și preview-ul se aplică la publicarea diagnosticului.
 - Core expune porturi neutre; [Console](README.Console.md), [Mock](README.Mock.md) și [Reporting](README.Reporting.md) au roluri distincte.
 
+## Verificarea utilizării
+
+| Acțiune | Rezultat observabil |
+|---|---|
+| Compilați fragmentul cu JDK 21 și dependențele din POM. | Tipurile și metodele se rezolvă din livrarea binară aleasă. |
+| Executați fragmentul. | URL-ul are baza și calea cererii; `total` este numeric egal cu `19.90` prin `BigDecimal`. |
+| Furnizați chei JSON duplicate sau conținut după rădăcină. | Parsarea refuză documentul, fără rezultat parțial acceptat. |
+
+Exemplul construiește date locale; nu execută un apel HTTP. Verificarea transportului se face separat, prin adaptorul real ori mock selectat explicit.
+
 ---
 
 Mentenanța codului și testelor Core aparține proiectului separat `atf_j0/atf-core`; [feedback-ul și sincronizarea](README.md#mentenanță-și-feedback) pornesc de la J0.

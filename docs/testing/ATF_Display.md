@@ -63,7 +63,7 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 
 - Meniul păstrează configurarea accesibilă în viewport.
 - Masa de joc folosește înălțimea măsurată a ferestrei. Mâna, levata și toate chenarele încap simultan; suprafața de joc nu are container de derulare verticală.
-- [Tipografia antetului](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameHeaderTypography.java) păstrează titlul la 14 sp și progresul la 11 sp; cele două rânduri ale licitației folosesc 11,7 sp, exact +30% față de 9 sp. Dimensiunea fracționară rămâne în SP pentru scalarea Android, iar câmpul multilinie își măsoară înălțimea. [Componenta de contract](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameHeaderTypographyComponentTest.java) protejează proporția și rolurile celorlalte texte; fontul Android are calificare nativă separată.
+- [Tipografia antetului](../../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) păstrează titlul la 14 sp și progresul la 11 sp; cele două rânduri ale licitației folosesc 11,7 sp, exact +30% față de 9 sp. Dimensiunea fracționară rămâne în SP pentru scalarea Android, iar câmpul multilinie își măsoară înălțimea. [Componenta de contract](../../whist-lab-app/app/src/test/java/ro/whistlab/app/theme/GameHeaderTypographyComponentTest.java) protejează proporția și rolurile celorlalte texte; fontul Android are calificare nativă separată.
 - Licitarea nu acoperă locurile jucătorilor; selecția semantică distinge etichetele duplicate.
 - Fiecare acțiune este confruntată cu starea observată după ea.
 - Reluarea păstrează registrul scorului și informația cunoscută.
@@ -92,6 +92,8 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - Tăietura oblică traversează doar cifra licitației ratate, inclusiv zero. Componentele verifică încadrarea în coloană; sanity-ul verifică rezultatul accesibil, cifrele, legenda și captura nativă în RO/EN cu text normal și mărit.
 
 ## Guvernanța execuției
+
+Comparațiile aceleiași stări folosesc un snapshot XML comun. [Scenariul istoricului](../../atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java) reînnoiește observația după navigare și derulare; snapshot-ul nu se reutilizează după o mutație. Captura și verdictul checkpoint-ului rămân în urma originală, fără recitiri ADB pentru fiecare câmp al aceleiași stări stabile.
 
 1. Verificați parametrii, binarele configurate și contractele profilului, driverului și publicatorului.
 2. Rezervați dispozitivul și consemnați starea inițială.

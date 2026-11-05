@@ -43,6 +43,16 @@ var response = mock.send(ApiRequest.of("GET", "/health"),
 - Durata din rută este metadată a răspunsului, nu o întârziere reală simulată.
 - O probă mock verifică integrarea; acceptanța serviciului, brokerului sau dispozitivului real rămâne separată.
 
+## Verificarea utilizării
+
+| Acțiune | Rezultat observabil |
+|---|---|
+| Salvați YAML-ul ca `mock.yaml`, în directorul procesului. | Exemplul citește exact acel catalog local. |
+| Trimiteți cererea `GET /health`. | Răspunsul are status `200`; corpul corespunde rutei configurate. |
+| Trimiteți o cale fără rută în același catalog. | Răspunsul are statusul fallback `500`. |
+
+Adresa `offline.test` este contextul cererii pentru transportul mock. Reușita probei califică potrivirea catalogului și contractul consumat, fără să confirme disponibilitatea unui serviciu extern.
+
 ---
 
 Mentenanța codului și testelor Mock aparține proiectului separat `atf_j0/atf-mock`; [feedback-ul și sincronizarea](README.md#mentenanță-și-feedback) pornesc de la J0.

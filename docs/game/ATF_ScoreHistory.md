@@ -4,6 +4,10 @@ Istoricul păstrează licitația, punctele mâinii și totalul fiecărui loc dup
 
 Registrul stochează licitațiile, levatele câștigate și soldurile; punctele sunt diferențe de sold. Rezultatul contractului compară licitatul cu levatele, independent de semnul punctelor. O licitație ratată este tăiată oblic, păstrând cifra lizibilă și descrierea accesibilă explicită.
 
+- Fiecare jucător are exact două coloane vizibile: licitat și punctele mâinii.
+- Punctele sunt subliniate numai pe mâna în care se acordă bonusul sau penalizarea de serie; semnul pozitiv ori negativ, singur, nu justifică sublinierea.
+- Totalurile rămân în registru și în descrierea accesibilă, fără coloană vizibilă separată.
+
 ## Fluxul datelor
 
 ```mermaid
@@ -31,6 +35,7 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 | Levate | Valorile sunt întregi, încadrate în mână, iar suma pe locuri este numărul cărților mâinii. Ultima mână încheiată concordă cu starea jucătorilor. |
 | Rezultatul contractului | Realizat, ratat sau necunoscut; punctele pozitive nu implică realizarea contractului. Zero este o licitație distinctă de valoarea necunoscută. |
 | Înregistrare | O singură avansare pentru fiecare mână încheiată. |
+| Limite | Un loc invalid nu este informație necunoscută; indexarea și depășirea intervalului mâinilor sunt refuzate explicit. O înregistrare nouă include levatele, fără ștergerea sufixului cunoscut. |
 | Reîncărcare | Ultimul sold trebuie să corespundă stării jucătorilor și fazei sesiunii. |
 | Date vechi | Soldul cunoscut se păstrează; cărțile, licitațiile și mâinile neînregistrate nu sunt reconstruite prin presupunere. |
 | Partidă nouă | Registru propriu și sold inițial validat. |
@@ -41,7 +46,7 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 
 - Toți jucătorii au coloane proprii; antetele rămân deasupra rândurilor derulabile vertical și se deplasează împreună cu acestea la derularea orizontală.
 - Prima coloană afișează numai numărul cărților mâinii. Identitatea cronologică rămâne în model și în descrierile accesibile, inclusiv când mai multe mâini au același număr de cărți.
-- Separatoarele verticale delimitează grupurile jucătorilor, fără a separa licitația de punctele și totalul aceluiași loc. Subcoloanele se rotunjesc o singură dată în pixeli; suma lor dimensionează și antetul, iar padding-ul intră în lățimea derulabilă.
+- Separatoarele verticale delimitează grupurile jucătorilor, fără a separa licitația de punctele aceluiași loc. Cele două subcoloane se rotunjesc o singură dată în pixeli; suma lor dimensionează și antetul, iar padding-ul intră în lățimea derulabilă. Totalurile ascunse nu participă la măsurarea lățimii.
 - Programul complet include mâinile încheiate, mâna curentă și mâinile viitoare; punctele neacordate se afișează ca necunoscute, fără totaluri inventate.
 - Contractul zero se afișează ca valoare, iar contractul necunoscut are marcaj și text accesibil distinct.
 - Istoricul rămâne disponibil după terminarea partidei.
@@ -49,6 +54,7 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 - Antetele scurte sunt explicate prin legendă, iar separatoarele delimitează fiecare jucător. Lățimile preferate compacte se extind după textul măsurat; cifrele și numele complete au prioritate față de compresie.
 - Schema curentă păstrează un sufix de levate cunoscute, separat de sufixul licitațiilor cunoscute. Migrarea unei mâini încheiate poate recupera ultima valoare din starea jucătorilor; mâinile mai vechi și cele în curs nu primesc valori inventate.
 - Salvarea și reîncărcarea păstrează prefixul necunoscut. O mână nouă adaugă informația completă fără a reinterpreta datele vechi; un contract necunoscut nu primește tăietură.
+- Marcajul de serie compară punctele înregistrate cu scorul obișnuit al contractului cunoscut, în profilul românesc cu serii activate. Numai ajustarea egală cu bonusul sau penalizarea configurată primește subliniere; o mână de o carte, rezultatele necunoscute și mâinile neîncheiate nu primesc marcaj. Descrierea accesibilă numește separat ajustarea, inclusiv pentru profilurile vechi asimetrice.
 
 ## Verificarea mecanismului
 

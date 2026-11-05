@@ -1,21 +1,17 @@
-# Artefactele livrărilor
+# Dovezile release-ului local
 
 ## Pe scurt
 
-Fiecare versiune are propriul dosar cu README, rapoarte, capturi și metadate. Strategia comună se păstrează în [documentația testării](../docs/testing/README.md), iar procedura publicării în [contractul livrării](../docs/platform/ATF_AndroidDelivery.md).
+Artefactele active însoțesc un singur APK. Build-urile și istoricul încercărilor rămân în TMP sau în arhiva externă.
 
 ## Versiunea curentă
 
-[1.9.2 — rapoarte și proveniență](1.9.2/README.md)
+[0.10.0 — rezultate și proveniență](reports/0.10.0/README.md) este pregătită local, fără commit, push sau publicare. Observațiile vizuale deschise rămân explicite în dosar.
 
 ## Versiuni disponibile
 
-| Versiune | Dosar |
+| Versiune | Dosar activ |
 |---|---|
-| 1.9.2 | [Rezultate și metadate](1.9.2/README.md) |
-| 1.9.1 | [Rezultate și metadate](1.9.1/README.md) |
-| 0.1.9 | [Rezultate și metadate](0.1.9/README.md) |
+| 0.10.0 | [Rapoarte și predare](reports/0.10.0/README.md) |
 
-[Indexul structurat](index.json) declară versiunea curentă și populația dosarelor. Un dosar nou primește versiunea exactă a APK-ului; rezultatele unei livrări existente se păstrează separat de următoarea.
-
-Rulările intermediare și build-urile rămân în TMP sau în depozitul extern. În dosarul versiunii intră doar dovezile relevante pentru livrare; identitatea și limitele unei execuții se păstrează la reorganizare.
+[Rapoartele curente](reports/README.md) · [Strategia comună](../docs/testing/README.md) · [Retenția](../docs/platform/ATF_ReleaseRetention.md)

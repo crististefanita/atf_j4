@@ -9,7 +9,7 @@ O regulă definește condiția, acțiunea și limitele ei. O pondere are sens nu
 | Reguli obligatorii | Pachet, licitații permise, culoare, atu și scor | Filtrează acțiuni și calculează rezultate în motor. |
 | Manifest legat de cod | Condiții, priorități, surse și teste | Documentează și verifică implementarea declarată. |
 | Parametru de estimator | Buget, mix de continuare sau prag de departajare | Influențează calculul numai prin consumatorul implementat. |
-| Catalog de tipare | Clase de combinații, indicii și statut | Descriere pentru cercetare, cu activare runtime explicită. |
+| Catalog de tipare | Clase de combinații, indicii și statut | Cercetare; influența în aplicație cere consumator implementat și promovare separată. |
 | Model învățat | Caracteristici, coeficienți, dispersie și identitate | Produce estimări numai prin consumatorul implementat și domeniul calificat. |
 | Date de experiment | Partide, selecții concrete și rezultate | Intrări externe pentru dezvoltare și evaluare. |
 
@@ -55,6 +55,37 @@ Tabelul separă mecanisme posibile; nu afirmă că fiecare este activ în toate 
 
 ## Modelul formal al influenței
 
+„Pondere” poate numi mecanisme diferite. Identificați mai întâi ce se cântărește și cine consumă valoarea; mărirea unui număr nu are aceeași semnificație în toate modelele.
+
+| Tip de influență | Unitate și efect | Stadiu în implementare |
+|---|---|---|
+| Prioritate de obiectiv | Ordinea dintre exact, puncte și efectul asupra rivalilor. | [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) ordonează criterii, fără o sumă arbitrară de scoruri. |
+| Amestec de continuări | Proporția dintre două estimări ale aceleiași utilități. | [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) combină rollout și căutare în domeniul mic eligibil. |
+| Plauzibilitatea lumii | Influența unei distribuții ipotetice în agregare. | Domeniul specializat de o carte este activ; modelul general de 2–8 cărți rămâne experimental. |
+| Coeficient învățat | Contribuția unei caracteristici normalizate la predicție. | Ajustare offline și generare de sursă pentru candidați identificați. |
+| Indiciu despre onoruri | Descrierea potențialului unei combinații în context. | Catalog de cercetare, neaditiv și fără influență runtime directă. |
+
+### Parametru fix, context care evoluează
+
+```mermaid
+flowchart LR
+    PUBLIC[Fapt public nou] -->|actualizează| OBS[Observație]
+    OBS -->|recalculează| FEATURES[Context]
+    FEATURES -->|influențează| ORDER[Evaluare și ordine]
+    PARAM[Politică înghețată] -->|definește| ORDER
+    ORDER -->|propune| ACTION[Acțiune legală]
+```
+
+<details>
+<summary>Legendă: adaptarea deciziei păstrează identitatea politicii</summary>
+
+Necesarul, cărțile publice și oportunitățile se schimbă după acțiuni; parametrul și regula rămân cele ale implementării identificate. Poarta de fezabilitate poate schimba obiectivul prioritar, fără reantrenarea coeficienților în timpul mâinii.
+
+</details>
+
+<details>
+<summary>Forma aditivă și corecția experimentală de presiune</summary>
+
 ```text
 scor_contextual(acțiune, stare) =
   suma_j θ_j × φ_j(acțiune, stare)
@@ -75,11 +106,22 @@ progres = 1 − oportunități / mărimea_inițială
 
 Corecția contextuală se aplică doar în ramura eligibilă a modelului experimental. Formula nu este activă implicit în rollout-ul Hard acceptat, iar dezechilibrul semnat Δ rămâne constant în timpul unei mâini.
 
+</details>
+
+### Cum ajustăm un model offline
+
+[Constructorul modelului de ofertă](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) extrage mâna actorului și prefixul existent la licitare din partide development validate. Grupează observațiile după seed pentru ponderare și separarea ajustării de validarea predictivă; eticheta este oferta observată, fără afirmația că ar fi fost optimă.
+
+[Generatorul de sursă](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence-codegen.mjs) verifică vocabularul, formele numerice și criteriul predictiv, apoi păstrează hash-ul modelului în implementarea generată. Acest control califică generarea; [procedura de evoluție](../learning/ATF_PolicyEvolution.md#când-promovăm) cere separat componentele și progresul strategic pe lot nou înaintea activării.
+
 ## Inferența comportamentului
 
 Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Modelul runtime specializat de o carte și fallback-ul său sunt documentate în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor); controlul automat al coerenței manifestului cu acel domeniu rămâne [criteriu deschis](../feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor).
 
 [Modelul experimental de licitații](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) folosește coeficienți fixați și caracteristici ale mâinii ipotetice originale și prefixului disponibil atunci. Cărțile rămase și cele jucate de același loc se reunesc fără dublarea mesei curente.
+
+<details>
+<summary>Plauzibilitate, regularizare și mărimea efectivă a eșantionului</summary>
 
 ```text
 μ = clamp(scală × θ · φ(mână_inițială, prefix), 0, mărime)
@@ -98,6 +140,8 @@ eșantion_efectiv = suma_ponderilor² / suma_pătratelor_ponderilor
 - Concentrarea excesivă sau ponderile constante păstrează estimarea de bază prin fallback.
 - O licitație proprie ipotetică este țintă de simulare și nu este folosită retrospectiv drept dovadă despre un adversar.
 - Modelul prezice comportament observat, fără etichetarea lui ca optim sau posterior comun calibrat.
+
+</details>
 
 ## Licitațiile viitoare în simulare
 

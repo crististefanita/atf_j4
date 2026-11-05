@@ -49,13 +49,18 @@ Componentele construiesc domenii finite cu așteptări independente. Ele calific
 
 ## Alegerea verificării
 
+| Mecanism modificat | Filtru JUnit al sarcinii `informationResearchTest` |
+|---|---|
+| Observația și continuarea publică | `ro.whistlab.core.ai.information.PublicTailInformationTest` |
+| Agregarea deschiderii înaintea mediei | `ro.whistlab.core.ai.information.OpeningBidEvidenceTest` |
+
 Din directorul `whist-lab-app` al unei copii temporare complete, cu Java și dependențele Gradle disponibile local:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:informationResearchTest --offline --no-daemon
 ```
 
-[Gradle](../../../game-core/build.gradle) definește selecția exactă, inclusiv alte componente ale aceleiași sarcini. Testele de informație sunt excluse din sarcina implicită `test`; colecția `research` din [catalog](../../../../config/test-collections.json) este o selecție mai largă.
+[Gradle](../../../game-core/build.gradle) definește selecția exactă, inclusiv componenta presiunii contractului în aceeași sarcină. Adăugați `--tests '<filtrul-din-tabel>'` pentru mecanismul vizat; cele două teste de informație sunt excluse din sarcina implicită `test`, iar colecția `research` din [catalog](../../../../config/test-collections.json) este o selecție mai largă.
 
 Pentru a modifica o politică, identificați separat observația, generatorul, continuarea și agregarea schimbate. [Protocolul offline](../../../../docs/learning/README.md) cere componente independente, candidat înghețat și evaluare rezervată înaintea promovării; datele și rezultatele concrete rămân externe.
 

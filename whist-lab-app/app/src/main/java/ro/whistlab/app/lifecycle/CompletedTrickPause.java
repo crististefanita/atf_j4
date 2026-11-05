@@ -6,7 +6,20 @@ import ro.whistlab.core.model.PlayedCard;
 
 /** Keeps a completed trick on the table before the next turn becomes interactive. */
 public final class CompletedTrickPause {
-    static final long DISPLAY_MILLIS = 1_500L;
+    static final long DISPLAY_MILLIS = ro.whistlab.app.animation.TrickCollectionMotion.DISPLAY_MILLIS;
+
+    private GameSession owner;
+
+    public DisplayState evaluate(GameSession game, long uptimeMillis) {
+        if (owner != game) {
+            owner = java.util.Objects.requireNonNull(game);
+            displayedHandIndex = -1;
+            displayedHistorySize = -1;
+            cards = List.of();
+            displayDeadline = 0;
+        }
+        return evaluate(game.snapshot(), uptimeMillis);
+    }
 
     private int displayedHandIndex = -1;
     private int displayedHistorySize = -1;

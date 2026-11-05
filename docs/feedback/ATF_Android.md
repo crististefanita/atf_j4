@@ -16,7 +16,7 @@ Cerințele sunt definite prin geometrie și setări Android măsurabile. Configu
 | P1 | Text mărit | Componentele acoperă scalele 1,0/1,15/1,3/1,5. Selectați pentru sanity nativ scara normală și cel puțin o scară mărită; decorul se adaptează înaintea pierderii conținutului. |
 | P0 | Acțiune și nume | Acțiunea integrală este centrată deasupra numelui jucătorului activ, la fiecare loc și în ambele faze. Nicio intersecție cu rame, cărți ori controale; spațiul rezervat previne deplasarea mesei la schimbarea actorului. |
 | P0 | Mână și masă | Primul și ultimul indice de carte sunt lizibile, mâna și toate locurile se văd simultan în profilul declarat, iar țintele tactile păstrează minimum 48 dp. O carte sau un chenar tăiat nu se validează prin simpla prezență în XML. |
-| P0 | Istoric | Numărul cărților este singura valoare vizibilă a mâinii; identitatea cronologică rămâne accesibilă. Antetele, separatorul de 3 dp și grupurile licitat–puncte–total sunt aliniate; derularea ajunge la ultima mână și ultimul jucător fără pierderea valorilor. |
+| P0 | Istoric | Numărul cărților este singura valoare vizibilă a mâinii; identitatea cronologică rămâne accesibilă. Antetele, separatorul de 3 dp și grupurile cu două coloane licitat–puncte sunt aliniate; derularea ajunge la ultima mână și ultimul jucător fără pierderea valorilor. |
 | P1 | Verificare rapidă | Geometria, rotunjirile, textele și observațiile defecte au teste de componentă. E2E restrâns verifică randarea reală, actorii, derularea și lizibilitatea în RO/EN. |
 | P1 | Dovezi | Captura PNG nativă și XML-ul aparțin aceleiași stări; raportul include imaginile inline base64, parametrii efectivi și hash-ul APK-ului. Emularea geometriei și acceptanța pe un dispozitiv fizic rămân calificări distincte. |
 
@@ -34,6 +34,17 @@ Nu rescrieți identitatea tehnică observată în dovezile brute pentru a anonim
 
 ## Compatibilitatea istoricului
 
+### P1 — calificarea nativă a istoricului cu două coloane
+
+Sanity-ul folosește un APK care include schimbarea; nu se atribuie unui release anterior. Componentele califică separat proiecția, persistența și geometria.
+
+| Suprafață | Criteriu de închidere |
+|---|---|
+| Două coloane | Exact licitat și punctele mâinii per jucător, fără antet sau celule vizibile de total; RO/EN, text normal și mărit, prima și ultima mână și toate locurile. |
+| Subliniere | Bonusurile și penalizările de serie ±5/±10 subliniază cifra punctelor numai pe rândul plății; punctajele obișnuite și datele necunoscute nu sunt subliniate. |
+| Randare | Captura originală confirmă linia, lizibilitatea semnului și lipsa intersecțiilor; prezența nodului în XML nu demonstrează sublinierea. |
+| Integritate | Explorarea și reluarea păstrează totalurile și toate rândurile; marcajul rămâne asociat mâinii și locului corect. |
+
 [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează sufixele cunoscute ale licitațiilor și levatelor. Punctele se derivă din solduri, iar ratarea compară licitatul cu levatele; nu se deduce din culoare sau semnul punctajului.
 
 | Prioritate | Cerință rămasă | Criteriu de închidere |
@@ -44,16 +55,27 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 
 ## Persistență și coordonare
 
+[Comenzile și salvarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#comenzi-salvare-și-erori) au porturi de componentă pentru refuz, checkpoint, clasament și continuare. Randarea nu înregistrează rezultate; recuperarea stocării native și costul pe dispozitiv păstrează calificare distinctă.
+
 | Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
 |---|---|---|
-| P1 | [GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java): ordinea stocării față de randare și calcul nu este calificată la eșec sau întârziere. | Componente cu stocare controlată: salvare, reluare și clasament au ordine explicită, fără puncte ori rezultate duplicate. |
-| P1 | Recuperarea `AtomicFile` după corupere sau întrerupere nu are acceptanță prin interfață. | Android pe APK identificat: întrerupere controlată, recuperare sau eroare explicită, datele utilizatorului păstrate; componentele serializării rămân verificare separată. |
-| P2 | [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java) compune navigarea, comenzile și construcția ecranelor. | Extrageri calificate prin componente: proprietar și durată de viață explicite pentru callback-uri, aceleași tranziții, geometrie și reguli. |
+| P1 | Recuperarea stocării Android: checkpoint-ul `SharedPreferences` și clasamentul `AtomicFile` nu au acceptanță nativă după corupere sau întrerupere. | Android pe APK identificat: întrerupere controlată, recuperare sau eroare explicită, datele utilizatorului păstrate; componentele serializării și porturile de stocare rămân verificări separate. |
+| P2 | Latența checkpoint-ului sincron nu este calificată pe dispozitiv; ordinea componentelor nu certifică reactivitatea. | Mediu și stare identificate, costul scrierii separat de calculul AI și randare; păstrați ordinea și cauza erorii înaintea unei eventuale mutări a I/O între executori. |
 
 ## Calificarea modificărilor vizuale
 
+### Legenda istoricului la text mărit
+
+**P2 · reprodus pe candidatul activ.** [Captura EN cu text 1,3](../../artifacts/reports/0.10.0/e2e/history-api28/01-current-apk-resumes-the-same-completed-ledger-en.png) arată legenda tăiată în dreapta. [Receipt-ul vizual](../../artifacts/reports/0.10.0/visual-review.json) identifică PNG-ul, APK-ul Debug observat, APK-ul Release și sursele prin hash. [ScoreHistoryView](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java) include legenda în tabelul derulabil orizontal; prezența textului complet în XML nu dovedește lizibilitatea în viewport.
+
+- Separați legenda de derularea coloanelor ori măsurați împărțirea pe rânduri după lățimea utilă a dialogului. Numărul jucătorilor nu trebuie să împingă explicația în afara ferestrei.
+- Identificați raportul, APK-ul și captura prin hash înaintea calificării reproducerii sau închiderii. Un candidat neînregistrat nu împrumută dovezile versiunii active.
+- Păstrați tabelul cronologic, antetele și accesul la toate locurile. Acceptanța cere explicația completă în RO/EN, cu text normal și mărit, plus o comparație a geometriei vizibile; verificarea `hasTextContaining` singură nu închide problema.
+- Marcajele diagonale și sublinierile păstrează criteriul raster separat descris mai sus; verdictul funcțional al istoricului nu certifică automat contrastul ori lizibilitatea lor.
+
 | Prioritate | Suprafață | Verificare necesară înainte de acceptare |
 |---|---|---|
+| P2 | Colectarea levatei | Calificare nativă pe APK identificat: toate cărțile converg spre locul câștigătorului la 3–6 locuri, fără tăiere, efect reluat sau mutație de scor. Confruntați suspendarea/detașarea, ultima levată și animațiile dezactivate; componentele geometriei și navigării au domeniu separat. |
 | P1 | Masă, carte și atu | Profiluri declarate, text mărit, intersecții reale, coordonate logice mapate la raster și revizie a capturii originale. |
 | P1 | Istoric și reluare | Toate mâinile încheiate și toate locurile accesibile, fără acordarea repetată a punctelor ori avansarea partidei. |
 | P1 | Accesibilitate și localizare | Ordine asistată, etichete ale valorilor necunoscute ori negative, primul și ultimul element derulabil în ambele limbi. |
@@ -80,6 +102,14 @@ Protecția ferestrei și calculul spațiului util sunt implementate; acceptanța
 
 [Contractul livrării](../platform/ATF_AndroidDelivery.md) distinge padding-ul cu IME de măsurarea ferestrei fără IME și definește restaurarea și diagnosticul de memorie. Componentele verifică modelul, iar criteriul nativ rămâne deschis până la execuția callback-urilor și a scenariului pe sistemul țintă.
 
+## Identitatea numerică a cadrului de animație
+
+| Prioritate | Lacună și sursă | Criteriu de închidere |
+|---|---|---|
+| P2 | [TrickCollectionMotion.frame](../../whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java) poate produce zero negativ în translație la începutul mișcării. Egalitatea structurală a record-ului îl distinge de zero pozitiv, încălcând cadrul identitate cerut de [componentă](../../whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java). | Canonicalizați cadrul identitate conform contractului numeric și păstrați componentele pentru direcții, densități, capete, limitare și monotonie. Nu modificați aserțiunea doar pentru a ascunde diferența de reprezentare; calificarea randării Android rămâne separată. |
+
+[Reproducerea izolată](../../../../whist_back/documentation-transfer/20261105-223207/pure-ui-components.log) și [sursele identificate](../../../../whist_back/documentation-transfer/20261105-223207/pure-ui-source-identity.json) delimitează discrepanța. Remedierea în sursa live cere reluarea componentei pe noua identitate, fără preluarea verdictului APK-ului pregătit.
+
 ## Memoria adaptorului
 
 Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
@@ -94,7 +124,7 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 |---|---|---|
 | P1 extern | API-ul Search autentificat confirmă `User flagged as spammy.`; profilul, repository-ul public și asset-ul returnează 404 anonim. | Solicitați revizuirea marcajului contului prin formularul oficial GitHub; după ridicare, URL-ul public al asset-ului trebuie să răspundă 200 și să producă exact mărimea și SHA-256 ale binarului verificat. |
 
-[Registrul distribuției](../../artifacts/README.md) păstrează probele și răspunsul explicit al API-ului Search. Marcajul contului este confirmat; motivul declanșării lui nu este expus și necesită revizuire GitHub. Setarea repository-ului este deja publică, iar release-ul este publicat.
+[Registrul distribuției](../../artifacts/README.md) identifică dosarul activ și starea lui de pregătire ori publicare. Semnalul furnizorului și răspunsurile anonime aparțin probei care le-a capturat; un candidat local `PREPARED` nu confirmă publicarea și nu închide incidentul distribuției anterioare.
 
 Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-256 aparțin înregistrării distribuției și cererii de suport, fără duplicarea lor în ghid. Distribuția publică rămâne necalificată; modificarea APK-ului nu compensează un răspuns HTTP negativ.
 
@@ -104,9 +134,9 @@ Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-2
 
 Acceptanța nativă a versiunii publicate rămâne condiționată de proveniența completă: tag-ul identifică sursa declarată, iar același commit este accesibil din istoricul unui branch remote. Publicarea asset-ului și un commit ulterior cu documentele versiunii nu demonstrează această relație.
 
-- **Observație:** pentru `v1.9.2`, tag-ul identifică `9623d95b285291b0675a48e54610b56fcbe693c9`; enumerarea tuturor branch-urilor remote arată numai `master`, iar `git merge-base --is-ancestor` întoarce `1` pentru sursa tag-ului față de acel branch. APK-ul publicat și descărcat autentificat are identitate verificată; acesta nu este un defect al binarului.
+- **Defect urmărit:** un tag poate identifica sursa APK-ului fără ca acea sursă să fie accesibilă din istoricul unui branch remote. Descărcarea autentificată verificată și un commit ulterior cu documentele nu închid această diferență de proveniență.
 - **Criteriu de închidere:** proprietarul publicării păstrează sursa release-ului pe un branch remote; după `git fetch`, enumerarea branch-urilor și verificarea strămoșului trebuie să confirme exact commit-ul tag-ului. Nu rescrieți istoricul comun sau tag-ul publicat pentru a masca discrepanța.
-- **Dovadă externă:** [verificarea porții release-ului](C:/work/whist_back/release-acceptance/1.9.2/release-gate.json), împreună cu receipt-ul publicării și APK-ul arhivat în același dosar. Instalarea și rezervarea emulatorului nu au început.
+- **Dovadă externă:** [verificarea porții release-ului](../../../../whist_back/release-acceptance/1.9.2/release-gate.json), împreună cu receipt-ul publicării și APK-ul arhivat în același dosar. Instalarea și rezervarea emulatorului nu au început.
 
 | Prioritate | Lacună rămasă | Criteriu de închidere |
 |---|---|---|

@@ -86,7 +86,28 @@ Oracolul dimensiunilor urmează cerința de prezentare, iar controalele negative
 
 </details>
 
-## Mutarea proprietății unei verificări
+## Înregistrări active pentru modificarea testelor
+
+<details>
+<summary>Control activ: măsurarea istoricului și invariantele registrului</summary>
+
+```yaml
+testChanges:
+  - id: HISTORY-MEASUREMENT-AND-LEDGER-INVARIANTS
+    status: VERIFIED
+    base: 180ea08cb639fd09291d191278e18fa93ae6db96
+    expires: 2026-12-05
+    reason: Extrage agregarea măsurătorilor din vederea Android și adaugă refuzuri pentru locuri invalide, pierderea levatelor și dimensiuni imposibile; păstrează sufixele necunoscute, imutabilitatea și măsurarea ultimei celule.
+    proof: 'gradlew.bat :game-core:test --tests ro.whistlab.core.session.ScoreHistoryInvariantTest --offline; gradlew.bat :app:testDebugUnitTest --tests ro.whistlab.app.score.ScoreHistory*Test --offline'
+    paths:
+      - whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/ScoreHistoryInvariantTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
+```
+
+Regresiile se confruntă cu sursa anterioară înaintea corecției. Furnizorii de font sunt injectați în componente; calificarea rasterului și a fontului Android rămâne separată. Un diagnostic de classpath nu este reclasificat ca defect al produsului.
+
+</details>
 
 <details>
 <summary>Control activ: istoric compact și rezultatul explicit al contractului</summary>
@@ -137,6 +158,8 @@ testChanges:
 Controalele păstrează cartea sau culoarea, lizibilitatea, localizarea și descrierea accesibilă; absența textului redundant nu înlocuiește prezența valorii. Măsurătorile de font injectate califică politica comună, iar verificarea nativă compară aceeași geometrie în stări cu și fără atu.
 
 </details>
+
+## Mutarea proprietății unei verificări
 
 Transferul unei implementări către o bibliotecă păstrează toate contractele native la producător. Consumatorul păstrează acceptanța API-ului folosit, identitatea JAR-ului încărcat și refuzurile pentru metadate ori livrări inconsistente.
 

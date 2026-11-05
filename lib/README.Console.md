@@ -40,6 +40,16 @@ Calea cere opt-in, consolă activă și eveniment cu artifact confirmat; `detail
 
 Console depinde de Core; Kit este opțional pentru legătura JUnit. Proiecția rămâne diagnostică: comparația și verdictul aparțin testului.
 
+## Verificarea utilizării
+
+| Acțiune | Rezultat observabil |
+|---|---|
+| Executați exemplul cu politica explicită. | Mesajul furnizat apare în stdout, inclusiv cu detaliile dezactivate. |
+| Dezactivați consola prin `ConsoleSettings.disabled()`. | Un nou apel `info(...)` nu produce mesaj în stream. |
+| Activați numai afișarea căii. | Calea apare numai după evenimentul de publicare confirmată; opțiunea nu creează raportul. |
+
+Compilarea fragmentului califică semnătura API pe JAR-ul ales. Verificarea stream-ului califică proiecția mesajului; consola nu schimbă rezultatul testului sau regulile aplicației.
+
 ---
 
 Mentenanța codului și testelor Console aparține proiectului separat `atf_j0/atf-console`; [feedback-ul și sincronizarea](README.md#mentenanță-și-feedback) pornesc de la J0.

@@ -21,6 +21,22 @@ import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.model.Suit;
 
 public final class WhistUiTextTest {
+    @Test public void historyExplainsOnlyBidAndHandPointsAndBothSeriesMarkers() {
+        var en = new WhistUiText(HowToPlay.Language.EN);
+        var ro = new WhistUiText(HowToPlay.Language.RO);
+        assertTrue(en.historyLegend().startsWith("B Bid · P Hand points\n"));
+        assertTrue(ro.historyLegend().startsWith("L Licitat · P Punctele mâinii\n"));
+        for (var copy : List.of(en, ro)) {
+            assertFalse(copy.historyLegend().contains("Total"));
+            assertTrue(copy.historyLegend().contains(copy == en ? "Underline" : "Subliniere"));
+            for (int points : List.of(5, 10)) {
+                assertTrue(copy.historySeriesAdjustment(points).endsWith("+" + points));
+                assertTrue(copy.historySeriesAdjustment(-points).endsWith("-" + points));
+                assertFalse(copy.historySeriesAdjustment(points).equals(copy.historySeriesAdjustment(-points)));
+            }
+        }
+    }
+
     @Test public void ohHellHelpUsesTheActualScheduleAtFourAndSixSeats() {
         for (int seats : new int[]{4, 6}) {
             List<Integer> schedule = GameRules.handSizes(GameMode.OH_HELL, seats);

@@ -50,6 +50,16 @@ public static void publish(Path output, String actual) {
 
 Reporting este thin și folosește modelele `atf.reporting.*`, distincte de Core. Consumerul citește YAML-ul și transmite `ReportingSettings`; `defaults()` folosește valorile JAR-ului.
 
+## Verificarea utilizării
+
+| Intrare în metoda exemplului | Rezultat observabil |
+|---|---|
+| `actual` este `ready`. | Metoda se încheie normal, iar fișierul HTML există după închiderea sesiunii. |
+| `actual` diferă sau este `null`. | Raportul păstrează comparația eșuată, apoi metoda aruncă `AssertionError`. |
+| Sursa exemplului este compilată pe alt JAR. | Orice incompatibilitate a constructorilor ori metodelor trebuie detectată înaintea publicării. |
+
+Exemplul verifică folosirea API-ului și propagarea verdictului. Autonomia HTML, expandarea interactivă și capturile native au acceptanțe proprii; existența fișierului nu le demonstrează singură.
+
 ---
 
 Mentenanța codului și regresiilor generice aparține proiectelor sursă `atf_j0/atf-reporting` și `atf_j0/atf-reporting-tests`; [feedback-ul și sincronizarea](README.md#mentenanță-și-feedback) pornesc de la J0.

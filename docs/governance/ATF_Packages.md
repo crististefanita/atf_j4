@@ -4,6 +4,8 @@
 
 Un pachet grupează tipuri care se schimbă pentru același contract. [Politica proiectului](../../config/atf-governance-policy.json) aplică limita de opt fișiere Java separat pe modul și set de surse; o extracție se justifică prin starea și invarianta mecanismului.
 
+[Tipografia antetului](../../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) aparține stilului comun din `theme`; geometria și compoziția mesei rămân în `table`. Selecția componentelor de afișaj include ambele responsabilități.
+
 ## Alegerea responsabilului
 
 ```mermaid
@@ -36,12 +38,14 @@ API-ul poate rămâne o delegare scurtă. Regula comună are o singură implemen
 
 | Intrare | Mecanism delimitat | Invariantă de păstrat |
 |---|---|---|
+| [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java) | `AppNavigation`, familia `screens`, `GameCommandFlow` și `GamePersistence` | Destinația și dialogurile au identitate proprie; ecranele primesc observații și acțiuni. Refuzul privește numai comanda, iar checkpoint-ul precedă clasamentul și exportul. |
+| [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) | Familia `animation`: `TrickCollectionMotion` și `TrickCollectionAnimator` | Geometria statică rămâne în `table`; modelul mișcării nu schimbă câștigătorul, scorul sau timpul pauzei. Adaptorul anulează animația odată cu vederea. |
 | [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) | `CheckpointValidation` și `CheckpointScores` | Structura, cărțile și scorul sunt validate înaintea restaurării; datele lipsă nu sunt inventate. |
 | [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | `PossibleDeals`, `RolloutPolicy`, `DecisionEvaluation` și `DecisionOrdering` | Generarea lumilor, evaluarea continuărilor și ordonarea rezultatelor rămân distincte; ordinea, toleranțele și fluxul aleator sunt reproductibile. |
 | [AiCostQualificationTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/AiCostQualificationTest.java) | `CostProfile`, `CostPlayer` și `CostChecks` | Profilul se validează o dată, măsurile sunt tipizate, iar regulile și limitele se verifică separat de publicare; eșecul păstrează cauza inițială. |
 | [IndependentPlayer](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) | `IndependentDeals` și `IndependentContinuations` | Distribuțiile și avansarea lumilor ipotetice rămân independente de motor; ordinea deciziilor, scorul și fluxul aleator nu expun cărțile reale adverse. |
 | [AdbClient](../../atf-test-android/src/main/java/atf/android/AdbClient.java) | `CommandProcess` | Pornirea, drenarea și terminarea folosesc același termen; curățarea păstrează cauza inițială. |
-| [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) | `UiDeviceCapture`, `waiting.UiStateAwaiter`, `UiHierarchy` și `ScreenshotAnalysis` | Captura deține transferul; așteptarea pasivă păstrează termenul, pauza și ultima ierarhie. Parsarea și măsurarea nu emit ADB; navigarea rămâne distinctă de observare. |
+| [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) | `UiDeviceCapture`, `waiting.UiStateAwaiter`, `UiHierarchy`, [familia `hierarchy`](../../atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/) și `ScreenshotAnalysis` | Captura deține transferul, iar așteptarea păstrează termenul și ultima ierarhie. `HierarchyDocument` decodează nodurile, `CardLabelText` păstrează notația, iar `CardHierarchy` interpretează cărțile; selectorii generici și măsurarea nu emit ADB. |
 | [ThirteenCardDisplayScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardDisplayScenario.java) | `ThirteenCardBiddingCheck` și `SingleCardCenteringCheck` | Coordonatorul păstrează profilurile și restaurarea; verificările fazelor primesc aceeași urmă și aceleași dovezi, fără invocări JUnit suplimentare. |
 | [SixPlayerTableScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java) | `SixPlayerSetupPhase`, `SixPlayerBiddingCheck` și `SixPlayerNavigationCheck` | Configurarea, masa și navigarea folosesc aceeași urmă; rezumatul inițial și domeniul imuabil al licitațiilor trec explicit între faze. Coordonatorul păstrează eșecul și oprirea din `finally`. |
 | [ThirteenCardPlayScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardPlayScenario.java) | [Familia `fan`](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/): `ThirteenCardFanFlow`, `FanSetupPhase` și `FanPlayPhase` | Intrarea familiei conectează fazele interne; ierarhia și locul inițial sunt transmise explicit. Urma, dovezile și comparațiile rămân comune, iar coordonatorul deține verdictul și oprirea. |

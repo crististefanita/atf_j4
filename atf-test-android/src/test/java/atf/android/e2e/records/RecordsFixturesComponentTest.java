@@ -60,6 +60,14 @@ class RecordsFixturesComponentTest {
             assertEquals(List.of(magnitude,magnitude,0,-magnitude),
                     state.players().stream().map(player->player.streakPoints()).toList());
             assertEquals(List.of(0,0,1,0),state.players().stream().map(player->player.streak()).toList());
+            var paid=RecordsFixtures.encode(fixture.game(),false);
+            for(boolean romanian:List.of(false,true)) {
+                assertTrue(NameHistoryScenarios.description(paid,20,0,romanian).endsWith(
+                        (romanian?"Bonus de serie +":"Series bonus +")+magnitude));
+                assertTrue(NameHistoryScenarios.description(paid,20,3,romanian).endsWith(
+                        (romanian?"Penalizare de serie -":"Series penalty -")+magnitude));
+                assertFalse(NameHistoryScenarios.description(paid,20,2,romanian).contains(romanian?"de serie":"Series "));
+            }
         }
     }
 }

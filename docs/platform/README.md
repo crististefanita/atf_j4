@@ -9,6 +9,7 @@ Proiectul consumă Core, Reporting, Console și Mock ca perechi JAR/POM. Reactor
 - [Cod, feedback și sincronizare](../../lib/README.md) explică responsabilitatea comună și acceptanța separată a consumatorilor.
 - [Integrarea API-urilor](ATF_Integration.md) definește identitatea binară, adaptoarele și sincronizarea.
 - [Livrarea Android](ATF_AndroidDelivery.md) leagă sursele de APK, instalare și păstrarea salvărilor.
+- [Retenția și pregătirea release-ului](ATF_ReleaseRetention.md) separă candidatul local, publicarea și retragerea versiunilor precedente.
 
 ## Responsabilități
 
@@ -53,6 +54,7 @@ Console și Mock nu depind de Reporting, Validation sau modulele aplicației. PO
 | [PlatformLibraryContractTest](../../atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java) | Identitatea fizică, POM-uri independente, izolare și utilizarea fără încărcarea infrastructurii interzise. |
 | [PlatformLibraryIntegrityTest](../../atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java) | Refuzul artefactelor ori metadatelor alterate, inclusiv când un hash exterior a fost actualizat. |
 | [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) | Configurația și binarele comune efectiv încărcate. |
+| [LibraryReadmeExamplesIntegrationTest](../../atf-tests/src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java) | Fragmentele Java din ghidurile livrate, compilate și executate pe JAR-urile fizice; comparații nominale și refuzuri explicite. |
 | [Suita de calitate](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) | Perimetru sursă, documentație, pachete și acceptanța bibliotecilor. |
 
 Probele negative construiesc artefacte sintetice identificabile. Acceptanța fizică folosește JAR-urile reale și nu le înlocuiește cu clasele de producție compilate local.

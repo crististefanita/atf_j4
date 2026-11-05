@@ -22,18 +22,23 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
     }
 
     public ScoreHistory {
-        if (priorHands < 0 || openingTotals.isEmpty()) throw new IllegalArgumentException("Invalid score history origin");
+        if (priorHands < 0 || openingTotals == null || openingTotals.isEmpty()) throw new IllegalArgumentException("Invalid score history origin");
         openingTotals = balances(openingTotals, openingTotals.size());
         closingTotals = vectors(closingTotals, openingTotals.size());
         recordedBids = vectors(recordedBids, openingTotals.size());
         recordedTricks = vectors(recordedTricks, openingTotals.size());
+        try { Math.addExact(priorHands, closingTotals.size()); }
+        catch (ArithmeticException overflow) { throw new IllegalArgumentException("Score history exceeds the hand index range", overflow); }
         if (recordedBids.size() > closingTotals.size()) throw new IllegalArgumentException("Too many bid rows");
+        if (recordedBids.stream().flatMap(List::stream).anyMatch(value -> value < 0))
+            throw new IllegalArgumentException("Invalid recorded bids");
         if (recordedTricks.size() > closingTotals.size()
                 || recordedTricks.stream().flatMap(List::stream).anyMatch(value -> value < 0))
             throw new IllegalArgumentException("Invalid recorded trick rows");
     }
 
     private static List<List<Integer>> vectors(List<List<Integer>> values, int seats) {
+        if (values == null) throw new IllegalArgumentException("Missing score history rows");
         List<List<Integer>> rows = new ArrayList<>(values.size());
         for (List<Integer> row : values) rows.add(balances(row, seats));
         return Collections.unmodifiableList(rows);
@@ -49,23 +54,27 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
         return closingTotals.isEmpty() ? openingTotals : closingTotals.get(closingTotals.size() - 1);
     }
 
-    public int total(int hand, int seat) { return row(hand).get(seat); }
+    public int total(int hand, int seat) { validSeat(seat); return row(hand).get(seat); }
 
     public int points(int hand, int seat) {
+        validSeat(seat);
         int previous = hand == priorHands + 1 ? openingTotals.get(seat) : total(hand - 1, seat);
         return Math.subtractExact(total(hand, seat), previous);
     }
 
     public Integer bid(int hand, int seat) {
-        row(hand);
-        int index = recordedBids.size() - (completedHands() - hand) - 1;
-        return index < 0 ? null : recordedBids.get(index).get(seat);
+        return recordedValue(recordedBids, hand, seat);
     }
 
     public Integer tricks(int hand, int seat) {
+        return recordedValue(recordedTricks, hand, seat);
+    }
+
+    private Integer recordedValue(List<List<Integer>> rows, int hand, int seat) {
+        validSeat(seat);
         row(hand);
-        int index = recordedTricks.size() - (completedHands() - hand) - 1;
-        return index < 0 ? null : recordedTricks.get(index).get(seat);
+        int index = rows.size() - (completedHands() - hand) - 1;
+        return index < 0 ? null : rows.get(index).get(seat);
     }
 
     public Outcome outcome(int hand, int seat) {
@@ -73,19 +82,15 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
         return bid == null || won == null ? Outcome.UNKNOWN : bid.equals(won) ? Outcome.EXACT : Outcome.MISSED;
     }
 
-    ScoreHistory finish(int hand, List<Integer> totals, List<Integer> bids) {
-        return finish(hand, totals, bids, null);
-    }
-
     ScoreHistory finish(int hand, List<Integer> totals, List<Integer> bids, List<Integer> won) {
+        if (won == null) throw new IllegalArgumentException("A new completed hand requires its won tricks");
         if (hand != completedHands() + 1) throw new IllegalArgumentException("Score history must advance by one hand");
         List<List<Integer>> rows = new ArrayList<>(closingTotals);
         rows.add(totals);
         List<List<Integer>> contracts = new ArrayList<>(recordedBids);
         contracts.add(bids);
         List<List<Integer>> tricks = new ArrayList<>(recordedTricks);
-        if (won != null) tricks.add(won);
-        else tricks.clear();
+        tricks.add(won);
         return new ScoreHistory(priorHands, openingTotals, rows, contracts, tricks);
     }
 
@@ -94,8 +99,12 @@ public record ScoreHistory(int priorHands, List<Integer> openingTotals, List<Lis
         return closingTotals.get(hand - priorHands - 1);
     }
 
+    private void validSeat(int seat) {
+        if (seat < 0 || seat >= openingTotals.size()) throw new IllegalArgumentException("Seat is outside the score history");
+    }
+
     private static List<Integer> balances(List<Integer> values, int seats) {
-        if (values.size() != seats || values.stream().anyMatch(java.util.Objects::isNull)) throw new IllegalArgumentException("Invalid player score vector");
+        if (values == null || values.size() != seats || values.stream().anyMatch(java.util.Objects::isNull)) throw new IllegalArgumentException("Invalid player score vector");
         return ImmutableLists.copy(values);
     }
 }

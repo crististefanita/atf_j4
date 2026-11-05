@@ -34,6 +34,16 @@ flowchart LR
 
 ## Alegerea intrării
 
+Verificați mai întâi mecanismul schimbat, apoi integrarea candidatului. Probele de mai jos aparțin surselor alternative; execuția lor cere suprapunerea declarată în catalog, cu o bază compatibilă.
+
+| Întrebarea experimentului | Probă din sursă | Ce rămâne separat |
+|---|---|---|
+| Cum se interpretează oferta observată? | [LearnedBidEvidenceTest](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) | Decizia completă de licitare și progresul strategic. |
+| Cum se estimează prefixul viitor? | [ConditionedBidForecastTest](r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java) | Observațiile reale și efectul asupra partidei complete. |
+| Cum se schimbă alegerea politicii? | [LargeHandStrategyTest](r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java) și [regresia certificată](r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java) | Evaluarea rezervată și calificarea costului. |
+
+Lansatorul aplică numai fișierele candidatului ales. O selecție Gradle care nu conține acea probă sau o bază refuzată nu reprezintă executarea testului prin simpla prezență a sursei.
+
 | Intrare | Utilizare |
 |---|---|
 | `-ResearchCandidate` | Identitate unică din catalog, în colecția permisă acelui candidat. |

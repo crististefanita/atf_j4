@@ -1,55 +1,38 @@
 package ro.whistlab.app;
+import ro.whistlab.app.screens.ScoreScreens;
+import ro.whistlab.app.screens.GameScreen;
+import ro.whistlab.app.screens.SetupScreen;
+import ro.whistlab.app.screens.MenuScreens;
+import ro.whistlab.app.screens.MatchSetup;
+import ro.whistlab.app.screens.ScreenViews;
+import ro.whistlab.app.navigation.AppNavigation;
 
-import ro.whistlab.app.bidding.DropdownBackground;
 import ro.whistlab.app.fixtures.DisplayFixtureDeals;
 import ro.whistlab.app.fixtures.OriginalMatchReplay;
 import ro.whistlab.app.lifecycle.CompletedTrickPause;
 import ro.whistlab.app.lifecycle.AiTurnCoordinator;
 import ro.whistlab.app.lifecycle.AiTurnRequest;
+import ro.whistlab.app.lifecycle.GameCommandFlow;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.persistence.GameSessionStore;
-import ro.whistlab.app.score.ScoreHistoryView;
+import ro.whistlab.app.persistence.GamePersistence;
 import ro.whistlab.app.highscores.AndroidHighScoreStorage;
 import ro.whistlab.app.highscores.HighScoreRepository;
 import ro.whistlab.app.highscores.HighScores;
 import ro.whistlab.app.highscores.HighScoresDialog;
 import ro.whistlab.app.profile.PlayerPreferences;
 import ro.whistlab.app.profile.PlayerSettingsDialog;
-import ro.whistlab.app.score.ScoreTableView;
-import ro.whistlab.app.table.GameTablePanel;
-import ro.whistlab.app.table.GameHeaderTypography;
-import ro.whistlab.app.table.TrumpIndicatorView;
-import ro.whistlab.app.theme.WhistUiPalette;
-import ro.whistlab.app.window.WindowContent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.model.Card;
@@ -64,45 +47,37 @@ import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 
 public final class MainActivity extends Activity {
-    private static final long COMPLETED_TRICK_DISPLAY_MILLIS = 1_500L;
-    private static final int PINE = Color.rgb(29, 54, 43);
-    private static final int INK = Color.rgb(41, 54, 46);
-    private static final int MUTED = Color.rgb(105, 117, 106);
-    private static final int ACCENT = Color.rgb(48, 111, 78);
-    private static final int SURFACE = Color.rgb(255, 254, 248);
-    private static final int BACKGROUND = Color.rgb(246, 245, 237);
-
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Handler aiResults = new Handler(Looper.getMainLooper());
     private final AiTurnCoordinator aiTurns = new AiTurnCoordinator(command -> aiResults.post(command));
+    private final GameCommandFlow commands = new GameCommandFlow(this::persistGame, this::driveAutomatedTurns);
     private boolean automationActive = true;
     private final CompletedTrickPause completedTrickPause = new CompletedTrickPause();
     private GameSession game;
     private GameConfig lastConfig;
     private OriginalMatchReplay recordedReplay;
-    private boolean tableVisible;
-    private boolean menuSubpage;
-    private boolean instructionsVisible;
-    private boolean scoreDialogShowing;
     private boolean debugHoldAiTurns;
     private boolean debugHoldAiBids;
     private WhistUiText copy;
-    private int setupPlayerCount = 4;
-    private GameMode setupMode = GameMode.OH_HELL;
-    private AiDifficulty setupDifficulty = AiDifficulty.NORMAL;
-    private boolean setupStreaks = true;
-    private int setupStreakBonus = 10;
+    private final AppNavigation navigation = new AppNavigation();
+    private final MatchSetup setup = new MatchSetup();
+    private ScreenViews views;
+    private MenuScreens menuScreens;
+    private SetupScreen setupScreen;
+    private GameScreen gameScreen;
+    private ScoreScreens scoreScreens;
     private Integer selectedBid;
     private PlayerPreferences playerPreferences;
     private HighScoreRepository highScores;
+    private GamePersistence persistence;
     private boolean rankingEligible;
     private String matchId = java.util.UUID.randomUUID().toString();
 
-    @Override protected void onResume(){super.onResume();automationActive=true;if(tableVisible&&game!=null)driveAutomatedTurns();}
+    @Override protected void onResume(){super.onResume();automationActive=true;if(navigation.gameVisible()&&game!=null)driveAutomatedTurns();}
     @Override protected void onStop(){automationActive=false;cancelAutomatedTurns();persistGame();super.onStop();}
     @Override protected void onDestroy(){automationActive=false;cancelAutomatedTurns();aiTurns.close();aiResults.removeCallbacksAndMessages(null);super.onDestroy();}
-    @Override public void onBackPressed(){if(tableVisible||menuSubpage)renderHome();else super.onBackPressed();}
+    @Override public void onBackPressed() { if (navigation.backReturnsHome()) renderHome(); else super.onBackPressed(); }
 
     @Override
     protected void onCreate(Bundle state) {
@@ -113,8 +88,17 @@ public final class MainActivity extends Activity {
             selectedLanguage = getIntent().getStringExtra("debug_language");
         }
         copy = new WhistUiText(WhistUiText.parseLanguage(selectedLanguage));
+        views = new ScreenViews(this, () -> copy);
+        menuScreens = new MenuScreens(views);
+        setupScreen = new SetupScreen(views, menuScreens);
+        gameScreen = new GameScreen(views);
+        scoreScreens = new ScoreScreens(views);
         playerPreferences = new PlayerPreferences(this);
         highScores = new HighScoreRepository(new AndroidHighScoreStorage(this), new java.util.Random());
+        persistence = new GamePersistence(
+                (session, eligible, id) -> GameSessionStore.save(this, session, eligible, id),
+                highScores::record, System::currentTimeMillis,
+                failure -> Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show());
         try { highScores.boards(); } catch (java.io.IOException failure) {
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
         }
@@ -126,7 +110,7 @@ public final class MainActivity extends Activity {
                 && getIntent().getBooleanExtra("debug_hold_ai_turns", false);
         debugHoldAiBids = BuildConfig.DEBUG
                 && getIntent().getBooleanExtra("debug_hold_ai_bids", false);
-        applyStandardWindowChrome();
+        views.applyStandardWindowChrome();
         if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_replay", false)) {
             try {
                 recordedReplay = new OriginalMatchReplay(getFilesDir());
@@ -153,62 +137,39 @@ public final class MainActivity extends Activity {
             lastConfig = game.config();
             renderPlay(fixture.cards(), true);
         } else {
-            try {
-                game = GameSessionStore.load(this);
-                if (game != null) {
-                    lastConfig = game.config();
-                    rankingEligible = GameSessionStore.rankingEligible(this);
-                    matchId = GameSessionStore.matchId(this);
-                    persistGame();
-                }
-            } catch (GameSessionStore.UnsupportedSavedMode unavailable) {
-                Toast.makeText(this, copy.unsupportedSavedMode(), Toast.LENGTH_LONG).show();
-            } catch (IllegalStateException invalidSave) {
-                GameSessionStore.clear(this);
-                game = null;
-                lastConfig = null;
-                Toast.makeText(this, copy.noSavedGame(), Toast.LENGTH_LONG).show();
-            }
+            loadSavedGame();
             renderHome();
         }
     }
 
-    private void renderHome() {
-        applyStandardWindowChrome();
-        tableVisible=false;
-        menuSubpage=false;
-        instructionsVisible=false;
-        cancelAutomatedTurns();
-        LinearLayout page = page(null, copy.homeTitle());
-        addLanguagePicker(page);
-        addQuietButton(page, copy.playerSettings() + ": " + (playerPreferences.name().isBlank()
-                ? (copy.romanian() ? "Tu" : "You") : playerPreferences.name()), this::showPlayerSettings);
-        addButton(page, copy.newGame(), "btn_new_game", true, this::renderSetup, true);
-        addButton(page, copy.resumeGame(), "btn_resume_game", game != null,
-                this::renderCurrentState, false);
-        addQuietButton(page, copy.highestScores(), this::showHighScores);
-        addButton(page, copy.help(), "btn_instructions", true,
-                this::renderInstructions, false);
+    private void loadSavedGame() {
+        try {
+            game = GameSessionStore.load(this);
+            if (game != null) {
+                lastConfig = game.config();
+                rankingEligible = GameSessionStore.rankingEligible(this);
+                matchId = GameSessionStore.matchId(this);
+            }
+        } catch (GameSessionStore.UnsupportedSavedMode unavailable) {
+            Toast.makeText(this, copy.unsupportedSavedMode(), Toast.LENGTH_LONG).show();
+            return;
+        } catch (IllegalStateException invalidSave) {
+            GameSessionStore.clear(this);
+            game = null;
+            lastConfig = null;
+            Toast.makeText(this, copy.noSavedGame(), Toast.LENGTH_LONG).show();
+            return;
+        }
+        persistGame();
     }
 
-    private void addLanguagePicker(LinearLayout parent) {
-        LinearLayout row = new LinearLayout(this);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        TextView label = text(copy.languageLabel(), 13, MUTED, true);
-        row.addView(label, new LinearLayout.LayoutParams(0, dp(48), 1f));
-
-        Spinner language = spinner(List.of("English", "Română"), "interface-language");
-        language.setSelection(copy.language() == HowToPlay.Language.EN ? 0 : 1);
-        row.addView(language, new LinearLayout.LayoutParams(dp(150), dp(48)));
-        LinearLayout.LayoutParams params = matchWrap();
-        params.topMargin = dp(6);
-        parent.addView(row, params);
-        language.post(() -> language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
-                setUiLanguage(position == 0 ? HowToPlay.Language.EN : HowToPlay.Language.RO);
-            }
-            public void onNothingSelected(AdapterView<?> adapter) { }
-        }));
+    private void renderHome() {
+        navigation.show(AppNavigation.Screen.HOME);
+        cancelAutomatedTurns();
+        views.applyStandardWindowChrome();
+        menuScreens.home(copy, playerPreferences.name(), game != null,
+                new MenuScreens.Actions(this::showPlayerSettings, this::renderSetup, this::renderCurrentState,
+                        this::showHighScores, this::renderInstructions, this::setUiLanguage));
     }
 
     private void setUiLanguage(HowToPlay.Language language) {
@@ -218,130 +179,48 @@ public final class MainActivity extends Activity {
                 .putString("helpLanguage", language.name())
                 .apply();
         copy = new WhistUiText(language);
-        if (instructionsVisible) renderInstructions();
-        else if (menuSubpage) renderSetup();
-        else renderHome();
+        switch (navigation.screen()) {
+            case INSTRUCTIONS -> renderInstructions();
+            case SETUP -> renderSetup();
+            default -> renderHome();
+        }
     }
 
     private void renderSetup() {
-        applyStandardWindowChrome();
-        tableVisible=false;menuSubpage=true;instructionsVisible=false;cancelAutomatedTurns();
-        LinearLayout page = page(null, copy.setupTitle());
-        addLanguagePicker(page);
+        navigation.show(AppNavigation.Screen.SETUP);
+        cancelAutomatedTurns();
+        views.applyStandardWindowChrome();
+        setupScreen.show(copy, setup, this::setUiLanguage, this::startGame, this::renderHome);
+    }
 
-        Spinner players = spinner(Arrays.asList("3", "4", "5", "6"), "player-count");
-        players.setSelection(setupPlayerCount - 3);
-        addSetupSelector(page, copy.players(), players);
-
-        Spinner modes = spinner(WhistUiText.MENU_MODES.stream().map(copy::modeName).collect(Collectors.toList()),
-                "game-type");
-        modes.setSelection(WhistUiText.MENU_MODES.indexOf(setupMode));
-        LinearLayout.LayoutParams modeParams = matchWrap();
-        modeParams.topMargin = dp(4);
-        page.addView(modes, modeParams);
-        addQuietButton(page, copy.rulesAndSchedule(), () -> {
-            new AlertDialog.Builder(this).setTitle(copy.modeName(setupMode))
-                    .setMessage(copy.modeDescription(setupMode) + "\n\n" + copy.schedulePreview(setupMode, setupPlayerCount)
-                            + (setupMode.isRomanian() ? "\n\n" + copy.streakToggle() : ""))
-                    .setPositiveButton(copy.close(), null).show();
-        });
-        CheckBox streakBonuses=new CheckBox(this);
-        streakBonuses.setText(copy.romanian() ? "Serii de cinci mâini" : "Five-hand streaks");
-        streakBonuses.setTextSize(13);
-        streakBonuses.setContentDescription(copy.streakToggle());
-        streakBonuses.setTag("romanian-streak-bonuses");
-        streakBonuses.setChecked(setupStreaks);
-
-
-        Spinner streakValue=spinner(Arrays.asList(copy.fivePointsOriginal(),copy.tenPoints()),"romanian-streak-value");
-        streakValue.setSelection(setupStreakBonus == 5 ? 0 : 1);
-
-        streakValue.setEnabled(setupStreaks);
-        streakBonuses.setOnCheckedChangeListener((button,checked)->{
-            setupStreaks=checked;
-            streakValue.setEnabled(checked);
-        });
-        LinearLayout streakRow = new LinearLayout(this);
-        streakRow.setGravity(Gravity.CENTER_VERTICAL);
-        streakRow.addView(streakBonuses, new LinearLayout.LayoutParams(0, dp(48), 1f));
-        streakRow.addView(streakValue, new LinearLayout.LayoutParams(dp(138), dp(48)));
-        page.addView(streakRow, matchWrap());
-        players.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
-                setupPlayerCount = position + 3;
-            }
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-        streakValue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
-                setupStreakBonus = position == 0 ? 5 : 10;
-            }
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-        Runnable updateModeDetails = () -> {
-            streakRow.setVisibility(setupMode.isRomanian() ? View.VISIBLE : View.GONE);
-        };
-        updateModeDetails.run();
-        modes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
-                setupMode = WhistUiText.MENU_MODES.get(position);
-                updateModeDetails.run();
-            }
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-
-        Spinner difficulty = spinner(Arrays.stream(AiDifficulty.values()).map(copy::difficultyName).collect(Collectors.toList()),
-                "ai-level");
-        difficulty.setSelection(setupDifficulty.ordinal());
-        addSetupSelector(page, copy.aiLevel(), difficulty);
-        difficulty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
-                setupDifficulty = AiDifficulty.values()[position];
-            }
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-        addButton(page, copy.startGame(), "btn_start_game", true, () -> {
-            cancelAutomatedTurns();
-            int playerCount = Integer.parseInt(String.valueOf(players.getSelectedItem()));
-            GameMode mode = WhistUiText.MENU_MODES.get(modes.getSelectedItemPosition());
-            AiDifficulty ai = AiDifficulty.values()[difficulty.getSelectedItemPosition()];
-            recordedReplay = null;
-            selectedBid = null;
-            lastConfig = GameConfig.newMatch(playerCount, mode, ai, System.nanoTime(),mode.isRomanian()&&streakBonuses.isChecked(),streakValue.getSelectedItemPosition()==0?5:10);
-            rankingEligible = true;
-            matchId = java.util.UUID.randomUUID().toString();
-            game = GameSession.newGame(lastConfig, playerPreferences.sessionName());
-            persistGame();
-            driveAutomatedTurns();
-        }, true);
-        addQuietButton(page, copy.back(), this::renderHome);
+    private void startGame(GameConfig config) {
+        cancelAutomatedTurns();
+        recordedReplay = null;
+        selectedBid = null;
+        lastConfig = config;
+        rankingEligible = true;
+        matchId = java.util.UUID.randomUUID().toString();
+        game = GameSession.newGame(lastConfig, playerPreferences.sessionName());
+        persistGame();
+        driveAutomatedTurns();
     }
 
     private void renderBidding() {
-        applyTableWindowChrome();
-        GameSession.Snapshot state = game.snapshot();
-        LinearLayout page = gamePage();
-        addGameHeader(page, state, true);
-        boolean lastBid = state.bidsSubmitted() == state.players().size() - 1;
-        List<Integer> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(), lastBid);
+        var state = game.snapshot();
+        List<Integer> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(),
+                state.bidsSubmitted() == state.players().size() - 1);
         if (selectedBid == null || !choices.contains(selectedBid)) selectedBid = choices.get(0);
-        GameTablePanel table = GameTablePanel.bidding(this, state, choices, selectedBid,
-                bid -> selectedBid = bid, this::submitSelectedBid, copy);
-        page.addView(table, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        gameScreen.bidding(copy, state, choices, selectedBid, bid -> selectedBid = bid,
+                this::submitSelectedBid, gameMenuActions());
     }
 
     private void submitSelectedBid() {
         if (aiTurns.isPending()) return;
-        try {
-            game.submitBid(0, selectedBid);
-            selectedBid = null;
-            persistGame();
-            driveAutomatedTurns();
-        } catch (RuntimeException invalidBid) {
-            Toast.makeText(this, copy.invalidBid(), Toast.LENGTH_SHORT).show();
-            renderBidding();
-        }
+        commands.execute(() -> game.submitBid(0, selectedBid), () -> selectedBid = null,
+                refusal -> {
+                    Toast.makeText(this, copy.invalidBid(), Toast.LENGTH_SHORT).show();
+                    renderBidding();
+                });
     }
 
     private void renderPlay() {
@@ -349,250 +228,120 @@ public final class MainActivity extends Activity {
     }
 
     private void renderPlay(List<PlayedCard> completedTrick, boolean pauseActive) {
-        applyTableWindowChrome();
-        GameSession.Snapshot state = game.snapshot();
-        LinearLayout page = gamePage();
-        addGameHeader(page, state, !pauseActive);
-        boolean humanTurn = !pauseActive && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
-        Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
-        List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
-        String instruction = humanTurn ? copy.playHint(state) : null;
-        GameTablePanel table = GameTablePanel.playing(this, state,
-                humanTurn ? legal : java.util.Collections.emptyList(),
-                this::playHumanCard, instruction, completedTrick, pauseActive, copy);
-        page.addView(table, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        gameScreen.playing(copy, game.snapshot(), completedTrick, pauseActive, 0,
+                this::playHumanCard, gameMenuActions());
     }
 
-    private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
-            boolean currentPlayerHighlighted) {
-        LinearLayout header = new LinearLayout(this);
-        header.setOrientation(LinearLayout.HORIZONTAL);
-        header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setTag("game-header");
-
-        FrameLayout menuButton = new FrameLayout(this);
-        menuButton.setTag("btn_game_menu");
-        menuButton.setContentDescription(copy.gameMenu());
-        menuButton.setClickable(true);
-        menuButton.setFocusable(true);
-        menuButton.setBackground(roundedBackground(Color.TRANSPARENT, Color.TRANSPARENT, 24));
-        menuButton.setOnClickListener(ignored -> showGameMenu(menuButton));
-        for (int offset : new int[]{-6, 0, 6}) {
-            View line = new View(this);
-            line.setBackground(roundedBackground(Color.rgb(225, 239, 228),
-                    Color.rgb(225, 239, 228), 2));
-            line.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            FrameLayout.LayoutParams lineParams = new FrameLayout.LayoutParams(dp(20), dp(2), Gravity.CENTER);
-            lineParams.topMargin = dp(offset);
-            menuButton.addView(line, lineParams);
-        }
-        header.addView(menuButton, new LinearLayout.LayoutParams(dp(48), dp(48)));
-
-        LinearLayout status = new LinearLayout(this);
-        status.setOrientation(LinearLayout.VERTICAL);
-        status.setPadding(dp(8), 0, 0, 0);
-        TextView title = text(copy.gameTitle(state.mode()), GameHeaderTypography.TITLE_SP, Color.rgb(245, 248, 240), true);
-        title.setSingleLine(true);
-        title.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        title.setTag("game-title");
-        TextView progress = text(copy.progress(state), GameHeaderTypography.PROGRESS_SP, Color.rgb(229, 239, 230), true);
-        TextView summary = text(copy.bidSummary(state), GameHeaderTypography.BID_SUMMARY_SP, Color.rgb(194, 216, 199), false);
-        summary.setSingleLine(false);
-        status.addView(title, matchWrap());
-        status.addView(progress, matchWrap());
-        status.addView(summary, matchWrap());
-        header.addView(status, new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        LinearLayout.LayoutParams trumpParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        trumpParams.leftMargin = dp(8);
-        header.addView(new TrumpIndicatorView(this, state, copy, currentPlayerHighlighted), trumpParams);
-
-        LinearLayout.LayoutParams params = matchWrap();
-        params.bottomMargin = dp(4);
-        page.addView(header, params);
+    private void renderCollecting(CompletedTrickPause.DisplayState pause) {
+        gameScreen.playing(copy, game.snapshot(), pause.cards(), true, pause.remainingMillis(),
+                this::playHumanCard, gameMenuActions());
     }
 
-    private void showGameMenu(View anchor) {
-        PopupMenu menu = new PopupMenu(this, anchor);
-        menu.getMenu().add(copy.scoreSheet()).setOnMenuItemClickListener(item -> {
-            showLiveScoreboard();
-            return true;
-        });
-        menu.getMenu().add(copy.playerSettings()).setOnMenuItemClickListener(item -> { showPlayerSettings(); return true; });
-        menu.getMenu().add(copy.highestScores()).setOnMenuItemClickListener(item -> { showHighScores(); return true; });
-        menu.getMenu().add(copy.mainMenu()).setOnMenuItemClickListener(item -> {
-            renderHome();
-            return true;
-        });
-        menu.show();
+    private GameScreen.MenuActions gameMenuActions() {
+        return new GameScreen.MenuActions(this::showLiveScoreboard, this::showPlayerSettings,
+                this::showHighScores, this::renderHome);
     }
 
     private void showLiveScoreboard() {
-        GameSession.Snapshot state = game.snapshot();
-        boolean resumeAutomatedTurn = (state.phase() == GamePhase.BIDDING && state.biddingSeat() != 0)
-                || (state.phase() == GamePhase.PLAYING && state.currentSeat() != 0);
-        cancelAutomatedTurns();
-        scoreDialogShowing = true;
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(8), dp(2), dp(8), 0);
-        TextView summary = text(copy.bidSummary(state), 12, MUTED, false);
-        summary.setPadding(dp(2), dp(2), dp(2), dp(8));
-        content.addView(summary, matchWrap());
-        if (state.players().get(0).bid() == null) {
-            TextView pendingBid = text(copy.bidNotPlaced(), 12, MUTED, true);
-            pendingBid.setPadding(dp(2), 0, dp(2), dp(8));
-            content.addView(pendingBid, matchWrap());
-        }
-        ScrollView scoreScroll = new ScrollView(this);
-        scoreScroll.setFillViewport(false);
-        scoreScroll.addView(new ScoreTableView(this, state, copy, game.scoreHistory()),
-                new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-        content.addView(scoreScroll, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle(copy.currentScores(state.handNumber()))
-                .setView(content)
-                .setPositiveButton(copy.close(), null);
-        ScoreHistory history = game.scoreHistory();
-        if (history.completedHands() > 0) builder.setNeutralButton(copy.scoreHistory(), null);
-        AlertDialog dialog = builder.create();
-        dialog.setOnDismissListener(ignored -> {
-            scoreDialogShowing = false;
-            if (resumeAutomatedTurn && tableVisible && game != null) driveAutomatedTurns();
-        });
-        dialog.show();
-        if (history.completedHands() > 0) {
-            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(view -> showScoreHistory(state, history));
-        }
+        var state = game.snapshot();
+        boolean resume = state.phase() == GamePhase.BIDDING && state.biddingSeat() != 0
+                || state.phase() == GamePhase.PLAYING && state.currentSeat() != 0;
+        var token = openDialog();
+        var history = game.scoreHistory();
+        scoreScreens.live(copy, state, history, () -> dismissDialog(token, resume), () -> showScoreHistory(state, history));
     }
 
     private void showScoreHistory(GameSession.Snapshot state, ScoreHistory history) {
-        new AlertDialog.Builder(this).setTitle(copy.scoreHistory())
-                .setView(new ScoreHistoryView(this, state, history, copy))
-                .setPositiveButton(copy.close(), null).show();
+        var token = openDialog();
+        scoreScreens.history(copy, state, history, () -> dismissDialog(token, true));
+    }
+
+    private AppNavigation.Dialog openDialog() {
+        cancelAutomatedTurns();
+        return navigation.openDialog();
+    }
+
+    private void dismissDialog(AppNavigation.Dialog token, boolean resume) {
+        if (navigation.dismiss(token) && resume && game != null) driveAutomatedTurns();
     }
 
     private void playHumanCard(Card card) {
         if (aiTurns.isPending()) return;
-        try {
-            game.playCard(0, card);
+        commands.execute(() -> game.playCard(0, card), () -> {
             if (recordedReplay != null) recordedReplay.played(card);
-            persistGame();
-            driveAutomatedTurns();
-        } catch (RuntimeException invalidPlay) {
+        }, refusal -> {
             Toast.makeText(this, copy.invalidCard(), Toast.LENGTH_SHORT).show();
             renderPlay();
-        }
+        });
     }
 
     private void renderScore() {
-        applyStandardWindowChrome();
-        GameSession.Snapshot state = game.snapshot();
-        LinearLayout page = page(copy.romanian() ? "MÂNA " + state.handNumber()
-                : "HAND " + state.handNumber(), copy.scoreSheet());
-        addText(page,copy.roundStatus(state),13,MUTED,false,0,4);
-        addText(page, state.finalHand() ? copy.gameComplete() : copy.handComplete(),
-                16, MUTED, false, 0, 12);
-        if(state.finalHand())addText(page,copy.winner(state),18,ACCENT,true,0,12);
-        recordFinishedMatch();
+        var state = game.snapshot();
+        scoreScreens.score(copy, state, game.scoreHistory(), new ScoreScreens.Actions(
+                () -> nextHand(state), this::playAgain, () -> showScoreHistory(state, game.scoreHistory()), this::renderHome));
+    }
 
-        LinearLayout.LayoutParams scoreTableParams = matchWrap();
-        scoreTableParams.setMargins(0, 0, 0, dp(8));
-        page.addView(new ScoreTableView(this, state, copy, game.scoreHistory()), scoreTableParams);
-        addQuietButton(page, copy.scoringDetails(), () -> new AlertDialog.Builder(this)
-                .setTitle(copy.scoringDetails()).setMessage(copy.scoreRule(state)
-                        + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : ""))
-                .setPositiveButton(copy.close(), null).show());
+    private void nextHand(GameSession.Snapshot state) {
+        cancelAutomatedTurns();
+        if (recordedReplay != null) game = recordedReplay.startHand(state.handIndex() + 1, game.scoreHistory());
+        else game.startNextHand();
+        persistGame();
+        driveAutomatedTurns();
+    }
 
-        if (!state.finalHand()) {
-            addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
-                cancelAutomatedTurns();
-                if (recordedReplay != null) {
-                    game = recordedReplay.startHand(state.handIndex() + 1, game.scoreHistory());
-                } else game.startNextHand();
-                persistGame();
-                driveAutomatedTurns();
-            }, true);
-        } else {
-            addButton(page, copy.playAgain(), "btn_play_again", true, () -> {
-                cancelAutomatedTurns();
-                recordedReplay = null;
-                rankingEligible = true;
-                matchId = java.util.UUID.randomUUID().toString();
-                game = GameSession.newGame(GameConfig.newMatch(lastConfig.playerCount(), lastConfig.mode(),
-                        lastConfig.aiDifficulty(), System.nanoTime(),lastConfig.streakBonuses(),lastConfig.streakBonusPoints()), playerPreferences.sessionName());
-                lastConfig = game.config();
-                persistGame();
-                driveAutomatedTurns();
-            }, true);
-        }
-        addQuietButton(page, copy.scoreHistory(), () -> showScoreHistory(state, game.scoreHistory()));
-        addQuietButton(page, copy.mainMenu(), this::renderHome);
+    private void playAgain() {
+        startGame(GameConfig.newMatch(lastConfig.playerCount(), lastConfig.mode(),
+                lastConfig.aiDifficulty(), System.nanoTime(), lastConfig.streakBonuses(), lastConfig.streakBonusPoints()));
     }
 
     private void showPlayerSettings() {
-        cancelAutomatedTurns();
-        scoreDialogShowing = true;
+        var token = openDialog();
         AlertDialog dialog = PlayerSettingsDialog.show(this, copy, playerPreferences.name(), name -> {
             if (game != null) game.renameHuman(name.isBlank() ? "You" : name);
             playerPreferences.saveName(name);
             persistGame();
-            if (!tableVisible) { if (menuSubpage) renderSetup(); else renderHome(); }
+            if (!navigation.gameVisible()) {
+                if (navigation.screen() == AppNavigation.Screen.SETUP || navigation.screen() == AppNavigation.Screen.INSTRUCTIONS) renderSetup();
+                else renderHome();
+            }
         });
-        dialog.setOnDismissListener(ignored -> {
-            scoreDialogShowing = false;
-            if (tableVisible && game != null) driveAutomatedTurns();
-        });
+        dialog.setOnDismissListener(ignored -> dismissDialog(token, true));
     }
 
     private void showHighScores() {
-        cancelAutomatedTurns();
-        scoreDialogShowing = true;
+        var token = openDialog();
         try {
-            GameConfig config = lastConfig != null ? lastConfig : GameConfig.newMatch(setupPlayerCount, setupMode,
-                    setupDifficulty, 0, setupMode.isRomanian() && setupStreaks, setupStreakBonus);
+            GameConfig config = lastConfig != null ? lastConfig : setup.config(0);
             AlertDialog dialog = HighScoresDialog.show(this, copy, highScores, HighScores.Profile.from(config), playerPreferences);
-            dialog.setOnDismissListener(ignored -> {
-                scoreDialogShowing = false;
-                if (tableVisible && game != null) driveAutomatedTurns();
-            });
+            dialog.setOnDismissListener(ignored -> dismissDialog(token, true));
         } catch (java.io.IOException failure) {
-            scoreDialogShowing = false;
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
-            if (tableVisible && game != null) driveAutomatedTurns();
+            dismissDialog(token, true);
         }
     }
 
     private void renderInstructions() {
-        applyStandardWindowChrome();
-        tableVisible=false;menuSubpage=true;instructionsVisible=true;cancelAutomatedTurns();
-        HowToPlay.Language language = copy.language();
-        LinearLayout page=page(HowToPlay.title(language),language==HowToPlay.Language.RO
-                ? "Whist românesc — reguli și exemple" : "Romanian Whist — rules and examples");
-        addLanguagePicker(page);
-        for(var section:HowToPlay.sections(language))addRule(page,section.title(),section.explanation());
-        addButton(page,copy.back(),"btn_instructions_back",true,this::renderHome,true);
+        navigation.show(AppNavigation.Screen.INSTRUCTIONS);
+        cancelAutomatedTurns();
+        views.applyStandardWindowChrome();
+        menuScreens.instructions(copy, this::setUiLanguage, this::renderHome);
     }
 
     private void driveAutomatedTurns() {
         if (!automationActive) return;
         handler.removeCallbacksAndMessages(null);
-        if (scoreDialogShowing) return;
+        if (navigation.blocksAutomation()) return;
         if (aiTurns.isPending()) return;
         if (game == null) {
             renderHome();
             return;
         }
         GameSession.Snapshot state = game.snapshot();
-        tableVisible=true;
+        navigation.show(AppNavigation.Screen.GAME);
         CompletedTrickPause.DisplayState trickPause = completedTrickPause.evaluate(
-                state, SystemClock.uptimeMillis());
+                game, SystemClock.uptimeMillis());
         if (trickPause.active()) {
-            renderPlay(trickPause.cards(), true);
+            renderCollecting(trickPause);
             handler.postDelayed(this::driveAutomatedTurns, trickPause.remainingMillis());
             return;
         }
@@ -650,13 +399,14 @@ public final class MainActivity extends Activity {
     private void submitAiTurn() {
         AiTurnRequest request = new AiTurnRequest(game);
         aiTurns.submit(request::evaluate, decision -> {
-            if (!automationActive || !tableVisible || scoreDialogShowing) return;
+            if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return;
             if (request.applyTo(game, decision)) persistGame();
             driveAutomatedTurns();
         }, failure -> { throw new IllegalStateException("AI computation failed", failure); });
     }
 
     private void cancelAutomatedTurns() {
+        if (gameScreen != null) gameScreen.cancelCollection();
         handler.removeCallbacksAndMessages(null);
         aiTurns.cancel();
         aiResults.removeCallbacksAndMessages(null);
@@ -671,15 +421,10 @@ public final class MainActivity extends Activity {
     }
 
     private void persistGame() {
-        if (game != null) GameSessionStore.save(this, game, rankingEligible, matchId);
-        recordFinishedMatch();
-        if (recordedReplay != null) recordedReplay.export(game);
-    }
-
-    private void recordFinishedMatch() {
-        if (game == null || !rankingEligible) return;
-        try { highScores.record(matchId, game, System.currentTimeMillis()); }
-        catch (java.io.IOException failure) { Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show(); }
+        if (game == null) return;
+        persistence.save(game, rankingEligible, matchId, session -> {
+            if (recordedReplay != null) recordedReplay.export(session);
+        });
     }
 
     private void openOneTrickFixture(boolean persistFixture) {
@@ -750,164 +495,6 @@ public final class MainActivity extends Activity {
         lastConfig = config;
         selectedBid = null;
         driveAutomatedTurns();
-    }
-    private LinearLayout page(String eyebrow, String title) {
-        return page(eyebrow, title, 22);
-    }
-
-    private LinearLayout page(String eyebrow, String title, int horizontalPadding) {
-        ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(horizontalPadding), dp(16), dp(horizontalPadding), dp(14));
-        content.setBackgroundColor(BACKGROUND);
-        scroll.addView(content, new ScrollView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        setContentView(scroll);
-        WindowContent.protect(scroll);
-        if (eyebrow != null && !eyebrow.isBlank()) addText(content, eyebrow, 12, ACCENT, true, 0, 8);
-        if (title != null && !title.isBlank()) addText(content, title, 25, PINE, true, 0, 8);
-        return content;
-    }
-
-    private LinearLayout gamePage() {
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(dp(12), dp(2), dp(12), dp(2));
-        content.setBackgroundColor(WhistUiPalette.TABLE_FELT);
-        setContentView(content);
-        WindowContent.protect(content);
-        return content;
-    }
-
-    private void applyStandardWindowChrome() {
-        getWindow().setStatusBarColor(PINE);
-        getWindow().setNavigationBarColor(BACKGROUND);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-    }
-
-    private void applyTableWindowChrome() {
-        getWindow().setStatusBarColor(WhistUiPalette.TABLE_FELT);
-        getWindow().setNavigationBarColor(WhistUiPalette.TABLE_FELT);
-        getWindow().getDecorView().setSystemUiVisibility(0);
-    }
-
-    private void addRule(LinearLayout page, String heading, String body) {
-        addText(page, heading, 16, INK, true, 18, 4);
-        addText(page, body, 15, MUTED, false, 0, 4);
-    }
-
-    private void addText(LinearLayout parent, String value, int size, int color,
-            boolean bold, int top, int bottom) {
-        TextView view = text(value, size, color, bold);
-        LinearLayout.LayoutParams params = matchWrap();
-        params.setMargins(0, dp(top), 0, dp(bottom));
-        parent.addView(view, params);
-    }
-
-    private TextView text(String value, float size, int color, boolean bold) {
-        TextView view = new TextView(this);
-        view.setText(value);
-        view.setTextSize(size);
-        view.setTextColor(color);
-        view.setGravity(Gravity.CENTER_VERTICAL);
-        if (bold) {
-            view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        }
-        return view;
-    }
-
-    private void addButton(LinearLayout parent, String label, String description, boolean enabled,
-            Runnable action, boolean primary) {
-        Button button = actionButton(label, description, enabled, action, primary, 16);
-        LinearLayout.LayoutParams params = matchWrap();
-        params.setMargins(0, dp(8), 0, dp(3));
-        parent.addView(button, params);
-    }
-
-    private Button actionButton(String label, String description, boolean enabled,
-            Runnable action, boolean primary, int textSize) {
-        Button button = new Button(this);
-        button.setAllCaps(false);
-        button.setText(label);
-        button.setTextSize(textSize);
-        button.setTextColor(primary ? Color.WHITE : PINE);
-        button.setContentDescription(label);
-        button.setTag(description);
-        button.setEnabled(enabled);
-        button.setMinimumWidth(0);
-        button.setMinHeight(dp(48));
-        button.setBackground(buttonBackground(primary));
-        button.setOnClickListener(ignored -> action.run());
-        return button;
-    }
-
-    private Spinner spinner(List<String> values, String description) {
-        Spinner spinner = new Spinner(this);
-        spinner.setContentDescription(copy.spinnerLabel(description));
-        spinner.setTag(description);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, new ArrayList<>(values)) {
-            @Override public View getView(int position, View recycled, ViewGroup parent) {
-                TextView selected = (TextView) super.getView(position, recycled, parent);
-                selected.setTextSize(14);
-                selected.setTextColor(INK);
-                selected.setSingleLine(true);
-                selected.setEllipsize(android.text.TextUtils.TruncateAt.END);
-                return selected;
-            }
-        };
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setGravity(Gravity.CENTER_VERTICAL);
-        spinner.setBackground(new DropdownBackground(getResources().getDisplayMetrics().density));
-        spinner.setMinimumHeight(dp(48));
-        spinner.setPadding(dp(12), dp(4), dp(34), dp(4));
-        return spinner;
-    }
-
-    private void addSetupSelector(LinearLayout parent, String label, Spinner selector) {
-        LinearLayout row = new LinearLayout(this);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.addView(text(label, 14, INK, true), new LinearLayout.LayoutParams(0, dp(48), 1f));
-        row.addView(selector, new LinearLayout.LayoutParams(dp(150), dp(48)));
-        LinearLayout.LayoutParams params = matchWrap();
-        params.topMargin = dp(8);
-        parent.addView(row, params);
-    }
-
-    private void addQuietButton(LinearLayout parent, String label, Runnable action) {
-        Button button = actionButton(label, label, true, action, false, 14);
-        button.setBackgroundColor(Color.TRANSPARENT);
-        button.setElevation(0);
-        button.setStateListAnimator(null);
-        parent.addView(button, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
-    }
-
-    private GradientDrawable buttonBackground(boolean primary) {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setColor(primary ? ACCENT : SURFACE);
-        shape.setCornerRadius(dp(14));
-        shape.setStroke(dp(1), primary ? ACCENT : Color.rgb(211, 220, 210));
-        return shape;
-    }
-
-    private GradientDrawable roundedBackground(int fill, int stroke, int radius) {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setColor(fill);
-        shape.setCornerRadius(dp(radius));
-        shape.setStroke(dp(1), stroke);
-        return shape;
-    }
-
-    private LinearLayout.LayoutParams matchWrap() {
-        return new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    }
-
-    private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
 }

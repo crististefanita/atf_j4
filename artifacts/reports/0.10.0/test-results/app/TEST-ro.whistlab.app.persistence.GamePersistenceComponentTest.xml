@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.persistence.GamePersistenceComponentTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-05T20:17:51.700Z" hostname="DESKTOP-BLFSO18" time="0.097">
+  <properties/>
+  <testcase name="storageDiagnosticDoesNotRejectOrReplayTheAcceptedCommand" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.018"/>
+  <testcase name="checkpointIoFailureIsReportedOnceAndStopsLaterPersistenceStages" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.008"/>
+  <testcase name="unexpectedCheckpointDefectKeepsItsCauseAndIsNotAnIoDiagnostic" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.008"/>
+  <testcase name="checkpointReceivesTheSameSessionEligibilityAndIdentityBeforeReplay" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.009"/>
+  <testcase name="replayFailureAfterCheckpointIsNotReclassifiedOrRetried" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.004"/>
+  <testcase name="delayedCheckpointPreventsReplayAndContinuationUntilItReturns" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.035"/>
+  <testcase name="noSessionHasNoPersistenceSideEffects" classname="ro.whistlab.app.persistence.GamePersistenceComponentTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

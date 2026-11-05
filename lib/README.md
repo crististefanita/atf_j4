@@ -39,6 +39,17 @@ Declarați, de exemplu, `atf.api:atf-reporting:<versiunea din POM>` în dependen
 - În ATF, pom.xml selectează versiunile; library-provenance.json păstrează hash-urile și originea.
 - Guvernanța și acceptanța rulează în TMP; fiecare consumer verifică propriul profil și classpath.
 
+## Alegerea verificării minime
+
+| Bibliotecă | Punctul de pornire | Contractul observabil |
+|---|---|---|
+| Core | [Exemplul minim](README.Core.md#exemplu-minim) | Construirea URL-ului și păstrarea preciziei JSON. |
+| Reporting | [Exemplul minim](README.Reporting.md#exemplu-minim) | Publicarea încheiată, urmată de propagarea comparației eșuate. |
+| Console | [Exemplul minim](README.Console.md#exemplu-minim) | Mesaj vizibil sau consolă dezactivată, după politica explicită. |
+| Mock | [Exemplul minim](README.Mock.md#exemplu-minim) | Configurația și cererea produc răspunsul ori fallback-ul declarat. |
+
+Verificați întâi compilarea pe perechile fizice JAR/POM, apoi comportamentul fragmentului. Contractele aplicației, transportul real și prezentarea interactivă se califică separat în consumer.
+
 ## Mentenanță și feedback
 
 Codul, testele native și feedback-ul bibliotecilor aparțin `atf_j0` (`atf_j0/docs/feedback/README.md`). Remedierea și regresia în J0 preced sincronizarea și acceptanța locală; feedback-ul include JAR/hash, reproducere și așteptat/observat.

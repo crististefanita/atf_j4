@@ -34,7 +34,7 @@ Sesiunea păstrează starea completă necesară jocului și restaurării. Fațad
 | [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Pachet, program, oferte și cărți legale, câștigător și scor de bază. |
 | [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Punctele contractului și evoluția seriilor. |
 | [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Fazele, comenzile, istoricul public și validarea restaurării. |
-| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile cunoscute și soldurile mâinilor încheiate; punctele sunt diferența dintre solduri. |
+| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile, levatele cunoscute și soldurile mâinilor încheiate; punctele sunt diferența dintre solduri. |
 | [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Ajutorul RO/EN pentru profilul și programul selectate. |
 
 ## Whist românesc

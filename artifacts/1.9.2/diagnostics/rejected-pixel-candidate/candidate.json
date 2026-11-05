@@ -1,6 +1,0 @@
-{
-  "sourceCommit": "3bc7ba24918f39f1cc0f25be27b95000dd894de0",
-  "apkSha256": "7c642a6e8ab917fe178956a764b876f71104a123f30933499ad9b959eeec93f9",
-  "status": "REJECTED",
-  "reason": "Double dp rounding made fan 4px wider than viewport; exposed strips were misidentified as full faces in the XML oracle"
-}

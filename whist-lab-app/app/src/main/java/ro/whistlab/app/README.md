@@ -4,7 +4,7 @@
 
 Acest pachet compune interfața Android și transmite intențiile utilizatorului către `GameSession`. Motorul deține legalitatea și scorul; prezentarea deține geometria, textele, navigarea și accesibilitatea.
 
-`MainActivity` coordonează sesiunea, persistența și ciclul Android. Componentele specializate măsoară și redau starea, iar verificările separă modelele geometrice de aspectul observat pe dispozitiv.
+`MainActivity` leagă intențiile, serviciile sesiunii și ciclul Android. Clasele din `screens` compun ecranele, iar `AppNavigation` păstrează ruta și identitatea dialogurilor; componentele de geometrie și persistență au contracte distincte.
 
 ## Flux și responsabilități
 
@@ -31,18 +31,26 @@ Fereastra exclude barele sistemului și decupajul înaintea aranjării. Această
 
 | Zonă | Responsabilitate și sursă |
 |---|---|
+| Rute și ecrane | [AppNavigation](navigation/AppNavigation.java) gestionează ruta și dialogurile curente; [screens](screens/) compune paginile, iar [ScreenViews](screens/ScreenViews.java) construiește widgeturile comune. |
 | Fereastră Android | [WindowContent](window/WindowContent.java) aplică protecția nativă și măsoară spațiul util; [WindowPadding](window/WindowPadding.java) păstrează baza imuabilă. |
 | Masă și licitare | [GameBoardLayout](table/GameBoardLayout.java), [TableGeometry](table/TableGeometry.java) și [BidGridMetrics](bidding/BidGridMetrics.java) măsoară locurile și regiunea centrală. |
 | Nume și tură | [PlayerSeatView](seat/PlayerSeatView.java) măsoară textul acțiunii deasupra chenarului; [PlayerSeatMetrics](seat/PlayerSeatMetrics.java) rezervă regiunile fără suprapuneri. |
 | Mână | [HandLayoutMetrics](hand/HandLayoutMetrics.java) calculează evantaiul; [CenteredHandView](hand/CenteredHandView.java) gestionează poziția inițială a derulării. |
 | Levată și atu | [TrickCardMetrics](table/TrickCardMetrics.java) ancorează cărțile după loc; [TrumpIndicatorView](table/TrumpIndicatorView.java) afișează informația despre atu. |
+| Colectarea levatei | [TrickCollectionMotion](animation/TrickCollectionMotion.java) calculează cadrul și timpul; [TrickCollectionAnimator](animation/TrickCollectionAnimator.java) aplică animația pe vederile Android. |
 | Scor | [ScoreHistoryTable](score/ScoreHistoryTable.java) proiectează programul complet pentru toate locurile; [ScoreHistoryView](score/ScoreHistoryView.java) îl afișează cu descrieri accesibile. |
-| Salvare și ciclu Android | [GameSessionStore](persistence/GameSessionStore.java) deține schema salvării; [CompletedTrickPause](lifecycle/CompletedTrickPause.java) delimitează pauza levatei. |
-| Texte și stil | [WhistUiText](localization/WhistUiText.java) deține EN/RO; [WhistUiPalette](theme/WhistUiPalette.java) furnizează stilurile comune. |
+| Comenzi și salvare | [GameCommandFlow](lifecycle/GameCommandFlow.java) delimitează refuzul comenzii; [GamePersistence](persistence/GamePersistence.java) ordonează checkpoint-ul, clasamentul și exportul. |
+| Stocare și ciclu Android | [GameSessionStore](persistence/GameSessionStore.java) deține schema salvării; [CompletedTrickPause](lifecycle/CompletedTrickPause.java) delimitează pauza levatei. |
+| Texte și stil | [WhistUiText](localization/WhistUiText.java) deține EN/RO; [WhistUiPalette](theme/WhistUiPalette.java) și [GameHeaderTypography](theme/GameHeaderTypography.java) furnizează culorile și rolurile tipografice. |
 
 Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele indicate. Atlasul păstrează relațiile și invariantele, astfel încât modificarea unui profil de ecran să poată fi urmărită din cod spre verificare.
 
 ## Principii de aranjare
+
+Geometria păstrează separat locurile, țintele tactile, cărțile și textul. Criteriile detaliate și sursele lor sunt grupate mai jos; [componentele și acceptanța nativă](#cum-verificăm) califică niveluri diferite.
+
+<details>
+<summary>Invariantele mesei, mâinii, atuului și istoricului</summary>
 
 - Locul omului rămâne sud; poziția cărții jucate depinde de locul actorului și de ordinea levatei.
 - [CardFaceMetrics](cards/CardFaceMetrics.java) păstrează proporția comună 5:7, scalată după rol; mâna schimbă suprapunerea, iar numărul jucătorilor schimbă pozițiile. [TableSeatLayout](table/TableSeatLayout.java) urmează ordinea circulară a motorului; la patru locuri adversarii ocupă un arc superior, fără îngustarea cărților jucate.
@@ -56,11 +64,18 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 - Istoricul are toate locurile în același tabel cronologic, cu antete fixe la derularea verticală și deplasare orizontală comună.
 - Prima coloană a istoricului arată numărul de cărți; ordinea mâinii rămâne în model și în descrierile accesibile. [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aliniază separatoarele și grupurile jucătorilor la densități fracționare.
 
+</details>
+
 ## Istoricul scorului
 
-Tabelul conține toate mâinile programate, iar fiecare loc are licitația cunoscută, punctele și totalul după încheiere. O licitație necunoscută are marcaj explicit, iar o salvare veche păstrează soldul de deschidere disponibil.
+Tabelul conține toate mâinile programate, iar fiecare loc are două coloane vizibile: licitația cunoscută și punctele mâinii. Totalul rămâne în registru și în descrierea accesibilă. O licitație necunoscută are marcaj explicit, iar o salvare veche păstrează soldul de deschidere disponibil.
 
-Punctele sunt derivate de domeniu din soldurile istoricului. Levatele și licitațiile cunoscute determină separat rezultatul contractului; o ratare primește tăietură oblică peste licitație. [Contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie migrarea prefixului necunoscut, conservarea levatelor și măsurarea coloanelor compacte.
+Punctele sunt derivate de domeniu din soldurile istoricului. Levatele și licitațiile cunoscute determină separat rezultatul contractului; o ratare primește tăietură oblică peste licitație. Bonusul ori penalizarea de serie subliniază punctele mâinii respective; punctajul obișnuit rămâne fără subliniere.
+
+[Contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie migrarea prefixului necunoscut, conservarea levatelor și măsurarea coloanelor compacte.
+
+- [ScoreHistoryMeasure](score/ScoreHistoryMeasure.java) agregă lățimile folosind furnizori de măsurători injectați; vederea Android deține fonturile și randarea.
+- Componenta verifică politica asupra tuturor celulelor, iar [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aplică minimele și protecția împotriva depășirilor numerice.
 
 ## Profil și clasamente
 
@@ -70,6 +85,7 @@ Punctele sunt derivate de domeniu din soldurile istoricului. Levatele și licita
 
 | Nivel | Proprietatea verificată |
 |---|---|
+| Rute și mișcare pură | [AppNavigationComponentTest](../../../../../test/java/ro/whistlab/app/navigation/AppNavigationComponentTest.java) verifică dialogurile curente; [TrickCollectionMotionComponentTest](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java) verifică timpii și transformarea, fără randare Android. |
 | Componente ale ferestrei | [WindowPaddingComponentTest](../../../../../test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) verifică insets repetate, decupaj, tastatură și bugetul ferestrei compacte. |
 | Componente JVM | [Aranjarea mesei](../../../../../test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java), [ancorele levatei](../../../../../test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java) și [ferestrele compacte](../../../../../test/java/ro/whistlab/app/table/TableViewportPolicyTest.java) verifică modelele geometrice. |
 | Acțiune și nume | [PlayerSeatMetricsComponentTest](../../../../../test/java/ro/whistlab/app/seat/PlayerSeatMetricsComponentTest.java) injectează măsurători pentru RO/EN, rezoluții uzuale și text mărit; verifică spațiul integral deasupra chenarului și egalizarea locurilor. |
@@ -89,6 +105,84 @@ Componentele geometrice verifică relații calculate. Captura fizică și intera
 - `debug_hold_ai_bids` oprește calculul licitației după randare; `debug_hold_ai_turns` oprește avansarea cărților AI. Ambele controale sunt disponibile numai în build-ul debug și păstrează fazele distincte ale acceptanței.
 
 [Aplicația](../../../../../../../README.md) · [Testarea Android](../../../../../../../../docs/testing/ATF_Android.md) · [Regulile jocului](../../../../../../../../docs/game/README.md)
+
+## Destinații și dialoguri
+
+Constructorii ecranelor primesc observații și acțiuni explicite, fără proprietatea sesiunii sau a executorului AI. [MatchSetup](screens/MatchSetup.java) păstrează alegerile configurării fără să modifice o partidă începută.
+
+```mermaid
+flowchart LR
+    INTENT[Intenție] -->|alege destinația| NAV[Navigare]
+    NAV -->|selectează| SCREEN[Constructor de ecran]
+    SCREEN -->|compune cu| VIEWS[Controale comune]
+    SCREEN -->|trimite acțiunea| OWNER[Proprietarul sesiunii]
+    DIALOG[Dialog curent] -->|suspendă| AI[Automatizare]
+    NAV -->|invalidează la schimbarea rutei| DIALOG
+```
+
+<details>
+<summary>Legendă: prezentare fără proprietatea partidei</summary>
+
+[AppNavigation](navigation/AppNavigation.java) identifică fiecare dialog prin proprietar și generația rutei. Dialogurile suprapuse păstrează suspendarea până la ultima închidere; o notificare repetată, străină sau întârziată nu reia jocul și nu închide dialogul unei alte rute.
+
+[ScreenViews](screens/ScreenViews.java) păstrează textele, dimensiunile, stilurile și etichetele controalelor. Stocarea, deciziile și aplicarea cărților rămân în coordonatorii lor.
+
+</details>
+
+- [Componentele navigării](../../../../../test/java/ro/whistlab/app/navigation/AppNavigationComponentTest.java) verifică destinațiile, dialogurile suprapuse și notificările depășite.
+- [Componentele configurării](../../../../../test/java/ro/whistlab/app/screens/MatchSetupComponentTest.java) verifică păstrarea alegerilor și independența configurației deja capturate.
+
+## Colectarea levatei câștigate
+
+Motorul stabilește câștigătorul și scorul înaintea efectului vizual. Pauza levatei păstrează toate cărțile vizibile, iar ultimele 500 ms din intervalul de 1,5 secunde le deplasează și le micșorează spre centrul măsurat al locului câștigătorului.
+
+| Componentă | Contract |
+|---|---|
+| [CompletedTrickPause](lifecycle/CompletedTrickPause.java) | Fereastră unică per levată și sesiune; o sesiune nouă, chiar cu observație egală, primește identitate proprie. Pauza precedă inclusiv pagina de scor a ultimei levate. |
+| [TrickCollectionMotion](animation/TrickCollectionMotion.java) | Model pur pentru întârziere, durată, translație, micșorare și transparență. Întârzierea layout-ului consumă timpul disponibil; nu extinde pauza. |
+| [TrickCollectionAnimator](animation/TrickCollectionAnimator.java) | Măsoară cărțile și locul câștigătorului în același sistem de coordonate. Detașarea mesei sau suspendarea automatizării anulează efectul; containerele intermediare permit deplasarea în afara regiunii inițiale a cărții. |
+| [GameScreen](screens/GameScreen.java) | Înlocuirea ecranului anulează efectul anterior; interacțiunea cu mâna rămâne suspendată până la expirarea pauzei. Fixture-urile statice păstrează afișarea fără animație. |
+
+- [Componentele mișcării](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java) confruntă capetele traiectoriei pentru toate locurile la 3–6 jucători, progresul și timpul rămas.
+- [Componentele proprietarului levatei](../../../../../test/java/ro/whistlab/app/lifecycle/CompletedTrickOwnershipComponentTest.java) folosesc câștigătorul calculat de motor și verifică lipsa mutațiilor, fereastra finală și o sesiune nouă cu stare egală.
+- Dacă animațiile sunt dezactivate pe API 26+, cărțile păstrează afișarea statică în pauză. Modelul de componentă nu califică randarea, clipping-ul sau preferințele sistemului pe dispozitiv.
+
+## Comenzi, salvare și erori
+
+Comanda modifică domeniul o singură dată. Salvarea și continuarea consumă mutația acceptată; un eșec ulterior nu o transformă în licitație sau carte invalidă.
+
+```mermaid
+flowchart LR
+    INTENT[Intenție] -->|execută| COMMAND[Comandă în motor]
+    COMMAND -->|refuză| REJECT[Mesaj existent]
+    COMMAND -->|acceptă| LOCAL[Selecție sau replay]
+    LOCAL -->|salvează| CHECKPOINT[Checkpoint]
+    CHECKPOINT -->|permite| RANK[Clasament eligibil]
+    RANK -->|urmează| EXPORT[Export replay]
+    EXPORT -->|continuă| NEXT[Stare următoare]
+```
+
+<details>
+<summary>Legendă: ordinea efectelor și limita refuzului</summary>
+
+[GameCommandFlow](lifecycle/GameCommandFlow.java) tratează `IllegalArgumentException` și `IllegalStateException` numai în apelul comenzii. Actualizarea selecției, salvarea și continuarea au frontiere distincte; defectele lor se propagă cu aceeași cauză, fără refuz sau reluare implicită a mutației.
+
+[GamePersistence](persistence/GamePersistence.java) primește stocarea, clasamentul, ceasul și diagnosticul prin porturi. Toate etapele rămân sincrone pe proprietarul sesiunii; modelul califică ordinea, fără să mute I/O pe un executor ori să certifice latența Android.
+
+</details>
+
+| Etapă | Contract la eșec |
+|---|---|
+| Checkpoint | `GameSessionStore.save` declară `IOException` pentru scriere sau codificare eșuată. Diagnosticul folosește mesajul existent de stocare; clasamentul și exportul acelei încercări nu rulează. |
+| Mutație acceptată | Un diagnostic I/O nu anulează mutația din memorie; fluxul poate continua. O salvare ulterioară reîncearcă stocarea stării curente, fără repetarea comenzii. |
+| Clasament | Numai o partidă eligibilă, încheiată, ajunge la repository după checkpoint. Eșecul I/O păstrează exportul replay-ului; deduplicarea folosește identitatea stabilă a partidei la o salvare ulterioară, inclusiv după reluare. |
+| Randare | Afișarea scorului nu înregistrează clasamentul. Reafișarea nu ocolește checkpoint-ul și nu scrie rezultate suplimentare. |
+| Reluare | Citirea și validarea salvării au bloc propriu. Salvarea ulterioară se execută în afara tratării datelor invalide, astfel încât eșecul ei nu șterge checkpoint-ul citit. |
+
+- [Componentele comenzilor](../../../../../test/java/ro/whistlab/app/lifecycle/GameCommandFlowComponentTest.java) verifică mutația reală și refuzul, plus defecte injectate după acceptare.
+- [Componentele persistenței](../../../../../test/java/ro/whistlab/app/persistence/GamePersistenceComponentTest.java) verifică ordinea și oprirea etapelor prin porturi controlate; blocarea folosește handshake, fără prag de performanță.
+- [Componentele clasamentului](../../../../../test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) confruntă reîncercarea cu repository-ul real și o sesiune restaurată, fără puncte sau locuri duplicate.
+- Recuperarea stocării Android și latența I/O pe dispozitiv păstrează [calificarea proprie](../../../../../../../../docs/feedback/ATF_Android.md#persistență-și-coordonare).
 
 ## Coordonarea turelor automate
 
@@ -117,6 +211,6 @@ Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea
 
 ## Limite și calificare
 
-Reactivitatea pe dispozitiv și costul politicii au calificare distinctă de corectitudinea predării între executori. Persistența și navigarea păstrează următoarele criterii deschise.
+Reactivitatea pe dispozitiv și costul politicii au calificare distinctă de corectitudinea predării între executori. Randarea efectului de colectare și recuperarea stocării native cer calificarea binarului efectiv instalat.
 
-Lucrările privind stocarea controlată și separarea navigării sunt centralizate în [feedback-ul coordonării Android](../../../../../../../../docs/feedback/ATF_Android.md#persistență-și-coordonare). Reactivitatea și costul deciziei se măsoară separat pe mărimea mâinii și profilul dispozitivului, fără a deduce acceptanța APK-ului din componentele executorului.
+Calificările rămase sunt centralizate în [feedback-ul Android](../../../../../../../../docs/feedback/ATF_Android.md). Reactivitatea și costul deciziei se măsoară separat pe mărimea mâinii și profilul dispozitivului, fără a deduce acceptanța APK-ului din componentele executorului.

@@ -26,6 +26,8 @@ Rezervarea precede execuția și rămâne păstrată inclusiv după eșec sau î
 
 ## Identitatea și reutilizarea
 
+[Componenta de intervale](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs) verifică intersecția intervalelor întregi semi-deschise, independent de joc și stocare. Registrul adaptează `firstSeed` și `seeds` la capetele intervalului și păstrează validarea domeniului propriu; adiacența nu este suprapunere.
+
 | Element | Contract |
 |---|---|
 | Distribuție | Spațiul comun `romanian4-seeded-deals` și intervalul semi-deschis de semințe identifică expunerea conservator. Rolul, adversarul, locul și versiunea protocolului nu creează distribuții independente. |
@@ -36,7 +38,10 @@ Rezervarea precede execuția și rămâne păstrată inclusiv după eșec sau î
 
 Identitatea este calculată din JSON canonic cu chei sortate și SHA-256. Căile corpusului și rezultatului păstrează proveniența primei cereri, fără să poată reseta expunerea.
 
-[Inventarul executabil](../../whist-lab-app/ai-lab/tools/qualification/WhistEvaluationInputs.psm1) include sursele și resursele motorului și laboratorului, construirea JVM și mecanismul admiterii. Prezentarea Android și documentația independentă nu schimbă identitatea politicii; o modificare a sursei executabile o schimbă.
+- [Inventarul executabil](../../whist-lab-app/ai-lab/tools/qualification/WhistEvaluationInputs.psm1) include sursele și resursele motorului și laboratorului, construirea JVM și mecanismul admiterii.
+- Prezentarea Android și documentația independentă nu schimbă identitatea politicii; o modificare a sursei executabile o schimbă.
+- Inventarul include și componenta generică importată de registru.
+- Schimbarea acestei dependențe schimbă identitatea rezervării; separarea într-un fișier nou nu o scoate din sursele care trebuie înghețate.
 
 ## Inițializare și istoric
 

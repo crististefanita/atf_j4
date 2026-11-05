@@ -4,12 +4,14 @@
 
 Fiecare candidat reprezintă o modificare identificată a licitării sau a alegerii cărții. Protocolul precizează rolul evaluat, sursele, familiile de adversari, profilul de scor și distribuțiile înaintea execuției.
 
-[Laboratorul AI](../../whist-lab-app/ai-lab/README.md) deține uneltele și sursele experimentale ale procesului. [Lansatoarele comune](../../scripts/README.md) selectează configurația și resursele pentru execuția izolată.
+- **Pornire:** [Construirea și îmbunătățirea AI-ului](ATF_PolicyEvolution.md) urmează regula, contextul, regresia mică, comparația și promovarea. Politica se schimbă explicit; recalcularea contextului mâinii nu rescrie parametrii acceptați.
+- **Responsabilități:** [Laboratorul AI](../../whist-lab-app/ai-lab/README.md) deține uneltele și sursele experimentale; [lansatoarele comune](../../scripts/README.md) selectează configurația și resursele execuției izolate.
 
 - [Corpusul](ATF_Corpus.md) definește partidele și integritatea intrărilor.
 - [Selecția](ATF_Selection.md) restrânge analiza la lecții distincte.
 - [Arena](ATF_Arena.md) compară politici pe distribuții și locuri controlate.
 - [Retenția](ATF_Retention.md) păstrează rolul și proveniența datelor externe.
+- [Transferul către alt joc](ATF_GameTransfer.md) delimitează ce reutilizăm și criteriile primului adaptor.
 
 ## Etapele calificării
 
@@ -44,7 +46,7 @@ Fiecare candidat reprezintă o modificare identificată a licitării sau a alege
 
 ## Ciclul de îmbunătățire
 
-Aceasta este procedura responsabilă pentru promovarea unei politici; ghidurile arenei, componentelor și colecțiilor o specializează prin propriile contracte.
+[Procedura de evoluție](ATF_PolicyEvolution.md) deține pașii și criteriile de ieșire. Această hartă orientează lectura; arena, componentele și colecțiile dețin contractele specializate.
 
 ```mermaid
 flowchart LR
@@ -62,13 +64,7 @@ Rolurile, adversarii, scorul, distribuțiile, bugetele și criteriile sunt decla
 
 </details>
 
-1. Validați regulile și scorul jocurilor de dezvoltare înaintea analizei performanței.
-2. Localizați prima divergență și reconstruiți observația permisă actorului la acel moment.
-3. Formulați condiția generală, frontierele și așteptarea independentă; păstrați o regresie mică.
-4. Verificați componentele și comparațiile pereche în domeniul declarat, apoi înghețați sursele și criteriile.
-5. Verificați disponibilitatea și rezervați lotul de evaluare înaintea deschiderii; expunerea lui rămâne înregistrată.
-6. Aplicați fiecare criteriu obligatoriu pe rol și familie, păstrând separat punctele, exactele și victoriile.
-7. Promovați explicit codul și contractele numai după progresul cerut, fără regresii de reguli sau scor.
+Pentru prima îmbunătățire, urmați [diagnosticul și regresia mică](ATF_PolicyEvolution.md#din-partidă-într-o-întrebare-precisă), apoi [compararea jocurilor](ATF_PolicyEvolution.md#cum-comparăm-jocurile) și [promovarea](ATF_PolicyEvolution.md#când-promovăm). Protocolul se stabilește înaintea evaluării rezervate.
 
 O înfrângere localizează analiza, fără a demonstra singură o eroare. Mâinile complete sunt admise în auditul de după joc, în timp ce politica rămâne limitată la [observația permisă](../ai/ATF_DecisionModel.md#contractul-unei-decizii).
 

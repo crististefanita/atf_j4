@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-05T20:17:47.538Z" hostname="DESKTOP-BLFSO18" time="1.852">
+  <properties/>
+  <testcase name="everyGameTypeStartsWithTenMarkedSamplesAndReloadDoesNotReseed" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.571"/>
+  <testcase name="codecRejectsUnsupportedOrDuplicateDataAndSeparatesRuleProfiles" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.15"/>
+  <testcase name="failedCommitCanBeRetriedAndCorruptionIsNotOverwritten" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.045"/>
+  <testcase name="rankingGrowsToTwentyThenRetainsTheBestScoresIncludingAiAndNegativeScores" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.034"/>
+  <testcase name="failedFinalMatchWriteIsRetryableAndTheMatchIsNotMarkedProcessedPrematurely" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.412"/>
+  <testcase name="theLocalJsonFileCanBeReopenedWithoutAndroid" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.151"/>
+  <testcase name="onlyCompletedMatchesAreCommittedAndEachSeatIsRecordedExactlyOnceAcrossReload" classname="ro.whistlab.app.highscores.HighScoreRepositoryComponentTest" time="0.485"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

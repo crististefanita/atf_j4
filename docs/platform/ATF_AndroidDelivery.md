@@ -95,7 +95,7 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 ### Predarea patch-ului
 
 1. Actualizați `versionName` și incrementați `versionCode` în Gradle; fixați commit-ul construit. Sursele relevante schimbate în paralel se confruntă înainte de publicare.
-2. Rulați selecția de mai sus în TMP; păstrați comenzile, rezultatele JUnit și jurnalele în `artifacts/<versionName>/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
+2. Rulați selecția de mai sus în TMP; pregătiți comenzile, rezultatele JUnit și jurnalele pentru `artifacts/reports/<versionName>/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
 3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `dist`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
 4. Actualizați manifestul și README-ul noii versiuni, `artifacts/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
 5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi confruntați prezentarea cu adresele efectiv publicate și verificați descărcarea. Faceți sync pentru metadatele finale; linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
@@ -104,21 +104,27 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 
 ## Dosarul unei versiuni
 
-[Catalogul](../../artifacts/README.md) păstrează câte un dosar `artifacts/<versionName>/` pentru fiecare livrare înregistrată. Versiunea exactă separă dovezile; un reper dintr-o versiune anterioară rămâne etichetat ca reper, cu proveniența originală.
+[Catalogul](../../artifacts/README.md) și [directorul rapoartelor](../../artifacts/reports/README.md) păstrează numai ultima versiune calificată, în `artifacts/reports/<versionName>/`. [Politica de retenție](ATF_ReleaseRetention.md) definește arhivarea precedentului, înlocuirea și resetarea GitHub cerută explicit.
 
 | Intrare | Responsabilitate |
 |---|---|
-| `artifacts/index.json` | Declară `currentVersion` și lista `versions`; fiecare versiune apare o singură dată și are dosar propriu. |
-| `artifacts/<versionName>/README.md` | Prezintă binarul, rapoartele, rezultatele și limitele acelei livrări. |
+| `artifacts/index.json` | Schema 2 declară `currentVersion` și exact o versiune activă în `versions`. |
+| `artifacts/reports/README.md` | Intrarea stabilă către ultimele rezultate relevante. |
+| `artifacts/reports/<versionName>/README.md` | Prezintă binarul, rapoartele, rezultatele și limitele livrării active. |
 | Manifest și metadate în dosar | Leagă `versionName`, tag-ul, asset-urile, checksum-ul și notele; căile relative pornesc din dosarul versiunii. |
 | Rapoarte, capturi, rezultate și jurnale | Păstrează execuția identificată, inclusiv diagnosticele negative și replay-urile etichetate. |
 | [Strategia testării](../testing/README.md) | Deține selecția și principiile comune, independent de versiune. |
 
-- La o versiune nouă, creați dosarul și înregistrarea în index; actualizați catalogul după verificarea identității. Păstrați dovezile livrărilor existente și numai APK-ul curent în `dist`.
+- La o versiune nouă, calificați candidatul extern și arhivați dosarul anterior înaintea înlocuirii. Actualizați indexul și catalogul după verificarea identității; păstrați numai APK-ul local curent în `dist`.
 - La reorganizare, mutați împreună rapoartele și fișierele asociate, confruntați hash-urile și refaceți referințele active. Căile absolute capturate și URL-urile istorice fixate pe commit își păstrează sensul original.
 - Notele din GitHub Release trimit la README-ul versiunii într-un commit identificat; schimbarea navigării nu mută tag-ul și nu înlocuiește asset-ul binar.
 
-[Guvernanța dosarelor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) respinge populația neînregistrată, versiunile duplicate, metadatele lipsă și identitățile divergente. Verificarea integrității fișierelor și a linkurilor completează acest contract structural.
+[Guvernanța dosarelor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) respinge populația neînregistrată, acumularea versiunilor active, metadatele lipsă și identitățile divergente. Verificarea integrității fișierelor și a linkurilor completează acest contract structural.
+
+- **Inventar:** indexul structurat, dosarele și catalogul formează aceeași populație verificată.
+- **Calificare:** validarea structurală și [legarea notelor de asset-ul publicat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) sunt controale distincte; trecerea lor nu dovedește accesul anonim, proveniența Git completă sau autonomia raportului.
+
+Delimitarea secțiunilor catalogului se validează înaintea intrării curente, cu diagnostic pentru titluri lipsă sau inversate. Prezența unei versiuni în tabelul general nu substituie legătura din secțiunea curentă.
 
 ## Prezentarea unei versiuni
 

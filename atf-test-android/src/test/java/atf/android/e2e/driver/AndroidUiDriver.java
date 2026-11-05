@@ -1,11 +1,13 @@
 package atf.android.e2e.driver;
 
 import static atf.android.e2e.driver.UiHierarchy.matchesSpinnerLabel;
-import static atf.android.e2e.driver.UiHierarchy.nodes;
+import static atf.android.e2e.driver.hierarchy.HierarchyDocument.nodes;
 
 import atf.android.AdbClient;
+import atf.android.e2e.driver.hierarchy.CardHierarchy;
+import atf.android.e2e.driver.hierarchy.HierarchyDocument;
 import atf.android.e2e.driver.waiting.UiStateAwaiter;
-import atf.android.e2e.driver.UiHierarchy.Node;
+import atf.android.e2e.driver.hierarchy.HierarchyDocument.Node;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.ui.model.AtfUiActionRecord;
 import atf.reporting.ui.model.AtfUiEvidenceSource;
@@ -131,11 +133,11 @@ public final class AndroidUiDriver {
     }
 
     public String firstLegalCardDescription(String xml) throws Exception {
-        return UiHierarchy.firstLegalCardDescription(xml);
+        return CardHierarchy.firstLegalCardDescription(xml);
     }
 
     public List<String> legalCardDescriptions(String xml) throws Exception {
-        return UiHierarchy.legalCardDescriptions(xml);
+        return CardHierarchy.legalCardDescriptions(xml);
     }
 
     public boolean hasClass(String xml, String exactClass) throws Exception {
@@ -151,7 +153,7 @@ public final class AndroidUiDriver {
     }
 
     public boolean legalCardIsClickable(String xml, String cardLabel) throws Exception {
-        return UiHierarchy.legalCardIsClickable(xml, cardLabel);
+        return CardHierarchy.legalCardIsClickable(xml, cardLabel);
     }
 
     public boolean isSelected(String xml, String exactText) throws Exception {
@@ -195,11 +197,11 @@ public final class AndroidUiDriver {
     }
 
     public List<CardLabel> bottomRowCardLabels(String xml) throws Exception {
-        return UiHierarchy.bottomRowCardLabels(xml);
+        return CardHierarchy.bottomRowCardLabels(xml);
     }
 
     public List<Bounds> playingCardLabelBounds(String xml) throws Exception {
-        return UiHierarchy.playingCardLabelBounds(xml);
+        return CardHierarchy.playingCardLabelBounds(xml);
     }
 
     public List<ElementSize> numericButtonSizes(String xml) throws Exception {
@@ -308,7 +310,7 @@ public final class AndroidUiDriver {
             if (current.stream().anyMatch(target)) return;
             int width = 0, height = 0;
             for (Node node : current) {
-                var match = UiHierarchy.matchBounds(node.bounds());
+                var match = HierarchyDocument.matchBounds(node.bounds());
                 if (match.matches()) {
                     width = Math.max(width, Integer.parseInt(match.group(3)));
                     height = Math.max(height, Integer.parseInt(match.group(4)));
@@ -551,7 +553,7 @@ public final class AndroidUiDriver {
     }
 
     private void tap(Node node) throws Exception {
-        Matcher matcher = UiHierarchy.matchBounds(node.bounds());
+        Matcher matcher = HierarchyDocument.matchBounds(node.bounds());
         if (!matcher.matches())
             throw new IllegalStateException("Invalid UI bounds: " + node.bounds());
         int x = (Integer.parseInt(matcher.group(1)) + Integer.parseInt(matcher.group(3))) / 2;
@@ -622,7 +624,7 @@ public final class AndroidUiDriver {
     }
 
     public boolean turnedTrumpIdentityMatchesVisibleCard(String xml) throws Exception {
-        return UiHierarchy.turnedTrumpIdentityMatchesVisibleCard(xml);
+        return CardHierarchy.turnedTrumpIdentityMatchesVisibleCard(xml);
     }
 
     public Bounds buttonBounds(String xml, String text) throws Exception {
@@ -630,7 +632,7 @@ public final class AndroidUiDriver {
     }
 
     public List<Bounds> handCardFaceBounds(String xml) throws Exception {
-        return UiHierarchy.handCardFaceBounds(xml);
+        return CardHierarchy.handCardFaceBounds(xml);
     }
 
     public record ElementSize(int widthPixels, int heightPixels) {}

@@ -58,6 +58,7 @@ Alegeți verificarea după contractul schimbat:
 | Populație, praguri și selecție | [EvidenceSelectionContractTest](src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java). |
 | Binare și compoziția modulelor | [CoreReportingConsumerContractTest](src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java). |
 | Capturi PNG prin API | [AndroidInlineScreenshotReportContractTest](src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java). |
+| Fragmentele ghidurilor pe JAR-urile fizice | [LibraryReadmeExamplesIntegrationTest](src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java). |
 
 [LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java) publică o selecție explicită prin activarea sa dedicată. [DeepSuiteExtentReportTest](src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java) compune o publicare agregată, cu precondiții și activare separate.
 
@@ -75,10 +76,6 @@ Componentele verifică selecția, adaptoarele și publicarea; integrarea verific
 
 ## Limite și calificare
 
-Responsabilul consumatorului trebuie să păstreze auditabilitatea și la intrări mari sau predominant cu eșec. Politica de selecție, compoziția și citirea dovezilor rămân mecanisme locale, iar randarea HTML aparține bibliotecii comune.
+Responsabilul consumatorului păstrează auditabilitatea și la intrări mari sau predominant cu eșec. [Feedback-ul de volum](../docs/feedback/ATF_Reporting.md#costul-intrărilor-consumatorului) deține calificarea costului, iar [predarea rezultatelor](../docs/reporting/ATF_Handoff.md) deține identitatea și refuzul provenienței contradictorii.
 
-- [Feedback-ul consumatorului](../docs/feedback/ATF_Reporting.md#costul-intrărilor-consumatorului) centralizează calificarea volumului intrărilor.
-- [Responsabilitățile pachetelor](../docs/governance/ATF_Packages.md) cer pași numiți după invariantă și păstrarea ordinii și verdictului la extracție.
-- [Predarea rezultatelor](../docs/reporting/ATF_Handoff.md) deține identitatea și refuzul provenienței contradictorii; replay-ul și interacțiunea nouă au scopuri distincte.
-
-[Politica prezentării](../docs/reporting/ATF_Presentation.md) deține selecția. Cerințele generice ale JAR-ului urmează [rutarea responsabilităților](../docs/feedback/README.md), împreună cu reproducerea și contractul așteptat.
+Pentru alt joc, [contractul transferului](../docs/learning/ATF_GameTransfer.md) separă semantica înregistrărilor de API-ul bibliotecii. Adaptorul nou păstrează comparațiile și proveniența; cerințele generice ale JAR-ului urmează [rutarea responsabilităților](../docs/feedback/README.md).

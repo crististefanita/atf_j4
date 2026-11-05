@@ -109,7 +109,7 @@ Politica primește mâna proprie și informația publică. Datele complete ale a
 |---|---|
 | Cum se ia decizia? | [Modelul deciziei](docs/ai/ATF_DecisionModel.md) și [configurarea regulilor](docs/ai/ATF_RulesConfiguration.md). |
 | Cum alegem datele utile? | [Corpusul](docs/learning/ATF_Corpus.md) și [selecția pentru învățare](docs/learning/ATF_Selection.md). |
-| Cum calificăm o schimbare? | [Protocolul offline](docs/learning/README.md) și [arhitectura AI](docs/ai/README.md). |
+| Cum construim și calificăm o schimbare? | [Evoluția AI și lecțiile transferabile](docs/learning/ATF_PolicyEvolution.md), apoi [arhitectura AI](docs/ai/README.md). |
 
 Evaluările au domenii și bugete declarate. Indiciile despre onoruri, estimările și certificatele finite sunt explicate separat în [ghidul tiparelor](docs/ai/ATF_HandPatternsRo.md).
 

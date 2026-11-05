@@ -1,0 +1,28 @@
+{
+  "state": "FROZEN_QUALIFIED_SNAPSHOT",
+  "sourceCommit": null,
+  "sourceFingerprint": "d9ea2d43cc88d6295fe8f7c7a1c4804fc3262f9d19486eca24625ba6dec999f6",
+  "archive": "C:\\work\\whist_back\\release-archives\\20261105T191620Z-before-010\\WhistLab-0.10.0-qualified-sources.zip",
+  "archiveSha256": "e66da44209f2a230a99193e44ce0e45bdd59819d46c971b801497e33e66f50db",
+  "archivedSourceFiles": 388,
+  "archiveCrcAndEverySourceHashVerified": true,
+  "liveAdditionalProductionInputsExcluded": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MatchSetup.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MenuScreens.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScoreScreens.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScreenViews.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/SetupScreen.java"
+  ],
+  "operatorRequirement": "Bind publication to this qualified source snapshot, or build and qualify a new APK after including later work",
+  "laterWorkspaceDevelopmentQualifiedByThisRelease": false,
+  "liveChangedQualifiedPathsExcluded": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/CompletedTrickPause.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java"
+  ],
+  "liveWorkspaceEquivalent": false
+}

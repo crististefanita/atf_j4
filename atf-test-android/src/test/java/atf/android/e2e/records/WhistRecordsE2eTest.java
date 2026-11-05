@@ -8,6 +8,37 @@ import org.junit.jupiter.api.Test;
 /** One real Android journey; controlled preconditions and actual card/UI actions remain separately identified. */
 @AndroidE2eTest
 public class WhistRecordsE2eTest {
+    @Test void releaseHistoryResumeKeepsTheCompletedLedgerAndBothLanguages() throws Throwable {
+        execute(new RecordsContext("release-history-resume",
+                "Whist Lab — reluarea istoricului pe binarul curent", "history-release-sanity"), c -> {
+            c.phase("SETUP — preserved data and current APK");
+            c.sandbox();
+            c.command("Set portrait resolution", "1080x2448", "shell", "wm", "size", "1080x2448");
+            c.command("Set portrait density", "440 dpi", "shell", "wm", "density", "440");
+            c.command("Enlarge text", "1.3", "shell", "settings", "put", "system", "font_scale", "1.3");
+            var fixture = RecordsFixtures.history();
+            c.inject(fixture, "release-history-24-jvm-played-hands");
+            var original = fixture.json().path("scores");
+            for (boolean romanian : new boolean[]{false, true}) {
+                c.phase("TEST BODY — resumed history " + (romanian ? "RO" : "EN"));
+                c.home(romanian ? "RO" : "EN");
+                c.tap(romanian ? "Reia partida" : "Resume game");
+                c.ui.awaitText(romanian ? "Partidă încheiată" : "Game complete", java.time.Duration.ofSeconds(15));
+                c.tap(romanian ? "Istoricul scorului" : "Score history");
+                String observed = c.ui.dump();
+                c.check("Current APK resumes the same completed ledger: " + (romanian ? "RO" : "EN"),
+                        RecordsContext.equal("Installed requested APK", c.setup.path("requestedApkSha256").asText(),
+                                c.raw("shell", "sha256sum", c.setup.path("installedPath").asText()).split("\\s+")[0]),
+                        RecordsContext.equal("All settled hands retained", original, c.state().path("scores")),
+                        RecordsContext.equal("Card-count heading", true, c.ui.hasText(observed, romanian ? "Cărți" : "Cards")),
+                        RecordsContext.equal("Bid heading", true, c.ui.hasText(observed, romanian ? "L" : "B")),
+                        RecordsContext.equal("Points heading", true, c.ui.hasText(observed, "P")),
+                        RecordsContext.equal("No third total heading", false, c.ui.hasText(observed, "T")),
+                        RecordsContext.equal("Human column remains readable", true, c.ui.hasText(observed, "HistUser")));
+            }
+        });
+    }
+
     @Test void compactHistoryAndSlashedContractsRemainReadable() throws Throwable {
         execute(new RecordsContext("compact-history-sanity",
                 "Whist Lab — istoric compact, contracte ratate și text mărit RO/EN", "compact-history"),c -> {
@@ -142,7 +173,9 @@ public class WhistRecordsE2eTest {
                         c.setup.path("installedPath").asText()+"; SHA-256="+c.setup.path("installedApkSha256").asText(),
                         c.setup.path("serial").asText(),c.setup.path("api").asText(),
                         "Declared journey: "+c.trace.name()+". Android API "+c.setup.path("api").asText()
-                                +"; viewports are recorded with each setup action. Full-history and final-card preconditions are prepared by the JVM engine; UI actions, comparisons and restoration have individual recorded verdicts. This is not a complete match played through UI. Overall outcome: "+c.trace.status()+".",
+                                +"; viewports are recorded with each setup action. Full-history and final-card preconditions are prepared by the JVM engine;"
+                                +" UI actions, comparisons and restoration have individual recorded verdicts."
+                                +" This is not a complete match played through UI. Overall outcome: "+c.trace.status()+".",
                         c.evidence,c.trace);
             }catch(Throwable reporting){if(failure==null)failure=reporting;else failure.addSuppressed(reporting);}
         }

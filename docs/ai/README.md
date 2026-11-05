@@ -4,6 +4,8 @@
 
 Politica transformă mâna proprie și informația publică într-o decizie legală, potrivită contractului rămas. Algoritmul și parametrii unei politici sunt identificați; îmbunătățirea lor urmează separat [ciclul de calificare offline](../learning/README.md).
 
+Pentru traseul complet, începeți cu [modul în care construim și îmbunătățim AI-ul](../learning/ATF_PolicyEvolution.md). În joc se actualizează contextul și estimările; între experimente se califică modificările regulilor, ponderilor și implementării.
+
 ## Ghiduri complementare
 
 | Mecanism | Ghid |

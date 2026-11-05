@@ -22,7 +22,7 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 - Configurarea unei partide noi aplică aceeași valoare de 5 sau 10 pentru bonusul și penalizarea după cinci mâini eligibile; profilurile istorice își păstrează configurația la restaurare.
 - [Motorul de reguli](game-core/README.md) descrie domeniul și diferențele față de celelalte variante.
 
-`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează cronologic licitația cunoscută, punctele și totalul pentru toate locurile în același tabel.
+`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează cronologic două coloane pentru fiecare jucător: licitația cunoscută și punctele mâinii. Bonusul sau penalizarea de serie subliniază punctele rândului respectiv; totalurile rămân în registru și în descrierea accesibilă.
 
 Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
 
@@ -60,6 +60,12 @@ APK instalat anterior au proveniențe distincte; versiunea sursei nu dovedește
 ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/testing/ATF_Android.md) definește verificarea binarului identificat.
 
 ## Construire și verificare
+
+| Scop | Intrare | Resurse |
+|---|---|---|
+| Regresie JVM rapidă | `:game-core:quickRegressionTest` prin `algorithm-build` | JDK și cache Gradle/JVM; fără dispozitiv Android. |
+| APK de dezvoltare | `:app:assembleDebug` | JDK, SDK Android și dependențele construirii. |
+| Colecție cu identitate și rezultat extern | [run-whist-collection.ps1](../scripts/run-whist-collection.ps1) | Configurația și precondițiile [colecției](../docs/testing/ATF_Collections.md). |
 
 Executați compilările într-o copie de lucru proprie din `%TEMP%`. Din acea copie
 a directorului `whist-lab-app`:
