@@ -27,7 +27,7 @@ class TableViewportObservationComponentTest {
     static Stream<Arguments> faults() {
         return Stream.of(Fault.MISSING_HUMAN,Fault.SHORT_SEAT,Fault.SHORT_FACE,Fault.SCROLL,
                 Fault.ZERO_TITLE,Fault.ZERO_TRUMP,Fault.OVERLAP,Fault.OBSTRUCTED_WINDOW,
-                Fault.MISSING_ACTION,Fault.ACTION_BELOW_NAME,Fault.CUT_ACTION)
+                Fault.MISSING_ACTION,Fault.ACTION_BELOW_NAME,Fault.CUT_ACTION,Fault.TALL_PLAYED_FACE)
                 .map(fault->Arguments.of(fault, switch(fault) {
                     case MISSING_HUMAN,SHORT_SEAT->"Complete seat frames in the same viewport";
                     case SHORT_FACE->"Whole hand retains complete faces on one row";
@@ -36,6 +36,7 @@ class TableViewportObservationComponentTest {
                     case OVERLAP->"Seats and all trick cards stay distinct";
                     case OBSTRUCTED_WINDOW->"Board and hand remain separate inside the display";
                     case MISSING_ACTION,ACTION_BELOW_NAME,CUT_ACTION->"Complete turn action stays above the player name";
+                    case TALL_PLAYED_FACE->"Requested played-card height: King of hearts";
                     default->throw new IllegalArgumentException();
                 }));
     }
@@ -94,6 +95,36 @@ class TableViewportObservationComponentTest {
                 "A playing table cannot silently lose both the active flag and action label");
         assertFalse(TableViewportObservation.inspectActions(driver(),play.replace("PLAY NOW\" content-desc", "BID NOW\" content-desc"),
                 profile).getFirst().passed());
+    }
+
+    @Test void occupiedSeatRegionIncludesTheActionWhileTheFrameKeepsItsOwnBounds() throws Exception {
+        var profile=profiles().getFirst();
+        String xml=new SyntheticTableHierarchy(profile).xml(13,false,1f,Fault.NONE);
+        var ui=driver();
+        String human=ui.descriptions(xml).stream().filter(text->text.startsWith("You. Bid ")).findFirst().orElseThrow();
+        var frame=ui.boundsForDescription(xml,human);
+        var action=ui.boundsForText(xml,"PLAY NOW");
+        var occupied=TableViewportObservation.occupiedSeatBounds(ui,xml,human);
+        assertEquals(action.top(),occupied.top());
+        assertEquals(frame.bottom(),occupied.bottom());
+        assertEquals(frame.left(),occupied.left());
+        int controlsBottom=action.top()-6,opponentGap=14;
+        assertTrue(occupied.top()-controlsBottom<opponentGap);
+        assertTrue(frame.top()-controlsBottom>opponentGap,"Ignoring the action reverses the same distance comparison");
+        String paused=xml.replace(" Current turn. PLAY NOW","");
+        assertEquals(frame,TableViewportObservation.occupiedSeatBounds(ui,paused,human.replace(" Current turn. PLAY NOW","")));
+    }
+
+    @Test void romanianActionsUseTheirOwnCompleteVisibleAndAccessibleLabels() throws Exception {
+        var profile=profiles().getFirst();
+        String xml=new SyntheticTableHierarchy(profile).xml(13,false,1f,Fault.NONE)
+                .replace(". Bid ",". Licitat ").replace(". Score ",". Scor ")
+                .replace(". Current turn.",". La rând.").replace("PLAY NOW","JOACĂ ACUM");
+        assertTrue(TableViewportObservation.inspectActions(driver(),xml,profile,1,true).getFirst().passed());
+        assertFalse(TableViewportObservation.inspectActions(driver(),xml.replace("JOACĂ ACUM","JOACĂ"),profile,1,true).getFirst().passed());
+        String bidding=xml.replace("JOACĂ ACUM\" content-desc","LICITEAZĂ\" content-desc")
+                .replace("La rând. JOACĂ ACUM","La rând. LICITEAZĂ ACUM");
+        assertTrue(TableViewportObservation.inspectActions(driver(),bidding,profile,1,true).getFirst().passed());
     }
 
     private static List<ResponsiveDisplayProfile> profiles() {

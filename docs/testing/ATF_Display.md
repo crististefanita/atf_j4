@@ -47,7 +47,7 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 - Matricea normală parcurge meniul, configurarea și situațiile controlate de afișare pe fiecare profil.
 - `-IncludeGameFlow` activează un singur flux normal pe primul profil.
 - Pentru fluxul de joc, `-Hands` acceptă 1–5 mâini și are implicit 1.
-- `-DenseLayout` selectează suita de afișare compactă: o mână de 13 cărți, 9 licitații și capturi după selectarea licitației. Profilele implicite verifică 320 dp, 353 dp, ROG 7 la 392 dp și tabletă la 600 dp; o rulare scurtă poate declara numai profilul compact.
+- `-DenseLayout` selectează suita de afișare compactă: o mână de 13 cărți, 9 licitații și capturi după selectarea licitației. Profilele implicite verifică lățimi logice de aproximativ 320, 353, 393 și 600 dp; o rulare scurtă poate declara numai profilul compact.
 
 ```powershell
 pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -DenseLayout -Profiles '720x1280@360'
@@ -70,6 +70,7 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - [Oracolul rasterului](../../atf-test-android/src/main/java/atf/android/evidence/DisplayRaster.java) identifică explicit modul fizic sau logic. O axă mixtă, o tăiere de un pixel ori o scalare arbitrară sunt respinse; coordonatele sunt mapate la rasterul observat.
 - La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Mâna are fețe de 98 dp; politica ferestrei păstrează fețele jucate de 71/78 dp și spațiul vertical de 2/4 dp.
 - Zona licitației ocupă banda liberă dintre locurile de sus și cel al omului. Dacă geometria oferă spațiu suplimentar, centrul se deplasează 62% din surplus către jucător; verificarea raportează și compară distanțele față de locurile adverse și cel uman. Țintele tactile rămân de minimum 48 dp.
+- Regiunea ocupată a unui loc include și acțiunea deasupra chenarului. Distanțele și intersecțiile licitației folosesc această regiune completă; comparația chenarelor după selectare păstrează separat conturul propriu al fiecărui jucător.
 - Rama atuului folosește aceeași fabrică de fundal și contur ca locul activ. E2E compară umplerea raster și verifică lizibilitatea titlului, simbolului și stării.
 - Auditul umplerii compară culoarea dominantă din interiorul ramelor, după maparea coordonatelor la raster. Componentele verifică textul suprapus punctului de eșantionare, culori diferite și schimbarea scării capturii.
 - [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) deține comparațiile geometrice reutilizate de E2E și componente. Probele simulate introduc cadre lipsă, fețe tăiate, scroll, suprapuneri și o singură carte deplasată.
@@ -79,6 +80,7 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - Fețele jucate păstrează pragul responsive de 71/78 dp; mâna și țintele tactile nu se micșorează. Testul confruntă intersecțiile, înălțimile complete și toate regiunile în același viewport, fără a uni capturi după scroll.
 - Eticheta turei se poate împărți pe rânduri, fără elipsă ori înălțime fixă. Locurile inactive rezervă aceeași regiune; pauza dintre levate nu afișează o acțiune falsă.
 - Chenarul păstrează regiunea de referință a antetului când acțiunea este mutată deasupra și îi rezervă o înălțime cu 25% mai mare, rotunjită în sus. Compoziția preferă un spațiu superior de 5% din masă, limitat la surplusul disponibil, pentru a păstra mâna separată.
+- Alegerea aranjării compacte ține cont și de scara fontului. Textul mărit pe un ecran înalt poate elimina decorul redundant înainte de a pierde o regiune; această alegere nu micșorează fețele mâinii sau țintele tactile.
 - Indicatorul atuului are lățimea de 57 dp; textul valorii se adaptează lățimii utile. Rezumatul licitației separă numărul depunerilor și totalul licitat printr-un rând nou.
 - La jocul normal, indicatorul turei și o carte legală trebuie să fie vizibile înaintea acțiunii. Sanity-ul compact nu acceptă derularea ca remediu pentru o regiune lipsă.
 - Simularea unei rezoluții logice nu dovedește proprietățile unui panou fizic de aceeași dimensiune.

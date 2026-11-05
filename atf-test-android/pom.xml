@@ -54,13 +54,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
                     <configuration><testIncludes>
-                        <testInclude>**/AndroidUiDriver.java</testInclude>
+                        <testInclude>**/e2e/driver/*.java</testInclude>
                         <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
                         <testInclude>**/display/component/*.java</testInclude>
                         <testInclude>**/display/profile/*ComponentTest.java</testInclude>
                         <testInclude>**/display/HandGeometryDriverComponentTest.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
-                        <testInclude>**/AndroidUiDriverComponentTest.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
                         <testInclude>**/FrameFillAuditComponentTest.java</testInclude>
                         <testInclude>**/TableViewportAuditComponentTest.java</testInclude>

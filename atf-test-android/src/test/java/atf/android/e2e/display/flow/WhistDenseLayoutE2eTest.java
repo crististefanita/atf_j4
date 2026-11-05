@@ -148,7 +148,7 @@ class WhistDenseLayoutE2eTest {
                 trace.finish(outcome); evidence.add(trace.manifest());
                 AndroidUiFlowReportPublisher.publish(output.resolve("dense-layout.html"), "ro.whistlab.app",
                         System.getProperty("atf.android.serial"), System.getProperty("atf.android.api"),
-                        "Deterministic display fixtures; no claim of a completed match or physical ROG testing.", evidence, trace);
+                        "Deterministic display fixtures; no claim of a completed match or physical-device testing.", evidence, trace);
             }
         }
     }

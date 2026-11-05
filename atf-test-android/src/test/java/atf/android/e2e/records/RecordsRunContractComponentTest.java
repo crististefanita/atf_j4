@@ -20,6 +20,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class RecordsRunContractComponentTest {
     @TempDir Path temp;
 
+    @Test void historyLabelsAreCardCountsRatherThanHandOrdinalsOrCombinedLabels() throws Exception {
+        String prefix="<hierarchy><node class=\"android.widget.TextView\" text=\"Hand\" bounds=\"[10,10][76,40]\"/>"
+                +"<node class=\"android.widget.ScrollView\" bounds=\"[10,70][500,300]\">";
+        String suffix="</node></hierarchy>";
+        String row="<node class=\"android.widget.TextView\" text=\"1\" bounds=\"[10,70][76,110]\"/>";
+        assertTrue(RecordsRunContract.historyCardCounts(prefix+row+suffix,"Hand",8));
+        for(String label:List.of("1 · 1","1.1","24","0","—")) {
+            assertFalse(RecordsRunContract.historyCardCounts(prefix+row.replace("text=\"1\"","text=\""+label+"\"")+suffix,"Hand",8));
+        }
+        assertFalse(RecordsRunContract.historyCardCounts(prefix+suffix,"Hand",8));
+        assertFalse(RecordsRunContract.historyCardCounts(prefix+row+suffix,"Mână",8));
+        assertTrue(RecordsRunContract.historyCardCounts((prefix+row+suffix).replace("Hand","Mână"),"Mână",8));
+    }
+
     @Test void changingOwnerAfterOneCommandStopsTextAndBinaryDispatch() throws Exception {
         Path path=reservation(true,"ours","device-a");var fake=new FakeDevice();
         var guarded=RecordsRunContract.guarded(fake,path,"ours","device-a");

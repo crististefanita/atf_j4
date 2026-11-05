@@ -52,6 +52,22 @@ Inventarul include rădăcinile Maven declarate și rădăcinile JVM suplimentar
 
 Politica nu permite mărirea automată a pragului sau generarea derogărilor pentru a obține succes. Probele negative verifică și mecanismul generic al excepțiilor: identitate exactă a fișierelor, motiv și acțiune de separare; o excepție devenită inutilă este respinsă. Aceste probe sintetice nu introduc derogări în proiect.
 
+## Declarațiile testelor
+
+[Parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java) folosește JDK-ul activ, în memorie, fără generare de clase sau procesarea adnotărilor. [Regulile nivelurilor](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerRules.java) consumă această structură și păstrează separat rezolvarea adnotărilor compuse.
+
+O inspecție deține și închide propriul manager de fișiere JDK, reutilizat între sursele aceleiași inspecții. Fiecare sursă are o sarcină și diagnostice noi; o eroare de sintaxă nu contaminează următoarea sursă, iar contextul închis nu mai poate fi folosit.
+
+| Frontieră | Contract |
+|---|---|
+| Declarație | Poziția adnotării față de modificatori, forma calificată și spațierea nu schimbă proprietarul. |
+| Execuție declarată | Metodele tipului și containerele `@Nested` identifică execuția; o clasă interioară folosită ca fixture nu etichetează automat exteriorul. |
+| Graf de adnotări | Importuri explicite sau cu wildcard, declarații reale și cicluri delimitate; ambiguitățile sunt refuzate. |
+| Surse invalide | O eroare de sintaxă produce diagnostic cu linie și coloană, fără inventar gol acceptat. |
+| Limită | Inspecția nu încarcă tipurile aplicației, nu execută JUnit și nu substituie compilarea sau rezolvarea completă a moștenirii. |
+
+[Componentele sintaxei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerSyntaxTest.java) verifică refuzurile și vecinii valizi, inclusiv exemple Java în șiruri care nu trebuie tratate ca declarații.
+
 ## Rulare izolată
 
 Din rădăcina proiectului:

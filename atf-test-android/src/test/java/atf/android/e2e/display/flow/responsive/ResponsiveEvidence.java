@@ -97,7 +97,7 @@ public final class ResponsiveEvidence {
             throws Exception {
         boolean passed = checks.stream().allMatch(AtfAssertion::passed);
         trace.checkpoint(
-                "TEST BODY",
+                trace.activePhaseName(),
                 trace.phaseSnapshots().stream().allMatch(value -> value.checkpoints().isEmpty())
                         ? "GIVEN"
                         : "AND",

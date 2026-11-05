@@ -11,12 +11,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 /** Small evaluator for the JSON Schema keywords used by ATF response contracts. */
 final class JsonSchemaValidator {
+    private final List<String> violations = new ArrayList<>();
+    private final Map<String, Pattern> patterns = new HashMap<>();
+
     private JsonSchemaValidator() { }
 
     static Result validate(Path schemaPath, JsonDocument document) throws IOException {
@@ -26,12 +30,12 @@ final class JsonSchemaValidator {
         var contractErrors = JsonSchemaCapabilities.inspect(schema);
         if (!contractErrors.isEmpty()) return new Result(contractErrors);
         if (!document.valid()) return new Result(List.of("instance: " + document.failure()));
-        List<String> violations = new ArrayList<>();
-        validateNode(document.root(), schema, "$", violations);
-        return new Result(violations);
+        var evaluation = new JsonSchemaValidator();
+        evaluation.validateNode(document.root(), schema, "$");
+        return new Result(evaluation.violations);
     }
 
-    private static void validateNode(JsonNode instance, JsonNode schema, String path, List<String> violations) {
+    private void validateNode(JsonNode instance, JsonNode schema, String path) {
         if (schema.isBoolean() && schema.booleanValue()) return;
         if (schema.isBoolean() && !schema.booleanValue()) {
             violations.add(path + ": schema rejected the value");
@@ -46,13 +50,13 @@ final class JsonSchemaValidator {
         if (enumValues != null && enumValues.isArray() && !contains(enumValues, instance)) {
             violations.add(path + ": value is not in enum");
         }
-        if (instance != null && instance.isObject()) validateObject(instance, schema, path, violations);
-        if (instance != null && instance.isArray()) validateArray(instance, schema, path, violations);
-        if (instance != null && instance.isTextual()) validateString(instance, schema, path, violations);
-        if (instance != null && instance.isNumber()) validateNumber(instance, schema, path, violations);
+        if (instance != null && instance.isObject()) validateObject(instance, schema, path);
+        if (instance != null && instance.isArray()) validateArray(instance, schema, path);
+        if (instance != null && instance.isTextual()) validateString(instance, schema, path);
+        if (instance != null && instance.isNumber()) validateNumber(instance, schema, path);
     }
 
-    private static void validateObject(JsonNode instance, JsonNode schema, String path, List<String> violations) {
+    private void validateObject(JsonNode instance, JsonNode schema, String path) {
         JsonNode required = schema.get("required");
         if (required != null && required.isArray()) {
             required.forEach(field -> {
@@ -67,7 +71,7 @@ final class JsonSchemaValidator {
             while (fields.hasNext()) {
                 var field = fields.next();
                 if (instance.has(field.getKey())) {
-                    validateNode(instance.get(field.getKey()), field.getValue(), path + "." + field.getKey(), violations);
+                    validateNode(instance.get(field.getKey()), field.getValue(), path + "." + field.getKey());
                 }
             }
         }
@@ -77,34 +81,35 @@ final class JsonSchemaValidator {
                 if (properties == null || !properties.has(name)) {
                     if (additional.isBoolean() && !additional.booleanValue())
                         violations.add(path + "." + name + ": additional property is not allowed");
-                    else validateNode(instance.get(name), additional, path + "." + name, violations);
+                    else validateNode(instance.get(name), additional, path + "." + name);
                 }
             });
         }
     }
 
-    private static void validateArray(JsonNode instance, JsonNode schema, String path, List<String> violations) {
+    private void validateArray(JsonNode instance, JsonNode schema, String path) {
         checkLimit(instance.size(), schema.get("minItems"), path + ": fewer items than minItems", violations, true);
         checkLimit(instance.size(), schema.get("maxItems"), path + ": more items than maxItems", violations, false);
         JsonNode items = schema.get("items");
         if (items != null) {
             for (int index = 0; index < instance.size(); index++) {
-                validateNode(instance.get(index), items, path + "[" + index + "]", violations);
+                validateNode(instance.get(index), items, path + "[" + index + "]");
             }
         }
     }
 
-    private static void validateString(JsonNode instance, JsonNode schema, String path, List<String> violations) {
+    private void validateString(JsonNode instance, JsonNode schema, String path) {
         int length = instance.textValue().codePointCount(0, instance.textValue().length());
         checkLimit(length, schema.get("minLength"), path + ": shorter than minLength", violations, true);
         checkLimit(length, schema.get("maxLength"), path + ": longer than maxLength", violations, false);
         JsonNode pattern = schema.get("pattern");
-        if (pattern != null && pattern.isTextual() && !Pattern.compile(pattern.textValue()).matcher(instance.textValue()).find()) {
+        if (pattern != null && pattern.isTextual()
+                && !patterns.computeIfAbsent(pattern.textValue(), Pattern::compile).matcher(instance.textValue()).find()) {
             violations.add(path + ": does not match pattern");
         }
     }
 
-    private static void validateNumber(JsonNode instance, JsonNode schema, String path, List<String> violations) {
+    private void validateNumber(JsonNode instance, JsonNode schema, String path) {
         if (schema.has("minimum") && instance.decimalValue().compareTo(schema.get("minimum").decimalValue()) < 0) {
             violations.add(path + ": less than minimum");
         }

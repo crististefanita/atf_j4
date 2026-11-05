@@ -90,4 +90,30 @@ final class RecordsRunContract {
         }
         return false;
     }
+
+    static boolean historyCardCounts(String hierarchy,String heading,int maximumCards) throws Exception {
+        var nodes=RecordsContext.xml(hierarchy).getElementsByTagName("node");
+        var bounds=java.util.regex.Pattern.compile("\\[(\\d+),(\\d+)]\\[(\\d+),(\\d+)]");
+        int left=-1,right=-1;
+        for(int index=0;index<nodes.getLength();index++) {
+            var node=(org.w3c.dom.Element)nodes.item(index);
+            if(!heading.equals(node.getAttribute("text")))continue;
+            var match=bounds.matcher(node.getAttribute("bounds"));
+            if(match.matches()){left=Integer.parseInt(match.group(1));right=Integer.parseInt(match.group(3));break;}
+        }
+        if(left<0||right<=left)return false;
+        int[] body=scrollBounds(hierarchy,"android.widget.ScrollView");int found=0;
+        for(int index=0;index<nodes.getLength();index++) {
+            var node=(org.w3c.dom.Element)nodes.item(index);
+            if(!node.getAttribute("class").equals("android.widget.TextView"))continue;
+            var match=bounds.matcher(node.getAttribute("bounds"));if(!match.matches())continue;
+            int x=Integer.parseInt(match.group(1)),y=Integer.parseInt(match.group(2));
+            int end=Integer.parseInt(match.group(3)),bottom=Integer.parseInt(match.group(4));
+            if(x!=left||end!=right||y<body[1]||bottom>body[3]||bottom<=y)continue;
+            String text=node.getAttribute("text");
+            if(!text.matches("[1-9][0-9]*")||Integer.parseInt(text)>maximumCards)return false;
+            found++;
+        }
+        return found>0;
+    }
 }

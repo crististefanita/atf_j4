@@ -5,7 +5,7 @@ import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 /** Independent measured observations, not an implementation of the application's layout algorithm. */
 final class SyntheticTableHierarchy {
     enum Fault { NONE, MISSING_HUMAN, SHORT_SEAT, SHORT_FACE, SCROLL, ZERO_TITLE, ZERO_TRUMP, OVERLAP, OBSTRUCTED_WINDOW,
-        MISSING_ACTION, ACTION_BELOW_NAME, CUT_ACTION }
+        MISSING_ACTION, ACTION_BELOW_NAME, CUT_ACTION, TALL_PLAYED_FACE }
     private static final String[] INDICES={"3♠","4♠","5♠","6♠","7♠","8♠","9♠","10♠","J♠","Q♥","K♣","A♦","2♥"};
     private final ResponsiveDisplayProfile profile;
     private final double density;
@@ -21,7 +21,7 @@ final class SyntheticTableHierarchy {
         xml.append("<node class=\"android.widget.FrameLayout\" resource-id=\"android:id/content\" bounds=\"[0,0][")
                 .append(profile.width()).append(',').append(bottom).append("]\">");
         xml.append(node("android.widget.TextView","Whist · Descending","",bounds(10,4,210,fault==Fault.ZERO_TITLE?0:30)));
-        xml.append(node("android.widget.FrameLayout","","Trump: Spades",bounds(260,4,50,fault==Fault.ZERO_TRUMP?0:34)));
+        xml.append(node("android.widget.FrameLayout","","Trump: Spades",bounds(260,4,57,fault==Fault.ZERO_TRUMP?0:34)));
         xml.append("<node class=\"").append(fault==Fault.SCROLL?"android.widget.ScrollView":"android.widget.FrameLayout")
                 .append("\" content-desc=\"Playing surface\" bounds=\"").append(bounds(10,45,300,385)).append("\">");
         int[][] seats={{133,355},{16,210},{133,50},{250,210}};
@@ -48,7 +48,8 @@ final class SyntheticTableHierarchy {
                 int height=profile.playedCardFaceHeightDp();
                 xml.append("<node class=\"android.widget.LinearLayout\" content-desc=\"AI").append(seat)
                         .append(" played ").append(descriptions[seat]).append("\" bounds=\"").append(bounds(x,y,42,height+2)).append("\">")
-                        .append(node("android.widget.TextView",labels[seat],"",bounds(x,y+1,42,height))).append("</node>");
+                        .append(node("android.widget.TextView",labels[seat],"",bounds(x,y+1,42,
+                                height+(seat==0&&fault==Fault.TALL_PLAYED_FACE?1:0)))).append("</node>");
             }
         }
         xml.append("</node><node class=\"android.widget.FrameLayout\" content-desc=\"Your hand, ").append(count)

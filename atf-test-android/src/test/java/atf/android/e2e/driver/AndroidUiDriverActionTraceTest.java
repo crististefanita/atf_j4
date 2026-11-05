@@ -1,7 +1,6 @@
 package atf.android.e2e.driver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import atf.android.AdbClient;
 import atf.reporting.contract.AtfReportStatus;
@@ -10,6 +9,7 @@ import atf.testkit.AtfComponentTest;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -18,18 +18,13 @@ class AndroidUiDriverActionTraceTest {
     @Test
     void recordsTheResolvedAndroidTapAndMeasuredDispatchWithoutInventingTheResult(@TempDir Path output)
             throws Exception {
-        AndroidUiDriver.Device device = new AndroidUiDriver.Device() {
-            @Override
-            public AdbClient.Result run(String... arguments) {
-                return new AdbClient.Result(0, "", List.of(arguments));
-            }
-
-            @Override
-            public AdbClient.BinaryResult runBinary(String... arguments) {
-                throw new UnsupportedOperationException("Binary capture is outside this interaction fixture");
-            }
-        };
-        AndroidUiDriver driver = new AndroidUiDriver(device, output);
+        var ticks = new AtomicLong();
+        List<Long> pauses = new ArrayList<>();
+        AndroidUiDriver.Device device = device(() -> ticks.addAndGet(37_000_000L));
+        AndroidUiDriver driver = new AndroidUiDriver(device, output, ticks::get, millis -> {
+            pauses.add(millis);
+            ticks.addAndGet(millis * 1_000_000L);
+        });
         List<atf.reporting.ui.model.AtfUiActionRecord> actions = new ArrayList<>();
         driver.recordActionsAs(actions::add);
         String hierarchy = "<hierarchy><node text=\"New game\" class=\"android.widget.Button\" "
@@ -43,9 +38,9 @@ class AndroidUiDriverActionTraceTest {
         assertEquals("New game", action.target());
         assertEquals("Dispatch a tap to the resolved target at its current accessibility bounds", action.expected());
         assertEquals("ADB accepted tap at 60,45", action.observed());
-        assertTrue(action.durationMillis() > 0);
-        assertTrue(action.durationMillis() < 500,
-                "The measured ADB dispatch must exclude the fixed post-tap UI settling delay");
+        assertEquals(37, action.durationMillis(), "Only ADB dispatch belongs in the action duration");
+        assertEquals(List.of(500L), pauses, "UI settling still follows the measured dispatch");
+        assertEquals(537_000_000L, ticks.get());
         assertEquals(AtfReportStatus.PASS, action.status());
         assertEquals(AtfUiEvidenceSource.ACTION, action.source());
     }
@@ -53,17 +48,7 @@ class AndroidUiDriverActionTraceTest {
     @Test
     void resolvesTheWholeHandViewportWhenNestedNodesShareItsAccessibilityDescription(@TempDir Path output)
             throws Exception {
-        AndroidUiDriver.Device device = new AndroidUiDriver.Device() {
-            @Override
-            public AdbClient.Result run(String... arguments) {
-                return new AdbClient.Result(0, "", List.of(arguments));
-            }
-
-            @Override
-            public AdbClient.BinaryResult runBinary(String... arguments) {
-                throw new UnsupportedOperationException("Binary capture is outside this bounds fixture");
-            }
-        };
+        AndroidUiDriver.Device device = device(() -> {});
         AndroidUiDriver driver = new AndroidUiDriver(device, output);
         String hierarchy = "<hierarchy><node class=\"android.widget.HorizontalScrollView\" "
                 + "content-desc=\"Your hand, 13 cards.\" bounds=\"[10,20][610,120]\">"
@@ -78,17 +63,7 @@ class AndroidUiDriverActionTraceTest {
     @Test
     void readsTheSelectedValueFromItsNamedSpinnerInsteadOfAnotherMatchingLabel(@TempDir Path output)
             throws Exception {
-        AndroidUiDriver.Device device = new AndroidUiDriver.Device() {
-            @Override
-            public AdbClient.Result run(String... arguments) {
-                return new AdbClient.Result(0, "", List.of(arguments));
-            }
-
-            @Override
-            public AdbClient.BinaryResult runBinary(String... arguments) {
-                throw new UnsupportedOperationException("Binary capture is outside this spinner fixture");
-            }
-        };
+        AndroidUiDriver.Device device = device(() -> {});
         AndroidUiDriver driver = new AndroidUiDriver(device, output);
         String hierarchy = "<hierarchy><node text=\"Players\" class=\"android.widget.Spinner\" "
                 + "content-desc=\"Players\" bounds=\"[10,20][210,70]\"><node text=\"6\" "
@@ -97,5 +72,19 @@ class AndroidUiDriverActionTraceTest {
                 + "</hierarchy>";
 
         assertEquals("6", driver.spinnerValue(hierarchy, "Players"));
+    }
+    private static AndroidUiDriver.Device device(Runnable dispatch) {
+        return new AndroidUiDriver.Device() {
+            @Override
+            public AdbClient.Result run(String... arguments) {
+                dispatch.run();
+                return new AdbClient.Result(0, "", List.of(arguments));
+            }
+
+            @Override
+            public AdbClient.BinaryResult runBinary(String... arguments) {
+                throw new UnsupportedOperationException("Capture is outside this hierarchy fixture");
+            }
+        };
     }
 }

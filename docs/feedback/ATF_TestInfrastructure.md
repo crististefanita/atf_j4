@@ -16,6 +16,5 @@ Responsabilii Kitului și ai validării API dețin aceste criterii ale adaptoare
 | Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
 |---|---|---|
 | P2 | [JsonSchemaCapabilities](../../atf-validation/src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) și [JsonSchemaValidator](../../atf-validation/src/main/java/atf/validation/contract/JsonSchemaValidator.java) nu declară un buget al adâncimii și volumului evaluării. | Probe controlate pentru adâncime, cardinalitate și repetarea regulilor; mediu și intrare identificate, refuz explicit și limite documentate în contract. |
-| P2 | Expresia regulată validată preliminar este recompilată la evaluarea valorilor repetate. | Model pregătit reutilizabil în aceeași evaluare, calificat prin paritate numerică, Unicode și refuzuri independente, apoi măsurarea costului. |
 
 [Kitul testelor](../../atf-test-kit/README.md) · [Validarea API](../../atf-validation/README.md) · [Guvernanță](ATF_Governance.md)

@@ -24,6 +24,38 @@ O modificare a testelor păstrează sensul contractului și motivul pentru care 
 [Guvernanța documentației](ATF_Documentation.md) · [Colecții](../testing/ATF_Collections.md)
 
 <details>
+<summary>Control activ: acceptanța nativă a acțiunilor și a istoricului</summary>
+
+```yaml
+testChanges:
+  - id: PORTRAIT-ACTION-REGIONS-AND-HISTORY
+    status: VERIFIED
+    base: 5ae98e8cc1863c7513f0d7b8396087f19c0bc6cb
+    expires: 2026-12-05
+    reason: Distanța se măsoară față de chenar și acțiunea lui observată, păstrând refuzul suprapunerilor; adaugă dimensiuni exacte, localizare, actori pregătiți legal și accesul la toate rândurile și coloanele.
+    proof: 'gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true; mvn -Dtest=AndroidDisplayComponentSuite,RecordsRunContractComponentTest,RecordsFixturesComponentTest,AndroidUiFlowReportPublisherTest test; mvn -Dtest=WhistRecordsE2eTest#historyPresentationAcrossDeclaredPortraitProfiles -Datf.android.enabled=true test'
+    paths:
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveMenuChecks.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveEvidence.java
+      - atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixtures.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsContext.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContractComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java
+```
+
+Un reper simulat arată cum ignorarea acțiunii inversează comparația distanțelor pe aceleași coordonate. Controalele negative păstrează erorile de text, actor, dimensiune și identitate a rândului; rularea nativă cere metadatele instalării, rezervarea și arhiva privată definite în [contractul Android](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii).
+
+</details>
+
+<details>
 <summary>Control activ: proporțiile mesei și acțiunea deasupra numelui</summary>
 
 ```yaml

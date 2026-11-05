@@ -90,6 +90,12 @@ Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea 
 
 ## Execuția delimitată a transportului
 
+[Driverul UI](src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) păstrează
+interacțiunile și jurnalul acțiunilor. [Captura](src/test/java/atf/android/e2e/driver/UiDeviceCapture.java)
+deține transferul ierarhiei și al PNG-ului, reîncercările și închiderea intervalului
+măsurat. O ierarhie rămasă de la alt ecran sau un PNG anterior nu poate demonstra
+succesul capturii curente; întreruperea păstrează cauza și marcajul firului.
+
 [AdbClient](src/main/java/atf/android/AdbClient.java) deleagă [execuția procesului](src/main/java/atf/android/process/CommandProcess.java) cu un singur termen monoton pentru pornire, terminare și drenarea ieșirilor. Întreruperea păstrează marcajul firului, iar erorile de citire nu sunt convertite în succes.
 
 - Operațiile native blocante folosesc fire daemon independente de planificatorul firelor virtuale.

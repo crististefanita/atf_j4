@@ -20,7 +20,7 @@ Integrarea locală păstrează verificatoarele adaptate și controalele lor nega
 - Rădăcina greșită, inventarul gol, documentele lipsă și căile din afara perimetrului sunt refuzate.
 - Probele negative detectează defectul injectat și acceptă documentul sănătos vecin, inclusiv pe căi cu spații și diacritice.
 - Descoperirea surselor și adnotările compuse păstrează aceeași semantică; comentariile și exemplele nu devin clase executabile.
-- Rezolvarea adnotărilor trebuie să acopere pozițiile legale față de modificatorii declarației; adaptoarele locale folosesc forma canonică până la calificarea completă a parserului comun.
+- Rezolvarea adnotărilor trebuie să acopere pozițiile legale față de modificatorii declarației; [adaptorul local](../governance/README.md#declarațiile-testelor) folosește structura sintactică JDK, iar un contract comun se califică prin aceleași controale independente.
 - Validarea nu rescrie documentele și nu relaxează regulile pentru a închide o revizie.
 
 ## Coeziunea și evoluția pachetelor

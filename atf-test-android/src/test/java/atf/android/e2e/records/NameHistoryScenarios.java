@@ -71,18 +71,32 @@ final class NameHistoryScenarios {
     }
 
     static void history(RecordsContext c) throws Exception {
-        c.phase("TEST BODY — complete chronological score table, all seats and both languages");
+        history(c,"complete chronological table");
+    }
+
+    static void history(RecordsContext c,String scope) throws Exception {
+        c.phase("TEST BODY — "+scope+", all seats and both languages");
         var before=c.scores();var fixture=RecordsFixtures.history();
-        c.inject(fixture,"history-24-jvm-played-hands");
+        c.inject(fixture,"history-"+scope.replaceAll("[^A-Za-z0-9]+","-")+"-24-jvm-played-hands");
         c.home("EN");c.tap("Resume game");c.ui.awaitText("Game complete",Duration.ofSeconds(15));
         c.tap("Score history");
         String first=description(fixture.json(),1,0,false);
         var reference=c.ui.boundsForDescription(c.ui.dump(),first);
+        var handHeading=c.ui.boundsForText(c.ui.dump(),"Hand");
+        var playerHeading=c.ui.boundsForText(c.ui.dump(),"HistUser");
+        String densityText=c.raw("shell","wm","density");
+        var dpi=java.util.regex.Pattern.compile("(?:Override|Physical) density:\\s*(\\d+)").matcher(densityText);
+        int density=0;while(dpi.find())density=Integer.parseInt(dpi.group(1));
+        if(density==0)throw new IllegalStateException("No observed Android density");
         int cellWidth=reference.right()-reference.left(),cellHeight=reference.bottom()-reference.top();
         c.check("First recorded hand is readable in the shared table",
                 equal("Declared precondition: 24 hands played by the JVM engine",24,fixture.game().scoreHistory().completedHands()),
                 equal("First hand, first seat, exact bid points and total",true,c.ui.hasDescription(c.ui.dump(),first)),
                 equal("Human column heading",true,c.ui.hasText(c.ui.dump(),"HistUser")),
+                equal("Hand column contains only card counts",true,RecordsRunContract.historyCardCounts(c.ui.dump(),"Hand",8)),
+                equal("Player separator width",Math.round(3*density/160f),playerHeading.left()-handHeading.right()),
+                equal("Player heading and first cell left edge",playerHeading.left(),reference.left()),
+                equal("Player heading and first cell right edge",playerHeading.right(),reference.right()),
                 equal("Final diagnostic fixture does not enter rankings",before,c.scores()));
         String last=description(fixture.json(),24,0,false);
         c.revealDescription(last,false,cellHeight);
@@ -102,6 +116,7 @@ final class NameHistoryScenarios {
         c.check("Romanian history uses the same complete table and values",
                 equal("Romanian hand heading",true,c.ui.hasText(c.ui.dump(),"Mână")),
                 equal("Romanian point heading",true,c.ui.hasText(c.ui.dump(),"Puncte")),
+                equal("Romanian hand column contains only card counts",true,RecordsRunContract.historyCardCounts(c.ui.dump(),"Mână",8)),
                 equal("First-hand values localized",true,c.ui.hasDescription(c.ui.dump(),description(fixture.json(),1,0,true))),
                 equal("History exploration does not change totals",totals(fixture.json()),totals(c.state())));
         c.revealDescription(description(fixture.json(),24,0,true),false,cellHeight);

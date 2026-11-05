@@ -59,7 +59,7 @@ final class RecordsContext {
         },leasePath,leaseId,setup.path("serial").asText());
         trace = new AndroidUiFlowTrace(output,id,name,
                 "WhistRecordsE2eTest","atf.android.e2e.records",PACKAGE,
-                List.of("android","e2e","api-28","records","series","controlled-preconditions"));
+                List.of("android","e2e","api-"+setup.path("api").asText(),"records","presentation","controlled-preconditions"));
         ui = new AndroidUiDriver(device,output);
         ui.recordActionsAs(trace::recordAction);
         ui.recordCapturesAs(trace::capture);
@@ -68,6 +68,12 @@ final class RecordsContext {
     }
 
     void phase(String name) throws Exception { verifyLease(); phase = name; trace.beginPhase(name); }
+    AndroidUiDriver scopedUi(String scope) throws Exception {
+        if(!scope.matches("[A-Za-z0-9.-]+")||scope.contains(".."))throw new IllegalArgumentException("Invalid capture scope");
+        var scoped=new AndroidUiDriver(device,output.resolve(scope));
+        scoped.recordActionsAs(trace::recordAction);scoped.recordCapturesAs(trace::capture);
+        return scoped;
+    }
     void verifyLease() throws Exception {
         RecordsRunContract.lease(leasePath,leaseId,setup.path("serial").asText());
     }
@@ -82,7 +88,12 @@ final class RecordsContext {
         result.requireSuccess();
     }
     String home(String language) throws Exception {
-        return ui.restartToActivity(PACKAGE,".MainActivity","--es","debug_language",language);
+        return home(language,false);
+    }
+    String home(String language,boolean holdAi) throws Exception {
+        return ui.restartToActivity(PACKAGE,".MainActivity","--es","debug_language",language,
+                "--ez","debug_hold_ai_turns",Boolean.toString(holdAi),
+                "--ez","debug_hold_ai_bids",Boolean.toString(holdAi));
     }
     ObjectNode state() throws Exception {
         String xml = raw("shell","run-as",PACKAGE,"cat","shared_prefs/whist_lab_game.xml");
@@ -207,6 +218,7 @@ final class RecordsContext {
         String size=override(setup.path("size").asText(),"size"),density=override(setup.path("density").asText(),"density");
         command("Restore display size",size,"shell","wm","size",size);
         command("Restore display density",density,"shell","wm","density",density);
+        command("Restore font scale",setup.path("fontScale").asText("1.0"),"shell","settings","put","system","font_scale",setup.path("fontScale").asText("1.0"));
         var receipt=RecordsFixtures.JSON.createObjectNode().put("restored",checks.stream().allMatch(AtfAssertion::passed));
         receipt.set("checks",RecordsFixtures.JSON.valueToTree(checks));
         Files.writeString(run.resolve("restoration.json"),receipt.toPrettyString());

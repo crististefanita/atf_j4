@@ -84,7 +84,13 @@ Un hash dovedește identitatea octeților, fără a substitui oracolul de domeni
 
 ## Implementare și verificare
 
-[AndroidUiFlowReportPublisher](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) proiectează checkpoint-urile prin API-ul UI al bibliotecii. [AndroidUiFlowTrace](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) păstrează ordinea și proprietatea datelor înaintea publicării.
+Datele capturate, publicarea și auditul au contracte separate:
+
+| Responsabil | Contract |
+|---|---|
+| [AndroidUiFlowTrace](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) | Păstrează ordinea și proprietatea datelor înaintea publicării. |
+| [AndroidUiFlowReportPublisher](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) | Proiectează checkpoint-urile prin API-ul UI al bibliotecii și gestionează sesiunea de publicare. |
+| [AndroidUiFlowReportAudit](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportAudit.java) | Confruntă raportul rezultat cu checkpoint-urile, acțiunile, comparațiile, intervalele și PNG-urile capturate; refuză asocierile incomplete sau divergente. |
 
 Controalele urmăresc proprietarul exact, multiplicitatea, ultima comparație, ordinea fragmentelor și bytes-ii PNG. Căutarea globală a unei valori sau a unui hash nu demonstrează asocierea ei cu scenariul corect.
 

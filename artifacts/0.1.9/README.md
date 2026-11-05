@@ -93,7 +93,7 @@ SDK-urile păstrează contractul versiunii 0.1.5 raportate funcționale de utili
 ## Limite
 
 - E2E-ul folosește APK-ul debug identificat prin hash și fixture-uri protejate de `BuildConfig.DEBUG`; APK-ul release primește separat smoke de instalare și pornire.
-- Emulatoarele API 28 și API 36 sunt identificate separat; override-urile logice nu reprezintă un test pe ROG 7 fizic.
+- Emulatoarele API 28 și API 36 sunt identificate separat; override-urile logice nu reprezintă un test pe un dispozitiv fizic.
 - Iterația califică afișarea și controalele selectate; nu joacă o partidă completă și nu califică randarea nativă a textului mărit.
 - HTML-ul, structura expandabilă și imaginile inline au fost verificate static, iar capturile au fost inspectate vizual. Expand/collapse-ul interactiv nu este confirmat: browserul conectat a respins protocolul `file://`.
 

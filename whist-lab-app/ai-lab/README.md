@@ -52,19 +52,15 @@ criteriu de departajare. Bugetele și excepția pentru posteriorul de o carte se
 citesc din metodele `bid` și `card` ale sursei active. Aceasta este utilitate în
 puncte, nu un certificat că licitația aleasă va fi realizată.
 
-Generatorul de distribuții folosește cărțile publice, cartea întoarsă și culorile demonstrate ca
-epuizate. Dacă respingerea aleatoare nu găsește o distribuție, varianta de rezervă
-fezabilă respectă necesarul și restricțiile publice. Reproductibilitatea privește
-aceeași intrare completă; invarianta față de schimbarea comună a scorurilor nu
-este presupusă.
+| Mecanism | Contract și limită |
+|---|---|
+| [IndependentDeals](src/main/java/ro/whistlab/coach/IndependentDeals.java) | Distribuțiile respectă cărțile publice, cartea întoarsă, necesarul și culorile demonstrate ca epuizate; varianta fezabilă de rezervă păstrează aceleași restricții. |
+| [IndependentContinuations](src/main/java/ro/whistlab/coach/IndependentContinuations.java) | Avansează lumea ipotetică, levatele și scorurile. Simularea deciziei și rezolvarea exhaustivă de diagnostic sunt intrări distincte; diagnosticul nu înlocuiește politica activă. |
+| [RolloutPlanner](src/main/java/ro/whistlab/coach/RolloutPlanner.java) | Modelează continuarea unei ipoteze; mâinile reale adverse nu intră în API-ul deciziei. [Referințele înghețate](../game-core/src/test/java/ro/whistlab/coach/baseline) rămân separate în testele motorului. |
+| [ContractGuarantee](src/main/java/ro/whistlab/coach/ContractGuarantee.java) | Poate înlocui propunerea numai pentru universul complet și continuările legale din domeniul finit permis; enumerarea incompletă sau bugetul epuizat păstrează propunerea inițială. |
 
-[ContractGuarantee](src/main/java/ro/whistlab/coach/ContractGuarantee.java) poate înlocui o propunere numai pe baza universului complet și a continuărilor legale din domeniul finit permis de cod.
-
-O enumerare incompletă sau un buget epuizat păstrează propunerea inițială. Lumile ipotetice folosite intern și mâinile reale de după partidă au roluri diferite; ultimele nu intră în API-ul deciziei.
-
-[RolloutPlanner](src/main/java/ro/whistlab/coach/RolloutPlanner.java) este un model de continuare. Politicile de referință înghețate sunt separate în [sursele de test ale motorului](../game-core/src/test/java/ro/whistlab/coach/baseline), fără a intra în sursele active ale jucătorului independent.
-
-Niciuna dintre acestea nu înseamnă un jucător perfect.
+Reproductibilitatea privește aceeași intrare completă; invarianta față de schimbarea
+comună a scorurilor nu este presupusă. Mecanismele nu certifică un jucător perfect.
 
 ## Verificare și experimente
 

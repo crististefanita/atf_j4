@@ -85,6 +85,7 @@ public final class MainActivity extends Activity {
     private boolean instructionsVisible;
     private boolean scoreDialogShowing;
     private boolean debugHoldAiTurns;
+    private boolean debugHoldAiBids;
     private WhistUiText copy;
     private int setupPlayerCount = 4;
     private GameMode setupMode = GameMode.OH_HELL;
@@ -122,6 +123,8 @@ public final class MainActivity extends Activity {
                 .anyMatch(key -> getIntent().getBooleanExtra(key, false));
         debugHoldAiTurns = BuildConfig.DEBUG
                 && getIntent().getBooleanExtra("debug_hold_ai_turns", false);
+        debugHoldAiBids = BuildConfig.DEBUG
+                && getIntent().getBooleanExtra("debug_hold_ai_bids", false);
         applyStandardWindowChrome();
         if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_replay", false)) {
             try {
@@ -601,8 +604,8 @@ public final class MainActivity extends Activity {
             return;
         }
         if (state.phase() == GamePhase.BIDDING) {
-            if (state.biddingSeat() == 0) {
-                renderBidding();
+            renderBidding();
+            if (state.biddingSeat() == 0 || debugHoldAiBids) {
                 return;
             }
             int seat = state.biddingSeat();

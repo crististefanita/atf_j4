@@ -95,6 +95,28 @@ class JsonSchemaContractTest {
         assertEquals(AtfReportStatus.FAIL, evaluate("{}", body, false).status());
         assertEquals(AtfReportStatus.FAIL, evaluate("true", body, false).status());
     }
+
+    @Test void repeatedUnicodePatternsKeepTheirOwnFailurePathsAndOrder() throws Exception {
+        String pattern = "{\"type\":\"string\",\"pattern\":\"(?U)^\\\\p{L}+$\"}";
+        String schema = "{\"properties\":{\"names\":{\"items\":" + pattern + "},\"code\":" + pattern
+                + ",\"extra\":{\"additionalProperties\":" + pattern + "}}}";
+        var result = evaluate(schema, "{\"names\":[\"Ana\",\"Ștefan\",\"1\",\"😀\"],\"code\":\"Élodie\",\"extra\":{\"a\":\"!\",\"b\":\"țară\"}}", false);
+        assertEquals(AtfReportStatus.FAIL, result.status());
+        assertEquals("$.names[2]: does not match pattern | $.names[3]: does not match pattern | $.extra.a: does not match pattern",
+                result.rows().getFirst().actual());
+    }
+
+    @Test void reusingTheSchemaPathDoesNotReuseAnotherEvaluationsPatternsOrViolations() throws Exception {
+        var first = evaluate("{\"pattern\":\"^A+$\"}", "\"AAA\"", false);
+        var changed = evaluate("{\"pattern\":\"^B+$\"}", "\"AAA\"", false);
+        var restored = evaluate("{\"pattern\":\"^A+$\"}", "\"AAA\"", false);
+        assertEquals(AtfReportStatus.PASS, first.status());
+        assertEquals(AtfReportStatus.FAIL, changed.status());
+        assertEquals("$: does not match pattern", changed.rows().getFirst().actual());
+        assertEquals(AtfReportStatus.PASS, restored.status());
+        assertEquals("schema matched", first.rows().getFirst().actual());
+    }
+
     private atf.validation.evaluation.ValidationDecision evaluate(String schema, String body, boolean warning) throws Exception {
         Path path = directory.resolve("contract.json");
         Files.writeString(path, schema);

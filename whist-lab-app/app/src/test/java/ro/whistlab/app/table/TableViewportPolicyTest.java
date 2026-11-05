@@ -7,6 +7,32 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class TableViewportPolicyTest {
+    @Test public void tallPortraitsReclaimDecorationWhenLargerTextExhaustsTheRoomyBudget() {
+        assertFalse(new TableViewportPolicy(818,1f).isCompact());
+        for(float fontScale:new float[]{1.3f,1.5f}) {
+            var viewport=new TableViewportPolicy(818,fontScale);
+            assertTrue(viewport.isCompact());
+            assertFalse(viewport.showPlayHint());
+            assertEquals("Only the physical short-window threshold changes card height",78,viewport.playedCardFaceHeightDp());
+            for(int players=3;players<=6;players++) {
+                var trick=TrickCardMetrics.forTable(players,353,fontScale,viewport);
+                int reference=ro.whistlab.app.seat.PlayerSeatMetrics.referenceFrameHeightPx(
+                        (int)Math.ceil(42*fontScale),(int)Math.ceil(16*fontScale),20);
+                int seat=ro.whistlab.app.seat.PlayerSeatMetrics.arrange(reference,(int)Math.ceil(13*fontScale),3).heightPx();
+                int available=818-(int)Math.ceil(90*fontScale)-HandLayoutMetrics.reservedHandHeightDp()-4;
+                int minimum=TableGeometry.minimumHeight(players,seat,trick.centerHeightDp(),viewport.regionGapDp());
+                assertTrue("Larger text retains the hand and all seat/action regions",minimum<=available);
+                var plan=TableGeometry.arrangeDisplay(353,available,players,
+                        TableLayoutMetrics.seatWidthDp(353,true),seat,trick.safeCenterWidthDp(),trick.centerHeightDp(),
+                        viewport.regionGapDp(),true,TableGeometry.CenterAlignment.BALANCED);
+                assertEquals(available,plan.seats().getFirst().bottom());
+            }
+        }
+        for(float invalid:new float[]{0,-1,Float.NaN,Float.POSITIVE_INFINITY}) {
+            assertThrows(IllegalArgumentException.class,()->new TableViewportPolicy(818,invalid));
+        }
+    }
+
     @Test public void tallerFramesAndLowerCompositionKeepEveryRegionInsideTheBoard() {
         for (int width : new int[]{280, 313, 353, 560, 760}) {
             for (int players = 3; players <= 6; players++) {

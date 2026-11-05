@@ -17,13 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.LongSupplier;
 import java.util.regex.Matcher;
 
-import javax.imageio.ImageIO;
 
 /** Small UI Automator bridge; resolves visible labels and bounds from each fresh hierarchy. */
 public final class AndroidUiDriver {
-    private static final String REMOTE_XML = "/sdcard/atf-j4-window.xml";
 
     public interface Device {
         AdbClient.Result run(String... arguments) throws IOException, InterruptedException;
@@ -32,8 +31,16 @@ public final class AndroidUiDriver {
                 throws IOException, InterruptedException;
     }
 
+    @FunctionalInterface
+    interface Delay {
+        void sleep(long millis) throws InterruptedException;
+    }
+
     private final Device adb;
     private final Path output;
+    private final UiDeviceCapture captures;
+    private final LongSupplier nanoTime;
+    private final Delay pause;
     private Consumer<AtfUiActionRecord> actionSink = ignored -> {};
     private java.util.function.Supplier<? extends AutoCloseable> captureScopes = () -> () -> {};
     private int actionSequence;
@@ -55,9 +62,16 @@ public final class AndroidUiDriver {
     }
 
     public AndroidUiDriver(Device adb, Path output) throws Exception {
+        this(adb, output, System::nanoTime, Thread::sleep);
+    }
+
+    AndroidUiDriver(Device adb, Path output, LongSupplier nanoTime, Delay pause) throws Exception {
         this.adb = Objects.requireNonNull(adb);
         this.output = output.toAbsolutePath().normalize();
+        this.nanoTime = Objects.requireNonNull(nanoTime);
+        this.pause = Objects.requireNonNull(pause);
         Files.createDirectories(this.output);
+        captures = new UiDeviceCapture(this.adb, this.output);
     }
 
     public void recordActionsAs(Consumer<AtfUiActionRecord> sink) {
@@ -69,31 +83,7 @@ public final class AndroidUiDriver {
     }
 
     public String dump() throws Exception {
-        Path local = output.resolve("current-window.xml");
-        IOException lastFailure = null;
-        for (int attempt = 0; attempt < 4; attempt++) {
-            try {
-                // uiautomator can exit 0 after "null root node" without rewriting the file.
-                // Never pull a hierarchy left behind by a previous screen.
-                adb.run("shell", "rm", "-f", REMOTE_XML).requireSuccess();
-                var dump = adb.run("shell", "uiautomator", "dump", REMOTE_XML);
-                if (dump.succeeded() && dump.output().contains("dumped to:")) {
-                    var pull = adb.run("pull", REMOTE_XML, local.toString());
-                    if (pull.succeeded() && Files.isRegularFile(local)) {
-                        String xml = Files.readString(local);
-                        if (xml.contains("<hierarchy")) return xml;
-                    }
-                }
-            } catch (InterruptedException interrupted) {
-                Thread.currentThread().interrupt();
-                throw interrupted;
-            } catch (IOException transferFailure) {
-                lastFailure = transferFailure;
-            }
-            Thread.sleep(350L * (attempt + 1));
-        }
-        throw new IllegalStateException(
-                "UI Automator did not produce a hierarchy: " + local, lastFailure);
+        return captures.dump();
     }
 
     public boolean hasText(String xml, String exactText) throws Exception {
@@ -324,7 +314,7 @@ public final class AndroidUiDriver {
             if (width == 0 || height == 0)
                 throw new IllegalStateException("No visible scroll bounds");
             int startX = width / 2, startY = height * 4 / 5, endX = width / 2, endY = height / 3;
-            long started = System.nanoTime();
+            long started = nanoTime.getAsLong();
             try {
                 adb.run(
                                 "shell", "input", "swipe", "" + startX, "" + startY, "" + endX,
@@ -347,13 +337,13 @@ public final class AndroidUiDriver {
                     "ADB accepted swipe " + startX + "," + startY + " → " + endX + "," + endY,
                     started,
                     AtfReportStatus.PASS);
-            Thread.sleep(250);
+            pause.sleep(250);
         }
         throw new IllegalStateException("Setup control not found after scrolling");
     }
 
     private void selectOpenedSpinnerOption(String expectedText) throws Exception {
-        long deadline = System.nanoTime() + Duration.ofSeconds(8).toNanos();
+        long deadline = nanoTime.getAsLong() + Duration.ofSeconds(8).toNanos();
         String latest;
         do {
             latest = dump();
@@ -369,8 +359,8 @@ public final class AndroidUiDriver {
                 tap(options.get(0));
                 return;
             }
-            Thread.sleep(250);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(250);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException(
                 "Spinner option '"
                         + expectedText
@@ -379,15 +369,15 @@ public final class AndroidUiDriver {
     }
 
     String awaitSpinnerSelection(String expected, Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = nanoTime.getAsLong() + timeout.toNanos();
         String latest;
         do {
             latest = dump();
             if (hasText(latest, "START")
                     && hasText(latest, expected)
                     && !hasClass(latest, "android.widget.CheckedTextView")) return latest;
-            Thread.sleep(250);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(250);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException(
                 "Spinner did not settle on '"
                         + expected
@@ -396,25 +386,25 @@ public final class AndroidUiDriver {
     }
 
     public String awaitText(String expected, Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = nanoTime.getAsLong() + timeout.toNanos();
         String latest;
         do {
             latest = dump();
             if (hasText(latest, expected)) return latest;
-            Thread.sleep(300);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(300);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException(
                 "UI did not show text '" + expected + "' within " + timeout);
     }
 
     public String awaitDescriptionContaining(String fragment, Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = nanoTime.getAsLong() + timeout.toNanos();
         String latest;
         do {
             latest = dump();
             if (hasDescriptionContaining(latest, fragment)) return latest;
-            Thread.sleep(250);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(250);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException(
                 "UI did not expose description containing '"
                         + fragment
@@ -425,30 +415,30 @@ public final class AndroidUiDriver {
     }
 
     public String awaitContains(String expected, Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = nanoTime.getAsLong() + timeout.toNanos();
         String latest;
         do {
             latest = dump();
             if (latest.contains(expected)) return latest;
-            Thread.sleep(300);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(300);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException(
                 "UI hierarchy did not contain '" + expected + "' within " + timeout);
     }
 
     String awaitAbsent(String absent, Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = nanoTime.getAsLong() + timeout.toNanos();
         String latest;
         do {
             latest = dump();
             if (!hasText(latest, absent)) return latest;
-            Thread.sleep(300);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(300);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException("UI still shows text '" + absent + "' after " + timeout);
     }
 
     public void back() throws Exception {
-        long started = System.nanoTime();
+        long started = nanoTime.getAsLong();
         try {
             adb.run("shell", "input", "keyevent", "4").requireSuccess();
         } catch (Exception failure) {
@@ -468,7 +458,7 @@ public final class AndroidUiDriver {
                 "ADB accepted keyevent 4",
                 started,
                 AtfReportStatus.PASS);
-        Thread.sleep(350);
+        pause.sleep(350);
     }
 
     String restartToMainMenu(String packageName) throws Exception {
@@ -500,7 +490,7 @@ public final class AndroidUiDriver {
     public String restartToActivity(String packageName, String activity, String... intentArguments)
             throws Exception {
         String target = packageName + "/" + activity;
-        long stopStarted = System.nanoTime();
+        long stopStarted = nanoTime.getAsLong();
         try {
             adb.run("shell", "am", "force-stop", packageName).requireSuccess();
             record(
@@ -521,7 +511,7 @@ public final class AndroidUiDriver {
             throw failure;
         }
 
-        long launchStarted = System.nanoTime();
+        long launchStarted = nanoTime.getAsLong();
         try {
             List<String> command =
                     new ArrayList<>(List.of("shell", "am", "start", "-W", "-n", target));
@@ -548,7 +538,7 @@ public final class AndroidUiDriver {
     }
 
     private String awaitMainMenu(Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
+        long deadline = nanoTime.getAsLong() + timeout.toNanos();
         String latest;
         do {
             latest = dump();
@@ -563,8 +553,8 @@ public final class AndroidUiDriver {
                 }
                 return latest;
             }
-            Thread.sleep(300);
-        } while (System.nanoTime() < deadline);
+            pause.sleep(300);
+        } while (nanoTime.getAsLong() < deadline);
         throw new IllegalStateException(
                 "Android app did not reach an unobstructed main menu within "
                         + timeout
@@ -590,179 +580,11 @@ public final class AndroidUiDriver {
     }
 
     public List<Path> capture(String label) throws Exception {
-        try (var capture = captureScopes.get()) {
-            String xml = dump();
-            Path xmlFile = output.resolve(label + ".xml");
-            Path imageFile = output.resolve(label + ".png");
-            Files.writeString(xmlFile, xml);
-            capturePng(imageFile);
-            return List.of(xmlFile, imageFile);
-        }
+        return captures.capture(label, captureScopes);
     }
 
     Path captureImage(String label) throws Exception {
-        try (var capture = captureScopes.get()) {
-            Path image = output.resolve(label + ".png");
-            capturePng(image);
-            return image;
-        }
-    }
-
-    private void capturePng(Path imageFile) throws Exception {
-        IOException lastFailure = null;
-        for (int attempt = 0; attempt < 3; attempt++) {
-            try {
-                Files.deleteIfExists(imageFile);
-                var capture = adb.runBinary("exec-out", "screencap", "-p");
-                capture.requireSuccess();
-                byte[] png = capture.output();
-                if (png.length >= 10_000) {
-                    Files.write(imageFile, png);
-                    return;
-                }
-                lastFailure =
-                        new IOException(
-                                "Screenshot looks incomplete after ADB exec-out: " + imageFile);
-            } catch (InterruptedException interrupted) {
-                Thread.currentThread().interrupt();
-                throw interrupted;
-            } catch (IOException transferFailure) {
-                lastFailure = transferFailure;
-            }
-            if (attempt < 2) Thread.sleep(250L * (attempt + 1));
-        }
-        throw lastFailure == null
-                ? new IOException("Screenshot capture failed: " + imageFile)
-                : lastFailure;
-    }
-
-    long countBrightNeutralPixels(Path image, double minVerticalFraction) throws Exception {
-        return ScreenshotAnalysis.countBrightNeutralPixels(image, minVerticalFraction);
-    }
-
-    long tapUntilHandChanges(Path before, Path after) throws Exception {
-        return tapUntilHandChangesDetailed(before, after).handChangedPixels();
-    }
-
-    CardPlayResult tapUntilHandChangesDetailed(Path before, Path after) throws Exception {
-        var initial = ImageIO.read(before.toFile());
-        if (initial == null) throw new IllegalStateException("Cannot decode screenshot: " + before);
-        int width = initial.getWidth(), height = initial.getHeight();
-        Path probe = output.resolve("card-probe.png");
-        List<CardTapAttempt> attempts = new ArrayList<>();
-        long handChanged = 0, tableChanged = 0;
-        // Observed 4-player hand: ten cards laid out as five slots on each row.
-        // The custom canvas exposes no accessible card nodes, so probe visible slot centers.
-        for (int row = 0; row < 2; row++) {
-            int y = (int) (height * (row == 0 ? 0.74 : 0.89));
-            for (int card = 0; card < 5; card++) {
-                int x = (int) (width * (card + 0.5) / 5.0);
-                // The score-sheet Next Hand button occupies this calibrated slot.
-                // Check the accessible hierarchy before probing it so a card search
-                // can never advance to another hand and mislabel that as card play.
-                if (row == 1 && card == 2) {
-                    List<String> visible = texts(dump());
-                    if (visible.stream()
-                            .anyMatch(
-                                    label ->
-                                            label.equalsIgnoreCase("Next Hand")
-                                                    || label.equalsIgnoreCase("Play Again"))) {
-                        return new CardPlayResult(
-                                List.copyOf(attempts),
-                                handChanged,
-                                tableChanged,
-                                -1,
-                                -1,
-                                false,
-                                true,
-                                visible);
-                    }
-                }
-                long started = System.nanoTime();
-                adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y))
-                        .requireSuccess();
-                Thread.sleep(400);
-                capturePng(probe);
-                var firstFrame = ImageIO.read(probe.toFile());
-                if (firstFrame == null)
-                    throw new IllegalStateException("Cannot decode screenshot: " + probe);
-                handChanged = countChangedPixels(initial, firstFrame, 0.67, 0.94);
-                tableChanged = countChangedPixels(initial, firstFrame, 0.20, 0.65);
-                if (handChanged > 3_000 && tableChanged > 3_000) {
-                    // Require a stable hand change and a matching table-area transition,
-                    // so a card-selection highlight alone cannot count as a played card.
-                    Thread.sleep(650);
-                    capturePng(probe);
-                    var stableFrame = ImageIO.read(probe.toFile());
-                    if (stableFrame == null)
-                        throw new IllegalStateException("Cannot decode screenshot: " + probe);
-                    handChanged = countChangedPixels(initial, stableFrame, 0.67, 0.94);
-                    tableChanged = countChangedPixels(initial, stableFrame, 0.20, 0.65);
-                    boolean accepted = handChanged > 3_000 && tableChanged > 3_000;
-                    attempts.add(
-                            new CardTapAttempt(
-                                    x,
-                                    y,
-                                    handChanged,
-                                    tableChanged,
-                                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
-                                    accepted));
-                    if (accepted) {
-                        Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                        Files.deleteIfExists(probe);
-                        return new CardPlayResult(
-                                List.copyOf(attempts),
-                                handChanged,
-                                tableChanged,
-                                x,
-                                y,
-                                true,
-                                false,
-                                List.of());
-                    }
-                } else {
-                    attempts.add(
-                            new CardTapAttempt(
-                                    x,
-                                    y,
-                                    handChanged,
-                                    tableChanged,
-                                    Duration.ofNanos(System.nanoTime() - started).toMillis(),
-                                    false));
-                }
-            }
-        }
-        Files.copy(probe, after, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        Files.deleteIfExists(probe);
-        return new CardPlayResult(
-                List.copyOf(attempts), handChanged, tableChanged, -1, -1, false, false, List.of());
-    }
-
-    record CardTapAttempt(
-            int x,
-            int y,
-            long handChangedPixels,
-            long tableChangedPixels,
-            long durationMillis,
-            boolean accepted) {}
-
-    record CardPlayResult(
-            List<CardTapAttempt> attempts,
-            long handChangedPixels,
-            long tableChangedPixels,
-            int acceptedX,
-            int acceptedY,
-            boolean accepted,
-            boolean handBoundary,
-            List<String> boundaryLabels) {}
-
-    private long countChangedPixels(
-            java.awt.image.BufferedImage left,
-            java.awt.image.BufferedImage right,
-            double firstRowFraction,
-            double lastRowFraction) {
-        return ScreenshotAnalysis.countChangedPixels(
-                left, right, firstRowFraction, lastRowFraction);
+        return captures.captureImage(label, captureScopes);
     }
 
     private void tap(Node node) throws Exception {
@@ -783,7 +605,7 @@ public final class AndroidUiDriver {
                 operation.equals("Select option")
                         ? "Dispatch a tap to the selected option at its current accessibility bounds"
                         : "Dispatch a tap to the resolved target at its current accessibility bounds";
-        long started = System.nanoTime();
+        long started = nanoTime.getAsLong();
         try {
             adb.run("shell", "input", "tap", Integer.toString(x), Integer.toString(y))
                     .requireSuccess();
@@ -798,7 +620,7 @@ public final class AndroidUiDriver {
                 "ADB accepted tap at " + x + "," + y,
                 started,
                 AtfReportStatus.PASS);
-        Thread.sleep(500);
+        pause.sleep(500);
     }
 
     private void record(
@@ -813,7 +635,7 @@ public final class AndroidUiDriver {
                 target,
                 expected,
                 observed,
-                Duration.ofNanos(System.nanoTime() - started).toMillis(),
+                Duration.ofNanos(nanoTime.getAsLong() - started).toMillis(),
                 status);
     }
 

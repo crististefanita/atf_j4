@@ -30,6 +30,21 @@ final class RecordsFixtures {
     }
 
     static Fixture series(int magnitude) {
+        var game=seriesStart(magnitude);
+        for (int seat = 0; seat < 4; seat++) game.submitBid(seat,new int[]{2,0,0,1}[seat]);
+        return new Fixture(game,encode(game,false));
+    }
+
+    static Fixture activeTurn(int seat,boolean bidding) {
+        if(seat<0||seat>3)throw new IllegalArgumentException("Unsupported table seat");
+        var game=seriesStart(10);
+        game.renameHuman("SeatUser");
+        for(int index=0;index<(bidding?seat:4);index++)game.submitBid(index,new int[]{2,0,0,1}[index]);
+        if(!bidding)for(int index=0;index<seat;index++)playFirst(game);
+        return new Fixture(game,encode(game,false));
+    }
+
+    private static GameSession seriesStart(int magnitude) {
         var config = GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 70240 + magnitude, true, magnitude);
         var hands = List.of(List.of(new Card(Suit.SPADES,14),new Card(Suit.SPADES,13)),
                 List.of(new Card(Suit.HEARTS,12),new Card(Suit.HEARTS,11)),
@@ -39,10 +54,8 @@ final class RecordsFixtures {
         var players = deal.players().stream().map(player -> new GameSession.PlayerState(player.seat(),
                 player.seat() == 0 ? "SeriesUser" : player.name(), player.human(), player.hand(), null,0,0,
                 player.seat() < 2 ? 4 : -4,0)).toList();
-        var game = GameSession.restoreComplete(new GameSession.SaveState(config,GamePhase.BIDDING,19,2,
+        return GameSession.restoreComplete(new GameSession.SaveState(config,GamePhase.BIDDING,19,2,
                 3,0,0,0,0,Trump.SPADES,-1,players,List.of(),List.of(),List.of(),new Card(Suit.SPADES,7)));
-        for (int seat = 0; seat < 4; seat++) game.submitBid(seat,new int[]{2,0,0,1}[seat]);
-        return new Fixture(game,encode(game,false));
     }
 
     static Fixture finalHumanCard() {

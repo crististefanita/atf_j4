@@ -19,13 +19,23 @@ class TestLayerGovernanceTest {
         var annotations = TestLayerRules.annotationSources(root);
         var matrix = new TreeMap<String, Set<String>>();
         var violations = new ArrayList<String>();
-        for (var file : AtfJavaSourceInventory.testSources(root)) {
-            String source = Files.readString(file);
-            if (!TestLayerRules.isConcreteExecutable(source)) continue;
-            var layers = TestLayerRules.declaredLayers(source, annotations);
-            if (layers.size() != 1) { violations.add(file + ": expected one layer, found " + layers); continue; }
-            String module = root.relativize(file).getName(0).toString();
-            matrix.computeIfAbsent(module, ignored -> new TreeSet<>()).add(layers.getFirst());
+        try (var parser = JavaTestDeclarations.open()) {
+            for (var sourceRoot : AtfJavaSourceInventory.roots(root)) {
+                if (!sourceRoot.test()) continue;
+                String module = GovernanceProject.relative(root, sourceRoot.module());
+                for (var file : AtfJavaSourceInventory.files(sourceRoot.directory())) {
+                    String source = Files.readString(file);
+                    for (var declaration : TestLayerRules.inspect(source, annotations, parser)) {
+                        if (!declaration.executable()) continue;
+                        var layers = declaration.layers();
+                        if (layers.size() != 1) {
+                            violations.add(file + "#" + declaration.type() + ": expected one layer, found " + layers);
+                            continue;
+                        }
+                        matrix.computeIfAbsent(module, ignored -> new TreeSet<>()).add(layers.getFirst());
+                    }
+                }
+            }
         }
         assertTrue(violations.isEmpty(), () -> String.join("\n", violations));
         assertFalse(matrix.isEmpty());

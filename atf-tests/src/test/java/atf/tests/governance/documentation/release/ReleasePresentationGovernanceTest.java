@@ -77,7 +77,7 @@ class ReleasePresentationGovernanceTest {
 
     @Test void testCountsAndUntestedDeviceStatementsStayInTheEvidenceFolder() {
         var edition = sample("summary", null);
-        for (String leak : List.of("73 teste trecute", "JUnit PASS", "E2E sanity", "Nu s-a testat pe ROG 7", "Not tested on device"))
+        for (String leak : List.of("73 teste trecute", "JUnit PASS", "E2E sanity", "Nu s-a testat pe dispozitiv", "Not tested on device"))
             assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "- " + leak)).contains("NOTE-AUDIT-DETAILS"), leak);
     }
 

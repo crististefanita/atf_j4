@@ -2,6 +2,7 @@ package atf.android.e2e.support;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -123,36 +124,48 @@ class AndroidUiFlowReportPublisherTest {
                 "Six-player setup is visible and ready", List.of(screenshot, hierarchy, trace.manifest()), trace);
 
         String html = Files.readString(report);
-        assertTrue(html.contains("GIVEN"));
-        assertTrue(html.contains("Configure the six-player game"));
-        assertTrue(html.contains("class=\"atf-ui-action-sequence\""));
-        assertTrue(html.contains("class=\"atf-ui-action-table"));
-        assertTrue(html.contains("UI action sequence (2 entries)"));
-        assertTrue(html.contains("text=New game"));
-        assertTrue(html.contains("class=\"atf-ui-observations\""));
-        assertTrue(html.contains("class=\"atf-ui-assertions\""));
-        assertTrue(html.contains("Selected player count is six"));
-        assertTrue(html.contains("<th>EXPECTED</th><th>ACTUAL</th><th>RESULT</th>"));
-        assertTrue(html.contains("visible label: Players = 6"));
-        assertTrue(html.contains("href=\"data:image/png;base64," + ONE_PIXEL_PNG + "\""));
-        assertTrue(html.contains("data-featherlight=\"image\""));
-        int actionDisclosure = html.indexOf("<details class=\"atf-ui-action-sequence\"");
-        int screenshotLink = html.indexOf("href=\"data:image/png;base64," + ONE_PIXEL_PNG + "\"");
-        int actionDisclosureEnd = html.indexOf("</details>", actionDisclosure);
-        assertTrue(actionDisclosure >= 0 && screenshotLink > actionDisclosure
-                && screenshotLink < actionDisclosureEnd,
-                "The inline screenshot must be inside the matching collapsed action table");
-        assertTrue(html.contains("bidding-state.xml"));
-        assertTrue(html.contains("<td>FLOW ID</td>"));
-        assertTrue(html.contains("<td>CHECKPOINT COUNT</td><td>1</td>"));
-        assertTrue(html.contains("<td>INLINE CHECKPOINT SCREENSHOTS</td><td>1</td>"));
-        assertTrue(html.contains("android-report-contract"));
-        assertFalse(html.contains("<details class=\"atf-ui-action-sequence\" open"));
-        assertFalse(html.contains("<details class=\"atf-ui-observations\" open"));
-        assertFalse(html.contains("<details class=\"atf-ui-assertions\" open"));
-        var fullObservation = Jsoup.parse(html).selectFirst("details.atf-ui-observations details.atf-ui-value pre");
-        assertNotNull(fullObservation, "Long observations must retain their nested complete-value disclosure");
-        assertEquals(completeObservation, fullObservation.wholeText());
+        String spacedMarkup = html
+                .replace("<details class=\"atf-ui-action-sequence\"",
+                        "<details data-format-fixture=\"true\" class=\"atf-ui-action-sequence\"")
+                .replace("<th>EXPECTED</th><th>ACTUAL</th>",
+                        "<th data-format-fixture=\"true\">EXPECTED</th>\n<th>ACTUAL</th>")
+                .replace("<td>CHECKPOINT COUNT</td><td>1</td>",
+                        "<td>CHECKPOINT COUNT</td>\n<td>1</td>");
+        assertNotEquals(html, spacedMarkup, "The reader control must exercise different markup");
+        for (String markup : List.of(html, spacedMarkup)) {
+            var document = Jsoup.parse(markup);
+            assertTrue(document.select("span").stream().anyMatch(span -> span.wholeText()
+                    .equals("GIVEN Configure the six-player game")));
+            var actions = document.selectFirst("details.atf-ui-action-sequence");
+            assertNotNull(actions);
+            assertNotNull(actions.selectFirst("table.atf-ui-action-table"));
+            assertTrue(actions.selectFirst("summary").text().contains("UI action sequence (2 entries)"));
+            assertTrue(actions.text().contains("text=New game"));
+            var comparisons = document.selectFirst("details.atf-ui-assertions");
+            assertNotNull(comparisons);
+            assertTrue(comparisons.text().contains("Selected player count is six"));
+            var headers = comparisons.select("thead th").eachText();
+            assertTrue(headers.size() >= 3, "The comparison must retain its three result columns");
+            assertEquals(List.of("EXPECTED", "ACTUAL", "RESULT"),
+                    headers.subList(headers.size() - 3, headers.size()));
+            var observations = document.selectFirst("details.atf-ui-observations");
+            assertNotNull(observations);
+            assertTrue(observations.text().contains("visible label: Players = 6"));
+            var screenshotLink = actions.selectFirst("a[data-atf-screenshot]");
+            assertNotNull(screenshotLink, "The matching action disclosure must own the screenshot");
+            assertEquals("data:image/png;base64," + ONE_PIXEL_PNG, screenshotLink.attr("href"));
+            assertEquals("image", screenshotLink.attr("data-featherlight"));
+            assertTrue(document.text().contains("bidding-state.xml"));
+            assertEquals("android-report-contract", receiptValue(document, "FLOW ID"));
+            assertEquals("1", receiptValue(document, "CHECKPOINT COUNT"));
+            assertEquals("1", receiptValue(document, "INLINE CHECKPOINT SCREENSHOTS"));
+            for (var disclosure : List.of(actions, observations, comparisons)) {
+                assertFalse(disclosure.hasAttr("open"), "UI evidence must start collapsed");
+            }
+            var fullObservation = observations.selectFirst("details.atf-ui-value pre");
+            assertNotNull(fullObservation, "Long observations must retain their complete value");
+            assertEquals(completeObservation, fullObservation.wholeText());
+        }
         Files.writeString(report, html.replace("final-boundary-retained", "final-boundary-corrupted"));
         assertThrows(IllegalStateException.class, () -> AndroidUiFlowReportPublisher.auditPublishedReport(
                 report, trace, AtfReportConfigurationLoader.load().reportingSettings()));
@@ -317,5 +330,12 @@ class AndroidUiFlowReportPublisherTest {
             for (int x = 0; x < image.getWidth(); x++) image.setRGB(x, y, argb);
         }
         assertTrue(ImageIO.write(image, "png", path.toFile()), "The JDK PNG writer must be available");
+    }
+    private static String receiptValue(org.jsoup.nodes.Document document, String label) {
+        return document.select("tr").stream()
+                .filter(row -> row.childrenSize() == 2 && row.child(0).text().equals(label))
+                .map(row -> row.child(1).text())
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Missing Android execution receipt field: " + label));
     }
 }

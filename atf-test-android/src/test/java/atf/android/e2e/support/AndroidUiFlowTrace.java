@@ -132,6 +132,7 @@ public final class AndroidUiFlowTrace {
 
     public String id() { return id; }
     public String name() { return name; }
+    public synchronized String activePhaseName() { return required(activePhase,"active phase"); }
     public String testClass() { return testClass; }
     public String testPackage() { return testPackage; }
     public String appPackage() { return appPackage; }

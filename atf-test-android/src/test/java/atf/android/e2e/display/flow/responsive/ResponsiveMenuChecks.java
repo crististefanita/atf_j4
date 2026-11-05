@@ -315,8 +315,15 @@ public final class ResponsiveMenuChecks {
         for (int bid : bids) controls.add(ui.buttonBounds(xml, Integer.toString(bid)));
         AndroidUiDriver.Bounds submit = ui.buttonBounds(xml, "Place bid");
         controls.add(submit);
+        List<AndroidUiDriver.Bounds> seatRegions=new ArrayList<>();
+        String humanDescription=null;
+        for(String description:ResponsiveTableState.seatDescriptions(ui,xml)) {
+            seatRegions.add(atf.android.e2e.display.support.TableViewportObservation.occupiedSeatBounds(ui,xml,description));
+            if(description.startsWith("You. Bid "))humanDescription=description;
+        }
+        if(humanDescription==null)throw new IllegalStateException("Human seat is missing from the bidding fixture");
         int overlaps = 0;
-        List<AndroidUiDriver.Bounds> occupied = new ArrayList<>(seats);
+        List<AndroidUiDriver.Bounds> occupied = new ArrayList<>(seatRegions);
         occupied.addAll(controls);
         for (int first = 0; first < occupied.size(); first++) {
             for (int second = first + 1; second < occupied.size(); second++) {
@@ -324,7 +331,7 @@ public final class ResponsiveMenuChecks {
             }
         }
         var board = ui.boundsForDescription(xml, "Playing surface");
-        AndroidUiDriver.Bounds human = ui.boundsForDescriptionContaining(xml, "You. Bid ");
+        AndroidUiDriver.Bounds human = atf.android.e2e.display.support.TableViewportObservation.occupiedSeatBounds(ui,xml,humanDescription);
         int controlsTop =
                 controls.stream()
                         .mapToInt(AndroidUiDriver.Bounds::top)
@@ -336,7 +343,7 @@ public final class ResponsiveMenuChecks {
                         .max()
                         .orElse(Integer.MIN_VALUE);
         int nearestOpponentBottom =
-                seats.stream()
+                seatRegions.stream()
                         .filter(seat -> seat.bottom() <= human.top())
                         .mapToInt(AndroidUiDriver.Bounds::bottom)
                         .max()
@@ -379,7 +386,7 @@ public final class ResponsiveMenuChecks {
                                         overlaps == 0),
                                 check(
                                         "Nine-bid zone is closer to the human seat",
-                                        "opponent gap > human gap",
+                                        "opponent gap > human occupied-region gap, including its action label",
                                         "opponent="
                                                 + opponentGap
                                                 + " px; human="

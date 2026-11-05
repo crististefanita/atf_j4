@@ -4,6 +4,26 @@
 
 Motorul deține datele partidei, iar aplicația Android deține persistența și prezentarea lor. Modificările interfeței se califică pe binarul efectiv instalat, cu starea și scopul scenariului declarate.
 
+## Contract prioritar de afișaj portret
+
+Cerințele sunt definite prin geometrie și setări Android măsurabile. Configurația comercială a unui telefon nu este un criteriu de selecție sau acceptare.
+
+| Prioritate | Suprafață | Cerință și criteriu de acceptare |
+|---|---|---|
+| P0 | Identitatea profilului | Folosiți rezoluție, DPI logic, scară de text, insets și orientare. Eliminați mărcile și modelele din cerințe, ghiduri, aliasuri, nume de teste și textele rapoartelor active; nici RAM-ul, stocarea sau culoarea comercială nu definesc layout-ul. |
+| P0 | Geometrie de referință | Portret 1080×2448 px, raport 20,4:9. Măsurați separat fereastra utilă după bare și decupaj; rezoluția completă nu este viewport-ul aplicației. |
+| P1 | Densitate | Citiți DPI-ul logic din Android; PPI-ul fizic nu îl înlocuiește. Matricea de regresie include 420/440/480 dpi, aproximativ 411/393/360 dp lățime înainte de insets; acestea sunt setări de test, fără presupunerea unei valori implicite a dispozitivului. |
+| P1 | Text mărit | Componentele acoperă scalele 1,0/1,15/1,3/1,5. Selectați pentru sanity nativ scara normală și cel puțin o scară mărită; decorul se adaptează înaintea pierderii conținutului. |
+| P0 | Acțiune și nume | Acțiunea integrală este centrată deasupra numelui jucătorului activ, la fiecare loc și în ambele faze. Nicio intersecție cu rame, cărți ori controale; spațiul rezervat previne deplasarea mesei la schimbarea actorului. |
+| P0 | Mână și masă | Primul și ultimul indice de carte sunt lizibile, mâna și toate locurile se văd simultan în profilul declarat, iar țintele tactile păstrează minimum 48 dp. O carte sau un chenar tăiat nu se validează prin simpla prezență în XML. |
+| P0 | Istoric | Numărul cărților este singura valoare vizibilă a mâinii; identitatea cronologică rămâne accesibilă. Antetele, separatorul de 3 dp și grupurile licitat–puncte–total sunt aliniate; derularea ajunge la ultima mână și ultimul jucător fără pierderea valorilor. |
+| P1 | Verificare rapidă | Geometria, rotunjirile, textele și observațiile defecte au teste de componentă. E2E restrâns verifică randarea reală, actorii, derularea și lizibilitatea în RO/EN. |
+| P1 | Dovezi | Captura PNG nativă și XML-ul aparțin aceleiași stări; raportul include imaginile inline base64, parametrii efectivi și hash-ul APK-ului. Emularea geometriei și acceptanța pe un dispozitiv fizic rămân calificări distincte. |
+
+Nu rescrieți identitatea tehnică observată în dovezile brute pentru a anonimiza un profil. Cerințele și denumirile active folosesc geometria; observațiile originale își păstrează proveniența.
+
+[Politicile și oracolele display](../testing/ATF_DisplayComponents.md) · [Scenariul nativ](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii)
+
 ## Diferență de contract: levatele istorice
 
 [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează licitațiile și soldurile după mâini; punctele se derivă din diferența soldurilor. Levatele fiecărui loc nu sunt stocate separat în acest registru.

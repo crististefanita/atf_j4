@@ -46,6 +46,8 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 
 - Locul omului rămâne sud; poziția cărții jucate depinde de locul actorului și de ordinea levatei.
 - Licitarea și levata folosesc regiunea centrală; [TableViewportPolicy](table/TableViewportPolicy.java) adaptează spațiul decorativ și înălțimea fețelor pentru ferestre scunde.
+- Bugetul decorativ ține cont de înălțimea utilă și de scara fontului. Aranjarea compactă poate fi necesară și pe un ecran înalt cu text mărit; dimensiunea cărților din mână și a țintelor tactile rămâne constantă.
+- Fiecare tură de licitare este randată înaintea calculului automat. Controalele omului sunt inactive cât licitează un adversar; eticheta de acțiune rămâne asociată locului care deține tura.
 - Masa folosește o fereastră cu înălțime măsurată, fără scroll vertical. Profilul compact decalează crucea levatei; acțiunea turei are o regiune proprie deasupra numelui, cu înălțimea integrală a textului și spațiu rezervat între ture.
 - Evantaiul ține cont de lățime, densitate, scara textului și banda măsurată a indicelui; o mână mai lată păstrează accesul orizontal. Masa nu recuperează prin scroll vertical o regiune tăiată.
 - Selecția unei cărți rezervă spațiul ridicării și păstrează locul omului; decorul cărții aparține [CardFaceBackground](cards/CardFaceBackground.java).
@@ -83,6 +85,7 @@ Componentele geometrice verifică relații calculate. Captura fizică și intera
 
 - Fixture-urile verifică separat mâna maximă de 13 cărți și o levată completă cu 12 cărți rămase. Fiecare verificare cere toate chenarele în același viewport; [matricea de ecrane](../../../../../../../../docs/testing/ATF_Display.md) deține criteriile.
 - [DisplayFixtureDeals](fixtures/DisplayFixtureDeals.java) furnizează date deterministe, activate prin căile protejate de `BuildConfig.DEBUG` din activitate. Aceste stări servesc acceptanței și se disting de distribuțiile unei partide normale.
+- `debug_hold_ai_bids` oprește calculul licitației după randare; `debug_hold_ai_turns` oprește avansarea cărților AI. Ambele controale sunt disponibile numai în build-ul debug și păstrează fazele distincte ale acceptanței.
 
 [Aplicația](../../../../../../../README.md) · [Testarea Android](../../../../../../../../docs/testing/ATF_Android.md) · [Regulile jocului](../../../../../../../../docs/game/README.md)
 

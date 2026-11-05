@@ -28,6 +28,7 @@ flowchart LR
 - Calea invalidă, absența și valoarea prezentă sunt distincte; `null` explicit este prezent.
 - Căile simple și JSON Pointer au un subset explicit; selecțiile generale, filtrele și căutarea recursivă sunt refuzate.
 - Schema este verificată preliminar, inclusiv în ramuri neatinse de instanță; cuvintele-cheie necunoscute sunt refuzate.
+- Evaluarea unei scheme are propriile abateri și expresii regulate compilate; aceeași expresie se reutilizează pentru valorile repetitive, fără cache comun între cereri sau după modificarea fișierului.
 - Politica strictă produce eșec, iar politica de avertizare păstrează comparațiile negative și statutul `WARNING`.
 
 <details>
@@ -79,6 +80,6 @@ mvn -B -pl atf-validation -am test
 
 Subsetul JSON este explicit și refuză construcțiile nesuportate. Următoarea calificare trebuie să delimiteze costul prevalidării și al evaluării pe structuri mari, adânci sau repetitive.
 
-- [Feedback-ul validării](../docs/feedback/ATF_TestInfrastructure.md#costul-validării-api) deține calificarea bugetelor și reutilizarea expresiilor validate. Corectitudinea subsetului și costul pe structuri mari ori adânci au verificări distincte.
+- [Feedback-ul validării](../docs/feedback/ATF_TestInfrastructure.md#costul-validării-api) deține calificarea bugetelor pe volum și adâncime. Reutilizarea expresiilor din aceeași evaluare păstrează prevalidarea, semantica regex Java, căile și ordinea abaterilor; componentele verifică și independența evaluărilor succesive.
 
 - Rezultatul performanței și identitatea intrărilor se păstrează extern. Optimizarea se acceptă după paritate semantică și măsurare, cu publicarea separată de evaluarea valorilor integrale.

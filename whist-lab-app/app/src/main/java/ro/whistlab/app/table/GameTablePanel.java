@@ -93,7 +93,8 @@ public final class GameTablePanel extends LinearLayout {
             WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused) {
         super(context);
         this.context = context;
-        this.viewport = new TableViewportPolicy(WindowContent.heightDp(context));
+        this.viewport = new TableViewportPolicy(WindowContent.heightDp(context),
+                getResources().getConfiguration().fontScale);
         this.state = state;
         this.copy = copy;
         this.bidding = bidding;
@@ -187,6 +188,8 @@ public final class GameTablePanel extends LinearLayout {
                 choice.setStateListAnimator(null);
                 choice.setTag("bid-choice:" + bid);
                 choice.setSelected(bid == selectedBid);
+                choice.setEnabled(state.biddingSeat() == 0);
+                choice.setAlpha(state.biddingSeat() == 0 ? 1f : 0.5f);
                 choice.setFocusable(true);
                 styleBidChoice(choice, bid == selectedBid);
                 choice.setOnClickListener(ignored -> selectBid(bid));
@@ -214,6 +217,8 @@ public final class GameTablePanel extends LinearLayout {
         submit.setTextColor(Color.rgb(245, 248, 240));
         submit.setContentDescription(copy.placeBid());
         submit.setTag("btn_submit_bid");
+        submit.setEnabled(state.biddingSeat() == 0);
+        submit.setAlpha(state.biddingSeat() == 0 ? 1f : 0.5f);
         submit.setMinimumWidth(0);
         submit.setMinHeight(dp(48));
         submit.setStateListAnimator(null);
@@ -226,6 +231,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     private void selectBid(int bid) {
+        if (state.biddingSeat() != 0) return;
         selectedBid = bid;
         for (Button choice : bidChoiceButtons) {
             boolean selected = Integer.parseInt(String.valueOf(choice.getTag()).substring("bid-choice:".length())) == bid;

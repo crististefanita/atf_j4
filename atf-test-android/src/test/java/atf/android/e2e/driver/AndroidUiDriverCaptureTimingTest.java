@@ -5,6 +5,7 @@ import atf.testkit.AtfComponentTest;
 import static org.junit.jupiter.api.Assertions.*;
 import atf.android.AdbClient;
 import atf.android.evidence.timing.AndroidPhaseClock;
+import java.io.IOException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,24 +22,37 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @AtfComponentTest
 class AndroidUiDriverCaptureTimingTest {
-    @ParameterizedTest @ValueSource(booleans = {true, false})
-    void fullPngAndOptionalHierarchyAreMeasuredAsCaptureRatherThanBusiness(boolean hierarchy, @TempDir Path output) throws Exception {
-        byte[] png = wholeFixture(); var ticks = new AtomicLong();
-        var clock = new AndroidPhaseClock("capture", ticks::get); clock.enter("TEST BODY");
-        var driver = new AndroidUiDriver(device(ticks, png, false), output); driver.recordCapturesAs(clock::capture);
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void fullPngAndOptionalHierarchyAreMeasuredAsCaptureRatherThanBusiness(
+            boolean hierarchy, @TempDir Path output) throws Exception {
+        byte[] png = wholeFixture();
+        var ticks = new AtomicLong();
+        var clock = new AndroidPhaseClock("capture", ticks::get);
+        clock.enter("TEST BODY");
+        var driver = new AndroidUiDriver(device(ticks, png, false), output);
+        driver.recordCapturesAs(clock::capture);
         ticks.addAndGet(100_000_000L);
         Path image = hierarchy ? driver.capture("whole").getLast() : driver.captureImage("whole");
-        ticks.addAndGet(40_000_000L); clock.stop(false);
+        ticks.addAndGet(40_000_000L);
+        clock.stop(false);
         var timing = clock.snapshot("TEST BODY").orElseThrow();
         assertEquals(140_000_000L, timing.executionNanos());
         assertEquals(hierarchy ? 45_000_000L : 30_000_000L, timing.captureNanos());
         assertArrayEquals(png, Files.readAllBytes(image));
-        var decoded = ImageIO.read(image.toFile()); assertEquals(200, decoded.getWidth()); assertEquals(400, decoded.getHeight());
+        var decoded = ImageIO.read(image.toFile());
+        assertEquals(200, decoded.getWidth());
+        assertEquals(400, decoded.getHeight());
     }
 
-    @Test void failedCaptureClosesItsMeasuredScopeAndRetainsTheOriginalFailure(@TempDir Path output) throws Exception {
-        var ticks = new AtomicLong(); var clock = new AndroidPhaseClock("capture", ticks::get); clock.enter("TEST BODY");
-        var driver = new AndroidUiDriver(device(ticks, new byte[0], true), output); driver.recordCapturesAs(clock::capture);
+    @Test
+    void failedCaptureClosesItsMeasuredScopeAndRetainsTheOriginalFailure(@TempDir Path output)
+            throws Exception {
+        var ticks = new AtomicLong();
+        var clock = new AndroidPhaseClock("capture", ticks::get);
+        clock.enter("TEST BODY");
+        var driver = new AndroidUiDriver(device(ticks, new byte[0], true), output);
+        driver.recordCapturesAs(clock::capture);
         var failure = assertThrows(UnsupportedOperationException.class, () -> driver.captureImage("failed"));
         clock.stop(true);
         assertEquals("Controlled failed capture", failure.getMessage());
@@ -45,11 +60,70 @@ class AndroidUiDriverCaptureTimingTest {
         assertTrue(clock.snapshot("TEST BODY").orElseThrow().partial());
     }
 
+    @Test
+    void exhaustedPngTransfersRemoveStaleEvidenceAndRetainTheLastCause(@TempDir Path output)
+            throws Exception {
+        Path image = output.resolve("retry.png");
+        Files.write(image, wholeFixture());
+        var attempts = new AtomicInteger();
+        var closed = new AtomicInteger();
+        var finalFailure = new IOException("Final controlled transfer failure");
+        var driver = new AndroidUiDriver(new AndroidUiDriver.Device() {
+            public AdbClient.Result run(String... args) {
+                throw new AssertionError("Image-only capture must not request a hierarchy");
+            }
+            public AdbClient.BinaryResult runBinary(String... args) throws IOException {
+                int attempt = attempts.incrementAndGet();
+                if (attempt == 1) return new AdbClient.BinaryResult(0, new byte[0], "", List.of(args));
+                if (attempt == 2) throw new IOException("Transient controlled transfer failure");
+                throw finalFailure;
+            }
+        }, output);
+        driver.recordCapturesAs(() -> closed::incrementAndGet);
+
+        assertSame(finalFailure, assertThrows(IOException.class, () -> driver.captureImage("retry")));
+        assertEquals(3, attempts.get());
+        assertEquals(1, closed.get());
+        assertFalse(Files.exists(image), "A previous PNG must never survive as current evidence");
+    }
+
+    @Test
+    void interruptedCaptureClosesItsScopeWithoutRetryingOrClearingTheInterrupt(@TempDir Path output)
+            throws Exception {
+        var attempts = new AtomicInteger();
+        var closed = new AtomicInteger();
+        var interrupted = new InterruptedException("Controlled interrupted capture");
+        var driver = new AndroidUiDriver(new AndroidUiDriver.Device() {
+            public AdbClient.Result run(String... args) {
+                throw new AssertionError("Image-only capture must not request a hierarchy");
+            }
+            public AdbClient.BinaryResult runBinary(String... args) throws InterruptedException {
+                attempts.incrementAndGet();
+                throw interrupted;
+            }
+        }, output);
+        driver.recordCapturesAs(() -> closed::incrementAndGet);
+
+        try {
+            assertSame(interrupted,
+                    assertThrows(InterruptedException.class, () -> driver.captureImage("interrupted")));
+            assertTrue(Thread.currentThread().isInterrupted());
+            assertEquals(1, attempts.get());
+            assertEquals(1, closed.get());
+            assertFalse(Files.exists(output.resolve("interrupted.png")));
+        } finally {
+            Thread.interrupted(); // The fixture must not interrupt the next JUnit invocation.
+        }
+    }
+
     private static AndroidUiDriver.Device device(AtomicLong ticks, byte[] png, boolean fail) {
         return new AndroidUiDriver.Device() {
-            public AdbClient.Result run(String... args) throws java.io.IOException {
+            public AdbClient.Result run(String... args) throws IOException {
                 ticks.addAndGet(5_000_000L);
-                if (args[0].equals("pull")) Files.writeString(Path.of(args[2]), "<hierarchy><node text=\"Controlled fixture\"/></hierarchy>");
+                if (args[0].equals("pull")) {
+                    Files.writeString(Path.of(args[2]),
+                            "<hierarchy><node text=\"Controlled fixture\"/></hierarchy>");
+                }
                 return new AdbClient.Result(0, "UI hierarchy dumped to: fixture", List.of(args));
             }
             public AdbClient.BinaryResult runBinary(String... args) {
@@ -60,8 +134,13 @@ class AndroidUiDriverCaptureTimingTest {
         };
     }
     private static byte[] wholeFixture() throws Exception {
-        var image = new BufferedImage(200, 400, BufferedImage.TYPE_INT_RGB); var random = new Random(105);
-        for (int y = 0; y < 400; y++) for (int x = 0; x < 200; x++) image.setRGB(x, y, random.nextInt(0x1000000));
-        var output = new ByteArrayOutputStream(); ImageIO.write(image, "png", output); return output.toByteArray();
+        var image = new BufferedImage(200, 400, BufferedImage.TYPE_INT_RGB);
+        var random = new Random(105);
+        for (int y = 0; y < 400; y++) {
+            for (int x = 0; x < 200; x++) image.setRGB(x, y, random.nextInt(0x1000000));
+        }
+        var output = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", output);
+        return output.toByteArray();
     }
 }

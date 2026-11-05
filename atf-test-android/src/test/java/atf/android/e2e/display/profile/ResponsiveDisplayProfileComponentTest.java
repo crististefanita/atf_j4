@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 @AtfComponentTest
 class ResponsiveDisplayProfileComponentTest {
     @Test
-    void defaultsCoverCompactStandardRogAndTabletPortraits() {
+    void defaultsCoverCompactStandardTallAndWidePortraits() {
         assertEquals(4, ResponsiveDisplayProfile.parse(null).size());
         assertEquals(4, ResponsiveDisplayProfile.parse("").size());
     }

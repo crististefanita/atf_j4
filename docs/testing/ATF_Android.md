@@ -62,6 +62,7 @@ vizuală și obiectivul partidei rămân verdicte distincte.
 |---|---|
 | Profil local izolat | Setare și resetare nume, nume AI scurte, identități păstrate la relansare. |
 | Istoric complet pregătit de motorul JVM | Primul și ultimul rând, toate coloanele, licitații și punctaje, derulare în RO/EN. |
+| Tură pregătită la fiecare loc al mesei | Eticheta integrală deasupra jucătorului corect, licitare și joc, text mărit și controale umane inactive cât licitează AI. |
 | Contoare de serie la limita celor cinci mâini | Selectare ±5/±10 în meniu, închidere prin cărți jucate în Android și relansare fără plată repetată. |
 | Partidă pregătită până la ultima carte umană | Încheiere prin interfață, recalculare Top 20 cu om și AI, Top 10/20 și izolare între configurații. |
 
@@ -77,6 +78,11 @@ Datele pregătite de fixture-uri sau replay-uri diagnostice sunt excluse din cla
 | Comparații | JSON-ul întreg are amprentă canonică compactă; fiecare poziție a clasamentului are comparație separată și date complete de diagnostic. |
 
 Aceste scenarii nu califică o partidă întreagă jucată prin interfață și nici recuperarea fișierelor corupte.
+
+Selecția `historyPresentationAcrossDeclaredPortraitProfiles` reunește masa, acțiunile active și istoricul într-un singur trace, pe profilele din `atf.android.sanity.profiles`. Ea cere instalarea identificată, arhiva privată și rezervarea din `whist.records.runRoot`; formatarea numerică a mâinii, separatoarele și alinierea antetului sunt confruntate cu observația nativă.
+
+- **Capturi:** fazele folosesc nume explicite pentru profil și scara textului. Repetările aceluiași profil au directoare distincte, păstrând imaginile originale ale fiecărui checkpoint.
+- **Diagnostic:** calculul licitațiilor AI și avansarea cărților AI se opresc separat, numai într-un APK debug. Starea înghețată verifică afișarea și actorul; calitatea și viteza deciziei au acceptanță separată.
 
 ## Păstrarea rezultatelor
 

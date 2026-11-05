@@ -13,8 +13,10 @@ import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
+import ro.whistlab.coach.RolloutPlanner;
+import ro.whistlab.coach.WorldEnumerationProbe;
 import static org.junit.Assert.*;
-import java.util.*;import java.lang.reflect.*;import org.junit.Test;import ro.whistlab.coach.IndependentPlayer;
+import java.util.*;import org.junit.Test;import ro.whistlab.coach.IndependentPlayer;
 /** Literal trick expectations, independently scored full hand, and both separate policy implementations. */
 public class RolloutPolicyRegressionTest {
  public static Card card(String code){int rank=switch(code.substring(0,code.length()-1)){case "A"->14;case "K"->13;case "Q"->12;case "J"->11;default->Integer.parseInt(code.substring(0,code.length()-1));};return new Card(Suit.values()["SHCD".indexOf(code.charAt(code.length()-1))],rank);}
@@ -29,7 +31,7 @@ public class RolloutPolicyRegressionTest {
  public static String reference(MonteCarloAi.View v,List<List<Card>> w,List<PlayedCard> t,int hero,int need){return LossMiningTest.code(RolloutPolicy.choose(v,w,t,hero,need,stable()));}
  public static String player(MonteCarloAi.View v,List<List<Card>> w,List<PlayedCard> t,int hero,int need)throws Exception{
   var p=PlayerObservations.independent(v);var hands=w.stream().map(h->h.stream().map(PublicEndgameOracle::id).toList()).toList();var trick=t.stream().map(x->new IndependentPlayer.Play(x.seat(),PublicEndgameOracle.id(x.card()))).toList();
-  var method=Class.forName("ro.whistlab.coach.RolloutPlanner").getDeclaredMethod("choose",IndependentPlayer.Position.class,List.class,List.class,int.class,int.class,Random.class);method.setAccessible(true);return PublicEndgameOracle.code((int)method.invoke(null,p,hands,trick,hero,need,stable()));
+  return PublicEndgameOracle.code(RolloutPlanner.choose(p,hands,trick,hero,need,stable()));
  }
  private void literal(String id,List<List<Card>> world,int actor,Trump trump,List<PlayedCard> trick,int need,String expected)throws Exception{
   int[] goals=new int[world.size()];goals[actor]=Math.max(0,need);var v=view(world,actor,(actor+world.size()-1)%world.size(),trump,trick,goals);
@@ -66,8 +68,9 @@ public class RolloutPolicyRegressionTest {
   }return won;
  }
  static int[] rollPlayer(MonteCarloAi.View v,List<List<Card>> w,int[] goals,boolean old)throws Exception{
-  Class<?> type=old?ro.whistlab.coach.baseline.v6.RoundSixIndependentPlayer.class:IndependentPlayer.class;Object observed=old?frozenPosition(v):PlayerObservations.independent(v);
   var hands=new ArrayList<List<Integer>>();for(var h:w)hands.add(new ArrayList<>(h.stream().map(PublicEndgameOracle::id).toList()));
+  if(!old)return WorldEnumerationProbe.continueAfter(PlayerObservations.independent(v),hands,-1,goals,stable());
+  Class<?> type=ro.whistlab.coach.baseline.v6.RoundSixIndependentPlayer.class;Object observed=frozenPosition(v);
   var method=type.getDeclaredMethod("roll",observed.getClass(),List.class,int.class,int[].class,Random.class);method.setAccessible(true);return (int[])method.invoke(null,observed,hands,-1,goals,stable());
  }
  @Test public void twoTrickTrapIsCorrectedAtAllFourRotations()throws Exception{

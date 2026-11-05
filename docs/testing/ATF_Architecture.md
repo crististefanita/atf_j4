@@ -44,6 +44,8 @@ Tabelul reflectă adnotările claselor executabile, inclusiv adnotările compuse
 
 [Verificarea matricei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java) confruntă acest tabel cu sursele curente. Fiecare clasă executabilă Maven are exact una dintre `@AtfUnitTest`, `@AtfComponentTest`, `@AtfIntegrationTest` și `@AtfE2eTest`, direct sau printr-o adnotare compusă.
 
+Declarațiile sunt extrase prin parserul JDK, independent de indentare și de poziția adnotării față de modificatori. Metodele aparțin tipului care le declară, containerele `@Nested` au rol explicit, iar modulele păstrează identitatea rădăcinilor Maven; [contractul sintactic](../governance/README.md#declarațiile-testelor) delimitează această inspecție de execuția JUnit.
+
 - **Biblioteci comune:** Core, Reporting, Console și Mock sunt [biblioteci binare](../platform/README.md). Testele lor native rămân la responsabilul comun; proiectul verifică separat integrarea binarelor și adaptoarele sale.
 
 | Contract reprezentativ | Sursă |

@@ -2,6 +2,9 @@ package ro.whistlab.coach;
 
 import java.util.*;
 
+import static ro.whistlab.coach.IndependentContinuations.roll;
+import static ro.whistlab.coach.IndependentContinuations.score;
+
 /** Test-only independent player. No engine imports and no representation of opponents' private cards. */
 public final class IndependentPlayer {
     public record Seat(int remaining, Integer bid, int won, int total, int streak) {
@@ -183,14 +186,7 @@ public final class IndependentPlayer {
                                 goals,
                                 new Random(seed(p, k) ^ 0xC0AC4L));
                 values[c] += score(p, p.seat, won[p.seat], goals[p.seat]);
-                int leader = Integer.MIN_VALUE;
-                for (int s = 0; s < won.length; s++)
-                    if (s != p.seat)
-                        leader =
-                                Math.max(
-                                        leader,
-                                        p.seats.get(s).total + score(p, s, won[s], goals[s]));
-                rivals[c] += leader;
+                rivals[c] += IndependentContinuations.rival(p, won, goals, p.seat);
             }
         }
         int best = 0;
@@ -246,71 +242,9 @@ public final class IndependentPlayer {
         return targets;
     }
 
-    // Offline diagnostic solver; not selected by the accepted policy after development regressions.
+    // Offline diagnostic solver; not selected by the accepted policy.
     static int[] exactAfter(Position p, List<List<Integer>> world, int first, int[] goals) {
-        var hands = copy(world);
-        if (!hands.get(p.seat).remove(Integer.valueOf(first)))
-            throw new IllegalArgumentException("First card not held");
-        var trick = new ArrayList<>(p.trick);
-        trick.add(new Play(p.seat, first));
-        int[] won = p.seats.stream().mapToInt(Seat::won).toArray();
-        int actor = (p.seat + 1) % hands.size();
-        if (trick.size() == hands.size()) {
-            actor = winner(trick, p.trump);
-            won[actor]++;
-            trick.clear();
-        }
-        return solve(p, hands, trick, actor, won, goals);
-    }
-
-    private static int[] solve(
-            Position p,
-            List<List<Integer>> hands,
-            List<Play> trick,
-            int actor,
-            int[] won,
-            int[] goals) {
-        PlannerControl.check();
-        PlannerControl.event(PlannerControl.Event.ENDGAME);
-        if (hands.stream().allMatch(List::isEmpty)) return won;
-        var choices =
-                new ArrayList<>(
-                        legal(
-                                hands.get(actor),
-                                trick.isEmpty() ? -1 : trick.get(0).card / 13,
-                                p.trump));
-        Collections.sort(choices);
-        int[] best = null;
-        for (int card : choices) {
-            var next = copy(hands);
-            next.get(actor).remove(Integer.valueOf(card));
-            var round = new ArrayList<>(trick);
-            round.add(new Play(actor, card));
-            int[] count = won.clone();
-            int turn = (actor + 1) % hands.size();
-            if (round.size() == hands.size()) {
-                turn = winner(round, p.trump);
-                count[turn]++;
-                round.clear();
-            }
-            int[] value = solve(p, next, round, turn, count, goals);
-            if (best == null
-                    || score(p, actor, value[actor], goals[actor])
-                            > score(p, actor, best[actor], goals[actor])
-                    || score(p, actor, value[actor], goals[actor])
-                                    == score(p, actor, best[actor], goals[actor])
-                            && rival(p, value, goals, actor) < rival(p, best, goals, actor))
-                best = value;
-        }
-        return best;
-    }
-
-    private static int rival(Position p, int[] won, int[] goals, int actor) {
-        int best = Integer.MIN_VALUE;
-        for (int s = 0; s < won.length; s++)
-            if (s != actor)
-                best = Math.max(best, p.seats.get(s).total + score(p, s, won[s], goals[s]));
-        return best;
+        return IndependentContinuations.exactAfter(p, world, first, goals);
     }
 
     private static int estimate(List<Integer> hand, int trump) {
@@ -372,67 +306,6 @@ public final class IndependentPlayer {
         return value;
     }
 
-    private static int[] roll(
-            Position p, List<List<Integer>> hands, int first, int[] goals, Random r) {
-        int n = hands.size(), actor = first < 0 ? (p.dealer + 1) % n : p.seat;
-        int[] won = p.seats.stream().mapToInt(Seat::won).toArray();
-        var trick = new ArrayList<>(p.trick);
-        int left = hands.stream().mapToInt(List::size).sum();
-        boolean initial = true;
-        while (left-- > 0) {
-            PlannerControl.check();
-            PlannerControl.event(PlannerControl.Event.ROLLOUT);
-            int c =
-                    initial && first >= 0
-                            ? first
-                            : (actor == p.seat
-                                    ? RolloutPlanner.choose(
-                                            p, hands, trick, actor, goals[actor] - won[actor], r)
-                                    : greedy(
-                                            hands.get(actor),
-                                            trick,
-                                            p.trump,
-                                            actor,
-                                            goals[actor] - won[actor],
-                                            r));
-            initial = false;
-            if (!hands.get(actor).remove(Integer.valueOf(c)))
-                throw new IllegalStateException("Independent player invented a card");
-            trick.add(new Play(actor, c));
-            if (trick.size() == n) {
-                actor = winner(trick, p.trump);
-                won[actor]++;
-                trick.clear();
-            } else actor = (actor + 1) % n;
-        }
-        return won;
-    }
-
-    private static int greedy(
-            List<Integer> hand, List<Play> trick, int trump, int seat, int needed, Random r) {
-        var legal = legal(hand, trick.isEmpty() ? -1 : trick.get(0).card / 13, trump);
-        Comparator<Integer> power =
-                Comparator.comparingInt(c -> c % 13 + (c / 13 == trump ? 13 : 0));
-        if (trick.isEmpty())
-            return needed > 0
-                    ? legal.stream().max(power).orElseThrow()
-                    : legal.stream().min(power).orElseThrow();
-        var preferred = new ArrayList<Integer>();
-        for (int c : legal) {
-            var test = new ArrayList<>(trick);
-            test.add(new Play(seat, c));
-            if ((winner(test, trump) == seat) == (needed > 0)) preferred.add(c);
-        }
-        if (preferred.isEmpty())
-            return needed > 0
-                    ? legal.stream().min(power).orElseThrow()
-                    : legal.stream().max(power).orElseThrow();
-        // When avoiding tricks, discard dangerous high losers while another player owns the trick.
-        return needed > 0
-                ? preferred.stream().min(power).orElseThrow()
-                : preferred.stream().max(power).orElseThrow();
-    }
-
     public static List<Integer> legal(List<Integer> hand, int led, int trump) {
         if (led < 0) return hand;
         var follows = hand.stream().filter(c -> c / 13 == led).toList();
@@ -451,15 +324,6 @@ public final class IndependentPlayer {
 
     private static int strength(int c, int led, int trump) {
         return (c / 13 == trump ? 200 : c / 13 == led ? 100 : 0) + c % 13;
-    }
-
-    private static int score(Position p, int seat, int won, int bid) {
-        int base = won == bid ? 5 + won : -Math.abs(won - bid);
-        if (!p.streakBonuses || p.size == 1) return base;
-        int previous = p.seats.get(seat).streak;
-        if (won == bid && previous == 4) return base + p.streakBonusPoints;
-        if (won != bid && previous == -4) return base - p.streakPenaltyPoints;
-        return base;
     }
 
     private static List<List<Integer>> copy(List<List<Integer>> w) {

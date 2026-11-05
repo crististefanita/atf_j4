@@ -7,7 +7,11 @@ final class TableViewportPolicy {
     private final boolean compact;
     private final boolean shortWindow;
     TableViewportPolicy(int availableHeightDp) {
-        compact = availableHeightDp < 760;
+        this(availableHeightDp,1f);
+    }
+    TableViewportPolicy(int availableHeightDp,float fontScale) {
+        if(!Float.isFinite(fontScale)||fontScale<=0)throw new IllegalArgumentException("Font scale must be positive and finite");
+        compact = availableHeightDp < 760 * Math.max(1f,fontScale);
         shortWindow = availableHeightDp < 600;
     }
     boolean isCompact() { return compact; }

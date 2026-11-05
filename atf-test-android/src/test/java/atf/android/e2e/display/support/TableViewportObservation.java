@@ -25,7 +25,25 @@ public final class TableViewportObservation {
         var snapshot = decode(ui,xml,profile);
         var checks = new ArrayList<>(TableViewportAudit.inspect(snapshot,expected));
         checks.addAll(inspectActions(ui,xml,profile,completeTrick ? 0 : 1));
+        var trump = ui.descriptions(xml).stream().filter(value -> value.startsWith("Trump")).findFirst();
+        int trumpWidth = trump.isPresent() ? box(ui.boundsForDescription(xml,trump.get())).right()
+                - box(ui.boundsForDescription(xml,trump.get())).left() : 0;
+        checks.add(new AtfAssertion("Trump frame retains the declared narrow width","57 dp",
+                trumpWidth+" px",Math.abs(trumpWidth-Math.round(57*density))<=1));
+        for(var card:snapshot.playedCards()) {
+            int height=card.face().bottom()-card.face().top();
+            checks.add(new AtfAssertion("Requested played-card height: "+card.label(),
+                    expected.playedFaceHeight()+" px",height+" px",Math.abs(height-expected.playedFaceHeight())<=1));
+        }
         return List.copyOf(checks);
+    }
+
+    public static AndroidUiDriver.Bounds occupiedSeatBounds(AndroidUiDriver ui,String xml,String description) throws Exception {
+        var frame=ui.boundsForDescription(xml,description);
+        if(!description.contains(". Current turn."))return frame;
+        var action=ui.boundsForText(xml,description.endsWith("BID NOW")?"BID NOW":"PLAY NOW");
+        return new AndroidUiDriver.Bounds(Math.min(frame.left(),action.left()),Math.min(frame.top(),action.top()),
+                Math.max(frame.right(),action.right()),Math.max(frame.bottom(),action.bottom()));
     }
 
     /** Shared by playing and bidding checkpoints; no command or capture is acquired here. */
@@ -36,16 +54,24 @@ public final class TableViewportObservation {
 
     public static List<AtfAssertion> inspectActions(AndroidUiDriver ui, String xml,
             ResponsiveDisplayProfile profile, int expectedActive) throws Exception {
+        return inspectActions(ui,xml,profile,expectedActive,false);
+    }
+
+    public static List<AtfAssertion> inspectActions(AndroidUiDriver ui, String xml,
+            ResponsiveDisplayProfile profile, int expectedActive, boolean romanian) throws Exception {
         if (expectedActive < 0 || expectedActive > 1) throw new IllegalArgumentException("Expected zero or one active turn");
         Box viewport = contentBounds(xml,new Box(0,0,profile.width(),profile.height()));
+        String bid=romanian?". Licitat ":". Bid ", score=romanian?". Scor ":". Score ";
+        String turn=romanian?". La rând.":". Current turn.";
+        String bidAction=romanian?"LICITEAZĂ":"BID NOW", playAction=romanian?"JOACĂ ACUM":"PLAY NOW";
         var seats = ui.descriptions(xml).stream()
-                .filter(text -> text.contains(". Bid ") && text.contains(". Score ")).toList();
-        var active = seats.stream().filter(text -> text.contains(". Current turn.")).toList();
-        int visibleActions = (ui.hasText(xml,"BID NOW") ? 1 : 0) + (ui.hasText(xml,"PLAY NOW") ? 1 : 0);
+                .filter(text -> text.contains(bid) && text.contains(score)).toList();
+        var active = seats.stream().filter(text -> text.contains(turn)).toList();
+        int visibleActions = (ui.hasText(xml,bidAction) ? 1 : 0) + (ui.hasText(xml,playAction) ? 1 : 0);
         boolean correct = active.size() == expectedActive && visibleActions == expectedActive;
         String actual = "active seats=" + active.size() + "; visible actions=" + visibleActions;
         for (String description : active) {
-            String label = description.endsWith("BID NOW") ? "BID NOW" : "PLAY NOW";
+            String label = description.endsWith(romanian?"LICITEAZĂ ACUM":"BID NOW") ? bidAction : playAction;
             if (!ui.hasText(xml,label)) { correct = false; continue; }
             Box badge = box(ui.boundsForText(xml,label));
             Box frame = box(ui.boundsForDescription(xml,description));
@@ -57,7 +83,7 @@ public final class TableViewportObservation {
                 correct &= !overlaps(badge,occupied);
             }
             for (String other : ui.descriptions(xml)) {
-                if (other.contains(" played ") || other.startsWith("Your hand,")) {
+                if (other.contains(romanian?" a jucat ":" played ") || other.startsWith(romanian?"Cărțile tale,":"Your hand,")) {
                     correct &= !overlaps(badge,box(ui.boundsForDescription(xml,other)));
                 }
             }

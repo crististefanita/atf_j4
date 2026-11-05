@@ -11,6 +11,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /** Validates declared E2E preconditions without accessing Android or user files. */
 @AtfComponentTest
 class RecordsFixturesComponentTest {
+    @Test void everyActiveSeatHasALegalDiagnosticBiddingAndPlayingPrecondition() {
+        for(int seat=0;seat<4;seat++)for(boolean bidding:List.of(true,false)) {
+            var fixture=RecordsFixtures.activeTurn(seat,bidding);var state=fixture.game().snapshot();
+            assertEquals(bidding?GamePhase.BIDDING:GamePhase.PLAYING,state.phase());
+            assertEquals(seat,bidding?state.biddingSeat():state.currentSeat());
+            assertEquals(bidding?seat:4,state.bidsSubmitted());
+            assertFalse(fixture.json().path("rankingEligible").asBoolean());
+            assertEquals(state,ro.whistlab.core.session.GameSession.restoreComplete(fixture.game().saveState()).snapshot());
+        }
+    }
     @Test void completeHistoryIsDiagnosticAndOwnsEverySeatAndHand() {
         var fixture=RecordsFixtures.history();var state=fixture.json();
         assertEquals(GamePhase.SCORE,fixture.game().snapshot().phase());
