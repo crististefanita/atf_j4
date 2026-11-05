@@ -4,8 +4,6 @@
 
 Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul comun reutilizabil se solicită prin [responsabilitățile bibliotecilor](README.md), fără introducerea în consumator a implementărilor acestora.
 
-## API reutilizabil pentru verificatoare
-
 ## Registrul livrărilor
 
 | Prioritate | Lacună | Criteriu de închidere |
@@ -13,6 +11,8 @@ Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul 
 | P1 | Verificările livrărilor semnalează `RELEASE-UNREGISTERED` pentru rădăcina artefactelor. | Reconciliați indexul structurat, dosarele de versiuni, metadatele și README-urile cu contractul validatorului, păstrând identitatea binarelor și rezultatele originale. |
 
 [Inventarul livrărilor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) și [legarea handoff-ului de asset](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) rămân controale distincte. Acceptanța unei componente nu închide o eroare a registrului de publicare.
+
+## API reutilizabil pentru verificatoare
 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
