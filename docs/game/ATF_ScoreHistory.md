@@ -38,6 +38,8 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 [GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) definește migrarea fiecărei scheme și validarea checkpoint-ului. [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) definește integritatea registrului.
 
 - Toți jucătorii au coloane proprii; antetele rămân deasupra rândurilor derulabile vertical și se deplasează împreună cu acestea la derularea orizontală.
+- Prima coloană afișează numai numărul cărților mâinii. Identitatea cronologică rămâne în model și în descrierile accesibile, inclusiv când mai multe mâini au același număr de cărți.
+- Separatoarele verticale delimitează grupurile jucătorilor, fără a separa licitația de punctele și totalul aceluiași loc. Subcoloanele se rotunjesc o singură dată în pixeli; suma lor dimensionează și antetul, iar padding-ul intră în lățimea derulabilă.
 - Programul complet include mâinile încheiate, mâna curentă și mâinile viitoare; punctele neacordate se afișează ca necunoscute, fără totaluri inventate.
 - Contractul zero se afișează ca valoare, iar contractul necunoscut are marcaj și text accesibil distinct.
 - Istoricul rămâne disponibil după terminarea partidei.

@@ -4,7 +4,8 @@ import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 
 /** Independent measured observations, not an implementation of the application's layout algorithm. */
 final class SyntheticTableHierarchy {
-    enum Fault { NONE, MISSING_HUMAN, SHORT_SEAT, SHORT_FACE, SCROLL, ZERO_TITLE, ZERO_TRUMP, OVERLAP, OBSTRUCTED_WINDOW }
+    enum Fault { NONE, MISSING_HUMAN, SHORT_SEAT, SHORT_FACE, SCROLL, ZERO_TITLE, ZERO_TRUMP, OVERLAP, OBSTRUCTED_WINDOW,
+        MISSING_ACTION, ACTION_BELOW_NAME, CUT_ACTION }
     private static final String[] INDICES={"3♠","4♠","5♠","6♠","7♠","8♠","9♠","10♠","J♠","Q♥","K♣","A♦","2♥"};
     private final ResponsiveDisplayProfile profile;
     private final double density;
@@ -27,8 +28,15 @@ final class SyntheticTableHierarchy {
         for(int seat=0;seat<4;seat++) {
             if(seat==0&&fault==Fault.MISSING_HUMAN)continue;
             int height=seat==0&&fault==Fault.SHORT_SEAT?20:(int)Math.ceil(44*fontScale);
-            xml.append(node("android.widget.LinearLayout","",(seat==0?"You":"AI"+seat)+". Bid 0. Won 0. Score 0.",
+            xml.append(node("android.widget.LinearLayout","",(seat==0?"You":"AI"+seat)+". Bid 0. Won 0. Score 0."
+                            +(seat==0&&!trick?" Current turn. PLAY NOW":""),
                     bounds(seats[seat][0],seats[seat][1],54,height)));
+        }
+        if (!trick && fault != Fault.MISSING_ACTION) {
+            int labelHeight = (int)Math.ceil(12*fontScale);
+            int y = fault == Fault.ACTION_BELOW_NAME ? 357 : 355 - 3 - labelHeight;
+            xml.append(node("android.widget.TextView",fault == Fault.CUT_ACTION ? "PLAY N…" : "PLAY NOW",
+                    "",bounds(133,y,54,labelHeight)));
         }
         if(trick) {
             String[] descriptions={"King of hearts","Queen of spades","2 of spades","Ace of clubs"};

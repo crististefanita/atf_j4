@@ -30,7 +30,8 @@ public final class ResponsiveTableState {
         for (int attempt = 0; attempt < 6; attempt++) {
             AndroidUiDriver.Bounds cardSlot = ui.boundsForDescription(latest, cardDescription);
             boolean fullCardRowVisible =
-                    height(cardSlot) >= (int) Math.round(122 * profile.density() / 160.0);
+                    height(cardSlot) >= (int) Math.round(profile.minimumPlayedCardSlotHeightDp()
+                            * profile.density() / 160.0);
             if (fullCardRowVisible && humanSeatFullyVisible(ui, latest)) return latest;
             int distance = Math.max(96, Math.round(dimensions[1] * 0.12f));
             int startY = dimensions[1] * 90 / 100;

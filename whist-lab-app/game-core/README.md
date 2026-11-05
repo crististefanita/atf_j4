@@ -62,6 +62,7 @@ O comandă ilegală este respinsă înaintea tranziției. Închiderea mâinii ap
 
 - **Normal** urmărește contractul și evită levatele suplimentare după realizarea lui, în limitele acțiunilor legale.
 - **Hard** compară continuări pe lumi compatibile cu informația publică, necesarul și contractele cunoscute; [MonteCarloAi](src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) deține compoziția deciziei.
+- **Evaluare și ordonare:** `DecisionEvaluation` calculează utilitatea continuărilor, iar `DecisionOrdering` compară alternativele deja evaluate; API-ul și fluxul aleator rămân în coordonator.
 - Certificatele finite și recuperarea contractelor imposibile au condiții și bugete explicite; epuizarea unui buget păstrează propunerea de bază.
 
 | Control | Contract |

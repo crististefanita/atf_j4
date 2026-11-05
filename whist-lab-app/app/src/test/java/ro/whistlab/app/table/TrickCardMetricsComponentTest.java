@@ -27,7 +27,8 @@ public final class TrickCardMetricsComponentTest {
                     assertTrue(layout.playerLabelHeightDp()
                             >= Math.ceil(TrickCardMetrics.PLAYER_LABEL_HEIGHT_DP * fontScale));
 
-                    int seatHeight = TableLayoutMetrics.seatHeightPx((int) Math.ceil(70 * fontScale));
+                    int seatHeight = ro.whistlab.app.seat.PlayerSeatMetrics.arrange(
+                            (int) Math.ceil(70 * fontScale), (int) Math.ceil(12 * fontScale), 3).heightPx();
                     int gap = 8;
                     int safeCenterWidth = layout.safeCenterWidthDp();
                     int boardHeight = TableGeometry.minimumHeight(players, seatHeight,

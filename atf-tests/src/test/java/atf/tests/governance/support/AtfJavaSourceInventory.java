@@ -22,60 +22,74 @@ public final class AtfJavaSourceInventory {
     private AtfJavaSourceInventory() { }
 
     public static List<Path> mainSources(Path project) throws Exception {
-        return sources(project, "sourceDirectory", "src/main/java");
+        return sources(project, false);
     }
 
     public static List<Path> testSources(Path project) throws Exception {
-        return sources(project, "testSourceDirectory", "src/test/java");
+        return sources(project, true);
     }
 
     public static List<Path> allSources(Path project) throws Exception {
-        Set<Path> result = new LinkedHashSet<>(mainSources(project));
-        result.addAll(testSources(project));
+        Set<Path> result = new LinkedHashSet<>();
+        for (SourceRoot source : roots(project)) result.addAll(files(source.directory()));
         return result.stream().sorted().toList();
     }
 
-    private static List<Path> sources(Path project, String element, String defaultDirectory) throws Exception {
+    public record SourceRoot(Path module, Path directory, boolean test) { }
+
+    /** Retains the declared root and owning POM instead of inferring them from each file path. */
+    public static List<SourceRoot> roots(Path project) throws Exception {
         Path root = project.toAbsolutePath().normalize();
-        Set<Path> sourceRoots = new LinkedHashSet<>();
+        List<SourceRoot> result = new ArrayList<>();
         for (Path pom : pomFiles(root)) {
             Path module = pom.getParent();
-            String configured = configuredDirectory(pom, element, defaultDirectory);
-            Path source = module.resolve(configured).normalize();
-            if (!source.startsWith(module) || source.equals(module)
-                    || configured.contains("${")) {
-                throw new IOException("Invalid " + element + " in " + pom + ": " + configured);
-            }
-            if (!Files.exists(source)) continue;
-            if (!Files.isDirectory(source) || !source.toRealPath().startsWith(module.toRealPath())) {
-                throw new IOException("Unsafe " + element + " in " + pom + ": " + configured);
-            }
-            sourceRoots.add(source);
+            Element build = configuredBuild(pom);
+            addRoot(result, pom, module, build, false, "sourceDirectory", "src/main/java");
+            addRoot(result, pom, module, build, true, "testSourceDirectory", "src/test/java");
         }
-        List<Path> result = new ArrayList<>();
-        for (Path source : sourceRoots) {
-            try (var files = Files.walk(source)) {
-                result.addAll(files.filter(Files::isRegularFile)
-                        .filter(path -> path.toString().endsWith(".java"))
-                        .toList());
-            }
+        return List.copyOf(result);
+    }
+
+    private static void addRoot(List<SourceRoot> roots, Path pom, Path module, Element build,
+                                boolean test, String name, String fallback) throws IOException {
+        Element configured = build == null ? null : child(build, name);
+        String directory = configured == null ? fallback : configured.getTextContent().strip();
+        Path source = module.resolve(directory).normalize();
+        if (directory.isBlank() || Path.of(directory).isAbsolute() || !source.startsWith(module)
+                || source.equals(module) || directory.contains("${")) {
+            throw new IOException("Invalid " + name + " in " + pom + ": " + directory);
         }
+        if (!Files.exists(source)) return;
+        if (!Files.isDirectory(source) || !source.toRealPath().startsWith(module.toRealPath()))
+            throw new IOException("Unsafe " + name + " in " + pom + ": " + directory);
+        roots.add(new SourceRoot(module, source, test));
+    }
+
+    private static List<Path> sources(Path project, boolean test) throws Exception {
+        Set<Path> result = new LinkedHashSet<>();
+        for (SourceRoot root : roots(project)) if (root.test() == test) result.addAll(files(root.directory()));
         return result.stream().distinct().sorted().toList();
     }
 
-    private static String configuredDirectory(Path pom, String name, String defaultDirectory) throws Exception {
+    public static List<Path> files(Path source) throws IOException {
+        Path physicalRoot = source.toRealPath();
+        try (var files = Files.walk(source)) {
+            List<Path> result = files.filter(Files::isRegularFile)
+                    .filter(file -> file.toString().endsWith(".java")).sorted().toList();
+            for (Path file : result) if (!file.toRealPath().startsWith(physicalRoot))
+                throw new IOException("GOV-SOURCE-ESCAPE: " + file);
+            return result;
+        }
+    }
+
+    private static Element configuredBuild(Path pom) throws Exception {
         var factory = DocumentBuilderFactory.newInstance();
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
         factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         Element project = factory.newDocumentBuilder().parse(pom.toFile()).getDocumentElement();
-        Element build = child(project, "build");
-        Element configured = build == null ? null : child(build, name);
-        if (configured == null) return defaultDirectory;
-        String directory = configured.getTextContent().strip();
-        if (directory.isBlank()) throw new IOException("Empty " + name + " in " + pom);
-        return directory;
+        return child(project, "build");
     }
 
     private static Element child(Element parent, String name) {

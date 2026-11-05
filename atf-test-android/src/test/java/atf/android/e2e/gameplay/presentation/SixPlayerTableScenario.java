@@ -34,7 +34,7 @@ public final class SixPlayerTableScenario {
     private SixPlayerTableScenario() {}
 
     private static final Pattern SIX_PLAYER_EIGHT_CARD_BID_SUMMARY =
-            Pattern.compile("Bids submitted (\\d+)/6 · Bid total (-?\\d+)/8");
+            Pattern.compile("Bids submitted (\\d+)/6\\RBid total (-?\\d+)/8");
 
     public static void run(String ownerName) throws Exception {
         var installation = installedApp();

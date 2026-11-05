@@ -22,7 +22,55 @@ public final class TableViewportObservation {
         var expected=new TableViewportAudit.Requirements(4,handCards,completeTrick?4:0,
                 (int)Math.round(98*density),(int)Math.round(profile.playedCardFaceHeightDp()*density),
                 (int)Math.floor(44*density));
-        return TableViewportAudit.inspect(decode(ui,xml,profile),expected);
+        var snapshot = decode(ui,xml,profile);
+        var checks = new ArrayList<>(TableViewportAudit.inspect(snapshot,expected));
+        checks.addAll(inspectActions(ui,xml,profile,completeTrick ? 0 : 1));
+        return List.copyOf(checks);
+    }
+
+    /** Shared by playing and bidding checkpoints; no command or capture is acquired here. */
+    public static List<AtfAssertion> inspectActions(AndroidUiDriver ui, String xml,
+            ResponsiveDisplayProfile profile) throws Exception {
+        return inspectActions(ui,xml,profile,1);
+    }
+
+    public static List<AtfAssertion> inspectActions(AndroidUiDriver ui, String xml,
+            ResponsiveDisplayProfile profile, int expectedActive) throws Exception {
+        if (expectedActive < 0 || expectedActive > 1) throw new IllegalArgumentException("Expected zero or one active turn");
+        Box viewport = contentBounds(xml,new Box(0,0,profile.width(),profile.height()));
+        var seats = ui.descriptions(xml).stream()
+                .filter(text -> text.contains(". Bid ") && text.contains(". Score ")).toList();
+        var active = seats.stream().filter(text -> text.contains(". Current turn.")).toList();
+        int visibleActions = (ui.hasText(xml,"BID NOW") ? 1 : 0) + (ui.hasText(xml,"PLAY NOW") ? 1 : 0);
+        boolean correct = active.size() == expectedActive && visibleActions == expectedActive;
+        String actual = "active seats=" + active.size() + "; visible actions=" + visibleActions;
+        for (String description : active) {
+            String label = description.endsWith("BID NOW") ? "BID NOW" : "PLAY NOW";
+            if (!ui.hasText(xml,label)) { correct = false; continue; }
+            Box badge = box(ui.boundsForText(xml,label));
+            Box frame = box(ui.boundsForDescription(xml,description));
+            correct &= complete(viewport,badge) && badge.bottom() < frame.top()
+                    && badge.left() >= frame.left() && badge.right() <= frame.right()
+                    && Math.abs((long)badge.left()+badge.right()-frame.left()-frame.right()) <= 2;
+            for (String other : seats) {
+                Box occupied = box(ui.boundsForDescription(xml,other));
+                correct &= !overlaps(badge,occupied);
+            }
+            for (String other : ui.descriptions(xml)) {
+                if (other.contains(" played ") || other.startsWith("Your hand,")) {
+                    correct &= !overlaps(badge,box(ui.boundsForDescription(xml,other)));
+                }
+            }
+            actual += "; " + label + "=" + badge + "; frame=" + frame;
+        }
+        return List.of(new AtfAssertion("Complete turn action stays above the player name",
+                expectedActive == 0 ? "no active action while paused" : "one full action above the active frame",
+                actual, correct));
+    }
+
+    private static boolean overlaps(Box first, Box second) {
+        return first.left() < second.right() && first.right() > second.left()
+                && first.top() < second.bottom() && first.bottom() > second.top();
     }
 
     public static TableViewportAudit.Snapshot decode(AndroidUiDriver ui,String xml,

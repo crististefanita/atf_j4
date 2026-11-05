@@ -26,7 +26,8 @@ class TableViewportObservationComponentTest {
     }
     static Stream<Arguments> faults() {
         return Stream.of(Fault.MISSING_HUMAN,Fault.SHORT_SEAT,Fault.SHORT_FACE,Fault.SCROLL,
-                Fault.ZERO_TITLE,Fault.ZERO_TRUMP,Fault.OVERLAP,Fault.OBSTRUCTED_WINDOW)
+                Fault.ZERO_TITLE,Fault.ZERO_TRUMP,Fault.OVERLAP,Fault.OBSTRUCTED_WINDOW,
+                Fault.MISSING_ACTION,Fault.ACTION_BELOW_NAME,Fault.CUT_ACTION)
                 .map(fault->Arguments.of(fault, switch(fault) {
                     case MISSING_HUMAN,SHORT_SEAT->"Complete seat frames in the same viewport";
                     case SHORT_FACE->"Whole hand retains complete faces on one row";
@@ -34,6 +35,7 @@ class TableViewportObservationComponentTest {
                     case ZERO_TITLE,ZERO_TRUMP->"Game title and trump remain visible with the hand";
                     case OVERLAP->"Seats and all trick cards stay distinct";
                     case OBSTRUCTED_WINDOW->"Board and hand remain separate inside the display";
+                    case MISSING_ACTION,ACTION_BELOW_NAME,CUT_ACTION->"Complete turn action stays above the player name";
                     default->throw new IllegalArgumentException();
                 }));
     }
@@ -50,9 +52,11 @@ class TableViewportObservationComponentTest {
     @ParameterizedTest(name="reject {0}") @MethodSource("faults")
     void controlledDefectsCannotBeHiddenByAValidProfile(Fault fault,String comparison) throws Exception {
         var profile=profiles().getFirst();var fixture=new SyntheticTableHierarchy(profile);
-        var baseline=TableViewportObservation.inspect(driver(),fixture.xml(12,true,1f,Fault.NONE),profile,12,true);
+        boolean trick = fault != Fault.MISSING_ACTION && fault != Fault.ACTION_BELOW_NAME && fault != Fault.CUT_ACTION;
+        int cards = trick ? 12 : 13;
+        var baseline=TableViewportObservation.inspect(driver(),fixture.xml(cards,trick,1f,Fault.NONE),profile,cards,trick);
         assertTrue(baseline.stream().allMatch(check->check.passed()));
-        var checks=TableViewportObservation.inspect(driver(),fixture.xml(12,true,1f,fault),profile,12,true);
+        var checks=TableViewportObservation.inspect(driver(),fixture.xml(cards,trick,1f,fault),profile,cards,trick);
         assertFalse(checks.stream().filter(check->check.name().equals(comparison)).findFirst().orElseThrow().passed());
     }
 
@@ -76,6 +80,20 @@ class TableViewportObservationComponentTest {
         String duplicate=xml.replace("</hierarchy>","<node resource-id=\"android:id/content\" bounds=\"[0,0][720,1280]\"/></hierarchy>");
         assertThrows(IllegalArgumentException.class,()->TableViewportObservation.decode(driver(),duplicate,profile));
         assertThrows(Exception.class,()->TableViewportObservation.decode(driver(),"<!DOCTYPE hierarchy><hierarchy/>",profile));
+    }
+
+    @Test void biddingAndPausedStatesKeepAnExplicitActionContract() throws Exception {
+        var profile=profiles().getFirst();
+        String play=new SyntheticTableHierarchy(profile).xml(13,false,1f,Fault.NONE);
+        String bid=play.replace("PLAY NOW","BID NOW");
+        assertTrue(TableViewportObservation.inspectActions(driver(),bid,profile).getFirst().passed());
+        String paused=new SyntheticTableHierarchy(profile).xml(13,false,1f,Fault.MISSING_ACTION)
+                .replace(" Current turn. PLAY NOW","");
+        assertTrue(TableViewportObservation.inspectActions(driver(),paused,profile,0).getFirst().passed());
+        assertFalse(TableViewportObservation.inspectActions(driver(),paused,profile,1).getFirst().passed(),
+                "A playing table cannot silently lose both the active flag and action label");
+        assertFalse(TableViewportObservation.inspectActions(driver(),play.replace("PLAY NOW\" content-desc", "BID NOW\" content-desc"),
+                profile).getFirst().passed());
     }
 
     private static List<ResponsiveDisplayProfile> profiles() {

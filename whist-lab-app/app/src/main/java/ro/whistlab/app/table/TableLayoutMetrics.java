@@ -4,17 +4,7 @@ package ro.whistlab.app.table;
 final class TableLayoutMetrics {
     static final int TRUMP_WIDTH_DP = 57;
 
-    /** Scale the freshly measured content, never a previously enlarged frame. */
-    static int seatHeightPx(int naturalHeightPx) {
-        if (naturalHeightPx < 1) throw new IllegalArgumentException("Seat content must have a height");
-        return Math.toIntExact((naturalHeightPx * 5L + 3) / 4);
-    }
-
     static int topInsetPx(int boardHeightPx) { return Math.round(boardHeightPx * 0.05f); }
-
-    static int boardHeightPx(int contentHeightPx) {
-        return Math.toIntExact((contentHeightPx * 20L + 18) / 19);
-    }
 
     static float fitTextSizePx(float sizePx, float textWidthPx, int availableWidthPx) {
         return sizePx * Math.min(1f, Math.max(1, availableWidthPx) / Math.max(1f, textWidthPx));

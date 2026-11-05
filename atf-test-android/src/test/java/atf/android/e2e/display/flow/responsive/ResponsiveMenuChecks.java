@@ -396,6 +396,7 @@ public final class ResponsiveMenuChecks {
                                         "accessible",
                                         touch,
                                         touch)));
+        checks.addAll(atf.android.e2e.display.support.TableViewportObservation.inspectActions(ui, xml, profile));
         checkCaptureSize(adb, capture, profile, checks);
         publishCheckpoint(ui, trace, profile, "Inspect all nine bid controls", capture, checks);
         ui.selectBid(8);

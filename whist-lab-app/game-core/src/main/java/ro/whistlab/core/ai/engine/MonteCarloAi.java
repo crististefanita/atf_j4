@@ -2,7 +2,6 @@ package ro.whistlab.core.ai.engine;
 
 import ro.whistlab.core.ai.profile.HardStrategyProfile;
 import ro.whistlab.core.ai.simulation.PossibleDeals;
-import ro.whistlab.core.ai.simulation.RolloutPolicy;
 import ro.whistlab.core.ai.simulation.SearchCancellation;
 import ro.whistlab.core.ai.simulation.SearchWork;
 import ro.whistlab.core.model.Card;
@@ -12,7 +11,6 @@ import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.GameRules;
-import ro.whistlab.core.rules.RomanianScoring;
 import ro.whistlab.core.session.GameSession;
 
 import java.util.*;
@@ -219,7 +217,7 @@ public final class MonteCarloAi {
             for (int bid : allowed) {
                 int[] targets = biddingTargets(view, hands, bid);
                 double[] result =
-                        evaluate(view, hands, null, targets, seed(view, sample) ^ 0xB1D2026L, .5);
+                        DecisionEvaluation.evaluate(view, hands, null, targets, seed(view, sample) ^ 0xB1D2026L, .5);
                 points[bid] = result[0];
                 exact[bid] = result[2];
             }
@@ -234,50 +232,7 @@ public final class MonteCarloAi {
 
     public static int selectBid(
             List<BidOption> candidates, HardStrategyProfile profile, boolean safety) {
-        if (candidates.isEmpty()) throw new IllegalArgumentException("No legal bid candidates");
-        Comparator<BidOption> safeOrder =
-                Comparator.comparingDouble(BidOption::exactContractProbability)
-                        .thenComparingDouble(BidOption::expectedPoints)
-                        .thenComparingInt(option -> -option.bid());
-        if (profile == HardStrategyProfile.SCORE_FIRST) {
-            return candidates.stream()
-                    .max(
-                            Comparator.comparingDouble(BidOption::expectedPoints)
-                                    .thenComparingDouble(BidOption::exactContractProbability)
-                                    .thenComparingInt(option -> -option.bid()))
-                    .orElseThrow()
-                    .bid();
-        }
-        if (profile.bidProbabilityGap() > 0.0 && safety) {
-            double best =
-                    candidates.stream()
-                            .mapToDouble(BidOption::exactContractProbability)
-                            .max()
-                            .orElseThrow();
-            return candidates.stream()
-                    .filter(
-                            option ->
-                                    option.exactContractProbability()
-                                            >= best - profile.bidProbabilityGap())
-                    .min(
-                            Comparator.comparingInt(BidOption::bid)
-                                    .thenComparing(
-                                            Comparator.comparingDouble(
-                                                            BidOption::exactContractProbability)
-                                                    .reversed())
-                                    .thenComparing(
-                                            Comparator.comparingDouble(BidOption::expectedPoints)
-                                                    .reversed()))
-                    .orElseThrow()
-                    .bid();
-        }
-        Comparator<BidOption> order =
-                safety
-                        ? safeOrder
-                        : Comparator.comparingDouble(BidOption::expectedPoints)
-                                .thenComparingDouble(BidOption::exactContractProbability)
-                                .thenComparingInt(option -> -option.bid());
-        return candidates.stream().max(order).orElseThrow().bid();
+        return DecisionOrdering.selectBid(candidates, profile, safety);
     }
 
     /** Paired-world uncertainty, bounded to128 samples; not a formal confidence guarantee. */
@@ -441,7 +396,7 @@ public final class MonteCarloAi {
             SearchWork.event(SearchWork.Event.WORLD);
             for (int c = 0; c < legal.size(); c++) {
                 double[] value =
-                        evaluate(
+                        DecisionEvaluation.evaluate(
                                 view,
                                 hands,
                                 legal.get(c),
@@ -546,31 +501,8 @@ public final class MonteCarloAi {
             double bestMisses,
             double bestRival,
             HardStrategyProfile profile) {
-        if (salvage) {
-            if (profile == HardStrategyProfile.BURN_IF_DOOMED) {
-                if (misses > bestMisses + 1e-9) return true;
-                if (Math.abs(misses - bestMisses) > 1e-9) return false;
-                if (points > bestPoints + 1e-9) return true;
-                if (Math.abs(points - bestPoints) > 1e-9) return false;
-                return rival < bestRival;
-            }
-            if (points > bestPoints + 1e-9) return true;
-            if (Math.abs(points - bestPoints) > 1e-9) return false;
-            if (misses > bestMisses + 1e-9) return true;
-            if (Math.abs(misses - bestMisses) > 1e-9) return false;
-            return rival < bestRival;
-        }
-        if (profile == HardStrategyProfile.SCORE_FIRST) {
-            return points > bestPoints + 1e-9
-                    || Math.abs(points - bestPoints) < 1e-9
-                            && (exact > bestExact + 1e-9
-                                    || Math.abs(exact - bestExact) < 1e-9 && rival < bestRival);
-        }
-        double primary = safety ? exact : points, bestPrimary = safety ? bestExact : bestPoints;
-        return primary > bestPrimary + 1e-9
-                || Math.abs(primary - bestPrimary) < 1e-9
-                        && (points > bestPoints + 1e-9
-                                || Math.abs(points - bestPoints) < 1e-9 && rival < bestRival);
+        return DecisionOrdering.prefer(safety, salvage, exact, points, misses, rival,
+                bestExact, bestPoints, bestMisses, bestRival, profile);
     }
 
     public static double oneCardWinProbability(View v) {
@@ -604,90 +536,16 @@ public final class MonteCarloAi {
         return PossibleDeals.enumerateSmallDeals(v);
     }
 
-    private static double[] evaluate(
-            View view,
-            List<List<Card>> hands,
-            Card first,
-            int[] targets,
-            long seed,
-            double exactWeight) {
-        int[] greedy = rollout(view, copy(hands), first, targets, new Random(seed));
-        double[] result = utility(view, greedy, targets);
-        if (exactWeight > 0
-                && hands.stream().allMatch(h -> h.size() <= (hands.size() == 4 ? 3 : 2))) {
-            double[] exact =
-                    utility(view, ContractEndgame.after(view, hands, first, targets), targets);
-            for (int i = 0; i < result.length; i++)
-                result[i] = (1 - exactWeight) * result[i] + exactWeight * exact[i];
-        }
-        return result;
-    }
-
     public static double[] utility(View view, int[] won, int[] targets) {
-        int rival = Integer.MIN_VALUE, misses = 0;
-        for (int s = 0; s < won.length; s++)
-            if (s != view.seat()) {
-                rival =
-                        Math.max(
-                                rival,
-                                view.seats().get(s).total() + points(view, s, won[s], targets[s]));
-                if (won[s] != targets[s]) misses++;
-            }
-        return new double[] {
-            points(view, view.seat(), won[view.seat()], targets[view.seat()]),
-            rival,
-            won[view.seat()] == targets[view.seat()] ? 1 : 0,
-            misses
-        };
+        return DecisionEvaluation.utility(view, won, targets);
     }
 
     public static int points(View view, int seat, int won, int bid) {
-        return view.streakBonuses()
-                ? RomanianScoring.score(
-                                won,
-                                bid,
-                                view.handSize(),
-                                view.seats().get(seat).streak(),
-                                view.streakBonusPoints(), view.streakPenaltyPoints())
-                        .totalPoints()
-                : GameRules.scoreDelta(won, bid, view.mode());
-    }
-
-    private static List<List<Card>> copy(List<List<Card>> hands) {
-        return PossibleDeals.copy(hands);
+        return DecisionEvaluation.points(view, seat, won, bid);
     }
 
     public static int[] biddingTargets(View view, List<List<Card>> hands, int own) {
-        int[] targets = new int[hands.size()];
-        int sum = 0;
-        for (int i = 1; i <= hands.size(); i++) {
-            int seat = (view.dealer() + i) % hands.size();
-            Integer known = view.seats().get(seat).bid();
-            int target =
-                    seat == view.seat()
-                            ? own
-                            : known != null ? known : estimate(hands.get(seat), view.trump());
-            if (i == hands.size()
-                    && seat != view.seat()
-                    && known == null
-                    && sum + target == view.handSize()) target = target > 0 ? target - 1 : 1;
-            targets[seat] = target;
-            sum += target;
-        }
-        return targets;
-    }
-
-    private static int estimate(List<Card> hand, Trump trump) {
-        double value = 0;
-        for (Card c : hand)
-            value +=
-                    (c.rank() == 14
-                                    ? 1
-                                    : c.rank() == 13
-                                            ? .7
-                                            : c.rank() == 12 ? .4 : c.rank() == 11 ? .2 : .03)
-                            + (c.suit().ordinal() == trump.ordinal() ? .2 : 0);
-        return Math.min(hand.size(), (int) Math.round(value));
+        return DecisionEvaluation.biddingTargets(view, hands, own);
     }
 
     private static long seed(View view, int sample) {
@@ -730,22 +588,4 @@ public final class MonteCarloAi {
         return PossibleDeals.sample(view, random);
     }
 
-    private static boolean[][] knownVoids(View view) {
-        return PossibleDeals.knownVoids(view);
-    }
-
-    private static int[] rollout(
-            View view, List<List<Card>> hands, Card first, int[] targets, Random random) {
-        return RolloutPolicy.rollout(view, hands, first, targets, random);
-    }
-
-    private static Card greedy(
-            List<Card> hand,
-            List<PlayedCard> trick,
-            View view,
-            int seat,
-            int needed,
-            Random random) {
-        return RolloutPolicy.greedy(hand, trick, view, seat, needed, random);
-    }
 }

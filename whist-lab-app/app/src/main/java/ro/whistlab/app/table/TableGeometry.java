@@ -19,7 +19,8 @@ final class TableGeometry {
     static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
             int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows,
             CenterAlignment centerAlignment) {
-        int inset = TableLayoutMetrics.topInsetPx(height);
+        int inset = Math.min(TableLayoutMetrics.topInsetPx(height),
+                Math.max(0, height - minimumHeight(players, seatHeight, centerHeight, gap)));
         Plan base = arrange(width, height - inset, players, seatWidth, seatHeight,
                 centerWidth, centerHeight, gap, fullWidthCardRows, centerAlignment);
         return new Plan(base.seats().stream().map(box -> lower(box, inset)).toList(),

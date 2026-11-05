@@ -53,7 +53,7 @@ public class RolloutPolicyRegressionTest {
  public static List<List<Card>> copy(List<List<Card>> w){var result=new ArrayList<List<Card>>();for(var h:w)result.add(new ArrayList<>(h));return result;}
  static int[] rollExpert(MonteCarloAi.View v,List<List<Card>> w,int[] goals,boolean old)throws Exception{
   if(!old)return guideReference(v,w,goals);
-  Class<?> type=old?ro.whistlab.core.baseline.v6.RoundSixMonteCarloAi.class:MonteCarloAi.class;Object observed=old?frozenView(v):v;var method=type.getDeclaredMethod("rollout",observed.getClass(),List.class,Card.class,int[].class,Random.class);method.setAccessible(true);return (int[])method.invoke(null,observed,copy(w),null,goals,stable());
+  Object observed=frozenView(v);var method=ro.whistlab.core.baseline.v6.RoundSixMonteCarloAi.class.getDeclaredMethod("rollout",observed.getClass(),List.class,Card.class,int[].class,Random.class);method.setAccessible(true);return (int[])method.invoke(null,observed,copy(w),null,goals,stable());
  }
  static int[] guideReference(MonteCarloAi.View v,List<List<Card>> world,int[] goals)throws Exception{
   var hands=copy(world);var trick=new ArrayList<>(v.trick());int n=hands.size(),actor=trick.isEmpty()?(v.dealer()+1)%n:v.seat();int[] won=v.seats().stream().mapToInt(MonteCarloAi.Seat::won).toArray();var old=frozenView(v);

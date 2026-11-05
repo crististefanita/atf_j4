@@ -23,6 +23,37 @@ O modificare a testelor păstrează sensul contractului și motivul pentru care 
 
 [Guvernanța documentației](ATF_Documentation.md) · [Colecții](../testing/ATF_Collections.md)
 
+<details>
+<summary>Control activ: proporțiile mesei și acțiunea deasupra numelui</summary>
+
+```yaml
+testChanges:
+  - id: DISPLAY-PROPORTIONS-ACTION-AND-HISTORY
+    status: VERIFIED
+    base: 8933374e33ab6eee9cb4217ed1a6112aebacc9b3
+    expires: 2026-12-05
+    reason: Aplică cerința de reducere a înălțimii fețelor jucate și lățimii atuului, mărire a chenarelor și separare completă a acțiunii de nume; păstrează geometria fără suprapuneri și identitatea cronologică a scorului.
+    proof: 'gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true --offline --no-daemon; pwsh -NoProfile -File scripts/run-whist-responsive-sanity.ps1 -ComponentsOnly'
+    paths:
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/seat/PlayerSeatMetricsComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/profile/ResponsiveDisplayProfile.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/profile/ResponsiveDisplayProfileComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveTableState.java
+      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveMenuChecks.java
+      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java
+```
+
+Oracolul dimensiunilor urmează cerința de prezentare, iar controalele negative refuză înălțimea depășită, acțiunea lipsă, textul prescurtat și suprapunerea peste nume. Verificarea nativă rămâne distinctă de observația simulată și de mecanismul JVM.
+
+</details>
+
 ## Mutarea proprietății unei verificări
 
 Transferul unei implementări către o bibliotecă păstrează toate contractele native la producător. Consumatorul păstrează acceptanța API-ului folosit, identitatea JAR-ului încărcat și refuzurile pentru metadate ori livrări inconsistente.

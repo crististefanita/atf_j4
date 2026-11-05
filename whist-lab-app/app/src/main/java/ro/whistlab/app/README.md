@@ -33,6 +33,7 @@ Fereastra exclude barele sistemului și decupajul înaintea aranjării. Această
 |---|---|
 | Fereastră Android | [WindowContent](window/WindowContent.java) aplică protecția nativă și măsoară spațiul util; [WindowPadding](window/WindowPadding.java) păstrează baza imuabilă. |
 | Masă și licitare | [GameBoardLayout](table/GameBoardLayout.java), [TableGeometry](table/TableGeometry.java) și [BidGridMetrics](bidding/BidGridMetrics.java) măsoară locurile și regiunea centrală. |
+| Nume și tură | [PlayerSeatView](seat/PlayerSeatView.java) măsoară textul acțiunii deasupra chenarului; [PlayerSeatMetrics](seat/PlayerSeatMetrics.java) rezervă regiunile fără suprapuneri. |
 | Mână | [HandLayoutMetrics](hand/HandLayoutMetrics.java) calculează evantaiul; [CenteredHandView](hand/CenteredHandView.java) gestionează poziția inițială a derulării. |
 | Levată și atu | [TrickCardMetrics](table/TrickCardMetrics.java) ancorează cărțile după loc; [TrumpIndicatorView](table/TrumpIndicatorView.java) afișează informația despre atu. |
 | Scor | [ScoreHistoryTable](score/ScoreHistoryTable.java) proiectează programul complet pentru toate locurile; [ScoreHistoryView](score/ScoreHistoryView.java) îl afișează cu descrieri accesibile. |
@@ -45,11 +46,12 @@ Dimensiunile, pragurile și coeficienții de aranjare au sursa în componentele 
 
 - Locul omului rămâne sud; poziția cărții jucate depinde de locul actorului și de ordinea levatei.
 - Licitarea și levata folosesc regiunea centrală; [TableViewportPolicy](table/TableViewportPolicy.java) adaptează spațiul decorativ și înălțimea fețelor pentru ferestre scunde.
-- Masa folosește o fereastră cu înălțime măsurată, fără scroll vertical. Profilul compact decalează crucea levatei, integrează indicatorul turei lângă nume și păstrează mâna, levata și toate chenarele simultan vizibile.
+- Masa folosește o fereastră cu înălțime măsurată, fără scroll vertical. Profilul compact decalează crucea levatei; acțiunea turei are o regiune proprie deasupra numelui, cu înălțimea integrală a textului și spațiu rezervat între ture.
 - Evantaiul ține cont de lățime, densitate, scara textului și banda măsurată a indicelui; o mână mai lată păstrează accesul orizontal. Masa nu recuperează prin scroll vertical o regiune tăiată.
 - Selecția unei cărți rezervă spațiul ridicării și păstrează locul omului; decorul cărții aparține [CardFaceBackground](cards/CardFaceBackground.java).
 - Indicatorul de atu și locul activ folosesc stilurile comune; textul și descrierile accesibile completează diferențierea vizuală.
 - Istoricul are toate locurile în același tabel cronologic, cu antete fixe la derularea verticală și deplasare orizontală comună.
+- Prima coloană a istoricului arată numărul de cărți; ordinea mâinii rămâne în model și în descrierile accesibile. [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aliniază separatoarele și grupurile jucătorilor la densități fracționare.
 
 ## Istoricul scorului
 
@@ -67,6 +69,7 @@ Punctele sunt derivate de domeniu din soldurile istoricului. Schema curentă nu 
 |---|---|
 | Componente ale ferestrei | [WindowPaddingComponentTest](../../../../../test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) verifică insets repetate, decupaj, tastatură și bugetul ferestrei compacte. |
 | Componente JVM | [Aranjarea mesei](../../../../../test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java), [ancorele levatei](../../../../../test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java) și [ferestrele compacte](../../../../../test/java/ro/whistlab/app/table/TableViewportPolicyTest.java) verifică modelele geometrice. |
+| Acțiune și nume | [PlayerSeatMetricsComponentTest](../../../../../test/java/ro/whistlab/app/seat/PlayerSeatMetricsComponentTest.java) injectează măsurători pentru RO/EN, rezoluții uzuale și text mărit; verifică spațiul integral deasupra chenarului și egalizarea locurilor. |
 | Componente ale scorului | [ScoreHistoryCheckpointTest](../../../../../test/java/ro/whistlab/app/score/ScoreHistoryCheckpointTest.java) verifică valorile și proiecția istoricului. |
 | Android E2E | [Matricea vizuală](../../../../../../../../docs/testing/ATF_Display.md) verifică nodurile, interacțiunile și rasterul PNG pe profiluri explicite. |
 

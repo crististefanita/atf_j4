@@ -30,6 +30,14 @@ Inventarul include rădăcinile Maven declarate și rădăcinile JVM suplimentar
 
 [Suita locală](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) și [politica](../../config/atf-governance-policy.json) definesc contractul executabil. Adaptarea păstrează regulile reutilizabile ale verificatoarelor comune; ipotezele despre modulele altor aplicații nu sunt importate.
 
+| Inventar | Invariantă |
+|---|---|
+| Maven | Rădăcina declarată și POM-ul responsabil sunt păstrate împreună, inclusiv pentru module imbricate; metadatele nu sunt reconstruite din primele segmente ale căii. |
+| Rădăcini suplimentare | Modulul și calea sunt explicite, iar `test` este boolean; rădăcina rămâne în modulul său. |
+| Proprietate | Un fișier are un singur responsabil și un singur set de surse; suprapunerile sunt refuzate, fără deduplicare care ar ascunde ambiguitatea. |
+
+[Contractele inventarului](../../atf-tests/src/test/java/atf/tests/governance/support/SourceInventoryContractTest.java) verifică atât sursa validă, cât și configurațiile care ar pierde identitatea sau ar schimba proprietarul.
+
 ## Reguli executabile
 
 | Zonă | Contract | Limită |

@@ -41,7 +41,6 @@ final class GameBoardLayout extends ViewGroup {
                     MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             seatHeight = Math.max(seatHeight, seat.getMeasuredHeight());
         }
-        seatHeight = TableLayoutMetrics.seatHeightPx(seatHeight);
         for (int index = 0; index < players; index++) {
             getChildAt(index).measure(MeasureSpec.makeMeasureSpec(seatWidth, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(seatHeight, MeasureSpec.EXACTLY));
@@ -51,8 +50,7 @@ final class GameBoardLayout extends ViewGroup {
         center.measure(MeasureSpec.makeMeasureSpec(measuredCenterWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         int minimum = Math.max(dp(minimumHeightDp),
-                TableLayoutMetrics.boardHeightPx(
-                        TableGeometry.minimumHeight(players, seatHeight, center.getMeasuredHeight(), gap)));
+                TableGeometry.minimumHeight(players, seatHeight, center.getMeasuredHeight(), gap));
         setMeasuredDimension(width, Math.max(minimum, resolveSize(minimum, heightSpec)));
     }
 

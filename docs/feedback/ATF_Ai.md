@@ -36,7 +36,6 @@ Responsabilul modulului AI deține intrările și verificarea proprie. Testele d
 
 | Prioritate | Responsabil și lucrare | Criteriu de închidere |
 |---|---|---|
-| P2 | Politica Hard: separarea evaluării alternativelor de compoziția din [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java). | Extrageri justificate prin invariantă proprie; componentele păstrează ordinea eșantionării, inițializarea deterministă și așteptări independente. |
 | P2 | Motorul: calificarea frontierelor prin mutanți semantici. | Inversarea obligației de atu, a câștigătorului sau a întreruperii seriei este detectată independent; acoperirea JaCoCo se interpretează separat de corectitudine. |
 
 ## Contractele calificării

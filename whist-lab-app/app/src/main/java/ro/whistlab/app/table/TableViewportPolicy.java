@@ -11,12 +11,12 @@ final class TableViewportPolicy {
         shortWindow = availableHeightDp < 600;
     }
     boolean isCompact() { return compact; }
-    int regionGapDp() { return compact ? 2 : 8; }
+    int regionGapDp() { return compact ? 1 : 8; }
     int minimumBoardHeightDp() { return compact ? 0 : 320; }
     boolean showPlayHint() { return !compact; }
     int handClearanceDp(boolean bidding) { return compact && bidding ? 12 : HandLayoutMetrics.LIFT_CLEARANCE_DP; }
     int seatVerticalPaddingDp() { return compact ? 1 : 4; }
-    int outerVerticalPaddingDp() { return compact ? 2 : 4; }
+    int outerVerticalPaddingDp() { return compact ? 0 : 4; }
     int playedCardFaceHeightDp() { return shortWindow ? 71 : TrickCardMetrics.CARD_HEIGHT_DP; }
     int playedCardItemVerticalPaddingDp() {
         return compact ? 2 : TrickCardMetrics.ITEM_VERTICAL_PADDING_DP;

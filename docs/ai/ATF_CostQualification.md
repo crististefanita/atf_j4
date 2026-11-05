@@ -4,7 +4,14 @@
 
 Costul deciziei se califică separat de forța strategică și de latența aplicației Android. [Colecția `cost`](../testing/ATF_Collections.md) exercită Normal, Hard și jucătorul independent pe observații publice rezultate din joc legal generat, la 2–8 cărți și patru jucători. Pregătirea folosește sesiunea reală și comenzi legale; distribuția completă rămâne în suportul testului, iar algoritmul primește mâna proprie și faptele publice.
 
-[Profilul](../../config/whist-ai-cost-profile.json) declară înaintea execuției inițializările, repetările, încălzirea JVM și limitele de lucru, CPU și timp total. Testul refuză domenii incomplete, valori lipsă și limite nepozitive. Colecția este explicită și nu se adaugă regresiei implicite sau turneelor de învățare.
+[Profilul](../../config/whist-ai-cost-profile.json) declară înaintea execuției inițializările, repetările, încălzirea JVM și limitele de lucru, CPU și timp total. [CostProfile](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostProfile.java) îl validează o singură dată și păstrează identitatea octeților; refuză domenii incomplete, conversii implicite, depășiri numerice și limite nepozitive. Colecția este explicită și nu se adaugă regresiei implicite sau turneelor de învățare.
+
+| Responsabil al verificării | Limită |
+|---|---|
+| `CostProfile` | Profil validat și copii independente ale documentului; [componentele profilului](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostProfileTest.java) verifică refuzurile. |
+| `CostPlayer` | Adaptoare tipizate pentru cele două API-uri și controale de măsurare, cu păstrarea diagnosticului la abandon. |
+| `CostChecks` | Legalitatea și limitele structurale, separate de ceas și serializare. |
+| `AiCostQualificationTest` | Orchestrare, interval măsurat și rezultat extern; eroarea publicării se atașează cauzei inițiale când calculul a eșuat deja. |
 
 ## Fluxul măsurării
 

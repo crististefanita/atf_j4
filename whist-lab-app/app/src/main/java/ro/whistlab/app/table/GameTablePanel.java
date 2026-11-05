@@ -5,7 +5,7 @@ import ro.whistlab.app.cards.CardFaceBackground;
 import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
 import ro.whistlab.app.localization.WhistUiText;
-import ro.whistlab.app.seat.SeatHeadingView;
+import ro.whistlab.app.seat.PlayerSeatView;
 import ro.whistlab.app.theme.WhistUiPalette;
 import ro.whistlab.app.window.WindowContent;
 
@@ -260,15 +260,21 @@ public final class GameTablePanel extends LinearLayout {
         seat.setBackground(WhistUiPalette.seatFrame(context, active));
         seat.setElevation(dp(active ? 1 : 0));
 
-        seat.addView(new SeatHeadingView(context, copy.seatName(player),
-                copy.seatTurnBadge(bidding), active), matchWrap());
+        TextView name = text(copy.seatName(player), 13,
+                active ? INK : WhistUiPalette.IDLE_SEAT_TEXT, true);
+        name.setGravity(Gravity.CENTER);
+        name.setSingleLine(true);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        name.setTag("seat-name:" + player.seat());
+        name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        seat.addView(name, matchWrap());
         addSeatFact(seat, copy.bidLabel() + ":", player.bid() == null ? "—" : player.bid().toString(), active);
         addSeatFact(seat, copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()), active);
         seat.setTag("table-seat:" + player.seat());
         seat.setContentDescription(copy.seatAccessibility(player, dealer, active, bidding));
         seat.setFocusable(true);
         seat.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        return seat;
+        return new PlayerSeatView(context, seat, copy.seatTurnBadge(bidding), active, player.seat(), viewport.isCompact());
     }
 
     private View buildCurrentTrick(TrickCardMetrics.Layout layout) {

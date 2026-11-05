@@ -2,6 +2,7 @@ package ro.whistlab.core.learning.regression;
 import ro.whistlab.core.testing.match.PlayerObservations;
 
 import ro.whistlab.core.ai.engine.MonteCarloAi;
+import ro.whistlab.core.ai.simulation.RolloutPolicy;
 import ro.whistlab.core.ai.information.RolloutBoundsOracleTest;
 import ro.whistlab.core.ai.policy.LostGameContractRegressionTest;
 import ro.whistlab.core.model.Card;
@@ -36,7 +37,7 @@ public class SafetyPlanningCasesTest {
   var world=List.of(RolloutPolicyRegressionTest.hand("10H","9D"),RolloutPolicyRegressionTest.hand("9H","JH"),RolloutPolicyRegressionTest.hand("7H","7D"),RolloutPolicyRegressionTest.hand("8H","8D"));
   CapturedRegression.run("auction-same-cards-different-contracts",getClass().getName(),"identicalCardsReactToTheOpponentsPublicContract",Map.of("purpose","Public bidding must influence predicted behavior, not just a raw honor sum","rule","After hero leads10H, an opponent holding9H/JH ducks with9H when needing zero, and takes withJH when needing one. The hero consequently takes2 or0 in this fixed world.","scope","Two legal hypothetical continuations with identical cards; only the public opponent bid changes.","world",world),capture->{
    for(int bid:List.of(0,1)){int[] goals={0,bid,0,0};var view=RolloutPolicyRegressionTest.view(world,0,3,Trump.NO_TRUMP,List.of(),goals);capture.equal("Known public opponent contract is authoritative",bid,MonteCarloAi.biddingTargets(view,world,0)[1]);
-    var method=MonteCarloAi.class.getDeclaredMethod("rollout",MonteCarloAi.View.class,List.class,Card.class,int[].class,Random.class);method.setAccessible(true);int[] actual=(int[])method.invoke(null,view,RolloutPolicyRegressionTest.copy(world),c("10H"),goals,RolloutPolicyRegressionTest.stable());capture.equal("Expert continuation reflects remaining opponent need",bid==0?2:0,actual[0]);
+    int[] actual=RolloutPolicy.rollout(view,RolloutPolicyRegressionTest.copy(world),c("10H"),goals,RolloutPolicyRegressionTest.stable());capture.equal("Expert continuation reflects remaining opponent need",bid==0?2:0,actual[0]);
     var p=PlayerObservations.independent(view);var hands=new ArrayList<List<Integer>>();for(var h:world)hands.add(new ArrayList<>(h.stream().map(PublicEndgameOracle::id).toList()));var independent=IndependentPlayer.class.getDeclaredMethod("roll",IndependentPlayer.Position.class,List.class,int.class,int[].class,Random.class);independent.setAccessible(true);int[] independentWon=(int[])independent.invoke(null,p,hands,PublicEndgameOracle.id(c("10H")),goals,RolloutPolicyRegressionTest.stable());capture.equal("Independent continuation reflects the same public need",bid==0?2:0,independentWon[0]);
    }
   });

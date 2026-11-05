@@ -11,19 +11,19 @@ public class TableViewportPolicyTest {
         for (int width : new int[]{280, 313, 353, 560, 760}) {
             for (int players = 3; players <= 6; players++) {
                 for (int naturalHeight : new int[]{48, 62, 82, 110, 156}) {
-                    int seatHeight = TableLayoutMetrics.seatHeightPx(naturalHeight);
-                    assertEquals((int) Math.ceil(naturalHeight * 1.25), seatHeight);
+                    var seat = ro.whistlab.app.seat.PlayerSeatMetrics.arrange(naturalHeight, 12, 3);
+                    int seatHeight = seat.heightPx();
+                    assertEquals((int) Math.ceil(naturalHeight * 1.25), seat.frameHeightPx());
                     var trick = TrickCardMetrics.forTable(players, width);
-                    int minimum = TableLayoutMetrics.boardHeightPx(TableGeometry.minimumHeight(
-                            players, seatHeight, trick.centerHeightDp(), 8));
+                    int minimum = TableGeometry.minimumHeight(players, seatHeight, trick.centerHeightDp(), 8);
                     for (int extra : new int[]{0, 80, 240}) {
                         int height = minimum + extra;
                         var plan = TableGeometry.arrangeDisplay(width, height, players,
                                 TableLayoutMetrics.seatWidthDp(width), seatHeight,
                                 trick.safeCenterWidthDp(), trick.centerHeightDp(), 8, true,
                                 TableGeometry.CenterAlignment.BALANCED);
-                        int inset = TableLayoutMetrics.topInsetPx(height);
-                        assertEquals(Math.round(height * 0.05f), inset);
+                        int inset = Math.min(Math.round(height * 0.05f), extra);
+                        assertTrue(TableLayoutMetrics.topInsetPx(height) >= inset);
                         assertEquals("Human frame stays above the separate hand region",
                                 height, plan.seats().getFirst().bottom());
                         var boxes = new java.util.ArrayList<>(plan.seats());
@@ -63,13 +63,13 @@ public class TableViewportPolicyTest {
     @Test public void shortWindowsReclaimDecorationAndReduceOnlyThePlayedCardFaces() {
         var compact = new TableViewportPolicy(497);
         assertTrue(compact.isCompact());
-        assertEquals(2, compact.regionGapDp());
+        assertEquals(1, compact.regionGapDp());
         assertEquals(0, compact.minimumBoardHeightDp());
         assertFalse(compact.showPlayHint());
         assertEquals(28, compact.handClearanceDp(false));
         assertEquals(12, compact.handClearanceDp(true));
         assertEquals(1, compact.seatVerticalPaddingDp());
-        assertEquals(2, compact.outerVerticalPaddingDp());
+        assertEquals(0, compact.outerVerticalPaddingDp());
         assertEquals(71, compact.playedCardFaceHeightDp());
         assertEquals(2, compact.playedCardItemVerticalPaddingDp());
         assertEquals(98, HandLayoutMetrics.cardHeightDp());
@@ -93,9 +93,10 @@ public class TableViewportPolicyTest {
         for (int width : new int[]{280, 313, 353}) for (int players = 3; players <= 6; players++) {
             var trick = TrickCardMetrics.forTable(players, width, 1f, viewport);
             int seatWidth = TableLayoutMetrics.seatWidthDp(width, true);
-            int seatHeight = TableLayoutMetrics.seatHeightPx(48);
-            int minimum = TableLayoutMetrics.boardHeightPx(TableGeometry.minimumHeight(
-                    players, seatHeight, trick.centerHeightDp(), viewport.regionGapDp()));
+            int reference = ro.whistlab.app.seat.PlayerSeatMetrics.referenceFrameHeightPx(43, 15, 20);
+            int seatHeight = ro.whistlab.app.seat.PlayerSeatMetrics.arrange(reference, 12, 3).heightPx();
+            int minimum = TableGeometry.minimumHeight(
+                    players, seatHeight, trick.centerHeightDp(), viewport.regionGapDp());
             assertTrue("The whole table must fit a 497 dp viewport: " + players + " players", minimum <= availableBoard);
             var plan = TableGeometry.arrangeDisplay(width, availableBoard, players, seatWidth, seatHeight,
                     trick.safeCenterWidthDp(), trick.centerHeightDp(), viewport.regionGapDp(), true,

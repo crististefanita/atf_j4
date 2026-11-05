@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @AtfComponentTest
@@ -32,5 +33,46 @@ class SourceInventoryContractTest {
 
     private static Path write(Path root, String relative, String text) throws IOException {
         Path file = root.resolve(relative); Files.createDirectories(file.getParent()); Files.writeString(file, text); return file;
+    }
+
+    @Test void projectInventoryKeepsDeclaredRootsAndNestedModuleOwnership(@TempDir Path root) throws Exception {
+        write(root, "config/atf-governance-policy.json", "{\"additionalSourceRoots\":[]}");
+        write(root, "modules/domain/pom.xml", """
+                <project><build><sourceDirectory>sources</sourceDirectory>
+                <testSourceDirectory>checks</testSourceDirectory></build></project>
+                """);
+        Path main=write(root,"modules/domain/sources/domain/Model.java","package domain; class Model {}");
+        Path test=write(root,"modules/domain/checks/domain/ModelTest.java","package domain; class ModelTest {}");
+        var files=GovernanceProject.sources(root);
+        assertEquals(2,files.size());
+        for(var file:files) {
+            assertEquals("modules/domain",file.module());
+            assertEquals(file.test()?test:main,file.file());
+            assertEquals(root.resolve(file.test()?"modules/domain/checks":"modules/domain/sources"),file.sourceRoot());
+        }
+    }
+
+    @Test void duplicatedOrOverlappingRootsCannotChangeSourceOwnership(@TempDir Path root) throws Exception {
+        write(root,"domain/src/main/java/model/Visible.java","package model; class Visible {}");
+        String entry="{\"module\":\"domain\",\"path\":\"domain/src/main/java\",\"test\":false}";
+        Path policy=write(root,"config/atf-governance-policy.json","{\"additionalSourceRoots\":["+entry+"]}");
+        assertEquals(1,GovernanceProject.sources(root).size());
+        for(String other:List.of(entry,entry.replace("false","true"),entry.replace("domain/src/main/java","domain/src/main"))) {
+            Files.writeString(policy,"{\"additionalSourceRoots\":["+entry+","+other+"]}");
+            assertThrows(IOException.class,()->GovernanceProject.sources(root));
+        }
+    }
+
+    @Test void additionalRootMetadataCannotBeCoercedOrAssignedToAnotherModule(@TempDir Path root) throws Exception {
+        write(root,"domain/src/main/java/model/Visible.java","package model; class Visible {}");
+        Files.createDirectories(root.resolve("other"));
+        for(String entry:List.of(
+                "{\"module\":\"domain\",\"path\":\"domain/src/main/java\"}",
+                "{\"module\":\"domain\",\"path\":\"domain/src/main/java\",\"test\":\"true\"}",
+                "{\"module\":\"other\",\"path\":\"domain/src/main/java\",\"test\":false}",
+                "{\"module\":\"\",\"path\":\"domain/src/main/java\",\"test\":false}")) {
+            write(root,"config/atf-governance-policy.json","{\"additionalSourceRoots\":["+entry+"]}");
+            assertThrows(IOException.class,()->GovernanceProject.sources(root));
+        }
     }
 }

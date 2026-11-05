@@ -11,6 +11,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /** Shared explicit perimeter. Discovery never treats a missing project as a successful empty scan. */
 public final class GovernanceProject {
@@ -59,28 +61,33 @@ public final class GovernanceProject {
     }
 
     public static List<SourceFile> sources(Path root) throws Exception {
-        var result = new ArrayList<SourceFile>();
-        for (Path file : AtfJavaSourceInventory.mainSources(root)) result.add(mavenSource(root, file, false));
-        for (Path file : AtfJavaSourceInventory.testSources(root)) result.add(mavenSource(root, file, true));
-        for (JsonNode entry : policy(root).withArray("additionalSourceRoots")) {
-            Path source = safeDirectory(root, entry.required("path").asText());
-            try (var files = Files.walk(source)) {
-                for (Path file : files.filter(Files::isRegularFile)
-                        .filter(p -> p.toString().endsWith(".java")).toList()) {
-                    if (!file.toRealPath().startsWith(source.toRealPath())) throw new IOException("GOV-SOURCE-ESCAPE: " + file);
-                    result.add(new SourceFile(file, source, entry.required("module").asText(), entry.path("test").asBoolean()));
-                }
-            }
+        root = root.toAbsolutePath().normalize();
+        var result = new LinkedHashMap<Path, SourceFile>();
+        for (var source : AtfJavaSourceInventory.roots(root)) {
+            String module = relative(root, source.module());
+            addSources(result, source.directory(), module, source.test());
         }
-        return result.stream().distinct().sorted(java.util.Comparator.comparing(row -> row.file().toString())).toList();
+        JsonNode additional = policy(root).path("additionalSourceRoots");
+        if (!additional.isMissingNode() && !additional.isArray()) throw new IOException("GOV-SOURCE-CONFIG: additionalSourceRoots must be an array");
+        for (JsonNode entry : additional) {
+            if (!entry.path("module").isTextual() || entry.path("module").asText().isBlank()
+                    || !entry.path("path").isTextual() || !entry.path("test").isBoolean())
+                throw new IOException("GOV-SOURCE-CONFIG: explicit module, path and boolean test required: " + entry);
+            Path module = safeDirectory(root, entry.path("module").asText());
+            Path source = safeDirectory(root, entry.required("path").asText());
+            if (!source.startsWith(module) || source.equals(module))
+                throw new IOException("GOV-SOURCE-OWNER: root must be inside its module: " + entry);
+            addSources(result, source, relative(root, module), entry.path("test").booleanValue());
+        }
+        return result.values().stream().sorted(java.util.Comparator.comparing(row -> row.file().toString())).toList();
     }
 
-    private static SourceFile mavenSource(Path root, Path file, boolean test) throws IOException {
-        Path relative = root.relativize(file);
-        Path module = root.resolve(relative.getName(0));
-        Path source = module.resolve(test ? "src/test/java" : "src/main/java");
-        if (!file.startsWith(source)) throw new IOException("GOV-MAVEN-LAYOUT: declare adapter for " + file);
-        return new SourceFile(file, source, relative.getName(0).toString(), test);
+    private static void addSources(Map<Path, SourceFile> result, Path source, String module, boolean test) throws IOException {
+        for (Path file : AtfJavaSourceInventory.files(source)) {
+            var entry = new SourceFile(file, source, module, test);
+            SourceFile previous = result.putIfAbsent(file, entry);
+            if (previous != null) throw new IOException("GOV-SOURCE-OVERLAP: " + file + " claimed by " + previous + " and " + entry);
+        }
     }
 
     public static Path safeDirectory(Path root, String relative) throws IOException {
