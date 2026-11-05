@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-05T13:01:12.451Z" hostname="DESKTOP-BLFSO18" time="0.241">
+  <properties/>
+  <testcase name="playerHeadersAndSubcolumnsAlignWithoutClippingAtFractionalDensities" classname="ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest" time="0.044"/>
+  <testcase name="invalidInputsCannotInventAHistoryGeometry" classname="ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest" time="0.08"/>
+  <testcase name="fractionalDensityKeepsTheExtraSubcolumnPixelRatherThanClippingIt" classname="ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest" time="0.059"/>
+  <testcase name="visibleLabelsContainOnlyCardsWhileRepeatedHandsKeepDistinctIdentities" classname="ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest" time="0.017"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

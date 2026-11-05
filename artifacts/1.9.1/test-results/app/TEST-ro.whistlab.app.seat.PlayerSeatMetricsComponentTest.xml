@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-05T13:01:12.736Z" hostname="DESKTOP-BLFSO18" time="0.206">
+  <properties/>
+  <testcase name="invalidExtentsCannotSilentlyHideAnAction" classname="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" time="0.013"/>
+  <testcase name="repeatedMeasurementUsesFreshContentRatherThanThePreviousEnlargedFrame" classname="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" time="0.005"/>
+  <testcase name="movingTheBadgeOutsideDoesNotShrinkTheReferenceFrameBeforeEnlargingIt" classname="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" time="0.0"/>
+  <testcase name="fullLocalizedActionsStayAboveNamesAcrossCommonResolutionsAndFontScales" classname="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" time="0.166"/>
+  <testcase name="multiLineActionExpandsItsOwnRegionAndCannotIntersectTheFrame" classname="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" time="0.012"/>
+  <testcase name="equalizedSeatSlotsKeepFramesAlignedForDifferentMeasuredContents" classname="ro.whistlab.app.seat.PlayerSeatMetricsComponentTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

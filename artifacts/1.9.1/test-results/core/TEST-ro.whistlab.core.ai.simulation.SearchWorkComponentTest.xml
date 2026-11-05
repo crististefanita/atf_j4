@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.core.ai.simulation.SearchWorkComponentTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-05T13:01:50.009Z" hostname="DESKTOP-BLFSO18" time="2.772">
+  <properties/>
+  <testcase name="scopesAreThreadOwnedNonNestedAndReturnImmutableFrozenMetrics" classname="ro.whistlab.core.ai.simulation.SearchWorkComponentTest" time="0.159"/>
+  <testcase name="exhaustedWorkAbortsWithoutPartialDecisionOrScopeLeak" classname="ro.whistlab.core.ai.simulation.SearchWorkComponentTest" time="1.15"/>
+  <testcase name="measurementPreservesBothPoliciesAtTwoToEightCards" classname="ro.whistlab.core.ai.simulation.SearchWorkComponentTest" time="1.384"/>
+  <testcase name="cancellationIsDistinctFromWorkExhaustionAndKeepsTheFlag" classname="ro.whistlab.core.ai.simulation.SearchWorkComponentTest" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -12,6 +12,7 @@ Fiecare versiune are propriul dosar cu README, rapoarte, capturi și metadate. S
 
 | Versiune | Dosar |
 |---|---|
+| 1.9.1 | [Rezultate și metadate](1.9.1/README.md) |
 | 0.1.9 | [Rezultate și metadate](0.1.9/README.md) |
 
 [Indexul structurat](index.json) declară versiunea curentă și populația dosarelor. Un dosar nou primește versiunea exactă a APK-ului; rezultatele unei livrări existente se păstrează separat de următoarea.
