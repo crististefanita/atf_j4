@@ -1,5 +1,5 @@
 {
-  "status": "PASS_LOCAL_ARTIFACTS_AND_NATIVE_SANITY",
+  "status": "PASS_LOCAL_NATIVE_AND_PERSONAL_BROWSER_DOWNLOAD",
   "localMarkdownLinks": 130,
   "missingLinks": 0,
   "apkSha256": "811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066",
@@ -24,5 +24,7 @@
   "android37": "NOT_RUN_BY_USER_REQUEST",
   "interactiveExtentExpansionVerified": false,
   "anonymousGithubDownload": "BLOCKED_HTTP_404",
-  "authenticatedGithubAssetDownload": "PASS"
+  "authenticatedGithubAssetDownload": "PASS",
+  "authenticatedPersonalBrowserDownload": "PASS",
+  "anonymousAccessRequiredForPersonalDownload": false
 }

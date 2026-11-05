@@ -186,6 +186,10 @@
     "authenticatedAssetDownload": "PASS",
     "anonymousBrowserDownload": "BLOCKED_HTTP_404",
     "publicDeliveryQualified": false,
-    "proof": "github-download-verification.json"
+    "proof": "github-download-verification.json",
+    "authenticatedPersonalBrowserDownload": "PASS",
+    "personalDownloadQualified": true,
+    "anonymousAccessRequiredForPersonalDownload": false,
+    "personalBrowserProof": "github-authenticated-browser-download.json"
   }
 }

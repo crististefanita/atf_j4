@@ -10,14 +10,29 @@ La un release nou, înlocuiți pachetul și actualizați acest registru. Build-u
 |---|---|
 | Binar | [WhistLab-0.1.9.apk](../../dist/WhistLab-0.1.9.apk) |
 | Versiune | `0.1.9`, `versionCode 10` |
-| Mărime | 771.391 bytes; fișierul de 14 bytes cu `404: Not Found` nu este un APK. |
+| Mărime | 771.391 bytes |
 | Platformă | `minSdk 24`, `targetSdk 36`, `compileSdk 36` |
 | SHA-256 | `811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066` |
 | Semnare | Keystore Android local de dezvoltare; semnături v2/v3 și aliniere verificate. |
 
 APK-ul release este destinat instalării directe; cheia nu este una de publicare Google Play. [Manifestul release-ului](WhistLab-0.1.9/release-validation.json) leagă binarul, testele, restaurarea datelor și limitele verificării.
 
-**Distribuția anonimă GitHub este blocată de HTTP 404.** [Release-ul publicat](https://github.com/crististefanita/atf_j4/releases/tag/v0.1.9) conține APK-ul și checksum-ul; descărcarea autentificată prin API a trecut cu 771.391 bytes, același SHA-256 și toate CRC-urile valide. [Proba distribuției](WhistLab-0.1.9/github-download-verification.json) păstrează separat rezultatele. Folosiți copia locală verificată până la calificarea accesului anonim.
+## Descărcare din browser
+
+**[Descarcă APK-ul din GitHub Releases](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk)** · [Pagina versiunii](https://github.com/crististefanita/atf_j4/releases/tag/v0.1.9) · [Checksum](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk.sha256).
+
+Autentifică-te cu contul tău GitHub în același browser. Descărcarea din **Assets** a reușit: 771.391 bytes și SHA-256 identic cu APK-ul local; [proba browserului](WhistLab-0.1.9/github-authenticated-browser-download.json) păstrează canalul și fișierul verificat.
+
+[Intrarea dist](../../dist/README.md) și README-ul principal trimit la `releases/latest`, fără duplicarea versiunii în navigarea stabilă. Cerința 2FA observată la formularul Support nu a fost necesară pentru această descărcare.
+
+<details>
+<summary>Acces anonim — diagnostic separat de descărcarea personală</summary>
+
+Accesul anonim este blocat de HTTP 404. [Proba inițială](WhistLab-0.1.9/github-download-verification.json) separă upload-ul, descărcarea autentificată prin API și accesul anonim; acest blocaj nu invalidează descărcarea personală verificată în browser.
+
+[Diagnosticul contului](WhistLab-0.1.9/github-account-visibility-diagnostic.json) confirmă mesajul `User flagged as spammy.` din Search API autentificat. Revizuirea marcajului rămâne un proces separat prin [GitHub Support](https://support.github.com/contact/reinstatement).
+
+</details>
 
 ## Rapoarte Extent
 

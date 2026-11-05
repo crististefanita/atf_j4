@@ -38,7 +38,11 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 ## Distribuția prin GitHub
 
-[Registrul release-ului](../../artifacts/reports/README.md#apk-documentat) păstrează legăturile publice ale APK-ului și fișierului SHA-256 pentru versiunea documentată. Din pagina GitHub a unei versiuni, meniul **Assets** oferă intrarea de descărcare pentru telefon; binarul ales trebuie confruntat cu identitatea din registru.
+[GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest) este intrarea stabilă de descărcare; adresa urmărește ultima versiune publicată. Pentru folosire personală, autentificați-vă în același browser și alegeți APK-ul din **Assets**.
+
+[Directorul dist](../../dist/README.md) păstrează copia locală curentă și trimite către Releases prin README. GitHub afișează directorul repository-ului ca fișiere și documentație; acest README este o legătură de navigare, nu un redirect HTTP automat.
+
+[Registrul release-ului](../../artifacts/reports/README.md#apk-documentat) deține identitatea versiunii, adresele asset-urilor și probele de integritate. Descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului personal verificat.
 
 | Etapă | Criteriu de acceptare |
 |---|---|
