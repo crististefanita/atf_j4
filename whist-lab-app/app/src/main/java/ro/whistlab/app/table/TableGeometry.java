@@ -23,8 +23,9 @@ final class TableGeometry {
                 Math.max(0, height - minimumHeight(players, seatHeight, centerHeight, gap)));
         Plan base = arrange(width, height - inset, players, seatWidth, seatHeight,
                 centerWidth, centerHeight, gap, fullWidthCardRows, centerAlignment);
-        return new Plan(base.seats().stream().map(box -> lower(box, inset)).toList(),
-                lower(base.center(), inset));
+        List<Rect> seats = new ArrayList<>();
+        for (Rect box : base.seats()) seats.add(lower(box, inset));
+        return new Plan(List.copyOf(seats), lower(base.center(), inset));
     }
 
     private static Rect lower(Rect box, int offset) {
