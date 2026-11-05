@@ -1,0 +1,13 @@
+{
+  "version": "0.1.9",
+  "mode": "summary",
+  "previousVersion": null,
+  "sourceCommit": "cd4e62e4fd89bb5134f874aee1912aa086a5bda2",
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/4eeead966610b9c7f7c661d8ec43fc3f03339f60/artifacts/reports/README.md",
+  "points": [
+    "Mână afișată pe un singur rând, inclusiv cu 13 cărți.",
+    "Masă compactă cu jucătorii și cărțile jucate vizibile simultan.",
+    "Licitare prin butoane, cu poziția jucătorilor păstrată.",
+    "Încadrare adaptată spațiului disponibil al ferestrei."
+  ]
+}

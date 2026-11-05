@@ -44,16 +44,18 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 ## Distribuția prin GitHub
 
-[GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest) este intrarea stabilă de descărcare; adresa urmărește ultima versiune publicată. Pentru folosire personală, autentificați-vă în același browser și alegeți APK-ul din **Assets**.
+- **Descărcare:** [GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest) este intrarea stabilă și urmărește ultima versiune publicată; pentru folosire personală, autentificați-vă în același browser și alegeți APK-ul din **Assets**.
 
-[Directorul dist](../../dist/README.md) păstrează copia locală curentă și trimite către Releases prin README. GitHub afișează directorul repository-ului ca fișiere și documentație; acest README este o legătură de navigare, nu un redirect HTTP automat.
+- **Copie locală:** [directorul dist](../../dist/README.md) păstrează copia curentă și trimite către Releases prin README; APK-ul și checksum-ul local sunt excluse din Git.
+- **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
 
-[Registrul release-ului](../../artifacts/reports/README.md#apk-documentat) deține identitatea versiunii, adresele asset-urilor și probele de integritate. Descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului personal verificat.
+- **Identitate:** [registrul release-ului](../../artifacts/reports/README.md#apk-documentat) deține versiunea, adresele asset-urilor și probele de integritate.
+- **Canale:** descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului personal verificat.
 
 | Etapă | Criteriu de acceptare |
 |---|---|
 | Publicare | Upload-ul asset-ului are exact numărul de bytes al APK-ului semnat; checksum-ul identifică același fișier. |
-| Descărcare | URL-ul public al asset-ului răspunde cu succes, iar copia descărcată are mărimea și SHA-256 originale. |
+| Descărcare | Asset-ul este accesibil în canalul declarat, iar copia descărcată are mărimea și SHA-256 originale; pentru folosirea personală se verifică browserul autentificat. |
 | Integritate | Arhiva ZIP trece CRC pentru toate intrările și conține manifestul Android și codul aplicației; semnătura și alinierea sunt verificate separat. |
 | Instalare | Verificarea folosește copia completă, cu identitatea pachetului și cheia de upgrade a release-ului. |
 
@@ -62,6 +64,33 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 - Copiați fișierul local într-un nume temporar, verificați-l și publicați-l prin redenumire atomică. Descărcați din nou asset-ul GitHub și confruntați-l înainte de handoff; răspunsurile HTTP negative rămân erori, fără promovarea lor la pachet instalabil.
 
 - Calificați separat accesul autentificat și accesul anonim. `visibility=public`, starea `uploaded` și digest-ul corect al asset-ului nu dovedesc că browserul unui vizitator poate descărca binarul. Proba păstrează codul HTTP, numărul de bytes și hash-ul copiei primite; un blocaj de vizibilitate rămâne deschis până la răspunsul public reușit.
+
+## Procesul unei versiuni
+
+[Modelul GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) leagă livrarea de un tag și permite atașarea binarelor. APK-ul se distribuie ca asset, iar `dist` rămâne ieșire locală; redenumirea lui în `releases` nu creează o secțiune GitHub sau un redirect.
+
+1. Identificați commit-ul surselor și versiunea aplicației; fixați copia de construire în TMP.
+2. Construiți și semnați o singură dată, apoi verificați pachetul și scenariile relevante ale acelui binar.
+3. Pregătiți un draft legat de tag, cu APK și checksum; confruntați identitatea asset-ului cu registrul livrării.
+4. Publicați versiunea completă și marcați-o drept ultima versiune; păstrați binarul publicat stabil, iar corecțiile primesc o versiune nouă.
+5. Verificați descărcarea în canalul cerut și actualizați registrul, legăturile și dosarul de dovezi.
+
+[GitHub recomandă draftul înaintea atașării asset-urilor și publicării](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) pentru release-urile imuabile. Procesul proiectului folosește această ordine și păstrează diferența dintre politica stabilită și activarea opțiunii native de imutabilitate.
+
+## Prezentarea unei versiuni
+
+Pagina Release este destinată utilizatorului. Păstrează trei secțiuni cu bullets și trimite către dosarul dedicat pentru audit:
+
+| Secțiune | Conținut |
+|---|---|
+| Descărcare | Autentificare în browser, linkul direct al APK-ului și checksum-ul versiunii. |
+| Îmbunătățiri față de versiunea precedentă | Schimbări confirmate pentru binarul publicat, cu versiunea de comparație identificată. |
+| Documentație | Legătura către rapoarte și proveniență, într-un commit identificat. |
+
+- **Comparație:** dacă diferențele față de versiunea precedentă nu sunt confirmate, secțiunea se numește **Pe scurt** și descrie doar capabilități cunoscute ale versiunii. Nu transformați rezumatul în istoric inventat; următoarea livrare își adună schimbările pe parcursul dezvoltării.
+- **Audit:** numerele testelor, verdicturile tehnice, mesajele despre dispozitive neverificate și diagnosticul distribuției aparțin dosarului de dovezi. Linkul din Release păstrează accesul la ele fără a încărca prezentarea produsului.
+
+[Guvernanța prezentării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) confruntă snapshot-ul notelor cu asset-ul și registrul: bullets, destinația APK-ului, checksum, referință de audit și comparație declarată ori rezumat explicit. Probele negative acoperă legături Raw, versiuni greșite, lipsa bazei de comparație și detalii de testare introduse în prezentare.
 
 ## Fereastra și versiunile Android noi
 

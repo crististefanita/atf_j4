@@ -16,6 +16,10 @@ models/
 __pycache__/
 *.pyc
 
+# APK-urile de livrare rămân local; distribuția versionată este în GitHub Releases.
+/dist/*.apk
+/dist/*.apk.sha256
+
 # IDE-uri și fișiere locale.
 .idea/
 *.iml

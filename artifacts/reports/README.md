@@ -8,12 +8,14 @@ La un release nou, înlocuiți pachetul și actualizați acest registru. Build-u
 
 | Proprietate | Valoare |
 |---|---|
-| Binar | [WhistLab-0.1.9.apk](../../dist/WhistLab-0.1.9.apk) |
+| Binar publicat | [WhistLab-0.1.9.apk](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk) |
+| Copie locală | `dist/WhistLab-0.1.9.apk`, exclusă din versionarea Git |
 | Versiune | `0.1.9`, `versionCode 10` |
 | Mărime | 771.391 bytes |
 | Platformă | `minSdk 24`, `targetSdk 36`, `compileSdk 36` |
 | SHA-256 | `811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066` |
 | Semnare | Keystore Android local de dezvoltare; semnături v2/v3 și aliniere verificate. |
+| Prezentarea versiunii | [Note publicate](WhistLab-0.1.9/release-notes.md) · [Guvernanța formatului](WhistLab-0.1.9/release-presentation-validation.json) |
 
 APK-ul release este destinat instalării directe; cheia nu este una de publicare Google Play. [Manifestul release-ului](WhistLab-0.1.9/release-validation.json) leagă binarul, testele, restaurarea datelor și limitele verificării.
 

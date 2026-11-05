@@ -84,6 +84,10 @@ Valorile definite de reguli, limitele API și exemplele didactice generale sunt 
 
 ## Revizie și sincronizare live
 
+Notele din pagina Release sunt o prezentare pentru utilizator: descărcare și schimbări în bullets, urmate de o legătură către dovezi. [Contractul livrării](../platform/ATF_AndroidDelivery.md#prezentarea-unei-versiuni) definește diferențele confirmate față de versiunea precedentă și rezumatul **Pe scurt** folosit când comparația nu este stabilită.
+
+[Guvernanța prezentării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) validează acest perimetru separat de ghidurile tehnice. Detaliile testelor și limitele dispozitivelor se păstrează în dosarul de dovezi al versiunii.
+
 1. Citiți sursa, configurația, testul și ghidul responsabil în starea lor curentă.
 2. Clasificați informația ca regulă stabilă, propunere, lacună sau rezultat de execuție.
 3. Formulați afirmația și limita ei, cu legătura către sursa care o deține.
