@@ -28,7 +28,9 @@ Nu rescrieți identitatea tehnică observată în dovezile brute pentru a anonim
 
 | Prioritate | Calificare rămasă | Criteriu de închidere |
 |---|---|---|
-| P1 | Randarea proporției comune și arcul celor trei adversari; componentele nu substituie fonturile și interacțiunea Android. | Sanity restrâns pe un profil compact și unul înalt: 13 cărți, levată completă la 4/5 locuri, nume și indicii lizibili, fără intersecții; confruntați succesiunea actorilor cu pozițiile numelor la 3–6 locuri. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
+| P1 | Extinderea calificării native dincolo de profilul compact; componentele nu substituie fonturile și interacțiunea Android. | Profil înalt și text mărit: 13 cărți, levată completă la 5 locuri și succesiunea actorilor la 3/5/6 locuri, cu nume și indici lizibili. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
+
+[Catalogul livrărilor](../../artifacts/README.md) păstrează proba compactă cu 13 cărți, levată completă la patru locuri și licitare, inclusiv auditul pixelilor indicilor. Calificarea acestui profil nu închide restul matricei.
 
 ## Compatibilitatea istoricului
 

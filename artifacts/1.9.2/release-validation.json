@@ -2,7 +2,7 @@
   "profile": "maintenance",
   "createdUtc": "2026-11-05T15:47:01.035435+00:00",
   "previousVersion": "1.9.1",
-  "sourceCommit": "6e8f3f38e94f0513597b197bc8fa60ce73ee371b",
+  "sourceCommit": "9623d95b285291b0675a48e54610b56fcbe693c9",
   "release": {
     "versionName": "1.9.2",
     "versionCode": 12,
@@ -11,7 +11,7 @@
     "compileSdk": 36,
     "apkRelativePath": "../../dist/WhistLab-1.9.2.apk",
     "apkBytes": 775288,
-    "apkSha256": "39d31c4433488ee8d77499f196a888eb8ef230ca5d36940bd66ee9ac5a3feb94",
+    "apkSha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
     "assetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v1.9.2/WhistLab-1.9.2.apk",
     "checksumUrl": "https://github.com/crististefanita/atf_j4/releases/download/v1.9.2/WhistLab-1.9.2.apk.sha256",
     "localApkTrackedInGit": false,
@@ -21,7 +21,7 @@
     {
       "class": "ro.whistlab.app.table.GameTableLayoutComponentTest",
       "result": "test-results/app/TEST-ro.whistlab.app.table.GameTableLayoutComponentTest.xml",
-      "tests": 13,
+      "tests": 15,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -61,7 +61,7 @@
     {
       "class": "atf.android.e2e.display.component.TableViewportObservationComponentTest",
       "result": "test-results/atf/TEST-atf.android.e2e.display.component.TableViewportObservationComponentTest.xml",
-      "tests": 58,
+      "tests": 60,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -96,16 +96,92 @@
     "upgradeCertificate": "MATCH"
   },
   "governance": {
-    "status": "PENDING",
-    "tests": 0,
+    "status": "PASS",
+    "tests": 17,
     "failures": 0,
     "errors": 0,
-    "skipped": 0
+    "skipped": 0,
+    "results": [
+      {
+        "class": "atf.tests.governance.documentation.DocumentationProseGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.DocumentationStyleGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "class": "atf.tests.governance.source.AndroidJavaApiGovernanceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "basis": "Identified release snapshot plus owned handoff metadata; initial stale-link/encoding diagnostic retained separately",
+    "snapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_CARD_GEOMETRY_8706104409\\governance-project"
   },
   "native": {
-    "status": "PENDING"
+    "status": "PASS",
+    "api": 28,
+    "profile": "720x1280@360",
+    "test": {
+      "class": "atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "newSuccessfulE2eRuns": 1,
+    "fullGameRun": false,
+    "report": "reports/compact-api28/responsive-ui-sanity.html",
+    "privateDataRestored": true,
+    "releaseSmoke": "PASS",
+    "rejectedCandidate": "diagnostics/rejected-candidate/candidate.json",
+    "failedAttemptsBeforeFix": 3,
+    "rejectedPixelCandidate": "diagnostics/rejected-pixel-candidate/candidate.json",
+    "e2eVariant": "debug; deterministic display fixture intents",
+    "e2eApkSha256": "bdfa70f117737378382b30ff87d965c7f569085f3a5295efe96a9cbc5e010bab",
+    "sourceCommit": "9623d95b285291b0675a48e54610b56fcbe693c9",
+    "signedReleaseVariant": "release; install/start smoke with restored user data"
   },
   "distribution": {
     "status": "PENDING"
+  },
+  "javaApiGuard": {
+    "status": "PASS",
+    "class": "atf.tests.governance.source.AndroidJavaApiGovernanceTest",
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "result": "test-results/java-api/TEST-atf.tests.governance.source.AndroidJavaApiGovernanceTest.xml"
   }
 }

@@ -1,0 +1,135 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24363 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] ATF J4 Android                                                     [pom]
+[INFO] ATF Test Kit                                                       [jar]
+[INFO] ATF Android infrastructure and acceptance                          [jar]
+[INFO] 
+[INFO] ----------------------------< atf.api:atf >-----------------------------
+[INFO] Building ATF J4 Android 1.0.0-SNAPSHOT                             [1/3]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-core-library) @ atf ---
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-core-1.0.0-c3.jar to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-core\1.0.0-c3\atf-core-1.0.0-c3.jar
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-core-1.0.0-c3.pom to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-core\1.0.0-c3\atf-core-1.0.0-c3.pom
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-reporting-library) @ atf ---
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-reporting-1.0.0-j20.jar to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-reporting\1.0.0-j20\atf-reporting-1.0.0-j20.jar
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-reporting-1.0.0-j20.pom to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-reporting\1.0.0-j20\atf-reporting-1.0.0-j20.pom
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-console-library) @ atf ---
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-console-1.0.0-c1.jar to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-console\1.0.0-c1\atf-console-1.0.0-c1.jar
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-console-1.0.0-c1.pom to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-console\1.0.0-c1\atf-console-1.0.0-c1.pom
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-mock-library) @ atf ---
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-mock-1.0.0-m1.jar to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-mock\1.0.0-m1\atf-mock-1.0.0-m1.jar
+[INFO] Installing C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\lib\atf-mock-1.0.0-m1.pom to C:\Users\Cristi\AppData\Local\Temp\WHIST_M2_019_63f42690\atf\api\atf-mock\1.0.0-m1\atf-mock-1.0.0-m1.pom
+[INFO] 
+[INFO] ------------------------< atf.api:atf-test-kit >------------------------
+[INFO] Building ATF Test Kit 1.0.0-SNAPSHOT                               [2/3]
+[INFO]   from atf-test-kit\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ atf-test-kit ---
+[INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\atf-test-kit\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ atf-test-kit ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ atf-test-kit ---
+[INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\atf-test-kit\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ atf-test-kit ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ atf-test-kit ---
+[INFO] 
+[INFO] ----------------------< atf.api:atf-test-android >----------------------
+[INFO] Building ATF Android infrastructure and acceptance 1.0.0-SNAPSHOT  [3/3]
+[INFO]   from atf-test-android\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ atf-test-android ---
+[INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\atf-test-android\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ atf-test-android ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- build-helper:3.6.2:add-test-source (independent-whist-player) @ atf-test-android ---
+[INFO] Skipping plugin execution!
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ atf-test-android ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ atf-test-android ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ atf-test-android ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest
+[ATF] > WhistResponsivePlaySanityE2eTest
+[ATF]   > TEST BODY - configuredProfilesPassMenuAndDisplaySanity
+[ATF]   FAIL: TEST BODY - configuredProfilesPassMenuAndDisplaySanity (205.682 s)
+[ATF] FAIL: WhistResponsivePlaySanityE2eTest (205.682 s)
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 222.1 s <<< FAILURE! -- in atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest
+[ERROR] atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest.configuredProfilesPassMenuAndDisplaySanity -- Time elapsed: 221.6 s <<< ERROR!
+java.io.IOException: Command timed out after PT1M30S
+	at atf.android.process.CommandProcess.collect(CommandProcess.java:90)
+	at atf.android.process.CommandProcess.execute(CommandProcess.java:31)
+	at atf.android.AdbClient.execute(AdbClient.java:54)
+	at atf.android.AdbClient.run(AdbClient.java:40)
+	at atf.android.e2e.driver.AndroidUiDriver$1.run(AndroidUiDriver.java:53)
+	at atf.android.e2e.driver.AndroidUiDriver.restartToActivity(AndroidUiDriver.java:519)
+	at atf.android.e2e.display.flow.responsive.SimultaneousTableChecks.inspect(SimultaneousTableChecks.java:23)
+	at atf.android.e2e.display.flow.responsive.ResponsiveSanityRun.run(ResponsiveSanityRun.java:81)
+	at atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest.configuredProfilesPassMenuAndDisplaySanity(WhistResponsivePlaySanityE2eTest.java:12)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.util.concurrent.TimeoutException: Process and output deadline expired
+	at atf.android.process.CommandProcess.remaining(CommandProcess.java:165)
+	at atf.android.process.CommandProcess.collect(CommandProcess.java:74)
+	... 11 more
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   WhistResponsivePlaySanityE2eTest.configuredProfilesPassMenuAndDisplaySanity:12 » IO Command timed out after PT1M30S
+[INFO] 
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for ATF J4 Android 1.0.0-SNAPSHOT:
+[INFO] 
+[INFO] ATF J4 Android ..................................... SUCCESS [ 13.373 s]
+[INFO] ATF Test Kit ....................................... SUCCESS [ 33.120 s]
+[ERROR] ATF Android infrastructure and acceptance .......... FAILURE [04:31 min]
+[INFO] ------------------------------------------------------------------------
+[ERROR] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  05:24 min
+[INFO] Finished at: 2026-11-05T17:45:18+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project atf-test-android: 
+[ERROR] 
+[ERROR] See C:\Users\Cristi\AppData\Local\Temp\WHIST_CARD_GEOMETRY_8706104409\source\atf-test-android\target\surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :atf-test-android

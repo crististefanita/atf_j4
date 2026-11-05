@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "launch": "Starting: Intent { cmp=ro.whistlab.app/.MainActivity }\r\nStatus: ok\r\nActivity: ro.whistlab.app/.MainActivity\r\nThisTime: 2011\r\nTotalTime: 2011\r\nWaitTime: 2125\r\nComplete\r\n",
+  "installedApkSha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
+  "expectedApkSha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
+  "api": 28,
+  "appDataCleared": false,
+  "resumedActivity": "mResumedActivity: ActivityRecord{ce43357 u0 ro.whistlab.app/.MainActivity t974}",
+  "processId": "10821",
+  "fatalAndroidRuntimeForProcess": false
+}

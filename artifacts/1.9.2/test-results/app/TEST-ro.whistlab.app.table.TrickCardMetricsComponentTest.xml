@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ro.whistlab.app.table.TrickCardMetricsComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-05T15:26:55.329Z" hostname="DESKTOP-BLFSO18" time="0.605">
+<testsuite name="ro.whistlab.app.table.TrickCardMetricsComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-05T16:46:32.482Z" hostname="DESKTOP-BLFSO18" time="0.159">
   <properties/>
-  <testcase name="shortWindowsScaleBothDimensionsWithoutLosingSeatSlots" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.006"/>
-  <testcase name="outerSeatsRemainMappedToTheirSideOfTheTrickForThreeFiveAndSixPlayers" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.002"/>
-  <testcase name="shorterCardFacesKeepSeatAnchorsAndAvoidSeatsAcrossWidthsAndTextScales" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.456"/>
-  <testcase name="threeToSixPlayersKeepTheSamePortraitFacesIncludingTheFivePlayerRegression" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.037"/>
-  <testcase name="fourPlayersFormAStableCrossAroundTheHumanBottomSeat" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.028"/>
-  <testcase name="rejectsUnsupportedPlayerCountsInvalidFontScalesAndNarrowTables" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.07"/>
+  <testcase name="shortWindowsScaleBothDimensionsWithoutLosingSeatSlots" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.01"/>
+  <testcase name="outerSeatsRemainMappedToTheirSideOfTheTrickForThreeFiveAndSixPlayers" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.009"/>
+  <testcase name="shorterCardFacesKeepSeatAnchorsAndAvoidSeatsAcrossWidthsAndTextScales" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.058"/>
+  <testcase name="threeToSixPlayersKeepTheSamePortraitFacesIncludingTheFivePlayerRegression" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.014"/>
+  <testcase name="fourPlayersFormAStableCrossAroundTheHumanBottomSeat" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.01"/>
+  <testcase name="rejectsUnsupportedPlayerCountsInvalidFontScalesAndNarrowTables" classname="ro.whistlab.app.table.TrickCardMetricsComponentTest" time="0.028"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

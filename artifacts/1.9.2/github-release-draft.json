@@ -1,21 +1,21 @@
 {
-  "url": "https://github.com/crististefanita/atf_j4/releases/tag/untagged-a5bfc35869b84136e1f8",
+  "url": "https://github.com/crististefanita/atf_j4/releases/tag/untagged-aebbb33003c185bd708b",
   "tag": "v1.9.2",
-  "targetCommit": "6e8f3f38e94f0513597b197bc8fa60ce73ee371b",
+  "targetCommit": "9623d95b285291b0675a48e54610b56fcbe693c9",
   "draft": true,
-  "expectedApkSha256": "39d31c4433488ee8d77499f196a888eb8ef230ca5d36940bd66ee9ac5a3feb94",
+  "expectedApkSha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
   "assets": [
     {
       "name": "WhistLab-1.9.2.apk",
       "size": 775288,
-      "url": "https://github.com/crististefanita/atf_j4/releases/download/untagged-a5bfc35869b84136e1f8/WhistLab-1.9.2.apk",
-      "id": 713929191
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/untagged-aebbb33003c185bd708b/WhistLab-1.9.2.apk",
+      "id": 714158561
     },
     {
       "name": "WhistLab-1.9.2.apk.sha256",
       "size": 86,
-      "url": "https://github.com/crististefanita/atf_j4/releases/download/untagged-a5bfc35869b84136e1f8/WhistLab-1.9.2.apk.sha256",
-      "id": 713929264
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/untagged-aebbb33003c185bd708b/WhistLab-1.9.2.apk.sha256",
+      "id": 714158624
     }
   ]
 }
