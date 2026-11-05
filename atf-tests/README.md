@@ -72,3 +72,15 @@ Componentele verifică selecția, adaptoarele și publicarea; integrarea verific
 [Suita de calitate](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) verifică sursele, documentația și contractele bibliotecilor. [Lansatorul guvernanței](../scripts/run-atf-governance.ps1) pregătește copia temporară și depozitul Maven propriu, păstrează rezultatele extern și detectează schimbările sursei pe durata verificării.
 
 [Guvernanță](../docs/governance/README.md) · [Arhitectura publicării](../docs/reporting/README.md) · [Indexul documentației](../docs/README.md)
+
+## Îmbunătățiri prioritare ale consumatorului
+
+Responsabilul consumatorului trebuie să păstreze auditabilitatea și la intrări mari sau predominant cu eșec. Politica de selecție, compoziția și citirea dovezilor rămân mecanisme locale, iar randarea HTML aparține bibliotecii comune.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P2 | Calificați volumul intrărilor înaintea publicării. | Componente cu populații controlate măsoară costul selecției, numărul comparațiilor și corpul opțional; toate eșecurile, valorile obligatorii și inventarul omisiunilor sunt păstrate. |
+| P2 | Faceți selecția și compoziția ușor de revizuit. | Pașii pentru populație, priorități, exemple și diagnostic sunt denumiți după invariantă, cu probe de frontieră; reformatarea sau extracția păstrează verdictul și ordinea originală. |
+| P2 | Verificați separat temporalitatea și proveniența. | Replay-ul, captura sintetică și execuția Android nouă au identități și domenii distincte; intrările contradictorii ori incomplete sunt refuzate. |
+
+[Politica prezentării](../docs/reporting/ATF_Presentation.md) deține selecția. Cerințele generice ale JAR-ului urmează [rutarea responsabilităților](../docs/feedback/README.md), împreună cu reproducerea și contractul așteptat.

@@ -4,9 +4,9 @@ import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.check;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.checkCaptureSize;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.publishCheckpoint;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.record;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.box;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.contains;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.overlaps;
+import static atf.android.e2e.display.support.ResponsiveGeometry.box;
+import static atf.android.e2e.display.support.ResponsiveGeometry.contains;
+import static atf.android.e2e.display.support.ResponsiveGeometry.overlaps;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.APP;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.HAND_CARD_FACE_HEIGHT_DP;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.WAIT;
@@ -133,8 +133,7 @@ public final class ResponsiveMenuChecks {
                 "Check the game title before revealing the hand",
                 List.of(check("Fixture title", "Whist · Descending",
                         ui.hasText(initial, "Whist · Descending"))));
-        String xml = scrollUntilVisible(
-                adb, ui, profile, "Your hand, 13 cards.", true, HAND_CARD_FACE_HEIGHT_DP);
+        String xml = ui.awaitDescriptionContaining("Your hand, 13 cards.", WAIT);
         List<Path> capture = ui.capture(profile.id() + "-thirteen-card-fan");
         evidence.addAll(capture);
         var faces =
@@ -174,7 +173,7 @@ public final class ResponsiveMenuChecks {
                                         faces.size(),
                                         faces.size() == 13 && labels.size() == 13),
                                 check(
-                                        "All thirteen card faces are fully visible after recorded scrolling",
+                                        "All thirteen card faces are fully visible without scrolling",
                                         expectedFaceHeight + " px minimum",
                                         shortestFaceHeight + " px minimum; full faces="
                                                 + fullFacesVisible,
@@ -307,7 +306,7 @@ public final class ResponsiveMenuChecks {
                 "--es",
                 "debug_language",
                 "EN");
-        String xml = scrollUntilVisible(adb, ui, profile, "Place bid", false, 0);
+        String xml = ui.awaitText("Place bid", WAIT);
         List<Path> capture = ui.capture(profile.id() + "-nine-bid-controls");
         evidence.addAll(capture);
         List<Integer> bids = ui.numericButtonValues(xml);
@@ -370,7 +369,7 @@ public final class ResponsiveMenuChecks {
                                                         .toList())),
                                 check(
                                         "Four players remain individually visible",
-                                        "You, Ava, Miles, Grace",
+                                        "4 distinct player frames",
                                         seats.size(),
                                         seats.size() == 4),
                                 check(
@@ -399,5 +398,13 @@ public final class ResponsiveMenuChecks {
                                         touch)));
         checkCaptureSize(adb, capture, profile, checks);
         publishCheckpoint(ui, trace, profile, "Inspect all nine bid controls", capture, checks);
+        ui.selectBid(8);
+        String selected = ui.dump();
+        record(ui, adb, trace, evidence, profile, "Select bid eight without moving player frames",
+                List.of(check("Bid eight is selected", "selected", ui.isSelected(selected, "8")),
+                        check("Player frames remain fixed after selection", "same four rectangles",
+                                seats.equals(seatBounds(ui, selected))),
+                        check("Bidding does not introduce vertical scrolling", "absent",
+                                !ui.hasClass(selected, "android.widget.ScrollView"))));
     }
 }

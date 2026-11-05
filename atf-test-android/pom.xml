@@ -37,6 +37,9 @@
                         <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
                         <testInclude>**/AndroidUiDriverComponentTest.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
+                        <testInclude>**/FrameFillAuditComponentTest.java</testInclude>
+                        <testInclude>**/TableViewportAuditComponentTest.java</testInclude>
+                        <testInclude>**/display/flow/responsive/*.java</testInclude>
                         <testInclude>**/AndroidUiFlowReportPublisherTest.java</testInclude>
                         <testInclude>**/WhistResponsivePlaySanityE2eTest.java</testInclude>
                         <testInclude>**/WhistDenseLayoutE2eTest.java</testInclude>

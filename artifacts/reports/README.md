@@ -1,48 +1,57 @@
 # Dovezile de testare atașate release-ului Whist Lab
 
-Directorul păstrează **numai cele mai recente rezultate relevante** care justifică APK-ul curent. Este un pachet de dovezi pentru release, nu o arhivă a tuturor execuțiilor.
+Directorul păstrează **numai cele mai recente rezultate relevante** care documentează APK-ul curent. Rapoartele, capturile, rezultatele automate și proveniența binarului formează un singur pachet de acceptanță.
 
-La publicarea unei versiuni noi, înlocuiți pachetul de versiune cu rapoartele finale trecute și actualizați acest registru. Build-urile intermediare și rulările istorice rămân în `%TEMP%` și în `C:\work\whist_back\ui-reports\whist-lab\runs\`; nu se copiază aici rezultate eșuate sau fără legătură cu APK-ul livrat.
+La un release nou, înlocuiți pachetul și actualizați acest registru. Build-urile și istoricul complet rămân în `%TEMP%` și în depozitul extern; un diagnostic negativ se păstrează aici când explică o corecție și reverificarea ei.
 
 ## APK documentat
 
 | Proprietate | Valoare |
 |---|---|
-| Binar | [WhistLab-0.1.7.apk](../../dist/WhistLab-0.1.7.apk) |
-| Versiune | `0.1.7` (`versionCode 8`) |
-| Compatibilitate | `minSdk 24`, `targetSdk 36` |
-| SHA-256 APK | `14e88358e342ee5e8a123389a88e7ec1908d3a178c43b3381c216642f47c0b9b` |
-| Certificat | SHA-256 `b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3` |
+| Binar | [WhistLab-0.1.8.apk](../../dist/WhistLab-0.1.8.apk) |
+| Versiune | `0.1.8`, `versionCode 9` |
+| Platformă | `minSdk 24`, `targetSdk 36`, `compileSdk 36` |
+| SHA-256 | `9a22a5cec0ad3cf0f6a18d87fd7ab0fd09e8c94fc2cbd9b1a2e81fd3711a8248` |
+| Semnare | Keystore Android local de dezvoltare; semnături v2/v3 și aliniere verificate. |
 
-Pachetul este semnat local cu keystore-ul Android de dezvoltare pentru instalare directă și smoke test. Nu este semnătura de publicare Google Play. Metadatele de build, semnătură și instalare sunt în [release-validation.json](WhistLab-0.1.7/release-validation.json).
+APK-ul release este destinat instalării directe; cheia nu este una de publicare Google Play. [Manifestul release-ului](WhistLab-0.1.8/release-validation.json) leagă binarul, testele, restaurarea datelor și limitele verificării.
 
 ## Rapoarte Extent
 
-| Scop | Raport | Conținut verificat |
+| Dovadă | Raport | Domeniu demonstrat |
 |---|---|---|
-| Meniu și layout responsive | [responsive-ui-sanity.html](WhistLab-0.1.7/responsive-ui-sanity/responsive-ui-sanity.html) | Home fără overflow, clasament, configurare, atu și rama jucătorului activ, locurile, mâna de 13 cărți și cele 9 bid-uri. 16 checkpoint-uri și 116 aserții pe două profile. |
-| Cazuri dense | [dense-layout.html](WhistLab-0.1.7/dense-layout/dense-layout.html) | Indicii celor 13 cărți, țintele pentru 9 bid-uri, lipsa intersecțiilor, distanța față de locul uman și stabilitatea locurilor după selectarea unui bid. 4 checkpoint-uri și 35 aserții. |
+| Sanity live compact — PASS | [Masa compactă](WhistLab-0.1.8/compact-table/responsive-ui-sanity.html) | 4 checkpoint-uri, 35 de aserții: 13 cărți, levată completă cu 12 rămase, 9 licitații și selecția lui 8 fără deplasarea chenarelor. |
+| Matrice capturată, republicată offline | [Meniu și masă pe două profiluri](WhistLab-0.1.8/responsive-matrix-replay/responsive-ui-sanity-replayed.html) | 20 de checkpoint-uri și 160 de comparații trecute; acțiunile, capturile și timpii provin din execuția live inițială. |
 
-Fiecare director de raport conține HTML-ul Extent, capturile PNG, ierarhiile UIAutomator XML și proprietățile serializate ale trace-ului. Rapoartele leagă acțiunea, observația, comparația și captura; XML-urile JUnit/Surefire și logurile de build permit verificarea automată a rezultatelor.
+Matricea folosește `720x1280@360` și `1080x1920@440`. Publicarea inițială a acesteia a eșuat deoarece sumarul unei aserții depășea 240 de caractere; rezultatul JUnit inițial este **ERROR**, distinct de comparațiile UI trecute.
 
-## Matricea executată
+Replay-ul folosește trace-ul original nemodificat și păstrează valorile lungi în observații expandabile; nu execută acțiuni ADB. Consumerul live produce acum rezumate scurte, iar sanity-ul compact repetat a trecut inclusiv publicarea și auditul HTML.
 
-| Verificare | Rezultat |
+Capturile esențiale ale sanity-ului final:
+
+- [13 cărți și toate chenarele](WhistLab-0.1.8/compact-table/720x1280-360dpi-See-thirteen-hand-cards-and-every-seat-without-scrolling.png).
+- [Levată completă, 12 cărți și toate chenarele](WhistLab-0.1.8/compact-table/720x1280-360dpi-See-all-four-trick-cards,-twelve-hand-cards-and-four-seats-without-scrolling.png).
+- [Licitația selectată, cu poziții fixe](WhistLab-0.1.8/compact-table/720x1280-360dpi-Select-bid-eight-without-moving-player-frames.png).
+
+## Verificarea release-ului
+
+| Nivel | Rezultat |
 |---|---|
-| `:app:testDebugUnitTest` | 54 teste; 53 trecute, 0 eșecuri, 0 erori, 1 skipped. XML-urile sunt în `WhistLab-0.1.7/test-results/app-unit/`. |
-| Preflight ATF | 18/18 trecute: 5 profiluri responsive, 4 verificări driver și 9 verificări ale publisherului Extent. Logul și XML-urile sunt păstrate. |
-| E2E responsive | 1 test trecut; `720x1280@360` și `1080x2448@440`; raport Extent `PASS`. |
-| E2E DenseLayout | 1 test trecut; `720x1280@360`; 13 cărți, 9 bid-uri și selecția bid-ului 8; raport Extent `PASS`. |
-| Smoke APK release | Instalare upgrade și pornire pe emulator API 28; activitatea principală a pornit, hash-ul APK-ului instalat coincide cu binarul de mai sus, fără excepție AndroidRuntime în verificarea imediată. Datele aplicației nu au fost șterse. |
-| Build release | `:app:assembleDebug`, `:app:assembleRelease` și `lintVitalRelease` au trecut; build-ul a rulat în `%TEMP%`. |
+| Aplicație JVM | 56 de teste: 55 trecute, 1 skipped, fără eșecuri sau erori. Include bugetul ferestrei compacte, intersecțiile și fixture-ul obținut prin joc legal. |
+| Componente ATF | 21/21 trecute: profiluri, driver, publisher și oracolul raster, inclusiv fundal diferit și text în punctul vechi de eșantionare. |
+| Sanity live final | 1 test E2E trecut pe profilul compact; fără scroll vertical, fără intersecții și cu selecție verificată. |
+| Build în TMP | Testele aplicației, `assembleDebug`, `assembleRelease` și `lintVitalRelease` au trecut. |
+| Smoke release | Upgrade pe API 28, activitate principală reluată, proces viu și fără excepție AndroidRuntime pentru procesul verificat; hash-ul instalat coincide cu APK-ul livrat. |
+| Datele utilizatorului | Cele 3 fișiere private au fost restaurate și comparate prin hash înaintea instalării și smoke-ului release; nu s-au șters datele aplicației. |
+| Sync live | Cele 69 de fișiere de sursă/configurație incluse în verificarea build-ului coincid cu live; bibliotecile executate coincid cu JAR-urile locale. |
 
-### Limitele dovezii
+Directoarele rapoartelor conțin PNG-uri, XML-uri UIAutomator și trace-urile ordonate. `test-results/`, `logs/`, fișierele de proveniență și `source-provenance.json` susțin verificarea separată a afirmațiilor.
 
-- Profilele de rezoluție sunt override-uri **logice** ale emulatorului. Capturile păstrează rasterul fizic raportat de acesta: `1080x1920`. Pentru profilul logic `1080x2448@440`, emulatorul scalează conținutul în suprafața fizică, ceea ce produce margini negre laterale. Acest profil verifică geometria logică și nu dovedește randarea pe un panou fizic `1080x2448`.
-- Pe profilul compact `720x1280@360`, checkpoint-ul pentru stilul cărții centrale și cel pentru toate locurile sunt separate. Captura înainte de scroll lasă textul locului uman la marginea de jos (`responsive-played-card-style.xml`, `y=1170–1172`); checkpoint-ul următor îl expune după scroll și verifică distanțele. Dovezile atestă accesul prin viewport-uri controlate, nu vizibilitatea simultană a mâinii, levatei și tuturor ramelor. Lacuna este înregistrată în [feedback-ul Android](../../docs/feedback/ATF_Android.md).
-- Verificarea s-a făcut pe emulatorul API 28 din VM, nu pe un ROG 7 fizic.
-- E2E-urile folosesc fixture-uri debug pentru ecrane și nu joacă o partidă completă. APK-ul release a primit separat numai smoke de instalare și pornire.
-- Deschiderea interactivă a HTML-ului Extent nu a putut fi verificată în browser: politica browserului conectat a respins protocolul local `file://`. HTML-ul, starea `PASS`, numărul checkpoint-urilor/aserțiilor și capturile inline au fost verificate static, iar PNG-urile atașate au fost inspectate separat; comportamentul expand/collapse în browser rămâne neconfirmat.
-- `:game-core:test` nu a fost validat integral pentru acest release. O execuție anterioară întreruptă a raportat eșecuri AI în `CertifiedContractRegressionTest`, `PublicSalvageTest` și `PromotedMasterLossTest`; rezultatul nu este prezentat drept trecere.
+## Limite
 
-Logurile de build și XML-urile de test din acest pachet sunt suport pentru audit; execuțiile și capturile neincluse rămân în directorul extern al rulărilor. Procedura și limitele profilelor sunt descrise în [ATF_Display.md](../../docs/testing/ATF_Display.md) și [ATF_AndroidDelivery.md](../../docs/platform/ATF_AndroidDelivery.md).
+- E2E-ul folosește APK-ul debug identificat prin hash și fixture-uri protejate de `BuildConfig.DEBUG`; APK-ul release primește separat smoke de instalare și pornire.
+- Emulatorul este API 28, cu raster fizic `1080x1920`; override-urile logice nu reprezintă un test pe ROG 7 fizic.
+- Iterația califică afișarea și controalele selectate; nu joacă o partidă completă și nu califică textul mărit.
+- HTML-ul, structura expandabilă și imaginile inline au fost verificate static, iar capturile au fost inspectate vizual. Expand/collapse-ul interactiv nu este confirmat: browserul conectat a respins protocolul `file://`.
+
+[Contractul profilurilor](../../docs/testing/ATF_Display.md) · [Livrarea Android](../../docs/platform/ATF_AndroidDelivery.md) · [Feedback activ](../../docs/feedback/ATF_Android.md)

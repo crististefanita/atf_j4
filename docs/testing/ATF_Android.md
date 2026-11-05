@@ -54,12 +54,35 @@ acțiune tranziția observată și păstrează captura aceleiași stări. Un tap
 reușit singur nu certifică acceptarea mutării. Rezultatul testului, acceptanța
 vizuală și obiectivul partidei rămân verdicte distincte.
 
-## Dispozitiv și rezultate
+## Profil, istoric, clasamente și serii
+
+[Scenariul dedicat](../../atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java) separă pregătirea datelor de acțiunile Android. Meniul configurează numele și seria; cărțile efectiv jucate în interfață declanșează închiderea mâinii ori a partidei. Așteptările pentru punctele de serie și ultima levată sunt calculate înaintea acțiunii.
+
+| Precondiție declarată | Interacțiune verificată |
+|---|---|
+| Profil local izolat | Setare și resetare nume, nume AI scurte, identități păstrate la relansare. |
+| Istoric complet pregătit de motorul JVM | Primul și ultimul rând, toate coloanele, licitații și punctaje, derulare în RO/EN. |
+| Contoare de serie la limita celor cinci mâini | Selectare ±5/±10 în meniu, închidere prin cărți jucate în Android și relansare fără plată repetată. |
+| Partidă pregătită până la ultima carte umană | Încheiere prin interfață, recalculare Top 20 cu om și AI, Top 10/20 și izolare între configurații. |
+
+| Control | Mecanism |
+|---|---|
+| Date inițiale | Arhivare înaintea izolării; hash-ul fiecărui fișier restaurat se confruntă înaintea redeschiderii aplicației. |
+| Parametri | `whist.records.runRoot` identifică metadatele instalării și rezervării; `atf.android.artifacts` delimitează ieșirea. |
+| Precondiții | [Componentele fixture-urilor](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java) se execută fără dispozitiv. |
+| Lizibilitate | Caz JUnit distinct pentru tabele, selectabil fără repetarea numelui și a seriilor; celula completă observată devine reper pentru derulare. Un nod tăiat nu confirmă lizibilitatea. |
+| Rezervare | [Contractul sesiunii](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java) verifică proprietarul înaintea fiecărei comenzi de transport. |
+| Comparații | JSON-ul întreg are amprentă canonică compactă; fiecare poziție a clasamentului are comparație separată și date complete de diagnostic. |
+
+Aceste scenarii nu califică o partidă întreagă jucată prin interfață și nici recuperarea fișierelor corupte.
+
+## Păstrarea rezultatelor
 
 Pentru un test live, identifică serialul, verifică disponibilitatea exclusivă a
 emulatorului și folosește runnerul dedicat. Niciun test dezactivat sau sărit nu
-este acceptanță UI. Rapoartele și capturile se păstrează în directorul extern
-configurat; sursele proiectului nu sunt destinație pentru artefacte.
+este acceptanță UI. Rulările brute și capturile se păstrează în directorul extern
+configurat; [pachetul release-ului](../../artifacts/reports/README.md) reține în proiect
+numai dovezile relevante pentru APK-ul curent.
 
 Dacă rendererul sau fallback-ul nu respectă contractul comun, înregistrează
 problema prin [feedback-ul de raportare](../feedback/README.md). Aici rămân

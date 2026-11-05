@@ -2,7 +2,7 @@ package atf.android.e2e.display.component;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import atf.android.e2e.display.flow.responsive.ResponsiveGeometry;
+import atf.android.e2e.display.support.ResponsiveGeometry;
 import atf.android.e2e.display.support.GameplayGeometry;
 import atf.android.e2e.display.support.ScreenGeometry;
 import atf.android.e2e.driver.AndroidUiDriver.Bounds;

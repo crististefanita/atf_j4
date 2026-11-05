@@ -10,6 +10,7 @@ final class GameBoardLayout extends ViewGroup {
     private final int centerWidthDp;
     private final int minimumHeightDp;
     private final int regionGapDp;
+    private final boolean compact;
     private final boolean centerUsesFullWidth;
     private final TableGeometry.CenterAlignment centerAlignment;
     private int seatWidth;
@@ -22,6 +23,7 @@ final class GameBoardLayout extends ViewGroup {
         this.centerWidthDp = centerWidthDp;
         this.minimumHeightDp = viewport.minimumBoardHeightDp();
         this.regionGapDp = viewport.regionGapDp();
+        this.compact = viewport.isCompact();
         this.centerUsesFullWidth = centerUsesFullWidth;
         this.centerAlignment = centerAlignment;
         setClipChildren(false);
@@ -30,7 +32,8 @@ final class GameBoardLayout extends ViewGroup {
     @Override protected void onMeasure(int widthSpec, int heightSpec) {
         int width = MeasureSpec.getSize(widthSpec);
         int gap = dp(regionGapDp);
-        seatWidth = dp(TableLayoutMetrics.seatWidthDp(Math.round(width / getResources().getDisplayMetrics().density)));
+        seatWidth = dp(TableLayoutMetrics.seatWidthDp(
+                Math.round(width / getResources().getDisplayMetrics().density), compact));
         seatHeight = 0;
         for (int index = 0; index < players; index++) {
             View seat = getChildAt(index);

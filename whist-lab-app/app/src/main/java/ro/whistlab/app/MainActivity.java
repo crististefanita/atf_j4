@@ -4,6 +4,8 @@ import ro.whistlab.app.bidding.DropdownBackground;
 import ro.whistlab.app.fixtures.DisplayFixtureDeals;
 import ro.whistlab.app.fixtures.OriginalMatchReplay;
 import ro.whistlab.app.lifecycle.CompletedTrickPause;
+import ro.whistlab.app.lifecycle.AiTurnCoordinator;
+import ro.whistlab.app.lifecycle.AiTurnRequest;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.persistence.GameSessionStore;
 import ro.whistlab.app.score.ScoreHistoryView;
@@ -17,6 +19,7 @@ import ro.whistlab.app.score.ScoreTableView;
 import ro.whistlab.app.table.GameTablePanel;
 import ro.whistlab.app.table.TrumpIndicatorView;
 import ro.whistlab.app.theme.WhistUiPalette;
+import ro.whistlab.app.window.WindowContent;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -48,7 +51,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.config.AiDifficulty;
-import ro.whistlab.core.ai.policy.AiPolicy;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
@@ -71,6 +73,9 @@ public final class MainActivity extends Activity {
 
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler aiResults = new Handler(Looper.getMainLooper());
+    private final AiTurnCoordinator aiTurns = new AiTurnCoordinator(command -> aiResults.post(command));
+    private boolean automationActive = true;
     private final CompletedTrickPause completedTrickPause = new CompletedTrickPause();
     private GameSession game;
     private GameConfig lastConfig;
@@ -92,9 +97,9 @@ public final class MainActivity extends Activity {
     private boolean rankingEligible;
     private String matchId = java.util.UUID.randomUUID().toString();
 
-    @Override protected void onResume(){super.onResume();if(tableVisible&&game!=null)driveAutomatedTurns();}
-    @Override protected void onStop(){handler.removeCallbacksAndMessages(null);persistGame();super.onStop();}
-    @Override protected void onDestroy(){handler.removeCallbacksAndMessages(null);super.onDestroy();}
+    @Override protected void onResume(){super.onResume();automationActive=true;if(tableVisible&&game!=null)driveAutomatedTurns();}
+    @Override protected void onStop(){automationActive=false;cancelAutomatedTurns();persistGame();super.onStop();}
+    @Override protected void onDestroy(){automationActive=false;cancelAutomatedTurns();aiTurns.close();aiResults.removeCallbacksAndMessages(null);super.onDestroy();}
     @Override public void onBackPressed(){if(tableVisible||menuSubpage)renderHome();else super.onBackPressed();}
 
     @Override
@@ -113,7 +118,7 @@ public final class MainActivity extends Activity {
         }
         rankingEligible = !BuildConfig.DEBUG || !java.util.stream.Stream.of("debug_replay", "debug_fixture",
                 "debug_trick_pause_fixture", "debug_played_card_fixture", "debug_hard_ai_bid_fixture",
-                "debug_hand_fan_fixture", "debug_nine_bids_fixture")
+                "debug_hand_fan_fixture", "debug_nine_bids_fixture", "debug_compact_table_fixture")
                 .anyMatch(key -> getIntent().getBooleanExtra(key, false));
         debugHoldAiTurns = BuildConfig.DEBUG
                 && getIntent().getBooleanExtra("debug_hold_ai_turns", false);
@@ -138,6 +143,11 @@ public final class MainActivity extends Activity {
             openDisplayFixture(13, true);
         } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_nine_bids_fixture", false)) {
             openDisplayFixture(8, false);
+        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_compact_table_fixture", false)) {
+            var fixture = DisplayFixtureDeals.completedThirteenCardTrick();
+            game = fixture.game();
+            lastConfig = game.config();
+            renderPlay(fixture.cards(), true);
         } else {
             try {
                 game = GameSessionStore.load(this);
@@ -164,7 +174,7 @@ public final class MainActivity extends Activity {
         tableVisible=false;
         menuSubpage=false;
         instructionsVisible=false;
-        handler.removeCallbacksAndMessages(null);
+        cancelAutomatedTurns();
         LinearLayout page = page(null, copy.homeTitle());
         addLanguagePicker(page);
         addQuietButton(page, copy.playerSettings() + ": " + (playerPreferences.name().isBlank()
@@ -211,7 +221,7 @@ public final class MainActivity extends Activity {
 
     private void renderSetup() {
         applyStandardWindowChrome();
-        tableVisible=false;menuSubpage=true;instructionsVisible=false;handler.removeCallbacksAndMessages(null);
+        tableVisible=false;menuSubpage=true;instructionsVisible=false;cancelAutomatedTurns();
         LinearLayout page = page(null, copy.setupTitle());
         addLanguagePicker(page);
 
@@ -287,6 +297,7 @@ public final class MainActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
         addButton(page, copy.startGame(), "btn_start_game", true, () -> {
+            cancelAutomatedTurns();
             int playerCount = Integer.parseInt(String.valueOf(players.getSelectedItem()));
             GameMode mode = WhistUiText.MENU_MODES.get(modes.getSelectedItemPosition());
             AiDifficulty ai = AiDifficulty.values()[difficulty.getSelectedItemPosition()];
@@ -313,10 +324,11 @@ public final class MainActivity extends Activity {
         GameTablePanel table = GameTablePanel.bidding(this, state, choices, selectedBid,
                 bid -> selectedBid = bid, this::submitSelectedBid, copy);
         page.addView(table, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
 
     private void submitSelectedBid() {
+        if (aiTurns.isPending()) return;
         try {
             game.submitBid(0, selectedBid);
             selectedBid = null;
@@ -345,7 +357,7 @@ public final class MainActivity extends Activity {
                 humanTurn ? legal : java.util.Collections.emptyList(),
                 this::playHumanCard, instruction, completedTrick, pauseActive, copy);
         page.addView(table, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
 
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
@@ -417,7 +429,7 @@ public final class MainActivity extends Activity {
         GameSession.Snapshot state = game.snapshot();
         boolean resumeAutomatedTurn = (state.phase() == GamePhase.BIDDING && state.biddingSeat() != 0)
                 || (state.phase() == GamePhase.PLAYING && state.currentSeat() != 0);
-        handler.removeCallbacksAndMessages(null);
+        cancelAutomatedTurns();
         scoreDialogShowing = true;
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
@@ -461,6 +473,7 @@ public final class MainActivity extends Activity {
     }
 
     private void playHumanCard(Card card) {
+        if (aiTurns.isPending()) return;
         try {
             game.playCard(0, card);
             if (recordedReplay != null) recordedReplay.played(card);
@@ -493,6 +506,7 @@ public final class MainActivity extends Activity {
 
         if (!state.finalHand()) {
             addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
+                cancelAutomatedTurns();
                 if (recordedReplay != null) {
                     game = recordedReplay.startHand(state.handIndex() + 1, game.scoreHistory());
                 } else game.startNextHand();
@@ -501,6 +515,7 @@ public final class MainActivity extends Activity {
             }, true);
         } else {
             addButton(page, copy.playAgain(), "btn_play_again", true, () -> {
+                cancelAutomatedTurns();
                 recordedReplay = null;
                 rankingEligible = true;
                 matchId = java.util.UUID.randomUUID().toString();
@@ -516,7 +531,7 @@ public final class MainActivity extends Activity {
     }
 
     private void showPlayerSettings() {
-        handler.removeCallbacksAndMessages(null);
+        cancelAutomatedTurns();
         scoreDialogShowing = true;
         AlertDialog dialog = PlayerSettingsDialog.show(this, copy, playerPreferences.name(), name -> {
             if (game != null) game.renameHuman(name.isBlank() ? "You" : name);
@@ -531,7 +546,7 @@ public final class MainActivity extends Activity {
     }
 
     private void showHighScores() {
-        handler.removeCallbacksAndMessages(null);
+        cancelAutomatedTurns();
         scoreDialogShowing = true;
         try {
             GameConfig config = lastConfig != null ? lastConfig : GameConfig.newMatch(setupPlayerCount, setupMode,
@@ -550,7 +565,7 @@ public final class MainActivity extends Activity {
 
     private void renderInstructions() {
         applyStandardWindowChrome();
-        tableVisible=false;menuSubpage=true;instructionsVisible=true;handler.removeCallbacksAndMessages(null);
+        tableVisible=false;menuSubpage=true;instructionsVisible=true;cancelAutomatedTurns();
         HowToPlay.Language language = copy.language();
         LinearLayout page=page(HowToPlay.title(language),language==HowToPlay.Language.RO
                 ? "Whist românesc — reguli și exemple" : "Romanian Whist — rules and examples");
@@ -560,8 +575,10 @@ public final class MainActivity extends Activity {
     }
 
     private void driveAutomatedTurns() {
+        if (!automationActive) return;
         handler.removeCallbacksAndMessages(null);
         if (scoreDialogShowing) return;
+        if (aiTurns.isPending()) return;
         if (game == null) {
             renderHome();
             return;
@@ -589,8 +606,11 @@ public final class MainActivity extends Activity {
                 return;
             }
             int seat = state.biddingSeat();
-            game.submitBid(seat, recordedReplay != null ? recordedReplay.bid(seat)
-                    : AiPolicy.chooseBid(state, seat, lastConfig.aiDifficulty()));
+            if (recordedReplay == null) {
+                submitAiTurn();
+                return;
+            }
+            game.submitBid(seat, recordedReplay.bid(seat));
             persistGame();
             driveAutomatedTurns();
             return;
@@ -611,13 +631,31 @@ public final class MainActivity extends Activity {
                 return;
             }
             int seat = current.currentSeat();
-            Card choice = recordedReplay != null ? recordedReplay.nextCard()
-                    : AiPolicy.chooseCard(current, seat, lastConfig.aiDifficulty());
+            if (recordedReplay == null) {
+                submitAiTurn();
+                return;
+            }
+            Card choice = recordedReplay.nextCard();
             game.playCard(seat, choice);
             if (recordedReplay != null) recordedReplay.played(choice);
             persistGame();
             driveAutomatedTurns();
         }, 550L);
+    }
+
+    private void submitAiTurn() {
+        AiTurnRequest request = new AiTurnRequest(game);
+        aiTurns.submit(request::evaluate, decision -> {
+            if (!automationActive || !tableVisible || scoreDialogShowing) return;
+            if (request.applyTo(game, decision)) persistGame();
+            driveAutomatedTurns();
+        }, failure -> { throw new IllegalStateException("AI computation failed", failure); });
+    }
+
+    private void cancelAutomatedTurns() {
+        handler.removeCallbacksAndMessages(null);
+        aiTurns.cancel();
+        aiResults.removeCallbacksAndMessages(null);
     }
 
     private void renderCurrentState() {
@@ -723,24 +761,19 @@ public final class MainActivity extends Activity {
         scroll.addView(content, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         setContentView(scroll);
+        WindowContent.protect(scroll);
         if (eyebrow != null && !eyebrow.isBlank()) addText(content, eyebrow, 12, ACCENT, true, 0, 8);
         if (title != null && !title.isBlank()) addText(content, title, 25, PINE, true, 0, 8);
         return content;
     }
 
     private LinearLayout gamePage() {
-        ScrollView viewport = new ScrollView(this);
-        viewport.setFillViewport(true);
-        viewport.setBackgroundColor(WhistUiPalette.TABLE_FELT);
-
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setGravity(Gravity.CENTER_VERTICAL);
-        content.setPadding(dp(12), dp(6), dp(12), dp(4));
+        content.setPadding(dp(12), dp(2), dp(12), dp(2));
         content.setBackgroundColor(WhistUiPalette.TABLE_FELT);
-        viewport.addView(content, new ScrollView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        setContentView(viewport);
+        setContentView(content);
+        WindowContent.protect(content);
         return content;
     }
 

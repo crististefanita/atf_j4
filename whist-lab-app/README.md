@@ -19,10 +19,10 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 
 - La opt cărți nu există atu.
 - Contractul exact valorează `5 + levate`, iar ratarea scade diferența absolută.
-- Configurarea seriilor permite bonus pozitiv de 5 sau 10 după cinci contracte exacte eligibile; cinci ratări scad 5.
+- Configurarea unei partide noi aplică aceeași valoare de 5 sau 10 pentru bonusul și penalizarea după cinci mâini eligibile; profilurile istorice își păstrează configurația la restaurare.
 - [Motorul de reguli](game-core/README.md) descrie domeniul și diferențele față de celelalte variante.
 
-`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează licitația, punctele și totalul fiecărei mâini pentru jucătorul ales.
+`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează cronologic licitația cunoscută, punctele și totalul pentru toate locurile în același tabel.
 
 Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
 
@@ -87,3 +87,14 @@ simpla lor existență. Accesul la un dispozitiv și instalarea unui APK sunt pa
 separați, activați explicit.
 
 Contractele și mecanismele curente sunt în [documentație](../docs/).
+
+## Cerințe de calificare a aplicației
+
+[Coordonarea Android](app/src/main/java/ro/whistlab/app/README.md#coordonarea-turelor-automate) separă calculul AI de firul principal și condiționează aplicarea de identitatea partidei și a stării capturate. Componentele verifică anularea și aplicarea unică; persistența, reactivitatea și interacțiunea se califică separat pe binarul identificat.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P1 | Păstrați distincte profilul nou și compatibilitatea salvărilor. | Configurarea, scorul, restaurarea, proiecțiile AI și ajutorul RO/EN folosesc aceeași identitate a regulilor; un profil istoric își păstrează explicit valorile. |
+| P2 | Mențineți ghidul de folosire legat de sursele interfeței. | Etichetele și accesul la istoricul tuturor locurilor sunt confruntate cu textele și comenzile curente; procedurile complete rămân în ghidurile responsabile. |
+
+[Regulile și scorul](../docs/game/README.md) dețin contractul produsului, iar [calificările Android](../docs/feedback/ATF_Android.md) păstrează criteriile încă deschise.

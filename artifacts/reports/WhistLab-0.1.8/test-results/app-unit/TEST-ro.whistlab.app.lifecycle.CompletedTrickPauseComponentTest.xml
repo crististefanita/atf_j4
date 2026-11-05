@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.lifecycle.CompletedTrickPauseComponentTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-05T06:35:29.351Z" hostname="DESKTOP-BLFSO18" time="0.062">
+  <properties/>
+  <testcase name="completedTrickRemainsVisibleForExactlyFifteenHundredMilliseconds" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseComponentTest" time="0.03"/>
+  <testcase name="theNextCompletedTrickStartsANewDisplayWindow" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseComponentTest" time="0.029"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

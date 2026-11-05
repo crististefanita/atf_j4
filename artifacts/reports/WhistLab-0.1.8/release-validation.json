@@ -1,0 +1,103 @@
+{
+  "release": {
+    "versionName": "0.1.8",
+    "versionCode": 9,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "apkRelativePath": "../../../dist/WhistLab-0.1.8.apk",
+    "apkSha256": "9a22a5cec0ad3cf0f6a18d87fd7ab0fd09e8c94fc2cbd9b1a2e81fd3711a8248",
+    "signing": "Local Android development key; verified v2/v3; zipalign PASS"
+  },
+  "appUnit": {
+    "tests": 56,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "atfComponents": {
+    "tests": 21,
+    "passed": 21,
+    "failures": 0,
+    "errors": 0
+  },
+  "compactLiveE2E": {
+    "status": "PASS",
+    "checkpoints": 4,
+    "assertions": 35,
+    "allComparisonsPassed": true,
+    "tests": 1,
+    "junitStatus": "PASS",
+    "profiles": [
+      "720x1280@360"
+    ],
+    "tableViewportOnly": true
+  },
+  "extendedMatrix": {
+    "status": "PASS",
+    "checkpoints": 20,
+    "assertions": 160,
+    "allComparisonsPassed": true,
+    "profiles": [
+      "720x1280@360",
+      "1080x1920@440"
+    ],
+    "originalJUnitStatus": "ERROR: assertion preview overflow during publication",
+    "offlineReplay": {
+      "capturedUiStatus": "PASS",
+      "originalJUnitStatus": "ERROR",
+      "originalPublicationError": "assertion preview exceeded 240 characters",
+      "offlinePublication": "PASS",
+      "assertions": 160,
+      "adbOperations": 0,
+      "traceUnchanged": true
+    }
+  },
+  "releaseSmoke": {
+    "status": "PASS",
+    "launch": "Starting: Intent { cmp=ro.whistlab.app/.MainActivity }\r\nStatus: ok\r\nActivity: ro.whistlab.app/.MainActivity\r\nThisTime: 1136\r\nTotalTime: 1136\r\nWaitTime: 1202\r\nComplete\r\n",
+    "installedApkSha256": "9a22a5cec0ad3cf0f6a18d87fd7ab0fd09e8c94fc2cbd9b1a2e81fd3711a8248",
+    "expectedApkSha256": "9a22a5cec0ad3cf0f6a18d87fd7ab0fd09e8c94fc2cbd9b1a2e81fd3711a8248",
+    "api": 28,
+    "appDataCleared": false,
+    "resumedActivity": "mResumedActivity: ActivityRecord{e68274e u0 ro.whistlab.app/.MainActivity t931}",
+    "processId": "24646",
+    "fatalAndroidRuntimeForProcess": false
+  },
+  "appDataRestoreBeforeReleaseSmoke": {
+    "contentHashesMatch": true,
+    "files": 3,
+    "extraFixtureFilesRemoved": []
+  },
+  "sourcesMatchLive": true,
+  "sourceFilesChecked": 69,
+  "librariesMatchLive": true,
+  "reportAudit": [
+    {
+      "report": "compact-table/responsive-ui-sanity.html",
+      "bytes": 3923784,
+      "details": 18,
+      "embeddedPngOccurrences": 7,
+      "sha256": "18dee02bd56c81904e333c1cfc76ea34676ca9bd58b864e4fc138794c12d02b4",
+      "interactiveBrowserVerified": false
+    },
+    {
+      "report": "responsive-matrix-replay/responsive-ui-sanity-replayed.html",
+      "bytes": 6589510,
+      "details": 283,
+      "embeddedPngOccurrences": 19,
+      "sha256": "f9a4918999dccee443c8937bd947236f04dec1f21f4f11f60c948f4e9623d50c",
+      "interactiveBrowserVerified": false
+    }
+  ],
+  "limits": {
+    "physicalEmulatorRaster": "1080x1920",
+    "androidApi": 28,
+    "physicalRog7Tested": false,
+    "completeMatchPlayed": false,
+    "interactiveExtentExpandCollapseVerified": false,
+    "browserLimit": "Connected browser rejected file protocol; no alternate browser workaround used"
+  },
+  "externalRunRoot": "C:\\work\\whist_back\\ui-reports\\whist-lab\\runs\\20261105-083745-compact-018",
+  "tmpBuildRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_J4_COMPACT_448067ce6ea54aae9b7169dfc386bccb"
+}

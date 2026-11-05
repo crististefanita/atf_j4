@@ -69,11 +69,17 @@ if($ResearchCandidate){
     if(@($researchChoice.baselineGuards).Count -lt 1){throw 'Research candidate requires an accepted-baseline guard.'}
 }
 if($CandidateOverlay){
+    Import-Module (Join-Path $sourceRoot 'whist-lab-app/ai-lab/tools/qualification/WhistCandidateSource.psm1') -Force
     if($Collection -notin @('regression','learning')){throw 'Candidate overlays require regression or learning.'}
     $candidateOverlayFile=[IO.Path]::GetFullPath($CandidateOverlay)
     $candidateSourceRoot=Split-Path -Parent $candidateOverlayFile
-    $candidateSpec=Get-Content -LiteralPath $candidateOverlayFile -Raw | ConvertFrom-Json
-    if($candidateSpec.schemaVersion -ne 1 -or $candidateSpec.kind -ne 'CANDIDATE_EXPERIMENT' -or $candidateSpec.status -ne 'FROZEN_CANDIDATE_SOURCE' -or $candidateSpec.protocolVersion -ne 18 -or $candidateSpec.candidate -notmatch '^[a-z0-9-]+$' -or $candidateSpec.role -notin @('expert','player')){throw 'Invalid frozen schema18 candidate overlay.'}
+    $candidateOverlayBytes=[IO.File]::ReadAllBytes($candidateOverlayFile)
+    $manifestStream=[IO.MemoryStream]::new($candidateOverlayBytes,$false)
+    $manifestReader=[IO.StreamReader]::new($manifestStream,[Text.Encoding]::UTF8,$true)
+    try{$candidateSpec=$manifestReader.ReadToEnd() | ConvertFrom-Json}finally{$manifestReader.Dispose()}
+    $manifestHash=[Security.Cryptography.SHA256]::Create()
+    try{$candidateOverlaySha=[Convert]::ToHexString($manifestHash.ComputeHash($candidateOverlayBytes)).ToLowerInvariant()}finally{$manifestHash.Dispose()}
+    if($candidateSpec.schemaVersion -notin @(1,2) -or $candidateSpec.kind -ne 'CANDIDATE_EXPERIMENT' -or $candidateSpec.status -ne 'FROZEN_CANDIDATE_SOURCE' -or $candidateSpec.protocolVersion -ne 18 -or $candidateSpec.candidate -notmatch '^[a-z0-9-]+$' -or $candidateSpec.role -notin @('expert','player')){throw 'Invalid frozen schema18 candidate overlay.'}
     if($Candidate -and $Candidate -ne $candidateSpec.candidate){throw 'Candidate overlay identity differs from the requested candidate.'}
     $Candidate=$candidateSpec.candidate
     if($Collection -eq 'learning' -and ($protocol.version -ne 18 -or $declaredRoles.Count -ne 1 -or $declaredRoles[0] -ne $candidateSpec.role)){throw 'Candidate learning requires schema18 and its single declared role.'}
@@ -84,18 +90,7 @@ if($CandidateOverlay){
         if(-not $absolute.StartsWith($parentAbsolute,[StringComparison]::OrdinalIgnoreCase)){throw 'Candidate path escaped its declared directory.'}
         return $absolute
     }
-    function Assert-CandidateAcceptedSource([string]$AppRoot){
-        $expected=@{}
-        if(@($candidateSpec.baselineGuards).Count -ne 30){throw 'Candidate baseline requires all30 accepted main-source guards.'}
-        foreach($guard in $candidateSpec.baselineGuards){
-            if($guard.target -notmatch '^(game-core|ai-lab)/src/main/java/.+\.java$' -or $guard.sha256 -notmatch '^[a-f0-9]{64}$' -or $expected.ContainsKey($guard.target)){throw 'Invalid or duplicate candidate baseline guard.'}
-            $expected[$guard.target]=$guard.sha256
-        }
-        $actual=@(foreach($tree in @('game-core/src/main/java','ai-lab/src/main/java')){foreach($source in Get-ChildItem -LiteralPath (Join-Path $AppRoot $tree) -Recurse -File -Filter '*.java'){[IO.Path]::GetRelativePath($AppRoot,$source.FullName).Replace('\','/')}})
-        if($actual.Count -ne $expected.Count -or @($actual | Where-Object {-not $expected.ContainsKey($_)}).Count){throw 'Accepted main Java path set changed; rebase candidate before qualification.'}
-        foreach($target in $actual){$source=Resolve-ContainedCandidatePath $AppRoot $target;if((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant() -ne $expected[$target]){throw "Accepted source changed; rebase candidate: $target"}}
-    }
-    Assert-CandidateAcceptedSource (Join-Path $sourceRoot 'whist-lab-app')
+    $candidateBaseline = Assert-WhistCandidateAcceptedSource -AppRoot (Join-Path $sourceRoot 'whist-lab-app') -Specification $candidateSpec
     $candidateTargets=@{}
     if(@($candidateSpec.files).Count -lt 1){throw 'A candidate overlay needs explicit source files.'}
     foreach($entry in $candidateSpec.files){
@@ -135,7 +130,7 @@ if($ResearchCandidate){
     @{researchCandidate=$ResearchCandidate;status=$researchChoice.status;scope='Explicit research overlay in temporary source only; no production activation or strength acceptance.';catalogSha256=(Get-FileHash -LiteralPath $researchCatalogFile -Algorithm SHA256).Hash.ToLowerInvariant();baselineGuards=$researchChoice.baselineGuards;files=$researchFiles} | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $RunRoot 'research-overlay.json') -Encoding utf8
 }
 if($CandidateOverlay){
-    Assert-CandidateAcceptedSource $stageApp
+    $stagedBaseline = Assert-WhistCandidateAcceptedSource -AppRoot $stageApp -Specification $candidateSpec
     foreach($entry in $candidateSpec.files){
         $source=Resolve-ContainedCandidatePath $candidateSourceRoot $entry.source
         $target=Resolve-ContainedCandidatePath $stageApp $entry.target
@@ -143,12 +138,9 @@ if($CandidateOverlay){
         Copy-Item -LiteralPath $source -Destination $target
         if((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant() -ne $entry.sha256){throw "Staged candidate digest differs: $($entry.target)"}
     }
-    $expectedMain=@{};foreach($guard in $candidateSpec.baselineGuards){$expectedMain[$guard.target]=$true}
-    foreach($entry in $candidateSpec.files){if($entry.target -match '^(game-core|ai-lab)/src/main/java/.+\.java$'){$expectedMain[$entry.target]=$true}}
-    $actualMain=@(foreach($tree in @('game-core/src/main/java','ai-lab/src/main/java')){foreach($source in Get-ChildItem -LiteralPath (Join-Path $stageApp $tree) -Recurse -File -Filter '*.java'){[IO.Path]::GetRelativePath($stageApp,$source.FullName).Replace('\','/')}})
-    if($actualMain.Count -ne $expectedMain.Count -or @($actualMain | Where-Object {-not $expectedMain.ContainsKey($_)}).Count){throw 'Undeclared main Java addition in staged candidate.'}
-    Copy-Item -LiteralPath $candidateOverlayFile -Destination (Join-Path $RunRoot 'candidate-overlay.json')
-    @{candidate=$Candidate;role=$candidateSpec.role;status='ISOLATED_CANDIDATE_SOURCE';scope='Explicit source overlay in TEMP only; no production activation or strength acceptance.';sourceManifest=$candidateOverlayFile;sourceRoot=$candidateSourceRoot;overlaySha256=(Get-FileHash -LiteralPath $candidateOverlayFile -Algorithm SHA256).Hash.ToLowerInvariant();baselineGuards=$candidateSpec.baselineGuards;files=$candidateSpec.files} | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $RunRoot 'candidate-overlay-proof.json') -Encoding utf8
+    $stagedCandidate = Assert-WhistStagedCandidateSource -AppRoot $stageApp -Specification $candidateSpec
+    [IO.File]::WriteAllBytes((Join-Path $RunRoot 'candidate-overlay.json'),$candidateOverlayBytes)
+    @{candidate=$Candidate;role=$candidateSpec.role;status='ISOLATED_CANDIDATE_SOURCE';scope='Explicit source overlay in TEMP only; no production activation or strength acceptance.';sourceManifest=$candidateOverlayFile;sourceRoot=$candidateSourceRoot;overlaySha256=$candidateOverlaySha;baselineGuards=$candidateSpec.baselineGuards;baselineInventory=$candidateBaseline;copiedBaselineInventory=$stagedBaseline;candidateInventory=$stagedCandidate;files=$candidateSpec.files} | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $RunRoot 'candidate-overlay-proof.json') -Encoding utf8
 }
 # Inventory the final staged bytes, including explicit overlays, before checking any source freeze.
 $inventory=@(foreach($file in Get-ChildItem -LiteralPath $stageApp -Recurse -File){

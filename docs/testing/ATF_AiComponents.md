@@ -59,6 +59,12 @@ Un parcurs Android rămâne E2E numai când execută interacțiuni noi în aplic
 | [HardSalvageObjectiveTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | Ordinea obiectivelor când exactul este imposibil public. |
 | [IndependentPlayerModelTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java) | Fezabilitate și model independent. |
 
+## Citirea observațiilor arhivate
+
+[ObservedPositionJson](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJson.java) adaptează capturile publice la modelul curent fără să rescrie documentul original. Absența câmpului penalizării păstrează profilul istoric de cinci puncte; o valoare explicită rămâne explicită, iar una invalidă este refuzată.
+
+[Componentele adaptorului](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJsonComponentTest.java) disting absența, valoarea curentă și coruperea datelor. Compatibilitatea capturii aparține cititorului de arhivă, iar motorul rămâne independent de parserul JSON al testelor.
+
 ## Organizarea colecțiilor
 
 Regresia implicită păstrează cazuri mici, stabile și cu așteptare independentă. Cercetarea, turneele și diagnosticele care explorează limite nerezolvate sunt colecții explicite, cu buget și scop declarate.

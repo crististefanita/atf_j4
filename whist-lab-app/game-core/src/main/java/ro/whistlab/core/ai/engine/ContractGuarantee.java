@@ -3,6 +3,7 @@ package ro.whistlab.core.ai.engine;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.rules.GameRules;
+import ro.whistlab.core.ai.simulation.SearchCancellation;
 import java.util.*;
 /** A proof over every feasible deal and every legal opponent continuation; never over a sample. */
 final class ContractGuarantee {
@@ -19,7 +20,7 @@ final class ContractGuarantee {
   return new Proof(selected,false,worlds.size(),proof.nodes);
  }
  private boolean all(List<List<Card>> hands,List<PlayedCard> trick,int actor,int won){
-  if(++nodes>limit)throw new Exhausted();if(won>target)return false;int left=hands.stream().mapToInt(List::size).sum();if(left==0)return trick.isEmpty()&&won==target;if(won+(left+trick.size())/4<target)return false;
+  SearchCancellation.check();if(++nodes>limit)throw new Exhausted();if(won>target)return false;int left=hands.stream().mapToInt(List::size).sum();if(left==0)return trick.isEmpty()&&won==target;if(won+(left+trick.size())/4<target)return false;
   var legal=new ArrayList<>(GameRules.legalCards(hands.get(actor),trick.isEmpty()?null:trick.get(0).card().suit(),v.trump(),v.mode()));if(legal.isEmpty())return false;for(Card c:legal)if(!play(hands,trick,actor,won,c))return false;return true;
  }
  private boolean play(List<List<Card>> hands,List<PlayedCard> trick,int actor,int won,Card card){

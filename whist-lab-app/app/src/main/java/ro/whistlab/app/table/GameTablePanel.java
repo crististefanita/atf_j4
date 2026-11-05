@@ -6,6 +6,7 @@ import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.WhistUiPalette;
+import ro.whistlab.app.window.WindowContent;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -91,7 +92,7 @@ public final class GameTablePanel extends LinearLayout {
             WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused) {
         super(context);
         this.context = context;
-        this.viewport = new TableViewportPolicy(getResources().getConfiguration().screenHeightDp);
+        this.viewport = new TableViewportPolicy(WindowContent.heightDp(context));
         this.state = state;
         this.copy = copy;
         this.bidding = bidding;
@@ -140,11 +141,10 @@ public final class GameTablePanel extends LinearLayout {
         int tableWidthDp = Math.min(availableContentWidthDp(), 760);
         TrickCardMetrics.Layout trickLayout = bidding
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp,
-                        getResources().getConfiguration().fontScale, viewport.playedCardFaceHeightDp(),
-                        viewport.playedCardItemVerticalPaddingDp());
+                        getResources().getConfiguration().fontScale, viewport);
         int centerWidthDp = bidding
                 ? Math.max(132, Math.min(bidOptions.size(), BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp)) * 52)
-                : TableLayoutMetrics.centerPlayWidthDp(tableWidthDp);
+                : TableLayoutMetrics.centerPlayWidthDp(tableWidthDp, viewport.isCompact());
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
                 viewport, !bidding, bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
                         : TableGeometry.CenterAlignment.BALANCED);
@@ -278,16 +278,32 @@ public final class GameTablePanel extends LinearLayout {
             action.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             actionSlot.addView(action, actionBadgeParams);
         }
-        seat.addView(actionSlot, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(viewport.turnBadgeSlotHeightDp())));
-
         TextView name = text(copy.seatName(player), 13,
                 active ? INK : Color.rgb(229, 239, 230), true);
         name.setGravity(Gravity.CENTER);
         name.setSingleLine(true);
         name.setEllipsize(android.text.TextUtils.TruncateAt.END);
         name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        seat.addView(name, matchWrap());
+        if (viewport.isCompact()) {
+            LinearLayout heading = new LinearLayout(context);
+            heading.setGravity(Gravity.CENTER_VERTICAL);
+            heading.addView(name, new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            if (active) {
+                TextView badge = (TextView) actionSlot.getChildAt(0);
+                actionSlot.removeView(badge);
+                badge.setTextSize(8);
+                badge.setPadding(0, 0, 0, 0);
+                badge.setCompoundDrawablesRelative(null, null, null, null);
+                badge.setMaxLines(2);
+                heading.addView(badge, new LayoutParams(dp(27), ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+            seat.addView(heading, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(viewport.seatHeadingHeightDp())));
+        } else {
+            seat.addView(actionSlot, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    dp(viewport.turnBadgeSlotHeightDp())));
+            seat.addView(name, matchWrap());
+        }
         addSeatFact(seat, copy.bidLabel() + ":", player.bid() == null ? "—" : player.bid().toString(), active);
         addSeatFact(seat, copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()), active);
         seat.setTag("table-seat:" + player.seat());
@@ -314,7 +330,7 @@ public final class GameTablePanel extends LinearLayout {
             FrameLayout.LayoutParams rowParams = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(layout.cellHeightDp()),
                     Gravity.TOP | Gravity.LEFT);
-            rowParams.topMargin = dp(rowIndex * layout.cellHeightDp());
+            rowParams.topMargin = dp(rowIndex * layout.rowStrideDp());
             cards.addView(row, rowParams);
         }
         for (int seat = 0; seat < bySeat.length; seat++) {
@@ -342,8 +358,10 @@ public final class GameTablePanel extends LinearLayout {
             who.setSingleLine(true);
             who.setEllipsize(android.text.TextUtils.TruncateAt.END);
             who.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            item.addView(who, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(layout.playerLabelHeightDp())));
+            if (layout.playerLabelHeightDp() > 0) {
+                item.addView(who, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(layout.playerLabelHeightDp())));
+            }
 
             item.setContentDescription(copy.trickCardAccessibility(player, play.card()));
             item.setTag("trick-card:" + seat);
@@ -461,6 +479,7 @@ public final class GameTablePanel extends LinearLayout {
         TextView view = new TextView(context);
         view.setText(value);
         view.setTextSize(size);
+        view.setIncludeFontPadding(!viewport.isCompact());
         view.setTextColor(color);
         if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         return view;
@@ -483,8 +502,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     private int availableContentWidthDp() {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.max(1, Math.round(getResources().getDisplayMetrics().widthPixels / density) - 40);
+        return Math.max(1, WindowContent.widthDp(context) - 40);
     }
 
 }

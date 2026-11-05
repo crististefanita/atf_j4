@@ -74,3 +74,14 @@ mvn -B -pl atf-validation -am test
 | Clasificarea antetului | [JsonMediaTypeContractTest](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java). |
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă regulile unitare de componentele evaluării AI și de colaborarea prin API-ul public. [POM-ul](pom.xml) definește dependențele și limita modulului.
+
+## Calificare prioritară a costului evaluării
+
+Subsetul JSON este explicit și refuză construcțiile nesuportate. Următoarea calificare trebuie să delimiteze costul prevalidării și al evaluării pe structuri mari, adânci sau repetitive.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P2 | Identificați limitele și costul schemei. | Probe controlate măsoară adâncimea, cardinalitatea și repetarea regulilor; refuzurile au cauză explicită, iar limitele sunt documentate ca parte a contractului. |
+| P2 | Evitați recompilarea nejustificată a regulilor repetate. | Modelul pregătit al evaluării poate reutiliza expresiile validate în aceeași invocare; comparațiile numerice, Unicode și refuzul cuvintelor necunoscute păstrează controale independente. |
+
+Rezultatul performanței și identitatea intrărilor se păstrează extern. Optimizarea se acceptă după paritate semantică și măsurare, cu publicarea separată de evaluarea valorilor integrale.

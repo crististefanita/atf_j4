@@ -28,10 +28,10 @@ class ResponsiveDisplayProfileComponentTest {
         var profiles = ResponsiveDisplayProfile.parse("720x1280@360,1080x1920@440");
         assertEquals(569, profiles.get(0).logicalHeightDp());
         assertEquals(94, profiles.get(0).playedCardFaceHeightDp());
-        assertEquals(16, profiles.get(0).playedCardLabelAndPaddingDp());
+        assertEquals(96, profiles.get(0).minimumPlayedCardSlotHeightDp());
         assertEquals(698, profiles.get(1).logicalHeightDp());
         assertEquals(104, profiles.get(1).playedCardFaceHeightDp());
-        assertEquals(18, profiles.get(1).playedCardLabelAndPaddingDp());
+        assertEquals(106, profiles.get(1).minimumPlayedCardSlotHeightDp());
     }
 
     @Test

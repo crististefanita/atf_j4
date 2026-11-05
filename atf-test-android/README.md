@@ -29,6 +29,7 @@ Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpret
 | Zonă | Contract |
 |---|---|
 | [AdbClient](src/main/java/atf/android/AdbClient.java) | Dispozitiv explicit, durată maximă, ieșiri text sau binare. |
+| [TableViewportAudit](src/main/java/atf/android/whist/evidence/TableViewportAudit.java) | Compară o singură observație a mesei; E2E și componentele folosesc același oracol, cu date reale ori simulate. |
 | [Captură](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) și [temporizare](src/main/java/atf/android/evidence/timing/) | PNG original, ceas monoton, intervale și serializare. |
 | [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Verificări pure și publicarea indexului extern. |
 | [Scenarii și oracole](src/test/java/atf/android/e2e/) | Navigare, extragerea stării, actori și comparații ale jocului. |
@@ -55,24 +56,25 @@ mvn -B -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockT
 
 [AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) verifică ADB controlat și capturi. [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) verifică temporizarea fluxului prin componente; aceste selecții sunt distincte de activarea scenariilor E2E.
 
+Selecția `TableViewportAuditComponentTest` din profilul `responsive-sanity` verifică fără ADB observații controlate ale mesei. Cazurile negative acoperă cadre lipsă, fețe tăiate, suprapuneri, scroll și centrarea unei singure cărți; același oracol este folosit de E2E.
+
 ## Fluxuri Android
 
 [Ghidul Android](../docs/testing/ATF_Android.md) definește dispozitivul, rezervarea exclusivă, activarea și starea inițială. [Matricea de ecrane](../docs/testing/ATF_Display.md) deține profilurile, distribuțiile controlate și fluxul de joc opțional; [verificarea jocului](../docs/testing/ATF_Gameplay.md) deține regulile și scorul.
 
-Pentru o verificare vizuală scurtă, runnerul suportă `-DenseLayout` și
-`-Profiles`: fixture-ul cu 13 cărți și cel cu 9 licitații rulează numai pe
-profilele declarate, păstrează imaginile și ierarhiile în Extent și nu joacă o
-partidă. Exemplu din rădăcina proiectului:
+Pentru o verificare vizuală scurtă, `-TableViewportOnly` selectează mâna maximă,
+levata completă și licitarea cu selecție. `-Profiles` limitează matricea;
+imaginile și ierarhiile sunt păstrate în Extent, fără o partidă completă.
 
 ```powershell
-pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -DenseLayout -Profiles '720x1280@360'
+pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -TableViewportOnly -Profiles '720x1280@360'
 ```
 
 Runnerul necesită PowerShell 7 (`pwsh`), fiindcă adaptorul de proces ADB folosește
 `ProcessStartInfo.ArgumentList`. Build-ul și raportul rămân în locațiile temporară
 și externă documentate.
 
-Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea în PNG și interacțiunea observată. Pe ecranele compacte, DenseLayout păstrează o captură a titlului, înregistrează derularea controlată și verifică apoi fețele întregi ale celor 13 cărți; nu pretinde că titlul și mâna încap simultan în primul viewport.
+Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea în PNG și interacțiunea observată. Masa compactă cere mâna, levata și toate chenarele simultan, fără scroll vertical; verificarea pixelilor și acceptanța nativă rămân distincte de observațiile simulate.
 
 ## Niveluri de testare
 
@@ -81,3 +83,15 @@ Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea 
 - **E2E:** acțiuni noi în aplicația identificată și instalată, sub rezervarea dispozitivului.
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.
+
+## Îmbunătățiri prioritare ale infrastructurii
+
+[AdbClient](src/main/java/atf/android/AdbClient.java) limitează așteptarea procesului, dar sincronizarea cititoarelor folosește join fără termen, iar întreruperea nu are un bloc unic de curățare. Contractul operațional trebuie calificat pentru întregul apel, inclusiv drenarea fluxurilor și oprirea descendenților.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P1 | Aplicați un termen total și curățare la întrerupere. | Procese controlate verifică ieșirea blocată, descendentul care ține fluxul deschis, întreruperea și depășirea termenului; apelul se închide în buget și cauza inițială rămâne vizibilă. |
+| P2 | Delimitați memoria capturii și diagnosticului. | Limitele textului și binarului sunt configurate separat; depășirea este explicită și un PNG incomplet este refuzat înaintea publicării. |
+| P2 | Continuați separarea scenariilor și a driverului după invariantă. | Navigarea, așteptarea, parsarea și oracolul au proprietari clari; extracțiile păstrează identitățile JUnit, ordinea acțiunilor și comparațiile independente. |
+
+Componentele transportului folosesc procese locale controlate. [Acceptanța Android](../docs/testing/ATF_Android.md) verifică separat comportamentul pe dispozitiv; publicarea unei capturi valide are propriul contract.

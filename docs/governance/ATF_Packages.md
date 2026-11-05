@@ -107,7 +107,7 @@ Metoda JUnit deține numele și metadatele cazului. Scenariul primește explicit
 | `gameplay.presentation`, `configuration`, `persistence`, `tricks` | Scenarii delimitate prin comportamentul verificat; metodele JUnit rămân puncte de intrare stabile. |
 | `support.flow` | Ținta aplicației, metadatele instalării și publicarea checkpoint-urilor. |
 | `display.support` | Geometrie comună, toleranțe explicite și comenzi de display trasate. |
-| `display.flow.responsive` | Coordonare, inspecții de meniu, parcurs de joc, stare vizibilă, dovezi și geometrie. |
+| `display.flow.responsive` | Coordonare, inspecții de meniu, parcurs de joc, stare vizibilă, dovezi și scenariul vizibilității simultane. |
 | `evidence.frames` | Colectarea cadrelor, analiza pixelilor și timpului, respectiv metadatele PNG fără alterarea pixelilor. |
 | `atf.tests.reporting.acceptance` | Citirea rezultatelor native și compunerea raportului de acceptanță. |
 | `atf.tests.reporting.replay` | Citirea fișierelor capturate și transformarea fluxurilor în intrări tipizate pentru raportare. |

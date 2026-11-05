@@ -68,7 +68,7 @@ public class PublicSalvageTest {
         CapturedRegression.run("salvage-budget-fallback",getClass().getName(),"aPartialSearchCannotClaimDominance",Map.of("rule","A one-node budget cannot compare both full trees. Keep the original proposal and never publish a partial search as certain."),r->{r.equal("Incomplete search not certified",false,proof.certified());r.equal("Original card retained","7S",LossMiningTest.code(proof.card()));});
     }
     @Test public void equalExpectedPenaltyIsWeakerThanPointwiseDominance()throws Exception {
-        var json=new com.fasterxml.jackson.databind.ObjectMapper();var v=json.treeToValue(json.readTree(getClass().getResourceAsStream("/regressions/contract-certificate/cases.json")).path("impossible").path("input").path("before"),MonteCarloAi.View.class);
+        var json=new com.fasterxml.jackson.databind.ObjectMapper();var v=ro.whistlab.core.testing.codec.ObservedPositionJson.view(json,json.readTree(getClass().getResourceAsStream("/regressions/contract-certificate/cases.json")).path("impossible").path("input").path("before"));
         var proof=PublicSalvage.choose(v,c("AS"));
         CapturedRegression.run("salvage-no-expected-value-certificate",getClass().getName(),"equalExpectedPenaltyIsWeakerThanPointwiseDominance",Map.of("rule","AS and AD both average-2.6 under a uniform prior but allow final own won1or2. Overlapping payoff intervals cannot certify pointwise no-worse points; retain baseline."),r->{r.equal("No universal dominance from equal means",false,proof.certified());r.equal("Baseline retained","AS",LossMiningTest.code(proof.card()));});
     }

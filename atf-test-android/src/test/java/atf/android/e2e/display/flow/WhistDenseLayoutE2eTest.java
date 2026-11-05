@@ -57,7 +57,7 @@ class WhistDenseLayoutE2eTest {
                         List.of(check("Expected game title", "Whist · Descending",
                                 ui.hasText(xml, "Whist · Descending"),
                                 ui.hasText(xml, "Whist · Descending"))));
-                xml = scrollUntilVisible(adb, ui, profile, "Your hand, 13 cards.", true, 98);
+                xml = ui.awaitDescriptionContaining("Your hand, 13 cards.", Duration.ofSeconds(15));
                 var capture = ui.capture(profile.id() + "-13-indices"); evidence.addAll(capture);
                 var screenshot = capture.stream().filter(path -> path.toString().endsWith(".png")).findFirst().orElseThrow();
                 var image = ImageIO.read(screenshot.toFile());
@@ -94,7 +94,7 @@ class WhistDenseLayoutE2eTest {
 
                 xml = ui.restartToActivity(PACKAGE, ".MainActivity", "--ez", "debug_nine_bids_fixture", "true",
                         "--ez", "debug_hold_ai_turns", "true", "--es", "debug_language", "EN");
-                xml = scrollUntilVisible(adb, ui, profile, "Place bid", false, 48);
+                xml = ui.awaitText("Place bid", Duration.ofSeconds(15));
                 capture = ui.capture(profile.id() + "-9-bids"); evidence.addAll(capture);
                 var seats = seats(ui, xml);
                 var bidZone = ui.boundsForDescriptionContaining(xml, "Choose your bid");

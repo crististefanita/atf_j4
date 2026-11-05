@@ -74,3 +74,15 @@ mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=At
 - Deficiențele semantice și datoria de separare rămân vizibile în [feedback](../feedback/ATF_Governance.md).
 
 [Arhitectura testării](../testing/ATF_Architecture.md) · [Documentație](ATF_Documentation.md) · [Schimbarea testelor](ATF_TestChanges.md)
+
+## Îmbunătățiri prioritare ale calificării
+
+Verificările structurale trebuie completate prin controale ale afirmațiilor factuale care au proprietar executabil. Revizia semantică rămâne obligatorie pentru reguli, compatibilitate și limitele descrise în mai multe rezumate.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P1 | Leagă afirmațiile despre reguli de profilul exact. | Controale cu defecte injectate detectează amestecarea profilului nou cu cel istoric în scor, ajutor și documentație; schema afirmației identifică sursa responsabilă și domeniul, fără a deduce comportamentul dintr-un cuvânt izolat. |
+| P2 | Califică sensul separării responsabilităților. | Revizia urmărește starea, dependențele și invarianta fiecărui mecanism; mutarea într-un alt fișier păstrează controale comportamentale și nu închide singură datoria de coeziune. |
+| P2 | Publică separat rezultatul și criteriul rămas. | Auditul extern identifică populația, sursele, limitele și notele; README-urile păstrează mecanismele și condițiile de închidere, fără cronologii ori scoruri editoriale copiate. |
+
+[Bunele practici documentare](ATF_Documentation.md) dețin grila editorială. [Feedback-ul de guvernanță](../feedback/ATF_Governance.md) deține contractul reutilizabil al verificatoarelor și limitele adaptării locale.

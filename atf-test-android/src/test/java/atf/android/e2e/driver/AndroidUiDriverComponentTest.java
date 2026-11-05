@@ -13,6 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AtfComponentTest
 class AndroidUiDriverComponentTest {
     @Test
+    void symmetricSeriesSelectorRetainsItsStableIdentityAndLegacyAlias() {
+        assertTrue(UiHierarchy.matchesSpinnerLabel("romanian-streak-value", "Five-hand reward / penalty"));
+        assertTrue(UiHierarchy.matchesSpinnerLabel("romanian-streak-value", "Bonus / penalizare după cinci mâini"));
+        assertTrue(UiHierarchy.matchesSpinnerLabel("romanian-streak-value", "Five-hand exact-contract bonus"));
+        assertFalse(UiHierarchy.matchesSpinnerLabel("romanian-streak-value", "Game type"));
+    }
+    @Test
     void clippedScrollViewDoesNotPassAsACompleteFirstViewport() throws Exception {
         String hierarchy = """
                 <hierarchy>

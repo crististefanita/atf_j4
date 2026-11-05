@@ -3,6 +3,7 @@ package ro.whistlab.core.ai.engine;
 import ro.whistlab.core.ai.profile.HardStrategyProfile;
 import ro.whistlab.core.ai.simulation.PossibleDeals;
 import ro.whistlab.core.ai.simulation.RolloutPolicy;
+import ro.whistlab.core.ai.simulation.SearchCancellation;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.ImmutableLists;
 import ro.whistlab.core.model.PlayedCard;
@@ -181,6 +182,7 @@ public final class MonteCarloAi {
     }
 
     public static BidDecision chooseBid(View view, HardStrategyProfile profile) {
+        SearchCancellation.check();
         int prior = view.seats().stream().filter(s -> s.bid() != null).mapToInt(s -> s.bid()).sum();
         boolean last =
                 view.seats().stream().filter(s -> s.bid() != null).count()
@@ -207,6 +209,7 @@ public final class MonteCarloAi {
         var evidence = new BidSamples(allowed, view.handSize() + 1, safety);
         int budget = safety ? 128 : SAMPLES;
         for (int sample = 0; sample < budget; sample++) {
+            SearchCancellation.check();
             List<List<Card>> hands = sample(view, new Random(seed(view, sample)));
             if (hands == null) continue;
             double[] points = new double[view.handSize() + 1],
@@ -369,6 +372,7 @@ public final class MonteCarloAi {
     }
 
     private static Decision chooseCard(View view, double exactWeight, HardStrategyProfile profile) {
+        SearchCancellation.check();
         var model = modelCard(view, exactWeight, profile);
         var proof = ContractGuarantee.choose(view, model.card());
         Decision accepted =
@@ -425,6 +429,7 @@ public final class MonteCarloAi {
                 unknownCards(view).size() <= 7 ? enumerateSmallDeals(view) : List.of();
         int worlds = exactDeals.isEmpty() ? SAMPLES : exactDeals.size();
         for (int sample = 0; sample < worlds; sample++) {
+            SearchCancellation.check();
             List<List<Card>> hands =
                     exactDeals.isEmpty()
                             ? sample(view, new Random(seed(view, sample)))

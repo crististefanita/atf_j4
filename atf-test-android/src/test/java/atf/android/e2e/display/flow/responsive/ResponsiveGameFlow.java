@@ -4,18 +4,16 @@ import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.check;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.checkCaptureSize;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.publishCheckpoint;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.record;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.contains;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.darkTextPixels;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.noOverlap;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.overlaps;
-import static atf.android.e2e.display.flow.responsive.ResponsiveGeometry.sampleFrameFill;
+import static atf.android.e2e.display.support.ResponsiveGeometry.contains;
+import static atf.android.e2e.display.support.ResponsiveGeometry.darkTextPixels;
+import static atf.android.e2e.display.support.ResponsiveGeometry.noOverlap;
+import static atf.android.e2e.display.support.ResponsiveGeometry.overlaps;
+import static atf.android.e2e.display.support.ResponsiveGeometry.sampleFrameFill;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.APP;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.WAIT;
 import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.awaitPlayableTurn;
 import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.dealNumber;
 import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.handSize;
-import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.revealCompletePlayedCard;
-import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.revealSeatCross;
 import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.romanianFourPlayerHandSize;
 import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.seatBounds;
 import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.seatDescriptions;
@@ -355,14 +353,12 @@ public final class ResponsiveGameFlow {
             throw new IllegalStateException(
                     "Expected one deterministic card in the current trick: " + playedCards);
         }
-        xml = revealCompletePlayedCard(adb, ui, playedCards.getFirst(), profile, xml);
         AndroidUiDriver.Bounds cardSlot = ui.boundsForDescription(xml, playedCards.getFirst());
         AndroidUiDriver.Bounds cardFace = ui.boundsForText(xml, "A♥");
         AndroidUiDriver.Bounds board = ui.boundsForDescription(xml, "Playing surface");
         AndroidUiDriver.Bounds currentSeat =
                 ui.boundsForDescriptionContaining(xml, "Current turn.");
         AndroidUiDriver.Bounds trump = ui.boundsForDescriptionContaining(xml, "Trump");
-        List<String> initialSeatDescriptions = seatDescriptions(ui, xml);
         double density = profile.density() / 160.0;
         int playedCardFaceHeightDp = profile.playedCardFaceHeightDp();
         int playedCardFaceHeight = (int) Math.round(playedCardFaceHeightDp * density);
@@ -437,22 +433,19 @@ public final class ResponsiveGameFlow {
                 styleCapture,
                 styleChecks);
 
-        xml = revealSeatCross(adb, ui, playedCards.getFirst(), profile, xml);
         cardSlot = ui.boundsForDescription(xml, playedCards.getFirst());
         cardFace = ui.boundsForText(xml, "A♥");
         board = ui.boundsForDescription(xml, "Playing surface");
         List<String> visibleSeatDescriptions = seatDescriptions(ui, xml);
         List<AndroidUiDriver.Bounds> seats = seatBounds(ui, xml);
         boolean fullFaceStillVisible = height(cardFace) >= playedCardFaceHeight;
-        int fullCardRowHeight = playedCardFaceHeightDp + profile.playedCardLabelAndPaddingDp();
+        int fullCardRowHeight = profile.minimumPlayedCardSlotHeightDp();
         boolean completeCardRowVisible =
                 height(cardSlot) >= (int) Math.round(fullCardRowHeight * density);
         boolean humanSeatVisible =
                 visibleSeatDescriptions.stream()
                         .anyMatch(description -> description.startsWith("You. Bid "));
-        java.util.Set<String> observedPlayers =
-                new java.util.LinkedHashSet<>(initialSeatDescriptions);
-        observedPlayers.addAll(visibleSeatDescriptions);
+        java.util.Set<String> observedPlayers = new java.util.LinkedHashSet<>(visibleSeatDescriptions);
         boolean allSeatsObserved = observedPlayers.size() == 4 && humanSeatVisible;
         AndroidUiDriver.Bounds auditedCardSlot = cardSlot;
         int overlapCount =
@@ -478,16 +471,16 @@ public final class ResponsiveGameFlow {
                                         height(cardFace) + " px",
                                         fullFaceStillVisible),
                                 check(
-                                        "Card face and player label are fully inside the table viewport",
+                                        "Complete card slot remains inside the table viewport",
                                         (int) Math.round(fullCardRowHeight * density)
                                                 + " px full row",
                                         height(cardSlot) + " px",
                                         completeCardRowVisible),
                                 check(
-                                        "All four player frames are accounted for across the scrollable table",
+                                        "All four player frames are simultaneously visible without scrolling",
                                         "4 player frames",
                                         observedPlayers.size() + "/4 unique seats including You",
-                                        allSeatsObserved),
+                                        allSeatsObserved && !ui.hasClass(xml, "android.widget.ScrollView")),
                                 check(
                                         "The bottom card remains aligned with the human seat",
                                         "same horizontal center",

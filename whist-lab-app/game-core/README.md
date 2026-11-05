@@ -45,7 +45,7 @@ Profilul acceptă 3–6 jucători și un pachet redus de `8 × N` cărți mari. 
 - Câștigă cel mai mare atu sau cea mai mare carte din culoarea cerută; câștigătorul conduce levata următoare.
 - Licitația este în intervalul mâinii, iar ultima ofertă nu poate egaliza suma cu numărul de levate.
 - Contractul exact acordă `5 + levate`; ratarea scade diferența absolută.
-- Seriile opționale folosesc bonusul pozitiv configurat de 5 sau 10 și penalizarea de 5; eligibilitatea și întreruperea sunt definite de `RomanianScoring`.
+- Seriile opționale folosesc valorile explicite din GameConfig. `newMatch` aplică simetric 5 sau 10, iar constructorul de compatibilitate care primește numai bonusul pozitiv păstrează penalizarea istorică de 5; eligibilitatea și întreruperea sunt definite de `RomanianScoring`.
 
 [Regulile RO/EN](../../docs/game/README.md) explică distribuirea, atuul, programul și seriile. Configurația este explicită: constructorul de compatibilitate cu patru argumente păstrează seriile dezactivate, iar celelalte forme își validează opțiunile.
 
@@ -63,6 +63,8 @@ O comandă ilegală este respinsă înaintea tranziției. Închiderea mâinii ap
 - **Normal** urmărește contractul și evită levatele suplimentare după realizarea lui, în limitele acțiunilor legale.
 - **Hard** compară continuări pe lumi compatibile cu informația publică, necesarul și contractele cunoscute; [MonteCarloAi](src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) deține compoziția deciziei.
 - Certificatele finite și recuperarea contractelor imposibile au condiții și bugete explicite; epuizarea unui buget păstrează propunerea de bază.
+
+[SearchCancellation](src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java) verifică întreruperea la frontierele eșantionării, simulării și căutării finite. Anularea abandonează calculul și păstrează marcajul întreruperii; proprietarul turei invalidează rezultatul, iar epuizarea unui buget de certificat își păstrează separat comportamentul de rezervă.
 
 [Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) și [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimitează comportamentul activ de ipotezele de cercetare. Estimarea probabilistă și un certificat local nu garantează câștigarea fiecărei partide cu informație ascunsă.
 
@@ -84,3 +86,15 @@ Dintr-o copie temporară proprie a `whist-lab-app`, intrarea directă este:
 ```
 
 [Arhitectura testării](../../docs/testing/ATF_Architecture.md) delimitează componentele, integrarea și Android. [Învățarea offline](../../docs/learning/README.md) explică extragerea regresiilor mici, comparațiile pe aceleași distribuții și calificarea pe partide noi.
+
+## Îmbunătățiri prioritare ale motorului
+
+Separarea domeniului de Android este solidă; următoarea limită este calificarea costului și a deciziei probabiliste. Responsabilul motorului păstrează comportamentul și sursele politicilor de referință în timpul extragerilor.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P1 | Definiți bugetul operațional al Hard. | Contexte publice controlate pentru 2–8 cărți verifică numărul de lumi, epuizarea căutării, anularea și alegerea legală de rezervă; măsurătorile identifică mediul și distribuția costului. |
+| P2 | Delimitați în continuare evaluarea alternativelor de compoziția deciziei. | Extragerile din MonteCarloAi păstrează ordinea eșantionării, inițializarea deterministă și așteptări independente; dimensiunea clasei este indiciu, iar contractul mecanismului justifică separarea. |
+| P2 | Calificați frontierele critice prin mutanți semantici. | Inversarea obligației de atu, a câștigătorului sau a întreruperii seriei este detectată de un control independent; configurația JaCoCo publică acoperirea, fără a o trata drept dovadă a corectitudinii. |
+
+[Criteriile AI](../../docs/feedback/ATF_Ai.md) dețin calificarea strategică. [Regulile documentației](../../docs/governance/ATF_Documentation.md) cer aceeași descriere a profilului nou și a compatibilității în toate rezumatele.

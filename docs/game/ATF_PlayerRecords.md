@@ -50,6 +50,6 @@ Meniul partidelor noi oferă ±5 sau ±10 puncte după cinci rezultate eligibile
 
 ## Verificare
 
-Componentele verifică programul complet, asocierea locurilor, migrarea, ordonarea topului, refuzul coruperii, reîncercarea și idempotenta înregistrării. Geometria observată, navigarea Android și recuperarea efectivă a adaptorului de fișier au [acceptanță E2E separată](../feedback/ATF_Android.md#todo--acceptanță-e2e-minimă-pentru-profil-istoric-și-clasamente).
+Componentele verifică programul complet, asocierea locurilor, migrarea, ordonarea topului, refuzul coruperii, reîncercarea și idempotenta înregistrării. Geometria observată, navigarea Android și recuperarea efectivă a adaptorului de fișier au [acceptanță E2E separată](../feedback/ATF_Android.md#acoperire-e2e-minimă-pentru-profil-istoric-și-clasamente).
 
 [Istoricul scorului](ATF_ScoreHistory.md) · [Atlasul interfeței](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

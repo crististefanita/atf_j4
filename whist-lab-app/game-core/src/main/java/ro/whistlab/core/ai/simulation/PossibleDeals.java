@@ -23,6 +23,7 @@ public final class PossibleDeals {
     }
 
     public static List<List<Card>> sample(View view, Random random) {
+        SearchCancellation.check();
         List<Card> pool = unknownCards(view);
         boolean[][] voids = knownVoids(view);
         Collections.shuffle(pool, random);
@@ -75,6 +76,7 @@ public final class PossibleDeals {
             boolean[][] voids,
             int[] matched,
             boolean[] seen) {
+        SearchCancellation.check();
         for (int c = 0; c < pool.size(); c++)
             if (!seen[c] && !voids[owners.get(slot)][pool.get(c).suit().ordinal()]) {
                 seen[c] = true;
@@ -87,6 +89,7 @@ public final class PossibleDeals {
     }
 
     public static List<List<List<Card>>> enumerateSmallDeals(View v) {
+        SearchCancellation.check();
         List<Card> pool = unknownCards(v);
         if (pool.size() > 10 || v.seats().stream().anyMatch(s -> s.remaining() > 2))
             return List.of();

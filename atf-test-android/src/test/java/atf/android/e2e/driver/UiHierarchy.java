@@ -363,6 +363,8 @@ final class UiHierarchy {
             case "ai-level" -> List.of("AI level", "Nivelul adversarilor").contains(label);
             case "romanian-streak-value" ->
                     List.of(
+                                    "Five-hand reward / penalty",
+                                    "Bonus / penalizare după cinci mâini",
                                     "Five-hand exact-contract bonus",
                                     "Bonus pentru cinci contracte exacte eligibile")
                             .contains(label);

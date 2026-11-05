@@ -25,7 +25,7 @@ function Get-SourceInventory {
             if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
             if ($entry.PSIsContainer) {
                 if ($entry.Name -notin $ignored) { Visit-SourceDirectory $entry.FullName }
-            } elseif ($entry.Extension -in @('.java','.md','.json','.yaml','.yml','.xml','.gradle','.ps1','.mjs','.jar','.pom')) {
+            } elseif ($entry.Extension -in @('.java','.md','.json','.yaml','.yml','.xml','.gradle','.ps1','.psm1','.py','.mjs','.jar','.pom')) {
                 $rows.Add([pscustomobject]@{ path = [IO.Path]::GetRelativePath($sourceRoot,$entry.FullName).Replace('\','/'); sha256 = (Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash })
             }
         }

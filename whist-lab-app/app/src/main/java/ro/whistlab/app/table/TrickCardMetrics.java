@@ -18,7 +18,7 @@ final class TrickCardMetrics {
 
     record Layout(int columns, int rows, int cardWidthDp, int cardHeightDp,
             int playerLabelHeightDp, int itemVerticalPaddingDp, int centerWidthDp, int safeCenterWidthDp,
-            int cellHeightDp, int centerHeightDp, List<Slot> slots) {
+            int cellHeightDp, int rowStrideDp, int centerHeightDp, List<Slot> slots) {
         Layout {
             slots = List.copyOf(slots);
         }
@@ -55,6 +55,16 @@ final class TrickCardMetrics {
 
     static Layout forTable(int players, int tableWidthDp, float fontScale, int cardHeightDp,
             int itemVerticalPaddingDp) {
+        return forTable(players, tableWidthDp, fontScale, cardHeightDp, itemVerticalPaddingDp, false);
+    }
+
+    static Layout forTable(int players, int tableWidthDp, float fontScale, TableViewportPolicy viewport) {
+        return forTable(players, tableWidthDp, fontScale, viewport.playedCardFaceHeightDp(),
+                viewport.playedCardItemVerticalPaddingDp(), viewport.isCompact());
+    }
+
+    private static Layout forTable(int players, int tableWidthDp, float fontScale, int cardHeightDp,
+            int itemVerticalPaddingDp, boolean compact) {
         if (players < 3 || players > 6) {
             throw new IllegalArgumentException("A trick requires 3–6 players");
         }
@@ -71,26 +81,28 @@ final class TrickCardMetrics {
             throw new IllegalArgumentException("Played-card row padding must be between 0 and 4 dp");
         }
 
-        int safeCenterWidth = TableLayoutMetrics.centerPlayWidthDp(tableWidthDp);
+        int safeCenterWidth = TableLayoutMetrics.centerPlayWidthDp(tableWidthDp, compact);
         int maxEdgeCardWidth = Math.max(MIN_CARD_WIDTH_DP,
                 tableWidthDp / 3 - ITEM_HORIZONTAL_INSET_DP);
         int cardWidth = Math.min(MAX_CARD_WIDTH_DP, maxEdgeCardWidth);
         if (players == 4) {
             int maxSideCardWidth = Math.max(MIN_CARD_WIDTH_DP,
-                    (safeCenterWidth - ITEM_HORIZONTAL_INSET_DP) / 2);
+                    (safeCenterWidth - ITEM_HORIZONTAL_INSET_DP) / (compact ? 3 : 2));
             cardWidth = Math.min(cardWidth, maxSideCardWidth);
         }
 
         int rows = players == 4 ? 3 : 2;
-        int labelHeight = (int) Math.ceil(PLAYER_LABEL_HEIGHT_DP * fontScale);
+        int labelHeight = compact ? 0 : (int) Math.ceil(PLAYER_LABEL_HEIGHT_DP * fontScale);
         int cellHeight = cardHeightDp + labelHeight + itemVerticalPaddingDp;
-        List<Slot> slots = seatSlots(players, tableWidthDp, safeCenterWidth, cardWidth, rows);
+        int rowStride = compact && players == 4 ? (cellHeight + 3) / 2 : cellHeight;
+        List<Slot> slots = seatSlots(players, tableWidthDp, safeCenterWidth, cardWidth, rows, compact);
         return new Layout(3, rows, cardWidth, cardHeightDp, labelHeight, itemVerticalPaddingDp,
-                tableWidthDp, safeCenterWidth, cellHeight, rows * cellHeight, slots);
+                tableWidthDp, safeCenterWidth, cellHeight, rowStride,
+                cellHeight + (rows - 1) * rowStride, slots);
     }
 
     private static List<Slot> seatSlots(int players, int width, int safeWidth,
-            int cardWidth, int rows) {
+            int cardWidth, int rows, boolean compact) {
         TableSeatLayout.Anchor[] anchors = TableSeatLayout.positions(players);
         List<Slot> slots = new ArrayList<>(java.util.Collections.nCopies(players, null));
         for (int row = 0; row < rows; row++) {
@@ -105,7 +117,8 @@ final class TrickCardMetrics {
                 double center;
                 if (players == 4 && row == 1) {
                     center = (width - safeWidth) / 2.0
-                            + safeWidth * (index + 0.5) / seats.size();
+                            + safeWidth * (compact ? (index == 0 ? 1.0 / 6 : 5.0 / 6)
+                                    : (index + 0.5) / seats.size());
                 } else if (seats.size() == 1) {
                     center = width / 2.0;
                 } else if (seats.size() == 2) {

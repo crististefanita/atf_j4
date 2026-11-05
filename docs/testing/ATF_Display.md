@@ -33,6 +33,7 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 | Hands | Număr de mâini dacă `IncludeGameFlow` este activat; fluxul rulează numai pe primul profil. |
 | IncludeGameFlow | Opțional. Implicit, matricea verifică display-ul și nu joacă o partidă la fiecare rezoluție. |
 | DenseLayout | Opțional. Verifică numai mâna de 13 cărți și grila de 9 licitații pe profilele declarate; nu joacă o partidă. |
+| TableViewportOnly | Opțional. Mână maximă, levată completă și licitare cu selecție, fără meniu ori partidă completă; exclude celelalte opțiuni de flux. |
 | HardAiCompatibility | Opțional. Verifică o singură dată fixture-ul de licitare Hard, pe primul profil. |
 | Serial | Dispozitivul Android rezervat pentru scenariu. |
 | AdbServerSocket | Serverul ADB configurat pentru stație sau VM. |
@@ -49,24 +50,30 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -DenseLayout -Profiles '720x1280@360'
 ```
 
-- **Publicare:** raportul și capturile sunt în `<director-rezultate>\android-artifacts\dense-layout\dense-layout.html`.
-- **Fixture-ul DenseLayout:** păstrează separat captura titlului și verifică, după derularea înregistrată, fețele întregi ale celor 13 cărți, un singur rând și lizibilitatea indicilor. Acest scenariu nu cere titlul și mâna simultan în primul viewport.
+Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableViewportOnly` în loc de `-DenseLayout`. Sunt patru checkpoint-uri: mâna maximă, levata completă, grila de licitație și selectarea unei valori cu ramele nemișcate.
+
+- **Publicare:** `DenseLayout` scrie în `<director-rezultate>\android-artifacts\dense-layout\dense-layout.html`; verificarea standard și `TableViewportOnly` folosesc `responsive-ui-sanity\responsive-ui-sanity.html` în același director de artefacte.
+- **Fixture-ul DenseLayout:** verifică cele 13 cărți întregi, un singur rând și indicii lizibili în primul viewport. Titlul și toate chenarele rămân vizibile; derularea nu poate recupera o regiune tăiată.
 - **Grilă:** verifică separarea țintelor, distanța față de scaunul uman și stabilitatea ramelor după selectarea valorii.
 
 ## Invariante vizuale și de interacțiune
 
 - Meniul păstrează configurarea accesibilă în viewport.
-- Mâna este poziționată după spațiul disponibil, cu indicii vizibili și derulare accesibilă când este necesară.
+- Masa de joc folosește înălțimea măsurată a ferestrei. Mâna, levata și toate chenarele încap simultan; suprafața de joc nu are container de derulare verticală.
 - Licitarea nu acoperă locurile jucătorilor; selecția semantică distinge etichetele duplicate.
 - Fiecare acțiune este confruntată cu starea observată după ea.
 - Reluarea păstrează registrul scorului și informația cunoscută.
 - Captura păstrează ecranul fizic original; rezoluția logică cerută se verifică separat.
-- La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Fața din mână are 98 dp; fața jucată are 94 dp sub 600 dp înălțime logică și 104 dp pe ferestre mai înalte. Rândul levatei păstrează eticheta, cu 2 dp spațiu vertical compact și 4 dp normal.
+- La patru jucători, levatele urmează crucea scaunelor; locul omului este sud, iar cartea lui rămâne centrată acolo. Mâna are fețe de 98 dp; politica ferestrei păstrează fețele jucate de 94/104 dp și spațiul vertical de 2/4 dp.
 - Zona licitației ocupă banda liberă dintre locurile de sus și cel al omului. Dacă geometria oferă spațiu suplimentar, centrul se deplasează 62% din surplus către jucător; verificarea raportează și compară distanțele față de locurile adverse și cel uman. Țintele tactile rămân de minimum 48 dp.
 - Rama atuului folosește aceeași fabrică de fundal și contur ca locul activ. E2E compară umplerea raster și verifică lizibilitatea titlului, simbolului și stării.
-- Fixture-ul cu 13 cărți păstrează separat titlul vizibil înainte de derulare și verifică apoi toate cele 13 fețe întregi de 98 dp într-un singur rând, cu indicii lizibili în captura Extent. Pe ecranele compacte este permisă derularea controlată și înregistrată; cartea jucată are prag responsive separat de 94/104 dp. Profilul compact recuperează spațiu prin marginile mesei, padding-ul ramelor și distanța rândurilor, fără să micșoreze mâna, textul sau țintele tactile.
-- Pe ferestrele care cer derulare, verificarea stilului și verificarea cărții vizibile complet folosesc puncte de control distincte. Testul de intersecții folosește dreptunghiurile reale ale cadrelor accesibile.
-- La jocul normal, scenariul derulează până când observă întâi controlul turei și apoi o carte legală clicabilă; acțiunea rămâne verificată în viewport-ul efectiv.
+- Auditul umplerii compară culoarea dominantă din interiorul ramelor, după maparea coordonatelor la raster. Componentele verifică textul suprapus punctului de eșantionare, culori diferite și schimbarea scării capturii.
+- [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) deține comparațiile geometrice reutilizate de E2E și componente. Probele simulate introduc cadre lipsă, fețe tăiate, scroll, suprapuneri și o singură carte deplasată.
+- Componentele validează oracolul pe observații controlate; verificarea rasterului și acceptanța nativă rămân niveluri separate. Rezumatele sunt confruntate cu limita efectivă de preview, iar geometria completă rămâne în XML-urile capturii.
+- Fixture-ul maxim verifică 13 fețe întregi de 98 dp și toate chenarele în aceeași stare. Un al doilea fixture joacă legal o levată: cele patru cărți sunt afișate împreună cu cele 12 rămase în mână.
+- Profilul compact decalează vertical crucea levatei în trei coloane distincte. Numele redundante de sub cărți rămân în descrierile accesibile și în chenare; indicatorul turei intră lângă nume, fără un rând separat.
+- Fețele jucate păstrează pragul responsive de 94/104 dp; mâna și țintele tactile nu se micșorează. Testul confruntă intersecțiile, înălțimile complete și toate regiunile în același viewport, fără a uni capturi după scroll.
+- La jocul normal, indicatorul turei și o carte legală trebuie să fie vizibile înaintea acțiunii. Sanity-ul compact nu acceptă derularea ca remediu pentru o regiune lipsă.
 - Simularea unei rezoluții logice nu dovedește proprietățile unui panou fizic de aceeași dimensiune.
 
 ## Guvernanța execuției

@@ -88,7 +88,7 @@ public class DifficultyContractTest {
     }
     @Test public void hardKeepsTheCertifiedContractAcrossHiddenWorlds() throws Exception {
         var json=new ObjectMapper();var fixture=json.readTree(getClass().getResourceAsStream("/regressions/contract-certificate/cases.json")).path("positive");
-        var v=json.treeToValue(fixture.path("input").path("before"),MonteCarloAi.View.class);
+        var v=ro.whistlab.core.testing.codec.ObservedPositionJson.view(json,fixture.path("input").path("before"));
         var oracle=PublicEndgameOracle.audit(v);var worlds=MonteCarloAi.enumerateSmallDeals(v);
         CapturedRegression.run("difficulty-hard-certified-discard",getClass().getName(),"hardUsesTheAcceptedPublicCertificate",Map.of(
                 "purpose","Hard inherits the strongest accepted card-play guard",

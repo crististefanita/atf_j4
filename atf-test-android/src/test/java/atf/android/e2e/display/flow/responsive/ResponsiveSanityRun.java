@@ -36,6 +36,7 @@ public final class ResponsiveSanityRun {
                 ResponsiveDisplayProfile.handsToPlay(
                         System.getProperty("atf.android.sanity.hands", "1"));
         boolean includeGameFlow = Boolean.getBoolean("atf.android.sanity.includeGameFlow");
+        boolean tableViewportOnly = Boolean.getBoolean("atf.android.sanity.tableViewportOnly");
         String configured = System.getProperty(OUTPUT);
         Path root =
                 Path.of(
@@ -76,11 +77,17 @@ public final class ResponsiveSanityRun {
             for (ResponsiveDisplayProfile profile : profiles) {
                 applyProfile(adb, ui, profile);
                 Thread.sleep(700);
+                if (tableViewportOnly) {
+                    SimultaneousTableChecks.inspect(adb, ui, trace, evidence, profile);
+                    inspectNineBidTable(adb, ui, trace, evidence, profile);
+                    continue;
+                }
                 if (!hardAiCompatibilityChecked) {
                     inspectHardAiBid(adb, ui, trace, evidence, profile);
                     hardAiCompatibilityChecked = true;
                 }
                 inspectPlayedCard(adb, ui, trace, evidence, profile);
+                SimultaneousTableChecks.inspect(adb, ui, trace, evidence, profile);
                 if (primaryProfile && includeGameFlow) {
                     playShortGame(adb, ui, trace, evidence, profile, hands);
                 } else {
@@ -121,6 +128,7 @@ public final class ResponsiveSanityRun {
                             + hands
                             + "; game flow="
                             + includeGameFlow
+                            + "; table viewport only=" + tableViewportOnly
                             + "; Hard-AI compatibility="
                             + hardAiCompatibilityRequested
                             + ".",

@@ -1,0 +1,129 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24363 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] ATF J4 Android                                                     [pom]
+[INFO] ATF Test Kit                                                       [jar]
+[INFO] ATF Android infrastructure and acceptance                          [jar]
+[INFO] 
+[INFO] ----------------------------< atf.api:atf >-----------------------------
+[INFO] Building ATF J4 Android 1.0.0-SNAPSHOT                             [1/3]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-core-library) @ atf ---
+[INFO] Installing C:\work\1\atf_j4\lib\atf-core-1.0.0-c3.jar to C:\Users\Cristi\.m2\repository\atf\api\atf-core\1.0.0-c3\atf-core-1.0.0-c3.jar
+[INFO] Installing C:\work\1\atf_j4\lib\atf-core-1.0.0-c3.pom to C:\Users\Cristi\.m2\repository\atf\api\atf-core\1.0.0-c3\atf-core-1.0.0-c3.pom
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-reporting-library) @ atf ---
+[INFO] Installing C:\work\1\atf_j4\lib\atf-reporting-1.0.0-j20.jar to C:\Users\Cristi\.m2\repository\atf\api\atf-reporting\1.0.0-j20\atf-reporting-1.0.0-j20.jar
+[INFO] Installing C:\work\1\atf_j4\lib\atf-reporting-1.0.0-j20.pom to C:\Users\Cristi\.m2\repository\atf\api\atf-reporting\1.0.0-j20\atf-reporting-1.0.0-j20.pom
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-console-library) @ atf ---
+[INFO] Installing C:\work\1\atf_j4\lib\atf-console-1.0.0-c1.jar to C:\Users\Cristi\.m2\repository\atf\api\atf-console\1.0.0-c1\atf-console-1.0.0-c1.jar
+[INFO] Installing C:\work\1\atf_j4\lib\atf-console-1.0.0-c1.pom to C:\Users\Cristi\.m2\repository\atf\api\atf-console\1.0.0-c1\atf-console-1.0.0-c1.pom
+[INFO] 
+[INFO] --- install:3.2.0:install-file (bootstrap-mock-library) @ atf ---
+[INFO] Installing C:\work\1\atf_j4\lib\atf-mock-1.0.0-m1.jar to C:\Users\Cristi\.m2\repository\atf\api\atf-mock\1.0.0-m1\atf-mock-1.0.0-m1.jar
+[INFO] Installing C:\work\1\atf_j4\lib\atf-mock-1.0.0-m1.pom to C:\Users\Cristi\.m2\repository\atf\api\atf-mock\1.0.0-m1\atf-mock-1.0.0-m1.pom
+[INFO] 
+[INFO] ------------------------< atf.api:atf-test-kit >------------------------
+[INFO] Building ATF Test Kit 1.0.0-SNAPSHOT                               [2/3]
+[INFO]   from atf-test-kit\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ atf-test-kit ---
+[INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\ATF_J4_COMPACT_d986d7118c0347c596c0f80c59c2fd24\atf-test-kit\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ atf-test-kit ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ atf-test-kit ---
+[INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\ATF_J4_COMPACT_d986d7118c0347c596c0f80c59c2fd24\atf-test-kit\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ atf-test-kit ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ atf-test-kit ---
+[INFO] 
+[INFO] ----------------------< atf.api:atf-test-android >----------------------
+[INFO] Building ATF Android infrastructure and acceptance 1.0.0-SNAPSHOT  [3/3]
+[INFO]   from atf-test-android\pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ atf-test-android ---
+[INFO] skip non existing resourceDirectory C:\Users\Cristi\AppData\Local\Temp\ATF_J4_COMPACT_d986d7118c0347c596c0f80c59c2fd24\atf-test-android\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ atf-test-android ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- build-helper:3.6.2:add-test-source (independent-whist-player) @ atf-test-android ---
+[INFO] Skipping plugin execution!
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ atf-test-android ---
+[INFO] Copying 3 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ atf-test-android ---
+[INFO] Recompiling the module because of added or removed source files.
+[INFO] Compiling 17 source files with javac [debug release 21] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ atf-test-android ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest
+[ATF] > WhistResponsivePlaySanityE2eTest
+[ATF]   > TEST BODY - configuredProfilesPassMenuAndDisplaySanity
+[ATF]   FAIL: TEST BODY - configuredProfilesPassMenuAndDisplaySanity (288.446 s)
+[ATF] FAIL: WhistResponsivePlaySanityE2eTest (288.446 s)
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 286.7 s <<< FAILURE! -- in atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest
+[ERROR] atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest.configuredProfilesPassMenuAndDisplaySanity -- Time elapsed: 286.5 s <<< ERROR!
+java.lang.IllegalStateException: Assertion actual value exceeds Extent's configured 240 character preview: Whole hand retains its 98 dp faces on one row; put complete diagnostic values in the expandable observation table
+	at atf.android.e2e.support.AndroidUiFlowReportPublisher.require(AndroidUiFlowReportPublisher.java:402)
+	at atf.android.e2e.support.AndroidUiFlowReportPublisher.validateCheckpointContract(AndroidUiFlowReportPublisher.java:311)
+	at atf.android.e2e.support.AndroidUiFlowReportPublisher.publish(AndroidUiFlowReportPublisher.java:49)
+	at atf.android.e2e.support.AndroidUiFlowReportPublisher.publish(AndroidUiFlowReportPublisher.java:37)
+	at atf.android.e2e.display.flow.responsive.ResponsiveSanityRun.run(ResponsiveSanityRun.java:115)
+	at atf.android.e2e.display.flow.WhistResponsivePlaySanityE2eTest.configuredProfilesPassMenuAndDisplaySanity(WhistResponsivePlaySanityE2eTest.java:12)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Errors: 
+[ERROR]   WhistResponsivePlaySanityE2eTest.configuredProfilesPassMenuAndDisplaySanity:12 » IllegalState Assertion actual value exceeds Extent's configured 240 character preview: Whole hand retains its 98 dp faces on one row; put complete diagnostic values in the expandable observation table
+[INFO] 
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for ATF J4 Android 1.0.0-SNAPSHOT:
+[INFO] 
+[INFO] ATF J4 Android ..................................... SUCCESS [  1.793 s]
+[INFO] ATF Test Kit ....................................... SUCCESS [  2.027 s]
+[ERROR] ATF Android infrastructure and acceptance .......... FAILURE [05:02 min]
+[INFO] ------------------------------------------------------------------------
+[ERROR] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  05:07 min
+[INFO] Finished at: 2026-11-05T08:53:40+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project atf-test-android: 
+[ERROR] 
+[ERROR] See C:\Users\Cristi\AppData\Local\Temp\ATF_J4_COMPACT_d986d7118c0347c596c0f80c59c2fd24\atf-test-android\target\surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :atf-test-android

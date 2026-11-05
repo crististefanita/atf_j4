@@ -10,9 +10,13 @@ param(
     [switch]$DenseLayout,
     [switch]$HardAiCompatibility,
     [switch]$IncludeGameFlow,
+    [switch]$TableViewportOnly,
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
+if ($TableViewportOnly -and ($DenseLayout -or $IncludeGameFlow -or $HardAiCompatibility)) {
+    throw 'TableViewportOnly cannot be combined with DenseLayout, IncludeGameFlow or HardAiCompatibility.'
+}
 $root = Split-Path -Parent $PSScriptRoot
 Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 if ([string]::IsNullOrWhiteSpace($Profiles)) {
@@ -72,6 +76,7 @@ $state = [ordered]@{
     profiles=$Profiles
     hands=$Hands
     includeGameFlow=$IncludeGameFlow.IsPresent
+    tableViewportOnly=$TableViewportOnly.IsPresent
     status='STAGED'
     startedAt=[DateTimeOffset]::UtcNow.ToString('o')
 }
@@ -192,7 +197,7 @@ $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot '
     $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test','-Presponsive-sanity',
         "-Dmaven.repo.local=$MavenRepository",'-Dsurefire.failIfNoSpecifiedTests=false')
     Invoke-SanityMaven 'display-profile-components' ($common + @(
-        '-Dtest=ResponsiveDisplayProfileComponentTest,AndroidUiDriverComponentTest,AndroidUiFlowReportPublisherTest',
+        '-Dtest=ResponsiveDisplayProfileComponentTest,AndroidUiDriverComponentTest,AndroidUiFlowReportPublisherTest,FrameFillAuditComponentTest,TableViewportAuditComponentTest',
         '-Datf.android.enabled=false'))
 
     Acquire-DeviceLease
@@ -226,6 +231,7 @@ $libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot '
         "-Datf.android.sanity.profiles=$Profiles",
         "-Datf.android.sanity.hands=$Hands",
         "-Datf.android.sanity.includeGameFlow=$($IncludeGameFlow.IsPresent.ToString().ToLowerInvariant())",
+        "-Datf.android.sanity.tableViewportOnly=$($TableViewportOnly.IsPresent.ToString().ToLowerInvariant())",
         "-Datf.android.sanity.hardAiCompatibility=$($HardAiCompatibility.IsPresent.ToString().ToLowerInvariant())"))
 
     $report = if ($DenseLayout) {

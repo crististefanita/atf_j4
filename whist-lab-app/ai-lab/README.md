@@ -87,3 +87,15 @@ Uneltele au verificare proprie, din aceeași copie temporară:
 ```
 
 Păstrați separat cazurile de învățare, regresiile mici, sursa candidatului și partidele noi de evaluare. Corectitudinea unei componente sau un câștig într-o lume ipotetică nu reprezintă singure un progres al forței de joc. Alternativele externe nu schimbă sursele active și nu se promovează prin simpla trecere a unui test local.
+
+## Îmbunătățiri prioritare ale laboratorului
+
+Modulul Java are verificări ale jucătorului independent în testele consumatorului game-core, iar sarcina locală check adaugă testele Node. Responsabilitatea verificării publice a modulului trebuie făcută executabilă și în propriul său set de teste.
+
+| Prioritate | Cerință | Criteriu de închidere |
+|---|---|---|
+| P1 | Introduceți contractele Java locale ale observației și deciziei. | Verificarea modulului execută controale independente pentru copierea intrărilor, legalitate, informație publică, determinism și epuizarea bugetului; comparațiile cu motorul rămân integrare la consumator. |
+| P1 | Faceți componentele implicite autonome față de arhiva personală. | [Uneltele](tools/README.md#îmbunătățiri-prioritare-ale-verificării-offline) generează date legale mici în spațiul temporar; verificarea partidelor arhivate are selecție și precondiții explicite. |
+| P1 | Întăriți calificarea evaluării rezervate. | [Registrul de expunere](../../docs/feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor) refuză suprapunerile și reutilizarea prin alte rădăcini de corpus, inclusiv la execuție concurentă. |
+
+Promovarea rămâne condiționată de progres pe partide noi și de identitatea tuturor surselor; o verificare locală reușită închide numai contractul ei. [Protocolul de învățare](../../docs/learning/README.md) deține procedura comună.

@@ -18,7 +18,6 @@ Responsabilul politicilor Whist deține aceste criterii de cercetare și calific
 | Prioritate | Lacună demonstrabilă în sursă | Criteriu de închidere |
 |---|---|---|
 | P1 | [Runnerul](../../scripts/run-whist-collection.ps1) rezervă intervalul sub corpusul transmis și verifică identitatea exactă a fișierului de rezervare. | Registru canonic comun, refuzul suprapunerilor parțiale și al expunerii din alte corpusuri, cu probe negative și concurente. |
-| P1 | Cardinalitatea bazei fixată în același runner nu coincide cu inventarul curent al surselor active. | Migrare explicită a contractului candidatului și inventar complet verificabil, păstrând refuzul surselor necunoscute și hash-urile înghețate. |
 | P2 | Manifestele agregate pot descrie lipsa inferenței din licitații fără a distinge modelul specializat de o carte. | Domeniu explicit pentru fiecare afirmație și componente care leagă manifestul de calea runtime; păstrarea coeficienților și a comportamentului calificat. |
 | P2 | Selecția generică de focus după categorii nu are un consumator calificat în sursele curente. | Selector cu manifest părinte, subset și hash-uri verificate, criterii de acoperire și refuzul loturilor rezervate; până atunci rămâne propunere. |
 
