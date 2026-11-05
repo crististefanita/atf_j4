@@ -6,6 +6,14 @@ Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul 
 
 ## API reutilizabil pentru verificatoare
 
+## Registrul livrărilor
+
+| Prioritate | Lacună | Criteriu de închidere |
+|---|---|---|
+| P1 | Verificările livrărilor semnalează `RELEASE-UNREGISTERED` pentru rădăcina artefactelor. | Reconciliați indexul structurat, dosarele de versiuni, metadatele și README-urile cu contractul validatorului, păstrând identitatea binarelor și rezultatele originale. |
+
+[Inventarul livrărilor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) și [legarea handoff-ului de asset](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) rămân controale distincte. Acceptanța unei componente nu închide o eroare a registrului de publicare.
+
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
 | P1 | Validatoarele comune nu au încă un contract împachetat independent de reactorul producătorului. | API sau CLI cu rădăcină explicită, inventar de documente și surse, module, rădăcini JVM suplimentare și excepții motivate. |
