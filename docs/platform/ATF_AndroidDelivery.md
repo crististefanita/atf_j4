@@ -28,7 +28,7 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 - Construiți într-o copie temporară proprie, cu dependențe identificate.
 - Verificați API-urile Java disponibile pe platforma Android vizată; nivelul `sourceCompatibility` nu adaugă metode absente din sistem. Configurați explicit desugaring-ul bibliotecilor de bază dacă produsul depinde de el.
 - Verificați integritatea, semnătura, alinierea și compatibilitatea cheii pentru upgrade.
-- Păstrați APK-ul curent și rapoartele Extent care îi justifică verificarea în [registrul local de dovezi release](../../artifacts/reports/README.md). Rapoartele istorice și build-urile intermediare rămân în directoarele externe de lucru.
+- Păstrați copia APK-ului curent în `dist` și dovezile fiecărei livrări în [catalogul artefactelor](../../artifacts/README.md). Rulările intermediare rămân în directoarele externe de lucru.
 - Verificați binarul instalat înainte de a atribui unui scenariu comportamentul acelei livrări.
 - Distingeți build-ul local de distribuția prin magazin și de gestionarea cheilor de distribuție.
 
@@ -49,7 +49,7 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 - **Copie locală:** [directorul dist](../../dist/README.md) păstrează copia curentă și trimite către Releases prin README; APK-ul și checksum-ul local sunt excluse din Git.
 - **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
 
-- **Identitate:** [registrul release-ului](../../artifacts/reports/README.md#apk-documentat) deține versiunea, adresele asset-urilor și probele de integritate.
+- **Identitate:** [registrul release-ului](../../artifacts/README.md) deține versiunea, adresele asset-urilor și probele de integritate.
 - **Canale:** descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului personal verificat.
 
 | Etapă | Criteriu de acceptare |
@@ -76,6 +76,24 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 5. Verificați descărcarea în canalul cerut și actualizați registrul, legăturile și dosarul de dovezi.
 
 [GitHub recomandă draftul înaintea atașării asset-urilor și publicării](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) pentru release-urile imuabile. Procesul proiectului folosește această ordine și păstrează diferența dintre politica stabilită și activarea opțiunii native de imutabilitate.
+
+## Dosarul unei versiuni
+
+[Catalogul](../../artifacts/README.md) păstrează câte un dosar `artifacts/<versionName>/` pentru fiecare livrare înregistrată. Versiunea exactă separă dovezile; un reper dintr-o versiune anterioară rămâne etichetat ca reper, cu proveniența originală.
+
+| Intrare | Responsabilitate |
+|---|---|
+| `artifacts/index.json` | Declară `currentVersion` și lista `versions`; fiecare versiune apare o singură dată și are dosar propriu. |
+| `artifacts/<versionName>/README.md` | Prezintă binarul, rapoartele, rezultatele și limitele acelei livrări. |
+| Manifest și metadate în dosar | Leagă `versionName`, tag-ul, asset-urile, checksum-ul și notele; căile relative pornesc din dosarul versiunii. |
+| Rapoarte, capturi, rezultate și jurnale | Păstrează execuția identificată, inclusiv diagnosticele negative și replay-urile etichetate. |
+| [Strategia testării](../testing/README.md) | Deține selecția și principiile comune, independent de versiune. |
+
+- La o versiune nouă, creați dosarul și înregistrarea în index; actualizați catalogul după verificarea identității. Păstrați dovezile livrărilor existente și numai APK-ul curent în `dist`.
+- La reorganizare, mutați împreună rapoartele și fișierele asociate, confruntați hash-urile și refaceți referințele active. Căile absolute capturate și URL-urile istorice fixate pe commit își păstrează sensul original.
+- Notele din GitHub Release trimit la README-ul versiunii într-un commit identificat; schimbarea navigării nu mută tag-ul și nu înlocuiește asset-ul binar.
+
+[Guvernanța dosarelor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) respinge populația neînregistrată, versiunile duplicate, metadatele lipsă și identitățile divergente. Verificarea integrității fișierelor și a linkurilor completează acest contract structural.
 
 ## Prezentarea unei versiuni
 

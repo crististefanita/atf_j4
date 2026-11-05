@@ -83,8 +83,8 @@ Aceste scenarii nu califică o partidă întreagă jucată prin interfață și 
 Pentru un test live, identifică serialul, verifică disponibilitatea exclusivă a
 emulatorului și folosește runnerul dedicat. Niciun test dezactivat sau sărit nu
 este acceptanță UI. Rulările brute și capturile se păstrează în directorul extern
-configurat; [pachetul release-ului](../../artifacts/reports/README.md) reține în proiect
-numai dovezile relevante pentru APK-ul curent.
+configurat; [pachetul release-ului](../../artifacts/README.md) reține în proiect
+numai dovezile relevante, grupate după versiunea livrată.
 
 Dacă rendererul sau fallback-ul nu respectă contractul comun, înregistrează
 problema prin [feedback-ul de raportare](../feedback/README.md). Aici rămân

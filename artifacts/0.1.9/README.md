@@ -1,8 +1,10 @@
-# Dovezile de testare atașate release-ului Whist Lab
+# Dovezile livrării 0.1.9
 
-Directorul păstrează **numai cele mai recente rezultate relevante** care documentează APK-ul curent. Rapoartele, capturile, rezultatele automate și proveniența binarului formează un singur pachet de acceptanță.
+## Pe scurt
 
-La un release nou, înlocuiți pachetul și actualizați acest registru. Build-urile și istoricul complet rămân în `%TEMP%` și în depozitul extern; un diagnostic negativ se păstrează aici când explică o corecție și reverificarea ei.
+Acest dosar păstrează rapoartele, capturile, rezultatele și metadatele binarului identificat mai jos. Rezultatele comparative și limitele aparțin acestei livrări, indiferent de versiunea curentă a surselor.
+
+[Catalogul livrărilor](../README.md) · [Strategia comună de testare](../../docs/testing/README.md)
 
 ## APK documentat
 
@@ -15,24 +17,24 @@ La un release nou, înlocuiți pachetul și actualizați acest registru. Build-u
 | Platformă | `minSdk 24`, `targetSdk 36`, `compileSdk 36` |
 | SHA-256 | `811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066` |
 | Semnare | Keystore Android local de dezvoltare; semnături v2/v3 și aliniere verificate. |
-| Prezentarea versiunii | [Note publicate](WhistLab-0.1.9/release-notes.md) · [Guvernanța formatului](WhistLab-0.1.9/release-presentation-validation.json) |
+| Prezentarea versiunii | [Note publicate](release-notes.md) · [Guvernanța formatului](release-presentation-validation.json) |
 
-APK-ul release este destinat instalării directe; cheia nu este una de publicare Google Play. [Manifestul release-ului](WhistLab-0.1.9/release-validation.json) leagă binarul, testele, restaurarea datelor și limitele verificării.
+APK-ul release este destinat instalării directe; cheia nu este una de publicare Google Play. [Manifestul release-ului](release-validation.json) leagă binarul, testele, restaurarea datelor și limitele verificării.
 
 ## Descărcare din browser
 
 **[Descarcă APK-ul din GitHub Releases](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk)** · [Pagina versiunii](https://github.com/crististefanita/atf_j4/releases/tag/v0.1.9) · [Checksum](https://github.com/crististefanita/atf_j4/releases/download/v0.1.9/WhistLab-0.1.9.apk.sha256).
 
-Autentifică-te cu contul tău GitHub în același browser. Descărcarea din **Assets** a reușit: 771.391 bytes și SHA-256 identic cu APK-ul local; [proba browserului](WhistLab-0.1.9/github-authenticated-browser-download.json) păstrează canalul și fișierul verificat.
+Autentifică-te cu contul tău GitHub în același browser. Descărcarea din **Assets** a reușit: 771.391 bytes și SHA-256 identic cu APK-ul local; [proba browserului](github-authenticated-browser-download.json) păstrează canalul și fișierul verificat.
 
 [Intrarea dist](../../dist/README.md) și README-ul principal trimit la `releases/latest`, fără duplicarea versiunii în navigarea stabilă. Cerința 2FA observată la formularul Support nu a fost necesară pentru această descărcare.
 
 <details>
 <summary>Acces anonim — diagnostic separat de descărcarea personală</summary>
 
-Accesul anonim este blocat de HTTP 404. [Proba inițială](WhistLab-0.1.9/github-download-verification.json) separă upload-ul, descărcarea autentificată prin API și accesul anonim; acest blocaj nu invalidează descărcarea personală verificată în browser.
+Accesul anonim este blocat de HTTP 404. [Proba inițială](github-download-verification.json) separă upload-ul, descărcarea autentificată prin API și accesul anonim; acest blocaj nu invalidează descărcarea personală verificată în browser.
 
-[Diagnosticul contului](WhistLab-0.1.9/github-account-visibility-diagnostic.json) confirmă mesajul `User flagged as spammy.` din Search API autentificat. Revizuirea marcajului rămâne un proces separat prin [GitHub Support](https://support.github.com/contact/reinstatement).
+[Diagnosticul contului](github-account-visibility-diagnostic.json) confirmă mesajul `User flagged as spammy.` din Search API autentificat. Revizuirea marcajului rămâne un proces separat prin [GitHub Support](https://support.github.com/contact/reinstatement).
 
 </details>
 
@@ -40,10 +42,10 @@ Accesul anonim este blocat de HTTP 404. [Proba inițială](WhistLab-0.1.9/github
 
 | Dovadă | Raport | Domeniu demonstrat |
 |---|---|---|
-| Sanity live 0.1.9 — PASS | [Masa compactă](WhistLab-0.1.9/compact-table/responsive-ui-sanity.html) | 4 checkpoint-uri, 39 de aserții: 13 cărți, levată completă cu 12 rămase, 9 licitații și selecția lui 8 fără deplasarea chenarelor. |
-| Sanity live API 36 — PASS | [Masa compactă cu protecția ferestrei](WhistLab-0.1.9/api36-table/responsive-ui-sanity.html) | Aceleași patru stări, pe noul emulator identificat separat; acțiunile, comparațiile și capturile aparțin acestei execuții. |
-| Diagnostic API 36 inițial — FAIL | [Oracolul fizic anterior](WhistLab-0.1.9/api36-initial-diagnostic/responsive-ui-sanity.html) | Păstrează respingerea rasterului logic complet și diagnosticul inițial, separat de acceptanța corectată. |
-| Reper 0.1.8, republicat offline | [Meniu și masă pe două profiluri](WhistLab-0.1.9/baseline-0.1.8-matrix/responsive-ui-sanity-replayed.html) | 20 de checkpoint-uri și 160 de comparații trecute; acțiunile, capturile și timpii provin din execuția live 0.1.8. |
+| Sanity live 0.1.9 — PASS | [Masa compactă](compact-table/responsive-ui-sanity.html) | 4 checkpoint-uri, 39 de aserții: 13 cărți, levată completă cu 12 rămase, 9 licitații și selecția lui 8 fără deplasarea chenarelor. |
+| Sanity live API 36 — PASS | [Masa compactă cu protecția ferestrei](api36-table/responsive-ui-sanity.html) | Aceleași patru stări, pe noul emulator identificat separat; acțiunile, comparațiile și capturile aparțin acestei execuții. |
+| Diagnostic API 36 inițial — FAIL | [Oracolul fizic anterior](api36-initial-diagnostic/responsive-ui-sanity.html) | Păstrează respingerea rasterului logic complet și diagnosticul inițial, separat de acceptanța corectată. |
+| Reper 0.1.8, republicat offline | [Meniu și masă pe două profiluri](baseline-0.1.8-matrix/responsive-ui-sanity-replayed.html) | 20 de checkpoint-uri și 160 de comparații trecute; acțiunile, capturile și timpii provin din execuția live 0.1.8. |
 
 Sanity-urile curente folosesc `720x1280@360` pe API 28 și API 36, pe dispozitive distincte. Reperul 0.1.8 acoperă și `1080x1920@440`; nu reprezintă o nouă execuție pe APK-ul 0.1.9.
 
@@ -51,10 +53,10 @@ Publicarea inițială a matricei 0.1.8 a eșuat deoarece sumarul unei aserții d
 
 Capturile esențiale ale versiunii 0.1.9:
 
-- [13 cărți și toate chenarele](WhistLab-0.1.9/compact-table/720x1280-360dpi-See-thirteen-hand-cards-and-every-seat-without-scrolling.png).
-- [Levată completă, 12 cărți și toate chenarele](WhistLab-0.1.9/compact-table/720x1280-360dpi-See-all-four-trick-cards,-twelve-hand-cards-and-four-seats-without-scrolling.png).
-- [Nouă opțiuni de licitare](WhistLab-0.1.9/compact-table/720x1280-360dpi-nine-bid-controls.png).
-- [Licitația selectată, cu poziții fixe](WhistLab-0.1.9/compact-table/720x1280-360dpi-Select-bid-eight-without-moving-player-frames.png).
+- [13 cărți și toate chenarele](compact-table/720x1280-360dpi-See-thirteen-hand-cards-and-every-seat-without-scrolling.png).
+- [Levată completă, 12 cărți și toate chenarele](compact-table/720x1280-360dpi-See-all-four-trick-cards,-twelve-hand-cards-and-four-seats-without-scrolling.png).
+- [Nouă opțiuni de licitare](compact-table/720x1280-360dpi-nine-bid-controls.png).
+- [Licitația selectată, cu poziții fixe](compact-table/720x1280-360dpi-Select-bid-eight-without-moving-player-frames.png).
 
 ## Verificarea release-ului
 
@@ -70,11 +72,17 @@ Capturile esențiale ale versiunii 0.1.9:
 | Datele utilizatorului | Cele 3 fișiere private de pe API 28 și salvarea proprie emulatorului API 36 au fost restaurate și comparate prin hash înaintea smoke-urilor release. Interfețele au fost închise și rezervările eliberate. |
 | Sync live | Sursele și configurația aplicației sunt confruntate în manifestul de proveniență; bibliotecile executate coincid cu JAR-urile locale. Selecția JVM adăugată în paralel a fost preluată și release-ul reconstruit, cu APK unsigned identic. |
 
-`test-results/`, `logs/`, [proveniența surselor](WhistLab-0.1.9/source-provenance.json), [sincronizarea configurației](WhistLab-0.1.9/build-config-sync.json) și fișierele de proveniență ale APK-urilor susțin verificarea separată a afirmațiilor. Prima pornire Maven a fost blocată înaintea testelor de un JAR deschis în cache-ul comun; execuția finală a trecut folosind coordonate ATF private.
+`test-results/`, `logs/`, [proveniența surselor](source-provenance.json), [sincronizarea configurației](build-config-sync.json) și fișierele de proveniență ale APK-urilor susțin verificarea separată a afirmațiilor. Prima pornire Maven a fost blocată înaintea testelor de un JAR deschis în cache-ul comun; execuția finală a trecut folosind coordonate ATF private.
 
 Prima probă API 36 a respins un PNG nativ logic complet deoarece oracolul cerea exclusiv dimensiunile fizice. Corecția acceptă numai rasterul fizic exact sau rasterul logic activ exact din `wm size`; tăierea cu un pixel rămâne respinsă. Proba negativă și reverificarea sunt păstrate separat. Smoke-ul recunoaște și `topResumedActivity`, denumirea observată pe API 36.
 
-[Snapshot-ul testelor executate](WhistLab-0.1.9/test-source-provenance.json) separă sursele din TMP de refactorările paralele ale suportului live; acestea nu primesc implicit calificarea execuției de release.
+[Snapshot-ul testelor executate](test-source-provenance.json) separă sursele din TMP de refactorările paralele ale suportului live; acestea nu primesc implicit calificarea execuției de release.
+
+## Reorganizarea dovezilor
+
+- [Auditul mutării](artifact-layout-validation.json) confruntă hash-urile fișierelor originale, linkurile locale și calea copiei APK din noul dosar.
+- [Guvernanța arhivării și documentației](logs/artifact-layout-governance.log) are rezultatele JUnit în `test-results/artifact-layout/`; verifică structura și referințele, separat de calificarea binarului.
+- Mutarea păstrează HTML-urile, capturile, trace-urile și diagnosticele existente; nu reconstruiește APK-ul și nu repetă E2E-ul. Căile absolute înregistrate descriu execuția originală.
 
 ## Pregătirea pentru Android nou
 

@@ -27,9 +27,10 @@ __pycache__/
 .project
 .settings/
 
-# Keep the current, auditable release evidence; other local artifacts stay ignored.
+# Keep registered, versioned release evidence; intermediate runs stay external.
 !artifacts/
-artifacts/*
-!artifacts/reports/
-artifacts/reports/*
-!artifacts/reports/**
+/artifacts/*
+!/artifacts/README.md
+!/artifacts/index.json
+!/artifacts/[0-9]*/
+!/artifacts/[0-9]*/**

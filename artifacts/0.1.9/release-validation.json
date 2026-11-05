@@ -5,7 +5,7 @@
     "minSdk": 24,
     "targetSdk": 36,
     "compileSdk": 36,
-    "apkRelativePath": "../../../dist/WhistLab-0.1.9.apk",
+    "apkRelativePath": "../../dist/WhistLab-0.1.9.apk",
     "apkSha256": "811e119e9dc3e5190c49b4ef38973e1890174f9e5b77d8a8961e15611aba4066",
     "apkBytes": 771391,
     "signing": "Local Android development key; v2/v3 and zipalign verified",

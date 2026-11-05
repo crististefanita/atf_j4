@@ -63,7 +63,7 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 |---|---|---|
 | P1 extern | API-ul Search autentificat confirmă `User flagged as spammy.`; profilul, repository-ul public și asset-ul returnează 404 anonim. | Solicitați revizuirea marcajului contului prin formularul oficial GitHub; după ridicare, URL-ul public al asset-ului trebuie să răspundă 200 și să producă exact mărimea și SHA-256 ale binarului verificat. |
 
-[Registrul distribuției](../../artifacts/reports/README.md#apk-documentat) păstrează probele și răspunsul explicit al API-ului Search. Marcajul contului este confirmat; motivul declanșării lui nu este expus și necesită revizuire GitHub. Setarea repository-ului este deja publică, iar release-ul este publicat.
+[Registrul distribuției](../../artifacts/README.md) păstrează probele și răspunsul explicit al API-ului Search. Marcajul contului este confirmat; motivul declanșării lui nu este expus și necesită revizuire GitHub. Setarea repository-ului este deja publică, iar release-ul este publicat.
 
 Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-256 aparțin înregistrării distribuției și cererii de suport, fără duplicarea lor în ghid. Distribuția publică rămâne necalificată; modificarea APK-ului nu compensează un răspuns HTTP negativ.
 
@@ -71,7 +71,7 @@ Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-2
 
 | Prioritate | Lacună rămasă | Criteriu de închidere |
 |---|---|---|
-| P2 | [Procesul versiunii](../platform/ATF_AndroidDelivery.md#procesul-unei-versiuni) este documentat, iar operațiile de publicare folosesc încă unelte temporare. | Un lansator versionat confruntă tag-ul, APK-ul, checksum-ul și notele înainte de publicare; reluarea unui draft verifică asset-urile existente, iar o versiune publicată nu este înlocuită implicit. |
+| P2 | [Procesul versiunii](../platform/ATF_AndroidDelivery.md#procesul-unei-versiuni) este documentat, iar operațiile de publicare folosesc încă unelte temporare. | Un lansator versionat confruntă tag-ul, APK-ul, checksum-ul și notele înainte de publicare; reluarea unui draft verifică asset-urile existente, iar o versiune publicată nu este înlocuită implicit. Actualizează atomic dosarul versiunii, indexul și catalogul, cu linkul Release către auditul fixat pe commit. |
 
 [Guvernanța prezentării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) verifică structura și identitatea notelor; sensul schimbărilor se confruntă cu sursele release-ului la revizie. Notele publice trimit către dosarul tehnic, care păstrează rezultatele și limitele verificării.
 

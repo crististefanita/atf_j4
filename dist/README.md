@@ -6,6 +6,6 @@
 
 Linkul urmărește automat ultima versiune publicată. Noutățile sunt prezentate schematic în pagina fiecărei versiuni.
 
-Directorul păstrează doar APK-ul local curent și checksum-ul său, excluse din versionarea Git. [Registrul livrării](../artifacts/reports/README.md#apk-documentat) identifică versiunea și dosarul ei de verificare.
+Directorul păstrează doar APK-ul local curent și checksum-ul său, excluse din versionarea Git. [Registrul livrării](../artifacts/README.md) identifică versiunea și dosarul ei de verificare.
 
 [Contractul livrării Android](../docs/platform/ATF_AndroidDelivery.md#distribuția-prin-github) explică publicarea și verificarea copiei descărcate.

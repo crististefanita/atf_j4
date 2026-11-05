@@ -30,32 +30,30 @@ class ReleasePresentationGovernanceTest {
         var root = GovernanceProject.locateProjectRoot();
         var repository = GovernanceProject.policy(root).required("publicRepository").asText();
         int releases = 0;
-        try (var folders = Files.list(root.resolve("artifacts/reports"))) {
-            for (var folder : folders.filter(Files::isDirectory).toList()) {
-                if (!Files.isRegularFile(folder.resolve("github-release.json"))) continue;
-                var published = JSON.readTree(folder.resolve("github-release.json").toFile());
-                var validation = JSON.readTree(folder.resolve("release-validation.json").toFile());
-                var presentation = JSON.readTree(folder.resolve("release-presentation.json").toFile());
-                String version = validation.required("release").required("versionName").asText();
-                String tag = published.required("tag").asText();
-                assertEquals("v" + version, tag, folder.toString());
-                var assets = new ArrayList<JsonNode>();
-                published.required("assets").forEach(asset -> { if (asset.required("name").asText().endsWith(".apk")) assets.add(asset); });
-                assertEquals(1, assets.size(), "One canonical APK asset per published release");
-                String asset = repository + "/releases/download/" + tag + "/" + assets.getFirst().required("name").asText();
-                assertEquals(asset, assets.getFirst().required("url").asText());
-                assertEquals(validation.required("release").required("apkBytes").asLong(), assets.getFirst().required("size").asLong());
-                assertTrue(java.util.stream.StreamSupport.stream(published.required("assets").spliterator(), false)
-                        .anyMatch(row -> row.path("url").asText().equals(asset + ".sha256")), "Checksum asset must exist");
-                assertEquals(version, presentation.required("version").asText());
-                assertTrue(presentation.required("evidenceUrl").asText().matches(Pattern.quote(repository)
-                        + "/blob/[0-9a-f]{40}/artifacts/reports/README\\.md"), "Evidence belongs to an identified documentation commit");
-                var edition = new Edition(version, asset, asset + ".sha256", presentation.required("evidenceUrl").asText(),
-                        presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
-                        java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
-                assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
-                releases++;
-            }
+        for (var folder : ReleaseArtifactCatalog.folders(root)) {
+            if (!Files.isRegularFile(folder.resolve("github-release.json"))) continue;
+            var published = JSON.readTree(folder.resolve("github-release.json").toFile());
+            var validation = JSON.readTree(folder.resolve("release-validation.json").toFile());
+            var presentation = JSON.readTree(folder.resolve("release-presentation.json").toFile());
+            String version = validation.required("release").required("versionName").asText();
+            String tag = published.required("tag").asText();
+            assertEquals("v" + version, tag, folder.toString());
+            var assets = new ArrayList<JsonNode>();
+            published.required("assets").forEach(asset -> { if (asset.required("name").asText().endsWith(".apk")) assets.add(asset); });
+            assertEquals(1, assets.size(), "One canonical APK asset per published release");
+            String asset = repository + "/releases/download/" + tag + "/" + assets.getFirst().required("name").asText();
+            assertEquals(asset, assets.getFirst().required("url").asText());
+            assertEquals(validation.required("release").required("apkBytes").asLong(), assets.getFirst().required("size").asLong());
+            assertTrue(java.util.stream.StreamSupport.stream(published.required("assets").spliterator(), false)
+                    .anyMatch(row -> row.path("url").asText().equals(asset + ".sha256")), "Checksum asset must exist");
+            assertEquals(version, presentation.required("version").asText());
+            assertTrue(presentation.required("evidenceUrl").asText().matches(Pattern.quote(repository)
+                    + "/blob/[0-9a-f]{40}/artifacts/reports/README\\.md"), "Evidence belongs to an identified documentation commit");
+            var edition = new Edition(version, asset, asset + ".sha256", presentation.required("evidenceUrl").asText(),
+                    presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
+                    java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
+            assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
+            releases++;
         }
         assertTrue(releases > 0, "The curated published-release population must not be empty");
     }

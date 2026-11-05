@@ -75,7 +75,7 @@ Scopul, responsabilitatea și limita principală rămân vizibile. Detaliile sec
 
 ## Conținut stabil și date variabile
 
-Valorile definite de reguli, limitele API și exemplele didactice generale sunt parte a contractului. Rezultatele unui candidat, scorurile unei partide, numărul testelor unei rulări și evaluările editoriale se păstrează extern.
+Valorile definite de reguli, limitele API și exemplele didactice generale sunt parte a contractului. Rezultatele curente se păstrează extern; dovezile selectate pentru o livrare intră în [dosarul versiunii](../platform/ATF_AndroidDelivery.md#dosarul-unei-versiuni), separat de ghidurile generice.
 
 - Controalele tehnice active au identitate și ciclu propriu de reconciliere; închiderea feedback-ului păstrează controlul până când criteriul lui este demonstrat.
 - Identificatorul unui control YAML recunoscut după schemă este dată tehnică și se păstrează intact.
