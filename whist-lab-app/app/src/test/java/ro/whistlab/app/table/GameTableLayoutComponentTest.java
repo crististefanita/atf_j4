@@ -167,6 +167,22 @@ public final class GameTableLayoutComponentTest {
         }
     }
 
+    @Test public void fractionalDensityMeasuresTheIndexOnceInPixelsWithoutClippingEitherEnd() {
+        int measured = HandLayoutMetrics.indexBandWidthPx(35.6f, 2);
+        assertEquals(40, measured);
+        var fan = HandLayoutMetrics.fan(13, 630, 2.25f, 1f, measured);
+        assertEquals(142, fan.cardWidth());
+        assertTrue(fan.advance() >= measured);
+        assertTrue(fan.first() >= 0);
+        assertTrue(fan.left(12) + fan.cardWidth() <= 630);
+    }
+
+    @Test public void invalidMeasuredGlyphsDoNotCreateAReadableBand() {
+        for (float width : new float[]{0, -1, Float.NaN, Float.POSITIVE_INFINITY})
+            assertThrows(IllegalArgumentException.class, () -> HandLayoutMetrics.indexBandWidthPx(width, 2));
+        assertThrows(IllegalArgumentException.class, () -> HandLayoutMetrics.indexBandWidthPx(30, -1));
+    }
+
     @Test public void denseBidsUseAvailableColumnsWithoutShrinkingTouchTargets() {
         assertEquals(5, BidGridMetrics.columnCount(14, 280));
         assertEquals(3, BidGridMetrics.rowCount(14, 280));

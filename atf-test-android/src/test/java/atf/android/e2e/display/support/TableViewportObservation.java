@@ -38,8 +38,10 @@ public final class TableViewportObservation {
                     expected.handFaceHeight()+" px",height+" px",Math.abs(height-expected.handFaceHeight())<=1));
             int width=face.right()-face.left();
             int expectedWidth=(int)Math.round(ResponsiveDisplayProfile.HAND_CARD_FACE_WIDTH_DP*density);
-            checks.add(new AtfAssertion("Requested hand-card width: "+index,
-                    expectedWidth+" px",width+" px",Math.abs(width-expectedWidth)<=1));
+            boolean trailing=index==snapshot.handFaces().size()-1;
+            checks.add(new AtfAssertion(trailing?"Requested trailing hand-card width":"Exposed hand-card band: "+index,
+                    trailing?expectedWidth+" px":"positive exposed band, at most "+expectedWidth+" px",
+                    width+" px",trailing?Math.abs(width-expectedWidth)<=1:width>0&&width<=expectedWidth+1));
         }
         for(var card:snapshot.playedCards()) {
             int height=card.face().bottom()-card.face().top();

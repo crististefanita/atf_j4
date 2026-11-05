@@ -6,7 +6,7 @@ import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 final class SyntheticTableHierarchy {
     enum Fault { NONE, MISSING_HUMAN, SHORT_SEAT, SHORT_FACE, SCROLL, ZERO_TITLE, ZERO_TRUMP, OVERLAP, OBSTRUCTED_WINDOW,
         MISSING_ACTION, ACTION_BELOW_NAME, CUT_ACTION, TALL_PLAYED_FACE, TALL_HAND_FACE,
-        THIN_HAND_FACE, THIN_PLAYED_FACE, WIDE_PLAYED_FACE }
+        THIN_HAND_FACE, THIN_PLAYED_FACE, WIDE_PLAYED_FACE, WIDE_HAND_BAND, ZERO_HAND_BAND }
     private static final String[] INDICES={"3♠","4♠","5♠","6♠","7♠","8♠","9♠","10♠","J♠","Q♥","K♣","A♦","2♥"};
     private final ResponsiveDisplayProfile profile;
     private final double density;
@@ -63,7 +63,9 @@ final class SyntheticTableHierarchy {
         for(int card=0;card<count;card++) {
             int heightDp=card==0&&fault==Fault.TALL_HAND_FACE?98:card==0&&fault==Fault.SHORT_FACE?87:88;
             int left=start+card*advance,top=px(450),height=px(heightDp);
-            int faceWidth=card==0&&fault==Fault.THIN_HAND_FACE?px(42):cardWidth;
+            int faceWidth=card==count-1&&fault==Fault.THIN_HAND_FACE?px(42):card==count-1?cardWidth:advance;
+            if(card==0&&fault==Fault.WIDE_HAND_BAND)faceWidth=px(64);
+            if(card==0&&fault==Fault.ZERO_HAND_BAND)faceWidth=0;
             String face="["+left+","+top+"]["+(left+faceWidth)+","+(top+height)+"]";
             String index=INDICES[card];
             String label=index.substring(0,index.length()-1)+"&#10;"+index.substring(index.length()-1);

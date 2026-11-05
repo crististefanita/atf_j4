@@ -371,10 +371,10 @@ public final class GameTablePanel extends LinearLayout {
         TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CARD_DARK, true);
         float widestIndex = measurement.getPaint().measureText("10");
         for (String symbol : List.of("♠", "♥", "♣", "♦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
-        int indexWidthDp = (int) Math.ceil(widestIndex / getResources().getDisplayMetrics().density) + 2;
+        int indexWidthPx = HandLayoutMetrics.indexBandWidthPx(widestIndex, dp(1));
         if (cardCount == 0) return fan;
         HandLayoutMetrics.Fan layout = HandLayoutMetrics.fan(cardCount, widthPx,
-                getResources().getDisplayMetrics().density, fontScale, dp(indexWidthDp));
+                getResources().getDisplayMetrics().density, fontScale, indexWidthPx);
         fan.setMinimumWidth(layout.width());
         int cardHeightDp = HandLayoutMetrics.cardHeightDp();
         int liftClearanceDp = viewport.handClearanceDp(bidding);
@@ -394,7 +394,7 @@ public final class GameTablePanel extends LinearLayout {
             slot.setEnabled(true);
             slot.setClickable(playable);
             slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
-            FrameLayout face = cardFace(card, playable, indexWidthDp);
+            FrameLayout face = cardFace(card, playable, indexWidthPx);
             FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(layout.cardWidth(),
                     dp(cardHeightDp), Gravity.TOP | Gravity.START);
             faceParams.topMargin = dp(liftClearanceDp);
@@ -420,7 +420,7 @@ public final class GameTablePanel extends LinearLayout {
         return fan;
     }
 
-    private FrameLayout cardFace(Card card, boolean playable, int indexWidthDp) {
+    private FrameLayout cardFace(Card card, boolean playable, int indexWidthPx) {
         FrameLayout face = new FrameLayout(context);
         face.setBackground(new CardFaceBackground(card, getResources().getDisplayMetrics().density, playable ? GOLD : SOFT_BORDER));
         face.setFocusable(false);
@@ -433,7 +433,7 @@ public final class GameTablePanel extends LinearLayout {
         label.setPadding(dp(1), dp(5), dp(1), 0);
         label.setTag("card-index");
         face.addView(label, new FrameLayout.LayoutParams(
-                dp(indexWidthDp), ViewGroup.LayoutParams.WRAP_CONTENT));
+                indexWidthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
         return face;
     }
 

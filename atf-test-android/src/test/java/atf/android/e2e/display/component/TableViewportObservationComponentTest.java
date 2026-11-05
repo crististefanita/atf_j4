@@ -28,7 +28,7 @@ class TableViewportObservationComponentTest {
         return Stream.of(Fault.MISSING_HUMAN,Fault.SHORT_SEAT,Fault.SHORT_FACE,Fault.SCROLL,
                 Fault.ZERO_TITLE,Fault.ZERO_TRUMP,Fault.OVERLAP,Fault.OBSTRUCTED_WINDOW,
                 Fault.MISSING_ACTION,Fault.ACTION_BELOW_NAME,Fault.CUT_ACTION,Fault.TALL_PLAYED_FACE,Fault.TALL_HAND_FACE,
-                Fault.THIN_HAND_FACE,Fault.THIN_PLAYED_FACE,Fault.WIDE_PLAYED_FACE)
+                Fault.THIN_HAND_FACE,Fault.THIN_PLAYED_FACE,Fault.WIDE_PLAYED_FACE,Fault.WIDE_HAND_BAND,Fault.ZERO_HAND_BAND)
                 .map(fault->Arguments.of(fault, switch(fault) {
                     case MISSING_HUMAN,SHORT_SEAT->"Complete seat frames in the same viewport";
                     case SHORT_FACE->"Whole hand retains complete faces on one row";
@@ -39,7 +39,9 @@ class TableViewportObservationComponentTest {
                     case MISSING_ACTION,ACTION_BELOW_NAME,CUT_ACTION->"Complete turn action stays above the player name";
                     case TALL_PLAYED_FACE->"Requested played-card height: King of hearts";
                     case TALL_HAND_FACE->"Requested hand-card height: 0";
-                    case THIN_HAND_FACE->"Requested hand-card width: 0";
+                    case THIN_HAND_FACE->"Requested trailing hand-card width";
+                    case WIDE_HAND_BAND->"Exposed hand-card band: 0";
+                    case ZERO_HAND_BAND->"Whole hand retains complete faces on one row";
                     case THIN_PLAYED_FACE,WIDE_PLAYED_FACE->"Requested played-card width: King of hearts";
                     default->throw new IllegalArgumentException();
                 }));

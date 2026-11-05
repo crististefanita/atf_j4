@@ -19,6 +19,12 @@ public final class HandLayoutMetrics {
 
     private HandLayoutMetrics() { }
 
+    public static int indexBandWidthPx(float glyphWidthPx, int horizontalPaddingPx) {
+        if (!Float.isFinite(glyphWidthPx) || glyphWidthPx <= 0 || horizontalPaddingPx < 0)
+            throw new IllegalArgumentException("A finite positive glyph width and nonnegative padding are required");
+        return Math.addExact((int) Math.ceil(glyphWidthPx), Math.multiplyExact(2, horizontalPaddingPx));
+    }
+
     public static boolean usesSingleRow(int cardCount) {
         return cardCount >= MIN_CARD_COUNT && cardCount <= MAX_CARD_COUNT;
     }
