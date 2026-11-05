@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "scope": "Calificare componentă JVM, cu poziții legale generate; fără acceptanță de latență Android sau progres strategic.",
+  "players": 4,
+  "handSizes": [2, 3, 4, 5, 6, 7, 8],
+  "seeds": [101, 307],
+  "warmups": 1,
+  "repetitions": 3,
+  "maximumWorkUnits": 10000000,
+  "maximumThreadCpuNanos": 2000000000,
+  "maximumWallNanos": 30000000000,
+  "coreBidSamples": 128,
+  "coreCardSamples": 32,
+  "coreEnumeratedWorlds": 256,
+  "independentBidSamples": 24,
+  "independentCardSamples": 48,
+  "coreProofNodes": 80000,
+  "independentProofNodes": 40000
+}

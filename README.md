@@ -27,6 +27,7 @@ reușite se alege înaintea partidei: **5 sau 10**, implicit **10**; seria de
 cinci ratări se penalizează cu valoarea în oglindă: **−5 sau −10**.
 
 - Interfața și instrucțiunile sunt disponibile în română și engleză.
+- Doar mâinile de 2–8 cărți avansează seria; la o carte, un rezultat de același tip păstrează contorul, iar rezultatul opus îl întrerupe.
 - Numele omului se configurează din meniul inițial; adversarii primesc nume scurte aleatorii la fiecare partidă.
 - [Istoricul comun](docs/game/ATF_ScoreHistory.md) și [clasamentele locale](docs/game/ATF_PlayerRecords.md) păstrează separat evoluția partidei și cele mai bune rezultate.
 
@@ -35,8 +36,6 @@ Jocul are două niveluri. **Normal** urmărește levatele licitate și evită s�
 [Regulile și limitele variantelor](docs/game/README.md) explică diferențele de profil.
 
 [Motorul jocului](whist-lab-app/game-core/README.md) leagă comportamentele de implementare și teste.
-
-Doar mâinile de 2–8 cărți avansează seria. La o carte, un rezultat de același tip păstrează contorul, iar rezultatul opus îl întrerupe.
 
 ## Arhitectura
 
@@ -75,8 +74,8 @@ Sunt două procese de construire distincte, cu responsabilități și dependenț
 ## Început rapid offline
 
 Sunt necesare Java 21, PowerShell 7 (`pwsh`) și Node.js pentru verificatoarele JSON.
-SDK-ul Android este necesar pentru aplicație și testele Android; verificările
-algoritmului au și o intrare JVM separată.
+SDK-ul Android este necesar pentru construirea aplicației și componentele ei JVM;
+algoritmul și componentele adaptorului au intrări JVM separate, fără SDK.
 
 Din rădăcina proiectului, o verificare mică a regulilor și a contextelor publice:
 
@@ -100,24 +99,19 @@ Parametrii și delimitarea colecțiilor sunt în
 
 ## Cum dezvoltăm jucătorii
 
-Pornim de la partide salvate și extragem situații mici cu intrări publice.
-O mutare devine regresie numai după justificarea așteptării printr-o regulă,
-un invariant sau un oracol finit; o înfrângere singură nu dovedește o greșeală.
+Politica primește mâna proprie și informația publică. Datele complete ale adversarilor aparțin auditului de după joc, iar progresul se califică înaintea promovării.
 
-Comparăm un candidat cu o politică fixată pe aceleași distribuții și locuri,
-apoi îl verificăm pe partide nefolosite la ajustare. Păstrăm și rezultatele
-negative; un candidat fără progres demonstrat nu înlocuiește politica acceptată.
+1. Extragem din partide o situație mică și justificăm așteptarea prin regulă, invariant sau oracol finit.
+2. Comparăm candidatul cu o politică fixată pe aceleași distribuții și locuri; după prima alegere diferită, fiecare partidă își păstrează evoluția publică proprie.
+3. Verificăm candidatul înghețat pe date nefolosite la ajustare și păstrăm rezultatele negative; promovarea cere progresul declarat.
 
-Datele complete ale adversarilor sunt disponibile numai pentru auditul de după partidă.
+| Întrebare | Ghid responsabil |
+|---|---|
+| Cum se ia decizia? | [Modelul deciziei](docs/ai/ATF_DecisionModel.md) și [configurarea regulilor](docs/ai/ATF_RulesConfiguration.md). |
+| Cum alegem datele utile? | [Corpusul](docs/learning/ATF_Corpus.md) și [selecția pentru învățare](docs/learning/ATF_Selection.md). |
+| Cum calificăm o schimbare? | [Protocolul offline](docs/learning/README.md) și [arhitectura AI](docs/ai/README.md). |
 
-Jucătorul primește propria mână și informația publică; cărțile ascunse nu intră
-în API-ul de decizie. În experimentele pereche, fiecare profil joacă din nou
-aceleași distribuiri la fiecare loc; după prima licitație sau carte diferită,
-starea publică evoluează firesc pe linia acelui profil.
-
-[Arhitectura învățării](docs/ai/README.md), [modelul deciziei](docs/ai/ATF_DecisionModel.md), [regulile și ponderile](docs/ai/ATF_RulesConfiguration.md), [corpusul de partide](docs/learning/ATF_Corpus.md), [selecția pentru învățare](docs/learning/ATF_Selection.md) și [catalogul regulilor AI](docs/ai/ATF_HandPatternsRo.md) descriu fluxul.
-
-Aceste evaluări măsoară comportamente pe domenii declarate, fără garanția că Hard va câștiga orice partidă cu informație ascunsă.
+Evaluările au domenii și bugete declarate. Indiciile despre onoruri, estimările și certificatele finite sunt explicate separat în [ghidul tiparelor](docs/ai/ATF_HandPatternsRo.md).
 
 ## Lucrul pe Android
 

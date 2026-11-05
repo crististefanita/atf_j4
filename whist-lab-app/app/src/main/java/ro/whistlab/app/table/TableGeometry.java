@@ -15,6 +15,21 @@ final class TableGeometry {
 
     record Plan(List<Rect> seats, Rect center) { }
 
+    /** Reserve five percent above the composition; keep the human seat clear of the hand. */
+    static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
+            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows,
+            CenterAlignment centerAlignment) {
+        int inset = TableLayoutMetrics.topInsetPx(height);
+        Plan base = arrange(width, height - inset, players, seatWidth, seatHeight,
+                centerWidth, centerHeight, gap, fullWidthCardRows, centerAlignment);
+        return new Plan(base.seats().stream().map(box -> lower(box, inset)).toList(),
+                lower(base.center(), inset));
+    }
+
+    private static Rect lower(Rect box, int offset) {
+        return new Rect(box.left(), box.top() + offset, box.right(), box.bottom() + offset);
+    }
+
     static int minimumHeight(int players, int seatHeight, int centerHeight, int gap) {
         requirePlayers(players);
         return 2 * seatHeight + centerHeight + (players >= 5 ? 6 : 4) * gap;

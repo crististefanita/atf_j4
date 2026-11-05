@@ -172,10 +172,10 @@ public final class WhistUiText {
     public String bidSummary(GameSession.Snapshot state) {
         if (romanian()) {
             return "Licitații depuse " + state.bidsSubmitted() + "/" + state.players().size()
-                    + " · Total licitat " + state.bidTotal() + "/" + state.handSize();
+                    + "\nTotal licitat " + state.bidTotal() + "/" + state.handSize();
         }
         return "Bids submitted " + state.bidsSubmitted() + "/" + state.players().size()
-                + " · Bid total " + state.bidTotal() + "/" + state.handSize();
+                + "\nBid total " + state.bidTotal() + "/" + state.handSize();
     }
 
     public String roundStatus(GameSession.Snapshot state) {

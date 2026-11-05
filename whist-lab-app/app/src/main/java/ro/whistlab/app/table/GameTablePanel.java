@@ -5,6 +5,7 @@ import ro.whistlab.app.cards.CardFaceBackground;
 import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
 import ro.whistlab.app.localization.WhistUiText;
+import ro.whistlab.app.seat.SeatHeadingView;
 import ro.whistlab.app.theme.WhistUiPalette;
 import ro.whistlab.app.window.WindowContent;
 
@@ -259,51 +260,8 @@ public final class GameTablePanel extends LinearLayout {
         seat.setBackground(WhistUiPalette.seatFrame(context, active));
         seat.setElevation(dp(active ? 1 : 0));
 
-        FrameLayout actionSlot = new FrameLayout(context);
-        FrameLayout.LayoutParams actionBadgeParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER);
-        if (active) {
-            TextView action = text(copy.seatTurnBadge(bidding), 9, INK, true);
-            action.setGravity(Gravity.CENTER);
-            int badgePadding = viewport.turnBadgeVerticalPaddingDp();
-            action.setPadding(dp(6), dp(badgePadding), dp(6), dp(badgePadding));
-            action.setBackground(rounded(GOLD, Color.rgb(105, 83, 45), 20));
-            GradientDrawable turnDot = new GradientDrawable();
-            turnDot.setShape(GradientDrawable.OVAL);
-            turnDot.setColor(Color.rgb(105, 83, 45));
-            turnDot.setBounds(0, 0, dp(5), dp(5));
-            action.setCompoundDrawablesRelative(turnDot, null, null, null);
-            action.setCompoundDrawablePadding(dp(3));
-            action.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            actionSlot.addView(action, actionBadgeParams);
-        }
-        TextView name = text(copy.seatName(player), 13,
-                active ? INK : Color.rgb(229, 239, 230), true);
-        name.setGravity(Gravity.CENTER);
-        name.setSingleLine(true);
-        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        if (viewport.isCompact()) {
-            LinearLayout heading = new LinearLayout(context);
-            heading.setGravity(Gravity.CENTER_VERTICAL);
-            heading.addView(name, new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            if (active) {
-                TextView badge = (TextView) actionSlot.getChildAt(0);
-                actionSlot.removeView(badge);
-                badge.setTextSize(8);
-                badge.setPadding(0, 0, 0, 0);
-                badge.setCompoundDrawablesRelative(null, null, null, null);
-                badge.setMaxLines(2);
-                heading.addView(badge, new LayoutParams(dp(27), ViewGroup.LayoutParams.WRAP_CONTENT));
-            }
-            seat.addView(heading, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(viewport.seatHeadingHeightDp())));
-        } else {
-            seat.addView(actionSlot, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    dp(viewport.turnBadgeSlotHeightDp())));
-            seat.addView(name, matchWrap());
-        }
+        seat.addView(new SeatHeadingView(context, copy.seatName(player),
+                copy.seatTurnBadge(bidding), active), matchWrap());
         addSeatFact(seat, copy.bidLabel() + ":", player.bid() == null ? "—" : player.bid().toString(), active);
         addSeatFact(seat, copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()), active);
         seat.setTag("table-seat:" + player.seat());

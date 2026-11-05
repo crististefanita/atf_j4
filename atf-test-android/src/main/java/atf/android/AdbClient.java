@@ -2,14 +2,14 @@ package atf.android;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.io.ByteArrayOutputStream;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import atf.android.process.CommandProcess;
 
 /** Runs a single explicitly selected Android device command with bounded execution time. */
 public final class AdbClient {
@@ -37,49 +37,21 @@ public final class AdbClient {
 
     public Result run(String... arguments) throws IOException, InterruptedException {
         List<String> command = command(arguments);
-        ProcessBuilder builder = new ProcessBuilder(command).redirectErrorStream(true);
-        if (serverSocket != null) builder.environment().put("ADB_SERVER_SOCKET", serverSocket);
-        Process process = builder.start();
-        ByteArrayOutputStream captured = new ByteArrayOutputStream();
-        Thread reader = Thread.startVirtualThread(() -> {
-            try { process.getInputStream().transferTo(captured); }
-            catch (IOException ignored) { /* the process may be forcibly stopped on timeout */ }
-        });
-        boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        if (!finished) {
-            process.descendants().forEach(ProcessHandle::destroyForcibly);
-            process.destroyForcibly();
-            reader.join();
-            throw new IOException("ADB command timed out after " + timeout + ": " + safeCommand(List.of(arguments)));
-        }
-        reader.join();
-        String output = captured.toString(StandardCharsets.UTF_8);
-        return new Result(process.exitValue(), output, List.copyOf(command));
+        CommandProcess.Output result = execute(command, true);
+        return new Result(result.exitCode(), new String(result.stdout(), StandardCharsets.UTF_8), command);
     }
 
     /** Runs a command whose stdout is binary (for example {@code exec-out screencap -p}). */
     public BinaryResult runBinary(String... arguments) throws IOException, InterruptedException {
         List<String> command = command(arguments);
-        ProcessBuilder builder = new ProcessBuilder(command);
-        if (serverSocket != null) builder.environment().put("ADB_SERVER_SOCKET", serverSocket);
-        Process process = builder.start();
-        ByteArrayOutputStream standardOutput = new ByteArrayOutputStream();
-        ByteArrayOutputStream standardError = new ByteArrayOutputStream();
-        Thread stdoutReader = Thread.startVirtualThread(() -> transfer(process.getInputStream(), standardOutput));
-        Thread stderrReader = Thread.startVirtualThread(() -> transfer(process.getErrorStream(), standardError));
-        boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        if (!finished) {
-            process.descendants().forEach(ProcessHandle::destroyForcibly);
-            process.destroyForcibly();
-            stdoutReader.join();
-            stderrReader.join();
-            throw new IOException("ADB command timed out after " + timeout + ": "
-                    + safeCommand(List.of(arguments)));
-        }
-        stdoutReader.join();
-        stderrReader.join();
-        return new BinaryResult(process.exitValue(), standardOutput.toByteArray(),
-                standardError.toString(StandardCharsets.UTF_8), command);
+        CommandProcess.Output result = execute(command, false);
+        return new BinaryResult(result.exitCode(), result.stdout(), result.stderr(), command);
+    }
+
+    private CommandProcess.Output execute(List<String> command, boolean mergeError)
+            throws IOException, InterruptedException {
+        Map<String, String> environment = serverSocket == null ? Map.of() : Map.of("ADB_SERVER_SOCKET", serverSocket);
+        return CommandProcess.execute(command, environment, timeout, mergeError);
     }
 
     private List<String> command(String... arguments) {
@@ -88,11 +60,6 @@ public final class AdbClient {
         command.add("-s"); command.add(serial);
         command.addAll(List.of(arguments));
         return List.copyOf(command);
-    }
-
-    private static void transfer(java.io.InputStream input, ByteArrayOutputStream output) {
-        try { input.transferTo(output); }
-        catch (IOException ignored) { /* the process may be forcibly stopped on timeout */ }
     }
 
     private static String setting(String property, String env, String fallback) {
@@ -105,8 +72,6 @@ public final class AdbClient {
         if (value == null || value.isBlank()) throw new IllegalArgumentException(name + " must not be blank");
         return value.trim();
     }
-
-    private static String safeCommand(List<String> args) { return String.join(" ", args); }
 
     public record Result(int exitCode, String output, List<String> command) {
         public Result { Objects.requireNonNull(output); command = List.copyOf(command); }

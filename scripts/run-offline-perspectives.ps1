@@ -9,6 +9,7 @@ $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $run = Join-Path $EvidenceRoot "perspectives-romanian181-$stamp-seed$Seed"
 if (Test-Path -LiteralPath $run) { throw "Evidence run already exists: $run" }
 New-Item -ItemType Directory -Path $run | Out-Null
+& (Join-Path $PSScriptRoot 'Register-WhistDevelopmentExposure.ps1') -Seed $Seed -RunRoot $run -Kind perspectives
 $match = Join-Path $run 'perspective-matches.json'
 $log = Join-Path $run 'gradle.log'
 $env:JAVA_HOME = 'C:\tools\Java21\jdk-21.0.12.1+1'

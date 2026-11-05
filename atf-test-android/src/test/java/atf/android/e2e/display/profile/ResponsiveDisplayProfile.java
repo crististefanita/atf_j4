@@ -69,7 +69,7 @@ public record ResponsiveDisplayProfile(int width, int height, int density) {
     }
 
     public int playedCardFaceHeightDp() {
-        return logicalHeightDp() < 600 ? 94 : 104;
+        return logicalHeightDp() < 600 ? 71 : 78;
     }
 
     /** Minimum slot includes the complete face and padding; actor identity is audited semantically. */

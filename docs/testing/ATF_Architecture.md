@@ -58,13 +58,14 @@ Core, Reporting, Console și Mock sunt [biblioteci binare](../platform/README.md
 
 Motorul folosește JUnit JVM prin [configurația proprie](../../whist-lab-app/game-core/build.gradle). Nu depinde de Test Kit și nu pretinde adnotările Maven.
 
-[ai-lab](../../whist-lab-app/ai-lab/README.md) este modul JVM consumat numai la testarea motorului. `:ai-lab:testTools` verifică uneltele Node.js ale laboratorului; experimentele păstrate sub `experiments` sunt excluse din sursele principale.
+[ai-lab](../../whist-lab-app/ai-lab/README.md) este modul JVM consumat numai la testarea motorului. `:ai-lab:check` execută contractele Java locale și uneltele Node.js, cu date legale construite fără arhivă. Classpath-ul Java local exclude motorul, Android și ATF; experimentele păstrate sub `experiments` sunt excluse din sursele principale.
 
 | Zonă | Nivel semantic | Ce verifică | Execuție |
 |---|---|---|---|
 | Reguli și scor | Unitar sau componentă, după API-ul exercitat | Legalitate, levate, puncte, serii și limite | JVM, fără Android. |
 | Sesiune și restaurare | Componentă | Comenzi, tranziții și respingerea unei stări inconsistente | Situații legale controlate. |
 | Politici AI | Componentă | Observația permisă, decizia și proprietățile justificate independent | [Proiectarea testelor AI](ATF_AiComponents.md). |
+| Costul deciziei | Componentă și integrare între observație și cele două API-uri AI | Lucru, CPU, legalitate și determinism pe poziții generate | [Profil JVM explicit](../ai/ATF_CostQualification.md); fără latență Android sau verdict strategic. |
 | Partidă simulată | Integrare de domeniu | Colaborarea politicilor cu motorul și oracolul până la scorul final | Distribuții și locuri declarate. |
 | Geometrie și texte Android | Unitar sau componentă JVM | Dimensiuni, regiuni, localizare și modele de prezentare | [Testele aplicației](../../whist-lab-app/app/src/test/java/ro/whistlab/app/). |
 | Interacțiune în aplicația instalată | E2E | Legătura dintre comandă, stare, captură și scor | [Infrastructura Android](ATF_Android.md). |

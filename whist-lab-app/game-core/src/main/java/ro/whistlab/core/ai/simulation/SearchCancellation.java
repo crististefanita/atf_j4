@@ -6,6 +6,10 @@ import java.util.concurrent.CancellationException;
 public final class SearchCancellation {
     private SearchCancellation() { }
     public static void check() {
-        if (Thread.currentThread().isInterrupted()) throw new CancellationException("AI search interrupted");
+        if (Thread.currentThread().isInterrupted()) {
+            SearchWork.interrupted();
+            throw new CancellationException("AI search interrupted");
+        }
+        SearchWork.checkpoint();
     }
 }

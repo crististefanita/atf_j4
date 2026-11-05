@@ -16,6 +16,7 @@ class DocumentationPolicyGovernanceTest {
     @Test void theInventoryContainsAllModuleReadmesAndNoPerReleaseVerificationNotes() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var files = GovernanceProject.markdown(root);
+        String publicRepository = GovernanceProject.policy(root).path("publicRepository").asText("");
         assertTrue(files.contains(root.resolve("README.md")));
         var modules = GovernanceProject.policy(root).required("mavenModules");
         for (var module : modules) assertTrue(files.contains(root.resolve(module.asText()).resolve("README.md")),
@@ -28,10 +29,42 @@ class DocumentationPolicyGovernanceTest {
             }
             String prose = deploymentProse(Files.readString(file));
             prose = libraryMaintenanceProse(GovernanceProject.relative(root, file), prose);
+            prose = publicReleaseProse(prose, publicRepository);
             if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
             assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
                     () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
         }
+    }
+
+    /** A declared repository's stable release URI is technical data; visible link text remains prose. */
+    static String publicReleaseProse(String source, String repository) {
+        if (repository.isEmpty()) return source;
+        if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+                || !java.net.URI.create(repository).normalize().toString().equals(repository))
+            throw new IllegalArgumentException("Expected a canonical public GitHub repository URI");
+        var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
+        var result = new StringBuffer();
+        while (links.find()) {
+            String replacement = links.group(2).equals(repository + "/releases/latest")
+                    ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
+            links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
+        }
+        return links.appendTail(result).toString();
+    }
+
+    @Test void publicReleaseUriDoesNotExemptVisibleProseOrForeignAndAlteredDestinations() {
+        String repository = "https://github.com/example/atf_j4", latest = repository + "/releases/latest";
+        assertEquals("[APK](<resursă-publică>)", publicReleaseProse("[APK](" + latest + ")", repository));
+        assertEquals("Context J4. [atf_j4](<resursă-publică>)",
+                publicReleaseProse("Context J4. [atf_j4](" + latest + ")", repository));
+        for (String original : List.of(latest, "[APK](https://github.com/example/atf_j1/releases/latest)",
+                "[APK](" + repository + "/tree/main)", "[APK](" + latest + "?next=atf_j1)",
+                "[APK](" + latest + "#J1)", "[APK](" + latest + "/)", "![APK](" + latest + ")"))
+            assertEquals(original, publicReleaseProse(original, repository), original);
+        assertEquals("[APK](" + latest + ")", publicReleaseProse("[APK](" + latest + ")", ""));
+        for (String invalid : List.of("https://github.com/example/../atf_j4", "http://github.com/example/atf_j4",
+                repository + "?query=1", repository + "/", "https://elsewhere.test/example/atf_j4"))
+            assertThrows(IllegalArgumentException.class, () -> publicReleaseProse("Control J4", invalid));
     }
 
     /** Only the named library guides may route maintenance to the source owner, in their footer. */

@@ -27,11 +27,14 @@ Integrarea locală păstrează verificatoarele adaptate și controalele lor nega
 
 [Politica executabilă](../../config/atf-governance-policy.json) aplică limita fără derogări pentru structura curentă. [Responsabilitățile pachetelor](../governance/ATF_Packages.md) delimitează API-urile, suportul comun și selecțiile testelor.
 
-- O mutare verifică noua declarație de pachet, importurile, dependențele și API-urile restrânse.
-- O excepție devenită inutilă se elimină după verificare; lista nu se regenerează automat pentru a ascunde creșterea.
-- O listă revizuită păstrează motivul și acțiunea de separare, iar înlocuirea unui tip cere revizie explicită.
-
 [Guvernanța calității](../governance/README.md) · [Bune practici documentare](../governance/ATF_Documentation.md)
+
+## Calificarea afirmațiilor și lansatoarelor
+
+| Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
+|---|---|---|
+| P1 | Guvernanța documentară: verificările structurale nu confruntă automat toate afirmațiile despre profilul nou și cel istoric. | Controale factuale cu defecte injectate pentru scor, ajutor și documentație; fiecare afirmație identifică sursa și domeniul, fără deducerea comportamentului dintr-un cuvânt izolat. |
+| P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. |
 
 ## Control tehnic activ
 

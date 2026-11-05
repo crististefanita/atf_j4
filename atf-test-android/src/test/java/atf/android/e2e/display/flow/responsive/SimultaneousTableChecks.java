@@ -4,15 +4,12 @@ import atf.android.AdbClient;
 import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 import atf.android.e2e.driver.AndroidUiDriver;
 import atf.android.e2e.support.AndroidUiFlowTrace;
-import atf.android.whist.evidence.TableViewportAudit;
+import atf.android.e2e.display.support.TableViewportObservation;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import static atf.android.e2e.display.flow.responsive.ResponsiveEvidence.record;
-import static atf.android.e2e.display.support.ResponsiveGeometry.box;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.APP;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.WAIT;
-import static atf.android.e2e.display.flow.responsive.ResponsiveTableState.seatBounds;
 
 /** Verifică o singură stare capturată; nu unește observații din viewport-uri diferite. */
 public final class SimultaneousTableChecks {
@@ -36,43 +33,6 @@ public final class SimultaneousTableChecks {
     /** Decodes a recorded hierarchy without sending device commands. */
     public static List<atf.reporting.contract.AtfAssertion> auditSnapshot(AndroidUiDriver ui, String xml,
             ResponsiveDisplayProfile profile, int handSize, boolean completeTrick) throws Exception {
-        var cards = new ArrayList<TableViewportAudit.PlayedRegion>();
-        for (String description : ui.descriptions(xml).stream().filter(value -> value.contains(" played ")).toList()) {
-            String label = description.substring(description.indexOf(" played ") + " played ".length());
-            cards.add(new TableViewportAudit.PlayedRegion(label, box(ui.boundsForDescription(xml, description)),
-                    box(ui.boundsForText(xml, shortLabel(label)))));
-        }
-        var snapshot = new TableViewportAudit.Snapshot(
-                new atf.android.whist.evidence.HandIndexAudit.Box(0, 0, profile.width(), profile.height()),
-                box(ui.boundsForDescription(xml, "Playing surface")),
-                box(ui.boundsForDescriptionContaining(xml, "Your hand,")),
-                seatBounds(ui, xml).stream().map(atf.android.e2e.display.support.ResponsiveGeometry::box).toList(),
-                ui.handCardFaceBounds(xml).stream().map(atf.android.e2e.display.support.ResponsiveGeometry::box).toList(),
-                cards, ui.hasClass(xml, "android.widget.ScrollView"),
-                ui.hasText(xml, "Whist · Descending") && ui.hasDescriptionContaining(xml, "Trump"));
-        double density = profile.density() / 160.0;
-        var expected = new TableViewportAudit.Requirements(4, handSize, completeTrick ? 4 : 0,
-                (int) Math.round(98 * density), (int) Math.round(profile.playedCardFaceHeightDp() * density),
-                (int) Math.floor(44 * density));
-        return TableViewportAudit.inspect(snapshot, expected);
-    }
-
-    private static String shortLabel(String card) {
-        String[] parts = card.split(" of ", 2);
-        String rank = switch (parts[0]) {
-            case "Ace" -> "A";
-            case "King" -> "K";
-            case "Queen" -> "Q";
-            case "Jack" -> "J";
-            default -> parts[0];
-        };
-        String suit = switch (parts[1]) {
-            case "spades" -> "♠";
-            case "hearts" -> "♥";
-            case "clubs" -> "♣";
-            case "diamonds" -> "♦";
-            default -> throw new IllegalArgumentException("Unknown fixture card: " + card);
-        };
-        return rank + suit;
+        return TableViewportObservation.inspect(ui,xml,profile,handSize,completeTrick);
     }
 }

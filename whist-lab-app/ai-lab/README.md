@@ -11,9 +11,10 @@ Acest modul JVM reunește jucătorul independent, uneltele offline și experimen
 | Zonă | Responsabilitate |
 |---|---|
 | [src/main/java](src/main/java/) | Modelul independent și observația permisă actorului. |
+| [src/test/java](src/test/java/) | Contractele Java locale, cu poziții legale construite fără motor sau arhivă. |
 | [tools](tools/README.md) | Corpus, modele, diagnostic și calificare, cu teste Node.js alăturate. |
 | [experiments](experiments/) | Prototipuri și [surse alternative de licitare](experiments/bid-models/README.md), excluse din compilarea implicită. |
-| [build.gradle](build.gradle) | Limita Java a modulului și sarcina explicită `testTools`. |
+| [build.gradle](build.gradle) | `check` combină testele Java și Node; replay-ul extern are activare separată. |
 
 ## Intrare și informație disponibilă
 
@@ -88,14 +89,19 @@ Uneltele au verificare proprie, din aceeași copie temporară:
 
 Păstrați separat cazurile de învățare, regresiile mici, sursa candidatului și partidele noi de evaluare. Corectitudinea unei componente sau un câștig într-o lume ipotetică nu reprezintă singure un progres al forței de joc. Alternativele externe nu schimbă sursele active și nu se promovează prin simpla trecere a unui test local.
 
-## Îmbunătățiri prioritare ale laboratorului
+## Verificare proprie și calificare
 
-Modulul Java are verificări ale jucătorului independent în testele consumatorului game-core, iar sarcina locală check adaugă testele Node. Responsabilitatea verificării publice a modulului trebuie făcută executabilă și în propriul său set de teste.
+| Suprafață | Contract și limită |
+|---|---|
+| Java | [Contractele locale](src/test/java/ro/whistlab/coach/IndependentPlayerContractTest.java) verifică observația, legalitatea, determinismul, anularea și bugetele. Motorul, Android și ATF lipsesc din classpath-ul acestor teste; comparațiile din `game-core` rămân integrare. |
+| Unelte Node | `check` include `testTools`; [constructorul de partide legale](tools/testing/legal-game-fixture.mjs) înlocuiește intrările implicite din arhivă. Mutațiile de carte, licitație, levată și scor verifică refuzurile validatorului. |
+| Arhivă | `replayArchive` cere fișier și SHA-256 explicite; verifică octeții înaintea parsării și regulilor. Nu este dependență a `check`. |
+| Expunerea datelor | [Registrul comun](../../docs/learning/ATF_EvaluationRegistry.md) coordonează rezervările între corpusuri și păstrează reutilizarea ca expunere cunoscută. |
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Introduceți contractele Java locale ale observației și deciziei. | Verificarea modulului execută controale independente pentru copierea intrărilor, legalitate, informație publică, determinism și epuizarea bugetului; comparațiile cu motorul rămân integrare la consumator. |
-| P1 | Faceți componentele implicite autonome față de arhiva personală. | [Uneltele](tools/README.md#îmbunătățiri-prioritare-ale-verificării-offline) generează date legale mici în spațiul temporar; verificarea partidelor arhivate are selecție și precondiții explicite. |
-| P1 | Întăriți calificarea evaluării rezervate. | [Registrul de expunere](../../docs/feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor) refuză suprapunerile și reutilizarea prin alte rădăcini de corpus, inclusiv la execuție concurentă. |
+Promovarea rămâne condiționată de progres pe partide noi și de identitatea tuturor surselor; o verificare locală reușită închide numai contractul ei. [Protocolul de învățare](../../docs/learning/README.md) deține procedura, iar [feedback-ul AI](../../docs/feedback/ATF_Ai.md) centralizează lucrările încă deschise.
 
-Promovarea rămâne condiționată de progres pe partide noi și de identitatea tuturor surselor; o verificare locală reușită închide numai contractul ei. [Protocolul de învățare](../../docs/learning/README.md) deține procedura comună.
+[PlannerControl](src/main/java/ro/whistlab/coach/PlannerControl.java) oferă măsurare și limită de lucru opționale, izolate pe fir.
+
+- Întreruperea păstrează marcajul și aruncă `CancellationException`; `WORK_LIMIT` abandonează decizia printr-o excepție distinctă.
+- Închiderea contextului elimină limita pentru apelurile următoare.
+- [Calificarea costului](../../docs/ai/ATF_CostQualification.md) separă acest control de bugetul dovezii și de forța strategică.

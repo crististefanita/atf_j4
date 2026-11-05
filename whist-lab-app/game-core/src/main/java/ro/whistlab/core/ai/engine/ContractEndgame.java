@@ -5,6 +5,7 @@ import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.ai.simulation.SearchCancellation;
+import ro.whistlab.core.ai.simulation.SearchWork;
 
 import java.util.*;
 
@@ -22,6 +23,7 @@ public final class ContractEndgame {
     }
     private static int[] search(MonteCarloAi.View v,long[] hands,int[] won,int[] targets,int actor,int leader,long table,int length){
         SearchCancellation.check();
+        SearchWork.event(SearchWork.Event.ENDGAME);
         boolean empty=true;for(long h:hands)if(h!=0){empty=false;break;}
         if(empty)return won.clone();
         long allowed=legal(hands[actor],length==0?-1:((int)table&63)/13,v.trump(),v.mode());

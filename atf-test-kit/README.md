@@ -67,13 +67,10 @@ mvn -B -pl atf-test-kit -am test
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă testele unitare de componentele care lansează ciclul JUnit real. [POM-ul](pom.xml) deține selecția efectivă; clasele imbricate pentru defecte controlate se execută prin lansatorul probei.
 
-## Calificare prioritară a concurenței
+## Limitele concurenței
 
 Primitivele resurselor au controale concurente, iar probele ciclului JUnit folosesc și execuție serială explicită. Calificarea partajării între invocări trebuie să includă și lansări Jupiter paralele reale.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P2 | Verificați resursele și auditul prin ciclul paralel. | Clase și metode concurente păstrează o singură creare pe proprietar, audit separat pe invocare și o singură închidere; eșecul pregătirii sau publicării păstrează cauza inițială. |
-| P2 | Delimitați suprascrierile configurației globale. | Utilizatorii ScopedAcceptanceRun cunosc limita monitorului local; testele verifică restaurarea proprietății și interacțiunea cu cititorii concurenți înaintea extinderii suportului paralel. |
+- `ScopedAcceptanceRun` serializează apelurile propriei metode; cititorii externi ai proprietăților globale nu sunt izolați de acel monitor. [Feedback-ul infrastructurii](../docs/feedback/ATF_TestInfrastructure.md#concurența-kitului) deține calificarea Jupiter paralelă și verificarea cititorului concurent.
 
-[Matricea testării](../docs/testing/ATF_Architecture.md) deține nivelul fiecărei probe. Afirmația despre suportul concurent se limitează la combinațiile de proprietar și ciclu efectiv verificate.
+- [Matricea testării](../docs/testing/ATF_Architecture.md) deține nivelul fiecărei probe. Afirmația despre suportul concurent se limitează la combinațiile de proprietar și ciclu efectiv verificate.

@@ -11,6 +11,7 @@ Politica transformă mâna proprie și informația publică într-o decizie lega
 | Observație, simulare, utilitate și certificate | [Modelul deciziei](ATF_DecisionModel.md) |
 | Rolul manifestelor și influența contextului | [Reguli și configurare](ATF_RulesConfiguration.md) |
 | Necesar, oportunități și ieșiri legale | [Joc contextual](ATF_ContextualPlay.md) |
+| Bugete, anulare și măsurare pe mediul JVM | [Calificarea costului AI](ATF_CostQualification.md) |
 | Onoruri și acoperiri, cu statut de cercetare | [Română](ATF_HandPatternsRo.md) și [engleză](ATF_HandPatternsEn.md) |
 
 ## Decizia din timpul jocului
@@ -52,7 +53,7 @@ Catalogul de tipare rămâne un instrument de cercetare. [Ghidul onorurilor](ATF
 
 - Schema, validatoarele, selecția și criteriile aparțin surselor proiectului.
 - Partidele, calibrările, selecțiile concrete, registrele loturilor și rezultatele sunt date externe.
-- [Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ; analiza obișnuită citește numai manifestul selectat și verificat.
+- [Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ; analiza corpusului activ citește manifestul selectat și verificat. [Calibrarea onorurilor](ATF_HandPatternsRo.md#calibrare-descriptivă) are intrare separată: toate fișierele development din arhiva furnizată explicit.
 - Selecția elimină urmele duplicate, păstrează originile protejate și urmărește categorii noi în limita bugetului.
 - O categorie observată măsoară varietatea setului, fără să demonstreze acoperirea codului sau optimalitatea unei acțiuni.
 - Regresia implicită păstrează cazuri mici generate sau construite pentru o proprietate generală, cu așteptare independentă.

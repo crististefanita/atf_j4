@@ -7,7 +7,11 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-// Tool tests stay opt-in and run from the repository root for declared CLI inputs.
+dependencies { testImplementation "junit:junit:4.13.2" }
+
+tasks.withType(Test).configureEach { maxHeapSize = "128m" }
+
+// Default components use constructed local data. Archive replay has its own explicit entrypoint.
 tasks.register("testTools", Exec) {
     group = "verification"
     description = "Runs the AI laboratory's offline Node component tests."
@@ -19,3 +23,17 @@ tasks.register("testTools", Exec) {
 }
 
 tasks.named("check") { dependsOn tasks.named("testTools") }
+
+tasks.register("replayArchive", Exec) {
+    group = "verification"
+    description = "Replays an explicitly selected and SHA-256-sealed external game."
+    workingDir projectDir.parentFile.parentFile
+    doFirst {
+        def fixture = providers.gradleProperty("whist.archive.file").orNull
+        def seal = providers.gradleProperty("whist.archive.sha256").orNull
+        if (!fixture || !seal || !(seal ==~ /(?i)[a-f0-9]{64}/))
+            throw new GradleException("Archive replay requires whist.archive.file and whist.archive.sha256")
+        commandLine providers.gradleProperty("nodeExecutable").getOrElse("node"),
+                file("tools/corpus/whist-corpus-cli.mjs").absolutePath, "replay", fixture, seal
+    }
+}

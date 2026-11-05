@@ -394,7 +394,7 @@ public final class MainActivity extends Activity {
         title.setTag("game-title");
         TextView progress = text(copy.progress(state), 11, Color.rgb(229, 239, 230), true);
         TextView summary = text(copy.bidSummary(state), 9, Color.rgb(194, 216, 199), false);
-        summary.setSingleLine(true);
+        summary.setSingleLine(false);
         status.addView(title, matchWrap());
         status.addView(progress, matchWrap());
         status.addView(summary, matchWrap());

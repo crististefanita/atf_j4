@@ -4,30 +4,24 @@
 
 Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea externă. Defectele generice de API sau randare urmează [rutarea către responsabilul bibliotecilor](README.md).
 
-## Lacune de calificare
+## Validarea timpurie a checkpoint-ului
 
-| Prioritate | Limită | Criteriu de închidere |
+| Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
 |---|---|---|
-| P1 | Un tip de republicare descrie date capturate anterior. | Execuția Android nouă are identitate și criterii proprii; datele republicate păstrează explicit proveniența și intervalele originale. |
-| P1 | Indexul Java al ultimei publicări este un instrument de navigare. | Acceptarea unui scop se stabilește prin descriptorul și verificările sale, cu referințe separate pentru încercare și acceptanță. |
-| P1 | Publicatorii de date istorice au suprafețe diferite. | Calificați fiecare producător folosit prin inventarul comparațiilor originale, ultimul rând, proprietarul capturii și refuzul datelor corupte. |
+| P2 | [AndroidUiFlowTrace.checkpoint](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) păstrează aserțiuni pe care [publicatorul](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) le confruntă ulterior cu politica bibliotecii; sumarul prea lung poate fi refuzat abia la publicare. | Componentă: validați prin aceeași politică efectivă înaintea următoarei capturi, cu refuz localizat și fără trunchierea valorilor integrale din observații și XML. |
 
-[WhistExtentFeedback](../../atf-test-android/src/main/java/atf/android/whist/evidence/WhistExtentFeedback.java) scrie indexul extern după audit. [Mecanismul de predare](../reporting/ATF_Handoff.md) definește acceptarea pe scop; un index nu este registrul acelei acceptări.
+Consumatorul deține momentul validării și datele transmise. Dacă API-ul public nu expune politica necesară, contractul reutilizabil se solicită responsabilului bibliotecii; limita nu se recopiază ca o regulă locală independentă.
 
-## Criterii pentru înregistrare și retenție
+## Costul intrărilor consumatorului
 
-- Identificați aplicația, scenariul, sursele și bibliotecile execuției originale.
-- Păstrați încercarea neacceptată și cauza ei fără modificarea ultimei acceptanțe.
-- Verificați caracterul idempotent al reimportului, refuzul modificării aceluiași identificator și actualizarea atomică sub un singur blocaj.
-- Protejați țintele manifestelor și referințelor înaintea arhivării.
-- Transmiteți rădăcina externă explicit, independent de copia temporară și de descoperirea Git.
+| Prioritate | Responsabil și calificare rămasă | Nivel și criteriu de închidere |
+|---|---|---|
+| P2 | Consumatorul raportării: costul selecției și compoziției la populații mari ori predominant cu eșec. | Componente cu populații controlate și mediu identificat: cost, număr de comparații și corp opțional, cu toate eșecurile, valorile obligatorii și inventarul omisiunilor păstrate. |
 
-## Criterii pentru conținut
+## Contractele responsabile
 
-- Confruntați comanda trimisă cu tranziția semantică observată; păstrați rezultatele lor distincte.
-- Verificați PNG-ul integral și intervalul original la proprietarul corect, inclusiv după întrerupere.
-- Refuzați scalarii lipsă, intervalele imposibile, referințele alterate și verdictul nativ inconsecvent.
-- Separați auditul datelor, revizia interactivă și acceptarea vizuală; consemnați numai nivelul executat.
-- Publicarea și indexarea nu rescriu documentația editorială.
+- [Predarea rezultatelor](../reporting/ATF_Handoff.md) deține proveniența republicării, idempotența înregistrării și pointerele distincte pentru încercare și acceptanță.
+- [Auditul publicării](../reporting/ATF_Audit.md#calificarea-unui-producător) deține calificarea fiecărui producător, comparațiile originale, ultima valoare, capturile și controalele negative.
+- [Contractul Android](../reporting/ATF_Android.md) deține asocierea acțiune–observație–comparație și distincția dintre rezultatul funcțional și publicare.
 
 [Contractul Android](../reporting/ATF_Android.md) · [Auditul publicării](../reporting/ATF_Audit.md) · [Retenție](../learning/ATF_Retention.md)

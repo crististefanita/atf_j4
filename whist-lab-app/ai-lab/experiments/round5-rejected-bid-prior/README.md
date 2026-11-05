@@ -2,45 +2,54 @@
 
 ## Pe scurt
 
-Acest director păstrează două implementări ale unui model liniar care estimează licitația unei mâini ipotetice. Modelul aparține cercetării și este exclus din sursele active ale aplicației și ale jucătorului independent.
+Prototipul estimează oferta unui adversar dintr-o mână ipotetică și prefixul licitației. Cele două implementări păstrează aceeași schemă numerică; integrarea în motorul curent este o lucrare explicită, separată de existența acestor surse.
 
-Coeficienții versionați identifică prototipul; folosirea lui într-o politică cere integrare izolată, componente proprii și calificare pe partide noi. Predicția unei licitații observate și alegerea contractului propriu au criterii de corectitudine diferite.
-
-## Transformarea intrării
+## Contractul modelului
 
 ```mermaid
 flowchart LR
-    HAND[Mână ipotetică] -->|descrie| FEATURES[Caracteristici]
-    FEATURES -->|ponderează| MODEL[Model liniar]
-    MODEL -->|rotunjește| BID[Licitație estimată]
-    BID -->|alimentează| EXP[Experiment izolat]
+    HAND[Mână și prefix] -->|extrage| FEATURES[Vector ordonat]
+    FEATURES -->|ponderează| MEAN[Estimare liniară]
+    MEAN -->|rotunjește și limitează| BID[Ofertă numerică]
+    BID -->|este filtrată de| LEGAL[Politica licitației legale]
 ```
 
 <details>
-<summary>Legendă: predicție și decizie</summary>
+<summary>Legendă: predicția precede decizia legală</summary>
 
-Caracteristicile descriu mărimea mâinii, atuul, rangurile, distribuția culorilor, poziția și suma licitațiilor anterioare. Rezultatul liniar este rotunjit și limitat la intervalul de la zero la numărul de cărți; modelul nu aplică restricția ultimei licitații și nu produce o probabilitate a contractului.
+`predict` calculează produsul scalar, aplică `Math.round` și limitează rezultatul între zero și numărul cărților. Filtrul ultimei licitații aparține viitorului consumator; prototipul nu îl aplică și nu furnizează o probabilitate a contractului exact.
 
 </details>
 
-## Surse și responsabilități
-
-| Intrare | Contract |
+| Intrare sau ieșire | Semnificație |
 |---|---|
-| [Implementarea pentru motor](engine/EstimatedBidPrior.java) | Extrage caracteristici din tipurile de cărți ale prototipului motorului. |
-| [Implementarea independentă](independent/EstimatedBidPrior.java) | Extrage separat aceleași caracteristici din cărți numerice, fără importuri din motor. |
-| [Metadatele calibrării](calibration.json) | Identifică vocabularul caracteristicilor și parametrii experimentali; valorile unei calibrări rămân date ale modelului. |
+| Mâna ipotetică | Cărți compatibile cu observația actorului, fără consultarea mâinii reale adverse. |
+| Atu și poziție | Culoare sau fără atu, plus poziția în ordinea licitării. |
+| Prefix | Suma ofertelor deja depuse; ofertele viitoare nu sunt intrări observate. |
+| Caracteristici | Ordinea și normalizarea din `features` al [metadatelor](calibration.json), păstrate împreună cu coeficienții. |
+| Rezultat | Un întreg din intervalul mâinii; legalitatea completă se verifică în politica ce îl consumă. |
 
-Sursele păstrează pachetele prototipului. Compatibilitatea cu tipurile și pachetele motorului curent se verifică înaintea oricărei reutilizări într-o copie izolată.
+## Compatibilitatea surselor
 
-## Condiții pentru reutilizare
+Sursele din `experiments` sunt excluse din compilarea implicită a [laboratorului](../../build.gradle). Copierea lor într-un alt pachet schimbă identitatea candidatului și cere calificarea acelei copii.
 
-- Reconstruiți numai contextul disponibil actorului; mâinile ipotetice nu autorizează accesul politicii la cărțile reale adverse.
-- Păstrați aceeași ordine și normalizare a caracteristicilor pentru coeficienții identificați.
-- Verificați prin componente independente intervalul rezultatului, codificarea culorilor și rangurilor, lipsa atuului și echivalența celor două extrageri.
-- Aplicați legalitatea licitației în politica ce consumă predicția; intervalul numeric singur nu asigură oferta legală.
-- Calificați separat efectul asupra punctelor și contractelor, prin [protocolul de învățare](../../../../docs/learning/README.md).
+| Sursă | Formă păstrată | Ce trebuie rezolvat înaintea integrării |
+|---|---|---|
+| [Varianta motorului](engine/EstimatedBidPrior.java) | Clasă și metodă cu acces de pachet în `ro.whistlab.core`; referințe simple la `Card` și `Trump`. | Tipurile curente sunt în [core.model](../../../game-core/src/main/java/ro/whistlab/core/model/). Stabiliți pachetul, importurile și accesul din consumator; forma păstrată nu este gata de copiat în politica activă. |
+| [Varianta independentă](independent/EstimatedBidPrior.java) | `ro.whistlab.coach`, cărți `13 × suit + rank − 2`, fără importuri din motor. | Păstrați ordinea pică–cupă–treflă–caro și codul fără atu; verificați echivalența extragerii fără a uni cele două modele. |
 
-API-ul de predicție și limitele numerice se verifică în sursele indicate. Acest director nu declară o suită proprie care să certifice integrarea în politica activă; selectarea [colecției de cercetare](../../../../docs/testing/ATF_Collections.md) nu include automat orice prototip păstrat aici.
+Metadatele identifică vocabularul, coeficienții și proveniența modelului. Metricile calibrării sunt date ale acelui artefact; nu certifică integrarea ori forța politicii curente și nu se copiază în ghid.
 
-Corpusul de antrenare și rezultatele execuțiilor se păstrează extern. [Regulile și configurarea AI](../../../../docs/ai/ATF_RulesConfiguration.md) explică diferența dintre parametrii identificați și un consumator runtime calificat.
+Scalările sunt fixe în prototip, inclusiv `size/8` și `position/3`. Extinderea la alt domeniu cere validarea intrărilor și calificare; semnătura metodei nu declară singură compatibilitatea cu orice masă.
+
+## Reutilizare controlată
+
+1. Definiți consumatorul: predicția ofertei observate, estimarea ofertelor încă necunoscute sau alegerea contractului propriu au obiective diferite.
+2. Pregătiți o copie izolată și adaptați tipurile și accesul; păstrați inventarul bazei și sursele alternative identificate.
+3. Construiți componente pentru interval, lipsa atuului, codificarea cărților și paritatea vectorilor și predicțiilor între implementări.
+4. Verificați separat oferta interzisă a ultimului jucător și observația permisă a API-ului complet; testul predictorului nu califică singur decizia publică.
+5. Introduceți integrarea în manifestul candidatului și aplicați [protocolul offline](../../../../docs/learning/README.md) înaintea promovării.
+
+Acest director nu declară o suită proprie de integrare. [Colecția research](../../../../docs/testing/ATF_Collections.md) execută numai cazurile declarate în catalog și Gradle; ea nu adaptează sau include automat acest prototip.
+
+[Alternative izolate de sursă](../bid-models/README.md) · [Semantica modelelor și YAML-urilor](../../../../docs/ai/ATF_RulesConfiguration.md)

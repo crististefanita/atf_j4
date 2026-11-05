@@ -16,6 +16,7 @@ import ro.whistlab.core.model.Suit;
 
 /** Persistent, accessible trump tile kept in the game header above the table. */
 public final class TrumpIndicatorView extends LinearLayout {
+    private final TextView value;
     private static final int IVORY = Color.rgb(255, 254, 248);
     private static final int HEART_RED = Color.rgb(255, 177, 177);
     private static final int DARK_SUIT_RED = Color.rgb(157, 45, 54);
@@ -25,10 +26,10 @@ public final class TrumpIndicatorView extends LinearLayout {
         super(context);
         float density = getResources().getDisplayMetrics().density;
         setOrientation(VERTICAL);
-        setMinimumWidth(dp(density, 76));
+        setMinimumWidth(dp(density, TableLayoutMetrics.TRUMP_WIDTH_DP));
         setMinimumHeight(dp(density, 48));
         setGravity(Gravity.CENTER);
-        setPadding(dp(density, 6), dp(density, 4), dp(density, 6), dp(density, 4));
+        setPadding(dp(density, 4), dp(density, 4), dp(density, 4), dp(density, 4));
         setBackground(WhistUiPalette.seatFrame(context, currentPlayerHighlighted));
         setTag("trump-indicator");
         setContentDescription(copy.trumpAccessibility(state));
@@ -44,7 +45,7 @@ public final class TrumpIndicatorView extends LinearLayout {
         heading.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         addView(heading, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-        TextView value = new TextView(context);
+        value = new TextView(context);
         value.setText(trumpValue(state));
         value.setTextSize(20);
         if (state.turnedCard() != null) {
@@ -52,7 +53,7 @@ public final class TrumpIndicatorView extends LinearLayout {
             card.setColor(IVORY);
             card.setCornerRadius(dp(density, 5));
             value.setBackground(card);
-            value.setPadding(dp(density, 7), 0, dp(density, 7), 0);
+            value.setPadding(dp(density, 5), 0, dp(density, 5), 0);
         }
         value.setTextColor(valueColor(state, currentPlayerHighlighted));
         value.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -69,10 +70,24 @@ public final class TrumpIndicatorView extends LinearLayout {
         status.setTextColor(frameText(currentPlayerHighlighted));
         status.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         status.setGravity(Gravity.CENTER);
-        status.setSingleLine(true);
+        status.setSingleLine(false);
         status.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         if (state.turnedCard() != null) status.setVisibility(GONE);
         addView(status, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+    }
+
+    @Override protected void onMeasure(int widthSpec, int heightSpec) {
+        int width = resolveSize(dp(getResources().getDisplayMetrics().density,
+                TableLayoutMetrics.TRUMP_WIDTH_DP), widthSpec);
+        float nominalSize = 20 * getResources().getDisplayMetrics().scaledDensity;
+        android.graphics.Paint paint = new android.graphics.Paint(value.getPaint());
+        paint.setTextSize(nominalSize);
+        int available = width - getPaddingLeft() - getPaddingRight()
+                - value.getPaddingLeft() - value.getPaddingRight();
+        value.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,
+                TableLayoutMetrics.fitTextSizePx(nominalSize,
+                        paint.measureText(value.getText().toString()), available));
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), heightSpec);
     }
 
     private String trumpValue(GameSession.Snapshot state) {

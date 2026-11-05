@@ -64,7 +64,11 @@ O comandă ilegală este respinsă înaintea tranziției. Închiderea mâinii ap
 - **Hard** compară continuări pe lumi compatibile cu informația publică, necesarul și contractele cunoscute; [MonteCarloAi](src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) deține compoziția deciziei.
 - Certificatele finite și recuperarea contractelor imposibile au condiții și bugete explicite; epuizarea unui buget păstrează propunerea de bază.
 
-[SearchCancellation](src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java) verifică întreruperea la frontierele eșantionării, simulării și căutării finite. Anularea abandonează calculul și păstrează marcajul întreruperii; proprietarul turei invalidează rezultatul, iar epuizarea unui buget de certificat își păstrează separat comportamentul de rezervă.
+| Control | Contract |
+|---|---|
+| [SearchCancellation](src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java) | Verifică întreruperea la frontierele eșantionării, simulării și căutării; abandonează calculul, păstrează marcajul și permite proprietarului turei să invalideze rezultatul. |
+| [SearchWork](src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java) | Contabilizare și limită globală opționale pe fir, fără schimbarea generatorului aleator sau a utilității; epuizarea aruncă o excepție distinctă, fără decizie parțială. |
+| [Calificarea costului JVM](../../docs/ai/ATF_CostQualification.md) | Separă măsurarea, limita globală și bugetul certificatului; dovada incompletă își păstrează propunerea legală. |
 
 [Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) și [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimitează comportamentul activ de ipotezele de cercetare. Estimarea probabilistă și un certificat local nu garantează câștigarea fiecărei partide cu informație ascunsă.
 
@@ -87,14 +91,8 @@ Dintr-o copie temporară proprie a `whist-lab-app`, intrarea directă este:
 
 [Arhitectura testării](../../docs/testing/ATF_Architecture.md) delimitează componentele, integrarea și Android. [Învățarea offline](../../docs/learning/README.md) explică extragerea regresiilor mici, comparațiile pe aceleași distribuții și calificarea pe partide noi.
 
-## Îmbunătățiri prioritare ale motorului
+## Limite și calificare
 
-Separarea domeniului de Android este solidă; următoarea limită este calificarea costului și a deciziei probabiliste. Responsabilul motorului păstrează comportamentul și sursele politicilor de referință în timpul extragerilor.
+Costul operațional, interpretarea probabilităților și progresul strategic au domenii și verificări distincte. [Criteriile AI](../../docs/feedback/ATF_Ai.md) centralizează lucrările deschise, inclusiv evoluția compoziției Hard și calificarea frontierelor prin mutanți semantici.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Definiți bugetul operațional al Hard. | Contexte publice controlate pentru 2–8 cărți verifică numărul de lumi, epuizarea căutării, anularea și alegerea legală de rezervă; măsurătorile identifică mediul și distribuția costului. |
-| P2 | Delimitați în continuare evaluarea alternativelor de compoziția deciziei. | Extragerile din MonteCarloAi păstrează ordinea eșantionării, inițializarea deterministă și așteptări independente; dimensiunea clasei este indiciu, iar contractul mecanismului justifică separarea. |
-| P2 | Calificați frontierele critice prin mutanți semantici. | Inversarea obligației de atu, a câștigătorului sau a întreruperii seriei este detectată de un control independent; configurația JaCoCo publică acoperirea, fără a o trata drept dovadă a corectitudinii. |
-
-[Criteriile AI](../../docs/feedback/ATF_Ai.md) dețin calificarea strategică. [Regulile documentației](../../docs/governance/ATF_Documentation.md) cer aceeași descriere a profilului nou și a compatibilității în toate rezumatele.
+O extracție păstrează comportamentul și sursele politicilor de referință. [Regulile documentației](../../docs/governance/ATF_Documentation.md) cer aceeași descriere a profilului nou și a compatibilității în toate rezumatele.

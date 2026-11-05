@@ -11,9 +11,14 @@ param(
     [switch]$HardAiCompatibility,
     [switch]$IncludeGameFlow,
     [switch]$TableViewportOnly,
+    [switch]$ComponentsOnly,
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
+if ($ComponentsOnly -and ($DenseLayout -or $IncludeGameFlow -or $HardAiCompatibility -or $TableViewportOnly -or
+        $PSBoundParameters.ContainsKey('Profiles') -or $PSBoundParameters.ContainsKey('Hands'))) {
+    throw 'ComponentsOnly selects the JVM matrix; do not combine it with device-flow or profile selections.'
+}
 if ($TableViewportOnly -and ($DenseLayout -or $IncludeGameFlow -or $HardAiCompatibility)) {
     throw 'TableViewportOnly cannot be combined with DenseLayout, IncludeGameFlow or HardAiCompatibility.'
 }
@@ -29,7 +34,8 @@ if ([string]::IsNullOrWhiteSpace($Profiles)) {
 
 if ([string]::IsNullOrWhiteSpace($RunRoot)) {
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-    $RunRoot = "C:\work\whist_back\ui-reports\whist-lab\runs\$stamp-responsive-sanity"
+    $kind = if ($ComponentsOnly) { 'display-components' } else { 'responsive-sanity' }
+    $RunRoot = "C:\work\whist_back\ui-reports\whist-lab\runs\$stamp-$kind"
 }
 $RunRoot = [IO.Path]::GetFullPath($RunRoot)
 $sourceRoot = [IO.Path]::GetFullPath($root)
@@ -66,6 +72,16 @@ foreach ($module in $modules) {
     & robocopy $source (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "Could not stage source module declared by the reactor: $module" }
 }
+$sourceSnapshot=@(Get-ChildItem -LiteralPath $stage -Recurse -File | Where-Object {
+    $_.Extension -in @('.java','.xml','.yaml','.yml','.pom','.json','.jar')
+} | ForEach-Object {
+    @{path=[IO.Path]::GetRelativePath($stage,$_.FullName).Replace('\','/');sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
+})
+$sourceSnapshot|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $RunRoot 'source-snapshot.json') -Encoding utf8
+$executionRepository = Join-Path $stage 'maven-repository'
+New-Item -ItemType Directory -Path $executionRepository | Out-Null
+& robocopy $MavenRepository $executionRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
+if ($LASTEXITCODE -ge 8) { throw 'Could not prepare the private Maven dependency cache.' }
 $leasePath = 'C:\work\whist_back\android-ui-lease.json'
 $leaseId = ''
 $leaseAcquired = $false
@@ -77,6 +93,10 @@ $state = [ordered]@{
     hands=$Hands
     includeGameFlow=$IncludeGameFlow.IsPresent
     tableViewportOnly=$TableViewportOnly.IsPresent
+    componentsOnly=$ComponentsOnly.IsPresent
+    mavenRepository=$executionRepository
+    sourceSnapshot=(Join-Path $RunRoot 'source-snapshot.json')
+    runnerSha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
     status='STAGED'
     startedAt=[DateTimeOffset]::UtcNow.ToString('o')
 }
@@ -178,27 +198,45 @@ foreach ($library in @(
     $version = $versions[$library.Key]
     $jar = "$($library.Artifact)-$version.jar"
     $source = Join-Path $stage "lib\$jar"
-    $local = Join-Path $MavenRepository "atf\api\$($library.Artifact)\$version\$jar"
-    foreach ($path in @($source, $local)) {
+    foreach ($path in @($source)) {
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
             throw "Required $($library.Artifact) $version JAR is missing: $path"
         }
     }
     $sourceHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant()
-    $localHash = (Get-FileHash -LiteralPath $local -Algorithm SHA256).Hash.ToLowerInvariant()
-    if ($sourceHash -ne $localHash) {
-        throw "The staged and Maven-cache $($library.Artifact) $version JARs differ."
-    }
     $libraryHashes["$($library.Key)Version"] = $version
     $libraryHashes["$($library.Key)Source"] = $sourceHash
-    $libraryHashes["$($library.Key)Maven"] = $localHash
 }
-$libraryHashes | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot 'library-binaries.json') -Encoding utf8
-    $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test','-Presponsive-sanity',
-        "-Dmaven.repo.local=$MavenRepository",'-Dsurefire.failIfNoSpecifiedTests=false')
+    $profile = if ($ComponentsOnly) { 'display-components' } else { 'responsive-sanity' }
+    $tests = if ($ComponentsOnly) { 'AndroidDisplayComponentSuite' } else { 'AndroidDisplayComponentSuite,AndroidUiFlowReportPublisherTest' }
+    $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test',"-P$profile",
+        "-Dmaven.repo.local=$executionRepository",'-Dsurefire.failIfNoSpecifiedTests=false')
     Invoke-SanityMaven 'display-profile-components' ($common + @(
-        '-Dtest=ResponsiveDisplayProfileComponentTest,AndroidUiDriverComponentTest,AndroidUiFlowReportPublisherTest,FrameFillAuditComponentTest,TableViewportAuditComponentTest',
+        "-Dtest=$tests",
         '-Datf.android.enabled=false'))
+
+    foreach ($library in @(@{Key='core';Artifact='atf-core'},@{Key='reporting';Artifact='atf-reporting'})) {
+        $version=$versions[$library.Key]
+        $local=Join-Path $executionRepository "atf\api\$($library.Artifact)\$version\$($library.Artifact)-$version.jar"
+        $hash=(Get-FileHash -LiteralPath $local -Algorithm SHA256).Hash.ToLowerInvariant()
+        if($hash -ne $libraryHashes["$($library.Key)Source"]){throw 'Resolved ATF library differs from its staged binary.'}
+        $libraryHashes["$($library.Key)Maven"]=$hash
+    }
+    $libraryHashes|ConvertTo-Json|Set-Content -LiteralPath (Join-Path $RunRoot 'library-binaries.json') -Encoding utf8
+    if ($ComponentsOnly) {
+        $native=Join-Path $stage 'atf-test-android/target/surefire-reports'
+        $cases=@(Get-ChildItem -LiteralPath $native -Filter 'TEST-*.xml'|ForEach-Object {
+            [xml]$suite=[IO.File]::ReadAllText($_.FullName)
+            foreach($case in $suite.SelectNodes('/testsuite/testcase')) { $case }
+        })
+        if($cases.Count -eq 0 -or @($cases|Where-Object {$_.failure -or $_.error -or $_.skipped}).Count){throw 'Display components must execute actual cases without failures or skips.'}
+        Copy-Item -LiteralPath $native -Destination (Join-Path $RunRoot 'junit') -Recurse
+        $state.status='PASS';$state.kind='JVM_COMPONENTS';$state.tests=$cases.Count
+        $state.serial='not-used';$state.profiles='component matrix';$state.hands=0
+        $state.completedAt=[DateTimeOffset]::UtcNow.ToString('o')
+        Write-Output (Join-Path $RunRoot 'WORKING_STATE.json')
+        return
+    }
 
     Acquire-DeviceLease
     $env:ADB_SERVER_SOCKET = $AdbServerSocket

@@ -8,14 +8,14 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public final class TrickCardMetricsComponentTest {
-    @Test public void doubledCardFacesKeepSeatAnchorsAndAvoidSeatsAcrossWidthsAndTextScales() {
+    @Test public void shorterCardFacesKeepSeatAnchorsAndAvoidSeatsAcrossWidthsAndTextScales() {
         for (int width : new int[]{240, 280, 313, 353, 560, 760}) {
             for (int players = 3; players <= 6; players++) {
                 for (float fontScale : new float[]{1f, 1.3f, 1.5f}) {
                     TrickCardMetrics.Layout layout = TrickCardMetrics.forTable(players, width, fontScale);
                     int expectedRows = players == 4 ? 3 : 2;
-                    assertEquals("Played-card face height must remain exactly doubled",
-                            TrickCardMetrics.PREVIOUS_CARD_HEIGHT_DP * 2, layout.cardHeightDp());
+                    assertEquals("Played-card faces retain the requested reduced height",
+                            78, layout.cardHeightDp());
                     assertTrue(layout.cardWidthDp() >= TrickCardMetrics.MIN_CARD_WIDTH_DP);
                     assertTrue(layout.cardWidthDp() <= TrickCardMetrics.MAX_CARD_WIDTH_DP);
                     assertEquals(width, layout.centerWidthDp());
@@ -27,7 +27,7 @@ public final class TrickCardMetricsComponentTest {
                     assertTrue(layout.playerLabelHeightDp()
                             >= Math.ceil(TrickCardMetrics.PLAYER_LABEL_HEIGHT_DP * fontScale));
 
-                    int seatHeight = (int) Math.ceil(70 * fontScale);
+                    int seatHeight = TableLayoutMetrics.seatHeightPx((int) Math.ceil(70 * fontScale));
                     int gap = 8;
                     int safeCenterWidth = layout.safeCenterWidthDp();
                     int boardHeight = TableGeometry.minimumHeight(players, seatHeight,
@@ -115,16 +115,17 @@ public final class TrickCardMetricsComponentTest {
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 0));
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, Float.NaN));
         assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 239));
-        assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 1f, 105));
+        assertThrows(IllegalArgumentException.class, () -> TrickCardMetrics.forTable(4, 353, 1f, 79));
     }
 
-    @Test public void compactPlayedCardsRemainSubstantiallyLargerThanTheirLegacyHeight() {
+    @Test public void shortWindowsReduceHeightWithoutReducingCardWidthOrLosingSlots() {
         for (int players : new int[]{3, 4, 5, 6}) {
-            var layout = TrickCardMetrics.forTable(players, 320, 1f, 94, 2);
-            assertEquals(94, layout.cardHeightDp());
+            var layout = TrickCardMetrics.forTable(players, 320, 1f, 71, 2);
+            var tall = TrickCardMetrics.forTable(players, 320, 1f, 78, 2);
+            assertEquals(71, layout.cardHeightDp());
             assertEquals(2, layout.itemVerticalPaddingDp());
-            assertTrue("Compact played cards retain at least 1.8x their legacy height",
-                    layout.cardHeightDp() >= Math.ceil(TrickCardMetrics.PREVIOUS_CARD_HEIGHT_DP * 1.8));
+            assertEquals(tall.cardWidthDp(), layout.cardWidthDp());
+            assertEquals(tall.slots(), layout.slots());
             assertEquals(layout.rows() * (layout.cardHeightDp() + layout.playerLabelHeightDp()
                             + layout.itemVerticalPaddingDp()), layout.centerHeightDp());
         }

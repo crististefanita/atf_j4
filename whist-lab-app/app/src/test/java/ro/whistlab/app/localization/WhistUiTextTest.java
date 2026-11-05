@@ -125,9 +125,9 @@ public final class WhistUiTextTest {
         game.submitBid(game.snapshot().biddingSeat(), 2);
         GameSession.Snapshot state = game.snapshot();
 
-        assertEquals("Bids submitted 1/4 · Bid total 2/10",
+        assertEquals("Bids submitted 1/4\nBid total 2/10",
                 new WhistUiText(HowToPlay.Language.EN).bidSummary(state));
-        assertEquals("Licitații depuse 1/4 · Total licitat 2/10",
+        assertEquals("Licitații depuse 1/4\nTotal licitat 2/10",
                 new WhistUiText(HowToPlay.Language.RO).bidSummary(state));
     }
 

@@ -42,8 +42,13 @@ Validatorul poate verifica proprietatea tuturor cărților după încheierea joc
 
 ```powershell
 $gamePath = Read-Host 'Fișierul JSON extern pentru replay'
-node whist-lab-app/ai-lab/tools/corpus/whist-corpus-cli.mjs replay $gamePath
+$expectedSha256 = Read-Host 'SHA-256 declarat în manifestul sursei'
+node whist-lab-app/ai-lab/tools/corpus/whist-corpus-cli.mjs replay $gamePath $expectedSha256
 node whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs verify-current
 ```
+
+[Replay-ul](../../whist-lab-app/ai-lab/tools/corpus/whist-archive-replay.mjs) cere hash-ul așteptat înaintea citirii, compară octeții și apoi verifică regulile; o intrare lipsă, schimbată sau ilegală este refuzată. Hash-ul identifică fișierul, fără să demonstreze proveniența ori corectitudinea jocului. Sarcina Gradle `:ai-lab:replayArchive` acceptă aceleași intrări prin `-Pwhist.archive.file` și `-Pwhist.archive.sha256` și nu face parte din `check`.
+
+Componentele implicite folosesc [date legale construite](../../whist-lab-app/ai-lab/tools/testing/legal-game-fixture.mjs), cu reguli de pregătire independente de validator. Arhiva externă este necesară numai pentru operațiile selectate asupra datelor păstrate.
 
 [Criteriile selecției](ATF_Selection.md) și [protocolul evaluării](README.md) explică folosirea corpusului pentru îmbunătățirea politicilor.

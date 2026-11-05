@@ -2,127 +2,64 @@
 
 ## Pe scurt
 
-Un pachet grupează tipuri care se schimbă pentru același contract. Limita de opt fișiere Java se aplică separat pe modul și set de surse; organizarea urmărește responsabilitatea, iar limita semnalează acumularea ei.
+Un pachet grupează tipuri care se schimbă pentru același contract. [Politica proiectului](../../config/atf-governance-policy.json) aplică limita de opt fișiere Java separat pe modul și set de surse; o extracție se justifică prin starea și invarianta mecanismului.
 
-## Motorul și politica de joc
+## Alegerea responsabilului
 
 ```mermaid
 flowchart LR
-    MODEL[Model și configurare] -->|furnizează valori| RULES[Reguli]
-    RULES -->|validează| SESSION[Sesiune]
-    SESSION -->|expune observația| POLICY[Politică AI]
-    POLICY -->|propune| ACTION[Acțiune]
-    ACTION -->|este verificată de| RULES
-    TEST[Oracol independent] -->|confruntă| SESSION
+    CHANGE[Comportament schimbat] -->|identifică| STATE[Stare și invariantă]
+    STATE -->|atribuie| OWNER[Responsabil]
+    OWNER -->|expune| API[Contract de intrare]
+    API -->|se califică prin| CHECK[Verificare independentă]
 ```
 
 <details>
-<summary>Legendă: comandă, observație și verificare</summary>
+<summary>Legendă: separarea urmează contractul</summary>
 
-Motorul păstrează starea și validează orice acțiune. Politica este apelată prin proiecția mâinii proprii și a informației publice; oracolul și datele complete pentru audit rămân în suportul testelor.
+Clasa de intrare păstrează API-ul consumat și deleagă mecanismele cu stare ori reguli proprii. Numărul de linii indică unde merită investigat; mutarea într-un fișier nou nu demonstrează singură coeziunea sau corectitudinea.
 
 </details>
 
-| Zonă | Responsabilitate |
+| Întrebare | Responsabil și limită |
 |---|---|
-| `core.model` | Cărți, culori, atu și copii imutabile ale listelor, inclusiv marcajele de absență permise de stare. |
-| `core.config` | Configurația și nivelul selectat înaintea jocului. |
-| `core.rules` | Variante, acțiuni legale, scor și catalogul regulilor. |
-| `core.session` | Tranziții, faze, restaurare și istoricul scorului. |
-| `core.ai.policy` | Fațada deciziei și politica Normal. |
-| `core.ai.engine` | Estimarea Hard, continuări, finaluri și certificate asupra observației permise. |
-| `core.ai.forecast` | Estimarea contractelor și a seriilor viitoare. |
-| `core.ai.profile` | Alternative explicite de obiectiv pentru comparații controlate. |
-| `core.ai.simulation` | Distribuții ipotetice și continuări ale jocului, separate de alegerea obiectivului și a acțiunii. |
+| Ce acțiune este legală și ce scor rezultă? | [Motorul](../../whist-lab-app/game-core/README.md): model, configurare, reguli și sesiune, fără Android sau infrastructura testelor. |
+| Ce informație poate folosi politica? | [Modelul deciziei](../ai/ATF_DecisionModel.md): proiecția mâinii proprii și a faptelor publice precede simularea. |
+| Cum comparăm o implementare independentă? | [Laboratorul](../../whist-lab-app/ai-lab/README.md): model și algoritm separate; motorul îl consumă numai la testare. |
+| Cum se măsoară și redă ecranul? | [Atlasul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md): fereastră, geometrie, texte, persistență și ciclu de viață. |
+| Cine comandă și cine interpretează observația? | [Adaptorul Android](../../atf-test-android/README.md): transport delimitat, captură și parsare; componentele pure nu comandă dispozitivul. |
+| Cine selectează și publică rezultatele? | [Consumatorul raportării](../../atf-tests/README.md): date și audit local; randarea generică aparține bibliotecii binare. |
 
-Prefixul complet al motorului este `ro.whistlab`. Implementarea aplicației consumă aceste contracte fără dependență de codul testelor sau al jucătorului independent.
+## Clase de intrare și delegare
 
-## Clase de intrare și mecanisme interne
+API-ul poate rămâne o delegare scurtă. Regula comună are o singură implementare în perimetrul său, iar algoritmii independenți și politicile de referință își păstrează identitatea.
 
-O clasă de intrare păstrează contractul folosit de consumatori și deleagă mecanismele care au propriile invariante. Separarea urmărește starea deținută și direcția dependențelor; numărul de linii, singur, nu justifică o clasă nouă.
-
-| Clasă de intrare | Mecanisme delimitate | Invariantă |
+| Intrare | Mecanism delimitat | Invariantă de păstrat |
 |---|---|---|
-| `GameSession` | `CheckpointValidation` verifică structura, ordinea, conservarea cărților și istoricul levatelor; `CheckpointScores` verifică și restaurează istoricul scorului. | Restaurarea validează datele înainte ca sesiunea să fie returnată; datele invalide nu sunt reparate tacit. Compatibilitatea salvărilor vechi păstrează numai informația cunoscută. |
-| `MonteCarloAi` | `PossibleDeals` construiește lumi fezabile; `RolloutPolicy` continuă o lume ipotetică. | Bugetele, ordinea cărților și fluxul aleator determinist aparțin contractului de reproductibilitate. Politica de selecție rămâne distinctă de simulare. |
-| `IndependentPlayer` | `IndependentDeals` deține bazinul cărților necunoscute, culorile epuizate, distribuirea fezabilă și enumerarea completă limitată. | Implementarea rămâne independentă de motor; reutilizarea nu transmite mâinile reale adverse și nu unește algoritmii celor doi jucători. |
-| `AndroidUiDriver` | `UiHierarchy` parsează și selectează elemente; `ScreenshotAnalysis` măsoară capturi și transformă coordonate. | Parserul și măsurătorile nu emit comenzi ADB. Driverul deține interacțiunile, încercările repetate și trasarea acțiunilor. |
+| [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) | `CheckpointValidation` și `CheckpointScores` | Structura, cărțile și scorul sunt validate înaintea restaurării; datele lipsă nu sunt inventate. |
+| [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | `PossibleDeals` și `RolloutPolicy` | Generarea lumilor, continuarea și alegerea utilității rămân distincte; ordinea și fluxul aleator sunt reproductibile. |
+| [IndependentPlayer](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) | `IndependentDeals` | Bazinul necunoscut și enumerarea nu importă motorul și nu expun cărțile reale adverse. |
+| [AdbClient](../../atf-test-android/src/main/java/atf/android/AdbClient.java) | `CommandProcess` | Pornirea, drenarea și terminarea folosesc același termen; curățarea păstrează cauza inițială. |
+| [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) | `UiHierarchy` și `ScreenshotAnalysis` | Parsarea și măsurarea nu emit ADB; interacțiunea păstrează acțiunea și observația separată. |
 
-Operațiile publice ale claselor de intrare pot rămâne delegări subțiri pentru stabilitatea consumatorilor. Duplicările se elimină în mecanismul care deține regula: bazinul de cărți al jucătorului independent, selecția butoanelor numerice și parsarea coordonatelor au fiecare o singură implementare în perimetrul lor.
+## Teste, scenarii și date
 
-La o extracție verificăm separat mutarea mecanică a logicii, observația permisă și regresiile comportamentale. Politicile istorice înghețate rămân repere independente; documentația și controalele nu sunt relaxate pentru a accepta noua structură.
+Metoda JUnit păstrează identitatea cazului, iar scenariul primește explicit proprietarul fluxului. Oracolul calculează așteptarea independent; jurnalul și publicarea consumă comparația deja evaluată.
 
-## Teste și învățare
+- **Componente:** situații mici lângă regula ori API-ul verificat; suportul comun păstrează martorii legali și proiecția actorului.
+- **Partide și cercetare:** `core.match`, `core.learning`, `core.research` și familiile independente de cercetare au selecții explicite, distincte de regresia implicită.
+- **Referințe:** politicile înghețate rămân surse separate; mutarea unui pachet nu autorizează rescrierea lor.
+- **Scenarii Android:** navigarea, configurarea, persistența și levatele au responsabili proprii; helperul primește starea și nu inventează o nouă invocare.
+- **Observații display:** [decodorul comun](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) consumă aceeași ierarhie în componente și E2E; captura și acceptanța nativă au alte limite.
+- **Publicare:** citirea replay-ului și a rezultatelor native nu depinde de coordonatorul prezentării; [contractele raportării](../reporting/README.md) dețin asocierea și acceptanța.
+- **Date:** partidele, selecțiile și rezultatele concrete rămân în arhiva externă; schema și validatoarele aparțin codului.
 
-[Laboratorul AI](../../whist-lab-app/ai-lab/README.md) deține implementarea independentă, uneltele și experimentele. `game-core` îl consumă prin dependența Gradle de test, iar [lansatoarele comune](../../scripts/README.md) coordonează modulele fără a prelua algoritmii lor.
+## Procedura unei reorganizări
 
-| Zonă | Contract |
-|---|---|
-| Teste lângă regulă, sesiune sau politică | Proprietăți mici și așteptări independente, grupate după comportamentul verificat. |
-| `core.testing` | Martori legali, comparații capturate și oracole comune. |
-| `core.testing.match` | Execuția reutilizabilă a partidei și proiecția observației jucătorului independent. |
-| `core.learning` | Colectare, analiză a pierderilor, referințe și evaluări explicite; selecții distincte de regresia implicită. |
-| `core.match` | Contracte ale partidelor offline, perspectivelor și strategiilor. |
-| `core.baseline` și `coach.baseline` | Politici de referință separate pe identitate de versiune, cu paritate verificată. |
-| `coach.research` și `coach.strategy` | Ipoteze experimentale și alternative de strategie, separate de jucătorul activ. |
+1. Identificați starea, invarianta, consumatorii și testul care poate observa o schimbare greșită.
+2. Păstrați API-ul necesar și mutați mecanismul, actualizând declarația de pachet, importurile și accesul; vizibilitatea publică se acordă numai integrărilor justificate.
+3. Confruntați populația JUnit, ordinea acțiunilor, valorile comparate și comportamentul de rezervă; schimbarea unui expected are revizie proprie.
+4. Reconciliați sursele live și [identitatea completă a candidatului](../testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului). O mutare schimbă hash-ul chiar când algoritmul este același; baza înghețată nu se repară prin înlocuirea hash-urilor.
+5. Rulați verificarea comportamentală minimă și [guvernanța](README.md). Modificarea unei derogări cere motiv și revizie; inventarul nu se regenerează pentru a ascunde depășirea limitei.
 
-O mutare schimbă identitatea sursei chiar când algoritmul și coeficienții rămân aceiași. O sursă înghețată se păstrează integral în arhiva sa; reutilizarea unui candidat pe altă structură cere o migrare explicită și o nouă calificare, fără simpla înlocuire a hash-urilor.
-
-## Android și infrastructura ATF
-
-| Zonă | Responsabilitate |
-|---|---|
-| `app.table`, `app.hand`, `app.cards`, `app.bidding` | Geometrie și elemente de prezentare, fără modificarea regulilor jocului. |
-| `app.score`, `app.localization`, `app.theme` | Istoric afișat, texte și stiluri comune. |
-| `app.persistence`, `app.lifecycle`, `app.fixtures` | Salvare, temporizarea levatei și date de test protejate prin activarea de depanare. |
-| `app.MainActivity` | Compoziția aplicației și punctul de lansare Android. |
-| `atf.android.e2e.driver` și `activation` | Interacțiuni delimitate și activarea explicită a dispozitivului. |
-| `atf.android.e2e.oracle`, `player`, `evidence` | Așteptări independente, proiecția actorului și capturarea datelor. |
-| `atf.android.e2e.display` și `gameplay` | Contracte vizuale și parcursuri de joc distincte. |
-| `atf.tests.contracts`, `learning`, `publishing`, `reporting.text` | Contracte de adaptor, selecție, compoziția publicării și compararea textului. |
-
-## Scenarii și suport de testare
-
-```mermaid
-flowchart LR
-    ENTRY[Metodă JUnit] -->|păstrează identitatea| SCENARIO[Scenariu de domeniu]
-    SCENARIO -->|comandă| DRIVER[Adaptor Android]
-    SCENARIO -->|înregistrează| TRACE[Flux de dovezi]
-    COMPONENT[Componentă offline] -->|verifică| OBSERVATION[Geometrie și analiză de cadre]
-    SCENARIO -->|confruntă| OBSERVATION
-    TRACE -->|este citit de| REPLAY[Replay tipizat]
-    NATIVE[Rezultate native] -->|se agregă în| COMPOSITION[Compunerea acceptanței]
-    REPLAY -->|alimentează| COMPOSITION
-```
-
-<details>
-<summary>Legendă: identitate stabilă și responsabilități distincte</summary>
-
-Metoda JUnit deține numele și metadatele cazului. Scenariul primește explicit proprietarul fluxului, astfel încât mutarea codului să nu schimbe identitatea dovezilor. Adaptorul execută interacțiuni; analiza imaginilor citește capturi. Verificarea unei componente a oracolului nu certifică randarea aplicației pe dispozitiv.
-
-</details>
-
-| Zonă | Responsabilitate |
-|---|---|
-| `gameplay.presentation`, `configuration`, `persistence`, `tricks` | Scenarii delimitate prin comportamentul verificat; metodele JUnit rămân puncte de intrare stabile. |
-| `support.flow` | Ținta aplicației, metadatele instalării și publicarea checkpoint-urilor. |
-| `display.support` | Geometrie comună, toleranțe explicite și comenzi de display trasate. |
-| `display.flow.responsive` | Coordonare, inspecții de meniu, parcurs de joc, stare vizibilă, dovezi și scenariul vizibilității simultane. |
-| `evidence.frames` | Colectarea cadrelor, analiza pixelilor și timpului, respectiv metadatele PNG fără alterarea pixelilor. |
-| `atf.tests.reporting.acceptance` | Citirea rezultatelor native și compunerea raportului de acceptanță. |
-| `atf.tests.reporting.replay` | Citirea fișierelor capturate și transformarea fluxurilor în intrări tipizate pentru raportare. |
-
-Clasele care citesc dovezi nu depind de coordonatorul raportului. Pragurile și toleranțele cu semnificații diferite rămân explicite, chiar dacă folosesc aceeași operație geometrică. Controalele de componentă confruntă date valide și mutanți invalizi; scenariile pe dispozitiv păstrează separat capturile și observațiile reale.
-
-La reorganizare verificăm identitățile descoperite de JUnit, ordinea operațiilor, aserțiunile și proprietarul fluxului. Schimbarea unei așteptări de acceptanță este o decizie distinctă de mutarea mecanică a codului.
-
-## Evoluție și verificare
-
-- Declarația de pachet corespunde căii, iar importurile arată contractele folosite între responsabilități.
-- Vizibilitatea publică se acordă punctelor de integrare necesare; starea privată rămâne privată.
-- Numele aplicației Android, schema salvării și regulile nu se schimbă pentru a simplifica o mutare.
-- Colecțiile identifică testele după declarația curentă, fără presupunerea că toate trăiesc în pachetul rădăcină.
-- Inventarul curent nu folosește derogări de coeziune; o schimbare a acestei politici cere revizie explicită.
-- Regresiile compară populația de cazuri și comportamentul, iar guvernanța verifică structura și limitele dependențelor.
-
-[Arhitectura testării](../testing/ATF_Architecture.md) · [Guvernanță](README.md) · [Regulile documentației](ATF_Documentation.md)
+[Arhitectura testării](../testing/ATF_Architecture.md) · [Schimbarea testelor](ATF_TestChanges.md) · [Regulile documentației](ATF_Documentation.md)

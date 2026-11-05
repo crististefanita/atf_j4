@@ -7,10 +7,62 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class TableViewportPolicyTest {
-    @Test public void shortWindowsReclaimDecorationAndSlightlyCompactOnlyThePlayedCards() {
+    @Test public void tallerFramesAndLowerCompositionKeepEveryRegionInsideTheBoard() {
+        for (int width : new int[]{280, 313, 353, 560, 760}) {
+            for (int players = 3; players <= 6; players++) {
+                for (int naturalHeight : new int[]{48, 62, 82, 110, 156}) {
+                    int seatHeight = TableLayoutMetrics.seatHeightPx(naturalHeight);
+                    assertEquals((int) Math.ceil(naturalHeight * 1.25), seatHeight);
+                    var trick = TrickCardMetrics.forTable(players, width);
+                    int minimum = TableLayoutMetrics.boardHeightPx(TableGeometry.minimumHeight(
+                            players, seatHeight, trick.centerHeightDp(), 8));
+                    for (int extra : new int[]{0, 80, 240}) {
+                        int height = minimum + extra;
+                        var plan = TableGeometry.arrangeDisplay(width, height, players,
+                                TableLayoutMetrics.seatWidthDp(width), seatHeight,
+                                trick.safeCenterWidthDp(), trick.centerHeightDp(), 8, true,
+                                TableGeometry.CenterAlignment.BALANCED);
+                        int inset = TableLayoutMetrics.topInsetPx(height);
+                        assertEquals(Math.round(height * 0.05f), inset);
+                        assertEquals("Human frame stays above the separate hand region",
+                                height, plan.seats().getFirst().bottom());
+                        var boxes = new java.util.ArrayList<>(plan.seats());
+                        boxes.add(plan.center());
+                        for (int first = 0; first < boxes.size(); first++) {
+                            var box = boxes.get(first);
+                            assertTrue(box.top() >= inset && box.bottom() <= height);
+                            for (int second = first + 1; second < boxes.size(); second++) {
+                                assertFalse(box.overlaps(boxes.get(second)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test public void narrowerTrumpTileFitsLongValuesWithoutEnlargingTheFrame() {
+        assertEquals(57, TableLayoutMetrics.TRUMP_WIDTH_DP);
+        for (float density : new float[]{1, 1.5f, 2.625f, 2.75f, 3.5f}) {
+            int available = Math.round(57 * density) - 2 * Math.round(4 * density)
+                    - 2 * Math.round(5 * density);
+            for (float fontScale : new float[]{1, 1.3f, 1.5f, 2}) {
+                float nominal = 20 * fontScale * density;
+                for (float measuredGlyphWidth : new float[]{20, 35, 48}) {
+                    float measured = measuredGlyphWidth * fontScale * density;
+                    float fitted = TableLayoutMetrics.fitTextSizePx(nominal, measured, available);
+                    assertTrue(fitted <= nominal);
+                    assertTrue(measured * fitted / nominal <= available + 0.01f);
+                    assertEquals("Repeated layout must start from the nominal size", fitted,
+                            TableLayoutMetrics.fitTextSizePx(nominal, measured, available), 0);
+                }
+            }
+        }
+    }
+
+    @Test public void shortWindowsReclaimDecorationAndReduceOnlyThePlayedCardFaces() {
         var compact = new TableViewportPolicy(497);
         assertTrue(compact.isCompact());
-        assertEquals(20, compact.seatHeadingHeightDp());
         assertEquals(2, compact.regionGapDp());
         assertEquals(0, compact.minimumBoardHeightDp());
         assertFalse(compact.showPlayHint());
@@ -18,21 +70,19 @@ public class TableViewportPolicyTest {
         assertEquals(12, compact.handClearanceDp(true));
         assertEquals(1, compact.seatVerticalPaddingDp());
         assertEquals(2, compact.outerVerticalPaddingDp());
-        assertEquals(1, compact.turnBadgeVerticalPaddingDp());
-        assertEquals(14, compact.turnBadgeSlotHeightDp());
-        assertEquals(94, compact.playedCardFaceHeightDp());
+        assertEquals(71, compact.playedCardFaceHeightDp());
         assertEquals(2, compact.playedCardItemVerticalPaddingDp());
         assertEquals(98, HandLayoutMetrics.cardHeightDp());
         assertEquals(48, BidGridMetrics.CHOICE_TARGET_DP);
         var intermediate = new TableViewportPolicy(626);
         assertTrue(intermediate.isCompact());
-        assertEquals(104, intermediate.playedCardFaceHeightDp());
+        assertEquals(78, intermediate.playedCardFaceHeightDp());
         var roomy = new TableViewportPolicy(818);
         assertFalse(roomy.isCompact());
         assertTrue(roomy.showPlayHint());
         assertEquals(4, roomy.seatVerticalPaddingDp());
         assertEquals(4, roomy.outerVerticalPaddingDp());
-        assertEquals(104, roomy.playedCardFaceHeightDp());
+        assertEquals(78, roomy.playedCardFaceHeightDp());
         assertEquals(TrickCardMetrics.ITEM_VERTICAL_PADDING_DP, roomy.playedCardItemVerticalPaddingDp());
     }
 
@@ -43,10 +93,13 @@ public class TableViewportPolicyTest {
         for (int width : new int[]{280, 313, 353}) for (int players = 3; players <= 6; players++) {
             var trick = TrickCardMetrics.forTable(players, width, 1f, viewport);
             int seatWidth = TableLayoutMetrics.seatWidthDp(width, true);
-            int minimum = TableGeometry.minimumHeight(players, 48, trick.centerHeightDp(), viewport.regionGapDp());
+            int seatHeight = TableLayoutMetrics.seatHeightPx(48);
+            int minimum = TableLayoutMetrics.boardHeightPx(TableGeometry.minimumHeight(
+                    players, seatHeight, trick.centerHeightDp(), viewport.regionGapDp()));
             assertTrue("The whole table must fit a 497 dp viewport: " + players + " players", minimum <= availableBoard);
-            var plan = TableGeometry.arrange(width, availableBoard, players, seatWidth, 48,
-                    trick.safeCenterWidthDp(), trick.centerHeightDp(), viewport.regionGapDp(), true);
+            var plan = TableGeometry.arrangeDisplay(width, availableBoard, players, seatWidth, seatHeight,
+                    trick.safeCenterWidthDp(), trick.centerHeightDp(), viewport.regionGapDp(), true,
+                    TableGeometry.CenterAlignment.BALANCED);
             var occupied = new java.util.ArrayList<>(plan.seats());
             for (var slot : trick.slots()) {
                 int top = plan.center().top() + slot.row() * trick.rowStrideDp();
@@ -61,7 +114,7 @@ public class TableViewportPolicyTest {
                             box.overlaps(occupied.get(second)));
                 }
             }
-            assertEquals(94, trick.cardHeightDp());
+            assertEquals(71, trick.cardHeightDp());
             assertEquals("Names remain in the seat frames and accessible card descriptions", 0, trick.playerLabelHeightDp());
         }
     }

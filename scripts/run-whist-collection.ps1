@@ -1,16 +1,33 @@
 param(
-    [ValidateSet('context','quick','regression','strategy','documentation','learning','arena','research')][string]$Collection='quick',
+    [ValidateSet('cost','context','quick','regression','strategy','documentation','learning','arena','research')][string]$Collection='quick',
     [string]$RunRoot='', [string]$Candidate='', [string]$CorpusRoot='', [string]$CandidateFreeze='', [string]$ProtocolFile='', [string]$CasesFile='', [string]$ResearchCandidate='', [string]$CandidateOverlay='',
     [ValidateSet('development','heldout')][string]$Phase='development', [switch]$CaptureComponents,
+    [string]$CostProfile='',
     [string]$JavaHome='C:\tools\Java21\jdk-21.0.12.1+1',
     [string]$AndroidSdk='C:\tools\whist-android-sdk'
 )
 $ErrorActionPreference='Stop'
+function Read-JsonSnapshot([string]$File){
+    $bytes=[IO.File]::ReadAllBytes([IO.Path]::GetFullPath($File))
+    $stream=[IO.MemoryStream]::new($bytes,$false)
+    $reader=[IO.StreamReader]::new($stream,[Text.Encoding]::UTF8,$true)
+    try{$value=$reader.ReadToEnd() | ConvertFrom-Json}finally{$reader.Dispose()}
+    return @{bytes=$bytes;value=$value}
+}
 if($ResearchCandidate -and $CandidateOverlay){throw 'ResearchCandidate and CandidateOverlay cannot be combined.'}
 $sourceRoot=Split-Path -Parent $PSScriptRoot
+$evaluationPolicy=Get-Content -LiteralPath (Join-Path $sourceRoot 'config/whist-evaluation-policy.json') -Raw | ConvertFrom-Json
+if($evaluationPolicy.schemaVersion -ne 1 -or -not [IO.Path]::IsPathRooted($evaluationPolicy.registryRoot)){throw 'Invalid installation-wide evaluation registry policy.'}
+$evaluationRegistryRoot=$evaluationPolicy.registryRoot
 $catalog=Get-Content -LiteralPath (Join-Path $sourceRoot 'config/test-collections.json') -Raw | ConvertFrom-Json
 $selection=@($catalog.collections | Where-Object id -eq $Collection)
 if($selection.Count -ne 1){throw 'Unknown collection'}
+if($CostProfile -and $Collection -ne 'cost'){throw 'CostProfile requires the cost collection.'}
+if($Collection -eq 'cost'){
+    if(-not $CostProfile){$CostProfile=Join-Path $sourceRoot 'config/whist-ai-cost-profile.json'}
+    $costSnapshot=Read-JsonSnapshot $CostProfile
+    if($costSnapshot.value.schemaVersion -ne 1){throw 'Unsupported AI cost profile.'}
+}
 if($Collection -eq 'learning' -and ($Candidate -notmatch '^[a-z0-9-]+$' -or [string]::IsNullOrWhiteSpace($CorpusRoot))){throw 'Learning requires an explicit fresh candidate and external corpus folder.'}
 if([string]::IsNullOrWhiteSpace($RunRoot)){$RunRoot='C:\work\whist_back\collections\'+(Get-Date -Format 'yyyyMMdd-HHmmss')+'-'+$Collection}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
@@ -18,12 +35,15 @@ if($RunRoot.StartsWith([IO.Path]::GetFullPath($sourceRoot)+[IO.Path]::DirectoryS
 if(Test-Path -LiteralPath $RunRoot){throw 'Fresh output directory required; results are immutable.'}
 if($Collection -eq 'learning' -and $Phase -eq 'heldout'){
     if(-not (Test-Path -LiteralPath $CandidateFreeze)){throw 'Heldout requires a candidate freeze created before opening heldout.'}
-    $freeze=Get-Content -LiteralPath $CandidateFreeze -Raw | ConvertFrom-Json
+    $freezeSnapshot=Read-JsonSnapshot $CandidateFreeze
+    $freeze=$freezeSnapshot.value
     if($freeze.status -ne 'FROZEN_BEFORE_HELDOUT' -or $freeze.candidate -ne $Candidate){throw 'Candidate freeze identity mismatch'}
+    if($null -eq $freeze.sourceHashes -or @($freeze.sourceHashes.PSObject.Properties).Count -eq 0){throw 'Candidate freeze requires explicit source hashes.'}
 }
 if($Collection -eq 'learning'){
     if(-not (Test-Path -LiteralPath $ProtocolFile)){throw 'Learning requires an explicit protocol JSON with the selected phase seed range.'}
-    $protocol=Get-Content -LiteralPath $ProtocolFile -Raw | ConvertFrom-Json
+    $protocolSnapshot=Read-JsonSnapshot $ProtocolFile
+    $protocol=$protocolSnapshot.value
     $range=$protocol.$Phase
     $declaredRoles=@("expert","player")
     if($null -ne $protocol.roles){$declaredRoles=@($protocol.roles);if($declaredRoles.Count -lt 1 -or $declaredRoles.Count -gt 2 -or @($declaredRoles | Select-Object -Unique).Count -ne $declaredRoles.Count -or @($declaredRoles | Where-Object {$_ -notin @("expert","player")}).Count){throw "Invalid declared protocol roles."}}
@@ -37,8 +57,10 @@ if($Collection -eq 'learning'){
 }
 if($Collection -eq 'arena'){
     if([string]::IsNullOrWhiteSpace($CorpusRoot) -or -not (Test-Path -LiteralPath $ProtocolFile -PathType Leaf)){throw 'Arena requires an external corpus and protocol JSON.'}
-    $arenaProtocol=Get-Content -LiteralPath $ProtocolFile -Raw | ConvertFrom-Json
+    $protocolSnapshot=Read-JsonSnapshot $ProtocolFile
+    $arenaProtocol=$protocolSnapshot.value
     if($arenaProtocol.schemaVersion -ne 1 -or $arenaProtocol.profile -ne 'ROMANIAN4_SERIES10'){throw 'Unsupported arena protocol.'}
+    if($arenaProtocol.partition -ne 'development' -or $arenaProtocol.id -notmatch '^[a-z0-9-]+$' -or $arenaProtocol.firstSeed -lt 0 -or $arenaProtocol.seeds -lt 1 -or $arenaProtocol.seeds -gt 1000){throw 'Invalid development arena interval.'}
 }
 if($CasesFile -and ($Collection -ne "learning" -or $protocol.version -notin @(7,11,12,15,16,18) -or -not (Test-Path -LiteralPath $CasesFile -PathType Leaf))){throw "Case selection requires a current Round7/Round11/Round12/protocol15/16/18 learning protocol and an existing selection file."}
 if($ResearchCandidate){
@@ -104,7 +126,8 @@ $stageRoot=Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_COLLECTION_'+[guid]::Ne
 $stageApp=Join-Path $stageRoot 'whist-lab-app'
 New-Item -ItemType Directory -Path $RunRoot,$stageApp | Out-Null
 $inventory=@()
-if($Collection -in @("learning","arena")){Copy-Item -LiteralPath $ProtocolFile -Destination (Join-Path $RunRoot "protocol.json")}
+if($Collection -eq 'cost'){[IO.File]::WriteAllBytes((Join-Path $RunRoot 'cost-profile.json'),$costSnapshot.bytes)}
+if($Collection -in @("learning","arena")){[IO.File]::WriteAllBytes((Join-Path $RunRoot "protocol.json"),$protocolSnapshot.bytes)}
 if($CasesFile){$stagedCasesFile=Join-Path $RunRoot "case-selection.json";Copy-Item -LiteralPath $CasesFile -Destination $stagedCasesFile}
 $appSource=Join-Path $sourceRoot 'whist-lab-app'
 foreach($file in Get-ChildItem -LiteralPath $appSource -Recurse -File){
@@ -149,22 +172,38 @@ $inventory=@(foreach($file in Get-ChildItem -LiteralPath $stageApp -Recurse -Fil
 })
 if($Collection -eq 'learning' -and $Phase -eq 'heldout'){
     foreach($property in $freeze.sourceHashes.PSObject.Properties){
+        if([IO.Path]::IsPathRooted($property.Name) -or ($property.Name -split '[\\/]') -contains '..' -or $property.Value -notmatch '^[a-f0-9]{64}$'){throw 'Invalid frozen source path or hash.'}
         $candidateFile=Join-Path $stageApp $property.Name
         if(-not (Test-Path -LiteralPath $candidateFile) -or (Get-FileHash -LiteralPath $candidateFile -Algorithm SHA256).Hash.ToLowerInvariant() -ne $property.Value){throw "Frozen source differs: $($property.Name)"}
     }
-    Copy-Item -LiteralPath $CandidateFreeze -Destination (Join-Path $RunRoot 'candidate-freeze.json')
-    $registryFolder=Join-Path $CorpusRoot 'holdout-use'
-    New-Item -ItemType Directory -Force -Path $registryFolder | Out-Null
-    $registry=Join-Path $registryFolder ("romanian4-$($range.firstSeed)-$([long]$range.firstSeed+[long]$range.seeds-1).json")
-    if(Test-Path -LiteralPath $registry){
-        $used=Get-Content -LiteralPath $registry -Raw | ConvertFrom-Json
-        if($used.candidate -ne $Candidate){throw 'Evaluation range already belongs to another frozen candidate.'}
-        foreach($property in $freeze.sourceHashes.PSObject.Properties){if($used.sourceHashes.($property.Name) -ne $property.Value){throw 'Evaluation source changed after reservation.'}}
-    }else{
-        $reservation=@{candidate=$Candidate;sourceHashes=$freeze.sourceHashes;reservedAt=[DateTimeOffset]::UtcNow.ToString('o');run=$RunRoot} | ConvertTo-Json -Depth 8
-        $stream=[IO.File]::Open($registry,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
-        $writer=[IO.StreamWriter]::new($stream,[Text.UTF8Encoding]::new($false))
-        try{$writer.Write($reservation)}finally{$writer.Dispose()}
+    [IO.File]::WriteAllBytes((Join-Path $RunRoot 'candidate-freeze.json'),$freezeSnapshot.bytes)
+}
+if($Collection -in @('learning','arena')){
+    Import-Module (Join-Path $stageApp 'ai-lab/tools/qualification/WhistEvaluationInputs.psm1') -Force
+    $sourceHashes=Get-WhistEvaluationSourceHashes -AppRoot $stageApp
+    $request=@{candidate=$Candidate;phase=$Phase;firstSeed=$range.firstSeed;seeds=$range.seeds;sourceHashes=$sourceHashes;protocolSha256=(Get-FileHash -LiteralPath (Join-Path $RunRoot 'protocol.json') -Algorithm SHA256).Hash.ToLowerInvariant();run=$RunRoot;corpus=$CorpusRoot}
+    if($Collection -eq 'arena'){$request.candidate='arena-'+$arenaProtocol.id;$request.phase='development';$request.firstSeed=$arenaProtocol.firstSeed;$request.seeds=$arenaProtocol.seeds}
+    if($request.phase -eq 'heldout'){$request.freezeSha256=(Get-FileHash -LiteralPath (Join-Path $RunRoot 'candidate-freeze.json') -Algorithm SHA256).Hash.ToLowerInvariant()}
+    $requestFile=Join-Path $RunRoot 'evaluation-request.json'
+    $request | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $requestFile -Encoding utf8NoBOM
+    & node (Join-Path $stageApp 'ai-lab/tools/qualification/whist-evaluation-registry.mjs') reserve $evaluationRegistryRoot $requestFile (Join-Path $RunRoot 'evaluation-reservation.json')
+    if($LASTEXITCODE -ne 0){throw 'Canonical exposure reservation refused; no tournament was started.'}
+    if($request.phase -eq 'heldout'){
+        # Compatibility projection for frozen tournament readers; this is not the authority.
+        $registryFolder=Join-Path $CorpusRoot 'holdout-use'
+        New-Item -ItemType Directory -Force -Path $registryFolder | Out-Null
+        $registry=Join-Path $registryFolder ("romanian4-$($range.firstSeed)-$([long]$range.firstSeed+[long]$range.seeds-1).json")
+        if(Test-Path -LiteralPath $registry){
+            $used=Get-Content -LiteralPath $registry -Raw | ConvertFrom-Json
+            if($used.candidate -ne $Candidate){throw 'Local compatibility receipt belongs to another candidate.'}
+            foreach($property in $freeze.sourceHashes.PSObject.Properties){if($used.sourceHashes.($property.Name) -ne $property.Value){throw 'Local receipt source changed.'}}
+        }else{
+            $receipt=Get-Content -LiteralPath (Join-Path $RunRoot 'evaluation-reservation.json') -Raw | ConvertFrom-Json
+            $reservation=@{candidate=$Candidate;sourceHashes=$freeze.sourceHashes;reservationId=$receipt.reservationId;registryRoot=$evaluationRegistryRoot;reservedAt=$receipt.originallyReservedAt;run=$RunRoot} | ConvertTo-Json -Depth 8
+            $stream=[IO.File]::Open($registry,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+            $writer=[IO.StreamWriter]::new($stream,[Text.UTF8Encoding]::new($false))
+            try{$writer.Write($reservation)}finally{$writer.Dispose()}
+        }
     }
 }
 
@@ -172,6 +211,7 @@ $inventory | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $RunR
 $arguments=@('-p','algorithm-build','--offline','--no-daemon','--console=plain','--max-workers=1','-Dorg.gradle.jvmargs=-Xms32m -Xmx256m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC -XX:ActiveProcessorCount=2',$selection[0].task)
 if($Collection -eq 'learning'){if($protocol.version -eq 18){$arguments[-1]=':game-core:roundEighteenTest';$learningPrefix='whist.round18'}elseif($protocol.version -in @(15,16)){$arguments[-1]=':game-core:roundFifteenTest';$learningPrefix='whist.round15'}elseif($protocol.version -eq 12){$arguments[-1]=':game-core:roundTwelveTest';$learningPrefix='whist.round12'}elseif($protocol.version -eq 11){$arguments[-1]=':game-core:roundElevenTest';$learningPrefix='whist.round11'}else{$arguments[-1]=':game-core:roundSevenTest';$learningPrefix='whist.round7'}}
 if($Collection -eq 'documentation'){$arguments+=@("-Pwhist.documentationEvidence=$RunRoot","-Pwhist.documentationMarkdown=$RunRoot\rules","-Pwhist.documentationRunId=$([IO.Path]::GetFileName($RunRoot))")}
+if($Collection -eq 'cost'){$arguments+=@("-Pwhist.aiCost.profile=$RunRoot\cost-profile.json","-Pwhist.aiCost.output=$RunRoot")}
 if($Collection -eq 'learning'){$arguments+=@("-P$learningPrefix.output=$RunRoot","-P$learningPrefix.corpus=$CorpusRoot","-P$learningPrefix.candidate=$Candidate","-P$learningPrefix.phase=$Phase","-P$learningPrefix.firstSeed=$($range.firstSeed)","-P$learningPrefix.seeds=$($range.seeds)")}
 if($Collection -eq "learning" -and $declaredRoles.Count -eq 1){$arguments+=("-P$learningPrefix.role="+$declaredRoles[0])}
 if($CasesFile){$arguments+=("-P$learningPrefix.casesFile="+$stagedCasesFile)}

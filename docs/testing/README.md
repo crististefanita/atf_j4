@@ -15,6 +15,7 @@ Nivelul exprimă limita verificată, iar colecția selectează cazurile și cost
 | Cum verific regulile și scorul unei partide? | [Verificarea jocului](ATF_Gameplay.md) |
 | Cum pregătesc și controlez dispozitivul? | [Testarea Android](ATF_Android.md) |
 | Cum verific geometria, derularea și capturile? | [Profiluri de ecran](ATF_Display.md) |
+| Ce pot verifica despre display fără emulator? | [Componente display](ATF_DisplayComponents.md) |
 
 ## De la proprietate la rezultat
 

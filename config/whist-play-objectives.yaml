@@ -50,10 +50,10 @@ hard:
     unseen_pool: "Remove own cards, publicly played cards, current-trick cards, and the turned-up trump."
     ownership_constraints: "Sample only deals consistent with inferred suit voids from the full public history and current table."
     public_bids: "Use known bids as contract targets and scoring outcomes during rollouts."
-    bid_conditioned_hand_likelihood: "Not implemented: unknown hand assignments are not weighted by a seat-specific likelihood of making the observed bid. Test this as a separate paired candidate before runtime promotion."
+    bid_conditioned_hand_likelihood: "At 2-8 cards, general seat-specific weighting of hidden deals by observed bids remains experimental. At one card, OneCardBidBelief conditions enumeration on eligible earlier bids in its four-seat Romanian domain with a turned card; outside that domain it preserves the baseline estimate."
     information_boundary: "The Hard decision view likewise contains only the actor's own hand and public information; simulated hidden deals are generated after observation and never expose the actual opponent holdings."
     tests: ["bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates", "runsAndCapturesACompleteFourSeatRomanian181MockMatch", "replaysTheSameDealsAndTurnOrderAcrossHardSeatPerspectives", "comparesBidAndCardProfilesOnTheSameDealsAtEverySeat", "currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored", "publicIrrecoverabilityRanksOwnPointsBeforeRivalMisses", "rolloutUtilityCountsHowManyOpponentsMiss"]
-  limitations: ["Salvage certificate currently covers two-card endings only.", "Bid-conditioned hidden-hand likelihood is not yet modeled.", "No claim of perfect Hard play or universal perfect play."]
+  limitations: ["Salvage certificate currently covers two-card endings only.", "General bid-conditioned hidden-hand likelihood at 2-8 cards remains experimental; the specialized one-card model has a separate runtime domain.", "No claim of perfect Hard play or universal perfect play."]
 evolution:
   recompute_after: "Every public bid and every card played."
   accepted_evidence: "Small legal component examples plus same-deal paired complete matches, seat rotation, and fresh seeds; compare each strategy profile at the same seat before promotion."

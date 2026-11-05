@@ -3,6 +3,13 @@
   "policy": "Learning determines candidate changes; it is not part of the default regression. Estimated time budgets are scheduling guidance, never a reason to turn unfinished work into PASS.",
   "collections": [
     {
+      "id": "cost",
+      "task": ":game-core:aiCostTest",
+      "targetMinutes": 5,
+      "trigger": "Schimbarea bugetelor sau mecanismelor de căutare AI; calificare JVM explicită",
+      "evidence": "Poziții legale generate la 2–8 cărți, profil copiat înainte de execuție, cost CPU și lucru măsurat, mediu identificat. Fără corpus, emulator sau verdict de progres strategic."
+    },
+    {
       "id": "context",
       "task": ":game-core:contextRegressionTest",
       "targetMinutes": 1,

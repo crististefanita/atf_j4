@@ -108,13 +108,8 @@ Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea
 - [Componentele coordonatorului](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnCoordinatorComponentTest.java) verifică firul calculului, predarea, anularea, dublurile și cauza eșecului.
 - [Componentele cererii](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java) verifică ambele niveluri, starea neschimbată în calcul și refuzul rezultatelor depășite ori destinate altei partide.
 
-## Îmbunătățiri prioritare ale coordonării Android
+## Limite și calificare
 
 Reactivitatea pe dispozitiv și costul politicii au calificare distinctă de corectitudinea predării între executori. Persistența și navigarea păstrează următoarele criterii deschise.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Delimitați persistența de randare și de calcul. | Testele injectează eșecul și întârzierea stocării; salvarea, reluarea și înregistrarea clasamentului au ordine explicită, fără puncte sau rezultate duplicate. |
-| P2 | Separați navigarea, comenzile și construcția ecranelor. | Activitatea compune responsabili cu stare și contracte clare; geometria și regulile păstrează implementările existente, iar callback-urile au proprietar și durată de viață explicite. |
-
-Măsurați reactivitatea și costul deciziei separat pe mărimea mâinii și profilul dispozitivului. [Calificarea Android](../../../../../../../../docs/feedback/ATF_Android.md) rămâne responsabilă pentru acceptanța pe APK; aceste cerințe descriu lucrări deschise, fără a declara o execuție pe dispozitiv.
+Lucrările privind stocarea controlată și separarea navigării sunt centralizate în [feedback-ul coordonării Android](../../../../../../../../docs/feedback/ATF_Android.md#persistență-și-coordonare). Reactivitatea și costul deciziei se măsoară separat pe mărimea mâinii și profilul dispozitivului, fără a deduce acceptanța APK-ului din componentele executorului.

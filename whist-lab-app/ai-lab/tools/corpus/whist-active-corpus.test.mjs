@@ -5,9 +5,18 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {traceHash,lessons,selectGames,curate,loadActiveGame,resolveActivePointer} from './whist-active-corpus.mjs';
-const sample='C:/work/whist_back/training-corpus/games/development/android-round-v2-21049369348797.json';
-const game=JSON.parse(await fs.readFile(sample));
+import {createLegalGame} from '../testing/legal-game-fixture.mjs';
+const game=createLegalGame();
 const e=(id,tokens,sha=id)=>({id,traceHash:sha,lessons:tokens});
+async function localFolder(t,prefix) {
+ const folder=await fs.mkdtemp(path.join(os.tmpdir(),prefix));
+ t.after(async()=>{
+  assert.equal(path.dirname(path.resolve(folder)),path.resolve(os.tmpdir()));
+  assert.ok(path.basename(folder).startsWith(prefix));
+  await fs.rm(folder,{recursive:true,force:true});
+ });
+ return folder;
+}
 test('semantic trace dedup ignores IDs and controller names, but preserves different actions',()=>{
  const copy=structuredClone(game);copy.id='renamed';copy.players[0].controller='Other version';copy.source={changed:true};
  assert.equal(traceHash(game),traceHash(copy));copy.hands[0].bids[0].bid++;assert.notEqual(traceHash(game),traceHash(copy));
@@ -69,8 +78,8 @@ test('an exchange retains a protected alias and every final lesson attribution i
   for(const token of entry.lessons)covered.add(token);
  }
 });
-test('active corpus is development-only, immutable-source, hash-checked, path-safe and independently replayable',async()=>{
- const folder=await fs.mkdtemp(path.join(os.tmpdir(),'ATF_J4_CURATOR_TEST_'));
+test('active corpus is development-only, immutable-source, hash-checked, path-safe and independently replayable',async(t)=>{
+ const folder=await localFolder(t,'ATF_J4_CURATOR_TEST_');
  const archive=path.join(folder,'archive'),active=path.join(folder,'active');
  await fs.mkdir(path.join(archive,'games/development'),{recursive:true});await fs.mkdir(path.join(archive,'games/heldout'));
  const source=path.join(archive,'games/development',game.id+'.json'),bytes=Buffer.from(JSON.stringify(game));
@@ -86,8 +95,8 @@ test('active corpus is development-only, immutable-source, hash-checked, path-sa
  await assert.rejects(curate(archive,active),/EEXIST/);
 });
 
-test('current pointer binds the development manifest bytes and refuses heldout or relative targets',async()=>{
- const folder=await fs.mkdtemp(path.join(os.tmpdir(),'ATF_J4_POINTER_TEST_')),manifest=path.join(folder,'manifest.json'),pointer=path.join(folder,'current.json');
+test('current pointer binds the development manifest bytes and refuses heldout or relative targets',async(t)=>{
+ const folder=await localFolder(t,'ATF_J4_POINTER_TEST_'),manifest=path.join(folder,'manifest.json'),pointer=path.join(folder,'current.json');
  const bytes=Buffer.from(JSON.stringify({schemaVersion:1,partition:'development'}));await fs.writeFile(manifest,bytes);
  const p={schemaVersion:1,partition:'development',folder,manifestSha256:crypto.createHash('sha256').update(bytes).digest('hex')};await fs.writeFile(pointer,JSON.stringify(p));assert.equal((await resolveActivePointer(pointer)).folder,folder);
  await fs.appendFile(manifest,' ');await assert.rejects(resolveActivePointer(pointer),/manifest hash mismatch/);await fs.writeFile(manifest,bytes);

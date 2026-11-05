@@ -52,6 +52,16 @@ Implementarea verificării este legată de contractul exercitat:
 - [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) verifică publicarea și mutațiile deliberate ale datelor.
 - [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) verifică încorporarea PNG prin contractul public.
 
+## Calificarea unui producător
+
+Fiecare producător se califică pe suprafața API efectiv folosită. Trecerea unui publicator nu califică implicit alt adaptor sau revizia sa interactivă.
+
+1. Identificați intrarea, invocările native, sursele, bibliotecile și proprietarul fiecărei capturi.
+2. Confruntați toate comparațiile originale, inclusiv ultimul rând și continuările grupurilor; valorile integrale și verdictele rămân asociate aceleiași invocări.
+3. Injectați lipsuri, proprietari greșiți, intervale imposibile și referințe alterate; publicarea ori auditul trebuie să refuze datele corupte.
+4. Verificați separat navigarea, secțiunile pliabile, imaginile și revenirea cu contextul păstrat pe HTML-ul identificat prin hash.
+5. Păstrați nivelurile executate și limitele în înregistrarea externă; [predarea rezultatelor](ATF_Handoff.md) decide acceptanța scopului.
+
 ## Limite
 
 Trecerea auditului structural nu demonstrează singură lizibilitatea sau navigarea interactivă. Verificarea publicării nu certifică o nouă execuție Android sau puterea politicii jocului.

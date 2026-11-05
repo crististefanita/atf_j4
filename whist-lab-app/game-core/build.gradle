@@ -35,6 +35,7 @@ tasks.named("jacocoTestReport") {
 }
 
 tasks.named("test", Test) {
+    exclude "**/AiCostQualificationTest.class"
     exclude "**/ObservedOriginalReplayTest.class"
     exclude "**/AiTournamentTest.class"
     exclude "**/AiTrainingTournamentTest.class"
@@ -51,6 +52,20 @@ tasks.named("test", Test) {
     exclude "**/LossMiningTest.class"
     exclude "**/BidEvidenceTest.class"
     systemProperty "whist.componentEvidence", providers.gradleProperty("whist.componentEvidence").getOrElse("")
+}
+
+tasks.register("aiCostTest", Test) {
+    group = "verification"
+    description = "Qualifies JVM work and CPU cost on generated legal public observations."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter { includeTestsMatching "ro.whistlab.core.ai.cost.AiCostQualificationTest" }
+    systemProperty "whist.aiCost.profile", providers.gradleProperty("whist.aiCost.profile").getOrElse(
+            new File(rootProject.projectDir.parentFile.parentFile, "config/whist-ai-cost-profile.json").absolutePath)
+    systemProperty "whist.aiCost.output", providers.gradleProperty("whist.aiCost.output").getOrElse("")
+    jvmArgs "-XX:ActiveProcessorCount=2", "-XX:+UseSerialGC"
+    jacoco.enabled = false
+    outputs.upToDateWhen { false }
 }
 tasks.register("corpusTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs

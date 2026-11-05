@@ -5,8 +5,7 @@ import java.util.List;
 
 /** Stable, seat-oriented trick slots; the full number of rows is reserved before play. */
 final class TrickCardMetrics {
-    static final int PREVIOUS_CARD_HEIGHT_DP = 52;
-    static final int CARD_HEIGHT_DP = PREVIOUS_CARD_HEIGHT_DP * 2;
+    static final int CARD_HEIGHT_DP = 78;
     static final int BASE_CARD_WIDTH_DP = 44;
     static final int MIN_CARD_WIDTH_DP = 32;
     static final int MAX_CARD_WIDTH_DP = 88;
@@ -75,7 +74,7 @@ final class TrickCardMetrics {
             throw new IllegalArgumentException("Font scale must be positive and finite");
         }
         if (cardHeightDp < 1 || cardHeightDp > CARD_HEIGHT_DP) {
-            throw new IllegalArgumentException("Played-card height must be between 1 and 104 dp");
+            throw new IllegalArgumentException("Played-card height must be between 1 and " + CARD_HEIGHT_DP + " dp");
         }
         if (itemVerticalPaddingDp < 0 || itemVerticalPaddingDp > ITEM_VERTICAL_PADDING_DP) {
             throw new IllegalArgumentException("Played-card row padding must be between 0 and 4 dp");

@@ -88,13 +88,13 @@ separați, activați explicit.
 
 Contractele și mecanismele curente sunt în [documentație](../docs/).
 
-## Cerințe de calificare a aplicației
+## Contracte de integrare
 
 [Coordonarea Android](app/src/main/java/ro/whistlab/app/README.md#coordonarea-turelor-automate) separă calculul AI de firul principal și condiționează aplicarea de identitatea partidei și a stării capturate. Componentele verifică anularea și aplicarea unică; persistența, reactivitatea și interacțiunea se califică separat pe binarul identificat.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Păstrați distincte profilul nou și compatibilitatea salvărilor. | Configurarea, scorul, restaurarea, proiecțiile AI și ajutorul RO/EN folosesc aceeași identitate a regulilor; un profil istoric își păstrează explicit valorile. |
-| P2 | Mențineți ghidul de folosire legat de sursele interfeței. | Etichetele și accesul la istoricul tuturor locurilor sunt confruntate cu textele și comenzile curente; procedurile complete rămân în ghidurile responsabile. |
+| Suprafață | Invariantă |
+|---|---|
+| Profil nou și salvări compatibile | Configurarea, scorul, restaurarea, proiecțiile AI și ajutorul RO/EN folosesc aceeași identitate a regulilor; profilul istoric își păstrează explicit valorile. |
+| Ghid și interfață | Etichetele și accesul la istoricul tuturor locurilor urmează textele și comenzile curente; procedurile complete aparțin ghidurilor responsabile. |
 
 [Regulile și scorul](../docs/game/README.md) dețin contractul produsului, iar [calificările Android](../docs/feedback/ATF_Android.md) păstrează criteriile încă deschise.

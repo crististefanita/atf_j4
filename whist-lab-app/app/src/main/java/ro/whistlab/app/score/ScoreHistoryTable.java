@@ -11,7 +11,9 @@ import ro.whistlab.core.session.ScoreHistory;
 record ScoreHistoryTable(List<String> players, List<Row> rows) {
     enum Status { RECORDED, EARLIER, CURRENT, FUTURE }
     record Cell(String bid, String points, String total, String description) { }
-    record Row(int hand, int cards, Status status, List<Cell> cells) { }
+    record Row(int hand, int cards, Status status, List<Cell> cells) {
+        String cardLabel() { return Integer.toString(cards); }
+    }
     ScoreHistoryTable { players = List.copyOf(players); rows = List.copyOf(rows); }
 
     static ScoreHistoryTable forMatch(GameSession.Snapshot state, ScoreHistory history, WhistUiText copy) {

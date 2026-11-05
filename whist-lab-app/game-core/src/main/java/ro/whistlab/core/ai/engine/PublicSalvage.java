@@ -5,6 +5,7 @@ import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.ai.simulation.SearchCancellation;
+import ro.whistlab.core.ai.simulation.SearchWork;
 
 import java.util.*;
 
@@ -77,7 +78,7 @@ public final class PublicSalvage {
             var result=new Bounds();play(hands,new ArrayList<>(view.trick()),view.seat(),won,first,result);return result;
         }
         void all(List<List<Card>> hands,List<PlayedCard> table,int actor,int[] won,Bounds result) {
-            SearchCancellation.check();if(++nodes>limit)throw new Exhausted();
+            SearchCancellation.check();if(nodes>=limit)throw new Exhausted();nodes++;SearchWork.event(SearchWork.Event.PROOF);
             if(hands.stream().allMatch(List::isEmpty)) {
                 if(!table.isEmpty())throw new IllegalStateException("Incomplete terminal trick in public salvage proof");
                 int misses=0;for(int s=0;s<won.length;s++)if(s!=view.seat()&&won[s]!=view.seats().get(s).bid())misses++;

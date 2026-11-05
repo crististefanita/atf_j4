@@ -1,48 +1,62 @@
-# Cercetarea deciziilor din informație publică
+# Decizii coerente cu informația disponibilă
 
 ## Pe scurt
 
-Această zonă explică cercetarea continuărilor de joc și a licitării din observația permisă actorului. Implementările și componentele sunt în sursele de test ale motorului; acest director este punctul lor de orientare și nu adaugă cod în aplicație.
+Cercetarea verifică dacă o alegere folosește numai informația disponibilă actorului. Implementările și componentele sunt în sursele de test ale motorului; acest director le orientează, fără a adăuga o politică în aplicație.
 
-Proprietatea urmărită este coerența informației: o alegere disponibilă în aceeași observație se evaluează consecvent în lumile ipotetice compatibile. Un rezultat local al modelului necesită separat calificarea politicii pe distribuții noi.
-
-## De la observație la evaluare
+## Invarianta observației
 
 ```mermaid
 flowchart LR
-    PUBLIC[Observație permisă] -->|restrânge| WORLDS[Lumi compatibile]
-    PUBLIC -->|delimitează| ACTION[Acțiune comună]
+    OBS[Observație permisă] -->|constrânge| WORLDS[Lumi compatibile]
+    OBS -->|delimitează| ACTION[Acțiune comună]
     ACTION -->|se evaluează în| WORLDS
-    WORLDS -->|agregă| VALUE[Estimare declarată]
-    VALUE -->|informează| REVIEW[Calificarea politicii]
+    WORLDS -->|agregă prin model| VALUE[Utilitate estimată]
+    VALUE -->|informează| REVIEW[Calificare separată]
 ```
 
 <details>
-<summary>Legendă: aceeași informație, aceeași alegere disponibilă</summary>
+<summary>Legendă: acțiunea depinde de observație</summary>
 
-Mâna proprie, licitațiile și istoricul public delimitează observația. O lume ipotetică ajută calculul consecințelor; alegerea unei alte acțiuni după consultarea fiecărei lumi ar folosi informație indisponibilă actorului. Ponderarea lumilor și utilitatea comparată trebuie declarate separat.
+Două lumi ascunse compatibile cu aceeași observație nu pot autoriza alegeri publice diferite doar pentru că simulatorul le cunoaște. După o carte publică nouă observațiile pot deveni diferite, iar politica poate reacționa diferit; invarianta nu impune o singură carte în toate stările viitoare.
 
 </details>
 
-## Componente și limite
-
-| Proprietate cercetată | Sursa verificării |
+| Mecanism | Responsabilitate și limită |
 |---|---|
-| Continuări coerente, legalitate și păstrarea intrărilor | [PublicTailInformationTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java). |
-| Agregarea aceleiași deschideri, obiective pe rol și refuzul lipsei de mostre | [OpeningBidEvidenceTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java). |
+| Observația | Mâna proprie, contracte, cărți publice și necesarul disponibil la acea decizie. |
+| Lumea ipotetică | Permite evaluarea consecințelor; cărțile ei ascunse nu devin parametri ai alegerii publice. |
+| Agregarea | Compară aceeași alternativă pe lumile și ponderile declarate. |
+| Politica rezultată | Are nevoie de calificare proprie; coerența informației nu demonstrează singură contract optim sau progres strategic. |
 
-Testele construiesc domenii finite și așteptări explicite. Ele verifică mecanismul modelului cercetat; probabilitățile unor exemple construite nu estimează automat distribuția reală a cărților adverse.
+## Ordinea optimizării
 
-## Verificare cu activare explicită
-
-Din rădăcina proiectului, cu Java și dependențele Gradle disponibile local:
-
-```powershell
-.\scripts\run-whist-collection.ps1 -Collection research
+```text
+alegere disponibilă actorului = argmax_acțiune sumă_lume p(lume) × U(acțiune, lume)
+valoare cu informație în plus = sumă_lume p(lume) × max_acțiune U(acțiune, lume)
 ```
 
-[Catalogul](../../../../config/test-collections.json) și [configurația Gradle](../../../game-core/build.gradle) definesc populația efectivă a colecției. Aceasta include și alte ipoteze de cercetare; testele menționate sunt excluse din sarcina implicită `test`.
+Maximizarea separată după consultarea fiecărei lumi poate produce o valoare inaccesibilă unei singure alegeri publice. Utilitatea, ponderile și continuarea sunt ipoteze distincte; formula nu afirmă că un rollout este calibrat ori o căutare este completă.
 
-Lansatorul pregătește copia temporară și păstrează rezultatele extern. Pentru o schimbare a politicii, [protocolul de învățare](../../../../docs/learning/README.md) cere surse înghețate, criterii declarate și un lot rezervat nefolosit la ajustare.
+## Implementări și controale
 
-[Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md) · [Componente și oracole](../../../../docs/testing/ATF_AiComponents.md)
+| Proprietate | Sursă și verificare |
+|---|---|
+| Continuare din informație publică | [PublicTailPlanner](../../../game-core/src/test/java/ro/whistlab/coach/research/publictail/PublicTailPlanner.java) și [PublicTailInformationTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java): observație comună, legalitate și păstrarea intrărilor. |
+| Agregarea unei deschideri | [OpeningBidEvidence](../../../game-core/src/test/java/ro/whistlab/core/research/bidding/OpeningBidEvidence.java) și [OpeningBidEvidenceTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java): aceeași deschidere înaintea mediei, obiectiv declarat și refuzul lipsei de mostre. |
+
+Componentele construiesc domenii finite cu așteptări independente. Ele califică mecanismul modelului cercetat; mostrele construite nu estimează automat distribuția reală a cărților adverse.
+
+## Alegerea verificării
+
+Din directorul `whist-lab-app` al unei copii temporare complete, cu Java și dependențele Gradle disponibile local:
+
+```powershell
+.\gradlew.bat -p algorithm-build :game-core:informationResearchTest --offline --no-daemon
+```
+
+[Gradle](../../../game-core/build.gradle) definește selecția exactă, inclusiv alte componente ale aceleiași sarcini. Testele de informație sunt excluse din sarcina implicită `test`; colecția `research` din [catalog](../../../../config/test-collections.json) este o selecție mai largă.
+
+Pentru a modifica o politică, identificați separat observația, generatorul, continuarea și agregarea schimbate. [Protocolul offline](../../../../docs/learning/README.md) cere componente independente, candidat înghețat și evaluare rezervată înaintea promovării; datele și rezultatele concrete rămân externe.
+
+[Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md) · [Proiectarea componentelor](../../../../docs/testing/ATF_AiComponents.md)

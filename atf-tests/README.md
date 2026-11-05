@@ -73,14 +73,12 @@ Componentele verifică selecția, adaptoarele și publicarea; integrarea verific
 
 [Guvernanță](../docs/governance/README.md) · [Arhitectura publicării](../docs/reporting/README.md) · [Indexul documentației](../docs/README.md)
 
-## Îmbunătățiri prioritare ale consumatorului
+## Limite și calificare
 
 Responsabilul consumatorului trebuie să păstreze auditabilitatea și la intrări mari sau predominant cu eșec. Politica de selecție, compoziția și citirea dovezilor rămân mecanisme locale, iar randarea HTML aparține bibliotecii comune.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P2 | Calificați volumul intrărilor înaintea publicării. | Componente cu populații controlate măsoară costul selecției, numărul comparațiilor și corpul opțional; toate eșecurile, valorile obligatorii și inventarul omisiunilor sunt păstrate. |
-| P2 | Faceți selecția și compoziția ușor de revizuit. | Pașii pentru populație, priorități, exemple și diagnostic sunt denumiți după invariantă, cu probe de frontieră; reformatarea sau extracția păstrează verdictul și ordinea originală. |
-| P2 | Verificați separat temporalitatea și proveniența. | Replay-ul, captura sintetică și execuția Android nouă au identități și domenii distincte; intrările contradictorii ori incomplete sunt refuzate. |
+- [Feedback-ul consumatorului](../docs/feedback/ATF_Reporting.md#costul-intrărilor-consumatorului) centralizează calificarea volumului intrărilor.
+- [Responsabilitățile pachetelor](../docs/governance/ATF_Packages.md) cer pași numiți după invariantă și păstrarea ordinii și verdictului la extracție.
+- [Predarea rezultatelor](../docs/reporting/ATF_Handoff.md) deține identitatea și refuzul provenienței contradictorii; replay-ul și interacțiunea nouă au scopuri distincte.
 
 [Politica prezentării](../docs/reporting/ATF_Presentation.md) deține selecția. Cerințele generice ale JAR-ului urmează [rutarea responsabilităților](../docs/feedback/README.md), împreună cu reproducerea și contractul așteptat.

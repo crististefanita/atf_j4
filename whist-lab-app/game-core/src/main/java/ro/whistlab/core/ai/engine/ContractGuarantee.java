@@ -4,6 +4,7 @@ import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.ai.simulation.SearchCancellation;
+import ro.whistlab.core.ai.simulation.SearchWork;
 import java.util.*;
 /** A proof over every feasible deal and every legal opponent continuation; never over a sample. */
 final class ContractGuarantee {
@@ -13,6 +14,7 @@ final class ContractGuarantee {
  private ContractGuarantee(MonteCarloAi.View v,int limit){this.v=v;target=v.seats().get(v.seat()).bid();this.limit=limit;}
  static Proof choose(MonteCarloAi.View v,Card selected){return choose(v,selected,LIMIT);}
  static Proof choose(MonteCarloAi.View v,Card selected,int limit){
+  if(limit<0)throw new IllegalArgumentException("Negative proof budget");
   Integer bid=v.seats().get(v.seat()).bid();if(!v.mode().isRomanian()||v.seats().size()!=4||v.hand().size()!=2||bid==null||bid<v.seats().get(v.seat()).won()||bid>v.seats().get(v.seat()).won()+2)return new Proof(selected,false,0,0);
   var legal=GameRules.legalCards(v.hand(),v.trick().isEmpty()?null:v.trick().get(0).card().suit(),v.trump(),v.mode());if(legal.size()<2)return new Proof(selected,false,0,0);
   var worlds=MonteCarloAi.enumerateSmallDeals(v);if(worlds.isEmpty())return new Proof(selected,false,0,0);var proof=new ContractGuarantee(v,limit);var choices=new ArrayList<Card>();choices.add(selected);for(Card c:legal)if(!c.equals(selected))choices.add(c);
@@ -20,7 +22,7 @@ final class ContractGuarantee {
   return new Proof(selected,false,worlds.size(),proof.nodes);
  }
  private boolean all(List<List<Card>> hands,List<PlayedCard> trick,int actor,int won){
-  SearchCancellation.check();if(++nodes>limit)throw new Exhausted();if(won>target)return false;int left=hands.stream().mapToInt(List::size).sum();if(left==0)return trick.isEmpty()&&won==target;if(won+(left+trick.size())/4<target)return false;
+  SearchCancellation.check();if(nodes>=limit)throw new Exhausted();nodes++;SearchWork.event(SearchWork.Event.PROOF);if(won>target)return false;int left=hands.stream().mapToInt(List::size).sum();if(left==0)return trick.isEmpty()&&won==target;if(won+(left+trick.size())/4<target)return false;
   var legal=new ArrayList<>(GameRules.legalCards(hands.get(actor),trick.isEmpty()?null:trick.get(0).card().suit(),v.trump(),v.mode()));if(legal.isEmpty())return false;for(Card c:legal)if(!play(hands,trick,actor,won,c))return false;return true;
  }
  private boolean play(List<List<Card>> hands,List<PlayedCard> trick,int actor,int won,Card card){

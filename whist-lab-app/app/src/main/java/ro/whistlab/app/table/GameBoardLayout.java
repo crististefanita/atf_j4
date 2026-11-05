@@ -41,18 +41,24 @@ final class GameBoardLayout extends ViewGroup {
                     MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             seatHeight = Math.max(seatHeight, seat.getMeasuredHeight());
         }
+        seatHeight = TableLayoutMetrics.seatHeightPx(seatHeight);
+        for (int index = 0; index < players; index++) {
+            getChildAt(index).measure(MeasureSpec.makeMeasureSpec(seatWidth, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(seatHeight, MeasureSpec.EXACTLY));
+        }
         View center = getChildAt(players);
         int measuredCenterWidth = centerUsesFullWidth ? width : Math.min(width, dp(centerWidthDp));
         center.measure(MeasureSpec.makeMeasureSpec(measuredCenterWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         int minimum = Math.max(dp(minimumHeightDp),
-                TableGeometry.minimumHeight(players, seatHeight, center.getMeasuredHeight(), gap));
+                TableLayoutMetrics.boardHeightPx(
+                        TableGeometry.minimumHeight(players, seatHeight, center.getMeasuredHeight(), gap)));
         setMeasuredDimension(width, Math.max(minimum, resolveSize(minimum, heightSpec)));
     }
 
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         View center = getChildAt(players);
-        var plan = TableGeometry.arrange(right - left, bottom - top, players, seatWidth, seatHeight,
+        var plan = TableGeometry.arrangeDisplay(right - left, bottom - top, players, seatWidth, seatHeight,
                 dp(centerWidthDp), center.getMeasuredHeight(), dp(regionGapDp), centerUsesFullWidth,
                 centerAlignment);
         for (int index = 0; index < players; index++) place(getChildAt(index), plan.seats().get(index));

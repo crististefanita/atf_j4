@@ -80,6 +80,7 @@ Valorile definite de reguli, limitele API și exemplele didactice generale sunt 
 - Controalele tehnice active au identitate și ciclu propriu de reconciliere; închiderea feedback-ului păstrează controlul până când criteriul lui este demonstrat.
 - Identificatorul unui control YAML recunoscut după schemă este dată tehnică și se păstrează intact.
 - Verificarea identificatorilor de proiect protejează proza și celelalte câmpuri; un bloc incomplet sau fără schema controlului nu primește această încadrare.
+- URL-ul stabil `releases/latest` al repository-ului public declarat în [politica proiectului](../../config/atf-governance-policy.json) este adresă tehnică numai în destinația linkului Markdown. Eticheta vizibilă, alte repository-uri, căile de sursă și URL-urile modificate rămân verificate; clasificarea nu declară descărcarea ori integritatea APK-ului.
 
 ## Revizie și sincronizare live
 

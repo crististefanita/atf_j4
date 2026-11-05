@@ -22,6 +22,27 @@
     </plugin></plugins></build>
     <profiles>
         <profile>
+            <id>display-components</id>
+            <build><plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId>
+                    <executions><execution><id>independent-whist-player</id>
+                        <configuration><skipAddTestSource>true</skipAddTestSource></configuration>
+                    </execution></executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
+                    <configuration><testIncludes>
+                        <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
+                        <testInclude>**/display/component/*.java</testInclude>
+                        <testInclude>**/display/profile/*ComponentTest.java</testInclude>
+                        <testInclude>**/display/HandGeometryDriverComponentTest.java</testInclude>
+                        <testInclude>**/e2e/driver/*.java</testInclude>
+                    </testIncludes></configuration>
+                </plugin>
+            </plugins></build>
+        </profile>
+        <profile>
             <id>responsive-sanity</id>
             <build><plugins>
                 <plugin>
@@ -34,12 +55,16 @@
                     <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
                     <configuration><testIncludes>
                         <testInclude>**/AndroidUiDriver.java</testInclude>
+                        <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
+                        <testInclude>**/display/component/*.java</testInclude>
+                        <testInclude>**/display/profile/*ComponentTest.java</testInclude>
+                        <testInclude>**/display/HandGeometryDriverComponentTest.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
                         <testInclude>**/AndroidUiDriverComponentTest.java</testInclude>
                         <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
                         <testInclude>**/FrameFillAuditComponentTest.java</testInclude>
                         <testInclude>**/TableViewportAuditComponentTest.java</testInclude>
-                  <testInclude>**/DisplayRasterComponentTest.java</testInclude>
+                        <testInclude>**/DisplayRasterComponentTest.java</testInclude>
                         <testInclude>**/display/flow/responsive/*.java</testInclude>
                         <testInclude>**/AndroidUiFlowReportPublisherTest.java</testInclude>
                         <testInclude>**/WhistResponsivePlaySanityE2eTest.java</testInclude>

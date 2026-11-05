@@ -33,8 +33,11 @@ Validatorul verifică regulile și scorul înaintea interpretării rezultatelor.
 | [learning](learning/) | Compoziția loturilor și evaluarea protocoalelor ori arenei. |
 | [diagnostics](diagnostics/) | Divergențe, presiune contextuală și răspunsuri finite. |
 | [qualification](qualification/) | Criterii explicite pentru corecții locale și caracteristici candidate. |
+| [testing](testing/) | Constructor determinist de partide legale pentru componente, fără citirea arhivei. |
 
 [Validatorul bazei candidatului](qualification/WhistCandidateSource.psm1) păstrează inventarul complet al surselor și verificarea copiei finale. [Contractul manifestului](../../../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului) deține migrarea, hash-ul canonic și delimitarea dintre bază și candidat; componentele sale folosesc directoare temporare construite, fără partide arhivate.
+
+[Registrul expunerii](qualification/whist-evaluation-registry.mjs) coordonează loturile între corpusuri și păstrează reluarea ca expunere cunoscută. [Contractul registrului](../../../docs/learning/ATF_EvaluationRegistry.md) definește identitatea, importul istoricului, blocarea și recuperarea după întrerupere.
 
 ## Verificare
 
@@ -45,19 +48,15 @@ Din directorul `whist-lab-app` al unei copii temporare complete a proiectului, c
 ```
 
 - **Rezolvare:** Gradle execută Node din rădăcina copiei proiectului. Importurile și resursele uneltelor se rezolvă față de fișierul care le deține; intrările CLI și destinațiile externe sunt declarate de apelant.
-- **Date necesare:** testele de [corpus](corpus/whist-corpus.test.mjs) și de [curator](corpus/whist-active-corpus.test.mjs) citesc o partidă de referință externă, cu așteptări fixe. Copia de execuție trebuie să aibă acces la acel fixture; `--offline` controlează rezolvarea dependențelor Gradle și nu furnizează datele de test.
+- **Date locale:** testele de [corpus](corpus/whist-corpus.test.mjs) și de [curator](corpus/whist-active-corpus.test.mjs) folosesc [partide construite](testing/legal-game-fixture.mjs), cu distribuire, licitații, joc legal și scor calculate separat de validator. Fișierele temporare aparțin testului. `--offline` cere separat dependențe Gradle disponibile local.
 - **Reproductibilitate:** identitățile semantice ale înregistrărilor se păstrează la mutarea fizică a sursei. Capturile vechi se reproduc din copia lor identificată, iar directoarele externe nu sunt rescrise prin această organizare.
 
 [Modulul AI](../README.md) · [Protocolul](../../../docs/learning/README.md) · [Colecții](../../../docs/testing/ATF_Collections.md)
 
-## Îmbunătățiri prioritare ale verificării offline
+## Limite și calificare
 
-Testele corpusului și curatorului citesc implicit o partidă arhivată dintr-o locație externă fixată. Această dependență trebuie scoasă din selecția implicită de componente pentru ca verificarea unui checkout nou să aibă intrări disponibile și identificabile.
+Datele construite califică mecanismul și refuzurile sale; nu sunt partide noi pentru demonstrarea progresului strategic. Replay-ul arhivei folosește intrarea separată din [contractul corpusului](../../../docs/learning/ATF_Corpus.md#utilizare), cu fișier și SHA-256 declarate. Nicio arhivă nu se selectează implicit în componente.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Generați fixture-uri legale mici pentru componente. | Testele implicite trec cu arhiva absentă și folosesc numai date construite în directoare temporare; controalele negative corup deliberat cartea, licitația, levata și scorul. |
-| P1 | Separați verificarea de arhivă. | O intrare explicită cere fixture și hash, refuză datele lipsă sau schimbate și păstrează scopul de replay; seturile de antrenare rămân în afara proiectului. |
-| P2 | Calificați uneltele pe volume și întreruperi controlate. | Criteriile de corpus, selecție și compoziție includ intrări duplicate, fișiere incomplete, scriere concurentă și cost măsurat; bugetele păstrează proveniența și cazurile cu eșec. |
+Calificarea uneltelor pe volume și întreruperi rămâne urmărită în [feedback-ul laboratorului](../../../docs/feedback/ATF_Ai.md#verificarea-autonomă-a-laboratorului).
 
-[Protocolul](../../../docs/learning/README.md) deține expunerea loturilor și promovarea. Notele și rezultatele unei evaluări rămân externe; un README explică mecanismul și criteriul de închidere.
+[Protocolul](../../../docs/learning/README.md) deține expunerea loturilor și promovarea. Notele și rezultatele unei evaluări rămân externe; registrul expunerii nu certifică automat celelalte unelte.

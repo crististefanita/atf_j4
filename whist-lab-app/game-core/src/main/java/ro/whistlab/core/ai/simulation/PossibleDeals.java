@@ -24,6 +24,7 @@ public final class PossibleDeals {
 
     public static List<List<Card>> sample(View view, Random random) {
         SearchCancellation.check();
+        SearchWork.event(SearchWork.Event.SAMPLE);
         List<Card> pool = unknownCards(view);
         boolean[][] voids = knownVoids(view);
         Collections.shuffle(pool, random);
@@ -77,6 +78,7 @@ public final class PossibleDeals {
             int[] matched,
             boolean[] seen) {
         SearchCancellation.check();
+        SearchWork.event(SearchWork.Event.MATCHING);
         for (int c = 0; c < pool.size(); c++)
             if (!seen[c] && !voids[owners.get(slot)][pool.get(c).suit().ordinal()]) {
                 seen[c] = true;
@@ -109,6 +111,8 @@ public final class PossibleDeals {
             List<List<Card>> hands,
             int seat,
             List<List<List<Card>>> result) {
+        SearchCancellation.check();
+        SearchWork.event(SearchWork.Event.ENUMERATION);
         if (result.size() > 256) return;
         if (seat == hands.size()) {
             result.add(copy(hands));
@@ -140,6 +144,8 @@ public final class PossibleDeals {
             int need,
             List<Card> chosen,
             List<List<List<Card>>> result) {
+        SearchCancellation.check();
+        SearchWork.event(SearchWork.Event.ENUMERATION);
         if (result.size() > 256) return;
         if (need == 0) {
             hands.set(seat, new ArrayList<>(chosen));

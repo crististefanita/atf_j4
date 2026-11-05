@@ -36,6 +36,12 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 
 Compatibilitatea unei versiuni Android noi se califică separat de alegerea `targetSdk`. Numărul SDK-ului din APK nu dovedește instalarea, afișarea ori stabilitatea pe acel sistem.
 
+| Nivel | Ce verifică | Limită |
+|---|---|---|
+| Construire și pachet | Surse, dependențe, manifest, SDK-uri, semnătură și APK complet. | Nu execută aplicația pe fiecare sistem acceptat. |
+| Componente JVM | Modelele ferestrei, geometria, salvarea și regulile, cu intrări controlate. | Nu execută callback-urile sistemului sau gesturile reale. |
+| Android identificat | Instalare, restaurare, fereastră, interacțiune și stabilitate pe binarul efectiv. | Califică profilul și sistemul declarate, cu limitele înregistrate. |
+
 ## Distribuția prin GitHub
 
 [GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest) este intrarea stabilă de descărcare; adresa urmărește ultima versiune publicată. Pentru folosire personală, autentificați-vă în același browser și alegeți APK-ul din **Assets**.
@@ -53,24 +59,30 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișierului salvat. Reușita construirii și instalării locale nu dovedește reușita descărcării publice; integritatea și proveniența copiei descărcate se verifică separat.
 
-Fișierul local este copiat într-un nume temporar, verificat și apoi publicat prin redenumire atomică. Asset-ul GitHub este descărcat din nou și confruntat înainte de handoff; răspunsurile HTTP negative rămân erori, fără promovarea lor la pachet instalabil.
+- Copiați fișierul local într-un nume temporar, verificați-l și publicați-l prin redenumire atomică. Descărcați din nou asset-ul GitHub și confruntați-l înainte de handoff; răspunsurile HTTP negative rămân erori, fără promovarea lor la pachet instalabil.
 
-Calificați separat accesul autentificat și accesul anonim. `visibility=public`, starea `uploaded` și digest-ul corect al asset-ului nu dovedesc că browserul unui vizitator poate descărca binarul. Proba păstrează codul HTTP, numărul de bytes și hash-ul copiei primite; un blocaj de vizibilitate rămâne deschis până la răspunsul public reușit.
+- Calificați separat accesul autentificat și accesul anonim. `visibility=public`, starea `uploaded` și digest-ul corect al asset-ului nu dovedesc că browserul unui vizitator poate descărca binarul. Proba păstrează codul HTTP, numărul de bytes și hash-ul copiei primite; un blocaj de vizibilitate rămâne deschis până la răspunsul public reușit.
 
 ## Fereastra și versiunile Android noi
 
-[WindowContent](../../whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowContent.java) protejează rădăcinile ecranelor față de bare, decupaj și tastatură pe sistemele cu afișare edge-to-edge impusă. Padding-ul pornește dintr-o bază imuabilă, fără acumulare la redistribuirea insets-urilor.
+[Documentația Android](https://developer.android.com/develop/ui/views/layout/edge-to-edge) descrie afișarea edge-to-edge pentru aplicațiile cu `targetSdk` de cel puțin 35 pe Android 15 sau mai nou. [WindowContent](../../whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowContent.java) separă protecția vederii de măsurarea ferestrei:
 
-| Responsabilitate | Contract și calificare |
+| Cale din cod | Comportament implementat |
 |---|---|
-| Măsurarea ferestrei | Pe API 30+, geometria folosește fereastra curentă și exclude barele și decupajul înainte de alegerea politicii mesei; sistemele mai vechi păstrează configurația gestionată de platformă. [Componentele ferestrei](../../whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) verifică bugetul și reaplicarea fără acumulare. |
-| Acceptanța nativă | [Documentația Android](https://developer.android.com/develop/ui/views/layout/edge-to-edge) descrie impunerea edge-to-edge pentru aplicațiile care țintesc API 35+ pe Android 15+. Calificarea confruntă gesturile, navigarea cu trei butoane, decupajul și tastatura cu viewport-ul efectiv. |
+| `protect`, API 35+ | Adaugă barele, decupajul și IME la padding-ul inițial și consumă insets-urile. Baza se păstrează, fără acumulare la reaplicare. |
+| `widthDp` / `heightDp`, API 30+ | Folosește fereastra curentă și exclude barele și decupajul, independent de vizibilitatea lor. IME nu este scăzut în această măsurare; protecția rădăcinii are cale proprie. |
+| Sisteme anterioare | Măsurarea folosește configurația platformei; listenerul de protecție nu este instalat de această clasă înainte de API 35. |
+
+[Componentele ferestrei](../../whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) verifică aritmetica și bugetele modelului. [Acceptanța nativă](../feedback/ATF_Android.md#acceptanță-nativă-android-17) confruntă viewport-ul real, gesturile, navigarea cu trei butoane, decupajul și tastatura; ea nu rezultă din modelul JVM.
 
 ## Memorie și diagnostic pe Android 17
 
-[Android 17 / API 37](https://developer.android.com/about/versions/17/behavior-changes-all) introduce limite de memorie și pentru aplicațiile care țintesc versiuni anterioare. Colectați un baseline de memorie și motivul ieșirii procesului; un exit `REASON_OTHER` cu `MemoryLimiter:AnonSwap` identifică intervenția limiterului.
+[Android 17 / API 37](https://developer.android.com/about/versions/17/behavior-changes-all) aplică limite de memorie inclusiv aplicațiilor care țintesc versiuni anterioare. Documentația identifică intervenția limiterului prin `ApplicationExitInfo`, motivul `REASON_OTHER` și descrierea care conține `MemoryLimiter:AnonSwap`.
 
-Scenariul de diagnostic păstrează limitele sistemului și leagă memoria, jurnalul AndroidRuntime, `ApplicationExitInfo`, configurația mesei și APK-ul de aceeași execuție. Interfața folosește vederi Android obișnuite și un motor Java local; memoria procesului rămâne parte a acceptanței.
+- Identificați APK-ul, sistemul, profilul mesei și starea aplicației din aceeași execuție.
+- Înregistrați memoria de referință și evoluția ei la reluare și la mărimi diferite de mână; costul căutării AI și reactivitatea au măsurători proprii.
+- Confruntați motivul ieșirii cu jurnalul AndroidRuntime; codul sau mesajul izolat nu substituie corelarea procesului și intervalului.
+- Păstrați limitele sistemului pentru acceptanță și consemnați explicit un diagnostic incomplet. Corectitudinea calculelor JVM nu califică memoria procesului Android.
 
 ## Restaurarea datelor
 

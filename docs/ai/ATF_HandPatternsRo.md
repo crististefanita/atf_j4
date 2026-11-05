@@ -1,62 +1,89 @@
 # Onoruri, acoperiri și siguranța contractului
 
-Acest ghid formalizează indicii strategice pentru Whist românesc. Regulile jocului sunt definite în [Cum se joacă](../game/ATF_RulesRo.md); catalogul de mai jos nu le poate modifica.
+O combinație de cărți oferă indicii condiționate de legalitate, necesar și informația publică. [Regulile jocului](../game/ATF_RulesRo.md) stabilesc acțiunile permise; catalogul descrie mâna, fără influență runtime directă.
 
-## Responsabilități și statut
+## De la observație la indiciu
 
-| Sursă | Responsabilitate |
+```mermaid
+flowchart LR
+    OBS[Mână și cărți publice] -->|descrie prin| EXTRACT[Extractor]
+    EXTRACT -->|clasifică| PATTERN[Tipar și unitate]
+    GAMES[Partide development] -->|calibrează descriptiv| PATTERN
+    PATTERN -->|necesită consumator și| GATE[Calificare separată]
+```
+
+<details>
+<summary>Legendă: descriere, măsurare și activare</summary>
+
+[Extractorul](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) identifică ranguri, acoperiri și cărți superioare încă nevăzute. [Calibratorul](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) măsoară rezultate ale unor politici deja jucate; niciuna dintre operații nu activează o regulă în Hard.
+
+</details>
+
+## Unitatea indiciului
+
+`hint_scope` stabilește ce descrie `trick_hint`. Două valori cu unități diferite nu se adună și nu se interpretează ca aceeași probabilitate.
+
+| Câmp sau domeniu | Semnificație și limită |
 |---|---|
-| [Catalogul de tipare](../../config/whist-hand-patterns.yaml) | Descrie clase de combinații, contextul relevant, aria indiciului și statutul cercetării. |
-| [Extragerea tiparelor](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) | Derivă descrieri și categorii din mâna vizibilă jucătorului. |
-| [Calibrarea](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) | Analizează asocieri descriptive din jocurile alocate dezvoltării. |
-| [Manifestul contextual](../../config/whist-contextual-discard.yaml) | Leagă reguli condiționale, limite de informație, implementări și teste. |
-| [Obiectivele jucătorilor](../../config/whist-play-objectives.yaml) | Definește prioritățile Normal și Hard și distinge regulile active de experimente. |
+| `HIGHEST_CARD_CAPTURE` | Indicatorul că cea mai mare carte proprie a culorii a fost jucată într-o levată câștigată de acel loc. Nu numără toate levatele culorii. |
+| `SUIT_TRICKS` | Numărul levatelor câștigate de loc prin cărți din acea culoare. Se citește separat de captura cărții maxime. |
+| Rata contractului exact | Rezultatul întregii mâini pentru acel loc; repetarea lui în categorii nu creează rezultate independente. |
+| Suportul și ponderarea | Descriu observațiile grupate și apropierea de indiciul inițial. Nu sunt probabilități calibrate de câștig sau coeficienți runtime. |
 
-Catalogul de tipare este marcat `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`, iar influența lui directă asupra runtime-ului este zero. Modificarea catalogului nu schimbă de la sine politica jucătorului.
+[Catalogul YAML](../../config/whist-hand-patterns.yaml) păstrează statutul `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`. Tiparele suprapuse nu acordă credit repetat aceleiași cărți.
 
-## Reguli generale de interpretare
+## Reguli de interpretare
 
-- Un rang superior poate deveni câștigător după ce rangurile care îl bat au fost jucate sau au devenit imposibil de păstrat. Acoperirile oferă ocazii de a consuma aceste ranguri, nu levate garantate.
-- Secvențele de onoruri se evaluează împreună. Același rang nu primește credit separat pentru fiecare tipar care îl conține.
-- Numărul de cărți dintr-o culoare, rangurile lor și numărul de levate posibile în acea culoare sunt mărimi diferite.
-- O carte mare poate pierde prin tăiere sau poate fi aruncată legal când jucătorul nu are culoarea cerută și nu este obligat să taie.
-- O tăiere cu atu este supusă regulii de joc și poate produce o levată nedorită după realizarea contractului.
-- Atuul întors, atuul jucat într-o levată terminată și atuul încă pe masa curentă au efecte distincte asupra cărților care mai pot câștiga.
-- Orice indiciu despre promovare sau capturare se condiționează de poziția la masă, istoricul public, cărțile rămase, necesarul fiecărui jucător și posibilitățile de intrare.
+- **Promovarea unui onor:** cărțile mici pot ajuta consumarea rangurilor superioare; poziția, intrările și tăierile pot împiedica realizarea levatei.
+- **Secvențe și lungime:** onorurile se evaluează împreună; rangul, numărul cărților și numărul levatelor posibile sunt mărimi distincte.
+- **Ieșire legală:** un onor lateral poate fi aruncat când lipsesc culoarea cerută și atuul; existența atuului poate impune o levată nedorită.
+- **Memorie publică:** cartea întoarsă, o carte dintr-o levată încheiată și cartea încă pe masă au roluri diferite.
+- **Obiectiv:** necesarul individual și oportunitățile rămase se citesc din [modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia); dezechilibrul mesei nu le înlocuiește.
 
-## Informația permisă
+## Intrarea extractorului
 
-| Etapa | Date disponibile politicii |
+| Câmp JSON pentru `describe` | Contract |
 |---|---|
-| Licitare | Mâna proprie, regulile active și prefixul licitațiilor deja depuse. |
-| Joc | Mâna proprie, toate contractele depuse, levatele câștigate, istoricul public, masa curentă, atuul și scorurile publice. |
-| Simulare | Numai lumi compatibile cu informația de mai sus; mâinile reale ale adversarilor rămân ascunse. |
+| `hand` | Cărți proprii distincte: rang `A`, `K`, `Q`, `J`, `10` sau `2`–`9`, urmat de `S`, `H`, `C` ori `D`; compatibile cu pachetul redus. |
+| `trump` | `S`, `H`, `C`, `D` sau `NT`. |
+| `players` | Întreg între 3 și 6; implicit 4. |
+| `handSize` | Mărime inițială declarată între 1 și 8; absența folosește lungimea mâinii furnizate. |
+| `publicOut` | Cărți publice excluse din bazinul necunoscut; implicit lista goală, fără intersecție cu mâna proprie. |
 
-[Mărimile de stare](ATF_DecisionModel.md#starea-care-schimbă-decizia) definesc necesarul și oportunitățile. Interpretarea unui onor trebuie să folosească ținta individuală și ieșirile legale; puterea rangului sau dezechilibrul mesei nu sunt suficiente.
+Extractorul verifică aceste limite locale ale cărților și parametrilor. Apelantul deține coerența observației și prefixul legal; descrierea unei mâini nu validează singură o partidă completă.
 
-## Cum se interpretează observațiile
-
-Frecvența cu care o combinație a câștigat depinde de strategia care a jucat-o, inclusiv de alegerile deliberate de a păstra sau arunca ranguri. Asocierea observată nu este probabilitatea intrinsecă a combinației și nu dovedește ce s-ar fi întâmplat într-o acțiune alternativă.
-
-Calibrarea folosește numai datele permise pentru dezvoltare, grupează observațiile dependente și păstrează separat lotul rezervat. Mărimea eșantionului, partiția, filtrele și pragurile se citesc din protocolul și artefactul rulării, nu se copiază ca rezultate permanente în acest ghid.
-
-## YAML și experimente
-
-[Reguli și configurare](ATF_RulesConfiguration.md) deține rolurile și stările manifestelor, iar [protocolul offline](../learning/README.md) deține calificarea unui candidat. Catalogul de aici exprimă clase de cărți și indicii, fără a modifica politica prin simpla editare a YAML-ului.
-
-Calibrările produse, partidele și rezultatele sunt date externe. Parametrii versionați ai unui model identifică o implementare reproductibilă; activarea lor cere consumator și domeniu declarate.
-
-## Legătura cu implementarea
-
-- [Hard](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) evaluează cărțile prin simulări constrânse de informația publică și reguli de siguranță.
-- [Certificatul de contract](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/ContractGuarantee.java) verifică exhaustiv numai domeniul și limitele declarate de implementare.
-- [Salvarea publică](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java) tratează separat protejarea punctelor proprii și ratarea contractelor adverse.
-- [Independentul](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) folosește o implementare și o utilitate distincte; asemănarea numelui obiectivului nu dovedește echivalența politicilor.
+Din rădăcina proiectului, cu Node.js și fișiere externe alese explicit:
 
 ```powershell
-$output = Read-Host 'Fișierul YAML într-un director extern de rezultate'
-node whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns-cli.mjs catalog $output
+$inputFile = Read-Host 'Fișierul JSON al observației permise'
+node whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns-cli.mjs describe $inputFile
+```
+
+## Calibrare descriptivă
+
+Calibratorul citește toate fișierele JSON din `games/development` ale arhivei furnizate și validează regulile și scorul înaintea interpretării. Nu rezolvă automat pointerul corpusului activ; intrarea și costul ei trebuie alese explicit.
+
+1. Refuză jocurile din altă partiție și elimină urmele de acțiuni repetate.
+2. Grupează observațiile după distribuția inițială, loc și culoare; variațiile aceleiași unități sunt mediate în interiorul grupului.
+3. Agregă grupurile și păstrează separat captura maximului, levatele culorii și exactul; gruparea nu demonstrează independență statistică între categorii.
+4. Scrie într-un director nou YAML-ul calibrat, inventarul complet al contextelor, hash-urile surselor și înregistrarea comparațiilor.
+
+```powershell
+$archive = Read-Host 'Arhiva externă pentru calibrarea development'
+$output = Read-Host 'Director extern nou; părintele trebuie să existe'
+node whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs $archive $output
+```
+
+Frecvențele depind de politica ce a produs jocurile și nu estimează efectul unei acțiuni alternative nejucate. Pragurile și suportul se citesc din catalog și implementare; fișierele obținute rămân externe și au influență runtime zero.
+
+## Verificare și promovare
+
+Componentele folosesc intrări construite pentru onoruri, unități distincte, duplicate și medierea grupurilor:
+
+```powershell
 node --test whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.test.mjs whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.test.mjs
 ```
 
-Catalogul nu promite joc perfect sau acoperire exhaustivă a tuturor stărilor. Afirmațiile despre optimalitate necesită un certificat complet în domeniul său; estimările din simulare rămân estimări.
+[Configurarea regulilor](ATF_RulesConfiguration.md) deține consumatorul și domeniul activării, iar [protocolul offline](../learning/README.md) deține promovarea. Indiciul, estimarea simulată și certificatul finit au niveluri de garanție distincte.
+
+[English guide](ATF_HandPatternsEn.md) · [Joc contextual](ATF_ContextualPlay.md) · [Corpus și integritate](../learning/ATF_Corpus.md)

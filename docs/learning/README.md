@@ -34,7 +34,7 @@ Fiecare candidat reprezintă o modificare identificată a licitării sau a alege
 
 - O copie executată este identificată prin sursele și configurația capturate; o modificare live nu o recalifică retrospectiv.
 - Reproducerea unei evaluări vechi folosește sursele ei păstrate și nu deschide o nouă evaluare neatinsă.
-- Politica cere un registru comun al loturilor; runnerul implementează în prezent rezervarea sub corpusul transmis, cu [limitele de coordonare](../feedback/ATF_Ai.md) declarate explicit.
+- [Registrul comun](ATF_EvaluationRegistry.md) confruntă intervalele și expunerea istorică independent de corpus. Dezvoltarea poate rejuca distribuții, iar continuarea păstrează identitatea; niciuna nu reprezintă un lot nou neatins.
 
 ## Reguli stabile și date de experiment
 

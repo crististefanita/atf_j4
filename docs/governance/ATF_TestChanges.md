@@ -57,3 +57,23 @@ testChanges:
 Exemplele sunt extrase din README-uri și verificate pe JAR-urile fizice. Schimbarea păstrează perechile publicate și oracolele existente.
 
 </details>
+
+<details>
+<summary>Control activ: adresa tehnică a descărcării publice</summary>
+
+```yaml
+testChanges:
+  - id: DOCUMENTATION-PUBLIC-RELEASE-URI
+    status: VERIFIED
+    base: cd4e62e4fd89bb5134f874aee1912aa086a5bda2
+    expires: 2026-12-05
+    reason: Distinge destinația tehnică a linkului stabil al propriului repository de proza vizibilă; păstrează refuzul identificatorilor din etichete, alte proiecte, căi de sursă și URL-uri modificate.
+    proof: 'mvn -B -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - config/atf-governance-policy.json
+```
+
+Reproducerea este refuzul linkului public valid ca referință editorială; controalele negative păstrează etichetele, alte proiecte și variantele necanonice în perimetrul verificat. Contractul [documentației](ATF_Documentation.md#conținut-stabil-și-date-variabile) definește limita, fără excepții generale pentru URL-uri.
+
+</details>

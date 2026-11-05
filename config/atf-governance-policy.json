@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "publicRepository": "https://github.com/crististefanita/atf_j4",
   "mavenModules": [
     "atf-test-kit",
     "atf-validation",
@@ -22,6 +23,11 @@
       "module": "whist-lab-app/ai-lab",
       "test": false,
       "path": "whist-lab-app/ai-lab/src/main/java"
+    },
+    {
+      "module": "whist-lab-app/ai-lab",
+      "test": true,
+      "path": "whist-lab-app/ai-lab/src/test/java"
     },
     {
       "module": "whist-lab-app/app",

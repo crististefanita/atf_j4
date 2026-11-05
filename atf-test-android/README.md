@@ -54,9 +54,13 @@ Dintr-o copie temporară proprie, cu POM-ul părinte, bibliotecile și un depozi
 mvn -B -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
 ```
 
-[AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) verifică ADB controlat și capturi. [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) verifică temporizarea fluxului prin componente; aceste selecții sunt distincte de activarea scenariilor E2E.
+| Colecție | Contract verificat |
+|---|---|
+| [AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) | ADB controlat și capturi. |
+| [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Temporizarea fluxului prin componente. |
+| [AndroidDisplayComponentSuite](src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profile, parsare, geometrie și raster sintetic; profilul Maven `display-components` exclude compilarea algoritmilor AI. |
 
-Selecția `TableViewportAuditComponentTest` din profilul `responsive-sanity` verifică fără ADB observații controlate ale mesei. Cazurile negative acoperă cadre lipsă, fețe tăiate, suprapuneri, scroll și centrarea unei singure cărți; același oracol este folosit de E2E.
+Opțiunea `-ComponentsOnly` a lansatorului selectează colecția display fără dispozitiv. [Ghidul componentelor display](../docs/testing/ATF_DisplayComponents.md) definește intrările simulate, defectele controlate și limitele verificării.
 
 ## Fluxuri Android
 
@@ -84,14 +88,17 @@ Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea 
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.
 
-## Îmbunătățiri prioritare ale infrastructurii
+## Execuția delimitată a transportului
 
-[AdbClient](src/main/java/atf/android/AdbClient.java) limitează așteptarea procesului, dar sincronizarea cititoarelor folosește join fără termen, iar întreruperea nu are un bloc unic de curățare. Contractul operațional trebuie calificat pentru întregul apel, inclusiv drenarea fluxurilor și oprirea descendenților.
+[AdbClient](src/main/java/atf/android/AdbClient.java) deleagă [execuția procesului](src/main/java/atf/android/process/CommandProcess.java) cu un singur termen monoton pentru pornire, terminare și drenarea ieșirilor. Întreruperea păstrează marcajul firului, iar erorile de citire nu sunt convertite în succes.
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Aplicați un termen total și curățare la întrerupere. | Procese controlate verifică ieșirea blocată, descendentul care ține fluxul deschis, întreruperea și depășirea termenului; apelul se închide în buget și cauza inițială rămâne vizibilă. |
-| P2 | Delimitați memoria capturii și diagnosticului. | Limitele textului și binarului sunt configurate separat; depășirea este explicită și un PNG incomplet este refuzat înaintea publicării. |
-| P2 | Continuați separarea scenariilor și a driverului după invariantă. | Navigarea, așteptarea, parsarea și oracolul au proprietari clari; extracțiile păstrează identitățile JUnit, ordinea acțiunilor și comparațiile independente. |
+- Operațiile native blocante folosesc fire daemon independente de planificatorul firelor virtuale.
+- Așteptarea observă ambele fluxuri, astfel încât o ieșire blocată să nu ascundă eroarea celeilalte; o eroare deja observată are prioritate față de diagnosticul generic de expirare.
 
 Componentele transportului folosesc procese locale controlate. [Acceptanța Android](../docs/testing/ATF_Android.md) verifică separat comportamentul pe dispozitiv; publicarea unei capturi valide are propriul contract.
+
+- La eșec se solicită oprirea procesului și a descendenților observați cât timp părintele este activ.
+- Închiderea fluxurilor nu blochează apelantul; un proces creat după expirarea pornirii este curățat când devine disponibil.
+- Erorile curățării se adaugă cauzei inițiale; un descendent desprins înainte să poată fi observat nu are identitate garantată de API-ul Java.
+
+Bugetele de memorie pentru text și binar rămân [criteriu deschis al adaptorului](../docs/feedback/ATF_Android.md). [Responsabilitățile pachetelor](../docs/governance/ATF_Packages.md) dețin regulile extragerii mecanismelor fără schimbarea identității și ordinii scenariilor.

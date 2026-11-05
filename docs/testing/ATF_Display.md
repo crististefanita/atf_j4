@@ -27,6 +27,8 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 
 ## Intrări
 
+[Colecția de componente display](ATF_DisplayComponents.md) verifică offline politicile aplicației, decodarea XML și oracolele pe observații controlate. E2E reutilizează același decodor; capturarea și interacțiunea rămân în scenariul nativ.
+
 | Parametru | Contract |
 |---|---|
 | Profiles | Listă de forme LĂȚIMExÎNĂLȚIME@DPI, portret și fără duplicate, în limitele componentei de profil. |
@@ -38,6 +40,7 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 | Serial | Dispozitivul Android rezervat pentru scenariu. |
 | AdbServerSocket | Serverul ADB configurat pentru stație sau VM. |
 | Director de rezultate | Destinație externă pentru trace-ul și rezultatele execuției. |
+| ComponentsOnly | Selectează exclusiv matricea JVM; exclude opțiunile de profil și flux, rezervarea și comenzile dispozitivului. |
 
 [Runnerul](../../scripts/run-whist-responsive-sanity.ps1) și componentele sale definesc valorile implicite și limitele efective.
 

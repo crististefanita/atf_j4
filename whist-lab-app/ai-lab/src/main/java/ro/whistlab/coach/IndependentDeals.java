@@ -10,6 +10,7 @@ final class IndependentDeals {
     private IndependentDeals() {}
 
     static List<List<List<Integer>>> smallDeals(Position p) {
+        PlannerControl.check();
         if (p.seats().size() != 4 || p.seats().stream().anyMatch(s -> s.remaining() > 2))
             return List.of();
         var pool = unknownCards(p);
@@ -30,6 +31,8 @@ final class IndependentDeals {
             List<List<Integer>> hands,
             int seat,
             List<List<List<Integer>>> out) {
+        PlannerControl.check();
+        PlannerControl.event(PlannerControl.Event.ENUMERATION);
         if (out.size() > 256) return;
         if (seat == hands.size()) {
             out.add(copy(hands));
@@ -61,6 +64,8 @@ final class IndependentDeals {
             int need,
             List<Integer> chosen,
             List<List<List<Integer>>> out) {
+        PlannerControl.check();
+        PlannerControl.event(PlannerControl.Event.ENUMERATION);
         if (out.size() > 256) return;
         if (need == 0) {
             hands.set(seat, new ArrayList<>(chosen));
@@ -78,12 +83,16 @@ final class IndependentDeals {
     }
 
     static List<List<Integer>> deal(Position p, Random r) {
+        PlannerControl.check();
         var pool = unknownCards(p);
         boolean[][] voids = knownVoids(p);
         // Preserve the established distribution on easy states; the Hall fallback guarantees
         // an assignment when a feasible late deal defeats bounded rejection sampling.
         for (int attempt = 0; attempt < 64; attempt++) {
+            PlannerControl.check();
+            PlannerControl.event(PlannerControl.Event.REJECTION);
             Collections.shuffle(pool, r);
+            PlannerControl.check();
             var hands = new ArrayList<List<Integer>>();
             for (int s = 0; s < p.seats().size(); s++) hands.add(new ArrayList<>());
             hands.set(p.seat(), new ArrayList<>(p.hand()));
@@ -122,6 +131,7 @@ final class IndependentDeals {
         for (int c : pool) suits[c / 13]++;
         if (!feasible(need, suits, voids)) return null;
         while (Arrays.stream(need).sum() > 0) {
+            PlannerControl.check();
             int seat = -1, slack = Integer.MAX_VALUE;
             var order = new ArrayList<Integer>();
             for (int s = 0; s < need.length; s++) if (need[s] > 0) order.add(s);
@@ -177,9 +187,12 @@ final class IndependentDeals {
     }
 
     static boolean feasible(int[] need, int[] counts, boolean[][] voids) {
+        PlannerControl.check();
+        PlannerControl.event(PlannerControl.Event.FEASIBILITY);
         for (int n : need) if (n < 0) return false;
         for (int n : counts) if (n < 0) return false;
         for (int mask = 1; mask < (1 << need.length); mask++) {
+            PlannerControl.check();
             int required = 0, allowed = 0;
             for (int s = 0; s < need.length; s++)
                 if ((mask & (1 << s)) != 0 && need[s] > 0) {

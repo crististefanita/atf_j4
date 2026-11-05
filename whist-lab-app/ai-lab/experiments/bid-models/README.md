@@ -2,54 +2,58 @@
 
 ## Pe scurt
 
-Acest director păstrează alternative de sursă pentru estimarea licitațiilor și interpretarea ofertelor deja observate. Catalogul le marchează pentru cercetare; sursele sunt excluse din aplicația activă și se aplică explicit unei copii temporare.
+Alternativele de aici modifică un mecanism declarat al licitării sau al interpretării ofertelor. [Catalogul cercetării](../../../../config/whist-research-candidates.json) identifică fișierele, baza și colecțiile permise; prezența sursei nu o activează în aplicație.
 
-Lansatorul deține aplicarea alternativei, iar [protocolul de învățare](../../../../docs/learning/README.md) deține calificarea. O alternativă devine utilizabilă numai dacă fișierele, baza și scopul ei coincid cu manifestul declarat.
+## Ce mecanism se schimbă?
+
+| Mecanism | Intrare și efect | Limită de verificare |
+|---|---|---|
+| Plauzibilitatea unei oferte observate | Mână ipotetică inițială și prefixul disponibil atunci; poate pondera lumile estimate. | Testul distribuției sau al helperului nu califică întregul API al licitării. |
+| Oferte încă necunoscute | Estimarea ordonată a actorilor viitori din prefixul continuării simulate. | Predicția rămâne ipoteză, fără a deveni fapt public observat. |
+| Licitarea ori cartea proprie | Selectarea unei alternative după utilitatea și filtrele politicii. | Cere controale ale API-ului complet și comparație separată pe partide noi. |
+
+[Contractul YAML și al modelelor](../../../../docs/ai/ATF_RulesConfiguration.md) deține definițiile și stările. Declarați separat ponderarea, continuarea și obiectivul pentru a putea atribui efectul schimbării.
 
 ## Aplicarea unei alternative
 
 ```mermaid
 flowchart LR
-    CAT[Catalog candidat] -->|declară| GUARD[Fișiere și bază]
-    GUARD -->|verifică| COPY[Copie izolată]
-    COPY -->|primește| SOURCE[Sursă alternativă]
-    SOURCE -->|se verifică prin| GATES[Componente și protocol]
-    GATES -->|informează| REVIEW[Revizie de promovare]
+    CATALOG[Manifest candidat] -->|identifică| BASE[Bază și fișiere]
+    BASE -->|validează| COPY[Copie izolată]
+    COPY -->|primește și confruntă| SOURCE[Surse alternative]
+    SOURCE -->|se califică prin| CHECK[Componente și protocol]
+    CHECK -->|informează| REVIEW[Revizie de promovare]
 ```
 
 <details>
-<summary>Legendă: identitate înaintea execuției</summary>
+<summary>Legendă: identitatea precede execuția</summary>
 
-[Catalogul](../../../../config/whist-research-candidates.json) declară fișierele comune, fișierele candidatului, hash-urile, baza și colecțiile permise. [Lansatorul](../../../../scripts/run-whist-collection.ps1) verifică sursele și apoi conținutul copiat; o bază schimbată cere reîncadrare și calificare explicită.
+[Lansatorul](../../../../scripts/run-whist-collection.ps1) verifică baza, aplică sursele numai în copia temporară și confruntă fișierele copiate cu manifestul. O bază incompatibilă produce refuz; schimbarea hash-urilor pentru a trece controlul nu constituie migrare calificată.
 
 </details>
 
-## Alegerea mecanismului
+## Alegerea intrării
 
-| Mecanism | Precondiție și limită |
+| Intrare | Utilizare |
 |---|---|
-| `-ResearchCandidate` | Identitate unică din catalog; permite numai colecțiile declarate `regression` sau `learning`. |
-| `-CandidateOverlay` | Manifest extern de candidat înghețat, cu propria bază verificată; are contract separat în lansator. |
-| `-Collection research` | Componentele de cercetare deja declarate în Gradle; nu aplică implicit sursele acestui director. |
+| `-ResearchCandidate` | Identitate unică din catalog, în colecția permisă acelui candidat. |
+| `-CandidateOverlay` | Manifest extern înghețat, cu contractul [inventarului complet al bazei](../../../../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului). |
+| `-Collection research` | Componentele de cercetare declarate în Gradle; nu aplică automat sursele din acest director. |
 
-Cele două moduri de suprapunere sunt mutual exclusive. Verificarea regresiei și comparația pe partide noi răspund unor întrebări distincte, chiar când folosesc aceeași alternativă.
-
-## Pornirea unei verificări
-
-Din rădăcina proiectului, înlocuiți identificatorul cu unul din catalog și folosiți dependențele Gradle disponibile local:
+Cele două moduri de suprapunere sunt mutual exclusive. Din rădăcina proiectului, pentru un identificator ales din catalog:
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection regression -ResearchCandidate '<identificator-din-catalog>'
 ```
 
-O bază incompatibilă este refuzată înaintea calificării. Pentru `learning` sunt necesare suplimentar identitatea candidatului, corpusul extern, protocolul compatibil și faza declarată, conform [ghidului colecțiilor](../../../../docs/testing/ATF_Collections.md).
+Colecția `learning` cere și candidatul, corpusul extern, protocolul compatibil și faza din [ghidul colecțiilor](../../../../docs/testing/ATF_Collections.md). Sursele se îngheață înaintea evaluării rezervate; o verificare de dezvoltare nu reface statutul unui lot deja expus.
 
-## Principii de interpretare
+## Cum se citește rezultatul
 
-- Separați modelul licitației, modelul mâinilor ascunse și continuarea jocului pentru a putea atribui efectul observat.
-- Tratați lipsa unei culori dedusă legal ca restricție certă și licitația adversă ca indiciu dependent de model.
-- Verificați componentele prin așteptări independente; o predicție apropiată de oferta observată nu dovedește contractul optim.
-- Înghețați sursele și criteriile înaintea lotului rezervat; distribuiți aceleași cărți și rotiți locurile în comparațiile pereche.
-- Păstrați extern jocurile, calibrările produse și registrele de evaluare; codul și parametrii versionați identifică alternativa reproductibilă.
+- **Identitate:** comparația folosește sursele și configurația copiei executate; modificarea live nu o recalifică retrospectiv.
+- **Legalitate:** lipsa unei culori dedusă legal restrânge lumile certe; licitația voluntară este indiciu prin modelul declarat.
+- **Domeniul probei:** [testele modelului de ofertă](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) verifică și helperi de plauzibilitate; controlul ofertelor viitoare al acelui helper nu dovedește singur comportamentul `chooseBid`.
+- **Progres:** regresia, costul și comparația pe partide noi au criterii distincte; statutul de cercetare al manifestului rămâne explicit până la promovare.
+- **Retenție:** jocurile, calibrările produse și rezultatele rămân externe. Parametrii versionați identifică implementarea, fără a deveni scoruri istorice în ghid.
 
-[Reguli și configurare](../../../../docs/ai/ATF_RulesConfiguration.md) · [Componente și oracole](../../../../docs/testing/ATF_AiComponents.md)
+[Protocolul promovării](../../../../docs/learning/README.md) · [Componente și oracole](../../../../docs/testing/ATF_AiComponents.md) · [Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md)

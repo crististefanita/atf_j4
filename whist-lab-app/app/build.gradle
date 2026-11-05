@@ -20,6 +20,20 @@ android {
     }
 
     testOptions.unitTests.all {
+        def displaySelection = providers.gradleProperty("whist.displayComponents").getOrElse("false")
+        if (!(displaySelection in ["true", "false"])) {
+            throw new GradleException("whist.displayComponents must be true or false")
+        }
+        if (displaySelection == "true") {
+            filter {
+                includeTestsMatching "ro.whistlab.app.table.*"
+                includeTestsMatching "ro.whistlab.app.seat.*"
+                includeTestsMatching "ro.whistlab.app.window.*"
+                includeTestsMatching "ro.whistlab.app.score.ScoreHistoryTableComponentTest"
+                includeTestsMatching "ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest"
+                includeTestsMatching "ro.whistlab.app.localization.WhistUiTextTest"
+            }
+        }
         def archive = providers.gradleProperty("whist.scoreHistoryTraceDir").getOrElse("")
         if (archive) {
             def folder = rootProject.file(archive)

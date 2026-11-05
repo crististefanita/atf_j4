@@ -23,6 +23,7 @@ public final class RolloutPolicy {
         int remaining = hands.stream().mapToInt(List::size).sum();
         while (remaining-- > 0) {
             SearchCancellation.check();
+            SearchWork.event(SearchWork.Event.ROLLOUT);
             Card choice =
                     initial && first != null
                             ? first

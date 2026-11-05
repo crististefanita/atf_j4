@@ -4,6 +4,7 @@ import ro.whistlab.core.ai.profile.HardStrategyProfile;
 import ro.whistlab.core.ai.simulation.PossibleDeals;
 import ro.whistlab.core.ai.simulation.RolloutPolicy;
 import ro.whistlab.core.ai.simulation.SearchCancellation;
+import ro.whistlab.core.ai.simulation.SearchWork;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.ImmutableLists;
 import ro.whistlab.core.model.PlayedCard;
@@ -212,6 +213,7 @@ public final class MonteCarloAi {
             SearchCancellation.check();
             List<List<Card>> hands = sample(view, new Random(seed(view, sample)));
             if (hands == null) continue;
+            SearchWork.event(SearchWork.Event.WORLD);
             double[] points = new double[view.handSize() + 1],
                     exact = new double[view.handSize() + 1];
             for (int bid : allowed) {
@@ -436,6 +438,7 @@ public final class MonteCarloAi {
                             : exactDeals.get(sample);
             if (hands == null) continue;
             samples++;
+            SearchWork.event(SearchWork.Event.WORLD);
             for (int c = 0; c < legal.size(); c++) {
                 double[] value =
                         evaluate(

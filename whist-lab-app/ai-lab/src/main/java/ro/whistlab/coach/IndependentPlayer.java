@@ -85,6 +85,7 @@ public final class IndependentPlayer {
     private IndependentPlayer() {}
 
     public static Choice bid(Position p) {
+        PlannerControl.check();
         int prior = p.seats.stream().filter(s -> s.bid != null).mapToInt(s -> s.bid).sum();
         boolean last = p.seats.stream().filter(s -> s.bid != null).count() == p.seats.size() - 1;
         if (p.seats.size() == 4
@@ -113,9 +114,12 @@ public final class IndependentPlayer {
         double[] values = new double[p.size + 1];
         int samples = 0;
         for (int k = 0; k < 24; k++) {
+            PlannerControl.check();
+            PlannerControl.event(PlannerControl.Event.SAMPLE);
             var world = deal(p, new Random(seed(p, k)));
             if (world == null) continue;
             samples++;
+            PlannerControl.event(PlannerControl.Event.WORLD);
             for (int b = 0; b <= p.size; b++)
                 if (!last || b + prior != p.size) {
                     int[] goals = goals(p, world, b);
@@ -135,6 +139,7 @@ public final class IndependentPlayer {
     }
 
     public static Choice card(Position p) {
+        PlannerControl.check();
         var model = modelCard(p);
         var proof = ContractGuarantee.choose(p, model.value());
         return proof.certified() && proof.card() != model.value()
@@ -163,9 +168,12 @@ public final class IndependentPlayer {
         int samples = 0;
         int[] goals = p.seats.stream().mapToInt(s -> s.bid == null ? 0 : s.bid).toArray();
         for (int k = 0; k < 48; k++) {
+            PlannerControl.check();
+            PlannerControl.event(PlannerControl.Event.SAMPLE);
             var world = deal(p, new Random(seed(p, k)));
             if (world == null) continue;
             samples++;
+            PlannerControl.event(PlannerControl.Event.WORLD);
             for (int c = 0; c < allowed.size(); c++) {
                 int[] won =
                         roll(
@@ -262,6 +270,8 @@ public final class IndependentPlayer {
             int actor,
             int[] won,
             int[] goals) {
+        PlannerControl.check();
+        PlannerControl.event(PlannerControl.Event.ENDGAME);
         if (hands.stream().allMatch(List::isEmpty)) return won;
         var choices =
                 new ArrayList<>(
@@ -370,6 +380,8 @@ public final class IndependentPlayer {
         int left = hands.stream().mapToInt(List::size).sum();
         boolean initial = true;
         while (left-- > 0) {
+            PlannerControl.check();
+            PlannerControl.event(PlannerControl.Event.ROLLOUT);
             int c =
                     initial && first >= 0
                             ? first

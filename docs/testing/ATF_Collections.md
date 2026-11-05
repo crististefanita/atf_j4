@@ -25,6 +25,7 @@ Colecția restrânge cazurile la proprietatea schimbată. Evaluarea unei politic
 
 | Colecție | Scop | Execuție |
 |---|---|---|
+| `cost` | Cost JVM pentru Normal, Hard și independent la 2–8 cărți | Poziții generate, CPU și bugete din profil explicit |
 | `context` | Onoruri, necesar de levate, atu întors sau încă pe masă, legalitatea prefixelor | Verificări JVM restrânse |
 | `quick` | Reguli, scor, serii, checkpoint-uri și gărzi de decizie | Subset al regresiei |
 | `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Regresie JVM, fără turnee |
@@ -44,6 +45,7 @@ Estimările `targetMinutes` din catalog ajută planificarea. Ele nu înlocuiesc 
 .\scripts\run-whist-collection.ps1 -Collection context
 .\scripts\run-whist-collection.ps1 -Collection quick
 .\scripts\run-whist-collection.ps1 -Collection regression
+.\scripts\run-whist-collection.ps1 -Collection cost
 ```
 
 Runnerul creează o copie temporară proprie și un director nou de rezultate în arhiva externă implicită din script. `-RunRoot` selectează o altă destinație externă proiectului, iar o destinație existentă este refuzată; `-JavaHome` selectează JDK-ul.
@@ -51,6 +53,8 @@ Runnerul creează o copie temporară proprie și un director nou de rezultate î
 Build-ul [algorithm-build](../../whist-lab-app/algorithm-build/settings.gradle) include motorul și laboratorul JVM; dependența motorului către laborator este numai pentru teste. Construirea aplicației Android și accesul ADB au intrări separate, iar dependențele Gradle trebuie să fie în cache pentru `--offline`.
 
 Fiecare execuție păstrează inventarul SHA-256 al surselor copiate, logul, rezultatele JUnit XML și `collection-result.json`.
+
+`cost` copiază înaintea execuției [profilul de cost](../../config/whist-ai-cost-profile.json), apoi măsoară poziții legale generate. `-CostProfile` poate selecta un alt profil explicit; copia exactă, mediul și fiecare măsurare rămân în rezultatul extern. [Contractul costului](../ai/ATF_CostQualification.md) deține interpretarea și limitele acestei calificări.
 
 `-CaptureComponents` solicită și capturile JSON ale cazurilor instrumentate. Numărul capturilor nu este automat numărul tuturor testelor executate. Un subset `quick` nu se adună cu regresia completă ca și cum ar reprezenta alte cazuri.
 
@@ -67,7 +71,7 @@ Fiecare execuție păstrează inventarul SHA-256 al surselor copiate, logul, rez
 | `-Phase heldout` | Cere și `-CandidateFreeze`, cu identitate și hash-uri verificate înaintea rezervării. |
 
 - **Surse:** modurile `CandidateOverlay` și `ResearchCandidate` sunt mutual exclusive. Suprapunerea se aplică numai copiei temporare, iar baza schimbată este refuzată; migrarea cere calificare explicită, fără simpla înlocuire a hash-urilor.
-- **Rezervare:** runnerul înregistrează identitatea intervalului în `holdout-use` sub `CorpusRoot`. Acest control local nu demonstrează lipsa suprapunerilor parțiale sau a expunerii prin alt corpus; coordonarea registrului comun rămâne un [criteriu deschis](../feedback/ATF_Ai.md).
+- **Rezervare:** [registrul comun](../learning/ATF_EvaluationRegistry.md) verifică suprapunerile independent de corpus și de numele lotului. Dezvoltarea poate reutiliza distribuțiile cu expunere declarată; evaluarea rezervată refuză contaminarea, iar o continuare identică păstrează identitatea inițială.
 - **Compoziție:** [verificatorul loturilor](../../whist-lab-app/ai-lab/tools/learning/whist-learning-batches.mjs) confruntă perechile și sursele, păstrând eșecurile închise. [Evaluatorul](../../whist-lab-app/ai-lab/tools/learning/whist-learning-evaluate.mjs) aplică criteriile protocolului, separat de rezervarea datelor.
 
 ### Identitatea completă a bazei candidatului

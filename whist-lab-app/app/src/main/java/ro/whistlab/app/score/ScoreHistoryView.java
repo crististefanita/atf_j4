@@ -3,6 +3,7 @@ package ro.whistlab.app.score;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -16,23 +17,28 @@ public final class ScoreHistoryView extends HorizontalScrollView {
     public ScoreHistoryView(Context context, GameSession.Snapshot state, ScoreHistory history, WhistUiText copy) {
         super(context);
         ScoreHistoryTable model = ScoreHistoryTable.forMatch(state, history, copy);
+        ScoreHistoryGridMetrics grid = ScoreHistoryGridMetrics.forDensity(
+                model.players().size(), getResources().getDisplayMetrics().density);
         setTag("score-history-table");
         setFillViewport(true);
         LinearLayout table = new LinearLayout(context);
         table.setOrientation(LinearLayout.VERTICAL);
-        table.setPadding(dp(8), dp(6), dp(8), dp(4));
-        int width = dp(66 + model.players().size() * 144);
-        addView(table, new LayoutParams(width, -2));
+        table.setPadding(grid.outerPaddingPx(), dp(6), grid.outerPaddingPx(), dp(4));
+        addView(table, new LayoutParams(grid.tableWidthPx(), -2));
         LinearLayout names = line(0xffdfeada);
-        text(names, copy.historyHand(), 66, true, true);
-        for (String name : model.players()) text(names, name, 144, true, true);
+        text(names, copy.historyHand(), grid.handWidthPx(), true, true);
+        for (String name : model.players()) {
+            separator(names, grid);
+            text(names, name, grid.playerWidthPx(), true, true);
+        }
         table.addView(names);
         LinearLayout headings = line(0xffeef3ea);
-        text(headings, copy.cardsHeading(), 66, false, true);
+        text(headings, copy.cardsHeading(), grid.handWidthPx(), false, true);
         for (String ignored : model.players()) {
-            text(headings, copy.scoreColumnBid(), 42, false, true);
-            text(headings, copy.historyPoints(), 52, false, true);
-            text(headings, copy.scoreColumnTotal(), 50, false, true);
+            separator(headings, grid);
+            text(headings, copy.scoreColumnBid(), grid.bidWidthPx(), false, true);
+            text(headings, copy.historyPoints(), grid.pointsWidthPx(), false, true);
+            text(headings, copy.scoreColumnTotal(), grid.totalWidthPx(), false, true);
         }
         table.addView(headings);
         ScrollView scroll = new ScrollView(context);
@@ -42,22 +48,30 @@ public final class ScoreHistoryView extends HorizontalScrollView {
             int fill = row.status() == ScoreHistoryTable.Status.CURRENT ? 0xffe5eedc
                     : row.hand() % 2 == 0 ? 0xfff1f5ee : 0xfffffef8;
             LinearLayout line = line(fill);
-            text(line, row.hand() + " · " + row.cards(), 66, false, true);
+            text(line, row.cardLabel(), grid.handWidthPx(), false, true);
             for (var cell : row.cells()) {
+                separator(line, grid);
                 LinearLayout group = new LinearLayout(context);
                 group.setGravity(Gravity.CENTER_VERTICAL);
                 group.setFocusable(true);
                 group.setContentDescription(cell.description());
-                text(group, cell.bid(), 42, false, false);
-                text(group, cell.points(), 52, false, false);
-                text(group, cell.total(), 50, true, false);
-                line.addView(group, new LinearLayout.LayoutParams(dp(144), -2));
+                text(group, cell.bid(), grid.bidWidthPx(), false, false);
+                text(group, cell.points(), grid.pointsWidthPx(), false, false);
+                text(group, cell.total(), grid.totalWidthPx(), true, false);
+                line.addView(group, new LinearLayout.LayoutParams(grid.playerWidthPx(), -2));
             }
             rows.addView(line);
         }
         scroll.addView(rows);
         int viewport = Math.min(dp(380), Math.max(dp(80), getResources().getDisplayMetrics().heightPixels - dp(260)));
         table.addView(scroll, new LinearLayout.LayoutParams(-1, viewport));
+    }
+
+    private void separator(LinearLayout row, ScoreHistoryGridMetrics grid) {
+        View divider = new View(getContext());
+        divider.setBackgroundColor(0xff71846c);
+        divider.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(divider, new LinearLayout.LayoutParams(grid.separatorWidthPx(), -1));
     }
 
     private LinearLayout line(int fill) {
@@ -78,7 +92,7 @@ public final class ScoreHistoryView extends HorizontalScrollView {
         view.setEllipsize(android.text.TextUtils.TruncateAt.END);
         if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         if (!accessible) view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        row.addView(view, new LinearLayout.LayoutParams(dp(width), -2));
+        row.addView(view, new LinearLayout.LayoutParams(width, -2));
     }
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
 }

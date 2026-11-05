@@ -11,8 +11,9 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 |---|---|
 | [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
-| [Publicare](ATF_Reporting.md) | Asocierea datelor, tipul înregistrării și acceptarea pe scop. |
+| [Publicare](ATF_Reporting.md) | Validarea timpurie a checkpoint-ului și costul intrărilor consumatorului. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
+| [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
 
 ## Responsabilitatea schimbării
 
@@ -39,5 +40,6 @@ Principiile editoriale se aliniază cu [bunele practici documentare comune](../.
 - Păstrați distincte defectul demonstrat, calificarea lipsă și ipoteza de cercetare.
 - Verificați cazul nominal, refuzul relevant și identitatea surselor înainte de închidere.
 - Promovați regula stabilă în ghidul său și eliminați numai criteriul demonstrat.
+- Fiecare lucrare deschisă are un singur registru responsabil; README-urile explică mecanismul și trimit la acel criteriu.
 - Păstrați controalele tehnice active până la reconcilierea lor explicită.
 - Actualizați toate referințele la consolidare; o schimbare de director nu dovedește rezolvarea comportamentului.

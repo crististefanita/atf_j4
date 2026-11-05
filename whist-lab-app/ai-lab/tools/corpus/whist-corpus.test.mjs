@@ -4,12 +4,13 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {validateGame,decisionExamples,exportDecisionExamples} from './whist-corpus.mjs';
+import {createLegalGame} from '../testing/legal-game-fixture.mjs';
 
-const sample=process.env.WHIST_CORPUS_SAMPLE??'C:/work/whist_back/training-corpus/games/development/android-round-v2-21049369348797.json';
-const game=JSON.parse(await fs.readFile(sample,'utf8'));
+const game=createLegalGame();
 
-test('complete retained Android game replays without any emulator',()=>{
-  const rows=[];const audit=validateGame(game,row=>rows.push(row));assert.equal(audit.cards,376);assert.equal(audit.tricks,94);assert.equal(audit.bids,96);assert.deepEqual(audit.finalScores,[63,90,110,74]);
+test('a generated complete legal game replays without an archive or emulator',()=>{
+  const rows=[];const audit=validateGame(game,row=>rows.push(row));assert.equal(audit.cards,376);assert.equal(audit.tricks,94);assert.equal(audit.bids,96);
+  assert.deepEqual(audit.finalScores,game.players.map(p=>game.hands.reduce((sum,h)=>sum+h.scores[p.seat].base+h.scores[p.seat].series,0)));
   assert.ok(rows.length>1000);assert.ok(rows.every(r=>r.passed));assert.equal(rows.filter(r=>r.name.startsWith('Legal card')).length,376);assert.ok(rows.some(r=>r.scope==='Hand 24'&&r.name==='Cumulative score'));
 });
 test('decision inputs contain own cards and contemporaneous public facts only',()=>{
@@ -34,7 +35,8 @@ test('corrupt data is refused before it becomes training input',()=>{
     g=>{g.hands[0].scores[0].total++;},
     g=>{g.hands[0].tricks[0].plays.pop();},
     g=>{g.hands.pop();},
-    g=>{g.seed=21049369348797;},
+    g=>{g.seed=19;},
+    g=>{g.hands[0].bids[0].bid=2;},
     g=>{g.rules.seriesEnabled='true';},
     g=>{g.players[0].seat=1;},
     g=>{g.hands[0].dealer=-1;},

@@ -77,7 +77,7 @@ Corecția contextuală se aplică doar în ramura eligibilă a modelului experim
 
 ## Inferența comportamentului
 
-Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Modelul runtime specializat de o carte și fallback-ul său sunt documentate în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor); manifestele agregate care omit această delimitare au [criteriu de reconciliere](../feedback/ATF_Ai.md).
+Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Modelul runtime specializat de o carte și fallback-ul său sunt documentate în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor); controlul automat al coerenței manifestului cu acel domeniu rămâne [criteriu deschis](../feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor).
 
 [Modelul experimental de licitații](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) folosește coeficienți fixați și caracteristici ale mâinii ipotetice originale și prefixului disponibil atunci. Cărțile rămase și cele jucate de același loc se reunesc fără dublarea mesei curente.
 

@@ -65,6 +65,8 @@ vizuală și obiectivul partidei rămân verdicte distincte.
 | Contoare de serie la limita celor cinci mâini | Selectare ±5/±10 în meniu, închidere prin cărți jucate în Android și relansare fără plată repetată. |
 | Partidă pregătită până la ultima carte umană | Încheiere prin interfață, recalculare Top 20 cu om și AI, Top 10/20 și izolare între configurații. |
 
+Datele pregătite de fixture-uri sau replay-uri diagnostice sunt excluse din clasamentul utilizatorului. Verificarea controalelor, observația întregii celule și restaurarea fișierelor au criterii distincte:
+
 | Control | Mecanism |
 |---|---|
 | Date inițiale | Arhivare înaintea izolării; hash-ul fiecărui fișier restaurat se confruntă înaintea redeschiderii aplicației. |

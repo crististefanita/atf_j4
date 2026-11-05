@@ -61,8 +61,10 @@ Descriptorul separă datele capturate la execuție de cele verificate la revizia
 
 ## Implementări și limite
 
-[whist_ui_handoff.py](../../atf-test-android/tools/whist_ui_handoff.py) implementează republicarea offline, cu descriptor și rădăcină externă. Tipul său de înregistrare nu trebuie folosit pentru a pretinde o nouă execuție Android.
-
-[WhistExtentFeedback](../../atf-test-android/src/main/java/atf/android/whist/evidence/WhistExtentFeedback.java) publică indexul unei rulări auditate în spațiul extern indexes. Rădăcina de handoff și directorul indexului sunt configurabile; directorul sursă nu este o destinație validă.
+| Implementare | Contract și limită |
+|---|---|
+| [whist_ui_handoff.py](../../atf-test-android/tools/whist_ui_handoff.py) | Implementează republicarea offline, cu descriptor și rădăcină externă. Tipul său de înregistrare nu trebuie folosit pentru a pretinde o nouă execuție Android. |
+| [WhistExtentFeedback](../../atf-test-android/src/main/java/atf/android/whist/evidence/WhistExtentFeedback.java) | Publică indexul unei rulări auditate în spațiul extern indexes. Rădăcina de handoff și directorul indexului sunt configurabile; directorul sursă nu este o destinație validă. |
+| [Componentele predării](../../atf-test-android/tools/test_whist_ui_handoff.py) | Verifică refuzul datelor corupte și păstrarea acceptanței la eșec ori republicare veche. Indexul Java indică ultima publicare auditată; descriptorul și pointerul pe scop stabilesc acceptanța, inclusiv când ultima încercare a eșuat. |
 
 [Arhitectura publicării](README.md) · [Contractul Android](ATF_Android.md) · [Criterii pentru handoff](../feedback/ATF_Reporting.md)

@@ -39,13 +39,10 @@ Un lansator alege modulele, parametrii și resursele. Motorul și laboratorul de
 
 PowerShell se verifică sintactic separat de execuția operației. Un scenariu Android cere aplicație identificată și rezervare exclusivă; documentarea comenzii nu reprezintă o execuție pe dispozitiv.
 
-## Îmbunătățiri prioritare ale lansatoarelor
+## Identitatea execuției
 
-Responsabilul coordonării trebuie să închidă blocajele de calificare înaintea extinderii catalogului de experimente. [Lansatorul colecțiilor](run-whist-collection.ps1) deține validarea bazei și rezervarea evaluării; [registrul AI](../docs/feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor) păstrează criteriile comune.
+[Lansatorul colecțiilor](run-whist-collection.ps1) deține validarea bazei și rezervarea evaluării. Uniformizarea precondițiilor și diagnosticului rămâne în [feedback-ul coordonării](../docs/feedback/ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor).
 
-| Prioritate | Cerință | Criteriu de închidere |
-|---|---|---|
-| P1 | Rezervați evaluarea într-un registru canonic. | Intervalele parțial suprapuse, copierea corpusului și doi solicitanți concurenți au probe de refuz; simpla schimbare a numelui lotului păstrează expunerea. |
-| P2 | Uniformizați precondițiile și diagnosticul lansatoarelor. | Java, Maven, Gradle, Node și Python au versiuni și capabilități verificate pentru intrarea aleasă; lipsa lor este raportată înaintea execuției costisitoare, iar rezultatul identifică sursele și comanda efectivă. |
+- [Contractul bazei candidatului](../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului) validează inventarul complet, hash-urile și copia finală, cu migrare explicită a identității. Criteriile și rezultatele rămân distincte, iar configurația generală nu se umple cu identitățile unor experimente încheiate.
 
-[Contractul bazei candidatului](../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului) validează inventarul complet, hash-urile și copia finală, cu migrare explicită a identității. Criteriile și rezultatele rămân distincte, iar configurația generală nu se umple cu identitățile unor experimente încheiate.
+- [Registrul comun](../docs/learning/ATF_EvaluationRegistry.md) serializează rezervările și refuză suprapunerile evaluării între corpusuri. Lansatoarele de diagnostic înregistrează reutilizarea pentru învățare; o rulare întreruptă nu eliberează automat distribuțiile.
