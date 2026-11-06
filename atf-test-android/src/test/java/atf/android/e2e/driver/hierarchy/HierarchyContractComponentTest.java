@@ -1,9 +1,12 @@
 package atf.android.e2e.driver.hierarchy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 import atf.android.AdbClient;
 import atf.android.e2e.driver.AndroidUiDriver;
@@ -20,6 +23,7 @@ import org.xml.sax.SAXParseException;
 
 @AtfComponentTest
 class HierarchyContractComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @TempDir Path output;
 
     @Test void legalCardsKeepObservedOrderAndDistinctDescriptions() throws Exception {

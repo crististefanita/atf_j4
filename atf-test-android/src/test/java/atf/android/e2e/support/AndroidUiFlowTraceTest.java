@@ -1,10 +1,13 @@
 package atf.android.e2e.support;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
@@ -20,6 +23,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @AtfComponentTest
 class AndroidUiFlowTraceTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @ParameterizedTest
     @ValueSource(strings = {"exception", "checkpoint", "assertion", "action", "pending"})
     void successfulFinishCannotEraseRecordedFailure(String source, @TempDir Path artifacts) throws Exception {

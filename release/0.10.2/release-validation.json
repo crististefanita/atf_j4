@@ -1,0 +1,254 @@
+{
+  "release": {
+    "versionName": "0.10.2",
+    "versionCode": 15,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "apkName": "WhistLab-0.10.2.apk",
+    "apkRelativePath": "WhistLab-0.10.2.apk",
+    "apkBytes": 803960,
+    "apkSha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
+  },
+  "source": {
+    "sourceCommit": null,
+    "basisHead": "1fce1e36695402d39c3b99339bc9cecf1b9e8508",
+    "workingTreeFingerprint": "a897187aef5bb5c284ba8233a2e24724a971a677793cadf17cfa56c58106d278",
+    "inputManifest": "reports/apk-inputs.json",
+    "originalBuildSnapshotFingerprint": "5798cc87928fbe2298708909ef911242e5e9dbff18eaf70084bc53a257b85786"
+  },
+  "publication": {
+    "state": "PREPARED",
+    "tag": "v0.10.2",
+    "commitPerformed": false,
+    "pushPerformed": false,
+    "remoteMutationsPerformed": false
+  },
+  "qualification": {
+    "state": "PASS",
+    "groups": {
+      "app": {
+        "tests": 236,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-app.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      },
+      "kit": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-kit.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      },
+      "adapter": {
+        "tests": 200,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-adapter.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      },
+      "framework": {
+        "tests": 37,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-framework.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      },
+      "packaging": {
+        "tests": 83,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-packaging.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      },
+      "native": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-native.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      },
+      "governance": {
+        "tests": 58,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-governance.xml"
+        ],
+        "aggregation": "Original testsuite nodes, cases, verdicts and timing preserved; not a new test execution"
+      }
+    },
+    "build": "PASS",
+    "lintVitalRelease": "PASS",
+    "apkZipCrc": "PASS",
+    "nativeAndroidApi": 28,
+    "finalGovernance": "PASS",
+    "fullGameRegressionExecuted": false,
+    "uniqueJunitInvocations": 630
+  },
+  "evidenceRetention": {
+    "state": "CURRENT_SELECTIONS_EMBEDDED",
+    "canonicalReport": "reports/e2e/history-legend.html",
+    "canonicalReportSha256": "8ae17833b3013d56d60ae61ba4f8edc200b34827b7fc826b3740c203d4bfb187",
+    "separateEvidencePurpose": {
+      "qualification.json": "Selection identity, aggregation provenance, browser checks and explicit limits",
+      "apk-inputs.json": "APK source input population; usable by the independent integrity gate",
+      "test-results": "Original JUnit suite nodes consolidated per selection for independent verdict recount",
+      "diagnostics/font-restoration-failure.html": "Original demonstrated teardown defect; explicitly failed diagnostic"
+    },
+    "previousVersionArchive": {
+      "previousVersion": "0.10.1",
+      "archive": "C:\\work\\whist_back\\release-archives\\0.10.2-5d160bbf9f\\retired-0.10.1.zip",
+      "sha256": "65d384ddeb28905b74797bf492e2a81d14eec49869499f77808d82769f8d7549",
+      "files": 107,
+      "zipCrc": "PASS"
+    }
+  },
+  "integrity": {
+    "schemaVersion": 1,
+    "kind": "OBSERVED_PAYLOAD_HASHES",
+    "observedUtc": "2026-11-06T11:37:23.831Z",
+    "files": [
+      {
+        "path": "README.md",
+        "bytes": 891,
+        "sha256": "cbbba075ee033f33087a28d516fcaff32394aad1141cc37e745f0eb17e7c76dc"
+      },
+      {
+        "path": "WhistLab-0.10.2.apk",
+        "bytes": 803960,
+        "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a"
+      },
+      {
+        "path": "WhistLab-0.10.2.apk.sha256",
+        "bytes": 87,
+        "sha256": "9b3f636a4cc7cc123c390b011eb32df83c4eeffdedc3e201492afe0b3047d045"
+      },
+      {
+        "path": "release-notes.template.md",
+        "bytes": 678,
+        "sha256": "fb4f9dc4e52a1dd86fcb84aed795ac35731df9d21f1599826978e7dffeb52ec6"
+      },
+      {
+        "path": "release-presentation.json",
+        "bytes": 429,
+        "sha256": "05d53a86d3eb5c5aef0baa3ef3be56a09ae09e4f440965b7709e83a2dedb0afc"
+      },
+      {
+        "path": "reports/README.md",
+        "bytes": 4835,
+        "sha256": "c4c11d0ff3ddd92064e0da7b7d0f65a853295974b40a021b96e69589df570d2a"
+      },
+      {
+        "path": "reports/apk-inputs.json",
+        "bytes": 22133,
+        "sha256": "63b514b4ea9cac9993b7b18576c82d04ac5c90a19c05681e527b1c2d0db38cda"
+      },
+      {
+        "path": "reports/component/adapter-extent.html",
+        "bytes": 2880499,
+        "sha256": "1d8f5702f48b53ef8e39cb680ce2d3b75297bacd9715e0242566d4b101368ebc"
+      },
+      {
+        "path": "reports/component/display-extent.html",
+        "bytes": 3826056,
+        "sha256": "000f99fb59cca7ef575bd7bcfc83b7f5178d2577bea211a8d743c7e224d9e701"
+      },
+      {
+        "path": "reports/component/framework-extent.html",
+        "bytes": 2801286,
+        "sha256": "6483e245254754bbdd6481aa2fbeb5e701fcd6b1e885bba8da711f89958d5e78"
+      },
+      {
+        "path": "reports/component/history-fallback.html",
+        "bytes": 120847,
+        "sha256": "2300a41c8726af0ec7b89d884f735061cd855a75969a7b75ac9a64fc097cbbc2"
+      },
+      {
+        "path": "reports/component/trace-publication-extent.html",
+        "bytes": 18362000,
+        "sha256": "3f123f0fafa2d7900d8a3e81ad00e459b1f4be0122f433a6aba601d2ef83234d"
+      },
+      {
+        "path": "reports/diagnostics/font-restoration-failure.html",
+        "bytes": 3870461,
+        "sha256": "53af8d0a78ac23503c472a17ff9d942a5a41eda01602a0fa54f846c084dd5267"
+      },
+      {
+        "path": "reports/e2e/history-legend.html",
+        "bytes": 4000745,
+        "sha256": "8ae17833b3013d56d60ae61ba4f8edc200b34827b7fc826b3740c203d4bfb187"
+      },
+      {
+        "path": "reports/e2e/history-release-sanity.html",
+        "bytes": 3517962,
+        "sha256": "ee103eaa48ff1e3760d8b3481d696aacebd22a60aeadeaf4b15a67f647be498b"
+      },
+      {
+        "path": "reports/e2e/signed-release-smoke.html",
+        "bytes": 2836427,
+        "sha256": "823bf53a26b52076b14a350e626aea19afb235c43779597c20d11740e20f3f52"
+      },
+      {
+        "path": "reports/qualification.json",
+        "bytes": 46247,
+        "sha256": "b412a4ae615fa7c1ed55132dfff0ad92f0106d3c6b6c0482f809777f2fca74eb"
+      },
+      {
+        "path": "reports/test-results/adapter/TEST-adapter.xml",
+        "bytes": 508750,
+        "sha256": "453b52bbff4cc23fdd6298f43a7f816ce841efaeee00662e9587cfceac530222"
+      },
+      {
+        "path": "reports/test-results/app/TEST-app.xml",
+        "bytes": 48223,
+        "sha256": "ac1afd090170b61fe311e367e436d6b90198844a26d0ef6e284656747d9a652d"
+      },
+      {
+        "path": "reports/test-results/framework/TEST-framework.xml",
+        "bytes": 107654,
+        "sha256": "caad83117e6e957b05ba3ce5ed05dfec4c3d3966060d2380fb0b326787055ecd"
+      },
+      {
+        "path": "reports/test-results/governance/TEST-governance.xml",
+        "bytes": 277563,
+        "sha256": "ab2c89eb2d09505da502e415db2b5a7e66e85357a064b1d6cc059f069848169b"
+      },
+      {
+        "path": "reports/test-results/kit/TEST-kit.xml",
+        "bytes": 25154,
+        "sha256": "5655679d15393b2a6e8618fefa4ced74ba2b0d0c947dbfee8a59443c4c95ee67"
+      },
+      {
+        "path": "reports/test-results/native/TEST-native.xml",
+        "bytes": 34926,
+        "sha256": "e1fd69bb81cd596051c4c93daaae2c0abc9e7aae6426a44d0c16167395467d21"
+      },
+      {
+        "path": "reports/test-results/packaging/TEST-packaging.xml",
+        "bytes": 83293,
+        "sha256": "56b4db2f4e5aa1abf96c63441401b5419c2715f20c8b4be0ee1601df4054a8a6"
+      }
+    ]
+  }
+}

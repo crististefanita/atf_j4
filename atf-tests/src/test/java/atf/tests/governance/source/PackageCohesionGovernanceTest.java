@@ -1,5 +1,7 @@
 package atf.tests.governance.source;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,11 +17,11 @@ class PackageCohesionGovernanceTest {
     @Test void oversizedPackagesRequireAnExactReviewedInventoryAndAnAction() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var policy = GovernanceProject.policy(root);
-        assertEquals(0, policy.required("reviewedPackages").size(),
+        AuditedAssertions.assertEquals(0, policy.required("reviewedPackages").size(),
                 "The current package layout must remain within the cohesion limit without waivers");
         var inventory = SourceQualityRules.packageInventory(GovernanceProject.sources(root));
         var violations = check(inventory, policy.required("packageLimit").asInt(), policy.required("reviewedPackages"));
-        assertTrue(violations.isEmpty(), () -> String.join("\n", violations));
+        AuditedAssertions.assertTrue(violations.isEmpty(), () -> String.join("\n", violations));
     }
 
     static List<String> check(Map<String, List<String>> inventory, int limit, JsonNode reviewed) {
@@ -39,17 +41,27 @@ class PackageCohesionGovernanceTest {
         return result;
     }
 
+    @Test void unreviewedPackagePassesAtEightFilesAndRejectsTheNinth() {
+        var files = java.util.stream.IntStream.range(0, 9).mapToObj(i -> "Type" + i + ".java").toList();
+        var noExceptions = new com.fasterxml.jackson.databind.ObjectMapper().createObjectNode();
+        String owner = "module:test:example";
+        AuditedAssertions.assertTrue(check(Map.of(owner, files.subList(0, 8)), 8, noExceptions).isEmpty());
+        var violations = check(Map.of(owner, files), 8, noExceptions);
+        AuditedAssertions.assertEquals(1, violations.size());
+        AuditedAssertions.assertTrue(violations.getFirst().contains(owner));
+    }
+
     @Test void anExceptionCannotHideGrowthReplacementOrAStalePackage() throws Exception {
         var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
         var original = java.util.stream.IntStream.range(0, 9).mapToObj(i -> "Type" + i + ".java").toList();
         var entry = mapper.createObjectNode().put("reason", "reviewed seam").put("action", "split by responsibility");
         var files = entry.putArray("files"); original.forEach(files::add);
         var reviewed = mapper.createObjectNode().set("module:main:example", entry);
-        assertTrue(check(Map.of("module:main:example", original), 8, reviewed).isEmpty());
+        AuditedAssertions.assertTrue(check(Map.of("module:main:example", original), 8, reviewed).isEmpty());
         var replaced = new ArrayList<>(original); replaced.set(0, "Replacement.java");
-        assertFalse(check(Map.of("module:main:example", replaced), 8, reviewed).isEmpty());
+        AuditedAssertions.assertFalse(check(Map.of("module:main:example", replaced), 8, reviewed).isEmpty());
         var grown = new ArrayList<>(original); grown.add("NewType.java");
-        assertFalse(check(Map.of("module:main:example", grown), 8, reviewed).isEmpty());
-        assertFalse(check(Map.of("module:main:example", original.subList(0, 8)), 8, reviewed).isEmpty());
+        AuditedAssertions.assertFalse(check(Map.of("module:main:example", grown), 8, reviewed).isEmpty());
+        AuditedAssertions.assertFalse(check(Map.of("module:main:example", original.subList(0, 8)), 8, reviewed).isEmpty());
     }
 }

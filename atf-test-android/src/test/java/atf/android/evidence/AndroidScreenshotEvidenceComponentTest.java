@@ -1,8 +1,11 @@
 package atf.android.evidence;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 import atf.reporting.model.ReportScreenshot;
 import atf.testkit.AtfComponentTest;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 @AtfComponentTest
 public class AndroidScreenshotEvidenceComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test
     void mapsPngBytesToTheSharedInlineScreenshotContract() {
         byte[] png = new byte[] {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10, 0, 1};

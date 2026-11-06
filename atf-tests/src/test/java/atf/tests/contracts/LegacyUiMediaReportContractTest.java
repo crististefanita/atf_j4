@@ -1,5 +1,7 @@
 package atf.tests.contracts;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.tests.publishing.DeepSuiteExtentReportTest;
 
 import atf.testkit.AtfComponentTest;
@@ -42,13 +44,13 @@ class LegacyUiMediaReportContractTest {
             DeepSuiteExtentReportTest.publishUiFlow(session,manifest,folder,true);
         }
         String html=Files.readString(report);var doc=Jsoup.parse(html);
-        var canonical=doc.select("#test-view .test-list-item > li.test-item");assertEquals(1,canonical.size());
+        var canonical=doc.select("#test-view .test-list-item > li.test-item");AuditedAssertions.assertEquals(1,canonical.size());
         var labels=canonical.first().select(".node").eachText();
-        assertTrue(labels.contains("THEN Captured instruction panel 0"));assertTrue(labels.contains("THEN Captured instruction panel 1"));
-        assertTrue(labels.stream().noneMatch(label->label.startsWith("THEN THEN ")));
-        assertEquals(0,canonical.select("table.helm-validation-table > tbody > tr").size());
-        assertEquals(2,canonical.select("a[data-atf-screenshot=base64],a[data-atf-screenshot-ref]").size());
-        assertTrue(html.contains(Base64.getEncoder().encodeToString(png)));
-        assertTrue(new GameReportTextAudit(html).contains("first\r\nlast & &#13; <literal>"));
+        AuditedAssertions.assertTrue(labels.contains("THEN Captured instruction panel 0"));AuditedAssertions.assertTrue(labels.contains("THEN Captured instruction panel 1"));
+        AuditedAssertions.assertTrue(labels.stream().noneMatch(label->label.startsWith("THEN THEN ")));
+        AuditedAssertions.assertEquals(0,canonical.select("table.helm-validation-table > tbody > tr").size());
+        AuditedAssertions.assertEquals(2,canonical.select("a[data-atf-screenshot=base64],a[data-atf-screenshot-ref]").size());
+        AuditedAssertions.assertTrue(html.contains(Base64.getEncoder().encodeToString(png)));
+        AuditedAssertions.assertTrue(new GameReportTextAudit(html).contains("first\r\nlast & &#13; <literal>"));
     }
 }

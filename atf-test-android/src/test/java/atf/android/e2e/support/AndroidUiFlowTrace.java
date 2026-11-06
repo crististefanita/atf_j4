@@ -20,7 +20,7 @@ import java.util.Properties;
 import java.util.Objects;
 
 /** Persists ordered, renderer-neutral Android UI checkpoints for the final J4 Extent report. */
-public final class AndroidUiFlowTrace {
+public final class AndroidUiFlowTrace implements atf.android.e2e.support.flow.AndroidUiFlowEvidence {
     private final Path outputDirectory;
     private final Path manifest;
     private final String id;

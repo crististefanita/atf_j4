@@ -195,8 +195,11 @@ flowchart LR
 | Randare | Afișarea scorului nu înregistrează clasamentul. Reafișarea nu ocolește checkpoint-ul și nu scrie rezultate suplimentare. |
 | Reluare | Citirea și validarea salvării au bloc propriu. Salvarea ulterioară se execută în afara tratării datelor invalide, astfel încât eșecul ei nu șterge checkpoint-ul citit. |
 
+[SavedNumbers](persistence/SavedNumbers.java) refuză fracțiile, depășirile, șirurile și valorile nule înaintea conversiei câmpurilor întregi. Seed-ul păstrează exact domeniul semnat pe 64 de biți; valorile opționale folosesc implicitul numai când câmpul lipsește, apoi domeniul validează starea restaurată.
+
 - [Componentele comenzilor](../../../../../test/java/ro/whistlab/app/lifecycle/GameCommandFlowComponentTest.java) verifică mutația reală și refuzul, plus defecte injectate după acceptare.
 - [Componentele persistenței](../../../../../test/java/ro/whistlab/app/persistence/GamePersistenceComponentTest.java) verifică ordinea și oprirea etapelor prin porturi controlate; blocarea folosește handshake, fără prag de performanță.
+- [Componentele codec-ului numeric](../../../../../test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java) confruntă salvarea reală, vecinul valid, limitele seed-ului și refuzul pierderii de precizie, cu aceeași cauză localizată pe câmp.
 - [Componentele clasamentului](../../../../../test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) confruntă reîncercarea cu repository-ul real și o sesiune restaurată, fără puncte sau locuri duplicate.
 - Recuperarea stocării Android și latența I/O pe dispozitiv păstrează [calificarea proprie](../../../../../../../../docs/feedback/ATF_Android.md#persistență-și-coordonare).
 
@@ -230,3 +233,7 @@ Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea
 Reactivitatea pe dispozitiv și costul politicii au calificare distinctă de corectitudinea predării între executori. Randarea efectului de colectare și recuperarea stocării native cer calificarea binarului efectiv instalat.
 
 Calificările rămase sunt centralizate în [feedback-ul Android](../../../../../../../../docs/feedback/ATF_Android.md). Reactivitatea și costul deciziei se măsoară separat pe mărimea mâinii și profilul dispozitivului, fără a deduce acceptanța APK-ului din componentele executorului.
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](../../../../../test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

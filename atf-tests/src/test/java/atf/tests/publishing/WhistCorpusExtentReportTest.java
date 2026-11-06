@@ -1,5 +1,7 @@
 package atf.tests.publishing;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.tests.reporting.GameReportSession;
@@ -27,7 +29,7 @@ class WhistCorpusExtentReportTest {
     @Test void publishesEveryCorpusAuditAndDetailedIndependentReplayWithHonestLearningOutcomes()throws Exception{
         assumeTrue(Boolean.getBoolean("atf.corpus.publish"));Path run=Path.of(System.getProperty("atf.corpus.runDir"));
         Path report=run.resolve("corpus-extent-report.html");var index=read(run.resolve("corpus-index.json"));var replay=read(run.resolve("reference-audit.json"));var acceptance=read(run.resolve("acceptance.json"));
-        assertEquals("PASS",acceptance.path("functionalStatus").asText());assertEquals("PASS",replay.path("status").asText());
+        AuditedAssertions.assertEquals("PASS",acceptance.path("functionalStatus").asText());AuditedAssertions.assertEquals("PASS",replay.path("status").asText());
 
         long checks=0;var images=new ArrayList<byte[]>();
         try(var session=GameReportSession.open(report)){
@@ -44,11 +46,11 @@ class WhistCorpusExtentReportTest {
             }
             try(var phase=scenario.startPhase("TEST BODY")){
                 try(var group=phase.startAssertionStep("Every complete retained game — evaluator outcomes")){
-                    var rows=new ArrayList<AtfAssertion>();for(var game:index.path("index")){assertEquals("PASS",game.path("status").asText());rows.add(new AtfAssertion(game.path("id").asText()+" / full rules replay","PASS",
+                    var rows=new ArrayList<AtfAssertion>();for(var game:index.path("index")){AuditedAssertions.assertEquals("PASS",game.path("status").asText());rows.add(new AtfAssertion(game.path("id").asText()+" / full rules replay","PASS",
                         game.path("status").asText(),true));checks++;}
                     group.assertions(rows);group.complete(AtfReportStatus.PASS);
                 }
-                var groups=new LinkedHashMap<String,List<AtfAssertion>>();for(var row:replay.path("rows")){assertTrue(row.path("passed").asBoolean());groups.computeIfAbsent(row.path("scope").asText(),k->new ArrayList<>()).add(new
+                var groups=new LinkedHashMap<String,List<AtfAssertion>>();for(var row:replay.path("rows")){AuditedAssertions.assertTrue(row.path("passed").asBoolean());groups.computeIfAbsent(row.path("scope").asText(),k->new ArrayList<>()).add(new
                     AtfAssertion(row.path("name").asText(),text(row.get("expected")),text(row.get("actual")),row.path("passed").asBoolean()));checks++;}
                 for(var group:groups.entrySet())try(var step=phase.startAssertionStep("Retained Android game / offline replay / "+group.getKey())){
                     step.assertions(group.getValue());step.complete(AtfReportStatus.PASS);
@@ -77,9 +79,9 @@ class WhistCorpusExtentReportTest {
                     ui.complete(AtfReportStatus.PASS);
             }
         }
-        String html=Files.readString(report);var textAudit=new GameReportTextAudit(html);assertTrue(checks>1000);
-        for(var row:replay.path("rows"))for(String key:List.of("expected","actual"))assertTrue(textAudit.contains(text(row.get(key))),"Missing full replay value: "+row.path("scope")+" / "+key);
-        for(byte[] image:images)assertTrue(html.contains(Base64.getEncoder().encodeToString(image)),"Lost exact historical PNG bytes");
+        String html=Files.readString(report);var textAudit=new GameReportTextAudit(html);AuditedAssertions.assertTrue(checks>1000);
+        for(var row:replay.path("rows"))for(String key:List.of("expected","actual"))AuditedAssertions.assertTrue(textAudit.contains(text(row.get(key))),"Missing full replay value: "+row.path("scope")+" / "+key);
+        for(byte[] image:images)AuditedAssertions.assertTrue(html.contains(Base64.getEncoder().encodeToString(image)),"Lost exact historical PNG bytes");
         Properties proof=new Properties();proof.setProperty("status","PASS");proof.setProperty("nativeComparisons",""+checks);proof.setProperty("completeGames",index.path("games").asText());proof.setProperty("inlineHistoricalPngs",
             ""+images.size());proof.setProperty("learningStatus",acceptance.path("learningStatus").asText());proof.setProperty("report.bytes",""+Files.size(report));proof.setProperty("report.sha256",HexFormat.of().formatHex(
             java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(report))));try(var out=Files.newOutputStream(run.resolve("corpus-report-verification.properties"))){proof.store(out,

@@ -1,12 +1,15 @@
 package atf.android.process;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static atf.testkit.assertions.AuditedAssertions.assertArrayEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertInstanceOf;
+import static atf.testkit.assertions.AuditedAssertions.assertSame;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 import atf.testkit.AtfComponentTest;
 import java.io.ByteArrayInputStream;
@@ -30,6 +33,7 @@ import org.junit.jupiter.api.io.TempDir;
 @AtfComponentTest
 @Timeout(60)
 public class CommandProcessComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test void aLateProcessStartIsBoundedAndItsEventualProcessIsCleaned() throws Exception {
         CountDownLatch release = new CountDownLatch(1);
         CountDownLatch destroyed = new CountDownLatch(1);

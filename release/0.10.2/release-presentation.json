@@ -1,0 +1,10 @@
+{
+  "version": "0.10.2",
+  "mode": "changes",
+  "previousVersion": "0.10.1",
+  "points": [
+    "Salvările cu valori numerice invalide sunt refuzate înaintea pierderii preciziei.",
+    "Livrarea locală reunește APK-ul, checksum-ul și documentația într-un singur dosar de versiune."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.10.2/reports/README.md"
+}

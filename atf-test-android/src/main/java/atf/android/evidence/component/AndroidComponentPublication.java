@@ -17,7 +17,7 @@ public final class AndroidComponentPublication implements ComponentAuditExtensio
         this.identity = java.util.Objects.requireNonNull(identity);
         this.inputs = java.util.Objects.requireNonNull(inputs);
     }
-    @Override public AssertionValueDisplay display() { return owner.display(); }
+    @Override public AssertionValueDisplay display() { return owner.display(inputs); }
     @Override public ComponentAssertionAudit.AssertionRequirement assertionRequirement() {
         return ComponentAssertionAudit.AssertionRequirement.TEST_BODY;
     }

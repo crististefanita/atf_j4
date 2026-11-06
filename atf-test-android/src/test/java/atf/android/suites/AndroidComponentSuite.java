@@ -1,14 +1,16 @@
 package atf.android.suites;
 
-import atf.android.AdbClientContractTest;
-import atf.android.process.CommandProcessComponentTest;
-import atf.android.evidence.AndroidScreenshotEvidenceComponentTest;
 import atf.testkit.AtfComponentTest;
-import org.junit.platform.suite.api.SelectClasses;
-import org.junit.platform.suite.api.Suite;
+import atf.testkit.scope.TestRunScope;
+import org.junit.platform.suite.api.*;
 
-/** Local Android adapter contracts; this suite never needs an emulator. */
+/** Primary component gate; focused suites are declared separately in the suite catalogue. */
 @Suite
-@SelectClasses({AdbClientContractTest.class, CommandProcessComponentTest.class, AndroidScreenshotEvidenceComponentTest.class})
+@SelectPackages("atf.android")
+@IncludeClassNamePatterns("^[^$]+$")
+@IncludeTags("component")
+@IncludeEngines("junit-jupiter")
+@ConfigurationParameter(key = TestRunScope.CONFIGURATION_PARAMETER, value = "suite")
+@ConfigurationParameter(key = "junit.jupiter.execution.parallel.enabled", value = "false")
 @AtfComponentTest
 public class AndroidComponentSuite { }

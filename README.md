@@ -12,7 +12,7 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 **[Descarcă APK-ul din GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest)**. Autentifică-te cu contul tău în același browser, apoi alege fișierul `.apk` din **Assets**.
 
-[Directorul local de livrare](dist/README.md) trimite către aceeași pagină. [Registrul APK-ului curent](artifacts/README.md) păstrează identitatea, SHA-256 și rapoartele versiunii verificate.
+[Livrarea locală curentă](release/README.md) reunește APK-ul, SHA-256 și rapoartele versiunii verificate.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 

@@ -40,7 +40,7 @@ Tabelul reflectă adnotările claselor executabile, inclusiv adnotările compuse
 | `atf-test-kit` | Da | Da | — | — | Configurare, izolare, resurse și auditul comparațiilor. |
 | `atf-validation` | Da | Da | — | — | Reguli de validare și evaluarea contractelor publice. |
 | `atf-test-android` | Da | Da | Da | Da | Timp, ADB simulat, oracole, integrarea raportării și parcursuri Android reale. |
-| `atf-tests` | — | Da | Da | — | Contractele adaptoarelor, binarele comune și guvernanța proiectului. |
+| `atf-tests` | Da | Da | Da | — | Contractele adaptoarelor, binarele comune și guvernanța proiectului. |
 
 [Verificarea matricei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java) confruntă acest tabel cu sursele curente. Fiecare clasă executabilă Maven are exact una dintre `@AtfUnitTest`, `@AtfComponentTest`, `@AtfIntegrationTest` și `@AtfE2eTest`, direct sau printr-o adnotare compusă.
 
@@ -55,6 +55,19 @@ Declarațiile sunt extrase prin parserul JDK, independent de indentare și de po
 | Binar și integrarea consumatorului | [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) |
 | Parcurs Android | [WhistLabGameplayE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabGameplayE2eTest.java) |
 | Calitatea surselor și documentelor | [AtfQualityGovernanceSuite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) |
+
+## Suite primare și selecții focalizate
+
+[Catalogul executabil](../../config/atf-test-suites.json) atribuie fiecărei clase Maven exact o suită primară din modulul și nivelul ei. Selectorii primari folosesc pachetele și eticheta nivelului, cu motorul Jupiter; o clasă nouă intră în selecție fără completarea manuală a unei liste.
+
+| Rol | Responsabilitate | Regula de agregare |
+|---|---|---|
+| Primar | Populația completă a unui nivel dintr-un modul | Fiecare clasă executabilă are exact un proprietar primar. |
+| Focalizat | Submulțime explicită a unuia sau mai multor părinți primari | Se execută pentru diagnostic ori un scop restrâns; nu adaugă din nou cazurile în totalul primar. |
+
+[Guvernanța selecțiilor](../../atf-tests/src/test/java/atf/tests/governance/suites/SuiteOwnershipGovernanceTest.java) confruntă declarațiile reale, rolurile și selecțiile. Clasele omise, proprietarii multipli, nivelul greșit, suitele neînregistrate și selecțiile focalizate fără părinte sunt refuzate; corecția modifică intrarea, fără eliminarea testului.
+
+Colecția de guvernanță este o selecție focalizată care traversează mai multe niveluri. Publicatoarele care consumă jurnale externe au nivel de integrare și precondiții proprii; simpla republicare nu devine componentă autonomă sau execuție Android.
 
 ## Motorul și interfața în Gradle
 

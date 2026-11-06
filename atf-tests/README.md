@@ -79,3 +79,7 @@ Componentele verifică selecția, adaptoarele și publicarea; integrarea verific
 Responsabilul consumatorului păstrează auditabilitatea și la intrări mari sau predominant cu eșec. [Feedback-ul de volum](../docs/feedback/ATF_Reporting.md#costul-intrărilor-consumatorului) deține calificarea costului, iar [predarea rezultatelor](../docs/reporting/ATF_Handoff.md) deține identitatea și refuzul provenienței contradictorii.
 
 Pentru alt joc, [contractul transferului](../docs/learning/ATF_GameTransfer.md) separă semantica înregistrărilor de API-ul bibliotecii. Adaptorul nou păstrează comparațiile și proveniența; cerințele generice ale JAR-ului urmează [rutarea responsabilităților](../docs/feedback/README.md).
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

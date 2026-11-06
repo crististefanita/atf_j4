@@ -1,5 +1,8 @@
 package atf.android.e2e.records;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.AdbClient;
 import atf.android.e2e.driver.AndroidUiDriver;
 import atf.testkit.AtfComponentTest;
@@ -8,17 +11,18 @@ import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertSame;
+import static atf.testkit.assertions.AuditedAssertions.assertArrayEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertNotEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
 
 /** No emulator: proves that ownership loss cannot forward a command to the transport. */
 @AtfComponentTest
 class RecordsRunContractComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test void installedApkReceiptUsesTheObservedPathAndVerifiedDigest() {
         var setup = RecordsFixtures.JSON.createObjectNode().put("installedPath", "/data/app/ro.whistlab.app/base.apk")
                 .put("installedApkSha256", "A".repeat(64)).put("requestedApkSha256", "a".repeat(64));

@@ -1,5 +1,7 @@
 package atf.libraries;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
@@ -22,14 +24,14 @@ class PlatformLibraryIntegrityTest {
             var surface = new PlatformLibrarySurface(root, artifact); surface.inspect();
             Path jar = surface.jar(); byte[] original = Files.readAllBytes(jar);
             Files.writeString(jar, "changed binary");
-            assertEquals("LIB-JAR-HASH", assertThrows(IllegalStateException.class, surface::inspect).getMessage());
+            AuditedAssertions.assertEquals("LIB-JAR-HASH", AuditedAssertions.assertThrows(IllegalStateException.class, surface::inspect).getMessage());
             Files.write(jar, original);
             Path pom = jar.resolveSibling(jar.getFileName().toString().replace(".jar", ".pom"));
             String published = Files.readString(pom); Files.writeString(pom, published + "\n");
-            assertEquals("LIB-POM-HASH", assertThrows(IllegalStateException.class, surface::inspect).getMessage());
+            AuditedAssertions.assertEquals("LIB-POM-HASH", AuditedAssertions.assertThrows(IllegalStateException.class, surface::inspect).getMessage());
             Files.writeString(pom, published);
             Path shadow = Files.createDirectory(root.resolve("atf-" + artifact));
-            assertEquals("LIB-SOURCE-SHADOW", assertThrows(IllegalStateException.class, surface::inspect).getMessage());
+            AuditedAssertions.assertEquals("LIB-SOURCE-SHADOW", AuditedAssertions.assertThrows(IllegalStateException.class, surface::inspect).getMessage());
             Files.delete(shadow); surface.inspect();
         }
     }
@@ -42,11 +44,11 @@ class PlatformLibraryIntegrityTest {
         ((com.fasterxml.jackson.databind.node.ObjectNode) library.path("producerInputs"))
                 .putArray("nativeTests").addObject().put("path", "../outside.java").put("sha256", "a".repeat(64));
         refreshInputsDigest(library); mapper.writeValue(file.toFile(), metadata);
-        assertEquals("LIB-NATIVE-CATALOG", assertThrows(IllegalStateException.class, surface::inspect).getMessage());
+        AuditedAssertions.assertEquals("LIB-NATIVE-CATALOG", AuditedAssertions.assertThrows(IllegalStateException.class, surface::inspect).getMessage());
         prepare("mock"); pack("mock", "<project/>");
         metadata = mapper.readTree(file.toFile()); library = (com.fasterxml.jackson.databind.node.ObjectNode) metadata.path("platformLibraries").path("mock");
         library.put("binarySha256", PlatformLibrarySurface.hash(surface.jar())); mapper.writeValue(file.toFile(), metadata);
-        assertEquals("LIB-EMBEDDED-POM", assertThrows(IllegalStateException.class, surface::inspect).getMessage());
+        AuditedAssertions.assertEquals("LIB-EMBEDDED-POM", AuditedAssertions.assertThrows(IllegalStateException.class, surface::inspect).getMessage());
     }
 
     @Test void consumerCannotBecomeTheLibrarySourceOrFeedbackOwner() throws Exception {
@@ -55,7 +57,7 @@ class PlatformLibraryIntegrityTest {
             var metadata = mapper.readTree(file.toFile());
             ((com.fasterxml.jackson.databind.node.ObjectNode) metadata.path("platformLibraryOwnership")).put(field, "atf_j4");
             mapper.writeValue(file.toFile(), metadata);
-            assertEquals("LIB-OWNERSHIP", assertThrows(IllegalStateException.class,
+            AuditedAssertions.assertEquals("LIB-OWNERSHIP", AuditedAssertions.assertThrows(IllegalStateException.class,
                     () -> new PlatformLibrarySurface(root, "mock").inspect()).getMessage());
         }
     }

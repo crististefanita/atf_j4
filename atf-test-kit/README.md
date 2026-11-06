@@ -36,6 +36,9 @@ flowchart LR
 
 Comparația JUnit se evaluează o singură dată. Pentru numere reale, așteptarea include toleranța; [AssertionValueDisplay](src/main/java/atf/testkit/assertions/AssertionValueDisplay.java) limitează separat previzualizarea, păstrând semnificația verdictului.
 
+- **Valori integrale:** observatorul opțional `Projection` primește valoarea după redactare, rolul expected/actual și indicația trunchierii; consumatorul o publică separat de preview.
+- **Defect al capturii:** eroarea originală se păstrează, fără reevaluarea comparației sau a grupului `assertAll`.
+
 `ComponentAssertionAudit.AssertionRequirement` permite `ANY_PHASE` sau `TEST_BODY`. Adaptorul publicării alege explicit cerința; activarea `TEST_BODY` cere o comparație auditată în corpul invocării.
 
 <details>
@@ -83,3 +86,7 @@ Primitivele resurselor au controale concurente, iar probele ciclului JUnit folos
 ## Folosirea într-un alt domeniu
 
 Testul nou furnizează valorile așteptate, comparațiile și publicatorul; Kitul gestionează ciclul și auditul fără reguli Whist. [Admiterea unui joc nou](../docs/learning/ATF_GameTransfer.md) califică separat modelul, observația actorului și oracolul; reutilizarea Kitului nu califică aceste contracte.
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

@@ -1,5 +1,7 @@
 package atf.validation.ai;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.validation.ai.grounding.AiGroundingObservation;
 import atf.validation.ai.grounding.AiGroundingRequirement;
 import atf.validation.ai.grounding.AiSourceReference;
@@ -39,11 +41,11 @@ class AiEvaluationEvaluatorTest {
     void evaluatesExpectedFieldsAndScoresWeightedMatches() {
         var result = evaluator.evaluate(evaluationCase(), Map.of("decision", "REVIEW_REQUIRED", "confidence", 0.82), realInvocation());
 
-        assertEquals(PASS, result.verdict());
-        assertEquals(100, result.qualityScore());
-        assertEquals(AiEvaluationSnapshot.Lifecycle.COMPLETE, result.lifecycle());
-        assertEquals(AiEvaluationPolicy.defaultPolicy(), result.policy());
-        assertEquals(List.of(MATCH, MATCH, MATCH), result.comparisons().stream().map(AiFieldComparison::outcome).toList());
+        AuditedAssertions.assertEquals(PASS, result.verdict());
+        AuditedAssertions.assertEquals(100, result.qualityScore());
+        AuditedAssertions.assertEquals(AiEvaluationSnapshot.Lifecycle.COMPLETE, result.lifecycle());
+        AuditedAssertions.assertEquals(AiEvaluationPolicy.defaultPolicy(), result.policy());
+        AuditedAssertions.assertEquals(List.of(MATCH, MATCH, MATCH), result.comparisons().stream().map(AiFieldComparison::outcome).toList());
     }
 
     @Test
@@ -55,20 +57,20 @@ class AiEvaluationEvaluatorTest {
         var snapshot = deterministicEvaluator.evaluate(evaluationCase(),
                 Map.of("decision", "REVIEW_REQUIRED", "confidence", 0.82), realInvocation());
 
-        assertEquals(AiEvaluationSnapshot.Lifecycle.COMPLETE, snapshot.lifecycle());
-        assertEquals(completedAt, snapshot.completedAt());
-        assertEquals(80, snapshot.policy().minimumPassingScore());
-        assertThrows(UnsupportedOperationException.class, () -> snapshot.comparisons().clear());
-        assertThrows(UnsupportedOperationException.class, () -> snapshot.hardFailures().clear());
+        AuditedAssertions.assertEquals(AiEvaluationSnapshot.Lifecycle.COMPLETE, snapshot.lifecycle());
+        AuditedAssertions.assertEquals(completedAt, snapshot.completedAt());
+        AuditedAssertions.assertEquals(80, snapshot.policy().minimumPassingScore());
+        AuditedAssertions.assertThrows(UnsupportedOperationException.class, () -> snapshot.comparisons().clear());
+        AuditedAssertions.assertThrows(UnsupportedOperationException.class, () -> snapshot.hardFailures().clear());
     }
 
     @Test
     void criticalMismatchFailsEvenWhenAggregateScoreIsHigh() {
         var result = evaluator.evaluate(evaluationCase(), Map.of("decision", "APPROVE", "confidence", 0.82), realInvocation());
 
-        assertEquals(FAIL, result.verdict());
-        assertEquals(91, result.qualityScore());
-        assertEquals("VALUE_MISMATCH", result.comparisons().getFirst().reasonCode());
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals(91, result.qualityScore());
+        AuditedAssertions.assertEquals("VALUE_MISMATCH", result.comparisons().getFirst().reasonCode());
     }
 
     @Test
@@ -76,9 +78,9 @@ class AiEvaluationEvaluatorTest {
         var result = evaluator.evaluate(evaluationCase(), Map.of(
                 "decision", "REVIEW_REQUIRED", "customer.accountNumber", "invented"), realInvocation());
 
-        assertEquals("MISSING_OBSERVED", result.comparisons().get(1).reasonCode());
-        assertEquals("UNEXPECTED_PRESENT", result.comparisons().get(2).reasonCode());
-        assertEquals(MISMATCH, result.comparisons().get(1).outcome());
+        AuditedAssertions.assertEquals("MISSING_OBSERVED", result.comparisons().get(1).reasonCode());
+        AuditedAssertions.assertEquals("UNEXPECTED_PRESENT", result.comparisons().get(2).reasonCode());
+        AuditedAssertions.assertEquals(MISMATCH, result.comparisons().get(1).outcome());
     }
 
     @Test
@@ -86,9 +88,9 @@ class AiEvaluationEvaluatorTest {
         var result = new AiEvaluationEvaluator(new AiEvaluationPolicy(90))
                 .evaluate(evaluationCase(), Map.of("decision", "REVIEW_REQUIRED"), realInvocation());
 
-        assertEquals(FAIL, result.verdict());
-        assertFalse(result.hardFail());
-        assertEquals(18, result.qualityScore());
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertFalse(result.hardFail());
+        AuditedAssertions.assertEquals(18, result.qualityScore());
     }
 
     @Test
@@ -109,8 +111,8 @@ class AiEvaluationEvaluatorTest {
 
         var result = evaluator.evaluate(new AiEvaluationCase("modes", 1, "fixture:modes:v1", expectations), observed, realInvocation());
 
-        assertEquals(PASS, result.verdict());
-        assertEquals(100, result.qualityScore());
+        AuditedAssertions.assertEquals(PASS, result.verdict());
+        AuditedAssertions.assertEquals(100, result.qualityScore());
     }
 
     @Test
@@ -123,11 +125,11 @@ class AiEvaluationEvaluatorTest {
 
         var result = evaluator.evaluate(evaluationCase, Map.of("account.number", "invented"), realInvocation());
 
-        assertEquals(FAIL, result.verdict());
-        assertEquals(2, result.hardFailures().size());
-        assertEquals(List.of("MISSING_CRITICAL_FIELD", "INVENTED_CRITICAL_ENTITY"),
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals(2, result.hardFailures().size());
+        AuditedAssertions.assertEquals(List.of("MISSING_CRITICAL_FIELD", "INVENTED_CRITICAL_ENTITY"),
                 result.hardFailures().stream().map(AiEvaluationSnapshot.HardFailure::ruleId).toList());
-        assertEquals(List.of("MISSING_CRITICAL_FIELD", "INVENTED_CRITICAL_ENTITY"),
+        AuditedAssertions.assertEquals(List.of("MISSING_CRITICAL_FIELD", "INVENTED_CRITICAL_ENTITY"),
                 result.comparisons().stream().map(AiFieldComparison::reasonCode).toList());
     }
 
@@ -137,11 +139,11 @@ class AiEvaluationEvaluatorTest {
                 Map.of("decision", "REVIEW_REQUIRED", "customer.taxId", "invented"), realInvocation());
 
         var unexpected = result.comparisons().getLast();
-        assertEquals(FAIL, result.verdict());
-        assertEquals(UNDECLARED, unexpected.comparisonMode());
-        assertEquals("UNDECLARED_OUTPUT_FIELD", unexpected.reasonCode());
-        assertEquals("UNDECLARED_OUTPUT_FIELD", result.hardFailures().getFirst().ruleId());
-        assertEquals("evidence:output", unexpected.evidenceReference());
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals(UNDECLARED, unexpected.comparisonMode());
+        AuditedAssertions.assertEquals("UNDECLARED_OUTPUT_FIELD", unexpected.reasonCode());
+        AuditedAssertions.assertEquals("UNDECLARED_OUTPUT_FIELD", result.hardFailures().getFirst().ruleId());
+        AuditedAssertions.assertEquals("evidence:output", unexpected.evidenceReference());
     }
 
     @Test
@@ -153,11 +155,11 @@ class AiEvaluationEvaluatorTest {
         var result = permissive.evaluate(evaluationCase,
                 Map.of("decision", "REVIEW_REQUIRED", "customer.taxId", "extra"), realInvocation());
 
-        assertEquals(FAIL, result.verdict());
-        assertEquals(50, result.qualityScore());
-        assertFalse(result.hardFail());
-        assertEquals(UNDECLARED, result.comparisons().getLast().comparisonMode());
-        assertEquals("UNDECLARED_OUTPUT_FIELD", result.comparisons().getLast().reasonCode());
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals(50, result.qualityScore());
+        AuditedAssertions.assertFalse(result.hardFail());
+        AuditedAssertions.assertEquals(UNDECLARED, result.comparisons().getLast().comparisonMode());
+        AuditedAssertions.assertEquals("UNDECLARED_OUTPUT_FIELD", result.comparisons().getLast().reasonCode());
     }
 
     @Test
@@ -167,8 +169,8 @@ class AiEvaluationEvaluatorTest {
                     new AiInvocationEvidence(mode, "run-1", "fixture", "fixture-model", true,
                             null, null, List.of()));
 
-            assertEquals(NOT_EVALUATED, result.verdict());
-            assertNull(result.qualityScore());
+            AuditedAssertions.assertEquals(NOT_EVALUATED, result.verdict());
+            AuditedAssertions.assertNull(result.qualityScore());
         }
     }
 
@@ -179,9 +181,9 @@ class AiEvaluationEvaluatorTest {
 
         var result = evaluator.evaluate(evaluationCase(), Map.of("decision", "REVIEW_REQUIRED"), incomplete);
 
-        assertEquals(FAIL, result.verdict());
-        assertNull(result.qualityScore());
-        assertEquals("MISSING_INVOCATION_EVIDENCE", result.hardFailures().getFirst().ruleId());
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertNull(result.qualityScore());
+        AuditedAssertions.assertEquals("MISSING_INVOCATION_EVIDENCE", result.hardFailures().getFirst().ruleId());
     }
 
     @Test
@@ -192,8 +194,8 @@ class AiEvaluationEvaluatorTest {
 
         var result = evaluator.evaluate(evaluationCase, Map.of(), realInvocation());
 
-        assertEquals(FAIL, result.verdict());
-        assertEquals("SOURCE_PRESENT_BUT_EXPECTED_ABSENT", result.hardFailures().getFirst().ruleId());
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals("SOURCE_PRESENT_BUT_EXPECTED_ABSENT", result.hardFailures().getFirst().ruleId());
     }
 
     @Test
@@ -202,9 +204,9 @@ class AiEvaluationEvaluatorTest {
 
         var result = evaluator.evaluate(evaluationCase(), Map.of("decision", "REVIEW_REQUIRED"), invocation);
 
-        assertEquals(invocation, result.invocationEvidence());
-        assertEquals(AiInvocationEvidence.Mode.REAL_AI, result.invocationEvidence().mode());
-        assertEquals(4, result.invocationEvidence().references().size());
+        AuditedAssertions.assertEquals(invocation, result.invocationEvidence());
+        AuditedAssertions.assertEquals(AiInvocationEvidence.Mode.REAL_AI, result.invocationEvidence().mode());
+        AuditedAssertions.assertEquals(4, result.invocationEvidence().references().size());
     }
 
     @Test
@@ -219,11 +221,11 @@ class AiEvaluationEvaluatorTest {
         var result = evaluator.evaluate(evaluationCase, Map.of("decision", "REVIEW"), realInvocation(),
                 Map.of("decision", source));
 
-        assertEquals(PASS, result.verdict());
-        assertEquals(AiGroundingObservation.Result.SUPPORTED,
+        AuditedAssertions.assertEquals(PASS, result.verdict());
+        AuditedAssertions.assertEquals(AiGroundingObservation.Result.SUPPORTED,
                 result.groundingObservations().getFirst().result());
-        assertEquals(source, result.groundingObservations().getFirst().sourceReference());
-        assertThrows(UnsupportedOperationException.class, () -> result.groundingObservations().clear());
+        AuditedAssertions.assertEquals(source, result.groundingObservations().getFirst().sourceReference());
+        AuditedAssertions.assertThrows(UnsupportedOperationException.class, () -> result.groundingObservations().clear());
     }
 
     @Test
@@ -235,10 +237,10 @@ class AiEvaluationEvaluatorTest {
 
         var result = evaluator.evaluate(evaluationCase, Map.of("decision", "REVIEW"), realInvocation());
 
-        assertEquals(FAIL, result.verdict());
-        assertEquals(AiGroundingObservation.Result.MISSING_REFERENCE,
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals(AiGroundingObservation.Result.MISSING_REFERENCE,
                 result.groundingObservations().getFirst().result());
-        assertEquals("MISSING_GROUNDING_REFERENCE", result.hardFailures().getFirst().ruleId());
+        AuditedAssertions.assertEquals("MISSING_GROUNDING_REFERENCE", result.hardFailures().getFirst().ruleId());
     }
 
     @Test
@@ -253,10 +255,10 @@ class AiEvaluationEvaluatorTest {
         var result = evaluator.evaluate(evaluationCase, Map.of("decision", "REVIEW"), realInvocation(),
                 Map.of("decision", source));
 
-        assertEquals(FAIL, result.verdict());
-        assertEquals(AiGroundingObservation.Result.UNSUPPORTED,
+        AuditedAssertions.assertEquals(FAIL, result.verdict());
+        AuditedAssertions.assertEquals(AiGroundingObservation.Result.UNSUPPORTED,
                 result.groundingObservations().getFirst().result());
-        assertEquals("UNSUPPORTED_GROUNDING", result.hardFailures().getFirst().ruleId());
+        AuditedAssertions.assertEquals("UNSUPPORTED_GROUNDING", result.hardFailures().getFirst().ruleId());
     }
 
     @Test
@@ -266,9 +268,9 @@ class AiEvaluationEvaluatorTest {
         var evaluationCase = new AiEvaluationCase("review-case", 2, "fixture:review-case:v2", expectations);
         expectations.clear();
 
-        assertEquals(1, evaluationCase.expectations().size());
-        assertThrows(UnsupportedOperationException.class, () -> evaluationCase.expectations().clear());
-        assertEquals("REVIEW_REQUIRED", evaluationCase.expectations().getFirst().comparison().expectedValue());
+        AuditedAssertions.assertEquals(1, evaluationCase.expectations().size());
+        AuditedAssertions.assertThrows(UnsupportedOperationException.class, () -> evaluationCase.expectations().clear());
+        AuditedAssertions.assertEquals("REVIEW_REQUIRED", evaluationCase.expectations().getFirst().comparison().expectedValue());
     }
 
     @Test
@@ -282,14 +284,14 @@ class AiEvaluationEvaluatorTest {
         var result = evaluator.evaluate(new AiEvaluationCase("nested", 1, "fixture:nested:v1", List.of(expectation)),
                 Map.of("decision", Map.of("allowed", List.of("review"))), realInvocation());
 
-        assertEquals(MATCH, result.comparisons().getFirst().outcome());
-        assertThrows(UnsupportedOperationException.class,
+        AuditedAssertions.assertEquals(MATCH, result.comparisons().getFirst().outcome());
+        AuditedAssertions.assertThrows(UnsupportedOperationException.class,
                 () -> ((List<?>) ((Map<?, ?>) expectation.comparison().expectedValue()).get("allowed")).clear());
     }
 
     @Test
     void rejectsDuplicateExpectedFieldPaths() {
-        assertThrows(IllegalArgumentException.class, () -> new AiEvaluationCase("duplicate", 1, "fixture:duplicate:v1", List.of(
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> new AiEvaluationCase("duplicate", 1, "fixture:duplicate:v1", List.of(
                 new AiFieldExpectation("decision", EXACT, "REVIEW", true, 1),
                 new AiFieldExpectation("decision", PRESENT, null, false, 1))));
     }

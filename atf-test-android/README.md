@@ -53,12 +53,12 @@ Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpret
 Dintr-o copie temporară proprie, cu POM-ul părinte, bibliotecile și un depozit Maven propriu:
 
 ```powershell
-mvn -B -pl atf-test-android -am '-Dtest=AndroidComponentSuite,AndroidPhaseClockTest,AndroidPhaseTimingCodecTest,AndroidUiFlowTimingComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
+mvn -B -pl atf-test-android -am '-Dtest=AndroidUnitSuite,AndroidComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
 ```
 
 | Colecție | Contract verificat |
 |---|---|
-| [AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) | ADB controlat și capturi. |
+| [AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) | Toate componentele Maven ale adaptorului, cu observații controlate și fără dispozitiv. |
 | [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Temporizarea fluxului prin componente. |
 | [AndroidDisplayComponentSuite](src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profile, parsare, geometrie și raster sintetic; profilul Maven `display-components` exclude compilarea algoritmilor AI. |
 
@@ -164,3 +164,7 @@ Componentele transportului folosesc procese locale controlate. [Acceptanța Andr
 Bugetele de memorie pentru text și binar rămân [criteriu deschis al adaptorului](../docs/feedback/ATF_Android.md). [Responsabilitățile pachetelor](../docs/governance/ATF_Packages.md) dețin regulile extragerii mecanismelor fără schimbarea identității și ordinii scenariilor.
 
 </details>
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

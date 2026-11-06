@@ -1,5 +1,6 @@
 # Output local Maven/JVM; nu face parte din sursa ATF.
 target/
+*.class
 artifacts/
 **/.gradle/
 **/build/
@@ -16,10 +17,6 @@ models/
 __pycache__/
 *.pyc
 
-# APK-urile de livrare rămân local; distribuția versionată este în GitHub Releases.
-/dist/*.apk
-/dist/*.apk.sha256
-
 # IDE-uri și fișiere locale.
 .idea/
 *.iml
@@ -27,10 +24,10 @@ __pycache__/
 .project
 .settings/
 
-# Keep only the latest registered release evidence; historical runs stay external.
-!artifacts/
-/artifacts/*
-!/artifacts/README.md
-!/artifacts/index.json
-!/artifacts/reports/
-!/artifacts/reports/**
+# Păstrăm numai dosarul livrării active; rulările intermediare sunt externe.
+!/release/
+!/release/**
+
+# APK-ul și checksum-ul local însoțesc versiunea; distribuția este în GitHub Releases.
+/release/**/*.apk
+/release/**/*.apk.sha256

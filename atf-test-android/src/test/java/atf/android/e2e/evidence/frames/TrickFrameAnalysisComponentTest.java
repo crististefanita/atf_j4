@@ -1,5 +1,7 @@
 package atf.android.e2e.evidence.frames;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import atf.testkit.AtfComponentTest;
@@ -23,19 +25,19 @@ class TrickFrameAnalysisComponentTest {
         Path first = png(directory, "first.png", renderedCards(true));
         Path later = png(directory, "later.png", renderedCards(true));
         var origin = new TrickFrameAnalysis.TrickFrame(first, 10.0);
-        assertNull(
+        AuditedAssertions.assertNull(
                 TrickFrameAnalysis.findRenderedPause(
                         List.of(origin, new TrickFrameAnalysis.TrickFrame(later, 10.899))));
-        assertNotNull(
+        AuditedAssertions.assertNotNull(
                 TrickFrameAnalysis.findRenderedPause(
                         List.of(origin, new TrickFrameAnalysis.TrickFrame(later, 10.900))));
-        assertNotNull(
+        AuditedAssertions.assertNotNull(
                 TrickFrameAnalysis.findRenderedPause(
                         List.of(origin, new TrickFrameAnalysis.TrickFrame(later, 11.400))));
-        assertNull(
+        AuditedAssertions.assertNull(
                 TrickFrameAnalysis.findRenderedPause(
                         List.of(origin, new TrickFrameAnalysis.TrickFrame(later, 11.401))));
-        assertEquals(
+        AuditedAssertions.assertEquals(
                 2,
                 TrickFrameAnalysis.countCardFaceFrames(
                         List.of(origin, new TrickFrameAnalysis.TrickFrame(later, 11.0))));
@@ -46,12 +48,12 @@ class TrickFrameAnalysisComponentTest {
             throws Exception {
         Path healthy = png(directory, "healthy.png", renderedCards(true));
         Path missing = png(directory, "without-marks.png", renderedCards(false));
-        assertTrue(TrickFrameAnalysis.cardFacesAreRendered(healthy));
-        assertTrue(TrickFrameAnalysis.cardFacesHaveHeartMarks(healthy));
-        assertFalse(TrickFrameAnalysis.cardFacesAreRendered(missing));
-        assertFalse(TrickFrameAnalysis.cardFacesHaveHeartMarks(missing));
-        assertFalse(TrickFrameAnalysis.cardPixelsRemainEquivalent(healthy, missing));
-        assertNull(
+        AuditedAssertions.assertTrue(TrickFrameAnalysis.cardFacesAreRendered(healthy));
+        AuditedAssertions.assertTrue(TrickFrameAnalysis.cardFacesHaveHeartMarks(healthy));
+        AuditedAssertions.assertFalse(TrickFrameAnalysis.cardFacesAreRendered(missing));
+        AuditedAssertions.assertFalse(TrickFrameAnalysis.cardFacesHaveHeartMarks(missing));
+        AuditedAssertions.assertFalse(TrickFrameAnalysis.cardPixelsRemainEquivalent(healthy, missing));
+        AuditedAssertions.assertNull(
                 TrickFrameAnalysis.findRenderedPause(
                         List.of(
                                 new TrickFrameAnalysis.TrickFrame(missing, 0),
@@ -65,11 +67,11 @@ class TrickFrameAnalysisComponentTest {
         Path first = png(directory, "first.png", original);
         original.setRGB(20, 20, Color.BLUE.getRGB());
         Path outside = png(directory, "outside-viewport.png", original);
-        assertTrue(TrickFrameAnalysis.sameGameViewportPixels(first, outside));
+        AuditedAssertions.assertTrue(TrickFrameAnalysis.sameGameViewportPixels(first, outside));
         original.setRGB(20, 700, Color.BLUE.getRGB());
         Path board = png(directory, "changed-board.png", original);
-        assertFalse(TrickFrameAnalysis.sameGameViewportPixels(first, board));
-        assertTrue(TrickFrameAnalysis.cardPixelsRemainEquivalent(first, board));
+        AuditedAssertions.assertFalse(TrickFrameAnalysis.sameGameViewportPixels(first, board));
+        AuditedAssertions.assertTrue(TrickFrameAnalysis.cardPixelsRemainEquivalent(first, board));
     }
 
     private static BufferedImage renderedCards(boolean marks) {
@@ -95,7 +97,7 @@ class TrickFrameAnalysisComponentTest {
 
     private static Path png(Path directory, String name, BufferedImage image) throws Exception {
         Path file = directory.resolve(name);
-        assertTrue(ImageIO.write(image, "png", file.toFile()));
+        AuditedAssertions.assertTrue(ImageIO.write(image, "png", file.toFile()));
         return file;
     }
 }

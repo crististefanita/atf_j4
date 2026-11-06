@@ -1,5 +1,7 @@
 package atf.tests.governance.source;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import org.junit.jupiter.api.Test;
@@ -30,9 +32,9 @@ class ModuleBoundaryGovernanceTest {
         }
         var expected = new ArrayList<String>();
         GovernanceProject.policy(root).required("mavenModules").forEach(value -> expected.add(value.asText()));
-        assertEquals(expected, modules, "The source reactor must match the reviewed governance perimeter");
-        for (String module : modules) assertTrue(Files.isRegularFile(root.resolve(module).resolve("pom.xml")));
+        AuditedAssertions.assertEquals(expected, modules, "The source reactor must match the reviewed governance perimeter");
+        for (String module : modules) AuditedAssertions.assertTrue(Files.isRegularFile(root.resolve(module).resolve("pom.xml")));
         for (String binary : List.of("atf-core", "atf-reporting", "atf-console", "atf-mock", "atf-reporting-tests"))
-            assertFalse(Files.exists(root.resolve(binary)), () -> "Binary consumers must not retain producer source/harness: " + binary);
+            AuditedAssertions.assertFalse(Files.exists(root.resolve(binary)), () -> "Binary consumers must not retain producer source/harness: " + binary);
     }
 }

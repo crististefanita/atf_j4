@@ -1,5 +1,7 @@
 package atf.android.e2e.support;
 
+import atf.android.e2e.support.flow.AndroidUiFlowEvidence;
+
 import static atf.android.e2e.support.AndroidUiFlowReportAudit.checkpointCount;
 import static atf.android.e2e.support.AndroidUiFlowReportAudit.screenshotCount;
 import static atf.android.e2e.support.AndroidUiFlowReportAudit.require;
@@ -31,12 +33,12 @@ public final class AndroidUiFlowReportPublisher {
     private AndroidUiFlowReportPublisher() { }
 
     public static Path publish(Path report, String installedPackage, String device, String androidApi,
-            String summary, List<Path> files, AndroidUiFlowTrace trace) throws Exception {
+            String summary, List<Path> files, AndroidUiFlowEvidence trace) throws Exception {
         return publish(report, installedPackage, device, androidApi, summary, files, trace, System::nanoTime);
     }
 
     static Path publish(Path report, String installedPackage, String device, String androidApi,
-            String summary, List<Path> files, AndroidUiFlowTrace trace, java.util.function.LongSupplier publicationTicks) throws Exception {
+            String summary, List<Path> files, AndroidUiFlowEvidence trace, java.util.function.LongSupplier publicationTicks) throws Exception {
         Objects.requireNonNull(report, "report");
         Objects.requireNonNull(trace, "trace");
         if (trace.hasOpenPhase()) throw new IllegalStateException("Cannot publish an unfinished Android phase");
@@ -51,7 +53,7 @@ public final class AndroidUiFlowReportPublisher {
         validateCheckpointContract(trace,
                 settings.assertionMaxDisplayCharacters());
         List<ReportObservation.Body> supporting = supportingEvidence(List.copyOf(evidenceFiles),
-                trace.manifest().toAbsolutePath().getParent());
+                trace.manifest().toAbsolutePath().getParent(), settings.bodyMaxDisplayCharacters());
 
         try (var session = new ExtentReportSession(output, settings)) {
             AtfReportPorts.Scenario raw = session.startScenario(
@@ -107,7 +109,7 @@ public final class AndroidUiFlowReportPublisher {
                 ReportScreenshotPolicy.CapturePoint.CHECKPOINT, checkpoint.status());
     }
 
-    private static List<ReportObservation.Body> supportingEvidence(List<Path> files, Path origin)
+    private static List<ReportObservation.Body> supportingEvidence(List<Path> files, Path origin, int bodyBudget)
             throws java.io.IOException {
         var bodies = new ArrayList<ReportObservation.Body>();
         var inventory = new StringBuilder();
@@ -118,16 +120,23 @@ public final class AndroidUiFlowReportPublisher {
             String name = origin.relativize(file.toAbsolutePath()).toString().replace('\\', '/');
             var evidence = CapturedTextEvidence.read(file, name);
             inventory.append(name).append("  sha256=").append(evidence.sha256()).append("  bytes=").append(evidence.bytes()).append('\n');
-            if (retained.add(evidence.sha256())) bodies.add(new ReportObservation.Body(
-                    "Captured supporting evidence — " + name + " — " + evidence.sha256(),
-                    redactor.redactField(name, evidence.content()), ReportObservation.Format.TEXT));
+            if (retained.add(evidence.sha256())) {
+                var parts = atf.android.evidence.text.EvidenceTextParts.split(redactor.redactField(name, evidence.content()), bodyBudget);
+                for (int index = 0; index < parts.size(); index++) bodies.add(new ReportObservation.Body(
+                        "Captured supporting evidence — " + name + " — " + evidence.sha256()
+                                + " — part " + (index + 1) + "/" + parts.size(), parts.get(index), ReportObservation.Format.TEXT));
+            }
         }
-        if (!inventory.isEmpty()) bodies.add(0, new ReportObservation.Body(
-                "Supporting evidence inventory — original bytes read at publication", inventory.toString(), ReportObservation.Format.TEXT));
+        if (!inventory.isEmpty()) {
+            var parts = atf.android.evidence.text.EvidenceTextParts.split(inventory.toString(), bodyBudget);
+            for (int index = parts.size() - 1; index >= 0; index--) bodies.add(0, new ReportObservation.Body(
+                    "Supporting evidence inventory — original bytes read at publication — part " + (index + 1) + "/" + parts.size(),
+                    parts.get(index), ReportObservation.Format.TEXT));
+        }
         return List.copyOf(bodies);
     }
 
-    private static void publishRunReceipt(AtfReportPorts.Scenario scenario, AndroidUiFlowTrace trace,
+    private static void publishRunReceipt(AtfReportPorts.Scenario scenario, AndroidUiFlowEvidence trace,
             String installedPackage, String device, String androidApi, String summary,
             List<ReportObservation.Body> supporting) throws Exception {
         int checkpointCount = checkpointCount(trace);
@@ -153,12 +162,12 @@ public final class AndroidUiFlowReportPublisher {
                 .reduce(AtfReportStatus.INFO, AtfReportStatus::worst);
     }
 
-    static void auditPublishedReport(Path report, AndroidUiFlowTrace trace,
+    static void auditPublishedReport(Path report, AndroidUiFlowEvidence trace,
             ReportingSettings settings) throws Exception {
         AndroidUiFlowReportAudit.auditPublishedReport(report, trace, settings);
     }
 
-    private static void validateCheckpointContract(AndroidUiFlowTrace trace, int assertionPreviewLimit) {
+    private static void validateCheckpointContract(AndroidUiFlowEvidence trace, int assertionPreviewLimit) {
         List<AndroidUiFlowTrace.CheckpointSnapshot> checkpoints = trace.phaseSnapshots().stream()
                 .flatMap(phase -> phase.checkpoints().stream()).toList();
         for (AndroidUiFlowTrace.CheckpointSnapshot checkpoint : checkpoints) {

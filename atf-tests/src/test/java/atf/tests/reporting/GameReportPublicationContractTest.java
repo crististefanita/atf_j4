@@ -1,10 +1,12 @@
 package atf.tests.reporting;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.tests.learning.EvidencePolicy;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 import atf.reporting.contract.*;
 import atf.reporting.extent.session.ExtentReportSession;
 import atf.reporting.html.HtmlReportSession;
@@ -28,6 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 @AtfComponentTest
 class GameReportPublicationContractTest {
+    @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
     @TempDir Path folder;
     static Stream<Arguments> selections() {
         return Arrays.stream(EvidencePolicy.DetailLevel.values()).flatMap(mode -> Stream.of(true, false)

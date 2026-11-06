@@ -1,5 +1,7 @@
 package atf.android.e2e.driver;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import atf.android.AdbClient;
@@ -32,17 +34,17 @@ class AndroidUiDriverActionTraceTest {
 
         driver.tapTextIn(hierarchy, "New game");
 
-        assertEquals(1, actions.size());
+        AuditedAssertions.assertEquals(1, actions.size());
         var action = actions.getFirst();
-        assertEquals("Tap", action.operation());
-        assertEquals("New game", action.target());
-        assertEquals("Dispatch a tap to the resolved target at its current accessibility bounds", action.expected());
-        assertEquals("ADB accepted tap at 60,45", action.observed());
-        assertEquals(37, action.durationMillis(), "Only ADB dispatch belongs in the action duration");
-        assertEquals(List.of(500L), pauses, "UI settling still follows the measured dispatch");
-        assertEquals(537_000_000L, ticks.get());
-        assertEquals(AtfReportStatus.PASS, action.status());
-        assertEquals(AtfUiEvidenceSource.ACTION, action.source());
+        AuditedAssertions.assertEquals("Tap", action.operation());
+        AuditedAssertions.assertEquals("New game", action.target());
+        AuditedAssertions.assertEquals("Dispatch a tap to the resolved target at its current accessibility bounds", action.expected());
+        AuditedAssertions.assertEquals("ADB accepted tap at 60,45", action.observed());
+        AuditedAssertions.assertEquals(37, action.durationMillis(), "Only ADB dispatch belongs in the action duration");
+        AuditedAssertions.assertEquals(List.of(500L), pauses, "UI settling still follows the measured dispatch");
+        AuditedAssertions.assertEquals(537_000_000L, ticks.get());
+        AuditedAssertions.assertEquals(AtfReportStatus.PASS, action.status());
+        AuditedAssertions.assertEquals(AtfUiEvidenceSource.ACTION, action.source());
     }
 
     @Test
@@ -55,7 +57,7 @@ class AndroidUiDriverActionTraceTest {
                 + "<node class=\"android.widget.FrameLayout\" content-desc=\"Your hand, 13 cards.\" "
                 + "bounds=\"[10,20][580,120]\"/></node></hierarchy>";
 
-        assertEquals(new AndroidUiDriver.Bounds(10, 20, 610, 120),
+        AuditedAssertions.assertEquals(new AndroidUiDriver.Bounds(10, 20, 610, 120),
                 driver.boundsForDescription(hierarchy, "Your hand, 13 cards.",
                         "android.widget.HorizontalScrollView"));
     }
@@ -71,7 +73,7 @@ class AndroidUiDriverActionTraceTest {
                 + "<node text=\"6\" class=\"android.widget.Button\" bounds=\"[300,20][350,70]\"/>"
                 + "</hierarchy>";
 
-        assertEquals("6", driver.spinnerValue(hierarchy, "Players"));
+        AuditedAssertions.assertEquals("6", driver.spinnerValue(hierarchy, "Players"));
     }
     private static AndroidUiDriver.Device device(Runnable dispatch) {
         return new AndroidUiDriver.Device() {

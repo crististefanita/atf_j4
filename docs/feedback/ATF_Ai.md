@@ -47,6 +47,7 @@ Responsabilul modulului AI deține intrările și verificarea proprie. Testele d
 | Prioritate | Responsabil și lucrare | Criteriu de închidere |
 |---|---|---|
 | P2 | Motorul: calificarea frontierelor prin mutanți semantici. | Inversarea obligației de atu, a câștigătorului sau a întreruperii seriei este detectată independent; acoperirea JaCoCo se interpretează separat de corectitudine. |
+| P2 | Motorul: [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) coordonează licitarea, selecția cărții și stocarea mostrelor de licitație. | Extrageți gestionarea și reutilizarea mostrelor într-un colaborator intern, păstrând fațada publică și observația actorului. Componentele fixează ordinea consumului aleator, repetarea cu aceeași inițializare, anularea și bugetul; o refactorizare nu se declară progres strategic. |
 
 ## Contractele calificării
 

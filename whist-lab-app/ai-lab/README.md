@@ -101,3 +101,7 @@ Promovarea rămâne condiționată de progres pe partide noi și de identitatea 
 - Întreruperea păstrează marcajul și aruncă `CancellationException`; `WORK_LIMIT` abandonează decizia printr-o excepție distinctă.
 - Închiderea contextului elimină limita pentru apelurile următoare.
 - [Calificarea costului](../../docs/ai/ATF_CostQualification.md) separă acest control de bugetul dovezii și de forța strategică.
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

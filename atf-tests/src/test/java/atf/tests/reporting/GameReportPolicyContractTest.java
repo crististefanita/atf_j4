@@ -1,10 +1,12 @@
 package atf.tests.reporting;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.tests.learning.EvidencePolicy;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 @AtfComponentTest
 class GameReportPolicyContractTest {
+    @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
     @TempDir Path folder;
     private static final String BASE = "detailLevel: AUTO\nmaxDetailedInvocations: 64\nmaxDetailedComparisons: 10000\n"
             + "maxDetailedContextCharacters: 250000\npassingExamplesPerFamily: 1\noptionalContextBudgetCharacters: 65536\n";

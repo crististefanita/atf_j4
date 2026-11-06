@@ -1,8 +1,11 @@
 package atf.android.e2e.support;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 import atf.android.evidence.timing.AndroidPhaseTimingCodec;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.contract.AtfAssertion;
@@ -21,6 +24,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 @AtfComponentTest
 class AndroidUiFlowTimingComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     private static final String PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 
     @Test void individualPublicationUsesCapturedPhaseIntervalsAndPreservesFullPngs(@TempDir Path output) throws Exception {

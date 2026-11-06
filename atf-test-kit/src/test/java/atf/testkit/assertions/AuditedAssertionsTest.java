@@ -87,4 +87,46 @@ class AuditedAssertionsTest {
         assertFalse(rows.checks().getLast().passed());
         assertEquals("105.0", rows.checks().getLast().actual());
     }
+    @Test void primitiveValuesAreCapturedWithoutChangingTheJUnitVerdict() {
+        var checks = new RecordedAssertions();
+        try (var scope = AuditedAssertionScope.open(getClass().getName(), "primitiveValuesAreCapturedWithoutChangingTheJUnitVerdict", checks)) {
+            AuditedAssertions.assertArrayEquals(new byte[] {-1, 0, 1}, new byte[] {-1, 0, 1});
+            AuditedAssertions.assertArrayEquals(new int[] {-1, 0, 65536}, new int[] {-1, 0, 65536});
+        }
+        assertEquals(2, checks.checks().size());
+        assertEquals("[-1, 0, 1]", checks.checks().getFirst().expected());
+        assertEquals("[-1, 0, 65536]", checks.checks().getLast().actual());
+        assertTrue(checks.checks().stream().allMatch(RecordedAssertions.Check::passed));
+    }
+    @Test void messageOverloadsKeepIdentityNullAndLazySupplierSemantics() {
+        var checks = new RecordedAssertions();
+        var calls = new java.util.concurrent.atomic.AtomicInteger();
+        Object same = new Object();
+        try (var scope = AuditedAssertionScope.open(getClass().getName(), "messageOverloadsKeepIdentityNullAndLazySupplierSemantics", checks)) {
+            AuditedAssertions.assertFalse(false, () -> { calls.incrementAndGet(); return "lazy message"; });
+            assertEquals(0, calls.get());
+            var failure = assertThrows(org.opentest4j.AssertionFailedError.class,
+                    () -> AuditedAssertions.assertFalse(true, () -> { calls.incrementAndGet(); return "lazy message"; }));
+            assertTrue(failure.getMessage().contains("lazy message"));
+            AuditedAssertions.assertNull(null, "null contract");
+            assertThrows(org.opentest4j.AssertionFailedError.class, () -> AuditedAssertions.assertNull(same, "null contract"));
+            AuditedAssertions.assertSame(same, same, "identity contract");
+            assertThrows(org.opentest4j.AssertionFailedError.class, () -> AuditedAssertions.assertSame(same, new Object(), "identity contract"));
+        }
+        assertEquals(1, calls.get());
+        assertEquals(6, checks.checks().size());
+        assertEquals(3, checks.checks().stream().filter(row -> !row.passed()).count());
+    }
+    @Test void mismatchesKeepTheOriginalAssertionErrorAndFailedValues() {
+        var checks = new RecordedAssertions();
+        try (var scope = AuditedAssertionScope.open(getClass().getName(), "mismatchesKeepTheOriginalAssertionErrorAndFailedValues", checks)) {
+            assertThrows(org.opentest4j.AssertionFailedError.class,
+                    () -> AuditedAssertions.assertArrayEquals(new byte[] {1}, new byte[] {2}));
+            assertThrows(org.opentest4j.AssertionFailedError.class,
+                    () -> AuditedAssertions.assertArrayEquals(new int[] {1}, new int[] {2}));
+        }
+        assertEquals(2, checks.checks().size());
+        assertFalse(checks.checks().getFirst().passed());
+        assertEquals("[2]", checks.checks().getLast().actual());
+    }
 }

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "scope": "Maven Jupiter source test roots; Gradle collections have their own contract",
+  "suites": [
+    {
+      "module": "atf-test-kit",
+      "suite": "atf.testkit.suites.KitUnitSuite",
+      "role": "primary",
+      "layer": "unit"
+    },
+    {
+      "module": "atf-test-kit",
+      "suite": "atf.testkit.suites.KitComponentSuite",
+      "role": "primary",
+      "layer": "component"
+    },
+    {
+      "module": "atf-validation",
+      "suite": "atf.validation.suites.ValidationUnitSuite",
+      "role": "primary",
+      "layer": "unit"
+    },
+    {
+      "module": "atf-validation",
+      "suite": "atf.validation.suites.ValidationComponentSuite",
+      "role": "primary",
+      "layer": "component"
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidUnitSuite",
+      "role": "primary",
+      "layer": "unit"
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidComponentSuite",
+      "role": "primary",
+      "layer": "component"
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidIntegrationSuite",
+      "role": "primary",
+      "layer": "integration"
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidE2eSuite",
+      "role": "primary",
+      "layer": "e2e"
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfUnitSuite",
+      "role": "primary",
+      "layer": "unit"
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "role": "primary",
+      "layer": "component"
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfIntegrationSuite",
+      "role": "primary",
+      "layer": "integration"
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidDisplayComponentSuite",
+      "role": "focused",
+      "parents": [
+        "atf.android.suites.AndroidComponentSuite"
+      ]
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidHistoryComponentSuite",
+      "role": "focused",
+      "parents": [
+        "atf.android.suites.AndroidComponentSuite"
+      ]
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.e2e.support.AndroidUiFlowTimingComponentSuite",
+      "role": "focused",
+      "parents": [
+        "atf.android.suites.AndroidComponentSuite"
+      ]
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidGameplayE2eSuite",
+      "role": "focused",
+      "parents": [
+        "atf.android.suites.AndroidE2eSuite"
+      ]
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.reporting.GameReportComponentSuite",
+      "role": "focused",
+      "parents": [
+        "atf.tests.suites.AtfComponentSuite"
+      ]
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.governance.AtfQualityGovernanceSuite",
+      "role": "focused",
+      "parents": [
+        "atf.tests.suites.AtfUnitSuite",
+        "atf.tests.suites.AtfComponentSuite",
+        "atf.tests.suites.AtfIntegrationSuite"
+      ]
+    }
+  ]
+}

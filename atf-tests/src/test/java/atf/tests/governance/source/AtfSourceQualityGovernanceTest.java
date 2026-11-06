@@ -1,5 +1,7 @@
 package atf.tests.governance.source;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,7 @@ class AtfSourceQualityGovernanceTest {
         Path root = GovernanceProject.locateProjectRoot();
         var policy = GovernanceProject.policy(root);
         var sources = GovernanceProject.sources(root);
-        assertFalse(sources.isEmpty(), "The governed source population must not be empty");
+        AuditedAssertions.assertFalse(sources.isEmpty(), "The governed source population must not be empty");
         var violations = new ArrayList<String>();
         for (var file : sources) {
             var forbidden = new ArrayList<String>();
@@ -32,7 +34,7 @@ class AtfSourceQualityGovernanceTest {
             if (sources.stream().noneMatch(file -> !file.test() && GovernanceProject.relative(root, file.file()).equals(entry.getKey())))
                 violations.add("Stale production adapter: " + entry.getKey());
         });
-        assertTrue(violations.isEmpty(), () -> String.join("\n", violations));
+        AuditedAssertions.assertTrue(violations.isEmpty(), () -> String.join("\n", violations));
     }
 
     @Test void lexicalGuardFindsRealViolationsAndIgnoresExamples() {
@@ -44,11 +46,11 @@ class AtfSourceQualityGovernanceTest {
                 class Example { String example = "import x.Y; import x.Y; org.junit.Test"; }
                 // import org.junit.Test;
                 """;
-        assertEquals(List.of("java.util.List"), SourceQualityRules.duplicateImports(code));
-        assertEquals(1, SourceQualityRules.inspect(file, code, List.of("org.junit")).size());
+        AuditedAssertions.assertEquals(List.of("java.util.List"), SourceQualityRules.duplicateImports(code));
+        AuditedAssertions.assertEquals(1, SourceQualityRules.inspect(file, code, List.of("org.junit")).size());
         var invalid = SourceQualityRules.inspect(file, "package wrong;\nimport org.junit.Test;", List.of("org.junit"));
-        assertEquals(2, invalid.size());
-        assertTrue(invalid.stream().anyMatch(value -> value.contains("GOV-PACKAGE-PATH")));
-        assertTrue(invalid.stream().anyMatch(value -> value.contains("GOV-BOUNDARY")));
+        AuditedAssertions.assertEquals(2, invalid.size());
+        AuditedAssertions.assertTrue(invalid.stream().anyMatch(value -> value.contains("GOV-PACKAGE-PATH")));
+        AuditedAssertions.assertTrue(invalid.stream().anyMatch(value -> value.contains("GOV-BOUNDARY")));
     }
 }

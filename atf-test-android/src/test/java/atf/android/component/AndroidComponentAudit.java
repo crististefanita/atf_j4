@@ -14,13 +14,15 @@ import org.junit.jupiter.api.extension.ParameterContext;
 /** JUnit metadata glue; shared owner acquisition and closure are delegated to Test Kit. */
 public final class AndroidComponentAudit implements ComponentAuditAdapter {
     private static final ExtensionContext.Namespace INPUTS = ExtensionContext.Namespace.create(AndroidComponentAudit.class);
-    private final ComponentAuditExtension audit = ComponentAuditExtension.scoped(AndroidComponentAudit.class, AndroidComponentRun.class,
+    private final ComponentAuditExtension audit = ComponentAuditExtension.scoped(AndroidComponentReports.class, AndroidComponentRun.class,
                 context -> AndroidComponentReports.open(), (run, context) -> {
                     var type = context.getRequiredTestClass();
                     String method = context.getTestMethod().map(java.lang.reflect.Method::getName).orElse("Class lifecycle");
-                    var identity = new AssertionAuditReport.Identity(type.getSimpleName(), type.getPackageName(),
+                    String classIdentity = type.getName().substring(type.getPackageName().length() + 1);
+                    var identity = new AssertionAuditReport.Identity(classIdentity, type.getPackageName(),
                             context.getDisplayName(), method, List.of("component", "android-library", "offline"));
                     var inputs = new ComponentInputs();
+                    inputs.add("JUnit invocation identity", context.getUniqueId());
                     context.getStore(INPUTS).put(ComponentInputs.class, inputs);
                     return new AndroidComponentPublication(run, identity, inputs);
                 });

@@ -1,0 +1,1153 @@
+{
+  "state": "PASS — QUALIFIED LOCAL PREPARATION",
+  "reports": [
+    {
+      "file": "reports/component/display-extent.html",
+      "sha256": "000f99fb59cca7ef575bd7bcfc83b7f5178d2577bea211a8d743c7e224d9e701",
+      "junitInvocations": 150,
+      "htmlInvocations": 150,
+      "owners": [
+        "atf.android.e2e.display.HandGeometryDriverComponentTest",
+        "atf.android.e2e.display.HandIndexAuditComponentTest",
+        "atf.android.e2e.display.component.DisplayRasterComponentTest",
+        "atf.android.e2e.display.component.FrameFillAuditComponentTest",
+        "atf.android.e2e.display.component.ScreenGeometryComponentTest",
+        "atf.android.e2e.display.component.TableViewportAuditComponentTest",
+        "atf.android.e2e.display.component.TableViewportObservationComponentTest",
+        "atf.android.e2e.display.profile.ResponsiveDisplayProfileComponentTest",
+        "atf.android.e2e.display.profile.WhistDisplayProfileComponentTest",
+        "atf.android.e2e.driver.AndroidUiDriverComponentTest",
+        "atf.android.e2e.driver.AndroidUiDriverComponentTest$Waiting",
+        "atf.android.e2e.driver.hierarchy.HierarchyContractComponentTest",
+        "atf.android.e2e.records.RecordsFixturesComponentTest",
+        "atf.android.e2e.records.RecordsRunContractComponentTest",
+        "atf.android.e2e.records.legend.HistoryLegendAuditComponentTest",
+        "atf.android.e2e.records.legend.LegendProfilesComponentTest"
+      ],
+      "suiteIds": [
+        "atf.android.suites.AndroidDisplayComponentSuite"
+      ],
+      "exactIdentityMatch": true,
+      "missingRegistrationWitnessRejected": true
+    },
+    {
+      "file": "reports/component/framework-extent.html",
+      "sha256": "6483e245254754bbdd6481aa2fbeb5e701fcd6b1e885bba8da711f89958d5e78",
+      "junitInvocations": 37,
+      "htmlInvocations": 37,
+      "owners": [
+        "atf.tests.contracts.AndroidPhaseTraceReplayContractTest",
+        "atf.tests.reporting.GameEvidenceBodiesContractTest",
+        "atf.tests.reporting.GameReportPolicyContractTest",
+        "atf.tests.reporting.GameReportPublicationContractTest",
+        "atf.tests.reporting.GameReportTextAuditContractTest"
+      ],
+      "suiteIds": [
+        "atf.tests.reporting.GameReportComponentSuite"
+      ],
+      "exactIdentityMatch": true,
+      "missingRegistrationWitnessRejected": true
+    },
+    {
+      "file": "reports/component/trace-publication-extent.html",
+      "sha256": "3f123f0fafa2d7900d8a3e81ad00e459b1f4be0122f433a6aba601d2ef83234d",
+      "junitInvocations": 27,
+      "htmlInvocations": 27,
+      "owners": [
+        "atf.android.e2e.support.AndroidUiFlowReportPublisherTest",
+        "atf.android.e2e.support.AndroidUiFlowTimingComponentTest",
+        "atf.android.e2e.support.AndroidUiFlowTraceTest",
+        "atf.android.e2e.support.replay.CapturedAndroidFlowComponentTest"
+      ],
+      "suiteIds": [
+        "atf.android.e2e.support.AndroidUiFlowTimingComponentSuite"
+      ],
+      "exactIdentityMatch": true,
+      "missingRegistrationWitnessRejected": true,
+      "qualificationLog": "complete-body-components.log"
+    },
+    {
+      "file": "reports/component/adapter-extent.html",
+      "sha256": "1d8f5702f48b53ef8e39cb680ce2d3b75297bacd9715e0242566d4b101368ebc",
+      "junitInvocations": 21,
+      "htmlInvocations": 21,
+      "owners": [
+        "atf.android.AdbClientContractTest",
+        "atf.android.evidence.AndroidScreenshotEvidenceComponentTest",
+        "atf.android.evidence.FontScaleRestorationComponentTest",
+        "atf.android.evidence.text.EvidenceTextPartsComponentTest",
+        "atf.android.process.CommandProcessComponentTest"
+      ],
+      "suiteIds": [
+        "atf.android.suites.AndroidComponentSuite"
+      ],
+      "exactIdentityMatch": true,
+      "missingRegistrationWitnessRejected": true,
+      "qualificationLog": "complete-body-components.log"
+    }
+  ],
+  "nativeEmbedding": [
+    {
+      "report": "reports/e2e/history-legend.html",
+      "sha256": "8ae17833b3013d56d60ae61ba4f8edc200b34827b7fc826b3740c203d4bfb187",
+      "embeddedCopiesNotRetained": [
+        {
+          "name": "01-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-0-en.png",
+          "bytes": 263142,
+          "sha256": "a2d6d6a1bfe89f6b26cbc7a08fab74eae340ac846970a818cd2040ad190cc0d8"
+        },
+        {
+          "name": "01-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-0-en.xml",
+          "bytes": 68058,
+          "sha256": "1be0eb456b247998741fcb1586e584cc3353533798a1ec3084b2487865a312fd"
+        },
+        {
+          "name": "02-fixed-legend-after-column-scrolling-720x1280-360dpi-font-1-0-en.png",
+          "bytes": 263142,
+          "sha256": "a2d6d6a1bfe89f6b26cbc7a08fab74eae340ac846970a818cd2040ad190cc0d8"
+        },
+        {
+          "name": "02-fixed-legend-after-column-scrolling-720x1280-360dpi-font-1-0-en.xml",
+          "bytes": 68058,
+          "sha256": "1be0eb456b247998741fcb1586e584cc3353533798a1ec3084b2487865a312fd"
+        },
+        {
+          "name": "03-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-5-ro.png",
+          "bytes": 273757,
+          "sha256": "76dc179c2dd2b2afb2e97dc8a7d96cb842b012e92a8a7e44d582bf11a1d3a92c"
+        },
+        {
+          "name": "03-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-5-ro.xml",
+          "bytes": 42265,
+          "sha256": "6742753409bd405e3c4014cb55367f784b27bb38ed6c53ac1784dfd70b8771c5"
+        },
+        {
+          "name": "04-fixed-legend-after-column-scrolling-720x1280-360dpi-font-1-5-ro.png",
+          "bytes": 270120,
+          "sha256": "33bfde6f11fe20cf92b159ab7bc4e72ef911a4fa4fc8b43f26e429a2bc7791f9"
+        },
+        {
+          "name": "04-fixed-legend-after-column-scrolling-720x1280-360dpi-font-1-5-ro.xml",
+          "bytes": 39729,
+          "sha256": "206fbc35dcf0c5be5634371e85718130e58cbef4cdfa4ec6cb02e198be6ca73a"
+        },
+        {
+          "name": "05-original-user-data-restored.png",
+          "bytes": 90791,
+          "sha256": "b74ec83a6685412a598254b199d0ea15cde085ecc37271ea13222af26ec2b898"
+        },
+        {
+          "name": "05-original-user-data-restored.xml",
+          "bytes": 5767,
+          "sha256": "cbda90b575cc6f25f20d1098adf0b3c1a601016deb57171aef67ce5ee0c501a4"
+        },
+        {
+          "name": "installation.json",
+          "bytes": 946,
+          "sha256": "8ba042464c65c49d7069ca612c3d2e8ae1e213abf529af0dea6c3cb2d573fd54"
+        },
+        {
+          "name": "legend-720x1280-360dpi-font-1.0-EN-fixture.json",
+          "bytes": 3351,
+          "sha256": "b0b2b31c9fa11656b772147797b2d8122849d663a4d790ac3f595e113ae72a33"
+        },
+        {
+          "name": "legend-720x1280-360dpi-font-1.0-EN-preferences.xml",
+          "bytes": 3343,
+          "sha256": "91a1dfd3b9fb4044e0a8f4375d3f63f888c6f7620e0068baa603191508924741"
+        },
+        {
+          "name": "legend-720x1280-360dpi-font-1.5-RO-fixture.json",
+          "bytes": 3351,
+          "sha256": "b0b2b31c9fa11656b772147797b2d8122849d663a4d790ac3f595e113ae72a33"
+        },
+        {
+          "name": "legend-720x1280-360dpi-font-1.5-RO-preferences.xml",
+          "bytes": 3343,
+          "sha256": "91a1dfd3b9fb4044e0a8f4375d3f63f888c6f7620e0068baa603191508924741"
+        },
+        {
+          "name": "observed-001-committed-session.json",
+          "bytes": 3777,
+          "sha256": "71a207b762a109a6ecf88132ffa65108e95f72dc29c8290c7ca8573873ce255b"
+        },
+        {
+          "name": "observed-002-committed-session.json",
+          "bytes": 3777,
+          "sha256": "846afb2dc8e588166593b5f91b81d1e151e885375a70ab5936689bdc65d4f294"
+        },
+        {
+          "name": "ui-flow-history-legend-viewport.properties",
+          "bytes": 34755,
+          "sha256": "edcb9077b4e081243e6bff71af65a8272bc02e45a04db4e2de082502c9245721"
+        }
+      ],
+      "publication": "OFFLINE_REPUBLICATION, no new Android execution",
+      "scope": "Complete XML/properties text modulo HTML newlines; JSON value trees exact including scalar types and duplicate refusal; PNG bytes exact; current-window.xml is mutable scratch"
+    },
+    {
+      "report": "reports/e2e/history-release-sanity.html",
+      "sha256": "ee103eaa48ff1e3760d8b3481d696aacebd22a60aeadeaf4b15a67f647be498b",
+      "embeddedCopiesNotRetained": [
+        {
+          "name": "01-current-apk-resumes-the-same-completed-ledger-en.png",
+          "bytes": 226653,
+          "sha256": "504f8924142964795c5421fb9807c7dd53db9bb422465e338e4ee9a407150b00"
+        },
+        {
+          "name": "01-current-apk-resumes-the-same-completed-ledger-en.xml",
+          "bytes": 86495,
+          "sha256": "e02e7645b780b749a6506e02e7b8894f6d90ce29a65fb7d7fc82d4d659031878"
+        },
+        {
+          "name": "02-current-apk-resumes-the-same-completed-ledger-ro.png",
+          "bytes": 224987,
+          "sha256": "8b2e6d0fcb821a677beba26c6d668f2c46cff3b791aa5a2a667dfd7a97f1a1c3"
+        },
+        {
+          "name": "02-current-apk-resumes-the-same-completed-ledger-ro.xml",
+          "bytes": 86896,
+          "sha256": "6ff56bd8b49b165adec769d56d3017b1c42d79c01abf3ff40e417e86e3a3ce3b"
+        },
+        {
+          "name": "03-original-user-data-restored.png",
+          "bytes": 90730,
+          "sha256": "3f19d38e22ea86a8c77d7f671554127cb0511f3a7b7705fa18b5731bb98ba31e"
+        },
+        {
+          "name": "03-original-user-data-restored.xml",
+          "bytes": 5767,
+          "sha256": "cbda90b575cc6f25f20d1098adf0b3c1a601016deb57171aef67ce5ee0c501a4"
+        },
+        {
+          "name": "installation.json",
+          "bytes": 946,
+          "sha256": "8ba042464c65c49d7069ca612c3d2e8ae1e213abf529af0dea6c3cb2d573fd54"
+        },
+        {
+          "name": "observed-001-committed-session.json",
+          "bytes": 3768,
+          "sha256": "c85943738e5d62724dc239acea0db8b827a75b0aaa71794c4cff5ab7ee3434fa"
+        },
+        {
+          "name": "observed-002-committed-session.json",
+          "bytes": 3768,
+          "sha256": "19ef352959e5eb4ea5565748f61c572e6b8fdfffdd05c9bee2fdfd6ee78f9956"
+        },
+        {
+          "name": "release-history-24-jvm-played-hands-fixture.json",
+          "bytes": 3351,
+          "sha256": "62877d1b91e56d3266458fc0f1f691bcff4c8922d10fd2620e595fd6c134c838"
+        },
+        {
+          "name": "release-history-24-jvm-played-hands-preferences.xml",
+          "bytes": 3343,
+          "sha256": "bbbf2df93b212bcff6d87ef9b51256a4a26956a440adaea09845bd783191dcb7"
+        },
+        {
+          "name": "ui-flow-release-history-resume.properties",
+          "bytes": 22116,
+          "sha256": "1bc755cc82ca2136e6f3579f3276c2ccb6b948da94232917e39b2f33a941d441"
+        }
+      ],
+      "publication": "OFFLINE_REPUBLICATION, no new Android execution",
+      "scope": "Complete XML/properties text modulo HTML newlines; JSON value trees exact including scalar types and duplicate refusal; PNG bytes exact; current-window.xml is mutable scratch"
+    },
+    {
+      "report": "reports/e2e/signed-release-smoke.html",
+      "sha256": "823bf53a26b52076b14a350e626aea19afb235c43779597c20d11740e20f3f52",
+      "embeddedCopiesNotRetained": [
+        {
+          "name": "home-remains-reachable-after-back.png",
+          "bytes": 90417,
+          "sha256": "674a4c1312b95bed6a711bd045136a8113f06ef8a21683c5ab728d88296f2cfb"
+        },
+        {
+          "name": "home-remains-reachable-after-back.xml",
+          "bytes": 5767,
+          "sha256": "cbda90b575cc6f25f20d1098adf0b3c1a601016deb57171aef67ce5ee0c501a4"
+        },
+        {
+          "name": "real-configuration-without-starting-another-match.png",
+          "bytes": 93109,
+          "sha256": "c3d1ec8cb50ced5d3f06ede3f217abf50cb475775b3a4cb57885c28fda1db0e7"
+        },
+        {
+          "name": "real-configuration-without-starting-another-match.xml",
+          "bytes": 8417,
+          "sha256": "3df21dab837119e2247bb850f0ef87bcae295cd0e2df5ded7bc6f1798d9dcbc6"
+        },
+        {
+          "name": "real-signed-apk-home.png",
+          "bytes": 90379,
+          "sha256": "4f8a48e4888878968ebe9202796ddabff2b7eb5a48f00b20bbc9a7d31afd65b8"
+        },
+        {
+          "name": "real-signed-apk-home.xml",
+          "bytes": 5767,
+          "sha256": "cbda90b575cc6f25f20d1098adf0b3c1a601016deb57171aef67ce5ee0c501a4"
+        },
+        {
+          "name": "signed-release-context.json",
+          "bytes": 2690,
+          "sha256": "c0d5327cd1559bd7ffebc2f1c83c42971b594daa8f6a8a00366340d92e47c263"
+        },
+        {
+          "name": "ui-flow-signed-release-smoke.properties",
+          "bytes": 6402,
+          "sha256": "cc677cd7cb4f5bf52222384804eba54c086255c6b1454a372b0fd5da2893628d"
+        }
+      ],
+      "publication": "OFFLINE_REPUBLICATION, no new Android execution",
+      "scope": "Complete XML/properties text modulo HTML newlines; JSON value trees exact including scalar types and duplicate refusal; PNG bytes exact; current-window.xml is mutable scratch"
+    }
+  ],
+  "browser": [
+    {
+      "htmlSha256": "000f99fb59cca7ef575bd7bcfc83b7f5178d2577bea211a8d743c7e224d9e701",
+      "scope": "One declared component owner in detached HTML, Chromium with non-navigation requests blocked",
+      "owner": "HistoryLegendAuditComponentTest",
+      "lastComparison": "assertThrows · HistoryLegendAuditComponentTest.java:53 · External DTD refused\torg.xml.sax.SAXException\torg.xml.sax.SAXParseException\t✅",
+      "assertionGroupReopened": true,
+      "fullInputCharacters": 451,
+      "fullInputReopened": true,
+      "renderer": "extent",
+      "status": "PASS"
+    },
+    {
+      "htmlSha256": "1d8f5702f48b53ef8e39cb680ce2d3b75297bacd9715e0242566d4b101368ebc",
+      "scope": "One declared component owner in detached HTML, Chromium with non-navigation requests blocked",
+      "owner": "EvidenceTextPartsComponentTest",
+      "lastComparison": "assertEquals · EvidenceTextPartsComponentTest.java:29 · Empty body remains explicit\t[]\t[]\t✅",
+      "assertionGroupReopened": true,
+      "fullInputCharacters": 32772,
+      "lastInputPart": 4,
+      "fullInputReopened": true,
+      "renderer": "extent",
+      "status": "PASS"
+    },
+    {
+      "htmlSha256": "2300a41c8726af0ec7b89d884f735061cd855a75969a7b75ac9a64fc097cbbc2",
+      "scope": "One declared component owner in detached HTML, Chromium with non-navigation requests blocked",
+      "owner": "HistoryLegendAuditComponentTest",
+      "lastComparison": "assertThrows · HistoryLegendAuditComponentTest.java:53 · External DTD refused\torg.xml.sax.SAXException\torg.xml.sax.SAXParseException\tPass",
+      "assertionGroupReopened": true,
+      "fullInputCharacters": 451,
+      "lastInputPart": 451,
+      "fullInputReopened": true,
+      "renderer": "fallback",
+      "status": "PASS"
+    },
+    {
+      "source": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_0102_5d160bbf9f\\republications\\history-legend\\report.html",
+      "originalRasterSizes": [
+        "1080x1920"
+      ],
+      "htmlSha256": "8ae17833b3013d56d60ae61ba4f8edc200b34827b7fc826b3740c203d4bfb187",
+      "scope": "Detached original HTML in automated Chromium; independent of MCP and Android execution",
+      "title": "ATF Report",
+      "details": 182,
+      "tables": 148,
+      "visibleControls": [
+        "Android UI execution receipt",
+        "Android phase timing — separate measured axes",
+        "Android phase timing — separate measured axes",
+        "UI action sequence (16 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 7",
+        "UI action sequence (1 entry)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 8",
+        "Android phase timing — separate measured axes",
+        "Android phase timing — separate measured axes",
+        "UI action sequence (11 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 7",
+        "UI action sequence (1 entry)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 9",
+        "Android phase timing — separate measured axes",
+        "UI action sequence (9 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 4",
+        "Android phase timing — separate measured axes"
+      ],
+      "ownerMarkup": [
+        {
+          "tag": "DETAILS",
+          "cl": "atf-ui-action-sequence",
+          "id": ""
+        },
+        {
+          "tag": "TD",
+          "cl": "",
+          "id": ""
+        },
+        {
+          "tag": "TR",
+          "cl": "event-row",
+          "id": ""
+        },
+        {
+          "tag": "TBODY",
+          "cl": "",
+          "id": ""
+        },
+        {
+          "tag": "TABLE",
+          "cl": "table table-sm",
+          "id": ""
+        },
+        {
+          "tag": "DIV",
+          "cl": "card-body",
+          "id": ""
+        }
+      ],
+      "assertionsVisible": true,
+      "lastAssertionRow": "At least one whole score row remains visible\t>= 90 px\t544 px\t✅",
+      "visibleScreenshotLinks": 1,
+      "viewerImages": [
+        {
+          "width": 1080,
+          "height": 1920,
+          "complete": true
+        }
+      ],
+      "ownerOpenAfterViewer": true,
+      "status": "PASS"
+    },
+    {
+      "source": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_0102_5d160bbf9f\\republications\\history-release-sanity\\report.html",
+      "originalRasterSizes": [
+        "1080x1920"
+      ],
+      "htmlSha256": "ee103eaa48ff1e3760d8b3481d696aacebd22a60aeadeaf4b15a67f647be498b",
+      "scope": "Detached original HTML in automated Chromium; independent of MCP and Android execution",
+      "title": "ATF Report",
+      "details": 134,
+      "tables": 100,
+      "visibleControls": [
+        "Android UI execution receipt",
+        "Android phase timing — separate measured axes",
+        "UI action sequence (15 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 7",
+        "Android phase timing — separate measured axes",
+        "UI action sequence (4 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 7",
+        "Android phase timing — separate measured axes",
+        "UI action sequence (9 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 4",
+        "Android phase timing — separate measured axes"
+      ],
+      "ownerMarkup": [
+        {
+          "tag": "DETAILS",
+          "cl": "atf-ui-action-sequence",
+          "id": ""
+        },
+        {
+          "tag": "TD",
+          "cl": "",
+          "id": ""
+        },
+        {
+          "tag": "TR",
+          "cl": "event-row",
+          "id": ""
+        },
+        {
+          "tag": "TBODY",
+          "cl": "",
+          "id": ""
+        },
+        {
+          "tag": "TABLE",
+          "cl": "table table-sm",
+          "id": ""
+        },
+        {
+          "tag": "DIV",
+          "cl": "card-body",
+          "id": ""
+        }
+      ],
+      "assertionsVisible": true,
+      "lastAssertionRow": "Human column remains readable\ttrue\ttrue\t✅",
+      "visibleScreenshotLinks": 1,
+      "viewerImages": [
+        {
+          "width": 1080,
+          "height": 1920,
+          "complete": true
+        }
+      ],
+      "ownerOpenAfterViewer": true,
+      "status": "PASS"
+    },
+    {
+      "source": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_0102_5d160bbf9f\\republications\\signed-release-smoke\\report.html",
+      "originalRasterSizes": [
+        "1080x1920"
+      ],
+      "htmlSha256": "823bf53a26b52076b14a350e626aea19afb235c43779597c20d11740e20f3f52",
+      "scope": "Detached original HTML in automated Chromium; independent of MCP and Android execution",
+      "title": "ATF Report",
+      "details": 74,
+      "tables": 73,
+      "visibleControls": [
+        "Android UI execution receipt",
+        "UI action sequence (2 entries)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 3",
+        "UI action sequence (1 entry)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 2",
+        "UI action sequence (1 entry)",
+        "Audit observations · 1 checkpoint",
+        "Assertions · 1",
+        "Android phase timing — separate measured axes"
+      ],
+      "ownerMarkup": [
+        {
+          "tag": "DETAILS",
+          "cl": "atf-ui-action-sequence",
+          "id": ""
+        },
+        {
+          "tag": "TD",
+          "cl": "",
+          "id": ""
+        },
+        {
+          "tag": "TR",
+          "cl": "event-row",
+          "id": ""
+        },
+        {
+          "tag": "TBODY",
+          "cl": "",
+          "id": ""
+        },
+        {
+          "tag": "TABLE",
+          "cl": "table table-sm",
+          "id": ""
+        },
+        {
+          "tag": "DIV",
+          "cl": "card-body",
+          "id": ""
+        }
+      ],
+      "assertionsVisible": true,
+      "lastAssertionRow": "Home content fits the first viewport\ttrue\ttrue\t✅",
+      "visibleScreenshotLinks": 1,
+      "viewerImages": [
+        {
+          "width": 1080,
+          "height": 1920,
+          "complete": true
+        }
+      ],
+      "ownerOpenAfterViewer": true,
+      "status": "PASS"
+    }
+  ],
+  "originalJunitSuites": {
+    "app": [
+      {
+        "name": "TEST-ro.whistlab.app.animation.TrickCollectionCleanupComponentTest.xml",
+        "sha256": "ac48d04e623991dfd5848450ab27945320b92cdc7d3ac03c707bfb2a11211c0f",
+        "tests": 5
+      },
+      {
+        "name": "TEST-ro.whistlab.app.animation.TrickCollectionFlowComponentTest.xml",
+        "sha256": "5d10c2f9a32f9b9c20fd543aaf71a5e2cd1ef7f8c6d761f065fe06fdb3f7ac1d",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.animation.TrickCollectionMotionComponentTest.xml",
+        "sha256": "d91055253d26f2532de07fda683bf9fcfb1f39b9692f9a284e44f3a338389fc6",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.animation.TrickCollectionRequestComponentTest.xml",
+        "sha256": "9560c61b819506fd53e0c003697364e5b1f9fdba3335b0af0608fd820838b880",
+        "tests": 5
+      },
+      {
+        "name": "TEST-ro.whistlab.app.animation.TrickCollectionResizeComponentTest.xml",
+        "sha256": "1c6a4aa8fa8ee7f5524d865e23cfe2687eacd0ab163a10f1141e76b05b3496c7",
+        "tests": 9
+      },
+      {
+        "name": "TEST-ro.whistlab.app.animation.TrickCollectionRunComponentTest.xml",
+        "sha256": "e92d934dd9f121af05ac3f3ca3612f0efa736bb2fd5586c949d62a78415d2a47",
+        "tests": 9
+      },
+      {
+        "name": "TEST-ro.whistlab.app.fixtures.DisplayFixtureDealsTest.xml",
+        "sha256": "74431d6d0de18bb8d79c6ffa775417e7d46bfcdadc1ff3896a287a9525c20964",
+        "tests": 2
+      },
+      {
+        "name": "TEST-ro.whistlab.app.highscores.HighScoreRepositoryComponentTest.xml",
+        "sha256": "9afe52ffc845e11665ef1066912a1267aac0d54565133251b1290a8e7e5af70e",
+        "tests": 7
+      },
+      {
+        "name": "TEST-ro.whistlab.app.lifecycle.AiTurnCoordinatorComponentTest.xml",
+        "sha256": "3e196a5121c90de66bd062abc971002e2af42a0530d33cbaf0e8d70dbccdb94b",
+        "tests": 8
+      },
+      {
+        "name": "TEST-ro.whistlab.app.lifecycle.AiTurnRequestComponentTest.xml",
+        "sha256": "ae7c1f3112a483766450b4601d4039ca43a6bec7ea27b2553b4e2ca4ef2baf20",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.lifecycle.CompletedTrickOwnershipComponentTest.xml",
+        "sha256": "9d430620b7e95ad16767e9d484542b4c34a1f2ec55fa38c566ad3485baafd0a0",
+        "tests": 3
+      },
+      {
+        "name": "TEST-ro.whistlab.app.lifecycle.CompletedTrickPauseComponentTest.xml",
+        "sha256": "bb4f4cc12d6b234108c7a20786b1d12d196690639ec1a99d07609784e17880ac",
+        "tests": 2
+      },
+      {
+        "name": "TEST-ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest.xml",
+        "sha256": "1bfcad9468f108546a4216b1726023954eafa5fe1682ac1f647ce8d28bcb9e98",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.lifecycle.GameCommandFlowComponentTest.xml",
+        "sha256": "48a7fa8b6c83200bb95a0e255643763814129fa9224a0a2dc5573d2f410685d0",
+        "tests": 8
+      },
+      {
+        "name": "TEST-ro.whistlab.app.localization.WhistUiTextTest.xml",
+        "sha256": "583530aed1dc31e6acdb50acebe8d68f4223d4ff341f0720d4aa1a62140dfe57",
+        "tests": 15
+      },
+      {
+        "name": "TEST-ro.whistlab.app.navigation.AppNavigationComponentTest.xml",
+        "sha256": "d1399b97dccf5cbb9cc0e255b51f6437daab25c2d144a20ce6faa8a3bd047099",
+        "tests": 7
+      },
+      {
+        "name": "TEST-ro.whistlab.app.persistence.GamePersistenceComponentTest.xml",
+        "sha256": "813fef0de7b111f46d190c22111f49512b185360e198cb92c05a5076978f8a0b",
+        "tests": 7
+      },
+      {
+        "name": "TEST-ro.whistlab.app.persistence.GamePersistenceRankingComponentTest.xml",
+        "sha256": "2c17fb28fb471467cfd7360420eaa3ab8c2828028f1062ccb7515def28312413",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.persistence.GameSessionNumbersComponentTest.xml",
+        "sha256": "0eb76844c174a19e73d608d572a2da7f4ef5bd3cbdb1f6c594dcb4b31856e0e7",
+        "tests": 4
+      },
+      {
+        "name": "TEST-ro.whistlab.app.presentation.PresentationRefreshComponentTest.xml",
+        "sha256": "de96ed48b6565f680bd100bd3c6522ac2c0a8b856999e0d38820bdc799d86e53",
+        "tests": 8
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.award.SeriesPointsFrameComponentTest.xml",
+        "sha256": "c560c287deaf2fba195b29294758736daac5c0fc8e9101627db6fd42d0a4279b",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.layout.HistoryViewportComponentTest.xml",
+        "sha256": "67a77dae802c1b5e0c5fac30d7d74a3f191e00598c09e90c0acca82e992041eb",
+        "tests": 5
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.ScoreHistoryCheckpointTest.xml",
+        "sha256": "bbe3118778d42f5121ef8a591991c90c214c119f12236396d7361751de373bae",
+        "tests": 7
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest.xml",
+        "sha256": "cadd2364c68921cd56d41a07f8e3ef5b46e1fc27b7379780460dbd337dfc36c7",
+        "tests": 8
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.ScoreHistoryMeasureComponentTest.xml",
+        "sha256": "f75b3a97024b7990d7217a4ecd889981eaa3a82d17e1321748f37dce5296cb6d",
+        "tests": 10
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest.xml",
+        "sha256": "2436c5748fbaaf9bda3d65fb58c920e7ba6223fb0f1f460b4660c0c1a655da4e",
+        "tests": 7
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.ScoreHistorySeriesComponentTest.xml",
+        "sha256": "7bc61cb55604bdef2a8ecae951c3e59d1b1ee69470b1fcba4687cebddad195a8",
+        "tests": 3
+      },
+      {
+        "name": "TEST-ro.whistlab.app.score.ScoreHistoryTableComponentTest.xml",
+        "sha256": "f8b4533790d0fd3db06733f6bb63fe15c023c4a9cd1c7c85f34dc7f1cf5ef4bc",
+        "tests": 9
+      },
+      {
+        "name": "TEST-ro.whistlab.app.screens.MatchSetupComponentTest.xml",
+        "sha256": "ee90cd161d9fa969d25e041c4bb6f058bf055016fb63b27df770247cb23fa6f0",
+        "tests": 4
+      },
+      {
+        "name": "TEST-ro.whistlab.app.seat.PlayerSeatMetricsComponentTest.xml",
+        "sha256": "6f768bc82dab20646f7c8975bc06d898030d427eb689e47f25704ad54dceb6e9",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.table.GameTableLayoutComponentTest.xml",
+        "sha256": "e57524b09d2dbec7f40dbe3cac660bd1cf7a0c0c1557ce4741463525c5ea55e0",
+        "tests": 15
+      },
+      {
+        "name": "TEST-ro.whistlab.app.table.TableSeatOrderComponentTest.xml",
+        "sha256": "1dc023f811be2456a524f550c5747b99fe336eb3652a4f9cdbb16c868ffc0e58",
+        "tests": 2
+      },
+      {
+        "name": "TEST-ro.whistlab.app.table.TableViewportPolicyTest.xml",
+        "sha256": "bdcc9495eb9b3b3f5c99441e6c8c9f470b73989190fc2c6d4061ac4689afd9f4",
+        "tests": 7
+      },
+      {
+        "name": "TEST-ro.whistlab.app.table.TrickCardMetricsComponentTest.xml",
+        "sha256": "64e0af5cfa321fb04b085c422facab02beed7735b114a630a0a96a3643896bab",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.table.TrumpIndicatorComponentTest.xml",
+        "sha256": "c3b64c7fdaa745fde5d9fd4098a829ac2e12db574e88845890316f863e275b43",
+        "tests": 6
+      },
+      {
+        "name": "TEST-ro.whistlab.app.theme.GameHeaderTypographyComponentTest.xml",
+        "sha256": "e5fff3c8a58e3b9573a149f20acb5d8c73e9410f7df6a2dd394848229d03d228",
+        "tests": 2
+      },
+      {
+        "name": "TEST-ro.whistlab.app.window.WindowPaddingComponentTest.xml",
+        "sha256": "af3316be7b37ea591e44f2f7f54d80132f62f7a2d8262b8cac744a47145c4a1d",
+        "tests": 4
+      }
+    ],
+    "kit": [
+      {
+        "name": "TEST-atf.testkit.assertions.AssertionProjectionTest.xml",
+        "sha256": "b72c86e0af0a57676f9f357168906235660e28550ff5ed265cc07f237e1ac324",
+        "tests": 6
+      },
+      {
+        "name": "TEST-atf.testkit.assertions.AuditedAssertionsTest.xml",
+        "sha256": "bb6c968f373eb17de5044f42c61e763fc700a8dd913c88d816be0ec948db88f2",
+        "tests": 7
+      }
+    ],
+    "adapter": [
+      {
+        "name": "TEST-atf.android.AdbClientContractTest.xml",
+        "sha256": "062f7267ba98391f340d41955938fa44e0042f9cfbd545540140320af9fc15b0",
+        "tests": 4
+      },
+      {
+        "name": "TEST-atf.android.component.AndroidComponentReportContractTest.xml",
+        "sha256": "08dbb642b007e95634b697d929859eb71a1a9299f5370428b869c5417f5e3a1b",
+        "tests": 2
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.component.DisplayRasterComponentTest.xml",
+        "sha256": "9c53f418770e5f5270f558f74d27bc5cb67f2ad53994ec451c04a65d47df335c",
+        "tests": 6
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.component.FrameFillAuditComponentTest.xml",
+        "sha256": "a2c038ac0002caa676224966f7872f2ec236bb3935aba3b8c03b1fdaa21ebed7",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.component.ScreenGeometryComponentTest.xml",
+        "sha256": "350b29c6392bdcc6347672ca47a9f4cc3e6a6ef54824635441811bb6cf2c76ff",
+        "tests": 2
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.component.TableViewportAuditComponentTest.xml",
+        "sha256": "178fd66d633efca035d168824e5f4cf682febe7a6b05e9a2c0cc240ab1f62084",
+        "tests": 10
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.component.TableViewportObservationComponentTest.xml",
+        "sha256": "01a6641f6063c240682b3207a9cb5aab04b92edc95b56751673379c085351fcb",
+        "tests": 60
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.HandGeometryDriverComponentTest.xml",
+        "sha256": "5be709446e30c7a802c6f206de66e2266ce26e2517de3115fda24d4c8f34c745",
+        "tests": 2
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.HandIndexAuditComponentTest.xml",
+        "sha256": "1782df3137dad89c8264577554325898dcbd6e700bb1b40ea0eddf8985e4dd09",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.profile.ResponsiveDisplayProfileComponentTest.xml",
+        "sha256": "e6fd319249acb694059a77ac34589135856ed4010a711611d0ca60a57a791a06",
+        "tests": 5
+      },
+      {
+        "name": "TEST-atf.android.e2e.display.profile.WhistDisplayProfileComponentTest.xml",
+        "sha256": "912ff309008a2002dab3526c00e1e0452fb197c5e644f8151e18c231d6f217b7",
+        "tests": 4
+      },
+      {
+        "name": "TEST-atf.android.e2e.driver.AndroidUiDriverComponentTest$Waiting.xml",
+        "sha256": "a680edff77ff6f44641941b680fbd308b4f5789127769a74e118e4023e54b4ac",
+        "tests": 14
+      },
+      {
+        "name": "TEST-atf.android.e2e.driver.AndroidUiDriverComponentTest.xml",
+        "sha256": "35c23404c41dfd1b491244c072bc3a21cbfa6489182195f4cd3c3b2095ce012a",
+        "tests": 0
+      },
+      {
+        "name": "TEST-atf.android.e2e.driver.hierarchy.HierarchyContractComponentTest.xml",
+        "sha256": "b8da93a89e2945ce2bf4bfaba9a17eda272f386608e858cf8a081baec071d6b2",
+        "tests": 12
+      },
+      {
+        "name": "TEST-atf.android.e2e.records.legend.HistoryLegendAuditComponentTest.xml",
+        "sha256": "860734b8b8984181e485c25fba7f08516895f40745753dbc4c982c43346c4fd2",
+        "tests": 4
+      },
+      {
+        "name": "TEST-atf.android.e2e.records.legend.LegendProfilesComponentTest.xml",
+        "sha256": "fc94e1f341240854aa7dcd02c0194c9d81ab608d01ff575d7e6fa196f58ec9ac",
+        "tests": 5
+      },
+      {
+        "name": "TEST-atf.android.e2e.records.RecordsFixturesComponentTest.xml",
+        "sha256": "aa546176647fa490e8428852a120841bc43519e125634e513822fbeb3907912b",
+        "tests": 4
+      },
+      {
+        "name": "TEST-atf.android.e2e.records.RecordsRunContractComponentTest.xml",
+        "sha256": "bc63df98b25caa9ef1941eb700dab7066ceb19e26e59f7ea448be1ac4bfeca33",
+        "tests": 16
+      },
+      {
+        "name": "TEST-atf.android.e2e.support.AndroidUiFlowReportPublisherTest.xml",
+        "sha256": "9f523770204450655c24db2ee5e6d4e240d30bd8e020b9585d925ce159859539",
+        "tests": 13
+      },
+      {
+        "name": "TEST-atf.android.e2e.support.AndroidUiFlowTimingComponentSuite.xml",
+        "sha256": "2c76a0dc1b50d9f1b4a93ddcc824f38d38b2d91191fab1de0f174d9b5818686c",
+        "tests": 0
+      },
+      {
+        "name": "TEST-atf.android.e2e.support.AndroidUiFlowTimingComponentTest.xml",
+        "sha256": "af5e8680f98b59d6290d57e14db2ee70f4f2891485a7a6370ecd02e90d2bdae4",
+        "tests": 5
+      },
+      {
+        "name": "TEST-atf.android.e2e.support.AndroidUiFlowTraceTest.xml",
+        "sha256": "4886ea6a21afc79ba3e3cc0330675c30dafb2e9038228f95f542cd5a3a982142",
+        "tests": 6
+      },
+      {
+        "name": "TEST-atf.android.e2e.support.replay.CapturedAndroidFlowComponentTest.xml",
+        "sha256": "7d695047c35836bb19deb898a0383f23abad5666fe64de303703ddc6f34e6ffb",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.android.evidence.AndroidScreenshotEvidenceComponentTest.xml",
+        "sha256": "3b38f6a5daae77119506a0465bb6b56e5e5193eae9df85eb2672b8c4976c5e4c",
+        "tests": 2
+      },
+      {
+        "name": "TEST-atf.android.evidence.FontScaleRestorationComponentTest.xml",
+        "sha256": "bc4a7b7d27320151a1ef740648ecde9a0384eaa921108bab7090d289debb6ac9",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.android.evidence.text.EvidenceTextPartsComponentTest.xml",
+        "sha256": "743f73124506783210cddfd1266a50bd7c23cb9ef024660182cd76bbf135d94f",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.android.process.CommandProcessComponentTest.xml",
+        "sha256": "240bb02de24bbbf1d34df4e1ee36b61bff4ffdb090d5fb70402a4a3a4c2b2858",
+        "tests": 9
+      },
+      {
+        "name": "TEST-atf.android.suites.AndroidComponentSuite.xml",
+        "sha256": "b087dee28248accdcbba5af2d8e456c9ae8d958e313c4ceb87b2fb31c787507e",
+        "tests": 0
+      },
+      {
+        "name": "TEST-atf.android.suites.AndroidDisplayComponentSuite.xml",
+        "sha256": "f67cdc97fb2e04a9e3ff531ab63464b25bfcb0d69adb966c697a51aa6112cbbb",
+        "tests": 0
+      }
+    ],
+    "framework": [
+      {
+        "name": "TEST-atf.tests.contracts.AndroidPhaseTraceReplayContractTest.xml",
+        "sha256": "690bfc62b008e2a1ffbdfb9d0eadc92e4bda97494cc436aae733cef63ae6a58d",
+        "tests": 8
+      },
+      {
+        "name": "TEST-atf.tests.reporting.GameEvidenceBodiesContractTest.xml",
+        "sha256": "70de49b12419372bacf783df6f0db3e7b6cde9c7734388afdf5cdf01ae0545c8",
+        "tests": 7
+      },
+      {
+        "name": "TEST-atf.tests.reporting.GameReportComponentSuite.xml",
+        "sha256": "796ea486b03cfb986a4fc1e4e2c54c3e633cc4a0afba6f59bba3ae559e98b820",
+        "tests": 0
+      },
+      {
+        "name": "TEST-atf.tests.reporting.GameReportPolicyContractTest.xml",
+        "sha256": "f5c226bfd29b4cb1da29d45dfec81c9b30949336a24b4af079b9a7783c9ba4a9",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.tests.reporting.GameReportPublicationContractTest.xml",
+        "sha256": "de3dbc4db6205abfa3dd23b7f6b29538d2cd49e988a61de5a55db6190a0ea5a0",
+        "tests": 16
+      },
+      {
+        "name": "TEST-atf.tests.reporting.GameReportTextAuditContractTest.xml",
+        "sha256": "ca4635469e8c578a4db236c4122a62bbc8a41a9854f0467c554d7fd7e2b05fdf",
+        "tests": 3
+      }
+    ],
+    "packaging": [
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.integrity.ApkIntegrityComponentTest.xml",
+        "sha256": "fa674099202a094a714c29dd4f7d152daf0c1eccad73f165f9a24a34835042cb",
+        "tests": 15
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.integrity.JunitIntegrityComponentTest.xml",
+        "sha256": "c213134e67feb568788f2dbf485b38b7908f2ec1ce72458cb906221270ee1370",
+        "tests": 24
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.integrity.ReleaseFilesUnitTest.xml",
+        "sha256": "112b1bbde980952049645710ea24cd802d39b9f43cc486a0cab41a500179079c",
+        "tests": 20
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.integrity.ManifestIntegrityComponentTest.xml",
+        "sha256": "e775fa8d536c56caf98730f016287f27a509c37e46954ca55c89320afcc36339",
+        "tests": 24
+      }
+    ],
+    "native": [
+      {
+        "name": "TEST-atf.android.e2e.display.flow.WhistReleaseSmokeE2eTest.xml",
+        "sha256": "c55c54418b023525be88d110b183de794be8910ec58eab53ed499361fa94e7e4",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.android.e2e.records.WhistRecordsE2eTest.xml",
+        "sha256": "15439b7bc03c71ae8e179a3f8d680c7eec413713d9378fe7459c00d68ed0bb2c",
+        "tests": 2
+      }
+    ],
+    "governance": [
+      {
+        "name": "TEST-atf.tests.governance.documentation.DocumentationAnchorGovernanceTest.xml",
+        "sha256": "61c3e692b4993647247aa9079b40e7510bbc067ad65e1f6a4b30809d0cca046d",
+        "tests": 7
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.DocumentationDiagramGovernanceTest.xml",
+        "sha256": "b54cc76da467a7bd928a133ffa56325a9abe40562a0667eff339937095d4dcb6",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.DocumentationPolicyGovernanceTest.xml",
+        "sha256": "fbd4034ac3aea6aa9fe53a1fcf0ae4c1c634990b350710c14c1c50a2ee258b20",
+        "tests": 8
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.DocumentationStyleGovernanceTest.xml",
+        "sha256": "c12a2318e84e96b2afe67412a994d9105f486d6d3dee4165beb0117f858dc32f",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.source.android.AndroidJavaApiGovernanceTest.xml",
+        "sha256": "84b3b06dd18d5ab10bbc8828f8029dfa726efc7543539ff9b9b236f6b2189d41",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.tests.governance.source.AtfSourceQualityGovernanceTest.xml",
+        "sha256": "95251407f6132f48a0ee9a6c119a0d5a1622c087bac3e0dc91bc871511a3a416",
+        "tests": 2
+      },
+      {
+        "name": "TEST-atf.tests.governance.source.ModuleBoundaryGovernanceTest.xml",
+        "sha256": "d3fafeeb882cafa65042675db4a7da266eae9887d472492622ebb90fbd40ec86",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.source.PackageCohesionGovernanceTest.xml",
+        "sha256": "263125f00dd856062a40bfbb8087b91e0ff558fc41e300523e2fa50ac2a31f1d",
+        "tests": 3
+      },
+      {
+        "name": "TEST-atf.tests.governance.source.TestLayerGovernanceTest.xml",
+        "sha256": "367198c18c5cc88bc66b759579c3e5f99c1a0049081a8941bd803253d860212c",
+        "tests": 2
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.DocumentationProseGovernanceTest.xml",
+        "sha256": "80cdd99a81eb164fd6e112e3140a21a0e4f9e0441549a409180be3ae58946dc9",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest.xml",
+        "sha256": "1bbe8e9b30c5ffde5c3bae29a7c68b46d80c537f1696e4233fe1c793b13d01b2",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest.xml",
+        "sha256": "f541b1bff0dac40406d3062e60703688220bdc3d059cd82bf5a232777a33f539",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest.xml",
+        "sha256": "38d2118ec97db1190c35d1b9a76c99c2543c292065423dbc90c909cf3a391dcf",
+        "tests": 15
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.ReleaseEvidenceRetentionGovernanceTest.xml",
+        "sha256": "f5325eaedf07aa060070e290a5f184eb6eee0788a6a724cdd80268dcab813e27",
+        "tests": 4
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.ReleaseIntegrityGovernanceTest.xml",
+        "sha256": "b1d8f6ddd951dc42b20abd437b5538f2f840edcc8bfd7b63187a2c83ecb9d317",
+        "tests": 1
+      },
+      {
+        "name": "TEST-atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest.xml",
+        "sha256": "98db4f4720624f169c7f792e29cd1b852c6c36298cd26f41a24ace99715aa3e5",
+        "tests": 7
+      }
+    ]
+  },
+  "native": {
+    "status": "PASS",
+    "historyDebugApkSha256": "fa1a151aa84b9f83a65886213cf386afac067795a66f1f67615aef77a7b9d7dc",
+    "signedReleaseApkSha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+    "originalDataRestored": true,
+    "appStopped": true,
+    "newAndroidExecution": true
+  },
+  "dataRestoration": {
+    "restored": true,
+    "checks": [
+      {
+        "path": "files/highestScores.json",
+        "sha256": "77407dfe619e9ec3ed9da4604fbdf7c2a8357a19957c73970918ca227ecc8347",
+        "passed": true
+      },
+      {
+        "path": "shared_prefs/whist_lab_profile.xml",
+        "sha256": "59019579bf553963b2ccab70e81d9e48f0bf56b57d1605f4a1574a3325699d6a",
+        "passed": true
+      },
+      {
+        "path": "shared_prefs/whist_lab_game.xml",
+        "sha256": "3325d2a819fdd8062c2cdc48a09b995c9b012915bcdf88b1cf9742a7f057c793",
+        "passed": true
+      }
+    ],
+    "appStopped": true,
+    "beforeSignedReleaseInstall": true
+  },
+  "fallback": {
+    "exitCode": 0,
+    "selector": "AndroidHistoryComponentSuite",
+    "overlap": "Nine invocations already included in AndroidDisplayComponentSuite; do not add to unique test total"
+  },
+  "diagnostic": {
+    "report": "diagnostics/font-restoration-failure.html",
+    "verdict": "FAIL — original null font_scale restoration",
+    "resolution": "Absent setting restored with settings delete; component and fresh native acceptance passed",
+    "originalAttempt": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_RELEASE_0102_5d160bbf9f\\native",
+    "relabelledAsPass": false
+  },
+  "externalArchive": {
+    "file": "C:\\work\\whist_back\\release-archives\\0.10.2-5d160bbf9f\\apk-sources.zip",
+    "sha256": "a4e671d85e1d972c670f30df4cd338a68ba8bdb3d29ba859208d999dd33afb7e",
+    "crc": "PASS"
+  },
+  "limits": [
+    "API 28 native acceptance only; no API 37 execution",
+    "No full-game regression repeated",
+    "App Gradle component verdicts remain JUnit, not reconstructed comparison audit",
+    "Browser acceptance is bounded to named owners, not Expand all of large reports"
+  ],
+  "liveSync": {
+    "status": "MATCH",
+    "changedApkInputs": [],
+    "observedUtc": "2026-11-06T11:26:41.649303+00:00",
+    "basisHead": "1fce1e36695402d39c3b99339bc9cecf1b9e8508"
+  },
+  "governance": {
+    "tests": 58,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "observedUtc": "2026-11-06T11:37:21.861896+00:00",
+  "producerLibrariesObservedAfterExecution": [
+    {
+      "file": "atf-console-1.0.0-c1.jar",
+      "bytes": 32064,
+      "sha256": "be71440c0f6bf9a6dbc3c6015ba8e58d5114a289cc4c4d88c434826b1b6423c1",
+      "moment": "Observed at final qualification; not claimed as initial runtime measurement"
+    },
+    {
+      "file": "atf-core-1.0.0-c3.jar",
+      "bytes": 195768,
+      "sha256": "605407b9d40e67c9c352ee6e94da758e50bd3cfb14cc0d7a0de3359c71088447",
+      "moment": "Observed at final qualification; not claimed as initial runtime measurement"
+    },
+    {
+      "file": "atf-mock-1.0.0-m1.jar",
+      "bytes": 22801,
+      "sha256": "7fcc5f867e3565cd9e0e3ef7e1ba4ed5b5e45f2387c9698ae7b1ffdcf8a2d319",
+      "moment": "Observed at final qualification; not claimed as initial runtime measurement"
+    },
+    {
+      "file": "atf-reporting-1.0.0-j21.jar",
+      "bytes": 1068258,
+      "sha256": "211c8e1ba307f1c68659343f62429b8058ab824e507e0d2c813854887c080715",
+      "moment": "Observed at final qualification; not claimed as initial runtime measurement"
+    }
+  ],
+  "effectiveDisplayPolicy": {
+    "assertionMaxDisplayCharacters": 240,
+    "bodyMaxDisplayCharacters": 32768,
+    "mandatoryLongBodies": "Complete numbered parts within the unchanged body budget; Unicode pairs preserved"
+  }
+}

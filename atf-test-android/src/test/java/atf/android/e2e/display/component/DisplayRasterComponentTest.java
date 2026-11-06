@@ -1,14 +1,18 @@
 package atf.android.e2e.display.component;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.evidence.DisplayRaster;
 import atf.android.evidence.DisplayRaster.Mode;
 import atf.android.evidence.DisplayRaster.Size;
 import atf.testkit.AtfComponentTest;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 @AtfComponentTest
 class DisplayRasterComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     private static final Size PHYSICAL = new Size(1080, 2400);
     private static final Size LOGICAL = new Size(720, 1280);
 

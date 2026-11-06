@@ -1,5 +1,7 @@
 package atf.android.e2e.driver;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.*;
 import atf.android.AdbClient;
 import java.nio.file.*;
@@ -14,14 +16,14 @@ class AndroidHierarchyFreshnessTest {
     @Test void zeroExitNullRootMustNeverReturnThePreviousScreensHierarchy()throws Exception {
         FakeDevice device=new FakeDevice(false);
         AndroidUiDriver driver=new AndroidUiDriver(device,temp);
-        assertThrows(IllegalStateException.class,driver::dump);
-        assertEquals(0,device.pulls);assertEquals(4,device.removals);
+        AuditedAssertions.assertThrows(IllegalStateException.class,driver::dump);
+        AuditedAssertions.assertEquals(0,device.pulls);AuditedAssertions.assertEquals(4,device.removals);
     }
     @Test void retryOnlyPullsAConfirmedFreshHierarchy()throws Exception {
         FakeDevice device=new FakeDevice(true);
         String xml=new AndroidUiDriver(device,temp).dump();
-        assertTrue(xml.contains("Fresh bidding"));assertFalse(xml.contains("Old menu"));
-        assertEquals(1,device.pulls);assertEquals(2,device.removals);
+        AuditedAssertions.assertTrue(xml.contains("Fresh bidding"));AuditedAssertions.assertFalse(xml.contains("Old menu"));
+        AuditedAssertions.assertEquals(1,device.pulls);AuditedAssertions.assertEquals(2,device.removals);
     }
     private static final class FakeDevice implements AndroidUiDriver.Device {
         String remote="<hierarchy><node text=\"Old menu\"/></hierarchy>";

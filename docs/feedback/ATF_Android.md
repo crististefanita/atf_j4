@@ -14,7 +14,7 @@ Motorul deține datele partidei, iar aplicația Android deține persistența și
 |---|---|---|
 | P1 | Extinderea calificării native dincolo de profilul compact; componentele nu substituie fonturile și interacțiunea Android. | Profil înalt și text mărit: 13 cărți, levată completă la 5 locuri și succesiunea actorilor la 3/5/6 locuri, cu nume și indici lizibili. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
 
-[Catalogul livrărilor](../../artifacts/README.md) păstrează proba compactă cu 13 cărți, levată completă la patru locuri și licitare, inclusiv auditul pixelilor indicilor. Calificarea acestui profil nu închide restul matricei.
+[Catalogul livrărilor](../../release/README.md) păstrează proba compactă cu 13 cărți, levată completă la patru locuri și licitare, inclusiv auditul pixelilor indicilor. Calificarea acestui profil nu închide restul matricei.
 
 ## Compatibilitatea istoricului
 
@@ -27,6 +27,7 @@ Sanity-ul folosește un APK care include schimbarea; nu se atribuie unui release
 | Două coloane | Exact licitat și punctajul total după fiecare mână per jucător; coloana `P` afișează soldul rândului, inclusiv zero și valori negative, fără o a treia coloană. RO/EN, text normal și mărit, prima și ultima mână și toate locurile, pe un APK care include acest contract. |
 | Dreptunghi de serie | Contur normal numai după cinci realizări eligibile consecutive; contur roșu după cinci ratări eligibile consecutive, inclusiv când totalul rămâne pozitiv. Bonusurile și penalizările ±5/±10 încadrează totalul numai pe rândul plății, exclusiv în celula `P`; licitația, antetul, vecinii și rezultatele fără plată nu primesc dreptunghi. |
 | Randare | Captura originală confirmă cele patru laturi, lizibilitatea numărului și semnului, spațiul până la contur și lipsa intersecțiilor, inclusiv la text mărit. Prezența nodului în XML nu demonstrează dreptunghiul, iar un raport al unui APK anterior nu califică noul marcaj. |
+| Tăietură oblică | O licitație ratată are marcaj vizibil în rasterul Android, inclusiv la zero și text mărit; numai culoarea roșie sau descrierea accesibilă nu certifică tăietura. Comparați cu un contract reușit și păstrați lizibilitatea cifrei. |
 | Integritate | Explorarea și reluarea păstrează totalurile și toate rândurile; marcajul rămâne asociat mâinii și locului corect. |
 | Separatoare | Țintă de 2,1 dp, rotunjită în pixeli o singură dată; toate granițele jucătorilor rămân aliniate între antete și corp. PNG-ul de componentă califică geometria și culoarea în randarea JVM; fontul și pixelii Android cer APK identificat. |
 
@@ -39,14 +40,6 @@ Sanity-ul folosește un APK care include schimbarea; nu se atribuie unui release
 Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lipsă. Contractul implementat și limita migrării rămân în [modelul istoricului](../game/ATF_ScoreHistory.md).
 
 ## Persistență și coordonare
-
-### P1 — numerele salvării sunt convertite înaintea validării
-
-[GameSessionStore.decode](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) folosește `Number.intValue()` pentru licitație și cititori JSON permisivi pentru câmpurile structurale. Proba JVM pe codec-ul live acceptă `bid=0.75` și `bid=4294967296` ca `0`; acceptă și fracții pentru versiune, numărul jucătorilor și indexul mâinii. Vecinul valid este restaurat, iar licitația întreagă ilegală este refuzată; pierderea precede validarea domeniului.
-
-- Introduceți o frontieră numerică exactă pentru schema salvării, cu domeniu explicit per câmp; refuzați fracția și depășirea înaintea conversiei. Nu normalizați o salvare coruptă într-o partidă aparent validă.
-- Calificați codec-ul real cu valori valide, fracții, limite, depășiri și tipuri greșite; păstrați migrarea versiunilor vechi și cauza refuzului. Cititorul strict al registrului scorului nu califică implicit celelalte câmpuri.
-- Păstrați separat acceptanța Android pentru stocare coruptă; componenta codec-ului nu demonstrează comportamentul `SharedPreferences` ori recuperarea după întrerupere.
 
 [Comenzile și salvarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#comenzi-salvare-și-erori) au porturi de componentă pentru refuz, checkpoint, clasament și continuare. Randarea nu înregistrează rezultate; recuperarea stocării native și costul pe dispozitiv păstrează calificare distinctă.
 
@@ -62,7 +55,7 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 | P2 | Colectarea levatei: legarea nativă a porturilor calificate prin componente | APK identificat la 3–6 locuri: măsurarea și clipping-ul corespund scenei, transformările se restaurează la anulare, iar ultima levată precedă scorul. Confruntați `onPause`/reluarea, meniul și dialogurile suprapuse, redimensionări consecutive, notificări de configurație, detașarea și animațiile dezactivate. Numai ultima geometrie poate primi scena nouă; un callback întârziat nu reia ruta abandonată și nu consumă timpul suspendat. Politica portret rămâne cea din manifest; probele cu ceas și evenimente controlate nu califică pixelii sau fluiditatea. |
 | P1 | Masă, carte și atu | Profiluri declarate, text mărit, intersecții reale, coordonate logice mapate la raster și revizie a capturii originale. |
 | P1 | Istoric și reluare | Toate mâinile încheiate și toate locurile accesibile, fără acordarea repetată a punctelor ori avansarea partidei. |
-| P1 | Accesibilitate și localizare | Ordine asistată, etichete ale valorilor necunoscute ori negative, primul și ultimul element derulabil în ambele limbi. |
+| P1 | Accesibilitate și localizare | Ordine asistată, etichete ale valorilor necunoscute ori negative, primul și ultimul element derulabil în ambele limbi. La text mărit, confruntați separat titlul integral al dialogului și numele din prima/ultima coloană, înainte și după derulare; calificarea regiunii legendei nu demonstrează lizibilitatea acestor regiuni. |
 | P2 | Nume configurat și insignă de tură | Verificați numele la lungimea maximă acceptată, în toate pozițiile și cu insigna activă; identitatea vizibilă trebuie să fie lizibilă, iar prescurtarea să aibă o regulă explicită și acces la numele complet. |
 
 - **Regiune:** acțiunea turei are o regiune măsurată deasupra chenarului; componentele verifică dimensiunile și separarea pentru text mărit.
@@ -100,7 +93,7 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 |---|---|---|
 | P1 extern | API-ul Search autentificat confirmă `User flagged as spammy.`; profilul, repository-ul public și asset-ul returnează 404 anonim. | Solicitați revizuirea marcajului contului prin formularul oficial GitHub; după ridicare, URL-ul public al asset-ului trebuie să răspundă 200 și să producă exact mărimea și SHA-256 ale binarului verificat. |
 
-[Registrul distribuției](../../artifacts/README.md) identifică dosarul activ și starea lui de pregătire ori publicare. Semnalul furnizorului și răspunsurile anonime aparțin probei care le-a capturat; un candidat local `PREPARED` nu confirmă publicarea și nu închide incidentul distribuției anterioare.
+[Registrul distribuției](../../release/README.md) identifică dosarul activ și starea lui de pregătire ori publicare. Semnalul furnizorului și răspunsurile anonime aparțin probei care le-a capturat; un candidat local `PREPARED` nu confirmă publicarea și nu închide incidentul distribuției anterioare.
 
 Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-256 aparțin înregistrării distribuției și cererii de suport, fără duplicarea lor în ghid. Distribuția publică rămâne necalificată; modificarea APK-ului nu compensează un răspuns HTTP negativ.
 

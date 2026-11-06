@@ -55,6 +55,7 @@ Fixture-ul descrie regiuni măsurate, fără să apeleze algoritmul de layout al
 - Istoricul măsoară licitația și punctajul total al fiecărui rând; diferența de puncte a mâinii rămâne în registru și în citirea asistată. Componentele confruntă soldurile tuturor locurilor, inclusiv zero, totaluri negative și limita prefixului vechi; marcajele seriilor se compară cu un oracol aritmetic independent după reîncărcare, iar randarea nativă a dreptunghiului rămâne distinctă de proiecție.
 - Familia `score.award` păstrează dreptunghiul exclusiv în celula `P`; numărul, fontul și conturul participă la măsurare. Componentele acoperă bonusurile și penalizările configurate, plata pe ultima mână eligibilă, seriile dezactivate, schimbarea sensului seriei și istoricul complet după reluare, la 3–6 locuri.
 - Familia de test `score.raster` randează proiecția și geometria reale cu fonturi JVM, fără dispozitiv. Oracolul compară pixelii cu o imagine identică fără contururi: licitațiile, antetele și vecinii trebuie să rămână identici, iar fiecare marcaj trebuie să aibă patru laturi și culoarea ajustării de serie.
+- Recuperarea raster scrie și citește checkpoint-uri JSON prin codec-ul aplicației, apoi compară integral pixelii PNG decodați înainte și după restaurare. La 3–6 locuri, RO/EN și text mărit, verifică păstrarea marcajelor istorice în licitare, joc, închiderea mâinii și finalul partidei. Ultimul rând și ultima plată eligibilă se verifică separat când mâna finală are o singură carte; salvarea de fișier nu califică portul Android `SharedPreferences`.
 - Grosimea separatoarelor are ținta de 2,1 dp, cu 30% sub 3 dp; conversia în pixeli întregi poate modifica procentul observat pe un profil. Componentele verifică grosimea rasterului pentru fiecare densitate, separat de lizibilitatea și randarea Android.
 - Coloanele de zero pixeli, depășirile numerice și măsurătorile negative sunt refuzate înaintea construirii vederii. Un eșec al furnizorului de font păstrează cauza inițială și nu devine o măsurătoare de zero.
 
@@ -71,7 +72,7 @@ Pentru o modificare limitată la istoric, selecția JVM se poate restrânge la `
 
 | Colecție | Precondiții | Rezultat |
 |---|---|---|
-| `AndroidDisplayComponentSuite` | Java 21, Maven și dependențe deja disponibile | JUnit XML și sumar `JVM_COMPONENTS`; Extent pentru pilotul de istoric. Fără ADB sau SDK Android; include planul nativ. |
+| `AndroidDisplayComponentSuite` | Java 21, Maven și dependențe deja disponibile | JUnit XML și Extent cu auditul invocărilor selectate. Fără ADB sau SDK Android; include planul nativ. |
 | `whist.displayComponents=true` | Java, Gradle și SDK Android pentru compilare | Componentele JVM ale aplicației; fără instalare sau emulator. |
 | `:app:historyRasterTest` | JDK complet, Gradle și clasele aplicației compilate cu SDK | Proiecția totalurilor și imaginile de componentă, fără biblioteci grafice în compilarea Android. |
 
@@ -131,11 +132,27 @@ mvn -B -o -pl atf-test-android -am -Phistory-components '-Dtest=AndroidHistoryCo
 - **Output:** implicit `%TEMP%/whist-component-reports`; `atf.android.component.report-directory` acceptă o cale absolută. Numele unic păstrează invocările distincte, fără suprascrierea unui raport deschis.
 - **Renderer:** `atf.android.component.renderer=extent` este implicit; `fallback` permite verificarea aceluiași contract fără Extent.
 - **Context:** XML-urile și selecțiile de profil sunt corpuri text integrale, pliabile; copiile externe nu sunt necesare acestei selecții. Preview-ul aserțiunilor folosește setarea Reporting capturată, după redactare.
+- **Valori lungi:** expected și actual care depășesc preview-ul sunt publicate integral în observații, după redactare, fără reevaluarea comparației. Identitatea unică JUnit permite confruntarea fiecărei invocări parametrizate sau imbricate cu rezultatul XML.
+- **Bugetul corpurilor:** părțile numerotate păstrează textul integral chiar peste plafonul de afișare; concatenarea și ultimul caracter au controale de componentă, separat de preview-ul aserțiunilor.
 - **Timp:** fazele păstrează durata măsurată de Kit; începutul sesiunii HTML identifică publicarea ulterioară, fără inventarea unui timp Android.
 
-[Contractele adaptorului](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) verifică sesiunea comună, eșecul original, abort-ul, lipsa aserțiunilor și inputul mai lung decât preview-ul, ca text sigur. Acest pilot nu atribuie comparații capturate celorlalte componente încă nemigrate; [criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne deschis pentru ele.
+### Familii care folosesc același audit
 
-Lansatorul izolat acceptă `-ComponentsOnly -ComponentSuite History` și `-ComponentRenderer fallback`; `Display` rămâne selecția implicită. Raportul se scrie în `component-reports` al rulării externe, iar `WORKING_STATE.json` indică exemplarul și domeniul auditat. Profilele Maven selectează testele la execuție; profilul larg nu omite sursele de istoric din compilare.
+| Suită | Responsabilitate |
+|---|---|
+| `AndroidDisplayComponentSuite` | Geometrie, ierarhie, planuri de ecran, driver și fixture-uri ale istoricului. |
+| `AndroidComponentSuite` | Intrare primară pentru toate componentele Maven ale adaptorului, inclusiv selecțiile focalizate de mai jos. |
+| `AndroidUiFlowTimingComponentSuite` | Trace, publicare, republicare read-only și separarea timpului execuției de publicare. |
+| `GameReportComponentSuite` | Contractele consumatorului pentru corpuri, politici și predarea rapoartelor. |
+
+Clasele folosesc aserțiunile auditate, iar [lansatorul agregării](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) completează adaptorul numai când nu există unul explicit. Suitele display, istoric și timing sunt selecții focalizate; nu se adună peste populația intrării primare.
+
+Selecțiile Gradle ale aplicației au contract propriu și nu sunt incluse implicit în agregatul Maven. Prezența unui HTML al altei selecții nu le califică auditul.
+
+- **Contract:** [probele adaptorului](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) verifică sesiunea comună, eșecul original, abort-ul, lipsa aserțiunilor și textul mai lung decât plafoanele. [Criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne deschis pentru componentele nemigrate.
+
+- **Lansator:** `-ComponentsOnly -ComponentSuite History` și `-ComponentRenderer fallback` restrâng selecția; `Display` este implicit. Raportul apare în `component-reports` al rulării externe, iar `WORKING_STATE.json` identifică exemplarul și domeniul.
+- **Compilare:** profilele Maven selectează testele la execuție; profilul larg nu omite sursele de istoric din compilare.
 
 ## Ce păstrează verificarea nativă
 

@@ -6,6 +6,7 @@ import atf.testkit.AtfIntegrationTest;
 import atf.testkit.lifecycle.ScopedAcceptanceRun;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -53,19 +54,33 @@ class AndroidComponentReportContractTest {
         assertTrue(html.contains("expected-value") && html.contains("actual-value"));
         assertTrue(html.contains("Audited assertion coverage"));
         assertTrue(html.contains("controlled assumption"));
-        assertTrue(org.jsoup.Jsoup.parse(html).text().contains(Passing.INPUT), "Full fixture survives beyond the assertion preview");
+        var inputParts = org.jsoup.Jsoup.parse(html).select("pre").stream().filter(node -> node.parents().stream().anyMatch(owner ->
+                owner.tagName().equals("details") && owner.children().stream().filter(child -> child.tagName().equals("summary"))
+                        .anyMatch(summaryNode -> summaryNode.text().equals("Component input: Full controlled input"))))
+                .map(org.jsoup.nodes.Element::wholeText).toList();
+        assertEquals(Passing.INPUT, String.join("", inputParts), "Complete ordered fixture survives both body and assertion preview budgets");
+        var completeValues = org.jsoup.Jsoup.parse(html).select("details").stream()
+                .filter(node -> node.children().stream().anyMatch(child -> child.tagName().equals("summary")
+                        && child.text().startsWith("Component input: Full comparison value —")))
+                .map(node -> node.select("pre").stream().map(part -> part.wholeText()).collect(java.util.stream.Collectors.joining())).toList();
+        assertEquals(List.of(Passing.LONG_VALUE, Passing.LONG_VALUE), completeValues,
+                "Expected and actual preserve their complete ordered parts beside bounded previews");
+        assertTrue(org.jsoup.Jsoup.parse(html).text().contains("Full comparison value — EXPECTED")
+                && org.jsoup.Jsoup.parse(html).text().contains("Full comparison value — ACTUAL"));
         assertFalse(org.jsoup.Jsoup.parse(html).select("script").stream()
                 .anyMatch(script -> script.data().trim().equals("window.COMPONENT_RAW_INPUT_CANARY = 1;")), "Fixture markup stays text");
         assertTrue(summary.getContainersFailedCount() == 0, "Publication must close successfully");
     }
 
     static class Passing {
-        static final String INPUT = "<fixture>" + "<node text=\"controlled-value\"/>".repeat(30)
+        static final String LONG_VALUE = "Complete compared value: " + "x".repeat(300);
+        static final String INPUT = "<fixture>" + "<node text=\"controlled-value\"/>".repeat(1500)
                 + "<script>window.COMPONENT_RAW_INPUT_CANARY = 1;</script></fixture>";
         @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
         @Test void observedValue(ComponentInputs inputs) {
             inputs.add("Full controlled input", INPUT);
             atf.testkit.assertions.AuditedAssertions.assertEquals(7, 7, "Independent contract value");
+            atf.testkit.assertions.AuditedAssertions.assertEquals(LONG_VALUE, LONG_VALUE, "Compared content survives preview truncation");
         }
     }
     static class Failing {

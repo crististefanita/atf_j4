@@ -93,10 +93,13 @@ mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=At
 - Rezultatul nativ păstrează clasa, regula și abaterea localizată.
 - Probele negative verifică detectarea unui defect injectat și acceptarea documentului sănătos vecin.
 - Inventarul surselor nu ignoră un pachet valid numit `target` din interiorul unei rădăcini compilate.
+- [Igiena rădăcinii](../../atf-tests/src/test/java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) refuză directoare nerecunoscute, căi temporare locale aplatizate și fișiere compilate rătăcite. Verificarea este numai cititoare; curățarea cere inventar și ținte rezolvate în perimetrul numit.
+- [Strategia unică](../../atf-tests/src/test/java/atf/tests/governance/documentation/strategy/TestingStrategyGovernanceTest.java) păstrează un proprietar normativ, ghiduri generice fără rezultate și un catalog explicativ pentru fiecare rădăcină de teste declarată.
 - Verificarea documentară nu certifică algoritmul jocului, randarea Android sau compatibilitatea tuturor bibliotecilor.
 - Calificarea binarelor rămâne contractul distinct al [integrării bibliotecilor](../platform/ATF_Integration.md).
 - Deficiențele semantice și datoria de separare rămân vizibile în [feedback](../feedback/ATF_Governance.md).
 - [Retenția dovezilor release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) refuză PNG-uri identice deja încorporate. Prezența octeților nu certifică viewerul, autonomia corpurilor Android sau integritatea APK-ului; acestea au controale distincte.
+- [Integritatea livrării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) confruntă APK-ul, checksum-ul, CRC-ul, inventarul hash-urilor și cazurile JUnit reale. Probele negative alterează și fișiere ale căror hash-uri au fost recalculate, pentru a califica separat oracolul semantic. [Contractul și limitele](../platform/ATF_AndroidDelivery.md#integritatea-fișierelor-și-rezultatelor) disting observarea octeților de execuție, semnătură și proveniență.
 
 [Arhitectura testării](../testing/ATF_Architecture.md) · [Documentație](ATF_Documentation.md) · [Schimbarea testelor](ATF_TestChanges.md)
 

@@ -1,0 +1,52 @@
+# Calificarea Whist Lab 0.10.2
+
+## Pe scurt
+
+Calificarea locală a trecut: APK, selecții componente/native și guvernanță; livrarea rămâne PREPARED, fără publicare. [Extent — legenda istoricului](e2e/history-legend.html) este intrarea principală; [inventarul](qualification.json) fixează identitățile și limitele.
+
+## Citirea rapoartelor
+
+1. Deschideți contextul rulării și binarul identificat, apoi invocarea și faza.
+2. Extindeți inputul ori secvența de acțiuni, observația și comparațiile până la ultimul rând.
+3. Deschideți PNG-ul integral și reveniți la același checkpoint. Corpurile XML/JSON și capturile sunt în HTML.
+
+## Componente auditate
+
+| Selecție | Invocări HTML/JUnit | Raport |
+|---|---|---|
+| Geometrie, driver și istoric | 150/150 | [Extent](component/display-extent.html) |
+| ADB, procese, capturi, font și corpuri integrale | 21/21 | [Extent](component/adapter-extent.html) |
+| Trace, publicare, republicare și timing | 27/27 | [Extent](component/trace-publication-extent.html) |
+| Contractele predării | 37/37 | [Extent](component/framework-extent.html) |
+| Istoric, renderer alternativ | 9/9, subset repetat | [Fallback](component/history-fallback.html) |
+
+Identitățile invocărilor sunt confruntate exact, inclusiv parametrizările și clasele imbricate. Cele nouă invocări fallback se suprapun selecției display; nu măresc totalul unic. Cele două controale de integrare lansează separat cazuri PASS, FAIL, abort și lipsa aserțiunilor, în ambele renderere.
+
+## Android și APK
+
+| Selecție efectivă | Scop | Raport |
+|---|---|---|
+| Legendă: compact EN 1,0 și RO 1,5 | Text întreg, legendă fixă și deplasarea coloanelor | [Extent](e2e/history-legend.html) |
+| Reluare: portret înalt, text 1,3, RO/EN | Același registru cu 24 de mâini încheiate | [Extent](e2e/history-release-sanity.html) |
+| Release semnat: meniu, configurare, revenire | APK-ul instalat are hash-ul livrat | [Extent](e2e/signed-release-smoke.html) |
+
+- Aplicație JVM: **236** teste, fără erori sau omiteri; construire Debug/Release și lint vital trecute. Replay-ul arhivei externe rămâne opt-in și nu face parte din selecție.
+- Adaptor Android: **200** teste, din selecția display și reverificarea focalizată a publicării; contractele framework: **37**; Kit: **13**; controalele negative de împachetare: **83**. Rezultatele originale sunt consolidate pe selecție în `test-results`, fără reevaluare sau transformarea lor în comparații HTML necapturate.
+- Android API 28: **3** teste JUnit trecute, cu identități separate pentru Debug cu fixture-uri și Release semnat. Datele originale sunt restaurate și aplicația rămâne închisă.
+- APK-ul și checksum-ul sunt [lângă manifestul versiunii](../README.md). [Intrările APK-ului](apk-inputs.json) și inventarul arhivei surselor păstrează proveniența construirii în TMP.
+
+- Guvernanță: **58** teste trecute pentru cod, documentație și livrare. Populația unică consolidată este **630**; include unit-uri, componente și E2E, din selecții compuse, fără a aduna reverificările suprapuse.
+
+## Revizie și retenție
+
+- Chromium a deschis detașat raportul Extent de componentă, fallback-ul și cele trei rapoarte native, cu resursele externe blocate. Revizia este limitată la ownerii declarați; nu constituie o nouă execuție Android.
+- Rapoartele Android finale sunt republicări offline ale trace-urilor calificate: corpurile mari apar în părți consecutive, în plafonul configurat. Proveniența, verdicturile și intervalele originale sunt păstrate; nu s-au reexecutat comenzi Android sau comparații.
+- Intrările integrale, grupurile pliabile, ultimul rând și PNG-ul original sunt verificate. Inventarul păstrează hash-urile și confruntarea octeților înaintea eliminării copiilor finale PNG/XML/JSON.
+- [Diagnosticul inițial FAIL](diagnostics/font-restoration-failure.html) păstrează eroarea restaurării unei setări de font absente. Modelul de restaurare și o execuție nativă nouă califică remedierea; încercarea inițială nu devine PASS.
+- Rezultatele JUnit au un scop distinct: recitirea automată independentă a populației și verdicturilor. Metadatele și intrările surselor califică identitatea APK-ului; nu dublează corpurile auditului din HTML.
+
+## Limite
+
+Acceptanța nativă acoperă API 28 și profilele declarate; API 37 și regresia completă a partidelor nu au fost executate. Componentele Gradle fără adaptor păstrează verdicturi JUnit, iar auditarea lor integrală rămâne în [feedback](../../../docs/feedback/ATF_Reporting.md). Sursele modificate după snapshot nu preiau automat calificarea APK-ului.
+
+[Catalog](../../README.md) · [Strategia comună](../../../docs/testing/README.md)

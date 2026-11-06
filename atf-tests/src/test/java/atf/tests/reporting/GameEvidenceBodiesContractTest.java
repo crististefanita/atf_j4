@@ -1,8 +1,10 @@
 package atf.tests.reporting;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 import atf.reporting.model.ReportObservation;
 import atf.reporting.security.SensitiveDataRedactor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 @AtfComponentTest
 class GameEvidenceBodiesContractTest {
+    @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
     private static final ObjectMapper JSON = new ObjectMapper();
     @Test void exactTextBoundariesRetainEveryCharacterAndUnicodeScalar() {
         for (int length : new int[] { 15, 16, 17 }) {

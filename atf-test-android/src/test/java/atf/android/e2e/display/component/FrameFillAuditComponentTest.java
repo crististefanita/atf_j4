@@ -1,5 +1,8 @@
 package atf.android.e2e.display.component;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.e2e.display.support.ResponsiveGeometry;
 import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
 import atf.android.e2e.driver.AndroidUiDriver;
@@ -7,10 +10,11 @@ import atf.testkit.AtfComponentTest;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 @AtfComponentTest
 class FrameFillAuditComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     private static final int IVORY = 0xF1E6C8;
     private static final int GREEN = 0x285C4C;
     private static final ResponsiveDisplayProfile PROFILE = new ResponsiveDisplayProfile(720, 1280, 360);

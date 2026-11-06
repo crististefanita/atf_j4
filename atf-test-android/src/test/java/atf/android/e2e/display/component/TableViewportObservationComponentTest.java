@@ -1,5 +1,8 @@
 package atf.android.e2e.display.component;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.AdbClient;
 import atf.android.e2e.driver.AndroidUiDriver;
 import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
@@ -14,10 +17,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import static atf.android.e2e.display.component.SyntheticTableHierarchy.Fault;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 @AtfComponentTest
 class TableViewportObservationComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @TempDir static Path output;
 
     static Stream<Arguments> validWindows() {

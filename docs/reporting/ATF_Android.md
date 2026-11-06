@@ -53,6 +53,20 @@ Tabelul de acțiuni păstrează operația expediată, ținta semantică, aștept
 - OBSERVE descrie o stare fără inventarea unui input.
 - HTTP, SQL, comparațiile de componentă și acțiunile UI folosesc suprafața semantică a faptului real.
 - Titlurile și rezumatele nu substituie comparațiile detaliate.
+
+### Corpuri integrale și bugetul de afișare
+
+Previzualizarea aserțiunilor și plafonul corpurilor sunt setări independente. [EvidenceTextParts](../../atf-test-android/src/main/java/atf/android/evidence/text/EvidenceTextParts.java) împarte textul deja redactat în părți consecutive care respectă bugetul efectiv, fără să separe o pereche Unicode.
+
+- Fiecare corp păstrează ownerul, hash-ul sursei și ordinea `part i/N`; concatenarea părților reconstruiește integral proiecția permisă.
+- Împărțirea nu mărește plafonul și nu reevaluează comparațiile. Un caracter care nu încape în buget produce refuz explicit, fără trunchiere ascunsă.
+- Același mecanism publică intrările componentelor, expected/actual integrale și anexele text Android; testele includ coada unei ierarhii mai mari decât plafonul.
+
+### Republicare fără interacțiuni Android
+
+[CapturedAndroidFlow](../../atf-test-android/src/test/java/atf/android/e2e/support/replay/CapturedAndroidFlow.java) citește manifestul existent prin contractul read-only al publicării. Păstrează comparațiile, verdicturile, checkpoint-urile și intervalele originale; refuză verdicturi necunoscute, artefacte care părăsesc ownerul și timpi atribuiți altui flux.
+
+Republicarea are eticheta `offline-republication` și proveniență explicită. HTML-ul nou nu devine execuție Android nouă; manifestul original rămâne neschimbat, iar browserul verifică separat noua prezentare.
 - O atribuire falsă a driverului este refuzată chiar când celelalte valori coincid.
 
 ## Capturi și proprietate

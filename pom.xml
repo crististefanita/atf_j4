@@ -24,7 +24,7 @@
         <jackson.version>2.17.2</jackson.version>
         <atf.consumer.profile>android</atf.consumer.profile>
         <atf.core.version>1.0.0-c3</atf.core.version>
-        <atf.reporting.version>1.0.0-j20</atf.reporting.version>
+        <atf.reporting.version>1.0.0-j21</atf.reporting.version>
         <atf.console.version>1.0.0-c1</atf.console.version>
         <atf.mock.version>1.0.0-m1</atf.mock.version>
         <atf.test.heap.max>1g</atf.test.heap.max>

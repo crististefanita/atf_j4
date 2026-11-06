@@ -1,5 +1,7 @@
 package atf.tests.contracts;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import atf.android.evidence.AndroidScreenshotEvidence;
@@ -33,7 +35,7 @@ class AndroidInlineScreenshotReportContractTest {
                 }scenario.complete(AtfReportStatus.PASS);
             }
         }
-        String html=Files.readString(report);assertTrue(html.contains(capture.base64Png()));assertTrue(html.contains("observation-only.png"));assertTrue(html.contains("Read captured instructions"));
+        String html=Files.readString(report);AuditedAssertions.assertTrue(html.contains(capture.base64Png()));AuditedAssertions.assertTrue(html.contains("observation-only.png"));AuditedAssertions.assertTrue(html.contains("Read captured instructions"));
     }
     @Test
     void rendersAndroidPngAsAnInlineUiCheckpoint() throws Exception {
@@ -63,11 +65,11 @@ class AndroidInlineScreenshotReportContractTest {
         }
 
         String html = Files.readString(report);
-        assertTrue(html.contains("data:image/png;base64,"),
+        AuditedAssertions.assertTrue(html.contains("data:image/png;base64,"),
                 "Reporting must emit the standard inline UI image data URI");
-        assertTrue(html.contains(screenshot.base64Png()),
+        AuditedAssertions.assertTrue(html.contains(screenshot.base64Png()),
                 "The screenshot payload must be carried by the rendered report");
-        assertTrue(html.contains("contract-checkpoint.png"),
+        AuditedAssertions.assertTrue(html.contains("contract-checkpoint.png"),
                 "The checkpoint title must stay attached to its screenshot");
     }
 }

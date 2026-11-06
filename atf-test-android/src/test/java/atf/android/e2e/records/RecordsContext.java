@@ -38,6 +38,7 @@ final class RecordsContext {
     private final AndroidUiDriver.Device device;
     private String phase;
     private int checkpoint;
+    private int observedData;
 
     RecordsContext() throws Exception {
         this("profile-score-records","Whist Lab — nume, istoric comun, clasamente locale și serii ±5/±10","records-minimal");
@@ -97,6 +98,9 @@ final class RecordsContext {
                 "--ez","debug_hold_ai_bids",Boolean.toString(holdAi));
     }
     ObjectNode state() throws Exception {
+        return observed("committed-session", readState());
+    }
+    private ObjectNode readState() throws Exception {
         String xml = raw("shell","run-as",PACKAGE,"cat","shared_prefs/whist_lab_game.xml");
         var document = xml(xml); var strings = document.getElementsByTagName("string");
         for (int index=0; index<strings.getLength(); index++) {
@@ -107,14 +111,23 @@ final class RecordsContext {
         throw new IllegalStateException("No saved session was exposed");
     }
     ObjectNode scores() throws Exception {
-        return (ObjectNode)RecordsFixtures.JSON.readTree(raw("shell","run-as",PACKAGE,"cat","files/highestScores.json"));
+        return observed("local-rankings", (ObjectNode)RecordsFixtures.JSON.readTree(raw("shell","run-as",PACKAGE,"cat","files/highestScores.json")));
+    }
+    private ObjectNode observed(String role, ObjectNode value) throws Exception {
+        var context = RecordsFixtures.JSON.createObjectNode().put("role", "Observed Android " + role)
+                .put("phase", phase).put("observationOrdinal", ++observedData)
+                .put("capturedAtUtc", java.time.Instant.now().toString());
+        context.set("value", value);
+        observation(String.format("observed-%03d-%s", observedData, role), context);
+        return value;
     }
     void observation(String label, JsonNode data) throws Exception {
         Path file=output.resolve(label+".json");Files.writeString(file,data.toPrettyString());evidence.add(file);
     }
     String awaitState(Predicate<ObjectNode> condition, Duration timeout) throws Exception {
         long end = System.nanoTime()+timeout.toNanos(); ObjectNode last=null;
-        do { last=state(); if(condition.test(last))return last.toString(); Thread.sleep(200); } while(System.nanoTime()<end);
+        do { last=readState(); if(condition.test(last))return observed("committed-session", last).toString(); Thread.sleep(200); } while(System.nanoTime()<end);
+        observed("last-committed-session-before-timeout",last);
         throw new IllegalStateException("Saved state did not reach expected transition: "+last);
     }
     void sandbox() throws Exception {
@@ -217,7 +230,8 @@ final class RecordsContext {
         String size=override(setup.path("size").asText(),"size"),density=override(setup.path("density").asText(),"density");
         command("Restore display size",size,"shell","wm","size",size);
         command("Restore display density",density,"shell","wm","density",density);
-        command("Restore font scale",setup.path("fontScale").asText("1.0"),"shell","settings","put","system","font_scale",setup.path("fontScale").asText("1.0"));
+        String fontScale = setup.path("fontScale").asText();
+        command("Restore font scale",fontScale,atf.android.evidence.FontScaleRestoration.command(fontScale));
         var receipt=RecordsFixtures.JSON.createObjectNode().put("restored",checks.stream().allMatch(AtfAssertion::passed));
         receipt.set("checks",RecordsFixtures.JSON.valueToTree(checks));
         Files.writeString(run.resolve("restoration.json"),receipt.toPrettyString());

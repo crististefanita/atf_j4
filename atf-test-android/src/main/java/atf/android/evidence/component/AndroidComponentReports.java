@@ -8,6 +8,7 @@ import java.util.UUID;
 public final class AndroidComponentReports {
     public static final String DIRECTORY = "atf.android.component.report-directory";
     public static final String RENDERER = "atf.android.component.renderer";
+    public static final String PROVENANCE = "atf.component.execution-provenance";
     private AndroidComponentReports() { }
 
     public static AndroidComponentRun open() {

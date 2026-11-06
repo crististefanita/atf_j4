@@ -30,8 +30,8 @@ public final class RecordedAssertions {
 
     void record(String name, Object expected, Object actual, boolean passed, Throwable error) {
         if (AuditedAssertionScope.isSuppressed()) return;
-        checks.add(new Check(display.display(null, name), display.display(name, expected),
-                display.display(name, actual), passed));
+        checks.add(new Check(display.display(null, name), display.comparison(name, AssertionValueDisplay.Role.EXPECTED, expected),
+                display.comparison(name, AssertionValueDisplay.Role.ACTUAL, actual), passed));
         if (!passed && failure == null) failure = error;
     }
 

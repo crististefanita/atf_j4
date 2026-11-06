@@ -7,7 +7,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 
 ## Registre active
 
-[Dosarul candidatului local](../../../../whist_back/release-candidates/0.11.0/README.md) grupează rapoartele auditabile și pașii rămași ai calificării. [Dosarul activ](../../artifacts/reports/README.md) păstrează separat dovezile APK-ului verificat.
+[Dosarul activ](../../release/README.md) reunește APK-ul și dovezile versiunii calificate. Candidații intermediari rămân în staging extern; [calificarea livrării](../testing/ATF_ReleaseQualification.md) condiționează înlocuirea dosarului activ.
 
 | Arie | Responsabilitate și criterii |
 |---|---|

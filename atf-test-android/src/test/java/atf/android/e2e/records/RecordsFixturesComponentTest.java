@@ -1,16 +1,20 @@
 package atf.android.e2e.records;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import ro.whistlab.core.session.GamePhase;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 /** Validates declared E2E preconditions without accessing Android or user files. */
 @AtfComponentTest
 class RecordsFixturesComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test void everyActiveSeatHasALegalDiagnosticBiddingAndPlayingPrecondition() {
         for(int seat=0;seat<4;seat++)for(boolean bidding:List.of(true,false)) {
             var fixture=RecordsFixtures.activeTurn(seat,bidding);var state=fixture.game().snapshot();

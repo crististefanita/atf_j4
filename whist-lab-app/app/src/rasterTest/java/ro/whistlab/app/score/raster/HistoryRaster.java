@@ -14,9 +14,10 @@ import ro.whistlab.app.score.award.SeriesPointsFrame;
 /** Controlled JVM raster of the production projection and geometry, with host fonts rather than Android fonts. */
 public final class HistoryRaster {
     public static final int DIVIDER = 0xff71846c;
-    public record Cell(String bid, String points, int series, boolean missed) { }
-    public record Row(int hand, String cards, boolean current, List<Cell> cells) {
+    public record Cell(String bid, String points, String handPoints, int series, boolean missed) { }
+    public record Row(int hand, String cards, String status, List<Cell> cells) {
         public Row { cells = List.copyOf(cells); }
+        public boolean current() { return status.equals("CURRENT"); }
     }
     public record Grid(int hand, int bid, int points, int separator, int padding) {
         public int group() { return bid + points; }

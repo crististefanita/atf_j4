@@ -1,6 +1,8 @@
 package atf.tests.publishing;
 
-import atf.testkit.AtfComponentTest;
+import atf.testkit.assertions.AuditedAssertions;
+
+import atf.testkit.AtfIntegrationTest;
 
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportTextAudit;
@@ -17,7 +19,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Publishes the same ATF UI contract used by the aggregate report; no separate HTML renderer. */
-@AtfComponentTest
+@AtfIntegrationTest
 class FullMatchExtentReportTest {
     @Test void publishesEveryOriginalAndParallelMatchCheckpointInline()throws Exception {
         assumeTrue(Boolean.getBoolean("atf.match.publish"));
@@ -188,7 +190,7 @@ class FullMatchExtentReportTest {
             textOnly.append(html,last,matcher.start()).append("[verified inline PNG]");last=matcher.end();
         }
         textOnly.append(html,last,html.length());String rendered=textOnly.toString();var textAudit=new GameReportTextAudit(rendered);
-        for(Path screenshot:screenshots)assertTrue(inlinePngHashes.contains(hash(Files.readAllBytes(screenshot))),
+        for(Path screenshot:screenshots)AuditedAssertions.assertTrue(inlinePngHashes.contains(hash(Files.readAllBytes(screenshot))),
                 "Missing exact inline PNG bytes: "+screenshot);
         for(Path manifest:manifests) {
             Properties flow=load(manifest);assertRendered(textAudit,flow.getProperty("flow.name"));
@@ -206,18 +208,18 @@ class FullMatchExtentReportTest {
         verification.setProperty("rule.assertions",Long.toString(assertions));
         verification.setProperty("action.records",Long.toString(actionRecords));
         verification.setProperty("rule.failedAssertions",Long.toString(failed));
-        assertEquals("true",recorded.getProperty("match.complete"));assertEquals("19",recorded.getProperty("match.handCount"));
-        assertEquals("436",recorded.getProperty("match.moves"));assertEquals("109",recorded.getProperty("match.tricks"));
-        assertEquals("true",recorded.getProperty("match.originalGameOver"));
-        assertTrue(allPassed,"One of the original or parallel live flows did not pass");assertEquals(0,failed);
-        assertTrue(componentCases>0,"Current component/live JUnit results are required");
+        AuditedAssertions.assertEquals("true",recorded.getProperty("match.complete"));AuditedAssertions.assertEquals("19",recorded.getProperty("match.handCount"));
+        AuditedAssertions.assertEquals("436",recorded.getProperty("match.moves"));AuditedAssertions.assertEquals("109",recorded.getProperty("match.tricks"));
+        AuditedAssertions.assertEquals("true",recorded.getProperty("match.originalGameOver"));
+        AuditedAssertions.assertTrue(allPassed,"One of the original or parallel live flows did not pass");AuditedAssertions.assertEquals(0,failed);
+        AuditedAssertions.assertTrue(componentCases>0,"Current component/live JUnit results are required");
         verification.setProperty("status","PASS");
         verification.setProperty("report.sha256",hashFile(report));
         try(var out=Files.newOutputStream(verificationPath)){verification.store(out,"Exact PNG bytes and complete assertion texts verified");}
     }
     private static Properties load(Path file)throws Exception {Properties p=new Properties();try(var in=Files.newInputStream(file)){p.load(in);}return p;}
     private static void assertRendered(GameReportTextAudit audit,String value) {
-        assertTrue(audit.contains(value), "Missing complete rendered value: " + value);
+        AuditedAssertions.assertTrue(audit.contains(value), "Missing complete rendered value: " + value);
     }
     private static String hash(byte[] bytes)throws Exception {return HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));}
     private static String hashFile(Path path)throws Exception {

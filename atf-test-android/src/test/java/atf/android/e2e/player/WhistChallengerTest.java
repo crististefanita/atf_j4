@@ -1,5 +1,7 @@
 package atf.android.e2e.player;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.*;
 import atf.testkit.AtfComponentTest;
 import com.fasterxml.jackson.databind.*;
@@ -12,12 +14,12 @@ class WhistChallengerTest {
     @Test void opponentsPrivateCardsAndShuffleSeedCannotAffectTheDecision(){
         ObjectNode a=position(),b=a.deepCopy();b.put("seed",999999999L);
         for(int s=1;s<4;s++)for(JsonNode c:b.path("players").get(s).path("hand"))((ObjectNode)c).put("rank",14-c.path("rank").asInt()+7);
-        var first=WhistChallenger.position(a,0);var second=WhistChallenger.position(b,0);assertEquals(first,second);
-        assertEquals(IndependentPlayer.bid(first),IndependentPlayer.bid(second));assertEquals(IndependentPlayer.card(first),IndependentPlayer.card(second));
+        var first=WhistChallenger.position(a,0);var second=WhistChallenger.position(b,0);AuditedAssertions.assertEquals(first,second);
+        AuditedAssertions.assertEquals(IndependentPlayer.bid(first),IndependentPlayer.bid(second));AuditedAssertions.assertEquals(IndependentPlayer.card(first),IndependentPlayer.card(second));
     }
     @Test void independentPlayerFollowsSuitAndCannotMutateItsInput(){
         ObjectNode s=position();var trick=(ArrayNode)s.path("currentTrick");var card=trick.addObject();card.put("seat",3);card.put("suit","HEARTS");card.put("rank",14);s.set("history",trick.deepCopy());
-        var p=WhistChallenger.position(s,0);assertEquals(18,IndependentPlayer.card(p).value());assertThrows(UnsupportedOperationException.class,()->p.hand().clear());
+        var p=WhistChallenger.position(s,0);AuditedAssertions.assertEquals(18,IndependentPlayer.card(p).value());AuditedAssertions.assertThrows(UnsupportedOperationException.class,()->p.hand().clear());
     }
     private static ObjectNode position(){
         ObjectMapper json=new ObjectMapper();ObjectNode s=json.createObjectNode();s.put("seed",123);s.put("dealerSeat",3);s.put("handSize",2);s.put("trump","SPADES");s.putNull("turnedCard");s.putArray("history");s.putArray("currentTrick");var players=s.putArray("players");

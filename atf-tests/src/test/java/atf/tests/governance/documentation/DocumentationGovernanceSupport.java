@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 /** Shared discovery and diagnostic vocabulary for documentation governance tests. */
 public final class DocumentationGovernanceSupport {

@@ -25,7 +25,8 @@ import javax.tools.ToolProvider;
 /** Syntax-only JDK parsing; no compilation, annotation processing or application-class loading. */
 final class JavaTestDeclarations {
     record Type(String name, Tree.Kind kind, Set<Modifier> modifiers, List<String> annotations,
-                List<List<String>> methods, List<Type> nested, String annotationSource) {
+                List<List<String>> methods, List<Type> nested, String annotationSource,
+                Map<String, List<String>> selectors) {
         boolean concrete() {
             return (kind == Tree.Kind.CLASS || kind == Tree.Kind.RECORD || kind == Tree.Kind.ENUM)
                     && !modifiers.contains(Modifier.ABSTRACT);
@@ -120,6 +121,28 @@ final class JavaTestDeclarations {
             else if (member instanceof ClassTree type) nested.add(describe(type));
         }
         return new Type(tree.getSimpleName().toString(), tree.getKind(), Set.copyOf(tree.getModifiers().getFlags()),
-                annotations, List.copyOf(methods), List.copyOf(nested), tree.getKind() == Tree.Kind.ANNOTATION_TYPE ? tree.toString() : "");
+                annotations, List.copyOf(methods), List.copyOf(nested), tree.getKind() == Tree.Kind.ANNOTATION_TYPE ? tree.toString() : "",
+                selectors(tree));
+    }
+
+    private static Map<String, List<String>> selectors(ClassTree tree) {
+        var result = new LinkedHashMap<String, List<String>>();
+        for (var annotation : tree.getModifiers().getAnnotations()) {
+            String name = annotation.getAnnotationType().toString().replaceAll(".*\\.", "");
+            if (!Set.of("SelectPackages", "SelectClasses", "IncludeTags", "IncludeEngines",
+                    "IncludeClassNamePatterns", "ExcludeTags", "ExcludePackages", "ExcludeClassNamePatterns").contains(name)) continue;
+            var values = new ArrayList<String>();
+            for (var argument : annotation.getArguments()) selectorValues(argument, values);
+            if (result.put(name, List.copyOf(values)) != null) throw new IllegalArgumentException("Duplicate suite selector: " + name);
+        }
+        return Map.copyOf(result);
+    }
+    private static void selectorValues(com.sun.source.tree.ExpressionTree expression, List<String> values) {
+        if (expression instanceof com.sun.source.tree.AssignmentTree named) selectorValues(named.getExpression(), values);
+        else if (expression instanceof com.sun.source.tree.NewArrayTree array) {
+            if (array.getInitializers() != null) array.getInitializers().forEach(value -> selectorValues(value, values));
+        } else if (expression instanceof com.sun.source.tree.LiteralTree literal && literal.getValue() instanceof String value) values.add(value);
+        else if (expression instanceof com.sun.source.tree.MemberSelectTree member && member.getIdentifier().contentEquals("class")) values.add(member.getExpression().toString());
+        else throw new IllegalArgumentException("Suite selector requires explicit string or class literals: " + expression);
     }
 }

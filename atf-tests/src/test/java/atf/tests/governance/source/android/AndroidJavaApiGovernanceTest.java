@@ -1,5 +1,7 @@
 package atf.tests.governance.source.android;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import com.sun.source.tree.MemberSelectTree;
@@ -30,20 +32,20 @@ class AndroidJavaApiGovernanceTest {
                 }
             }
         }
-        assertEquals(List.of(), failures, "Use Android-supported collectors or explicit iteration; JVM success does not qualify Android APIs");
+        AuditedAssertions.assertEquals(List.of(), failures, "Use Android-supported collectors or explicit iteration; JVM success does not qualify Android APIs");
     }
 
     @Test void fluentTerminalsAreRejectedAcrossWhitespaceAndLineBreaks() throws Exception {
         for (String call : List.of("values.stream().toList()", "values.stream().map(v -> v).\n toList()")) {
-            assertEquals(1, unsupportedCalls("class Example { Object run(java.util.List<String> values) { return " + call + "; } }").size());
+            AuditedAssertions.assertEquals(1, unsupportedCalls("class Example { Object run(java.util.List<String> values) { return " + call + "; } }").size());
         }
     }
 
     @Test void supportedCollectorsAndTextMentioningTheMethodRemainValid() throws Exception {
-        assertEquals(List.of(), unsupportedCalls("class Example { Object run(java.util.List<String> values) { "
+        AuditedAssertions.assertEquals(List.of(), unsupportedCalls("class Example { Object run(java.util.List<String> values) { "
                 + "// values.stream().toList()\n String note = \"stream.toList()\"; "
                 + "return values.stream().collect(java.util.stream.Collectors.toList()); } }"));
-        assertEquals(List.of(), unsupportedCalls("class Example { Object run(java.util.List<String> values) { "
+        AuditedAssertions.assertEquals(List.of(), unsupportedCalls("class Example { Object run(java.util.List<String> values) { "
                 + "return values.stream().collect(Collectors.toList()); } }"));
     }
 
@@ -52,7 +54,7 @@ class AndroidJavaApiGovernanceTest {
             @Override public CharSequence getCharContent(boolean ignoreEncodingErrors) { return source; }
         };
         var compiler = ToolProvider.getSystemJavaCompiler();
-        assertNotNull(compiler, "Governance requires the documented JDK");
+        AuditedAssertions.assertNotNull(compiler, "Governance requires the documented JDK");
         List<String> calls = new ArrayList<>();
         try (var manager = compiler.getStandardFileManager(null, null, null)) {
             JavacTask task = (JavacTask) compiler.getTask(null, manager, null, List.of("-proc:none"), null, List.of(input));

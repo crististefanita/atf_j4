@@ -1,5 +1,7 @@
 package atf.tests.publishing;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.tests.reporting.GameReportSession;
@@ -32,7 +34,7 @@ class RuleComponentExtentReportTest {
         Path run=Path.of(System.getProperty("atf.rules.runDir")),report=run.resolve("component-extent-report.html");
         List<Path> xmls;
         try(var files=Files.walk(run.resolve("components"))){xmls=files.filter(p->p.getFileName().toString().startsWith("TEST-")&&p.toString().endsWith(".xml")).sorted().toList();}
-        assertFalse(xmls.isEmpty());
+        AuditedAssertions.assertFalse(xmls.isEmpty());
         long tests=0,failures=0,skips=0;List<ReportObservation> cases=new ArrayList<>();
         for(Path file:xmls) {
             var root=parse(file).getDocumentElement();tests+=number(root,"tests");failures+=number(root,"failures")+number(root,"errors");skips+=number(root,"skipped");
@@ -51,7 +53,7 @@ class RuleComponentExtentReportTest {
         int games=0,moves=0,tricks=0,forced=0,discards=0,negative=0;
         try(var files=Files.list(run.resolve("evidence"))) {
             for(Path file:files.filter(p->p.getFileName().toString().startsWith("game-")).toList()) {
-                Properties game=load(file);assertEquals("PASS",game.getProperty("status"));games++;
+                Properties game=load(file);AuditedAssertions.assertEquals("PASS",game.getProperty("status"));games++;
                 moves+=Integer.parseInt(game.getProperty("moves"));tricks+=Integer.parseInt(game.getProperty("tricks"));
                 forced+=Integer.parseInt(game.getProperty("forcedTrumpMoves"));discards+=Integer.parseInt(game.getProperty("voidDiscardMoves"));
                 negative+=Integer.parseInt(game.getProperty("negativeScoreCheckpoints"));
@@ -118,19 +120,19 @@ class RuleComponentExtentReportTest {
             }
             game.complete(AtfReportStatus.PASS);
         }
-        String html=Files.readString(report);assertTrue(html.contains("RW04/RW05"));assertTrue(html.contains("376"));
-        assertTrue(html.contains("Expected")&&html.contains("Actual"));
-        for(ReportField rule:RULES)assertTrue(html.contains(rule.value()),"Report lost rule contract: "+rule.name());
+        String html=Files.readString(report);AuditedAssertions.assertTrue(html.contains("RW04/RW05"));AuditedAssertions.assertTrue(html.contains("376"));
+        AuditedAssertions.assertTrue(html.contains("Expected")&&html.contains("Actual"));
+        for(ReportField rule:RULES)AuditedAssertions.assertTrue(html.contains(rule.value()),"Report lost rule contract: "+rule.name());
         for(int i=0;i<Integer.parseInt(trace.getProperty("step.count"));i++)for(String field:List.of("title","rules","context","expected","actual")) {
             String value=trace.getProperty("step."+i+"."+field);
             String escaped=value.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;").replace("'","&#39;");
-            assertTrue(html.contains(value)||html.contains(escaped),"Report omitted complete component evidence: "+value);
+            AuditedAssertions.assertTrue(html.contains(value)||html.contains(escaped),"Report omitted complete component evidence: "+value);
         }
         Properties verification=new Properties();verification.setProperty("cases",""+tests);verification.setProperty("failures",""+failures);
         verification.setProperty("games",""+games);verification.setProperty("moves",""+moves);verification.setProperty("tricks",""+tricks);
         verification.setProperty("status",pass?"PASS":"FAIL");verification.setProperty("report.bytes",""+Files.size(report));
         try(var stream=Files.newOutputStream(run.resolve("component-report-verification.properties"))){verification.store(stream,"Actual component results and native Extent output");}
-        assertTrue(pass,"Component or AI acceptance failed; the retained Extent report includes the failure");
+        AuditedAssertions.assertTrue(pass,"Component or AI acceptance failed; the retained Extent report includes the failure");
     }
     private static org.w3c.dom.Document parse(Path p)throws Exception {
         var factory=javax.xml.parsers.DocumentBuilderFactory.newInstance();

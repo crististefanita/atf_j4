@@ -1,5 +1,7 @@
 package atf.android.e2e.evidence.frames;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import atf.testkit.AtfComponentTest;
@@ -24,9 +26,9 @@ class PngUptimeMetadataComponentTest {
             for (int x = 0; x < image.getWidth(); x++)
                 image.setRGB(x, y, 0xFF000000 | ((x * 13) << 16) | ((y * 11) << 8) | (x + y));
         Path source = directory.resolve("source.png"), destination = directory.resolve("timed.png");
-        assertTrue(ImageIO.write(image, "png", source.toFile()));
+        AuditedAssertions.assertTrue(ImageIO.write(image, "png", source.toFile()));
         PngUptimeMetadata.reencodePngWithUptime(source, destination, 12.3456);
-        assertTrue(PngUptimeMetadata.sameImagePixels(image, ImageIO.read(destination.toFile())));
+        AuditedAssertions.assertTrue(PngUptimeMetadata.sameImagePixels(image, ImageIO.read(destination.toFile())));
         try (var input = ImageIO.createImageInputStream(destination.toFile())) {
             var reader = ImageIO.getImageReaders(input).next();
             try {
@@ -42,7 +44,7 @@ class PngUptimeMetadataComponentTest {
                     if (entry.getAttribute("keyword").equals("atfCaptureUptimeMs"))
                         value = entry.getAttribute("value");
                 }
-                assertEquals("12346", value);
+                AuditedAssertions.assertEquals("12346", value);
             } finally {
                 reader.dispose();
             }
@@ -54,7 +56,7 @@ class PngUptimeMetadataComponentTest {
             throws Exception {
         Path source = directory.resolve("not-an-image.png");
         Files.writeString(source, "not PNG data");
-        assertThrows(
+        AuditedAssertions.assertThrows(
                 IOException.class,
                 () ->
                         PngUptimeMetadata.reencodePngWithUptime(
@@ -65,12 +67,12 @@ class PngUptimeMetadataComponentTest {
     void imageIdentityRejectsMissingDifferentSizedAndChangedImages() {
         var image = new BufferedImage(2, 3, BufferedImage.TYPE_INT_RGB);
         var same = new BufferedImage(2, 3, BufferedImage.TYPE_INT_RGB);
-        assertTrue(PngUptimeMetadata.sameImagePixels(image, same));
+        AuditedAssertions.assertTrue(PngUptimeMetadata.sameImagePixels(image, same));
         same.setRGB(1, 2, 0xFFFFFF);
-        assertFalse(PngUptimeMetadata.sameImagePixels(image, same));
-        assertFalse(
+        AuditedAssertions.assertFalse(PngUptimeMetadata.sameImagePixels(image, same));
+        AuditedAssertions.assertFalse(
                 PngUptimeMetadata.sameImagePixels(
                         image, new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB)));
-        assertFalse(PngUptimeMetadata.sameImagePixels(image, null));
+        AuditedAssertions.assertFalse(PngUptimeMetadata.sameImagePixels(image, null));
     }
 }

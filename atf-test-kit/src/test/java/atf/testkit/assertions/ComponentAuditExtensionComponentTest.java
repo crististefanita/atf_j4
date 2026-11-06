@@ -1,5 +1,7 @@
 package atf.testkit.assertions;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.testkit.AtfUnitTest;
 import org.junit.jupiter.api.*;
@@ -27,47 +29,47 @@ class ComponentAuditExtensionComponentTest {
 
     @Test void reconcilesExpectedCaughtEmptyAndAbortedInvocations() {
         var expected = run(ExpectedFailureFixture.class);
-        assertEquals(1, expected.getTestsSucceededCount());
-        assertEquals(1, RESULTS.getFirst().phases().getFirst().checks().size());
-        assertEquals(ComponentAssertionAudit.Outcome.PASS, RESULTS.getFirst().outcome());
-        assertEquals(1, run(CaughtFailureFixture.class).getTestsFailedCount());
-        assertEquals(ComponentAssertionAudit.Outcome.FAIL, RESULTS.getFirst().outcome());
-        assertEquals(1, run(EmptyFixture.class).getTestsFailedCount());
-        assertTrue(RESULTS.getFirst().phases().getFirst().checks().isEmpty());
-        assertEquals(1, run(AbortedFixture.class).getTestsAbortedCount());
-        assertEquals(ComponentAssertionAudit.Outcome.ABORTED, RESULTS.getFirst().outcome());
-        assertEquals(1, closed);
+        AuditedAssertions.assertEquals(1, expected.getTestsSucceededCount());
+        AuditedAssertions.assertEquals(1, RESULTS.getFirst().phases().getFirst().checks().size());
+        AuditedAssertions.assertEquals(ComponentAssertionAudit.Outcome.PASS, RESULTS.getFirst().outcome());
+        AuditedAssertions.assertEquals(1, run(CaughtFailureFixture.class).getTestsFailedCount());
+        AuditedAssertions.assertEquals(ComponentAssertionAudit.Outcome.FAIL, RESULTS.getFirst().outcome());
+        AuditedAssertions.assertEquals(1, run(EmptyFixture.class).getTestsFailedCount());
+        AuditedAssertions.assertTrue(RESULTS.getFirst().phases().getFirst().checks().isEmpty());
+        AuditedAssertions.assertEquals(1, run(AbortedFixture.class).getTestsAbortedCount());
+        AuditedAssertions.assertEquals(ComponentAssertionAudit.Outcome.ABORTED, RESULTS.getFirst().outcome());
+        AuditedAssertions.assertEquals(1, closed);
     }
 
     @Test void recordsInheritedLifecycleMethodsInTheirOwnPhases() {
-        assertEquals(1, run(InheritedFixture.class).getTestsSucceededCount());
+        AuditedAssertions.assertEquals(1, run(InheritedFixture.class).getTestsSucceededCount());
         var phases = RESULTS.getFirst().phases();
-        assertEquals(List.of(ComponentAssertionAudit.Phase.SETUP, ComponentAssertionAudit.Phase.TEST_BODY,
+        AuditedAssertions.assertEquals(List.of(ComponentAssertionAudit.Phase.SETUP, ComponentAssertionAudit.Phase.TEST_BODY,
                 ComponentAssertionAudit.Phase.TEARDOWN), phases.stream().map(ComponentAssertionAudit.PhaseResult::phase).toList());
-        assertTrue(phases.stream().allMatch(phase -> phase.checks().size() == 1));
-        assertEquals(1, closed);
+        AuditedAssertions.assertTrue(phases.stream().allMatch(phase -> phase.checks().size() == 1));
+        AuditedAssertions.assertEquals(1, closed);
     }
 
     @Test void isolatesTemplateInvocationsAndKeepsLifecycleFailuresInTheirPhase() {
-        assertEquals(2, run(TemplateFixture.class).getTestsSucceededCount());
-        assertEquals(2, RESULTS.size());
-        assertEquals(2, closed);
-        assertEquals(1, run(SetupFailureFixture.class).getTestsFailedCount());
-        assertEquals(ComponentAssertionAudit.Phase.SETUP, RESULTS.getFirst().phases().getFirst().phase());
-        assertEquals(1, run(TeardownFailureFixture.class).getTestsFailedCount());
-        assertEquals(ComponentAssertionAudit.Phase.TEARDOWN, RESULTS.getFirst().phases().getLast().phase());
-        assertEquals(ComponentAssertionAudit.Outcome.FAIL, RESULTS.getFirst().phases().getLast().outcome());
+        AuditedAssertions.assertEquals(2, run(TemplateFixture.class).getTestsSucceededCount());
+        AuditedAssertions.assertEquals(2, RESULTS.size());
+        AuditedAssertions.assertEquals(2, closed);
+        AuditedAssertions.assertEquals(1, run(SetupFailureFixture.class).getTestsFailedCount());
+        AuditedAssertions.assertEquals(ComponentAssertionAudit.Phase.SETUP, RESULTS.getFirst().phases().getFirst().phase());
+        AuditedAssertions.assertEquals(1, run(TeardownFailureFixture.class).getTestsFailedCount());
+        AuditedAssertions.assertEquals(ComponentAssertionAudit.Phase.TEARDOWN, RESULTS.getFirst().phases().getLast().phase());
+        AuditedAssertions.assertEquals(ComponentAssertionAudit.Outcome.FAIL, RESULTS.getFirst().phases().getLast().outcome());
     }
 
     @Test void closesAfterPublicationFailureWithoutReplacingTheOriginalCause() {
         publicationFails = true; closeFails = true;
         try {
             var result = run(PrimaryFailureFixture.class);
-            assertEquals(1, result.getTestsFailedCount());
-            assertSame(PRIMARY, result.getFailures().getFirst().getException());
-            assertEquals(List.of(PUBLICATION), List.of(PRIMARY.getSuppressed()));
-            assertEquals(List.of(CLOSE), List.of(PUBLICATION.getSuppressed()));
-            assertEquals(1, closed);
+            AuditedAssertions.assertEquals(1, result.getTestsFailedCount());
+            AuditedAssertions.assertSame(PRIMARY, result.getFailures().getFirst().getException());
+            AuditedAssertions.assertEquals(List.of(PUBLICATION), List.of(PRIMARY.getSuppressed()));
+            AuditedAssertions.assertEquals(List.of(CLOSE), List.of(PUBLICATION.getSuppressed()));
+            AuditedAssertions.assertEquals(1, closed);
         } finally { publicationFails = false; closeFails = false; }
     }
 

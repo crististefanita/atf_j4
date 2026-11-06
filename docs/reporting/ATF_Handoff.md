@@ -68,9 +68,10 @@ Descriptorul separă datele capturate la execuție de cele verificate la revizia
 | Date obligatorii ale verdictului | Corp accesibil în HTML, cu identitate și asociere; un hash sau nume de fișier nu înlocuiește conținutul. |
 | Copie identică încorporată | Eliminată numai după confruntarea octeților și verificarea raportului detașat. |
 | Diagnostic ori rezultat auxiliar cu scop separat | Păstrat numai cu motiv concret, consumator sau întrebare diagnostică și identitate; nu poate ascunde o informație necesară auditului HTML. |
+| Metadate ale distribuției | Indexul și manifestul integrității rămân compacte, cu rol verificabil pentru navigare ori guvernanță; nu substituie inputul, comparațiile sau observațiile accesibile în HTML. |
 | Dovadă unică încă externă | Păstrată până la publicarea completă; dependența rămâne explicită în feedback. |
 
-[Publicatorul Android](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) include PNG-urile, manifestul și corpurile text furnizate ori declarate de checkpoint-uri. [Pilotul componentelor](../testing/ATF_DisplayComponents.md#raportarea-componentelor-istoricului) include inputurile și comparațiile capturate; celelalte familii păstrează încă rezultate JUnit separate.
+[Publicatorul Android](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) include PNG-urile, manifestul și corpurile text furnizate ori declarate de checkpoint-uri. [Suitele de componentă migrate](../testing/ATF_DisplayComponents.md#familii-care-folosesc-același-audit) includ inputurile și comparațiile capturate; selecțiile fără adaptor păstrează calificarea distinctă a auditului.
 
 - **Istoric:** rapoartele native produse înaintea acestei încorporări păstrează anexele unice; schimbarea publicatorului nu le actualizează retrospectiv.
 - **Moment:** hash-ul și corpul text provin din aceeași citire la publicare; acest moment rămâne distinct de execuția Android și de revizia ulterioară.

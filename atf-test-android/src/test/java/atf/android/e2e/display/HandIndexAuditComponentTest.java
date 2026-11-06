@@ -1,15 +1,19 @@
 package atf.android.e2e.display;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.whist.evidence.HandIndexAudit;
 import atf.android.whist.evidence.HandIndexAudit.Box;
 import atf.testkit.AtfComponentTest;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 @AtfComponentTest
 class HandIndexAuditComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     private static final Box INDEX = new Box(10, 10, 30, 50);
     private static final Box SLOT = new Box(10, 10, 32, 90);
 

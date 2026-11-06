@@ -1,10 +1,13 @@
 package atf.tests.contracts;
 
+import atf.tests.reporting.GameReportAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.tests.publishing.DeepSuiteExtentReportTest;
 
 import atf.testkit.AtfComponentTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 import atf.android.evidence.timing.AndroidPhaseTiming;
 import atf.android.evidence.timing.AndroidPhaseTimingCodec;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
@@ -23,6 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @AtfComponentTest
 public class AndroidPhaseTraceReplayContractTest {
+    @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
     @ParameterizedTest @ValueSource(strings = {"extent", "fallback"})
     void republicationKeepsOriginalIntervalsRatherThanDispatchOrPublication(String renderer, @TempDir Path output) throws Exception {
         Path manifest = fixture(output);

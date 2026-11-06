@@ -99,13 +99,14 @@ Selecția `WhistRecordsE2eTest#historyLegendWrapsWithinTheDialogAndStaysFixedWhi
 - Oracolul verifică proprietatea legendei în afara coloanelor, încadrarea între rânduri și închidere și stabilitatea ramei după derulare. La text 1,5 trebuie observată și deplasarea reală a coloanelor.
 - Registrul complet rămâne neschimbat. Revizia PNG confirmă împărțirea și sfârșitul explicației; testul nu pretinde o partidă completă jucată prin UI.
 - Validarea planului, duplicatele, limitele și interpretarea XML se califică în componente. Sanity-ul restrâns păstrează fontul nativ, derularea reală și PNG-ul; acestea nu sunt înlocuite cu randare simulată.
+- Restaurarea distinge lipsa setării `font_scale` de o valoare numerică: absența cere `settings delete`, iar valoarea existentă se păstrează exact. [Modelul de restaurare](../../atf-test-android/src/main/java/atf/android/evidence/FontScaleRestoration.java) refuză valorile necunoscute; textul literal `null` nu se scrie drept scară numerică.
 
 ## Păstrarea rezultatelor
 
 Pentru un test live, identifică serialul, verifică disponibilitatea exclusivă a
 emulatorului și folosește runnerul dedicat. Niciun test dezactivat sau sărit nu
 este acceptanță UI. Rulările brute și capturile se păstrează în directorul extern
-configurat; [pachetul release-ului](../../artifacts/README.md) reține în proiect
+configurat; [pachetul release-ului](../../release/README.md) reține în proiect
 numai dovezile relevante, grupate după versiunea livrată.
 
 Dacă rendererul sau fallback-ul nu respectă contractul comun, înregistrează

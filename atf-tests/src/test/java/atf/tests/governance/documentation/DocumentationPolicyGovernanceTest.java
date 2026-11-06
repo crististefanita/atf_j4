@@ -1,5 +1,7 @@
 package atf.tests.governance.documentation;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest;
 import atf.tests.governance.support.GovernanceProject;
@@ -17,21 +19,21 @@ class DocumentationPolicyGovernanceTest {
         var root = GovernanceProject.locateProjectRoot();
         var files = GovernanceProject.markdown(root);
         String publicRepository = GovernanceProject.policy(root).path("publicRepository").asText("");
-        assertTrue(files.contains(root.resolve("README.md")));
+        AuditedAssertions.assertTrue(files.contains(root.resolve("README.md")));
         var modules = GovernanceProject.policy(root).required("mavenModules");
-        for (var module : modules) assertTrue(files.contains(root.resolve(module.asText()).resolve("README.md")),
+        for (var module : modules) AuditedAssertions.assertTrue(files.contains(root.resolve(module.asText()).resolve("README.md")),
                 () -> "Missing governed module README: " + module);
         for (Path file : files) {
-            assertFalse(file.getFileName().toString().matches("ATF_Reporting_J[0-9]+_Verification\\.md"),
+            AuditedAssertions.assertFalse(file.getFileName().toString().matches("ATF_Reporting_J[0-9]+_Verification\\.md"),
                     () -> "Release chronology belongs in the external archive: " + file);
             if (file.getFileName().toString().equalsIgnoreCase("README.md") || GovernanceProject.isLibraryGuide(root, file)) {
-                assertFalse(hasEnglishReadmeProse(Files.readString(file)), () -> "README prose must be Romanian: " + file);
+                AuditedAssertions.assertFalse(hasEnglishReadmeProse(Files.readString(file)), () -> "README prose must be Romanian: " + file);
             }
             String prose = deploymentProse(Files.readString(file));
             prose = libraryMaintenanceProse(GovernanceProject.relative(root, file), prose);
             prose = publicReleaseProse(prose, publicRepository);
             if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
-            assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
+            AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
                     () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
         }
     }
@@ -54,17 +56,17 @@ class DocumentationPolicyGovernanceTest {
 
     @Test void publicReleaseUriDoesNotExemptVisibleProseOrForeignAndAlteredDestinations() {
         String repository = "https://github.com/example/atf_j4", latest = repository + "/releases/latest";
-        assertEquals("[APK](<resursă-publică>)", publicReleaseProse("[APK](" + latest + ")", repository));
-        assertEquals("Context J4. [atf_j4](<resursă-publică>)",
+        AuditedAssertions.assertEquals("[APK](<resursă-publică>)", publicReleaseProse("[APK](" + latest + ")", repository));
+        AuditedAssertions.assertEquals("Context J4. [atf_j4](<resursă-publică>)",
                 publicReleaseProse("Context J4. [atf_j4](" + latest + ")", repository));
         for (String original : List.of(latest, "[APK](https://github.com/example/atf_j1/releases/latest)",
                 "[APK](" + repository + "/tree/main)", "[APK](" + latest + "?next=atf_j1)",
                 "[APK](" + latest + "#J1)", "[APK](" + latest + "/)", "![APK](" + latest + ")"))
-            assertEquals(original, publicReleaseProse(original, repository), original);
-        assertEquals("[APK](" + latest + ")", publicReleaseProse("[APK](" + latest + ")", ""));
+            AuditedAssertions.assertEquals(original, publicReleaseProse(original, repository), original);
+        AuditedAssertions.assertEquals("[APK](" + latest + ")", publicReleaseProse("[APK](" + latest + ")", ""));
         for (String invalid : List.of("https://github.com/example/../atf_j4", "http://github.com/example/atf_j4",
                 repository + "?query=1", repository + "/", "https://elsewhere.test/example/atf_j4"))
-            assertThrows(IllegalArgumentException.class, () -> publicReleaseProse("Control J4", invalid));
+            AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> publicReleaseProse("Control J4", invalid));
     }
 
     /** Only the named library guides may route maintenance to the source owner, in their footer. */
@@ -80,25 +82,25 @@ class DocumentationPolicyGovernanceTest {
     @Test void libraryMaintenanceFooterDoesNotExemptBodyOtherOwnersOrOtherFiles() {
         String index = "## Pe scurt\nJ0 în corp\n## Mentenanță și feedback\natf_j0 și J0; J1 rămâne vizibil";
         String filtered = libraryMaintenanceProse("lib/README.md", index);
-        assertTrue(filtered.contains("J0 în corp")); assertFalse(filtered.contains("atf_j0 și J0")); assertTrue(filtered.contains("J1 rămâne vizibil"));
+        AuditedAssertions.assertTrue(filtered.contains("J0 în corp")); AuditedAssertions.assertFalse(filtered.contains("atf_j0 și J0")); AuditedAssertions.assertTrue(filtered.contains("J1 rămâne vizibil"));
         String guide = "## Pe scurt\nJ0 în corp\n---\natf_j0 și J0; J2 rămâne vizibil";
         for (String name : List.of("Core", "Reporting", "Console", "Mock")) {
             filtered = libraryMaintenanceProse("lib/README." + name + ".md", guide);
-            assertTrue(filtered.contains("J0 în corp")); assertFalse(filtered.contains("atf_j0 și J0")); assertTrue(filtered.contains("J2 rămâne vizibil"));
+            AuditedAssertions.assertTrue(filtered.contains("J0 în corp")); AuditedAssertions.assertFalse(filtered.contains("atf_j0 și J0")); AuditedAssertions.assertTrue(filtered.contains("J2 rămâne vizibil"));
         }
-        for (String name : List.of("docs/README.md", "lib/verification.md", "lib/README.Other.md")) assertEquals(guide, libraryMaintenanceProse(name, guide));
-        assertEquals("J0 în corp", libraryMaintenanceProse("lib/README.Core.md", "J0 în corp"));
+        for (String name : List.of("docs/README.md", "lib/verification.md", "lib/README.Other.md")) AuditedAssertions.assertEquals(guide, libraryMaintenanceProse(name, guide));
+        AuditedAssertions.assertEquals("J0 în corp", libraryMaintenanceProse("lib/README.Core.md", "J0 în corp"));
     }
 
     @Test void libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter() throws Exception {
         Path root = GovernanceProject.locateProjectRoot(); var files = GovernanceProject.markdown(root);
         for (String name : List.of("README.md", "README.Core.md", "README.Reporting.md", "README.Console.md", "README.Mock.md")) {
-            Path file = root.resolve("lib").resolve(name); assertTrue(files.contains(file), name);
-            String source = Files.readString(file); assertTrue(source.contains("atf_j0"), name);
+            Path file = root.resolve("lib").resolve(name); AuditedAssertions.assertTrue(files.contains(file), name);
+            String source = Files.readString(file); AuditedAssertions.assertTrue(source.contains("atf_j0"), name);
             String prose = libraryMaintenanceProse("lib/" + name, source);
-            assertFalse(java.util.regex.Pattern.compile("(?i)(?<![A-Za-z0-9_])(?:atf[_-]j[0-9]+|J[0-9]+)(?![A-Za-z0-9_])").matcher(prose).find(), name);
-            assertFalse(prose.contains("atf_j0"), name);
-            assertFalse(hasEnglishReadmeProse(source), name);
+            AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)(?<![A-Za-z0-9_])(?:atf[_-]j[0-9]+|J[0-9]+)(?![A-Za-z0-9_])").matcher(prose).find(), name);
+            AuditedAssertions.assertFalse(prose.contains("atf_j0"), name);
+            AuditedAssertions.assertFalse(hasEnglishReadmeProse(source), name);
         }
     }
 
@@ -159,13 +161,13 @@ class DocumentationPolicyGovernanceTest {
         String valid = "```yaml\ntestChanges:\n  - id: CHANGE-J4\n    status: ACTIVE\n    base: " + base
                 + "\n    expires: 2030-01-01\n    reason: Clarifică proprietatea fără schimbarea verdictului."
                 + "\n    proof: 'mvn -pl atf-tests test'\n    paths:\n      - src/test/java/ExampleTest.java\n```\n";
-        assertFalse(deploymentProse(valid).contains("CHANGE-J4"));
-        assertTrue(valid.contains("id: CHANGE-J4"), "The original control identity is unchanged");
-        assertTrue(deploymentProse("Context J4.\n" + valid).contains("Context J4."));
-        assertTrue(deploymentProse(valid.replace("base: " + base, "base: main")).contains("CHANGE-J4"));
-        assertTrue(deploymentProse(valid.replace("testChanges:", "settings:")).contains("CHANGE-J4"));
-        assertTrue(deploymentProse(valid.replace("paths:\n      - src/test/java/ExampleTest.java", "paths: []")).contains("CHANGE-J4"));
-        assertTrue(deploymentProse(valid.replace("schimbarea verdictului.", "schimbarea verdictului. J8")).contains("J8"),
+        AuditedAssertions.assertFalse(deploymentProse(valid).contains("CHANGE-J4"));
+        AuditedAssertions.assertTrue(valid.contains("id: CHANGE-J4"), "The original control identity is unchanged");
+        AuditedAssertions.assertTrue(deploymentProse("Context J4.\n" + valid).contains("Context J4."));
+        AuditedAssertions.assertTrue(deploymentProse(valid.replace("base: " + base, "base: main")).contains("CHANGE-J4"));
+        AuditedAssertions.assertTrue(deploymentProse(valid.replace("testChanges:", "settings:")).contains("CHANGE-J4"));
+        AuditedAssertions.assertTrue(deploymentProse(valid.replace("paths:\n      - src/test/java/ExampleTest.java", "paths: []")).contains("CHANGE-J4"));
+        AuditedAssertions.assertTrue(deploymentProse(valid.replace("schimbarea verdictului.", "schimbarea verdictului. J8")).contains("J8"),
                 "Other metadata fields remain subject to the editorial identifier rule");
     }
 
@@ -182,9 +184,9 @@ class DocumentationPolicyGovernanceTest {
     }
 
     @Test void languageGuardRejectsEnglishProseButKeepsQuotedApiAndCommands() {
-        assertTrue(hasEnglishReadmeProse("# Overview\n\nThis module must preserve the source and their contracts before publication."));
-        assertTrue(hasEnglishReadmeProse("# Mecanism\n\nThis component must preserve the source and their contracts before publication."));
-        assertFalse(hasEnglishReadmeProse("# Mecanism\n\nRegulile păstrează contractul. API-ul `with and before after must` își păstrează numele.\n\n```text\nThis and that must remain before the source.\n```"));
+        AuditedAssertions.assertTrue(hasEnglishReadmeProse("# Overview\n\nThis module must preserve the source and their contracts before publication."));
+        AuditedAssertions.assertTrue(hasEnglishReadmeProse("# Mecanism\n\nThis component must preserve the source and their contracts before publication."));
+        AuditedAssertions.assertFalse(hasEnglishReadmeProse("# Mecanism\n\nRegulile păstrează contractul. API-ul `with and before after must` își păstrează numele.\n\n```text\nThis and that must remain before the source.\n```"));
     }
 
     @Test void copiedValidatorsDetectInjectedDefectsAndAcceptAHealthyNeighbour(@TempDir Path root) throws Exception {
@@ -192,13 +194,13 @@ class DocumentationPolicyGovernanceTest {
         Files.writeString(broken, "# Control\n\n## Pe scurt\n\n[Lipsă](missing.md)\n\n```mermaid\nflowchart LR\nA --> B\nB --> C\n```\n");
         var failures = validate(broken, root);
         var codes = failures.stream().map(DocumentationGovernanceSupport.Violation::code).toList();
-        assertTrue(codes.contains("DOC-README-LINK"));
-        assertTrue(codes.contains("DOC-DIAG-EDGE"));
-        assertTrue(codes.contains("DOC-DIAG-LEGEND"));
+        AuditedAssertions.assertTrue(codes.contains("DOC-README-LINK"));
+        AuditedAssertions.assertTrue(codes.contains("DOC-DIAG-EDGE"));
+        AuditedAssertions.assertTrue(codes.contains("DOC-DIAG-LEGEND"));
         Path healthy = root.resolve("healthy/README.md");
         Files.createDirectories(healthy.getParent());
         Files.writeString(healthy, "# Control sănătos\n\n## Pe scurt\n\nUn contract stabil.\n\n[Acest document](README.md)\n");
-        assertTrue(validate(healthy, root).isEmpty(), "A healthy neighbouring document must remain valid");
+        AuditedAssertions.assertTrue(validate(healthy, root).isEmpty(), "A healthy neighbouring document must remain valid");
     }
 
     @Test void generatedDirectoriesAreExcludedButNestedReadmesAndDocsRemainVisible(@TempDir Path root) throws Exception {
@@ -206,7 +208,7 @@ class DocumentationPolicyGovernanceTest {
                 "target/README.md", "node_modules/pkg/README.md", "dist/README.md", "unrelated/example.md")) {
             Path path = root.resolve(file); Files.createDirectories(path.getParent()); Files.writeString(path, "# Control\n");
         }
-        assertEquals(List.of("README.md", "docs/guide.md", "nested/README.md"), GovernanceProject.markdown(root).stream()
+        AuditedAssertions.assertEquals(List.of("README.md", "docs/guide.md", "nested/README.md"), GovernanceProject.markdown(root).stream()
                 .map(file -> GovernanceProject.relative(root, file)).sorted().toList());
     }
 

@@ -83,3 +83,7 @@ Subsetul JSON este explicit și refuză construcțiile nesuportate. Următoarea 
 - [Feedback-ul validării](../docs/feedback/ATF_TestInfrastructure.md#costul-validării-api) deține calificarea bugetelor pe volum și adâncime. Reutilizarea expresiilor din aceeași evaluare păstrează prevalidarea, semantica regex Java, căile și ordinea abaterilor; componentele verifică și independența evaluărilor succesive.
 
 - Rezultatul performanței și identitatea intrărilor se păstrează extern. Optimizarea se acceptă după paritate semantică și măsurare, cu publicarea separată de evaluarea valorilor integrale.
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

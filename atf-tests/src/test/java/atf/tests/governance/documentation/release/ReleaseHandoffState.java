@@ -25,7 +25,7 @@ final class ReleaseHandoffState {
     static String evidence(JsonNode presentation, String repository, String version, boolean prepared) {
         require(version.equals(presentation.path("version").asText()), "VERSION");
         String base = repository + "/blob/";
-        String suffix = "/artifacts/reports/" + version + "/README.md";
+        String suffix = "/release/" + version + "/reports/README.md";
         if (prepared) {
             require(!presentation.has("evidenceUrl"), "PUBLIC-CLAIM");
             String template = presentation.path("evidenceUrlTemplate").asText();
@@ -34,8 +34,8 @@ final class ReleaseHandoffState {
         }
         require(!presentation.has("evidenceUrlTemplate"), "UNBOUND");
         String url = presentation.path("evidenceUrl").asText();
-        require(url.matches(Pattern.quote(base) + "[0-9a-f]{40}/artifacts/(?:reports/)?"
-                + Pattern.quote(version) + "/README\\.md"), "EVIDENCE");
+        require(url.matches(Pattern.quote(base) + "[0-9a-f]{40}/release/"
+                + Pattern.quote(version) + "/reports/README\\.md"), "EVIDENCE");
         return url;
     }
 

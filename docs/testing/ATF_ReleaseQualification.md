@@ -27,8 +27,8 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 |---|---|
 | 1. Diferență | Identificați baza, fișierele modificate/adăugate/șterse și contractele afectate. Alegeți versiunea după comportament, apoi fixați inventarul complet al surselor și bibliotecilor copiate. |
 | 2. Componente | Executați întâi oracolele schimbate și refuzurile relevante. Istoricul are [suită auditată](ATF_DisplayComponents.md#raportarea-componentelor-istoricului); aplicația Gradle și restul componentelor își păstrează rezultatele native până la migrarea capturii comparațiilor. |
-| 3. Publicare | Verificați individual și prin suită, Extent și fallback, cauza originală, abort-ul și corpul fără aserții capturate. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
-| 4. HTML | Copiați numai HTML-ul final într-un director gol, blocați resursele externe și verificați un owner: input integral, ultimul rând, expandare/colapsare și captura originală când există. |
+| 3. Publicare | Confruntați identitățile JUnit–HTML individual și prin suită, apoi Extent/fallback, cauza originală, abort-ul și lipsa capturii. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
+| 4. HTML | Aplicați [revizia interactivă minimă](../reporting/ATF_Audit.md#revizia-interactivă-minimă) pe HTML-ul identificat prin hash; păstrați proprietarii, controalele și limitele probei. |
 | 5. APK | Construiți din snapshot în TMP; verificați versiunea, SDK-urile, bytes, SHA-256, CRC, semnătura și alinierea. Debug și Release au identități distincte. |
 | 6. Android | Rezervați dispozitivul; rulați scenariul scurt al schimbării și profilul care distinge riscul. Restaurați datele și configurația. O partidă completă nu se repetă pe toate rezoluțiile. |
 | 7. Predare | Confruntați sursele live, rapoartele, populația testelor, linkurile și guvernanța relevantă. Arhivați precedentul verificat înaintea înlocuirii dosarului activ și APK-ului. |
@@ -44,6 +44,25 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 | `diagnostics/` | Numai dovezi distincte justificate: rezultat JUnit nemigrat, semnătură, crash ori control al randării. |
 
 Nu copiați PNG/XML/JSON deja incluse integral în HTML după confruntarea octeților și a accesului offline. Păstrați încă dovezile unice necesare și declarați excepția; [predarea compactă](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) deține criteriul complet.
+
+## README-ul dosarului
+
+Prima parte oferă raportul principal și starea calificării. Detaliile rămân schematice, cu o singură sursă pentru fiecare rezultat; README-ul trimite la inventar și la [strategia comună](README.md), fără a copia regulile generale.
+
+| Secțiune | Informație necesară |
+|---|---|
+| Scop și stare | Proprietatea verificată, baza comparației și starea reală: pregătire, execuție încheiată ori calificare acceptată. |
+| Identitate | APK și hash când există, surse/biblioteci și momentul identificării; o amprentă observată ulterior nu este prezentată drept captură inițială. |
+| Deschidere | Link direct la HTML-ul canonic și ordinea scurtă de citire: context, invocare, input/acțiune, comparație și captură. |
+| Selecții | Selectorul sau comanda și rezultatul fiecărei selecții, cu unitatea numărată, erori și omiteri. |
+| Suprapuneri | Relația clasă–suită, parametrizări, checkpoint-uri și aceeași selecție în două renderere; totalurile nu se adună automat. |
+| Revizie | Hash-ul HTML-ului, verificarea statică și interactivă efectuată, browserul și proprietarii verificați. |
+| Dovezi separate | Pentru fiecare fișier: motiv concret, consumator ori întrebare diagnostică și identitate; JUnit fără comparații capturate își păstrează limita. |
+| Limite și pas următor | Cazuri neexecutate, surse schimbate după rulare și criteriul rămas înaintea build-ului sau promovării. |
+
+- **Stări:** `PENDING` exprimă un pas neexecutat; `SKIP`/abort exprimă rezultatul invocării. Un rezultat `FAIL` sau o eroare de publicare se păstrează, împreună cu impactul asupra calificării.
+- **Istoric:** o probă anterioară poate fi reper explicit, cu binarul și scopul ei. Mutarea documentelor sau actualizarea README-ului nu califică un APK nou.
+- **Retratare:** la corecția documentelor, păstrați sursa rezultatelor și descrieți selecția reverificată; o compoziție de rezultate trecute nu devine o singură rulare integrală nouă.
 
 ## Comenzi și limite
 

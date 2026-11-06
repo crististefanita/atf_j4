@@ -1,5 +1,8 @@
 package atf.android.e2e.display.component;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.whist.evidence.HandIndexAudit.Box;
 import atf.android.whist.evidence.TableViewportAudit;
 import atf.android.whist.evidence.TableViewportAudit.PlayedRegion;
@@ -10,10 +13,11 @@ import atf.testkit.AtfComponentTest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 @AtfComponentTest
 class TableViewportAuditComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test void completeTrickAndThirteenCardBoundaryAreAcceptedAsSeparateObservedStates() {
         for (int count : new int[]{1, 12, 13}) assertTrue(passes(baseline(count, count == 12), requirements(count, count == 12)));
     }

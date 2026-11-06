@@ -1,5 +1,8 @@
 package atf.android.e2e.display;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.android.e2e.driver.AndroidUiDriver;
 
 import atf.android.AdbClient;
@@ -7,10 +10,11 @@ import atf.testkit.AtfComponentTest;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 @AtfComponentTest
 class HandGeometryDriverComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test void verticalIndexAndFullCardFaceHaveDifferentGeometry(@TempDir Path out) throws Exception {
         var driver = driver(out);
         String xml = """

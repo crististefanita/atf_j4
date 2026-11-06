@@ -1,12 +1,15 @@
 package atf.tests.reporting;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 import org.junit.jupiter.api.Test;
 
 @AtfComponentTest
 class GameReportTextAuditContractTest {
+    @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
     @Test void textAndLiteralEntitiesAreDecodedExactlyOnce() {
         var audit = new GameReportTextAudit("<pre>&#10;first&#13;&#10;last &amp; &amp;#13; &lt;x&gt;</pre>");
         assertTrue(audit.contains("\nfirst\r\nlast & &#13; <x>"));

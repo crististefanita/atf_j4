@@ -1,5 +1,8 @@
 package atf.android.e2e.driver;
 
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.android.AdbClient;
@@ -16,14 +19,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
+import static atf.testkit.assertions.AuditedAssertions.assertSame;
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 @AtfComponentTest
 class AndroidUiDriverComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test
     void symmetricSeriesSelectorRetainsItsStableIdentityAndLegacyAlias() {
         assertTrue(UiHierarchy.matchesSpinnerLabel("romanian-streak-value", "Five-hand reward / penalty"));

@@ -1,5 +1,7 @@
 package atf.android.e2e.support;
 
+import atf.android.e2e.support.flow.AndroidUiFlowEvidence;
+
 import atf.android.evidence.AndroidScreenshotEvidence;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.configuration.ReportingSettings;
@@ -30,7 +32,7 @@ final class AndroidUiFlowReportAudit {
         }
     }
 
-    static void auditPublishedReport(Path report, AndroidUiFlowTrace trace,
+    static void auditPublishedReport(Path report, AndroidUiFlowEvidence trace,
             ReportingSettings settings) throws Exception {
         require(Files.isRegularFile(report) && Files.size(report) > 2_000,
                 "Android UI Extent report was not published: " + report);
@@ -221,11 +223,11 @@ final class AndroidUiFlowReportAudit {
                 + assertion.resultStatus().marker() + "</td></tr>";
     }
 
-    static int checkpointCount(AndroidUiFlowTrace trace) {
+    static int checkpointCount(AndroidUiFlowEvidence trace) {
         return trace.phaseSnapshots().stream().mapToInt(phase -> phase.checkpoints().size()).sum();
     }
 
-    static int screenshotCount(AndroidUiFlowTrace trace) {
+    static int screenshotCount(AndroidUiFlowEvidence trace) {
         return trace.phaseSnapshots().stream().flatMap(phase -> phase.checkpoints().stream())
                 .mapToInt(checkpoint -> checkpoint.screenshot() == null ? 0 : 1).sum();
     }

@@ -11,7 +11,7 @@ import org.junit.platform.suite.api.Suite;
 /** JVM-only display contracts, including history fixtures, observation decoding and bounded native plans. */
 @Suite
 @SelectPackages({"atf.android.e2e.display","atf.android.e2e.driver","atf.android.e2e.records"})
-@IncludeClassNamePatterns(".*ComponentTest")
+@IncludeClassNamePatterns("^[^$]*ComponentTest$")
 @IncludeTags("component")
 @ConfigurationParameter(key = TestRunScope.CONFIGURATION_PARAMETER, value = "suite")
 @AtfComponentTest

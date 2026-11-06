@@ -1,5 +1,7 @@
 package atf.tests.governance.documentation.release;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import org.junit.jupiter.api.Test;
@@ -20,23 +22,38 @@ class ReleaseArtifactLayoutGovernanceTest {
 
     @Test void registeredVersionsOwnTheirEvidenceAndHaveDiscoverableReadmes() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
-        String catalog = Files.readString(root.resolve("artifacts/README.md"));
-        String current = new com.fasterxml.jackson.databind.ObjectMapper().readTree(root.resolve("artifacts/index.json").toFile()).required("currentVersion").asText();
-        String currentSection = ReleaseCatalogPresentation.currentSection(root.resolve("artifacts/README.md"), catalog);
-        assertTrue(currentSection.contains("(reports/" + current + "/README.md)"), "The current entry follows the structured index");
-        String reports = Files.readString(root.resolve("artifacts/reports/README.md"));
+        String projectGuide = Files.readString(root.resolve("README.md"));
+        AuditedAssertions.assertTrue(projectGuide.contains("(release/README.md)"), "The project entry points to the release catalog");
+        AuditedAssertions.assertFalse(projectGuide.contains("(dist/"), "The project entry must not revive the retired distribution directory");
+        String catalog = Files.readString(root.resolve("release/README.md"));
+        String current = new com.fasterxml.jackson.databind.ObjectMapper().readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
+        String currentSection = ReleaseCatalogPresentation.currentSection(root.resolve("release/README.md"), catalog);
+        AuditedAssertions.assertTrue(currentSection.contains("(" + current + "/README.md)"), "The current entry follows the structured index");
         for (Path folder : ReleaseArtifactCatalog.folders(root)) {
-            assertTrue(catalog.contains("(reports/" + folder.getFileName() + "/README.md)"), folder.toString());
-            assertTrue(reports.contains("(" + folder.getFileName() + "/README.md)"), folder.toString());
-            String guide = Files.readString(folder.resolve("README.md"));
-            assertTrue(guide.contains("(../README.md)"), "Each release links back to the catalog");
-            assertTrue(guide.contains("(../../../docs/testing/README.md)"), "Results point to the shared strategy");
+            AuditedAssertions.assertTrue(catalog.contains("(" + folder.getFileName() + "/README.md)"), folder.toString());
+            String guide = Files.readString(folder.resolve("reports/README.md"));
+            AuditedAssertions.assertTrue(guide.contains("(../../README.md)"), "Each release links back to the catalog");
+            AuditedAssertions.assertTrue(guide.contains("(../../../docs/testing/README.md)"), "Results point to the shared strategy");
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"README.md", "reports/README.md"})
+    void releaseOverviewAndReportIndexAreBothRequired(String missing) throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0"));
+        Files.delete(root.resolve("release/1.2.0").resolve(missing));
+        rejected(root, "REQUIRED");
     }
 
     @Test void aSecondRegisteredVersionCannotRemainInTheActiveStore() throws Exception {
         Path root = project("1.2.0", List.of("1.1.0", "1.2.0"));
         rejected(root, "RETENTION");
+    }
+
+    @Test void aSecondDistributionDirectoryCannotReappearBesideTheReleaseCatalog() throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0"));
+        Files.createDirectory(root.resolve("dist"));
+        rejected(root, "LEGACY-DIST");
     }
 
     @Test void emptyDuplicateEscapingAndUnknownCurrentVersionsAreRejected() throws Exception {
@@ -52,7 +69,7 @@ class ReleaseArtifactLayoutGovernanceTest {
 
     @Test void missingMetadataAndDivergentVersionOrTagCannotPass() throws Exception {
         Path root = project("1.2.0", List.of("1.2.0"));
-        Path folder = root.resolve("artifacts/reports/1.2.0");
+        Path folder = root.resolve("release/1.2.0");
         Files.delete(folder.resolve("release-validation.json"));
         rejected(root, "REQUIRED");
         manifest(folder, "1.1.0");
@@ -64,34 +81,34 @@ class ReleaseArtifactLayoutGovernanceTest {
 
     @Test void aLegacyVersionFolderCannotBeSilentlyExcludedFromThePopulation() throws Exception {
         Path root = project("1.2.0", List.of("1.2.0"));
-        Files.createDirectories(root.resolve("artifacts/1.1.0"));
+        Files.createDirectories(root.resolve("release/legacy-retired"));
         rejected(root, "UNREGISTERED");
     }
 
     @Test void anUnregisteredRetiredRunCannotRemainInsideReports() throws Exception {
         Path root = project("1.2.0", List.of("1.2.0"));
-        Files.createDirectories(root.resolve("artifacts/reports/1.1.0"));
+        Files.createDirectories(root.resolve("release/1.1.0"));
         rejected(root, "UNREGISTERED");
     }
 
     @Test void renamingAnOldRunDoesNotQualifyANewVersion() throws Exception {
         Path root = project("0.10.0", List.of("0.10.0"));
-        manifest(root.resolve("artifacts/reports/0.10.0"), "1.9.2");
+        manifest(root.resolve("release/0.10.0"), "1.9.2");
         rejected(root, "IDENTITY");
     }
 
     @Test void theTestingStrategyLinksTheCatalogWithoutFixingAReleaseOrItsResults() throws Exception {
         String strategy = Files.readString(GovernanceProject.locateProjectRoot().resolve("docs/testing/README.md"));
-        assertTrue(strategy.contains("(../../artifacts/README.md)"));
-        assertTrue(strategy.contains("(../../artifacts/index.json)"));
-        assertFalse(Pattern.compile("\\b[0-9]+\\.[0-9]+\\.[0-9]+\\b").matcher(strategy).find(), "The strategy must not fix the current release");
-        assertFalse(Pattern.compile("(?iu)\\b[0-9]+\\s+(?:teste|tests)\\s*[:—]|\\b[0-9]+/[0-9]+\\s+(?:trecute|PASS)").matcher(strategy).find(), "Run totals belong to release evidence");
+        AuditedAssertions.assertTrue(strategy.contains("(../../release/README.md)"));
+        AuditedAssertions.assertTrue(strategy.contains("(../../release/index.json)"));
+        AuditedAssertions.assertFalse(Pattern.compile("\\b[0-9]+\\.[0-9]+\\.[0-9]+\\b").matcher(strategy).find(), "The strategy must not fix the current release");
+        AuditedAssertions.assertFalse(Pattern.compile("(?iu)\\b[0-9]+\\s+(?:teste|tests)\\s*[:—]|\\b[0-9]+/[0-9]+\\s+(?:trecute|PASS)").matcher(strategy).find(), "Run totals belong to release evidence");
     }
 
     @Test void currentSectionCannotBorrowAnEntryFromTheVersionsTable() throws Exception {
         String current = "## Versiunea curentă\n\n[1.2.0](1.2.0/README.md)\n\n";
         String available = "## Versiuni disponibile\n\n[1.1.0](1.1.0/README.md)\n";
-        assertEquals(current, ReleaseCatalogPresentation.currentSection(
+        AuditedAssertions.assertEquals(current, ReleaseCatalogPresentation.currentSection(
                 Path.of("catalog.md"), "# Catalog\n\n" + current + available));
     }
 
@@ -107,21 +124,23 @@ class ReleaseArtifactLayoutGovernanceTest {
             default -> throw new IllegalArgumentException(defect);
         };
         Path file = Path.of("catalog.md");
-        var failure = assertThrows(IOException.class,
+        var failure = AuditedAssertions.assertThrows(IOException.class,
                 () -> ReleaseCatalogPresentation.currentSection(file, catalog));
-        assertTrue(failure.getMessage().startsWith("RELEASE-CATALOG-SECTIONS: " + file));
+        AuditedAssertions.assertTrue(failure.getMessage().startsWith("RELEASE-CATALOG-SECTIONS: " + file));
     }
 
     private Path project(String current, List<String> versions) throws Exception {
         Path root = Files.createDirectory(temporary.resolve("project"));
-        Files.createDirectories(root.resolve("artifacts/reports"));
-        Files.writeString(root.resolve("artifacts/reports/README.md"), "# Ultimele rezultate");
+        Files.createDirectories(root.resolve("release"));
+
         for (String version : versions) {
-            Path folder = Files.createDirectories(root.resolve("artifacts/reports").resolve(version));
-            Files.writeString(folder.resolve("README.md"), "# Dovezi");
+            Path folder = Files.createDirectories(root.resolve("release").resolve(version));
+            Files.writeString(folder.resolve("README.md"), "# Livrare");
+            Files.createDirectories(folder.resolve("reports"));
+            Files.writeString(folder.resolve("reports/README.md"), "# Dovezi");
             manifest(folder, version);
         }
-        Files.writeString(root.resolve("artifacts/README.md"), "# Catalog");
+        Files.writeString(root.resolve("release/README.md"), "# Catalog");
         index(root, current, new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(versions));
         return root;
     }
@@ -131,10 +150,10 @@ class ReleaseArtifactLayoutGovernanceTest {
     }
 
     private static void index(Path root, String current, String versions) throws Exception {
-        Files.writeString(root.resolve("artifacts/index.json"), "{\"schemaVersion\":2,\"currentVersion\":\"" + current + "\",\"versions\":" + versions + "}");
+        Files.writeString(root.resolve("release/index.json"), "{\"schemaVersion\":2,\"currentVersion\":\"" + current + "\",\"versions\":" + versions + "}");
     }
 
     private static void rejected(Path root, String code) {
-        assertTrue(assertThrows(IOException.class, () -> ReleaseArtifactCatalog.folders(root)).getMessage().contains("RELEASE-" + code));
+        AuditedAssertions.assertTrue(AuditedAssertions.assertThrows(IOException.class, () -> ReleaseArtifactCatalog.folders(root)).getMessage().contains("RELEASE-" + code));
     }
 }

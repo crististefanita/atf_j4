@@ -45,6 +45,7 @@ Pentru fiecare proprietate, oracolul auditului citește sursa originală și loc
 | Timp | Intervalul atribuit altui flow sau faze este respins. |
 | Semantica acțiunii | Atribuirea falsă a driverului și confundarea dispatch-ului cu succesul UI sunt refuzate. |
 | Navigare | Valorile și imaginile rămân accesibile după deschidere, închidere și schimbarea proprietarului. |
+| Populație | O invocare JUnit eliminată din HTML ori reasociată altei parametrizări este detectată; egalitatea totalurilor singure este insuficientă. |
 
 Implementarea verificării este legată de contractul exercitat:
 
@@ -61,6 +62,70 @@ Fiecare producător se califică pe suprafața API efectiv folosită. Trecerea u
 3. Injectați lipsuri, proprietari greșiți, intervale imposibile și referințe alterate; publicarea ori auditul trebuie să refuze datele corupte.
 4. Verificați separat navigarea, secțiunile pliabile, imaginile și revenirea cu contextul păstrat pe HTML-ul identificat prin hash.
 5. Păstrați nivelurile executate și limitele în înregistrarea externă; [predarea rezultatelor](ATF_Handoff.md) decide acceptanța scopului.
+
+## Agregarea componentelor pe sursa live
+
+[Lansatorul componentelor](../../scripts/run-component-suites.ps1) execută intrările primare de componentă din [catalogul Maven](../../config/atf-test-suites.json). Compilarea și cache-ul aparțin unei copii TMP; fiecare modul produce un HTML canonic cu invocări distincte, comparațiile evaluate și proveniența surselor.
+
+```mermaid
+flowchart LR
+    SOURCE[Surse înghețate] -->|compilează| SUITE[Suită primară]
+    SUITE -->|execută| JUNIT[Inventar JUnit]
+    SUITE -->|capturează| AUDIT[Input și comparații]
+    AUDIT -->|publică| HTML[HTML agregat]
+    JUNIT -->|confruntă identități și rezultate| HTML
+```
+
+<details>
+<summary>Legendă: execuție nouă și captură originală</summary>
+
+Receipt-ul JUnit este independent de receipt-ul publicat în HTML. [Confruntarea](../../atf-tests/src/main/java/atf/tests/reporting/aggregate/ComponentReportCoverage.java) refuză identități lipsă, suplimentare ori duplicate și verdicte diferite; totalurile egale nu sunt suficiente.
+
+</details>
+
+| Frontieră | Contract |
+|---|---|
+| Captură | Aserțiunile auditate păstrează evaluarea JUnit; fazele și cauzele aparțin invocării originale. O componentă fără comparații auditate în corp eșuează explicit. |
+| Adaptor | Adaptorul explicit are prioritate; lansatorul activează auditul componentelor fără adaptor local. Lansările JUnit imbricate păstrează propriul context și nu intră în populația părintelui. |
+| Publicare | Un owner comun per suită; receipt-urile păstrează ID-ul parametrizării, rezultatul și numărul comparațiilor. Corpurile lungi se reconstruiesc din părți ordonate. |
+| Proveniență | HTML-ul include inventarul surselor și configurației; metadatele compacte confruntă identitățile, hash-ul raportului și stabilitatea sursei, fără copii XML. |
+| Domeniu | Execuția califică sursa și suitele Maven declarate. Nu califică un APK istoric, componentele Gradle ori o interacțiune nouă pe Android. |
+
+Din rădăcina proiectului, cu JDK-ul și cache-ul Maven pregătite:
+
+```powershell
+.\scripts\run-component-suites.ps1 -JavaHome '<cale-JDK>' -MavenCache '<cache-Maven>'
+```
+
+Rezultatele rămân externe. Copierea selectivă în dosarul unei livrări păstrează explicit domeniul sursă, distinct de calificarea APK-ului; verificarea finală confruntă HTML-ul detașat înaintea eliminării oricărei dovezi originale.
+
+## Citirea unui raport
+
+README-ul dosarului indică întâi raportul canonic, scopul și identitatea verificată. HTML-ul păstrează datele necesare verdictului; README-ul orientează cititorul și explică selecția, suprapunerile și dovezile auxiliare justificate.
+
+| Ordine | Ce confruntăm |
+|---|---|
+| Context | Tipul verificării, sursele și bibliotecile, profilul și, pentru Android, APK-ul/dispozitivul efectiv. Momentul publicării se distinge de execuție. |
+| Invocare | Clasa, metoda și parametrii aleși; setup-ul ori restaurarea apar numai dacă au avut loc și sunt delimitate de corp. |
+| Componentă | Inputul integral și `Component assertions` din faza evaluării: numele invariantului, expected independent, actual și verdict. |
+| Android | Acțiunea expediată, observația proaspătă, comparația și PNG-ul aceleiași stări. Acceptarea ADB și succesul tranziției au dovezi separate. |
+| Eșec | Cauza primară, comparațiile trecute anterior și erorile secundare de curățare; Fails păstrează accesul la proprietarul original. |
+| Închidere | Populația executată/publicată, cazurile omise și limitele reviziei; durata scenariilor nu se confundă cu timpul total al suitei. |
+
+- **Sens:** când `true/false`, un număr ori o clasă de excepție nu explică proprietatea, comparația are mesaj declarativ despre obiect și invariant. Referința la linia sursei ajută trasabilitatea, fără a înlocui explicația.
+- **Refuz așteptat:** `assertThrows` poate trece când operația refuză exact intrarea cerută; raportul arată așteptarea evaluată. Un eșec injectat intenționat al invocării rămâne FAIL, chiar dacă acceptanța publicatorului așteaptă acel eșec.
+- **Mediu:** instrumentul care inspectează HTML-ul este auditorul raportului. Folosirea Playwright pentru această revizie nu transformă interacțiunea Android în automatizare Playwright.
+
+## Revizia interactivă minimă
+
+1. Identificați hash-ul HTML-ului final și copiați-l singur într-un director gol; blocați resursele externe și declarați browserul folosit.
+2. Porniți din starea inițială a raportului și alegeți un proprietar reprezentativ; pentru un arbore mare, deschideți ramura necesară.
+3. Verificați deschiderea și închiderea grupului de aserții, accesul la ultima comparație și independența vecinului; adăugați Enter/Space și focus când schimbarea afectează aceste controale.
+4. Deschideți inputul integral, inclusiv valori peste preview și text care arată ca HTML; el rămâne text sigur, la invocarea corectă.
+5. Când există captură, deschideți PNG-ul integral și reveniți la aceeași ramură. Proba păstrează proporțiile, rezoluția originală și contextul.
+6. Înregistrați proprietarii și controalele verificate, verdictul și limitele. Calificați separat Extent și fallback când schimbarea afectează ambele suprafețe.
+
+Revizia acoperă ramurile declarate. Reducerea la o probă reprezentativă cere aceeași implementare de prezentare; o ramură nouă, un eșec sau o problemă de acces primește propria probă.
 
 ## Limite
 

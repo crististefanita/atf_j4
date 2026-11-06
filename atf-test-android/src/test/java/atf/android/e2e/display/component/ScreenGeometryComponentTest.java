@@ -1,6 +1,9 @@
 package atf.android.e2e.display.component;
 
-import static org.junit.jupiter.api.Assertions.*;
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 import atf.android.e2e.display.support.ResponsiveGeometry;
 import atf.android.e2e.display.support.GameplayGeometry;
@@ -14,6 +17,7 @@ import java.util.List;
 
 @AtfComponentTest
 class ScreenGeometryComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test
     void strictAndPixelRoundingOverlapContractsRemainDifferent() {
         var first = new Bounds(0, 0, 10, 10);

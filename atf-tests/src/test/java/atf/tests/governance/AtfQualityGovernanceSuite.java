@@ -9,5 +9,5 @@ import org.junit.platform.suite.api.Suite;
 @AtfIntegrationTest
 @Suite
 @SelectPackages({"atf.tests.governance", "atf.libraries"})
-@IncludeClassNamePatterns(".*Test")
+@IncludeClassNamePatterns("^[^$]*Test$")
 public class AtfQualityGovernanceSuite { }

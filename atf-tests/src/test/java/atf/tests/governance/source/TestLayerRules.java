@@ -16,6 +16,32 @@ public final class TestLayerRules {
     record Inspection(String type, boolean executable, List<String> layers) { }
 
     private TestLayerRules() {}
+    public record ExecutableSource(String module, String name, List<String> layers, boolean suite, String source) { }
+    public static List<ExecutableSource> executableSources(Path root) throws Exception {
+        var annotations = annotationSources(root);
+        var result = new ArrayList<ExecutableSource>();
+        try (var parser = JavaTestDeclarations.open()) {
+            for (var sourceRoot : AtfJavaSourceInventory.roots(root)) if (sourceRoot.test()) {
+                for (Path file : AtfJavaSourceInventory.files(sourceRoot.directory())) {
+                    String source = Files.readString(file);
+                    var unit = parser.parse(source);
+                    for (var type : unit.types()) if (executable(type)) result.add(new ExecutableSource(
+                            root.relativize(sourceRoot.module()).toString().replace('\\', '/'),
+                            unit.packageName() + "." + type.name(),
+                            resolve(type, unit, annotations, LAYER_ANNOTATIONS, new HashSet<>(), parser),
+                            !resolve(type, unit, annotations, Set.of("@Suite"), new HashSet<>(), parser).isEmpty(), source));
+                }
+            }
+        }
+        return List.copyOf(result);
+    }
+    public static Map<String, List<String>> suiteSelectors(String source, Map<String, String> knownTypes) {
+        var unit = JavaTestDeclarations.parse(source);
+        var selectors = new HashMap<>(unit.types().getFirst().selectors());
+        if (selectors.containsKey("SelectClasses")) selectors.put("SelectClasses", selectors.get("SelectClasses").stream()
+                .map(name -> unit.qualified(name, knownTypes)).toList());
+        return Map.copyOf(selectors);
+    }
     public static boolean isConcreteExecutable(String source) {
         return JavaTestDeclarations.parse(source).types().stream().anyMatch(TestLayerRules::executable);
     }

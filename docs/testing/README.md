@@ -1,5 +1,7 @@
 # Testarea Whist Lab
 
+<!-- atf-testing-strategy-owner -->
+
 ## Pe scurt
 
 Testarea separă corectitudinea unei reguli, colaborarea componentelor, calitatea politicii și interacțiunea Android.
@@ -42,6 +44,8 @@ Pentru un alt joc, [admiterea domeniului](../learning/ATF_GameTransfer.md) cere 
 
 ## Strategia comună
 
+Acesta este documentul normativ unic al strategiei de testare. Ghidurile tematice descriu aplicarea unui contract, iar README-urile testelor descriu selecțiile și precondițiile; toate se raportează la aceeași strategie, indiferent de release.
+
 | Schimbare | Verificare principală | Completare necesară |
 |---|---|---|
 | Regulă, scor sau salvare | Unitare și componente cu intrări controlate, inclusiv cazuri negative. | Replay al unei partide înregistrate dacă se schimbă interpretarea istoricului. |
@@ -71,11 +75,23 @@ Selecția urmează riscul observabil. [Matricea de afișaj](ATF_Display.md#matri
 
 - **Populație:** clasa, metoda și invocarea parametrizată identifică un caz; aserțiunile, checkpoint-urile și mâinile jucate sunt unități distincte.
 - **Suprapunere:** o clasă rulată individual, apoi prin suită, ori aceeași selecție în Extent și fallback nu adaugă automat alte cazuri unice.
-- **Raportare:** componentele auditate capturează comparațiile în timpul testului; cele încă nemigrate își păstrează rezultatele JUnit și limita explicită. Unitarele nu primesc obligația unui parcurs E2E.
+- **Raportare:** selecțiile de componentă și E2E publică rapoarte Extent agregate pe suită sau scop declarat, cu comparațiile capturate în timpul testului. Rezultatul JUnit și capturile fac parte din auditul selecției, fără a substitui datele comparației; unitarele rămân o categorie distinctă.
 - **Închidere:** selecția executată se confruntă cu selecția cerută; un caz dispărut, un abort sau o omisiune relevantă se explică înaintea calificării.
 
 ## Rezultate pe versiuni
 
-Acest ghid deține strategia aplicabilă oricărei versiuni. Numerele testelor, verdictele, capturile și limitele ultimei livrări calificate se citesc din [catalogul artefactelor](../../artifacts/README.md) și [rapoartele active](../../artifacts/reports/README.md). Istoricul se arhivează conform [politicii de retenție](../platform/ATF_ReleaseRetention.md).
+| Intrare | Responsabilitate |
+|---|---|
+| Strategia și matricea | Nivelul minim, selecția după risc, proprietarul și condițiile de acceptare; fără rezultate ale unei execuții. |
+| README-ul testelor | Clasele sau suitele selectate, precondițiile, comenzile și interpretarea rezultatului. |
+| Dosarul release-ului | Identitățile efectiv verificate, rapoartele agregate și starea acoperirii fiecărei selecții. |
 
-Dosarul se selectează prin [indexul livrărilor](../../artifacts/index.json), fără codificarea versiunii curente în această strategie. [Procesul livrării](../platform/ATF_AndroidDelivery.md#dosarul-unei-versiuni) deține structura și condițiile de publicare; ghidurile matricei de mai sus dețin selecțiile executabile.
+Un raport canonic reprezintă o selecție identificată. Suitele focalizate sunt submulțimi declarate ale selecției primare; aceeași invocare executată prin mai multe intrări se numără o singură dată în populația unică.
+
+- **Navigare:** componenta și E2E au intrări distincte către HTML-urile canonice ale selecțiilor.
+- **Conținut:** PNG-ul rămâne inline Base64; XML-ul sau JSON-ul necesar auditului este încorporat cu identitate și proveniență.
+- **Retenție:** copia separată se elimină după confruntarea datelor și verificarea HTML-ului detașat. Datele unice încă nemigrate blochează acceptarea formei finale și rămân explicit identificate.
+
+- **Versiune:** [catalogul livrărilor](../../release/README.md) trimite la rezultate, capturi și limite; acest ghid păstrează strategia generică. Istoricul urmează [politica de retenție](../platform/ATF_ReleaseRetention.md).
+
+- **Proces:** [indexul livrărilor](../../release/index.json) selectează dosarul activ. [Contractul livrării](../platform/ATF_AndroidDelivery.md#dosarul-unei-versiuni) deține structura și publicarea; matricea de mai sus deține selecțiile executabile.

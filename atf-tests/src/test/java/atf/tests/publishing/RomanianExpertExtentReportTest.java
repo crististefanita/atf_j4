@@ -1,5 +1,7 @@
 package atf.tests.publishing;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.tests.reporting.GameReportSession;
@@ -95,17 +97,17 @@ class RomanianExpertExtentReportTest {
         Set<String> hashes=new HashSet<>();StringBuilder text=new StringBuilder();int end=0,uris=0;
         while(matcher.find()){hashes.add(hash(Base64.getDecoder().decode(matcher.group(1))));uris++;text.append(html,end,matcher.start()).append("[verified PNG]");end=matcher.end();}text.append(html,end,html.length());String
             rendered=text.toString();var textAudit=new GameReportTextAudit(rendered);
-        for(Path image:images)assertTrue(hashes.contains(hash(Files.readAllBytes(image))),"Exact PNG omitted: "+image);
+        for(Path image:images)AuditedAssertions.assertTrue(hashes.contains(hash(Files.readAllBytes(image))),"Exact PNG omitted: "+image);
         for(String key:flow.stringPropertyNames())if(key.endsWith(".title")||key.matches(".*\\.assertion\\.\\d+\\.(name|expected|actual)$")||key.matches(".*\\.action\\.\\d+\\.(operation|target|expected|observed)$")){
-            String value=flow.getProperty(key);if(!value.isBlank())assertTrue(textAudit.contains(value),()->"Incomplete report field: "+key+" = "+value);
+            String value=flow.getProperty(key);if(!value.isBlank())AuditedAssertions.assertTrue(textAudit.contains(value),()->"Incomplete report field: "+key+" = "+value);
         }
-        assertTrue(pass);assertTrue(cases>200);
-        assertTrue(xmls.stream().anyMatch(p->p.getFileName().toString().equals("TEST-atf.android.e2e.gameplay.CompleteRomanianExpertE2eTest.xml")),"Live JUnit execution proof required");
-        assertTrue(xmls.stream().anyMatch(p->p.getFileName().toString().equals("TEST-atf.android.e2e.oracle.recorded.RecordedRomanianMatchAuditTest.xml")),"Offline reconstruction execution proof required");
-        assertEquals("PASS",load(evidence.resolve("offline-audit-result.properties")).getProperty("status"));
-        assertEquals("24",result.getProperty("handsCompleted"));assertEquals("376",result.getProperty("moves"));assertEquals("94",result.getProperty("tricks"));assertEquals("94",result.getProperty("humanCards"));assertEquals("true",
-            result.getProperty("processResume"));assertEquals("128",coverage.getProperty("no-trump-card"));
-        for(String key:List.of("mandatory-trump","void-discard","exact-zero","exact-positive","bid-too-high","bid-too-low"))assertTrue(Integer.parseInt(coverage.getProperty(key,"0"))>0,"Missing observed branch: "+key);
+        AuditedAssertions.assertTrue(pass);AuditedAssertions.assertTrue(cases>200);
+        AuditedAssertions.assertTrue(xmls.stream().anyMatch(p->p.getFileName().toString().equals("TEST-atf.android.e2e.gameplay.CompleteRomanianExpertE2eTest.xml")),"Live JUnit execution proof required");
+        AuditedAssertions.assertTrue(xmls.stream().anyMatch(p->p.getFileName().toString().equals("TEST-atf.android.e2e.oracle.recorded.RecordedRomanianMatchAuditTest.xml")),"Offline reconstruction execution proof required");
+        AuditedAssertions.assertEquals("PASS",load(evidence.resolve("offline-audit-result.properties")).getProperty("status"));
+        AuditedAssertions.assertEquals("24",result.getProperty("handsCompleted"));AuditedAssertions.assertEquals("376",result.getProperty("moves"));AuditedAssertions.assertEquals("94",result.getProperty("tricks"));AuditedAssertions.assertEquals("94",result.getProperty("humanCards"));AuditedAssertions.assertEquals("true",
+            result.getProperty("processResume"));AuditedAssertions.assertEquals("128",coverage.getProperty("no-trump-card"));
+        for(String key:List.of("mandatory-trump","void-discard","exact-zero","exact-positive","bid-too-high","bid-too-low"))AuditedAssertions.assertTrue(Integer.parseInt(coverage.getProperty(key,"0"))>0,"Missing observed branch: "+key);
         Properties p=new Properties();p.setProperty("status","PASS");p.setProperty("cases",""+cases);p.setProperty("assertions",""+assertions);p.setProperty("failedAssertions",""+failed);p.setProperty("actions",""+actions);
             p.setProperty("screenshotCheckpoints",""+images.size());p.setProperty("inlinePngUris",""+uris);p.setProperty("uniquePngByteHashes",""+hashes.size());p.setProperty("report.bytes",""+Files.size(report));
             p.setProperty("report.sha256",hashFile(report));try(var out=Files.newOutputStream(proof)){p.store(out,"Complete text and exact decoded PNG bytes verified");}

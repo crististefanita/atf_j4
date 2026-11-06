@@ -1,5 +1,7 @@
 package atf.android.e2e.driver;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,12 +39,12 @@ class AndroidUiDriverCaptureTimingTest {
         ticks.addAndGet(40_000_000L);
         clock.stop(false);
         var timing = clock.snapshot("TEST BODY").orElseThrow();
-        assertEquals(140_000_000L, timing.executionNanos());
-        assertEquals(hierarchy ? 45_000_000L : 30_000_000L, timing.captureNanos());
-        assertArrayEquals(png, Files.readAllBytes(image));
+        AuditedAssertions.assertEquals(140_000_000L, timing.executionNanos());
+        AuditedAssertions.assertEquals(hierarchy ? 45_000_000L : 30_000_000L, timing.captureNanos());
+        AuditedAssertions.assertArrayEquals(png, Files.readAllBytes(image));
         var decoded = ImageIO.read(image.toFile());
-        assertEquals(200, decoded.getWidth());
-        assertEquals(400, decoded.getHeight());
+        AuditedAssertions.assertEquals(200, decoded.getWidth());
+        AuditedAssertions.assertEquals(400, decoded.getHeight());
     }
 
     @Test
@@ -53,11 +55,11 @@ class AndroidUiDriverCaptureTimingTest {
         clock.enter("TEST BODY");
         var driver = new AndroidUiDriver(device(ticks, new byte[0], true), output);
         driver.recordCapturesAs(clock::capture);
-        var failure = assertThrows(UnsupportedOperationException.class, () -> driver.captureImage("failed"));
+        var failure = AuditedAssertions.assertThrows(UnsupportedOperationException.class, () -> driver.captureImage("failed"));
         clock.stop(true);
-        assertEquals("Controlled failed capture", failure.getMessage());
-        assertEquals(30_000_000L, clock.snapshot("TEST BODY").orElseThrow().captureNanos());
-        assertTrue(clock.snapshot("TEST BODY").orElseThrow().partial());
+        AuditedAssertions.assertEquals("Controlled failed capture", failure.getMessage());
+        AuditedAssertions.assertEquals(30_000_000L, clock.snapshot("TEST BODY").orElseThrow().captureNanos());
+        AuditedAssertions.assertTrue(clock.snapshot("TEST BODY").orElseThrow().partial());
     }
 
     @Test
@@ -81,10 +83,10 @@ class AndroidUiDriverCaptureTimingTest {
         }, output);
         driver.recordCapturesAs(() -> closed::incrementAndGet);
 
-        assertSame(finalFailure, assertThrows(IOException.class, () -> driver.captureImage("retry")));
-        assertEquals(3, attempts.get());
-        assertEquals(1, closed.get());
-        assertFalse(Files.exists(image), "A previous PNG must never survive as current evidence");
+        AuditedAssertions.assertSame(finalFailure, AuditedAssertions.assertThrows(IOException.class, () -> driver.captureImage("retry")));
+        AuditedAssertions.assertEquals(3, attempts.get());
+        AuditedAssertions.assertEquals(1, closed.get());
+        AuditedAssertions.assertFalse(Files.exists(image), "A previous PNG must never survive as current evidence");
     }
 
     @Test
@@ -105,12 +107,12 @@ class AndroidUiDriverCaptureTimingTest {
         driver.recordCapturesAs(() -> closed::incrementAndGet);
 
         try {
-            assertSame(interrupted,
-                    assertThrows(InterruptedException.class, () -> driver.captureImage("interrupted")));
-            assertTrue(Thread.currentThread().isInterrupted());
-            assertEquals(1, attempts.get());
-            assertEquals(1, closed.get());
-            assertFalse(Files.exists(output.resolve("interrupted.png")));
+            AuditedAssertions.assertSame(interrupted,
+                    AuditedAssertions.assertThrows(InterruptedException.class, () -> driver.captureImage("interrupted")));
+            AuditedAssertions.assertTrue(Thread.currentThread().isInterrupted());
+            AuditedAssertions.assertEquals(1, attempts.get());
+            AuditedAssertions.assertEquals(1, closed.get());
+            AuditedAssertions.assertFalse(Files.exists(output.resolve("interrupted.png")));
         } finally {
             Thread.interrupted(); // The fixture must not interrupt the next JUnit invocation.
         }

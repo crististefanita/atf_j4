@@ -1,5 +1,7 @@
 package atf.tests.governance.documentation.release;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import java.nio.file.Files;
@@ -21,7 +23,7 @@ class ReleaseEvidenceRetentionGovernanceTest {
 
     @Test void activeReleasesDoNotRetainExactCopiesOfImagesAlreadyEmbeddedInTheirHtml() throws Exception {
         for (Path folder : ReleaseArtifactCatalog.folders(GovernanceProject.locateProjectRoot()))
-            assertEquals(List.of(), duplicates(folder), "RELEASE-DUPLICATE-INLINE-IMAGE: " + folder);
+            AuditedAssertions.assertEquals(List.of(), duplicates(folder), "RELEASE-DUPLICATE-INLINE-IMAGE: " + folder);
     }
 
     @Test void everyDuplicatePathIsReportedIncludingNestedAndUppercaseImages() throws Exception {
@@ -30,15 +32,15 @@ class ReleaseEvidenceRetentionGovernanceTest {
         Files.createDirectory(temporary.resolve("captures"));
         Files.write(temporary.resolve("captures/first.png"), image);
         Files.write(temporary.resolve("second.PNG"), image);
-        assertEquals(List.of(Path.of("captures/first.png"), Path.of("second.PNG")), duplicates(temporary));
-        assertTrue(Files.isRegularFile(temporary.resolve("captures/first.png")), "Inspection never deletes evidence");
+        AuditedAssertions.assertEquals(List.of(Path.of("captures/first.png"), Path.of("second.PNG")), duplicates(temporary));
+        AuditedAssertions.assertTrue(Files.isRegularFile(temporary.resolve("captures/first.png")), "Inspection never deletes evidence");
     }
 
     @Test void filenamesHashesAndExternalLinksDoNotProveThatTheBytesWereEmbedded() throws Exception {
         Files.write(temporary.resolve("original.png"), new byte[]{1, 3, 5, 7});
         Files.writeString(temporary.resolve("report.html"),
                 "<img src=\"original.png\"><p>original.png SHA-256=example</p>");
-        assertEquals(List.of(), duplicates(temporary));
+        AuditedAssertions.assertEquals(List.of(), duplicates(temporary));
     }
 
     @Test void differentBytesAndIndependentDiagnosticImagesRemainSeparate() throws Exception {
@@ -46,7 +48,7 @@ class ReleaseEvidenceRetentionGovernanceTest {
         Files.write(temporary.resolve("browser-review.png"), new byte[]{1, 3, 5, 8});
         Files.write(temporary.resolve("prefix.png"), new byte[]{1, 3, 5});
         Files.writeString(temporary.resolve("diagnostic.log"), "Independent process diagnostic");
-        assertEquals(List.of(), duplicates(temporary));
+        AuditedAssertions.assertEquals(List.of(), duplicates(temporary));
     }
 
     private static List<Path> duplicates(Path folder) throws Exception {

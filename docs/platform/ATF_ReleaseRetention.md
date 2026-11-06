@@ -7,20 +7,26 @@ Directorul de lucru păstrează ultimele dovezi calificate, asociate unui singur
 ## Structură activă
 
 ```text
-artifacts/
+release/
   README.md
   index.json
-  reports/
+  <versionName>/
     README.md
-    <versionName>/
+    WhistLab-<versionName>.apk
+    WhistLab-<versionName>.apk.sha256
+    release-validation.json
+    release-presentation.json
+    release-notes.template.md
+    reports/
       README.md
-      release-validation.json
       test-results/
       e2e/
 ```
 
 - Indexul folosește `schemaVersion: 2`, `currentVersion` și exact o intrare în `versions`.
-- `artifacts/reports` conține README-ul de navigare și un singur dosar de versiune. Numele dosarului, manifestul și versiunea curentă trebuie să coincidă.
+- APK-ul și checksum-ul aparțin aceluiași dosar cu manifestul versiunii; nu se păstrează o a doua copie activă într-un director de distribuție. README-ul principal trimite la catalogul `release`.
+- `release` conține catalogul, indexul și un singur dosar de versiune. Numele dosarului, manifestul și versiunea curentă trebuie să coincidă.
+- README-ul versiunii prezintă livrarea și trimite la `reports/README.md`, care explică selecțiile, rezultatele și limitele. Manifestul și metadatele prezentării aparțin versiunii; raportul canonic și diagnosticele aparțin subdirectorului `reports`.
 - Dosarul păstrează raportul canonic și numai dovezile ori diagnosticele auxiliare justificate pentru APK. [Contractul predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) cere eliminarea copiilor deja încorporate și păstrarea dovezii unice până la publicarea completă. Un rezultat omis sau blocat rămâne explicit; nu se preia automat verdictul altei versiuni.
 - Build-urile, candidații intermediari și diagnosticele istorice rămân în TMP sau în arhiva externă. [Strategia comună](../testing/README.md) rămâne independentă de versiune.
 
@@ -29,10 +35,12 @@ artifacts/
 1. Pregătiți noul dosar în afara directorului activ; fixați sursele și dependențele executate.
 2. Arhivați dosarul precedent, manifestul și indexul. Confruntați fișierele prin SHA-256 și verificați arhiva înaintea mutării surselor vechi.
 3. Calificați noul APK și toate selecțiile cerute de diferența de cod. Păstrați explicit tipul de binar: E2E cu fixture Debug și smoke Release au identități separate.
-4. Înlocuiți dosarul activ și actualizați cele două README-uri și indexul. Refuzați o populație goală, două versiuni active, dosare nerecunoscute sau redenumirea unui raport vechi drept versiune nouă.
+4. Înlocuiți dosarul activ și actualizați catalogul, indexul, prezentarea versiunii și indexul rapoartelor. Refuzați o populație goală, două versiuni active, dosare nerecunoscute sau redenumirea unui raport vechi drept versiune nouă.
 5. Păstrați jurnalul de retenție, identitatea arhivei externe și hash-urile originale. La eșec, restaurați întregul dosar și indexul anterior.
 
 Nu rescrieți capturile, HTML-ul sau trace-ul brut pentru a modifica proveniența. Legăturile active și metadatele de navigare pot fi adaptate la noua structură; copia originală rămâne în arhivă și în istoricul Git.
+
+După fixarea dosarului, [înregistrați integritatea](ATF_AndroidDelivery.md#integritatea-fișierelor-și-rezultatelor) și rulați guvernanța. Registrul identifică exact fișierele păstrate, fără manifestul autoreferențial; înlocuirea unui fișier cere o observație nouă, cu moment propriu. Capturarea hash-urilor nu rescrie rezultatele istorice și nu acordă calificare surselor modificate ulterior.
 
 - **Dezvoltare paralelă:** poate continua după fixarea candidatului. Inventariați fișierele ulterioare în `source-freeze.json` și păstrați arhiva surselor calificate cu hash și CRC; publicarea trebuie legată de acel snapshot. Un commit care include cod nou nu preia automat calificarea APK-ului anterior.
 - **Comparație live:** identificați momentul observației și confruntați întreaga populație: fișiere modificate, adăugate și șterse. Manifestul snapshot-ului rămâne neschimbat; actualizarea comparației nu reconstruiește retrospectiv un alt APK sau alte rezultate.

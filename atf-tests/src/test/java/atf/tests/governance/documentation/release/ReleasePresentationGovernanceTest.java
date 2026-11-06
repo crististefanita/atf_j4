@@ -1,5 +1,7 @@
 package atf.tests.governance.documentation.release;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,94 +43,94 @@ class ReleasePresentationGovernanceTest {
                 var edition = new Edition(version, asset, asset + ".sha256", evidence,
                         presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                         java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
-                assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.template.md"))), folder.toString());
-                assertFalse(Files.exists(folder.resolve("release-notes.md")), "Unbound notes remain a template");
+                AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.template.md"))), folder.toString());
+                AuditedAssertions.assertFalse(Files.exists(folder.resolve("release-notes.md")), "Unbound notes remain a template");
                 releases++;
                 continue;
             }
             var published = JSON.readTree(folder.resolve("github-release.json").toFile());
-            assertFalse(published.required("draft").asBoolean(), "A draft is not a published handoff");
+            AuditedAssertions.assertFalse(published.required("draft").asBoolean(), "A draft is not a published handoff");
             if (validation.path("publication").path("state").asText().equals("PUBLISHED"))
-                assertEquals(validation.required("source").required("sourceCommit").asText(),
+                AuditedAssertions.assertEquals(validation.required("source").required("sourceCommit").asText(),
                         published.required("targetCommit").asText(), "Published tag targets the qualified source commit");
             String tag = published.required("tag").asText();
-            assertEquals("v" + version, tag, folder.toString());
+            AuditedAssertions.assertEquals("v" + version, tag, folder.toString());
             var assets = new ArrayList<JsonNode>();
             published.required("assets").forEach(asset -> { if (asset.required("name").asText().endsWith(".apk")) assets.add(asset); });
-            assertEquals(1, assets.size(), "One canonical APK asset per published release");
+            AuditedAssertions.assertEquals(1, assets.size(), "One canonical APK asset per published release");
             String asset = repository + "/releases/download/" + tag + "/" + assets.getFirst().required("name").asText();
-            assertEquals(asset, assets.getFirst().required("url").asText());
-            assertEquals(validation.required("release").required("apkBytes").asLong(), assets.getFirst().required("size").asLong());
-            assertTrue(java.util.stream.StreamSupport.stream(published.required("assets").spliterator(), false)
+            AuditedAssertions.assertEquals(asset, assets.getFirst().required("url").asText());
+            AuditedAssertions.assertEquals(validation.required("release").required("apkBytes").asLong(), assets.getFirst().required("size").asLong());
+            AuditedAssertions.assertTrue(java.util.stream.StreamSupport.stream(published.required("assets").spliterator(), false)
                     .anyMatch(row -> row.path("url").asText().equals(asset + ".sha256")), "Checksum asset must exist");
-            assertEquals(version, presentation.required("version").asText());
+            AuditedAssertions.assertEquals(version, presentation.required("version").asText());
             var edition = new Edition(version, asset, asset + ".sha256", evidence,
                     presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                     java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
-            assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
+            AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
             releases++;
         }
-        assertTrue(releases > 0, "The curated handoff population must not be empty");
+        AuditedAssertions.assertTrue(releases > 0, "The curated handoff population must not be empty");
     }
 
     @Test void aPreparedCandidateCannotClaimPublicationOrInventASourceCommit() throws Exception {
         var candidate = (com.fasterxml.jackson.databind.node.ObjectNode) JSON.readTree("""
                 {"publication":{"state":"PREPARED"},"source":{"sourceCommit":null,"workingTreeFingerprint":"%s"}}
                 """.formatted("a".repeat(64)));
-        assertTrue(ReleaseHandoffState.prepared(candidate, false));
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
+        AuditedAssertions.assertTrue(ReleaseHandoffState.prepared(candidate, false));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
         ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).put("sourceCommit", "a".repeat(40));
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(JSON.createObjectNode(), false));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(JSON.createObjectNode(), false));
         ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("publication")).put("state", "PUBLISHED");
-        assertFalse(ReleaseHandoffState.prepared(candidate, true));
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+        AuditedAssertions.assertFalse(ReleaseHandoffState.prepared(candidate, true));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
         ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).putNull("sourceCommit");
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
     }
 
     @Test void unboundEvidenceIsOnlyAcceptedAsAnExplicitLocalTemplate() throws Exception {
         String repository = "https://github.com/example/game";
-        String template = repository + "/blob/{evidenceCommit}/artifacts/reports/1.2.0/README.md";
+        String template = repository + "/blob/{evidenceCommit}/release/1.2.0/reports/README.md";
         var presentation = JSON.createObjectNode().put("version", "1.2.0").put("evidenceUrlTemplate", template);
-        assertEquals(template, ReleaseHandoffState.evidence(presentation, repository, "1.2.0", true));
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.2.0", false));
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.1.0", true));
-        presentation.put("evidenceUrl", repository + "/blob/" + "a".repeat(40) + "/artifacts/reports/1.2.0/README.md");
-        assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.2.0", true));
+        AuditedAssertions.assertEquals(template, ReleaseHandoffState.evidence(presentation, repository, "1.2.0", true));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.2.0", false));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.1.0", true));
+        presentation.put("evidenceUrl", repository + "/blob/" + "a".repeat(40) + "/release/1.2.0/reports/README.md");
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.evidence(presentation, repository, "1.2.0", true));
         presentation.remove("evidenceUrlTemplate");
-        assertEquals(presentation.path("evidenceUrl").asText(), ReleaseHandoffState.evidence(presentation, repository, "1.2.0", false));
+        AuditedAssertions.assertEquals(presentation.path("evidenceUrl").asText(), ReleaseHandoffState.evidence(presentation, repository, "1.2.0", false));
     }
 
     @Test void aSummaryDoesNotPretendToBeAnUnverifiedVersionComparison() {
         var summary = sample("summary", null);
-        assertEquals(List.of(), violations(summary, notes(summary)));
+        AuditedAssertions.assertEquals(List.of(), violations(summary, notes(summary)));
         var changes = sample("changes", "1.1.0");
-        assertEquals(List.of(), violations(changes, notes(changes)));
+        AuditedAssertions.assertEquals(List.of(), violations(changes, notes(changes)));
         for (String base : new String[]{null, "", "1.2.0"})
-            assertTrue(violations(sample("changes", base), notes(sample("changes", base))).contains("NOTE-BASELINE"));
-        assertTrue(violations(sample("summary", "1.1.0"), notes(summary)).contains("NOTE-BASELINE"));
+            AuditedAssertions.assertTrue(violations(sample("changes", base), notes(sample("changes", base))).contains("NOTE-BASELINE"));
+        AuditedAssertions.assertTrue(violations(sample("summary", "1.1.0"), notes(summary)).contains("NOTE-BASELINE"));
     }
 
     @Test void rawRepositoryLinksAndAnotherVersionsAssetsAreRejected() {
         var edition = sample("summary", null);
         for (String wrong : List.of("https://raw.githubusercontent.com/example/game/main/dist/Game.apk",
                 edition.asset().replace("v1.2.0", "v1.1.0"), "https://github.com/example/game/blob/main/dist/Game.apk"))
-            assertTrue(violations(edition, notes(edition).replace(edition.asset(), wrong)).contains("NOTE-ASSET"), wrong);
+            AuditedAssertions.assertTrue(violations(edition, notes(edition).replace(edition.asset(), wrong)).contains("NOTE-ASSET"), wrong);
     }
 
     @Test void testCountsAndUntestedDeviceStatementsStayInTheEvidenceFolder() {
         var edition = sample("summary", null);
         for (String leak : List.of("73 teste trecute", "JUnit PASS", "E2E sanity", "Nu s-a testat pe dispozitiv", "Not tested on device"))
-            assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "- " + leak)).contains("NOTE-AUDIT-DETAILS"), leak);
+            AuditedAssertions.assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "- " + leak)).contains("NOTE-AUDIT-DETAILS"), leak);
     }
 
     @Test void missingEvidenceNonBulletProseAndUnrecordedChangesAreRejected() {
         var edition = sample("summary", null);
-        assertTrue(violations(edition, notes(edition).replace(edition.evidence(), "https://example.test")).contains("NOTE-EVIDENCE"));
-        assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "Masă încadrată.")).contains("NOTE-BULLETS"));
-        assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "- Altă afirmație.")).contains("NOTE-POINTS"));
-        assertTrue(violations(edition, notes(edition).replace("## Descărcare", "## Download")).contains("NOTE-SECTIONS"));
+        AuditedAssertions.assertTrue(violations(edition, notes(edition).replace(edition.evidence(), "https://example.test")).contains("NOTE-EVIDENCE"));
+        AuditedAssertions.assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "Masă încadrată.")).contains("NOTE-BULLETS"));
+        AuditedAssertions.assertTrue(violations(edition, notes(edition).replace("- Masă încadrată.", "- Altă afirmație.")).contains("NOTE-POINTS"));
+        AuditedAssertions.assertTrue(violations(edition, notes(edition).replace("## Descărcare", "## Download")).contains("NOTE-SECTIONS"));
     }
 
     private static List<String> violations(Edition edition, String markdown) {

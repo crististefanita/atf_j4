@@ -1,5 +1,7 @@
 package atf.tests.publishing;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import atf.testkit.AtfComponentTest;
 
 import atf.tests.reporting.GameReportSession;
@@ -25,10 +27,10 @@ class WhistAiTrainingExtentReportTest {
         String expectedSeriesReward=System.getProperty("atf.ai.expectedBonus","10");
         Path report=run.resolve("whist-ai-extent-report.html"),proof=run.resolve("ai-report-verification.properties");
         Files.writeString(proof,"status=PENDING\n");
-        for(String name:List.of("source-hashes.json","apk-provenance.json","library-binaries.json","environment.json","coverage/jacocoTestReport.xml"))assertTrue(Files.isRegularFile(run.resolve(name)),
+        for(String name:List.of("source-hashes.json","apk-provenance.json","library-binaries.json","environment.json","coverage/jacocoTestReport.xml"))AuditedAssertions.assertTrue(Files.isRegularFile(run.resolve(name)),
             "Missing provenance or measured coverage: "+name);
         List<Path> xmls=files(run.resolve("accepted-components"),p->p.getFileName().toString().startsWith("TEST-")&&p.toString().endsWith(".xml"));
-        assertFalse(xmls.isEmpty());long cases=0,failures=0,skips=0;
+        AuditedAssertions.assertFalse(xmls.isEmpty());long cases=0,failures=0,skips=0;
         List<ReportObservation> inventory=new ArrayList<>();
         for(Path xml:xmls){var suite=parse(xml).getDocumentElement();cases+=number(suite,"tests");failures+=number(suite,"failures")+number(suite,"errors");skips+=number(suite,"skipped");
             var fields=new ArrayList<ReportField>();fields.add(new ReportField("Tests / failures / errors / skipped",suite.getAttribute("tests")+" / "+suite.getAttribute("failures")+" / "+suite.getAttribute("errors")
@@ -42,24 +44,24 @@ class WhistAiTrainingExtentReportTest {
         Path finalMenu=run.resolve("android-menu-final/ui-flow-romanian-menu-options.properties");
         flows.add(Files.exists(finalMenu)?finalMenu:run.resolve("android-menu/ui-flow-romanian-menu-options.properties"));
         Path pilot=run.resolve("pilot-hard/evidence/android/ui-flow-romanian-expert-complete.properties");if(Files.exists(pilot))flows.add(pilot);
-        List<Path> duels=files(run,p->p.getFileName().toString().equals("romanian-match-result.properties")&&p.toString().contains("android-expert-"));assertFalse(duels.isEmpty(),"A complete normal Android duel is required");
-        boolean botsWon=false;for(Path result:duels){var p=load(result);assertEquals("PASS",p.getProperty("status"));assertEquals("24",p.getProperty("handsCompleted"));assertEquals("376",p.getProperty("moves"));assertEquals("true",
-            p.getProperty("processResume"));assertEquals(expectedSeriesReward,p.getProperty("streakBonus"));
-            int[] totals=Arrays.stream(p.getProperty("finalTotals").replace("[","").replace("]","").split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray();assertEquals(4,totals.length);botsWon|=Arrays.stream(totals,1,4)
+        List<Path> duels=files(run,p->p.getFileName().toString().equals("romanian-match-result.properties")&&p.toString().contains("android-expert-"));AuditedAssertions.assertFalse(duels.isEmpty(),"A complete normal Android duel is required");
+        boolean botsWon=false;for(Path result:duels){var p=load(result);AuditedAssertions.assertEquals("PASS",p.getProperty("status"));AuditedAssertions.assertEquals("24",p.getProperty("handsCompleted"));AuditedAssertions.assertEquals("376",p.getProperty("moves"));AuditedAssertions.assertEquals("true",
+            p.getProperty("processResume"));AuditedAssertions.assertEquals(expectedSeriesReward,p.getProperty("streakBonus"));
+            int[] totals=Arrays.stream(p.getProperty("finalTotals").replace("[","").replace("]","").split(",")).map(String::trim).mapToInt(Integer::parseInt).toArray();AuditedAssertions.assertEquals(4,totals.length);botsWon|=Arrays.stream(totals,1,4)
                 .max().orElseThrow()>totals[0];
-            flows.add(result.resolveSibling("ui-flow-romanian-expert-complete.properties"));assertEquals("PASS",load(result.resolveSibling("offline-audit-result.properties")).getProperty("status"));
+            flows.add(result.resolveSibling("ui-flow-romanian-expert-complete.properties"));AuditedAssertions.assertEquals("PASS",load(result.resolveSibling("offline-audit-result.properties")).getProperty("status"));
         }
         List<Path> images=new ArrayList<>();long assertions=0,failedAssertions=0;
-        for(Path manifest:flows){var flow=load(manifest);assertEquals("PASS",flow.getProperty("flow.status"),manifest.toString());for(String k:flow.stringPropertyNames()){if(k.endsWith(".screenshot")&&!flow.getProperty(k).isBlank())
+        for(Path manifest:flows){var flow=load(manifest);AuditedAssertions.assertEquals("PASS",flow.getProperty("flow.status"),manifest.toString());for(String k:flow.stringPropertyNames()){if(k.endsWith(".screenshot")&&!flow.getProperty(k).isBlank())
             images.add(manifest.getParent().resolve(flow.getProperty(k)));if(k.endsWith(".passed")){assertions++;if(!Boolean.parseBoolean(flow.getProperty(k)))failedAssertions++;}}}
         Path classic=run.resolve("evidence/components/ai-heldout.properties"),series=run.resolve("series-heldout/evidence/ai-heldout.properties");
         boolean accepted=failures==0&&skips==0&&failedAssertions==0&&"PASS".equals(load(classic).getProperty("status"))&&"PASS".equals(load(series).getProperty("status"));
         Path seriesData=Files.exists(run.resolve("series-component-evidence/series-domain.tsv"))?run.resolve("series-component-evidence"):run.resolve("evidence/components");
-        List<String> domain=Files.readAllLines(seriesData.resolve("series-domain.tsv"));assertEquals(5113,domain.size());
-        for(String row:domain.subList(1,domain.size())){String[] c=row.split("\t");assertEquals(12,c.length);assertEquals("true",c[11]);assertEquals(c[5],c[6]);assertEquals(c[7],c[8]);assertEquals(c[9],c[10]);}
+        List<String> domain=Files.readAllLines(seriesData.resolve("series-domain.tsv"));AuditedAssertions.assertEquals(5113,domain.size());
+        for(String row:domain.subList(1,domain.size())){String[] c=row.split("\t");AuditedAssertions.assertEquals(12,c.length);AuditedAssertions.assertEquals("true",c[11]);AuditedAssertions.assertEquals(c[5],c[6]);AuditedAssertions.assertEquals(c[7],c[8]);AuditedAssertions.assertEquals(c[9],c[10]);}
         Path componentTrace=Files.exists(run.resolve("instructions-components/evidence/representative-game-trace.properties"))?run.resolve("instructions-components/evidence/representative-game-trace.properties"):run.resolve(
             "evidence/components/representative-game-trace.properties");
-        Properties detailedGame=load(componentTrace);assertEquals("PASS",detailedGame.getProperty("status"));
+        Properties detailedGame=load(componentTrace);AuditedAssertions.assertEquals("PASS",detailedGame.getProperty("status"));
 
         try(var session=GameReportSession.open(report)){
             var scenario=session.startScenario("Whist Lab — reconstructed rules, selected series rewards and adversarial AI acceptance","atf.tests","Android API 28 / offline components / physical binaries recorded below",List.of(
@@ -136,7 +138,7 @@ class WhistAiTrainingExtentReportTest {
                             new ReportObservation.Body("Complete input / legal choices",detailedGame.getProperty(k+"context"),ReportObservation.Format.TEXT),
                             new ReportObservation.Body("Complete independent expected state",detailedGame.getProperty(k+"expected"),ReportObservation.Format.TEXT),
                             new ReportObservation.Body("Complete actual state",detailedGame.getProperty(k+"actual"),ReportObservation.Format.TEXT)),List.of()));
-                    String expected=detailedGame.getProperty(k+"expected"),actual=detailedGame.getProperty(k+"actual");assertEquals(expected,actual,"Component trace presentation changed");
+                    String expected=detailedGame.getProperty(k+"expected"),actual=detailedGame.getProperty(k+"actual");AuditedAssertions.assertEquals(expected,actual,"Component trace presentation changed");
                     try(var group=GameReportPhase.withCapturedValues(phase, detailedGame.getProperty(k+"title"))){
                         group.assertions(List.of(new atf.reporting.contract.AtfAssertion(detailedGame.getProperty(k+"rules")+" state",expected,actual,expected.equals(actual))));group.complete(AtfReportStatus.PASS);
                     }
@@ -147,14 +149,14 @@ class WhistAiTrainingExtentReportTest {
         String html=Files.readString(report);var matches=java.util.regex.Pattern.compile("data:image/png;base64,([A-Za-z0-9+/=]+)").matcher(html);var hashes=new HashSet<String>();var text=new StringBuilder();int end=0,count=0;
         while(matches.find()){hashes.add(hash(Base64.getDecoder().decode(matches.group(1))));count++;text.append(html,end,matches.start()).append("[verified PNG]");end=matches.end();}text.append(html,end,html.length());String
             rendered=text.toString();var textAudit=new GameReportTextAudit(rendered);
-        for(Path png:images)assertTrue(hashes.contains(hash(Files.readAllBytes(png))),"Exact screenshot omitted: "+png);
-        assertTrue(textAudit.contains(Files.readString(seriesData.resolve("series-domain.tsv"))),"Series component data was truncated");
-        for(int i=0;i<Integer.parseInt(detailedGame.getProperty("step.count"));i++)for(String field:List.of("title","rules","context","expected","actual"))assertTrue(textAudit.contains(
+        for(Path png:images)AuditedAssertions.assertTrue(hashes.contains(hash(Files.readAllBytes(png))),"Exact screenshot omitted: "+png);
+        AuditedAssertions.assertTrue(textAudit.contains(Files.readString(seriesData.resolve("series-domain.tsv"))),"Series component data was truncated");
+        for(int i=0;i<Integer.parseInt(detailedGame.getProperty("step.count"));i++)for(String field:List.of("title","rules","context","expected","actual"))AuditedAssertions.assertTrue(textAudit.contains(
             detailedGame.getProperty("step."+i+"."+field)),"Component trace value omitted: "+i+" / "+field);
         for(Path manifest:flows){var flow=load(manifest);for(String key:flow.stringPropertyNames())if(key.endsWith(".title")||key.matches(".*\\.assertion\\.\\d+\\.(name|expected|actual)$")||key.matches(
-            ".*\\.action\\.\\d+\\.(operation|target|expected|observed)$")){String value=flow.getProperty(key);if(!value.isBlank())assertTrue(textAudit.contains(value),
+            ".*\\.action\\.\\d+\\.(operation|target|expected|observed)$")){String value=flow.getProperty(key);if(!value.isBlank())AuditedAssertions.assertTrue(textAudit.contains(value),
             "Truncated report field: "+manifest+" / "+key);}}
-        assertTrue(accepted,"Functional or paired AI gates failed; report retained");assertTrue(botsWon,"No normal complete Android duel met the stated measured win target; all results retained");
+        AuditedAssertions.assertTrue(accepted,"Functional or paired AI gates failed; report retained");AuditedAssertions.assertTrue(botsWon,"No normal complete Android duel met the stated measured win target; all results retained");
         var receipt=new Properties();receipt.setProperty("status","PASS");receipt.setProperty("cases",""+cases);receipt.setProperty("assertions",""+assertions);receipt.setProperty("componentComparisons",""+((domain.size()-1)
             *3+Integer.parseInt(detailedGame.getProperty("step.count"))));receipt.setProperty("totalComparisons",""+(assertions+(domain.size()-1)*3+Integer.parseInt(detailedGame.getProperty("step.count"))));receipt.setProperty(
             "screenshotCheckpoints",""+images.size());receipt.setProperty("inlinePngUris",""+count);receipt.setProperty("uniqueDecodedPngHashes",""+hashes.size());receipt.setProperty("botsStrictlyBeatPlanner",""+botsWon);

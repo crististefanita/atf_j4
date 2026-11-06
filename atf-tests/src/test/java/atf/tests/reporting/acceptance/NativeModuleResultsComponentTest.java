@@ -1,5 +1,7 @@
 package atf.tests.reporting.acceptance;
 
+import atf.testkit.assertions.AuditedAssertions;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import atf.reporting.contract.AtfReportStatus;
@@ -28,27 +30,27 @@ class NativeModuleResultsComponentTest {
                 "<testsuite tests=\"3\" failures=\"0\" errors=\"1\" skipped=\"0\" time=\"1.250\"/>");
         Files.writeString(module.resolve("console.txt"), "retained native diagnostic");
         var summary = NativeModuleResults.readAll(root, List.of("fixture-module")).getFirst();
-        assertEquals(5, summary.tests());
-        assertEquals(1, summary.failures());
-        assertEquals(1, summary.errors());
-        assertEquals(1, summary.skipped());
-        assertEquals(Duration.ofMillis(1750), summary.duration());
-        assertEquals(AtfReportStatus.FAIL, summary.status());
-        assertEquals(2, summary.xmlFiles().size());
-        assertEquals(3, summary.resultFiles().size());
+        AuditedAssertions.assertEquals(5, summary.tests());
+        AuditedAssertions.assertEquals(1, summary.failures());
+        AuditedAssertions.assertEquals(1, summary.errors());
+        AuditedAssertions.assertEquals(1, summary.skipped());
+        AuditedAssertions.assertEquals(Duration.ofMillis(1750), summary.duration());
+        AuditedAssertions.assertEquals(AtfReportStatus.FAIL, summary.status());
+        AuditedAssertions.assertEquals(2, summary.xmlFiles().size());
+        AuditedAssertions.assertEquals(3, summary.resultFiles().size());
     }
 
     @Test
     void absenceOfNativeResultsAndExternalEntityDocumentsAreRefused(@TempDir Path root)
             throws Exception {
         Path module = Files.createDirectories(root.resolve("fixture-module"));
-        assertThrows(
+        AuditedAssertions.assertThrows(
                 AssertionError.class,
                 () -> NativeModuleResults.readAll(root, List.of("fixture-module")));
         Files.writeString(
                 module.resolve("TEST-invalid.xml"),
                 "<!DOCTYPE testsuite SYSTEM \"file:///absent-atf-canary.dtd\"><testsuite tests=\"1\"/>");
-        assertThrows(
+        AuditedAssertions.assertThrows(
                 SAXParseException.class,
                 () -> NativeModuleResults.readAll(root, List.of("fixture-module")));
     }

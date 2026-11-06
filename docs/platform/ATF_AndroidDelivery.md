@@ -28,7 +28,7 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 - Construiți într-o copie temporară proprie, cu dependențe identificate.
 - Verificați API-urile Java disponibile pe platforma Android vizată; nivelul `sourceCompatibility` nu adaugă metode absente din sistem. Configurați explicit desugaring-ul bibliotecilor de bază dacă produsul depinde de el.
 - Verificați integritatea, semnătura, alinierea și compatibilitatea cheii pentru upgrade.
-- Păstrați copia APK-ului curent în `dist` și dovezile fiecărei livrări în [catalogul artefactelor](../../artifacts/README.md). Rulările intermediare rămân în directoarele externe de lucru.
+- Păstrați APK-ul și checksum-ul în `release/<versionName>/`, lângă manifest și README; dovezile aparțin subdirectorului `reports`. [Catalogul livrărilor](../../release/README.md) identifică versiunea curentă, iar rulările intermediare rămân externe.
 - Verificați binarul instalat înainte de a atribui unui scenariu comportamentul acelei livrări.
 - Distingeți build-ul local de distribuția prin magazin și de gestionarea cheilor de distribuție.
 
@@ -46,10 +46,10 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 - **Descărcare:** [GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest) este intrarea stabilă și urmărește ultima versiune publicată; pentru folosire personală, autentificați-vă în același browser și alegeți APK-ul din **Assets**.
 
-- **Copie locală:** [directorul dist](../../dist/README.md) păstrează copia curentă și trimite către Releases prin README; APK-ul și checksum-ul local sunt excluse din Git.
+- **Copie locală:** [catalogul livrărilor](../../release/README.md) trimite la dosarul versiunii, care reunește APK-ul, checksum-ul și rapoartele; binarul și checksum-ul local sunt excluse din Git.
 - **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
 
-- **Identitate:** [registrul release-ului](../../artifacts/README.md) deține versiunea, adresele asset-urilor și probele de integritate.
+- **Identitate:** [registrul release-ului](../../release/README.md) deține versiunea, adresele asset-urilor și probele de integritate.
 - **Canale:** descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului personal verificat.
 
 | Etapă | Criteriu de acceptare |
@@ -69,7 +69,7 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 [Calificarea pas cu pas](../testing/ATF_ReleaseQualification.md) ordonează selecțiile, verificarea HTML și dosarul candidat; acest ghid deține build-ul, identitatea și publicarea.
 
-[Modelul GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) leagă livrarea de un tag și permite atașarea binarelor. APK-ul se distribuie ca asset, iar `dist` rămâne ieșire locală; redenumirea lui în `releases` nu creează o secțiune GitHub sau un redirect.
+[Modelul GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) leagă livrarea de un tag și permite atașarea binarelor. APK-ul se distribuie ca asset; dosarul local `release` păstrează livrarea verificată, fără să creeze o secțiune GitHub sau un redirect HTTP.
 
 1. Identificați commit-ul surselor și versiunea aplicației; fixați copia de construire în TMP.
 2. Construiți și semnați o singură dată, apoi verificați pachetul și scenariile relevante ale acelui binar.
@@ -97,27 +97,28 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 ### Predarea patch-ului
 
 1. Actualizați `versionName` și incrementați `versionCode` în Gradle; fixați commit-ul construit. Sursele relevante schimbate în paralel se confruntă înainte de publicare.
-2. Rulați selecția de mai sus în TMP; pregătiți comenzile, rezultatele JUnit și jurnalele pentru `artifacts/reports/<versionName>/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
-3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `dist`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
-4. Actualizați manifestul și README-ul noii versiuni, `artifacts/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
+2. Rulați selecția de mai sus în TMP; pregătiți comenzile, rezultatele JUnit și jurnalele pentru `release/<versionName>/reports/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
+3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `release/<versionName>/`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
+4. Actualizați manifestul și README-ul noii versiuni, `release/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
 5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi confruntați prezentarea cu adresele efectiv publicate și verificați descărcarea. Faceți sync pentru metadatele finale; linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
 
 Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate. La publicare, trimiteți explicit tag-ul și commit-ul surselor și confruntați răspunsul cu identitatea APK-ului.
 
 ## Dosarul unei versiuni
 
-[Catalogul](../../artifacts/README.md) și [directorul rapoartelor](../../artifacts/reports/README.md) păstrează numai ultima versiune calificată, în `artifacts/reports/<versionName>/`. [Politica de retenție](ATF_ReleaseRetention.md) definește arhivarea precedentului, înlocuirea și resetarea GitHub cerută explicit.
+[Catalogul livrărilor](../../release/README.md) păstrează numai ultima versiune calificată, în `release/<versionName>/`. Prezentarea versiunii și metadatele ei trimit la dovezile din `reports/`. [Politica de retenție](ATF_ReleaseRetention.md) definește arhivarea precedentului, înlocuirea și resetarea GitHub cerută explicit.
 
 | Intrare | Responsabilitate |
 |---|---|
-| `artifacts/index.json` | Schema 2 declară `currentVersion` și exact o versiune activă în `versions`. |
-| `artifacts/reports/README.md` | Intrarea stabilă către ultimele rezultate relevante. |
-| `artifacts/reports/<versionName>/README.md` | Prezintă binarul, rapoartele, rezultatele și limitele livrării active. |
+| `release/index.json` | Schema 2 declară `currentVersion` și exact o versiune activă în `versions`. |
+| `release/README.md` | Catalogul stabil al livrării active și punctul de intrare în dosarul ei. |
+| `release/<versionName>/README.md` | Prezintă ediția, APK-ul identificat, starea predării și legăturile către metadate și rapoarte. |
+| `release/<versionName>/reports/README.md` | Prezintă selecțiile executate, rapoartele, rezultatele și limitele calificării. |
 | Manifest și metadate în dosar | Leagă `versionName`, tag-ul, asset-urile, checksum-ul și notele; căile relative pornesc din dosarul versiunii. |
-| Rapoarte, capturi, rezultate și jurnale | Păstrează execuția identificată, inclusiv diagnosticele negative și replay-urile etichetate. |
+| Rapoarte, capturi, rezultate și jurnale în `reports/` | Păstrează execuția identificată, inclusiv diagnosticele negative și replay-urile etichetate; legăturile lor locale pornesc din acel subdirector. |
 | [Strategia testării](../testing/README.md) | Deține selecția și principiile comune, independent de versiune. |
 
-- La o versiune nouă, calificați candidatul extern și arhivați dosarul anterior înaintea înlocuirii. Actualizați indexul și catalogul după verificarea identității; păstrați numai APK-ul local curent în `dist`.
+- La o versiune nouă, calificați candidatul extern și arhivați dosarul anterior înaintea înlocuirii. Actualizați indexul și catalogul după verificarea identității; păstrați numai APK-ul local curent în dosarul versiunii din `release`.
 - La reorganizare, mutați împreună rapoartele și fișierele asociate, confruntați hash-urile și refaceți referințele active. Căile absolute capturate și URL-urile istorice fixate pe commit își păstrează sensul original.
 - Notele din GitHub Release trimit la README-ul versiunii într-un commit identificat; schimbarea navigării nu mută tag-ul și nu înlocuiește asset-ul binar.
 
@@ -126,7 +127,27 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 - **Inventar:** indexul structurat, dosarele și catalogul formează aceeași populație verificată.
 - **Calificare:** validarea structurală și [legarea notelor de asset-ul publicat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) sunt controale distincte; trecerea lor nu dovedește accesul anonim, proveniența Git completă sau autonomia raportului.
 
-Delimitarea secțiunilor catalogului se validează înaintea intrării curente, cu diagnostic pentru titluri lipsă sau inversate. Prezența unei versiuni în tabelul general nu substituie legătura din secțiunea curentă.
+### Integritatea fișierelor și rezultatelor
+
+[Guvernanța integrității](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) citește APK-ul și dosarul activ fără a le modifica. Confruntă numele, calea canonică din dosarul versiunii, mărimea, SHA-256 și fișierul checksum; citește toate intrările ZIP pentru CRC și refuză numele duplicate ori căile necanonice.
+
+| Legătură verificată | Contract |
+|---|---|
+| Manifest–payload | Registrul `integrity.files` enumeră exact toate fișierele dosarului, cu mărime și SHA-256; manifestul însuși este exclus pentru a evita autoreferința. Un fișier adăugat, șters sau modificat invalidează observația. |
+| Manifest–JUnit | Fiecare grup declară exact XML-urile păstrate. Cazurile sunt renumărate, identitatea clasă–invocare este unică, iar atributele XML și totalurile declarate trebuie să coincidă. |
+| Rezultat calificat | Sunt necesare cazuri efective și zero eșecuri, erori ori omisiuni; un container gol nu inventează teste. Un antet cu zero eșecuri nu ascunde un element `failure`, `error` sau `skipped`. |
+| Manifest–intrări | Fișierul intrărilor sursă este inclus în registrul hash-urilor; amprenta și commit-ul declarate concordă, iar căile și hash-urile intrărilor sunt valide și fără duplicate. |
+
+Înregistrarea hash-urilor este un pas de pregătire explicit, după fixarea fișierelor:
+
+```powershell
+node atf-tests/tools/record-release-integrity.mjs
+```
+
+- **Înregistrare:** unealta selectează versiunea din index, verifică stabilitatea inventarului și actualizează secțiunea `integrity`. Momentul `observedUtc` identifică observarea octeților, fără modificarea verdictului, datei execuției sau stării publicării.
+- **Verificare:** după înregistrare se execută guvernanța; recalcularea hash-urilor nu face valid un XML cu eșecuri sau un APK corupt.
+- **Limite:** CRC-ul și SHA-256 califică integritatea locală, separat de semnătura APK-ului, manifestul Android binar, reproducerea build-ului și identitatea commit-ului publicat. Lista intrărilor nu confruntă încă arhiva externă completă ori populația surselor live.
+- **Catalog:** delimitarea secțiunilor se validează înaintea intrării curente, cu diagnostic pentru titluri lipsă sau inversate. Prezența unei versiuni în tabelul general nu substituie legătura din secțiunea curentă.
 
 ## Prezentarea unei versiuni
 

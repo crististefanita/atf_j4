@@ -73,11 +73,11 @@ public final class GameSessionStore {
     public static GameSession fromJson(String encoded) {
         try {
             JSONObject root = new JSONObject(encoded);
-            if (root.getInt("version") < 1 || root.getInt("version") > VERSION) {
-                throw new IllegalArgumentException("Unsupported saved-game version " + root.getInt("version"));
+            if (SavedNumbers.integer(root, "version") < 1 || SavedNumbers.integer(root, "version") > VERSION) {
+                throw new IllegalArgumentException("Unsupported saved-game version " + SavedNumbers.integer(root, "version"));
             }
             GameSession.SaveState state=decode(root);
-            return root.getInt("version")>=2?GameSession.restoreComplete(state):GameSession.restore(state);
+            return SavedNumbers.integer(root, "version")>=2?GameSession.restoreComplete(state):GameSession.restore(state);
         } catch (JSONException | IllegalArgumentException | ArithmeticException failure) {
             throw new IllegalStateException("Saved game is invalid and cannot be resumed", failure);
         }
@@ -165,18 +165,18 @@ public final class GameSessionStore {
     }
 
     private static GameSession.SaveState decode(JSONObject root) throws JSONException {
-        GameConfig config = new GameConfig(root.getInt("playerCount"),
+        GameConfig config = new GameConfig(SavedNumbers.integer(root, "playerCount"),
                 savedMode(root.getString("mode")),
-                AiDifficulty.fromStoredName(root.getString("difficulty")), root.getLong("seed"),root.optBoolean("streakBonuses",false),root.optInt("streakBonusPoints",5), root.getInt("version") >= 6 || root.has("streakPenaltyPoints") ? root.getInt("streakPenaltyPoints") : 5);
+                AiDifficulty.fromStoredName(root.getString("difficulty")), SavedNumbers.seed(root),root.optBoolean("streakBonuses",false),SavedNumbers.optionalInteger(root, "streakBonusPoints", 5), SavedNumbers.integer(root, "version") >= 6 || root.has("streakPenaltyPoints") ? SavedNumbers.integer(root, "streakPenaltyPoints") : 5);
         JSONArray encodedPlayers = root.getJSONArray("players");
         List<GameSession.PlayerState> players = new ArrayList<>(encodedPlayers.length());
         for (int index = 0; index < encodedPlayers.length(); index++) {
             JSONObject player = encodedPlayers.getJSONObject(index);
             Object encodedBid = player.get("bid");
-            Integer bid = encodedBid == JSONObject.NULL ? null : ((Number) encodedBid).intValue();
-            players.add(new GameSession.PlayerState(player.getInt("seat"), player.getString("name"),
+            Integer bid = encodedBid == JSONObject.NULL ? null : SavedNumbers.integer(player, "bid");
+            players.add(new GameSession.PlayerState(SavedNumbers.integer(player, "seat"), player.getString("name"),
                     player.getBoolean("human"), decodeCards(player.getJSONArray("hand")), bid,
-                    player.getInt("tricksWon"), player.getInt("totalScore"),player.optInt("streak",0),player.optInt("streakPoints",0)));
+                    SavedNumbers.integer(player, "tricksWon"), SavedNumbers.integer(player, "totalScore"),SavedNumbers.optionalInteger(player, "streak", 0),SavedNumbers.optionalInteger(player, "streakPoints", 0)));
         }
         List<PlayedCard> current = decodeTrick(root.getJSONArray("currentTrick"));
         List<PlayedCard> last = decodeTrick(root.getJSONArray("lastTrick"));
@@ -185,25 +185,25 @@ public final class GameSessionStore {
         Card turned = null;
         if (root.has("turnedCard") && !root.isNull("turnedCard")) {
             JSONObject item = root.getJSONObject("turnedCard");
-            turned = new Card(Suit.valueOf(item.getString("suit")), item.getInt("rank"));
+            turned = new Card(Suit.valueOf(item.getString("suit")), SavedNumbers.integer(item, "rank"));
         }
         return new GameSession.SaveState(config, GamePhase.valueOf(root.getString("phase")),
-                root.getInt("handIndex"), root.getInt("handSize"), root.getInt("dealerSeat"),
-                root.getInt("biddingSeat"), root.getInt("currentSeat"), root.getInt("bidsSubmitted"),
-                root.getInt("bidTotal"), Trump.valueOf(root.getString("trump")),
-                root.getInt("lastTrickWinnerSeat"), players,
+                SavedNumbers.integer(root, "handIndex"), SavedNumbers.integer(root, "handSize"), SavedNumbers.integer(root, "dealerSeat"),
+                SavedNumbers.integer(root, "biddingSeat"), SavedNumbers.integer(root, "currentSeat"), SavedNumbers.integer(root, "bidsSubmitted"),
+                SavedNumbers.integer(root, "bidTotal"), Trump.valueOf(root.getString("trump")),
+                SavedNumbers.integer(root, "lastTrickWinnerSeat"), players,
                 current, last, history, turned, decodeScoreHistory(root, players));
     }
 
     private static ScoreHistory decodeScoreHistory(JSONObject root, List<GameSession.PlayerState> players) throws JSONException {
-        if (root.getInt("version") < 4 && !root.has("scores")) return null;
+        if (SavedNumbers.integer(root, "version") < 4 && !root.has("scores")) return null;
         JSONObject scores = root.getJSONObject("scores");
         JSONArray hands = scores.getJSONArray("hands");
         List<List<Integer>> rows = new ArrayList<>(hands.length());
         for (int i = 0; i < hands.length(); i++) rows.add(scoreVector(hands.getJSONArray(i)));
         List<List<Integer>> bids = new ArrayList<>();
         boolean settled = GamePhase.SCORE.name().equals(root.getString("phase"));
-        if (root.getInt("version") >= 5 || scores.has("bids")) {
+        if (SavedNumbers.integer(root, "version") >= 5 || scores.has("bids")) {
             JSONArray contracts = scores.getJSONArray("bids");
             for (int i = 0; i < contracts.length(); i++) bids.add(scoreVector(contracts.getJSONArray(i)));
             if (settled && bids.isEmpty()) throw new JSONException("Missing completed hand bids");
@@ -211,7 +211,7 @@ public final class GameSessionStore {
             bids.add(players.stream().map(GameSession.PlayerState::bid).collect(java.util.stream.Collectors.toList()));
         }
         List<List<Integer>> tricks = new ArrayList<>();
-        if (root.getInt("version") >= 7 || scores.has("tricks")) {
+        if (SavedNumbers.integer(root, "version") >= 7 || scores.has("tricks")) {
             JSONArray won = scores.getJSONArray("tricks");
             for (int i = 0; i < won.length(); i++) tricks.add(scoreVector(won.getJSONArray(i)));
             if (settled && tricks.isEmpty()) throw new JSONException("Missing completed hand tricks");
@@ -247,7 +247,7 @@ public final class GameSessionStore {
         List<Card> cards = new ArrayList<>(encoded.length());
         for (int index = 0; index < encoded.length(); index++) {
             JSONObject item = encoded.getJSONObject(index);
-            cards.add(new Card(Suit.valueOf(item.getString("suit")), item.getInt("rank")));
+            cards.add(new Card(Suit.valueOf(item.getString("suit")), SavedNumbers.integer(item, "rank")));
         }
         return cards;
     }
@@ -268,8 +268,8 @@ public final class GameSessionStore {
         List<PlayedCard> trick = new ArrayList<>(encoded.length());
         for (int index = 0; index < encoded.length(); index++) {
             JSONObject item = encoded.getJSONObject(index);
-            trick.add(new PlayedCard(item.getInt("seat"),
-                    new Card(Suit.valueOf(item.getString("suit")), item.getInt("rank"))));
+            trick.add(new PlayedCard(SavedNumbers.integer(item, "seat"),
+                    new Card(Suit.valueOf(item.getString("suit")), SavedNumbers.integer(item, "rank"))));
         }
         return trick;
     }

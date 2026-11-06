@@ -1,11 +1,14 @@
 package atf.android.e2e.support;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static atf.testkit.assertions.AuditedAssertions.assertFalse;
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertNotEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
+import static atf.testkit.assertions.AuditedAssertions.assertTrue;
+import static atf.testkit.assertions.AuditedAssertions.assertNotNull;
 
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
@@ -27,11 +30,12 @@ import org.jsoup.Jsoup;
 
 @AtfComponentTest
 class AndroidUiFlowReportPublisherTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test
     void embedsCompleteSupportingTextSafelyFromTheFingerprintedBytes(@TempDir Path output) throws Exception {
         Path screenshot = output.resolve("captured.png");
         Files.write(screenshot, Base64.getDecoder().decode(ONE_PIXEL_PNG));
-        String input = "<hierarchy>" + "<node text=\"fixture-value\"/>".repeat(30)
+        String input = "<hierarchy>" + "<node text=\"fixture-value\"/>".repeat(2000)
                 + "<script>window.ANDROID_RAW_INPUT_CANARY = 1;</script></hierarchy>";
         Path hierarchy = Files.writeString(output.resolve("full-input.xml"), input);
         Path alias = Files.copy(hierarchy, output.resolve("same-input.xml"));
@@ -41,13 +45,20 @@ class AndroidUiFlowReportPublisherTest {
                 "package:/fixture.apk", "mock-device", "28", "Controlled publication; no Android commands",
                 List.of(screenshot, alias), trace);
         var document = Jsoup.parse(Files.readString(report));
-        assertTrue(document.text().contains(input), "The full input survives the assertion preview limit");
+        var parts = document.select("pre").stream().filter(node -> {
+            var owner = node.closest("details");
+            return owner != null && owner.selectFirst("summary") != null
+                    && owner.selectFirst("summary").text().startsWith("Captured supporting evidence")
+                    && owner.selectFirst("summary").text().contains(captured.sha256());
+        }).map(org.jsoup.nodes.Element::wholeText).toList();
+        assertEquals(input, String.join("", parts), "Complete ordered input survives the body budget and the final sentinel");
         assertTrue(document.text().contains(captured.sha256()));
         assertTrue(document.text().contains("bytes=" + Files.size(hierarchy)));
         assertTrue(document.text().contains("same-input.xml"), "The inventory preserves both supplied identities");
         assertTrue(document.text().contains("full-input.xml"), "Checkpoint-declared input is mandatory even when omitted by the caller");
-        assertEquals(1, document.select("pre").stream().filter(node -> node.text().equals(input)).count(),
-                "Identical supporting bytes have one canonical body");
+        assertEquals(atf.android.evidence.text.EvidenceTextParts.split(input,
+                atf.reporting.configuration.AtfReportConfigurationLoader.load().reportingSettings().bodyMaxDisplayCharacters()).size(),
+                parts.size(), "Identical supporting bytes have one canonical set of body parts");
         assertFalse(document.select("script").stream().anyMatch(script -> script.data().contains("ANDROID_RAW_INPUT_CANARY")));
         assertFalse(document.select("a[href]").stream().anyMatch(link -> link.attr("href").endsWith(".xml")));
     }

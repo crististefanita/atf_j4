@@ -97,3 +97,7 @@ Dintr-o copie temporară proprie a `whist-lab-app`, intrarea directă este:
 Costul operațional, interpretarea probabilităților și progresul strategic au domenii și verificări distincte. [Criteriile AI](../../docs/feedback/ATF_Ai.md) centralizează lucrările deschise, inclusiv evoluția compoziției Hard și calificarea frontierelor prin mutanți semantici.
 
 O extracție păstrează comportamentul și sursele politicilor de referință. [Regulile documentației](../../docs/governance/ATF_Documentation.md) cer aceeași descriere a profilului nou și a compatibilității în toate rezumatele.
+
+## Catalogul testelor
+
+[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.

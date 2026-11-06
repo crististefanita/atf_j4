@@ -1,13 +1,17 @@
 package atf.android.e2e.display.profile;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import atf.android.component.AndroidComponentAudit;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static atf.testkit.assertions.AuditedAssertions.assertEquals;
+import static atf.testkit.assertions.AuditedAssertions.assertThrows;
 
 import atf.testkit.AtfComponentTest;
 import org.junit.jupiter.api.Test;
 
 @AtfComponentTest
 class ResponsiveDisplayProfileComponentTest {
+    @RegisterExtension static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
     @Test
     void defaultsCoverCompactStandardTallAndWidePortraits() {
         assertEquals(4, ResponsiveDisplayProfile.parse(null).size());
