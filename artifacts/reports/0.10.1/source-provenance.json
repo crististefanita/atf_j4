@@ -8,5 +8,27 @@
   "temporaryMavenProfiles": "Selection-only; live POM files unchanged",
   "componentSelection": "XML mutants, typed profile plans, label read/reveal bounds, installed APK observation and viewport allocation",
   "nativeSelection": "Two final compact cases; preceding five-case matrix belongs to a different APK",
-  "noLatencyBenchmarkClaim": true
+  "noLatencyBenchmarkClaim": true,
+  "liveReview": {
+    "observedUtc": "2026-11-06T04:34:34.510874+00:00",
+    "modified": [
+      "whist-lab-app/app/build.gradle",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/AndroidCollectionSurface.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRun.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/localization/WhistUiText.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryMeasure.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryTable.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java"
+    ],
+    "added": [
+      "whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java"
+    ],
+    "removed": [],
+    "snapshotFingerprint": "69d3beb8b1dcb453c6395da820bf2f321674b55b67528343b2dceb2d5edbfed4",
+    "state": "DIVERGED"
+  }
 }

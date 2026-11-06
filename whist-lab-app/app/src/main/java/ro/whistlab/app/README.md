@@ -69,13 +69,14 @@ Geometria păstrează separat locurile, țintele tactile, cărțile și textul. 
 
 ## Istoricul scorului
 
-Tabelul conține toate mâinile programate, iar fiecare loc are două coloane vizibile: licitația cunoscută și punctele mâinii. Totalul rămâne în registru și în descrierea accesibilă. O licitație necunoscută are marcaj explicit, iar o salvare veche păstrează soldul de deschidere disponibil.
+Tabelul conține toate mâinile programate, iar fiecare loc are două coloane vizibile: licitația cunoscută și punctajul total după mâna respectivă. Punctele câștigate sau pierdute în acea mână rămân în registru și în descrierea accesibilă. O licitație necunoscută are marcaj explicit, iar o salvare veche afișează numai soldul de deschidere cunoscut.
 
-Punctele sunt derivate de domeniu din soldurile istoricului. Levatele și licitațiile cunoscute determină separat rezultatul contractului; o ratare primește tăietură oblică peste licitație. Bonusul ori penalizarea de serie subliniază punctele mâinii respective; punctajul obișnuit rămâne fără subliniere.
+Punctele mâinii sunt derivate de domeniu din soldurile istoricului. Levatele și licitațiile cunoscute determină separat rezultatul contractului; o ratare primește tăietură oblică peste licitație. Bonusul ori penalizarea de serie încadrează totalul într-un dreptunghi numai pe rândul plății, în celula `P` a locului respectiv.
 
 [Contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie migrarea prefixului necunoscut, conservarea levatelor și măsurarea coloanelor compacte.
 
 - [ScoreHistoryMeasure](score/ScoreHistoryMeasure.java) agregă lățimile folosind furnizori de măsurători injectați; vederea Android deține fonturile și randarea.
+- [SeriesPointsFrame](score/award/SeriesPointsFrame.java) rezervă spațiul pentru numărul complet și font; [SeriesPointsView](score/award/SeriesPointsView.java) măsoară și desenează dreptunghiul în interiorul propriei celule, separat de licitație și de vecini.
 - [HistoryViewport](score/layout/HistoryViewport.java) rezervă antetele și legenda măsurate înaintea rândurilor. `ScoreHistoryView` compune un container vertical: coloanele se derulează orizontal, iar legenda se încadrează separat în lățimea dialogului și rămâne fixă.
 - Legenda folosește aceleași retrageri laterale ca tabelul. Spațiul pentru rânduri se recalculează din măsurătorile curente, fără o înălțime memorată din profilul anterior.
 - Componenta verifică politica asupra tuturor celulelor, iar [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aplică minimele și protecția împotriva depășirilor numerice.

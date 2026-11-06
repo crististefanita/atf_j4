@@ -11,4 +11,6 @@ Aici păstrăm numai dovezile relevante pentru APK-ul local curent: rapoarte Ext
 
 ## Responsabilitate
 
+[Calificarea pas cu pas](../../docs/testing/ATF_ReleaseQualification.md) ordonează planul candidatului, componentele, Extent/fallback și sanity-ul. Candidatul se pregătește extern; acest director păstrează un singur dosar de versiune, înlocuit după verificarea noului APK.
+
 Rezultatele susțin binarul identificat, cu selecția și limitele declarate. [Strategia generică](../../docs/testing/README.md) rămâne independentă de versiune; [retenția](../../docs/platform/ATF_ReleaseRetention.md) definește înlocuirea și recuperarea.

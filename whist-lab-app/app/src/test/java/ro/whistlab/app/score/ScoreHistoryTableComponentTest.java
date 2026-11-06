@@ -38,13 +38,14 @@ public class ScoreHistoryTableComponentTest {
                 for (int seat = 0; seat < seats; seat++) {
                     assertEquals(snapshot.players().get(seat).bid().toString(), row.cells().get(seat).bid());
                     assertEquals(Integer.toString(snapshot.players().get(seat).totalScore()), row.cells().get(seat).total());
+                    assertEquals(Integer.toString(snapshot.players().get(seat).totalScore()), row.cells().get(seat).displayPoints());
                     assertEquals(Integer.parseInt(row.cells().get(seat).points().replace("+", "")), game.scoreHistory().points(snapshot.handNumber(), seat));
                     assertEquals(snapshot.players().get(seat).tricksWon(), (int) game.scoreHistory().tricks(snapshot.handNumber(), seat));
                     assertEquals(snapshot.players().get(seat).bid().equals(snapshot.players().get(seat).tricksWon())
                             ? ro.whistlab.core.session.ScoreHistory.Outcome.EXACT : ro.whistlab.core.session.ScoreHistory.Outcome.MISSED,
                             row.cells().get(seat).outcome());
                     assertEquals(snapshot.players().get(seat).streakPoints(), row.cells().get(seat).seriesPoints());
-                    assertEquals(snapshot.players().get(seat).streakPoints() != 0, row.cells().get(seat).underlinePoints());
+                    assertEquals(snapshot.players().get(seat).streakPoints() != 0, row.cells().get(seat).boxPoints());
                 }
                 assertEquals(checkpoint, game.saveState());
                 assertEquals(table, ScoreHistoryTable.forMatch(GameSession.restoreComplete(checkpoint).snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO)));
@@ -62,10 +63,11 @@ public class ScoreHistoryTableComponentTest {
         assertEquals("0", table.rows().get(0).cells().get(bidder).bid());
         assertEquals("—", table.rows().get(0).cells().get(bidder).points());
         assertEquals("—", table.rows().get(0).cells().get(bidder).total());
-        assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::underlinePoints));
+        assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).allMatch(cell -> cell.displayPoints().equals("—")));
+        assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
     }
 
-    @Test public void onlyPositiveAndNegativeSeriesPaymentsUnderlineTheHandPoints() {
+    @Test public void onlyPositiveAndNegativeSeriesPaymentsRectangleTheRecordedTotal() {
         for (GameMode mode : List.of(GameMode.ROMANIAN_WHIST, GameMode.LONG_ROMANIAN)) {
             for (int bonus : List.of(5, 10)) for (int penalty : List.of(5, 10)) {
                 var game = GameSession.newGame(new GameConfig(4, mode, AiDifficulty.NORMAL, 8, true, bonus, penalty));
@@ -75,7 +77,7 @@ public class ScoreHistoryTableComponentTest {
                     var table = ScoreHistoryTable.forMatch(game.snapshot(), history, copy);
                     var cells = table.rows().get(8).cells();
                     assertEquals(List.of(bonus, -penalty, 0, 0), cells.stream().map(ScoreHistoryTable.Cell::seriesPoints).toList());
-                    assertEquals(List.of(true, true, false, false), cells.stream().map(ScoreHistoryTable.Cell::underlinePoints).toList());
+                    assertEquals(List.of(true, true, false, false), cells.stream().map(ScoreHistoryTable.Cell::boxPoints).toList());
                     assertEquals("+" + (5 + bonus), cells.get(0).points());
                     assertEquals(Integer.toString(-1 - penalty), cells.get(1).points());
                     assertEquals("-1", cells.get(2).points());
@@ -83,8 +85,8 @@ public class ScoreHistoryTableComponentTest {
                     assertTrue(cells.get(0).description().contains(copy.historySeriesAdjustment(bonus)));
                     assertTrue(cells.get(1).description().contains(copy.historySeriesAdjustment(-penalty)));
                     assertFalse(cells.get(3).description().contains(copy.historySeriesAdjustment(bonus)));
-                    assertTrue(table.rows().get(7).cells().stream().noneMatch(ScoreHistoryTable.Cell::underlinePoints));
-                    assertTrue(table.rows().get(9).cells().stream().noneMatch(ScoreHistoryTable.Cell::underlinePoints));
+                    assertTrue(table.rows().get(7).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
+                    assertTrue(table.rows().get(9).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
                 }
             }
         }
@@ -96,31 +98,31 @@ public class ScoreHistoryTableComponentTest {
             if (bids && tricks) continue;
             var table = ScoreHistoryTable.forMatch(game.snapshot(), awardHistory(GameMode.ROMANIAN_WHIST, 10, -10, bids, tricks),
                     new WhistUiText(HowToPlay.Language.EN));
-            assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::underlinePoints));
+            assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
         }
     }
 
-    @Test public void disabledSeriesAndUnconfiguredOrOppositeAdjustmentsHaveNoUnderline() {
+    @Test public void disabledSeriesAndUnconfiguredOrOppositeAdjustmentsHaveNoRectangle() {
         for (GameMode mode : GameMode.values()) {
             var game = GameSession.newGame(GameConfig.newMatch(4, mode, AiDifficulty.NORMAL, 8, false, 10));
             var table = ScoreHistoryTable.forMatch(game.snapshot(), awardHistory(mode, 10, -10, true, true),
                     new WhistUiText(HowToPlay.Language.EN));
-            assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::underlinePoints));
+            assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
         }
         var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10));
         for (var adjustments : List.of(List.of(5, -5), List.of(-10, 10), List.of(1, -1))) {
             var table = ScoreHistoryTable.forMatch(game.snapshot(), awardHistory(GameMode.ROMANIAN_WHIST, adjustments.get(0), adjustments.get(1), true, true),
                     new WhistUiText(HowToPlay.Language.RO));
-            assertTrue(table.rows().get(8).cells().stream().noneMatch(ScoreHistoryTable.Cell::underlinePoints));
+            assertTrue(table.rows().get(8).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
         }
     }
 
-    @Test public void aOneCardHandNeverReceivesTheSeriesUnderline() {
+    @Test public void aOneCardHandNeverReceivesTheSeriesRectangle() {
         var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10));
         var firstHand = new ScoreHistory(0, List.of(0, 0, 0, 0), List.of(List.of(15, -11, -1, 5)),
                 List.of(List.of(0, 1, 0, 0)), List.of(List.of(0, 0, 1, 0)));
         var table = ScoreHistoryTable.forMatch(game.snapshot(), firstHand, new WhistUiText(HowToPlay.Language.RO));
-        assertTrue(table.rows().get(0).cells().stream().noneMatch(ScoreHistoryTable.Cell::underlinePoints));
+        assertTrue(table.rows().get(0).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
     }
 
     @Test public void settledSeriesMarkersSurviveJsonReloadForEveryHistoricalSeat() throws Exception {
@@ -135,7 +137,9 @@ public class ScoreHistoryTableComponentTest {
                 game = GameSessionStore.fromJson(GameSessionStore.encode(game.saveState()).toString());
                 var table = ScoreHistoryTable.forMatch(game.snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO));
                 for (int hand = 0; hand < awards.size(); hand++) for (int seat = 0; seat < 4; seat++) {
-                    assertEquals((int) awards.get(hand).get(seat), table.rows().get(firstRecordedIndex + hand).cells().get(seat).seriesPoints());
+                    var cell = table.rows().get(firstRecordedIndex + hand).cells().get(seat);
+                    assertEquals((int) awards.get(hand).get(seat), cell.seriesPoints());
+                    assertEquals(Integer.toString(game.scoreHistory().total(firstRecordedIndex + hand + 1, seat)), cell.displayPoints());
                 }
                 for (int award : awards.get(awards.size() - 1)) {
                     if (award > 0) positive++;
@@ -190,6 +194,7 @@ public class ScoreHistoryTableComponentTest {
         for (int seat = 0; seat < 4; seat++) {
             assertEquals("—", earlier.cells().get(seat).bid()); assertEquals("—", earlier.cells().get(seat).points());
             assertEquals(migrated.snapshot().players().get(seat).totalScore(), Integer.parseInt(earlier.cells().get(seat).total()));
+            assertEquals(earlier.cells().get(seat).total(), earlier.cells().get(seat).displayPoints());
         }
     }
 

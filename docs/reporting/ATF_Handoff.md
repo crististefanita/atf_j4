@@ -59,6 +59,19 @@ Descriptorul separă datele capturate la execuție de cele verificate la revizia
 - Rădăcina externă este transmisă explicit, independent de directorul de staging.
 - Indexarea automată refuză destinațiile din checkout și nu rescrie README-uri editoriale.
 
+## Livrabil compact și excepții
+
+Ținta predării este un HTML auditabil care include informațiile obligatorii, valorile integrale și capturile asociate fiecărui checkpoint. Fișierele deja încorporate nu primesc copii finale doar pentru navigare; un director ori ZIP cu anexele raportului nu reprezintă autonomie.
+
+| Conținut | Politică de predare |
+|---|---|
+| Date obligatorii ale verdictului | Corp accesibil în HTML, cu identitate și asociere; un hash sau nume de fișier nu înlocuiește conținutul. |
+| Copie identică încorporată | Eliminată numai după confruntarea octeților și verificarea raportului detașat. |
+| Diagnostic ori rezultat auxiliar cu scop separat | Păstrat numai cu motiv concret, consumator sau întrebare diagnostică și identitate; nu poate ascunde o informație necesară auditului HTML. |
+| Dovadă unică încă externă | Păstrată până la publicarea completă; dependența rămâne explicită în feedback. |
+
+Implementarea curentă include PNG-urile, dar publică încă fingerprint-uri pentru unele corpuri Android și rezultate JUnit separate pentru componente. [Criteriul de consolidare](../feedback/ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) păstrează diferența și controalele necesare înaintea eliminării acestor dovezi.
+
 ## Implementări și limite
 
 | Implementare | Contract și limită |

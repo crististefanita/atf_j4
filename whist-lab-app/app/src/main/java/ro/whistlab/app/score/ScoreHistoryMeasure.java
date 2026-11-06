@@ -2,6 +2,7 @@ package ro.whistlab.app.score;
 
 import java.util.Objects;
 import java.util.function.ToIntFunction;
+import ro.whistlab.app.score.award.SeriesPointsFrame;
 
 /** Measures the full projection with injected glyph widths; Android supplies the font implementation. */
 record ScoreHistoryMeasure(int hand, int bid, int points, int name) {
@@ -23,7 +24,10 @@ record ScoreHistoryMeasure(int hand, int bid, int points, int name) {
                 hand = Math.max(hand, width(values, row.cardLabel(), padding));
                 for (var cell : row.cells()) {
                     bid = Math.max(bid, width(values, cell.bid(), Math.multiplyExact(2, padding)));
-                    points = Math.max(points, width(values, cell.points(), padding));
+                    int numeric = width(values, cell.displayPoints(), 0);
+                    int required = cell.boxPoints() ? SeriesPointsFrame.requiredWidth(numeric, sidePadding)
+                            : Math.addExact(numeric, padding);
+                    points = Math.max(points, required);
                 }
             }
             return new ScoreHistoryMeasure(hand, bid, points, name);

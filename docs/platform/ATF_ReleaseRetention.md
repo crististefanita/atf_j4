@@ -21,7 +21,7 @@ artifacts/
 
 - Indexul folosește `schemaVersion: 2`, `currentVersion` și exact o intrare în `versions`.
 - `artifacts/reports` conține README-ul de navigare și un singur dosar de versiune. Numele dosarului, manifestul și versiunea curentă trebuie să coincidă.
-- Dosarul păstrează rapoartele, capturile, XML-urile, jurnalele și proveniența relevante pentru APK. Un rezultat omis sau blocat rămâne explicit; nu se preia automat verdictul unei alte versiuni.
+- Dosarul păstrează raportul canonic și numai dovezile ori diagnosticele auxiliare justificate pentru APK. [Contractul predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) cere eliminarea copiilor deja încorporate și păstrarea dovezii unice până la publicarea completă. Un rezultat omis sau blocat rămâne explicit; nu se preia automat verdictul altei versiuni.
 - Build-urile, candidații intermediari și diagnosticele istorice rămân în TMP sau în arhiva externă. [Strategia comună](../testing/README.md) rămâne independentă de versiune.
 
 ## Înlocuire și recuperare
@@ -34,7 +34,8 @@ artifacts/
 
 Nu rescrieți capturile, HTML-ul sau trace-ul brut pentru a modifica proveniența. Legăturile active și metadatele de navigare pot fi adaptate la noua structură; copia originală rămâne în arhivă și în istoricul Git.
 
-Dezvoltarea paralelă poate continua după fixarea candidatului. Inventariați fișierele ulterioare în `source-freeze.json` și păstrați arhiva surselor calificate cu hash și CRC; publicarea trebuie legată de acel snapshot. Un commit care include cod nou nu preia automat calificarea APK-ului anterior.
+- **Dezvoltare paralelă:** poate continua după fixarea candidatului. Inventariați fișierele ulterioare în `source-freeze.json` și păstrați arhiva surselor calificate cu hash și CRC; publicarea trebuie legată de acel snapshot. Un commit care include cod nou nu preia automat calificarea APK-ului anterior.
+- **Comparație live:** identificați momentul observației și confruntați întreaga populație: fișiere modificate, adăugate și șterse. Manifestul snapshot-ului rămâne neschimbat; actualizarea comparației nu reconstruiește retrospectiv un alt APK sau alte rezultate.
 
 ## Pregătire și livrare
 

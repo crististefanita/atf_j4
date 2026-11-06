@@ -38,6 +38,11 @@
       "module": "whist-lab-app/app",
       "test": true,
       "path": "whist-lab-app/app/src/test/java"
+    },
+    {
+      "module": "whist-lab-app/app",
+      "test": true,
+      "path": "whist-lab-app/app/src/rasterTest/java"
     }
   ],
   "productionForbiddenNamespaces": {

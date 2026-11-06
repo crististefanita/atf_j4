@@ -7,6 +7,8 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 
 ## Registre active
 
+[Dosarul candidatului local](../../../../whist_back/release-candidates/0.11.0/README.md) grupează rapoartele auditabile și pașii rămași ai calificării. [Dosarul activ](../../artifacts/reports/README.md) păstrează separat dovezile APK-ului verificat.
+
 | Arie | Responsabilitate și criterii |
 |---|---|
 | [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
@@ -47,3 +49,7 @@ Principiile editoriale se aliniază cu [bunele practici documentare comune](../.
 ## Contractul comun de autonomie
 
 [Criteriul comun de autonomie a raportului](../../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-artifact-autonomy-150--calificare-fără-dependențe-externe) aparține responsabilului bibliotecilor. [Feedback-ul consumatorului Android](ATF_Reporting.md) păstrează colectarea, publicarea și calificarea livrabilului propriu.
+
+## Suportul comun al testelor
+
+[Primitivele și concurența Kitului](../../../atf_j0/docs/feedback/ATF_Common_Test_Support_Feedback.md#kit-concurrency-152--calificare-jupiter-paralelă) au responsabil comun. Modulul local rămâne sursă până la adopția binarului, iar acceptanța adaptorului Android rămâne la consumator; transferul responsabilității nu constituie calificarea paralelismului.

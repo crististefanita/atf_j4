@@ -95,7 +95,7 @@ final class NameHistoryScenarios {
                 equal("First hand, first seat, exact bid points and total",true,c.ui.hasDescription(visible,first)),
                 equal("Human column heading",true,c.ui.hasText(visible,"HistUser")),
                 equal("Hand column contains only card counts",true,RecordsRunContract.historyCardCounts(visible,"Cards",8)),
-                equal("Player separator width",Math.round(3*density/160f),playerHeading.left()-handHeading.right()),
+                equal("Player separator width",Math.round(2.1f*density/160f),playerHeading.left()-handHeading.right()),
                 equal("Player heading and first cell left edge",playerHeading.left(),reference.left()),
                 equal("Player heading and first cell right edge",playerHeading.right(),reference.right()),
                 equal("Compact preferred player group, with measured text expansion",true,
@@ -108,7 +108,7 @@ final class NameHistoryScenarios {
                 equal("Only bid and points headings are visible",true,
                         c.ui.hasText(visible,"P")&&!c.ui.hasText(visible,"T")),
                 equal("Diagonal slash legend",true,c.ui.hasTextContaining(visible,"Diagonal slash: missed contract")),
-                equal("Series underline legend",true,c.ui.hasTextContaining(visible,"Underline: series bonus or penalty")),
+                equal("Series rectangle legend",true,c.ui.hasTextContaining(visible,"Rectangle: series bonus or penalty")),
                 equal("Final diagnostic fixture does not enter rankings",before,c.scores()));
         String last=description(fixture.json(),24,0,false);
         visible=c.revealDescription(last,false,cellHeight);

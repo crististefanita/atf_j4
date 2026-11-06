@@ -90,6 +90,15 @@ Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea 
 
 [Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.
 
+## Componente cu raport auditabil
+
+[Suita istoricului](src/test/java/atf/android/suites/AndroidHistoryComponentSuite.java) este o intrare JVM fără SDK sau dispozitiv. [Ghidul componentelor](../docs/testing/ATF_DisplayComponents.md#raportarea-componentelor-istoricului) deține selecția, output-ul în TMP și modurile Extent/fallback.
+
+- Suportul reutilizabil al capturii și publicării este în [evidence.component](src/main/java/atf/android/evidence/component/); Kit deține protocolul JUnit și comparațiile, iar Reporting deține randarea.
+- Legătura cu metadatele JUnit rămâne în [AndroidComponentAudit](src/test/java/atf/android/component/AndroidComponentAudit.java), fără parsare de XML JUnit pentru reconstruirea aserțiunilor.
+- Kit este dependență de compilare pentru modelele capturate folosite în main; adaptorul Android nu introduce tipuri JUnit direct în sursele sale main.
+- Profilul `history-components` compilează numai această frontieră. Profilele `display-components` și `responsive-sanity` selectează execuția; nu elimină din compilare clase cerute indirect de suite.
+
 ## Mecanismele interacțiunii
 
 | Mecanism | Întrebarea verificată | Responsabil |

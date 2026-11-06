@@ -20,7 +20,7 @@ record ScoreHistoryGridMetrics(int handWidthPx, int bidWidthPx, int pointsWidthP
             throw new IllegalArgumentException("History requires 3–6 players and a finite positive density");
         }
         return new ScoreHistoryGridMetrics(Math.round(29.7f * density), Math.round(18.9f * density),
-                Math.round(23.4f * density), Math.max(1, Math.round(3 * density)),
+                Math.round(23.4f * density), Math.max(1, Math.round(2.1f * density)),
                 Math.round(7.2f * density), players);
     }
 

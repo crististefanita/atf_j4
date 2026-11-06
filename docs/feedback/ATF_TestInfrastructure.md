@@ -2,14 +2,11 @@
 
 ## Responsabilitate
 
-Responsabilii Kitului și ai validării API dețin aceste criterii ale adaptoarelor locale. Contractele implementate rămân în README-urile modulelor; biblioteca binară și acceptanța Android au verificări separate.
+Consumatorul deține validarea API, procesele și adopția locală; [registrul responsabilităților](README.md#suportul-comun-al-testelor) rutează primitivele Kit. Contractele implementate rămân în README-urile modulelor; biblioteca binară și acceptanța Android au verificări separate.
 
 ## Concurența Kitului
 
-| Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
-|---|---|---|
-| P2 | [ScopedComponentAuditExtensionComponentTest](../../atf-test-kit/src/test/java/atf/testkit/assertions/ScopedComponentAuditExtensionComponentTest.java) verifică ciclul Jupiter cu paralelism dezactivat. | Clase și metode Jupiter concurente: o singură creare și închidere pe proprietar, audit separat pe invocare; eșecul pregătirii ori publicării păstrează cauza inițială. |
-| P2 | Monitorul [ScopedAcceptanceRun](../../atf-test-kit/src/main/java/atf/testkit/lifecycle/ScopedAcceptanceRun.java) serializează utilizatorii propriei metode, fără izolarea cititorilor externi ai proprietății globale. | Componentă cu cititor concurent și eroare injectată: restaurarea proprietății și limita izolării sunt explicite înaintea extinderii suportului paralel. |
+[Suportul comun](README.md#suportul-comun-al-testelor) deține primitivele și probele generice. Consumatorul păstrează acceptanța adaptorului Android; transferul nu califică paralelismul și nu închide criteriul.
 
 ## Costul validării API
 

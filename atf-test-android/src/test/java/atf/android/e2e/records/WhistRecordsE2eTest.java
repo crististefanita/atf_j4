@@ -32,8 +32,8 @@ public class WhistRecordsE2eTest {
                 c.ui.awaitText(romanian ? "Partidă încheiată" : "Game complete", Duration.ofSeconds(15));
                 c.tap(romanian ? "Istoricul scorului" : "Score history");
                 String caption = romanian
-                        ? "L Licitat · P Punctele mâinii\nTăietură oblică: contract ratat · Subliniere: bonus sau penalizare de serie"
-                        : "B Bid · P Hand points\nDiagonal slash: missed contract · Underline: series bonus or penalty";
+                        ? "L Licitat · P Punctaj total\nTăietură oblică: contract ratat · Dreptunghi: bonus sau penalizare de serie"
+                        : "B Bid · P Total score\nDiagonal slash: missed contract · Rectangle: series bonus or penalty";
                 var before = HistoryLegendAudit.inspect(c.ui.dump(), caption, romanian ? "Închide" : "Close", "HistUser");
                 c.phase("TEST BODY — " + scope);
                 var opening = new ArrayList<>(before.checks());

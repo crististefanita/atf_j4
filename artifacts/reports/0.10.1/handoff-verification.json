@@ -24,5 +24,14 @@
   "noFullGameRegression": true,
   "commitPerformed": false,
   "pushPerformed": false,
-  "remoteMutationsPerformed": false
+  "remoteMutationsPerformed": false,
+  "maintenance": {
+    "observedUtc": "2026-11-06T04:08:41.199621+00:00",
+    "reportHtmlUnchanged": true,
+    "reportSha256": "c1a56535355b26909ab2951f616981c726126f29efd05e0df750aa48f29c5b18",
+    "removedStandalonePngCopies": 5,
+    "liveSourceState": "DIVERGED",
+    "historicalQualificationUnchanged": true,
+    "fullHtmlAutonomyQualified": false
+  }
 }

@@ -28,6 +28,46 @@ import org.jsoup.Jsoup;
 @AtfComponentTest
 class AndroidUiFlowReportPublisherTest {
     @Test
+    void embedsCompleteSupportingTextSafelyFromTheFingerprintedBytes(@TempDir Path output) throws Exception {
+        Path screenshot = output.resolve("captured.png");
+        Files.write(screenshot, Base64.getDecoder().decode(ONE_PIXEL_PNG));
+        String input = "<hierarchy>" + "<node text=\"fixture-value\"/>".repeat(30)
+                + "<script>window.ANDROID_RAW_INPUT_CANARY = 1;</script></hierarchy>";
+        Path hierarchy = Files.writeString(output.resolve("full-input.xml"), input);
+        Path alias = Files.copy(hierarchy, output.resolve("same-input.xml"));
+        var trace = attributionTrace(output, screenshot, false, false, List.of(hierarchy));
+        var captured = atf.android.evidence.text.CapturedTextEvidence.read(hierarchy, "full-input.xml");
+        Path report = AndroidUiFlowReportPublisher.publish(output.resolve("complete.html"),
+                "package:/fixture.apk", "mock-device", "28", "Controlled publication; no Android commands",
+                List.of(screenshot, alias), trace);
+        var document = Jsoup.parse(Files.readString(report));
+        assertTrue(document.text().contains(input), "The full input survives the assertion preview limit");
+        assertTrue(document.text().contains(captured.sha256()));
+        assertTrue(document.text().contains("bytes=" + Files.size(hierarchy)));
+        assertTrue(document.text().contains("same-input.xml"), "The inventory preserves both supplied identities");
+        assertTrue(document.text().contains("full-input.xml"), "Checkpoint-declared input is mandatory even when omitted by the caller");
+        assertEquals(1, document.select("pre").stream().filter(node -> node.text().equals(input)).count(),
+                "Identical supporting bytes have one canonical body");
+        assertFalse(document.select("script").stream().anyMatch(script -> script.data().contains("ANDROID_RAW_INPUT_CANARY")));
+        assertFalse(document.select("a[href]").stream().anyMatch(link -> link.attr("href").endsWith(".xml")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"missing.xml", "invalid.xml", "unsupported.bin"})
+    void refusesUnreadableSupportingEvidenceBeforeOpeningTheReport(String name, @TempDir Path output) throws Exception {
+        Path screenshot = output.resolve("captured.png");
+        Files.write(screenshot, Base64.getDecoder().decode(ONE_PIXEL_PNG));
+        var trace = attributionTrace(output, screenshot, false, false);
+        Path evidence = output.resolve(name);
+        if (name.equals("invalid.xml")) Files.write(evidence, new byte[] {(byte) 0xc3, 0x28});
+        if (name.equals("unsupported.bin")) Files.write(evidence, new byte[] {1, 2, 3});
+        Path report = output.resolve("must-not-be-passed.html");
+        assertThrows(java.io.IOException.class, () -> AndroidUiFlowReportPublisher.publish(report,
+                "package:/fixture.apk", "mock-device", "28", "Controlled refusal", List.of(evidence), trace));
+        assertFalse(Files.exists(report), "Missing input cannot leave an implicitly successful report");
+    }
+
+    @Test
     void refusesFalseDriverTitleWithIdenticalRowsComparisonsAndPng(@TempDir Path output) throws Exception {
         Path screenshot = output.resolve("captured.png");
         Files.write(screenshot, Base64.getDecoder().decode(ONE_PIXEL_PNG));
@@ -74,6 +114,11 @@ class AndroidUiFlowReportPublisherTest {
 
     private static AndroidUiFlowTrace attributionTrace(Path output, Path screenshot,
             boolean dispatchFailed, boolean comparisonFailed) throws Exception {
+        return attributionTrace(output, screenshot, dispatchFailed, comparisonFailed, List.of());
+    }
+
+    private static AndroidUiFlowTrace attributionTrace(Path output, Path screenshot,
+            boolean dispatchFailed, boolean comparisonFailed, List<Path> supporting) throws Exception {
         var trace = new AndroidUiFlowTrace(output, "dispatch-ui-attribution", "Mocked Android dispatch and state",
                 "AndroidUiFlowReportPublisherTest", "atf.android.e2e.support", "ro.whistlab.app",
                 List.of("android", "ui", "component", "mock"));
@@ -86,7 +131,7 @@ class AndroidUiFlowReportPublisherTest {
                 List.of(new AtfUiActionRecord(3, "Inspect", "screen", "ready", comparisonFailed ? "menu" : "ready", 0,
                         comparisonFailed ? AtfReportStatus.FAIL : AtfReportStatus.PASS, AtfUiEvidenceSource.OBSERVE)),
                 List.of(new AtfAssertion("State after dispatch", "ready", comparisonFailed ? "menu" : "ready", !comparisonFailed)),
-                dispatchFailed || comparisonFailed ? AtfReportStatus.FAIL : AtfReportStatus.PASS, List.of());
+                dispatchFailed || comparisonFailed ? AtfReportStatus.FAIL : AtfReportStatus.PASS, supporting);
         trace.finish(AtfReportStatus.PASS);
         return trace;
     }

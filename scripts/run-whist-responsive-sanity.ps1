@@ -12,9 +12,14 @@ param(
     [switch]$IncludeGameFlow,
     [switch]$TableViewportOnly,
     [switch]$ComponentsOnly,
+    [ValidateSet('Display','History')][string]$ComponentSuite = 'Display',
+    [ValidateSet('extent','fallback')][string]$ComponentRenderer = 'extent',
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
+if (-not $ComponentsOnly -and ($PSBoundParameters.ContainsKey('ComponentSuite') -or $PSBoundParameters.ContainsKey('ComponentRenderer'))) {
+    throw 'ComponentSuite and ComponentRenderer require ComponentsOnly.'
+}
 if ($ComponentsOnly -and ($DenseLayout -or $IncludeGameFlow -or $HardAiCompatibility -or $TableViewportOnly -or
         $PSBoundParameters.ContainsKey('Profiles') -or $PSBoundParameters.ContainsKey('Hands'))) {
     throw 'ComponentsOnly selects the JVM matrix; do not combine it with device-flow or profile selections.'
@@ -72,6 +77,10 @@ foreach ($module in $modules) {
     & robocopy $source (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if ($LASTEXITCODE -ge 8) { throw "Could not stage source module declared by the reactor: $module" }
 }
+foreach ($relative in @('whist-lab-app/game-core/src/main/java', 'whist-lab-app/ai-lab/src/main/java')) {
+    & robocopy (Join-Path $root $relative) (Join-Path $stage $relative) /E /NFL /NDL /NJH /NJS /NP | Out-Null
+    if ($LASTEXITCODE -ge 8) { throw "Could not stage the independent player's source dependency: $relative" }
+}
 $sourceSnapshot=@(Get-ChildItem -LiteralPath $stage -Recurse -File | Where-Object {
     $_.Extension -in @('.java','.xml','.yaml','.yml','.pom','.json','.jar')
 } | ForEach-Object {
@@ -94,6 +103,8 @@ $state = [ordered]@{
     includeGameFlow=$IncludeGameFlow.IsPresent
     tableViewportOnly=$TableViewportOnly.IsPresent
     componentsOnly=$ComponentsOnly.IsPresent
+    componentSuite=$ComponentSuite
+    componentRenderer=$ComponentRenderer
     mavenRepository=$executionRepository
     sourceSnapshot=(Join-Path $RunRoot 'source-snapshot.json')
     runnerSha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -207,10 +218,14 @@ foreach ($library in @(
     $libraryHashes["$($library.Key)Version"] = $version
     $libraryHashes["$($library.Key)Source"] = $sourceHash
 }
-    $profile = if ($ComponentsOnly) { 'display-components' } else { 'responsive-sanity' }
-    $tests = if ($ComponentsOnly) { 'AndroidDisplayComponentSuite' } else { 'AndroidDisplayComponentSuite,AndroidUiFlowReportPublisherTest' }
+    $profile = if ($ComponentsOnly -and $ComponentSuite -eq 'History') { 'history-components' }
+        elseif ($ComponentsOnly) { 'display-components' } else { 'responsive-sanity' }
+    $tests = if ($ComponentsOnly -and $ComponentSuite -eq 'History') { 'AndroidHistoryComponentSuite' }
+        elseif ($ComponentsOnly) { 'AndroidDisplayComponentSuite' } else { 'AndroidDisplayComponentSuite,AndroidUiFlowReportPublisherTest' }
     $common = @('-o','-f',(Join-Path $stage 'pom.xml'),'-pl','atf-test-android','-am','test',"-P$profile",
-        "-Dmaven.repo.local=$executionRepository",'-Dsurefire.failIfNoSpecifiedTests=false')
+        "-Dmaven.repo.local=$executionRepository",'-Dsurefire.failIfNoSpecifiedTests=false',
+        "-Datf.android.component.report-directory=$(Join-Path $RunRoot 'component-reports')",
+        "-Datf.android.component.renderer=$ComponentRenderer")
     Invoke-SanityMaven 'display-profile-components' ($common + @(
         "-Dtest=$tests",
         '-Datf.android.enabled=false'))
@@ -231,6 +246,11 @@ foreach ($library in @(
         })
         if($cases.Count -eq 0 -or @($cases|Where-Object {$_.failure -or $_.error -or $_.skipped}).Count){throw 'Display components must execute actual cases without failures or skips.'}
         Copy-Item -LiteralPath $native -Destination (Join-Path $RunRoot 'junit') -Recurse
+        $componentReports = @(Get-ChildItem -LiteralPath (Join-Path $RunRoot 'component-reports') -Filter '*.html' -File)
+        if ($componentReports.Count -ne 1) { throw 'The audited component subset must publish exactly one suite report.' }
+        $state.componentReport = $componentReports[0].FullName
+        $state.auditScope = if ($ComponentSuite -eq 'History') { 'Complete selected history component suite' }
+            else { 'History pilot only; other display components retain JUnit results' }
         $state.status='PASS';$state.kind='JVM_COMPONENTS';$state.tests=$cases.Count
         $state.serial='not-used';$state.profiles='component matrix';$state.hands=0
         $state.completedAt=[DateTimeOffset]::UtcNow.ToString('o')

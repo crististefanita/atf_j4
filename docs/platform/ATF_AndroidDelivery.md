@@ -67,6 +67,8 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 ## Procesul unei versiuni
 
+[Calificarea pas cu pas](../testing/ATF_ReleaseQualification.md) ordonează selecțiile, verificarea HTML și dosarul candidat; acest ghid deține build-ul, identitatea și publicarea.
+
 [Modelul GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) leagă livrarea de un tag și permite atașarea binarelor. APK-ul se distribuie ca asset, iar `dist` rămâne ieșire locală; redenumirea lui în `releases` nu creează o secțiune GitHub sau un redirect.
 
 1. Identificați commit-ul surselor și versiunea aplicației; fixați copia de construire în TMP.

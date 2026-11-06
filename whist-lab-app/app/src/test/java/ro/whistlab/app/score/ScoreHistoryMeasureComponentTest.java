@@ -26,7 +26,7 @@ public final class ScoreHistoryMeasureComponentTest {
         var table = new ScoreHistoryTable(small.players(), List.of(small.rows().get(0), last));
         var size = ScoreHistoryMeasure.measure(table, LABELS, String::length, String::length, 1);
         assertEquals(6, size.bid());
-        assertEquals(7, size.points());
+        assertEquals(9, size.points());
     }
 
     @Test public void captionAndNumericFontsHaveIndependentMeasurements() {
@@ -82,10 +82,44 @@ public final class ScoreHistoryMeasureComponentTest {
         return new ScoreHistoryTable.Cell(bid, points, total, "fixture", ScoreHistory.Outcome.UNKNOWN, 0);
     }
 
-    @Test public void hiddenTotalsNeverWidenTheTwoVisibleColumns() {
+    @Test public void cumulativeTotalsDetermineTheVisiblePointsWidth() {
         var shortTotal = table(List.of("A", "B", "C"), List.of(cell("0", "+5", "5")));
         var longTotal = table(List.of("A", "B", "C"), List.of(cell("0", "+5", "-123456789")));
-        assertEquals(ScoreHistoryMeasure.measure(shortTotal, LABELS, String::length, String::length, 1),
-                ScoreHistoryMeasure.measure(longTotal, LABELS, String::length, String::length, 1));
+        var shortSize = ScoreHistoryMeasure.measure(shortTotal, LABELS, String::length, String::length, 1);
+        var longSize = ScoreHistoryMeasure.measure(longTotal, LABELS, String::length, String::length, 1);
+        assertEquals(3, shortSize.points());
+        assertEquals(12, longSize.points());
+        assertEquals(shortSize.bid(), longSize.bid());
+        assertEquals(shortSize.hand(), longSize.hand());
+        assertEquals(shortSize.name(), longSize.name());
+    }
+
+    @Test public void aHiddenHandDeltaCannotWidenTheCumulativePointsColumn() {
+        var shortDelta = table(List.of("A", "B", "C"), List.of(cell("0", "+5", "10")));
+        var longDelta = table(List.of("A", "B", "C"), List.of(cell("0", "-123456789", "10")));
+        assertEquals(ScoreHistoryMeasure.measure(shortDelta, LABELS, String::length, String::length, 1),
+                ScoreHistoryMeasure.measure(longDelta, LABELS, String::length, String::length, 1));
+    }
+
+    @Test public void seriesRectanglesReserveSpaceOnlyInPointsForBonusAndPenaltyAtEverySeatCount() {
+        for (int seats = 3; seats <= 6; seats++) for (int award : new int[]{-10, -5, 5, 10}) {
+            var ordinary = cell("0", "+5", "-1000");
+            var marked = new ScoreHistoryTable.Cell("0", "+5", "-1000", "fixture", ScoreHistory.Outcome.EXACT, award);
+            var plain = table(java.util.Collections.nCopies(seats, "A"), java.util.Collections.nCopies(seats, ordinary));
+            var boxed = table(plain.players(), java.util.Collections.nCopies(seats, marked));
+            var baseline = ScoreHistoryMeasure.measure(plain, LABELS, String::length, String::length, 2);
+            var size = ScoreHistoryMeasure.measure(boxed, LABELS, String::length, String::length, 2);
+            assertEquals(17, size.points());
+            assertEquals(9, baseline.points());
+            assertEquals(baseline.bid(), size.bid());
+            assertEquals(baseline.hand(), size.hand());
+            assertEquals(baseline.name(), size.name());
+        }
+    }
+
+    @Test public void seriesRectangleWidthIncludesTheLongestTotal() {
+        var marked = new ScoreHistoryTable.Cell("0", "+5", "-123456789", "fixture", ScoreHistory.Outcome.EXACT, 10);
+        var table = table(List.of("A", "B", "C"), List.of(marked));
+        assertEquals(16, ScoreHistoryMeasure.measure(table, LABELS, String::length, String::length, 1).points());
     }
 }

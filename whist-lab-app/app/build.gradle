@@ -34,6 +34,8 @@ android {
                 includeTestsMatching "ro.whistlab.app.seat.*"
                 includeTestsMatching "ro.whistlab.app.window.*"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryTableComponentTest"
+                includeTestsMatching "ro.whistlab.app.score.ScoreHistorySeriesComponentTest"
+                includeTestsMatching "ro.whistlab.app.score.award.*"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryMeasureComponentTest"
@@ -61,3 +63,26 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.json:json:20240205"
 }
+
+// Host graphics need the complete JDK; Android unit compilation intentionally has a smaller API surface.
+def rasterCompile = tasks.register("compileHistoryRasterTestJava", JavaCompile) {
+    dependsOn "compileDebugUnitTestJavaWithJavac"
+    source fileTree("src/rasterTest/java") { include "**/*.java" }
+    classpath = tasks.named("testDebugUnitTest", Test).get().classpath
+    destinationDirectory = layout.buildDirectory.dir("classes/java/historyRasterTest")
+    options.release = 17
+    options.encoding = "UTF-8"
+    options.compilerArgs += ["-proc:none"]
+}
+
+def rasterTest = tasks.register("historyRasterTest", Test) {
+    dependsOn rasterCompile
+    testClassesDirs = files(rasterCompile.flatMap { it.destinationDirectory })
+    classpath = files(testClassesDirs, tasks.named("testDebugUnitTest", Test).get().classpath)
+    useJUnit()
+    systemProperty "java.awt.headless", "true"
+    def rasterOutput = providers.gradleProperty("whist.historyRasterOutput").getOrElse("")
+    if (rasterOutput) systemProperty "whist.historyRasterOutput", rootProject.file(rasterOutput).absolutePath
+}
+
+tasks.named("check") { dependsOn rasterTest }

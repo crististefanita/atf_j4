@@ -59,6 +59,19 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - **Fixture-ul DenseLayout:** verifică cele 13 cărți întregi, un singur rând și indicii lizibili în primul viewport. Titlul și toate chenarele rămân vizibile; derularea nu poate recupera o regiune tăiată.
 - **Grilă:** verifică separarea țintelor, distanța față de scaunul uman și stabilitatea ramelor după selectarea valorii.
 
+## Profil și domeniu de calificare
+
+Cerința folosește geometria și setările Android, separat de configurația comercială a unui telefon. Rezoluția completă nu este viewport-ul util: barele sistemului și decupajul se măsoară înaintea comparării regiunilor.
+
+| Parametru | Domeniu de verificare |
+|---|---|
+| Profil înalt de referință | Portret 1080×2448 px; lățimea utilă depinde de insets și DPI-ul logic observat. |
+| Densitate | 420/440/480 dpi oferă aproximativ 411/393/360 dp înainte de insets; setările de test nu presupun densitatea implicită a dispozitivului. |
+| Text | Scale 1,0/1,15/1,3/1,5 în componente; sanity-ul nativ selectează normal și mărit după risc. |
+| Identitate | Numele scenariilor și cerințele folosesc geometria; observațiile brute păstrează dispozitivul și setările efectiv capturate. |
+
+Acțiunea integrală, mâna și toate locurile se confruntă în aceeași stare. [Istoricul](../game/ATF_ScoreHistory.md) deține semantica coloanelor; [feedback-ul Android](../feedback/ATF_Android.md) păstrează numai calificările încă necesare.
+
 ## Invariante vizuale și de interacțiune
 
 - Meniul păstrează configurarea accesibilă în viewport.
@@ -88,7 +101,7 @@ Pentru o acceptanță scurtă a vizibilității simultane, folosiți `-TableView
 - Butonul de depunere are 119 dp lățime, text de 13 sp și țintă tactilă de 48 dp înălțime. Conturul este retras vertical cu 2 dp în interiorul țintei, iar rezumatul licitației separă depunerile și totalul printr-un rând nou.
 - La jocul normal, indicatorul turei și o carte legală trebuie să fie vizibile înaintea acțiunii. Sanity-ul compact nu acceptă derularea ca remediu pentru o regiune lipsă.
 - Simularea unei rezoluții logice nu dovedește proprietățile unui panou fizic de aceeași dimensiune.
-- Istoricul folosește antete scurte și legendă. Lățimile compacte preferate sunt 29,7 dp pentru cărți și 18,9/23,4/22,5 dp pentru licitat, puncte și total; separatoarele rămân de 3 dp. Textul măsurat poate extinde coloanele înaintea derulării, fără elipsă pe cifre.
+- Istoricul folosește antete scurte și legendă. Lățimile compacte preferate sunt 29,7 dp pentru cărți și 18,9/23,4 dp pentru licitat și totalul afișat; separatoarele sunt de 2,1 dp, cu 30% sub grosimea de 3 dp, rotunjite o singură dată în pixeli. Textul măsurat poate extinde cele două coloane înaintea derulării, fără elipsă pe cifre; [modelul istoricului](../game/ATF_ScoreHistory.md) deține semantica și diferența față de punctele mâinii.
 - Tăietura oblică traversează doar cifra licitației ratate, inclusiv zero. Componentele verifică încadrarea în coloană; sanity-ul verifică rezultatul accesibil, cifrele, legenda și captura nativă în RO/EN cu text normal și mărit.
 
 ## Guvernanța execuției

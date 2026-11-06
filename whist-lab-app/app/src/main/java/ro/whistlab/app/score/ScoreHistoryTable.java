@@ -12,7 +12,8 @@ record ScoreHistoryTable(List<String> players, List<Row> rows) {
     enum Status { RECORDED, EARLIER, CURRENT, FUTURE }
     record Cell(String bid, String points, String total, String description, ScoreHistory.Outcome outcome,
             int seriesPoints) {
-        boolean underlinePoints() { return seriesPoints != 0; }
+        String displayPoints() { return total; }
+        boolean boxPoints() { return seriesPoints != 0; }
     }
     record Row(int hand, int cards, Status status, List<Cell> cells) {
         String cardLabel() { return Integer.toString(cards); }

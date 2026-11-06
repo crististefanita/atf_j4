@@ -22,7 +22,7 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 - Configurarea unei partide noi aplică aceeași valoare de 5 sau 10 pentru bonusul și penalizarea după cinci mâini eligibile; profilurile istorice își păstrează configurația la restaurare.
 - [Motorul de reguli](game-core/README.md) descrie domeniul și diferențele față de celelalte variante.
 
-`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează cronologic două coloane pentru fiecare jucător: licitația cunoscută și punctele mâinii. Bonusul sau penalizarea de serie subliniază punctele rândului respectiv; totalurile rămân în registru și în descrierea accesibilă.
+`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează cronologic două coloane pentru fiecare jucător: licitația cunoscută și punctajul total după mâna respectivă. Bonusul sau penalizarea de serie încadrează totalul într-un dreptunghi numai în celula `P` a rândului plății; diferența de puncte a mâinii rămâne în registru și în descrierea accesibilă.
 
 Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
 

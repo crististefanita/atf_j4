@@ -8,7 +8,7 @@
     <dependencies>
         <dependency><groupId>atf.api</groupId><artifactId>atf-core</artifactId><version>${atf.core.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-reporting</artifactId><version>${atf.reporting.version}</version></dependency>
-        <dependency><groupId>atf.api</groupId><artifactId>atf-test-kit</artifactId><version>${project.version}</version><scope>test</scope></dependency>
+        <dependency><groupId>atf.api</groupId><artifactId>atf-test-kit</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-console</artifactId><version>${atf.console.version}</version><scope>test</scope></dependency>
         <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
         <dependency><groupId>org.junit.platform</groupId><artifactId>junit-platform-launcher</artifactId><scope>test</scope></dependency>
@@ -22,7 +22,7 @@
     </plugin></plugins></build>
     <profiles>
         <profile>
-            <id>display-components</id>
+            <id>history-components</id>
             <build><plugins>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId>
@@ -33,44 +33,30 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
                     <configuration><testIncludes>
-                        <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
-                        <testInclude>**/display/component/*.java</testInclude>
-                        <testInclude>**/display/profile/*ComponentTest.java</testInclude>
-                        <testInclude>**/display/*ComponentTest.java</testInclude>
-                        <testInclude>**/e2e/driver/**/*.java</testInclude>
+                        <testInclude>**/AndroidHistoryComponentSuite.java</testInclude>
+                        <testInclude>**/component/AndroidComponent*.java</testInclude>
+                        <testInclude>**/records/legend/*.java</testInclude>
+                        <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
                     </testIncludes></configuration>
                 </plugin>
             </plugins></build>
         </profile>
         <profile>
+            <id>display-components</id>
+            <build><plugins><plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                <configuration><includes><include>**/AndroidDisplayComponentSuite.java</include></includes></configuration>
+            </plugin></plugins></build>
+        </profile>
+        <profile>
             <id>responsive-sanity</id>
-            <build><plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId>
-                    <executions><execution><id>independent-whist-player</id>
-                        <configuration><skipAddTestSource>true</skipAddTestSource></configuration>
-                    </execution></executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId>
-                    <configuration><testIncludes>
-                        <testInclude>**/e2e/driver/**/*.java</testInclude>
-                        <testInclude>**/AndroidDisplayComponentSuite.java</testInclude>
-                        <testInclude>**/display/component/*.java</testInclude>
-                        <testInclude>**/display/profile/*ComponentTest.java</testInclude>
-                        <testInclude>**/display/*ComponentTest.java</testInclude>
-                        <testInclude>**/ResponsiveDisplayProfile.java</testInclude>
-                        <testInclude>**/ResponsiveDisplayProfileComponentTest.java</testInclude>
-                        <testInclude>**/FrameFillAuditComponentTest.java</testInclude>
-                        <testInclude>**/TableViewportAuditComponentTest.java</testInclude>
-                        <testInclude>**/DisplayRasterComponentTest.java</testInclude>
-                        <testInclude>**/display/flow/responsive/*.java</testInclude>
-                        <testInclude>**/AndroidUiFlowReportPublisherTest.java</testInclude>
-                        <testInclude>**/WhistResponsivePlaySanityE2eTest.java</testInclude>
-                        <testInclude>**/WhistDenseLayoutE2eTest.java</testInclude>
-                    </testIncludes></configuration>
-                </plugin>
-            </plugins></build>
+            <build><plugins><plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                <configuration><includes>
+                    <include>**/WhistResponsivePlaySanityE2eTest.java</include>
+                    <include>**/WhistDenseLayoutE2eTest.java</include>
+                </includes></configuration>
+            </plugin></plugins></build>
         </profile>
     </profiles>
 </project>

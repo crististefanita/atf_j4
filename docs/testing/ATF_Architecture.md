@@ -39,7 +39,7 @@ Tabelul reflectă adnotările claselor executabile, inclusiv adnotările compuse
 |---|---|---|---|---|---|
 | `atf-test-kit` | Da | Da | — | — | Configurare, izolare, resurse și auditul comparațiilor. |
 | `atf-validation` | Da | Da | — | — | Reguli de validare și evaluarea contractelor publice. |
-| `atf-test-android` | Da | Da | — | Da | Timp, ADB simulat, oracole și parcursuri Android reale. |
+| `atf-test-android` | Da | Da | Da | Da | Timp, ADB simulat, oracole, integrarea raportării și parcursuri Android reale. |
 | `atf-tests` | — | Da | Da | — | Contractele adaptoarelor, binarele comune și guvernanța proiectului. |
 
 [Verificarea matricei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java) confruntă acest tabel cu sursele curente. Fiecare clasă executabilă Maven are exact una dintre `@AtfUnitTest`, `@AtfComponentTest`, `@AtfIntegrationTest` și `@AtfE2eTest`, direct sau printr-o adnotare compusă.

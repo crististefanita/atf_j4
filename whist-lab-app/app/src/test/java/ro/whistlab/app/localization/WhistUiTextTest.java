@@ -21,14 +21,14 @@ import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.model.Suit;
 
 public final class WhistUiTextTest {
-    @Test public void historyExplainsOnlyBidAndHandPointsAndBothSeriesMarkers() {
+    @Test public void historyExplainsBidAndCumulativePointsAndBothSeriesMarkers() {
         var en = new WhistUiText(HowToPlay.Language.EN);
         var ro = new WhistUiText(HowToPlay.Language.RO);
-        assertTrue(en.historyLegend().startsWith("B Bid · P Hand points\n"));
-        assertTrue(ro.historyLegend().startsWith("L Licitat · P Punctele mâinii\n"));
+        assertTrue(en.historyLegend().startsWith("B Bid · P Total score\n"));
+        assertTrue(ro.historyLegend().startsWith("L Licitat · P Punctaj total\n"));
         for (var copy : List.of(en, ro)) {
-            assertFalse(copy.historyLegend().contains("Total"));
-            assertTrue(copy.historyLegend().contains(copy == en ? "Underline" : "Subliniere"));
+            assertFalse(copy.historyLegend().contains(copy == en ? "Hand points" : "Punctele mâinii"));
+            assertTrue(copy.historyLegend().contains(copy == en ? "Rectangle" : "Dreptunghi"));
             for (int points : List.of(5, 10)) {
                 assertTrue(copy.historySeriesAdjustment(points).endsWith("+" + points));
                 assertTrue(copy.historySeriesAdjustment(-points).endsWith("-" + points));

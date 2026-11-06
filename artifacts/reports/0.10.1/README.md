@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-**PREPARED — candidat local, fără commit, push sau publicare.** Corecția legendei și selecția de componente sunt calificate pe snapshot-ul identificat prin hash.
+**PREPARED — candidat local, fără commit, push sau publicare.** Corecția legendei și selecția de componente sunt calificate pe snapshot-ul identificat prin hash; codul live a avansat ulterior.
 
 ## APK și surse
 
@@ -18,6 +18,12 @@
 - [Revizia vizuală](visual-review.json) confirmă explicația integrală, aliniată și fixă; [verificarea structurii](report-structure-verification.json) confruntă toate payload-urile PNG originale.
 - [Chromium offline](browser/legend/browser-audit.json) deschide HTML-ul singur, assertions până la ultimul rând și PNG-ul integral 1080×1920, cu revenire la același owner. Proba interactivă acoperă primul owner declarat; captura RO mărită are și revizie vizuală separată.
 - [Identitatea Debug observată](e2e/history-legend-api28/apk-provenance-e2e-debug.json) este distinctă de [smoke-ul Release semnat](e2e/history-legend-api28/release-smoke.json). [Restaurarea](e2e/history-legend-api28/app-data-restored.json) confruntă cele trei fișiere originale după smoke; aplicația rămâne închisă.
+
+## Retenția datelor
+
+- Cele cinci copii PNG au fost eliminate după confruntarea octeților în HTML-ul verificat; imaginile integrale rămân în raport. [Inventarul](release-validation.json) păstrează hash-urile, excepțiile și dependențele încă externe.
+- XML-urile și starea Android încă neîncorporate, rezultatele JUnit și diagnosticele justificate sunt păstrate. Consolidarea nu pretinde autonomie completă; criteriul adaptorului rămâne deschis.
+- [Comparația live](source-provenance.json) identifică separat fișierele modificate și adăugate după snapshot. APK-ul pregătit nu include automat dezvoltarea ulterioară.
 
 ## Eficiență și limite
 

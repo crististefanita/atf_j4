@@ -96,6 +96,7 @@ mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=At
 - Verificarea documentară nu certifică algoritmul jocului, randarea Android sau compatibilitatea tuturor bibliotecilor.
 - Calificarea binarelor rămâne contractul distinct al [integrării bibliotecilor](../platform/ATF_Integration.md).
 - Deficiențele semantice și datoria de separare rămân vizibile în [feedback](../feedback/ATF_Governance.md).
+- [Retenția dovezilor release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) refuză PNG-uri identice deja încorporate. Prezența octeților nu certifică viewerul, autonomia corpurilor Android sau integritatea APK-ului; acestea au controale distincte.
 
 [Arhitectura testării](../testing/ATF_Architecture.md) · [Documentație](ATF_Documentation.md) · [Schimbarea testelor](ATF_TestChanges.md)
 

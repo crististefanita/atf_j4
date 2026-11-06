@@ -281,8 +281,8 @@ public final class WhistUiText {
     public String historyBidHeading() { return choose("B", "L"); }
     public String historyPointsHeading() { return "P"; }
     public String historyLegend() {
-        return choose("B Bid · P Hand points\nDiagonal slash: missed contract · Underline: series bonus or penalty",
-                "L Licitat · P Punctele mâinii\nTăietură oblică: contract ratat · Subliniere: bonus sau penalizare de serie");
+        return choose("B Bid · P Total score\nDiagonal slash: missed contract · Rectangle: series bonus or penalty",
+                "L Licitat · P Punctaj total\nTăietură oblică: contract ratat · Dreptunghi: bonus sau penalizare de serie");
     }
     public String historySeriesAdjustment(int points) {
         return points > 0 ? choose("Series bonus +" + points, "Bonus de serie +" + points)

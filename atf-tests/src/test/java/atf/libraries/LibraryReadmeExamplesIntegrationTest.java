@@ -83,7 +83,7 @@ class LibraryReadmeExamplesIntegrationTest {
         String outputCodec = "System.setOut(new java.io.PrintStream(System.out,true,java.nio.charset.StandardCharsets.UTF_8));"
                 + "System.setErr(new java.io.PrintStream(System.err,true,java.nio.charset.StandardCharsets.UTF_8));";
         String code = library.equals("Reporting") ? body + "\npublic static void main(String[] a) {" + outputCodec
-                + "publish(java.nio.file.Path.of(a[0]), a[1].equals(\"NULL\")?null:a[1]);}"
+                + "try (var run = open(java.nio.file.Path.of(a[0]))) { publish(run, a[1].equals(\"NULL\")?null:a[1]); }}"
                 : "public static void main(String[] a) throws Exception {" + outputCodec + body + checks + "}";
         code = imports + "\npublic final class ReadmeProbe {\n" + code + "\n}";
         if (corrupt) code = code.replace("JsonDocuments.read", "JsonDocuments.missingReadmeMethod");

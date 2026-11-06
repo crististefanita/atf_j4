@@ -6,23 +6,7 @@ Motorul deține datele partidei, iar aplicația Android deține persistența și
 
 ## Contract prioritar de afișaj portret
 
-Cerințele sunt definite prin geometrie și setări Android măsurabile. Configurația comercială a unui telefon nu este un criteriu de selecție sau acceptare.
-
-| Prioritate | Suprafață | Cerință și criteriu de acceptare |
-|---|---|---|
-| P0 | Identitatea profilului | Folosiți rezoluție, DPI logic, scară de text, insets și orientare. Eliminați mărcile și modelele din cerințe, ghiduri, aliasuri, nume de teste și textele rapoartelor active; nici RAM-ul, stocarea sau culoarea comercială nu definesc layout-ul. |
-| P0 | Geometrie de referință | Portret 1080×2448 px, raport 20,4:9. Măsurați separat fereastra utilă după bare și decupaj; rezoluția completă nu este viewport-ul aplicației. |
-| P1 | Densitate | Citiți DPI-ul logic din Android; PPI-ul fizic nu îl înlocuiește. Matricea de regresie include 420/440/480 dpi, aproximativ 411/393/360 dp lățime înainte de insets; acestea sunt setări de test, fără presupunerea unei valori implicite a dispozitivului. |
-| P1 | Text mărit | Componentele acoperă scalele 1,0/1,15/1,3/1,5. Selectați pentru sanity nativ scara normală și cel puțin o scară mărită; decorul se adaptează înaintea pierderii conținutului. |
-| P0 | Acțiune și nume | Acțiunea integrală este centrată deasupra numelui jucătorului activ, la fiecare loc și în ambele faze. Nicio intersecție cu rame, cărți ori controale; spațiul rezervat previne deplasarea mesei la schimbarea actorului. |
-| P0 | Mână și masă | Primul și ultimul indice de carte sunt lizibile, mâna și toate locurile se văd simultan în profilul declarat, iar țintele tactile păstrează minimum 48 dp. O carte sau un chenar tăiat nu se validează prin simpla prezență în XML. |
-| P0 | Istoric | Numărul cărților este singura valoare vizibilă a mâinii; identitatea cronologică rămâne accesibilă. Antetele, separatorul de 3 dp și grupurile cu două coloane licitat–puncte sunt aliniate; derularea ajunge la ultima mână și ultimul jucător fără pierderea valorilor. |
-| P1 | Verificare rapidă | Geometria, rotunjirile, textele și observațiile defecte au teste de componentă. E2E restrâns verifică randarea reală, actorii, derularea și lizibilitatea în RO/EN. |
-| P1 | Dovezi | Captura PNG nativă și XML-ul aparțin aceleiași stări; raportul include imaginile inline base64, parametrii efectivi și hash-ul APK-ului. Emularea geometriei și acceptanța pe un dispozitiv fizic rămân calificări distincte. |
-
-Nu rescrieți identitatea tehnică observată în dovezile brute pentru a anonimiza un profil. Cerințele și denumirile active folosesc geometria; observațiile originale își păstrează proveniența.
-
-[Politicile și oracolele display](../testing/ATF_DisplayComponents.md) · [Scenariul nativ](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii)
+[Contractul profilului și al afișării](../testing/ATF_Display.md#profil-și-domeniu-de-calificare) deține geometria, densitatea, textul și invariantele stabile. Aici rămân calificările native lipsă; prezența unei cerințe în ghid nu o declară automat trecută.
 
 ## Acceptanța nativă a proporțiilor și ordinii
 
@@ -40,10 +24,11 @@ Sanity-ul folosește un APK care include schimbarea; nu se atribuie unui release
 
 | Suprafață | Criteriu de închidere |
 |---|---|
-| Două coloane | Exact licitat și punctele mâinii per jucător, fără antet sau celule vizibile de total; RO/EN, text normal și mărit, prima și ultima mână și toate locurile. |
-| Subliniere | Bonusurile și penalizările de serie ±5/±10 subliniază cifra punctelor numai pe rândul plății; punctajele obișnuite și datele necunoscute nu sunt subliniate. |
-| Randare | Captura originală confirmă linia, lizibilitatea semnului și lipsa intersecțiilor; prezența nodului în XML nu demonstrează sublinierea. |
+| Două coloane | Exact licitat și punctajul total după fiecare mână per jucător; coloana `P` afișează soldul rândului, inclusiv zero și valori negative, fără o a treia coloană. RO/EN, text normal și mărit, prima și ultima mână și toate locurile, pe un APK care include acest contract. |
+| Dreptunghi de serie | Contur normal numai după cinci realizări eligibile consecutive; contur roșu după cinci ratări eligibile consecutive, inclusiv când totalul rămâne pozitiv. Bonusurile și penalizările ±5/±10 încadrează totalul numai pe rândul plății, exclusiv în celula `P`; licitația, antetul, vecinii și rezultatele fără plată nu primesc dreptunghi. |
+| Randare | Captura originală confirmă cele patru laturi, lizibilitatea numărului și semnului, spațiul până la contur și lipsa intersecțiilor, inclusiv la text mărit. Prezența nodului în XML nu demonstrează dreptunghiul, iar un raport al unui APK anterior nu califică noul marcaj. |
 | Integritate | Explorarea și reluarea păstrează totalurile și toate rândurile; marcajul rămâne asociat mâinii și locului corect. |
+| Separatoare | Țintă de 2,1 dp, rotunjită în pixeli o singură dată; toate granițele jucătorilor rămân aliniate între antete și corp. PNG-ul de componentă califică geometria și culoarea în randarea JVM; fontul și pixelii Android cer APK identificat. |
 
 [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează sufixele cunoscute ale licitațiilor și levatelor. Punctele se derivă din solduri, iar ratarea compară licitatul cu levatele; nu se deduce din culoare sau semnul punctajului.
 
@@ -54,6 +39,14 @@ Sanity-ul folosește un APK care include schimbarea; nu se atribuie unui release
 Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lipsă. Contractul implementat și limita migrării rămân în [modelul istoricului](../game/ATF_ScoreHistory.md).
 
 ## Persistență și coordonare
+
+### P1 — numerele salvării sunt convertite înaintea validării
+
+[GameSessionStore.decode](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) folosește `Number.intValue()` pentru licitație și cititori JSON permisivi pentru câmpurile structurale. Proba JVM pe codec-ul live acceptă `bid=0.75` și `bid=4294967296` ca `0`; acceptă și fracții pentru versiune, numărul jucătorilor și indexul mâinii. Vecinul valid este restaurat, iar licitația întreagă ilegală este refuzată; pierderea precede validarea domeniului.
+
+- Introduceți o frontieră numerică exactă pentru schema salvării, cu domeniu explicit per câmp; refuzați fracția și depășirea înaintea conversiei. Nu normalizați o salvare coruptă într-o partidă aparent validă.
+- Calificați codec-ul real cu valori valide, fracții, limite, depășiri și tipuri greșite; păstrați migrarea versiunilor vechi și cauza refuzului. Cititorul strict al registrului scorului nu califică implicit celelalte câmpuri.
+- Păstrați separat acceptanța Android pentru stocare coruptă; componenta codec-ului nu demonstrează comportamentul `SharedPreferences` ori recuperarea după întrerupere.
 
 [Comenzile și salvarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#comenzi-salvare-și-erori) au porturi de componentă pentru refuz, checkpoint, clasament și continuare. Randarea nu înregistrează rezultate; recuperarea stocării native și costul pe dispozitiv păstrează calificare distinctă.
 

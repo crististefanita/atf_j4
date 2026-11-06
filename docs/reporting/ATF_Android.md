@@ -74,6 +74,12 @@ HTML-ul trebuie să permită înțelegerea verificării fără acces la checkout
 
 Un hash dovedește identitatea octeților, fără a substitui oracolul de domeniu. Un link extern sau un rezumat al replay-ului nu înlocuiește comparațiile necesare scopului publicat.
 
+### Captura anexelor
+
+- [Captura text](../../atf-test-android/src/main/java/atf/android/evidence/text/CapturedTextEvidence.java) citește o singură dată octeții și decodează strict UTF-8; fingerprint-ul identifică originalul, iar corpul publicat trece prin redactarea bibliotecii.
+- Publicatorul încorporează manifestul, anexele declarate de checkpoint-uri și intrările suplimentare, deduplicând corpurile identice; datele necitibile sunt refuzate înaintea sesiunii.
+- Încorporarea la publicare este etichetată ca atare și nu reconstruiește timpul capturii Android.
+
 ## Timp și status
 
 [Contractul temporal](ATF_PhaseTiming.md) deține intervalele originale, axele și tratarea jurnalelor incomplete. [Predarea rezultatelor](ATF_Handoff.md) deține acceptanța unui scop și identitatea republicării.

@@ -2612,6 +2612,20 @@
       "sha256": "430a27e1869a8d8241be452cd414854a574e8fd8bfe8a8aed5be0c49bd9fab23"
     }
   ],
-  "laterLiveChangesExcluded": [],
-  "scope": "Exact staged APK inputs and test sources; staged Maven selection profiles are not production changes"
+  "laterLiveChangesExcluded": [
+    "whist-lab-app/app/build.gradle",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/AndroidCollectionSurface.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRun.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/localization/WhistUiText.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryMeasure.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryTable.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java"
+  ],
+  "scope": "Exact staged APK inputs and test sources; staged Maven selection profiles are not production changes",
+  "liveComparisonCapturedUtc": "2026-11-06T04:34:34.510874+00:00"
 }

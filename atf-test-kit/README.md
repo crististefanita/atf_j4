@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Modulul oferă clasificarea testelor, configurare, resurse cu proprietar explicit și auditul comparațiilor JUnit. Testul deține așteptarea, Kitul păstrează rezultatul evaluat, iar consumatorul furnizează publicarea.
+Kit clasifică și auditează teste JUnit; modulul rămâne sursă până la adopția JAR-ului. Oracolul și publicarea aparțin consumatorului. [Registrul responsabilităților](../docs/feedback/README.md#suportul-comun-al-testelor) deține rutarea schimbărilor comune.
 
 Resursele pot fi partajate la nivel de clasă sau suită; fiecare invocare păstrează propriul audit și propria publicare. Motorul Whist rămâne independent de infrastructura JUnit.
 

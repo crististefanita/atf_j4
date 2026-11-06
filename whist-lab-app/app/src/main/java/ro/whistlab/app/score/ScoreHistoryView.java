@@ -12,6 +12,7 @@ import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
 import ro.whistlab.app.score.layout.HistoryViewport;
+import ro.whistlab.app.score.award.SeriesPointsView;
 
 /** All players share a chronological table; the header stays above the vertical viewport. */
 public final class ScoreHistoryView extends LinearLayout {
@@ -62,9 +63,9 @@ public final class ScoreHistoryView extends LinearLayout {
                 group.setFocusable(true);
                 group.setContentDescription(cell.description());
                 bid(group, cell, grid.bidWidthPx());
-                TextView points = text(group, cell.points(), grid.pointsWidthPx(), false, false);
-                if (cell.underlinePoints()) points.setPaintFlags(points.getPaintFlags()
-                        | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
+                TextView points = new SeriesPointsView(context, cell.seriesPoints());
+                style(points, cell.displayPoints(), false, false);
+                group.addView(points, new LinearLayout.LayoutParams(grid.pointsWidthPx(), -2));
                 line.addView(group, new LinearLayout.LayoutParams(grid.playerWidthPx(), -2));
             }
             rows.addView(line);

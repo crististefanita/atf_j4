@@ -15,7 +15,7 @@ public final class ScoreHistoryGridMetricsComponentTest {
                     assertEquals("Player boundary at density " + density, header, cells);
                 }
                 assertEquals(grid.tableWidthPx(), cells + 2 * grid.outerPaddingPx());
-                assertEquals(Math.round(3 * density), grid.separatorWidthPx());
+                assertEquals(Math.round(2.1f * density), grid.separatorWidthPx());
             }
         }
     }
@@ -23,7 +23,7 @@ public final class ScoreHistoryGridMetricsComponentTest {
     @Test public void fractionalDensityKeepsTheExtraSubcolumnPixelRatherThanClippingIt() {
         var grid = ScoreHistoryGridMetrics.forDensity(4, 2.75f);
         assertEquals(116, grid.playerWidthPx());
-        assertEquals(4 * (116 + 8) + 82 + 40, grid.tableWidthPx());
+        assertEquals(4 * (116 + 6) + 82 + 40, grid.tableWidthPx());
     }
 
     @Test public void preferredGridContainsOnlyBidAndPointsForEveryPlayer() {
@@ -32,8 +32,8 @@ public final class ScoreHistoryGridMetricsComponentTest {
         assertEquals(19, grid.bidWidthPx());
         assertEquals(23, grid.pointsWidthPx());
         assertEquals(42, grid.playerWidthPx());
-        assertEquals(224, grid.tableWidthPx());
-        assertEquals(3, grid.separatorWidthPx());
+        assertEquals(220, grid.tableWidthPx());
+        assertEquals(2, grid.separatorWidthPx());
     }
 
     @Test public void measuredDigitsLargeTextAndNamesExpandWithoutChangingHeaderBoundaries() {
