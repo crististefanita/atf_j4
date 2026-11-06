@@ -2,7 +2,7 @@ package atf.tests.publishing;
 
 import atf.testkit.assertions.AuditedAssertions;
 
-import atf.testkit.AtfComponentTest;
+import atf.testkit.AtfIntegrationTest;
 
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportPhase;
@@ -18,7 +18,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Consumer composition through the J0-owned binary; no private HTML renderer. */
-@AtfComponentTest
+@AtfIntegrationTest
 class RuleComponentExtentReportTest {
     static final List<ReportField> RULES=List.of(
             new ReportField("RW01 — deck","3–6 players; 8 cards per player. Keep ranks 9..A / 7..A / 5..A / 3..A for 3 / 4 / 5 / 6 players. Hearts and diamonds red; spades and clubs black. Ace is highest."),

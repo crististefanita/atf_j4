@@ -2,7 +2,7 @@ package atf.tests.publishing;
 
 import atf.testkit.assertions.AuditedAssertions;
 
-import atf.testkit.AtfComponentTest;
+import atf.testkit.AtfIntegrationTest;
 
 import atf.tests.reporting.GameReportSession;
 import atf.tests.reporting.GameReportTextAudit;
@@ -19,7 +19,7 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Native J0 Reporting composition for a complete normal Romanian Expert Android game. */
-@AtfComponentTest
+@AtfIntegrationTest
 class RomanianExpertExtentReportTest {
     @Test void publishesEveryNormalGameCheckpointAndCompleteRuleEvidence()throws Exception{
         assumeTrue(Boolean.getBoolean("atf.romanian.publish"));
