@@ -22,9 +22,13 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 - Configurarea unei partide noi aplică aceeași valoare de 5 sau 10 pentru bonusul și penalizarea după cinci mâini eligibile; profilurile istorice își păstrează configurația la restaurare.
 - [Motorul de reguli](game-core/README.md) descrie domeniul și diferențele față de celelalte variante.
 
-`Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului` afișează cronologic două coloane pentru fiecare jucător: licitația cunoscută și punctajul total după mâna respectivă. Bonusul sau penalizarea de serie încadrează totalul într-un dreptunghi numai în celula `P` a rândului plății; diferența de puncte a mâinii rămâne în registru și în descrierea accesibilă.
-
-Registrul păstrează totalurile după mâinile încheiate și derivă punctele fiecărei mâini din diferența lor, inclusiv seriile. O salvare veche păstrează soldul cunoscut; mâinile lipsă nu sunt inventate. Contractele sunt în [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java).
+| Istoricul scorului | Folosire și comportament |
+|---|---|
+| Acces | `Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului`. |
+| Coloane | Fiecare jucător are licitația cunoscută și totalul după mâna respectivă. Dreptunghiul seriei apare numai în `P`, pe rândul plății; diferența mâinii rămâne în registru și în descrierea accesibilă. |
+| Date păstrate | Totalurile încheiate determină punctele mâinii, inclusiv seriile; datele lipsă nu sunt inventate. [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) dețin registrul și restaurarea. |
+| Adaptare | Dialogul distribuie fereastra disponibilă, cu margini proporționate și scara textului păstrată. Coloanele late se derulează orizontal; o fereastră prea scundă permite derularea conținutului integral. |
+| Licitație ratată | Diagonală roșie proprie, distinctă de dreptunghiul seriei; [contractul istoricului](../docs/game/ATF_ScoreHistory.md#adaptarea-la-fereastră) explică geometria și adaptarea. |
 
 ## Flux și responsabilități
 

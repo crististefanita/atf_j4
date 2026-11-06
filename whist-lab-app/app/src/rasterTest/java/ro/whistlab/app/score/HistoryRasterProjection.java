@@ -32,5 +32,14 @@ public final class HistoryRasterProjection {
         return new HistoryRaster.Spec(all.players(), all.rows().subList(first, last), all.grid(), all.fonts(),
                 all.cardsHeading(), all.bidHeading(), all.pointsHeading());
     }
+
+    public static HistoryRaster.Spec fitWidth(HistoryRaster.Spec spec, int viewportWidth) {
+        var original = spec.grid();
+        var grid = new ScoreHistoryGridMetrics(original.hand(), original.bid(), original.points(), original.separator(),
+                original.padding(), spec.players().size()).fitViewport(viewportWidth);
+        return new HistoryRaster.Spec(spec.players(), spec.rows(), new HistoryRaster.Grid(grid.handWidthPx(), grid.bidWidthPx(),
+                grid.pointsWidthPx(), grid.separatorWidthPx(), grid.outerPaddingPx()), spec.fonts(),
+                spec.cardsHeading(), spec.bidHeading(), spec.pointsHeading());
+    }
     private HistoryRasterProjection() { }
 }

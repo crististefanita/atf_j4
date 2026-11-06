@@ -63,7 +63,7 @@ utilitate_mixtă = (1 − α) × utilitate_rollout + α × utilitate_MaxN
 ```
 
 - Agregarea simulărilor generale folosește ponderi egale ale lumilor generate; samplerul nu este dovedit uniform peste toate distribuirile fezabile.
-- Amestecul cu MaxN se aplică numai în domeniul mic definit de `MonteCarloAi.evaluate`; în rest se folosește rollout-ul.
+- Amestecul cu MaxN se aplică numai în domeniul mic definit de `DecisionEvaluation.evaluate`; în rest se folosește rollout-ul.
 - Căutarea pe o lume ipotetică poate folosi acea lume pentru consecințe, fără a demonstra optimalitatea strategiei cu informație ascunsă.
 - Frecvența exactului depinde de modelul lumilor și al continuării; condiționarea generală după licitații la 2–8 cărți este [cercetare separată](ATF_RulesConfiguration.md#inferența-comportamentului).
 

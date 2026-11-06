@@ -14,13 +14,18 @@ public final class AwardRasterFixture {
                            List<Integer> eligibleSeries) { }
 
     public static GameSession create(int players, Pattern pattern) throws Exception {
+        return create(players, pattern, 0);
+    }
+
+    public static GameSession create(int players, Pattern pattern, int missedSeat) throws Exception {
+        if (missedSeat < 0 || missedSeat >= players) throw new IllegalArgumentException("Missed seat outside table");
         var game = GameSession.newGame(new GameConfig(players, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL,
                 171 + players, true, 10, 10), "Audit");
         int eligible = 0, target = pattern == Pattern.PENALTY_WITH_POSITIVE_TOTAL ? 10 : 5;
         do {
             if (game.snapshot().handSize() > 1) eligible++;
             int missed = pattern == Pattern.PENALTY_WITH_POSITIVE_TOTAL && eligible <= 5
-                    || pattern == Pattern.ISOLATED_BONUS && eligible == 5 ? 1 : 0;
+                    || pattern == Pattern.ISOLATED_BONUS && eligible == 5 ? (missedSeat + 1) % players : missedSeat;
             game = ScoredHandFixture.finish(game, missed, (stage, source) -> source).game();
             if (eligible == target) return game;
             game.startNextHand();

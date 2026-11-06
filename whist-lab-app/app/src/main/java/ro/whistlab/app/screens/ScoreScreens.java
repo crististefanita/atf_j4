@@ -6,6 +6,8 @@ import static ro.whistlab.app.screens.ScreenViews.ACCENT;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.score.ScoreHistoryView;
 import ro.whistlab.app.score.ScoreTableView;
+import ro.whistlab.app.score.layout.HistoryDialogWindow;
+import ro.whistlab.app.score.layout.HistoryContentScroll;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.view.ViewGroup;
@@ -84,9 +86,8 @@ public final class ScoreScreens {
     }
     public void history(WhistUiText copy, GameSession.Snapshot state, ScoreHistory history, Runnable dismissed) {
         AlertDialog dialog = new AlertDialog.Builder(activity).setTitle(copy.scoreHistory())
-                .setView(new ScoreHistoryView(activity, state, history, copy))
+                .setView(new HistoryContentScroll(activity, new ScoreHistoryView(activity, state, history, copy)))
                 .setPositiveButton(copy.close(), null).create();
-        dialog.setOnDismissListener(ignored -> dismissed.run());
-        dialog.show();
+        HistoryDialogWindow.show(activity, dialog, dismissed);
     }
 }

@@ -2,6 +2,7 @@ package ro.whistlab.app.score;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import ro.whistlab.app.score.layout.BidStrikeGeometry;
 
 public final class ScoreHistoryGridMetricsComponentTest {
     @Test public void playerHeadersAndSubcolumnsAlignWithoutClippingAtFractionalDensities() {
@@ -97,5 +98,55 @@ public final class ScoreHistoryGridMetricsComponentTest {
         var base = ScoreHistoryGridMetrics.forDensity(4, 1);
         assertThrows(IllegalArgumentException.class, () -> base.fitContent(0, Integer.MAX_VALUE, 0, 0));
         assertThrows(IllegalArgumentException.class, () -> new ScoreHistoryGridMetrics(0, 1, 1, 1, 0, 4));
+    }
+
+    @Test public void spareWidthIsSharedByColumnsAndEveryHeaderKeepsItsBodyBoundary() {
+        for (int seats = 3; seats <= 6; seats++) for (float density : new float[]{1, 1.5f, 2, 2.625f, 3.5f}) {
+            for (float scale : new float[]{1, 1.3f, 1.5f}) {
+                var minimum = ScoreHistoryGridMetrics.forDensity(seats, density)
+                        .fitContent(Math.round(42 * density * scale), Math.round(18 * density * scale),
+                                Math.round(38 * density * scale), Math.round(64 * density * scale));
+                for (int width : new int[]{240, 320, 480, 644, 720, 1080, 1460, 2400}) {
+                    var grid = minimum.fitViewport(width);
+                    assertEquals(Math.max(width, minimum.tableWidthPx()), grid.tableWidthPx());
+                    assertTrue(grid.handWidthPx() >= minimum.handWidthPx());
+                    assertTrue(grid.bidWidthPx() >= minimum.bidWidthPx());
+                    assertTrue(grid.pointsWidthPx() >= minimum.pointsWidthPx());
+                    assertEquals(minimum.separatorWidthPx(), grid.separatorWidthPx());
+                    assertEquals(minimum.outerPaddingPx(), grid.outerPaddingPx());
+                    int header = grid.handWidthPx(), body = header;
+                    for (int seat = 0; seat < seats; seat++) {
+                        header += grid.separatorWidthPx() + grid.playerWidthPx();
+                        body += grid.separatorWidthPx() + grid.bidWidthPx() + grid.pointsWidthPx();
+                        assertEquals(header, body);
+                    }
+                    assertEquals(grid.tableWidthPx(), body + 2 * grid.outerPaddingPx());
+                }
+            }
+        }
+    }
+
+    @Test public void extraWidthGrowsBothNumericColumnsAndResizingDoesNotMutateTheMinimum() {
+        var minimum = ScoreHistoryGridMetrics.forDensity(4, 2).fitContent(60, 40, 60, 80);
+        var first = minimum.fitViewport(644);
+        var wide = minimum.fitViewport(1460);
+        assertEquals(644, first.tableWidthPx());
+        assertEquals(1460, wide.tableWidthPx());
+        assertTrue(wide.bidWidthPx() > first.bidWidthPx());
+        assertTrue(wide.pointsWidthPx() > first.pointsWidthPx());
+        assertTrue(wide.handWidthPx() > first.handWidthPx());
+        assertEquals(first, minimum.fitViewport(644));
+        assertEquals(minimum, minimum.fitViewport(1));
+        assertEquals(minimum, minimum.fitViewport(0));
+    }
+
+    @Test public void pixelRemaindersCannotCreateAnEmptyStripOrAnOverflow() {
+        for (int seats = 3; seats <= 6; seats++) {
+            var minimum = ScoreHistoryGridMetrics.forDensity(seats, 1);
+            for (int width = minimum.tableWidthPx(); width < minimum.tableWidthPx() + 100; width++)
+                assertEquals(width, minimum.fitViewport(width).tableWidthPx());
+            assertEquals(Integer.MAX_VALUE, minimum.fitViewport(Integer.MAX_VALUE).tableWidthPx());
+            assertThrows(IllegalArgumentException.class, () -> minimum.fitViewport(-1));
+        }
     }
 }

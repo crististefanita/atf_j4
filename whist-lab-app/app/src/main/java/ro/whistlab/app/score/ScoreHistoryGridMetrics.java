@@ -37,4 +37,16 @@ record ScoreHistoryGridMetrics(int handWidthPx, int bidWidthPx, int pointsWidthP
     int playerWidthPx() { return bidWidthPx + pointsWidthPx; }
     int contentWidthPx() { return handWidthPx + players * (separatorWidthPx + playerWidthPx()); }
     int tableWidthPx() { return contentWidthPx() + 2 * outerPaddingPx; }
+
+    /** Extra pixels enlarge columns proportionally; narrow windows retain the measured minimum and scroll. */
+    ScoreHistoryGridMetrics fitViewport(int availableWidth) {
+        if (availableWidth < 0) throw new IllegalArgumentException("Viewport width cannot be negative");
+        if (availableWidth <= tableWidthPx()) return this;
+        long extra = (long) availableWidth - tableWidthPx();
+        long weights = (long) handWidthPx + (long) players * playerWidthPx();
+        int bid = bidWidthPx + (int) (extra * bidWidthPx / weights);
+        int points = pointsWidthPx + (int) (extra * pointsWidthPx / weights);
+        int hand = availableWidth - 2 * outerPaddingPx - players * (separatorWidthPx + bid + points);
+        return new ScoreHistoryGridMetrics(hand, bid, points, separatorWidthPx, outerPaddingPx, players);
+    }
 }

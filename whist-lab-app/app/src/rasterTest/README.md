@@ -27,11 +27,15 @@ Tabelul și geometria provin din aplicație. Fontul și desenarea sunt ale gazde
 - Conturul de serie exclusiv în coloana punctelor, cu culoarea ajustării și patru laturi vizibile.
 - Păstrarea proiecției după salvare/reluare, ultima mână, localizare și text mărit.
 - Grosimea separatoarelor și limitele celulei, fără schimbarea partidei prin randare.
+- Folosirea lățimii și înălțimii disponibile în portret, pe tabletă și în ferestre late; antetele, legenda și acțiunea de închidere rămân delimitate.
+- Diagonale roșii vizibile numai în licitațiile ratate, pentru fiecare loc, inclusiv contractul zero; diferența pixelilor este verificată separat de dreptunghiurile din puncte.
 
 ## Execuție și limite
 
 [Gradle](../../build.gradle) compilează separat sursele gazdei și execută `historyRasterTest`. [Ghidul display](../../../../docs/testing/ATF_DisplayComponents.md) explică exportul opțional într-un director extern; testele pot folosi numai temporarele proprii.
 
 Eticheta probei identifică randarea controlată JVM. Acceptarea APK-ului identificat verifică separat măsurarea fontului, clipping-ul și interacțiunea sistemului Android.
+
+- **Viewport:** [compoziția controlată](java/ro/whistlab/app/score/raster/HistoryViewportRaster.java) aplică politicile de grilă, înălțime și derulare integrală. Titlul și controalele folosesc fonturi gazdă; imaginea nu substituie layout-ul nativ Android.
 
 [Componentele aplicației](../test/README.md) · [Strategia comună](../../../../docs/testing/README.md) · [Contractul istoricului](../../../../docs/game/ATF_ScoreHistory.md)

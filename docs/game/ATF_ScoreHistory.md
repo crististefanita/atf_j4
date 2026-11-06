@@ -2,7 +2,7 @@
 
 Istoricul păstrează licitația, punctele mâinii și totalul fiecărui loc după o mână încheiată. Prezentarea și persistența consumă același registru, iar datele necunoscute dintr-o salvare veche rămân marcate ca necunoscute.
 
-Registrul stochează licitațiile, levatele câștigate și soldurile; punctele sunt diferențe de sold. Rezultatul contractului compară licitatul cu levatele, independent de semnul punctelor. O licitație ratată este tăiată oblic, păstrând cifra lizibilă și descrierea accesibilă explicită.
+Registrul stochează licitațiile, levatele câștigate și soldurile; punctele sunt diferențe de sold. Rezultatul contractului compară licitatul cu levatele, independent de semnul punctelor. O licitație ratată este tăiată oblic în roșu, păstrând cifra lizibilă și descrierea accesibilă explicită.
 
 - Fiecare jucător are exact două coloane vizibile: licitat și punctajul total după mâna respectivă; coloana `P` folosește soldul înregistrat pentru acel rând.
 - Totalul este încadrat într-un dreptunghi numai pe mâna în care se acordă bonusul sau penalizarea de serie, exclusiv în celula `P` a jucătorului respectiv; semnul pozitiv ori negativ, singur, nu justifică marcajul.
@@ -45,7 +45,7 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 
 [GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) definește migrarea fiecărei scheme și validarea checkpoint-ului. [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) definește integritatea registrului.
 
-- Toți jucătorii au coloane proprii; antetele rămân deasupra rândurilor derulabile vertical și se deplasează împreună cu acestea la derularea orizontală.
+- Toți jucătorii au coloane proprii; antetele rămân deasupra rândurilor derulabile vertical și se deplasează împreună cu acestea la derularea orizontală. Dacă elementele fixe nu mai lasă un rând complet, conținutul integral se derulează vertical, păstrând accesul la tabel și legendă.
 - Prima coloană afișează numai numărul cărților mâinii. Identitatea cronologică rămâne în model și în descrierile accesibile, inclusiv când mai multe mâini au același număr de cărți.
 - Separatoarele verticale delimitează grupurile jucătorilor, fără a separa licitația de punctele aceluiași loc. Cele două subcoloane se rotunjesc o singură dată în pixeli; suma lor dimensionează și antetul, iar padding-ul intră în lățimea derulabilă. Măsurarea folosește totalurile afișate, inclusiv zero și semnul negativ; diferențele pe mâini nu dimensionează coloana `P`.
 - Programul complet include mâinile încheiate, mâna curentă și mâinile viitoare; punctele neacordate se afișează ca necunoscute, fără totaluri inventate.
@@ -63,6 +63,18 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 
 ## Verificarea mecanismului
 
+### Adaptarea la fereastră
+
+| Responsabilitate | Mecanism |
+|---|---|
+| Fereastra dialogului | [HistoryDialogWindow](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryDialogWindow.java) urmărește fereastra utilă, protejată față de barele sistemului. Marginile sunt proporționale și plafonate; observatorul este eliminat la închidere. |
+| Lățimea tabelului | [Grila](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java) extinde proporțional coloanele până la lățimea disponibilă, cu aceleași frontiere pentru antet și rânduri. Resturile de rotunjire nu lasă o bandă goală. |
+| Conținutul minim | Măsurarea integrală a textului stabilește limita de comprimare. Când limita depășește fereastra, derularea orizontală păstrează cifrele și numele, fără reducerea scării de accesibilitate. |
+| Înălțimea | Antetele și legenda măsurate primesc întâi spațiu; rândurile derulabile ocupă restul, fără plafon fix. Când nu încape un rând complet, [containerul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryContentScroll.java) permite derularea conținutului integral; o nouă măsurare poate reveni la antete fixe. |
+| Text și marcaje | [Tipografia](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/HistoryTypography.java) păstrează dimensiuni în sp. [Diagonala](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) are roșu și grosime proprii; se desenează exclusiv peste licitația ratată, independent de culoarea textului și de conturul seriei. |
+
+### Componente și probe grafice
+
 Componentele verifică închiderea mâinii, migrarea, coruperea checkpoint-ului și proiecția tuturor locurilor. Replay-ul unui trace extern este opt-in și verifică asocierea contract–puncte–total după reîncărcare, cu identitatea și hash-ul intrării controlate.
 
 [Componentele totalurilor afișate](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) confruntă fiecare sold istoric și limita prefixului cunoscut la 3–6 locuri, în RO/EN. [Măsurarea coloanelor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java) folosește aceeași valoare vizibilă, inclusiv pentru ultimul rând și ultimul jucător.
@@ -71,6 +83,7 @@ Componentele verifică închiderea mâinii, migrarea, coruperea checkpoint-ului 
 - [Geometria marcajului](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/award/SeriesPointsFrameComponentTest.java) confruntă dreptunghiul și întregul contur cu limitele celulei la densități fracționare, numere lungi și font mărit; pixelii și fontul Android păstrează calificare nativă distinctă.
 - [Proba raster de componentă](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) proiectează stări legale prin geometria de producție într-o imagine JVM cu fonturi controlate. Diferența dintre imaginile cu și fără marcaje trebuie să aparțină numai celulelor `P` premiate și să conțină cele patru laturi; roșul se verifică și după o penalizare care lasă totalul pozitiv.
 - [Recuperarea istoricului în imagini](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryRecoveryRasterComponentTest.java) scrie checkpoint-ul JSON într-un fișier, îl citește prin codec-ul aplicației și compară pixelii PNG înainte și după restaurare, la 3–6 locuri, în RO/EN și cu text mărit. Verifică marcajele istorice în licitare, joc și după închiderea unei alte mâini; nu le deduce din contorul curent al seriei.
+- [Grila adaptivă](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java) verifică utilizarea lățimii, minimele măsurate, redimensionarea și rotunjirile. [Probele grafice](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryResponsiveRasterComponentTest.java) compun politicile într-un viewport controlat și compară separat imaginile cu și fără diagonale: numai celulele licitațiilor ratate se pot schimba, cu pixeli roșii și direcție oblică.
 - Ultima mână și ultima plată eligibilă sunt repere distincte: o mână finală de o carte nu primește marcaj nou, dar păstrează plata anterioară în istoric; un program care se încheie cu o mână eligibilă poate plăti seria chiar pe ultimul rând. Fereastra raster se limitează la programul existent, fără accesarea unui rând ulterior ultimei mâini.
 
 [Motorul](../../whist-lab-app/game-core/README.md) · [Persistența și interfața](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

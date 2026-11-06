@@ -10,6 +10,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import ro.whistlab.app.score.award.SeriesPointsFrame;
+import ro.whistlab.app.score.HistoryTypography;
+import ro.whistlab.app.score.layout.BidStrikeGeometry;
 
 /** Controlled JVM raster of the production projection and geometry, with host fonts rather than Android fonts. */
 public final class HistoryRaster {
@@ -36,9 +38,9 @@ public final class HistoryRaster {
         public final float density;
         public Fonts(float density, float scale) {
             this.density = density;
-            value = new Font(Font.DIALOG, Font.PLAIN, Math.round(12 * density * scale));
+            value = new Font(Font.DIALOG, Font.PLAIN, Math.round(HistoryTypography.VALUE_SP * density * scale));
             bold = value.deriveFont(Font.BOLD);
-            caption = new Font(Font.DIALOG, Font.BOLD, Math.round(11 * density * scale));
+            caption = new Font(Font.DIALOG, Font.BOLD, Math.round(HistoryTypography.CAPTION_SP * density * scale));
             var image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             var graphics = image.createGraphics();
             try {
@@ -55,6 +57,10 @@ public final class HistoryRaster {
     }
 
     public static BufferedImage render(Spec spec, boolean decorations) {
+        return render(spec, decorations, true);
+    }
+
+    public static BufferedImage render(Spec spec, boolean decorations, boolean strikes) {
         var grid = spec.grid(); var fonts = spec.fonts();
         int rowHeight = fonts.rowHeight(), width = grid.width(spec.players().size());
         var image = new BufferedImage(width, rowHeight * (2 + spec.rows().size()), BufferedImage.TYPE_INT_ARGB);
@@ -80,12 +86,7 @@ public final class HistoryRaster {
                     var cell = row.cells().get(seat);int pointsLeft = grid.pointsLeft(seat);
                     text(graphics, cell.bid(), fonts.value, cell.missed() ? 0xff97462e : 0xff29362e,
                             pointsLeft - grid.bid(), top, grid.bid(), rowHeight);
-                    if (cell.missed()) {
-                        graphics.setColor(new Color(0xff97462e, true));graphics.setStroke(new BasicStroke(fonts.unit()));
-                        int glyph = fonts.regularMetrics.stringWidth(cell.bid()), left = pointsLeft - grid.bid() + (grid.bid() - glyph) / 2;
-                        graphics.drawLine(left, top + rowHeight / 2 + fonts.textHeight() / 3,
-                                left + glyph, top + rowHeight / 2 - fonts.textHeight() / 3);
-                    }
+                    if (strikes && cell.missed()) strike(graphics, fonts, cell.bid(), pointsLeft - grid.bid(), top, grid.bid(), rowHeight);
                     text(graphics, cell.points(), fonts.value, cell.points().startsWith("-") ? 0xff97462e : 0xff29362e,
                             pointsLeft, top, grid.points(), rowHeight);
                     if (decorations && cell.series() != 0) {
@@ -104,6 +105,17 @@ public final class HistoryRaster {
                 fill(graphics, DIVIDER, grid.separatorLeft(seat), 0, grid.separator(), image.getHeight());
         } finally { graphics.dispose(); }
         return image;
+    }
+
+    private static void strike(Graphics2D graphics, Fonts fonts, String bid, int x, int y, int width, int height) {
+        int glyph = fonts.regularMetrics.stringWidth(bid);
+        float left = (width - glyph) / 2f;
+        int baseline = (height - fonts.regularMetrics.getHeight()) / 2 + fonts.regularMetrics.getAscent();
+        var line = BidStrikeGeometry.across(left, baseline - fonts.regularMetrics.getAscent(), left + glyph,
+                baseline + fonts.regularMetrics.getDescent(), width, fonts.unit());
+        graphics.setColor(new Color(BidStrikeGeometry.COLOR, true));
+        graphics.setStroke(new BasicStroke(BidStrikeGeometry.strokeWidth(fonts.density), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphics.draw(new java.awt.geom.Line2D.Float(x + line.left(), y + line.bottom(), x + line.right(), y + line.top()));
     }
 
     private static void fill(Graphics2D graphics, int color, int x, int y, int width, int height) {

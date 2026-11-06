@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.widget.TextView;
+import ro.whistlab.app.score.layout.BidStrikeGeometry;
 
 /** Keeps the bid as actual text; the cancellation mark is drawn across the glyphs. */
 final class HistoryBidView extends TextView {
@@ -24,8 +25,8 @@ final class HistoryBidView extends TextView {
         Paint.FontMetrics font = getPaint().getFontMetrics();
         var line = BidStrikeGeometry.across(left, getBaseline() + font.ascent,
                 left + width, getBaseline() + font.descent, getWidth(), density);
-        strike.setColor(getCurrentTextColor());
-        strike.setStrokeWidth(Math.max(1f, 1.2f * density));
+        strike.setColor(BidStrikeGeometry.COLOR);
+        strike.setStrokeWidth(BidStrikeGeometry.strokeWidth(density));
         strike.setStrokeCap(Paint.Cap.ROUND);
         canvas.drawLine(line.left(), line.bottom(), line.right(), line.top(), strike);
     }
