@@ -62,11 +62,13 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 |---|---|---|
 | P1 | Traseul linkului din README până la fișierul salvat în browser nu are încă o probă repetabilă pentru versiunea curentă publicată. | După publicare, verificați în sesiunea GitHub autentificată URL-ul exact, numele, numărul efectiv de bytes, SHA-256 și CRC. Păstrați separat identitatea browserului, rezultatul API și orice blocare a clientului; un rezultat al versiunii anterioare nu califică noul APK. |
 
-## Acoperirea inventarului surselor
+Transferul real DownloadManager pe API 28 este [calificat separat](../../release/0.10.2/reports/README.md#descărcare-reală-pe-android): fișier complet, identitate și certificat corecte. Nu închide proba browserului de mai sus. Păstrați distinct 404-ul frontend-ului fără sesiune, transferul autorizat reușit și refuzul local de automatizare; existența unui marcaj al contului sau cauza acestuia nu se deduc din acestea.
 
-| Prioritate | Problemă observată | Criteriu de închidere |
+## Acceptanța nativă a distribuției
+
+| Prioritate | Lacună delimitată | Criteriu de închidere |
 |---|---|---|
-| P1 | [Lansatorul suitelor](../../scripts/run-component-suites.ps1) exclude numele `release` din orice segment al căii; manifestul păstrat omite 19 fișiere Java din pachetul legitim `governance/documentation/release`, deși ele există în snapshot. | Excluderea dosarului de livrare se aplică numai rădăcinii proiectului. Controale cu fișiere sursă în pachete `release` și `target` disting directoarele de build de segmentele legitime; manifestul confruntă populația executată și refuză omisiunile. Suplimentul observat asupra snapshot-ului nu rescrie fingerprint-ul capturat în rapoartele istorice. |
+| P2 | Proba nativă este păstrată cu sursele în Extent, dar lansarea ei este încă o operație TMP a operatorului. | Adaptor opt-in versionat: citește identitatea candidatului, folosește permisiuni Android proprii și separă accesul de transfer. Componentele injectează 404, fișier scurt, hash/CRC greșit, certificat absent ori diferit și timeout; nu salvează redirectul semnat. Raportul păstrează comparațiile, eroarea și durata originale, iar cleanup-ul elimină doar resursele deținute. Un singur transfer Android califică livrarea; nu se multiplică pe rezoluțiile UI. |
 
 ## Reluarea publicării după răspunsuri parțiale
 
@@ -98,3 +100,20 @@ testChanges:
 Controalele negative resping README-ul absent, documentele suplimentare, un director în locul README-ului și atribuirea codului ori feedback-ului unui consumer. Bibliotecile distribuite își păstrează coordonatele și hash-urile.
 
 </details>
+
+## Identitatea completă a auditului
+
+| Prioritate | Lacună și sursă | Criteriu de închidere |
+|---|---|---|
+| P2 | [Inventarul lansatorului](../../scripts/Get-AtfSourceInputs.ps1) exclude dosarul release, însă suita inspectează și documentele și integritatea acelui dosar din rădăcina live. | Identificați separat toate intrările release citite de guvernanță; alterarea, adăugarea sau ștergerea lor în timpul rulării invalidează atribuirea rezultatului, fără introducerea rapoartelor generate în sursele compilate. |
+| P2 | [Politica documentară](../../atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java) recunoaște forma controalelor testChanges; această recunoaștere nu confruntă singură baza Git, căile schimbate și expirarea. | Definiți explicit partea locală și contractul comun, cu refuz pentru bază lipsă, cale neacoperită, control expirat și modificare neautorizată a unui gate. Păstrați distinct validarea formatului și validarea schimbării efective. |
+
+Verificarea unei copii compilate și inspecția rădăcinii live au identități distincte. Un rezultat trecut se atribuie codului curent numai după comparația intrărilor efectiv citite; [auditul extern](../../../../whist_back/atf-governance/20261106-cross-quality-6e8cd680-audit/REVIEW.md) păstrează inventarul și limitele verificării.
+
+## Lizibilitatea coordonatorilor de domeniu
+
+**P2 · deschis · responsabil: motorul și coordonarea deciziei.**
+
+[GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) și [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) păstrează coordonare și mai multe modele sau etape interne. Pragul pachetelor rămâne util, însă nu califică singur lizibilitatea metodelor și stabilitatea fațadelor.
+
+Extrageți o singură responsabilitate demonstrată pe increment, cu același contract public, aceleași alegeri și estimări pe observații fixate, conservarea scorului și verificări nominale și de refuz. Păstrați modificările de prezentare și candidații strategici în lucrări separate; o formatare amplă nu dovedește refactorizare semantică.

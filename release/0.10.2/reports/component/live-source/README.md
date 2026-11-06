@@ -23,7 +23,7 @@ Sursa live a avansat după înghețare; [indexul](index.json) enumeră diferenț
 
 ## Limite
 
-- Inventarul inițial omite 19 surse din pachetul legitim `release`. Indexul păstrează separat hash-urile observate în snapshot și comparația live; suplimentul nu schimbă fingerprint-ul capturat în HTML. [Corecția lansatorului și controalele necesare](../../../../../docs/feedback/ATF_Governance.md#acoperirea-inventarului-surselor) rămân deschise.
+- Inventarul inițial omite 19 surse din pachetul legitim `release`. Indexul păstrează separat hash-urile observate în snapshot și comparația live; suplimentul nu schimbă fingerprint-ul capturat în HTML. [Contractul corectat al inventarului](../../../../../docs/reporting/ATF_Audit.md#integritatea-inventarului) se aplică execuțiilor următoare.
 - Suitele focalizate nu sunt executate din nou peste populația primară.
 - Nu s-a instalat ori executat Android; rezultatele nu se transferă APK-ului istoric.
 - XML-urile și observațiile istorice unice rămân în dosarul lor, cu identitatea originală. Această execuție nu reconstruiește comparații care nu au fost capturate atunci.

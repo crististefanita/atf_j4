@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "scope": "Current 0.10.2 release links and distribution; no new APK build or Android execution",
-  "recordedUtc": "2026-11-06T16:07:55.793097+00:00",
+  "scope": "Current 0.10.2 links, authenticated API delivery and real native Android DownloadManager transfer; no new game build or game E2E",
+  "recordedUtc": "2026-11-06T18:00:47.053Z",
   "currentCandidate": {
     "version": "0.10.2",
     "publication": "PUBLISHED",
@@ -163,6 +163,20 @@
       "role": "CURRENT",
       "status": "PASS — actual current 0.10.2 download",
       "sha256": "71f2f4c4d8d104c6e1cc6cbd030712cc5b64b80f92286cd751a7dc9df64e8562"
+    },
+    {
+      "file": "distribution/mobile-download.html",
+      "owner": "NativeAuthorizedDownload",
+      "role": "NATIVE_CAPTURE",
+      "junitInvocations": 0,
+      "sha256": "ff4c19098f33edbc5bbdd0cae92cb06af5a7be60d3bb1ce1fa6441acc5001bb0"
+    },
+    {
+      "file": "diagnostics/mobile-download-diagnostics.html",
+      "owner": "NativeDownloadDiagnostics",
+      "role": "DIAGNOSTIC_FAILURES",
+      "junitInvocations": 0,
+      "sha256": "a8a9ecf9a08e19c915bbc78379f936840e053b930e14d8f9cdc37dea7c48a239"
     }
   ],
   "qualifiedSourceInputs": [
@@ -236,7 +250,8 @@
     "files": 114,
     "changedFiles": [],
     "bytes": 803960,
-    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a"
+    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+    "scope": "Observed before subsequent parallel app changes; historical comparison, not current live qualification"
   },
   "finalReadOnlyChecks": {
     "tests": 4,
@@ -539,9 +554,10 @@
   },
   "browserProbe": {
     "state": "UNAVAILABLE",
-    "mcpAttempts": 2,
-    "nativeAttempts": 3,
-    "error": "Browser helper connection timeout"
+    "mcpError": "Local browser use is disabled in Work settings",
+    "adbChromeLaunch": "Automatic tool review rejected: blocked by policy",
+    "credentialsNeeded": false,
+    "visualFlowVerified": false
   },
   "sourceCommit": "dc31898523c69160f465f3a531c578736bc7d3f2",
   "releaseId": 436701664,
@@ -675,5 +691,206 @@
         "sha256": "30034dbd6667f2a6ba2884039eda3909867d9cc5718c1b34ccedb66e1ee8c159"
       }
     ]
+  },
+  "nativeAndroidDownload": {
+    "state": "PASS",
+    "report": "distribution/mobile-download.html",
+    "diagnostics": "diagnostics/mobile-download-diagnostics.html",
+    "channel": "Authorized GitHub asset redirect consumed by Android DownloadManager; host token not copied to device",
+    "api": 28,
+    "downloadId": 16,
+    "downloadStatus": 8,
+    "downloadReason": 0,
+    "bytes": 803960,
+    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+    "zipEntries": 14,
+    "zipCrc": "PASS",
+    "elapsedMillis": 888,
+    "nativeComparisons": 11,
+    "hostFileComparisons": 2,
+    "junitInvocations": 0,
+    "package": "ro.whistlab.app",
+    "versionName": "0.10.2",
+    "versionCode": 15,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "signers": 1,
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+    "mime": "application/vnd.android.package-archive",
+    "uiPerformed": false,
+    "retainedOnDevice": "/sdcard/Download/WhistLab-0.10.2.apk",
+    "helperUninstalled": true,
+    "leaseReleased": true,
+    "postCleanupDeviceHash": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+    "originalFailures": [
+      {
+        "mode": "CANONICAL_README_ON_ANDROID",
+        "http": 404,
+        "comparisons": 1,
+        "receivedApkBytes": 0
+      },
+      {
+        "mode": "DIRECT_CANONICAL_LINK_ON_ANDROID",
+        "downloadStatus": 16,
+        "reason": 404,
+        "receivedBytes": 0,
+        "comparisons": 1
+      },
+      {
+        "mode": "AUTHORIZED_ASSET_REDIRECT_ON_ANDROID",
+        "receivedBytes": 803960,
+        "comparisonsPassed": 9,
+        "result": "FAIL",
+        "diagnostic": "API 28 SigningInfo absent with the initial archive flags; exact single-signer oracle retained in the corrected probe"
+      }
+    ],
+    "remainingBoundary": "Authenticated browser README to Assets visual navigation not verified; anonymous frontend access cause not established"
+  },
+  "nativeDistributionExecuted": true,
+  "currentLiveSourceComparison": {
+    "observedUtc": "2026-11-06T18:01:03.554Z",
+    "originalInputs": 114,
+    "changedOriginalInputs": [
+      {
+        "file": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/BidStrikeGeometry.java",
+        "state": "DELETED"
+      },
+      {
+        "file": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/HistoryBidView.java",
+        "expected": "df83ef98d8aced79b3134d213ad3a78ebefa14584290d922cfdd466400a13aa4",
+        "current": "e30d4b8c8542b7f415a53b6cb88c78dfc766ffd707adf05e08fc276fbd6213d9"
+      },
+      {
+        "file": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java",
+        "expected": "c338638296244040e740f3b1b596b0fd5602fd36021c61cb6f3a79d4900f5d47",
+        "current": "03b5042aaa3bdf77d29691bfdea8490ff6ae7f12d69ac5c722ffc4d01c55087c"
+      },
+      {
+        "file": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java",
+        "expected": "1270b027ee1070b0dc64902360267d18cfea4f8509787d1ef063383954c6d215",
+        "current": "b45e083f09566b5bfcbaed4ac096fa7c2e903fa183dfc29fcd61d8e869cb48a1"
+      },
+      {
+        "file": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryViewport.java",
+        "expected": "0ebbf2341066b59b914d2c2616ed24a01f72b1db9c8e992a87f4e3a0a290ba9d",
+        "current": "ccea661cff757dbfb6a2c30d622d04cfb0bb2332b3ed3a2b021aff1704316169"
+      },
+      {
+        "file": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScoreScreens.java",
+        "expected": "513a8edf85f304f94a9b69f53bf8fb3a7590c3321ddbc205085019d2630d3f76",
+        "current": "90feaa158ae81659ebe0c7f0d4460e6a8acfd55618956d52e48bb9cabd756f39"
+      }
+    ],
+    "scope": "Comparison against the original APK input list only; added files are outside this list. Published binary remains immutable; live changes require their own qualification."
+  },
+  "nativeReportRenderingReview": [
+    {
+      "report": "distribution/mobile-download.html",
+      "owner": "NativeAuthorizedDownload",
+      "sha256": "ff4c19098f33edbc5bbdd0cae92cb06af5a7be60d3bb1ce1fa6441acc5001bb0",
+      "comparisons": 11,
+      "lastComparison": "Native signing certificate\tb80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3\tb80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3\t✅",
+      "assertionsReopened": true,
+      "scope": "Detached native report QA; network blocked; not a new mobile execution",
+      "status": "PASS"
+    },
+    {
+      "report": "distribution/mobile-download.html",
+      "owner": "DeviceFileHandoff",
+      "sha256": "ff4c19098f33edbc5bbdd0cae92cb06af5a7be60d3bb1ce1fa6441acc5001bb0",
+      "comparisons": 2,
+      "lastComparison": "Pulled file SHA-256\t10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a\t10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a\t✅",
+      "assertionsReopened": true,
+      "scope": "Detached native report QA; network blocked; not a new mobile execution",
+      "status": "PASS"
+    },
+    {
+      "report": "diagnostics/mobile-download-diagnostics.html",
+      "owner": "UnauthenticatedReadme404",
+      "sha256": "a8a9ecf9a08e19c915bbc78379f936840e053b930e14d8f9cdc37dea7c48a239",
+      "comparisons": 1,
+      "lastComparison": "Repository README page HTTP\t200\t404\t❌",
+      "assertionsReopened": true,
+      "scope": "Detached native report QA; network blocked; not a new mobile execution",
+      "status": "PASS"
+    },
+    {
+      "report": "diagnostics/mobile-download-diagnostics.html",
+      "owner": "UnauthenticatedAsset404",
+      "sha256": "a8a9ecf9a08e19c915bbc78379f936840e053b930e14d8f9cdc37dea7c48a239",
+      "comparisons": 1,
+      "lastComparison": "Native download status\t8\t16\t❌",
+      "assertionsReopened": true,
+      "scope": "Detached native report QA; network blocked; not a new mobile execution",
+      "status": "PASS"
+    },
+    {
+      "report": "diagnostics/mobile-download-diagnostics.html",
+      "owner": "InitialCertificateOracleFailure",
+      "sha256": "a8a9ecf9a08e19c915bbc78379f936840e053b930e14d8f9cdc37dea7c48a239",
+      "comparisons": 9,
+      "lastComparison": "Native target SDK\t36\t36\t✅",
+      "assertionsReopened": true,
+      "scope": "Detached native report QA; network blocked; not a new mobile execution",
+      "status": "PASS"
+    }
+  ],
+  "initialFinalGovernance": {
+    "tests": 39,
+    "succeeded": 38,
+    "failed": 1,
+    "skipped": 0,
+    "state": "FAIL retained",
+    "owner": "DocumentationProseGovernanceTest",
+    "violations": [
+      {
+        "file": "whist-lab-app/README.md",
+        "line": 29,
+        "rule": "DOC-PROSE-RUN"
+      },
+      {
+        "file": "whist-lab-app/app/src/rasterTest/README.md",
+        "line": 39,
+        "rule": "DOC-PROSE-RUN"
+      }
+    ],
+    "correction": "Live documents now use a table and bullets; original failed observation retained"
+  },
+  "focusedProseAndRetention": {
+    "tests": 7,
+    "succeeded": 7,
+    "failed": 0,
+    "skipped": 0,
+    "owners": [
+      "atf.tests.governance.documentation.DocumentationProseGovernanceTest",
+      "atf.tests.governance.documentation.release.ReleaseEvidenceRetentionGovernanceTest"
+    ],
+    "scope": "Focused real JUnit governance; selected owners only; no game E2E"
+  },
+  "gitEvidenceRetention": {
+    "tests": 2,
+    "succeeded": 2,
+    "failed": 0,
+    "skipped": 0,
+    "owners": [
+      "atf.tests.governance.documentation.release.ReleaseEvidenceRetentionGovernanceTest#releasePayloadDisablesGitTextConversionForEveryRegisteredFile",
+      "atf.tests.governance.documentation.release.ReleaseEvidenceRetentionGovernanceTest#missingAutomaticForcedAndNestedTextRulesAreRejected"
+    ],
+    "scope": "Effective Git text attributes under core.autocrlf=true; original payload plus manifest; missing, auto, forced and nested rules rejected; TMP source without .git accepted through owned inspection repository",
+    "report": "distribution/git-evidence-policy.html",
+    "sourceSha256": "32cbe14c4c9b1c956a93fbc4d702ee24d8999ab60d17541b3fc483ddcefe4a94",
+    "renderingReview": [
+      {
+        "report": "distribution/git-evidence-policy.html",
+        "owner": "ReleaseEvidenceRetentionGovernanceTest",
+        "sha256": "c437d6a6e86f5974888a5bb861e2ef2cf21f47393963084b7c2b7fbf62e1991f",
+        "comparisons": 6,
+        "lastComparison": "assertEquals · ReleaseEvidenceRetentionGovernanceTest.java:82 · The healthy neighboring policy preserves evidence bytes\t[]\t[]\t✅",
+        "assertionsReopened": true,
+        "scope": "Detached native report QA; network blocked; not a new mobile execution",
+        "status": "PASS"
+      }
+    ],
+    "observation": "Seven comparisons across two component invocations; last assertion disclosure reopened in detached Chromium"
   }
 }

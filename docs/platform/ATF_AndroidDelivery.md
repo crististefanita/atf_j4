@@ -66,6 +66,16 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 - Calificați separat accesul autentificat și accesul anonim. `visibility=public`, starea `uploaded` și digest-ul corect al asset-ului nu dovedesc că browserul unui vizitator poate descărca binarul. Proba păstrează codul HTTP, numărul de bytes și hash-ul copiei primite; un blocaj de vizibilitate rămâne deschis până la răspunsul public reușit.
 
+## Separarea accesului de transferul Android
+
+- **Navigare:** din README deschideți pagina GitHub Release a versiunii curente, apoi **Assets** și APK-ul. Legătura directă rămâne aceeași descărcare versionată; dosarul local de documentație nu este endpoint de distribuție.
+- **Acces:** HTTP 404 pe pagina proiectului sau pe asset, înaintea primirii octeților, se păstrează separat de integritatea APK-ului. Vizibilitatea declarată publică și reușita API-ului autentificat nu identifică singure cauza refuzului din browser.
+- **Transfer nativ:** o probă DownloadManager identifică sistemul, modul de autorizare, statusul și motivul Android, octeții primiți, SHA-256, CRC și pachetul citit prin PackageManager. Transferul de rețea trebuie executat de Android; împingerea copiei de pe calculator nu îl substituie.
+- **Credențiale:** tokenul API rămâne pe calculator. Un redirect temporar autorizat pentru asset poate fi consumat de probă, fără token global pe dispozitiv; URL-ul semnat și query-ul nu intră în documentație sau rapoarte.
+- **Semnătură:** pe API 28 cereți ambele flag-uri de citire a semnăturii arhivei; refuzați absența sau numărul neașteptat de semnatari și confruntați certificatul exact. Eșecul verificatorului nu devine PASS fiindcă transferul a reușit.
+- **Audit:** păstrați JSON-ul rezultatului și sursele probei inline în Extent, cu durata execuției capturate. Încercările eșuate rămân în diagnosticul separat; republicarea offline nu inventează o nouă execuție ori invocări JUnit.
+- **Limită:** transferul nativ autorizat califică fișierul primit pe Android. Traseul vizual README → autentificare → Assets → fișier salvat necesită o probă distinctă în browser. Eliminați aplicația temporară și eliberați rezervarea după verificare.
+
 ## Procesul unei versiuni
 
 [Calificarea pas cu pas](../testing/ATF_ReleaseQualification.md) ordonează selecțiile, verificarea HTML și dosarul candidat; acest ghid deține build-ul, identitatea și publicarea.
@@ -193,6 +203,7 @@ node atf-tests/tools/record-release-integrity.mjs
 ```
 
 - **Înregistrare:** unealta selectează versiunea din index, verifică stabilitatea inventarului și actualizează secțiunea `integrity`. Momentul `observedUtc` identifică observarea octeților, fără modificarea verdictului, datei execuției sau stării publicării.
+- **Git:** [Atributul `text`](https://git-scm.com/docs/gitattributes) este dezactivat prin `.gitattributes` pentru întregul dosar `release`. Guvernanța confruntă atributul efectiv al fiecărui payload, inclusiv suprascrierile locale; înainte de push, octeții din obiectele Git trebuie să corespundă registrului.
 - **Verificare:** după înregistrare se execută guvernanța; recalcularea hash-urilor nu face valid un XML cu eșecuri sau un APK corupt.
 - **Limite:** CRC-ul și SHA-256 califică integritatea locală, separat de semnătura APK-ului, manifestul Android binar, reproducerea build-ului și identitatea commit-ului publicat. Lista intrărilor nu confruntă încă arhiva externă completă ori populația surselor live.
 - **Catalog:** delimitarea secțiunilor se validează înaintea intrării curente, cu diagnostic pentru titluri lipsă sau inversate. Prezența unei versiuni în tabelul general nu substituie legătura din secțiunea curentă.

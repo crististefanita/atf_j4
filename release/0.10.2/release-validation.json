@@ -129,7 +129,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-06T16:28:51.047Z",
+    "observedUtc": "2026-11-06T18:27:14.100Z",
     "files": [
       {
         "path": "README.md",
@@ -163,8 +163,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 7352,
-        "sha256": "7fe158ecf786c4b6085c15db8a77f3324255b92fbd6b54500e5d69e01b7eaa6e"
+        "bytes": 9562,
+        "sha256": "daff260cea91c30653de93e5770bc0b00c18f40587c80ae76d5a1b3657160df7"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -193,8 +193,8 @@
       },
       {
         "path": "reports/component/live-source/README.md",
-        "bytes": 2624,
-        "sha256": "c936038499f99d553f91a8a21d8a2f0dcd4fffbeab8450026f04aba255b9242a"
+        "bytes": 2619,
+        "sha256": "156909fd7a761ec1bf00521c33230f0b6f731761faca6f3f7fa6a891e69458b1"
       },
       {
         "path": "reports/component/live-source/atf-test-android/component-report.html",
@@ -252,9 +252,14 @@
         "sha256": "36dff3d3b19193c1667abf627334e9d550ac1fc753454ee7a62ed8ebd1d1b667"
       },
       {
+        "path": "reports/diagnostics/mobile-download-diagnostics.html",
+        "bytes": 2442790,
+        "sha256": "a8a9ecf9a08e19c915bbc78379f936840e053b930e14d8f9cdc37dea7c48a239"
+      },
+      {
         "path": "reports/distribution-verification.json",
-        "bytes": 21899,
-        "sha256": "2a4b813a9e1c5ebf4043dc17911a5ab1b9788b7b20ed7b57abc82e632c3999ce"
+        "bytes": 30828,
+        "sha256": "c5c87c3b9c1ac24facde823cd93c68b0fbab770d71d3b8ffcf8c706c67e13cda"
       },
       {
         "path": "reports/distribution/current-download.html",
@@ -270,6 +275,16 @@
         "path": "reports/distribution/download-selection.html",
         "bytes": 2433469,
         "sha256": "097cd5f1524aa657a87e381bd2a43856276352779c0a8d51a0da5ae0b3524696"
+      },
+      {
+        "path": "reports/distribution/git-evidence-policy.html",
+        "bytes": 2432915,
+        "sha256": "c437d6a6e86f5974888a5bb861e2ef2cf21f47393963084b7c2b7fbf62e1991f"
+      },
+      {
+        "path": "reports/distribution/mobile-download.html",
+        "bytes": 2463777,
+        "sha256": "ff4c19098f33edbc5bbdd0cae92cb06af5a7be60d3bb1ce1fa6441acc5001bb0"
       },
       {
         "path": "reports/distribution/readme-release-policy.html",

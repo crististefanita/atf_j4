@@ -22,16 +22,7 @@ function Get-SourceInventory {
 }
 $before = Get-SourceInventory
 $before | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-before.json') -Encoding utf8
-Copy-Item -LiteralPath (Join-Path $sourceRoot 'pom.xml') -Destination $stage
-Copy-Item -LiteralPath (Join-Path $sourceRoot 'library-provenance.json') -Destination $stage
-$policy = Get-Content -LiteralPath (Join-Path $sourceRoot 'config/atf-governance-policy.json') -Raw | ConvertFrom-Json
-$directories = @($policy.mavenModules) + @('lib','config','whist-lab-app/game-core','whist-lab-app/ai-lab')
-foreach ($directory in $directories) {
-    $origin = Join-Path $sourceRoot $directory
-    $destination = Join-Path $stage $directory
-    & robocopy $origin $destination /E /R:1 /W:1 /XD target build artifacts .gradle .git node_modules /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot ('copy-' + ($directory -replace '[/\\]','-') + '.log'))
-    if ($LASTEXITCODE -gt 7) { throw "Copiere eșuată: $directory" }
-}
+& (Join-Path $PSScriptRoot 'Copy-AtfSourceInputs.ps1') -SourceRoot $sourceRoot -Destination $stage -InputManifest (Join-Path $RunRoot 'source-before.json')
 $localRepository = Join-Path $stage 'maven-repository'
 New-Item -ItemType Directory -Path $localRepository | Out-Null
 if (Test-Path -LiteralPath $MavenCache -PathType Container) {

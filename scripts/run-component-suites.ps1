@@ -34,12 +34,8 @@ $libraries = @($before | Where-Object {$_.path -like 'lib/*.jar'})
 $provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputCount=$before.Count;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries}
 $provenanceFile = Join-Path $stage 'execution-provenance.json'
 $provenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $provenanceFile -Encoding utf8
-foreach ($file in @('pom.xml','library-provenance.json')) { Copy-Item -LiteralPath (Join-Path $sourceRoot $file) -Destination $stage }
 $policy = Get-Content -LiteralPath (Join-Path $sourceRoot 'config/atf-governance-policy.json') -Raw | ConvertFrom-Json
-foreach ($directory in @($policy.mavenModules) + @('lib','config','whist-lab-app/game-core','whist-lab-app/ai-lab')) {
-    & robocopy (Join-Path $sourceRoot $directory) (Join-Path $stage $directory) /E /R:1 /W:1 /XD target build artifacts .gradle .git node_modules /NFL /NDL /NJH /NJS /NP *> (Join-Path $stage ('copy-' + ($directory -replace '[/\\]','-') + '.log'))
-    if ($LASTEXITCODE -gt 7) { throw "Copiere eșuată: $directory" }
-}
+& (Join-Path $PSScriptRoot 'Copy-AtfSourceInputs.ps1') -SourceRoot $sourceRoot -Destination $stage -InputManifest (Join-Path $RunRoot 'source-inputs.json')
 $repository = Join-Path $stage 'maven-repository'
 New-Item -ItemType Directory -Path $repository | Out-Null
 if (Test-Path -LiteralPath $MavenCache -PathType Container) {

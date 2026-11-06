@@ -101,6 +101,16 @@ Din rădăcina proiectului, cu JDK-ul și cache-ul Maven pregătite:
 
 Rezultatele rămân externe. Copierea selectivă în dosarul unei livrări păstrează explicit domeniul sursă, distinct de calificarea APK-ului; verificarea finală confruntă HTML-ul detașat înaintea eliminării oricărei dovezi originale.
 
+### Integritatea inventarului
+
+[Inventarul comun](../../scripts/Get-AtfSourceInputs.ps1) alimentează lansatoarele de componente și guvernanță. Directoarele generate se exclud la granițele proiectului și modulelor declarate; dosarul de livrare se exclude numai la rădăcina proiectului. Numele unui pachet nu justifică omiterea sursei: segmente precum `release`, `target` și `build` rămân inventariate în arborii sursă, inclusiv rădăcinile Maven configurate și cele suplimentare din politică.
+
+Manifestul include și fișierele fără extensie, precum înregistrările extensiilor. Căile indirecte neinventariate sunt refuzate. [Controalele inventarului](../../atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java) confruntă populația Java declarată și detectează adăugări, ștergeri și modificări.
+
+O corecție ulterioară a inventarului produce o identitate nouă; nu rescrie amprenta unei execuții istorice.
+
+[Copierea în staging](../../scripts/Copy-AtfSourceInputs.ps1) folosește chiar manifestul capturat, fără o a doua listă de excluderi după numele directorului. Hash-ul fiecărei copii trebuie să coincidă cu intrarea; o modificare intervenită înaintea compilării este refuzată.
+
 ## Citirea unui raport
 
 README-ul dosarului indică întâi raportul canonic, scopul și identitatea verificată. HTML-ul păstrează datele necesare verdictului; README-ul orientează cititorul și explică selecția, suprapunerile și dovezile auxiliare justificate.

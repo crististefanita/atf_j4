@@ -1,0 +1,2 @@
+# Release evidence is hashed byte for byte; checkout must not convert line endings.
+release/** -text

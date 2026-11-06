@@ -11,6 +11,7 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 ## Jocul
 
 - **[Whist Lab 0.10.2](release/0.10.2/README.md)** — ultima versiune publicată.
+- **[Deschide release-ul 0.10.2](https://github.com/crististefanita/atf_j4/releases/tag/v0.10.2)** → **Assets** → `WhistLab-0.10.2.apk`; autentifică-te în același browser.
 - **[Descarcă APK 0.10.2](https://github.com/crististefanita/atf_j4/releases/download/v0.10.2/WhistLab-0.10.2.apk)** — asset-ul versiunii curente; autentifică-te în același browser.
 - [Catalogul livrării curente](release/README.md) reunește APK-ul, checksum-ul și rapoartele; README-ul principal indică întotdeauna aceeași versiune.
 
