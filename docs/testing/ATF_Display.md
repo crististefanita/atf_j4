@@ -72,6 +72,22 @@ Cerința folosește geometria și setările Android, separat de configurația co
 
 Acțiunea integrală, mâna și toate locurile se confruntă în aceeași stare. [Istoricul](../game/ATF_ScoreHistory.md) deține semantica coloanelor; [feedback-ul Android](../feedback/ATF_Android.md) păstrează numai calificările încă necesare.
 
+## Matricea minimă după risc
+
+Selecția acoperă diferențele care pot produce altă geometrie sau altă interacțiune. Combinațiile respectă varianta jocului; stările imposibile primesc probe negative în componente, fără a fi prezentate ca partide Android valide.
+
+| Risc | Componentă și variație | Sanity nativ selectat |
+|---|---|---|
+| Mână și carte selectată | O carte, maximul legal până la 13, benzi expuse și ridicare; locurile la masă nu modifică proporția feței. | Centrare la minim și lizibilitate la maxim pe profilul critic; fără repetarea partidei complete. |
+| Licitare | Valorile permise ale mâinii curente, ținte distincte, distanțe până la locuri și rame stabile după selecție. | Cea mai densă grilă legală și selectarea unei valori prin controlul afișat. |
+| Levata și ordinea | Locuri la 3–6 jucători, fiecare actor și câștigător, pauză și evenimente întârziate. | O levată completă și o tranziție reprezentativă; se adaugă alte locuri când schimbă aranjarea. |
+| Istoric și reluare | Prima/ultima celulă, totaluri, serii și prefix necunoscut; RO/EN, text mărit și lățimi compacte. | Legendă, marcaj, derulare reală și aceeași stare după relansare, pe APK-ul care include schimbarea. |
+| Fereastră și font | Bugete utile, densități fracționare, măsurători și scală de text. | Profil compact și profil înalt când disting riscul; barele sistemului și fontul se observă efectiv. |
+
+- **Parcurs:** meniul, configurarea și un flux reprezentativ verifică legăturile dintre ecrane. Restul matricei folosește stări mici declarate și checkpoint-uri focalizate.
+- **Extindere:** adăugați o combinație pentru un defect reprodus, o ramură geometrică ori un risc nou; aceeași formulă deja calificată nu cere automat o partidă completă la fiecare DPI.
+- **Limită:** screenshot-ul, XML-ul, geometria modelului și rezultatul interacțiunii sunt dovezi distincte. Dosarul execuției arată ce a fost verificat și unde rămâne numai modelul JVM.
+
 ## Invariante vizuale și de interacțiune
 
 - Meniul păstrează configurarea accesibilă în viewport.

@@ -70,7 +70,11 @@ Descriptorul separă datele capturate la execuție de cele verificate la revizia
 | Diagnostic ori rezultat auxiliar cu scop separat | Păstrat numai cu motiv concret, consumator sau întrebare diagnostică și identitate; nu poate ascunde o informație necesară auditului HTML. |
 | Dovadă unică încă externă | Păstrată până la publicarea completă; dependența rămâne explicită în feedback. |
 
-Implementarea curentă include PNG-urile, dar publică încă fingerprint-uri pentru unele corpuri Android și rezultate JUnit separate pentru componente. [Criteriul de consolidare](../feedback/ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) păstrează diferența și controalele necesare înaintea eliminării acestor dovezi.
+[Publicatorul Android](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) include PNG-urile, manifestul și corpurile text furnizate ori declarate de checkpoint-uri. [Pilotul componentelor](../testing/ATF_DisplayComponents.md#raportarea-componentelor-istoricului) include inputurile și comparațiile capturate; celelalte familii păstrează încă rezultate JUnit separate.
+
+- **Istoric:** rapoartele native produse înaintea acestei încorporări păstrează anexele unice; schimbarea publicatorului nu le actualizează retrospectiv.
+- **Moment:** hash-ul și corpul text provin din aceeași citire la publicare; acest moment rămâne distinct de execuția Android și de revizia ulterioară.
+- **Închidere:** [criteriul de consolidare](../feedback/ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) cere calificarea inventarului și a asocierilor fiecărui producător înaintea eliminării dovezii unice.
 
 ## Implementări și limite
 
