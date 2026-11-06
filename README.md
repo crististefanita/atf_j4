@@ -10,10 +10,8 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 ## Jocul
 
-- **[Whist Lab 0.10.2](release/0.10.2/README.md)** — ultima versiune publicată.
-- **[Deschide release-ul 0.10.2](https://github.com/crististefanita/atf_j4/releases/tag/v0.10.2)** → **Assets** → `WhistLab-0.10.2.apk`; autentifică-te în același browser.
-- **[Descarcă APK 0.10.2](https://github.com/crististefanita/atf_j4/releases/download/v0.10.2/WhistLab-0.10.2.apk)** — asset-ul versiunii curente; autentifică-te în același browser.
-- [Catalogul livrării curente](release/README.md) reunește APK-ul, checksum-ul și rapoartele; README-ul principal indică întotdeauna aceeași versiune.
+- **[Whist Lab 0.10.2](https://github.com/crististefanita/atf_j4/releases/tag/v0.10.2)** — release-ul curent, cu noutăți și acces la rapoarte.
+- **[Descarcă APK 0.10.2](https://github.com/crististefanita/atf_j4/releases/download/v0.10.2/WhistLab-0.10.2.apk)** — autentifică-te în același browser.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -126,6 +124,8 @@ iar partidele și celelalte dovezi în depozitul extern configurat. Nu se
 suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
+
+[Dosarul versiunii curente](release/0.10.2/README.md) · [Catalogul livrărilor](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

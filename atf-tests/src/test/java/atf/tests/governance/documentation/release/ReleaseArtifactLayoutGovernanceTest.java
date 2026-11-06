@@ -45,6 +45,26 @@ class ReleaseArtifactLayoutGovernanceTest {
         }
     }
 
+    @Test void theGameSectionHasOnlyTheCurrentReleaseAndItsDirectApk() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot();
+        String guide = Files.readString(root.resolve("README.md")).replace("\r\n", "\n");
+        int start = guide.indexOf("\n## Jocul\n");
+        AuditedAssertions.assertTrue(start >= 0, "The product entry has its own section");
+        int end = guide.indexOf("\n## ", start + 1);
+        String section = guide.substring(start, end < 0 ? guide.length() : end);
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        String version = json.readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
+        String repository = GovernanceProject.policy(root).required("publicRepository").asText();
+        boolean published = json.readTree(root.resolve("release/" + version + "/release-validation.json").toFile())
+                .required("publication").required("state").asText().equals("PUBLISHED");
+        var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|release/[^)]+)\\)")
+                .matcher(section).results().map(result -> result.group(1)).toList();
+        var expected = published ? List.of(repository + "/releases/tag/v" + version,
+                repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk")
+                : List.of("release/" + version + "/README.md", "release/" + version + "/WhistLab-" + version + ".apk");
+        AuditedAssertions.assertEquals(expected, links, "Two product actions; catalog and audit details belong to documentation");
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"README.md", "reports/README.md"})
     void releaseOverviewAndReportIndexAreBothRequired(String missing) throws Exception {
