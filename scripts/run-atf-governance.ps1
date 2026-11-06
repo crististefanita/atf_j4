@@ -17,21 +17,8 @@ if ($RunRoot.Equals($sourceRoot, [StringComparison]::OrdinalIgnoreCase) -or
 if (Test-Path -LiteralPath $RunRoot) { throw 'Directorul de rezultate trebuie să fie nou.' }
 $stage = Join-Path ([IO.Path]::GetTempPath()) ('atf-quality-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage, $RunRoot | Out-Null
-$ignored = @('.git','.locks','.gradle','.idea','target','build','artifacts','dist','node_modules','.presentation-build')
 function Get-SourceInventory {
-    $rows = [System.Collections.Generic.List[object]]::new()
-    function Visit-SourceDirectory([string]$Directory) {
-        foreach ($entry in Get-ChildItem -LiteralPath $Directory -Force) {
-            if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
-            if ($entry.PSIsContainer) {
-                if ($entry.Name -notin $ignored) { Visit-SourceDirectory $entry.FullName }
-            } elseif ($entry.Extension -in @('.java','.md','.json','.yaml','.yml','.xml','.gradle','.ps1','.psm1','.py','.mjs','.jar','.pom')) {
-                $rows.Add([pscustomobject]@{ path = [IO.Path]::GetRelativePath($sourceRoot,$entry.FullName).Replace('\','/'); sha256 = (Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash })
-            }
-        }
-    }
-    Visit-SourceDirectory $sourceRoot
-    return @($rows | Sort-Object path)
+    return @(& (Join-Path $PSScriptRoot 'Get-AtfSourceInputs.ps1') -SourceRoot $sourceRoot)
 }
 $before = Get-SourceInventory
 $before | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-before.json') -Encoding utf8

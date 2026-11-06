@@ -23,20 +23,8 @@ if (-not (Test-Path -LiteralPath $java -PathType Leaf)) { throw 'Este necesar un
 Get-Command $Maven -ErrorAction Stop | Out-Null
 $stage = Join-Path ([IO.Path]::GetTempPath()) ('whist-component-suites-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage,$RunRoot | Out-Null
-$ignored = @('.git','.locks','.gradle','.idea','target','build','artifacts','dist','release','node_modules','.presentation-build')
 function Get-Inputs {
-    $rows = [System.Collections.Generic.List[object]]::new()
-    function Visit([string]$directory) {
-        foreach ($entry in Get-ChildItem -LiteralPath $directory -Force) {
-            if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
-            if ($entry.PSIsContainer) { if ($entry.Name -notin $ignored) { Visit $entry.FullName } }
-            else {
-                $rows.Add([pscustomobject]@{path=[IO.Path]::GetRelativePath($sourceRoot,$entry.FullName).Replace('\','/');sha256=(Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash.ToLowerInvariant()})
-            }
-        }
-    }
-    Visit $sourceRoot
-    return @($rows | Sort-Object path)
+    return @(& (Join-Path $PSScriptRoot 'Get-AtfSourceInputs.ps1') -SourceRoot $sourceRoot)
 }
 $before = Get-Inputs
 $serialized = ConvertTo-Json -InputObject $before -Depth 5 -Compress

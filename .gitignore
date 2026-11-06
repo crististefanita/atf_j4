@@ -1,5 +1,6 @@
 # Output local Maven/JVM; nu face parte din sursa ATF.
 target/
+.locks/
 *.class
 artifacts/
 **/.gradle/

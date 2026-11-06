@@ -23,6 +23,13 @@ public record PlatformLibrarySurface(Path root, String artifact) {
     private String namespace() { return artifact.equals("test-kit") ? "atf/testkit/" : "atf/" + artifact + "/"; }
 
     public static Path workspace() {
+        String configured = System.getProperty("atf.governance.root", "");
+        if (!configured.isBlank()) {
+            Path declared = Path.of(configured).toAbsolutePath().normalize();
+            if (!Files.isRegularFile(declared.resolve("pom.xml")) || !Files.isDirectory(declared.resolve("atf-tests")))
+                throw new IllegalStateException("LIB-WORKSPACE: explicit root=" + configured);
+            return declared;
+        }
         Path current = Path.of("").toAbsolutePath();
         while (current != null) {
             if (Files.isRegularFile(current.resolve("pom.xml")) && Files.isDirectory(current.resolve("atf-tests"))) return current;

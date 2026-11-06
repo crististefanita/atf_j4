@@ -105,6 +105,14 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 
 Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate. La publicare, trimiteți explicit tag-ul și commit-ul surselor și confruntați răspunsul cu identitatea APK-ului.
 
+## Commit-ul surselor și commit-ul dovezilor
+
+- **Surse:** tag-ul fixează commit-ul calificat înaintea publicării. Confruntați toate intrările APK-ului și fișierele noi; modificările documentației ori ale probelor ulterioare nu mută tag-ul.
+- **Dovezi:** descărcarea reală se verifică după publicare și are un commit ulterior al rapoartelor. Nota Release fixează acest commit în `evidenceUrl`; metadatele păstrează separat `sourceCommit`.
+- **Legare:** commit-ul dovezilor există înaintea introducerii hash-ului său în note. Un commit final înregistrează legătura și răspunsul GitHub; nu se încearcă autoreferențierea hash-ului unui commit.
+- **Închidere:** după ultimul push, recitiți README-ul din GitHub și confruntați URL-ul exact cu asset-ul descărcat. Verificarea locală nu dovedește singură că documentul online a fost actualizat.
+- **Reluarea draftului:** păstrați ID-ul răspunsului de creare și recitiți draftul după ID. Un 404 la căutarea după tag nu justifică repetarea creării; confruntați mai întâi inventarul drafturilor autorizate și asset-urile existente, fără upload sau înlocuire oarbă.
+
 ## Dosarul unei versiuni
 
 [Catalogul livrărilor](../../release/README.md) păstrează numai ultima versiune calificată, în `release/<versionName>/`. Prezentarea versiunii și metadatele ei trimit la dovezile din `reports/`. [Politica de retenție](ATF_ReleaseRetention.md) definește arhivarea precedentului, înlocuirea și resetarea GitHub cerută explicit.

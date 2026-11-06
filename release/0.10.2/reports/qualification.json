@@ -1155,9 +1155,11 @@
     "scope": "Current 0.10.2 only; historical 1.9.2 is a model",
     "offlineTests": 47,
     "suiteOwnershipTests": 6,
-    "currentDownload": "FAIL — HTTP 404; remote release absent",
-    "currentCandidatePublished": false,
+    "currentDownload": "PASS — actual current 0.10.2 APK and checksum",
+    "currentCandidatePublished": true,
     "browserDownloadVerified": false,
-    "originalUniquePopulationUnchanged": true
+    "originalUniquePopulationUnchanged": true,
+    "prepublicationTests": 261,
+    "prepublicationSkipped": 2
   }
 }

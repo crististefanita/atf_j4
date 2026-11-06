@@ -9,7 +9,6 @@ Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
 | P1 | Validatoarele comune nu au încă un contract împachetat independent de reactorul producătorului. | API sau CLI cu rădăcină explicită, inventar de documente și surse, module, rădăcini JVM suplimentare și excepții motivate. |
-| P1 | Descoperirea și unele verificări factuale presupun țintele producătorului ori directorul curent; [PlatformLibrarySurface.workspace](../../atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java) nu consumă rădăcina explicită a guvernanței. | Contractele factuale primesc sursa și afirmația de verificat; lansarea dintr-un staging exterior identifică același proiect sau refuză rădăcina greșită explicit. Un profil Android valid este verificabil fără modulele altei aplicații. |
 
 Integrarea locală păstrează verificatoarele adaptate și controalele lor negative până la demonstrarea echivalenței API-ului împachetat. Configurația Surefire nu substituie identificarea rădăcinii efectiv inspectate.
 
@@ -61,8 +60,21 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 
 | Prioritate | Lacună delimitată | Criteriu de închidere |
 |---|---|---|
-| P0, predare | Publicarea ediției curente trebuie verificată independent de APK-ul local; un release absent nu are descărcare GitHub funcțională. | Proba live selectează exclusiv `currentVersion` și confruntă asset-ul real cu bytes, SHA-256 și CRC din manifest. Absența păstrează FAIL și diagnosticul HTTP; README-ul rămâne pe candidatul local curent până la publicare, fără revenirea la un APK anterior. |
 | P1 | Traseul linkului din README până la fișierul salvat în browser nu are încă o probă repetabilă pentru versiunea curentă publicată. | După publicare, verificați în sesiunea GitHub autentificată URL-ul exact, numele, numărul efectiv de bytes, SHA-256 și CRC. Păstrați separat identitatea browserului, rezultatul API și orice blocare a clientului; un rezultat al versiunii anterioare nu califică noul APK. |
+
+## Acoperirea inventarului surselor
+
+| Prioritate | Problemă observată | Criteriu de închidere |
+|---|---|---|
+| P1 | [Lansatorul suitelor](../../scripts/run-component-suites.ps1) exclude numele `release` din orice segment al căii; manifestul păstrat omite 19 fișiere Java din pachetul legitim `governance/documentation/release`, deși ele există în snapshot. | Excluderea dosarului de livrare se aplică numai rădăcinii proiectului. Controale cu fișiere sursă în pachete `release` și `target` disting directoarele de build de segmentele legitime; manifestul confruntă populația executată și refuză omisiunile. Suplimentul observat asupra snapshot-ului nu rescrie fingerprint-ul capturat în rapoartele istorice. |
+
+## Reluarea publicării după răspunsuri parțiale
+
+[Procesul livrării](../platform/ATF_AndroidDelivery.md#commit-ul-surselor-și-commit-ul-dovezilor) separă sursele, dovezile și ID-ul draftului. Verificatoarele existente controlează rezultatul; coordonarea operațiilor GitHub rămâne o sarcină a operatorului.
+
+| Prioritate | Lacună | Criteriu de închidere |
+|---|---|---|
+| P2 | Publicarea nu are încă un lansator versionat care salvează imediat identitatea fiecărei operații remote și permite reluarea sigură. | Jurnal atomic cu ID-ul draftului înainte de upload, commit-ul surselor, asset-urile și hash-urile. API controlat demonstrează creare reușită urmată de 404 la căutarea după tag, upload acceptat cu răspuns pierdut și promovare deja efectuată. Reluarea recitește obiectele după ID și refuză diferențele; nu recreează, nu reîncarcă și nu mută tag-ul prin repetare oarbă. |
 
 ## Control tehnic activ
 

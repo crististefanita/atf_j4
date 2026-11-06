@@ -60,7 +60,8 @@ class DocumentationPolicyGovernanceTest {
         var result = new StringBuffer();
         while (links.find()) {
             String replacement = (links.group(2).equals(repository + "/releases/latest")
-                    || published != null && links.group(2).equals(published.publicUrl()))
+                    || published != null && (links.group(2).equals(published.publicUrl())
+                            || links.group(2).equals(published.publicUrl() + ".sha256")))
                     ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
             links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
         }
@@ -86,11 +87,14 @@ class DocumentationPolicyGovernanceTest {
         var published = new atf.tests.distribution.ApkDownloadTarget("example/atf_j4", "1.2.0", 42, "a".repeat(64));
         String repository = "https://github.com/" + published.repository(), asset = published.publicUrl();
         AuditedAssertions.assertEquals("[APK](<resursă-publică>)", publicReleaseProse("[APK](" + asset + ")", repository, published));
+        AuditedAssertions.assertEquals("[SHA-256](<resursă-publică>)",
+                publicReleaseProse("[SHA-256](" + asset + ".sha256)", repository, published), "The declared APK and its checksum share one identity");
         AuditedAssertions.assertEquals("Context J4. [atf_j4](<resursă-publică>)",
                 publicReleaseProse("Context J4. [atf_j4](" + asset + ")", repository, published));
         for (String original : List.of(asset, "![APK](" + asset + ")", "[APK](" + asset + "?next=atf_j1)",
                 "[APK](" + asset + "#J1)", "[APK](" + asset + "/)", "[APK](" + asset.replace("WhistLab-", "Other-") + ")",
-                "[APK](" + asset.replace("1.2.0", "1.1.0") + ")", "[APK](" + asset.replace("example/", "foreign/") + ")"))
+                "[APK](" + asset.replace("1.2.0", "1.1.0") + ")", "[APK](" + asset.replace("example/", "foreign/") + ")",
+                "[SHA-256](" + asset.replace("1.2.0", "1.1.0") + ".sha256)", "[SHA-256](" + asset + ".sha256?next=atf_j1)"))
             AuditedAssertions.assertEquals(original, publicReleaseProse(original, repository, published), "Only the declared canonical asset URI is technical data");
         AuditedAssertions.assertThrows(IllegalArgumentException.class,
                 () -> publicReleaseProse("Control J4", "https://github.com/foreign/atf_j4", published));

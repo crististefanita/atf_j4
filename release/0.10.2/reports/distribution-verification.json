@@ -1,22 +1,38 @@
 {
   "schemaVersion": 1,
   "scope": "Current 0.10.2 release links and distribution; no new APK build or Android execution",
-  "recordedUtc": "2026-11-06T15:32:04.260Z",
+  "recordedUtc": "2026-11-06T16:07:55.793097+00:00",
   "currentCandidate": {
     "version": "0.10.2",
-    "publication": "PREPARED",
+    "publication": "PUBLISHED",
     "bytes": 803960,
     "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
     "localZipCrc": "PASS"
   },
   "currentDownload": {
-    "state": "FAIL",
+    "state": "PASS",
     "tag": "v0.10.2",
     "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.10.2/WhistLab-0.10.2.apk",
-    "authenticatedHttp": 404,
+    "authenticatedHttp": 200,
     "channel": "Authenticated GitHub API, not browser",
-    "reason": "Current release is absent; no older-version fallback",
-    "report": "distribution/current-download.html"
+    "report": "distribution/current-download.html",
+    "assets": [
+      {
+        "name": "WhistLab-0.10.2.apk",
+        "assetId": 717684475,
+        "bytes": 803960,
+        "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+        "http": 200
+      },
+      {
+        "name": "WhistLab-0.10.2.apk.sha256",
+        "assetId": 717684515,
+        "bytes": 87,
+        "sha256": "9b3f636a4cc7cc123c390b011eb32df83c4eeffdedc3e201492afe0b3047d045",
+        "http": 200
+      }
+    ],
+    "zipCrc": "PASS"
   },
   "executions": [
     {
@@ -101,24 +117,23 @@
       ]
     },
     {
-      "id": "current-network",
+      "id": "initial-current-network-before-publication",
       "tests": 3,
       "failures": 0,
       "errors": 1,
       "skipped": 0,
       "passed": 2,
-      "scope": "Repeated 2 identity component checks plus one failed current 0.10.2 download; does not qualify online handoff"
+      "scope": "Historical FAIL before publication; retained as a separate diagnostic"
+    },
+    {
+      "id": "published-current-network",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Two repeated target identity checks plus the real current download; not new Android execution"
     }
   ],
-  "historicalModel": {
-    "version": "1.9.2",
-    "state": "PASS",
-    "bytes": 775288,
-    "sha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
-    "zipCrc": "PASS",
-    "channel": "Authenticated GitHub API, not browser",
-    "qualifiesCurrentRelease": false
-  },
   "reports": [
     {
       "file": "distribution/readme-release-policy.html",
@@ -146,16 +161,8 @@
       "owner": "PublishedApkDownloadAcceptanceTest",
       "junitInvocations": 1,
       "role": "CURRENT",
-      "status": "FAIL — HTTP 404",
-      "sha256": "36dff3d3b19193c1667abf627334e9d550ac1fc753454ee7a62ed8ebd1d1b667"
-    },
-    {
-      "file": "distribution/published-1.9.2-reference.html",
-      "owner": "PublishedApkDownloadAcceptanceTest",
-      "junitInvocations": 1,
-      "role": "HISTORICAL MODEL ONLY",
-      "status": "PASS — 1.9.2, not current",
-      "sha256": "757967794ae897051000a5be62cb5a0da9c7974cf4f568aa7f481d0f21736b29"
+      "status": "PASS — actual current 0.10.2 download",
+      "sha256": "71f2f4c4d8d104c6e1cc6cbd030712cc5b64b80f92286cd751a7dc9df64e8562"
     }
   ],
   "qualifiedSourceInputs": [
@@ -219,12 +226,325 @@
   ],
   "kit": "atf-test-kit:1.0.0-k1 (JAR)",
   "browserDownloadVerified": false,
-  "currentCandidatePublished": false,
+  "currentCandidatePublished": true,
   "androidReexecuted": false,
-  "commitPerformed": false,
-  "pushPerformed": false,
-  "remoteMutationsPerformed": false,
+  "commitPerformed": true,
+  "pushPerformed": true,
+  "remoteMutationsPerformed": true,
   "originalApkUniqueInvocationCount": 630,
+  "liveApkInputCheck": {
+    "files": 114,
+    "changedFiles": [],
+    "bytes": 803960,
+    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a"
+  },
+  "finalReadOnlyChecks": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "owners": [
+      "DocumentationLinkGovernanceTest",
+      "DocumentationStyleGovernanceTest",
+      "DocumentationProseGovernanceTest",
+      "ReleaseIntegrityGovernanceTest"
+    ],
+    "scope": "Final recheck after evidence retention; documentation owners overlap current-offline, not an additional unique population"
+  },
+  "prepublication": {
+    "result": "PASS — selected checks; opt-in exclusions remain explicit",
+    "cases": [
+      {
+        "owner": "atf.android.component.AndroidComponentReportContractTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.android.evidence.component.ComponentInputSettingsTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.execution.components.ComponentAggregateAcceptanceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.execution.components.ComponentExecutionListenerTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.learning.EvidenceSelectionContractTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.learning.LearningRunReportContractTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.learning.LearningRunReportTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      {
+        "owner": "atf.tests.publishing.DeepSuiteExtentReportTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DynamicPathDocumentationArchitectureTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.TestLayerSyntaxTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.AtfSourceQualityGovernanceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.TestLayerGovernanceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationStyleGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.integrity.ReleaseFilesUnitTest",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest",
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.suites.SuiteOwnershipGovernanceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationProseGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.integrity.JunitIntegrityComponentTest",
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.ModuleBoundaryGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.download.DownloadSelectionComponentTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationPolicyGovernanceTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.android.AndroidJavaApiGovernanceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.workspace.WorkspaceHygieneGovernanceTest",
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.integrity.ManifestIntegrityComponentTest",
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.ReleaseIntegrityGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.download.ApkDownloadComponentTest",
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.integrity.ApkIntegrityComponentTest",
+        "tests": 17,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationAnchorGovernanceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.ReleaseEvidenceRetentionGovernanceTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.source.PackageCohesionGovernanceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.strategy.TestingStrategyGovernanceTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.support.SourceInventoryContractTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationDiagramGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.libraries.PlatformLibraryContractTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.libraries.PlatformLibraryIntegrityTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.libraries.LibraryReadmeExamplesIntegrationTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "tests": 261,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 2
+  },
+  "initialDownloadDiagnostic": {
+    "file": "diagnostics/initial-github-404.html",
+    "status": "FAIL — HTTP 404 before publication"
+  },
+  "browserProbe": {
+    "state": "UNAVAILABLE",
+    "mcpAttempts": 2,
+    "nativeAttempts": 3,
+    "error": "Browser helper connection timeout"
+  },
+  "sourceCommit": "dc31898523c69160f465f3a531c578736bc7d3f2",
+  "releaseId": 436701664,
   "browserRenderingReview": [
     {
       "report": "distribution/download-selection.html",
@@ -256,28 +576,104 @@
     {
       "report": "distribution/current-download.html",
       "owner": "PublishedApkDownloadAcceptanceTest",
-      "sha256": "36dff3d3b19193c1667abf627334e9d550ac1fc753454ee7a62ed8ebd1d1b667",
-      "scope": "Declared current version 0.10.2, expected bytes and HTTP 404 visible; FAIL retained",
-      "status": "PASS — verified rendering of the failed download; not a successful download"
+      "sha256": "71f2f4c4d8d104c6e1cc6cbd030712cc5b64b80f92286cd751a7dc9df64e8562",
+      "lastComparison": "Binary response HTTP\t200\t200\t✅",
+      "assertionGroupReopened": true,
+      "scope": "Declared owner, last assertion table, detached Chromium; external requests blocked",
+      "status": "PASS"
     }
   ],
-  "liveApkInputCheck": {
-    "files": 114,
-    "changedFiles": [],
-    "bytes": 803960,
-    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a"
-  },
-  "finalReadOnlyChecks": {
-    "tests": 4,
+  "publishedGovernance": {
+    "tests": 39,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "owners": [
-      "DocumentationLinkGovernanceTest",
-      "DocumentationStyleGovernanceTest",
-      "DocumentationProseGovernanceTest",
-      "ReleaseIntegrityGovernanceTest"
+    "scope": "Current PUBLISHED handoff: catalog, presentation, integrity, retention, links and prose; overlaps previous governance selections"
+  },
+  "parallelSourceVerification": {
+    "cases": [
+      {
+        "owner": "atf.libraries.PlatformLibraryContractTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.libraries.PlatformLibraryIntegrityTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.libraries.PlatformLibraryWorkspaceTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationPolicyGovernanceTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationProseGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.DocumentationStyleGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.documentation.release.ReleaseIntegrityGovernanceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "owner": "atf.tests.governance.suites.SuiteOwnershipGovernanceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
     ],
-    "scope": "Final recheck after evidence retention; documentation owners overlap current-offline, not an additional unique population"
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "scope": "Explicit workspace root and canonical checksum documentation, with their regressions",
+    "inputs": [
+      {
+        "file": "atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java",
+        "sha256": "5a1767a908e4edaa22f7899c6a0cf5760e945ea3f767eabb2474679cf0109ed7"
+      },
+      {
+        "file": "atf-tests/src/test/java/atf/libraries/PlatformLibraryWorkspaceTest.java",
+        "sha256": "bb34587a66d5b8061125eae628b7e5c7a6839652dc6d84abef14ee039bec1490"
+      },
+      {
+        "file": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "sha256": "30034dbd6667f2a6ba2884039eda3909867d9cc5718c1b34ccedb66e1ee8c159"
+      }
+    ]
   }
 }

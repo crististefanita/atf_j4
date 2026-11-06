@@ -2,13 +2,17 @@
 
 ## Pe scurt
 
-Calificarea locală a trecut: APK, selecții componente/native și guvernanță; livrarea rămâne PREPARED, fără publicare. [Extent — legenda istoricului](e2e/history-legend.html) este intrarea principală; [inventarul](qualification.json) fixează identitățile și limitele.
+Versiunea este PUBLISHED: APK-ul calificat și checksum-ul sunt în GitHub Releases; descărcarea integrală curentă a trecut prin API autentificat. [Extent — legenda istoricului](e2e/history-legend.html) este intrarea principală; [inventarul](qualification.json) fixează identitățile și limitele.
 
 ## Citirea rapoartelor
 
 1. Deschideți contextul rulării și binarul identificat, apoi invocarea și faza.
 2. Extindeți inputul ori secvența de acțiuni, observația și comparațiile până la ultimul rând.
 3. Deschideți PNG-ul integral și reveniți la același checkpoint. Corpurile XML/JSON și capturile sunt în HTML.
+
+## Componente Maven pe sursa nouă
+
+[Agregatele suitelor primare](component/live-source/README.md) au proveniență și invocări proprii. Verifică snapshot-ul sursei, fără a recalifica APK-ul, componentele Gradle sau selecția Android de mai jos.
 
 ## Componente auditate
 
@@ -44,15 +48,17 @@ Identitățile invocărilor sunt confruntate exact, inclusiv parametrizările ș
 | Catalog, link principal și refuzul directoarelor retrase | 24 | [Extent](distribution/readme-release-policy.html) |
 | Descărcare completă și răspunsuri defecte controlate | 13 | [Extent](distribution/download-components.html) |
 | Identitatea candidatului față de versiunea publicată | 2 | [Extent](distribution/download-selection.html) |
-| Descărcarea API a versiunii curente 0.10.2 | 1, FAIL: HTTP 404 | [Extent și diagnostic](distribution/current-download.html) |
-| Model istoric: descărcarea API 1.9.2 | 1, reper separat | [Referință Extent](distribution/published-1.9.2-reference.html) |
+| Descărcarea API a versiunii curente 0.10.2 | 1, PASS | [Extent](distribution/current-download.html) |
 
 Selecția finală are 47 de verificări offline trecute; cele 39 de invocări de componentă de mai sus sunt un subset. Șase controale separate ale proprietății suitelor au trecut. [Inventarul suplimentar](distribution-verification.json) separă execuțiile și identitățile; totalul istoric de 630 rămâne neschimbat.
 
-Referința 1.9.2 confirmă numai modelul distribuției: 775.288 bytes, SHA-256 și toate CRC-urile prin API autentificat. Candidatul 0.10.2 rămâne `PREPARED`, cu 803.960 bytes locali. Testul său real confirmă absența release-ului GitHub prin HTTP 404; această probă rămâne FAIL și blochează predarea online.
+Proba curentă confirmă 803.960 bytes, SHA-256 și toate CRC-urile. Testul JUnit are cinci comparații efective în Extent; verificarea separată a descărcării confruntă și checksum-ul primit. Referința veche a fost retrasă după calificarea ediției curente.
 
-- **Ținta:** README-ul principal indică exclusiv 0.10.2. Nici modelul istoric, nici copia locală nu califică descărcarea noului APK din browser; după publicare se repetă numai acceptanța distribuției curente.
-- **Randarea:** Chromium a verificat detașat cele trei rapoarte curente de componentă și diagnosticul descărcării, cu cererile externe blocate. Grupurile de aserțiuni și diagnosticul se închid și se redeschid; FAIL/HTTP 404 rămâne vizibil. Aceasta este verificarea HTML-ului, nu descărcarea APK-ului prin browser.
+- **Diagnostic păstrat:** [HTTP 404 înaintea publicării](diagnostics/initial-github-404.html) rămâne FAIL; nu este rescris ca descărcare reușită. Noua execuție califică starea publicată.
+- **Prepublicare:** selecțiile pentru infrastructura modificată și guvernanță au trecut. Cele două probe opt-in de învățare și deep suite au fost omise explicit; inventarul separă selecțiile și nu mărește artificial populația inițială.
+- **Ținta:** README-ul principal și asset-ul identifică exclusiv 0.10.2. Sursele aplicației au aceleași 114 intrări ca APK-ul calificat; testele Android nu au fost reluate pentru publicare.
+- **Randarea:** grupurile de componentă și comparațiile descărcării sunt verificate detașat, cu cererile externe blocate. Aceasta este revizia HTML-ului, separată de descărcarea APK-ului prin browser.
+- **Browser:** MCP a dat timeout la conectare, iar helperul nativ a rămas indisponibil după reluarea controlată. Proba API este PASS; traseul personal autentificat din browser rămâne neverificat în această sesiune.
 
 ## Revizie și retenție
 

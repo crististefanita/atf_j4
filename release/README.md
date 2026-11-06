@@ -6,13 +6,13 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 ## Versiunea curentă
 
-[0.10.2 — rezultate și proveniență](0.10.2/README.md) este pregătită local, fără commit, push sau publicare.
+[0.10.2 — rezultate și proveniență](0.10.2/README.md) este publicată în GitHub Releases, cu descărcarea integrală verificată prin API autentificat.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
-| 0.10.2 | PREPARED | [Raport Extent, rezultate și identitate](0.10.2/README.md) |
+| 0.10.2 | PUBLISHED | [Raport Extent, rezultate și identitate](0.10.2/README.md) |
 
 ## Citire rapidă
 

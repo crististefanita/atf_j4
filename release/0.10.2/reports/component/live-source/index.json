@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "e2eExecuted": false,
+  "sourceFingerprint": "be228380b9dc14f8a18733b0d381c8fa27847a5329e6fb8885cb4f7b540584cd",
+  "sourceManifest": "source-inputs.json",
+  "sourceSnapshotRoot": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\whist-source-inputs-c42d2c53ce1e43fc86942f3127b07788\\work\\1\\atf_j4",
+  "sourceOriginRoot": "C:/work/1/atf_j4",
+  "liveSourceComparison": {
+    "observedUtc": "2026-11-06T16:22:59.261571+00:00",
+    "added": [
+      "atf-tests/src/test/java/atf/libraries/PlatformLibraryWorkspaceTest.java"
+    ],
+    "removed": [],
+    "changed": [
+      ".gitignore",
+      "atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java",
+      "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+      "docs/feedback/ATF_Governance.md",
+      "docs/platform/ATF_AndroidDelivery.md",
+      "README.md"
+    ],
+    "exact": false
+  },
+  "preparedUtc": "2026-11-06T16:05:46.541Z",
+  "aggregation": "Independent primary-module executions on the same immutable source; unchanged modules retained byte-for-byte; only ATF rerun after release-document fixture correction",
+  "sourceExecutions": [
+    {
+      "module": "atf-validation",
+      "execution": "C:/work/whist_back/maintenance/20261106-component-suite-aggregation/frozen-qualified-components"
+    },
+    {
+      "module": "atf-test-android",
+      "execution": "C:/work/whist_back/maintenance/20261106-component-suite-aggregation/frozen-qualified-components"
+    },
+    {
+      "module": "atf-tests",
+      "execution": "C:/work/whist_back/maintenance/20261106-component-suite-aggregation/qualified-suite-composition"
+    }
+  ],
+  "reports": [
+    {
+      "module": "atf-validation",
+      "suite": "atf.validation.suites.ValidationComponentSuite",
+      "tests": 19,
+      "html": "atf-validation/component-report.html",
+      "execution": "atf-validation/execution.json",
+      "sha256": "7d807630d5d0b8f60266ca5271701645927a182d9fbcecdb3bd2606f3fdaee3c",
+      "bytes": 2664504
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidComponentSuite",
+      "tests": 246,
+      "html": "atf-test-android/component-report.html",
+      "execution": "atf-test-android/execution.json",
+      "sha256": "6f38a3c2066b55bdc428ee0f6f09fba068fd10e40a8b0395f9e95de3386b1fe6",
+      "bytes": 25867252
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "tests": 266,
+      "html": "atf-tests/component-report.html",
+      "execution": "atf-tests/execution.json",
+      "sha256": "f3da3a9645894c2b69ef44d01a28582bbdb1da5a489caac3e352834981ca08bf",
+      "bytes": 6323654
+    }
+  ],
+  "sourceManifestCoverage": {
+    "originalManifestComplete": false,
+    "originalFingerprintPreserved": true,
+    "scope": "Supplemental observation from the retained snapshot; not a replacement execution profile or a new test run",
+    "omittedSnapshotInputs": [
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactCatalog.java",
+        "snapshotSha256": "e42f062ec85af3fbd20b54e9de70c19b478946592e5f2ae839f80edd6d5087ac",
+        "liveSha256": "e42f062ec85af3fbd20b54e9de70c19b478946592e5f2ae839f80edd6d5087ac",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java",
+        "snapshotSha256": "68ee730ef93c6d5212b5100d42849a840d300c4d8e7cddb9cf17e2a5e72251cf",
+        "liveSha256": "68ee730ef93c6d5212b5100d42849a840d300c4d8e7cddb9cf17e2a5e72251cf",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseCatalogPresentation.java",
+        "snapshotSha256": "45e3a043de2b275979e03e78e19281eca61c63cea2c64de40f643784e74a0129",
+        "liveSha256": "45e3a043de2b275979e03e78e19281eca61c63cea2c64de40f643784e74a0129",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java",
+        "snapshotSha256": "220debe516b9d2d807c7e5cd432a9fa88fa28a533f80b2ced2bc7c2c265a516c",
+        "liveSha256": "220debe516b9d2d807c7e5cd432a9fa88fa28a533f80b2ced2bc7c2c265a516c",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseHandoffState.java",
+        "snapshotSha256": "9994d69691856d8d50398120c2b5de0cd9493f94fa6e4c9313617c05e2fdaa0d",
+        "liveSha256": "9994d69691856d8d50398120c2b5de0cd9493f94fa6e4c9313617c05e2fdaa0d",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java",
+        "snapshotSha256": "691a59dc3c91505459f8b58259122c04f14072fb1cbeafd89ef1c76b37c26f89",
+        "liveSha256": "691a59dc3c91505459f8b58259122c04f14072fb1cbeafd89ef1c76b37c26f89",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java",
+        "snapshotSha256": "5ad4d5e92d25130dc763eec1985a3495186c8a570e615194630789416054d06e",
+        "liveSha256": "5ad4d5e92d25130dc763eec1985a3495186c8a570e615194630789416054d06e",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java",
+        "snapshotSha256": "0a0c4a9b27f19958d3aaf5c9b6da4d6d626fce89e8fb51b937e8e1bf445de41f",
+        "liveSha256": "0a0c4a9b27f19958d3aaf5c9b6da4d6d626fce89e8fb51b937e8e1bf445de41f",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/download/DownloadSelectionComponentTest.java",
+        "snapshotSha256": "c31cb1f8f5087d2c58f6b5ebe9c04efb35f8d87b3527bfba53a71e4b7a47d645",
+        "liveSha256": "c31cb1f8f5087d2c58f6b5ebe9c04efb35f8d87b3527bfba53a71e4b7a47d645",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java",
+        "snapshotSha256": "c70bab07f68b424278d75bfce98ec57fc4d45650724c8b7c45d9b6e3dba736c2",
+        "liveSha256": "c70bab07f68b424278d75bfce98ec57fc4d45650724c8b7c45d9b6e3dba736c2",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ApkIntegrity.java",
+        "snapshotSha256": "76175ee5e62b05f5872a0001bb8dd8e7a2d7ed5a5e7e77568a0ee5252b1f8c2d",
+        "liveSha256": "76175ee5e62b05f5872a0001bb8dd8e7a2d7ed5a5e7e77568a0ee5252b1f8c2d",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ApkIntegrityComponentTest.java",
+        "snapshotSha256": "0f75619bd89c8d741d31792224b1df78d891f31ba4151a8c30e6be2e8bb75fe2",
+        "liveSha256": "0f75619bd89c8d741d31792224b1df78d891f31ba4151a8c30e6be2e8bb75fe2",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/JunitIntegrity.java",
+        "snapshotSha256": "2040e228088d9710ffb975ef184330bad2a6b486d3ab8a37bd2539e62fd5f152",
+        "liveSha256": "2040e228088d9710ffb975ef184330bad2a6b486d3ab8a37bd2539e62fd5f152",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/JunitIntegrityComponentTest.java",
+        "snapshotSha256": "b9f8ec84204b2aa7b0f4be388f45134dc4dffa5a7b8ccc0bcd081874451c5857",
+        "liveSha256": "b9f8ec84204b2aa7b0f4be388f45134dc4dffa5a7b8ccc0bcd081874451c5857",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ManifestIntegrityComponentTest.java",
+        "snapshotSha256": "4b1694e104a155edea2fc7d984dc9d24fba67daa89d306f7b3f1e6ca22ed880c",
+        "liveSha256": "4b1694e104a155edea2fc7d984dc9d24fba67daa89d306f7b3f1e6ca22ed880c",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseFiles.java",
+        "snapshotSha256": "4a5ab284e584b97bfaf1b552418a345161dcf6ae234716c1e7a651d3199b4706",
+        "liveSha256": "4a5ab284e584b97bfaf1b552418a345161dcf6ae234716c1e7a651d3199b4706",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseFilesUnitTest.java",
+        "snapshotSha256": "fcf25d4fe137011ced2922b8524b8ddd0d8ab766b2853b30443cbc77e6e294df",
+        "liveSha256": "fcf25d4fe137011ced2922b8524b8ddd0d8ab766b2853b30443cbc77e6e294df",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseIntegrity.java",
+        "snapshotSha256": "4e40ce4bf4ba190a995158bf15882d589b2bb6e8bfa991b85f1db17e37651ddc",
+        "liveSha256": "4e40ce4bf4ba190a995158bf15882d589b2bb6e8bfa991b85f1db17e37651ddc",
+        "unchanged": true
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/fixture/ReleaseFixture.java",
+        "snapshotSha256": "c199a68bf9a4bd84aac0bf39105d1908007cfc96b80e42cdf9972ff017dd8b24",
+        "liveSha256": "c199a68bf9a4bd84aac0bf39105d1908007cfc96b80e42cdf9972ff017dd8b24",
+        "unchanged": true
+      }
+    ]
+  }
+}
