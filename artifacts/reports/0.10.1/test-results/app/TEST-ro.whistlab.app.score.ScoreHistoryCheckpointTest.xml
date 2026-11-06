@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistoryCheckpointTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-05T21:47:06.459Z" hostname="DESKTOP-BLFSO18" time="0.773">
+  <properties/>
+  <testcase name="unsupportedSavedProfileHasItsOwnRecoverableLoadError" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.006"/>
+  <testcase name="everyModeKeepsEverySeatThroughTheLastHandAndAFreshMatchStartsEmpty" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.639"/>
+  <testcase name="damagedCurrentFormatFailsInsteadOfSilentlyDroppingHistory" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.042"/>
+  <testcase name="columnKeepsZeroPositiveAndNegativeDistinctInBothLanguages" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.013"/>
+  <testcase name="legacyScoreRecoversLastSettledHandExactlyOnce" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.008"/>
+  <testcase name="v4RecoversOnlyProvableBidsAndV5RejectsLostOrContradictoryContracts" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.011"/>
+  <testcase name="legacyMidHandCarriesOnlyKnownBalanceAndKeepsSubsequentRows" classname="ro.whistlab.app.score.ScoreHistoryCheckpointTest" time="0.039"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -8,7 +8,7 @@ Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea
 
 **P1 · responsabil adaptor Android: colectare, publicare și predare.** [Livrarea curentă](../../artifacts/README.md) păstrează PNG-uri canonice inline, cu viewer offline și revenire la checkpoint. Acestea califică accesul la capturi, fără să demonstreze că întregul audit poate fi înțeles numai din HTML.
 
-[Publicatorul](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) încorporează PNG-ul, dar publică numai fingerprint-uri pentru ierarhii și manifest. Receipt-ul livrat numește pachetul drept „Installed APK”; versiunea și hash-ul binarului, configurația și proveniența completă rămân în fișiere externe.
+[Publicatorul](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) încorporează PNG-ul, dar publică numai fingerprint-uri pentru ierarhii și manifest. Receipt-ul separă pachetul de identitatea APK-ului; scenariile Records cer calea și hash-ul observat, egal cu cel cerut, înaintea comenzilor Android. Versiunea, configurația și proveniența completă păstrează încă date externe.
 
 - [ ] Produceți un HTML autonom per execuție/selecție/suită, cu identități distincte pentru invocări; toate datele necesare auditului rămân în raport, fără copii finale PNG/XML/JSON/properties/log ori directoare brute mutate într-o altă arhivă. Temporarele servesc doar construirii și verificării livrabilului.
 - [ ] Prezentați întâi scopul, precondițiile, versiunea/build-ul și hash-ul APK, dispozitivul/API-ul, profilul, sursele și bibliotecile efectiv folosite; separați explicit identitatea capturată la execuție de cea stabilită ulterior. Pachetul aplicației nu este identitatea APK-ului.
@@ -35,7 +35,7 @@ Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea
 
 **P1 · responsabil adaptor Android: acceptarea și guvernanța livrabilului.** Rapoartele istorice și cele curente au aceeași obligație de autonomie a datelor; mutarea sau arhivarea anexelor nu închide criteriul.
 
-Proba pozitivă a HTML-ului din livrarea curentă confirmă încărcarea detașată fără rețea, tabelul de comparații, ultimul rând și deschiderea PNG-ului la dimensiunea originală, cu revenirea la același proprietar. Receipt-ul păstrează încă pachetul în câmpul APK, iar fingerprint-urile nu includ corpurile XML; criteriul de autonomie a datelor rămâne deschis. [Contractul reviziei](../reporting/ATF_Audit.md#calificarea-unui-producător) cere identificarea externă a exemplarului și limitelor probei; revizia offline nu reprezintă o execuție Android nouă sau acceptanță prin browserul MCP.
+Proba pozitivă a HTML-ului din livrarea curentă confirmă încărcarea detașată fără rețea, tabelul de comparații, ultimul rând și deschiderea PNG-ului la dimensiunea originală, cu revenirea la același proprietar. Receipt-ul identifică APK-ul instalat, dar fingerprint-urile nu includ corpurile XML; criteriul de autonomie a datelor rămâne deschis. [Contractul reviziei](../reporting/ATF_Audit.md#calificarea-unui-producător) cere identificarea externă a exemplarului și limitelor probei; revizia offline nu reprezintă o execuție Android nouă sau acceptanță prin browserul MCP.
 
 Confruntarea inventarului și a hash-urilor dovedește păstrarea identității la mutare, fără să execute accesul la probele din HTML. Guard-ul actual al publicatorului refuză numai forma literală href cu ghilimele duble, iar receipt-ul său nu substituie o calificare portabilă.
 

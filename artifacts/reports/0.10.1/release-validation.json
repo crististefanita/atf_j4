@@ -1,0 +1,136 @@
+{
+  "release": {
+    "versionName": "0.10.1",
+    "versionCode": 14,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "apkName": "WhistLab-0.10.1.apk",
+    "apkBytes": 799864,
+    "apkSha256": "6c32f6a253cd5db7bbf0752c467dcf36fee4ed25e0cc5087525e9ae45bbd62aa",
+    "apkRelativePath": "../../../dist/WhistLab-0.10.1.apk",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
+  },
+  "source": {
+    "sourceCommit": null,
+    "basisHead": "a20300b1d30b3b7a9e3a70f4811d1bb9478ad3ca",
+    "workingTreeFingerprint": "69d3beb8b1dcb453c6395da820bf2f321674b55b67528343b2dceb2d5edbfed4",
+    "inputManifest": "apk-inputs.json"
+  },
+  "publication": {
+    "state": "PREPARED",
+    "tag": "v0.10.1",
+    "commitPerformed": false,
+    "pushPerformed": false,
+    "remoteMutationsPerformed": false
+  },
+  "qualification": {
+    "state": "PASS",
+    "groups": {
+      "app": {
+        "tests": 203,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-ro.whistlab.app.animation.TrickCollectionCleanupComponentTest.xml",
+          "TEST-ro.whistlab.app.animation.TrickCollectionFlowComponentTest.xml",
+          "TEST-ro.whistlab.app.animation.TrickCollectionMotionComponentTest.xml",
+          "TEST-ro.whistlab.app.animation.TrickCollectionRequestComponentTest.xml",
+          "TEST-ro.whistlab.app.animation.TrickCollectionRunComponentTest.xml",
+          "TEST-ro.whistlab.app.fixtures.DisplayFixtureDealsTest.xml",
+          "TEST-ro.whistlab.app.highscores.HighScoreRepositoryComponentTest.xml",
+          "TEST-ro.whistlab.app.lifecycle.AiTurnCoordinatorComponentTest.xml",
+          "TEST-ro.whistlab.app.lifecycle.AiTurnRequestComponentTest.xml",
+          "TEST-ro.whistlab.app.lifecycle.CompletedTrickOwnershipComponentTest.xml",
+          "TEST-ro.whistlab.app.lifecycle.CompletedTrickPauseComponentTest.xml",
+          "TEST-ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest.xml",
+          "TEST-ro.whistlab.app.lifecycle.GameCommandFlowComponentTest.xml",
+          "TEST-ro.whistlab.app.localization.WhistUiTextTest.xml",
+          "TEST-ro.whistlab.app.navigation.AppNavigationComponentTest.xml",
+          "TEST-ro.whistlab.app.persistence.GamePersistenceComponentTest.xml",
+          "TEST-ro.whistlab.app.persistence.GamePersistenceRankingComponentTest.xml",
+          "TEST-ro.whistlab.app.score.layout.HistoryViewportComponentTest.xml",
+          "TEST-ro.whistlab.app.score.ScoreHistoryCheckpointTest.xml",
+          "TEST-ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest.xml",
+          "TEST-ro.whistlab.app.score.ScoreHistoryMeasureComponentTest.xml",
+          "TEST-ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest.xml",
+          "TEST-ro.whistlab.app.score.ScoreHistoryTableComponentTest.xml",
+          "TEST-ro.whistlab.app.screens.MatchSetupComponentTest.xml",
+          "TEST-ro.whistlab.app.seat.PlayerSeatMetricsComponentTest.xml",
+          "TEST-ro.whistlab.app.table.GameTableLayoutComponentTest.xml",
+          "TEST-ro.whistlab.app.table.TableSeatOrderComponentTest.xml",
+          "TEST-ro.whistlab.app.table.TableViewportPolicyTest.xml",
+          "TEST-ro.whistlab.app.table.TrickCardMetricsComponentTest.xml",
+          "TEST-ro.whistlab.app.table.TrumpIndicatorComponentTest.xml",
+          "TEST-ro.whistlab.app.theme.GameHeaderTypographyComponentTest.xml",
+          "TEST-ro.whistlab.app.window.WindowPaddingComponentTest.xml"
+        ]
+      },
+      "adapter": {
+        "tests": 159,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-atf.android.e2e.display.component.DisplayRasterComponentTest.xml",
+          "TEST-atf.android.e2e.display.component.FrameFillAuditComponentTest.xml",
+          "TEST-atf.android.e2e.display.component.ScreenGeometryComponentTest.xml",
+          "TEST-atf.android.e2e.display.component.TableViewportAuditComponentTest.xml",
+          "TEST-atf.android.e2e.display.component.TableViewportObservationComponentTest.xml",
+          "TEST-atf.android.e2e.display.HandGeometryDriverComponentTest.xml",
+          "TEST-atf.android.e2e.display.HandIndexAuditComponentTest.xml",
+          "TEST-atf.android.e2e.display.profile.ResponsiveDisplayProfileComponentTest.xml",
+          "TEST-atf.android.e2e.display.profile.WhistDisplayProfileComponentTest.xml",
+          "TEST-atf.android.e2e.driver.AndroidUiDriverComponentTest$Waiting.xml",
+          "TEST-atf.android.e2e.driver.AndroidUiDriverComponentTest.xml",
+          "TEST-atf.android.e2e.driver.hierarchy.HierarchyContractComponentTest.xml",
+          "TEST-atf.android.e2e.records.legend.HistoryLegendAuditComponentTest.xml",
+          "TEST-atf.android.e2e.records.legend.LegendProfilesComponentTest.xml",
+          "TEST-atf.android.e2e.records.RecordsFixturesComponentTest.xml",
+          "TEST-atf.android.e2e.records.RecordsRunContractComponentTest.xml",
+          "TEST-atf.android.e2e.support.AndroidUiFlowReportPublisherTest.xml",
+          "TEST-atf.android.suites.AndroidDisplayComponentSuite.xml"
+        ]
+      },
+      "governance": {
+        "tests": 29,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-atf.tests.governance.documentation.DocumentationDiagramGovernanceTest.xml",
+          "TEST-atf.tests.governance.documentation.DocumentationProseGovernanceTest.xml",
+          "TEST-atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest.xml",
+          "TEST-atf.tests.governance.documentation.DocumentationStyleGovernanceTest.xml",
+          "TEST-atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest.xml",
+          "TEST-atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest.xml",
+          "TEST-atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest.xml",
+          "TEST-atf.tests.governance.source.android.AndroidJavaApiGovernanceTest.xml",
+          "TEST-atf.tests.governance.source.PackageCohesionGovernanceTest.xml"
+        ]
+      },
+      "native": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-atf.android.e2e.records.WhistRecordsE2eTest.xml"
+        ]
+      }
+    },
+    "apkZipCrc": "PASS",
+    "build": "PASS",
+    "lintVitalRelease": "PASS",
+    "nativeAndroidApi": 28,
+    "nativeBinary": "Debug fixtures; signed Release separately installed and launched",
+    "fullGameRegressionExecuted": false,
+    "appArchivedReplayTest": "Opt-in archived replay excluded; no JUnit skipped verdict"
+  },
+  "browser": {
+    "state": "PASS",
+    "tool": "Installed Playwright Java / Chromium",
+    "report": "browser/legend/browser-audit.json",
+    "mcp": "Unavailable; no MCP interaction claimed"
+  }
+}

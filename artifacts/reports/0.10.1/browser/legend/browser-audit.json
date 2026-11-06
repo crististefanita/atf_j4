@@ -1,0 +1,76 @@
+{
+  "source": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\WHIST_LEGEND_ec8530a489\\native-final\\android-artifacts\\history-legend\\final-extent-report.html",
+  "htmlSha256": "c1a56535355b26909ab2951f616981c726126f29efd05e0df750aa48f29c5b18",
+  "scope": "Detached original HTML in automated Chromium; independent of MCP and Android execution",
+  "title": "ATF Report",
+  "details": 118,
+  "tables": 147,
+  "visibleControls": [
+    "Android UI execution receipt",
+    "Android phase timing — separate measured axes",
+    "Android phase timing — separate measured axes",
+    "UI action sequence (16 entries)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 7",
+    "UI action sequence (1 entry)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 8",
+    "Android phase timing — separate measured axes",
+    "Android phase timing — separate measured axes",
+    "UI action sequence (11 entries)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 7",
+    "UI action sequence (1 entry)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 9",
+    "Android phase timing — separate measured axes",
+    "UI action sequence (9 entries)",
+    "Audit observations · 1 checkpoint",
+    "Assertions · 4",
+    "Android phase timing — separate measured axes"
+  ],
+  "ownerMarkup": [
+    {
+      "tag": "DETAILS",
+      "cl": "atf-ui-action-sequence",
+      "id": ""
+    },
+    {
+      "tag": "TD",
+      "cl": "",
+      "id": ""
+    },
+    {
+      "tag": "TR",
+      "cl": "event-row",
+      "id": ""
+    },
+    {
+      "tag": "TBODY",
+      "cl": "",
+      "id": ""
+    },
+    {
+      "tag": "TABLE",
+      "cl": "table table-sm",
+      "id": ""
+    },
+    {
+      "tag": "DIV",
+      "cl": "card-body",
+      "id": ""
+    }
+  ],
+  "assertionsVisible": true,
+  "lastAssertionRow": "At least one whole score row remains visible\t\u003e\u003d 90 px\t544 px\t✅",
+  "visibleScreenshotLinks": 1,
+  "viewerImages": [
+    {
+      "width": 1080,
+      "height": 1920,
+      "complete": true
+    }
+  ],
+  "ownerOpenAfterViewer": true,
+  "status": "PASS"
+}

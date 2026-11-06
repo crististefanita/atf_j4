@@ -64,18 +64,9 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 
 ## Calificarea modificărilor vizuale
 
-### Legenda istoricului la text mărit
-
-**P2 · reprodus pe candidatul activ.** [Captura EN cu text 1,3](../../artifacts/reports/0.10.0/e2e/history-api28/01-current-apk-resumes-the-same-completed-ledger-en.png) arată legenda tăiată în dreapta. [Receipt-ul vizual](../../artifacts/reports/0.10.0/visual-review.json) identifică PNG-ul, APK-ul Debug observat, APK-ul Release și sursele prin hash. [ScoreHistoryView](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java) include legenda în tabelul derulabil orizontal; prezența textului complet în XML nu dovedește lizibilitatea în viewport.
-
-- Separați legenda de derularea coloanelor ori măsurați împărțirea pe rânduri după lățimea utilă a dialogului. Numărul jucătorilor nu trebuie să împingă explicația în afara ferestrei.
-- Identificați raportul, APK-ul și captura prin hash înaintea calificării reproducerii sau închiderii. Un candidat neînregistrat nu împrumută dovezile versiunii active.
-- Păstrați tabelul cronologic, antetele și accesul la toate locurile. Acceptanța cere explicația completă în RO/EN, cu text normal și mărit, plus o comparație a geometriei vizibile; verificarea `hasTextContaining` singură nu închide problema.
-- Marcajele diagonale și sublinierile păstrează criteriul raster separat descris mai sus; verdictul funcțional al istoricului nu certifică automat contrastul ori lizibilitatea lor.
-
 | Prioritate | Suprafață | Verificare necesară înainte de acceptare |
 |---|---|---|
-| P2 | Colectarea levatei | Calificare nativă pe APK identificat: toate cărțile converg spre locul câștigătorului la 3–6 locuri, fără tăiere, efect reluat sau mutație de scor. Confruntați suspendarea/detașarea, ultima levată și animațiile dezactivate; componentele geometriei și navigării au domeniu separat. |
+| P2 | Colectarea levatei: legarea nativă a porturilor calificate prin componente | APK identificat la 3–6 locuri: măsurarea și clipping-ul corespund scenei, transformările se restaurează la anulare, iar ultima levată precedă scorul. Confruntați `onPause`/reluarea, meniul și dialogurile suprapuse, redimensionări consecutive, notificări de configurație, detașarea și animațiile dezactivate. Numai ultima geometrie poate primi scena nouă; un callback întârziat nu reia ruta abandonată și nu consumă timpul suspendat. Politica portret rămâne cea din manifest; probele cu ceas și evenimente controlate nu califică pixelii sau fluiditatea. |
 | P1 | Masă, carte și atu | Profiluri declarate, text mărit, intersecții reale, coordonate logice mapate la raster și revizie a capturii originale. |
 | P1 | Istoric și reluare | Toate mâinile încheiate și toate locurile accesibile, fără acordarea repetată a punctelor ori avansarea partidei. |
 | P1 | Accesibilitate și localizare | Ordine asistată, etichete ale valorilor necunoscute ori negative, primul și ultimul element derulabil în ambele limbi. |
@@ -101,14 +92,6 @@ Protecția ferestrei și calculul spațiului util sunt implementate; acceptanța
 | P1 | API 37: fereastră, reluare și memorie | Pe un dispozitiv identificat: navigare prin gesturi și trei butoane, decupaj, tastatură, reluare și câteva mâini; înregistrați memoria, motivul ieșirii și hash-ul APK-ului, fără modificarea limitelor sistemului. |
 
 [Contractul livrării](../platform/ATF_AndroidDelivery.md) distinge padding-ul cu IME de măsurarea ferestrei fără IME și definește restaurarea și diagnosticul de memorie. Componentele verifică modelul, iar criteriul nativ rămâne deschis până la execuția callback-urilor și a scenariului pe sistemul țintă.
-
-## Identitatea numerică a cadrului de animație
-
-| Prioritate | Lacună și sursă | Criteriu de închidere |
-|---|---|---|
-| P2 | [TrickCollectionMotion.frame](../../whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java) poate produce zero negativ în translație la începutul mișcării. Egalitatea structurală a record-ului îl distinge de zero pozitiv, încălcând cadrul identitate cerut de [componentă](../../whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java). | Canonicalizați cadrul identitate conform contractului numeric și păstrați componentele pentru direcții, densități, capete, limitare și monotonie. Nu modificați aserțiunea doar pentru a ascunde diferența de reprezentare; calificarea randării Android rămâne separată. |
-
-[Reproducerea izolată](../../../../whist_back/documentation-transfer/20261105-223207/pure-ui-components.log) și [sursele identificate](../../../../whist_back/documentation-transfer/20261105-223207/pure-ui-source-identity.json) delimitează discrepanța. Remedierea în sursa live cere reluarea componentei pe noua identitate, fără preluarea verdictului APK-ului pregătit.
 
 ## Memoria adaptorului
 

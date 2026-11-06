@@ -1,0 +1,15 @@
+{
+  "state": "PASS",
+  "htmlSha256": "c1a56535355b26909ab2951f616981c726126f29efd05e0df750aa48f29c5b18",
+  "details": 26,
+  "tables": 51,
+  "exactInlinePngPayloads": {
+    "01-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-0-en.png": true,
+    "02-fixed-legend-after-column-scrolling-720x1280-360dpi-font-1-0-en.png": true,
+    "03-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-5-ro.png": true,
+    "04-fixed-legend-after-column-scrolling-720x1280-360dpi-font-1-5-ro.png": true,
+    "05-original-user-data-restored.png": true
+  },
+  "observedInstalledApkHashPresent": true,
+  "scope": "Static bytes and structure; interactive expansion/viewer covered separately"
+}

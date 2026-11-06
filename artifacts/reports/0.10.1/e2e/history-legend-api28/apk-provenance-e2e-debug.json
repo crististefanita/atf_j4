@@ -1,0 +1,12 @@
+{
+  "serial": "127.0.0.1:5555",
+  "api": 28,
+  "requestedApkSha256": "21ce512b6736fd9802a27a47352dc3b2fc3d22cc308544e55a88c9bee08da9c5",
+  "installedApkSha256": "21ce512b6736fd9802a27a47352dc3b2fc3d22cc308544e55a88c9bee08da9c5",
+  "installedPath": "/data/app/ro.whistlab.app-kT_bdzKg_O5FNmlzsNlDLw==/base.apk",
+  "backupSha256": "694eab9ef67897f64ca4b808452fffd764ab2a0f4db34dde8e304af309dacc3e",
+  "size": "Physical size: 1080x1920",
+  "density": "Physical density: 440",
+  "fontScale": "1.0",
+  "sourceFingerprint": "69d3beb8b1dcb453c6395da820bf2f321674b55b67528343b2dceb2d5edbfed4"
+}

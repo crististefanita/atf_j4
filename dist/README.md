@@ -2,19 +2,19 @@
 
 ## APK local
 
-- **[Whist Lab 0.10.0](WhistLab-0.10.0.apk)** · [SHA-256](WhistLab-0.10.0.apk.sha256).
+- **[Whist Lab 0.10.1](WhistLab-0.10.1.apk)** · [SHA-256](WhistLab-0.10.1.apk.sha256).
 - Stare: **PREPARED**, pregătit local; publicarea este un pas ulterior.
-- [Ultima versiune publicată în GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest): autentifică-te în același browser și alege APK-ul din Assets.
+- [Ultima versiune publicată](https://github.com/crististefanita/atf_j4/releases/latest): autentifică-te în același browser și alege APK-ul din Assets.
 
-## Îmbunătățiri față de 1.9.2
+## Îmbunătățiri față de 0.10.0
 
-- Rezumatul licitațiilor are text mărit cu 30%.
-- Istoricul afișează licitația și punctele fiecărei mâini în două coloane per jucător.
-- Plățile seriilor de reușite ori ratări sunt subliniate în istoricul scorului.
+- Legenda istoricului rămâne integrală în română și engleză, inclusiv cu text mărit.
+- Explicația rămâne fixă în dialog când coloanele jucătorilor sunt derulate.
+- Spațiul rândurilor se adaptează ferestrei și păstrează antetele și explicația vizibile.
 
 ## Documentație
 
-- [Dosarul versiunii și rapoartele](../artifacts/reports/0.10.0/README.md).
+- [Dosarul versiunii și rapoartele](../artifacts/reports/0.10.1/README.md).
 - [Procesul de pregătire și publicare](../docs/platform/ATF_ReleaseRetention.md).
 
-Directorul păstrează numai APK-ul local curent și checksum-ul. GitHub Releases este canalul distribuției publicate; un template local nu confirmă existența asset-ului la distanță.
+Directorul păstrează numai APK-ul local curent și checksum-ul. GitHub Releases deține distribuția publicată.

@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "version": "0.10.1",
+  "verifiedUtc": "2026-11-05T22:18:41.851201+00:00",
+  "groups": {
+    "adapter": 159,
+    "app": 203,
+    "governance": 29,
+    "native": 1
+  },
+  "apk": {
+    "name": "WhistLab-0.10.1.apk",
+    "bytes": 799864,
+    "sha256": "6c32f6a253cd5db7bbf0752c467dcf36fee4ed25e0cc5087525e9ae45bbd62aa"
+  },
+  "reportSha256": "c1a56535355b26909ab2951f616981c726126f29efd05e0df750aa48f29c5b18",
+  "sourceFingerprint": "69d3beb8b1dcb453c6395da820bf2f321674b55b67528343b2dceb2d5edbfed4",
+  "sourceInputFiles": 102,
+  "laterLiveChangesExcluded": [],
+  "sourceArchiveCrcAndEntryHashes": "PASS",
+  "retiredArchiveCrcAndEntryHashes": "PASS",
+  "browser": "Detached original HTML; first checkpoint assertions, last row, original PNG and owner return",
+  "native": "API 28; two legend cases and signed release smoke; original data restored",
+  "noFullGameRegression": true,
+  "commitPerformed": false,
+  "pushPerformed": false,
+  "remoteMutationsPerformed": false
+}

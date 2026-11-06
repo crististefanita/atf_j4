@@ -6,6 +6,7 @@ import ro.whistlab.app.screens.MenuScreens;
 import ro.whistlab.app.screens.MatchSetup;
 import ro.whistlab.app.screens.ScreenViews;
 import ro.whistlab.app.navigation.AppNavigation;
+import ro.whistlab.app.presentation.PresentationRefresh;
 
 import ro.whistlab.app.fixtures.DisplayFixtureDeals;
 import ro.whistlab.app.fixtures.OriginalMatchReplay;
@@ -25,6 +26,7 @@ import ro.whistlab.app.profile.PlayerSettingsDialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -60,7 +62,10 @@ public final class MainActivity extends Activity {
     private boolean debugHoldAiTurns;
     private boolean debugHoldAiBids;
     private WhistUiText copy;
-    private final AppNavigation navigation = new AppNavigation();
+    private final AppNavigation navigation = new AppNavigation(this::cancelAutomatedTurns, this::resumeVisibleGame);
+    private final PresentationRefresh presentationRefresh = new PresentationRefresh(
+            this::suspendAutomatedTurns, this::driveAutomatedTurns, task -> handler.post(task),
+            () -> automationActive && navigation.gameVisible() && !navigation.blocksAutomation() && game != null);
     private final MatchSetup setup = new MatchSetup();
     private ScreenViews views;
     private MenuScreens menuScreens;
@@ -75,9 +80,15 @@ public final class MainActivity extends Activity {
     private String matchId = java.util.UUID.randomUUID().toString();
 
     @Override protected void onResume(){super.onResume();automationActive=true;if(navigation.gameVisible()&&game!=null)driveAutomatedTurns();}
+    @Override protected void onPause(){automationActive=false;cancelAutomatedTurns();super.onPause();}
     @Override protected void onStop(){automationActive=false;cancelAutomatedTurns();persistGame();super.onStop();}
     @Override protected void onDestroy(){automationActive=false;cancelAutomatedTurns();aiTurns.close();aiResults.removeCallbacksAndMessages(null);super.onDestroy();}
     @Override public void onBackPressed() { if (navigation.backReturnsHome()) renderHome(); else super.onBackPressed(); }
+
+    @Override public void onConfigurationChanged(Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        if (navigation.gameVisible()) presentationRefresh.request();
+    }
 
     @Override
     protected void onCreate(Bundle state) {
@@ -165,7 +176,6 @@ public final class MainActivity extends Activity {
 
     private void renderHome() {
         navigation.show(AppNavigation.Screen.HOME);
-        cancelAutomatedTurns();
         views.applyStandardWindowChrome();
         menuScreens.home(copy, playerPreferences.name(), game != null,
                 new MenuScreens.Actions(this::showPlayerSettings, this::renderSetup, this::renderCurrentState,
@@ -188,7 +198,6 @@ public final class MainActivity extends Activity {
 
     private void renderSetup() {
         navigation.show(AppNavigation.Screen.SETUP);
-        cancelAutomatedTurns();
         views.applyStandardWindowChrome();
         setupScreen.show(copy, setup, this::setUiLanguage, this::startGame, this::renderHome);
     }
@@ -229,40 +238,42 @@ public final class MainActivity extends Activity {
 
     private void renderPlay(List<PlayedCard> completedTrick, boolean pauseActive) {
         gameScreen.playing(copy, game.snapshot(), completedTrick, pauseActive, 0,
-                this::playHumanCard, gameMenuActions());
+                presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
     private void renderCollecting(CompletedTrickPause.DisplayState pause) {
         gameScreen.playing(copy, game.snapshot(), pause.cards(), true, pause.remainingMillis(),
-                this::playHumanCard, gameMenuActions());
+                presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
     private GameScreen.MenuActions gameMenuActions() {
         return new GameScreen.MenuActions(this::showLiveScoreboard, this::showPlayerSettings,
-                this::showHighScores, this::renderHome);
+                this::showHighScores, this::renderHome, this::suspendGameMenu);
+    }
+
+    private Runnable suspendGameMenu() {
+        var token = navigation.openDialog();
+        return () -> navigation.dismiss(token);
     }
 
     private void showLiveScoreboard() {
         var state = game.snapshot();
-        boolean resume = state.phase() == GamePhase.BIDDING && state.biddingSeat() != 0
-                || state.phase() == GamePhase.PLAYING && state.currentSeat() != 0;
         var token = openDialog();
         var history = game.scoreHistory();
-        scoreScreens.live(copy, state, history, () -> dismissDialog(token, resume), () -> showScoreHistory(state, history));
+        scoreScreens.live(copy, state, history, () -> navigation.dismiss(token), () -> showScoreHistory(state, history));
     }
 
     private void showScoreHistory(GameSession.Snapshot state, ScoreHistory history) {
         var token = openDialog();
-        scoreScreens.history(copy, state, history, () -> dismissDialog(token, true));
+        scoreScreens.history(copy, state, history, () -> navigation.dismiss(token));
     }
 
     private AppNavigation.Dialog openDialog() {
-        cancelAutomatedTurns();
         return navigation.openDialog();
     }
 
-    private void dismissDialog(AppNavigation.Dialog token, boolean resume) {
-        if (navigation.dismiss(token) && resume && game != null) driveAutomatedTurns();
+    private void resumeVisibleGame() {
+        if (navigation.gameVisible() && game != null) driveAutomatedTurns();
     }
 
     private void playHumanCard(Card card) {
@@ -276,6 +287,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderScore() {
+        gameScreen.cancelCollection();
         var state = game.snapshot();
         scoreScreens.score(copy, state, game.scoreHistory(), new ScoreScreens.Actions(
                 () -> nextHand(state), this::playAgain, () -> showScoreHistory(state, game.scoreHistory()), this::renderHome));
@@ -305,7 +317,7 @@ public final class MainActivity extends Activity {
                 else renderHome();
             }
         });
-        dialog.setOnDismissListener(ignored -> dismissDialog(token, true));
+        dialog.setOnDismissListener(ignored -> navigation.dismiss(token));
     }
 
     private void showHighScores() {
@@ -313,22 +325,22 @@ public final class MainActivity extends Activity {
         try {
             GameConfig config = lastConfig != null ? lastConfig : setup.config(0);
             AlertDialog dialog = HighScoresDialog.show(this, copy, highScores, HighScores.Profile.from(config), playerPreferences);
-            dialog.setOnDismissListener(ignored -> dismissDialog(token, true));
+            dialog.setOnDismissListener(ignored -> navigation.dismiss(token));
         } catch (java.io.IOException failure) {
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
-            dismissDialog(token, true);
+            navigation.dismiss(token);
         }
     }
 
     private void renderInstructions() {
         navigation.show(AppNavigation.Screen.INSTRUCTIONS);
-        cancelAutomatedTurns();
         views.applyStandardWindowChrome();
         menuScreens.instructions(copy, this::setUiLanguage, this::renderHome);
     }
 
     private void driveAutomatedTurns() {
         if (!automationActive) return;
+        presentationRefresh.cancel();
         handler.removeCallbacksAndMessages(null);
         if (navigation.blocksAutomation()) return;
         if (aiTurns.isPending()) return;
@@ -338,8 +350,10 @@ public final class MainActivity extends Activity {
         }
         GameSession.Snapshot state = game.snapshot();
         navigation.show(AppNavigation.Screen.GAME);
+        long displayTime = SystemClock.uptimeMillis();
+        completedTrickPause.resume(displayTime);
         CompletedTrickPause.DisplayState trickPause = completedTrickPause.evaluate(
-                game, SystemClock.uptimeMillis());
+                game, displayTime);
         if (trickPause.active()) {
             renderCollecting(trickPause);
             handler.postDelayed(this::driveAutomatedTurns, trickPause.remainingMillis());
@@ -406,6 +420,12 @@ public final class MainActivity extends Activity {
     }
 
     private void cancelAutomatedTurns() {
+        presentationRefresh.cancel();
+        suspendAutomatedTurns();
+    }
+
+    private void suspendAutomatedTurns() {
+        completedTrickPause.suspend(SystemClock.uptimeMillis());
         if (gameScreen != null) gameScreen.cancelCollection();
         handler.removeCallbacksAndMessages(null);
         aiTurns.cancel();

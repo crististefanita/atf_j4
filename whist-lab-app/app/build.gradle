@@ -10,8 +10,8 @@ android {
         applicationId "ro.whistlab.app"
         minSdk 24
         targetSdk 36
-        versionCode 13
-        versionName "0.10.0"
+        versionCode 14
+        versionName "0.10.1"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
@@ -28,12 +28,16 @@ android {
             filter {
                 includeTestsMatching "ro.whistlab.app.table.*"
                 includeTestsMatching "ro.whistlab.app.theme.*"
+                includeTestsMatching "ro.whistlab.app.animation.*"
+                includeTestsMatching "ro.whistlab.app.presentation.*"
+                includeTestsMatching "ro.whistlab.app.lifecycle.CompletedTrick*"
                 includeTestsMatching "ro.whistlab.app.seat.*"
                 includeTestsMatching "ro.whistlab.app.window.*"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryTableComponentTest"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryGridMetricsComponentTest"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryOutcomeComponentTest"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryMeasureComponentTest"
+                includeTestsMatching "ro.whistlab.app.score.layout.*"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryCheckpointTest"
                 includeTestsMatching "ro.whistlab.app.localization.WhistUiTextTest"
             }

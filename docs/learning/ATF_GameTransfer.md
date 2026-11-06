@@ -12,6 +12,7 @@ Acest ghid deține admiterea unui domeniu nou. [Evoluția AI-ului](ATF_PolicyEvo
 |---|---|---|
 | Clasificare și audit JUnit | [Kit](../../atf-test-kit/README.md) independent de motorul Whist. | Așteptări proprii și adaptorul publicării rezultatelor. |
 | Biblioteci comune | [API-uri binare](../platform/README.md), cu acceptanță locală. | Configurație, proveniență și verificări pe profilul noului consumator. |
+| Guvernanță | [Verificatoare adaptate](../governance/README.md), cu politică și populație locale; API-ul comun împachetat este [criteriu deschis](../feedback/ATF_Governance.md#api-reutilizabil-pentru-verificatoare). | Rădăcină, module și inventar explicite, plus controale negative pe noul perimetru. |
 | Intersecția intervalelor | [Componentă pură](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs), consumată de registru. | Intrări întregi valide și adaptarea identității datelor. |
 | Expunerea datelor | [Registrul actual](ATF_EvaluationRegistry.md) fixează namespace-ul distribuirilor Whist. | Contract de identitate, spațiu de date și migrare; schimbarea unui nume nu califică un registru generic. |
 | Politică și observație | [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) proiectează starea către modelele Whist. | Tipuri, acțiuni, observație și obiectiv ale jocului nou. |

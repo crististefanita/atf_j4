@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-05T21:47:02.585Z" hostname="DESKTOP-BLFSO18" time="2.277">
+  <properties/>
+  <testcase name="wrongActorOrDecisionKindIsRefusedBeforeMutation" classname="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" time="0.004"/>
+  <testcase name="anEqualSnapshotFromAnotherSessionCannotReceiveTheResult" classname="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" time="0.07"/>
+  <testcase name="cardCalculationDoesNotMutateAndApplicationUsesTheCapturedActor" classname="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" time="0.283"/>
+  <testcase name="bothLevelsComputeFromSnapshotAndApplyTheSameBidOnce" classname="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" time="1.818"/>
+  <testcase name="humanTurnCannotBeScheduledAsAutomatedWork" classname="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" time="0.013"/>
+  <testcase name="changedStateRejectsLateResultEvenWhenTheSessionIdentityMatches" classname="ro.whistlab.app.lifecycle.AiTurnRequestComponentTest" time="0.075"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-05T21:47:05.045Z" hostname="DESKTOP-BLFSO18" time="0.227">
+  <properties/>
+  <testcase name="aRemainingBudgetDoesNotOverflowWhenTheClockIsNearItsMaximum" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" time="0.002"/>
+  <testcase name="theLastMatchTrickCannotBeSkippedByAStopOrAccrueExtraScoreDuringPause" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" time="0.093"/>
+  <testcase name="stoppingBeforeTheFirstPresentationStillLeavesTheFullWindowOnResume" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" time="0.049"/>
+  <testcase name="suspensionRetainsTheExactRemainingBudgetAtThreeToSixPlaces" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" time="0.028"/>
+  <testcase name="invalidTimeDoesNotChangeTheOwnerOrRemainingWindow" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" time="0.028"/>
+  <testcase name="repeatedSuspendResumeAndRedrawNeverResetOrSpendThePausedInterval" classname="ro.whistlab.app.lifecycle.CompletedTrickPauseResumeComponentTest" time="0.014"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

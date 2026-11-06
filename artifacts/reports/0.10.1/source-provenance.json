@@ -1,0 +1,12 @@
+{
+  "sourceCommit": null,
+  "basisHead": "a20300b1d30b3b7a9e3a70f4811d1bb9478ad3ca",
+  "sourceFingerprint": "69d3beb8b1dcb453c6395da820bf2f321674b55b67528343b2dceb2d5edbfed4",
+  "inputManifest": "apk-inputs.json",
+  "freeze": "source-freeze.json",
+  "liveSyncReceipt": "live-sync-final.json",
+  "temporaryMavenProfiles": "Selection-only; live POM files unchanged",
+  "componentSelection": "XML mutants, typed profile plans, label read/reveal bounds, installed APK observation and viewport allocation",
+  "nativeSelection": "Two final compact cases; preceding five-case matrix belongs to a different APK",
+  "noLatencyBenchmarkClaim": true
+}

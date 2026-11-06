@@ -1,0 +1,2617 @@
+{
+  "kind": "UNCOMMITTED_WORKING_TREE",
+  "sourceCommit": null,
+  "basisHead": "a20300b1d30b3b7a9e3a70f4811d1bb9478ad3ca",
+  "apkInputsFingerprint": "69d3beb8b1dcb453c6395da820bf2f321674b55b67528343b2dceb2d5edbfed4",
+  "sourceArchive": "C:\\work\\whist_back\\release-archives\\legend-0101-5d591a16b2\\qualified-source-0.10.1.zip",
+  "sourceArchiveSha256": "f631a2da1d7dc6d686fc367ec3bd0f34ada9de3634d482ba5dcdc48716a882e6",
+  "crcAndEntryHashes": "PASS",
+  "files": [
+    {
+      "path": "atf-test-android/pom.xml",
+      "sha256": "40134e1b0891bcbf26801eeb957f7380d04cea0064bc956d0a08d077a37a75e7"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/AdbClient.java",
+      "sha256": "6e2f3d853c3e6f61fe1dde137ee84e35d57663e9f1056ba16d53278cf629b80c"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java",
+      "sha256": "21c443eca1dc4f397c63abf7a5f7efb6be3ebff1571d853c784ab63b681fa0be"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/evidence/DisplayRaster.java",
+      "sha256": "728ccc90a32c2bd8fc6cc4e642abe8a5ca8280e797562e31c74d58620d16735f"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseClock.java",
+      "sha256": "79a87e7e214e18bae55f99813e9a395ad47195ada23b25c8ce01e1dadbe12eef"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseReportTiming.java",
+      "sha256": "1f21ee6a60450156865e6e73793bc377350e12af61b5e1eba7ff6b816540a17b"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseTiming.java",
+      "sha256": "17b8993196b7fb6cb13b6716205f97c35cc87b963356f3ec988417ff8bf801ed"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseTimingCodec.java",
+      "sha256": "6b52cb67a42fe7f7671bf027a83269f90228319f12a214fb2fcccc6f6f72c7ca"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/process/CommandProcess.java",
+      "sha256": "13b523f1f3ce5bc2a1645fe96b0ec792728c62e0d9d455f142ca164b3e8f38d4"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/whist/evidence/HandIndexAudit.java",
+      "sha256": "90eeec68cfa58fd79c18486ebde7272b9fe9d618120106a73e1dc84733ccd361"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java",
+      "sha256": "ae860101e80685560fe5b208970888f3109cf000f02e62e40f32eb031c1a9da0"
+    },
+    {
+      "path": "atf-test-android/src/main/java/atf/android/whist/evidence/WhistExtentFeedback.java",
+      "sha256": "6be2e07ff3dcdd1f8aabba6ac1106861f3d32cdc4a1f3c4cc3546bd2589a5aa0"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/AdbClientContractTest.java",
+      "sha256": "409fd761f11664d938ecbd4af652e38ff790499414aa8968134027ea1a043125"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/activation/AndroidE2eActivationExtension.java",
+      "sha256": "3fd0507e3bb0073c9da29c0c46bf64057dbb8cb53c4988b935e341e9f0526596"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/activation/AndroidE2eTest.java",
+      "sha256": "7096c8d55ad0003c70a761aba6f2035623773d6fa68cc74e0fc567c3975bc705"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/HandGeometryDriverComponentTest.java",
+      "sha256": "7f41cdda345afd2e12e6b5196f39b6e6b09c7b716eafa2e144917b13c70b6bf6"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/HandIndexAuditComponentTest.java",
+      "sha256": "ecb8276c2cf8f2abfdf4823624b5af6d87b352bfd1b54f75649b415ec077fc33"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/component/DisplayRasterComponentTest.java",
+      "sha256": "7294126aaa503381c45e8005168071afe30896dc8d672c7aa4bd986bbfb785a0"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/component/FrameFillAuditComponentTest.java",
+      "sha256": "8594574342f154f21e1b0be631c74fa047e554a3a0d08e94ecfecf27f0d9465d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/component/ScreenGeometryComponentTest.java",
+      "sha256": "cb99ac85c1d911a5a311d758dfca97aced8688eed361ff437deea815caf83a3e"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java",
+      "sha256": "25ef6dc6ca7aabb6081c9c5bea863e836e7dbe083764c8dc457b73f2b5cf7afa"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportAuditComponentTest.java",
+      "sha256": "471cf7f900117749bb4bf11a860b6010988d5e69b96cc82080df02e326e06b65"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java",
+      "sha256": "5ad64b6ec9ef42ab1347982cb48be6c38060480b639963423815c8643c625a90"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistDenseLayoutE2eTest.java",
+      "sha256": "bce18f543c597ef1ced48773ed34c558031d971af785775cfb24cbc3c2bc10a0"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistMenuLayoutE2eTest.java",
+      "sha256": "82cd2ddfcf6bd358813352968c7bb940f2160aa1687e0fb2eef6f11b1dbfc16d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistResponsivePlaySanityE2eTest.java",
+      "sha256": "17066310ce7a3aefd47658a9f8577cf64405a96642e659563e15d43cc02b2d43"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistTableAndScoreSanityE2eTest.java",
+      "sha256": "c363c2356e8923320fc66580f94f22adce08955d4fbe475d6dab0f3e30a57e7e"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveDisplayActions.java",
+      "sha256": "49c3b05a7e810579c713bba4cd26e463364758fcb2b3f1a8959aa0d5406cbf10"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveEvidence.java",
+      "sha256": "f6675fad0f2a3d19939666935af31be693e634f13547a150f24742d8b11356ca"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveGameFlow.java",
+      "sha256": "88ecba0db54157f3689a85b97ccc6a6d76725602e6b7e18c368b848faf9963dd"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveMenuChecks.java",
+      "sha256": "5afcadf04e57248c44eef843a0ee561981cf3812472697c08f8c156ba20887b6"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveSanityRun.java",
+      "sha256": "782e429667a75e3ebcb270883a6fda68924b3f5b17ab28a85767a9657d7905ca"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveSettings.java",
+      "sha256": "561a57049ac161e63ad42cd3564a1c8ebff5f535b6674c55f11fff597ec30fab"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveTableState.java",
+      "sha256": "da11b773eafb1cbf71088a860f0f971ada096560eb200fbedf23379f2785de29"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/SimultaneousTableChecks.java",
+      "sha256": "16145660f698d7c92253110cae650c9776fe0933dbde5518248593a0968ccb14"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/profile/ResponsiveDisplayProfile.java",
+      "sha256": "0acd69583cb8a5769d73c2b64cba540db7c13a5abde638edbf009684b752e93a"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/profile/ResponsiveDisplayProfileComponentTest.java",
+      "sha256": "6e8683f0d8246c76d094092eeb36b93993039cbb11b9a2189994902d747ac5e1"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/profile/WhistDisplayProfileComponentTest.java",
+      "sha256": "60f9029fde7cafdcf4af8a1543ee42fb0a78ecf06a729dd4fe37bf592fa7448e"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/support/DisplayActions.java",
+      "sha256": "7d5904730a0b4db4c2e90cba12f6cb7c2dcd9b22e8f934b8877fa217292ef863"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/support/GameplayDisplay.java",
+      "sha256": "18097ad6f1f1b4e161f1407001b48542ce45400a841cb955e4d184c8626faa4b"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/support/GameplayGeometry.java",
+      "sha256": "16c508e2b312342016ae5c3a8dc447fb17537e2724ddfc80f67af5a21f2a3ac2"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/support/ResponsiveGeometry.java",
+      "sha256": "3096889837bd89c73191798e3abf493b817b4cdc8c5d7382b5b027edd01abad4"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/support/ScreenGeometry.java",
+      "sha256": "26f53fb4dd165040570e774538142928d85c659840060a5d983cc10fbdbe75b7"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java",
+      "sha256": "1bb2667ca1c2d1063770a803ee3b461633d7c3a881ba3c6a5563b4df0996431e"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/AndroidHierarchyFreshnessTest.java",
+      "sha256": "a64589af0824618811b7e4d3e30932ed4ef7883ac737f49b373461bf34da1206"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java",
+      "sha256": "9e5dca16ea7fbee16bf18a196dee0d53fcc73790224f706d058779797b998c41"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriverActionTraceTest.java",
+      "sha256": "ae597e34ab082366cfb6aa585a034b9aa2b0bd3169136776d2fe9b52ba766fd9"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriverCaptureTimingTest.java",
+      "sha256": "9ac4435f60100ec18c456857106e3b9cdfd457d61899491c76dc9c3044ca471b"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriverComponentTest.java",
+      "sha256": "89889bab5cb3b5d9c09876c1b447acd0e6dccd907f86dacbe20d6a895b98899f"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/ScreenshotAnalysis.java",
+      "sha256": "8c624bef0f10fe720999ed8db2ddd1b6b22736ba66997cfc9e8c532c0e188021"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/UiDeviceCapture.java",
+      "sha256": "6ac22ee92e46f671a6b8d275eac6bf60ee7bfd86a3f8f30b2ea442b1c88999a0"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/UiHierarchy.java",
+      "sha256": "1295e6974d620c5ec4cad38139033f8e8323e599d8ae9f55ade8b83768d75a63"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/CardHierarchy.java",
+      "sha256": "75835514a1c4fdc7cd17baac47da2b7417a71302e3926d3ab174cc28b526fe0d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/CardLabelText.java",
+      "sha256": "589c04317227cee1fef28f730669e59d5bd5bda254783c5d4890e059282f3d1f"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/HierarchyContractComponentTest.java",
+      "sha256": "7b35b70b133f8f21211f94a6458d65d35191f334dc1f5c0f458497a3c8247410"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/HierarchyDocument.java",
+      "sha256": "2ce8f7d01eae102710445e3317a637d9f8139492f899e22f977115f635d7d663"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/driver/waiting/UiStateAwaiter.java",
+      "sha256": "37e039f0dbf8d2f4b5ef64d0ed4833e407b1a060a4222fd92814933aac772255"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/evidence/WhistTestEvidence.java",
+      "sha256": "17aa7d9a16be615809d0175bd5fc0ed541cc3d1a1ed185a5b68ff90b5947ca81"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/evidence/frames/PngUptimeMetadata.java",
+      "sha256": "cb2d4128462511425435022e4343d006085cdfad3857cccbc1fd07cf3e234e87"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/evidence/frames/PngUptimeMetadataComponentTest.java",
+      "sha256": "f2caac3f37b644d78ed2b74e0a9331319a86210de7ebfaf5823a1ebe9cde88de"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/evidence/frames/TrickFrameAnalysis.java",
+      "sha256": "542680f4668f1f3e654c59fd34a745702c42f0718a07e246db2e1930a3a5aac5"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/evidence/frames/TrickFrameAnalysisComponentTest.java",
+      "sha256": "7e9fc753a9683e66c44862754dfa6bf975a03f5ee15d6e8fa3a87cb3633ec6b1"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/evidence/frames/TrickFrameCapture.java",
+      "sha256": "a4cd1f05a1b4168befbfd4a8b1a3568282aa47808a83eff1dcdcc5d527ede887"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteRomanianExpertE2eTest.java",
+      "sha256": "c7d9024ba8fef3d92d445b021ee07f8c495b1f09ef23440e9220137f5b218be0"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteWhistLabMatchE2eTest.java",
+      "sha256": "174e6a6b376db038b979456db54680a447528c34d9cc8771f9e63eb5099bead3"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/RomanianMenuOptionsE2eTest.java",
+      "sha256": "bf14082a8379fb03baccdfd9fe6188eb511bac1ad51bf2e29014ec264afcd88b"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabContinuationTest.java",
+      "sha256": "4006d1036524a548b5a5eb21ff97fa5ef72166ab0e146d9ffe9837fdc400e7c2"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabGameplayE2eTest.java",
+      "sha256": "ad3609a78385d13977de6dc77de06db1be106c560c35e42f6da763a9daced82f"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabRomanianExpertE2eTest.java",
+      "sha256": "e9a86fee9adf833df06727b7b8f7c2b58c9c87e3502d7ee523711c00f430a745"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/configuration/DefaultGameScenario.java",
+      "sha256": "19327eccc912003c430cd57357e8f65fe88d0bdb3a030f7917798ddcd4764283"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/persistence/SavedGamePreparationPhase.java",
+      "sha256": "02f147e3257c36ffe1ff44a552d9765e4a3ee398aa6c31c9995e56d84f23fd49"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/persistence/SavedGameRecoveryScenario.java",
+      "sha256": "cfc5fb8d53d7438f568901d8a2d45c82a9d7201f71894f45bdc5a389ec8cfb34"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/persistence/SavedGameResumePhase.java",
+      "sha256": "29333a03134b962cbbd1bc1d3c9449e8daa1ae33433e1764db170b873fcff66e"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SingleCardCenteringCheck.java",
+      "sha256": "e2219a0135008733bcf59f28e078fc23f8139f2cf42b5c249cbe5c91099757c7"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerBiddingCheck.java",
+      "sha256": "33c614adb884f21c210bd4d4363e53bb3c030ca6ec65170eb4284bd05a94c10a"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerNavigationCheck.java",
+      "sha256": "3b6ac1bae4556b009f9dafe0a09f4ff4410674b5214327cacdba16996fe35528"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerSetupPhase.java",
+      "sha256": "7a34cc3de11ed5f406a0bd37681c7ddb306cf4c2d8c24950ecf3df7813d710b7"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java",
+      "sha256": "2f5094344c244bfc41924717164dd1df003078719ead73bbaad7647ab4a2253e"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardBiddingCheck.java",
+      "sha256": "50d26cf0a49d66dfababacbeaa665b4426ad779225663c25230129f65b6867e0"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardDisplayScenario.java",
+      "sha256": "c05c171c8f6ac19ca2b2374785b9b0d0749ecb07c6c61a43fb39d36fc99eab35"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardPlayScenario.java",
+      "sha256": "6d9ee1b9c1eff2f00a33045fd304acb915bf20048c2a0875b4a09c325d0edc2b"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/FanPlayPhase.java",
+      "sha256": "c30895d7f9980b514732a508d68f60707df62c07038525d2f8fd0299642f760d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/FanSetupPhase.java",
+      "sha256": "722a91ad6f584a17a4d3f4ebc4fe5f47cf66ec3938657ed5f26da2c56e3c522b"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/ThirteenCardFanFlow.java",
+      "sha256": "cf73e7b5b8169e2d850b04a3a211781267379f1b8dbe884f39b6bd3b4dfdda37"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/support/TrickUiState.java",
+      "sha256": "f862d7d67d864b511776c84a05262b6a67dc6dd9a0ccfbb2784ca8b5b5c2e99d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/tricks/CompletedTrickScenario.java",
+      "sha256": "0810443f79ca41dbda73200d2ef9b1c86f6b2baea5d00011bc8c536de2e92353"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/OriginalMatchOracle.java",
+      "sha256": "b4eb2734aaa18a41bee19c2073021be4d316222b1a03fc3fe525647ad96ff2aa"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/OriginalMatchOracleTest.java",
+      "sha256": "713e24ca391960523bd817e0b6264fdd6a61b84b2a1773b356535c285ac38190"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/OriginalWhistState.java",
+      "sha256": "f8a2610198cfe66201eb2bab14c65dc19209cbdcca88ccface2af3baba4a54bc"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/OriginalWhistStateTest.java",
+      "sha256": "399c45b1f8ab785d3162ab4558ea69e41d40bf45b9880b21820e6d67bfc36eb4"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/RecordedRomanianMatchAuditTest.java",
+      "sha256": "d99e01da08b2740fe8e544b64529258b91854e7165f54c3f020cde1e1b6775f3"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/romanian/RomanianMatchOracle.java",
+      "sha256": "05ba0edcf2aae823053249f7eb0f044e1283f84cf116ab3010f2ffedea572a82"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/romanian/RomanianMatchOracleSeriesTest.java",
+      "sha256": "b8fda940ffae67538e2176a78ce7d2fb8d7e74b332e3c9057d8eaf52d315f42d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/romanian/RomanianMatchOracleTest.java",
+      "sha256": "fbc1adde99b31f5019b3932de6e51513e6e9747ba2b1735bee126334c3c35dda"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/player/WhistChallenger.java",
+      "sha256": "5ecbccb0e78bdb2397cc71e93fce1d6b0f0bc6960e6a632bb53bc0cefe245f2c"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/player/WhistChallengerTest.java",
+      "sha256": "0140a4bb535582fab1e919830a8aa13cb5679f0e0752a0983824c8e85629eb79"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java",
+      "sha256": "4e80fc19be18a36054dde99681dd6931ced275659322a33e74baa244bc21ddfa"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/RecordsContext.java",
+      "sha256": "b3338c2569d6a7aa90527d0b45f0a9353902e6c4c022ade445c44ca5b9b77b65"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixtures.java",
+      "sha256": "e07fd0faa44f9afc785d6f2ed1ffa897ad5d28169451e1a312118ed286eed5fb"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java",
+      "sha256": "147beff764f65bf5bfeb4211923a441ffa06978a79446fd62c76b9f8b8a83fe5"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java",
+      "sha256": "ed88725a6247ce460b16d98dc523a0e1de2bd9d427aaef8196c3ab24ffcb3d1f"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContractComponentTest.java",
+      "sha256": "4902778d8a2ce5d9b5b306643219101603144cf75207d1c6c802b6536ba53d12"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/SeriesRankingScenarios.java",
+      "sha256": "4e60e119f6ac88e2e90e850ac01ed374670620bd57a9f2fcc74817c331dbdf2d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java",
+      "sha256": "216a512fbd00d001bf02c1397cbf862a8a5791a872140ee1e66b9ac09a0d0b5a"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/legend/HistoryLegendAudit.java",
+      "sha256": "5e45e361a4318aeb60cc24e49cf880134ae738de26e60f1911381cc486a3e6cc"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/legend/HistoryLegendAuditComponentTest.java",
+      "sha256": "39636c77ff6cff7620ed7c86a4662d6c0caf1101b66c5b74e6be326d63c12da2"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfiles.java",
+      "sha256": "dc953f57791042868726024cf2dd80c31cd618f04c4ecc963f9a1ed9143d250d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfilesComponentTest.java",
+      "sha256": "0bdbfc7080b9a760f5441334030f9723a963a7c15fcb4f8ec931de234d5491c7"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidPhaseTimingAudit.java",
+      "sha256": "b2cefecce873acd052dc56d905438a58844f41c07b54d072f8e7ff224f8bb9cd"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportAudit.java",
+      "sha256": "7d547c4dd06a537f6f10c20926d73a465022ccba6779129e59c75f15ec340962"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java",
+      "sha256": "b91793797f87adf12aff8b55fc7aff7008b0a1c553090dffe78f638a9b27280d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisherTest.java",
+      "sha256": "3b5e2889bf1262b630b3c628fbe908a4af317ca3d9382b5d07d512d286fbf50d"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java",
+      "sha256": "a3fa38626659e0e48e1fb5270958a0d1d1ef1faf94ee8c45b2a331157c253804"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentTest.java",
+      "sha256": "2af0e546197f5ec471890f71aafb0290b7ac6cb322cb21c51d0be1c148cd77ed"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java",
+      "sha256": "e02350a480462adab51e7c3e9de69f13446e00fba00fe1e1e062d9a26ab84fe8"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTraceTest.java",
+      "sha256": "e9bd06d50b3d8e9ae6cb9c2d9ba461214114a0ee76ad634cfe138dd7603e4cb2"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/flow/UiFlowCheckpoint.java",
+      "sha256": "67cae90ea5bf6b2f39070c79de1ac74958292d2480fcc83c08a1dc19987dc803"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenario.java",
+      "sha256": "6072374a5a36787107472fc9db54fc504e02ed85366d9f21fa8719253e95d774"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/evidence/AndroidScreenshotEvidenceComponentTest.java",
+      "sha256": "e36d89d7a4e8ed4b996484972210208b852cb1ce308819c77934ed736ffed659"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/evidence/timing/AndroidPhaseClockTest.java",
+      "sha256": "0e8ebd4e409f009970d2aa718fa867025957a8c6c742ac80d95221a4e8082093"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/evidence/timing/AndroidPhaseTimingCodecTest.java",
+      "sha256": "255d349c381ab2e7a17649dc8c153ef389556664352b64412142c6d0dfbb7c82"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java",
+      "sha256": "6dc3ade416a35d69c5dcdefb59ee35eb90c796a9ee75ff11bd61203ce1c6a167"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/process/ProcessFixture.java",
+      "sha256": "22084a0ed462c921189a4dc2f3519fd84e37bcb15a824ce2fcfd7e6aa03d8604"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/suites/AndroidComponentSuite.java",
+      "sha256": "2f4d02b1f3c77f444c497e182e7f9743273d7b3c1bb2ae56ff609453bb7625a1"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java",
+      "sha256": "be6bdce5c73bad75699ebcfb36a8fcfe8c773e4328d46be3cf12954fa59a646c"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/suites/AndroidGameplayE2eSuite.java",
+      "sha256": "7ac29876dd1276b29aae775169cd6b1f07513cdb42c9f354165f83991ba25664"
+    },
+    {
+      "path": "atf-test-android/src/test/java/atf/android/whist/evidence/WhistExtentFeedbackTest.java",
+      "sha256": "ae8f66bc8b35778b41a40a666b3c94e85ad72187d77da42e81d931778fe18efd"
+    },
+    {
+      "path": "atf-test-android/src/test/resources/original-whist/v4.5-bidding.save2",
+      "sha256": "74840829d613c531912f1ccfae39b2754c175dfcd866f89288d636a1f7459422"
+    },
+    {
+      "path": "atf-test-android/src/test/resources/original-whist/v4.5-complete-hand.save2",
+      "sha256": "6aaf5cccc8cdb1e52010c3d1ee4f05d8c029655b1a59dd4630c7a6427bdc9aeb"
+    },
+    {
+      "path": "atf-test-android/src/test/resources/original-whist/v4.5-resumed-score-next-size.save2",
+      "sha256": "953ae75affae910519e2eec1e6baeb7e399a4d35fc2892334ae841b08a86b52a"
+    },
+    {
+      "path": "atf-test-kit/pom.xml",
+      "sha256": "fc6911497eb04409d1ddb6284cf7ca49756f8412b86926b12385138e86954bff"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/AtfComponentTest.java",
+      "sha256": "75e2b2eed5849d5878b6430a5d4a670215aab1438bb019ef041b67e983580f4d"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/AtfConsoleMessages.java",
+      "sha256": "d6f294ae183fe6327ef3a4fc8ce9480d9ed29b00547cc9a37958125893b983ec"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/AtfE2eTest.java",
+      "sha256": "635a1e970d5139f474aeb1ff22039d4c3554d6c2264682cb0c21c79557d3bfbf"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/AtfIntegrationTest.java",
+      "sha256": "70f60746f164f7ca1f440ccbb67f7af7ead00b1636f15c4e0e62a56a13e87af1"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/AtfUnitTest.java",
+      "sha256": "b7163cc4f57c4eb02027f9abe9a5970e248869bc3dbc63d937070343a85ab655"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/AssertionValueDisplay.java",
+      "sha256": "42f8ec6485d54b5c16fcc431a96672a3ff87100ddc32eaeb09780ada3583393e"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/AuditedAssertionScope.java",
+      "sha256": "ff532c009a0f09d6202e9d71034a1c86d2b2988564f58faf28e047c1f54d2514"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/AuditedAssertions.java",
+      "sha256": "a31f99d6b4276cdf4a95ab21bf83f90a5e8d45c29c717bbe32f96e7eeb1143b5"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/ComponentAssertionAudit.java",
+      "sha256": "fa545ce3697ebab65bfdde06302d1c0798011153379e0406f46f2ec5ec0ab4df"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/ComponentAuditAdapter.java",
+      "sha256": "711c187fdb7cfd7c19d2f96b6dc12a33c2cd607fb703af91d1a169b26371d6e2"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/ComponentAuditExtension.java",
+      "sha256": "1f99280b6d88e677e2a733504ac2331a00f9f45294da8f75b64eaf184701c952"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/assertions/RecordedAssertions.java",
+      "sha256": "ff567c515abd1dd8c82f6bdbe27b0809ef0dcb1ac1695994b25f0987f2d56541"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/channel/AtfTestChannel.java",
+      "sha256": "225d84e6a64c55fabedb2d71c479b995f596574da69a9856cd56bb14563e4777"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/channel/AtfTestChannelResolver.java",
+      "sha256": "44db250ea02459afa016d61ea6b8367d5618a3df5506d9f1104a7f08a65399e3"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/channel/TestChannel.java",
+      "sha256": "f210e32adb06962c62d0286e2b304aa904102d9e8c822424fced66d15e15ca7a"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/channel/TestChannelPlan.java",
+      "sha256": "00ed7664d59e7f17adf58bc69a94390193aac2305bac13e5f610c4145044a906"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/config/AtfTestKitConfiguration.java",
+      "sha256": "a295f1df2939f4071a008a73565b374a726669f6142f4976c282d893417167ee"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/config/AtfTestKitConfigurationContext.java",
+      "sha256": "75f1dfb44cea8f6e9c973edd9798e4b8e3b2931c49695b8cdea5f1c4488d23c7"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/config/AtfTestKitConfigurationLoader.java",
+      "sha256": "02277e54e288b1feceee1e81ecc52106d140f4861bf33dd1838be010177560d0"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/config/AtfTestSelection.java",
+      "sha256": "2ef404daba2c6a4d2d60b5c044fdf17522b8586e3dba75bd6f808a9d94a4aed0"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/console/AtfConsoleMessagePolicyResolver.java",
+      "sha256": "2a8f62055e440ace02490457600a3af77eb2d5c6444f2b84fb7fb99f9f5602b7"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/documentation/DocumentationTarget.java",
+      "sha256": "1d11678664d41e7fded1f5c18d90baaf637a29812d9c9c77148f26d0c2326d8c"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/evidence/AtfUiActionDetails.java",
+      "sha256": "9f26a4f429ee084af36b66c4b94a62231d88ef6f78426828a911c37be67d715d"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/evidence/AtfUiEvidence.java",
+      "sha256": "31b7edff3935e3e453550183b44d4f03c98c11c069480cfb3d8ce3b8efbc6317"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/evidence/AtfUiEvidenceFlow.java",
+      "sha256": "cb562403f10116978e1af02ee6ba6fedbad110b9206886c1814b045fd0381fe7"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/evidence/AtfUiEvidencePlan.java",
+      "sha256": "e199a66fd3c9d29c1012fba46ce86785dcceee8345fa359672caee7087d63008"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/evidence/AtfUiEvidenceResolver.java",
+      "sha256": "c02375f8bf494a07d10f5b2a548c47edd5bbb60b36b19c433d81ed4f7cb245c1"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/evidence/AtfUiScreenshotPolicy.java",
+      "sha256": "1d02b0c5bfe66ec377eda62410a20d87a142d823d668ab00237773ce846eb6b4"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/files/AtfTestResourceReader.java",
+      "sha256": "b00ab4152b7421281a53de70791ec44abba9298e048d2d61ca831f0c5f9bdec9"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/ArmedCleanup.java",
+      "sha256": "52a43db337afe64c10e86550034d72306b83efe7665af66baaaed5fb63f70ee7"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/AtfE2eActivationPolicy.java",
+      "sha256": "eae7b25754327e101ff788942a36f3d90640e85eca30817315d552b71f1197b4"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/CloseOnceResource.java",
+      "sha256": "f987d520508a22b20e3575697f747e340afaec99be4aad8aaa0e5eaa4f27e882"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/FailureAwareCleanup.java",
+      "sha256": "4580eca2e780243b7bcd2de4dd4ada55db1ccd8f62a04c015b9878169203ffec"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/FailureEvidenceCleanup.java",
+      "sha256": "bac0a8c3d6d45848f7580ea930ca7f71d69f457b98c281ab6999e4653cb42d22"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/ScopedAcceptanceRun.java",
+      "sha256": "f329dda9fdae35dce0129752e0906e4eb649bd03aa2fdc702d4d383a3da7b596"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/lifecycle/TestRunInitialization.java",
+      "sha256": "cd73330afed4c2e737d38cc57f96b5d534e0d6235d9a6438a2a79ca1b6874d93"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/output/ProjectRelativeUiReportDirectory.java",
+      "sha256": "350cb8452ed1127b64801e693e6c19a7a4f580bbb5242b7d10b00791717ff3bd"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/output/ReportOutputDirectory.java",
+      "sha256": "62bdffa43084b4b42c7c8e0b7327a473ee4242fde75d49ee298da407e8af81fd"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/output/UiReportSubdirectory.java",
+      "sha256": "e12adb54e9873c27d46851eb27bc051a26fcdb22736c93ac56f838d036934d6f"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/recovery/AtfUiRecovery.java",
+      "sha256": "1d988e0a49e2ef433ec81dd741033042a7d78a8f41646d34a3234b130608c441"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/recovery/AtfUiRecoveryPlan.java",
+      "sha256": "7f82d45fe87abb37348faa288142c0c9bf9eaf8d4a1d865e874fe5523c094921"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/recovery/AtfUiRecoveryResolver.java",
+      "sha256": "4a496b8efda92d26f00264f2cd04bd4c285da9951eb5690390bf36bece42c9e7"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/reporting/AtfReportPath.java",
+      "sha256": "2746ab1928d39003b7368867b3c1fcb734665cf99ffdf9b33ab4780ac82566a4"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/reporting/AtfReportPathPolicyResolver.java",
+      "sha256": "d710defd793473fecae53471c66255e93098cc30f0aa87d17ab5537a0b5a7e92"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/scope/ScopedTestResource.java",
+      "sha256": "17450b3f71f1a8afe964154bd1f3174c03e8052e58ff71ef2e4144415c63dc33"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/scope/ScopedTestValue.java",
+      "sha256": "3e6c175fae29672bf5a3160b7b8b9d96d6aa32779f9957ebc4a92d0d0634cdba"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/scope/TestRunScope.java",
+      "sha256": "0c1100600f396fe56c55eecf7ce7a9120e32a3429b235613a914ced7562a3ace"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/setup/api/ApiScenarioSetup.java",
+      "sha256": "65dfe410d5c33e99ca3fcef16a03825dbe9af531110b67c286cdb5d66263d4ef"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/setup/api/ApiTestRef.java",
+      "sha256": "5f483bb18ab489d1e087b6e9ff599489a5c6f929236d6134bb91868718059e0b"
+    },
+    {
+      "path": "atf-test-kit/src/main/java/atf/testkit/timing/InvocationTimer.java",
+      "sha256": "4c48604ed5ef6156f82fe11aff7d69bf830179ae11bbcb5f4a56e7b34214872b"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/AssertionProjectionTest.java",
+      "sha256": "1bf2feae0b4bfbf53dcfff63e6552a945d8df76115687fbb2009f19351b9ac3b"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/AuditedAssertionScopeComponentTest.java",
+      "sha256": "9126ba769c5f644d813191038d66d375af5d24a5cfffe2578874af88e0ccc118"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/AuditedAssertionsTest.java",
+      "sha256": "2e3bf3ee72c5f1eed11c203f42203fd8871a30e7c9dd473a753e1b0ecdb60008"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/ComponentAuditExtensionComponentTest.java",
+      "sha256": "912c72440bfd498e1b95293dddea1e9095ecf6726bd183717cb17867985dedbe"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/ComponentPhaseTimingExtensionComponentTest.java",
+      "sha256": "38af4966b073031d959729b6d6d75fbb2e76f3332689517c4c1f48b959d93c2c"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/HandledComponentFailureComponentTest.java",
+      "sha256": "127edd0790ff6ca9f98dcaea1191a568cfe2617df94dd7dc6c2eeb5969dc5bb7"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/RecordedAssertionsTest.java",
+      "sha256": "33942e869165b88a4c1387c343df044273a8a011219ac95df60e596176303fa6"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/ScopedComponentAuditExtensionComponentTest.java",
+      "sha256": "eede602773c962bc89b133be0a4b38d48797de3f5e00731b306a8a5445ad51b8"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/requirements/TestBodyAssertionRequirementComponentTest.java",
+      "sha256": "6b14d4ff1a7dd291c908d4fb6b9b61925965c8f61aec79a74929c7a571a9677b"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/assertions/requirements/TestBodyAssertionRequirementTest.java",
+      "sha256": "9c52d735d9282ec86631b08d21d0932efa5a9148774d84da60028ffb3598223f"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/channel/AtfTestChannelResolverTest.java",
+      "sha256": "207440c0f7a997701d742a68b3a495a79142f473841bb9339e1f022f13033570"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/config/AtfTestKitConfigurationLoaderTest.java",
+      "sha256": "0b394ed4b6c8bd5723279a44ae2291202dfa74556ca43f03c429b17647cf5835"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/config/AtfTestSelectionTest.java",
+      "sha256": "39185a3049634879250b5c9226581d8293687db202badfaf07ab2431669ffc68"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/console/AtfConsoleMessagePolicyResolverTest.java",
+      "sha256": "c41fdd9d898a73a15ccca6debdf03aab61091ce0e2e59aa9b95d83cf9c213251"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/evidence/AtfUiEvidenceContractTest.java",
+      "sha256": "01543cee81fdc1f6646c068af2ac909b1ef4be6b613b156eed9649cea42ad0b2"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/evidence/AtfUiEvidenceResolverTest.java",
+      "sha256": "0baa74850aada474a721392dbf45ff5204ccd411df8edc0742d7eb76f2274d94"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/files/AtfTestResourceReaderTest.java",
+      "sha256": "5fe8a5c4c284b52b955babf77c1b9edf749fc3264b12fbde208eb3f020823775"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/lifecycle/ArmedCleanupTest.java",
+      "sha256": "fa8c33d516533126281d5aab3885cca1f7b6fb3610db713c54632b2ec6d11635"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/lifecycle/AtfE2eActivationPolicyTest.java",
+      "sha256": "83e09b8b665102d157af208e29f3e2714435b50d5c2e7472056588757ccf24b8"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/lifecycle/CloseOnceResourceTest.java",
+      "sha256": "d26da18e7cde3cbe2cb46d16a4bec9fa71da72dd9fbb1c5eae79f38807bdca64"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/lifecycle/FailureAwareCleanupTest.java",
+      "sha256": "52859ce28bb840d7f0f768373156e2b638ece55e2b65618f81528d20efeda159"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/lifecycle/ScopedAcceptanceRunTest.java",
+      "sha256": "04b9ad9dc8319e590f9c45ebc55f93d37d4a99003df8dc46f73975561683b17f"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/lifecycle/TestRunInitializationTest.java",
+      "sha256": "a4002ab783555613c649d8512394607f50ac44a3a5224625d6580d8e825eb63c"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/output/ReportOutputDirectoryTest.java",
+      "sha256": "574b192132ee9cc2c4b3eb35bd98e305e3ee9137f68d98c3a102451baa9efd3f"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/output/ReportOutputSymlinkFixture.java",
+      "sha256": "ee663b96761e791725ea18ff7ba5c8987abd4d687c525c83c0a2038c35dab091"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/recovery/AtfUiRecoveryResolverTest.java",
+      "sha256": "e4f240a659ec770df42dbacc40d99774224ac5082a8cb26559b37b4e95804296"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/reporting/AtfReportPathPolicyResolverTest.java",
+      "sha256": "cc194d1b1a86e352d1b57be95a8193ff1dca1fd8eb229c4d6e613721cd2954e5"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/reporting/TestDisabledReportPathOwner.java",
+      "sha256": "eeb86241fbb84cd8cd1265b97f2680fda0809d927e0dc3ef6235f5114d6c9772"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/reporting/TestReportPathOwner.java",
+      "sha256": "fd460fe8b41e6f7dd0be1690e724f89f34a88718d9b698ca8d5eabb7b4ad930c"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/scope/ScopedTestResourceTest.java",
+      "sha256": "2368543761d2f5f644e04e71ce94f3e107391056abfcf4155df51e02f56f28d1"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/scope/ScopedTestValueTest.java",
+      "sha256": "ffeacb50a258d6360aaa40529bc30529abdd924bc7d4e3bbbf39fea0cd18c380"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/scope/TestRunScopeComponentTest.java",
+      "sha256": "3e5e5524a2dc7c838ac3889700e91ec6db3655980dbb401b91f13ef1da25d591"
+    },
+    {
+      "path": "atf-test-kit/src/test/java/atf/testkit/timing/InvocationTimerTest.java",
+      "sha256": "38f77d8057649699758ac1eede7845d4d8c27dd3c32cd6beba1f5abd1b823a05"
+    },
+    {
+      "path": "atf-tests/pom.xml",
+      "sha256": "dda482f775e0e4e6e8406f9b19d7c7a11e0c800c9069ceba0b51490f9aa4a917"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/learning/EvidencePolicy.java",
+      "sha256": "5c3f035c3bde37686df09649efb3176f37c935704e19eeb251115653df5870fa"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/learning/EvidencePolicyYaml.java",
+      "sha256": "4e0e21e9f4fbb58dcbada396af0cbf5cce8f214af4c202160dbb389aea496360"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/learning/EvidenceSelection.java",
+      "sha256": "a181bea2871ccf2f37982298f20494fa734ef43f3b717d90b52cbcf56d33c914"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/learning/InlineComparisonValues.java",
+      "sha256": "68159b1f11db57b3b426c3862c4bc3e35e576591d64e13fe52c5d1a866f9db71"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/learning/LearningReportHtmlAudit.java",
+      "sha256": "2f1be7ec5bf29a8d8af2178c593decf68de2b53d09e763a9b8fe850d014d78d5"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/learning/LearningRunReport.java",
+      "sha256": "9c5f46d424dc6d78c65b0af54d9f805efa6de3ca143c09b767a22cc285e8e4a7"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameEvidenceBodies.java",
+      "sha256": "30057b52c7f096a26aa0011114e1238bb56b1e3c9a288f9044e40ef2c9bea483"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameReportConfiguration.java",
+      "sha256": "6787f599ff42ecfb8e696928b9d52ffb36062abc54556eb738abe16d0e0265ab"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameReportPhase.java",
+      "sha256": "120a1f0a10e44a3c7232ea167d73984ff9b315d4513e3c3b537555dd4c4b399b"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameReportPolicy.java",
+      "sha256": "d9ea74a1fbf6cf7a8432eedb7fbfae2f8a00672c49316679c8cefe8a650dac6f"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameReportPresentation.java",
+      "sha256": "2d665572cb229d028e8f659a869a98668149e5fef779904095dfa64f57ce145c"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameReportSession.java",
+      "sha256": "4b73a0fdf21e0cbac7b8d93a4ec5c48634cd94a1de1dd4789ff44ca71693b48a"
+    },
+    {
+      "path": "atf-tests/src/main/java/atf/tests/reporting/GameReportTextAudit.java",
+      "sha256": "94421e5e47daf0ddeb389a23b69ab11d8b1274cc91574cb320f59ac4760b0bb1"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java",
+      "sha256": "0806f274da281a3fd43c9307650714b2cee35480d224b87200fcf2075bd4dfd0"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java",
+      "sha256": "746e7e335e2341d95a588d6cba1b667017d414c484e1eca87866a11ba16152ef"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java",
+      "sha256": "4f7289ac5aa7ad39741a9e13ab28939ed8f52689db08056060aa2825ce7ae45f"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java",
+      "sha256": "a2f018d99dc5d4e187e6ffd96699b1f654ee7cead93d3237eeaf7f0dc459e6b4"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java",
+      "sha256": "ce4ce67d759aa2fcf3105240daf18cfcf4a321661b5207adf2447e415da323b5"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/contracts/AndroidPhaseTraceReplayContractTest.java",
+      "sha256": "543c24e987b3c5f95b5fdfa4b574ff25fc86b3d372cebb3152e7c6ac34344343"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/contracts/HeuristicCatalogContractTest.java",
+      "sha256": "7692ca54ba179c7a922fd6549a15ad7141e8ebc96341919f4253755008450488"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/contracts/LegacyUiMediaReportContractTest.java",
+      "sha256": "b8632832e3dff6df3141a895801414b16e31616182b6022df51ccfc63eaa16d4"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java",
+      "sha256": "148026964e6efd985b196adc5f836229dffd2ad7a67457ec2148426de894223d"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationAnchorGovernanceTest.java",
+      "sha256": "e47c3053aa25dd665247e40a454d05f32433b88c172fc40f649a809439e13a82"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationDiagramGovernanceTest.java",
+      "sha256": "231e7ba27445f72e9bfd6e807980254b0bb8f41061e4106bb798e52a2b33fab2"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationGovernanceSupport.java",
+      "sha256": "641ad41c0c476b41a7deb0eaa6f7cb85ca52384a6c0927b68a7a5c9db1e3255b"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+      "sha256": "8618da160a258b98741f320793fa97b4fab94bb7328b21fa9a3a7793c218c96e"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationProseGovernanceTest.java",
+      "sha256": "e143e56deb3a3c295fa55e8eb8071ac2d18fd8956b4f661a09f60a2bd52f8361"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java",
+      "sha256": "5c11cd5602bcf1f580a56d13c1072534cf0a85080fd91687230ec712b4df00f8"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationStyleGovernanceTest.java",
+      "sha256": "53035fa227059633341377101dd2437ac2916b90318ef036a84ed8f2915cb944"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DynamicPathDocumentationArchitectureTest.java",
+      "sha256": "f2e78959f4e21518ec12379fb90ffcb9292859a3083d4636fcffeb71fcfc4adb"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/links/DocumentationLinkGovernanceTest.java",
+      "sha256": "63a076501fdbdcc73947d287bd8ff1f47043bb9bccad45b9ce1fdb1429a9dafe"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/links/DocumentationLocalLinks.java",
+      "sha256": "d1e49b69afe004d5aa07ad4de709bcf879bd434970585a883871fcb015bf5bc0"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/links/MarkdownAnchorIndex.java",
+      "sha256": "6ad32d85a24f6010f0f97aa86d0f1baccb2a8b9f8e2923af6394642316ae22df"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactCatalog.java",
+      "sha256": "1039ac5dd185f30b5c03ce25d762c61dc5741a87a01b2ab1f1da778a01f9a18a"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java",
+      "sha256": "8be9b7476395d729de89332c56e380eb2205f1ced2d3329bb5da2400a0bcabbf"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseCatalogPresentation.java",
+      "sha256": "c19a6f14c621c7f88f6c67df1d1e48c91dd8cbb09b8db37992b5c06174e652c2"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseHandoffState.java",
+      "sha256": "0cc6a2b35da540e8bae473d545b7f5f737a2deaff58af4647397f0615a05365c"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java",
+      "sha256": "0205ad7b3fdc1bc3dcf29a786a1a7d7e37221d7a60b10971f8d88c55db6cf12e"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/AtfSourceQualityGovernanceTest.java",
+      "sha256": "69a3d2ef2675f10f0d8399b38717409e7d8d619676254f9edf0019208e3b888f"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java",
+      "sha256": "5425567fef320dbcc40699b3d3251a4c4cdc473b23385f282bf9af8da174a226"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/ModuleBoundaryGovernanceTest.java",
+      "sha256": "2f10329ff08d9b8dcde26b6517a309d98e5de31e3fb7cc773d697ad1d09ac604"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/PackageCohesionGovernanceTest.java",
+      "sha256": "620737553e339a706b76a70824b6e31a47a9c5a3de132851c84bb1885165a9d2"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/SourceQualityRules.java",
+      "sha256": "081fd5d6465c544a04c9810cc5b5f800ec910680ca93d6f574b3f0018906e56d"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java",
+      "sha256": "daaba3a0dbf55bf14cb9baf24fdf831f34625c8a9547ae6d7046239e914f1598"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/TestLayerRules.java",
+      "sha256": "054425263083954ba48cbf796f5416cacb62bc8dbceb19630883028e01efc779"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/TestLayerSyntaxTest.java",
+      "sha256": "e0e6dc795d5d830f0b718a9c608ac981e3e5753c3594676a9cc7bddb910cbfbb"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/source/android/AndroidJavaApiGovernanceTest.java",
+      "sha256": "26d4419593208ed2a823cc966629c1859061ad47652796457eba1b980bc9f10d"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/support/AtfJavaSourceInventory.java",
+      "sha256": "09c91af7de844c7d9f65a8b07ae726aa2e7cb6b36032e53efa1edadbf0808684"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/support/GovernanceProject.java",
+      "sha256": "f2ff23273972e00541539f6100e920d945759c38ecd1b1174572b2a0d547e74b"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/governance/support/SourceInventoryContractTest.java",
+      "sha256": "1a7603370188d74c85da07cf2847dcc4e46c59783c0224cfc69ad52f577d4fa0"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java",
+      "sha256": "26ec21768f85ca56e23ce7ba47ffddcc1ce08ae48718e380fdce82805e0e611b"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java",
+      "sha256": "7b61dd2502ecd866ab437e049bf4296e5c9b36fd5426f17bf2a7ea9719dc4130"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/learning/LearningRunReportTest.java",
+      "sha256": "72206700fe20f91a466a64f9d33d801adb9ed92e2f12b83e0b14c220bda1ad6d"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java",
+      "sha256": "b9211e8867eda4c5da9e206b2a21a5222553663d3046680d1bb4b57bd8562707"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java",
+      "sha256": "1cc81946707f01dd877c39a341df4f4c1bb949f23aac0edcadf8b902c6fce199"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/FullMatchExtentReportTest.java",
+      "sha256": "026ef6181fc2c7d7463cb52df2b120a12b94ea2d0e2f3aa63cb4e524b196b29c"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/RomanianExpertExtentReportTest.java",
+      "sha256": "a3d1e6b7009838be32e910c939f087bf736b947148b27355b6ea3bf77f04f8c2"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/RuleComponentExtentReportTest.java",
+      "sha256": "75c26b8f901cc49013bf5791c9ad4833a30ff8cb67ebf6829473e52819742e9b"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/WhistAiTrainingExtentReportTest.java",
+      "sha256": "5aa1b73ead4e41e9790a6e94ea0bd97bdd691a03306cbedd3178c13580c84cb5"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/publishing/WhistCorpusExtentReportTest.java",
+      "sha256": "03ead5ce3d21648507392ec4ff2e9c73c277e77b1ac2ddca4c8b6a1687ffe2a0"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/GameEvidenceBodiesContractTest.java",
+      "sha256": "342fd38aa95480f1b542a1452ad419ce3aa07de4a102b592adb7b05f4d43d546"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/GameReportComponentSuite.java",
+      "sha256": "a9551d2fdddf1d75fda1722c15c24e27e37fad3a80e283c7d6df7cd4b915d60f"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/GameReportPolicyContractTest.java",
+      "sha256": "3d116b186934d9cc302148b468f6e6d83a202c9a00ebd2f95ec540a5da8cc3b6"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/GameReportPublicationContractTest.java",
+      "sha256": "f308fb7420d89270d526df1b92c10be04869992556521dfb405166cf75fb8822"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/GameReportTextAuditContractTest.java",
+      "sha256": "15509e6ce6c65f536d1d9230622e9141ef503a70d7600a729ac527504ed3072c"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/acceptance/CombinedAcceptanceReport.java",
+      "sha256": "7dc0a6de681e10de8bee46b596a951cf6b210f5b2574335ab64fcb9fcd5f4565"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/acceptance/NativeModuleResults.java",
+      "sha256": "a0a08601595a5c56a0ab4c6ba42349996f0b687e722a206951363fa8a3c0fd3c"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/acceptance/NativeModuleResultsComponentTest.java",
+      "sha256": "8be9d35d0d71dc9da879335d1f06f76b9e051aae1b1c5043387cc0b5a59634b2"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/replay/ReplayEvidenceFiles.java",
+      "sha256": "b784f1daefb3fca8ee6cf0e70f3523a47a200cf4d414b1e10e30e1b95ab156bf"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/replay/UiFlowReplay.java",
+      "sha256": "dfbbe516c85117f0888d3e0bea496f5ee6a0d9f4bb58a7ae6b481c1a2bfecd63"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/text/ReportTextValueMatcher.java",
+      "sha256": "a4eab39dc4034ca7ffb5ef394e435edb51e30bc4453d32825de98cd20838dba2"
+    },
+    {
+      "path": "atf-tests/src/test/java/atf/tests/reporting/text/ReportTextValueMatcherTest.java",
+      "sha256": "9f00990e7018b3314e6fd55cf744fbf21cae8fbf2ceaeae094abf2d39cc40267"
+    },
+    {
+      "path": "atf-validation/pom.xml",
+      "sha256": "ca3b008da94c924865a96dfafc2e7d7296f5af8189cd546ed2f2c7a3e574d0dc"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiEvaluationCase.java",
+      "sha256": "414f88cd4e5e5705a4ca76ace394614b34a43425efb02edc30dfcfaaa31c134f"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiEvaluationEvaluator.java",
+      "sha256": "9c07fecf293f189688c2564f163f8859234f04e32602779ca417d0520b62cd35"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiEvaluationPolicy.java",
+      "sha256": "258750b541cad496cbab6e56219201347054d3b447f42a19e8425383cdbd1e68"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiEvaluationSnapshot.java",
+      "sha256": "28749c85eee78ef2e074bd9fa188ecf576ae8997708536842fc2c62e28434a65"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiEvaluationValues.java",
+      "sha256": "dce66f10baf2f4abfc7a8728d7fda4f54c15245acb93555f3ac0b35f447abe17"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiFieldComparison.java",
+      "sha256": "dcc2da68cd2836ab2774fbbd43cef3af05af82619f4c21792d979a41754a21b8"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/AiFieldExpectation.java",
+      "sha256": "7fd5e13365cdf1bc515b83ba04175290defc8169bc790ecd190407ae42443199"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/grounding/AiGroundingObservation.java",
+      "sha256": "3339975546cbda5a1a1e936eb53e419b9c223ce638dd9bbb527d68d6b53f4a2e"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/grounding/AiGroundingRequirement.java",
+      "sha256": "db5d66e40176f4f2ed96fa86dfa654582eb26611447175a4cce77039e398c4b4"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/grounding/AiSourceReference.java",
+      "sha256": "4f9a832cffc9d96f20496a2baac17a76e77d5b321d388960dc75caef5da88900"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/ai/invocation/AiInvocationEvidence.java",
+      "sha256": "8375ff5e3fdaa0ed4cbec35e5033596d97a61b939d8533878669605bb3390510"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/ContractEvaluation.java",
+      "sha256": "bb08a1a9c30fbd7ff6dbb89f3b7af165f701dd7b3bf31e51a64abe566c442b9b"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/ContractValidators.java",
+      "sha256": "da88e0debbd375e400dc7a70dcd360f7cffed07dd342586762f27764186263a0"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/JsonPathSupport.java",
+      "sha256": "523f4350f3e33da97ef61472641bc2938cb84642157acfa72e9aa4f9e2656403"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/JsonSchemaValidator.java",
+      "sha256": "00df02d27c180f85889a86407cb6ced99b983a26abe85c040eafb501dddd820e"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/ResponseContract.java",
+      "sha256": "00088bce3dc9641f873908c7860c6432ef76c4be9fb04f8f9431b26d18ab269f"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/ResponseContractRuleSet.java",
+      "sha256": "2bde483df5e064555679bac11999bc4fc254d585966557e9dc8897c07f7baaf7"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/ResponseValidationRule.java",
+      "sha256": "cbd277148535c894499d7627fbb4b852e8899f6062c50844452371b158f44dad"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/SchemaResourceResolver.java",
+      "sha256": "af3108712a396d8a273cf3c450153997f1ad41ed907bf8e2bda61761e55cd25b"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/json/JsonDocument.java",
+      "sha256": "c759709ee66207ff22f02ed1df383ab363a20019b10df1f8e16f9f8c54e7a901"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java",
+      "sha256": "a1078e4cba17c76561f4a7a62768456babb69ee5ecbfbae80768679a4634069d"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/contract/schema/JsonValueEquality.java",
+      "sha256": "d58ae5778351636218b758628adca8e6e2966a910eba7b971ffcb5ca487e123d"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/ApiValidationException.java",
+      "sha256": "5d2594605ce775e60b2d4339aa21e76cee53ee2c11b650edac4580aa78d71f1f"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/DefaultValidationOutcomePolicy.java",
+      "sha256": "5d04f8a75eb140eaf38e2e03d1a896072d8a16d50a7abdf008a97de65bde9dcd"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/ValidationDecision.java",
+      "sha256": "9bc1acb4254a0a1f1896fa67daed099958d5a1b6e50e6c039e92bef890b181bd"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/ValidationEvaluator.java",
+      "sha256": "2ff3314d40790c4432958c95eaf3fce81355887afd714ad036bd73ccf78e96f1"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/ValidationFailureEvidence.java",
+      "sha256": "5d60d86016a7114888092f708c59da5a55b1d5a95b05917cbbb8451b7edbd20d"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/ValidationOutcomePolicy.java",
+      "sha256": "5c37e1008ac14831620bbad7476f88870caffa7f70b755fe6326d780dbf723e0"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/evaluation/ValidationTable.java",
+      "sha256": "f6a69cd7b8dc568276a5de70c4f19aad911a8a544e5846df74d66f8a77c1d367"
+    },
+    {
+      "path": "atf-validation/src/main/java/atf/validation/publishing/ResponseContractReporter.java",
+      "sha256": "6e2b9fee84366942c32bb6cb5455c8be32290379bb951339044245293755470e"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/JsonPresenceContractTest.java",
+      "sha256": "df590e2000d2fcef89245e60f463f338da38407d0f10685d392465cc4c88aaad"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/JsonSchemaContractTest.java",
+      "sha256": "be1ae1ba6378a410bcb46e23d063476a4ad7daeee61fbb6105706c727eb57458"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ResponseContractReporterTest.java",
+      "sha256": "f3a8418c86c7069d501751f6177af683e8dd075c5d674c23653de6f7accc0a80"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ResponseContractTest.java",
+      "sha256": "3b551513cf33aee38813dc1e456bb1ef5323a11572e06155d631fdeaca77072c"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ValidationFailureEvidenceTest.java",
+      "sha256": "7105fe6a68eaaa9b4055921ded00c63378b028d6ee25dec8a46069917d4d1477"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ValidationOutcomePolicyTest.java",
+      "sha256": "e7a4a7c927bb12b1127e2b7a9442169e95cb5afaf268d1e07df4939cce562f35"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ValidationPreviewRedactionTest.java",
+      "sha256": "21d95685f5231a595cda74cbc357d99dd4ba95be697e40353e9791fee109d9ec"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ValidationTableTest.java",
+      "sha256": "2cdc9b3b9e7020600368c58f42b3a4280e700124c339470676e5bf1b914ac1c2"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/ai/AiEvaluationEvaluatorTest.java",
+      "sha256": "eccbba37d21119d22b600d4ec2b2d6e63026369f391ae2c3a9cc149d02c32317"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/contract/ResponseContractRuleSetTest.java",
+      "sha256": "8646398e6d7e98a75ba48878f205c1b7f8b434fcf5f492acc2fb777ba390d104"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/media/JsonMediaTypeContractTest.java",
+      "sha256": "69f38d0a9afac5e2a49e385c08ec069ee98be8f4318dd3bd2b96cbb86e2cd93e"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/protocol/ValidationProtocolTest.java",
+      "sha256": "fb697436ba08ec20098615255eed093bace507da5f4fd9e780bca0f3fe87a441"
+    },
+    {
+      "path": "atf-validation/src/test/java/atf/validation/scalar/JsonScalarEqualityContractTest.java",
+      "sha256": "df5f4c34edea75beeb3503e3435211579a38e7f93ece764a2f2b47fd2182da32"
+    },
+    {
+      "path": "pom.xml",
+      "sha256": "9aa9ce6934c1e59d8131023d9bb34ce8a21e221cb000d0fd6f6dc0490fe93b58"
+    },
+    {
+      "path": "whist-lab-app/app/build.gradle",
+      "sha256": "7e3d1a234902755d88dac2f04906b02bec268898d230de844132bef5e40f0dd4"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/AndroidManifest.xml",
+      "sha256": "b373fc12bf435090973ef9404066b59adb7e7fcdacf5b4bd3d1a02657d190376"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+      "sha256": "d9e829050ef6083b4ee81d258c35412bb32ef7b6fbacfcea2b3fad96d4eefba1"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+      "sha256": "3ede0fd971a9b8d0d0b9e22c345c87995a407bd06fd9b426e692c66f4ebc5e08"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/AndroidCollectionSurface.java",
+      "sha256": "32f1865798a8b8a44ce5798682a7ccb74eae60ae133797559e77f5daf4432ccc"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+      "sha256": "a88ba7d99f0b798d2c4fbb40f43f5512b4ead4bd055da87a6bb44a48c511cf6f"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java",
+      "sha256": "b737f585c041fd229517b87402731b9d21afa952c495c494eabb3b65c2a79cc0"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRequest.java",
+      "sha256": "a7466eb2e7914f8e2f4484ba056cf6af907cbd7a14caec5f76b84ff170aba285"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRun.java",
+      "sha256": "347569b9876065686456726b4abd8ea6a679f9e4b30b24044ba6590f0a4388f4"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java",
+      "sha256": "03d208f1d95f482af6ef3dbe6cc99e7e04df7e664e7c639f61d44f2b674eac58"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/DropdownBackground.java",
+      "sha256": "01630873146f6ec9027a9225874c1aa383978ae3b92052110176f70a60ccf960"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceBackground.java",
+      "sha256": "a11b71bc32e63ae537418716fabd538092c212e63d9704f23d891acd14374325"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java",
+      "sha256": "045e55492ddb83d96a4c47578ec956c3d06edfc804d7e5557cba4ec828eeb74e"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+      "sha256": "0f85c6cb63bb88567fadbffdb953c4f41aee3d17b7d6536ef82cc2827bc06f3e"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+      "sha256": "35bb404cd788cc5619e18f793d01131f1673e6ce8c7320f2e68207d3cae5c5e4"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/hand/CenteredHandView.java",
+      "sha256": "d9c09cd633e4dac33d91a2fe84fd9cf5559a20f77c506d99c35ecd7237a222a0"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/hand/HandLayoutMetrics.java",
+      "sha256": "397491e8ae6066a352ac3fa9743c53375ce10e98af3355ff2134d08a5aeb99ec"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/highscores/AndroidHighScoreStorage.java",
+      "sha256": "951797fea9b36c99e2d132919b2ce109af36ef3b019e215816f6d5d0282a409f"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/highscores/HighScoreCodec.java",
+      "sha256": "6b175c8063aff0ed3898c46a34aa16ca21b779fb04ea51e9cda42c30e3db0fdf"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/highscores/HighScoreRepository.java",
+      "sha256": "430f29d88f3812f0d7c580709c24f6898bda741861e80385c419491ba17c9845"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/highscores/HighScores.java",
+      "sha256": "708b45f1d4e93b77b8cf2df8c6e5891548fc517d4c52154f9085cc7ee33ca5f6"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/highscores/HighScoresDialog.java",
+      "sha256": "c7f5978b7502f8bc97acbc9e4ceee94b54f8a90da6130de591ac1ed41ef90294"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/AiTurnCoordinator.java",
+      "sha256": "ef5089140924fdc8ecea7ee938f39e1a68b4354de6b4f2f32635e5383277e58b"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/AiTurnRequest.java",
+      "sha256": "9c348b59efdf86dc64b5fef0028f70a5e6786b208bb7b5f7820c69ddb1b44e3f"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/CompletedTrickPause.java",
+      "sha256": "083593ae8b93ad608e085f5704823034263423deaa50b5f094f0631092b92049"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/GameCommandFlow.java",
+      "sha256": "74f091a66f2cfe242024ece173e09a037556a4c3839c6d13e4398d877f6afbce"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/localization/WhistUiText.java",
+      "sha256": "465e12d5fd50f673f67943a044d297538cbec146a44f9d769198328cd9f9099e"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java",
+      "sha256": "259bcd0abfd3733b805513f04e4fac878eefc16bca71916d42dc580dde2f0980"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GamePersistence.java",
+      "sha256": "7d0e973cf0f9cc9e87c48e0ccc20fe774c620a684d696b151cebcd091f27f81c"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java",
+      "sha256": "f9aaddf847b289f203004d9c514505d3d97f5501499248d6b290bc8be2d51c45"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/profile/PlayerPreferences.java",
+      "sha256": "3afadd15f966fc3e5b3c573b558d775d6e2ffc51aa34df409549ecb46313bee5"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/profile/PlayerSettingsDialog.java",
+      "sha256": "daf651818e77ade4d326a95379adeac06704a05d7476efe6d3e25b161dc6d99e"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/BidStrikeGeometry.java",
+      "sha256": "738570f2920836e48e39e3eba43b2a2f10c5d0797549a05e98ce50dc6661b63a"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/HistoryBidView.java",
+      "sha256": "df83ef98d8aced79b3134d213ad3a78ebefa14584290d922cfdd466400a13aa4"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java",
+      "sha256": "7eeb87167ab83941247010c692c22c10c81863abd01b0bc39e5009b1fd78acdd"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java",
+      "sha256": "f47424e8368e462bbfe106d6dd1b27130e4dccd44d9fa0510ce66fec2ae8a4d6"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryMeasure.java",
+      "sha256": "4a8d9a532b48ad4ec8df47e4ee48fbca6f1d51e826081fc6c083e764e53bb3df"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryTable.java",
+      "sha256": "90ef049f3fe0c9af0b3135e96b7c882c882502c736a86b0212828c57aabad15e"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryView.java",
+      "sha256": "3f4b0662541c13f484635f6631b8cd82c59cd166dab1b36bf271d97a92c8cc67"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreTableView.java",
+      "sha256": "e823f0205a7d492d78edf7ae598deb4d4b6a37fbbe1e779d6a705fe8c7fbb494"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryViewport.java",
+      "sha256": "0ebbf2341066b59b914d2c2616ed24a01f72b1db9c8e992a87f4e3a0a290ba9d"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+      "sha256": "95a7ab6a468daa9a7c2b9c734c781b9b6442c881a8ea1459ad593cd98e2657bd"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MatchSetup.java",
+      "sha256": "fdc12bc88c61b7136a04b47e9393fbfa9d6ed0fa6a4218c6905059d147604890"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MenuScreens.java",
+      "sha256": "e55312adaec0afb6aa924d0a064ee349c4b858dd73bd8f4978a0e9317065d5ff"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScoreScreens.java",
+      "sha256": "513a8edf85f304f94a9b69f53bf8fb3a7590c3321ddbc205085019d2630d3f76"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/ScreenViews.java",
+      "sha256": "f58a8396814312fc6cd6ba0be8b632dfc366de89dd218e55ae8ab170be0bcd01"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/SetupScreen.java",
+      "sha256": "3d8e5835986d782009e29c9b74520cc6b10574085ed648a8c155b0257d5e8744"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/seat/PlayerSeatMetrics.java",
+      "sha256": "10fcf5bf077a95dc88b5f7f3f83dec456ca49ffa0c09bfb93cd6e542c389c987"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/seat/PlayerSeatView.java",
+      "sha256": "cebac3a73802d042316dfd867897ff8d5941c431e54700eae76971d403883c44"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameBoardLayout.java",
+      "sha256": "7445d763c8ffc1ba7b82ab8c9284e87d9dbd966406d1faf07ac2419d6e6b2042"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+      "sha256": "60649f044a0d15c8bd78bebeb98b6f5f75eb3b9d00dbe7c0643a0cc042d1c6b1"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableGeometry.java",
+      "sha256": "9af10a54c67d076691787499bcf7a87a7bc5bc0ec9c418c1a9985d248110781b"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java",
+      "sha256": "d9a1da7e063d35fb24146c84c82a3352b745f1f6055cbbf2c369cb90dea3cb62"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableSeatLayout.java",
+      "sha256": "42fec423ea330728a013983f5ea6fee9b8a4e4c9631daf255bb5652a5829adab"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableViewportPolicy.java",
+      "sha256": "b88bccbd7ad9ae9383538b31ab43bf6db31b78f9f63c9d3249c06d9427df0526"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TrickCardMetrics.java",
+      "sha256": "62596b60f0f567658bf1d19603d70d56e8115235723aa67d91027cc725a32c72"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TrumpIndicatorView.java",
+      "sha256": "35861ecbd7974be045c69ee4062d9cd000ea53683fde76fbca3396324f96904f"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java",
+      "sha256": "115240cc0f338d9e4fc21ffb95e2b31029c843fd23c9b72b7efb45b09b0041d7"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/theme/WhistUiPalette.java",
+      "sha256": "ff4c1be8ec02790bb152abb4d1d7a7b674e53c91bdc95c6c737c83f94d2425bc"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowContent.java",
+      "sha256": "acda8724720c4f69d91f9d905fb132c0d8fc0b9686f98d354d24a99a4eb28931"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowPadding.java",
+      "sha256": "bafb695b0356d828f059be7e782c118637f0fdf496fd44e299c88c7523e5a14b"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/res/values/strings.xml",
+      "sha256": "ea6b996e9383061531a8e5f15f6aeb03e9a24a101cc9986780f651ef58be9bbd"
+    },
+    {
+      "path": "whist-lab-app/app/src/main/res/values/styles.xml",
+      "sha256": "9747600880d9712472424339ad536aa9e8d8b7825b0b9cb05e632fd3f64948d9"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/CollectionFixtures.java",
+      "sha256": "aac4b095dd22a6d39c1a54db299800bb088bdbc4c46071ac2986f05cd956df79"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/ControlledCollectionSurface.java",
+      "sha256": "512a4cfb0fc7ab789c79189d8c48643d36590bbb89c09341a98b4a4afbd4f323"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionCleanupComponentTest.java",
+      "sha256": "f5486a364b08d858b23a419cf1b87d813bc09d9b67d36f6dd5bcc73807d9f525"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionFlowComponentTest.java",
+      "sha256": "db507f328ee14cc1a39b139db2db62a919296f3f6a29643f96e3b97231c908aa"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java",
+      "sha256": "d1d75ea019005bb97d5c5251ed53922721f17ce6bad72265da767516ceebd743"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionRequestComponentTest.java",
+      "sha256": "ee85516e26e9df90d5d33486c8be1cad15c7e3e1cca578a732bb83be56443c82"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionRunComponentTest.java",
+      "sha256": "eaad5943d723a0dc55fbd55b813e10b3cdb4f42bd0ed6b935131803bfad18f42"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DisplayFixtureDealsTest.java",
+      "sha256": "30c885dbb32e90945fd283f9a95c35ebff71bb46efd48d61ebf901dfffa7bc32"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/highscores/HighScoreRepositoryComponentTest.java",
+      "sha256": "66aa27b6c22c602b6856128f3c5f3e98aeb1f9d7b309d32e5901ed406fa1bf4f"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/AiTurnCoordinatorComponentTest.java",
+      "sha256": "ae923f306a253bb3386e1b1504646efde3f596e19937c29601bf2cad29ba1516"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java",
+      "sha256": "875433fcca6e655edf782e2bdde9a3b163e7474314012c524f078394d9916aae"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickOwnershipComponentTest.java",
+      "sha256": "ecfea23dc1ecebba48991823855162c85d15d96c7c206b87e8236fbaec53ebaa"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseComponentTest.java",
+      "sha256": "1963572fdcfff8978c439d170346e8c83ed5db433edf467bfb7acb40734382a3"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseResumeComponentTest.java",
+      "sha256": "3dcbe0aff44677507d226d75d32cbbc40776f05833f1036cc9d8eddb79166bc1"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/GameCommandFlowComponentTest.java",
+      "sha256": "cda980d8624b3e6db8f6dd6ee397191b221946b9b0a7811273d9c9e7dd8140e1"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java",
+      "sha256": "d8884c2e18d8baf48f55c0e3c9e72efe3889d4063c26fc687b8f6398caa1251d"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/navigation/AppNavigationComponentTest.java",
+      "sha256": "d52df5ac19ebb8785f710a934c81618435a8d2a48ee9b4ac0b04f97679810a1d"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceComponentTest.java",
+      "sha256": "891132aa0c978f7542b9d4d15f4bab5fa6d3d4cab25a1b6ab42074c4e127ad5f"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java",
+      "sha256": "d8e557756530719be3347b31e3543ab5742301e120a258331b1fc2cd3bc300d2"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ArchivedScoreHistoryReplayTest.java",
+      "sha256": "ce167164baf678dc87b98717088a9aac342d27b81bbdc0b4d4b1b1cac15e0375"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryCheckpointTest.java",
+      "sha256": "896b8d1d2698416d882e4cd4fca8e1566911c5b44eded2969398ca1cdac1e7d5"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java",
+      "sha256": "2146fdcbb2dd15551162e72f5465a98d7678ccdcec21596ded732df1268c67f1"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java",
+      "sha256": "fa3a5066bcb4029eaa77d6a801c541830c3ee396567990ac4f62fed6ae520b8e"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryOutcomeComponentTest.java",
+      "sha256": "c42349b0d602e228d3b7bb80bc5780d7d07af2f1c2bc5c05b18fa4b4e3748414"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryTableComponentTest.java",
+      "sha256": "f787104871008340e06f441e18098829991ff58ac4ae33d2b80adeb8150fbef0"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/layout/HistoryViewportComponentTest.java",
+      "sha256": "548f4daa51e95018a391d52f13762e1643d7ebf40fc331e2afc4570a08cde991"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/screens/MatchSetupComponentTest.java",
+      "sha256": "6f31ae6d9bd530f8973e5519d4f0baf8915b0554022134145644723f67545ccf"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/seat/PlayerSeatMetricsComponentTest.java",
+      "sha256": "efce9ea977e27c2c7c4fea0a82f77b957a6e0694647712e5cdc9712cbf1ff2af"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java",
+      "sha256": "2a6f691b1f47cc13fb9ab58a633d19ac01da5977f72c76634db6160233208053"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java",
+      "sha256": "c8d76a686676ef9b7294eeb8878711861ecd4be94097a230d63abf5c8b19e786"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java",
+      "sha256": "d7cb52e6faa632dc5151f41152019dfb1a6d2f4208d3fb079587108eeeadc8cc"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java",
+      "sha256": "901036a4bd33e519544c8652ef084323af4e16590a26e111f4dfc4c3e854798a"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java",
+      "sha256": "844f9ff8ef653027e833986eb80d66e93f80700f89350904f354128539b15292"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/theme/GameHeaderTypographyComponentTest.java",
+      "sha256": "6be8fa8de2e1a23329eb521e4638cb604751afcc9ec7d009ebdd5d6a7fb48086"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java",
+      "sha256": "0319969a3f846ac4ca05d3be8ab711250a0390a0ff2fdc5a4fff36d519ce6ecf"
+    },
+    {
+      "path": "whist-lab-app/build.gradle",
+      "sha256": "0a840e9b62d66246d8fe8b24510571467fb8a935b709917b3d8dc1f972c9c893"
+    },
+    {
+      "path": "whist-lab-app/game-core/build.gradle",
+      "sha256": "454d8a5cb7c2d84f95526740ccd738db43c8ab50eca844b8aca310166e2a5662"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/ContractEndgame.java",
+      "sha256": "e552b5dcb6477f878814713595c4e45e22a32e7d177415862de7b8621250704e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/ContractGuarantee.java",
+      "sha256": "ee2b1e278851cb2ba49b50e9e569deceb2fef021811166bd5b6467c81dd9d57e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java",
+      "sha256": "3d08b4c1ab55d3e5e74cb91292636e6f0a8bd292d6f499d31a19790f41c74789"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java",
+      "sha256": "daa1a3bf12076c278f95a96ea3ecde76e86855489566b6df8a0fe8993384aa7f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/LateDiscard.java",
+      "sha256": "7976455852061e645264676f30e2fbec2239718c93e7f7705c00d1755cc324d0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java",
+      "sha256": "65cbe6982f518254ae5e3198d9ba109fc7456e7b1f02ddff618265e43c505574"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java",
+      "sha256": "4b98693fd11e5139068204309114622ad797faf64fedb0b5d365e3fa901391b9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java",
+      "sha256": "4870b3852749167aa3192e6b1695bb66c91b7a2b981dc83204b498c4c3157c56"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/forecast/ExactContractRates.java",
+      "sha256": "22c9e9e67db5b93051067f35c5e7dd72556f2fdacef790eaa86c412cdd29ec00"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/forecast/StreakForecast.java",
+      "sha256": "d2357396722806154d914f448464533faa89b44883f24bd41eca3a62a90fb386"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java",
+      "sha256": "50b8a852ec44e3a35a77c7f1d64d1cbee242e475857ad8d19d01ec1cf64b130a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/NormalBidPolicy.java",
+      "sha256": "095d8d353ea187b62861a6269d8fed1e371370bfa3b28eea0f022d9b60302fa5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/NormalPlayPolicy.java",
+      "sha256": "76ca9df532eef57e97043c95bb5ecabeb72a599ee318d91243605536634635f3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/profile/HardStrategyProfile.java",
+      "sha256": "66ec18cf9dd9ac089a9f552246565ff524a825039193a923855670543cdb5731"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java",
+      "sha256": "13851b46209053e153debc6f2e3d58811b7c686fecb33e9f58b4abe282ae1d4a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java",
+      "sha256": "c9420d54d302431d4ffcbcd93ed181ad2c88e7b2c97982f22e0ecc97ab4f8f4d"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java",
+      "sha256": "661a926113f1219102ee1cc1e15e4bc8f4cdb42d4968e96339709dea3b6f7624"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java",
+      "sha256": "ae541456e1bb49ec8c67361f2acfa8b4b1ea7beb76ed04055cf99cffab293ef4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/AiDifficulty.java",
+      "sha256": "5bae33d0da148d6c64ddb27d52665497c03afe727898cd38df6d2832f5103801"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/GameConfig.java",
+      "sha256": "bddcb3fba0f210dd34d5f5e5f764c9f154df49a0d9604ae573ae8117655c1e9c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/model/Card.java",
+      "sha256": "67ebad08660d129f77441dd922de105fe52693debb120cad96cfc26321dec5b9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/model/ImmutableLists.java",
+      "sha256": "02b32bcd091871eab1ee6874a2362b43f7b87356fe6ddc86e6b640fd4c908f84"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/model/PlayedCard.java",
+      "sha256": "e0396af62b94470e9c3c3b620cad36d6b49654786d15d195fd214595407ddf84"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/model/Suit.java",
+      "sha256": "7e093dc265f040244ec3a681bc91eb27af76d27244e11f5930999496a5213640"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/model/Trump.java",
+      "sha256": "55b3303bb54ba632b2444f7912fa5316b35dc1e7fe98d1cad5e26911ae831d3b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/player/PlayerNames.java",
+      "sha256": "2e8104e78d7f457ae2cebc3afa505757549c7281b9f8be391fc1f91b1968c0fc"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/GameMode.java",
+      "sha256": "cfdc5009f429dc1adce66583fd0cee209f8c7e9edc2e71a4b1e6748e4e2f4a0d"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/GameRules.java",
+      "sha256": "8cbce6df2df6c07ecfd2bb63574a039f95521c81b3f52861ded2647e9106eb68"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java",
+      "sha256": "596a56fa657a889ead41f4f56c4d339394458ce974978599648f3afc1cb02a02"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/RomanianScoring.java",
+      "sha256": "47d236a8dec085b7cd0e9be9c52f5fc489fdc86410d77e2eb4ac82b3a89876d5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/CheckpointScores.java",
+      "sha256": "b9e735b67796443bfe6eff00275614e367292118d6a447a826886c30eb74c9c0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/CheckpointValidation.java",
+      "sha256": "c35f7ac2e0f293c78745e35fa1df60440a541b9d89237efe2ad776201df9ccfd"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GamePhase.java",
+      "sha256": "ae753707c59230a977a8f5a9357ecbb8b0dbbcfb8947c16bef10763abe92a5ba"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java",
+      "sha256": "5305d4bc49ed0727a1715b255476043a843508c1a74fa35ab7efa3aa4335a5e8"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/MatchSummary.java",
+      "sha256": "118c1c7cb57a212beedac9d88612731470af393a12b54f52c3fdfe949ebf6c06"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java",
+      "sha256": "2338dcf6c1a3f286407d4afad991824effe3d74fee6f916e67cbe2a7814128c0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java",
+      "sha256": "1af138844e7599c392658ffbe1a1b8f05cc4bf425f2c43d0ee08663b8c5d9f48"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/WorldEnumerationProbe.java",
+      "sha256": "36714d0de20f5fe9199e0bc1c7efe91912aeeb5fd0d91c7739be1a1b6509b6e2"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/PreviousIndependentPlayer.java",
+      "sha256": "3bce5731a79621a76713ac12789ebd98e24f3f3889fab8e32392389a96dcf553"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/RoundFourIndependentOneCardBidBelief.java",
+      "sha256": "bb45a30914e8280334d37ffb2f72ba2d2d59c168c9e6adaf9a4e1a0a9b3487ee"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/RoundFourIndependentPlayer.java",
+      "sha256": "d987f64203e6a95c008196299903ba1aef3bf124662c3e30bb760046c3fbc11b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/RoundThreeIndependentPlayer.java",
+      "sha256": "c97a32e4cd1f8009d0a460269c14548542e1030553b94a163c3e41f9b068fd14"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v11/RoundElevenContractGuarantee.java",
+      "sha256": "6ad52a94adb6df47b531057af11ba5c62a8aae75253f406bdbba517b99cfc7f4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v11/RoundElevenIndependentPlayer.java",
+      "sha256": "8a553c99be45908bd2562a02483478d9683147016795e8cb96a492aec0491101"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v11/RoundElevenOneCardBidBelief.java",
+      "sha256": "de2a1ba9999088f0922e5d993b320d6ac3c3c6597bc0984282e3f9f0e9d2e6bd"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v11/RoundElevenRolloutPlanner.java",
+      "sha256": "8397a54d0c05aaf84808fdb4b57585528f8509d51cc96299a4c5efab3f045bdf"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v6/RoundSixIndependentOneCardBidBelief.java",
+      "sha256": "89734582b7335b4faba6d5c6b35049698ac373a2ae947572b2f71b05c1a92e93"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v6/RoundSixIndependentPlayer.java",
+      "sha256": "98210c1da77dc1a76f789d7826727e19f8815fd5dffdeb78a43c817ca2f4dc06"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v8/RoundEightIndependentPlayer.java",
+      "sha256": "d1c1b4cfc14fe678aeaf7596b17eb4bab975453a9522f82dd6cc67e31dde66a7"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v8/RoundEightOneCardBidBelief.java",
+      "sha256": "9715172b0bdf0bb15589069283f318cd3d0c245ff1fb88f60b1b572fbcabadaf"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/baseline/v8/RoundEightRolloutPlanner.java",
+      "sha256": "f28a4621e3156cac8edb166f7d0b1f8d2810fa48fb4052ab3874b2be6e3ef6b7"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/research/bidding/BidEvidence.java",
+      "sha256": "e65d8416e7876f59f1ff0462bb325d8e2142bb860db79d33030e1d1568a00e11"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/research/bidding/OpeningBidEvidence.java",
+      "sha256": "12f17c76c3482a605e3516ed370da72c9282f90331170a0c071e8674dfbf2657"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/research/bidding/OpeningBidEvidenceProbe.java",
+      "sha256": "b3a036e9be5f32610ca669e4d9410bea2bf84b9ee94375e75b0cc34613e68ff5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/research/publictail/PublicTailPlanner.java",
+      "sha256": "6ae7504bef7780d3f8fafd33754b1f398abe688962dffbc4a95d5e96caac03af"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/research/publictail/PublicTailPlannerProbe.java",
+      "sha256": "20994348736d6432f1bd1ec8f23cb1cbb5af4a9651eccc59e8f8bd7cdd2e3e3f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/strategy/SafetyCoversPlayer.java",
+      "sha256": "4643308430907bbeaab577fc3234f1e52861c73adb55caaf22ac00c3271224a0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/strategy/SafetyGreedyPlayer.java",
+      "sha256": "0f751fd56cd2dbac7ee61b9d20b76de3b9c59ed637a71082d344e454d85f3096"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java",
+      "sha256": "d1b45c0ef78315b97d385d84256ab993b593f720584fc1a75ad97607d5e868b4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/ObservedLateMissRegressionTest.java",
+      "sha256": "f847d0bcdec07549d2a19eeb7dce5cffce21def82dabc8ff3232c1ddea869ab0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/AiCostQualificationTest.java",
+      "sha256": "9ffa02ab84b1284eee0108d820ca236e8e4be2466df0b3ad6724008a642f70d6"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostChecks.java",
+      "sha256": "012865235069d9ee46947ded73391e9839321a5701a7b9f74bbdbc8e5dbc4972"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostPlayer.java",
+      "sha256": "8da937bd453d1ffe1866ca3ff1bdf78edc58e31df9411c07324d770b8a9a8802"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostPositions.java",
+      "sha256": "ada0e65a5893ffbe37d1bc82f205ad51b2c59c5e63f62f2c01ad5544d547e0ff"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostProfile.java",
+      "sha256": "f23159ccf74eca289046ee45e8b1a0c49750479eccbe5d408480d93e3e04b951"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostProfileTest.java",
+      "sha256": "6ef5e7f85b910faa454535d5a72b1c0ab084b3ac03fe79f6e15b12f530aebaa2"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java",
+      "sha256": "a76bdb3400133211293f4aadc4b535fb5b175e72a5bc62ea1f58c52526cf7eab"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java",
+      "sha256": "00afd2d2038fed9d0a8f994479ac472aabb5372b5fe4cc8ad960da4f64142c80"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorGuaranteeTest.java",
+      "sha256": "8b48d5b965e5509a2c3f9a628c4720173dd250dc8a8bb1873baeea62549fb020"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContractEndgameTest.java",
+      "sha256": "871dab47e0f79f1acc2c88fb5574eebd54c9ba62342bb73441c88b402be4a2e3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/LateDiscardBoundaryTest.java",
+      "sha256": "1a5075cf147475cb47d209bd6f90e1674d9a8ad458bdf36140ac0166fce04fdc"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/MonteCarloAiTest.java",
+      "sha256": "3cedd780c22f6746e67da8d17cde333b36e9dbc7ba8e11a4e16c6bc296d5d3d7"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/OneCardBidBeliefTest.java",
+      "sha256": "91b3fc0e097aff701b37b5dd7dfa70717247ad8c7df9697774a5c22423717ca5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/PublicSalvageTest.java",
+      "sha256": "4409a2b6c956c6cd7b994fe1ef39c39a91d57abb9fd105e80a3fe721ce5baacb"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/forecast/BidForecastContractTest.java",
+      "sha256": "170f5429477e246d9a3ca78993f35e3db36d1248a9ef0206e4228b3de2a5d611"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/forecast/DominantBidContractTest.java",
+      "sha256": "d68ccf5f1cbed4a4de7ec08d193e9e7f9c8ea1c0b5af94186973527a7df5fe6f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/forecast/ExactBeliefTest.java",
+      "sha256": "c72c027e047d6a2d3526ba0c6333483adf0f927f0af4b38ee900a1a4ee589569"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/forecast/StreakForecastTest.java",
+      "sha256": "82871fafa2fa9dc1776d1142f5b49b6ca894df7366573e5124ed795b3ee89c57"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/BlindPolicyObservationTest.java",
+      "sha256": "8eca7c29ad8d69f81d2d3898ee4f2166db6e2f1d6d666b7cd6eb20b25662fc2d"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/EnumerationBudgetTest.java",
+      "sha256": "0cb551994aad1961221c7e8f725d82a9461c8307b988247f05a299a3028ac34b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java",
+      "sha256": "ce30d616e2884aafc33ac888970f848597701dcb17c4b7befbded95ac04e08ec"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java",
+      "sha256": "451c3b1b1b0dcbe2c0dd915ec7589f8736df5c8bab65e6fa711a1cd1a650f98b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/RolloutBoundsOracleTest.java",
+      "sha256": "a05beeea4c0c7d00f39becd47534ef2c661a95dc8bb057014b4311b4d023c91e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/SmallWorldEnumerationTest.java",
+      "sha256": "87637ec0b336cd6b410662bab7690b6a8474ecc9554b907f4cba9b85a9966a21"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/AiStrategyRegressionTest.java",
+      "sha256": "8f27ed2f818c5b47f456ce1c432bfbd66362dcc1aefd70e345c48fe32627be6e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/DifficultyContractTest.java",
+      "sha256": "9c0d7f0c427a388ac0b4be99b13f6c7807062967be8367c1be07448df1028113"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/LargeHandStrategyTest.java",
+      "sha256": "76f7177c56916a9b60dc0d9d35c2cdc15855d2ba26ec300fd7e8c51750d14b61"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/LostGameContractRegressionTest.java",
+      "sha256": "6c7915c200825236063d84d7fedc30fbc22b58c32c01c75da192ccfece43d0f5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/NormalContractPursuitTest.java",
+      "sha256": "e645086240f2105389302907212e5b60d2bcdc1d8ca4162f5462264626e31292"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/PromotedMasterLossTest.java",
+      "sha256": "83d9b9142cd949fb1c878ca40051c03bd06766a9dcd5579b98560c053b00da01"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/SafetyPreferenceTest.java",
+      "sha256": "c008771105ab0705a1307e9be988ec027dc49471a66c6fa7b7564130264fadf1"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/profile/HardStrategyProfileTest.java",
+      "sha256": "96a3eef56b493d7eaa9ca735894dff5a4e49184c0305faba094427e9c8accd72"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/simulation/SearchCancellationComponentTest.java",
+      "sha256": "fedf6ad629dfc541d4a76d55dfe687855ea0d5ae4bcb61d06288e184732903ed"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/simulation/SearchWorkComponentTest.java",
+      "sha256": "cc60d242120c07ad61a8f6c880daa523937546fa349ffa9c3ada3c9cc6a7afbf"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/legacy/LegacyAiPolicy.java",
+      "sha256": "220b5985337f03cfb906bdecd8bc43682269881bf11bfb163da49c51a9b723ed"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/legacy/LegacyMonteCarloAi.java",
+      "sha256": "132ff822f9258084186af6c5cd332c681838d61f41c0a7baa161f1985d820e76"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v10/RoundTenAiPolicy.java",
+      "sha256": "6e126c604fe189873491a728acb58e001df07810a31ca26624887dfdc6ed19cc"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v10/RoundTenContractEndgame.java",
+      "sha256": "38ae25f0ac1508e0f4dc9e911b0bd8aa0a2a4a768a0d23dcd193a16ea9520f56"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v10/RoundTenLateDiscard.java",
+      "sha256": "ae0cf752df86bd248ee319c712f7175ec107cd56ba5956a90a4da39669bbe2da"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v10/RoundTenMonteCarloAi.java",
+      "sha256": "e0d297b6fa26a29babd85e7fddbd1263b2b6205d464ca588d6283609741e0851"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v10/RoundTenOneCardBidBelief.java",
+      "sha256": "99cc062263f8614e27b92098b6521e6986879c6567cbf5fc8f88fdcdaa78abe4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v11/RoundElevenAiPolicy.java",
+      "sha256": "5aa40bc28512afbf74c726a317a04d590955e40d1daec3a37761acc9f9f4d22b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v11/RoundElevenContractEndgame.java",
+      "sha256": "91cd98960a70f844d647e5b982dd24e299209cf748685c621767d69c83263c52"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v11/RoundElevenContractGuarantee.java",
+      "sha256": "3e999136e98c1c4cdd7c878b4132472ac5da2e8b2405bb80b88e9f259d7a7994"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v11/RoundElevenLateDiscard.java",
+      "sha256": "378641fab70afb9f23679ad7eb6fa61099c57282fcb192824eab66e49ba1f107"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v11/RoundElevenMonteCarloAi.java",
+      "sha256": "e4b1f8cb270c7c0e8cc74c7cf5e7e8f5bfd0a01e303eff7de135eca265b52efe"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v11/RoundElevenOneCardBidBelief.java",
+      "sha256": "65c34cf268cc0a4982d3ee932ca65aa18f3dd8f56f57ffd3b44e0c48d258f3c3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenAiPolicy.java",
+      "sha256": "f13e14f6d2a8d6b550f6afc3bb7c58594155b490231c0c530ecf28160391ac1e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenContractEndgame.java",
+      "sha256": "f2a549921b29767678cbde7d5856e54993d4c632e8d32daf5d3ce20d4575c513"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenContractGuarantee.java",
+      "sha256": "c3d1971d4aee89290c3a49d2fbf810ad6c2d6c17d01a15c97551d65135c30c15"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenLateDiscard.java",
+      "sha256": "8b1c7e4646fdea6262ccd518cd442a29e7b57cb2522f667768ce438731198a27"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenMonteCarloAi.java",
+      "sha256": "4f892bdc01483ebfc397a7261b3276b794dd376dbcaf6e4bfd8e71a62aa5b99e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenOneCardBidBelief.java",
+      "sha256": "3d9d4f102310a7a5107131fb4b2b1fc93f9774a75df431940c70d474cf0c0479"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v14/RoundFourteenPublicSalvage.java",
+      "sha256": "7900a217a7c2b05295384d0ec1e3ebb8987a712321f78c9c48b840e244a8112c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenAiPolicy.java",
+      "sha256": "cf0760aab363470d19bb309d7209bfe69f14bdbc04a5b3fdacb1a1eb40a6285a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenContractEndgame.java",
+      "sha256": "6d80aff5f2eed5ebb0836c14489b5a5a8565b77d0702936270cc07ccda0af725"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenContractGuarantee.java",
+      "sha256": "129a22f9657727a8f697048408d7fe868871100e922ab0d52906d636e22dd22e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenLateDiscard.java",
+      "sha256": "45d4d0d858e2a04e158595e7866e46e31cd9d718f93849ea4267c060fdd8c32f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenMonteCarloAi.java",
+      "sha256": "2d80aff8f4a053fe8341f59933fa7ef671d7942eb5207c6fb76bd66b15db747e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenOneCardBidBelief.java",
+      "sha256": "2650a2e316e0327dff890481d1aa78e2bb45c9260ea38ec16546ae008fab67b8"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v17/RoundSeventeenPublicSalvage.java",
+      "sha256": "95ac2ab95b734486aa17a880b00c200cfd759f810621fe2a9af0bc45d5123a32"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v2/RoundTwoAiPolicy.java",
+      "sha256": "9754746ba0b76fc3edeee5b93ff57d292905eb0bd5ab00be5c3797e913c3908f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v2/RoundTwoContractEndgame.java",
+      "sha256": "c5275c42e70192d439dc8857cbe89de24b1789225bf6b85029dfcfb8192ee10a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v2/RoundTwoMonteCarloAi.java",
+      "sha256": "671768d42cd8a1cc3685bab4d1f41d0bb32747942c232249776e58887d4e5cc4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v3/RoundThreeAiPolicy.java",
+      "sha256": "d9f4dae366a5fa52f2e0b9b8e7258406c8b44970a6aadcc7ff8e61817d279a30"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v3/RoundThreeContractEndgame.java",
+      "sha256": "2cc5262e10170c580bf472de93e0e64405e20840d9074798125c21f445a03a90"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v3/RoundThreeMonteCarloAi.java",
+      "sha256": "6b1d4130bb79d785e461fe60b780d29dc5205c2e7a74e0cf4d630084b232c37d"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v4/RoundFourAiPolicy.java",
+      "sha256": "90c99f892697754b855e3eff51e96f744073e12712b56548b34d7d5bf62d71a0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v4/RoundFourContractEndgame.java",
+      "sha256": "02bef63e88603996d63918a2b346caceb37e7ab1d7ae5006c97235b9a9403a4c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v4/RoundFourMonteCarloAi.java",
+      "sha256": "dfab8c4faca05fdc38a9a6cf8fe5a6f0ec03fa2027cb5f8fbdda8187b890ed73"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v4/RoundFourOneCardBidBelief.java",
+      "sha256": "7d7d5d0d4e1cfcac96f2d0a52dd822d3f1a4274770f332cc1d1e543366b70aae"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v6/RoundSixAiPolicy.java",
+      "sha256": "024b49ad174c116a6809577353f26e5a5bfb770c1fde53edee1c32111729e7de"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v6/RoundSixContractEndgame.java",
+      "sha256": "d683f6e5c214ae9ce4ada14c362409bdbdaa9ec721de9c711c411e8ac28ab6b5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v6/RoundSixLateDiscard.java",
+      "sha256": "b8669ead9d56b936db05ff00bf6e42f4c821c6a60ef3637ec8f73aac0ff54341"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v6/RoundSixMonteCarloAi.java",
+      "sha256": "bb58ea45a755a4d7d32537c20fd1bb3b7a1686bb96e337a013d38dd312f18cc3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/v6/RoundSixOneCardBidBelief.java",
+      "sha256": "8fbf28b5cd87005665694996f9a034b6b6184a98894f1f0264755c86f8d3bf76"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/ArenaProfileReplayTest.java",
+      "sha256": "45a52e4d65f82968632f84447001a61f27340bb845c5572b4a680d071b87a197"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundEighteenTournamentTest.java",
+      "sha256": "dade88c72b220b35384b09fe4ad718fd88a8d024bce16f96d5f544a6a4fcdcb0"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundElevenTournamentTest.java",
+      "sha256": "19244a5fa2cfcf4817cc330aa19d9288797ee8d98f8f721a9d1f3ee0e9d6e490"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundFifteenTournamentTest.java",
+      "sha256": "8d39667938f398606dd429f2c9822d90225257a18e7b532de7a24eb7a8a26aa9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundFourGameOracleTest.java",
+      "sha256": "f40a7f175a7fdefbb1797769dbb48fb15e32c12aaf62ed40fa1189f4047ddd22"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundTwelveTournamentTest.java",
+      "sha256": "2f82288367607327c062d31f80da5a2651a24ad577cc86da355e51b683a221a2"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/StrategyArenaTest.java",
+      "sha256": "23cbcc659eb718ba22c1b07083a3f36c4a351771b8d765f97f000f6c1bdd5cf6"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/mining/ArenaLossMiningTest.java",
+      "sha256": "2b041ca44edbeca9aff3917d6a07bb425281ceb83a52fb7f110298171d39929c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/mining/ComponentCorpusCollectorTest.java",
+      "sha256": "0d417d975f81767f24fb4efb34c378f0d316dbf7b8e89adfbaba8edf77983e2a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/mining/LossMiningTest.java",
+      "sha256": "c51475226b3579f76603d257c8da3a537fb19b71553f09cef32e42255e225cb4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/AcceptedBaselineViews.java",
+      "sha256": "c041b7e448861b749f5ade3edde139984d4de43f71c6994937f67e48044fb0a2"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/FrozenContinuationContractTest.java",
+      "sha256": "86a017e3c51d3e9784f3fa9e0e643479a03085f86920b2afb32c78f151a4563c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/FrozenV8ParityTest.java",
+      "sha256": "3ba31022a9b87ff6980998b2be1e99ce2b21745039237b63354ce5f5055a5fdd"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/LearningBaselineOptionTest.java",
+      "sha256": "91a00561c295782db52fe97cd0624b12fd9d7da9a645cddf5ed34ba980e4955a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/LegacySimpleHardReference.java",
+      "sha256": "ce13b967f48534b7e0a92da2cd4de3071d7c0f1416093eb4ff41a712c75fd389"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/RolloutPolicy.java",
+      "sha256": "9bb0b19a2591e8394562e5d607cad88f96d36df1b801f1671efeaecfbe049610"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/RoundThreeBaselineParityTest.java",
+      "sha256": "02454b7b9c6ce1c4b930020595a110292287543c28b7c1f3bca80282f3c76fa3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/RoundTwoFreezeParityTest.java",
+      "sha256": "af8cfc4d6feccd2003677369e4062b54dd3bed3f14e999edad2a79b4fd417fb6"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/regression/RolloutPolicyRegressionTest.java",
+      "sha256": "51cab862896d1fbcdbf8b470c0b944af04bb6d3d2704d42528c362c61b81ce5c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/regression/SafetyPlanningCasesTest.java",
+      "sha256": "e464f83d100e27064ac8bec5672f38752e86b4434e7c39ec3f637e909b461de9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/AiTournamentTest.java",
+      "sha256": "2d02a4cbe359fc1513f9278c0f295f7808b73571a9a07cf7881c70d647df64a4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/AiTrainingTournamentTest.java",
+      "sha256": "ca05c7f268e2ed5535828eb8ad5ba991a52817871c0b0f41797d1e03b59e3a6b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/DualLearningTournamentTest.java",
+      "sha256": "72ab689c47eeac6c354dfd1c12861fc5e5a07035f72b904b991b1d418003f87c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundFiveTournamentTest.java",
+      "sha256": "b692f1e026d9ab86fe6c0b83a7f4fd7f7de60bd20b6bc29f53697ff01e090da9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundFourTournamentTest.java",
+      "sha256": "1f9c95cd8cc602e068b0d95d24d815020fd27197515eac59cb7736f3d4276ab3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundSevenTournamentTest.java",
+      "sha256": "535334b27dbd04818203c9fb27497d301626f500152674e1bb0f87ce743c24c9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundSixTournamentTest.java",
+      "sha256": "d20ac082392ab377f71933ad2b4178e353a1d71da19ce8f578cd2ea2c0dcf5e3"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/ObservedOriginalReplayTest.java",
+      "sha256": "8733935685231eb03ca00d7318a2d4b67f7f366ddc86b08b32544223fd3f46eb"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflineMockMatchTest.java",
+      "sha256": "4f0d90c3f9ed496ed45a771823861aca10dd90235a34726ab44673ad99a89b0f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflinePerspectiveMatchTest.java",
+      "sha256": "632b18f7d9e95046428e95e24d5ea238bee1ea9b922cd5a36e65a5c26cf5c2c6"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflineStrategyProfileMatchTest.java",
+      "sha256": "b66556ddf458ff7b2f46746387cdd0faa881a6f63ff218917d700f5a1aaccffc"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/model/CardPresentationTest.java",
+      "sha256": "e9c2108262c954d792056d7b78a026cf1f6518434e2b64974996f9726bb3a6b8"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/model/RomanianStreakContractTest.java",
+      "sha256": "d763dff76184a1f7c4958281a88e9f2a3a7c1f46ec76262b747cc6369fc2e057"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/player/PlayerNamesComponentTest.java",
+      "sha256": "a52c762732babd3989aa41a94a1a68beddf47de4f971c654114d6a1ef6cfca01"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/BidEvidence.java",
+      "sha256": "6ae7a80c5b2372d1a34e43a0433539bb23150577c24e9b68b0797caf9a534b73"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/BidEvidenceTest.java",
+      "sha256": "69a9c169f0a08d053b985c171ecafda6a7ffb032a4118278549b26d43466fa8c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java",
+      "sha256": "0e00da97ed7b50d2a9f4d2db96f922d2e6d383133d6e1983b2120760cfefa3c5"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressureTest.java",
+      "sha256": "c045c76b0c45a07e9dd7c518b93300bda62b94c58c9a2a022e7712bfcbed63e9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/OpeningBidEvidence.java",
+      "sha256": "2c4e9c2cb70d6c4031e5c7be23260937662d26a38c28e5f9985d11dc4a3a9299"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/GameRulesBoundaryTest.java",
+      "sha256": "9e880c9f1d2ca3a188fdbc1efcea5132c42cb87d0afe3aa727c1b846b6226d87"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/GameRulesTest.java",
+      "sha256": "6ff1795c133bfaa201681967ec927ece3e606641545e165ae2091a3c30511c8f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+      "sha256": "5005aeb697099eed891d0fd0113d5a2ab7bd42c6cc306a034f227a8ffda79f40"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/OriginalInstructionsContractTest.java",
+      "sha256": "39f0577897d80809c0561c18e182a4b4cd246ffb44aaa228ea844ae223ab6945"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/OriginalVariantContractTest.java",
+      "sha256": "8c7740b7f656d1c15067a86735644094d68f4ec0bf278c54947d5a9853771552"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistExhaustiveTest.java",
+      "sha256": "1f0411eb9965e5eea547198cae0607054d9f1aae05c2b8d9e9f2d0fff2afa640"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistModelTest.java",
+      "sha256": "e702d0a61514908ca43e898f088684f320dc602a76d2010c312265be1427bbbd"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistRulesTest.java",
+      "sha256": "d8efb01e6723d8d899323b665fbc6d7aa3f75ae0949132bd8e9c2c3a893eced4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/scoring/SymmetricSeriesComponentTest.java",
+      "sha256": "fbbf940e41a10dfeb8681c1ee893c704091f2cb86927f43ca44b3954f8ddb03a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/CheckpointHistoryAuditTest.java",
+      "sha256": "dc34fe2d5fad0e1af054ba6ec047f86f56bb96ffd7f0fe444e7e713c920b2c9f"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/GameCheckpointIntegrityTest.java",
+      "sha256": "e2cd849960fe1584fbd90c8d8d854694b23800c9ab8fe8405d0d84b6f15aa1ee"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/GameCheckpointRejectionTest.java",
+      "sha256": "fff7d8103d363e9505e3bca345957e3a3016690d3684d1300e8a7194cb3d2470"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/GameSessionTest.java",
+      "sha256": "34fe22fb014b4b044127e209222e6bda230818b5dee23d3d3691cb566c4fdf37"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/MatchSummaryTest.java",
+      "sha256": "6164f2a4cf1a1093525e17b1484f6d73f84e38c3a3055ff86441664df9d8f6f9"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/RomanianWhistSessionTest.java",
+      "sha256": "c06e9d39d0614c239060349edad7a0b597849310e4a704b7a0804b303920f280"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/ScoreHistoryInvariantTest.java",
+      "sha256": "4b8d08018081c11371129bf474101933368729f0b9f3fb501f28ab082bf3a0c7"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/ScoreTranslationRegressionTest.java",
+      "sha256": "95085172670de860dfcb428fe97887d77aa35aa25620430f2194f779f49f182c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/CapturedRegression.java",
+      "sha256": "55166648658a41e4b3350ca37527a3241339304f3b6e2cc3594c7489c82d6c56"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/ForcedContract.java",
+      "sha256": "84702f53dd8b85ccfcaef2fc6d32c8548f33c98978392ba8de864e13c2d8ff6b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/OriginalVariantModelTest.java",
+      "sha256": "fc795d7aee4ade5826fed7de1c6aceaeff568b24fb53cbfd6f314a1e859f03fd"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/PublicEndgameOracle.java",
+      "sha256": "02e210014a63382d8e1b8655b8615d705141fd4c7b54ae8301c888e22659de8c"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/RoundFourGameOracle.java",
+      "sha256": "ec00060793d834445bb88cfb050169ad17c584c7e18eb75a4296e99e297496ff"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJson.java",
+      "sha256": "e2db53efdff2832decf82bb26b02d6cac6e29a96e14e4a77584f3b47bb36df07"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJsonComponentTest.java",
+      "sha256": "a06dfe746e1b329ed559b83344602a1387df80a25aa10fd021e471fd59ae0fee"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/match/OfflineMatchHarness.java",
+      "sha256": "8cd797c87da716937b7f5c5b84491887f655362eeac49420c43d36ba787dbc47"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/match/PlayerObservations.java",
+      "sha256": "654046dd3c49bc1b8bf500a451d6e2a3c8465df3206da9f05332883328db7a72"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/arena-replay/factorial.json",
+      "sha256": "12d4a99c8879a90dd54339077125939384746bef03337bd0e137601924fe5ea4"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/arena-replay/mixed.json",
+      "sha256": "8865f70ca87f764c34145b87e07b31bffd2ed7bed60b3286db9eec4bf341475b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/baseline-v8/snapshot-seed6700-seat0.json",
+      "sha256": "b4d2b2aa822aca292429dfb884ea0a9fb1500c4e6433a661cb25b6825ffb9a37"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/bid-forecast/promoted-master-losses.json",
+      "sha256": "c94796def0e5b20017e0f9dab2d3c2d94757f0389c3e181c33d4fb0f566e855b"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/contract-certificate/cases.json",
+      "sha256": "dcbd8a224e7c9db30211a8f24899ea0b31d9e65c681b7866f459683012b37252"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/forced-contract/mistake-001.json",
+      "sha256": "9ec5c7dcd6f62eec9862eb17469ad6c55962c9476d6058c507786f6a635ab50e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/forced-contract/mistake-002.json",
+      "sha256": "a81e0b37b7b2a3aeee4090e42358747726214d5a5c2a26184afbccd525e88708"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/forced-contract/mistake-003.json",
+      "sha256": "3fde5b46c2d5324e7e76c62832b6b950121c445e89d3c594e9454fc57293302e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/forced-contract/mistake-004.json",
+      "sha256": "9f07ea88e00f68890eb17da8a98697802fbf2d457920bb9c79e55c005a217830"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/observed-late/observed-miss-006.json",
+      "sha256": "a3cb33f19e2c3b3a25e24a373fbfc45975b6de667f777402cf954338839744a8"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/observed-late/observed-miss-019.json",
+      "sha256": "12a1cd501d0ce34f2d5ef8ece4ee39365885212b6cdac02244ff60240768f8bb"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/rollout-guide/forced-loss-retained-trump.json",
+      "sha256": "25dfd41745ca02e723a1d4b1fd0465c6fafc63d46cd161e296ef3282dfaf316a"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/rollout-guide/low-card-covers.json",
+      "sha256": "89dd2adef9030af28f18a4b644b4e07929a90a3b18cb3fa5b1b11d8ea7841e7e"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/rollout-guide/two-trick-zero-contract.json",
+      "sha256": "e8e77801d424d710c74bbb70064e99c463c5f55e9a5bc1f07966c0d84d5a10fe"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/score-invariance/cases.json",
+      "sha256": "b45a56420eae03a889f251ab6110be6b104926b41d1f78a31f901580716a2757"
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/resources/regressions/small-worlds/cases.json",
+      "sha256": "ec246242d4c2351bff5dca26a1de60059660904ba947434e5177c9bbfcafc46e"
+    },
+    {
+      "path": "whist-lab-app/gradle.properties",
+      "sha256": "f11ad66a46a2310a3feee522481a9c3ddeec8796461434942b0c1d210d8e3dbe"
+    },
+    {
+      "path": "whist-lab-app/settings.gradle",
+      "sha256": "430a27e1869a8d8241be452cd414854a574e8fd8bfe8a8aed5be0c49bd9fab23"
+    }
+  ],
+  "laterLiveChangesExcluded": [],
+  "scope": "Exact staged APK inputs and test sources; staged Maven selection profiles are not production changes"
+}

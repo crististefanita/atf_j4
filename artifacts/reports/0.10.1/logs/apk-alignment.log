@@ -1,0 +1,16 @@
+Verifying alignment of C:\Users\Cristi\AppData\Local\Temp\WHIST_LEGEND_ec8530a489\WhistLab-0.10.1.apk (4)...
+      87 META-INF/com/android/build/gradle/app-metadata.properties (OK - compressed)
+     208 META-INF/version-control-info.textproto (OK - compressed)
+     297 classes.dex (OK - compressed)
+  777958 classes2.dex (OK - compressed)
+  778409 kotlin/annotation/annotation.kotlin_builtins (OK - compressed)
+  779018 kotlin/collections/collections.kotlin_builtins (OK - compressed)
+  780931 kotlin/concurrent/atomics/atomics.kotlin_builtins (OK - compressed)
+  782087 kotlin/coroutines/coroutines.kotlin_builtins (OK - compressed)
+  782273 kotlin/internal/internal.kotlin_builtins (OK - compressed)
+  782689 kotlin/kotlin.kotlin_builtins (OK - compressed)
+  788097 kotlin/ranges/ranges.kotlin_builtins (OK - compressed)
+  789519 kotlin/reflect/reflect.kotlin_builtins (OK - compressed)
+  791003 AndroidManifest.xml (OK - compressed)
+  791852 resources.arsc (OK)
+Verification successful

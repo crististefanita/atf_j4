@@ -1,0 +1,109 @@
+{
+  "version" : 7,
+  "playerCount" : 4,
+  "mode" : "ROMANIAN_WHIST",
+  "difficulty" : "NORMAL",
+  "seed" : 70231,
+  "streakBonuses" : true,
+  "streakBonusPoints" : 10,
+  "streakPenaltyPoints" : 10,
+  "phase" : "SCORE",
+  "handIndex" : 23,
+  "handSize" : 1,
+  "dealerSeat" : 2,
+  "biddingSeat" : 2,
+  "currentSeat" : 2,
+  "bidsSubmitted" : 4,
+  "bidTotal" : 0,
+  "trump" : "HEARTS",
+  "lastTrickWinnerSeat" : 0,
+  "rankingEligible" : false,
+  "matchId" : "records-e2e-87714bd4-8af5-483a-b24d-4286bb7b8110",
+  "players" : [ {
+    "seat" : 0,
+    "name" : "HistUser",
+    "human" : true,
+    "hand" : [ ],
+    "bid" : 0,
+    "tricksWon" : 1,
+    "totalScore" : 26,
+    "streak" : 0,
+    "streakPoints" : 0
+  }, {
+    "seat" : 1,
+    "name" : "Ion",
+    "human" : false,
+    "hand" : [ ],
+    "bid" : 0,
+    "tricksWon" : 0,
+    "totalScore" : 16,
+    "streak" : 0,
+    "streakPoints" : 0
+  }, {
+    "seat" : 2,
+    "name" : "Oana",
+    "human" : false,
+    "hand" : [ ],
+    "bid" : 0,
+    "tricksWon" : 0,
+    "totalScore" : 0,
+    "streak" : 0,
+    "streakPoints" : 0
+  }, {
+    "seat" : 3,
+    "name" : "Luca",
+    "human" : false,
+    "hand" : [ ],
+    "bid" : 0,
+    "tricksWon" : 0,
+    "totalScore" : 59,
+    "streak" : 0,
+    "streakPoints" : 0
+  } ],
+  "currentTrick" : [ ],
+  "lastTrick" : [ {
+    "seat" : 3,
+    "suit" : "SPADES",
+    "rank" : 10
+  }, {
+    "seat" : 0,
+    "suit" : "HEARTS",
+    "rank" : 8
+  }, {
+    "seat" : 1,
+    "suit" : "DIAMONDS",
+    "rank" : 10
+  }, {
+    "seat" : 2,
+    "suit" : "DIAMONDS",
+    "rank" : 8
+  } ],
+  "history" : [ {
+    "seat" : 3,
+    "suit" : "SPADES",
+    "rank" : 10
+  }, {
+    "seat" : 0,
+    "suit" : "HEARTS",
+    "rank" : 8
+  }, {
+    "seat" : 1,
+    "suit" : "DIAMONDS",
+    "rank" : 10
+  }, {
+    "seat" : 2,
+    "suit" : "DIAMONDS",
+    "rank" : 8
+  } ],
+  "turnedCard" : {
+    "suit" : "HEARTS",
+    "rank" : 14
+  },
+  "scores" : {
+    "priorHands" : 0,
+    "opening" : [ 0, 0, 0, 0 ],
+    "hands" : [ [ 5, -1, 5, 5 ], [ 4, 4, 10, 10 ], [ 3, 9, 15, 15 ], [ 8, 14, 20, 14 ], [ 13, 12, 25, 19 ], [ 18, 17, 22, 24 ], [ 23, 13, 27, 29 ], [ 22, 11, 26, 28 ], [ 21, 16, 23, 26 ], [ 16, 15, 22, 31 ], [ 13, 12, 20, 36 ], [ -2, 10, 9, 41 ], [ -5, 15, 6, 39 ], [ -6, 14, 0, 44 ], [ -7, 13, -1, 40 ], [ -8, 11, -3, 39 ], [ -3, 9, -16, 44 ], [ 2, -2, -11, 41 ], [ 7, -3, -12, 40 ], [ 12, 2, -14, 45 ], [ 17, 7, -9, 44 ], [ 22, 6, -4, 49 ], [ 27, 11, -5, 54 ], [ 26, 16, 0, 59 ] ],
+    "bids" : [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ],
+    "tricks" : [ [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 2, 0, 0 ], [ 0, 0, 3, 0 ], [ 0, 4, 0, 0 ], [ 1, 2, 1, 1 ], [ 1, 0, 3, 2 ], [ 5, 1, 1, 0 ], [ 3, 3, 2, 0 ], [ 5, 2, 1, 0 ], [ 3, 0, 3, 2 ], [ 1, 1, 6, 0 ], [ 1, 1, 1, 4 ], [ 1, 2, 2, 1 ], [ 0, 2, 3, 0 ], [ 0, 1, 0, 3 ], [ 0, 1, 1, 1 ], [ 0, 0, 2, 0 ], [ 0, 0, 0, 1 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ] ]
+  }
+}

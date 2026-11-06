@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,6 +19,59 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /** No emulator: proves that ownership loss cannot forward a command to the transport. */
 @AtfComponentTest
 class RecordsRunContractComponentTest {
+    @Test void installedApkReceiptUsesTheObservedPathAndVerifiedDigest() {
+        var setup = RecordsFixtures.JSON.createObjectNode().put("installedPath", "/data/app/ro.whistlab.app/base.apk")
+                .put("installedApkSha256", "A".repeat(64)).put("requestedApkSha256", "a".repeat(64));
+        assertEquals("/data/app/ro.whistlab.app/base.apk; SHA-256=" + "a".repeat(64), RecordsRunContract.installedApk(setup));
+    }
+
+    @Test void requestedIdentityNeverSubstitutesForAMissingObservation() {
+        var setup = RecordsFixtures.JSON.createObjectNode().put("installedPath", "/data/app/ro.whistlab.app/base.apk")
+                .put("requestedApkSha256", "a".repeat(64));
+        assertThrows(IllegalArgumentException.class, () -> RecordsRunContract.installedApk(setup));
+        setup.put("installedApkSha256", "b".repeat(64));
+        assertThrows(IllegalArgumentException.class, () -> RecordsRunContract.installedApk(setup));
+    }
+
+    @Test void packageNamesAndMalformedDigestsCannotPretendToBeAnInstalledApk() {
+        for (String path : List.of("ro.whistlab.app", "", "/data/app/base.apk\n")) {
+            var setup = RecordsFixtures.JSON.createObjectNode().put("installedPath", path)
+                    .put("installedApkSha256", "a".repeat(64)).put("requestedApkSha256", "a".repeat(64));
+            assertThrows(IllegalArgumentException.class, () -> RecordsRunContract.installedApk(setup));
+        }
+        var setup = RecordsFixtures.JSON.createObjectNode().put("installedPath", "/data/app/base.apk")
+                .put("installedApkSha256", "not-a-digest").put("requestedApkSha256", "a".repeat(64));
+        assertThrows(IllegalArgumentException.class, () -> RecordsRunContract.installedApk(setup));
+    }
+    @Test void aVisibleLabelNeedsOneObservationAndKeepsTheActualUiSpelling() throws Exception {
+        var reads = new java.util.concurrent.atomic.AtomicInteger();
+        String actual = RecordsRunContract.visibleLabel(() -> { reads.incrementAndGet();return List.of("New game", "CLOSE"); },
+                label -> { throw new AssertionError("No reveal for a visible control"); }, "Close");
+        assertEquals("CLOSE", actual);assertEquals(1, reads.get());
+    }
+
+    @Test void aRevealUsesAFreshObservationWithoutReplayingAnAction() throws Exception {
+        var reads = new java.util.concurrent.atomic.AtomicInteger();var reveals = new java.util.ArrayList<String>();
+        String actual = RecordsRunContract.visibleLabel(() -> reads.getAndIncrement() == 0 ? List.of("Top") : List.of("RESUME GAME"),
+                reveals::add, "Resume game");
+        assertEquals("RESUME GAME", actual);assertEquals(2, reads.get());assertEquals(List.of("Resume game"), reveals);
+    }
+
+    @Test void anAbsentLabelHasOneBoundedRevealAndAnExplicitFailure() {
+        var reads = new java.util.concurrent.atomic.AtomicInteger();var reveals = new java.util.concurrent.atomic.AtomicInteger();
+        var failure = assertThrows(IllegalStateException.class, () -> RecordsRunContract.visibleLabel(
+                () -> { reads.incrementAndGet();return List.of("Other"); }, label -> reveals.incrementAndGet(), "Missing"));
+        assertEquals("No visible control: Missing", failure.getMessage());
+        assertEquals(2, reads.get());assertEquals(1, reveals.get());
+    }
+
+    @Test void observationAndRevealKeepTheirOriginalExceptionIdentity() {
+        var failure = new java.io.IOException("Captured transport failure");
+        assertSame(failure, assertThrows(java.io.IOException.class, () -> RecordsRunContract.visibleLabel(
+                () -> { throw failure; }, label -> { throw new AssertionError("No reveal after observation failure"); }, "Close")));
+        assertSame(failure, assertThrows(java.io.IOException.class, () -> RecordsRunContract.visibleLabel(
+                () -> List.of(), label -> { throw failure; }, "Close")));
+    }
     @TempDir Path temp;
 
     @Test void historyLabelsAreCardCountsRatherThanHandOrdinalsOrCombinedLabels() throws Exception {

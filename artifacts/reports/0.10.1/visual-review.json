@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "image": "e2e/history-legend-api28/03-whole-fixed-legend-before-scrolling-720x1280-360dpi-font-1-5-ro.png",
+  "sha256": "828aa9b82b0395c59b7bc7b4e5634f308423b0dd901a58ab7c049cacda3d6716",
+  "observations": [
+    "Complete RO legend ends with serie at font 1.5",
+    "Legend aligns with the fixed dialog and stays above close control",
+    "Header and several score rows remain visible; remaining player columns scroll separately"
+  ],
+  "scope": "Manual review of original native PNG, plus XML before/after; no raster claim for series underline"
+}

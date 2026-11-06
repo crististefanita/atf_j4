@@ -2,6 +2,7 @@ package ro.whistlab.app.table;
 
 import ro.whistlab.app.bidding.BidGridMetrics;
 import ro.whistlab.app.animation.TrickCollectionAnimator;
+import ro.whistlab.app.animation.TrickCollectionRequest;
 import ro.whistlab.app.cards.CardFaceBackground;
 import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
@@ -48,6 +49,7 @@ public final class GameTablePanel extends LinearLayout {
     private final TableViewportPolicy viewport;
     private final GameSession.Snapshot state;
     private final WhistUiText copy;
+    private final ViewGroup tableBoard;
     private final boolean bidding;
     private final boolean interactionPaused;
     private final List<PlayedCard> completedTrickToDisplay;
@@ -65,14 +67,12 @@ public final class GameTablePanel extends LinearLayout {
         if (collection != null) { collection.cancel(); collection = null; }
     }
 
-    public void collectCompletedTrick(long remainingMillis) {
-        if (collectionAttached || !interactionPaused || completedTrickToDisplay.isEmpty()
-                || !completedTrickToDisplay.equals(state.lastTrick()) || !state.currentTrick().isEmpty()
-                || completedTrickToDisplay.size() != state.players().size() || state.lastTrickWinnerSeat() < 0) return;
+    public void collectCompletedTrick(long remainingMillis, Runnable resized) {
+        if (collectionAttached || !interactionPaused || remainingMillis <= 0) return;
+        var request = TrickCollectionRequest.from(state, completedTrickToDisplay);
+        if (!request.isPresent()) return;
         collectionAttached = true;
-        var seats = new ArrayList<Integer>();
-        for (var play : completedTrickToDisplay) seats.add(play.seat());
-        collection = TrickCollectionAnimator.attach((ViewGroup) getChildAt(0), state.lastTrickWinnerSeat(), seats, remainingMillis);
+        collection = TrickCollectionAnimator.attach(tableBoard, request.get(), remainingMillis, resized);
     }
 
     public static GameTablePanel bidding(Context context, GameSession.Snapshot state,
@@ -131,11 +131,11 @@ public final class GameTablePanel extends LinearLayout {
         setClipChildren(false);
         setContentDescription(copy.tableAccessibility(state.players().size()));
 
-        View board = buildRoundTable();
+        tableBoard = buildRoundTable();
         LayoutParams boardParams = new LayoutParams(dp(Math.min(availableContentWidthDp(), 760)),
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         boardParams.gravity = Gravity.CENTER_HORIZONTAL;
-        addView(board, boardParams);
+        addView(tableBoard, boardParams);
         if (!bidding && viewport.showPlayHint()) {
             FrameLayout hintSlot = new FrameLayout(context);
             TextView help = text(hint == null ? "" : hint, 11, Color.rgb(222, 237, 225), false);
@@ -156,7 +156,7 @@ public final class GameTablePanel extends LinearLayout {
         addView(buildHand(), handParams);
     }
 
-    private View buildRoundTable() {
+    private ViewGroup buildRoundTable() {
         int tableWidthDp = Math.min(availableContentWidthDp(), 760);
         TrickCardMetrics.Layout trickLayout = bidding
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp,

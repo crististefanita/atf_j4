@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistoryTableComponentTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-05T21:47:07.663Z" hostname="DESKTOP-BLFSO18" time="0.835">
+  <properties/>
+  <testcase name="allVariantsAndSeatsExposeTheWholeScheduleAndExactRecordedCells" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.698"/>
+  <testcase name="savedRuleVersionPreservesOldPenaltyAndRoundTripsTheNewPenalty" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.047"/>
+  <testcase name="currentBidsAreVisibleButUnfinishedPointsStayUnknown" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.006"/>
+  <testcase name="disabledSeriesAndUnconfiguredOrOppositeAdjustmentsHaveNoUnderline" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.01"/>
+  <testcase name="aOneCardHandNeverReceivesTheSeriesUnderline" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.002"/>
+  <testcase name="settledSeriesMarkersSurviveJsonReloadForEveryHistoricalSeat" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.042"/>
+  <testcase name="legacyBalancesDoNotInventMissingContractsOrHandScores" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.002"/>
+  <testcase name="missingContractsOrTricksNeverInventASeriesPaymentFromItsSign" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.008"/>
+  <testcase name="onlyPositiveAndNegativeSeriesPaymentsUnderlineTheHandPoints" classname="ro.whistlab.app.score.ScoreHistoryTableComponentTest" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

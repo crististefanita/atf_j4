@@ -11,6 +11,33 @@ import java.util.HashSet;
 final class RecordsRunContract {
     private RecordsRunContract() { }
 
+    static String installedApk(JsonNode setup) {
+        String path = setup.path("installedPath").asText(), observed = setup.path("installedApkSha256").asText();
+        String requested = setup.path("requestedApkSha256").asText();
+        if (!path.startsWith("/") || !path.endsWith(".apk") || path.contains("\n") || path.contains("\r")
+                || !observed.matches("(?i)[0-9a-f]{64}") || !requested.matches("(?i)[0-9a-f]{64}")
+                || !observed.equalsIgnoreCase(requested))
+            throw new IllegalArgumentException("Missing or inconsistent installed APK identity");
+        return path + "; SHA-256=" + observed.toLowerCase(java.util.Locale.ROOT);
+    }
+
+    @FunctionalInterface interface TextObservation { java.util.List<String> read() throws Exception; }
+    @FunctionalInterface interface Reveal { void show(String label) throws Exception; }
+
+    static String visibleLabel(TextObservation observation, Reveal reveal, String requested) throws Exception {
+        String actual = matchingLabel(observation.read(), requested);
+        if (actual == null) {
+            reveal.show(requested);
+            actual = matchingLabel(observation.read(), requested);
+        }
+        if (actual == null) throw new IllegalStateException("No visible control: " + requested);
+        return actual;
+    }
+
+    private static String matchingLabel(java.util.List<String> texts, String requested) {
+        return texts.stream().filter(text -> text.equalsIgnoreCase(requested)).findFirst().orElse(null);
+    }
+
     static void lease(Path path, String id, String serial) throws IOException {
         if(id==null||id.isBlank()||serial==null||serial.isBlank())
             throw new IllegalArgumentException("Expected device reservation identity is missing");

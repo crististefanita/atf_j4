@@ -32,6 +32,7 @@ Fereastra exclude barele sistemului și decupajul înaintea aranjării. Această
 | Zonă | Responsabilitate și sursă |
 |---|---|
 | Rute și ecrane | [AppNavigation](navigation/AppNavigation.java) gestionează ruta și dialogurile curente; [screens](screens/) compune paginile, iar [ScreenViews](screens/ScreenViews.java) construiește widgeturile comune. |
+| Schimbarea ferestrei | [PresentationRefresh](presentation/PresentationRefresh.java) grupează cererile de refacere și invalidează callback-urile unei prezentări înlocuite; coordonatorul citește geometria curentă la livrare. |
 | Fereastră Android | [WindowContent](window/WindowContent.java) aplică protecția nativă și măsoară spațiul util; [WindowPadding](window/WindowPadding.java) păstrează baza imuabilă. |
 | Masă și licitare | [GameBoardLayout](table/GameBoardLayout.java), [TableGeometry](table/TableGeometry.java) și [BidGridMetrics](bidding/BidGridMetrics.java) măsoară locurile și regiunea centrală. |
 | Nume și tură | [PlayerSeatView](seat/PlayerSeatView.java) măsoară textul acțiunii deasupra chenarului; [PlayerSeatMetrics](seat/PlayerSeatMetrics.java) rezervă regiunile fără suprapuneri. |
@@ -75,6 +76,8 @@ Punctele sunt derivate de domeniu din soldurile istoricului. Levatele și licita
 [Contractul istoricului](../../../../../../../../docs/game/ATF_ScoreHistory.md) descrie migrarea prefixului necunoscut, conservarea levatelor și măsurarea coloanelor compacte.
 
 - [ScoreHistoryMeasure](score/ScoreHistoryMeasure.java) agregă lățimile folosind furnizori de măsurători injectați; vederea Android deține fonturile și randarea.
+- [HistoryViewport](score/layout/HistoryViewport.java) rezervă antetele și legenda măsurate înaintea rândurilor. `ScoreHistoryView` compune un container vertical: coloanele se derulează orizontal, iar legenda se încadrează separat în lățimea dialogului și rămâne fixă.
+- Legenda folosește aceleași retrageri laterale ca tabelul. Spațiul pentru rânduri se recalculează din măsurătorile curente, fără o înălțime memorată din profilul anterior.
 - Componenta verifică politica asupra tuturor celulelor, iar [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aplică minimele și protecția împotriva depășirilor numerice.
 
 ## Profil și clasamente
@@ -125,6 +128,10 @@ flowchart LR
 
 [AppNavigation](navigation/AppNavigation.java) identifică fiecare dialog prin proprietar și generația rutei. Dialogurile suprapuse păstrează suspendarea până la ultima închidere; o notificare repetată, străină sau întârziată nu reia jocul și nu închide dialogul unei alte rute.
 
+- **Suspendare:** schimbarea rutei și deschiderea unui dialog invocă portul comun.
+- **Reluare:** închiderea ultimului dialog curent solicită prezentarea inclusiv la tura omului.
+- **Suprapuneri:** meniul mesei folosește același contract, iar revenirea din fundal respectă dialogurile încă deschise.
+
 [ScreenViews](screens/ScreenViews.java) păstrează textele, dimensiunile, stilurile și etichetele controalelor. Stocarea, deciziile și aplicarea cărților rămân în coordonatorii lor.
 
 </details>
@@ -134,17 +141,25 @@ flowchart LR
 
 ## Colectarea levatei câștigate
 
-Motorul stabilește câștigătorul și scorul înaintea efectului vizual. Pauza levatei păstrează toate cărțile vizibile, iar ultimele 500 ms din intervalul de 1,5 secunde le deplasează și le micșorează spre centrul măsurat al locului câștigătorului.
+Motorul stabilește câștigătorul și scorul înaintea efectului vizual. Pauza levatei folosește 1,5 secunde de timp vizibil, iar ultimele 500 ms deplasează și micșorează cărțile spre centrul măsurat al locului câștigătorului.
 
 | Componentă | Contract |
 |---|---|
-| [CompletedTrickPause](lifecycle/CompletedTrickPause.java) | Fereastră unică per levată și sesiune; o sesiune nouă, chiar cu observație egală, primește identitate proprie. Pauza precedă inclusiv pagina de scor a ultimei levate. |
+| [TrickCollectionRequest](animation/TrickCollectionRequest.java) | Acceptă numai levata publică completă, cu toate locurile distincte, câștigătorul motorului și aceleași cărți la sfârșitul istoricului. O observație parțială ori depășită nu pornește colectarea. |
+| [CompletedTrickPause](lifecycle/CompletedTrickPause.java) | Fereastră unică per levată și sesiune; suspendarea conservă timpul rămas, fără reluarea unei levate expirate. Reluarea precedă inclusiv pagina scorului ultimei levate din partidă. |
 | [TrickCollectionMotion](animation/TrickCollectionMotion.java) | Model pur pentru întârziere, durată, translație, micșorare și transparență. Întârzierea layout-ului consumă timpul disponibil; nu extinde pauza. |
-| [TrickCollectionAnimator](animation/TrickCollectionAnimator.java) | Măsoară cărțile și locul câștigătorului în același sistem de coordonate. Detașarea mesei sau suspendarea automatizării anulează efectul; containerele intermediare permit deplasarea în afara regiunii inițiale a cărții. |
+| [TrickCollectionRun](animation/TrickCollectionRun.java) | Deține observarea, pornirea unică și curățarea scenei prin porturi. Cadrele depășite nu se aplică după anulare; erorile curățării nu înlocuiesc cauza inițială. |
+| [TrickCollectionAnimator](animation/TrickCollectionAnimator.java) | Leagă coordonatorul testabil de adaptorul Android al măsurării și animației. Detașarea sau schimbarea geometriei anulează scena; anularea restaurează transformările și regulile de clipping capturate. |
 | [GameScreen](screens/GameScreen.java) | Înlocuirea ecranului anulează efectul anterior; interacțiunea cu mâna rămâne suspendată până la expirarea pauzei. Fixture-urile statice păstrează afișarea fără animație. |
 
 - [Componentele mișcării](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java) confruntă capetele traiectoriei pentru toate locurile la 3–6 jucători, progresul și timpul rămas.
 - [Componentele proprietarului levatei](../../../../../test/java/ro/whistlab/app/lifecycle/CompletedTrickOwnershipComponentTest.java) folosesc câștigătorul calculat de motor și verifică lipsa mutațiilor, fereastra finală și o sesiune nouă cu stare egală.
+- [Componentele reluării](../../../../../test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseResumeComponentTest.java) verifică bugetul de timp vizibil, suspendări repetate și ultima levată a unor partide legale încheiate.
+- [Componentele coordonatorului](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionRunComponentTest.java) folosesc evenimente controlate pentru layout întârziat, finalizare sincronă și callback-uri livrate după anulare. [Compoziția fluxului](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionFlowComponentTest.java) conectează navigarea, timpul, scena și motorul real fără interfață.
+- Timpul suspendat de `onPause`, navigare sau dialoguri nu consumă bugetul vizibil. La reluare, scena se reconstruiește din timpul rămas; un dialog închis în fundal nu pornește animația înaintea revenirii în prim-plan.
+- Schimbarea geometriei anulează scena măsurată înaintea refacerii. [PresentationRefresh](presentation/PresentationRefresh.java) grupează notificările consecutive, conservă bugetul suspendat și permite randarea numai pe ruta jocului, în prim-plan și fără dialoguri deschise. Navigarea sau o reluare explicită invalidează cererile vechi din coadă.
+- [Componentele redimensionării](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionResizeComponentTest.java) combină motorul, timpul și navigarea reale cu viewport-uri și evenimente controlate: 3–6 locuri, fiecare câștigător, măsurare întârziată, dialoguri suprapuse și ultima levată. [Componentele refacerii](../../../../../test/java/ro/whistlab/app/presentation/PresentationRefreshComponentTest.java) verifică gruparea, reentrările și cauzele erorilor fără ceas sau coadă Android.
+- Activitatea tratează notificările `orientation` și `screenSize`, păstrând politica portret din manifest. Geometria peisaj din componente califică refacerea și ordinea evenimentelor; nu declară acceptanță nativă pentru un mod de orientare nou.
 - Dacă animațiile sunt dezactivate pe API 26+, cărțile păstrează afișarea statică în pauză. Modelul de componentă nu califică randarea, clipping-ul sau preferințele sistemului pe dispozitiv.
 
 ## Comenzi, salvare și erori

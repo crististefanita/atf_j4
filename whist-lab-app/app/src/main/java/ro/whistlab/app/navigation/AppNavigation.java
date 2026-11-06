@@ -22,6 +22,15 @@ public final class AppNavigation {
     private long route;
     private long nextDialog;
     private final Set<Long> dialogs = new HashSet<>();
+    private final Runnable suspend;
+    private final Runnable resume;
+
+    public AppNavigation() { this(() -> { }, () -> { }); }
+
+    public AppNavigation(Runnable suspend, Runnable resume) {
+        this.suspend = Objects.requireNonNull(suspend);
+        this.resume = Objects.requireNonNull(resume);
+    }
 
     public Screen screen() { return screen; }
     public boolean gameVisible() { return screen == Screen.GAME; }
@@ -29,12 +38,16 @@ public final class AppNavigation {
     public boolean backReturnsHome() { return screen != Screen.HOME; }
 
     public void show(Screen target) {
-        screen = Objects.requireNonNull(target);
+        Objects.requireNonNull(target);
+        if (screen == Screen.GAME && target == screen) return;
+        suspend.run();
+        screen = target;
         route++;
         dialogs.clear();
     }
 
     public Dialog openDialog() {
+        suspend.run();
         long id = ++nextDialog;
         dialogs.add(id);
         return new Dialog(this, route, id);
@@ -43,7 +56,9 @@ public final class AppNavigation {
     /** True only for the last current dialog on a game screen, once. */
     public boolean dismiss(Dialog dialog) {
         Objects.requireNonNull(dialog);
-        return dialog.owner == this && dialog.route == route && dialogs.remove(dialog.id)
+        boolean lastGameDialog = dialog.owner == this && dialog.route == route && dialogs.remove(dialog.id)
                 && dialogs.isEmpty() && gameVisible();
+        if (lastGameDialog) resume.run();
+        return lastGameDialog;
     }
 }

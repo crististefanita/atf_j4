@@ -1,0 +1,24 @@
+{
+  "capturedUtc": "2026-11-05T21:44:17.185062+00:00",
+  "changedPaths": [
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/AndroidCollectionSurface.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionAnimator.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionMotion.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRequest.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRun.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/lifecycle/CompletedTrickPause.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java",
+    "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/CollectionFixtures.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/ControlledCollectionSurface.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionCleanupComponentTest.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionFlowComponentTest.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionRequestComponentTest.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionRunComponentTest.java",
+    "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseResumeComponentTest.java"
+  ],
+  "policy": "Final build from this source snapshot; later unrelated development requires its own qualification"
+}

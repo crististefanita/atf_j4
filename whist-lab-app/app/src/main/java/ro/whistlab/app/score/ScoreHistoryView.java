@@ -11,19 +11,27 @@ import android.widget.TextView;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
+import ro.whistlab.app.score.layout.HistoryViewport;
 
 /** All players share a chronological table; the header stays above the vertical viewport. */
-public final class ScoreHistoryView extends HorizontalScrollView {
+public final class ScoreHistoryView extends LinearLayout {
+    private final HorizontalScrollView columns;
+    private final LinearLayout table;
+    private final ScrollView body;
+
     public ScoreHistoryView(Context context, GameSession.Snapshot state, ScoreHistory history, WhistUiText copy) {
         super(context);
         ScoreHistoryTable model = ScoreHistoryTable.forMatch(state, history, copy);
         ScoreHistoryGridMetrics grid = measuredGrid(model, copy);
         setTag("score-history-table");
-        setFillViewport(false);
-        LinearLayout table = new LinearLayout(context);
+        setOrientation(VERTICAL);
+        columns = new HorizontalScrollView(context);
+        columns.setFillViewport(false);
+        addView(columns, new LayoutParams(-1, -2));
+        table = new LinearLayout(context);
         table.setOrientation(LinearLayout.VERTICAL);
         table.setPadding(grid.outerPaddingPx(), dp(6), grid.outerPaddingPx(), dp(4));
-        addView(table, new LayoutParams(grid.tableWidthPx(), -2));
+        columns.addView(table, new HorizontalScrollView.LayoutParams(grid.tableWidthPx(), -2));
         LinearLayout names = line(0xffdfeada);
         text(names, copy.cardsHeading(), grid.handWidthPx(), true, true).setTextSize(11);
         for (String name : model.players()) {
@@ -39,7 +47,7 @@ public final class ScoreHistoryView extends HorizontalScrollView {
             text(headings, copy.historyPointsHeading(), grid.pointsWidthPx(), false, true);
         }
         table.addView(headings);
-        ScrollView scroll = new ScrollView(context);
+        body = new ScrollView(context);
         LinearLayout rows = new LinearLayout(context);
         rows.setOrientation(LinearLayout.VERTICAL);
         for (var row : model.rows()) {
@@ -61,16 +69,33 @@ public final class ScoreHistoryView extends HorizontalScrollView {
             }
             rows.addView(line);
         }
-        scroll.addView(rows);
-        int viewport = Math.min(dp(380), Math.max(dp(80), getResources().getDisplayMetrics().heightPixels - dp(260)));
-        table.addView(scroll, new LinearLayout.LayoutParams(-1, viewport));
+        body.addView(rows);
+        table.addView(body, new LayoutParams(-1, dp(380)));
         TextView legend = new TextView(context);
         legend.setText(copy.historyLegend());
         legend.setTextSize(11);
         legend.setTextColor(0xff52634f);
-        legend.setPadding(dp(1), dp(8), dp(1), dp(4));
+        int captionInset = grid.outerPaddingPx() + dp(1);
+        legend.setPadding(captionInset, dp(8), captionInset, dp(4));
         legend.setSingleLine(false);
-        table.addView(legend, new LinearLayout.LayoutParams(-1, -2));
+        addView(legend, new LayoutParams(-1, -2));
+    }
+
+    @Override protected void onMeasure(int widthSpec, int heightSpec) {
+        int preferred = dp(380);
+        bodyHeight(preferred);
+        super.onMeasure(widthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        if (MeasureSpec.getMode(heightSpec) == MeasureSpec.UNSPECIFIED) return;
+        int fitted = HistoryViewport.bodyHeight(preferred, getMeasuredHeight(), MeasureSpec.getSize(heightSpec));
+        if (fitted != preferred) bodyHeight(fitted);
+        super.onMeasure(widthSpec, heightSpec);
+    }
+
+    private void bodyHeight(int height) {
+        body.getLayoutParams().height = height;
+        body.forceLayout();
+        table.forceLayout();
+        columns.forceLayout();
     }
 
     private ScoreHistoryGridMetrics measuredGrid(ScoreHistoryTable model, WhistUiText copy) {

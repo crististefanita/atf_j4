@@ -3,11 +3,56 @@ package atf.android.e2e.records;
 import atf.android.e2e.activation.AndroidE2eTest;
 import atf.android.e2e.support.AndroidUiFlowReportPublisher;
 import atf.reporting.contract.AtfReportStatus;
+import atf.reporting.contract.AtfAssertion;
+import atf.android.e2e.records.legend.HistoryLegendAudit;
+import atf.android.e2e.records.legend.LegendProfiles;
+import java.time.Duration;
+import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 /** One real Android journey; controlled preconditions and actual card/UI actions remain separately identified. */
 @AndroidE2eTest
 public class WhistRecordsE2eTest {
+    @Test void historyLegendWrapsWithinTheDialogAndStaysFixedWhileColumnsScroll() throws Throwable {
+        var cases = LegendProfiles.parse(System.getProperty(LegendProfiles.PROPERTY));
+        execute(new RecordsContext("history-legend-viewport",
+                "Whist Lab — legendă întreagă și fixă la text mărit", "history-legend"), c -> {
+            c.phase("SETUP — preserved data and identified legend build");
+            c.sandbox();
+            var fixture = RecordsFixtures.history();
+            for (var entry : cases) {
+                var profile = entry.profile();boolean romanian = entry.romanian();String scope = entry.id();
+                c.phase("SETUP — " + scope);
+                c.command("Set legend resolution", entry.resolution(), "shell", "wm", "size", entry.resolution());
+                c.command("Set legend density", "" + profile.density(), "shell", "wm", "density", "" + profile.density());
+                c.command("Set legend font scale", "" + entry.fontScale(), "shell", "settings", "put", "system", "font_scale", "" + entry.fontScale());
+                c.inject(fixture, "legend-" + scope);
+                c.home(romanian ? "RO" : "EN");
+                c.tap(romanian ? "Reia partida" : "Resume game");
+                c.ui.awaitText(romanian ? "Partidă încheiată" : "Game complete", Duration.ofSeconds(15));
+                c.tap(romanian ? "Istoricul scorului" : "Score history");
+                String caption = romanian
+                        ? "L Licitat · P Punctele mâinii\nTăietură oblică: contract ratat · Subliniere: bonus sau penalizare de serie"
+                        : "B Bid · P Hand points\nDiagonal slash: missed contract · Underline: series bonus or penalty";
+                var before = HistoryLegendAudit.inspect(c.ui.dump(), caption, romanian ? "Închide" : "Close", "HistUser");
+                c.phase("TEST BODY — " + scope);
+                var opening = new ArrayList<>(before.checks());
+                int minimumRow = entry.minimumRowPixels(), rowSpace = before.rows().bottom() - before.rows().top();
+                opening.add(new AtfAssertion("At least one whole score row remains visible", ">= " + minimumRow + " px",
+                        rowSpace + " px", rowSpace >= minimumRow));
+                c.check("Whole fixed legend before scrolling " + scope, opening.toArray(AtfAssertion[]::new));
+                String afterXml = c.swipe("android.widget.HorizontalScrollView", true, true);
+                var after = HistoryLegendAudit.inspect(afterXml, caption, romanian ? "Închide" : "Close", "HistUser");
+                var checks = new ArrayList<>(after.checks());
+                checks.add(HistoryLegendAudit.check("Legend keeps the same screen rectangle", before.legend(), after.legend()));
+                checks.add(RecordsContext.equal("All 24 settled hands and totals remain unchanged", fixture.json().path("scores"), c.state().path("scores")));
+                if (entry.requiresColumnMovement())
+                    checks.add(HistoryLegendAudit.check("Player columns actually moved", true, !before.firstHeading().equals(after.firstHeading())));
+                c.check("Fixed legend after column scrolling " + scope, checks.toArray(AtfAssertion[]::new));
+            }
+        });
+    }
+
     @Test void releaseHistoryResumeKeepsTheCompletedLedgerAndBothLanguages() throws Throwable {
         execute(new RecordsContext("release-history-resume",
                 "Whist Lab — reluarea istoricului pe binarul curent", "history-release-sanity"), c -> {
@@ -170,7 +215,7 @@ public class WhistRecordsE2eTest {
             c.evidence.add(c.trace.manifest());
             try {
                 AndroidUiFlowReportPublisher.publish(c.output.resolve("final-extent-report.html"),
-                        c.setup.path("installedPath").asText()+"; SHA-256="+c.setup.path("installedApkSha256").asText(),
+                        RecordsRunContract.installedApk(c.setup),
                         c.setup.path("serial").asText(),c.setup.path("api").asText(),
                         "Declared journey: "+c.trace.name()+". Android API "+c.setup.path("api").asText()
                                 +"; viewports are recorded with each setup action. Full-history and final-card preconditions are prepared by the JVM engine;"

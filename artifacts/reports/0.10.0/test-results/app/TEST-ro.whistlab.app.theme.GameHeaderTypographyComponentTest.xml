@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ro.whistlab.app.theme.GameHeaderTypographyComponentTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-05T20:17:55.377Z" hostname="DESKTOP-BLFSO18" time="0.001">
-  <properties/>
-  <testcase name="theSummaryChangePreservesTheOtherHeaderRoles" classname="ro.whistlab.app.theme.GameHeaderTypographyComponentTest" time="0.0"/>
-  <testcase name="bidSummaryGrowsByExactlyThirtyPercentWithoutWholeSpRounding" classname="ro.whistlab.app.theme.GameHeaderTypographyComponentTest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

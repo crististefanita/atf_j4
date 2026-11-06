@@ -46,6 +46,7 @@ final class RecordsContext {
         output=Path.of(System.getProperty("atf.android.artifacts")).resolve(folder);
         Files.createDirectories(output);
         setup = (ObjectNode)RecordsFixtures.JSON.readTree(run.resolve("setup-install.json").toFile());
+        RecordsRunContract.installedApk(setup);
         originalManifest = RecordsFixtures.JSON.readTree(run.resolve("app-data-before.json").toFile());
         RecordsRunContract.manifest(originalManifest);
         leaseId = RecordsFixtures.JSON.readTree(run.resolve("device-lease.json").toFile()).path("leaseId").asText();
@@ -153,9 +154,7 @@ final class RecordsContext {
         command("Enter short player name",value,"shell","input","text",value);
     }
     void tap(String label) throws Exception {
-        if(ui.texts(ui.dump()).stream().noneMatch(text -> text.equalsIgnoreCase(label)))ui.revealText(label);
-        String actual=ui.texts(ui.dump()).stream().filter(text -> text.equalsIgnoreCase(label)).findFirst()
-                .orElseThrow(() -> new IllegalStateException("No visible control: "+label));
+        String actual=RecordsRunContract.visibleLabel(() -> ui.texts(ui.dump()),ui::revealText,label);
         ui.tapText(actual);
     }
     String swipe(String className, boolean horizontal, boolean forward) throws Exception {

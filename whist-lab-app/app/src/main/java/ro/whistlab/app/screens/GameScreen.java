@@ -32,7 +32,8 @@ public final class GameScreen {
     private final ScreenViews views;
     private final Activity activity;
     public GameScreen(ScreenViews views) { this.views = views; this.activity = views.activity(); }
-    public record MenuActions(Runnable scoreboard, Runnable settings, Runnable scores, Runnable home) { }
+    public record MenuActions(Runnable scoreboard, Runnable settings, Runnable scores, Runnable home,
+                              java.util.function.Supplier<Runnable> opened) { }
     public void bidding(WhistUiText copy, GameSession.Snapshot state, List<Integer> choices, int selectedBid,
             java.util.function.IntConsumer selected, Runnable submitted, MenuActions actions) {
         cancelCollection();
@@ -43,7 +44,7 @@ public final class GameScreen {
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
-    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick, boolean pauseActive, long remainingMillis, java.util.function.Consumer<Card> selected, MenuActions actions) {
+    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick, boolean pauseActive, long remainingMillis, Runnable resized, java.util.function.Consumer<Card> selected, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = views.gamePage();
@@ -58,7 +59,7 @@ public final class GameScreen {
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        if (pauseActive && remainingMillis > 0) table.collectCompletedTrick(remainingMillis);
+        if (pauseActive && remainingMillis > 0) table.collectCompletedTrick(remainingMillis, resized);
     }
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
             boolean currentPlayerHighlighted, WhistUiText copy, MenuActions actions) {
@@ -121,6 +122,8 @@ public final class GameScreen {
             actions.home().run();
             return true;
         });
+        Runnable dismissed = actions.opened().get();
+        menu.setOnDismissListener(ignored -> dismissed.run());
         menu.show();
     }
 }

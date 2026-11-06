@@ -1,11 +1,14 @@
-# Rapoartele release-ului curent
+# Ultimele rezultate relevante
 
 ## Pe scurt
 
-Păstrăm numai ultimele rezultate relevante care însoțesc APK-ul local. Candidații și edițiile înlocuite sunt arhivate în exterior, cu integritatea verificată.
+Aici păstrăm numai dovezile relevante pentru APK-ul local curent: rapoarte Extent, rezultate, capturi și proveniență. Build-urile și istoricul încercărilor sunt externe.
 
-- [0.10.0 — dosar de verificare și predare](0.10.0/README.md): **PREPARED**, fără publicare.
-- [Strategia generică](../../docs/testing/README.md) descrie selecția testelor, independent de versiune.
-- [Procesul și retenția](../../docs/platform/ATF_ReleaseRetention.md) definesc înlocuirea și recuperarea.
+## Versiunea curentă
 
-[Catalogul artefactelor](../README.md)
+- [0.10.1 — legendă, componente și sanity Android](0.10.1/README.md).
+- [Catalogul livrării](../README.md) · [Indexul structurat](../index.json).
+
+## Responsabilitate
+
+Rezultatele susțin binarul identificat, cu selecția și limitele declarate. [Strategia generică](../../docs/testing/README.md) rămâne independentă de versiune; [retenția](../../docs/platform/ATF_ReleaseRetention.md) definește înlocuirea și recuperarea.

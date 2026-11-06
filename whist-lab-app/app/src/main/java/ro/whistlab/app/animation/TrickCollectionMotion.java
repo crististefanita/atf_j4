@@ -21,7 +21,7 @@ public final class TrickCollectionMotion {
         long remaining = Math.max(0, remainingMillis - layoutDelayMillis);
         long duration = Math.min(COLLECT_MILLIS, remaining);
         return new Timing(Math.max(0, remaining - COLLECT_MILLIS), duration,
-                1f - duration / (float) COLLECT_MILLIS);
+                (COLLECT_MILLIS - duration) / (float) COLLECT_MILLIS);
     }
 
     public static Frame frame(Point source, Point target, float fraction) {

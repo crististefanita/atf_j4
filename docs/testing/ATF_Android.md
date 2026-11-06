@@ -75,6 +75,7 @@ Datele pregătite de fixture-uri sau replay-uri diagnostice sunt excluse din cla
 | Precondiții | [Componentele fixture-urilor](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java) se execută fără dispozitiv. |
 | Lizibilitate | Caz JUnit distinct pentru tabele, selectabil fără repetarea numelui și a seriilor; celula completă observată devine reper pentru derulare. Un nod tăiat nu confirmă lizibilitatea. |
 | Rezervare | [Contractul sesiunii](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java) verifică proprietarul înaintea fiecărei comenzi de transport. |
+| APK | `setup-install.json` păstrează `installedPath`, hash-ul observat `installedApkSha256` și hash-ul cerut `requestedApkSha256`; lipsa sau neconcordanța oprește contextul înaintea comenzilor Android. |
 | Comparații | JSON-ul întreg are amprentă canonică compactă; fiecare poziție a clasamentului are comparație separată și date complete de diagnostic. |
 
 Aceste scenarii nu califică o partidă întreagă jucată prin interfață și nici recuperarea fișierelor corupte.
@@ -83,6 +84,21 @@ Selecția `historyPresentationAcrossDeclaredPortraitProfiles` reunește masa, ac
 
 - **Capturi:** fazele folosesc nume explicite pentru profil și scara textului. Repetările aceluiași profil au directoare distincte, păstrând imaginile originale ale fiecărui checkpoint.
 - **Diagnostic:** calculul licitațiilor AI și avansarea cărților AI se opresc separat, numai într-un APK debug. Starea înghețată verifică afișarea și actorul; calitatea și viteza deciziei au acceptanță separată.
+
+## Sanity-ul legendei istoricului
+
+Selecția `WhistRecordsE2eTest#historyLegendWrapsWithinTheDialogAndStaysFixedWhileColumnsScroll` verifică legenda fixă în RO/EN la scările 1,0 și 1,5 pe profilul compact, plus reproducerea EN la 1,3 pe profilul înalt. Folosește aceeași precondiție de 24 de mâini jucate de motorul JVM, pe un APK identificat.
+
+[LegendProfiles](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfiles.java) deține planul tipizat.
+
+- **Selecție:** proprietatea `whist.history.legend.cases` poate restrânge rularea, de exemplu `720x1280@360:1.5:RO`.
+- **Format:** `WIDTHxHEIGHT@DPI:SCALE:EN|RO`, separat prin virgulă; maximum opt cazuri unice, scale 1,0–1,5.
+- **Refuz:** configurația invalidă este respinsă înaintea construirii contextului Android.
+
+- Fiecare navigare sau derulare are observație proaspătă; raportul păstrează acțiunile, comparațiile și PNG-ul original.
+- Oracolul verifică proprietatea legendei în afara coloanelor, încadrarea între rânduri și închidere și stabilitatea ramei după derulare. La text 1,5 trebuie observată și deplasarea reală a coloanelor.
+- Registrul complet rămâne neschimbat. Revizia PNG confirmă împărțirea și sfârșitul explicației; testul nu pretinde o partidă completă jucată prin UI.
+- Validarea planului, duplicatele, limitele și interpretarea XML se califică în componente. Sanity-ul restrâns păstrează fontul nativ, derularea reală și PNG-ul; acestea nu sunt înlocuite cu randare simulată.
 
 ## Păstrarea rezultatelor
 
