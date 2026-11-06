@@ -69,7 +69,11 @@ class AndroidComponentReportContractTest {
                 && org.jsoup.Jsoup.parse(html).text().contains("Full comparison value — ACTUAL"));
         assertFalse(org.jsoup.Jsoup.parse(html).select("script").stream()
                 .anyMatch(script -> script.data().trim().equals("window.COMPONENT_RAW_INPUT_CANARY = 1;")), "Fixture markup stays text");
-        assertTrue(summary.getContainersFailedCount() == 0, "Publication must close successfully");
+        assertTrue(summary.getContainersFailedCount() == 0, () -> {
+            var detail = new java.io.StringWriter();
+            for (var failure : summary.getFailures()) failure.getException().printStackTrace(new java.io.PrintWriter(detail));
+            return "Publication must close successfully\n" + detail;
+        });
     }
 
     static class Passing {

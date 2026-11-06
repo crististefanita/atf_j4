@@ -73,7 +73,8 @@ final class JavaTestDeclarations {
                 @Override public CharSequence getCharContent(boolean ignoreEncodingErrors) { return source; }
             };
             try {
-                var task = (JavacTask) compiler.getTask(null, manager, diagnostics, List.of("-proc:none"), null, List.of(input));
+                var task = (JavacTask) compiler.getTask(null, manager, diagnostics,
+                        List.of("-proc:none", "--class-path", "", "--processor-path", ""), null, List.of(input));
                 CompilationUnitTree tree = task.parse().iterator().next();
                 var errors = diagnostics.getDiagnostics().stream().filter(value -> value.getKind() == Diagnostic.Kind.ERROR).toList();
                 if (!errors.isEmpty()) {

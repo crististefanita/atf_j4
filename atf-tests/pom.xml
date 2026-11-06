@@ -7,7 +7,7 @@
     <dependencies>
         <dependency><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></dependency>
         <dependency><groupId>org.jsoup</groupId><artifactId>jsoup</artifactId><version>1.23.2</version></dependency>
-        <dependency><groupId>atf.api</groupId><artifactId>atf-test-kit</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>atf.api</groupId><artifactId>atf-test-kit</artifactId><version>${atf.testkit.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-core</artifactId><version>${atf.core.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-test-android</artifactId><version>${project.version}</version></dependency>
         <dependency><groupId>atf.api</groupId><artifactId>atf-reporting</artifactId><version>${atf.reporting.version}</version></dependency>

@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "scope": "Current 0.10.2 release links and distribution; no new APK build or Android execution",
+  "recordedUtc": "2026-11-06T15:32:04.260Z",
+  "currentCandidate": {
+    "version": "0.10.2",
+    "publication": "PREPARED",
+    "bytes": 803960,
+    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a",
+    "localZipCrc": "PASS"
+  },
+  "currentDownload": {
+    "state": "FAIL",
+    "tag": "v0.10.2",
+    "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.10.2/WhistLab-0.10.2.apk",
+    "authenticatedHttp": 404,
+    "channel": "Authenticated GitHub API, not browser",
+    "reason": "Current release is absent; no older-version fallback",
+    "report": "distribution/current-download.html"
+  },
+  "executions": [
+    {
+      "id": "current-offline",
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "owner": "atf.tests.governance.documentation.DocumentationProseGovernanceTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.documentation.DocumentationStyleGovernanceTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.documentation.release.download.ApkDownloadComponentTest",
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.documentation.release.download.DownloadSelectionComponentTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest",
+          "tests": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.source.AtfSourceQualityGovernanceTest",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "owner": "atf.tests.governance.source.PackageCohesionGovernanceTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ]
+    },
+    {
+      "id": "live-suite-ownership",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "owner": "atf.tests.governance.suites.SuiteOwnershipGovernanceTest",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ]
+    },
+    {
+      "id": "current-network",
+      "tests": 3,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0,
+      "passed": 2,
+      "scope": "Repeated 2 identity component checks plus one failed current 0.10.2 download; does not qualify online handoff"
+    }
+  ],
+  "historicalModel": {
+    "version": "1.9.2",
+    "state": "PASS",
+    "bytes": 775288,
+    "sha256": "6a4a50d895256c94254380083dffbb2fa3f2415ba92ba5f2133d8daf8926e81e",
+    "zipCrc": "PASS",
+    "channel": "Authenticated GitHub API, not browser",
+    "qualifiesCurrentRelease": false
+  },
+  "reports": [
+    {
+      "file": "distribution/readme-release-policy.html",
+      "owner": "ReleaseArtifactLayoutGovernanceTest",
+      "junitInvocations": 24,
+      "role": "CURRENT",
+      "sha256": "78232becc309638aa959e124c3fc50d085568feec045501d8895c77bcf72f074"
+    },
+    {
+      "file": "distribution/download-components.html",
+      "owner": "ApkDownloadComponentTest",
+      "junitInvocations": 13,
+      "role": "CURRENT",
+      "sha256": "07e6dfb64180dd6f6df88c11f665264653321e5377dc361676e7b93edff12e8f"
+    },
+    {
+      "file": "distribution/download-selection.html",
+      "owner": "DownloadSelectionComponentTest",
+      "junitInvocations": 2,
+      "role": "CURRENT",
+      "sha256": "097cd5f1524aa657a87e381bd2a43856276352779c0a8d51a0da5ae0b3524696"
+    },
+    {
+      "file": "distribution/current-download.html",
+      "owner": "PublishedApkDownloadAcceptanceTest",
+      "junitInvocations": 1,
+      "role": "CURRENT",
+      "status": "FAIL — HTTP 404",
+      "sha256": "36dff3d3b19193c1667abf627334e9d550ac1fc753454ee7a62ed8ebd1d1b667"
+    },
+    {
+      "file": "distribution/published-1.9.2-reference.html",
+      "owner": "PublishedApkDownloadAcceptanceTest",
+      "junitInvocations": 1,
+      "role": "HISTORICAL MODEL ONLY",
+      "status": "PASS — 1.9.2, not current",
+      "sha256": "757967794ae897051000a5be62cb5a0da9c7974cf4f568aa7f481d0f21736b29"
+    }
+  ],
+  "qualifiedSourceInputs": [
+    {
+      "file": "atf-tests/src/main/java/atf/tests/distribution/ApkPayload.java",
+      "sha256": "6ad878873b4cba9d367f3c1f35ef0b2aaa02bdd012a52d682561a62a8e2d84a4"
+    },
+    {
+      "file": "atf-tests/src/main/java/atf/tests/distribution/ApkDownloadTarget.java",
+      "sha256": "34638a8d275584ffe7ac72223073b7dd0b41e81abec4c3c05a68b1523efa839a"
+    },
+    {
+      "file": "atf-tests/src/main/java/atf/tests/distribution/GitHubApkDownload.java",
+      "sha256": "faefc0831a0532d592eaeffbd74c00625e118f32ffbebd8286752a3393d356b3"
+    },
+    {
+      "file": "atf-tests/src/main/java/atf/tests/distribution/ReleaseDownloadSelection.java",
+      "sha256": "0f28ba16b1642bfc7d5314b2c5e9a73760d6cc0ff51e9c775c15ecdfddb73041"
+    },
+    {
+      "file": "atf-tests/src/main/java/atf/tests/distribution/ReleasePaths.java",
+      "sha256": "2efcd9ba117f06606b491c1afdcfd603aeef494dae967657c281687afc7c4d48"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactCatalog.java",
+      "sha256": "e42f062ec85af3fbd20b54e9de70c19b478946592e5f2ae839f80edd6d5087ac"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java",
+      "sha256": "68ee730ef93c6d5212b5100d42849a840d300c4d8e7cddb9cf17e2a5e72251cf"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseCatalogPresentation.java",
+      "sha256": "45e3a043de2b275979e03e78e19281eca61c63cea2c64de40f643784e74a0129"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ApkIntegrity.java",
+      "sha256": "76175ee5e62b05f5872a0001bb8dd8e7a2d7ed5a5e7e77568a0ee5252b1f8c2d"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseFiles.java",
+      "sha256": "4a5ab284e584b97bfaf1b552418a345161dcf6ae234716c1e7a651d3199b4706"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java",
+      "sha256": "0a0c4a9b27f19958d3aaf5c9b6da4d6d626fce89e8fb51b937e8e1bf445de41f"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/download/DownloadSelectionComponentTest.java",
+      "sha256": "c31cb1f8f5087d2c58f6b5ebe9c04efb35f8d87b3527bfba53a71e4b7a47d645"
+    },
+    {
+      "file": "atf-tests/src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java",
+      "sha256": "c70bab07f68b424278d75bfce98ec57fc4d45650724c8b7c45d9b6e3dba736c2"
+    }
+  ],
+  "reactorModules": [
+    "atf-validation",
+    "atf-test-android",
+    "atf-tests"
+  ],
+  "kit": "atf-test-kit:1.0.0-k1 (JAR)",
+  "browserDownloadVerified": false,
+  "currentCandidatePublished": false,
+  "androidReexecuted": false,
+  "commitPerformed": false,
+  "pushPerformed": false,
+  "remoteMutationsPerformed": false,
+  "originalApkUniqueInvocationCount": 630,
+  "browserRenderingReview": [
+    {
+      "report": "distribution/download-selection.html",
+      "owner": "DownloadSelectionComponentTest",
+      "sha256": "097cd5f1524aa657a87e381bd2a43856276352779c0a8d51a0da5ae0b3524696",
+      "lastComparison": "assertEquals · DownloadSelectionComponentTest.java:36 · No numeric truncation of the expected byte count\tRELEASE-DOWNLOAD-NUMBER-apkBytes\tRELEASE-DOWNLOAD-NUMBER-apkBytes\t✅",
+      "assertionGroupReopened": true,
+      "scope": "Declared owner, last assertion table, detached Chromium; external requests blocked",
+      "status": "PASS"
+    },
+    {
+      "report": "distribution/download-components.html",
+      "owner": "ApkDownloadComponentTest",
+      "sha256": "07e6dfb64180dd6f6df88c11f665264653321e5377dc361676e7b93edff12e8f",
+      "lastComparison": "assertEquals · ApkDownloadComponentTest.java:54 · Only the API origin receives its credential\tBearer ***REDACTED***\tBearer ***REDACTED***\t✅",
+      "assertionGroupReopened": true,
+      "scope": "Declared owner, last assertion table, detached Chromium; external requests blocked",
+      "status": "PASS"
+    },
+    {
+      "report": "distribution/readme-release-policy.html",
+      "owner": "ReleaseArtifactLayoutGovernanceTest",
+      "sha256": "78232becc309638aa959e124c3fc50d085568feec045501d8895c77bcf72f074",
+      "lastComparison": "assertTrue · ReleaseArtifactLayoutGovernanceTest.java:209\ttrue\ttrue\t✅",
+      "assertionGroupReopened": true,
+      "scope": "Declared owner, last assertion table, detached Chromium; external requests blocked",
+      "status": "PASS"
+    },
+    {
+      "report": "distribution/current-download.html",
+      "owner": "PublishedApkDownloadAcceptanceTest",
+      "sha256": "36dff3d3b19193c1667abf627334e9d550ac1fc753454ee7a62ed8ebd1d1b667",
+      "scope": "Declared current version 0.10.2, expected bytes and HTTP 404 visible; FAIL retained",
+      "status": "PASS — verified rendering of the failed download; not a successful download"
+    }
+  ],
+  "liveApkInputCheck": {
+    "files": 114,
+    "changedFiles": [],
+    "bytes": 803960,
+    "sha256": "10d31fd0deddc73260768573d563a7edf7a29242c0e3fcb62ea81c1256abaa6a"
+  },
+  "finalReadOnlyChecks": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "owners": [
+      "DocumentationLinkGovernanceTest",
+      "DocumentationStyleGovernanceTest",
+      "DocumentationProseGovernanceTest",
+      "ReleaseIntegrityGovernanceTest"
+    ],
+    "scope": "Final recheck after evidence retention; documentation owners overlap current-offline, not an additional unique population"
+  }
+}

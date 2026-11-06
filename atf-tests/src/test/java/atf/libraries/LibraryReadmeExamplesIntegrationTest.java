@@ -61,6 +61,16 @@ class LibraryReadmeExamplesIntegrationTest {
         assertEquals(before, identity(), "Reporting acceptance must preserve guide and JAR identity");
     }
 
+    @Test void testKitExampleKeepsEvaluatedChecksAndTheOriginalJUnitFailure() throws Exception {
+        String checks = "var audit=new RecordedAssertions(); verifyState(audit,\"ready\");"
+                + "if(audit.checks().size()!=1 || !audit.checks().getFirst().passed()) throw new AssertionError(\"PASS lost\");"
+                + "try { verifyState(audit,\"wrong\"); throw new IllegalStateException(\"False PASS\"); }"
+                + "catch(org.opentest4j.AssertionFailedError expected) { if(!expected.getMessage().contains(\"State\")) throw expected; }"
+                + "if(audit.checks().size()!=2 || audit.checks().getLast().passed()) throw new AssertionError(\"FAIL lost\");";
+        var result = execute("TestKit", checks);
+        assertEquals(0, result.exit(), result.error());
+    }
+
     @Test void anUnknownApiMethodCannotPassTheCompilationControl() throws Exception {
         assertFalse(compile("Core", "", true), "A missing method must produce a compiler failure");
     }
@@ -84,6 +94,7 @@ class LibraryReadmeExamplesIntegrationTest {
                 + "System.setErr(new java.io.PrintStream(System.err,true,java.nio.charset.StandardCharsets.UTF_8));";
         String code = library.equals("Reporting") ? body + "\npublic static void main(String[] a) {" + outputCodec
                 + "try (var run = open(java.nio.file.Path.of(a[0]))) { publish(run, a[1].equals(\"NULL\")?null:a[1]); }}"
+                : library.equals("TestKit") ? body + "\npublic static void main(String[] a) {" + outputCodec + checks + "}"
                 : "public static void main(String[] a) throws Exception {" + outputCodec + body + checks + "}";
         code = imports + "\npublic final class ReadmeProbe {\n" + code + "\n}";
         if (corrupt) code = code.replace("JsonDocuments.read", "JsonDocuments.missingReadmeMethod");
@@ -117,7 +128,7 @@ class LibraryReadmeExamplesIntegrationTest {
         String inherited = System.getProperty("surefire.test.class.path", System.getProperty("java.class.path"));
         String dependencies = java.util.Arrays.stream(inherited.split(Pattern.quote(java.io.File.pathSeparator)))
                 .filter(entry -> !Path.of(entry).getFileName().toString()
-                        .matches("atf-(core|reporting|console|mock)-.*\\.jar"))
+                        .matches("atf-(core|reporting|console|mock|test-kit)-.*\\.jar"))
                 .collect(java.util.stream.Collectors.joining(java.io.File.pathSeparator));
         try (var files = Files.list(root().resolve("lib"))) {
             return files.filter(path -> path.toString().endsWith(".jar")).sorted().map(Path::toString)

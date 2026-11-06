@@ -37,7 +37,6 @@ Tabelul reflectă adnotările claselor executabile, inclusiv adnotările compuse
 
 | Modul | Unitar | Componentă | Integrare | E2E | Responsabilitate |
 |---|---|---|---|---|---|
-| `atf-test-kit` | Da | Da | — | — | Configurare, izolare, resurse și auditul comparațiilor. |
 | `atf-validation` | Da | Da | — | — | Reguli de validare și evaluarea contractelor publice. |
 | `atf-test-android` | Da | Da | Da | Da | Timp, ADB simulat, oracole, integrarea raportării și parcursuri Android reale. |
 | `atf-tests` | Da | Da | Da | — | Contractele adaptoarelor, binarele comune și guvernanța proiectului. |
@@ -46,7 +45,7 @@ Tabelul reflectă adnotările claselor executabile, inclusiv adnotările compuse
 
 Declarațiile sunt extrase prin parserul JDK, independent de indentare și de poziția adnotării față de modificatori. Metodele aparțin tipului care le declară, containerele `@Nested` au rol explicit, iar modulele păstrează identitatea rădăcinilor Maven; [contractul sintactic](../governance/README.md#declarațiile-testelor) delimitează această inspecție de execuția JUnit.
 
-- **Biblioteci comune:** Core, Reporting, Console și Mock sunt [biblioteci binare](../platform/README.md). Testele lor native rămân la responsabilul comun; proiectul verifică separat integrarea binarelor și adaptoarele sale.
+- **Biblioteci comune:** Core, Reporting, Console, Mock și [Test Kit](../../lib/README.TestKit.md) sunt [biblioteci binare](../platform/README.md). Testele lor native rămân la responsabilul comun; proiectul verifică separat integrarea binarelor și adaptoarele sale.
 
 | Contract reprezentativ | Sursă |
 |---|---|
@@ -65,9 +64,11 @@ Declarațiile sunt extrase prin parserul JDK, independent de indentare și de po
 | Primar | Populația completă a unui nivel dintr-un modul | Fiecare clasă executabilă are exact un proprietar primar. |
 | Focalizat | Submulțime explicită a unuia sau mai multor părinți primari | Se execută pentru diagnostic ori un scop restrâns; nu adaugă din nou cazurile în totalul primar. |
 
-[Guvernanța selecțiilor](../../atf-tests/src/test/java/atf/tests/governance/suites/SuiteOwnershipGovernanceTest.java) confruntă declarațiile reale, rolurile și selecțiile. Clasele omise, proprietarii multipli, nivelul greșit, suitele neînregistrate și selecțiile focalizate fără părinte sunt refuzate; corecția modifică intrarea, fără eliminarea testului.
+- **Acoperire:** părinții includ întreaga populație a selecției focalizate înaintea filtrelor de canal. Suita primară nu permite excluderi; filtrarea unei selecții offline păstrează proprietarul primar al canalului.
 
-Colecția de guvernanță este o selecție focalizată care traversează mai multe niveluri. Publicatoarele care consumă jurnale externe au nivel de integrare și precondiții proprii; simpla republicare nu devine componentă autonomă sau execuție Android.
+- **Guvernanță:** [controlul selecțiilor](../../atf-tests/src/test/java/atf/tests/governance/suites/SuiteOwnershipGovernanceTest.java) confruntă declarațiile, rolurile și selecțiile. Refuză clase omise, proprietari multipli, nivel greșit și selecții neînregistrate ori fără părinte; corecția modifică intrarea, fără eliminarea testului.
+
+- **Nivel:** guvernanța este o selecție focalizată care traversează mai multe niveluri. Verificările și publicatoarele care consumă jurnale externe au nivel de integrare și precondiții proprii; recitirea ori republicarea nu devine componentă autonomă sau execuție Android.
 
 ## Motorul și interfața în Gradle
 

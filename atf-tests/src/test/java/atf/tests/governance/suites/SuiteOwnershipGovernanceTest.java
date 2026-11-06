@@ -64,6 +64,19 @@ class SuiteOwnershipGovernanceTest {
                 Map.of("SelectPackages", List.of("example"), "IncludeTags", List.of("component"), "IncludeClassNamePatterns", List.of(".*")));
         AuditedAssertions.assertTrue(SuiteOwnershipRules.violations(List.of(test),List.of(unsafe)).stream().anyMatch(s -> s.contains("nested fixtures")));
     }
+    @Test void focusedChannelFilteringCannotRemoveOrReplaceAPrimaryOwner() {
+        var test = new SuiteOwnershipRules.TestSource("module", "example.ProbeTest", "component");
+        var primary = gate("Primary", "primary", "component", List.of(), "example");
+        var selectors = new HashMap<>(primary.selectors());selectors.put("ExcludeTags", List.of("network-live"));
+        var focus = new SuiteOwnershipRules.Gate("module", "Offline", "focused", "", List.of("Primary"), selectors);
+        AuditedAssertions.assertEquals(List.of(), SuiteOwnershipRules.violations(List.of(test), List.of(primary, focus)),
+                "Focused filtering refines its inclusive parent population without reducing the primary gate");
+        AuditedAssertions.assertFalse(SuiteOwnershipRules.violations(List.of(test), List.of(focus)).isEmpty(),
+                "A filtered focus cannot replace the missing primary");
+        var hiddenPrimary = new SuiteOwnershipRules.Gate("module", "Primary", "primary", "component", List.of(), selectors);
+        AuditedAssertions.assertTrue(SuiteOwnershipRules.violations(List.of(test), List.of(hiddenPrimary)).stream()
+                .anyMatch(problem -> problem.contains("Primary exclusion")), "Primary coverage still refuses negative filters");
+    }
     @Test void selectorParsingUsesOnlyTheOwnerAndResolvesImportsAndNamedValues() {
         var parsed = TestLayerRules.suiteSelectors("package fixture; import other.Probe; @SelectClasses(value={Probe.class}) @SelectPackages(\"fixture\") class Gate { @ExcludeTags(\"hidden\") class Nested {} }", Map.of("other.Probe", ""));
         AuditedAssertions.assertEquals(List.of("other.Probe"), parsed.get("SelectClasses"));

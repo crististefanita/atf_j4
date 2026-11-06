@@ -3,18 +3,6 @@
   "scope": "Maven Jupiter source test roots; Gradle collections have their own contract",
   "suites": [
     {
-      "module": "atf-test-kit",
-      "suite": "atf.testkit.suites.KitUnitSuite",
-      "role": "primary",
-      "layer": "unit"
-    },
-    {
-      "module": "atf-test-kit",
-      "suite": "atf.testkit.suites.KitComponentSuite",
-      "role": "primary",
-      "layer": "component"
-    },
-    {
       "module": "atf-validation",
       "suite": "atf.validation.suites.ValidationUnitSuite",
       "role": "primary",

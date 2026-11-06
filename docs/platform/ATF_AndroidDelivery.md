@@ -44,7 +44,8 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 ## Distribuția prin GitHub
 
-- **Descărcare:** [GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest) este intrarea stabilă și urmărește ultima versiune publicată; pentru folosire personală, autentificați-vă în același browser și alegeți APK-ul din **Assets**.
+- **Descărcare:** README-ul principal oferă APK-ul candidatului local; după publicare, folosește linkul direct fixat pe versiune și nume de asset din GitHub Releases. Autentificați-vă în același browser pentru canalul personal; directorul `release` al repository-ului păstrează documentația și copia locală.
+- **Stare:** README-ul principal indică numai `currentVersion`. Pentru `PREPARED`, linkul identifică APK-ul local; după publicare, identifică asset-ul GitHub al aceleiași versiuni. O ediție anterioară poate fi reper în audit, fără a deveni descărcarea curentă.
 
 - **Copie locală:** [catalogul livrărilor](../../release/README.md) trimite la dosarul versiunii, care reunește APK-ul, checksum-ul și rapoartele; binarul și checksum-ul local sunt excluse din Git.
 - **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
@@ -100,7 +101,7 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 2. Rulați selecția de mai sus în TMP; pregătiți comenzile, rezultatele JUnit și jurnalele pentru `release/<versionName>/reports/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
 3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `release/<versionName>/`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
 4. Actualizați manifestul și README-ul noii versiuni, `release/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
-5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi confruntați prezentarea cu adresele efectiv publicate și verificați descărcarea. Faceți sync pentru metadatele finale; linkul stabil `releases/latest` urmărește noua versiune fără editarea tuturor README-urilor.
+5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi descărcați asset-ul complet în canalul declarat. Actualizați dovada descărcării și linkul direct din README numai după confruntarea versiunii curente, mărimii, SHA-256 și CRC; portalul `releases/latest` nu fixează identitatea APK-ului.
 
 Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate. La publicare, trimiteți explicit tag-ul și commit-ul surselor și confruntați răspunsul cu identitatea APK-ului.
 
@@ -110,7 +111,7 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 
 | Intrare | Responsabilitate |
 |---|---|
-| `release/index.json` | Schema 2 declară `currentVersion` și exact o versiune activă în `versions`. |
+| `release/index.json` | Schema 2 declară `currentVersion` și exact o versiune activă în `versions`; toate legăturile principale identifică acea versiune. |
 | `release/README.md` | Catalogul stabil al livrării active și punctul de intrare în dosarul ei. |
 | `release/<versionName>/README.md` | Prezintă ediția, APK-ul identificat, starea predării și legăturile către metadate și rapoarte. |
 | `release/<versionName>/reports/README.md` | Prezintă selecțiile executate, rapoartele, rezultatele și limitele calificării. |
@@ -120,9 +121,48 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 
 - La o versiune nouă, calificați candidatul extern și arhivați dosarul anterior înaintea înlocuirii. Actualizați indexul și catalogul după verificarea identității; păstrați numai APK-ul local curent în dosarul versiunii din `release`.
 - La reorganizare, mutați împreună rapoartele și fișierele asociate, confruntați hash-urile și refaceți referințele active. Căile absolute capturate și URL-urile istorice fixate pe commit își păstrează sensul original.
+- `artifacts/` și `dist/` sunt directoare retrase din rădăcina proiectului. După arhivarea și confruntarea datelor unice, eliminați directoarele vechi, inclusiv cele goale; guvernanța refuză reapariția lor.
 - Notele din GitHub Release trimit la README-ul versiunii într-un commit identificat; schimbarea navigării nu mută tag-ul și nu înlocuiește asset-ul binar.
 
 [Guvernanța dosarelor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) respinge populația neînregistrată, acumularea versiunilor active, metadatele lipsă și identitățile divergente. Verificarea integrității fișierelor și a linkurilor completează acest contract structural.
+
+### Linkul principal și proba descărcării
+
+| Situație | Prezentare și verificare |
+|---|---|
+| Candidat local | Link la dosarul exact din `release/<versionName>/`, stare `PREPARED` și APK local; fără afirmație de publicare GitHub. |
+| Asset publicat | Link direct `releases/download/<tag>/<apkName>`; eticheta vizibilă, tag-ul și fișierul identifică aceeași versiune. |
+| Copie completă | Răspuns reușit, mărime și SHA-256 identice cu asset-ul și binarul declarat; ZIP cu CRC valid, manifest Android și cod. Un răspuns de eroare nu se redenumește `.apk`. |
+| Canal verificat | API autentificat și browser sunt probe distincte. Reușita API nu marchează browserul drept verificat și nu închide blocajul accesului anonim. |
+| Identitate unică | `currentVersion`, manifestul, eticheta, numele APK-ului și URL-ul identifică aceeași ediție. Dovezile unei versiuni anterioare rămân numai referințe de audit. |
+
+Fișierul se descarcă într-un nume temporar și primește extensia finală numai după verificări. README-ul principal păstrează exclusiv candidatul curent; după `PUBLISHED`, linkul local se înlocuiește cu asset-ul aceleiași versiuni. Lipsa publicării nu permite revenirea la APK-ul anterior.
+
+### Verificări automate ale distribuției
+
+| Control | Scop și limită |
+|---|---|
+| [Guvernanța linkurilor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) | Aceeași versiune în catalog, etichetă și APK, local sau publicat; refuză `latest` ambiguu, Raw/blob, descărcări concurente, orice APK vechi în README și directoarele retrase. |
+| [Componentele descărcării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java) | HTTP loopback real: răspuns complet, 404, text salvat ca APK, trunchiere, exces, SHA greșit, CRC invalid, metadate divergente și credențială nepropagată către altă origine. Fixture-ul ZIP nu califică instalarea Android. |
+| [Selecția identității](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/DownloadSelectionComponentTest.java) | Un rezultat pozitiv al versiunii online anterioare nu califică descărcarea candidatului curent. Numărul de bytes este citit exact, fără conversie numerică permisivă. |
+| [Acceptanța live](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java) | Descărcare GitHub explicită, cu versiune, bytes, SHA-256, CRC și verdict în Extent. Ținta este exclusiv `currentVersion`; publicarea absentă produce HTTP 404 și FAIL, fără accesarea unui APK anterior. |
+
+Dintr-o copie TMP cu dependențele disponibile, componentele rulează fără acces GitHub:
+
+```powershell
+mvn -B -o -pl atf-tests -am '-Dtest=ReleaseArtifactLayoutGovernanceTest,ApkDownloadComponentTest,DownloadSelectionComponentTest' '-Dsurefire.failIfNoSpecifiedTests=false' test
+```
+
+După publicare, verificați APK-ul curent prin proba separată de rețea:
+
+```powershell
+mvn -B -o -pl atf-tests -am '-Dtest=PublishedApkDownloadAcceptanceTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.release.download.enabled=true' '-Datf.release.download.scope=current' test
+```
+
+- **Canal:** tokenul se citește din `GH_TOKEN` sau `GITHUB_TOKEN`; nu se transmite prin argumente, YAML ori rapoarte. Testul nu publică și nu instalează aplicația.
+- **Scope:** numai `atf.release.download.scope=current` este acceptat. Identitatea și mărimea așteptată provin din manifestul curent, inclusiv când acesta este încă `PREPARED`; testul confruntă publicarea reală.
+- **Raport:** `atf.release.download.report-directory` cere o cale absolută; implicit folosește TMP. Erorile și refuzul publicării lipsă rămân FAIL, fără PASS dintr-un subset mai vechi.
+- **Suită offline:** guvernanța obișnuită exclude tag-ul `release-download-live`; acceptanța de rețea se selectează explicit, fără a transforma omisiunea ei într-un rezultat pozitiv.
 
 - **Inventar:** indexul structurat, dosarele și catalogul formează aceeași populație verificată.
 - **Calificare:** validarea structurală și [legarea notelor de asset-ul publicat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) sunt controale distincte; trecerea lor nu dovedește accesul anonim, proveniența Git completă sau autonomia raportului.

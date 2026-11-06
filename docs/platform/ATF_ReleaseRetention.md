@@ -24,6 +24,7 @@ release/
 ```
 
 - Indexul folosește `schemaVersion: 2`, `currentVersion` și exact o intrare în `versions`.
+- README-ul principal și indexul identifică exclusiv versiunea curentă. Un reper anterior poate documenta auditul, dar nu înlocuiește APK-ul, linkul sau proba descărcării candidatului activ.
 - APK-ul și checksum-ul aparțin aceluiași dosar cu manifestul versiunii; nu se păstrează o a doua copie activă într-un director de distribuție. README-ul principal trimite la catalogul `release`.
 - `release` conține catalogul, indexul și un singur dosar de versiune. Numele dosarului, manifestul și versiunea curentă trebuie să coincidă.
 - README-ul versiunii prezintă livrarea și trimite la `reports/README.md`, care explică selecțiile, rezultatele și limitele. Manifestul și metadatele prezentării aparțin versiunii; raportul canonic și diagnosticele aparțin subdirectorului `reports`.
@@ -37,6 +38,9 @@ release/
 3. Calificați noul APK și toate selecțiile cerute de diferența de cod. Păstrați explicit tipul de binar: E2E cu fixture Debug și smoke Release au identități separate.
 4. Înlocuiți dosarul activ și actualizați catalogul, indexul, prezentarea versiunii și indexul rapoartelor. Refuzați o populație goală, două versiuni active, dosare nerecunoscute sau redenumirea unui raport vechi drept versiune nouă.
 5. Păstrați jurnalul de retenție, identitatea arhivei externe și hash-urile originale. La eșec, restaurați întregul dosar și indexul anterior.
+
+- **Directoare retrase:** `artifacts/` și `dist/` nu mai apar în rădăcina activă. Înaintea eliminării, inventariați și arhivați datele unice; confruntați hash-urile și referințele mutate în `release`.
+- **Identitate:** mutarea rapoartelor nu publică un GitHub Release și nu transformă un link către un fișier Git într-un asset descărcabil. [Procesul descărcării](ATF_AndroidDelivery.md#linkul-principal-și-proba-descărcării) deține această verificare.
 
 Nu rescrieți capturile, HTML-ul sau trace-ul brut pentru a modifica proveniența. Legăturile active și metadatele de navigare pot fi adaptate la noua structură; copia originală rămâne în arhivă și în istoricul Git.
 

@@ -10,7 +10,7 @@ import org.junit.platform.suite.api.Suite;
 /** Audited history contracts share one report; native rendering remains a separate E2E qualification. */
 @Suite
 @SelectPackages("atf.android.e2e.records.legend")
-@IncludeClassNamePatterns(".*ComponentTest")
+@IncludeClassNamePatterns("^[^$]*ComponentTest$")
 @ConfigurationParameter(key = TestRunScope.CONFIGURATION_PARAMETER, value = "suite")
 @AtfComponentTest
 public class AndroidHistoryComponentSuite { }

@@ -7,14 +7,14 @@ import atf.android.e2e.oracle.romanian.RomanianMatchOracle;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import atf.reporting.contract.AtfAssertion;
-import atf.testkit.AtfComponentTest;
+import atf.testkit.AtfIntegrationTest;
 import com.fasterxml.jackson.databind.*;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 
 /** Re-audits the retained real Android evidence without ADB or game-core. */
-@AtfComponentTest
+@AtfIntegrationTest
 class RecordedRomanianMatchAuditTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     @Test void allRetainedNormalExpertCardsAndVisibleScoreRowsRemainReconstructible()throws Exception{

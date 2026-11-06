@@ -8,7 +8,8 @@ final class SuiteOwnershipRules {
     record TestSource(String module, String name, String layer) { }
     record Gate(String module, String name, String role, String layer, List<String> parents,
                 Map<String, List<String>> selectors) {
-        boolean selects(TestSource test) {
+        // Inclusive class population: focused negative filters may narrow it, never widen it.
+        boolean includes(TestSource test) {
             if (!module.equals(test.module())) return false;
             boolean selected = selectors.getOrDefault("SelectClasses", List.of()).contains(test.name())
                     || selectors.getOrDefault("SelectPackages", List.of()).stream().anyMatch(p -> test.name().startsWith(p + "."));
@@ -24,7 +25,8 @@ final class SuiteOwnershipRules {
         for (var gate : gates) {
             if (names.put(gate.name(), gate) != null) errors.add("Duplicate gate: " + gate.name());
             if (!Set.of("primary", "focused").contains(gate.role())) errors.add("Unknown role: " + gate.name());
-            if (gate.selectors().keySet().stream().anyMatch(s -> s.startsWith("Exclude"))) errors.add("Exclusion can hide new cases: " + gate.name());
+            if (gate.role().equals("primary") && gate.selectors().keySet().stream().anyMatch(s -> s.startsWith("Exclude")))
+                errors.add("Primary exclusion can hide new cases: " + gate.name());
             if (!gate.selectors().containsKey("SelectPackages") && !gate.selectors().containsKey("SelectClasses")) errors.add("Empty selection: " + gate.name());
             if (gate.selectors().containsKey("SelectPackages") && gate.selectors().getOrDefault("IncludeClassNamePatterns", List.of(".*"))
                     .stream().anyMatch(p -> Pattern.matches(p, "example.Parent$FixtureComponentTest")))
@@ -33,16 +35,16 @@ final class SuiteOwnershipRules {
             if (gate.role().equals("primary") && !gate.selectors().getOrDefault("IncludeTags", List.of()).equals(List.of(gate.layer()))) errors.add("Primary requires its exact layer: " + gate.name());
         }
         for (var test : tests) {
-            var owners = gates.stream().filter(g -> g.role().equals("primary") && g.selects(test)).toList();
+            var owners = gates.stream().filter(g -> g.role().equals("primary") && g.includes(test)).toList();
             if (owners.size() != 1) errors.add(test.name() + " primary owners=" + owners.stream().map(Gate::name).toList());
             else if (!owners.getFirst().layer().equals(test.layer())) errors.add("Wrong layer: " + test.name());
         }
         for (var gate : gates) {
-            if (tests.stream().noneMatch(gate::selects)) errors.add("Gate selects no executable class: " + gate.name());
+            if (tests.stream().noneMatch(gate::includes)) errors.add("Gate includes no executable class: " + gate.name());
             if (!gate.role().equals("focused")) continue;
             var parents = gate.parents().stream().map(names::get).filter(Objects::nonNull).toList();
             if (parents.size() != gate.parents().size() || parents.isEmpty() || parents.stream().anyMatch(g -> !g.role().equals("primary"))) errors.add("Focused gate needs declared primary parents: " + gate.name());
-            for (var test : tests) if (gate.selects(test) && parents.stream().noneMatch(g -> g.selects(test))) errors.add("Focused case outside parent: " + gate.name() + " / " + test.name());
+            for (var test : tests) if (gate.includes(test) && parents.stream().noneMatch(g -> g.includes(test))) errors.add("Focused case outside parent: " + gate.name() + " / " + test.name());
         }
         return List.copyOf(errors);
     }

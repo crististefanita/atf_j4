@@ -1149,5 +1149,15 @@
     "assertionMaxDisplayCharacters": 240,
     "bodyMaxDisplayCharacters": 32768,
     "mandatoryLongBodies": "Complete numbered parts within the unchanged body budget; Unicode pairs preserved"
+  },
+  "distributionFollowup": {
+    "file": "reports/distribution-verification.json",
+    "scope": "Current 0.10.2 only; historical 1.9.2 is a model",
+    "offlineTests": 47,
+    "suiteOwnershipTests": 6,
+    "currentDownload": "FAIL — HTTP 404; remote release absent",
+    "currentCandidatePublished": false,
+    "browserDownloadVerified": false,
+    "originalUniquePopulationUnchanged": true
   }
 }

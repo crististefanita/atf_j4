@@ -12,12 +12,20 @@ public final class AggregateComponentAudit implements ComponentAuditAdapter {
     private boolean enabled(ExtensionContext context) {
         if (!context.getConfigurationParameter("atf.component.aggregate").orElse("false").equals("true")
                 || !context.getTags().contains("component")) return false;
-        for (Class<?> type = context.getRequiredTestClass(); type != null; type = type.getSuperclass())
-            for (var field : type.getDeclaredFields()) if (field.isAnnotationPresent(RegisterExtension.class)
-                    && adapterType(field.getType())) return false;
-        if (org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations(context.getRequiredTestClass(), ExtendWith.class)
-                .stream().flatMap(annotation -> java.util.Arrays.stream(annotation.value())).anyMatch(AggregateComponentAudit::adapterType)) return false;
+        for (Class<?> owner = context.getRequiredTestClass(); owner != null;
+                owner = org.junit.platform.commons.support.AnnotationSupport.isAnnotated(owner, org.junit.jupiter.api.Nested.class)
+                        ? owner.getEnclosingClass() : null) {
+            for (Class<?> type = owner; type != null; type = type.getSuperclass())
+                for (var field : type.getDeclaredFields()) if (field.isAnnotationPresent(RegisterExtension.class)
+                        && adapterType(field.getType())) return false;
+            if (registeredOn(owner)) return false;
+        }
+        if (context.getTestMethod().map(AggregateComponentAudit::registeredOn).orElse(false)) return false;
         return true;
+    }
+    private static boolean registeredOn(java.lang.reflect.AnnotatedElement element) {
+        return org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations(element, ExtendWith.class)
+                .stream().flatMap(annotation -> java.util.Arrays.stream(annotation.value())).anyMatch(AggregateComponentAudit::adapterType);
     }
     private static boolean adapterType(Class<?> type) {
         return ComponentAuditAdapter.class.isAssignableFrom(type) || ComponentAuditExtension.class.isAssignableFrom(type);

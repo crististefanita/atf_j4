@@ -12,7 +12,7 @@ import java.util.List;
 @AtfIntegrationTest
 public class DeepSuiteExtentReportTest {
     private static final List<String> MODULES =
-            List.of("atf-test-kit", "atf-validation", "atf-tests", "atf-test-android");
+            List.of("atf-validation", "atf-tests", "atf-test-android");
 
     @Test
     void publishesCombinedComponentAndLiveGameplayReport() throws Exception {

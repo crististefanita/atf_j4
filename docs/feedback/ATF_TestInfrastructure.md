@@ -20,7 +20,7 @@ Consumatorul deține validarea API, procesele și adopția locală; [registrul r
 |---|---|---|
 | P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combină sincronizarea explicită cu praguri strânse ale timpului real. | Separați pregătirea subprocesului de intervalul transportului și proba de terminare/curățare de calificarea latenței pe mediul identificat. Păstrați termenul produsului și controalele negative; nu relaxați pragurile doar pentru a obține PASS. |
 
-[Kitul testelor](../../atf-test-kit/README.md) · [Validarea API](../../atf-validation/README.md) · [Guvernanță](ATF_Governance.md)
+[Kitul testelor](../../lib/README.TestKit.md#scope-și-integrare) · [Validarea API](../../atf-validation/README.md) · [Guvernanță](ATF_Governance.md)
 
 ## Compoziția acțiunilor driverului
 

@@ -3,7 +3,8 @@ param(
     [string]$RunRoot = '',
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
-    [string]$Maven = 'mvn'
+    [string]$Maven = 'mvn',
+    [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384
 )
 $ErrorActionPreference = 'Stop'
 $sourceRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
@@ -29,7 +30,7 @@ function Get-Inputs {
         foreach ($entry in Get-ChildItem -LiteralPath $directory -Force) {
             if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
             if ($entry.PSIsContainer) { if ($entry.Name -notin $ignored) { Visit $entry.FullName } }
-            elseif ($entry.Extension -in @('.java','.md','.json','.yaml','.yml','.xml','.gradle','.ps1','.psm1','.py','.mjs','.jar','.pom')) {
+            else {
                 $rows.Add([pscustomobject]@{path=[IO.Path]::GetRelativePath($sourceRoot,$entry.FullName).Replace('\','/');sha256=(Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash.ToLowerInvariant()})
             }
         }
@@ -40,7 +41,9 @@ function Get-Inputs {
 $before = Get-Inputs
 $serialized = ConvertTo-Json -InputObject $before -Depth 5 -Compress
 $fingerprint = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($serialized))).ToLowerInvariant()
-$provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputs=$before}
+[IO.File]::WriteAllText((Join-Path $RunRoot 'source-inputs.json'),$serialized,[Text.UTF8Encoding]::new($false))
+$libraries = @($before | Where-Object {$_.path -like 'lib/*.jar'})
+$provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputCount=$before.Count;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries}
 $provenanceFile = Join-Path $stage 'execution-provenance.json'
 $provenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $provenanceFile -Encoding utf8
 foreach ($file in @('pom.xml','library-provenance.json')) { Copy-Item -LiteralPath (Join-Path $sourceRoot $file) -Destination $stage }
@@ -72,8 +75,11 @@ try {
         $catalog = Get-Content -LiteralPath (Join-Path $stage 'config/atf-test-suites.json') -Raw | ConvertFrom-Json
         foreach ($gate in $catalog.suites | Where-Object {$_.role -eq 'primary' -and $_.layer -eq 'component'}) {
             $destination = Join-Path $RunRoot $gate.module
-            & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' -cp $classpath atf.tests.execution.components.ComponentSuiteExecution $gate.suite $destination $provenanceFile $sourceRoot *> (Join-Path $stage ($gate.module + '.log'))
-            $exit = $LASTEXITCODE
+            Push-Location (Join-Path $stage $gate.module)
+            try {
+                & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' "-Datf.component.input-part-characters=$InputPartCharacters" -cp $classpath atf.tests.execution.components.ComponentSuiteExecution $gate.suite $destination $provenanceFile $sourceRoot *> (Join-Path $stage ($gate.module + '.log'))
+                $exit = $LASTEXITCODE
+            } finally { Pop-Location }
             $receipt = Join-Path $destination 'execution.json'
             $results.Add([pscustomobject]@{module=$gate.module;suite=$gate.suite;exitCode=$exit;receipt=if(Test-Path -LiteralPath $receipt){Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json}else{$null}})
         }

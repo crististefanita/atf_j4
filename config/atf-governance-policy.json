@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "publicRepository": "https://github.com/crististefanita/atf_j4",
   "mavenModules": [
-    "atf-test-kit",
     "atf-validation",
     "atf-test-android",
     "atf-tests"
@@ -46,12 +45,6 @@
     }
   ],
   "productionForbiddenNamespaces": {
-    "atf-test-kit": [
-      "atf.android",
-      "atf.tests",
-      "atf.reporting",
-      "ro.whistlab"
-    ],
     "atf-validation": [
       "atf.android",
       "atf.tests",

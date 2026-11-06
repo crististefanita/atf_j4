@@ -17,7 +17,8 @@ Modulul confruntă răspunsul observat cu un contract declarat, păstrând difer
 
 [Catalogul](../../../config/atf-test-suites.json) separă `ValidationUnitSuite` de `ValidationComponentSuite`. [Lansatorul comun](../../../scripts/run-component-suites.ps1) publică numai selecția de componentă; unitățile păstrează intrarea și rezultatul lor distincte.
 
-Folosiți [intrarea modulului](../../README.md) într-o copie temporară cu dependențele identificate. Probele negative modifică o singură condiție relevantă și păstrează martorul valid; un defect al fixture-ului nu demonstrează refuzul cerut.
+- Folosiți [intrarea modulului](../../README.md) într-o copie temporară cu dependențele identificate.
+- Probele negative modifică o singură condiție relevantă și păstrează martorul valid; un defect al fixture-ului nu demonstrează refuzul cerut.
 
 Testele de raportare verifică datele transmise, separat de acceptanța rendererului. [Bugetul evaluării](../../../docs/feedback/ATF_TestInfrastructure.md#costul-validării-api) rămâne o calificare distinctă de corectitudinea funcțională.
 

@@ -25,15 +25,16 @@ import org.junit.jupiter.api.io.TempDir;
 @AtfComponentTest
 class LearningRunReportContractTest {
     private static final ObjectMapper JSON=new ObjectMapper();
+    private static final GameReportConfiguration FIXTURE_REPORT = new GameReportConfiguration(GameReportPolicy.defaults());
     @TempDir Path folder;
     @BeforeEach void retainOwnedArtifacts(TestInfo info)throws Exception{String output=System.getProperty("atf.learning.contractOutput","");
         if(!output.isBlank()){folder=Path.of(output).resolve(info.getTestMethod().orElseThrow().getName());Files.createDirectories(folder);}}
     @Test void standaloneInvocationsPreserveFullTypedContextOutcomeAndTiming()throws Exception{
-        var inputs=List.of(input("owner-a","PASS"),input("owner-b","FAIL"));Path html=folder.resolve("standalone.html");var result=LearningRunReport.publish(html,inputs);AuditedAssertions.assertEquals(2,result.invocations());AuditedAssertions.assertEquals(4,
+        var inputs=List.of(input("owner-a","PASS"),input("owner-b","FAIL"));Path html=folder.resolve("standalone.html");var result=LearningRunReport.publish(html,inputs,FIXTURE_REPORT);AuditedAssertions.assertEquals(2,result.invocations());AuditedAssertions.assertEquals(4,
             result.comparisons());AuditedAssertions.assertEquals(26_000_002,result.executionNanos());AuditedAssertions.assertEquals(4,LearningReportHtmlAudit.verify(html,inputs));
     }
     @Test void missingLastRowCrossOwnerFailedVerdictAndTimingMutantsAreRefused()throws Exception{
-        var inputs=List.of(input("owner-a","PASS"),input("owner-b","FAIL"));Path html=folder.resolve("mutant-source.html");LearningRunReport.publish(html,inputs);String source=Files.readString(html);
+        var inputs=List.of(input("owner-a","PASS"),input("owner-b","FAIL"));Path html=folder.resolve("mutant-source.html");LearningRunReport.publish(html,inputs,FIXTURE_REPORT);String source=Files.readString(html);
             AuditedAssertions.assertDoesNotThrow(()->LearningReportHtmlAudit.verify(html,inputs));
         for(String mutation:List.of("last-row","owner","verdict","timing","context","actual-cell")){
             var doc=Jsoup.parse(source);var second=doc.select("#test-view .test-list-item > li.test-item").get(1);
@@ -51,20 +52,20 @@ class LearningRunReportContractTest {
             "z".repeat(600)).put("passed",true);var longJson=rows.addObject();longJson.put("name","Long structured sequence");longJson.set("expected",JSON.valueToTree(Collections.nCopies(12,Map.of("seat",0,"total",-12,"contract",
             3))));longJson.set("actual",longJson.path("expected").deepCopy());longJson.put("passed",true);
         Path file=folder.resolve("structured.json");byte[] bytes=JSON.writeValueAsBytes(receipt);Files.write(file,bytes);var inputs=List.of(new LearningRunReport.Input(file,receipt,LearningRunReport.hash(bytes)));Path
-            html=folder.resolve("structured.html");LearningRunReport.publish(html,inputs);AuditedAssertions.assertEquals(5,LearningReportHtmlAudit.verify(html,inputs));
+            html=folder.resolve("structured.html");LearningRunReport.publish(html,inputs,FIXTURE_REPORT);AuditedAssertions.assertEquals(5,LearningReportHtmlAudit.verify(html,inputs));
     }
     @Test void skipAndErrorKeepTheirOriginalOutcomeAndEmptySelectionsCannotPass()throws Exception{
-        var inputs=List.of(input("active","PASS"),input("skip","SKIP"),input("error","ERROR"));Path html=folder.resolve("outcomes.html");LearningRunReport.publish(html,inputs);AuditedAssertions.assertEquals(2,LearningReportHtmlAudit.verify(html,
+        var inputs=List.of(input("active","PASS"),input("skip","SKIP"),input("error","ERROR"));Path html=folder.resolve("outcomes.html");LearningRunReport.publish(html,inputs,FIXTURE_REPORT);AuditedAssertions.assertEquals(2,LearningReportHtmlAudit.verify(html,
             inputs));AuditedAssertions.assertEquals("FAIL",LearningRunReport.capturedSummary(inputs).capturedStatus());AuditedAssertions.assertEquals(2,LearningRunReport.capturedSummary(inputs).comparisons());
-        AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.publish(folder.resolve("empty.html"),List.of()));AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.publish(folder.resolve("all-skip.html"),
-            List.of(input("only-skip","SKIP"))));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.publish(folder.resolve("empty.html"),List.of(),FIXTURE_REPORT));AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.publish(folder.resolve("all-skip.html"),
+            List.of(input("only-skip","SKIP")),FIXTURE_REPORT));
     }
     @Test void zeroDetailContradictoryPassAndChangedClosedSourceAreRefused()throws Exception{
         var pass=fixture("nominal","PASS");((ArrayNode)pass.path("checkpoints")).removeAll();AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.validate(pass));
         var contradiction=fixture("contradiction","FAIL");contradiction.put("status","PASS");AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.validate(contradiction));
         var missingParameters=fixture("missing-parameters","PASS");missingParameters.remove("parameters");AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.validate(missingParameters));var
             unknownSchema=fixture("unknown-schema","PASS");unknownSchema.put("schemaVersion",99);AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.validate(unknownSchema));
-        var source=input("immutable","PASS");Files.writeString(source.source(),"{}");AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.publish(folder.resolve("changed.html"),List.of(source)));
+        var source=input("immutable","PASS");Files.writeString(source.source(),"{}");AuditedAssertions.assertThrows(IllegalArgumentException.class,()->LearningRunReport.publish(folder.resolve("changed.html"),List.of(source),FIXTURE_REPORT));
     }
     @Test void localInterningPreservesDifferentLongValuesWithoutUsingTheirVerdict(){
         var cp=JSON.createObjectNode();cp.putObject("context").put("scores","a".repeat(500));var rows=cp.putArray("comparisons");rows.addObject().put("name","Different after preview").put("expected","a".repeat(500)).put("actual",

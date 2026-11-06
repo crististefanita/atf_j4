@@ -86,9 +86,11 @@ Receipt-ul JUnit este independent de receipt-ul publicat în HTML. [Confruntarea
 | Frontieră | Contract |
 |---|---|
 | Captură | Aserțiunile auditate păstrează evaluarea JUnit; fazele și cauzele aparțin invocării originale. O componentă fără comparații auditate în corp eșuează explicit. |
-| Adaptor | Adaptorul explicit are prioritate; lansatorul activează auditul componentelor fără adaptor local. Lansările JUnit imbricate păstrează propriul context și nu intră în populația părintelui. |
-| Publicare | Un owner comun per suită; receipt-urile păstrează ID-ul parametrizării, rezultatul și numărul comparațiilor. Corpurile lungi se reconstruiesc din părți ordonate. |
-| Proveniență | HTML-ul include inventarul surselor și configurației; metadatele compacte confruntă identitățile, hash-ul raportului și stabilitatea sursei, fără copii XML. |
+| Adaptor | Înregistrările explicite pe metodă, clasă sau clasă exterioară `@Nested` au prioritate. Lansatorul completează lipsa adaptorului, iar lansările JUnit independente își păstrează contextul și populația. |
+| Publicare | Un owner comun per suită; numele controlat combină metoda și ordinalul, iar display name-ul JUnit original rămâne input textual integral. Receipt-urile păstrează ID-ul parametrizării, rezultatul și numărul comparațiilor; corpurile lungi se reconstruiesc din părți ordonate. |
+| Calificare HTML | Profilul așteptat provine din captură, independent de fișierul publicat. Etichetele vizibile se confruntă cu spațiile normalizate conform HTML; etichetele publicate, valorile și corpurile originale rămân păstrate. |
+| Proveniență | HTML-ul indică amprenta surselor, configurația și cardinalitatea inventarului; manifestul unic de hash-uri este metadată tehnică a distribuției. Comparațiile și inputurile testului rămân în HTML, fără copii XML. |
+| Dimensiunea părților | `InputPartCharacters` configurează corpurile integrale ale agregatului, păstrând preview-ul aserțiunilor și valorile evaluate. Părțile mai mari evită multiplicarea marcajelor HTML; nu elimină text și nu schimbă bugetul semantic al componentei testate. |
 | Domeniu | Execuția califică sursa și suitele Maven declarate. Nu califică un APK istoric, componentele Gradle ori o interacțiune nouă pe Android. |
 
 Din rădăcina proiectului, cu JDK-ul și cache-ul Maven pregătite:

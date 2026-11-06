@@ -19,7 +19,11 @@ final class ComponentExecutionListener implements TestExecutionListener {
     @Override public void executionFinished(TestIdentifier id, TestExecutionResult result) {
         String outcome = switch (result.getStatus()) {case SUCCESSFUL -> "PASS";case FAILED -> "FAIL";case ABORTED -> "ABORTED";};
         if (id.isTest()) rows.put(id.getUniqueId(), outcome);
-        else if (result.getStatus() == TestExecutionResult.Status.FAILED) failures.add(id.getUniqueId() + " / " + result.getThrowable().orElse(null));
+        else if (result.getStatus() == TestExecutionResult.Status.FAILED) failures.add(id.getUniqueId() + " / " + result.getThrowable().map(failure -> {
+            var diagnostic = new java.io.StringWriter();
+            failure.printStackTrace(new java.io.PrintWriter(diagnostic));
+            return diagnostic.toString();
+        }).orElse("No original throwable supplied"));
     }
     List<Invocation> invocations() { return rows.entrySet().stream().map(e -> new Invocation(e.getKey(),e.getValue())).toList(); }
     List<String> containerFailures() { return List.copyOf(failures); }

@@ -55,6 +55,15 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 |---|---|---|
 | P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul; prin [responsabilul comun](README.md), promovați un contract generic al acestor probe și sincronizați clarificările ghidurilor în livrările următoare. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
 
+## Descărcarea prin browser
+
+[Contractul distribuției](../platform/ATF_AndroidDelivery.md#verificări-automate-ale-distribuției) separă linkul principal, identitatea versiunii și integritatea fișierului. Proba API nu califică automat browserul: blocarea locală `ERR_BLOCKED_BY_CLIENT` poate exista pentru același asset descărcat integral prin API.
+
+| Prioritate | Lacună delimitată | Criteriu de închidere |
+|---|---|---|
+| P0, predare | Publicarea ediției curente trebuie verificată independent de APK-ul local; un release absent nu are descărcare GitHub funcțională. | Proba live selectează exclusiv `currentVersion` și confruntă asset-ul real cu bytes, SHA-256 și CRC din manifest. Absența păstrează FAIL și diagnosticul HTTP; README-ul rămâne pe candidatul local curent până la publicare, fără revenirea la un APK anterior. |
+| P1 | Traseul linkului din README până la fișierul salvat în browser nu are încă o probă repetabilă pentru versiunea curentă publicată. | După publicare, verificați în sesiunea GitHub autentificată URL-ul exact, numele, numărul efectiv de bytes, SHA-256 și CRC. Păstrați separat identitatea browserului, rezultatul API și orice blocare a clientului; un rezultat al versiunii anterioare nu califică noul APK. |
+
 ## Control tehnic activ
 
 <details>

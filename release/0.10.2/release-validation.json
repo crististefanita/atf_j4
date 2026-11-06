@@ -127,7 +127,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-06T11:37:23.831Z",
+    "observedUtc": "2026-11-06T15:36:32.469Z",
     "files": [
       {
         "path": "README.md",
@@ -156,8 +156,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 4835,
-        "sha256": "c4c11d0ff3ddd92064e0da7b7d0f65a853295974b40a021b96e69589df570d2a"
+        "bytes": 6742,
+        "sha256": "6a0f82d2fabf7f264b42ad45fb7e9964755e0159aa2b3322df5700ab4ec82b1a"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -195,6 +195,36 @@
         "sha256": "53af8d0a78ac23503c472a17ff9d942a5a41eda01602a0fa54f846c084dd5267"
       },
       {
+        "path": "reports/distribution-verification.json",
+        "bytes": 10545,
+        "sha256": "3abd9bc8dbfbf03534562e1a56bede71f3172bb8e19a674c9f629a786736ead6"
+      },
+      {
+        "path": "reports/distribution/current-download.html",
+        "bytes": 2412392,
+        "sha256": "36dff3d3b19193c1667abf627334e9d550ac1fc753454ee7a62ed8ebd1d1b667"
+      },
+      {
+        "path": "reports/distribution/download-components.html",
+        "bytes": 2577932,
+        "sha256": "07e6dfb64180dd6f6df88c11f665264653321e5377dc361676e7b93edff12e8f"
+      },
+      {
+        "path": "reports/distribution/download-selection.html",
+        "bytes": 2433469,
+        "sha256": "097cd5f1524aa657a87e381bd2a43856276352779c0a8d51a0da5ae0b3524696"
+      },
+      {
+        "path": "reports/distribution/published-1.9.2-reference.html",
+        "bytes": 2412862,
+        "sha256": "757967794ae897051000a5be62cb5a0da9c7974cf4f568aa7f481d0f21736b29"
+      },
+      {
+        "path": "reports/distribution/readme-release-policy.html",
+        "bytes": 2717421,
+        "sha256": "78232becc309638aa959e124c3fc50d085568feec045501d8895c77bcf72f074"
+      },
+      {
         "path": "reports/e2e/history-legend.html",
         "bytes": 4000745,
         "sha256": "8ae17833b3013d56d60ae61ba4f8edc200b34827b7fc826b3740c203d4bfb187"
@@ -211,8 +241,8 @@
       },
       {
         "path": "reports/qualification.json",
-        "bytes": 46247,
-        "sha256": "b412a4ae615fa7c1ed55132dfff0ad92f0106d3c6b6c0482f809777f2fca74eb"
+        "bytes": 45491,
+        "sha256": "5499eefd689cabd9a738ad4c07edc34acf34e61df6c8d60f06a92f6d0c6df531"
       },
       {
         "path": "reports/test-results/adapter/TEST-adapter.xml",

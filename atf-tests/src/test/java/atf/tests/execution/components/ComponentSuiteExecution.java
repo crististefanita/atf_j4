@@ -30,6 +30,8 @@ public final class ComponentSuiteExecution {
         System.setProperty("atf.governance.root", root.toString());
         System.setProperty(AndroidComponentReports.DIRECTORY, output.toString());
         System.setProperty(AndroidComponentReports.PROVENANCE, provenance.toString());
+        System.setProperty(AndroidComponentReports.INPUT_PART_CHARACTERS,
+                System.getProperty(AndroidComponentReports.INPUT_PART_CHARACTERS, "16384"));
         var listener = new ComponentExecutionListener();
         var request = LauncherDiscoveryRequestBuilder.request().selectors(selectClass(args[0]))
                 .filters(EngineFilter.includeEngines("junit-platform-suite"))

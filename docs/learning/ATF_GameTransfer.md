@@ -10,7 +10,7 @@ Acest ghid deține admiterea unui domeniu nou. [Evoluția AI-ului](ATF_PolicyEvo
 
 | Suprafață | Stare în cod | Ce cere alt joc |
 |---|---|---|
-| Clasificare și audit JUnit | [Kit](../../atf-test-kit/README.md) independent de motorul Whist. | Așteptări proprii și adaptorul publicării rezultatelor. |
+| Clasificare și audit JUnit | [Kit](../../lib/README.TestKit.md#scope-și-integrare) independent de motorul Whist. | Așteptări proprii și adaptorul publicării rezultatelor. |
 | Biblioteci comune | [API-uri binare](../platform/README.md), cu acceptanță locală. | Configurație, proveniență și verificări pe profilul noului consumator. |
 | Guvernanță | [Verificatoare adaptate](../governance/README.md), cu politică și populație locale; API-ul comun împachetat este [criteriu deschis](../feedback/ATF_Governance.md#api-reutilizabil-pentru-verificatoare). | Rădăcină, module și inventar explicite, plus controale negative pe noul perimetru. |
 | Intersecția intervalelor | [Componentă pură](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs), consumată de registru. | Intrări întregi valide și adaptarea identității datelor. |
@@ -122,7 +122,7 @@ Pentru mecanismul pur de intervale, din rădăcina proiectului, cu Node.js dispo
 node --test whist-lab-app/ai-lab/tools/qualification/half-open-interval.test.mjs
 ```
 
-[Contractele Kitului](../../atf-test-kit/README.md#niveluri-și-verificare) și [acceptanța ghidurilor de bibliotecă](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) verifică alte părți reutilizabile. Registrul, arena și corpusul au propriile teste Whist; trecerea lor nu califică un domeniu nou.
+[Contractele Kitului](../../lib/README.TestKit.md#scope-și-integrare) și [acceptanța ghidurilor de bibliotecă](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) verifică alte părți reutilizabile. Registrul, arena și corpusul au propriile teste Whist; trecerea lor nu califică un domeniu nou.
 
 Începerea componentelor pentru alt joc cere contractul, proiecția observației și oracolul definite. Începerea antrenării cere suplimentar bucla offline validată și date separate; conectarea la interfață cere produs identificat și controlul resursei, conform [strategiei de testare](../testing/README.md).
 

@@ -10,9 +10,9 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 ## Jocul
 
-**[Descarcă APK-ul din GitHub Releases](https://github.com/crististefanita/atf_j4/releases/latest)**. Autentifică-te cu contul tău în același browser, apoi alege fișierul `.apk` din **Assets**.
-
-[Livrarea locală curentă](release/README.md) reunește APK-ul, SHA-256 și rapoartele versiunii verificate.
+- **[Whist Lab 0.10.2](release/0.10.2/README.md)** — ultima versiune pregătită, cu starea `PREPARED`.
+- **[Descarcă APK 0.10.2](release/0.10.2/WhistLab-0.10.2.apk)** — copia locală verificată. Descărcarea GitHub se activează după publicarea acestei versiuni.
+- [Catalogul livrării curente](release/README.md) reunește APK-ul, checksum-ul și rapoartele; README-ul principal indică întotdeauna aceeași versiune.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -63,7 +63,7 @@ Motorul deține regulile și tranzițiile. Aplicația deține interacțiunea, ia
 | `whist-lab-app/algorithm-build` | Construirea JVM a motorului pentru lucru offline, fără SDK Android. |
 | `whist-lab-app/ai-lab` | Modul JVM: jucător independent, unelte și experimente offline; dependență doar pentru teste. |
 | `atf-test-android` | Adaptor ADB, captură și temporizare Android, audituri reutilizabile, componente și E2E Whist Lab. |
-| `atf-test-kit`, `atf-validation` | Suportul comun al testelor, configurării și validării. |
+| Test Kit JAR, `atf-validation` | Suportul comun al testelor, configurării și validării; sursa Kit are owner separat. |
 | `atf-tests` | Contracte ale adaptoarelor, integrarea bibliotecilor și guvernanța calității. |
 | `config`, `scripts` | Configurație declarativă și lansatoare comune; uneltele de domeniu sunt în modulele responsabile. |
 | `lib` | Biblioteci binare; versiunile efective sunt în POM, iar proveniența în `library-provenance.json`. |

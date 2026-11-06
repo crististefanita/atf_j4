@@ -13,11 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
-import static org.junit.jupiter.api.Assertions.*;
+import static atf.testkit.assertions.AuditedAssertions.*;
 
 /** The generic strategy stays stable while each release owns its captured results. */
 @AtfComponentTest
 class ReleaseArtifactLayoutGovernanceTest {
+    @org.junit.jupiter.api.extension.RegisterExtension
+    static final atf.tests.reporting.GameReportAudit AUDIT = new atf.tests.reporting.GameReportAudit();
     @TempDir Path temporary;
 
     @Test void registeredVersionsOwnTheirEvidenceAndHaveDiscoverableReadmes() throws Exception {
@@ -26,7 +28,13 @@ class ReleaseArtifactLayoutGovernanceTest {
         AuditedAssertions.assertTrue(projectGuide.contains("(release/README.md)"), "The project entry points to the release catalog");
         AuditedAssertions.assertFalse(projectGuide.contains("(dist/"), "The project entry must not revive the retired distribution directory");
         String catalog = Files.readString(root.resolve("release/README.md"));
-        String current = new com.fasterxml.jackson.databind.ObjectMapper().readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
+        var releaseIndex = new com.fasterxml.jackson.databind.ObjectMapper().readTree(root.resolve("release/index.json").toFile());
+        String current = releaseIndex.required("currentVersion").asText();
+        var validation = new com.fasterxml.jackson.databind.ObjectMapper()
+                .readTree(root.resolve("release/" + current + "/release-validation.json").toFile());
+        AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(root.resolve("README.md"), projectGuide,
+                releaseIndex, GovernanceProject.policy(root).required("publicRepository").asText(),
+                validation.path("publication").path("state").asText().equals("PUBLISHED")));
         String currentSection = ReleaseCatalogPresentation.currentSection(root.resolve("release/README.md"), catalog);
         AuditedAssertions.assertTrue(currentSection.contains("(" + current + "/README.md)"), "The current entry follows the structured index");
         for (Path folder : ReleaseArtifactCatalog.folders(root)) {
@@ -54,6 +62,50 @@ class ReleaseArtifactLayoutGovernanceTest {
         Path root = project("1.2.0", List.of("1.2.0"));
         Files.createDirectory(root.resolve("dist"));
         rejected(root, "LEGACY-DIST");
+    }
+
+    @Test void theRetiredArtifactDirectoryCannotReappearEvenWhenEmpty() throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0"));
+        Files.createDirectory(root.resolve("artifacts"));
+        rejected(root, "LEGACY-ARTIFACTS");
+    }
+
+    @Test void theMainReadmeAlwaysTargetsTheCurrentVersionLocallyThenOnGitHub() throws Exception {
+        var index = downloadIndex();
+        AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(Path.of("README.md"),
+                downloadGuide(), index, "https://github.com/example/game", false));
+        String published = downloadGuide().replace("(release/1.2.0/WhistLab-1.2.0.apk)",
+                "(https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk)");
+        AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(Path.of("README.md"),
+                published, index, "https://github.com/example/game", true));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"wrong-current", "latest", "wrong-label", "wrong-asset", "duplicate", "old-extra-asset", "published-local"})
+    void staleAmbiguousAndUnpublishedDownloadClaimsAreRejected(String defect) throws Exception {
+        var index = downloadIndex();String guide = downloadGuide();boolean currentPublished = false;
+        switch (defect) {
+            case "wrong-current" -> guide = guide.replace("release/1.2.0/", "release/1.1.0/");
+            case "latest" -> guide = guide.replace("release/1.2.0/WhistLab-1.2.0.apk", "https://github.com/example/game/releases/latest");
+            case "wrong-label" -> guide = guide.replace("Descarcă APK 1.2.0", "Descarcă APK 1.1.0");
+            case "wrong-asset" -> guide = guide.replace("WhistLab-1.2.0.apk", "WhistLab-1.1.0.apk");
+            case "duplicate" -> guide += "\n" + guide;
+            case "old-extra-asset" -> guide += "\n[Model](https://github.com/example/game/releases/download/v1.1.0/WhistLab-1.1.0.apk)";
+            case "published-local" -> currentPublished = true;
+            default -> throw new IllegalArgumentException(defect);
+        }
+        String observed = guide;boolean published = currentPublished;
+        var failure = AuditedAssertions.assertThrows(IOException.class, () -> ReleaseCatalogPresentation.projectLinks(
+                Path.of("README.md"), observed, index, "https://github.com/example/game", published));
+        AuditedAssertions.assertTrue(failure.getMessage().startsWith("RELEASE-PROJECT-LINK-"), "Specific release-link diagnostic");
+    }
+
+    private static com.fasterxml.jackson.databind.node.ObjectNode downloadIndex() throws Exception {
+        return new com.fasterxml.jackson.databind.ObjectMapper().createObjectNode().put("currentVersion", "1.2.0");
+    }
+
+    private static String downloadGuide() {
+        return "[Candidat](release/1.2.0/README.md)\n[Descarcă APK 1.2.0](release/1.2.0/WhistLab-1.2.0.apk)";
     }
 
     @Test void emptyDuplicateEscapingAndUnknownCurrentVersionsAreRejected() throws Exception {

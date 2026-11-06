@@ -16,6 +16,7 @@ final class ReleaseArtifactCatalog {
 
     static List<Path> folders(Path project) throws IOException {
         require(!Files.exists(project.resolve("dist")), "LEGACY-DIST", project.resolve("dist"));
+        require(!Files.exists(project.resolve("artifacts")), "LEGACY-ARTIFACTS", project.resolve("artifacts"));
         Path root = project.resolve("release");
         require(Files.isDirectory(root) && root.toRealPath().startsWith(project.toRealPath()), "ROOT", root);
         var index = JSON.readTree(root.resolve("index.json").toFile());

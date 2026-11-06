@@ -37,6 +37,23 @@ Identitățile invocărilor sunt confruntate exact, inclusiv parametrizările ș
 
 - Guvernanță: **58** teste trecute pentru cod, documentație și livrare. Populația unică consolidată este **630**; include unit-uri, componente și E2E, din selecții compuse, fără a aduna reverificările suprapuse.
 
+## Distribuție și README
+
+| Selecție suplimentară | Invocări | Raport |
+|---|---|---|
+| Catalog, link principal și refuzul directoarelor retrase | 24 | [Extent](distribution/readme-release-policy.html) |
+| Descărcare completă și răspunsuri defecte controlate | 13 | [Extent](distribution/download-components.html) |
+| Identitatea candidatului față de versiunea publicată | 2 | [Extent](distribution/download-selection.html) |
+| Descărcarea API a versiunii curente 0.10.2 | 1, FAIL: HTTP 404 | [Extent și diagnostic](distribution/current-download.html) |
+| Model istoric: descărcarea API 1.9.2 | 1, reper separat | [Referință Extent](distribution/published-1.9.2-reference.html) |
+
+Selecția finală are 47 de verificări offline trecute; cele 39 de invocări de componentă de mai sus sunt un subset. Șase controale separate ale proprietății suitelor au trecut. [Inventarul suplimentar](distribution-verification.json) separă execuțiile și identitățile; totalul istoric de 630 rămâne neschimbat.
+
+Referința 1.9.2 confirmă numai modelul distribuției: 775.288 bytes, SHA-256 și toate CRC-urile prin API autentificat. Candidatul 0.10.2 rămâne `PREPARED`, cu 803.960 bytes locali. Testul său real confirmă absența release-ului GitHub prin HTTP 404; această probă rămâne FAIL și blochează predarea online.
+
+- **Ținta:** README-ul principal indică exclusiv 0.10.2. Nici modelul istoric, nici copia locală nu califică descărcarea noului APK din browser; după publicare se repetă numai acceptanța distribuției curente.
+- **Randarea:** Chromium a verificat detașat cele trei rapoarte curente de componentă și diagnosticul descărcării, cu cererile externe blocate. Grupurile de aserțiuni și diagnosticul se închid și se redeschid; FAIL/HTTP 404 rămâne vizibil. Aceasta este verificarea HTML-ului, nu descărcarea APK-ului prin browser.
+
 ## Revizie și retenție
 
 - Chromium a deschis detașat raportul Extent de componentă, fallback-ul și cele trei rapoarte native, cu resursele externe blocate. Revizia este limitată la ownerii declarați; nu constituie o nouă execuție Android.

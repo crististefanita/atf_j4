@@ -19,6 +19,12 @@ class DocumentationPolicyGovernanceTest {
         var root = GovernanceProject.locateProjectRoot();
         var files = GovernanceProject.markdown(root);
         String publicRepository = GovernanceProject.policy(root).path("publicRepository").asText("");
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var index = json.readTree(root.resolve("release/index.json").toFile());
+        String current = atf.tests.distribution.ReleasePaths.relative(index.required("currentVersion").asText());
+        var manifest = json.readTree(root.resolve("release").resolve(current).resolve("release-validation.json").toFile());
+        var declaredDownload = atf.tests.distribution.ReleaseDownloadSelection.select("current",
+                publicRepository.replace("https://github.com/", ""), index, manifest);
         AuditedAssertions.assertTrue(files.contains(root.resolve("README.md")));
         var modules = GovernanceProject.policy(root).required("mavenModules");
         for (var module : modules) AuditedAssertions.assertTrue(files.contains(root.resolve(module.asText()).resolve("README.md")),
@@ -31,7 +37,7 @@ class DocumentationPolicyGovernanceTest {
             }
             String prose = deploymentProse(Files.readString(file));
             prose = libraryMaintenanceProse(GovernanceProject.relative(root, file), prose);
-            prose = publicReleaseProse(prose, publicRepository);
+            prose = publicReleaseProse(prose, publicRepository, declaredDownload);
             if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
             AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
                     () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
@@ -40,6 +46,12 @@ class DocumentationPolicyGovernanceTest {
 
     /** A declared repository's stable release URI is technical data; visible link text remains prose. */
     static String publicReleaseProse(String source, String repository) {
+        return publicReleaseProse(source, repository, null);
+    }
+
+    static String publicReleaseProse(String source, String repository, atf.tests.distribution.ApkDownloadTarget published) {
+        if (published != null && !repository.equals("https://github.com/" + published.repository()))
+            throw new IllegalArgumentException("Published technical data must belong to the declared repository");
         if (repository.isEmpty()) return source;
         if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
                 || !java.net.URI.create(repository).normalize().toString().equals(repository))
@@ -47,7 +59,8 @@ class DocumentationPolicyGovernanceTest {
         var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
         var result = new StringBuffer();
         while (links.find()) {
-            String replacement = links.group(2).equals(repository + "/releases/latest")
+            String replacement = (links.group(2).equals(repository + "/releases/latest")
+                    || published != null && links.group(2).equals(published.publicUrl()))
                     ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
             links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
         }
@@ -69,10 +82,24 @@ class DocumentationPolicyGovernanceTest {
             AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> publicReleaseProse("Control J4", invalid));
     }
 
+    @Test void onlyTheDeclaredPublishedAssetIsTechnicalDataWhileItsVisibleTextRemainsProse() {
+        var published = new atf.tests.distribution.ApkDownloadTarget("example/atf_j4", "1.2.0", 42, "a".repeat(64));
+        String repository = "https://github.com/" + published.repository(), asset = published.publicUrl();
+        AuditedAssertions.assertEquals("[APK](<resursă-publică>)", publicReleaseProse("[APK](" + asset + ")", repository, published));
+        AuditedAssertions.assertEquals("Context J4. [atf_j4](<resursă-publică>)",
+                publicReleaseProse("Context J4. [atf_j4](" + asset + ")", repository, published));
+        for (String original : List.of(asset, "![APK](" + asset + ")", "[APK](" + asset + "?next=atf_j1)",
+                "[APK](" + asset + "#J1)", "[APK](" + asset + "/)", "[APK](" + asset.replace("WhistLab-", "Other-") + ")",
+                "[APK](" + asset.replace("1.2.0", "1.1.0") + ")", "[APK](" + asset.replace("example/", "foreign/") + ")"))
+            AuditedAssertions.assertEquals(original, publicReleaseProse(original, repository, published), "Only the declared canonical asset URI is technical data");
+        AuditedAssertions.assertThrows(IllegalArgumentException.class,
+                () -> publicReleaseProse("Control J4", "https://github.com/foreign/atf_j4", published));
+    }
+
     /** Only the named library guides may route maintenance to the source owner, in their footer. */
     static String libraryMaintenanceProse(String relative, String source) {
         if (!java.util.Set.of("lib/README.md", "lib/README.Core.md", "lib/README.Reporting.md",
-                "lib/README.Console.md", "lib/README.Mock.md").contains(relative)) return source;
+                "lib/README.Console.md", "lib/README.Mock.md", "lib/README.TestKit.md").contains(relative)) return source;
         String text = source.replace("\r\n", "\n");
         int footer = relative.equals("lib/README.md") ? text.indexOf("\n## Mentenanță și feedback\n") : text.lastIndexOf("\n---\n");
         if (footer < 0) return text;
@@ -84,7 +111,7 @@ class DocumentationPolicyGovernanceTest {
         String filtered = libraryMaintenanceProse("lib/README.md", index);
         AuditedAssertions.assertTrue(filtered.contains("J0 în corp")); AuditedAssertions.assertFalse(filtered.contains("atf_j0 și J0")); AuditedAssertions.assertTrue(filtered.contains("J1 rămâne vizibil"));
         String guide = "## Pe scurt\nJ0 în corp\n---\natf_j0 și J0; J2 rămâne vizibil";
-        for (String name : List.of("Core", "Reporting", "Console", "Mock")) {
+        for (String name : List.of("Core", "Reporting", "Console", "Mock", "TestKit")) {
             filtered = libraryMaintenanceProse("lib/README." + name + ".md", guide);
             AuditedAssertions.assertTrue(filtered.contains("J0 în corp")); AuditedAssertions.assertFalse(filtered.contains("atf_j0 și J0")); AuditedAssertions.assertTrue(filtered.contains("J2 rămâne vizibil"));
         }
@@ -94,7 +121,7 @@ class DocumentationPolicyGovernanceTest {
 
     @Test void libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter() throws Exception {
         Path root = GovernanceProject.locateProjectRoot(); var files = GovernanceProject.markdown(root);
-        for (String name : List.of("README.md", "README.Core.md", "README.Reporting.md", "README.Console.md", "README.Mock.md")) {
+        for (String name : List.of("README.md", "README.Core.md", "README.Reporting.md", "README.Console.md", "README.Mock.md", "README.TestKit.md")) {
             Path file = root.resolve("lib").resolve(name); AuditedAssertions.assertTrue(files.contains(file), name);
             String source = Files.readString(file); AuditedAssertions.assertTrue(source.contains("atf_j0"), name);
             String prose = libraryMaintenanceProse("lib/" + name, source);

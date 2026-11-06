@@ -57,7 +57,7 @@ public final class GovernanceProject {
 
     public static boolean isLibraryGuide(Path root, Path file) {
         return file.getParent().equals(root.resolve("lib")) && Set.of("README.md", "README.Core.md",
-                "README.Reporting.md", "README.Console.md", "README.Mock.md").contains(file.getFileName().toString());
+                "README.Reporting.md", "README.Console.md", "README.Mock.md", "README.TestKit.md").contains(file.getFileName().toString());
     }
 
     public static List<SourceFile> sources(Path root) throws Exception {

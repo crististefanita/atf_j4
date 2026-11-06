@@ -31,6 +31,7 @@ O înregistrare descrie o invocare: identitate, parametri, intervale, comparați
 | [Compoziția](src/main/java/atf/tests/learning/LearningRunReport.java) | Verifică înregistrările și transmite comparațiile originale. |
 | [Sesiunea publicării](src/main/java/atf/tests/reporting/GameReportSession.java) | Izolează configurația, contextul și fazele unei publicări. |
 | [Auditul HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confruntă identitățile, rândurile, valorile și scopul publicat cu datele sursă. |
+| [Descărcarea APK](src/main/java/atf/tests/distribution/GitHubApkDownload.java) | Verifică metadatele GitHub, fluxul complet, SHA-256 și CRC; suport în main, probe HTTP locale și acceptanță live în test. |
 
 [Politica prezentării](../docs/reporting/ATF_Presentation.md) deține regulile de volum și navigare. Codul reutilizabil este în `src/main/java`; intrările JUnit și probele negative sunt în `src/test/java`.
 
@@ -59,6 +60,8 @@ Alegeți verificarea după contractul schimbat:
 | Binare și compoziția modulelor | [CoreReportingConsumerContractTest](src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java). |
 | Capturi PNG prin API | [AndroidInlineScreenshotReportContractTest](src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java). |
 | Fragmentele ghidurilor pe JAR-urile fizice | [LibraryReadmeExamplesIntegrationTest](src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java). |
+| Linkul versiunii și refuzul unui APK incomplet | [Componentele distribuției](src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java), fără acces GitHub. |
+| Descărcarea GitHub reală | [Acceptanța explicită](src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java), separată de suita offline prin tag. |
 
 [LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java) publică o selecție explicită prin activarea sa dedicată. [DeepSuiteExtentReportTest](src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java) compune o publicare agregată, cu precondiții și activare separate.
 

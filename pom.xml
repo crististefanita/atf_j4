@@ -11,7 +11,6 @@
     <description>Reusable ATF foundation and local Android acceptance testing</description>
 
     <modules>
-        <module>atf-test-kit</module>
         <module>atf-validation</module>
         <module>atf-test-android</module>
         <module>atf-tests</module>
@@ -27,6 +26,7 @@
         <atf.reporting.version>1.0.0-j21</atf.reporting.version>
         <atf.console.version>1.0.0-c1</atf.console.version>
         <atf.mock.version>1.0.0-m1</atf.mock.version>
+        <atf.testkit.version>1.0.0-k1</atf.testkit.version>
         <atf.test.heap.max>1g</atf.test.heap.max>
     </properties>
 
@@ -78,6 +78,16 @@
                             <file>${maven.multiModuleProjectDirectory}/lib/atf-mock-${atf.mock.version}.jar</file>
                             <pomFile>${maven.multiModuleProjectDirectory}/lib/atf-mock-${atf.mock.version}.pom</pomFile>
                             <generatePom>false</generatePom></configuration></execution>
+    <execution>
+        <id>bootstrap-test-kit-library</id>
+        <phase>validate</phase>
+        <goals><goal>install-file</goal></goals>
+        <configuration>
+            <file>${maven.multiModuleProjectDirectory}/lib/atf-test-kit-${atf.testkit.version}.jar</file>
+            <pomFile>${maven.multiModuleProjectDirectory}/lib/atf-test-kit-${atf.testkit.version}.pom</pomFile>
+            <generatePom>false</generatePom>
+        </configuration>
+    </execution>
 </executions>
             </plugin>
             <plugin>
