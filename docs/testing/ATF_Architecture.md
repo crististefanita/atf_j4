@@ -88,6 +88,8 @@ Un turneu este o evaluare de politică, cu populație și criterii proprii. Num�
 
 ## Construcția și întreținerea unei verificări
 
+Mutarea unei verificări la un nivel mai mic păstrează invariantul și oracolul. Se extrage o responsabilitate observabilă; numărul mai mic de teste Android nu justifică pierderea unui refuz ori a unei tranziții.
+
 1. Formulați proprietatea și limita ei înaintea alegerii instrumentului.
 2. Alegeți nivelul minim care observă defectul fără a împrumuta verdictul implementării.
 3. Pregătiți o stare validă și un rezultat așteptat independent.
@@ -96,5 +98,21 @@ Un turneu este o evaluare de politică, cu populație și criterii proprii. Num�
 6. Actualizați documentul contractului și eliminați suprapunerile fără proprietăți distincte.
 
 Rezultatele se păstrează în afara surselor. Testele unitare nu sunt obligate să producă prezentarea unui parcurs E2E; volumul publicării urmează scopul verificării.
+
+## Mutarea verificărilor din E2E în componente
+
+| Proprietate extrasă | Componenta potrivită | Ce rămâne pe Android |
+|---|---|---|
+| Geometrie, intersecții și centrare | Măsurători tipizate, extreme legale, text mărit și vecini care încalcă o singură limită. | Fontul efectiv, insets, ținta tactilă și aceeași compoziție în raster. |
+| Interpretarea ierarhiei | XML controlat: stare validă, nod lipsă, duplicat, regiune tăiată și document malformat. | Captura proaspătă după acțiune și identitatea ecranului observat. |
+| Tranziție sau reluare | Porturi mici, motorul real și evenimente livrate controlat, inclusiv după anulare. | Comanda prin controlul afișat, callback-urile și persistența platformei. |
+| Publicare | Date capturate, comparații și eșecuri originale; Extent/fallback și mutații ale rezultatului. | Revizia interactivă a HTML-ului rămâne audit de raport, cu propriul mediu. |
+
+- **Echivalență:** mapați cazul vechi la cazurile noi prin proprietate și identitate; păstrați situația nominală, refuzul și vecinul sănătos.
+- **Izolare:** fixture-ul schimbă intrarea ori observația controlată, iar așteptarea provine din regulă sau oracol independent. Nu folosiți rezultatul implementării ca expected.
+- **Ordine:** temporizarea injectată verifică succesiunea evenimentelor; un somn real sau un retry nu înlocuiește dovada opririi la eșec.
+- **Selecție:** rulați entry point-ul real al suitei și confruntați [inventarul execuției](ATF_Collections.md#inventarul-unei-selecții); fișierul mutat trebuie compilat și selectat efectiv.
+
+Componentele oracolului și sanity-ul nativ califică frontiere diferite. [Ghidul afișajului](ATF_Display.md) deține selecția nativă rămasă, iar [guvernanța schimbării testelor](../governance/ATF_TestChanges.md) deține retragerea cazurilor fără pierderea contractului.
 
 [Colecții și comenzi](ATF_Collections.md) · [Verificarea partidei](ATF_Gameplay.md) · [Guvernanța calității](../governance/README.md)

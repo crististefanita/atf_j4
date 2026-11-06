@@ -52,10 +52,27 @@ Pentru un alt joc, [admiterea domeniului](../learning/ATF_GameTransfer.md) cere 
 
 Componentele folosesc un oracol independent de calculul verificat. Replay-ul citește trace-ul existent și păstrează identitatea lui; o republicare nu devine o nouă execuție Android.
 
+Selecția urmează riscul observabil. [Matricea de afișaj](ATF_Display.md#matricea-minimă-după-risc) păstrează variațiile geometrice în componente și adaugă Android pentru font, gesturi și compoziția reală; o combinație nouă se adaugă când poate distinge un defect.
+
 - **Izolare:** construiți în TMP și păstrați rulările intermediare în depozitul extern configurat; scenariile native cer rezervare exclusivă, stare inițială explicită și restaurarea datelor.
 - **Audit:** fiecare verdict se leagă de surse, dependențe și binarul executat; checkpoint-ul păstrează acțiuni, așteptat/observat, aserții și captură, după nivelul verificării.
 - **Randare:** confruntați pașii, secțiunile expandabile și imaginile cu trace-ul; consemnați distinct verificarea statică și interacțiunea efectivă în browser.
 - **Limite:** un test omis, un diagnostic incomplet ori un eșec de publicare rămâne explicit în dosarul rezultatului; nu este transformat în PASS funcțional.
+
+## Ce înseamnă verificat
+
+| Verdict | Dovadă | Limită |
+|---|---|---|
+| Execuție | Cazurile reale au evaluat contractul și refuzurile relevante; cauza originală și curățarea sunt păstrate. | Un test verde nu dovedește că toate comparațiile sale au fost publicate. |
+| Date publicate | Invocările și comparațiile capturate se regăsesc la proprietarul corect, cu inputul și observația necesare înțelegerii. | Prezența în HTML nu dovedește că datele sunt accesibile în interfața raportului. |
+| Randare | HTML-ul identificat prin hash este verificat detașat: secțiuni pliabile, ultimul rând, navigare și imagine integrală când există. | Revizia raportului nu execută din nou aplicația sau oracolul. |
+
+[Contractul auditului](../reporting/ATF_Audit.md) deține aceste verificări. În dosarul unei rulări, fiecare verdict își declară scopul; un control static sau o probă pe un singur proprietar nu califică implicit întregul arbore interactiv.
+
+- **Populație:** clasa, metoda și invocarea parametrizată identifică un caz; aserțiunile, checkpoint-urile și mâinile jucate sunt unități distincte.
+- **Suprapunere:** o clasă rulată individual, apoi prin suită, ori aceeași selecție în Extent și fallback nu adaugă automat alte cazuri unice.
+- **Raportare:** componentele auditate capturează comparațiile în timpul testului; cele încă nemigrate își păstrează rezultatele JUnit și limita explicită. Unitarele nu primesc obligația unui parcurs E2E.
+- **Închidere:** selecția executată se confruntă cu selecția cerută; un caz dispărut, un abort sau o omisiune relevantă se explică înaintea calificării.
 
 ## Rezultate pe versiuni
 
