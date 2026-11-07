@@ -10,6 +10,7 @@ import org.junit.Test;
 import ro.whistlab.core.ai.engine.MonteCarloAi.Seat;
 import ro.whistlab.core.ai.engine.MonteCarloAi.View;
 import ro.whistlab.core.model.Card;
+import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
@@ -17,6 +18,56 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.rules.RomanianScoring;
 
 public final class ZeroMatchFinalLossComponentTest extends GradleAuditedTest {
+    @Test public void hardCanConvertInANaturalAllHardMatch() {
+        var scenario = new ZeroMatchPair.Case(GameMode.LONG_ROMANIAN, 4, 202611075962L, 3, true, null, true);
+        var match = ZeroMatchPair.play(scenario).on();
+        var actor = match.seats().get(0);
+        GradleInputs.fixture("Natural four-seat replay with Hard at every seat", "scenario", scenario,
+                "result", actor, "first zero decision",
+                match.pivots().stream().filter(pivot -> pivot.seat() == 0 && pivot.selected()).findFirst());
+        assertEquals("The public proof gives Hard a route to settle the raw score", 0, actor.raw());
+        assertEquals("The natural match awards the exact-zero conversion", 500, actor.finalScore());
+    }
+
+    @Test public void followingWithTheZeroTargetAlreadyHeldPreservesTheWinningLine() {
+        var lowDiamond = card(Suit.DIAMONDS, 5);
+        var highDiamond = card(Suit.DIAMONDS, 8);
+        var hand = List.of(card(Suit.SPADES, 9), card(Suit.SPADES, 11), card(Suit.HEARTS, 8),
+                card(Suit.HEARTS, 10), card(Suit.HEARTS, 12), lowDiamond, highDiamond);
+        var seats = List.of(new Seat(7, 5, 0, 5, -2), new Seat(7, 1, 0, 49, 3),
+                new Seat(7, 2, 0, 82, 1), new Seat(6, 2, 1, 122, 2),
+                new Seat(6, 1, 0, 104, 1), new Seat(6, 2, 0, 124, 3));
+        var history = List.of(new PlayedCard(4, card(Suit.CLUBS, 13)), new PlayedCard(5, card(Suit.CLUBS, 9)),
+                new PlayedCard(0, card(Suit.CLUBS, 11)), new PlayedCard(1, card(Suit.CLUBS, 5)),
+                new PlayedCard(2, card(Suit.CLUBS, 6)), new PlayedCard(3, card(Suit.CLUBS, 14)),
+                new PlayedCard(3, card(Suit.DIAMONDS, 13)), new PlayedCard(4, card(Suit.DIAMONDS, 6)),
+                new PlayedCard(5, card(Suit.DIAMONDS, 14)));
+        var view = new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 0, 3, 8, hand, seats,
+                history.subList(6, 9), history, null, true, 10, 10);
+        GradleInputs.fixture("Six seats, zero tricks required, two losing cards follow an ace",
+                "observation", view, "legal cards", List.of(lowDiamond, highDiamond));
+        var goal = ZeroMatchObjective.forTurn(view, lastIndex(view), List.of()).orElseThrow();
+        assertEquals("A five-point miss requires preserving the current zero tricks",
+                List.of(0), goal.continuationTargets(5));
+        assertEquals("Equal sampled support uses the conventional fallback while following",
+                Optional.of(lowDiamond), ZeroMatchSearch.card(view, lastIndex(view)));
+    }
+
+    @Test public void leadingForTwoTricksStillUsesTheClosingBalanceOnEqualSupport() {
+        var tenOfDiamonds = card(Suit.DIAMONDS, 10);
+        var hand = List.of(card(Suit.SPADES, 5), card(Suit.HEARTS, 6), card(Suit.HEARTS, 13),
+                card(Suit.HEARTS, 14), card(Suit.CLUBS, 8), card(Suit.CLUBS, 10),
+                tenOfDiamonds, card(Suit.DIAMONDS, 12));
+        var seats = List.of(new Seat(8, 2, 0, 86, 2), new Seat(8, 0, 0, 186, 2),
+                new Seat(8, 1, 0, 73, -1), new Seat(8, 1, 0, 66, 1),
+                new Seat(8, 1, 0, 64, 1), new Seat(8, 7, 0, 5, -2));
+        var view = new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 5, 4, 8, hand, seats,
+                List.of(), List.of(), null, true, 10, 10);
+        GradleInputs.fixture("Six seats, leading the final hand with two tricks required", "observation", view);
+        assertEquals("The lead with the smaller closing balance remains preferred",
+                Optional.of(tenOfDiamonds), ZeroMatchSearch.card(view, lastIndex(view)));
+    }
+
     @Test public void equalZeroSupportFavorsTheSmallerResidualInTheLastAuction() {
         var hand = List.of(card(Suit.SPADES, 5), card(Suit.SPADES, 6), card(Suit.SPADES, 8),
                 card(Suit.CLUBS, 8), card(Suit.CLUBS, 12), card(Suit.DIAMONDS, 6),

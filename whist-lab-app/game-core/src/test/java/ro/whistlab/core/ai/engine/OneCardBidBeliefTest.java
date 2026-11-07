@@ -35,11 +35,39 @@ assertTrue("actual >= 0 && actual <= 1 must hold", actual>=0&&actual<=1);assertE
         assertTrue("OneCardBidBelief.probability(zero) > OneCardBidBelief.probability(one) must hold", OneCardBidBelief.probability(zero)>OneCardBidBelief.probability(one));
     }
     @Test public void forcedLastBidIsNotMistakenForHandStrength(){
-        var v=view(0,new Card(Suit.HEARTS,14),null,null);var seats=new ArrayList<>(v.seats());seats.set(3,new MonteCarloAi.Seat(1,0,0));
-        var forced=new MonteCarloAi.View(v.mode(),v.trump(),v.seat(),v.dealer(),1,v.hand(),seats,List.of(),List.of(),v.turnedCard());
+        for (int prior : List.of(0, 1)) {
+            var original = view(0, new Card(Suit.HEARTS, 14), null, 0);
+            var seats = new ArrayList<>(original.seats());
+            seats.set(0, new MonteCarloAi.Seat(1, prior, 0));
+            seats.set(2, new MonteCarloAi.Seat(1, 0, 0));
+            var withoutDealer = withSeats(original, seats);
+            seats.set(3, new MonteCarloAi.Seat(1, prior, 0));
+            var forced = withSeats(original, seats);
+            atf.gradle.audit.GradleInputs.fixture("A completed prefix makes the dealer bid mandatory",
+                    "prefix total", prior, "without dealer signal", withoutDealer, "forced dealer signal", forced);
+            assertEquals("The mandatory zero or one contributes no evidence about the dealer's card",
+                    OneCardBidBelief.probability(withoutDealer), OneCardBidBelief.probability(forced), 1e-12);
+        }
+    }
 
-        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "forced", forced, "seats", seats, "v", v);
-        assertEquals(MonteCarloAi.oneCardWinProbability(v),OneCardBidBelief.probability(forced),1e-12);
+    @Test public void aFreeDealerBidIsEvidenceAfterTwoEarlierOnes() {
+        var original = view(0, new Card(Suit.HEARTS, 14), null, 1);
+        var seats = new ArrayList<>(original.seats());
+        seats.set(0, new MonteCarloAi.Seat(1, 1, 0));
+        seats.set(2, new MonteCarloAi.Seat(1, 0, 0));
+        seats.set(3, new MonteCarloAi.Seat(1, 0, 0));
+        var zero = withSeats(original, seats);
+        seats.set(3, new MonteCarloAi.Seat(1, 1, 0));
+        var one = withSeats(original, seats);
+        atf.gradle.audit.GradleInputs.fixture("Both dealer bids are legal after a prefix of two",
+                "dealer chooses zero", zero, "dealer chooses one", one);
+        assertTrue("A voluntary one lowers the chance of the non-trump ace",
+                OneCardBidBelief.probability(zero) > OneCardBidBelief.probability(one));
+    }
+
+    private static MonteCarloAi.View withSeats(MonteCarloAi.View view, List<MonteCarloAi.Seat> seats) {
+        return new MonteCarloAi.View(view.mode(), view.trump(), view.seat(), view.dealer(), 1, view.hand(),
+                List.copyOf(seats), List.of(), List.of(), view.turnedCard());
     }
     @Test public void forbiddenLastBidStillWinsOverAWinningAceAndTheModelIsVersioned(){
         var v=view(3,new Card(Suit.SPADES,14),0,0);var seats=new ArrayList<>(v.seats());seats.set(2,new MonteCarloAi.Seat(1,0,0));

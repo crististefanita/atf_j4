@@ -33,6 +33,7 @@ Sarcina `:game-core:zeroMatchPairedTest` rulează explicit partide complete pe J
 |---|---|
 | `whist.zero.firstSeed`, `whist.zero.repeats` | Intervalul determinist de distribuții pentru fiecare combinație de variantă și număr de locuri. |
 | `whist.zero.pressure` | Alege lotul cu prefix controlat, în care un loc primește licitații adverse legale înainte de ultimele cinci mâini. Loturile naturale și controlate se interpretează separat. |
+| `whist.zero.allHard` | Alege un lot natural cu Hard la toate locurile. Opțiunea se folosește separat de prefixul controlat. |
 | `whist.zero.output`, `whist.zero.reference` | Scrie perechile JSON într-un dosar nou și confruntă controlul cu referința înghețată, când este disponibilă. |
 | `whist.auditOutput`, `whist.auditSource` | Destinația Extent și identificarea sursei de execuție. |
 

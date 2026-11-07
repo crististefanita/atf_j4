@@ -1,6 +1,8 @@
 # Componente native ale chenarului
 
-Matricea măsoară componentele Android comune la 3–6 locuri, 240, 320 și 393 dp, cu font normal, 1,5× și 2×. Numele cu diacritice, statisticile Whist, etichetele complete și simbolurile Δ/Σ intră în același chenar. Fiecare rând trebuie să aibă text integral, fără elipsă, în lățimea alocată. Chenarele trebuie să încapă în masă și să nu se intersecteze.
+Matricea măsoară componentele Android comune la 3–6 locuri, 240, 320 și 393 dp, cu font normal, 1,5× și 2×. Numele cu diacritice, statisticile Whist, etichetele complete și simbolurile Δ/Σ intră în același chenar.
+
+Fiecare rând trebuie să aibă text integral, fără elipsă, în lățimea alocată. Chenarele trebuie să încapă în masă și să nu se intersecteze.
 
 Construiți în workspace-ul extern, instalați APK-ul de test izolat și porniți runnerul nativ.
 

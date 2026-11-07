@@ -30,6 +30,8 @@ public final class ZeroMatchPairedMatchTest extends GradleAuditedTest {
         int repeats = Integer.getInteger("whist.zero.repeats", 2);
         if (repeats < 1 || repeats > 32) throw new IllegalArgumentException("Expected 1–32 deals per cell");
         boolean pressure = Boolean.getBoolean("whist.zero.pressure");
+        boolean allHard = Boolean.getBoolean("whist.zero.allHard");
+        if (pressure && allHard) throw new IllegalArgumentException("All-Hard tables use the natural cohort");
         var cases = new ArrayList<ZeroMatchPair.Case>();
         int cell = 0;
         for (var mode : List.of(GameMode.ROMANIAN_WHIST, GameMode.LONG_ROMANIAN)) {
@@ -38,7 +40,7 @@ public final class ZeroMatchPairedMatchTest extends GradleAuditedTest {
                     int hard = (cell + trial) % players;
                     Integer focal = pressure ? (trial % 4 < 2 ? (hard + 1) % players : hard) : null;
                     cases.add(new ZeroMatchPair.Case(mode, players, first + 32 * cell + trial,
-                            hard, trial % 2 == 0, focal));
+                            hard, trial % 2 == 0, focal, allHard));
                 }
             }
         }

@@ -41,17 +41,51 @@ public class ZeroMatchPolicyComponentTest extends GradleAuditedTest {
     }
 
     @Test public void theZeroTargetCannotOverrideTheDealerBidRestriction() {
-        var game = oneCardDeal(0);
-        game.submitBid(1, 1);
-        game.submitBid(2, 0);
-        var state = asMatch(game.snapshot(), 0, true, 1, 100, 101);
-        GradleInputs.fixture("The dealer would need a zero bid to miss, but the dealer hook forbids it",
-                "public state", state);
+        for (int count = 3; count <= 6; count++) {
+            int[] totals = rivalScores(count, 100);
+            for (int prefix : List.of(0, 1, 2)) {
+                var game = oneCardDeal(0, count);
+                for (int seat = 1; seat < count; seat++) game.submitBid(seat, seat <= prefix ? 1 : 0);
+                var state = asMatch(game.snapshot(), 0, true, totals);
+                var classic = asMatch(game.snapshot(), 0, false, totals);
+                GradleInputs.fixture("One-card dealer with a public prefix",
+                        "players", count, "prior sum", prefix, "public state", state);
+                if (prefix == 2) {
+                    assertEquals("An unforced dealer can aim for zero by bidding zero", List.of(0, 0), bids(state));
+                    assertEquals("The usual policy pursues the winning ace", List.of(1, 1), bids(classic));
+                } else {
+                    try (var work = SearchWork.measure(Long.MAX_VALUE)) {
+                        assertEquals("Both levels must make the only legal bid", List.of(prefix, prefix), bids(state));
+                        assertEquals("With the rule disabled the same bid is forced", List.of(prefix, prefix), bids(classic));
+                        var events = work.snapshot().events();
+                        assertEquals("No zero search is needed for a forced bid", 0L,
+                                events.get(SearchWork.Event.ZERO_ELIGIBLE).longValue());
+                        assertEquals("A forced bid does not count as a strategy selection", 0L,
+                                events.get(SearchWork.Event.ZERO_SELECTED).longValue());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test public void aCloseTableKeepsBothLevelsOnTheirOrdinaryPolicy() {
+        for (int count = 3; count <= 6; count++) {
+            var opening = oneCardDeal(count - 1, count).snapshot();
+            int[] totals = rivalScores(count, 4);
+            var near = asMatch(opening, 0, true, totals);
+            var classic = asMatch(opening, 0, false, totals);
+            GradleInputs.fixture("One-card auction with a reachable conventional finish", "public state", near);
+            assertEquals("Normal and Hard keep their original bids while second place is open", bids(classic), bids(near));
+        }
+        var tail = legalTwoTrickTail().snapshot();
+        var near = asMatch(tail, 0, true, 5, 5, 5);
+        var classic = asMatch(tail, 0, false, 5, 5, 5);
+        GradleInputs.fixture("Eight-card finale with a reachable conventional finish",
+                "observation", MonteCarloAi.observe(near, 0));
         try (var work = SearchWork.measure(Long.MAX_VALUE)) {
-            assertEquals("Both levels must make the only legal bid", List.of(1, 1), bids(state));
-            var events = work.snapshot().events();
-            assertEquals("A forced action does not count as eligibility", 0L, events.get(SearchWork.Event.ZERO_ELIGIBLE).longValue());
-            assertEquals("A forced action does not count as a strategy selection", 0L, events.get(SearchWork.Event.ZERO_SELECTED).longValue());
+            assertEquals("Normal and Hard keep their original play while second place is open", cards(classic), cards(near));
+            assertEquals("The play never enters the zero planner", 0L,
+                    work.snapshot().events().get(SearchWork.Event.ZERO_ELIGIBLE).longValue());
         }
     }
 
@@ -89,9 +123,23 @@ public class ZeroMatchPolicyComponentTest extends GradleAuditedTest {
     }
 
     private static GameSession oneCardDeal(int dealer) {
-        return GameSession.fromDeal(new GameConfig(3, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 1),
-                List.of(List.of(new Card(HEARTS, 14)), List.of(new Card(CLUBS, 9)), List.of(new Card(SPADES, 9))),
-                Trump.HEARTS, dealer);
+        return oneCardDeal(dealer, 3);
+    }
+
+    private static GameSession oneCardDeal(int dealer, int count) {
+        var mode = GameMode.ROMANIAN_WHIST;
+        var hands = new ArrayList<List<Card>>();
+        hands.add(List.of(new Card(HEARTS, 14)));
+        GameRules.deck(mode, count).stream().filter(card -> card.suit() == CLUBS).limit(count - 1)
+                .map(List::of).forEach(hands::add);
+        return GameSession.fromDeal(new GameConfig(count, mode, AiDifficulty.NORMAL, 1), hands, Trump.HEARTS, dealer);
+    }
+
+    private static int[] rivalScores(int count, int rivalScore) {
+        int[] totals = new int[count];
+        java.util.Arrays.fill(totals, rivalScore);
+        totals[0] = 1;
+        return totals;
     }
 
     private static GameSession legalTwoTrickTail() {

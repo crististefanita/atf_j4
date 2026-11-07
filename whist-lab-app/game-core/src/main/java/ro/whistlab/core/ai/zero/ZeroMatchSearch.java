@@ -41,10 +41,14 @@ public final class ZeroMatchSearch {
     }
 
     public static Optional<Card> card(View view, int handIndex) {
+        return card(view, handIndex, false);
+    }
+
+    public static Optional<Card> card(View view, int handIndex, boolean jointPodium) {
         var led = view.trick().isEmpty() ? null : view.trick().get(0).card().suit();
         List<Card> legal = GameRules.legalCards(view.hand(), led, view.trump(), view.mode());
         if (legal.size() == 1) return Optional.of(legal.get(0));
-        return ZeroMatchObjective.forTurn(view, handIndex, List.of()).flatMap(objective -> {
+        return ZeroMatchObjective.forTurn(view, handIndex, List.of(), jointPodium).flatMap(objective -> {
             SearchWork.event(SearchWork.Event.ZERO_ELIGIBLE);
             int bid = view.seats().get(view.seat()).bid();
             var targets = objective.continuationTargets(bid);
@@ -89,7 +93,10 @@ public final class ZeroMatchSearch {
         double bestOptions = 0;
         double bestDistance = Double.POSITIVE_INFINITY;
         double bestPoints = Double.NEGATIVE_INFINITY;
-        int balance = view.seats().get(view.seat()).total();
+        var own = view.seats().get(view.seat());
+        // On a follow, once a zero route already holds, keep the conventional fallback on equal support.
+        boolean compareDistance = objective.isFinalHand() && (view.trick().isEmpty()
+                || actions.stream().noneMatch(action -> action.desired() == own.won()));
         for (int i = 0; i < actions.size(); i++) {
             var action = actions.get(i);
             double[] distribution = counts.apply(i);
@@ -102,10 +109,9 @@ public final class ZeroMatchSearch {
                 int delta = MonteCarloAi.points(view, view.seat(), won, action.bid());
                 weight += distribution[won] * objective.weight(action.bid(), won);
                 options += distribution[won] * objective.finishingPreference(action.bid(), won);
-                if (objective.isFinalHand()) distance += distribution[won] * Math.abs(balance + delta);
+                if (compareDistance) distance += distribution[won] * Math.abs(own.total() + delta);
                 points += distribution[won] * delta;
             }
-            // Equal zero support should not favor a miss that leaves a larger final balance.
             boolean betterFallback = distance < bestDistance || distance == bestDistance && points > bestPoints;
             if (weight > bestWeight || weight > 0 && weight == bestWeight
                     && (options > bestOptions || options == bestOptions && betterFallback)) {

@@ -61,7 +61,7 @@ tasks.register("zeroMatchPairedTest", Test) {
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
     filter { includeTestsMatching "ro.whistlab.core.ai.zero.ZeroMatchPairedMatchTest" }
-    ["firstSeed", "repeats", "output", "reference", "pressure"].each { key ->
+    ["firstSeed", "repeats", "output", "reference", "pressure", "allHard"].each { key ->
         def name = "whist.zero.${key}"
         providers.gradleProperty(name).orNull?.with { value -> systemProperty(name, value) }
     }

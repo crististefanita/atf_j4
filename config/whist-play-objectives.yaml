@@ -58,12 +58,15 @@ zero_match:
   variants: ["ROMANIAN_WHIST", "LONG_ROMANIAN"]
   players: [3, 4, 5, 6]
   difficulties: ["NORMAL", "HARD"]
-  activation: "Rule enabled; at least two rivals have a conventional floor strictly above the actor ceiling; an exact-zero continuation remains arithmetically reachable."
+  activation: "Rule enabled; a public proof rules out the conventional top two, and an exact-zero continuation remains arithmetically reachable."
+  hard_podium_proof: "Once all bids are public, the rivals the actor would need to catch must share the remaining tricks in the current hand. If the cheapest such group cannot fit the budget in any own result, the podium is excluded. A possible tie counts as reachable. A current trick the actor cannot legally win is excluded from the actor's ceiling."
+  hard_reserve: "Before the final hand, with two to four tricks left and more than one legal card, compare at most 64 fully enumerated public deals. Where either choice can still lead to the conventional top two, all legal continuations must yield the same trick totals for every player. Where the podium is excluded, the alternative preserves existing routes and, with four tricks left, may replace a contingent route with a guaranteed one. An incomplete enumeration or continuation proof keeps the conventional card."
   bounds: "Evaluate each possible result of the current hand together with the remaining schedule. Its next streak determines the maximum remaining streak payouts for that seat."
   precedence: "Recompute before bidding and before playing. Use the level's ordinary policy if no eligible action has support."
+  one_card_auction: "The dealer bids zero after a prior total of zero, one after a prior total of one, and may choose either after a larger total. A mandatory bid bypasses strategy selection and supplies no card-strength evidence."
   suffix: "Combine distinct scoring outcomes with equal weights over the actual schedule, including the configured streak transitions."
   final_hand: "Compare each trick count that produces exact zero as a distinct continuation over the same public worlds."
-  final_tie: "Prefer the smaller expected absolute closing balance, including the scoring effect of a streak, before conventional points."
+  final_tie: "On a bid or lead, or when following with the target still ahead, prefer a smaller expected absolute closing balance. When following and the number of tricks already won settles the balance, use conventional points after equal exact-zero support."
   penultimate_tie: "Prefer final bid and trick-count pairs that settle the balance. When the actor closes the next auction, compare adjacent legal trick counts that would still miss, to account for one-trick errors."
   action_priority: ["estimated_support_for_exact_zero", "phase_specific_tie_break", "expected_conventional_points"]
   final_score: "After all scheduled hands and streak adjustments, each raw total of 0 becomes a final score of 500. The hand ledger stays raw."

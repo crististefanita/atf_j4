@@ -1,11 +1,13 @@
 package ro.whistlab.core.ai.zero;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import ro.whistlab.core.ai.engine.MonteCarloAi.Seat;
 import ro.whistlab.core.ai.engine.MonteCarloAi.View;
 import ro.whistlab.core.ai.simulation.SearchCancellation;
+import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.rules.RomanianScoring;
 import ro.whistlab.core.rules.RomanianScoring.Result;
@@ -17,7 +19,7 @@ final class ZeroMatchObjective {
     private final int radius;
     private final int finalHandSize;
 
-    private ZeroMatchObjective(View view, List<Integer> future, int radius) {
+    ZeroMatchObjective(View view, List<Integer> future, int radius) {
         this.view = view;
         this.radius = radius;
         finalHandSize = future.size() == 1 ? future.get(0) : 0;
@@ -25,13 +27,15 @@ final class ZeroMatchObjective {
     }
 
     public static Optional<ZeroMatchObjective> forTurn(View view, int handIndex, List<Integer> legalBids) {
+        return forTurn(view, handIndex, legalBids, false);
+    }
+
+    static Optional<ZeroMatchObjective> forTurn(View view, int handIndex, List<Integer> legalBids,
+            boolean jointPodium) {
         List<Integer> schedule = GameRules.handSizes(view.mode(), view.seats().size());
         List<Integer> future = schedule.subList(handIndex + 1, schedule.size());
         int unscored = view.handSize() - view.seats().stream().mapToInt(Seat::won).sum();
-        var tail = new ScheduleTail(future.size(), future.stream().mapToInt(Integer::intValue).sum(),
-                (int) future.stream().filter(size -> size > 1).count(),
-                view.streakBonuses() ? view.streakBonusPoints() : 0,
-                view.streakBonuses() ? view.streakPenaltyPoints() : 0);
+        var tail = ScheduleTail.of(view, future);
         var own = view.seats().get(view.seat());
         int ceiling = own.total() + bound(view, own, unscored, legalBids, tail, true);
         if (ceiling < 0 || own.total() + bound(view, own, unscored, legalBids, tail, false) > 0) {
@@ -45,12 +49,57 @@ final class ZeroMatchObjective {
             if (rival.total() + bound(view, rival, unscored, List.of(0, view.handSize()), tail, false) > ceiling)
                 ahead++;
         }
-        if (ahead < 2) return Optional.empty();
-
-        var objective = new ZeroMatchObjective(view, future, Math.max(tail.maximum(4), -tail.minimum(-4)));
         var bids = own.bid() == null ? legalBids : List.of(own.bid());
+        if (ahead < 2 && (!jointPodium || own.bid() == null || canStillFinishTopTwo(view, own, unscored, tail))) {
+            return Optional.empty();
+        }
+        var objective = new ZeroMatchObjective(view, future, Math.max(tail.maximum(4), -tail.minimum(-4)));
         return bids.stream().anyMatch(bid -> objective.weight(bid, objective.desiredTricks(bid)) > 0)
                 ? Optional.of(objective) : Optional.empty();
+    }
+
+    private static boolean canStillFinishTopTwo(View view, Seat own, int unscored,
+            ScheduleTail tail) {
+        int rivalsToCatch = view.seats().size() - 2;
+        int[] costs = new int[view.seats().size() - 1];
+        int ownLimit = unscored - (canWinCurrentTrick(view) ? 0 : 1);
+        for (int ownExtra = ownLimit; ownExtra >= 0; ownExtra--) {
+            var result = score(view, view.handSize(), own.streak(), own.won() + ownExtra, own.bid());
+            int ceiling = own.total() + result.totalPoints() + tail.maximum(result.nextStreak());
+            int budget = unscored - ownExtra;
+            int index = 0;
+            for (int seat = 0; seat < view.seats().size(); seat++) {
+                if (seat != view.seat()) {
+                    costs[index++] = minimumTricksToCatch(view, view.seats().get(seat), tail, ceiling, budget);
+                }
+            }
+            Arrays.sort(costs);
+            int needed = 0;
+            for (int i = 0; i < rivalsToCatch; i++) needed += costs[i];
+            if (needed <= budget) return true;
+        }
+        return false;
+    }
+
+    private static boolean canWinCurrentTrick(View view) {
+        if (view.trick().isEmpty()) return true;
+        var trial = new ArrayList<>(view.trick());
+        var legal = GameRules.legalCards(view.hand(), trial.get(0).card().suit(), view.trump(), view.mode());
+        for (var card : legal) {
+            trial.add(new PlayedCard(view.seat(), card));
+            if (GameRules.winningSeat(trial, view.trump()) == view.seat()) return true;
+            trial.remove(trial.size() - 1);
+        }
+        return false;
+    }
+
+    private static int minimumTricksToCatch(View view, Seat rival, ScheduleTail tail, int ceiling, int budget) {
+        for (int extra = 0; extra <= budget; extra++) {
+            var result = score(view, view.handSize(), rival.streak(), rival.won() + extra, rival.bid());
+            int floor = rival.total() + result.totalPoints() + tail.minimum(result.nextStreak());
+            if (floor <= ceiling) return extra;
+        }
+        return budget + 1;
     }
 
     private static int bound(View view, Seat seat, int unscored, List<Integer> legalBids,
@@ -68,7 +117,14 @@ final class ZeroMatchObjective {
         return bound;
     }
 
-    private record ScheduleTail(int hands, int tricks, int eligible, int reward, int penalty) {
+    record ScheduleTail(int hands, int tricks, int eligible, int reward, int penalty) {
+        static ScheduleTail of(View view, List<Integer> future) {
+            return new ScheduleTail(future.size(), future.stream().mapToInt(Integer::intValue).sum(),
+                    (int) future.stream().filter(size -> size > 1).count(),
+                    view.streakBonuses() ? view.streakBonusPoints() : 0,
+                    view.streakBonuses() ? view.streakPenaltyPoints() : 0);
+        }
+
         int maximum(int streak) {
             return 5 * hands + tricks + (eligible + Math.max(0, streak)) / 5 * reward;
         }
@@ -177,7 +233,7 @@ final class ZeroMatchObjective {
         return view.streakBonuses() ? streak + 4 : 0;
     }
 
-    private static Result score(View view, int size, int streak, int won, int bid) {
+    static Result score(View view, int size, int streak, int won, int bid) {
         return view.streakBonuses()
                 ? RomanianScoring.score(won, bid, size, streak, view.streakBonusPoints(), view.streakPenaltyPoints())
                 : new Result(GameRules.scoreDelta(won, bid, view.mode()), 0, 0);

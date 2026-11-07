@@ -91,17 +91,26 @@ public final class PossibleDeals {
     }
 
     public static List<List<List<Card>>> enumerateSmallDeals(View v) {
+        return enumerateSmallDeals(v, 2, 256);
+    }
+
+    public static List<List<List<Card>>> enumerateSmallDeals(View v, int maxCardsPerSeat, int maxWorlds) {
+        return enumerateSmallDeals(v, maxCardsPerSeat, 10, maxWorlds, Integer.MAX_VALUE);
+    }
+
+    public static List<List<List<Card>>> enumerateSmallDeals(View v, int maxCardsPerSeat, int maxUnknown,
+            int maxWorlds, int maxNodes) {
         SearchCancellation.check();
         List<Card> pool = unknownCards(v);
-        if (pool.size() > 10 || v.seats().stream().anyMatch(s -> s.remaining() > 2))
+        if (pool.size() > maxUnknown || v.seats().stream().anyMatch(s -> s.remaining() > maxCardsPerSeat))
             return List.of();
         boolean[][] voids = knownVoids(v);
         List<List<Card>> hands = new ArrayList<>();
         for (int s = 0; s < v.seats().size(); s++) hands.add(new ArrayList<>());
         hands.set(v.seat(), new ArrayList<>(v.hand()));
-        List<List<List<Card>>> result = new ArrayList<>();
-        enumerate(v, pool, voids, hands, 0, result);
-        return result.size() > 256 ? List.of() : result;
+        var search = new Enumeration(maxWorlds, maxNodes);
+        enumerate(v, pool, voids, hands, 0, search);
+        return search.incomplete ? List.of() : search.worlds;
     }
 
     private static void enumerate(
@@ -110,16 +119,15 @@ public final class PossibleDeals {
             boolean[][] voids,
             List<List<Card>> hands,
             int seat,
-            List<List<List<Card>>> result) {
-        SearchCancellation.check();
-        SearchWork.event(SearchWork.Event.ENUMERATION);
-        if (result.size() > 256) return;
+            Enumeration search) {
+        if (!search.visit()) return;
         if (seat == hands.size()) {
-            result.add(copy(hands));
+            if (search.worlds.size() == search.maxWorlds) search.incomplete = true;
+            else search.worlds.add(copy(hands));
             return;
         }
         if (seat == v.seat()) {
-            enumerate(v, available, voids, hands, seat + 1, result);
+            enumerate(v, available, voids, hands, seat + 1, search);
             return;
         }
         choose(
@@ -131,7 +139,7 @@ public final class PossibleDeals {
                 0,
                 v.seats().get(seat).remaining(),
                 new ArrayList<>(),
-                result);
+                search);
     }
 
     private static void choose(
@@ -143,23 +151,44 @@ public final class PossibleDeals {
             int at,
             int need,
             List<Card> chosen,
-            List<List<List<Card>>> result) {
-        SearchCancellation.check();
-        SearchWork.event(SearchWork.Event.ENUMERATION);
-        if (result.size() > 256) return;
+            Enumeration search) {
+        if (!search.visit()) return;
         if (need == 0) {
             hands.set(seat, new ArrayList<>(chosen));
             List<Card> rest = new ArrayList<>(available);
             rest.removeAll(chosen);
-            enumerate(v, rest, voids, hands, seat + 1, result);
+            enumerate(v, rest, voids, hands, seat + 1, search);
             return;
         }
-        for (int i = at; i <= available.size() - need; i++)
+        for (int i = at; !search.incomplete && i <= available.size() - need; i++)
             if (!voids[seat][available.get(i).suit().ordinal()]) {
                 chosen.add(available.get(i));
-                choose(v, available, voids, hands, seat, i + 1, need - 1, chosen, result);
+                choose(v, available, voids, hands, seat, i + 1, need - 1, chosen, search);
                 chosen.remove(chosen.size() - 1);
             }
+    }
+
+    private static final class Enumeration {
+        private final List<List<List<Card>>> worlds = new ArrayList<>();
+        private final int maxWorlds;
+        private int remainingNodes;
+        private boolean incomplete;
+
+        private Enumeration(int maxWorlds, int maxNodes) {
+            this.maxWorlds = maxWorlds;
+            this.remainingNodes = maxNodes;
+        }
+
+        private boolean visit() {
+            SearchCancellation.check();
+            if (remainingNodes == 0) {
+                incomplete = true;
+                return false;
+            }
+            remainingNodes--;
+            SearchWork.event(SearchWork.Event.ENUMERATION);
+            return true;
+        }
     }
 
     public static List<List<Card>> copy(List<List<Card>> hands) {

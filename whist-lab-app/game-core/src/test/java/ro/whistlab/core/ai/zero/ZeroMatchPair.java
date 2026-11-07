@@ -19,16 +19,21 @@ import ro.whistlab.core.session.GameSession.PlayerSnapshot;
 import ro.whistlab.core.session.GameSession.Snapshot;
 
 final class ZeroMatchPair {
-    record Case(GameMode mode, int players, long seed, int hardSeat, boolean series, Integer pressureSeat) {
+    record Case(GameMode mode, int players, long seed, int hardSeat, boolean series, Integer pressureSeat,
+            boolean allHard) {
+        Case(GameMode mode, int players, long seed, int hardSeat, boolean series, Integer pressureSeat) {
+            this(mode, players, seed, hardSeat, series, pressureSeat, false);
+        }
         String id() { return mode.name() + "-" + players + "-" + seed; }
-        AiDifficulty level(int seat) { return seat == hardSeat ? AiDifficulty.HARD : AiDifficulty.NORMAL; }
+        AiDifficulty level(int seat) { return allHard || seat == hardSeat ? AiDifficulty.HARD : AiDifficulty.NORMAL; }
         boolean pressurePrefix(int handNumber) {
             return pressureSeat != null && handNumber <= GameRules.handSizes(mode, players).size() - 5;
         }
     }
 
     record Pivot(int hand, int cards, int seat, GamePhase phase, int cardsPlayed,
-            boolean selected, String action, List<Integer> totals, List<Integer> bids, List<Integer> tricks) { }
+            boolean selected, String action, List<Integer> totals, List<Integer> bids, List<Integer> tricks,
+            boolean reserved) { }
 
     record Hand(int number, int size, int dealer, String trump, String turnedCard,
             String dealDigest, List<Integer> bids, List<String> plays, List<Integer> tricks,
@@ -96,10 +101,12 @@ final class ZeroMatchPair {
                 action = label(card);
             }
             var events = work.snapshot().events();
-            if (events.get(SearchWork.Event.ZERO_ELIGIBLE) > 0) {
+            boolean reserved = events.get(SearchWork.Event.ZERO_RESERVED) > 0;
+            if (events.get(SearchWork.Event.ZERO_ELIGIBLE) > 0 || reserved) {
                 pivots.add(new Pivot(state.handNumber(), state.handSize(), seat, state.phase(),
                         state.history().size(), events.get(SearchWork.Event.ZERO_SELECTED) > 0,
-                        action, totals(state), bids(state), state.players().stream().map(PlayerSnapshot::tricksWon).toList()));
+                        action, totals(state), bids(state), state.players().stream().map(PlayerSnapshot::tricksWon).toList(),
+                        reserved));
             }
         }
     }
@@ -114,7 +121,7 @@ final class ZeroMatchPair {
 
     private static SeatResult result(Case scenario, Snapshot end, PlayerSnapshot player, List<Pivot> pivots) {
         int seat = player.seat();
-        var eligible = pivots.stream().filter(pivot -> pivot.seat() == seat).toList();
+        var eligible = pivots.stream().filter(pivot -> pivot.seat() == seat && !pivot.reserved()).toList();
         var selected = eligible.stream().filter(Pivot::selected).toList();
         int selectedBids = (int) selected.stream().filter(pivot -> pivot.phase() == GamePhase.BIDDING).count();
         int finalScore = end.matchScore(seat);

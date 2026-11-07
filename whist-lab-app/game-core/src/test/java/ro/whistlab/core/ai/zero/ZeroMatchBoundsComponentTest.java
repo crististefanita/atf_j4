@@ -7,8 +7,11 @@ import atf.gradle.audit.GradleInputs;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
+import ro.whistlab.core.ai.engine.MonteCarloAi;
 import ro.whistlab.core.ai.engine.MonteCarloAi.Seat;
 import ro.whistlab.core.ai.engine.MonteCarloAi.View;
+import ro.whistlab.core.ai.simulation.PossibleDeals;
+import ro.whistlab.core.ai.simulation.SearchWork;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
@@ -62,6 +65,170 @@ public final class ZeroMatchBoundsComponentTest extends GradleAuditedTest {
                 ZeroMatchObjective.forTurn(tie, index, List.of()).isEmpty());
         assertTrue("Two rivals strictly ahead permit the two one-point losses",
                 ZeroMatchObjective.forTurn(excluded, index, List.of()).isPresent());
+    }
+
+    @Test public void hardProvesEliminationWhenRivalsNeedTheSameRemainingTricks() {
+        var out = withTwoRemainingTricks(4);
+        var tie = withTwoRemainingTricks(3);
+        int index = GameRules.handSizes(out.mode(), out.seats().size()).size() - 1;
+        GradleInputs.fixture("Four seats and two unassigned tricks",
+                "individual bounds are inconclusive", out, "one-point change leaves a podium tie", tie);
+        assertTrue("The individual bounds cannot prove that two rivals finish ahead",
+                ZeroMatchObjective.forTurn(out, index, List.of()).isEmpty());
+        var proof = ZeroMatchObjective.forTurn(out, index, List.of(), true).orElseThrow();
+        assertEquals("One more trick would reduce the raw score from two to zero",
+                List.of(2), proof.continuationTargets(0));
+        assertTrue("A two-way tie with the actor still leaves second place reachable",
+                ZeroMatchObjective.forTurn(tie, index, List.of(), true).isEmpty());
+    }
+
+    @Test public void hardDoesNotCountATrickItsLegalCardsCannotWin() {
+        var hand = List.of(new Card(Suit.HEARTS, 9), new Card(Suit.HEARTS, 10));
+        var seats = List.of(new Seat(2, 3, 1, 1), new Seat(2, 0, 2, 4),
+                new Seat(2, 0, 1, 4), new Seat(1, 0, 2, 4));
+        var ace = List.of(play(3, Suit.HEARTS, 14));
+        var following = new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 0, 3, 8, hand, seats, ace, ace);
+        var leading = new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 0, 3, 8, hand, seats, List.of(), List.of());
+        int index = GameRules.handSizes(following.mode(), seats.size()).size() - 1;
+        GradleInputs.fixture("Same totals and bids before a lead or behind an unbeatable ace",
+                "leading", leading, "following", following);
+        assertTrue("Winning both tricks could still make the contract and reach the podium",
+                ZeroMatchObjective.forTurn(leading, index, List.of(), true).isEmpty());
+        assertEquals("After the forced loss, taking the last trick settles the score",
+                List.of(2), ZeroMatchObjective.forTurn(following, index, List.of(), true)
+                        .orElseThrow().continuationTargets(3));
+    }
+
+    @Test public void hardKeepsAFutureZeroRouteAcrossCompletePublicWorlds() {
+        var view = twoCardReserve(61);
+        var ten = new Card(Suit.DIAMONDS, 10);
+        var ace = new Card(Suit.DIAMONDS, 14);
+        int index = GameRules.handSizes(view.mode(), view.seats().size()).size() - 3;
+        GradleInputs.fixture("Two possible owners of the last club and diamond", "observation", view,
+                "ordinary discard", ten, "route-preserving discard", ace);
+        assertTrue("The existing zero planner still leaves the ordinary card decision available",
+                ZeroMatchSearch.card(view, index, true).isEmpty());
+        assertEquals("The conventional Hard decision discards the ten", ten, MonteCarloAi.chooseCard(view).card());
+        try (var work = SearchWork.measure(Long.MAX_VALUE)) {
+            assertEquals("Discarding the ace retains the two-point miss in both worlds",
+                    ace, ZeroMatchReserve.choose(view, index, ten));
+            assertEquals("The decision is recorded as preserving a future route", 1L,
+                    work.snapshot().events().get(SearchWork.Event.ZERO_RESERVED).longValue());
+            assertEquals("A reserve is not an activation of the zero strategy", 0L,
+                    work.snapshot().events().get(SearchWork.Event.ZERO_SELECTED).longValue());
+        }
+    }
+
+    @Test public void aDifferentOutcomeWhilePodiumIsPossibleRejectsTheZeroReserve() {
+        var view = twoCardReserve(35);
+        var ten = new Card(Suit.DIAMONDS, 10);
+        int index = GameRules.handSizes(view.mode(), view.seats().size()).size() - 3;
+        GradleInputs.fixture("Identical cards with rivals close enough for a conventional recovery",
+                "observation", view, "ordinary discard", ten);
+        assertEquals("A zero route cannot displace a card when a public world has different podium outcomes",
+                ten, ZeroMatchReserve.choose(view, index, ten));
+    }
+
+    @Test public void hardCanPreserveTheZeroRouteWithThreeCardsRemaining() {
+        var view = threeCardReserve(63);
+        var nine = new Card(Suit.DIAMONDS, 9);
+        var jack = new Card(Suit.CLUBS, 11);
+        int index = GameRules.handSizes(view.mode(), view.seats().size()).size() - 3;
+        GradleInputs.fixture("Last club can force the required one-trick miss with three tricks left",
+                "observation", view, "ordinary lead", nine, "route-preserving lead", jack);
+        assertTrue("The zero strategy has not activated", ZeroMatchSearch.card(view, index, true).isEmpty());
+        assertEquals("The conventional lead is the nine", nine, MonteCarloAi.chooseCard(view).card());
+        assertEquals("The jack guarantees the actor takes an extra trick and keeps the route open",
+                jack, ZeroMatchReserve.choose(view, index, nine));
+    }
+
+    @Test public void threeCardProofRejectsDifferentScoresWhileTopTwoRemainsPossible() {
+        var view = threeCardReserve(35);
+        var nine = new Card(Suit.DIAMONDS, 9);
+        int index = GameRules.handSizes(view.mode(), view.seats().size()).size() - 3;
+        GradleInputs.fixture("Same cards but a reachable conventional podium", "observation", view);
+        assertEquals("A result-changing lead cannot replace the conventional lead",
+                nine, ZeroMatchReserve.choose(view, index, nine));
+    }
+
+    @Test public void threeCardEnumerationRejectsAnIncompleteSetOfDeals() {
+        var view = threeCardReserve(63);
+        GradleInputs.fixture("One rival is publicly out of diamonds", "observation", view);
+        assertEquals("All four compatible deals are available at the exact limit",
+                4, PossibleDeals.enumerateSmallDeals(view, 3, 4).size());
+        assertTrue("A smaller limit returns no proof rather than a truncated set",
+                PossibleDeals.enumerateSmallDeals(view, 3, 3).isEmpty());
+    }
+
+    @Test public void hardCanPreserveTheZeroRouteWithFourCardsRemaining() {
+        var view = fourCardReserve(62);
+        var king = new Card(Suit.SPADES, 13);
+        var ten = new Card(Suit.SPADES, 10);
+        int index = GameRules.handSizes(view.mode(), view.seats().size()).size() - 3;
+        GradleInputs.fixture("All remaining spades are public while the opponents hold six other cards",
+                "observation", view, "ordinary play", king, "route-preserving play", ten);
+        assertTrue("The direct zero strategy has not activated", ZeroMatchSearch.card(view, index, true).isEmpty());
+        assertEquals("The ordinary play takes the lead with the king", king, MonteCarloAi.chooseCard(view).card());
+        assertEquals("Losing the current trick keeps the reachable three-point miss",
+                ten, ZeroMatchReserve.choose(view, index, king));
+        assertEquals("The ordinary play remains when a different trick result may affect the podium",
+                king, ZeroMatchReserve.choose(fourCardReserve(35), index, king));
+    }
+
+    @Test public void fourCardEnumerationRejectsAPartialSearch() {
+        var view = fourCardReserve(62);
+        GradleInputs.fixture("Four-card proof requires all feasible allocations of the six unplayed rival cards",
+                "observation", view);
+        assertEquals("All twenty deals fit the complete proof", 20,
+                PossibleDeals.enumerateSmallDeals(view, 4, 20, 20, 16_384).size());
+        assertTrue("The world limit discards the prefix", PossibleDeals.enumerateSmallDeals(view, 4, 20, 19, 16_384).isEmpty());
+        assertTrue("The node limit also discards the prefix", PossibleDeals.enumerateSmallDeals(view, 4, 20, 20, 30).isEmpty());
+    }
+
+    private static View fourCardReserve(int rivalTotal) {
+        var history = List.of(play(2, Suit.DIAMONDS, 14), play(0, Suit.DIAMONDS, 13), play(1, Suit.DIAMONDS, 11),
+                play(2, Suit.CLUBS, 12), play(0, Suit.CLUBS, 13), play(1, Suit.CLUBS, 9),
+                play(0, Suit.HEARTS, 14), play(1, Suit.HEARTS, 11), play(2, Suit.HEARTS, 12),
+                play(0, Suit.HEARTS, 10), play(1, Suit.HEARTS, 9), play(2, Suit.HEARTS, 13),
+                play(2, Suit.SPADES, 9), play(0, Suit.SPADES, 12));
+        return new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 1, 1, 8,
+                List.of(new Card(Suit.SPADES, 10), new Card(Suit.SPADES, 11),
+                        new Card(Suit.SPADES, 13), new Card(Suit.SPADES, 14)),
+                List.of(new Seat(3, 2, 2, rivalTotal), new Seat(4, 3, 0, 18), new Seat(3, 1, 2, rivalTotal)),
+                history.subList(12, 14), history);
+    }
+
+    private static View threeCardReserve(int rivalTotal) {
+        var history = List.of(play(1, Suit.CLUBS, 12), play(2, Suit.CLUBS, 10), play(0, Suit.CLUBS, 9),
+                play(1, Suit.SPADES, 11), play(2, Suit.SPADES, 14), play(0, Suit.SPADES, 10),
+                play(2, Suit.CLUBS, 13), play(0, Suit.CLUBS, 14), play(1, Suit.SPADES, 12),
+                play(0, Suit.HEARTS, 13), play(1, Suit.HEARTS, 9), play(2, Suit.HEARTS, 14),
+                play(2, Suit.DIAMONDS, 11), play(0, Suit.DIAMONDS, 14), play(1, Suit.SPADES, 13));
+        return new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 0, 0, 8,
+                List.of(new Card(Suit.CLUBS, 11), new Card(Suit.DIAMONDS, 9), new Card(Suit.DIAMONDS, 10)),
+                List.of(new Seat(3, 2, 2, 10), new Seat(3, 0, 1, rivalTotal), new Seat(3, 3, 2, rivalTotal)),
+                List.of(), history);
+    }
+
+    private static View twoCardReserve(int rivalTotal) {
+        var history = List.of(play(0, Suit.HEARTS, 12), play(1, Suit.HEARTS, 10), play(2, Suit.HEARTS, 13),
+                play(2, Suit.DIAMONDS, 9), play(0, Suit.DIAMONDS, 13), play(1, Suit.DIAMONDS, 11),
+                play(0, Suit.SPADES, 13), play(1, Suit.SPADES, 11), play(2, Suit.SPADES, 14),
+                play(2, Suit.SPADES, 10), play(0, Suit.SPADES, 9), play(1, Suit.SPADES, 12),
+                play(1, Suit.HEARTS, 11), play(2, Suit.HEARTS, 9), play(0, Suit.HEARTS, 14),
+                play(0, Suit.CLUBS, 14), play(1, Suit.CLUBS, 11), play(2, Suit.CLUBS, 13),
+                play(0, Suit.CLUBS, 10), play(1, Suit.CLUBS, 9));
+        return new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 2, 2, 8,
+                List.of(new Card(Suit.DIAMONDS, 10), new Card(Suit.DIAMONDS, 14)),
+                List.of(new Seat(1, 3, 3, rivalTotal), new Seat(1, 0, 1, rivalTotal),
+                        new Seat(2, 4, 2, 18)), history.subList(18, 20), history);
+    }
+
+    private static View withTwoRemainingTricks(int firstRival) {
+        return new View(GameMode.LONG_ROMANIAN, Trump.NO_TRUMP, 0, 3, 8,
+                List.of(new Card(Suit.HEARTS, 10), new Card(Suit.CLUBS, 11)),
+                List.of(new Seat(2, 0, 1, 2), new Seat(2, 0, 2, firstRival),
+                        new Seat(2, 0, 1, 4), new Seat(2, 0, 2, 5)), List.of(), List.of());
     }
 
     @Test public void anIntervalContainingZeroDoesNotProveExactReachability() {
