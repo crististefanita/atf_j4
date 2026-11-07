@@ -75,7 +75,7 @@
     },
     {
       "path": "config/whist-play-objectives.yaml",
-      "sha256": "573d0a19e782caefe92b014c90a25a3d94f21be149e1530bee57b2cdf967f607"
+      "sha256": "f71e40e6f5fab1c1c87f45c05eb750022c5a1e5dfbf620e15f9cc2817eb606a3"
     },
     {
       "path": "config/whist-public-beliefs.yaml",
@@ -515,7 +515,7 @@
     },
     {
       "path": "whist-lab-app/app/build.gradle",
-      "sha256": "9e263d84cddb6cbe41b09b1c7b30f68c53609a071c3a21d0467970701d5fb0d4"
+      "sha256": "a5811fd0eeabce45e1b982bbdfeac272568b3a234d19c26b1d757c59ea090feb"
     },
     {
       "path": "whist-lab-app/app/src/androidTest/AndroidManifest.xml",
@@ -1083,7 +1083,7 @@
     },
     {
       "path": "whist-lab-app/card-table-ui/src/androidTest/README.md",
-      "sha256": "513fbdb417c3b41047281a7a6a922052b312386fb407f0d400635beeaca47c26"
+      "sha256": "8ebd9a592ba42a5c5698bad7690ddcbb84b6355e4cd9916ab7107278a4362e5b"
     },
     {
       "path": "whist-lab-app/card-table-ui/src/androidTest/java/ro/cardtable/ui/seat/SeatFrameComponentInstrumentation.java",
@@ -1259,7 +1259,7 @@
     },
     {
       "path": "whist-lab-app/game-core/build.gradle",
-      "sha256": "25503ce30b64e154a04b625baa519047d306c2bbc5862f85d5cb3e7c5c82f4af"
+      "sha256": "ba20ad93b51f1d7b827974ae4810227e80114a9c9dbaf19273c0ebd555bb4d1b"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/ContractEndgame.java",
@@ -1287,7 +1287,7 @@
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java",
-      "sha256": "a0d9875d3d5e37268a633e0114528cf1d293194a14dd25865457ac937be93a8e"
+      "sha256": "714022b57731067ba42aaf6ff7c309e4dd6baec32f495c916e25ea0bbd14d304"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java",
@@ -1303,7 +1303,7 @@
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java",
-      "sha256": "f9d8ba7b8f2dfe77786a92560b96f77ff658dd2cbf26806a30095d4b87253bb4"
+      "sha256": "df222ac3cfe290ec513cf3b45950897858db9b24367939a5f569f2531cfd7aeb"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/NormalBidPolicy.java",
@@ -1319,7 +1319,7 @@
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java",
-      "sha256": "8008523a981f632cc48896dce7674630476f2d51ef031ff93e60601e40e5a56c"
+      "sha256": "357de0d4be3fab841c2c0128440e5c966f246abc0cb3fd26eed19570e8c809b0"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java",
@@ -1331,19 +1331,19 @@
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java",
-      "sha256": "fce3d3940be28e495dff52563767fc3a2ac2a01128d7c1e6bd5c533a6a29060a"
+      "sha256": "f18f6967509e9fdaa12d4cd23035f70d1d4233a71b16413d874d3ae086109098"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/zero/ZeroMatchObjective.java",
-      "sha256": "2abc8d7d96991a33738b8e4b55dd7ab725ea52c35f5c84b81807af54fb78ba9f"
+      "sha256": "b6d6137b5479b88dbec82935e9cfb304e39872bd4f97277d32ff763a9710f954"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/zero/ZeroMatchReserve.java",
-      "sha256": "eff3c26f92fbb85b007097b1f23c9d1a2dbf7ce3deb246e82831918c0a0baada"
+      "sha256": "f8d6984080a5bfc3408336193c9d823789f768c7b4e54f674c03d712dfded9a8"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/zero/ZeroMatchSearch.java",
-      "sha256": "f001cc19147d9a0c6f58e2b4eb4bda34cd669a866abcfd270c2cf679aaaaf974"
+      "sha256": "4b79c4d281b1849e371d9229ab9d6843177015b2729ef930e0ac906e2415df8a"
     },
     {
       "path": "whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/AiDifficulty.java",
@@ -1419,7 +1419,7 @@
     },
     {
       "path": "whist-lab-app/game-core/src/test/README.md",
-      "sha256": "451b7362372518815b9e6da66517071a16e1270656536b7eb4e23f4b76347434"
+      "sha256": "fa21b71dc8eae327b5bf8dd446e6d9e8496ef42119df4a3423fb1c943e5a5983"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java",
@@ -1567,7 +1567,7 @@
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/OneCardBidBeliefTest.java",
-      "sha256": "715bfb1b5f5f206e2705084deda2370b758f4193fe7e6d11af887c757322511e"
+      "sha256": "a92f3a414640c5af77fd9b86e2e35a64d1ae00dc5108aa2297a16bfeadb6b070"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/PublicSalvageTest.java",
@@ -1655,11 +1655,11 @@
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchBoundsComponentTest.java",
-      "sha256": "7f96840bfa9aa0ed25b49b2a6132a60a010b4cd191a054a638c00d260e7379ed"
+      "sha256": "94f11e0f02730e9570437ff1650ce7fa3a9435e4ddfbb720eb6ad5406a6dc903"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchFinalLossComponentTest.java",
-      "sha256": "ef06ff2d2f5261cdde2bc51a726f01e5dfbcbc3e7ba716e2dce0d3b6fd47900e"
+      "sha256": "79ea71ea0d32a5d6970dca772392071e9b72cae273625d654fdec143474b9d0f"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchFinishingOptionsComponentTest.java",
@@ -1667,15 +1667,15 @@
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchPair.java",
-      "sha256": "2e1b4504d1b52da9da14417d77311dde4843a4075cafd4030e9206886e960355"
+      "sha256": "6c3b25ce236c0cef03c1f10418f459315fb2edac8dd8a644789da4ef8ee21005"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchPairedMatchTest.java",
-      "sha256": "6901c144aa77a4288d29c38ec11f9a7dde9e8e2f3ba771d6a29c481631a1746c"
+      "sha256": "52de8e8707f854417fd5b6fc5f56cb05a1bf4aa5c1458be1956f02abe6f2e24a"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchPolicyComponentTest.java",
-      "sha256": "505e6479116daad1b63b365340c274c6bccd84a5422869cdbdc0add56959bfbd"
+      "sha256": "34b0882754620fb97c3d3bba6631f5977b55f9db6cba408d0857158161e9f439"
     },
     {
       "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/baseline/legacy/LegacyAiPolicy.java",
@@ -2278,6 +2278,6 @@
       "sha256": "71d9d9309c9177b3fda36ec2a83f17c4e4e333dd4906618c6dd086dc24813f98"
     }
   ],
-  "fingerprint": "07fd12392f94d1d646b3952cb55b6620287e95150a531f316fe9f3f0dbbe49e0",
-  "sourceCommit": "ea1604ede355fed6128ec9dc4680869dde38b0bf"
+  "fingerprint": "dd004027335f5bea459165df685037bc4759aa945bd25712451b674ca2b1e316",
+  "sourceCommit": null
 }

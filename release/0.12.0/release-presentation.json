@@ -1,0 +1,9 @@
+{
+  "version": "0.12.0",
+  "mode": "summary",
+  "points": [
+    "Joc la 0 este disponibil în ambele variante românești și este activat implicit. Un scor final exact zero valorează 500 în clasament.",
+    "Hard poate păstra o rută spre zero cu până la patru levate rămase când dovada protejează șansa unui loc în primele două."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.12.0/reports/README.md"
+}

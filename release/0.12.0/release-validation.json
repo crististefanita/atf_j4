@@ -1,0 +1,165 @@
+{
+  "release": {
+    "versionName": "0.12.0",
+    "versionCode": 18,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "apkName": "WhistLab-0.12.0.apk",
+    "apkRelativePath": "WhistLab-0.12.0.apk",
+    "apkBytes": 832632,
+    "apkSha256": "27e4c3c298f1e05640438ccc0902a3d8c3515348fdbdfd04f5e9a8059b730d93",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
+  },
+  "source": {
+    "sourceCommit": null,
+    "basisHead": "82e18ae7f9428d2aed3914724c32a8221d6201f9",
+    "workingTreeFingerprint": "dd004027335f5bea459165df685037bc4759aa945bd25712451b674ca2b1e316",
+    "inputManifest": "reports/apk-inputs.json",
+    "snapshotArchive": "reports/diagnostics/source-snapshot.zip"
+  },
+  "publication": {
+    "state": "PREPARED",
+    "tag": "v0.12.0",
+    "commitPerformed": false,
+    "pushPerformed": false,
+    "remoteMutationsPerformed": false
+  },
+  "releaseReady": true,
+  "qualification": {
+    "schemaVersion": 2,
+    "state": "PASS",
+    "scope": "ZERO_MATCH_COMPONENTS_AND_SIGNED_VERSION_UPGRADE",
+    "uniqueJunitInvocations": 138,
+    "groups": {
+      "native": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "files": [
+          "TEST-signed-install-smoke.xml"
+        ],
+        "provenance": "Signed 0.12.0 verified on emulator API 28 after upgrading from 0.11.1"
+      }
+    },
+    "auditedGroups": {
+      "core": {
+        "tests": 137,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/core.html",
+        "protocol": "GRADLE_COMPONENT_V1",
+        "provenance": "Fresh J22 run reconciled against original Gradle JUnit XML"
+      }
+    },
+    "nativeAcceptance": {
+      "executedInThisIteration": true,
+      "reusedUnchangedBinary": false,
+      "apkSha256": "27e4c3c298f1e05640438ccc0902a3d8c3515348fdbdfd04f5e9a8059b730d93",
+      "api": 28
+    }
+  },
+  "evidenceRetention": {
+    "state": "CANONICAL_J22_AND_NATIVE",
+    "canonicalReport": "reports/component/core.html",
+    "canonicalReportSha256": "ff81cdc876736062964f95bb4f61c990ee4657b511aae32ad36242a48e63f5e0"
+  },
+  "integrity": {
+    "schemaVersion": 1,
+    "kind": "OBSERVED_PAYLOAD_HASHES",
+    "observedUtc": "2026-11-07T14:43:28.3832246+00:00",
+    "files": [
+      {
+        "path": "README.md",
+        "bytes": 372,
+        "sha256": "fb0147d77d1e9815a314868d9307d15b4937f2998fac64269764e6da30a63075"
+      },
+      {
+        "path": "release-notes.template.md",
+        "bytes": 761,
+        "sha256": "506daff824edeb04d532b4e7fe78b1f4682fce6ec6e862f30c3554a59e329635"
+      },
+      {
+        "path": "release-presentation.json",
+        "bytes": 483,
+        "sha256": "ce6f4bdd0757948189058422f92ae208c0c9fc727dec7f7d06f4c678d6b9ac46"
+      },
+      {
+        "path": "reports/apk-inputs.json",
+        "bytes": 112605,
+        "sha256": "cc81a9af15142b3283332bac10699c7cd14f7d198824fef8a91a0f9b5f1894ac"
+      },
+      {
+        "path": "reports/component/core.html",
+        "bytes": 8857205,
+        "sha256": "ff81cdc876736062964f95bb4f61c990ee4657b511aae32ad36242a48e63f5e0"
+      },
+      {
+        "path": "reports/diagnostics/apk-alignment.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "reports/diagnostics/apk-badging.log",
+        "bytes": 862,
+        "sha256": "ef6503ecb7ee9ce7792afee762a5bae1d5cb69617406c7cff6d5c58541030235"
+      },
+      {
+        "path": "reports/diagnostics/apk-signature.log",
+        "bytes": 971,
+        "sha256": "8ea575401afe32e39e59e381e44c06d72f93cd18edede2659817a135b1479a44"
+      },
+      {
+        "path": "reports/diagnostics/build.log",
+        "bytes": 5635,
+        "sha256": "f31f2146dfba402e65a3a6aa342c911bfb52f25fbec50dd115b2a231de13b900"
+      },
+      {
+        "path": "reports/diagnostics/native-identity.json",
+        "bytes": 470,
+        "sha256": "bee9d0af3583c28f47a392680118e207328d3a7c13808f3e5ac3be2112ebfdd0"
+      },
+      {
+        "path": "reports/diagnostics/retention-archive.json",
+        "bytes": 5307,
+        "sha256": "8236e5184de62fc3db9edc09fd9471845c7b2c8cede57960d97c7797f0a6c781"
+      },
+      {
+        "path": "reports/diagnostics/source-snapshot.zip",
+        "bytes": 2511719,
+        "sha256": "5342951b1912e79d9c3ea902af18fd84ba9870c7a21d1780b6b8e28f3075a71a"
+      },
+      {
+        "path": "reports/diagnostics/source-test-alignment.log",
+        "bytes": 284,
+        "sha256": "291ccae5ed9c47443c72959912ed47e42fc194ff4a656949f36f3f1eda835059"
+      },
+      {
+        "path": "reports/e2e/signed-release-smoke.html",
+        "bytes": 2839151,
+        "sha256": "9333cdce2ec9e5e670a9c42fa6c8db6f2d2e86cf727bac24b7b638e3a6a3c65c"
+      },
+      {
+        "path": "reports/README.md",
+        "bytes": 740,
+        "sha256": "cd009ceff00348ec7a145c4bb6b10a7048872afa592f6bbc6d37b3e0503ae6cd"
+      },
+      {
+        "path": "reports/test-results/native/TEST-signed-install-smoke.xml",
+        "bytes": 13348,
+        "sha256": "6b045e745e2b358f7deefcfa3c44731aa13a998e3cb88eae073f0b9ee3740c9a"
+      },
+      {
+        "path": "WhistLab-0.12.0.apk",
+        "bytes": 832632,
+        "sha256": "27e4c3c298f1e05640438ccc0902a3d8c3515348fdbdfd04f5e9a8059b730d93"
+      },
+      {
+        "path": "WhistLab-0.12.0.apk.sha256",
+        "bytes": 87,
+        "sha256": "a99752904bb10a1e681126b152a74e072a09c51395ee44a92a31fc2d2220298b"
+      }
+    ]
+  }
+}

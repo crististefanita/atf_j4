@@ -1,4 +1,4 @@
-package: name='ro.whistlab.app' versionCode='17' versionName='0.11.1' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+package: name='ro.whistlab.app' versionCode='18' versionName='0.12.0' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
 sdkVersion:'24'
 targetSdkVersion:'36'
 application-label:'Whist Lab'

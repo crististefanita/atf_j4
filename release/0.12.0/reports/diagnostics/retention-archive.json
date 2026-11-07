@@ -1,0 +1,152 @@
+{
+  "verifiedUtc": "2026-11-07T14:41:58.2489188+00:00",
+  "oldVersion": "0.11.1",
+  "archive": "C:/work/whist_back/release-archives/0.11.1-before-0.12.0",
+  "files": [
+    {
+      "path": "index.json",
+      "bytes": 96,
+      "sha256": "7408e602152c20b3dfb94820a26357bf71d84d39906f8e599ee0ff0604a2f00f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1385,
+      "sha256": "bb6e570cd0caeb44535ac2b1aaa864693948d3bdd9ba5f15fdf98e4bae9d4500"
+    },
+    {
+      "path": "0.11.1/github-release.json",
+      "bytes": 956,
+      "sha256": "cf1c57d553ac75e0c8a0f3f5ef2dd31e4a6bec6d4bc06556b46cb4f6d1bafdfc"
+    },
+    {
+      "path": "0.11.1/README.md",
+      "bytes": 556,
+      "sha256": "82456f6afbe13c0f941f05e959e44f867470967902189f548ca89d3c1aeec899"
+    },
+    {
+      "path": "0.11.1/release-notes.md",
+      "bytes": 864,
+      "sha256": "a3b7805c78601f6d24821fe0fbd3bb25ceb2010461cd40d2bad2dd6e3002da71"
+    },
+    {
+      "path": "0.11.1/release-presentation.json",
+      "bytes": 590,
+      "sha256": "1105ff53f376a7ee8a3b5ebc0a09acbccc8af75b7d9aa4c18edc7df36f4cc8dc"
+    },
+    {
+      "path": "0.11.1/release-validation.json",
+      "bytes": 8802,
+      "sha256": "78d0b71071d86c6787a04ae4774aa323dfc97d18b8f8c2300ed2e1538a30f4a2"
+    },
+    {
+      "path": "0.11.1/WhistLab-0.11.1.apk",
+      "bytes": 832632,
+      "sha256": "c302f211b2c7e355d8db0ba066751790268fd331b2d14ad096432638a707dd47"
+    },
+    {
+      "path": "0.11.1/WhistLab-0.11.1.apk.sha256",
+      "bytes": 87,
+      "sha256": "8ca06ec7ebfd9289c879c1e4a7ce1b14010f94a6d603d422afaad34fe0913e47"
+    },
+    {
+      "path": "0.11.1/reports/apk-inputs.json",
+      "bytes": 112643,
+      "sha256": "4fd8360709484580ae4620d1d1aeb9c82c1dd15bb620e9e8b0ded74cc673c0d6"
+    },
+    {
+      "path": "0.11.1/reports/distribution-verification.json",
+      "bytes": 2721,
+      "sha256": "296df1503ecd76f022ce687a47ab52c7b9b2b9f159b377615e4dcf359b5f7fb2"
+    },
+    {
+      "path": "0.11.1/reports/README.md",
+      "bytes": 810,
+      "sha256": "076291e0c1a0f727172c0ffca3a642db38ed8d1fc2c0bd1c80f10e30cb01d95a"
+    },
+    {
+      "path": "0.11.1/reports/component/app-bidding.html",
+      "bytes": 16551310,
+      "sha256": "ee63fea0a5f287cbc33a219dc6353a5e4bd70d8a73c2b18d05e51cce2db98a25"
+    },
+    {
+      "path": "0.11.1/reports/component/app-commands.html",
+      "bytes": 20894539,
+      "sha256": "1b5136ab6e206968c571b8ca863ff0cbf147529d410114d9cd2d4d15a4df98fd"
+    },
+    {
+      "path": "0.11.1/reports/component/app-display.html",
+      "bytes": 25764264,
+      "sha256": "828aa022aa00cdf3101bf5c801029caf2376754465639696244bc6c3134dc595"
+    },
+    {
+      "path": "0.11.1/reports/component/app-history.html",
+      "bytes": 19248695,
+      "sha256": "56764161a01e12e3221be14e40acec3ccebd6e55f6c1ff8ce8bc1d421c528280"
+    },
+    {
+      "path": "0.11.1/reports/component/core.html",
+      "bytes": 8857220,
+      "sha256": "7a3ac1a9c27d8e02f5775f88862d1d02d4dead149738d3bc8cb805543937e549"
+    },
+    {
+      "path": "0.11.1/reports/component/natural-pairs.html",
+      "bytes": 4406095,
+      "sha256": "2d6bbb1a61bbc8f82356460299c6e633426a805dc65fff8c431201d22f7c43cc"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/apk-alignment.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/apk-badging.log",
+      "bytes": 862,
+      "sha256": "c413be064b1dc769553475d50b36e6635549ae55eb9772ca9ba6d0ebe515fb06"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/apk-crc.log",
+      "bytes": 89,
+      "sha256": "2eb37907fe74267b90621eed4267d6b2d75064ee91f6ce30b3ef0ff913cbd18d"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/apk-signature.log",
+      "bytes": 971,
+      "sha256": "8ea575401afe32e39e59e381e44c06d72f93cd18edede2659817a135b1479a44"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/build.log",
+      "bytes": 5625,
+      "sha256": "4197cb1a23b0e9d9c6a80c3c40a4a846af0b6547a05061902969253346612fb9"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/native-identity.json",
+      "bytes": 470,
+      "sha256": "a32ad9d1bf9563a09460609e3ce05464a728a7361679dd41b462040239690b92"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/retention-archive.json",
+      "bytes": 8478,
+      "sha256": "b650235af39b28248e3bef143b2f68b1bb6c15fe3ef209365f6c8c9b80b25d48"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/source-snapshot.zip",
+      "bytes": 2585883,
+      "sha256": "05089f1a99c128b75a47a965ccd06aa437aae181972d7c7248d90e9cfdf487a4"
+    },
+    {
+      "path": "0.11.1/reports/diagnostics/source-test-alignment.log",
+      "bytes": 108,
+      "sha256": "1f5423ccab31471a541954e079c76f69a573a82d8a743e68bfd14ea1bb4a9315"
+    },
+    {
+      "path": "0.11.1/reports/e2e/signed-release-smoke.html",
+      "bytes": 2832242,
+      "sha256": "a8e30aacc1d0994bcf62c33a6b700044a88260bf5fa884275c25428814e8105e"
+    },
+    {
+      "path": "0.11.1/reports/test-results/native/TEST-signed-install-smoke.xml",
+      "bytes": 13391,
+      "sha256": "7c55e9f261a1edef8a120013fd23fd72ad924b6a79402e71a01531e767c91391"
+    }
+  ]
+}
