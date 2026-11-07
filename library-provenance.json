@@ -835,6 +835,15 @@
             "physicalJarTests": 531,
             "consumerSanity": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\ATF_REPORT153_ACTIVE_DO_NOT_CLEAN_fb58740c\\live-smoke-j4.log",
             "documentationSha256": "deea28d13b4163adebc27a28d37dc0b762a292f1f5f2d60c0a09f57fc2a286cd"
+          },
+          "browserLifecycleRegression": {
+            "status": "VERIFIED_SCOPED",
+            "owner": "atf_j0",
+            "sameBinary": true,
+            "evidence": "C:/Users/Cristi/AppData/Local/Temp/ATF_BROWSER_LIFECYCLE_ACTIVE_DO_NOT_CLEAN_d32b7955/browser-lifecycle-154-acceptance.json",
+            "consumerSanity": "C:/Users/Cristi/AppData/Local/Temp/ATF_BROWSER_LIFECYCLE_ACTIVE_DO_NOT_CLEAN_d32b7955/live-smoke-j4.log",
+            "nativeAcceptance": "OPEN: REPORT-BROWSER-LIFECYCLE-154",
+            "documentationSha256": "1fdc497a2e745415f78354087708e6f40e8e90a59fcbc1dff216a9bba13d3353"
           }
         },
         "producerHead": "5e89e77064a1c57e340c101847f89998395f8197",

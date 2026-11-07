@@ -1,0 +1,138 @@
+{
+  "state": "PASS",
+  "observedUtc": "2026-11-07T08:14:19.119Z",
+  "tag": "v0.11.0",
+  "targetCommit": "61a16105244e2504d7c0102956ef3e00019c0ca3",
+  "evidenceCommit": "a03cb3189bd26f258ea3138869d7967549b0345b",
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/a03cb3189bd26f258ea3138869d7967549b0345b/release/0.11.0/reports/README.md",
+  "evidenceSha256": "a8dbf8e4f2cd97353e4a03f190851f8002adf2eea8890ee9681373a62338242e",
+  "releaseId": 437433079,
+  "releaseUrl": "https://github.com/crististefanita/atf_j4/releases/tag/v0.11.0",
+  "verifiedChannel": "authenticated GitHub release and contents APIs",
+  "anonymousChannel": "UNAVAILABLE",
+  "repositoryVisibility": "public",
+  "assets": [
+    {
+      "id": 720068798,
+      "name": "WhistLab-0.11.0.apk",
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk",
+      "size": 824639,
+      "digest": "sha256:a7b0d6732bb4b68e4d8a855b2d204846e4b3140453ecc31bd53172caea3ea415"
+    },
+    {
+      "id": 720068837,
+      "name": "WhistLab-0.11.0.apk.sha256",
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk.sha256",
+      "size": 86,
+      "digest": "sha256:46fdd77f2d10c375fd351e8a07917dc811307168a5f40cd06de3d42e2d8a7ddc"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk",
+      "status": 404,
+      "verified": false
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk.sha256",
+      "status": 404,
+      "verified": false
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/tag/v0.11.0",
+      "status": 404,
+      "verified": false
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/blob/a03cb3189bd26f258ea3138869d7967549b0345b/release/0.11.0/reports/README.md",
+      "status": 404,
+      "verified": false
+    }
+  ],
+  "reports": [
+    {
+      "path": "release/0.11.0/reports/component/app-bidding.html",
+      "gitBlob": "41b510b48b1af1e1eecc59e753647840af95ff95",
+      "bytes": 16476295,
+      "sha256": "10e9bd03de4b4502d1540ee27201c7eecf065141d973604a666be2a5ba74af7a"
+    },
+    {
+      "path": "release/0.11.0/reports/component/app-commands.html",
+      "gitBlob": "5d8fae138e692406a52ed7c01116ee9fea1b1215",
+      "bytes": 20829123,
+      "sha256": "bb6267dd234e6aadcdc32998a07ae6e13f7907bd7bf0672015a84cf76b5c020f"
+    },
+    {
+      "path": "release/0.11.0/reports/component/app-display.html",
+      "gitBlob": "1464b42f29642fc1b72b48438ab02676cb9cc09f",
+      "bytes": 25676078,
+      "sha256": "6257acac68a50ed6eb473c5a071522fac82329bae8aea246cfbbcc01aeb158ae"
+    },
+    {
+      "path": "release/0.11.0/reports/component/app-history.html",
+      "gitBlob": "cac84d9367eec8862832d18fa9ebb7a410c35832",
+      "bytes": 19226389,
+      "sha256": "f66547bc199d4d4a8cc82aa56f29a99e1e12cfcc4dad0c1519f691ea76d11f93"
+    },
+    {
+      "path": "release/0.11.0/reports/component/audit-bridge.html",
+      "gitBlob": "5cc9274ce61bb6b4e2d701053d09ad344b47b852",
+      "bytes": 2908328,
+      "sha256": "7bd86551543137753469f61e75ee98c0ac28d26784ee979a3faf08e2af6857ae"
+    },
+    {
+      "path": "release/0.11.0/reports/component/core.html",
+      "gitBlob": "6ab077a3afc9e0f41dd6ccf9c4643864f9b898f3",
+      "bytes": 10556350,
+      "sha256": "5bfe0cc3adc0fb67ea232fa2a7248e786c67486c88025204c56702789c2015c9"
+    },
+    {
+      "path": "release/0.11.0/reports/component/governance.html",
+      "gitBlob": "415e6e8e364f4fa11675b42533aa7f2b976c5076",
+      "bytes": 21491650,
+      "sha256": "ad8bb5e620a076c46531e5a48644379e7e56838f9b437b023ccca7299311dd1f"
+    },
+    {
+      "path": "release/0.11.0/reports/component/independent.html",
+      "gitBlob": "0228462482cb8209dc9f00bd7d17bce531a821c9",
+      "bytes": 2688449,
+      "sha256": "32cd29c2a9d3e2832abad56c54fbc78c92a57a9b1baba6db4567c1a521c54210"
+    },
+    {
+      "path": "release/0.11.0/reports/component/native-history-marks.html",
+      "gitBlob": "8cdba688d602b82d0bf70683eb70c6c0a8367930",
+      "bytes": 2767972,
+      "sha256": "843ac0d005e6eea29bd4c0ace052eb68c9554e3653d913840228aa673279c163"
+    },
+    {
+      "path": "release/0.11.0/reports/component/raster.html",
+      "gitBlob": "dd734b0d6997d53c8cc6d33d34c1728950e0bc60",
+      "bytes": 20534163,
+      "sha256": "64a085dba5a2f91162a0da175d1e474dde921ec0942ab086ac0002b8b4ba6541"
+    },
+    {
+      "path": "release/0.11.0/reports/component/shared-ui.html",
+      "gitBlob": "6d4d0541c6d15f0a1632cf98d7974801cdb9872d",
+      "bytes": 3833357,
+      "sha256": "13278e777f396f05a4a66b0fb4b4fc080583619ae349ad21538569bb5ead520b"
+    },
+    {
+      "path": "release/0.11.0/reports/e2e/signed-release-bidding.html",
+      "gitBlob": "4674511386d3d4f36107f1866438a850c96ed3be",
+      "bytes": 5055862,
+      "sha256": "35c9e5dab984edf4e2bea92f05f369aab7f8b0e4626c596521dde5308a3e7676"
+    },
+    {
+      "path": "release/0.11.0/reports/e2e/signed-release-home-profile.html",
+      "gitBlob": "7cdda6e76bf22711d904e92ad6d275374a0cfcfe",
+      "bytes": 2875514,
+      "sha256": "f303289e0855e2b1c31ee84a629871f0648c81404a7d9cc1a4f3fb004b405e9c"
+    },
+    {
+      "path": "release/0.11.0/reports/e2e/signed-release-smoke.html",
+      "gitBlob": "429d7819ad604655091f716b04710cfe218b91a3",
+      "bytes": 2717862,
+      "sha256": "f8b795d3cfcf438f0868dd7fe30f9389c177807e285630df5cbfa7aab64aa46f"
+    }
+  ]
+}

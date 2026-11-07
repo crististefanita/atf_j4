@@ -13,4 +13,4 @@
 
 ## Documentație
 
-- [Audit Extent J22 și proveniență](https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.11.0/reports/README.md)
+- [Audit Extent J22 și proveniență](https://github.com/crististefanita/atf_j4/blob/a03cb3189bd26f258ea3138869d7967549b0345b/release/0.11.0/reports/README.md)

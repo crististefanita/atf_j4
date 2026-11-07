@@ -2,6 +2,8 @@
 
 ## Pe scurt
 
-[Candidatul APK](WhistLab-0.11.0.apk) are 824639 octeți; SHA-256: `a7b0d6732bb4b68e4d8a855b2d204846e4b3140453ecc31bd53172caea3ea415`. [Auditul complet](reports/README.md) identifică selecțiile și limitele lor.
+Versiunea 0.11.0 folosește codul Android 16, cu SDK minim 24 și țintă 36.
 
-Versiune 0.11.0 / cod 16, Android minim 24, țintă 36, Release fără debug; semnătură locală existentă și aliniere 16 KB verificate. Candidat PREPARED, fără commit/push sau publicare.
+- [Descarcă APK-ul semnat](https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk) și [checksum-ul SHA-256](https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk.sha256).
+- [Audit Extent J22](reports/README.md) și [verificarea descărcării](reports/distribution-verification.json).
+- [Catalogul livrărilor](../README.md).
