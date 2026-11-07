@@ -61,5 +61,34 @@
     "siteVersion": 3,
     "siteSourceCommit": "ae04a4d818f5900f64fc3816784ea249b9b4887b"
   },
-  "iosSimulatorWorkflow": "pending on candidate commit"
+  "githubRelease": {
+    "tag": "v0.13.0",
+    "url": "https://github.com/crististefanita/atf_j4/releases/tag/v0.13.0",
+    "commit": "3146464afe6bd61ac66b5cae5c975f2451f79084",
+    "published": true,
+    "assets": [
+      {
+        "name": "WhistLab-0.13.0.apk",
+        "bytes": 1222486
+      },
+      {
+        "name": "WhistLab-0.13.0.apk.sha256",
+        "bytes": 87
+      }
+    ]
+  },
+  "githubAnonymousAssetCheck": {
+    "apkHttpStatus": 404,
+    "sha256HttpStatus": 404,
+    "result": "not accessible anonymously from this environment; use the verified public Site URL"
+  },
+  "iosSimulatorWorkflow": {
+    "workflow": "iOS simulator qualification",
+    "status": "blocked before queue",
+    "httpStatus": 422,
+    "error": "Actions has been disabled for this user",
+    "repositoryActionsEnabled": true,
+    "githubActionsRunCount": 0,
+    "followUp": "GitHub Support review is required for the account-level Actions restriction"
+  }
 }

@@ -10,8 +10,8 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.13.0](release/0.13.0/README.md)** — dosarul build-ului și calificării curente.
-- **[Descarcă APK 0.13.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.13.0/WhistLab-0.13.0.apk)** — fișierul este disponibil fără cont; SHA-256: `451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0`.
+- **[Whist Lab 0.13.0](https://github.com/crististefanita/atf_j4/releases/tag/v0.13.0)** — release-ul Android și notele de publicare.
+- **[Descarcă APK 0.13.0 fără cont](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.13.0/WhistLab-0.13.0.apk)** — link direct verificat; SHA-256: `451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0`.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -42,7 +42,7 @@ Jocul are două niveluri. **Normal** urmărește levatele licitate și evită s�
 
 Ținta iOS folosește o interfață SwiftUI și traduce motorul comun Java pentru
 dispozitive Apple. Configurația declară iOS 17 ca versiune minimă; calificarea pe
-simulatorul iOS 27.2 este în curs în GitHub Actions. APK-ul nu se instalează pe
+simulatorul iOS 27.2 este încă în așteptarea CI. APK-ul nu se instalează pe
 iPhone sau iPad. Pașii și cerințele de distribuție sunt în
 [ghidul iOS](docs/platform/ATF_iOSDelivery.md).
 
