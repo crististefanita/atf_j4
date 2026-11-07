@@ -10,8 +10,8 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 ## Jocul
 
-- **[Whist Lab 0.11.0](https://github.com/crististefanita/atf_j4/releases/tag/v0.11.0)** — release-ul curent, cu noutăți și acces la rapoarte.
-- **[Descarcă APK 0.11.0](https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk)** — deschide linkul într-o sesiune GitHub cu acces la proiect.
+- **[Whist Lab 0.11.1](release/0.11.1/README.md)** — release-ul curent, cu noutăți și acces la rapoarte.
+- **[Descarcă APK 0.11.1](release/0.11.1/WhistLab-0.11.1.apk)** — pachetul semnat al candidatului.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -31,6 +31,8 @@ cinci ratări se penalizează cu valoarea în oglindă: **−5 sau −10**.
 - [Istoricul comun](docs/game/ATF_ScoreHistory.md) și [clasamentele locale](docs/game/ATF_PlayerRecords.md) păstrează separat evoluția partidei și cele mai bune rezultate.
 
 Jocul are două niveluri. **Normal** urmărește levatele licitate și evită să treacă peste contract. **Hard** evaluează șansa contractului din informația publică, apoi poate căuta ratări la adversari când limitele jocului îi arată că propriul contract a devenit imposibil.
+
+În ambele variante românești, opțiunea **Joc la 0** este bifată implicit. Un total final exact zero valorează 500 în clasament. Istoricul păstrează punctajul calculat după fiecare mână.
 
 [Regulile și limitele variantelor](docs/game/README.md) explică diferențele de profil.
 
@@ -125,7 +127,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
 
-[Dosarul versiunii curente](release/0.11.0/README.md) · [Catalogul livrărilor](release/README.md)
+[Dosarul versiunii curente](release/0.11.1/README.md) · [Catalogul livrărilor](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

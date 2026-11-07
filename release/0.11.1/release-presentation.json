@@ -1,0 +1,11 @@
+{
+  "version": "0.11.1",
+  "mode": "changes",
+  "previousVersion": "0.11.0",
+  "points": [
+    "Ambele variante românești permit jocul la 0. Un total final exact 0 se clasează ca 500.",
+    "Hard poate păstra o rută spre zero cu până la patru levate rămase când dovada protejează șansa unui loc în primele două.",
+    "Licitarea de o carte respectă valoarea obligatorie a dealerului înainte de evaluarea strategiei."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.11.1/reports/README.md"
+}
