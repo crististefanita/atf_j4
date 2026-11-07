@@ -94,7 +94,8 @@ public final class GradleReport {
         try (var reader = java.nio.file.Files.newBufferedReader(Path.of(configured))) { properties.load(reader); }
         catch (java.io.IOException error) { throw new java.io.UncheckedIOException(error); }
         String value = properties.getProperty(owner);
-        if (!List.of("unit", "component", "governance", "learning").contains(value)) throw new IllegalStateException("Unclassified Gradle test: " + owner);
+        if (value == null || !List.of("unit", "component", "governance", "learning").contains(value))
+            throw new IllegalStateException("Unclassified Gradle test: " + owner + " (add it to the audit collection catalog)");
         return value;
     }
     private static AtfReportStatus status(ComponentAssertionAudit.Outcome value) {

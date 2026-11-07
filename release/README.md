@@ -6,12 +6,13 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 ## Versiunea curentă
 
-[0.12.0 — rezultate și proveniență](0.12.0/README.md) este publicată în GitHub Releases. API-ul autentificat a returnat APK-ul verificat. Rezultatul accesului anonim este în verificarea distribuției. [Verificarea distribuției](0.12.0/reports/distribution-verification.json)
+[0.13.0 — build, verificări și proveniență](0.13.0/README.md) este disponibilă prin descărcare publică directă; linkul și hash-ul au fost verificate anonim. Release-ul GitHub/tag-ul se publică după calificarea simulatorului iOS pe commitul candidatului.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
+| 0.13.0 | APK public; calificare iOS în curs | [Dosarul și raportarea](0.13.0/README.md) |
 | 0.12.0 | PUBLISHED | [Raport Extent, rezultate și identitate](0.12.0/README.md) |
 
 ## Cum publicăm o versiune

@@ -1,8 +1,14 @@
 plugins { id 'java-library'; id 'java-test-fixtures' }
 java { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+def reportingPairs = fileTree('../../lib') { include 'atf-reporting-*.pom' }.files
+        .collect { pom -> [pom: pom, jar: new File(pom.parentFile, pom.name.replaceFirst(/\.pom$/, '.jar'))] }
+        .findAll { pair -> pair.jar.isFile() }
+        .sort { left, right -> right.pom.name <=> left.pom.name }
+if (reportingPairs.isEmpty()) throw new GradleException('No complete local Reporting JAR/POM pair is available for Gradle audit fixtures')
+def reportingJar = reportingPairs.first().jar
 dependencies {
     testFixturesApi 'junit:junit:4.13.2'
-    testFixturesImplementation files('../../lib/atf-test-kit-1.0.0-k1.jar', '../../lib/atf-reporting-1.0.0-j22.jar')
+    testFixturesImplementation files('../../lib/atf-test-kit-1.0.0-k1.jar', reportingJar)
     testFixturesImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
     testFixturesImplementation 'com.aventstack:extentreports:5.1.2'
     testFixturesImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2'

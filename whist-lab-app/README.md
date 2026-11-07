@@ -1,9 +1,10 @@
-# Whist Lab
+# Whist Lab — Android și iOS
 
 ## Pe scurt
 
-Aplicație Android locală de Whist, cu motor Java separat și adversari AI.
-Identificatorul pachetului și configurația de construire sunt definite în Gradle.
+Aplicația Android Whist Lab rulează local cu motorul Java comun și adversari AI.
+Proiectul nativ iOS este în calificare; interfața SwiftUI și integrarea aceluiași
+motor se află în directorul `../ios`.
 
 ## Folosire
 
@@ -42,11 +43,12 @@ La tura jucătorului, motorul Hard estimează și preselectează o licitație le
 
 ```mermaid
 flowchart LR
-UI[Interacțiune Android] -->|trimite comenzi| SESSION[GameSession]
+UI[Android sau SwiftUI] -->|trimite comenzi| SESSION[GameSession]
 SESSION -->|produce| VIEW[Stare capturată]
 VIEW -->|alimentează| UI
 SESSION -->|solicită decizii| AI[AiPolicy]
 STORE[Salvare locală] -->|restaurează| SESSION
+IOS[J2ObjC] -->|traduce motorul comun| SESSION
 ```
 
 <details>
@@ -67,6 +69,7 @@ GameSession validează comenzile înaintea schimbării stării; UI-ul redă star
 | [ai-lab](ai-lab/README.md) | Modul JVM al jucătorului independent, uneltelor și experimentelor offline; consumat numai la testare. |
 | [test-audit](test-audit/README.md) | Fixture-uri JVM pentru captura și verificarea componentelor; exclus din runtime-ul aplicației. |
 | [algorithm-build](algorithm-build/README.md) | Intrare Gradle exclusiv JVM, fără configurarea aplicației Android. |
+| [iOS](../ios/README.md) | Proiect SwiftUI, traducerea motorului comun și calificarea pe simulator Apple. |
 | [atf-test-android](../atf-test-android/README.md) | Componente de verificare și scenarii Android activate explicit. |
 
 Versiunea aplicației, SDK-urile și identificatorul pachetului au ca sursă

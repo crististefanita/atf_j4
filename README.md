@@ -1,17 +1,17 @@
-# Whist Lab și testarea Android
+# Whist Lab: Android, iOS și motor comun
 
 ## Pe scurt
 
-Whist Lab este un joc Android cu motor Java independent de interfață. Include
-jucători automați, verificarea regulilor și a scorului prin teste de componentă,
-evaluări offline și scenarii UI proprii. Experimentele compară politici pe distribuții controlate și observații publice.
+Whist Lab este un joc local Android și o țintă nativă iOS aflată în calificare.
+Motorul Java comun este independent de interfață. Include jucători automați, reguli și
+scor comune, teste de componentă și evaluări offline.
 
 [Bibliotecile comune](lib/README.md) au un responsabil comun al codului și feedback-ului; aici păstrăm adaptoarele și acceptanța domeniului.
 
 ## Jocul
 
-- **[Whist Lab 0.12.0](https://github.com/crististefanita/atf_j4/releases/tag/v0.12.0)** — versiunea curentă și notele de publicare.
-- **[Descarcă APK 0.12.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.12.0/WhistLab-0.12.0.apk)** — fișierul semnat este disponibil fără cont.
+- **[Whist Lab 0.13.0](release/0.13.0/README.md)** — dosarul build-ului și calificării curente.
+- **[Descarcă APK 0.13.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.13.0/WhistLab-0.13.0.apk)** — fișierul este disponibil fără cont; SHA-256: `451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0`.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -37,6 +37,14 @@ Jocul are două niveluri. **Normal** urmărește levatele licitate și evită s�
 [Regulile și limitele variantelor](docs/game/README.md) explică diferențele de profil.
 
 [Motorul jocului](whist-lab-app/game-core/README.md) leagă comportamentele de implementare și teste.
+
+## iOS
+
+Ținta iOS folosește o interfață SwiftUI și traduce motorul comun Java pentru
+dispozitive Apple. Configurația declară iOS 17 ca versiune minimă; calificarea pe
+simulatorul iOS 27.2 este în curs în GitHub Actions. APK-ul nu se instalează pe
+iPhone sau iPad. Pașii și cerințele de distribuție sunt în
+[ghidul iOS](docs/platform/ATF_iOSDelivery.md).
 
 ## Arhitectura
 
@@ -127,7 +135,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
 
-[Dosarul versiunii curente](release/0.12.0/README.md) · [Catalogul livrărilor](release/README.md)
+[Dosarul versiunii curente](release/0.13.0/README.md) · [Catalogul livrărilor](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

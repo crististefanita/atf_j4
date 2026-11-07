@@ -1,0 +1,65 @@
+{
+  "version": "0.13.0",
+  "versionCode": 19,
+  "applicationId": "ro.whistlab.app",
+  "minSdk": 24,
+  "targetSdk": 36,
+  "apk": "WhistLab-0.13.0.apk",
+  "apkBytes": 1222486,
+  "sha256": "451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0",
+  "signing": {
+    "verified": true,
+    "schemeV2": true,
+    "certificateName": "Android Debug",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+    "identityMatchesPreviousDistribution": true,
+    "productionManagedKey": false
+  },
+  "build": {
+    "task": ":app:assembleDebug",
+    "result": "SUCCESS",
+    "dateLocal": "2026-11-07"
+  },
+  "componentTests": {
+    "androidApplication": {
+      "bidding": 248,
+      "commands": 108,
+      "display": 85,
+      "history": 61,
+      "totalPassed": 502,
+      "failed": 0
+    },
+    "iosSharedEngineBridge": {
+      "passed": 3,
+      "failed": 0
+    },
+    "e2e": "not run",
+    "gameCoreRulesAndSession": {
+      "passed": 44,
+      "failed": 0,
+      "selection": "GameRulesTest, RomanianWhistRulesTest, GameSessionTest"
+    }
+  },
+  "broaderCoreRegression": {
+    "result": "not qualified",
+    "note": "Attempted full :game-core:test exhausted JVM memory in learning-heavy tests and reported an OfflineMockMatchTest assertion; these tests are not counted as passing release evidence."
+  },
+  "reportFiles": [
+    "android-bidding.html",
+    "android-commands.html",
+    "android-display.html",
+    "android-history.html",
+    "game-core-rules-session.html",
+    "ios-engine-bridge.html"
+  ],
+  "publicDownload": {
+    "url": "https://whist-lab-apk.totaloatcake.chatgpt.site/v0.13.0/WhistLab-0.13.0.apk",
+    "httpStatus": 200,
+    "anonymous": true,
+    "bytes": 1222486,
+    "sha256": "451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0",
+    "siteVersion": 3,
+    "siteSourceCommit": "ae04a4d818f5900f64fc3816784ea249b9b4887b"
+  },
+  "iosSimulatorWorkflow": "pending on candidate commit"
+}

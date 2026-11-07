@@ -1,0 +1,100 @@
+name: iOS simulator qualification
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/ios.yml"
+      - "ios/**"
+      - "whist-lab-app/game-core/**"
+      - "whist-lab-app/card-table-names/**"
+      - "whist-lab-app/ios-bridge/**"
+      - "whist-lab-app/gradle/**"
+      - "whist-lab-app/settings.gradle"
+  pull_request:
+    paths:
+      - ".github/workflows/ios.yml"
+      - "ios/**"
+      - "whist-lab-app/game-core/**"
+      - "whist-lab-app/card-table-names/**"
+      - "whist-lab-app/ios-bridge/**"
+      - "whist-lab-app/gradle/**"
+      - "whist-lab-app/settings.gradle"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-simulator:
+    name: iOS 27.2 simulator and shared-engine tests
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Select Xcode 27.2 and install build tools
+        shell: bash
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_27.2.app
+          xcodebuild -version
+          brew install abseil protobuf maven xcodegen
+
+      - name: Build pinned J2ObjC distribution for iOS and simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_dir="$RUNNER_TEMP/j2objc-source"
+          git clone --depth 1 --branch 3.1 https://github.com/google/j2objc.git "$source_dir"
+          export PROTOBUF_ROOT_DIR="$(brew --prefix)"
+          export J2OBJC_ARCHS="iphone64 simulator64"
+          make -C "$source_dir" -j4 dist
+          echo "J2OBJC_HOME=$source_dir/dist" >> "$GITHUB_ENV"
+
+      - name: Run focused game engine rule and session components
+        working-directory: whist-lab-app
+        run: >-
+          ./gradlew :game-core:test --no-daemon
+          --tests ro.whistlab.core.rules.GameRulesTest
+          --tests ro.whistlab.core.rules.RomanianWhistRulesTest
+          --tests ro.whistlab.core.session.GameSessionTest
+
+      - name: Run iOS bridge component tests
+        working-directory: whist-lab-app
+        run: ./gradlew :ios-bridge:test --no-daemon
+
+      - name: Translate shared Java engine
+        run: bash ios/scripts/prepare-shared-core.sh "$J2OBJC_HOME"
+
+      - name: Generate the Xcode project
+        run: |
+          cd ios
+          xcodegen generate --spec project.yml
+
+      - name: Build and test on iOS 27.2 simulator
+        run: >-
+          xcodebuild test
+          -project ios/WhistLab.xcodeproj
+          -scheme WhistLab
+          -destination 'platform=iOS Simulator,OS=27.2,name=iPhone 18 Pro'
+          -derivedDataPath ios/build/DerivedData
+          -resultBundlePath ios/build/TestResults.xcresult
+          CODE_SIGNING_ALLOWED=NO
+
+      - name: Preserve simulator test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-results
+          path: ios/build/TestResults.xcresult
+          if-no-files-found: ignore
+          retention-days: 14
