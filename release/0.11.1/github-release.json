@@ -1,0 +1,27 @@
+{
+  "latest": true,
+  "tag": "v0.11.1",
+  "name": "Whist Lab 0.11.1",
+  "id": 437623788,
+  "prerelease": false,
+  "targetCommit": "ea1604ede355fed6128ec9dc4680869dde38b0bf",
+  "url": "https://github.com/crististefanita/atf_j4/releases/tag/v0.11.1",
+  "draft": false,
+  "assets": [
+    {
+      "id": 720917843,
+      "name": "WhistLab-0.11.1.apk",
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.1/WhistLab-0.11.1.apk",
+      "size": 832632,
+      "digest": "sha256:c302f211b2c7e355d8db0ba066751790268fd331b2d14ad096432638a707dd47"
+    },
+    {
+      "id": 720917902,
+      "name": "WhistLab-0.11.1.apk.sha256",
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.1/WhistLab-0.11.1.apk.sha256",
+      "size": 87,
+      "digest": "sha256:8ca06ec7ebfd9289c879c1e4a7ce1b14010f94a6d603d422afaad34fe0913e47"
+    }
+  ],
+  "publishedUtc": "2026-11-07T14:23:17.0000000+00:00"
+}

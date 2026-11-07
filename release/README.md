@@ -6,13 +6,13 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 ## Versiunea curentă
 
-[0.11.1 — rezultate și proveniență](0.11.1/README.md) reunește APK-ul semnat și verificările candidatului local.
+[0.11.1 — rezultate și proveniență](0.11.1/README.md) este publicată în GitHub Releases. API-ul autentificat a returnat APK-ul verificat. Rezultatul accesului anonim este în verificarea distribuției. [Verificarea distribuției](0.11.1/reports/distribution-verification.json)
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
-| 0.11.1 | PREPARED | [Raport Extent, rezultate și identitate](0.11.1/README.md) |
+| 0.11.1 | PUBLISHED | [Raport Extent, rezultate și identitate](0.11.1/README.md) |
 
 ## Citire rapidă
 
