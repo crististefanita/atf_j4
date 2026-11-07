@@ -61,8 +61,8 @@ public final class AndroidComponentRun implements AutoCloseable {
         if (closed) return;
         closed = true;
         var environment = ReportEnvironmentSnapshot.builder()
-                .put(ReportEnvironmentField.ENVIRONMENT, "COMPONENT — no Android device")
-                .put(ReportEnvironmentField.SUITE, "Whist JVM component acceptance")
+                .put(ReportEnvironmentField.ENVIRONMENT, "JVM — no Android device")
+                .put(ReportEnvironmentField.SUITE, "Whist JVM component and unit acceptance")
                 .put(ReportEnvironmentField.REPORT_ARTIFACT, "Captured inputs and comparisons; publication after execution").build();
         var scenarios = new ArrayList<atf.reporting.artifact.ReportArtifactProfile.Scenario>();
         try (AtfReportPorts.Session session = fallback ? new HtmlReportSession(file, settings)

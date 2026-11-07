@@ -4,6 +4,16 @@
 
 Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea externă. Defectele generice de API sau randare urmează [rutarea către responsabilul bibliotecilor](README.md).
 
+## RPT-OBSERVATION-CONTRACT — validare după capabilitățile declarate
+
+**P2 · responsabil Reporting: contractul artefactului pentru observații.** O probă de componentă poate citi imagini controlate și publica comparații reale fără HTTP, Playwright sau acțiuni pe dispozitiv. Validatorul trebuie să cunoască acest domeniu, fără introducerea unor pași fictivi pentru completarea unei secțiuni.
+
+- Declarați separat schimburi API, acțiuni UI, observații UI și imagini de componentă; inventarul expected/actual, proprietatea capturilor și autonomia rămân obligatorii pentru domeniul selectat.
+- Absența unui canal nefolosit nu este eșec al probei; lipsa unei capturi ori comparații declarate trebuie să rămână eșec explicit.
+- Calificați cu API-ul public și cu un JAR fizic un raport numai cu `OBSERVE`, apoi controlați eliminarea PNG-ului, schimbarea proprietarului și alterarea rezultatului unei comparații.
+
+[Criteriile responsabilului comun](README.md) păstrează problema generică; adaptorul nu modifică JAR-ul sau HTML-ul publicat pentru a trece validatorul.
+
 ## RPT-ANDROID-HTML-ONLY — livrabilul de audit fără copii auxiliare
 
 **P1 · responsabil adaptor Android: colectare, publicare și predare.** [Livrarea curentă](../../release/README.md) păstrează PNG-uri canonice inline, cu viewer offline și revenire la checkpoint. Acestea califică accesul la capturi, fără să demonstreze că întregul audit poate fi înțeles numai din HTML.
@@ -24,7 +34,7 @@ Selecțiile Android ale [livrării curente](../../release/README.md) includ PNG-
 
 ## RPT-ANDROID-COMPONENT-HTML — comparații capturate, nu doar JUnit XML
 
-**P1 · responsabil adaptor Android: extinderea capturii către componentele rămase.** [Familiile migrate](../testing/ATF_DisplayComponents.md#familii-care-folosesc-același-audit) folosesc auditul Kit și publică inputuri și comparații; controlul rendererelor confruntă Extent și fallback. Selecțiile Gradle ale aplicației și alte familii fără adaptor rămân nemigrate; un HTML al subsetului auditat nu certifică toate comparațiile proiectului.
+**P1 · responsabil adaptor Android: calificarea fiecărui producător și a predării.** [Familiile Maven](../testing/ATF_DisplayComponents.md#familii-care-folosesc-același-audit) și [puntea Gradle](../testing/ATF_GradleComponents.md) folosesc auditul Kit și publică inputuri și comparații evaluate. Gradle păstrează intrări distincte pentru aplicație, motor, bibliotecă grafică și raster; catalogul impune clasificarea și participarea claselor la audit. Migrarea mecanismului nu recalifică execuțiile istorice și nici selecțiile neexecutate.
 
 [Suita display](../../atf-test-android/src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java), inclusiv [FrameFillAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/display/component/FrameFillAuditComponentTest.java), capturează comparațiile la evaluare. Familiile fără adaptor păstrează populația și verdictul JUnit; valorile necapturate ale unei execuții trecute nu se reconstruiesc retrospectiv.
 
@@ -53,7 +63,7 @@ Confruntarea inventarului și a hash-urilor dovedește păstrarea identității 
 
 ## RPT-RELEASE-SUITE-COVERAGE — agregarea corectă a livrării
 
-**P1 · responsabil adaptor și pregătirea release-ului: familiile Gradle și migrarea istorică.** [Agregarea pe sursa live](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) execută intrările primare Maven și confruntă identitățile și rezultatele cu HTML-ul. Lacuna rămasă nu se închide prin atribuirea acestei execuții unui APK anterior.
+**P1 · responsabil adaptor și pregătirea release-ului: calificarea colecțiilor și migrarea istorică.** [Agregarea pe sursa live](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) execută intrările primare Maven, iar [task-urile Gradle](../testing/ATF_GradleComponents.md) confruntă fiecare selecție cu propriul HTML. Identitățile se numără o singură dată; unitățile, componentele și cercetarea își păstrează categoria. O nouă execuție nu primește identitatea unui APK anterior.
 
 - [ ] Extindeți captura în timpul evaluării la familiile Gradle: input, expected independent, actual și verdict. Păstrați clasificarea semantică și separarea de unități, cercetare și corpus.
 - [ ] Calificați o intrare canonică pentru fiecare selecție încă nemigrată, cu invocări parametrizate distincte și refuz la omisiune, duplicare ori rezultat divergent.

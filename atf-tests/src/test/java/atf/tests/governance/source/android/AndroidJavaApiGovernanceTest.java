@@ -25,7 +25,7 @@ class AndroidJavaApiGovernanceTest {
     @Test void androidProductionAvoidsTheJava16StreamTerminal() throws Exception {
         Path root = GovernanceProject.locateProjectRoot().resolve("whist-lab-app");
         List<String> failures = new ArrayList<>();
-        for (String module : List.of("app", "game-core")) {
+        for (String module : List.of("app", "game-core", "card-table-ui")) {
             try (var files = Files.walk(root.resolve(module + "/src/main/java"))) {
                 for (Path file : files.filter(path -> path.toString().endsWith(".java")).toList()) {
                     for (String call : unsupportedCalls(Files.readString(file))) failures.add(root.relativize(file) + ": " + call);

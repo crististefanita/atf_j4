@@ -1,6 +1,6 @@
 package ro.whistlab.core.ai.simulation;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,15 +17,17 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GameSession;
 
-public class SearchCancellationComponentTest {
+public class SearchCancellationComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void bothPoliciesRefuseInterruptedWorkWithoutClearingTheInterrupt() {
         var state = game().snapshot();
         for (AiDifficulty level : AiDifficulty.values()) {
             try {
                 Thread.currentThread().interrupt();
-                assertThrows(CancellationException.class, () -> AiPolicy.chooseBid(state, 1, level));
-                assertThrows(CancellationException.class, () -> AiPolicy.chooseCard(state, 1, level));
-                assertTrue(Thread.currentThread().isInterrupted());
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "level", level, "state", state);
+                assertThrows("The operation rejects its input with CancellationException.class", CancellationException.class, () -> AiPolicy.chooseBid(state, 1, level));
+                assertThrows("The operation rejects its input with CancellationException.class", CancellationException.class, () -> AiPolicy.chooseCard(state, 1, level));
+                assertTrue("Thread.currentThread().isInterrupted() must hold", Thread.currentThread().isInterrupted());
             } finally { Thread.interrupted(); }
         }
     }
@@ -41,16 +43,20 @@ public class SearchCancellationComponentTest {
             }
         };
         try {
-            assertThrows(CancellationException.class, () -> PossibleDeals.sample(view, random));
-            assertTrue(Thread.currentThread().isInterrupted());
-            assertEquals(state, game.snapshot());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "random", random, "state", state, "view", view);
+            assertThrows("The operation rejects its input with CancellationException.class", CancellationException.class, () -> PossibleDeals.sample(view, random));
+            assertTrue("Thread.currentThread().isInterrupted() must hold", Thread.currentThread().isInterrupted());
+            assertEquals("game.snapshot() must equal state", state, game.snapshot());
         } finally { Thread.interrupted(); }
     }
 
     @Test public void normalSearchIsDeterministicAndDoesNotMarkTheThreadInterrupted() {
         var state = game().snapshot();
-        assertEquals(AiPolicy.chooseBid(state, 1, AiDifficulty.HARD), AiPolicy.chooseBid(state, 1, AiDifficulty.HARD));
-        assertFalse(Thread.currentThread().isInterrupted());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "state", state);
+        assertEquals("AiPolicy.chooseBid(state, 1, AiDifficulty.HARD) must equal AiPolicy.chooseBid(state, 1, AiDifficulty.HARD)", AiPolicy.chooseBid(state, 1, AiDifficulty.HARD), AiPolicy.chooseBid(state, 1, AiDifficulty.HARD));
+        assertFalse("Thread.currentThread().isInterrupted() must remain false", Thread.currentThread().isInterrupted());
     }
 
     private static GameSession game() {

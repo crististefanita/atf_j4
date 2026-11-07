@@ -1,6 +1,6 @@
 package ro.whistlab.app.animation;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -10,14 +10,15 @@ import ro.whistlab.app.presentation.PresentationRefresh;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-public class TrickCollectionResizeComponentTest {
+public class TrickCollectionResizeComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void resizeCleansTheOldSceneBeforeRequestingAnotherAndNotifiesOnlyOnce() {
         var surface = new ControlledCollectionSurface();
         int[] notified = {0};
         var run = new TrickCollectionRun(new TrickCollectionRequest(1, List.of(0, 1, 2)), 1500, () -> 0, surface, () -> {
-            assertEquals(1, surface.released);
-            assertEquals(1, surface.unwatched);
-            assertEquals(1, surface.stopped);
+
+            assertEquals("surface.released must equal 1", 1, surface.released);
+            assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+            assertEquals("surface.stopped must equal 1", 1, surface.stopped);
             notified[0]++;
         });
         run.start();
@@ -25,8 +26,9 @@ public class TrickCollectionResizeComponentTest {
         surface.resized.run();
         surface.invalidated.run();
         surface.finished.run();
-        assertEquals(1, notified[0]);
-        assertFalse(surface.completed);
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "notified", notified, "run", run, "surface", surface);
+        assertEquals("notified[0] must equal 1", 1, notified[0]);
+        assertFalse("surface.completed must remain false", surface.completed);
     }
 
     @Test public void resizeCleanupFailurePreservesItsCauseAndNeverRequestsAnotherScene() {
@@ -35,11 +37,13 @@ public class TrickCollectionResizeComponentTest {
         surface.stopFailure = failure;
         new TrickCollectionRun(new TrickCollectionRequest(1, List.of(0, 1, 2)), 1500, () -> 0,
                 surface, () -> fail("A failed cleanup cannot replace the scene")).start();
-        assertSame(failure, assertThrows(IllegalStateException.class, surface.resized::run));
-        assertEquals(1, surface.released);
-        assertEquals(1, surface.unwatched);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "failure", failure, "surface", surface);
+        assertSame("assertThrows(IllegalStateException.class, surface.resized::run) keeps the identity of failure", failure, assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, surface.resized::run));
+        assertEquals("surface.released must equal 1", 1, surface.released);
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
         surface.resized.run();
-        assertEquals(1, surface.stopped);
+        assertEquals("surface.stopped must equal 1", 1, surface.stopped);
     }
 
     @Test public void failedResizeNotificationCannotRetainOrReopenTheOldScene() {
@@ -47,16 +51,18 @@ public class TrickCollectionResizeComponentTest {
         var failure = new IllegalStateException("Presentation unavailable");
         new TrickCollectionRun(new TrickCollectionRequest(1, List.of(0, 1, 2)), 1500, () -> 0,
                 surface, () -> { throw failure; }).start();
-        assertSame(failure, assertThrows(IllegalStateException.class, surface.resized::run));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "failure", failure, "surface", surface);
+        assertSame("assertThrows(IllegalStateException.class, surface.resized::run) keeps the identity of failure", failure, assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, surface.resized::run));
         int draws = surface.draws.size();
         surface.frame.accept(1f);
         surface.resized.run();
         surface.becameReady.run();
         surface.finished.run();
-        assertEquals(draws, surface.draws.size());
-        assertEquals(1, surface.released);
-        assertEquals(1, surface.stopped);
-        assertEquals(1, surface.unwatched);
+        assertEquals("surface.draws.size() must equal draws", draws, surface.draws.size());
+        assertEquals("surface.released must equal 1", 1, surface.released);
+        assertEquals("surface.stopped must equal 1", 1, surface.stopped);
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
     }
 
     @Test public void portraitLandscapeAndResizeBurstsUseOnlyTheLatestGeometryForEveryWinningSeat() {
@@ -72,10 +78,12 @@ public class TrickCollectionResizeComponentTest {
             h.refresh.request();
             h.viewport = new Viewport(1600, 900);
             h.refresh.request();
-            assertEquals(1, h.queue.size());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "count", count, "h", h, "old", old, "winner", winner);
+            assertEquals("h.queue.size() must equal 1", 1, h.queue.size());
             h.drain();
-            assertEquals(2, h.surfaces.size());
-            assertEquals(300, h.display.remainingMillis());
+            assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
+            assertEquals("h.display.remainingMillis() must equal 300", 300, h.display.remainingMillis());
             assertEquals(.4f, h.surface().timing.startFraction(), .00001f);
             var current = h.surface();
             int freshDraws = current.draws.size();
@@ -83,12 +91,12 @@ public class TrickCollectionResizeComponentTest {
             old.becameReady.run();
             old.finished.run();
             old.resized.run();
-            assertEquals(freshDraws, current.draws.size());
-            assertEquals(0, current.released);
+            assertEquals("current.draws.size() must equal freshDraws", freshDraws, current.draws.size());
+            assertEquals("current.released must equal 0", 0, current.released);
             current.frame.accept(1f);
             current.finished.run();
             assertTarget(current, h.viewport, winner, count);
-            assertEquals(before, h.game.saveState());
+            assertEquals("h.game.saveState() must equal before", before, h.game.saveState());
         }
     }
 
@@ -103,16 +111,18 @@ public class TrickCollectionResizeComponentTest {
             h.refresh.request();
             h.now = 60_000;
             h.drain();
-            assertEquals(1, h.surfaces.size());
-            assertFalse(h.navigation.dismiss(parentFirst ? menu : history));
-            assertTrue(h.navigation.blocksAutomation());
-            assertTrue(h.navigation.dismiss(parentFirst ? history : menu));
-            assertEquals(2, h.surfaces.size());
-            assertEquals(500, h.display.remainingMillis());
-            assertEquals(new Viewport(1400, 800), h.drawnViewport);
-            assertFalse(h.navigation.dismiss(menu));
-            assertFalse(h.navigation.dismiss(history));
-            assertEquals(2, h.surfaces.size());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "h", h, "history", history, "menu", menu, "parentFirst", parentFirst);
+            assertEquals("h.surfaces.size() must equal 1", 1, h.surfaces.size());
+            assertFalse("h.navigation.dismiss(parentFirst ? menu : history) must remain false", h.navigation.dismiss(parentFirst ? menu : history));
+            assertTrue("h.navigation.blocksAutomation() must hold", h.navigation.blocksAutomation());
+            assertTrue("h.navigation.dismiss(parentFirst ? history : menu) must hold", h.navigation.dismiss(parentFirst ? history : menu));
+            assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
+            assertEquals("h.display.remainingMillis() must equal 500", 500, h.display.remainingMillis());
+            assertEquals("h.drawnViewport must equal new Viewport(1400, 800)", new Viewport(1400, 800), h.drawnViewport);
+            assertFalse("h.navigation.dismiss(menu) must remain false", h.navigation.dismiss(menu));
+            assertFalse("h.navigation.dismiss(history) must remain false", h.navigation.dismiss(history));
+            assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
         }
     }
 
@@ -125,14 +135,16 @@ public class TrickCollectionResizeComponentTest {
         var obsolete = h.queue.get(0);
         h.navigation.show(AppNavigation.Screen.HOME);
         obsolete.run();
-        assertEquals(1, h.surfaces.size());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "h", h, "obsolete", obsolete);
+        assertEquals("h.surfaces.size() must equal 1", 1, h.surfaces.size());
         h.now = 90_000;
         h.enter();
         var current = h.surface();
         obsolete.run();
-        assertEquals(2, h.surfaces.size());
-        assertEquals(400, h.display.remainingMillis());
-        assertEquals(0, current.released);
+        assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
+        assertEquals("h.display.remainingMillis() must equal 400", 400, h.display.remainingMillis());
+        assertEquals("current.released must equal 0", 0, current.released);
     }
 
     @Test public void backgroundAndConfigurationCallbacksPreserveTheLastMatchTricksFinalMillisecond() {
@@ -147,20 +159,22 @@ public class TrickCollectionResizeComponentTest {
             h.refresh.request();
             h.now = 900_000;
             h.drain();
-            assertEquals(1, h.surfaces.size());
-            assertNull(h.nextPhase);
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "count", count, "h", h);
+            assertEquals("h.surfaces.size() must equal 1", 1, h.surfaces.size());
+            assertNull("h.nextPhase remains absent", h.nextPhase);
             h.foreground = true;
             h.show();
-            assertEquals(1, h.display.remainingMillis());
+            assertEquals("h.display.remainingMillis() must equal 1", 1, h.display.remainingMillis());
             h.now++;
             h.show();
-            assertEquals(GamePhase.SCORE, h.nextPhase);
+            assertEquals("h.nextPhase must equal GamePhase.SCORE", GamePhase.SCORE, h.nextPhase);
             int scenes = h.surfaces.size();
             h.viewport = new Viewport(720, 1280);
             h.refresh.request();
             h.drain();
-            assertEquals(scenes, h.surfaces.size());
-            assertEquals(before, h.game.saveState());
+            assertEquals("h.surfaces.size() must equal scenes", scenes, h.surfaces.size());
+            assertEquals("h.game.saveState() must equal before", before, h.game.saveState());
         }
     }
 
@@ -169,19 +183,21 @@ public class TrickCollectionResizeComponentTest {
         h.measurementReady = false;
         h.enter();
         var waiting = h.surface();
-        assertEquals(0, waiting.animations);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "h", h, "waiting", waiting);
+        assertEquals("waiting.animations must equal 0", 0, waiting.animations);
         h.now = 200;
         h.viewport = new Viewport(1400, 800);
         h.refresh.request();
         h.measurementReady = true;
         h.drain();
-        assertEquals(1300, h.display.remainingMillis());
-        assertEquals(new Viewport(1400, 800), h.drawnViewport);
+        assertEquals("h.display.remainingMillis() must equal 1300", 1300, h.display.remainingMillis());
+        assertEquals("h.drawnViewport must equal new Viewport(1400, 800)", new Viewport(1400, 800), h.drawnViewport);
         waiting.ready = true;
         waiting.becameReady.run();
-        assertEquals(0, waiting.animations);
-        assertEquals(1, waiting.released);
-        assertEquals(1, h.surface().animations);
+        assertEquals("waiting.animations must equal 0", 0, waiting.animations);
+        assertEquals("waiting.released must equal 1", 1, waiting.released);
+        assertEquals("h.surface().animations must equal 1", 1, h.surface().animations);
     }
 
     @Test public void detachAndLateResizeAfterCompletionDoNotRequestAReplacement() {
@@ -194,15 +210,17 @@ public class TrickCollectionResizeComponentTest {
             int draws = surface.draws.size();
             surface.resized.run();
             surface.frame.accept(1f);
-            assertEquals(0, refreshes[0]);
-            assertEquals(draws, surface.draws.size());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "draws", draws, "finish", finish, "refreshes", refreshes, "surface", surface);
+            assertEquals("refreshes[0] must equal 0", 0, refreshes[0]);
+            assertEquals("surface.draws.size() must equal draws", draws, surface.draws.size());
         }
     }
 
     private static void assertTarget(ControlledCollectionSurface surface, Viewport viewport, int winner, int count) {
         var frames = surface.draws.get(surface.draws.size() - 1);
         var target = viewport.target(winner);
-        assertEquals(count, frames.size());
+        assertEquals("frames.size() must equal count", count, frames.size());
         for (int card = 0; card < count; card++) {
             assertEquals(target.x(), surface.geometry.cards().get(card).x() + frames.get(card).translationX(), .001f);
             assertEquals(target.y(), surface.geometry.cards().get(card).y() + frames.get(card).translationY(), .001f);

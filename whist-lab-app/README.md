@@ -30,6 +30,14 @@ O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizator
 | Adaptare | Dialogul distribuie fereastra disponibilă, cu margini proporționate și scara textului păstrată. Coloanele late se derulează orizontal; o fereastră prea scundă permite derularea conținutului integral. |
 | Licitație ratată | Diagonală roșie proprie, distinctă de dreptunghiul seriei; [contractul istoricului](../docs/game/ATF_ScoreHistory.md#adaptarea-la-fereastră) explică geometria și adaptarea. |
 
+## Licitarea asistată
+
+La tura jucătorului, motorul Hard estimează și preselectează o licitație legală din informația vizibilă. Alegerea se poate schimba și trebuie confirmată prin `Licitează` / `Place bid`; recomandarea nu depune contractul. Nivelul Normal sau Dificil selectat pentru partidă continuă să controleze adversarii.
+
+- Calculul rulează în fundal și folosește mâna proprie, atuul și cartea întoarsă cunoscută, licitațiile publice și contextul de scor al motorului.
+- Alegerea manuală are prioritate; un rezultat întârziat nu înlocuiește selecția și nu se aplică altei mâini ori partide.
+- Dacă estimarea nu este disponibilă, se poate alege manual orice valoare legală. [Selecția contextuală](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) păstrează această stare separat de contractele depuse.
+
 ## Flux și responsabilități
 
 ```mermaid
@@ -53,8 +61,10 @@ GameSession validează comenzile înaintea schimbării stării; UI-ul redă star
 | Componentă | Responsabilitate |
 |---|---|
 | [game-core](game-core/README.md) | Reguli, sesiune, scor, salvare și politica AI a aplicației; teste JVM. |
+| [card-table-ui](card-table-ui/README.md) | Nucleu Android reutilizabil: meniu/profil, widgeturi, cărți, temă și geometria mâinii; fără motorul jocului sau biblioteci ATF. |
 | [app](app/src/main/java/ro/whistlab/app/) | Activitatea Android, configurarea mesei, prezentarea jocului și persistența locală. |
 | [ai-lab](ai-lab/README.md) | Modul JVM al jucătorului independent, uneltelor și experimentelor offline; consumat numai la testare. |
+| [test-audit](test-audit/README.md) | Fixture-uri JVM pentru captura și verificarea componentelor; exclus din runtime-ul aplicației. |
 | [algorithm-build](algorithm-build/README.md) | Intrare Gradle exclusiv JVM, fără configurarea aplicației Android. |
 | [atf-test-android](../atf-test-android/README.md) | Componente de verificare și scenarii Android activate explicit. |
 

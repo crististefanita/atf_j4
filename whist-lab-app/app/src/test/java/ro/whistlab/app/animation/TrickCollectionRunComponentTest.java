@@ -1,11 +1,11 @@
 package ro.whistlab.app.animation;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
 
-public class TrickCollectionRunComponentTest {
+public class TrickCollectionRunComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void everyFaceReachesTheEnginesWinnerAndCompletesOnlyOnce() {
         for (int count = 3; count <= 6; count++) for (int winner = 0; winner < count; winner++) {
             var game = CollectionFixtures.completed(count, winner, 2, true);
@@ -22,6 +22,8 @@ public class TrickCollectionRunComponentTest {
             int draws = surface.draws.size();
             var last = surface.draws.get(draws - 1);
             for (int card = 0; card < count; card++) {
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "card", card, "count", count, "draws", draws, "game", game, "last", last, "request", request, "run", run, "surface", surface, "winner", winner);
                 assertEquals(surface.geometry.target().x(), surface.geometry.cards().get(card).x() + last.get(card).translationX(), .001f);
                 assertEquals(surface.geometry.target().y(), surface.geometry.cards().get(card).y() + last.get(card).translationY(), .001f);
                 assertEquals(0, last.get(card).alpha(), 0);
@@ -30,14 +32,14 @@ public class TrickCollectionRunComponentTest {
             surface.frame.accept(.5f);
             surface.finished.run();
             surface.invalidated.run();
-            assertEquals(draws, surface.draws.size());
-            assertTrue(surface.completed);
-            assertEquals(1, surface.animations);
-            assertEquals(1, surface.watches);
-            assertEquals(1, surface.stopped);
-            assertEquals(1, surface.unwatched);
-            assertEquals(1, surface.released);
-            assertEquals(before, game.snapshot());
+            assertEquals("surface.draws.size() must equal draws", draws, surface.draws.size());
+            assertTrue("surface.completed must hold", surface.completed);
+            assertEquals("surface.animations must equal 1", 1, surface.animations);
+            assertEquals("surface.watches must equal 1", 1, surface.watches);
+            assertEquals("surface.stopped must equal 1", 1, surface.stopped);
+            assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+            assertEquals("surface.released must equal 1", 1, surface.released);
+            assertEquals("game.snapshot() must equal before", before, game.snapshot());
         }
     }
 
@@ -47,13 +49,15 @@ public class TrickCollectionRunComponentTest {
         surface.ready = false;
         var run = new TrickCollectionRun(request(), 1500, clock::get, surface);
         run.start();
-        assertEquals(0, surface.animations);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "clock", clock, "run", run, "surface", surface);
+        assertEquals("surface.animations must equal 0", 0, surface.animations);
         clock.set(400);
         surface.ready = true;
         surface.becameReady.run();
         surface.becameReady.run();
-        assertEquals(new TrickCollectionMotion.Timing(600, 500, 0), surface.timing);
-        assertEquals(1, surface.animations);
+        assertEquals("surface.timing must equal new TrickCollectionMotion.Timing(600, 500, 0)", new TrickCollectionMotion.Timing(600, 500, 0), surface.timing);
+        assertEquals("surface.animations must equal 1", 1, surface.animations);
         run.cancel();
     }
 
@@ -66,11 +70,13 @@ public class TrickCollectionRunComponentTest {
         clock.set(1500);
         surface.ready = true;
         surface.becameReady.run();
-        assertEquals(0, surface.animations);
-        assertTrue(surface.draws.isEmpty());
-        assertEquals(1, surface.unwatched);
-        assertEquals(1, surface.released);
-        assertFalse(surface.completed);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "clock", clock, "run", run, "surface", surface);
+        assertEquals("surface.animations must equal 0", 0, surface.animations);
+        assertTrue("surface.draws.isEmpty() must hold", surface.draws.isEmpty());
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+        assertEquals("surface.released must equal 1", 1, surface.released);
+        assertFalse("surface.completed must remain false", surface.completed);
     }
 
     @Test public void cancelledWaitingLayoutIgnoresPostedReadyAndDetachEvents() {
@@ -83,10 +89,12 @@ public class TrickCollectionRunComponentTest {
         surface.becameReady.run();
         surface.invalidated.run();
         run.start();
-        assertEquals(0, surface.animations);
-        assertTrue(surface.draws.isEmpty());
-        assertEquals(1, surface.unwatched);
-        assertEquals(1, surface.released);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "run", run, "surface", surface);
+        assertEquals("surface.animations must equal 0", 0, surface.animations);
+        assertTrue("surface.draws.isEmpty() must hold", surface.draws.isEmpty());
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+        assertEquals("surface.released must equal 1", 1, surface.released);
     }
 
     @Test public void activeSceneInvalidationCancelsWithoutTreatingCancelAsSuccessfulCollection() {
@@ -97,46 +105,54 @@ public class TrickCollectionRunComponentTest {
         int draws = surface.draws.size();
         surface.frame.accept(1f);
         surface.finished.run();
-        assertEquals(draws, surface.draws.size());
-        assertFalse(surface.completed);
-        assertEquals(1, surface.stopped);
-        assertEquals(1, surface.unwatched);
-        assertEquals(1, surface.released);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "draws", draws, "surface", surface);
+        assertEquals("surface.draws.size() must equal draws", draws, surface.draws.size());
+        assertFalse("surface.completed must remain false", surface.completed);
+        assertEquals("surface.stopped must equal 1", 1, surface.stopped);
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+        assertEquals("surface.released must equal 1", 1, surface.released);
     }
 
     @Test public void resumedCollectionStartsAtItsRemainingFractionAndNeverMovesBackwards() {
         var surface = new ControlledCollectionSurface();
         var run = new TrickCollectionRun(request(), 300, () -> 0, surface);
         run.start();
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "run", run, "surface", surface);
         assertEquals(.4f, surface.timing.startFraction(), .00001f);
         surface.frame.accept(.1f);
         surface.frame.accept(.4f);
-        assertEquals(1, surface.draws.size());
+        assertEquals("surface.draws.size() must equal 1", 1, surface.draws.size());
         surface.frame.accept(.8f);
         surface.frame.accept(.6f);
-        assertEquals(2, surface.draws.size());
+        assertEquals("surface.draws.size() must equal 2", 2, surface.draws.size());
         surface.finished.run();
-        assertEquals(3, surface.draws.size());
-        assertTrue(surface.completed);
+        assertEquals("surface.draws.size() must equal 3", 3, surface.draws.size());
+        assertTrue("surface.completed must hold", surface.completed);
     }
 
     @Test public void disabledAnimationsLeaveTheSceneStaticAndReleaseTheWatcher() {
         var surface = new ControlledCollectionSurface();
         surface.enabled = false;
         new TrickCollectionRun(request(), 1500, () -> 0, surface).start();
-        assertTrue(surface.draws.isEmpty());
-        assertEquals(0, surface.animations);
-        assertEquals(1, surface.unwatched);
-        assertEquals(1, surface.released);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "surface", surface);
+        assertTrue("surface.draws.isEmpty() must hold", surface.draws.isEmpty());
+        assertEquals("surface.animations must equal 0", 0, surface.animations);
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+        assertEquals("surface.released must equal 1", 1, surface.released);
     }
 
     @Test public void synchronousCancellationWhileRegisteringStillClosesTheReturnedWatcher() {
         var surface = new ControlledCollectionSurface();
         surface.cancelWhenWatching = true;
         new TrickCollectionRun(request(), 1500, () -> 0, surface).start();
-        assertEquals(1, surface.unwatched);
-        assertEquals(1, surface.released);
-        assertEquals(0, surface.animations);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "surface", surface);
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+        assertEquals("surface.released must equal 1", 1, surface.released);
+        assertEquals("surface.animations must equal 0", 0, surface.animations);
     }
 
     @Test public void synchronousReadyAndCompletionReleaseBothHandlesReturnedAfterCompletion() {
@@ -144,12 +160,14 @@ public class TrickCollectionRunComponentTest {
         surface.readyWhenWatching = true;
         surface.finishInline = true;
         new TrickCollectionRun(request(), 1500, () -> 0, surface).start();
-        assertTrue(surface.completed);
-        assertEquals(2, surface.draws.size());
-        assertEquals(1, surface.animations);
-        assertEquals(1, surface.stopped);
-        assertEquals(1, surface.unwatched);
-        assertEquals(1, surface.released);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "surface", surface);
+        assertTrue("surface.completed must hold", surface.completed);
+        assertEquals("surface.draws.size() must equal 2", 2, surface.draws.size());
+        assertEquals("surface.animations must equal 1", 1, surface.animations);
+        assertEquals("surface.stopped must equal 1", 1, surface.stopped);
+        assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
+        assertEquals("surface.released must equal 1", 1, surface.released);
     }
 
     private static TrickCollectionRequest request() { return new TrickCollectionRequest(0, List.of(2, 0, 1)); }

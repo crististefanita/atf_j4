@@ -8,8 +8,8 @@ import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.testing.CapturedRegression;
-import static org.junit.Assert.*;import java.util.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
-@RunWith(Parameterized.class) public class BidForecastContractTest {
+import static atf.gradle.audit.assertions.GradleAssertions.*;import java.util.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
+@RunWith(Parameterized.class) public class BidForecastContractTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="size={0}")public static Collection<Object[]> cases(){var out=new ArrayList<Object[]>();for(int n=2;n<=8;n++)out.add(new Object[]{n});return out;}private final int size;public BidForecastContractTest(int size){this.size=size;}
  @Test public void knownAuctionRemainsAuthoritativeAndForbiddenLastBidStaysIllegal()throws Exception{
   var cards=new ArrayList<Card>(GameRules.deck(GameMode.ROMANIAN_WHIST,4).subList(0,size));var seats=List.of(new MonteCarloAi.Seat(size,1,0),new MonteCarloAi.Seat(size,0,0),new MonteCarloAi.Seat(size,0,0),new MonteCarloAi.Seat(size,null,0));

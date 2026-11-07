@@ -20,6 +20,7 @@ Nivelul exprimă limita verificată, iar colecția selectează cazurile și cost
 | Cum verific geometria, derularea și capturile? | [Profiluri de ecran](ATF_Display.md) |
 | În ce ordine pregătesc testele și dovezile unui release? | [Calificare pas cu pas](ATF_ReleaseQualification.md) |
 | Ce pot verifica despre display fără emulator? | [Componente display](ATF_DisplayComponents.md) |
+| Cum auditez componentele Gradle fără raportări paralele? | [Captură și colecții Gradle](ATF_GradleComponents.md) |
 
 ## De la proprietate la rezultat
 

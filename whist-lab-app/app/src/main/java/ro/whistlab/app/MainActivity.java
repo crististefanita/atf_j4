@@ -7,6 +7,7 @@ import ro.whistlab.app.screens.MatchSetup;
 import ro.whistlab.app.screens.ScreenViews;
 import ro.whistlab.app.navigation.AppNavigation;
 import ro.whistlab.app.presentation.PresentationRefresh;
+import ro.whistlab.app.bidding.HumanBidSelection;
 
 import ro.whistlab.app.fixtures.DisplayFixtureDeals;
 import ro.whistlab.app.fixtures.OriginalMatchReplay;
@@ -72,7 +73,7 @@ public final class MainActivity extends Activity {
     private SetupScreen setupScreen;
     private GameScreen gameScreen;
     private ScoreScreens scoreScreens;
-    private Integer selectedBid;
+    private final HumanBidSelection humanBids = new HumanBidSelection();
     private PlayerPreferences playerPreferences;
     private HighScoreRepository highScores;
     private GamePersistence persistence;
@@ -205,7 +206,7 @@ public final class MainActivity extends Activity {
     private void startGame(GameConfig config) {
         cancelAutomatedTurns();
         recordedReplay = null;
-        selectedBid = null;
+        humanBids.reset();
         lastConfig = config;
         rankingEligible = true;
         matchId = java.util.UUID.randomUUID().toString();
@@ -218,14 +219,40 @@ public final class MainActivity extends Activity {
         var state = game.snapshot();
         List<Integer> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(),
                 state.bidsSubmitted() == state.players().size() - 1);
-        if (selectedBid == null || !choices.contains(selectedBid)) selectedBid = choices.get(0);
-        gameScreen.bidding(copy, state, choices, selectedBid, bid -> selectedBid = bid,
+        int selected = state.biddingSeat() == 0 ? humanBids.selected(game).orElse(-1) : choices.get(0);
+        gameScreen.bidding(copy, state, choices, selected, bid -> {
+                    humanBids.select(game, bid);
+                    aiTurns.cancel();
+                },
                 this::submitSelectedBid, gameMenuActions());
+        if (state.biddingSeat() == 0) suggestHumanBid();
+    }
+
+    private void suggestHumanBid() {
+        if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return;
+        humanBids.request(game).ifPresent(request -> {
+            boolean queued = aiTurns.submit(request::evaluate, bid -> {
+                if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return;
+                if (humanBids.apply(game, request, bid)) renderBidding();
+            }, failure -> {
+                if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return;
+                if (humanBids.failed(game, request)) {
+                    android.util.Log.w("WhistLab", "Human bid recommendation failed", failure);
+                    Toast.makeText(this, copy.bidAdviceUnavailable(), Toast.LENGTH_SHORT).show();
+                    renderBidding();
+                }
+            });
+            if (!queued) humanBids.cancel();
+        });
     }
 
     private void submitSelectedBid() {
-        if (aiTurns.isPending()) return;
-        commands.execute(() -> game.submitBid(0, selectedBid), () -> selectedBid = null,
+        if (game == null || game.snapshot().phase() != GamePhase.BIDDING || game.snapshot().biddingSeat() != 0) return;
+        var selected = humanBids.selected(game);
+        if (!selected.isPresent()) return;
+        aiTurns.cancel();
+        humanBids.cancel();
+        commands.execute(() -> game.submitBid(0, selected.getAsInt()), humanBids::reset,
                 refusal -> {
                     Toast.makeText(this, copy.invalidBid(), Toast.LENGTH_SHORT).show();
                     renderBidding();
@@ -429,6 +456,7 @@ public final class MainActivity extends Activity {
         if (gameScreen != null) gameScreen.cancelCollection();
         handler.removeCallbacksAndMessages(null);
         aiTurns.cancel();
+        humanBids.cancel();
         aiResults.removeCallbacksAndMessages(null);
     }
 
@@ -501,7 +529,7 @@ public final class MainActivity extends Activity {
                 Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
                 Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
         game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
-        selectedBid = 0;
+        humanBids.select(game, 0);
         lastConfig = config;
         driveAutomatedTurns();
     }
@@ -513,7 +541,7 @@ public final class MainActivity extends Activity {
             for (int seat = 0; seat < config.playerCount(); seat++) game.submitBid(game.snapshot().biddingSeat(), 0);
         }
         lastConfig = config;
-        selectedBid = null;
+        humanBids.reset();
         driveAutomatedTurns();
     }
 

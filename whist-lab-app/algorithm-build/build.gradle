@@ -1,1 +1,2 @@
 // Pure JVM entrypoint. Android application configuration is intentionally outside this build.
+apply from: '../gradle/component-audit.gradle'

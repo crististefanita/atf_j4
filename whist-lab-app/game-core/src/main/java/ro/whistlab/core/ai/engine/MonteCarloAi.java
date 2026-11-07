@@ -560,11 +560,12 @@ public final class MonteCarloAi {
             seed = seed * 31 + c.suit().ordinal();
             seed = seed * 31 + c.rank();
         }
+        long scoreOrigin = view.seats().get(view.seat()).total();
         for (Seat s : view.seats()) {
             seed = seed * 31 + s.remaining();
             seed = seed * 31 + (s.bid() == null ? -1 : s.bid());
             seed = seed * 31 + s.won();
-            seed = seed * 31 + s.total();
+            seed = seed * 31 + (s.total() - scoreOrigin);
         }
         for (PlayedCard p : view.history()) {
             seed = seed * 31 + p.seat();

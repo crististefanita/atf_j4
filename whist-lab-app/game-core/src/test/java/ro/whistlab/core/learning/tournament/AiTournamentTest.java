@@ -7,13 +7,13 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.Test;
 
 /** Opt-in, predeclared held-out paired evaluation; does not establish global optimality. */
-public class AiTournamentTest {
+public class AiTournamentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void ai07ExpertMeetsTheBaselineAcrossPairedDealsAndRotatedSeats()throws Exception {
         Properties results=new Properties();int expert=0,baseline=0,expertExact=0,baselineExact=0,comparisons=0;
         long started=System.nanoTime();
@@ -45,11 +45,13 @@ public class AiTournamentTest {
             Files.createDirectories(Path.of(output));
             try(var stream=Files.newOutputStream(Path.of(output,"ai-tournament.properties"))){results.store(stream,"Actual paired AI evaluation; same seeded deals and rotated hero seat");}
         }
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "baseline", baseline, "baselineExact", baselineExact, "comparisons", comparisons, "everyTablePassed", everyTablePassed, "expert", expert, "expertExact", expertExact, "output", output, "results", results, "seeds", seeds, "started", started);
         assertTrue("Expert must meet Hard at every table size; total "+expert+" vs "+baseline+" in "+comparisons+" held-out paired games",everyTablePassed);
     }
 
     private static int[] play(int players,long seed,int hero,AiDifficulty policy) {
-        GameSession game=GameSession.newGame(new GameConfig(players,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,seed));int exact=0;
+        GameSession game=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(players,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,seed)));int exact=0;
         while(true) {
             while(game.snapshot().phase()==GamePhase.BIDDING) {
                 var s=game.snapshot();int seat=s.biddingSeat();game.submitBid(seat,AiPolicy.chooseBid(s,seat,seat==hero?policy:AiDifficulty.HARD));

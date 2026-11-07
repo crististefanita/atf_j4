@@ -1,6 +1,6 @@
 package ro.whistlab.app.score;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.List;
 import org.junit.Test;
 import ro.whistlab.app.localization.WhistUiText;
@@ -14,18 +14,22 @@ import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
 
-public class ScoreHistoryTableComponentTest {
+public class ScoreHistoryTableComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void allVariantsAndSeatsExposeTheWholeScheduleAndExactRecordedCells() {
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
         for (GameMode mode : GameMode.values()) for (int seats = 3; seats <= 6; seats++) {
-            var game = GameSession.newGame(GameConfig.newMatch(seats, mode, AiDifficulty.NORMAL, 8, mode.isRomanian(), 10), "Cristi");
+            var config = GameConfig.newMatch(seats, mode, AiDifficulty.NORMAL, 8, mode.isRomanian(), 10);
+            var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", config),
+                    atf.gradle.audit.GradleInputs.created("Human name before creation", "Cristi"));
             for (HowToPlay.Language language : HowToPlay.Language.values()) {
-                var copy = new WhistUiText(language);
-                var initial = ScoreHistoryTable.forMatch(game.snapshot(), game.scoreHistory(), copy);
-                assertEquals(GameRules.handSizes(mode, seats).size(), initial.rows().size());
-                assertEquals(seats, initial.players().size());
-                assertEquals("Cristi", initial.players().get(0));
-                assertEquals(ScoreHistoryTable.Status.CURRENT, initial.rows().get(0).status());
-                assertTrue(initial.rows().get(1).cells().stream().allMatch(cell -> cell.points().equals("—") && cell.total().equals("—")));
+                var initial = ScoreHistoryTable.forMatch(game.snapshot(), game.scoreHistory(), new WhistUiText(language));
+                checks.at(mode + " / seats " + seats + " / initial " + language);
+                checks.equal("Complete hand schedule", GameRules.handSizes(mode, seats).size(), initial.rows().size());
+                checks.equal("Every configured player", seats, initial.players().size());
+                checks.equal("Human player name", "Cristi", initial.players().get(0));
+                checks.equal("Opening row is current", ScoreHistoryTable.Status.CURRENT, initial.rows().get(0).status());
+                checks.equal("Unplayed row points and totals remain unknown", true,
+                        initial.rows().get(1).cells().stream().allMatch(cell -> cell.points().equals("—") && cell.total().equals("—")));
             }
             do {
                 finish(game);
@@ -33,96 +37,113 @@ public class ScoreHistoryTableComponentTest {
                 var checkpoint = game.saveState();
                 var table = ScoreHistoryTable.forMatch(snapshot, game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO));
                 var row = table.rows().get(snapshot.handIndex());
-                assertEquals(ScoreHistoryTable.Status.RECORDED, row.status());
-                assertEquals(snapshot.handSize(), row.cards());
+                checks.at(mode + " / seats " + seats + " / hand " + snapshot.handNumber());
+                checks.equal("Settled row is recorded", ScoreHistoryTable.Status.RECORDED, row.status());
+                checks.equal("Recorded hand size", snapshot.handSize(), row.cards());
                 for (int seat = 0; seat < seats; seat++) {
-                    assertEquals(snapshot.players().get(seat).bid().toString(), row.cells().get(seat).bid());
-                    assertEquals(Integer.toString(snapshot.players().get(seat).totalScore()), row.cells().get(seat).total());
-                    assertEquals(Integer.toString(snapshot.players().get(seat).totalScore()), row.cells().get(seat).displayPoints());
-                    assertEquals(Integer.parseInt(row.cells().get(seat).points().replace("+", "")), game.scoreHistory().points(snapshot.handNumber(), seat));
-                    assertEquals(snapshot.players().get(seat).tricksWon(), (int) game.scoreHistory().tricks(snapshot.handNumber(), seat));
-                    assertEquals(snapshot.players().get(seat).bid().equals(snapshot.players().get(seat).tricksWon())
-                            ? ro.whistlab.core.session.ScoreHistory.Outcome.EXACT : ro.whistlab.core.session.ScoreHistory.Outcome.MISSED,
-                            row.cells().get(seat).outcome());
-                    assertEquals(snapshot.players().get(seat).streakPoints(), row.cells().get(seat).seriesPoints());
-                    assertEquals(snapshot.players().get(seat).streakPoints() != 0, row.cells().get(seat).boxPoints());
+                    checks.at(mode + " / seats " + seats + " / hand " + snapshot.handNumber() + " / player " + seat);
+                    var player = snapshot.players().get(seat); var cell = row.cells().get(seat);
+                    checks.equal("Recorded bid", player.bid().toString(), cell.bid());
+                    checks.equal("Recorded cumulative total", Integer.toString(player.totalScore()), cell.total());
+                    checks.equal("Points display the cumulative total", Integer.toString(player.totalScore()), cell.displayPoints());
+                    checks.equal("Hand score delta", Integer.parseInt(cell.points().replace("+", "")), game.scoreHistory().points(snapshot.handNumber(), seat));
+                    checks.equal("Recorded tricks", player.tricksWon(), (int) game.scoreHistory().tricks(snapshot.handNumber(), seat));
+                    checks.equal("Contract outcome", player.bid().equals(player.tricksWon()) ? ScoreHistory.Outcome.EXACT : ScoreHistory.Outcome.MISSED, cell.outcome());
+                    checks.equal("Series payment", player.streakPoints(), cell.seriesPoints());
+                    checks.equal("Series rectangle eligibility", player.streakPoints() != 0, cell.boxPoints());
                 }
-                assertEquals(checkpoint, game.saveState());
-                assertEquals(table, ScoreHistoryTable.forMatch(GameSession.restoreComplete(checkpoint).snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO)));
-                if (snapshot.finalHand()) break;
+                checks.equal("Rendering preserves complete game state", checkpoint, game.saveState());
+                checks.equal("Restoration preserves the complete table", table, ScoreHistoryTable.forMatch(
+                        GameSession.restoreComplete(checkpoint).snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO)));
+                if (snapshot.finalHand()) {
+                    assertEquals("Every scheduled hand is complete before publishing the final table",
+                            GameRules.handSizes(mode, seats).size(), game.scoreHistory().completedHands());
+                    atf.gradle.audit.GradleInputs.fixture("Complete final score history", "configuration", config, "table", table);
+                    break;
+                }
                 game.startNextHand();
             } while (true);
         }
+        checks.publish();
     }
-
     @Test public void currentBidsAreVisibleButUnfinishedPointsStayUnknown() {
-        var game = GameSession.newGame(GameConfig.defaults(9));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.defaults(9)));
         int bidder = game.snapshot().biddingSeat();
         game.submitBid(bidder, 0);
         var table = ScoreHistoryTable.forMatch(game.snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.EN));
-        assertEquals("0", table.rows().get(0).cells().get(bidder).bid());
-        assertEquals("—", table.rows().get(0).cells().get(bidder).points());
-        assertEquals("—", table.rows().get(0).cells().get(bidder).total());
-        assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).allMatch(cell -> cell.displayPoints().equals("—")));
-        assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bidder", bidder, "game", game, "table", table);
+        assertEquals("table.rows().get(0).cells().get(bidder).bid() must equal \"0\"", "0", table.rows().get(0).cells().get(bidder).bid());
+        assertEquals("table.rows().get(0).cells().get(bidder).points() must equal \"\\u2014\"", "—", table.rows().get(0).cells().get(bidder).points());
+        assertEquals("table.rows().get(0).cells().get(bidder).total() must equal \"\\u2014\"", "—", table.rows().get(0).cells().get(bidder).total());
+        assertTrue("table.rows().stream().flatMap((row)->row.cells().stream()).allMatch((cell)->cell.displayPoints().equals(\"\\u2014\")) must hold", table.rows().stream().flatMap(row -> row.cells().stream()).allMatch(cell -> cell.displayPoints().equals("—")));
+        assertTrue("table.rows().stream().flatMap((row)->row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
     }
 
     @Test public void onlyPositiveAndNegativeSeriesPaymentsRectangleTheRecordedTotal() {
         for (GameMode mode : List.of(GameMode.ROMANIAN_WHIST, GameMode.LONG_ROMANIAN)) {
             for (int bonus : List.of(5, 10)) for (int penalty : List.of(5, 10)) {
-                var game = GameSession.newGame(new GameConfig(4, mode, AiDifficulty.NORMAL, 8, true, bonus, penalty));
+                var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4, mode, AiDifficulty.NORMAL, 8, true, bonus, penalty)));
                 var history = awardHistory(mode, bonus, -penalty, true, true);
                 for (var language : HowToPlay.Language.values()) {
                     var copy = new WhistUiText(language);
                     var table = ScoreHistoryTable.forMatch(game.snapshot(), history, copy);
                     var cells = table.rows().get(8).cells();
-                    assertEquals(List.of(bonus, -penalty, 0, 0), cells.stream().map(ScoreHistoryTable.Cell::seriesPoints).toList());
-                    assertEquals(List.of(true, true, false, false), cells.stream().map(ScoreHistoryTable.Cell::boxPoints).toList());
-                    assertEquals("+" + (5 + bonus), cells.get(0).points());
-                    assertEquals(Integer.toString(-1 - penalty), cells.get(1).points());
-                    assertEquals("-1", cells.get(2).points());
-                    assertEquals("+" + (4 + GameRules.handSizes(mode, 4).get(8)), cells.get(3).points());
-                    assertTrue(cells.get(0).description().contains(copy.historySeriesAdjustment(bonus)));
-                    assertTrue(cells.get(1).description().contains(copy.historySeriesAdjustment(-penalty)));
-                    assertFalse(cells.get(3).description().contains(copy.historySeriesAdjustment(bonus)));
-                    assertTrue(table.rows().get(7).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
-                    assertTrue(table.rows().get(9).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
+
+                    atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bonus", bonus, "cells", cells, "copy", copy, "game", game, "history", history, "language", language, "mode", mode, "penalty", penalty, "table", table);
+                    assertEquals("cells.stream().map(ScoreHistoryTable.Cell::seriesPoints).toList() must equal List.of(bonus, -penalty, 0, 0)", List.of(bonus, -penalty, 0, 0), cells.stream().map(ScoreHistoryTable.Cell::seriesPoints).toList());
+                    assertEquals("cells.stream().map(ScoreHistoryTable.Cell::boxPoints).toList() must equal List.of(true, true, false, false)", List.of(true, true, false, false), cells.stream().map(ScoreHistoryTable.Cell::boxPoints).toList());
+                    assertEquals("cells.get(0).points() must equal \"+\" + (5 + bonus)", "+" + (5 + bonus), cells.get(0).points());
+                    assertEquals("cells.get(1).points() must equal Integer.toString(-1 - penalty)", Integer.toString(-1 - penalty), cells.get(1).points());
+                    assertEquals("cells.get(2).points() must equal \"-1\"", "-1", cells.get(2).points());
+                    assertEquals("cells.get(3).points() must equal \"+\" + (4 + GameRules.handSizes(mode, 4).get(8))", "+" + (4 + GameRules.handSizes(mode, 4).get(8)), cells.get(3).points());
+                    assertTrue("cells.get(0).description().contains(copy.historySeriesAdjustment(bonus)) must hold", cells.get(0).description().contains(copy.historySeriesAdjustment(bonus)));
+                    assertTrue("cells.get(1).description().contains(copy.historySeriesAdjustment(-penalty)) must hold", cells.get(1).description().contains(copy.historySeriesAdjustment(-penalty)));
+                    assertFalse("cells.get(3).description().contains(copy.historySeriesAdjustment(bonus)) must remain false", cells.get(3).description().contains(copy.historySeriesAdjustment(bonus)));
+                    assertTrue("table.rows().get(7).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().get(7).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
+                    assertTrue("table.rows().get(9).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().get(9).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
                 }
             }
         }
     }
 
     @Test public void missingContractsOrTricksNeverInventASeriesPaymentFromItsSign() {
-        var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10)));
         for (boolean bids : List.of(false, true)) for (boolean tricks : List.of(false, true)) {
             if (bids && tricks) continue;
             var table = ScoreHistoryTable.forMatch(game.snapshot(), awardHistory(GameMode.ROMANIAN_WHIST, 10, -10, bids, tricks),
                     new WhistUiText(HowToPlay.Language.EN));
-            assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bids", bids, "game", game, "table", table, "tricks", tricks);
+            assertTrue("table.rows().stream().flatMap((row)->row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
         }
     }
 
     @Test public void disabledSeriesAndUnconfiguredOrOppositeAdjustmentsHaveNoRectangle() {
         for (GameMode mode : GameMode.values()) {
-            var game = GameSession.newGame(GameConfig.newMatch(4, mode, AiDifficulty.NORMAL, 8, false, 10));
+            var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(4, mode, AiDifficulty.NORMAL, 8, false, 10)));
             var table = ScoreHistoryTable.forMatch(game.snapshot(), awardHistory(mode, 10, -10, true, true),
                     new WhistUiText(HowToPlay.Language.EN));
-            assertTrue(table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "mode", mode, "table", table);
+            assertTrue("table.rows().stream().flatMap((row)->row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().stream().flatMap(row -> row.cells().stream()).noneMatch(ScoreHistoryTable.Cell::boxPoints));
         }
-        var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10)));
         for (var adjustments : List.of(List.of(5, -5), List.of(-10, 10), List.of(1, -1))) {
             var table = ScoreHistoryTable.forMatch(game.snapshot(), awardHistory(GameMode.ROMANIAN_WHIST, adjustments.get(0), adjustments.get(1), true, true),
                     new WhistUiText(HowToPlay.Language.RO));
-            assertTrue(table.rows().get(8).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
+            assertTrue("table.rows().get(8).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().get(8).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
         }
     }
 
     @Test public void aOneCardHandNeverReceivesTheSeriesRectangle() {
-        var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 8, true, 10)));
         var firstHand = new ScoreHistory(0, List.of(0, 0, 0, 0), List.of(List.of(15, -11, -1, 5)),
                 List.of(List.of(0, 1, 0, 0)), List.of(List.of(0, 0, 1, 0)));
         var table = ScoreHistoryTable.forMatch(game.snapshot(), firstHand, new WhistUiText(HowToPlay.Language.RO));
-        assertTrue(table.rows().get(0).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "firstHand", firstHand, "game", game, "table", table);
+        assertTrue("table.rows().get(0).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints) must hold", table.rows().get(0).cells().stream().noneMatch(ScoreHistoryTable.Cell::boxPoints));
     }
 
     @Test public void settledSeriesMarkersSurviveJsonReloadForEveryHistoricalSeat() throws Exception {
@@ -138,8 +159,10 @@ public class ScoreHistoryTableComponentTest {
                 var table = ScoreHistoryTable.forMatch(game.snapshot(), game.scoreHistory(), new WhistUiText(HowToPlay.Language.RO));
                 for (int hand = 0; hand < awards.size(); hand++) for (int seat = 0; seat < 4; seat++) {
                     var cell = table.rows().get(firstRecordedIndex + hand).cells().get(seat);
-                    assertEquals((int) awards.get(hand).get(seat), cell.seriesPoints());
-                    assertEquals(Integer.toString(game.scoreHistory().total(firstRecordedIndex + hand + 1, seat)), cell.displayPoints());
+
+                    atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "awards", awards, "cell", cell, "firstRecordedIndex", firstRecordedIndex, "game", game, "hand", hand, "negative", negative, "points", points, "positive", positive, "seat", seat, "table", table);
+                    assertEquals("cell.seriesPoints() must equal (int)awards.get(hand).get(seat)", (int) awards.get(hand).get(seat), cell.seriesPoints());
+                    assertEquals("cell.displayPoints() must equal Integer.toString(game.scoreHistory().total(firstRecordedIndex + hand + 1, seat))", Integer.toString(game.scoreHistory().total(firstRecordedIndex + hand + 1, seat)), cell.displayPoints());
                 }
                 for (int award : awards.get(awards.size() - 1)) {
                     if (award > 0) positive++;
@@ -184,31 +207,35 @@ public class ScoreHistoryTableComponentTest {
     }
 
     @Test public void legacyBalancesDoNotInventMissingContractsOrHandScores() throws Exception {
-        var game = GameSession.newGame(GameConfig.defaults(17)); finish(game); game.startNextHand();
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.defaults(17))); finish(game); game.startNextHand();
         var json = GameSessionStore.encode(game.saveState());
         json.put("version", 3); json.remove("scores"); json.remove("streakPenaltyPoints");
         var migrated = GameSessionStore.fromJson(json.toString());
         var table = ScoreHistoryTable.forMatch(migrated.snapshot(), migrated.scoreHistory(), new WhistUiText(HowToPlay.Language.RO));
         var earlier = table.rows().get(0);
-        assertEquals(ScoreHistoryTable.Status.EARLIER, earlier.status());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "earlier", earlier, "game", game, "json", json, "migrated", migrated, "table", table);
+        assertEquals("earlier.status() must equal ScoreHistoryTable.Status.EARLIER", ScoreHistoryTable.Status.EARLIER, earlier.status());
         for (int seat = 0; seat < 4; seat++) {
-            assertEquals("—", earlier.cells().get(seat).bid()); assertEquals("—", earlier.cells().get(seat).points());
-            assertEquals(migrated.snapshot().players().get(seat).totalScore(), Integer.parseInt(earlier.cells().get(seat).total()));
-            assertEquals(earlier.cells().get(seat).total(), earlier.cells().get(seat).displayPoints());
+            assertEquals("earlier.cells().get(seat).bid() must equal \"\\u2014\"", "—", earlier.cells().get(seat).bid()); assertEquals("earlier.cells().get(seat).points() must equal \"\\u2014\"", "—", earlier.cells().get(seat).points());
+            assertEquals("Integer.parseInt(earlier.cells().get(seat).total()) must equal migrated.snapshot().players().get(seat).totalScore()", migrated.snapshot().players().get(seat).totalScore(), Integer.parseInt(earlier.cells().get(seat).total()));
+            assertEquals("earlier.cells().get(seat).displayPoints() must equal earlier.cells().get(seat).total()", earlier.cells().get(seat).total(), earlier.cells().get(seat).displayPoints());
         }
     }
 
     @Test public void savedRuleVersionPreservesOldPenaltyAndRoundTripsTheNewPenalty() throws Exception {
-        var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.HARD, 8, true, 10));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.HARD, 8, true, 10)));
         var json = GameSessionStore.encode(game.saveState());
-        assertEquals(7, json.getInt("version"));
-        assertEquals(10, GameSessionStore.fromJson(json.toString()).config().streakPenaltyPoints());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "json", json);
+        assertEquals("json.getInt(\"version\") must equal 7", 7, json.getInt("version"));
+        assertEquals("GameSessionStore.fromJson(json.toString()).config().streakPenaltyPoints() must equal 10", 10, GameSessionStore.fromJson(json.toString()).config().streakPenaltyPoints());
         json.put("version", 5); json.remove("streakPenaltyPoints");
         var legacy = GameSessionStore.fromJson(json.toString());
-        assertEquals(10, legacy.config().streakBonusPoints()); assertEquals(5, legacy.config().streakPenaltyPoints());
-        assertEquals(5, GameSessionStore.fromJson(GameSessionStore.encode(legacy.saveState()).toString()).config().streakPenaltyPoints());
+        assertEquals("legacy.config().streakBonusPoints() must equal 10", 10, legacy.config().streakBonusPoints()); assertEquals("legacy.config().streakPenaltyPoints() must equal 5", 5, legacy.config().streakPenaltyPoints());
+        assertEquals("GameSessionStore.fromJson(GameSessionStore.encode(legacy.saveState()).toString()).config().streakPenaltyPoints() must equal 5", 5, GameSessionStore.fromJson(GameSessionStore.encode(legacy.saveState()).toString()).config().streakPenaltyPoints());
         json.put("version", 6);
-        assertThrows(IllegalStateException.class, () -> GameSessionStore.fromJson(json.toString()));
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, () -> GameSessionStore.fromJson(json.toString()));
     }
 
     private static void finish(GameSession game) {

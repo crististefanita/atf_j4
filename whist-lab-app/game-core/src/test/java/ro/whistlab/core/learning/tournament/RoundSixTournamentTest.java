@@ -9,7 +9,7 @@ import static ro.whistlab.core.testing.match.OfflineMatchHarness.Policy.*;
 import ro.whistlab.core.testing.match.OfflineMatchHarness;
 import ro.whistlab.core.testing.RoundFourGameOracle;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import com.fasterxml.jackson.databind.*;
 import java.nio.file.*;
@@ -21,7 +21,7 @@ import org.junit.runners.Parameterized;
 
 /** One actual JUnit invocation per paired seed/seat/role/opponent; receipts persist before failure escapes. */
 @RunWith(Parameterized.class)
-public class RoundSixTournamentTest {
+public class RoundSixTournamentTest extends atf.gradle.audit.GradleAuditedTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     @Parameterized.Parameters(name="role={0},opponent={1},seed={2},seat={3}") public static Collection<Object[]> cases(){
         boolean held=System.getProperty("whist.round6.phase","development").equals("heldout");int first=number("whist.round6.firstSeed",held?81000:6400),seeds=number("whist.round6.seeds",held?16:6);if(first<0||seeds<1||seeds>1000)throw new IllegalArgumentException("Invalid declared seed range");
@@ -32,10 +32,12 @@ public class RoundSixTournamentTest {
     public RoundSixTournamentTest(String role,String opponent,int seed,int seat){this.role=role;this.opponent=opponent;this.seed=seed;this.seat=seat;}
     @Test public void completePairedGamesMatchTheIndependentRuleAndScoreOracle()throws Exception{
         String output=required("whist.round6.output"),corpus=required("whist.round6.corpus"),candidate=required("whist.round6.candidate");String phase=System.getProperty("whist.round6.phase","development");
-        assertTrue(candidate.matches("[a-z0-9-]+"));assertTrue(phase.equals("development")||phase.equals("heldout"));Path out=Path.of(output);Files.createDirectories(out.resolve("invocations"));Files.createDirectories(out.resolve("partial-games"));var hashes=policyHashes();
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "candidate", candidate, "corpus", corpus, "output", output, "phase", phase);
+        assertTrue("candidate.matches(\"[a-z0-9-]+\") must hold", candidate.matches("[a-z0-9-]+"));assertTrue("phase.equals(\"development\") || phase.equals(\"heldout\") must hold", phase.equals("development")||phase.equals("heldout"));Path out=Path.of(output);Files.createDirectories(out.resolve("invocations"));Files.createDirectories(out.resolve("partial-games"));var hashes=policyHashes();
         Path manifest=out.resolve("candidate-source.json");if(Files.exists(manifest))assertEquals("Source changed under an existing candidate ID",JSON.valueToTree(hashes),JSON.readTree(Files.readString(manifest)));else write(manifest,hashes);
         if(phase.equals("heldout")){var freeze=JSON.readTree(Files.readString(out.resolve("candidate-freeze.json")));
-            assertEquals("FROZEN_BEFORE_HELDOUT",freeze.path("status").asText());assertEquals(candidate,freeze.path("candidate").asText());assertEquals(JSON.valueToTree(hashes),freeze.path("sourceHashes"));Path use=Path.of(corpus,"holdout-use","romanian4-"+number("whist.round6.firstSeed",81000)+"-"+(number("whist.round6.firstSeed",81000)+number("whist.round6.seeds",16)-1)+".json");var reservation=JSON.readTree(Files.readString(use));assertEquals("Heldout range belongs to a different candidate",candidate,reservation.path("candidate").asText());assertEquals("Heldout source changed after reservation",JSON.valueToTree(hashes),reservation.path("sourceHashes"));}
+            assertEquals("freeze.path(\"status\").asText() must equal \"FROZEN_BEFORE_HELDOUT\"", "FROZEN_BEFORE_HELDOUT",freeze.path("status").asText());assertEquals("freeze.path(\"candidate\").asText() must equal candidate", candidate,freeze.path("candidate").asText());assertEquals("freeze.path(\"sourceHashes\") must equal JSON.valueToTree(hashes)", JSON.valueToTree(hashes),freeze.path("sourceHashes"));Path use=Path.of(corpus,"holdout-use","romanian4-"+number("whist.round6.firstSeed",81000)+"-"+(number("whist.round6.firstSeed",81000)+number("whist.round6.seeds",16)-1)+".json");var reservation=JSON.readTree(Files.readString(use));assertEquals("Heldout range belongs to a different candidate",candidate,reservation.path("candidate").asText());assertEquals("Heldout source changed after reservation",JSON.valueToTree(hashes),reservation.path("sourceHashes"));}
         String id=phase+"-"+role+"-"+opponent.toLowerCase(Locale.ROOT)+"-seed"+seed+"-seat"+seat;Path receiptFile=out.resolve("invocations/"+id+".json");assertFalse("Fresh invocation output required",Files.exists(receiptFile));
         var checkpoints=new ArrayList<RoundFourGameOracle.Checkpoint>();var results=new ArrayList<Map<String,Object>>();var receipt=new LinkedHashMap<String,Object>();String start=Instant.now().toString();long begin=System.nanoTime();
         receipt.put("schemaVersion",1);receipt.put("runId",candidate+"/"+phase);receipt.put("invocationId",id);receipt.put("className",getClass().getName());receipt.put("methodName","completePairedGamesMatchTheIndependentRuleAndScoreOracle");receipt.put("parameters",Map.of("role",role,"opponent",opponent,"seed",Integer.toString(seed),"heroSeat",seat));receipt.put("sourceHashes",hashes);receipt.put("startedAt",start);receipt.put("status","RUNNING");receipt.put("checkpoints",checkpoints);receipt.put("results",results);write(receiptFile,receipt);

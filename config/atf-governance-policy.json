@@ -41,7 +41,32 @@
     {
       "module": "whist-lab-app/app",
       "test": true,
+      "path": "whist-lab-app/app/src/androidTest/java"
+    },
+    {
+      "module": "whist-lab-app/app",
+      "test": true,
       "path": "whist-lab-app/app/src/rasterTest/java"
+    },
+    {
+      "module": "whist-lab-app/card-table-ui",
+      "test": false,
+      "path": "whist-lab-app/card-table-ui/src/main/java"
+    },
+    {
+      "module": "whist-lab-app/card-table-ui",
+      "test": true,
+      "path": "whist-lab-app/card-table-ui/src/test/java"
+    },
+    {
+      "module": "whist-lab-app/test-audit",
+      "test": true,
+      "path": "whist-lab-app/test-audit/src/testFixtures/java"
+    },
+    {
+      "module": "whist-lab-app/test-audit",
+      "test": true,
+      "path": "whist-lab-app/test-audit/src/test/java"
     }
   ],
   "productionForbiddenNamespaces": {
@@ -91,8 +116,18 @@
       "ro.whistlab.core.learning",
       "ro.whistlab.core.baseline",
       "ro.whistlab.coach"
+    ],
+    "whist-lab-app/card-table-ui": [
+      "atf",
+      "org.junit",
+      "ro.whistlab",
+      "ro.rentzlab",
+      "ro.atf.holdem"
     ]
   },
   "reviewedPackages": {},
-  "productionBoundaryAdapters": {}
+  "productionBoundaryAdapters": {},
+  "buildRoots": [
+    "whist-lab-app/algorithm-build"
+  ]
 }

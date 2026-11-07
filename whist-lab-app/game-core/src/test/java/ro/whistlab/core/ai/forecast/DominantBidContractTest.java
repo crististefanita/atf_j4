@@ -11,7 +11,7 @@ import ro.whistlab.core.testing.CapturedRegression;
 import java.util.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
 /** Independent bidding certificates: k highest trumps guarantee all k tricks regardless of unseen cards. */
 @RunWith(Parameterized.class)
-public class DominantBidContractTest {
+public class DominantBidContractTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="cards={0},lastBid={1}")public static Collection<Object[]> cases(){var rows=new ArrayList<Object[]>();for(int k=2;k<=8;k++)for(boolean last:List.of(false,true))rows.add(new Object[]{k,last});return rows;}
  final int size;final boolean last;public DominantBidContractTest(int size,boolean last){this.size=size;this.last=last;}
  @Test public void allTopTrumpsBidTheForcedCountOrNearestLegalContract()throws Exception{

@@ -5,11 +5,11 @@ import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;
 import org.junit.Test;
 
-public class RomanianWhistExhaustiveTest {
+public class RomanianWhistExhaustiveTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void rw04EveryNonemptySubsetOfEightRepresentativeCardsHasExactlyTheLegalChoices() {
         List<Card> universe=new ArrayList<>();
         for(Suit suit:Suit.values()){universe.add(new Card(suit,7));universe.add(new Card(suit,14));}
@@ -25,11 +25,13 @@ public class RomanianWhistExhaustiveTest {
                         for(Card c:hand)if(c.suit().ordinal()==trump.ordinal())expected.add(c);
                     if(expected.isEmpty())expected.addAll(hand);
                 }
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "cases", cases, "expected", expected, "hand", hand, "led", led, "ledIndex", ledIndex, "mask", mask, "trump", trump, "universe", universe);
                 assertEquals("hand="+hand+", led="+led+", trump="+trump,expected,
                         GameRules.legalCards(hand,led,trump,GameMode.ROMANIAN_WHIST));cases++;
             }
         }
-        assertEquals(6375,cases);
+        assertEquals("cases must equal 6375", 6375,cases);
     }
 
     @Test public void rw05EveryOrderedPairFromTheFourPlayerDeckHasTheCorrectWinnerForEveryTrump() {
@@ -38,9 +40,11 @@ public class RomanianWhistExhaustiveTest {
         for(Card lead:cards)for(Card reply:cards)if(!lead.equals(reply))for(Trump trump:Trump.values()) {
             boolean replyWins=reply.suit()==lead.suit()?reply.rank()>lead.rank():
                     trump!=Trump.NO_TRUMP&&reply.suit().ordinal()==trump.ordinal();
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "cards", cards, "cases", cases, "lead", lead, "reply", reply, "replyWins", replyWins, "trump", trump);
             assertEquals("lead="+lead+", reply="+reply+", trump="+trump,replyWins?1:0,
                     GameRules.winningSeat(List.of(new PlayedCard(0,lead),new PlayedCard(1,reply)),trump));cases++;
         }
-        assertEquals(4960,cases);
+        assertEquals("cases must equal 4960", 4960,cases);
     }
 }

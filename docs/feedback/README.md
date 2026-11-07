@@ -13,6 +13,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 |---|---|
 | [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
+| [Interfață comună](ATF_CardUi_Extraction.md) | Refactorizarea meniului, profilului și prezentării mesei pentru consumul Rentz, cu interfața și contractele Whist păstrate. |
 | [Publicare](ATF_Reporting.md) | HTML autonom, componente auditabile și calificarea publicării. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
@@ -52,4 +53,4 @@ Principiile editoriale se aliniază cu [bunele practici documentare comune](../.
 
 ## Suportul comun al testelor
 
-[Primitivele și concurența Kitului](../../../atf_j0/docs/feedback/ATF_Common_Test_Support_Feedback.md#kit-concurrency-152--calificare-jupiter-paralelă) au responsabil comun. Modulul local rămâne sursă până la adopția binarului, iar acceptanța adaptorului Android rămâne la consumator; transferul responsabilității nu constituie calificarea paralelismului.
+[Primitivele și concurența Kitului](../../../atf_j0/docs/feedback/ATF_Common_Test_Support_Feedback.md#kit-concurrency-152--calificare-jupiter-paralelă) au responsabil comun. Consumatorul folosește perechea binară declarată în POM, iar acceptanța adaptorului Android rămâne locală; transferul responsabilității nu constituie calificarea paralelismului.

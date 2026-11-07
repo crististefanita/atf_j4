@@ -10,9 +10,9 @@ android {
         applicationId "ro.whistlab.app"
         minSdk 24
         targetSdk 36
-        versionCode 15
-        versionName "0.10.2"
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        versionCode 16
+        versionName "0.11.0"
+        testInstrumentationRunner "ro.whistlab.app.score.nativecomponent.HistoryMarksComponentInstrumentation"
     }
 
     buildFeatures {
@@ -27,6 +27,7 @@ android {
         if (displaySelection == "true") {
             filter {
                 includeTestsMatching "ro.whistlab.app.table.*"
+                includeTestsMatching "ro.whistlab.app.bidding.*"
                 includeTestsMatching "ro.whistlab.app.theme.*"
                 includeTestsMatching "ro.whistlab.app.animation.*"
                 includeTestsMatching "ro.whistlab.app.presentation.*"
@@ -42,9 +43,12 @@ android {
                 includeTestsMatching "ro.whistlab.app.score.layout.*"
                 includeTestsMatching "ro.whistlab.app.score.ScoreHistoryCheckpointTest"
                 includeTestsMatching "ro.whistlab.app.localization.WhistUiTextTest"
+                includeTestsMatching "ro.whistlab.app.screens.*"
+                includeTestsMatching "ro.whistlab.app.cards.*"
             }
         }
         def archive = providers.gradleProperty("whist.scoreHistoryTraceDir").getOrElse("")
+        if (!archive) exclude "**/ArchivedScoreHistoryReplayTest.class"
         if (archive) {
             def folder = rootProject.file(archive)
             systemProperty "whist.scoreHistoryTraceDir", folder.absolutePath
@@ -60,6 +64,7 @@ android {
 
 dependencies {
     implementation project(":game-core")
+    implementation project(":card-table-ui")
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.json:json:20240205"
 }
@@ -86,3 +91,5 @@ def rasterTest = tasks.register("historyRasterTest", Test) {
 }
 
 tasks.named("check") { dependsOn rasterTest }
+
+apply from: rootProject.file('gradle/app-component-collections.gradle')

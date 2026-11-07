@@ -16,7 +16,8 @@ public final class ReleaseIntegrity {
         require(text(manifest.path("release"), "versionName").equals(folder.getFileName().toString()), "VERSION", folder);
         ApkIntegrity.verify(project, folder, manifest.path("release"));
         payload(folder, manifest.path("integrity"));
-        JunitIntegrity.verify(folder, manifest.path("qualification"));
+        var identities = JunitIntegrity.verify(folder, manifest.path("qualification"));
+        atf.tests.governance.documentation.release.integrity.html.HtmlInvocationIntegrity.verify(folder, manifest.path("qualification"), identities);
         inputManifest(folder, manifest.path("source"));
         JsonNode retained = manifest.path("evidenceRetention");
         require(hash(inside(folder, text(retained, "canonicalReport"))).equals(digest(retained, "canonicalReportSha256")), "REPORT-HASH", folder);

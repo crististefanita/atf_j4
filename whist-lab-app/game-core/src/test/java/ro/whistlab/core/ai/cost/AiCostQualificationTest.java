@@ -1,6 +1,6 @@
 package ro.whistlab.core.ai.cost;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -20,7 +20,7 @@ import org.junit.runners.Parameterized;
 
 /** Orchestrates generated contexts; profile, decision adaptation and domain bounds have separate owners. */
 @RunWith(Parameterized.class)
-public class AiCostQualificationTest {
+public class AiCostQualificationTest extends atf.gradle.audit.GradleAuditedTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     @Parameterized.Parameters(name = "handSize={0}")
     public static Collection<Object[]> sizes() {
@@ -35,6 +35,8 @@ public class AiCostQualificationTest {
         var profile = CostProfile.read(Path.of(required("whist.aiCost.profile")));
         Path output = Path.of(required("whist.aiCost.output"));
         ThreadMXBean cpu = ManagementFactory.getThreadMXBean();
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "cpu", cpu, "output", output, "profile", profile);
         assertTrue("Thread CPU clock required", cpu.isCurrentThreadCpuTimeSupported());
         if (!cpu.isThreadCpuTimeEnabled()) cpu.setThreadCpuTimeEnabled(true);
         var rows = new ArrayList<Map<String, Object>>();
@@ -75,9 +77,9 @@ public class AiCostQualificationTest {
                 var measured = player.measure(scenario, profile.workLimit, row);
                 long wall = System.nanoTime() - begin, threadCpu = cpu.getCurrentThreadCpuTime() - beginCpu;
                 row.put("wallNanos", wall); row.put("threadCpuNanos", threadCpu); row.put("decision", measured.decision());
-                assertEquals(expected, measured.decision());
-                assertEquals("NONE", measured.work().stopReason());
-                assertTrue(measured.work().units() > 0 && measured.work().units() <= profile.workLimit);
+                assertEquals("measured.decision() must equal expected", expected, measured.decision());
+                assertEquals("measured.work().stopReason() must equal \"NONE\"", "NONE", measured.work().stopReason());
+                assertTrue("measured.work().units() > 0 && measured.work().units() <= profile.workLimit must hold", measured.work().units() > 0 && measured.work().units() <= profile.workLimit);
                 assertTrue("CPU clock must provide a nonnegative duration", threadCpu >= 0);
                 assertTrue("CPU cost exceeds declared profile: " + row, threadCpu <= profile.cpuLimit);
                 assertTrue("Wall safeguard exceeded", wall <= profile.wallLimit);

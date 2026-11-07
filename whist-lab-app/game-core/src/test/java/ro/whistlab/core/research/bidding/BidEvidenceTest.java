@@ -11,7 +11,7 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
 import java.util.*;import java.lang.reflect.*;import org.junit.Test;
-public class BidEvidenceTest {
+public class BidEvidenceTest extends atf.gradle.audit.GradleAuditedTest {
  private static Card card(Suit suit,int rank){return new Card(suit,rank);}
  private static MonteCarloAi.View view(boolean observed){return new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,Trump.SPADES,1,3,2,List.of(card(Suit.CLUBS,7),card(Suit.CLUBS,8)),List.of(new MonteCarloAi.Seat(2,observed?Integer.valueOf(2):null,0),new MonteCarloAi.Seat(2,null,0),new MonteCarloAi.Seat(2,null,0),new MonteCarloAi.Seat(2,null,0)),List.of(),List.of(),card(Suit.SPADES,11),true,10);}
  private static List<List<Card>> world(){return List.of(List.of(card(Suit.SPADES,14),card(Suit.SPADES,13)),List.of(card(Suit.CLUBS,7),card(Suit.CLUBS,8)),List.of(card(Suit.HEARTS,7),card(Suit.HEARTS,8)),List.of(card(Suit.CLUBS,9),card(Suit.CLUBS,10)));}

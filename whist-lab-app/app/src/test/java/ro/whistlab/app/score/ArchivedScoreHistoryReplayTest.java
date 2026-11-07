@@ -12,7 +12,7 @@ import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.model.Suit;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +25,7 @@ import org.junit.Assume;
 import org.junit.Test;
 
 
-public class ArchivedScoreHistoryReplayTest {
+public class ArchivedScoreHistoryReplayTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void publishedSixHandPilotRetainsEveryPlayersVisibleRowsAcrossResume() throws Exception {
         String folder = System.getProperty("whist.scoreHistoryTraceDir", "");
         Assume.assumeFalse("Supply the published six-hand pilot directory", folder.isBlank());
@@ -36,22 +36,24 @@ public class ArchivedScoreHistoryReplayTest {
         result.load(new StringReader(readVerified(run, "game-result.properties", hashes)));
         JSONObject trace = new JSONObject(readVerified(run, "public-trace.json", hashes));
         JSONArray hands = trace.getJSONArray("hands");
-        assertEquals(6, hands.length());
-        assertEquals(manifest.getString("runId"), trace.getString("sourceRunId"));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "folder", folder, "hands", hands, "hashes", hashes, "manifest", manifest, "result", result, "run", run, "trace", trace);
+        assertEquals("hands.length() must equal 6", 6, hands.length());
+        assertEquals("trace.getString(\"sourceRunId\") must equal manifest.getString(\"runId\")", manifest.getString("runId"), trace.getString("sourceRunId"));
         JSONObject profile = manifest.getJSONObject("profile");
         GameConfig config = new GameConfig(profile.getInt("seats"), GameMode.ROMANIAN_WHIST,
                 AiDifficulty.fromStoredName(profile.getString("difficulty")), Long.parseLong(result.getProperty("seed")),
                 hands.getJSONObject(0).getBoolean("seriesEnabled"), profile.getInt("seriesBonus"), profile.optInt("seriesPenalty",5));
-        GameSession game = GameSession.newGame(config);
+        GameSession game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", config));
         int moves = 0;
         for (int index = 0; index < hands.length(); index++) {
             JSONObject hand = hands.getJSONObject(index);
             GameSession.Snapshot deal = game.snapshot();
-            assertEquals(hand.getInt("hand"), deal.handNumber());
-            assertEquals(hand.getInt("size"), deal.handSize());
-            assertEquals(hand.getInt("dealer"), deal.dealerSeat());
+            assertEquals("deal.handNumber() must equal hand.getInt(\"hand\")", hand.getInt("hand"), deal.handNumber());
+            assertEquals("deal.handSize() must equal hand.getInt(\"size\")", hand.getInt("size"), deal.handSize());
+            assertEquals("deal.dealerSeat() must equal hand.getInt(\"dealer\")", hand.getInt("dealer"), deal.dealerSeat());
             for (int seat = 0; seat < config.playerCount(); seat++)
-                assertEquals(hand.getJSONArray("beforeTotals").getInt(seat), deal.players().get(seat).totalScore());
+                assertEquals("deal.players().get(seat).totalScore() must equal hand.getJSONArray(\"beforeTotals\").getInt(seat)", hand.getJSONArray("beforeTotals").getInt(seat), deal.players().get(seat).totalScore());
             JSONObject actualCapture = hand.getJSONObject("exPost");
             JSONArray bids = actualCapture.getJSONArray("bids");
             for (int i = 0; i < bids.length(); i++) {
@@ -68,7 +70,7 @@ public class ArchivedScoreHistoryReplayTest {
                     assertRows(hands, index, game);
                 }
             }
-            assertEquals(GamePhase.SCORE, game.snapshot().phase());
+            assertEquals("game.snapshot().phase() must equal GamePhase.SCORE", GamePhase.SCORE, game.snapshot().phase());
             game = resume(game);
             assertRows(hands, index + 1, game);
             if (index + 1 < hands.length()) {
@@ -77,15 +79,15 @@ public class ArchivedScoreHistoryReplayTest {
                 assertRows(hands, index + 1, game);
             }
         }
-        assertEquals(Integer.parseInt(result.getProperty("moves")), moves);
+        assertEquals("moves must equal Integer.parseInt(result.getProperty(\"moves\"))", Integer.parseInt(result.getProperty("moves")), moves);
     }
 
     private static void assertRows(JSONArray hands, int completed, GameSession game) throws Exception {
         WhistUiText copy = new WhistUiText(HowToPlay.Language.RO);
         for (int seat = 0; seat < game.config().playerCount(); seat++) {
             var column = ScoreHistoryColumn.forPlayer(game.scoreHistory(), seat, copy);
-            assertEquals("", column.opening());
-            assertEquals(completed, column.rows().size());
+            assertEquals("column.opening() must equal \"\"", "", column.opening());
+            assertEquals("column.rows().size() must equal completed", completed, column.rows().size());
             for (int h = completed; h > 0; h--) {
                 JSONObject hand = hands.getJSONObject(h - 1);
                 int total = hand.getJSONObject("exPost").getJSONArray("scores").getInt(seat);
@@ -95,12 +97,12 @@ public class ArchivedScoreHistoryReplayTest {
                 java.util.Map<Integer, Integer> bySeat = new java.util.HashMap<>();
                 for (int i = 0; i < contracts.length(); i++) {
                     JSONArray contract = contracts.getJSONArray(i);
-                    assertNull(bySeat.put(contract.getInt(0), contract.getInt(1)));
+                    assertNull("bySeat.put(contract.getInt(0), contract.getInt(1)) remains absent", bySeat.put(contract.getInt(0), contract.getInt(1)));
                 }
-                assertEquals(Integer.toString(bySeat.get(seat)), row.bid());
-                assertEquals(Integer.toString(h), row.hand());
-                assertEquals(points > 0 ? "+" + points : Integer.toString(points), row.points());
-                assertEquals(Integer.toString(total), row.total());
+                assertEquals("row.bid() must equal Integer.toString(bySeat.get(seat))", Integer.toString(bySeat.get(seat)), row.bid());
+                assertEquals("row.hand() must equal Integer.toString(h)", Integer.toString(h), row.hand());
+                assertEquals("row.points() must equal points > 0 ? \"+\" + points : Integer.toString(points)", points > 0 ? "+" + points : Integer.toString(points), row.points());
+                assertEquals("row.total() must equal Integer.toString(total)", Integer.toString(total), row.total());
             }
         }
     }

@@ -9,5 +9,6 @@ public record ApkDownloadTarget(String repository, String version, long bytes, S
             throw new IllegalArgumentException("Invalid declared APK download identity");
     }
     public String fileName() { return "WhistLab-" + version + ".apk"; }
+    public String releasePageUrl() { return "https://github.com/" + repository + "/releases/tag/v" + version; }
     public String publicUrl() { return "https://github.com/" + repository + "/releases/download/v" + version + "/" + fileName(); }
 }

@@ -6,10 +6,10 @@ import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
-import static org.junit.Assert.*;import java.util.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;
+import static atf.gradle.audit.assertions.GradleAssertions.*;import java.util.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;
 /** Independent exhaustive current-trick continuations; does not call engine legality/winner for its expected sets. */
 @RunWith(Parameterized.class)
-public class RolloutBoundsOracleTest {
+public class RolloutBoundsOracleTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="cards={0},players={1},trump={2}")public static Collection<Object[]> cases(){var out=new ArrayList<Object[]>();for(int size=2;size<=8;size++)for(int n=3;n<=6;n++)for(Trump trump:List.of(Trump.NO_TRUMP,Trump.SPADES))out.add(new Object[]{size,n,trump});return out;}
  final int size,n;final Trump trump;public RolloutBoundsOracleTest(int size,int n,Trump trump){this.size=size;this.n=n;this.trump=trump;}
  public static List<Card> legal(List<Card> hand,Suit led,Trump trump){
@@ -33,7 +33,9 @@ public class RolloutBoundsOracleTest {
     if(result.equals(Set.of(goals[actor]>0)))secure.add(LossMiningTest.code(candidate));
    }
    String expert=RolloutPolicyRegressionTest.reference(view,world,trick,actor,goals[actor]),player=RolloutPolicyRegressionTest.player(view,world,trick,actor,goals[actor]);
-   var allowed=options.stream().map(LossMiningTest::code).toList();assertTrue(allowed.contains(expert));assertTrue(allowed.contains(player));
+   var allowed=options.stream().map(LossMiningTest::code).toList();
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actor", actor, "allowed", allowed, "deck", deck, "expert", expert, "goals", goals, "led", led, "options", options, "played", played, "player", player, "sample", sample, "secure", secure, "trick", trick, "view", view, "world", world);
+assertTrue("allowed.contains(expert) must hold", allowed.contains(expert));assertTrue("allowed.contains(player) must hold", allowed.contains(player));
    if(!secure.isEmpty()){assertTrue("Reference selected an uncertain result despite a certain desired result: "+secure+" vs "+expert,secure.contains(expert));assertTrue("Independent selected an uncertain result despite a certain desired result",secure.contains(player));}
   }
  }

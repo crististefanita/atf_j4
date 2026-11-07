@@ -1,5 +1,6 @@
 package ro.whistlab.app.table;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,91 +16,32 @@ final class TableGeometry {
 
     record Plan(List<Rect> seats, Rect center) { }
 
-    /** Reserve five percent above the composition; keep the human seat clear of the hand. */
-    static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
-            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows,
-            CenterAlignment centerAlignment) {
-        int inset = Math.min(TableLayoutMetrics.topInsetPx(height),
-                Math.max(0, height - minimumHeight(players, seatHeight, centerHeight, gap)));
-        Plan base = arrange(width, height - inset, players, seatWidth, seatHeight,
-                centerWidth, centerHeight, gap, fullWidthCardRows, centerAlignment);
-        List<Rect> seats = new ArrayList<>();
-        for (Rect box : base.seats()) seats.add(lower(box, inset));
-        return new Plan(List.copyOf(seats), lower(base.center(), inset));
+    private static final class Shared {
+        static Rect box(ro.cardtable.ui.table.TableGeometry.Rect r) { return new Rect(r.left(), r.top(), r.right(), r.bottom()); }
+        static Plan plan(ro.cardtable.ui.table.TableGeometry.Plan p) {
+            return new Plan(p.seats().stream().map(Shared::box).collect(java.util.stream.Collectors.collectingAndThen(
+                    java.util.stream.Collectors.toList(), List::copyOf)), box(p.center()));
+        }
     }
-
-    private static Rect lower(Rect box, int offset) {
-        return new Rect(box.left(), box.top() + offset, box.right(), box.bottom() + offset);
-    }
-
     static int minimumHeight(int players, int seatHeight, int centerHeight, int gap) {
-        requirePlayers(players);
-        return 2 * seatHeight + centerHeight + (players >= 5 ? 6 : 4) * gap;
+        return ro.cardtable.ui.table.TableGeometry.minimumHeight(players, seatHeight, centerHeight, gap);
     }
-
-    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight,
-            int centerWidth, int centerHeight, int gap) {
-        return arrange(width, height, players, seatWidth, seatHeight, centerWidth,
-                centerHeight, gap, false);
+    static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
+            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows, CenterAlignment alignment) {
+        return Shared.plan(ro.cardtable.ui.table.TableGeometry.arrangeDisplay(width, height, players, seatWidth,
+                seatHeight, centerWidth, centerHeight, gap, fullWidthCardRows,
+                ro.cardtable.ui.table.TableGeometry.CenterAlignment.valueOf(alignment.name())));
     }
-
-    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight,
-            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows) {
-        return arrange(width, height, players, seatWidth, seatHeight, centerWidth,
-                centerHeight, gap, fullWidthCardRows, CenterAlignment.BALANCED);
+    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight, int centerWidth, int centerHeight, int gap) {
+        return arrange(width, height, players, seatWidth, seatHeight, centerWidth, centerHeight, gap, false);
     }
-
-    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight,
-            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows,
-            CenterAlignment centerAlignment) {
-        requirePlayers(players);
-        if (gap < 1 || seatWidth < 1 || seatHeight < 1 || centerWidth < 1 || centerHeight < 1
-                || width < 3 * seatWidth + 2 * gap || centerWidth > width
-                || height < minimumHeight(players, seatHeight, centerHeight, gap)) {
-            throw new IllegalArgumentException("Table regions do not fit the measured viewport");
-        }
-        boolean wideCenter = fullWidthCardRows || centerWidth + 2 * seatWidth + 2 * gap > width;
-        TableSeatLayout.Anchor[] anchors = TableSeatLayout.positions(players);
-        int centerTop = (height - centerHeight) / 2;
-        int flankClearance = wideCenter || players == 4 ? centerTop - seatHeight - gap
-                : (height - 2 * seatHeight - gap) / 2;
-        int stagger = fullWidthCardRows && players != 4 ? 0 : Math.min(height / 5, Math.max(0, flankClearance));
-        List<Rect> seats = new ArrayList<>();
-        for (var anchor : anchors) {
-            int x = switch (anchor) {
-                case NORTH_WEST, WEST, SOUTH_WEST -> 0;
-                case NORTH, SOUTH -> (width - seatWidth) / 2;
-                case NORTH_EAST, EAST, SOUTH_EAST -> width - seatWidth;
-            };
-            int y = switch (anchor) {
-                case NORTH -> 0;
-                case NORTH_WEST, NORTH_EAST -> stagger;
-                case WEST, EAST -> (height - seatHeight) / 2;
-                case SOUTH_WEST, SOUTH_EAST -> height - seatHeight - stagger;
-                case SOUTH -> height - seatHeight;
-            };
-            seats.add(new Rect(x, y, x + seatWidth, y + seatHeight));
-        }
-        int centerLeft = (width - centerWidth) / 2;
-        if (centerAlignment == CenterAlignment.TOWARD_HUMAN && !fullWidthCardRows) {
-            int humanSideLimit = height - centerHeight;
-            for (Rect seat : seats) {
-                boolean sharesCenterColumn = seat.left() < centerLeft + centerWidth
-                        && seat.right() > centerLeft;
-                boolean belowCenter = seat.top() + seat.bottom() > height;
-                if (sharesCenterColumn && belowCenter) {
-                    humanSideLimit = Math.min(humanSideLimit, seat.top() - gap - centerHeight);
-                }
-            }
-            int safeShift = Math.max(0, humanSideLimit - centerTop);
-            centerTop += Math.round(safeShift * 0.62f);
-        }
-        Rect center = new Rect(centerLeft, centerTop, centerLeft + centerWidth,
-                centerTop + centerHeight);
-        return new Plan(List.copyOf(seats), center);
+    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight, int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows) {
+        return arrange(width, height, players, seatWidth, seatHeight, centerWidth, centerHeight, gap, fullWidthCardRows, CenterAlignment.BALANCED);
     }
-
-    private static void requirePlayers(int players) {
-        if (players < 3 || players > 6) throw new IllegalArgumentException("A table requires 3–6 players");
+    static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight, int centerWidth,
+            int centerHeight, int gap, boolean fullWidthCardRows, CenterAlignment alignment) {
+        return Shared.plan(ro.cardtable.ui.table.TableGeometry.arrange(width, height, players, seatWidth,
+                seatHeight, centerWidth, centerHeight, gap, fullWidthCardRows,
+                ro.cardtable.ui.table.TableGeometry.CenterAlignment.valueOf(alignment.name())));
     }
 }

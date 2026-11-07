@@ -6,6 +6,8 @@ Motorul deține datele partidei, iar aplicația Android deține persistența și
 
 ## Contract prioritar de afișaj portret
 
+[Extragerea interfeței comune](ATF_CardUi_Extraction.md) are registru și criterii proprii de refactorizare. Păstrează prezentarea Whist; calificările native încă deschise în acest document nu sunt închise prin mutarea claselor sau prin componentele modulului nou.
+
 [Contractul profilului și al afișării](../testing/ATF_Display.md#profil-și-domeniu-de-calificare) deține geometria, densitatea, textul și invariantele stabile. Aici rămân calificările native lipsă; prezența unei cerințe în ghid nu o declară automat trecută.
 
 ## Acceptanța nativă a proporțiilor și ordinii

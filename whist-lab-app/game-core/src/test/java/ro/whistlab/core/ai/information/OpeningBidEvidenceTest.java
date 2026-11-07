@@ -6,10 +6,10 @@ import ro.whistlab.core.testing.CapturedRegression;
 
 import java.util.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import ro.whistlab.coach.research.bidding.OpeningBidEvidenceProbe;
 
-public class OpeningBidEvidenceTest {
+public class OpeningBidEvidenceTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void hiddenWorldCannotChooseItsOwnOpeningBeforeAveraging() throws Exception {
         // Two manually traced feasible two-trick worlds: 9S succeeds only in A; AD only in B.
         // Bid zero, no series reward: +5 for zero tricks, -1 for one extra trick.
@@ -49,8 +49,10 @@ public class OpeningBidEvidenceTest {
         });
     }
     @Test public void noSampleCannotBecomeAnApparentlyCertainOpening() {
-        assertThrows(IllegalStateException.class,()->new OpeningBidEvidence(List.of(0),1,2,true).best());
-        assertThrows(IllegalStateException.class,()->OpeningBidEvidenceProbe.plan(List.of(0),1,2,false,
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 0, "declared constant 2", 1, "declared constant 3", 2, "declared constant 4", true, "declared constant 5", false);
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class,()->new OpeningBidEvidence(List.of(0),1,2,true).best());
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class,()->OpeningBidEvidenceProbe.plan(List.of(0),1,2,false,
                 new double[0][][],new double[0][][]));
     }
 }

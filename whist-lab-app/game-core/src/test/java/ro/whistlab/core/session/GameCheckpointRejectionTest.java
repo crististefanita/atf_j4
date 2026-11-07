@@ -6,7 +6,7 @@ import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.rules.GameMode;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;
 import java.util.function.Consumer;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.junit.runners.Parameterized;
 
 /** Persisted rule violations must fail closed rather than change an in-progress contract. */
 @RunWith(Parameterized.class)
-public class GameCheckpointRejectionTest {
+public class GameCheckpointRejectionTest extends atf.gradle.audit.GradleAuditedTest {
     @Parameterized.Parameters(name="{0}") public static Collection<Object[]> corruptions() {
         List<Object[]> cases=new ArrayList<>();
         add(cases,"negative hand index",b->b.index=-1);add(cases,"hand past match end",b->b.index=24);
@@ -43,11 +43,13 @@ public class GameCheckpointRejectionTest {
     private final Consumer<Builder> corrupt;
     public GameCheckpointRejectionTest(String name,Consumer<Builder> corrupt){this.corrupt=corrupt;}
     @Test public void rw07CannotResumeAnInconsistentContract() {
-        Builder b=new Builder();corrupt.accept(b);assertThrows(IllegalArgumentException.class,()->GameSession.restore(b.build()));
+        Builder b=new Builder();corrupt.accept(b);
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "b", b);
+assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->GameSession.restore(b.build()));
     }
     private static void add(List<Object[]> cases,String name,Consumer<Builder> mutation){cases.add(new Object[]{name,mutation});}
     private static final class Builder {
-        GameSession.SaveState base=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.NORMAL,91)).saveState();
+        GameSession.SaveState base=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.NORMAL,91))).saveState();
         int index=base.handIndex(),dealer=base.dealerSeat(),bidder=base.biddingSeat(),current=base.currentSeat(),count=0,total=0,winner=-1;
         GamePhase phase=GamePhase.BIDDING;
         List<GameSession.PlayerState> players=new ArrayList<>(base.players());

@@ -17,7 +17,7 @@ final class TableLayoutMetrics {
                         + headingHeightPx + Math.round(TRUMP_VALUE_GAP_DP * density) + valueHeightPx);
     }
 
-    static int topInsetPx(int boardHeightPx) { return Math.round(boardHeightPx * 0.05f); }
+    static int topInsetPx(int boardHeightPx) { return ro.cardtable.ui.table.TableSizing.topInsetPx(boardHeightPx); }
 
     static float fitTextSizePx(float sizePx, float textWidthPx, int availableWidthPx) {
         return sizePx * Math.min(1f, Math.max(1, availableWidthPx) / Math.max(1f, textWidthPx));
@@ -38,8 +38,6 @@ final class TableLayoutMetrics {
     }
 
     static int seatWidthDp(int tableWidthDp, boolean compact) {
-        if (tableWidthDp < 240) throw new IllegalArgumentException("Table width must be at least 240 dp");
-        return Math.min(116, Math.min(Math.round(tableWidthDp * (compact ? 0.25f : 0.29f)),
-                (tableWidthDp - 16) / 3));
+        return ro.cardtable.ui.table.TableSizing.seatWidthDp(tableWidthDp, compact);
     }
 }

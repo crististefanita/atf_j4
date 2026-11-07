@@ -52,6 +52,8 @@ public final class WhistUiText {
     public String startGame() { return choose("Start game", "Începe partida"); }
     public String back() { return choose("Back", "Înapoi"); }
     public String placeBid() { return choose("Place bid", "Licitează"); }
+    public String bidAdviceUnavailable() { return choose("Suggestion unavailable. Choose your bid.",
+            "Estimarea nu este disponibilă. Alege licitația."); }
     public String scoreSheet() { return choose("Score sheet", "Scorul partidei"); }
     public String scoreHistory() { return choose("Score history", "Istoricul scorului"); }
     public String unknownBid() { return choose("unrecorded", "neînregistrat"); }

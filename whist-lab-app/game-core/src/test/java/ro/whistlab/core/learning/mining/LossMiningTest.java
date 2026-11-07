@@ -7,9 +7,9 @@ import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.testing.ForcedContract;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.nio.file.*;import java.util.*;import com.fasterxml.jackson.databind.*;import org.junit.Test;
-public class LossMiningTest {
+public class LossMiningTest extends atf.gradle.audit.GradleAuditedTest {
  static final ObjectMapper JSON=new ObjectMapper();
  public static Card card(String code){String r=code.substring(0,code.length()-1);return new Card(Suit.values()["SHCD".indexOf(code.charAt(code.length()-1))],switch(r){case "A"->14;case "K"->13;case "Q"->12;case "J"->11;default->Integer.parseInt(r);});}
  public static String code(Card c){return c.rankLabel()+"SHCD".charAt(c.suit().ordinal());}
@@ -30,6 +30,8 @@ public class LossMiningTest {
     for(var score:hand.path("scores")){int s=score.path("seat").asInt();total[s]=score.path("total").asInt();streak[s]=score.path("streak").asInt();}
    }
   }
-  Files.writeString(out.resolve("summary.json"),JSON.writerWithDefaultPrettyPrinter().writeValueAsString(Map.of("lostGames",games,"positions",positions,"nonemptyProofs",proofs,"mistakes",mistakes,"cases",summary))+"\n");assertTrue(games>0);
+  Files.writeString(out.resolve("summary.json"),JSON.writerWithDefaultPrettyPrinter().writeValueAsString(Map.of("lostGames",games,"positions",positions,"nonemptyProofs",proofs,"mistakes",mistakes,"cases",summary))+"\n");
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "corpus", corpus, "games", games, "mistakes", mistakes, "out", out, "positions", positions, "proofs", proofs, "source", source, "summary", summary);
+assertTrue("games > 0 must hold", games>0);
  }
 }

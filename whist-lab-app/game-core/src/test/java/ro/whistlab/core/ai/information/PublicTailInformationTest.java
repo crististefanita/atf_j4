@@ -10,10 +10,10 @@ import ro.whistlab.coach.research.publictail.PublicTailPlannerProbe;
 import java.util.*;
 import org.junit.Test;
 import ro.whistlab.coach.*;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 /** Two legal hidden worlds share one public decision; future choices must not peek at either. */
-public class PublicTailInformationTest {
+public class PublicTailInformationTest extends atf.gradle.audit.GradleAuditedTest {
     private static final List<Integer> OWN = List.of(7,51); // 9S, AD
     private static final List<IndependentPlayer.Play> HISTORY = List.of(
             new IndependentPlayer.Play(0,25),new IndependentPlayer.Play(1,18),
@@ -70,12 +70,16 @@ public class PublicTailInformationTest {
                 List.of(new IndependentPlayer.Seat(3,1,0,0),new IndependentPlayer.Seat(3,0,0,0),
                         new IndependentPlayer.Seat(3,0,0,0),new IndependentPlayer.Seat(2,0,0,0)),
                 List.of(new IndependentPlayer.Play(3,18)),List.of(new IndependentPlayer.Play(3,18)),21,false,5);
-        assertEquals(19,PublicTailPlannerProbe.choose(p,hand,List.of(new IndependentPlayer.Play(3,18)),0,seen(),new int[]{3,3,3,2}));
-        assertEquals(19,PublicTailPlannerProbe.choose(p,hand,List.of(new IndependentPlayer.Play(3,31)),0,seen(),new int[]{3,3,3,2}));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "hand", hand, "p", p);
+        assertEquals("PublicTailPlannerProbe.choose(p, hand, List.of(new IndependentPlayer.Play(3, 18)), 0, seen(), new int[]{3, 3, 3, 2}) must equal 19", 19,PublicTailPlannerProbe.choose(p,hand,List.of(new IndependentPlayer.Play(3,18)),0,seen(),new int[]{3,3,3,2}));
+        assertEquals("PublicTailPlannerProbe.choose(p, hand, List.of(new IndependentPlayer.Play(3, 31)), 0, seen(), new int[]{3, 3, 3, 2}) must equal 19", 19,PublicTailPlannerProbe.choose(p,hand,List.of(new IndependentPlayer.Play(3,31)),0,seen(),new int[]{3,3,3,2}));
     }
     @Test public void rankingDoesNotMutateObservedInformation() {
         boolean[] known=seen(),original=known.clone();int[] remaining={2,2,2,2},originalCounts=remaining.clone();
         PublicTailPlannerProbe.choose(position(),OWN,List.of(),0,known,remaining);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "known", known, "original", original, "originalCounts", originalCounts, "remaining", remaining);
         assertArrayEquals(original,known);assertArrayEquals(originalCounts,remaining);
     }
 }

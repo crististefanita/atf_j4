@@ -45,6 +45,12 @@ class AndroidUiFlowReportPublisherTest {
                 "package:/fixture.apk", "mock-device", "28", "Controlled publication; no Android commands",
                 List.of(screenshot, alias), trace);
         var document = Jsoup.parse(Files.readString(report));
+        String published = Files.readString(report);
+        var contract = atf.reporting.ui.contract.UiReportArtifactContract.evaluate(published);
+        assertTrue(contract.isCompliant(), "Published Android input satisfies the common UI contract: " + contract.violations());
+        assertFalse(atf.reporting.ui.contract.UiReportArtifactContract.evaluate(published.replace(
+                "data-atf-evidence-type=\"report-setup\"", "data-atf-evidence-type=\"missing-setup\"")).isCompliant(),
+                "Removing the typed publication preconditions must fail the common contract");
         var parts = document.select("pre").stream().filter(node -> {
             var owner = node.closest("details");
             return owner != null && owner.selectFirst("summary") != null

@@ -1,14 +1,16 @@
 package ro.whistlab.app.screens;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import org.junit.Test;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
 
-public class MatchSetupComponentTest {
+public class MatchSetupComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void initialChoicesProduceTheExistingDefaultConfiguration() {
-        assertEquals(GameConfig.newMatch(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 31, false, 10),
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 4, "declared constant 2", 31, "declared constant 3", false, "declared constant 4", 10);
+        assertEquals("new MatchSetup().config(31) must equal GameConfig.newMatch(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 31, false, 10)", GameConfig.newMatch(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 31, false, 10),
                 new MatchSetup().config(31));
     }
 
@@ -20,11 +22,13 @@ public class MatchSetupComponentTest {
         setup.streakBonus(5);
         var romanian = setup.config(31);
         setup.mode(GameMode.OH_HELL);
-        assertFalse(setup.config(31).streakBonuses());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "romanian", romanian, "setup", setup);
+        assertFalse("setup.config(31).streakBonuses() must remain false", setup.config(31).streakBonuses());
         setup.mode(GameMode.ROMANIAN_WHIST);
-        assertEquals(romanian, setup.config(31));
-        assertEquals(6, setup.playerCount());
-        assertEquals(AiDifficulty.HARD, setup.difficulty());
+        assertEquals("setup.config(31) must equal romanian", romanian, setup.config(31));
+        assertEquals("setup.playerCount() must equal 6", 6, setup.playerCount());
+        assertEquals("setup.difficulty() must equal AiDifficulty.HARD", AiDifficulty.HARD, setup.difficulty());
     }
 
     @Test public void bothBonusesAndBothDifficultiesProduceIndependentMatchSnapshots() {
@@ -36,13 +40,15 @@ public class MatchSetupComponentTest {
                 setup.difficulty(difficulty);
                 setup.streakBonus(bonus);
                 var started = setup.config(31);
-                assertEquals(GameConfig.newMatch(count, GameMode.ROMANIAN_WHIST, difficulty, 31, true, bonus), started);
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bonus", bonus, "count", count, "difficulty", difficulty, "setup", setup, "started", started);
+                assertEquals("started must equal GameConfig.newMatch(count, GameMode.ROMANIAN_WHIST, difficulty, 31, true, bonus)", GameConfig.newMatch(count, GameMode.ROMANIAN_WHIST, difficulty, 31, true, bonus), started);
                 setup.streaks(false);
                 setup.streakBonus(bonus == 5 ? 10 : 5);
-                assertTrue(started.streakBonuses());
-                assertEquals(bonus, started.streakBonusPoints());
-                assertFalse(setup.config(32).streakBonuses());
-                assertEquals(32, setup.config(32).seed());
+                assertTrue("started.streakBonuses() must hold", started.streakBonuses());
+                assertEquals("started.streakBonusPoints() must equal bonus", bonus, started.streakBonusPoints());
+                assertFalse("setup.config(32).streakBonuses() must remain false", setup.config(32).streakBonuses());
+                assertEquals("setup.config(32).seed() must equal 32", 32, setup.config(32).seed());
             }
     }
 
@@ -50,10 +56,12 @@ public class MatchSetupComponentTest {
         var setup = new MatchSetup();
         var before = setup.config(31);
         for (int count : new int[]{-1, 0, 2, 7, Integer.MAX_VALUE})
-            assertThrows(IllegalArgumentException.class, () -> setup.playerCount(count));
-        for (int bonus : new int[]{0, 7, 15}) assertThrows(IllegalArgumentException.class, () -> setup.streakBonus(bonus));
-        assertThrows(NullPointerException.class, () -> setup.mode(null));
-        assertThrows(NullPointerException.class, () -> setup.difficulty(null));
-        assertEquals(before, setup.config(31));
+            {
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "count", count, "setup", setup);
+assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> setup.playerCount(count)); }
+        for (int bonus : new int[]{0, 7, 15}) assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> setup.streakBonus(bonus));
+        assertThrows("The operation rejects its input with NullPointerException.class", NullPointerException.class, () -> setup.mode(null));
+        assertThrows("The operation rejects its input with NullPointerException.class", NullPointerException.class, () -> setup.difficulty(null));
+        assertEquals("setup.config(31) must equal before", before, setup.config(31));
     }
 }

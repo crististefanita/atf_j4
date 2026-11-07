@@ -9,11 +9,19 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 | Familie | Intrare controlată și oracol |
 |---|---|
 | Layout și text | Dimensiuni, densitate, font și număr de locuri; limite și măsurători independente. |
+| Adaptoare UI comune | [Textele și callback-urile](java/ro/whistlab/app/screens/WhistMenuContentComponentTest.java) și [toate fețele de carte](java/ro/whistlab/app/cards/WhistCardFaceComponentTest.java) păstrează semantica Whist la frontiera bibliotecii. |
+| Selecția licitației | [Matricea contextuală](java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java): 1–8 cărți, 3–6 locuri și fiecare poziție de licitare; observație publică, evaluare Hard și oracol aritmetic independent pentru legalitate. |
+| Continuitatea licitației | [Salvare și reluare](java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java): codec JSON real, recomandare recalculată, alegere manuală prioritară și contract confirmat păstrat; livrările întârziate nu schimbă sesiunea. |
+| Licitație incertă | [Factori de context](java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java): atu și carte întoarsă, ținte adverse publice, scor relativ și plata seriilor. Oracolele disting schimbarea legitimă a utilității de schimbarea accidentală a lumilor simulate. |
 | Persistență și istoric | Comenzi legale, checkpoint JSON, solduri și migrare; refuzul datelor corupte. |
 | Ciclu de viață | Ceas, executor, navigare și callback-uri controlate; anulare și reluare fără efect repetat. |
 | Colectarea levatei | Geometrie, jucători, ultima levată și evenimente întârziate; starea partidei se păstrează. |
 
 ## Execuție și limite
+
+[Componentele bibliotecii UI](../../../card-table-ui/README.md#verificare) au sarcina Gradle proprie. Filtrul de afișaj al aplicației include adaptoarele din `screens` și `cards`; testele existente de geometrie rămân la integrarea Whist și nu sunt numărate din nou ca teste noi ale bibliotecii.
+
+- **Selecție focalizată:** `:app:testDebugUnitTest --tests 'ro.whistlab.app.bidding.*'` include matricea, reluarea și cazurile mici ale estimării. Fixture-urile avansează motorul prin comenzi legale, cu scor și carte întoarsă reale, fără arhivă externă sau emulator.
 
 - **Execuție:** dintr-o copie temporară a aplicației, [configurația Gradle](../../build.gradle) selectează componentele prin `whist.displayComponents=true`. SDK-ul este necesar compilării; testele rulează pe JVM, fără comenzi ADB.
 
@@ -22,3 +30,9 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 - **Dovezi:** artefactele și rezultatele aparțin execuției externe. [Calificarea unui release](../../../../docs/testing/ATF_ReleaseQualification.md) decide selecția nativă necesară după verificările locale.
 
 [Aplicația](../main/java/ro/whistlab/app/README.md) · [Strategia comună](../../../../docs/testing/README.md) · [Componente display](../../../../docs/testing/ATF_DisplayComponents.md)
+
+## Proiecția Whist a mesei comune
+
+[WhistTableContentComponentTest](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică toate modurile Whist și mesele de 3–6 locuri: faptele și accesibilitatea, actorul suspendat, ordinea și identitatea cărților, callback-ul indisponibil și levata publică completată. Testul folosește motorul Whist real și rămâne în aplicație.
+
+Componentele din bibliotecă nu importă această sesiune. Ele verifică prezentarea neutră; Rentz păstrează propriile oracole de reveal, pas, secvențe și punctaj.

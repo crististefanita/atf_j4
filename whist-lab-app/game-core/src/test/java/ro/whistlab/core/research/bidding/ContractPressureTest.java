@@ -11,9 +11,9 @@ import ro.whistlab.core.testing.CapturedRegression;
 
 import java.util.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
-public class ContractPressureTest {
+public class ContractPressureTest extends atf.gradle.audit.GradleAuditedTest {
     private static Card c(String code){return LossMiningTest.card(code);}
     private static List<Card> hand(String... codes){return Arrays.stream(codes).map(ContractPressureTest::c).toList();}
     private static MonteCarloAi.View view(int actor,List<Card> hand,int[] bids,int[] won,int[] remaining,
@@ -130,6 +130,8 @@ public class ContractPressureTest {
         int[] bids={1,0,0,0},won=new int[4],rem={2,2,2,2};var v=view(0,hand("AS","7H"),bids,won,rem,List.of(),List.of(),c("KS"));
         var seen=ContractPressure.seen(v);var original=seen.clone();var voids=ContractPressure.voids(v);
         ContractPressure.choose(v,v.hand(),List.of(),0,bids,won,rem,seen,voids);
-        assertArrayEquals(original,seen);assertArrayEquals(new int[]{2,2,2,2},rem);assertEquals(hand("7H","AS").stream().sorted(Comparator.comparing(Card::suit).thenComparingInt(Card::rank)).toList(),v.hand());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bids", bids, "original", original, "rem", rem, "seen", seen, "v", v, "voids", voids, "won", won);
+        assertArrayEquals(original,seen);assertArrayEquals(new int[]{2,2,2,2},rem);assertEquals("v.hand() must equal hand(\"7H\", \"AS\").stream().sorted(Comparator.comparing(Card::suit).thenComparingInt(Card::rank)).toList()", hand("7H","AS").stream().sorted(Comparator.comparing(Card::suit).thenComparingInt(Card::rank)).toList(),v.hand());
     }
 }

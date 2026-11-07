@@ -10,20 +10,22 @@ import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;
 import org.junit.Test;
 
-public class IndependentPlayerModelTest {
+public class IndependentPlayerModelTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void hallFeasibilityMatchesExhaustiveAllocationOnTwoThousandSmallConstrainedWorlds(){
         var random=new Random(72021);
         for(int k=0;k<2000;k++){int n=3+random.nextInt(4);int[] need=new int[n],counts=new int[4];boolean[][] voids=new boolean[n][4];
             for(int s=0;s<n;s++){need[s]=random.nextInt(3);for(int suit=0;suit<4;suit++)voids[s][suit]=random.nextBoolean();}
             for(int suit=0;suit<4;suit++)counts[suit]=random.nextInt(3);
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "counts", counts, "k", k, "n", n, "need", need, "random", random, "voids", voids);
             assertEquals("case="+k,brute(need.clone(),counts.clone(),voids,0),IndependentPlayer.feasible(need,counts,voids));
         }
-        assertFalse(IndependentPlayer.feasible(new int[]{-1},new int[4],new boolean[1][4]));
-        assertFalse(IndependentPlayer.feasible(new int[]{0},new int[]{-1,0,0,0},new boolean[1][4]));
+        assertFalse("IndependentPlayer.feasible(new int[]{-1}, new int[4], new boolean[1][4]) must remain false", IndependentPlayer.feasible(new int[]{-1},new int[4],new boolean[1][4]));
+        assertFalse("IndependentPlayer.feasible(new int[]{0}, new int[]{-1, 0, 0, 0}, new boolean[1][4]) must remain false", IndependentPlayer.feasible(new int[]{0},new int[]{-1,0,0,0},new boolean[1][4]));
     }
     private static boolean brute(int[] need,int[] counts,boolean[][] voids,int seat){
         if(seat==need.length)return true;if(need[seat]==0)return brute(need,counts,voids,seat+1);
@@ -35,6 +37,8 @@ public class IndependentPlayerModelTest {
             var p=new IndependentPlayer.Position(seat,3,1,trump,List.of(own),seats(1),List.of(),List.of(),turned);
             var pool=new ArrayList<Integer>();for(int s=0;s<4;s++)for(int r=5;r<13;r++){int c=s*13+r;if(c!=own&&c!=turned)pool.add(c);}
             int[] wins={0,0};int[] cards=new int[4];cards[seat]=own;enumerate(pool,cards,seat,0,trump,wins);
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "cards", cards, "own", own, "p", p, "pool", pool, "seat", seat, "trump", trump, "turned", turned, "wins", wins);
             assertEquals(wins[0]/(double)wins[1],IndependentPlayer.oneCardWinChance(p),1e-12);
         }
     }
@@ -48,31 +52,37 @@ public class IndependentPlayerModelTest {
     @Test public void lastBidNeverChoosesForbiddenContractEvenWithCertainOneCardWin(){
         var players=new ArrayList<>(seats(1));for(int s=0;s<3;s++)players.set(s,new IndependentPlayer.Seat(1,0,0,0));
         var p=new IndependentPlayer.Position(3,3,1,0,List.of(12),players,List.of(),List.of(),5);
-        assertEquals(0,IndependentPlayer.bid(p).value());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "p", p, "players", players);
+        assertEquals("IndependentPlayer.bid(p).value() must equal 0", 0,IndependentPlayer.bid(p).value());
     }
     @Test public void constrainedSamplerKeepsCardOwnershipCountsAndVoidEvidenceAcrossAllRandomDraws(){
         // Seat1 publicly discarded a diamond on a heart lead: both hearts and trumps are exhausted there.
         var history=List.of(new IndependentPlayer.Play(0,18),new IndependentPlayer.Play(1,44),new IndependentPlayer.Play(2,19),new IndependentPlayer.Play(3,20));
         var p=new IndependentPlayer.Position(0,3,2,0,List.of(25),seats(1),List.of(),history,5);
-        for(int seed=0;seed<200;seed++)for(boolean hallOnly:List.of(false,true)){var hands=hallOnly?IndependentPlayer.feasibleDeal(p,new Random(seed)):IndependentPlayer.deal(p,new Random(seed));assertNotNull(hands);var all=new HashSet<Integer>();
-            for(int s=0;s<4;s++){assertEquals(1,hands.get(s).size());for(int c:hands.get(s)){assertTrue(all.add(c));assertNotEquals(5,c);assertFalse(history.stream().anyMatch(x->x.card()==c));if(s==1){assertNotEquals(0,c/13);assertNotEquals(1,c/13);}}}
-            assertEquals(p.hand(),hands.get(0));
+        for(int seed=0;seed<200;seed++)for(boolean hallOnly:List.of(false,true)){var hands=hallOnly?IndependentPlayer.feasibleDeal(p,new Random(seed)):IndependentPlayer.deal(p,new Random(seed));
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "hallOnly", hallOnly, "hands", hands, "history", history, "p", p, "seed", seed);
+assertNotNull("hands is available", hands);var all=new HashSet<Integer>();
+            for(int s=0;s<4;s++){assertEquals("hands.get(s).size() must equal 1", 1,hands.get(s).size());for(int c:hands.get(s)){assertTrue("all.add(c) must hold", all.add(c));assertNotEquals("c must differ from 5", 5,c);assertFalse("history.stream().anyMatch((x)->x.card() == c) must remain false", history.stream().anyMatch(x->x.card()==c));if(s==1){assertNotEquals("c / 13 must differ from 0", 0,c/13);assertNotEquals("c / 13 must differ from 1", 1,c/13);}}}
+            assertEquals("hands.get(0) must equal p.hand()", p.hand(),hands.get(0));
         }
     }
     @Test public void currentTrickDiscardConstrainsIndependentWorldsEvenWhenHistoryOmitsItsSuffix(){
         var partial=List.of(new IndependentPlayer.Play(0,18),new IndependentPlayer.Play(1,44));
         var offSuit=new IndependentPlayer.Position(2,3,2,0,List.of(31),seats(1),partial,List.of(),5);
         var voids=IndependentPlayer.knownVoids(offSuit);
-        assertTrue(voids[1][1]);assertTrue(voids[1][0]);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "offSuit", offSuit, "partial", partial, "voids", voids);
+        assertTrue("voids[1][1] must hold", voids[1][1]);assertTrue("voids[1][0] must hold", voids[1][0]);
         for(int seed=0;seed<96;seed++)for(boolean hallOnly:List.of(false,true)){
             var hands=hallOnly?IndependentPlayer.feasibleDeal(offSuit,new Random(seed)):IndependentPlayer.deal(offSuit,new Random(seed));
             assertNotNull("seed="+seed+" hallOnly="+hallOnly,hands);
-            assertTrue(hands.get(1).stream().noneMatch(c->c/13==0||c/13==1));
+            assertTrue("hands.get(1).stream().noneMatch((c)->c / 13 == 0 || c / 13 == 1) must hold", hands.get(1).stream().noneMatch(c->c/13==0||c/13==1));
         }
         var forcedTrump=new IndependentPlayer.Position(2,3,2,0,List.of(31),seats(1),
                 List.of(new IndependentPlayer.Play(0,18),new IndependentPlayer.Play(1,5)),List.of(),6);
         var trumpVoids=IndependentPlayer.knownVoids(forcedTrump);
-        assertTrue(trumpVoids[1][1]);assertFalse(trumpVoids[1][0]);
+        assertTrue("trumpVoids[1][1] must hold", trumpVoids[1][1]);assertFalse("trumpVoids[1][0] must remain false", trumpVoids[1][0]);
         boolean canStillHoldTrump=false;
         for(int seed=0;seed<96;seed++)canStillHoldTrump|=IndependentPlayer.deal(forcedTrump,new Random(seed)).get(1).stream().anyMatch(c->c/13==0);
         assertTrue("A forced trump proves the led-suit void, not a trump void",canStillHoldTrump);
@@ -91,10 +101,12 @@ public class IndependentPlayerModelTest {
                 new IndependentPlayer.Seat(2,0,0,0),new IndependentPlayer.Seat(2,0,0,0));
         var p=new IndependentPlayer.Position(0,3,8,4,List.of(35,36),seats,List.of(),history,-1);
         var worlds=IndependentPlayer.smallDeals(p);
-        assertEquals(19,worlds.size());
-        for(var world:worlds){assertEquals(2,world.get(1).size());assertEquals(2,world.get(2).size());assertEquals(2,world.get(3).size());
-            assertTrue(world.get(1).stream().noneMatch(c->c/13==0||c/13==3));
-            assertTrue(world.get(3).stream().noneMatch(c->c/13==2||c/13==3));}
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "history", history, "p", p, "seats", seats, "worlds", worlds);
+        assertEquals("worlds.size() must equal 19", 19,worlds.size());
+        for(var world:worlds){assertEquals("world.get(1).size() must equal 2", 2,world.get(1).size());assertEquals("world.get(2).size() must equal 2", 2,world.get(2).size());assertEquals("world.get(3).size() must equal 2", 2,world.get(3).size());
+            assertTrue("world.get(1).stream().noneMatch((c)->c / 13 == 0 || c / 13 == 3) must hold", world.get(1).stream().noneMatch(c->c/13==0||c/13==3));
+            assertTrue("world.get(3).stream().noneMatch((c)->c / 13 == 2 || c / 13 == 3) must hold", world.get(3).stream().noneMatch(c->c/13==2||c/13==3));}
     }
     @Test public void twoCardSolverMatchesAnOracleUsingRealEngineTransitionsAndTerminalScores(){
         var random=new Random(729);for(int k=0;k<24;k++){
@@ -103,7 +115,9 @@ public class IndependentPlayerModelTest {
             while(game.snapshot().phase()==GamePhase.BIDDING){var state=game.snapshot();var allowed=GameRules.allowedBids(state.handSize(),state.players().stream().filter(p->p.bid()!=null).mapToInt(p->p.bid()).sum(),state.biddingSeat()==state.dealerSeat());game.submitBid(state.biddingSeat(),allowed.get(random.nextInt(allowed.size())));}
             var s=game.snapshot();var p=new IndependentPlayer.Position(0,3,2,k%5,s.players().get(0).hand().stream().map(IndependentPlayerModelTest::id).toList(),s.players().stream().map(x->new IndependentPlayer.Seat(2,x.bid(),0,0)).toList(),List.of(),List.of(),-1);
             var world=s.players().stream().map(x->x.hand().stream().map(IndependentPlayerModelTest::id).toList()).toList();int[] goals=s.players().stream().mapToInt(GameSession.PlayerSnapshot::bid).toArray();
-            for(Card first:s.players().get(0).hand()){var branch=copyGame(game);branch.playCard(0,first);assertArrayEquals("world="+k+" first="+first,oracle(branch),IndependentPlayer.exactAfter(p,world,id(first),goals));}
+            for(Card first:s.players().get(0).hand()){var branch=copyGame(game);branch.playCard(0,first);
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "branch", branch, "deal", deal, "deck", deck, "first", first, "game", game, "goals", goals, "k", k, "p", p, "random", random, "s", s, "world", world);
+assertArrayEquals("world="+k+" first="+first,oracle(branch),IndependentPlayer.exactAfter(p,world,id(first),goals));}
         }
     }
     @Test public void feasibleLateGameIsNotLostWhenEveryRejectionAttemptTakesTheWrongSuit()throws Exception{
@@ -115,7 +129,9 @@ public class IndependentPlayerModelTest {
         var p=new IndependentPlayer.Position(0,3,8,4,s.players().get(0).hand().stream().map(IndependentPlayerModelTest::id).toList(),s.players().stream().map(x->new IndependentPlayer.Seat(x.hand().size(),x.bid(),x.tricksWon(),x.totalScore())).toList(),List.of(),s.history().stream().map(x->new IndependentPlayer.Play(x.seat(),id(x.card()))).toList(),-1);
         var old=new ro.whistlab.coach.baseline.PreviousIndependentPlayer.Position(p.seat(),p.dealer(),p.size(),p.trump(),p.hand(),p.seats().stream().map(x->new ro.whistlab.coach.baseline.PreviousIndependentPlayer.Seat(x.remaining(),x.bid(),x.won(),x.total())).toList(),List.of(),p.history().stream().map(x->new ro.whistlab.coach.baseline.PreviousIndependentPlayer.Play(x.seat(),x.card())).toList(),-1,false,5);
         var method=ro.whistlab.coach.baseline.PreviousIndependentPlayer.class.getDeclaredMethod("deal",old.getClass(),Random.class);method.setAccessible(true);
-        assertNull(method.invoke(null,old,identityShuffle()));var rescued=IndependentPlayer.deal(p,identityShuffle());assertNotNull(rescued);assertEquals(2,rescued.get(1).size());assertTrue(rescued.get(1).stream().allMatch(c->c/13==2));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actual", actual, "game", game, "method", method, "old", old, "p", p, "rounds", rounds, "s", s);
+        assertNull("method.invoke(null, old, identityShuffle()) remains absent", method.invoke(null,old,identityShuffle()));var rescued=IndependentPlayer.deal(p,identityShuffle());assertNotNull("rescued is available", rescued);assertEquals("rescued.get(1).size() must equal 2", 2,rescued.get(1).size());assertTrue("rescued.get(1).stream().allMatch((c)->c / 13 == 2) must hold", rescued.get(1).stream().allMatch(c->c/13==2));
     }
     private static Random identityShuffle(){return new Random(){@Override public int nextInt(int bound){return bound-1;}};}
     private static Card card(int suit,int rank){return new Card(Suit.values()[suit],rank);}

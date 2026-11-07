@@ -12,11 +12,11 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;
 import org.junit.Test;
 
-public class ContractEndgameTest {
+public class ContractEndgameTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void exactWorldSolverMatchesIndependentMaxNOnFiniteFourSeatEndgames(){
         Random r=new Random(77291);int compared=0;
         for(int t=0;t<60;t++){
@@ -27,9 +27,11 @@ public class ContractEndgameTest {
             for(Card first:hands.get(0)){
                 int[] actual=ContractEndgame.after(view,hands,first,bids);var numeric=new ArrayList<List<Integer>>();for(var h:hands)numeric.add(new ArrayList<>(h.stream().map(c->13*c.suit().ordinal()+c.rank()-2).toList()));
                 int id=13*first.suit().ordinal()+first.rank()-2;numeric.get(0).remove(Integer.valueOf(id));
-                int[] expected=reference(numeric,new int[4],bids,1,List.of(id),0,trump.ordinal());assertArrayEquals("world "+t+" first "+first,expected,actual);compared++;
+                int[] expected=reference(numeric,new int[4],bids,1,List.of(id),0,trump.ordinal());
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actual", actual, "bids", bids, "compared", compared, "deck", deck, "expected", expected, "first", first, "hands", hands, "id", id, "numeric", numeric, "r", r, "seats", seats, "size", size, "t", t, "trump", trump, "view", view);
+assertArrayEquals("world "+t+" first "+first,expected,actual);compared++;
             }
-        }assertEquals(128,compared);
+        }assertEquals("compared must equal 128", 128,compared);
     }
     private static int[] reference(List<List<Integer>> h,int[] won,int[] bids,int actor,List<Integer> trick,int leadSeat,int trump){
         if(h.stream().allMatch(List::isEmpty))return won.clone();
@@ -47,12 +49,14 @@ public class ContractEndgameTest {
     private static int rival(int[] w,int[] b,int actor){int best=-999;for(int s=0;s<4;s++)if(s!=actor)best=Math.max(best,s*2+score(w[s],b[s]));return best;}
     private static int power(int c,int led,int trump){return (c/13==trump?200:c/13==led?100:0)+c%13;}
     @Test public void constrainedDealsAlwaysRespectKnownVoidsAndAllCardCounts(){
-        GameSession g=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,31));
+        GameSession g=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,31)));
         while(g.snapshot().handSize()!=8){finish(g);g.startNextHand();}while(g.snapshot().phase()==GamePhase.BIDDING){var s=g.snapshot();g.submitBid(s.biddingSeat(),AiPolicy.chooseBid(s,s.biddingSeat(),AiDifficulty.HARD));}
         while(g.snapshot().history().size()<24){var s=g.snapshot();g.playCard(s.currentSeat(),AiPolicy.chooseCard(s,s.currentSeat(),AiDifficulty.HARD));}
         var v=MonteCarloAi.observe(g.snapshot(),g.snapshot().currentSeat());Set<Card> forbidden=new HashSet<>(v.hand());for(var p:v.history())forbidden.add(p.card());
-        for(int sample=0;sample<100;sample++){var hands=MonteCarloAi.sample(v,new Random(sample));assertNotNull(hands);Set<Card> all=new HashSet<>();for(int s=0;s<4;s++){assertEquals(v.seats().get(s).remaining(),hands.get(s).size());for(Card c:hands.get(s)){assertTrue(all.add(c));if(s!=v.seat())assertFalse(forbidden.contains(c));}}
-            for(int i=0;i<v.history().size();i++){var p=v.history().get(i);Suit led=v.history().get(i-i%4).card().suit();if(p.card().suit()!=led){assertTrue(hands.get(p.seat()).stream().noneMatch(c->c.suit()==led));}}
+        for(int sample=0;sample<100;sample++){var hands=MonteCarloAi.sample(v,new Random(sample));
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "forbidden", forbidden, "g", g, "hands", hands, "sample", sample, "v", v);
+assertNotNull("hands is available", hands);Set<Card> all=new HashSet<>();for(int s=0;s<4;s++){assertEquals("hands.get(s).size() must equal v.seats().get(s).remaining()", v.seats().get(s).remaining(),hands.get(s).size());for(Card c:hands.get(s)){assertTrue("all.add(c) must hold", all.add(c));if(s!=v.seat())assertFalse("forbidden.contains(c) must remain false", forbidden.contains(c));}}
+            for(int i=0;i<v.history().size();i++){var p=v.history().get(i);Suit led=v.history().get(i-i%4).card().suit();if(p.card().suit()!=led){assertTrue("hands.get(p.seat()).stream().noneMatch((c)->c.suit() == led) must hold", hands.get(p.seat()).stream().noneMatch(c->c.suit()==led));}}
         }
     }
     private static void finish(GameSession g){while(g.snapshot().phase()==GamePhase.BIDDING){var s=g.snapshot();g.submitBid(s.biddingSeat(),AiPolicy.chooseBid(s,s.biddingSeat(),AiDifficulty.HARD));}while(g.snapshot().phase()==GamePhase.PLAYING){var s=g.snapshot();g.playCard(s.currentSeat(),AiPolicy.chooseCard(s,s.currentSeat(),AiDifficulty.HARD));}}
@@ -60,7 +64,9 @@ public class ContractEndgameTest {
         var history=List.of(new PlayedCard(0,new Card(Suit.HEARTS,7)),new PlayedCard(1,new Card(Suit.CLUBS,7)),new PlayedCard(2,new Card(Suit.HEARTS,8)),new PlayedCard(3,new Card(Suit.SPADES,7)),new PlayedCard(3,new Card(Suit.SPADES,9)));
         var seats=List.of(new MonteCarloAi.Seat(2,0,0),new MonteCarloAi.Seat(2,0,0),new MonteCarloAi.Seat(2,0,0),new MonteCarloAi.Seat(1,0,1));
         var view=new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,Trump.SPADES,0,3,3,List.of(new Card(Suit.CLUBS,14),new Card(Suit.DIAMONDS,14)),seats,List.of(history.get(4)),history,new Card(Suit.SPADES,8));
-        for(int i=0;i<100;i++){var world=MonteCarloAi.sample(view,new Random(i));assertNotNull(world);assertTrue(world.get(1).stream().noneMatch(c->c.suit()==Suit.HEARTS||c.suit()==Suit.SPADES));assertTrue(world.get(3).stream().noneMatch(c->c.suit()==Suit.HEARTS));assertEquals(1,world.get(3).size());}
+        for(int i=0;i<100;i++){var world=MonteCarloAi.sample(view,new Random(i));
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "history", history, "i", i, "seats", seats, "view", view, "world", world);
+assertNotNull("world is available", world);assertTrue("world.get(1).stream().noneMatch((c)->c.suit() == Suit.HEARTS || c.suit() == Suit.SPADES) must hold", world.get(1).stream().noneMatch(c->c.suit()==Suit.HEARTS||c.suit()==Suit.SPADES));assertTrue("world.get(3).stream().noneMatch((c)->c.suit() == Suit.HEARTS) must hold", world.get(3).stream().noneMatch(c->c.suit()==Suit.HEARTS));assertEquals("world.get(3).size() must equal 1", 1,world.get(3).size());}
     }
     @Test public void currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored(){
         List<PlayedCard> history=new ArrayList<>();
@@ -76,7 +82,9 @@ public class ContractEndgameTest {
         var view=new MonteCarloAi.View(GameMode.ROMANIAN_WHIST,Trump.NO_TRUMP,2,3,8,
                 List.of(new Card(Suit.HEARTS,12),new Card(Suit.CLUBS,12)),seats,current,history,null);
         for(int seed=0;seed<100;seed++){
-            var world=MonteCarloAi.sample(view,new Random(seed));assertNotNull(world);
+            var world=MonteCarloAi.sample(view,new Random(seed));
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "current", current, "history", history, "leadSuits", leadSuits, "rankGroups", rankGroups, "seats", seats, "seed", seed, "view", view, "world", world);
+assertNotNull("world is available", world);
             assertTrue("seat 1 discarded while Hearts were led; no Heart can remain",
                     world.get(1).stream().noneMatch(card->card.suit()==Suit.HEARTS));
         }

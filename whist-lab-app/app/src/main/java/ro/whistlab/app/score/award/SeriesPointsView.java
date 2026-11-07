@@ -31,7 +31,13 @@ public final class SeriesPointsView extends TextView {
         if (rectangle == null) return;
         frame.setColor(SeriesPointsFrame.color(seriesPoints));
         frame.setStrokeWidth(stroke);
-        canvas.drawRect(rectangle.left(), rectangle.top(), rectangle.right(), rectangle.bottom(), frame);
+        int saved = canvas.save();
+        try {
+            canvas.translate(getScrollX(), getScrollY());
+            canvas.drawRect(rectangle.left(), rectangle.top(), rectangle.right(), rectangle.bottom(), frame);
+        } finally {
+            canvas.restoreToCount(saved);
+        }
     }
 
     private int requiredHeight() {

@@ -1,6 +1,6 @@
 package ro.whistlab.app.score.raster;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -49,8 +49,8 @@ public final class HistoryRecoveryProof {
             var baseline = HistoryRaster.render(first, false);
             var firstFile = Files.createTempFile(temporary, "before-", ".png");
             var secondFile = Files.createTempFile(temporary, "after-", ".png");
-            assertTrue(ImageIO.write(HistoryRaster.render(first, true), "png", firstFile.toFile()));
-            assertTrue(ImageIO.write(HistoryRaster.render(second, true), "png", secondFile.toFile()));
+            assertTrue("ImageIO.write(HistoryRaster.render(first, true), \"png\", firstFile.toFile()) must hold", ImageIO.write(HistoryRaster.render(first, true), "png", firstFile.toFile()));
+            assertTrue("ImageIO.write(HistoryRaster.render(second, true), \"png\", secondFile.toFile()) must hold", ImageIO.write(HistoryRaster.render(second, true), "png", secondFile.toFile()));
             var firstImage = ImageIO.read(firstFile.toFile());var secondImage = ImageIO.read(secondFile.toFile());
             HistoryRasterAudit.identicalPixels(profile, firstImage, secondImage);
             HistoryRasterAudit.rectanglesOnlyCoverTheirAwardedPointsCells(second, baseline, secondImage);
@@ -58,7 +58,7 @@ public final class HistoryRecoveryProof {
             String configured = System.getProperty("whist.historyRasterOutput", "");
             if (!configured.isBlank() && scale == 1.5f) {
                 var output = Path.of(configured);Files.createDirectories(output);
-                assertTrue(ImageIO.write(secondImage, "png", output.resolve(profile + ".png").toFile()));
+                assertTrue("ImageIO.write(secondImage, \"png\", output.resolve(profile + \".png\").toFile()) must hold", ImageIO.write(secondImage, "png", output.resolve(profile + ".png").toFile()));
                 Files.writeString(output.resolve(profile + ".txt"), "CONTROLLED_JVM_RASTER_NOT_ANDROID_SCREENSHOT\n"
                         + "fileRecovery=PASS\npixelEquality=PASS\nphase=" + restored.snapshot().phase()
                         + "\nexpected=" + expected + "\nrows=" + second.rows() + "\n");

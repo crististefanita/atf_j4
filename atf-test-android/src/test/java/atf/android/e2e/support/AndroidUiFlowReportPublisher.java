@@ -12,6 +12,7 @@ import atf.android.evidence.timing.AndroidPhaseReportTiming;
 import atf.android.whist.evidence.WhistExtentFeedback;
 import atf.reporting.configuration.AtfReportConfigurationLoader;
 import atf.reporting.contract.AtfReportPorts;
+import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
 import atf.reporting.contract.AtfGherkinKeyword;
 import atf.reporting.configuration.ReportingSettings;
@@ -63,6 +64,16 @@ public final class AndroidUiFlowReportPublisher {
             var ui = UiExtentReportSession.adaptScenario(raw,
                     ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT),
                     trace.name());
+            try (var setup = ui.startPhase("SETUP")) {
+                boolean manifestPresent = Files.isRegularFile(trace.manifest()) && Files.size(trace.manifest()) > 0;
+                boolean phasesClosed = !trace.hasOpenPhase();
+                setup.setup(AtfGherkinKeyword.GIVEN, "the captured trace is ready for publication",
+                        trace.id(), List.of(
+                                new AtfAssertion("Captured trace manifest is nonempty", "true", Boolean.toString(manifestPresent), manifestPresent),
+                                new AtfAssertion("Captured phases are closed before publication", "true", Boolean.toString(phasesClosed), phasesClosed)),
+                        manifestPresent && phasesClosed ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+                setup.complete(manifestPresent && phasesClosed ? AtfReportStatus.PASS : AtfReportStatus.FAIL);
+            }
             int ordinal = 0;
             for (AndroidUiFlowTrace.PhaseSnapshot phaseSnapshot : trace.phaseSnapshots()) {
                 try (var phase = ui.startPhase(phaseSnapshot.name())) {

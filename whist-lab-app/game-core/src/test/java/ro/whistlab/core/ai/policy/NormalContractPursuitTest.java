@@ -10,40 +10,49 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static atf.gradle.audit.assertions.GradleAssertions.assertEquals;
+import static atf.gradle.audit.assertions.GradleAssertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
-public final class NormalContractPursuitTest {
+public final class NormalContractPursuitTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void normalLeadsWithStrengthWhileAContractRemains() {
         var game = position(1, 0, 0, List.of(card(Suit.SPADES, 7), card(Suit.SPADES, 14)), List.of());
-        assertEquals(card(Suit.SPADES, 14), AiPolicy.chooseCard(game, 0, AiDifficulty.NORMAL));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game);
+        assertEquals("AiPolicy.chooseCard(game, 0, AiDifficulty.NORMAL) must equal card(Suit.SPADES, 14)", card(Suit.SPADES, 14), AiPolicy.chooseCard(game, 0, AiDifficulty.NORMAL));
     }
 
     @Test public void normalShedsTheLowestRiskWhenNoTrickIsNeeded() {
         var game = position(0, 0, 0, List.of(card(Suit.SPADES, 7), card(Suit.SPADES, 14)), List.of());
-        assertEquals(card(Suit.SPADES, 7), AiPolicy.chooseCard(game, 0, AiDifficulty.NORMAL));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game);
+        assertEquals("AiPolicy.chooseCard(game, 0, AiDifficulty.NORMAL) must equal card(Suit.SPADES, 7)", card(Suit.SPADES, 7), AiPolicy.chooseCard(game, 0, AiDifficulty.NORMAL));
     }
 
     @Test public void normalTakesAReachableTrickAndUsesTheSmallestCertainWinnerWhenLast() {
         List<PlayedCard> table = List.of(new PlayedCard(0, card(Suit.SPADES, 11)),
                 new PlayedCard(1, card(Suit.SPADES, 9)), new PlayedCard(2, card(Suit.SPADES, 10)));
         var game = position(1, 0, 3, List.of(card(Suit.SPADES, 12), card(Suit.SPADES, 14)), table);
-        assertEquals(card(Suit.SPADES, 12), AiPolicy.chooseCard(game, 3, AiDifficulty.NORMAL));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "table", table);
+        assertEquals("AiPolicy.chooseCard(game, 3, AiDifficulty.NORMAL) must equal card(Suit.SPADES, 12)", card(Suit.SPADES, 12), AiPolicy.chooseCard(game, 3, AiDifficulty.NORMAL));
     }
 
     @Test public void normalObservationKeepsItsPublicSeatSnapshotImmutable() {
-        var game = GameSession.newGame(new GameConfig(4, GameMode.ROMANIAN_WHIST,
-                AiDifficulty.NORMAL, 20261104L));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4, GameMode.ROMANIAN_WHIST,
+                AiDifficulty.NORMAL, 20261104L)));
 
         NormalPlayPolicy.Observation observation = NormalPlayPolicy.observe(game.snapshot(), 0);
 
-        assertEquals(4, observation.seats().size());
-        assertEquals(game.snapshot().players().get(0).hand().size(), observation.seats().get(0).remaining());
-        assertThrows(UnsupportedOperationException.class, () -> observation.seats().clear());
+
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "observation", observation);
+        assertEquals("observation.seats().size() must equal 4", 4, observation.seats().size());
+        assertEquals("observation.seats().get(0).remaining() must equal game.snapshot().players().get(0).hand().size()", game.snapshot().players().get(0).hand().size(), observation.seats().get(0).remaining());
+        assertThrows("The operation rejects its input with UnsupportedOperationException.class", UnsupportedOperationException.class, () -> observation.seats().clear());
     }
 
     private static GameSession.Snapshot position(int bid, int won, int seat,

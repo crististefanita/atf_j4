@@ -3,13 +3,16 @@ package ro.whistlab.app.table;
 import ro.whistlab.app.bidding.BidGridMetrics;
 import ro.whistlab.app.animation.TrickCollectionAnimator;
 import ro.whistlab.app.animation.TrickCollectionRequest;
-import ro.whistlab.app.cards.CardFaceBackground;
 import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.seat.PlayerSeatView;
 import ro.whistlab.app.theme.WhistUiPalette;
 import ro.whistlab.app.window.WindowContent;
+import ro.whistlab.app.table.content.WhistTableContent;
+import ro.cardtable.ui.hand.HandFan;
+import ro.cardtable.ui.seat.PlayerSeatFrame;
+import ro.cardtable.ui.table.PlayedCardsView;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -36,13 +39,8 @@ import ro.whistlab.core.model.PlayedCard;
 
 /** Player-facing table, public trick and private hand, composed from a game snapshot. */
 public final class GameTablePanel extends LinearLayout {
-    private static final int WHITE = Color.rgb(255, 254, 248);
     private static final int INK = WhistUiPalette.ACTIVE_SEAT_TEXT;
-    private static final int MUTED = Color.rgb(105, 117, 106);
     private static final int GOLD = Color.rgb(220, 181, 105);
-    private static final int CARD_RED = Color.rgb(173, 57, 58);
-    private static final int CARD_DARK = Color.rgb(42, 53, 47);
-    private static final int SOFT_BORDER = Color.rgb(211, 220, 210);
     private static final int PLAY_HINT_SLOT_HEIGHT_DP = 32;
 
     private final Context context;
@@ -60,6 +58,7 @@ public final class GameTablePanel extends LinearLayout {
     private final IntConsumer onBidSelected;
     private final Runnable onBidSubmitted;
     private int selectedBid;
+    private Button bidSubmitButton;
     private boolean collectionAttached;
     private TrickCollectionAnimator collection;
 
@@ -228,14 +227,14 @@ public final class GameTablePanel extends LinearLayout {
         row.setGravity(Gravity.CENTER);
 
         Button submit = new Button(context);
+        bidSubmitButton = submit;
         submit.setAllCaps(false);
         submit.setText(copy.placeBid());
         submit.setTextSize(BidGridMetrics.SUBMIT_TEXT_SP);
         submit.setTextColor(Color.rgb(245, 248, 240));
         submit.setContentDescription(copy.placeBid());
         submit.setTag("btn_submit_bid");
-        submit.setEnabled(state.biddingSeat() == 0);
-        submit.setAlpha(state.biddingSeat() == 0 ? 1f : 0.5f);
+        updateBidSubmission();
         submit.setMinimumWidth(0);
         submit.setMinHeight(dp(BidGridMetrics.SUBMIT_TARGET_DP));
         submit.setPadding(dp(6), 0, dp(6), 0);
@@ -255,12 +254,19 @@ public final class GameTablePanel extends LinearLayout {
     private void selectBid(int bid) {
         if (state.biddingSeat() != 0) return;
         selectedBid = bid;
+        updateBidSubmission();
         for (Button choice : bidChoiceButtons) {
             boolean selected = Integer.parseInt(String.valueOf(choice.getTag()).substring("bid-choice:".length())) == bid;
             choice.setSelected(selected);
             styleBidChoice(choice, selected);
         }
         if (onBidSelected != null) onBidSelected.accept(bid);
+    }
+
+    private void updateBidSubmission() {
+        boolean available = state.biddingSeat() == 0 && bidOptions.contains(selectedBid);
+        bidSubmitButton.setEnabled(available);
+        bidSubmitButton.setAlpha(available ? 1f : 0.5f);
     }
 
     private void styleBidChoice(Button choice, boolean selected) {
@@ -278,194 +284,31 @@ public final class GameTablePanel extends LinearLayout {
 
     private View buildSeat(GameSession.PlayerSnapshot player) {
         int activeSeat = bidding ? state.biddingSeat() : state.currentSeat();
-        boolean active = !interactionPaused && player.seat() == activeSeat;
-        boolean dealer = player.seat() == state.dealerSeat();
-        LinearLayout seat = new LinearLayout(context);
-        seat.setOrientation(VERTICAL);
-        seat.setGravity(Gravity.CENTER);
-        seat.setPadding(dp(6), dp(viewport.seatVerticalPaddingDp()), dp(6),
-                dp(viewport.seatVerticalPaddingDp()));
-        seat.setBackground(WhistUiPalette.seatFrame(context, active));
-        seat.setElevation(dp(active ? 1 : 0));
-
-        TextView name = text(copy.seatName(player), 13,
-                active ? INK : WhistUiPalette.IDLE_SEAT_TEXT, true);
-        name.setGravity(Gravity.CENTER);
-        name.setSingleLine(true);
-        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        name.setTag("seat-name:" + player.seat());
-        name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        seat.addView(name, matchWrap());
-        addSeatFact(seat, copy.bidLabel() + ":", player.bid() == null ? "—" : player.bid().toString(), active);
-        addSeatFact(seat, copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()), active);
-        seat.setTag("table-seat:" + player.seat());
-        seat.setContentDescription(copy.seatAccessibility(player, dealer, active, bidding));
-        seat.setFocusable(true);
-        seat.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-        return new PlayerSeatView(context, seat, copy.seatTurnBadge(bidding), active, player.seat(), viewport.isCompact());
+        var content = WhistTableContent.seat(player, activeSeat,
+                state.dealerSeat(), interactionPaused, bidding, copy);
+        LinearLayout frame = new PlayerSeatFrame(context, viewport.isCompact())
+                .build(content, viewport.seatVerticalPaddingDp());
+        return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding), content.active(),
+                player.seat(), viewport.isCompact());
     }
 
     private View buildCurrentTrick(TrickCardMetrics.Layout layout) {
         List<PlayedCard> plays = state.currentTrick().isEmpty() && !completedTrickToDisplay.isEmpty()
                 ? completedTrickToDisplay : state.currentTrick();
-        FrameLayout cards = new FrameLayout(context);
-        cards.setContentDescription(copy.currentTrick());
-        cards.setTag("current-trick");
-        cards.setMinimumHeight(dp(layout.centerHeightDp()));
-        cards.setClipChildren(false);
-        cards.setClipToPadding(false);
-
-        PlayedCard[] bySeat = new PlayedCard[state.players().size()];
-        for (PlayedCard play : plays) bySeat[play.seat()] = play;
-        for (int rowIndex = 0; rowIndex < layout.rows(); rowIndex++) {
-            FrameLayout row = new FrameLayout(context);
-            FrameLayout.LayoutParams rowParams = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, dp(layout.cellHeightDp()),
-                    Gravity.TOP | Gravity.LEFT);
-            rowParams.topMargin = dp(rowIndex * layout.rowStrideDp());
-            cards.addView(row, rowParams);
-        }
-        for (int seat = 0; seat < bySeat.length; seat++) {
-            PlayedCard play = bySeat[seat];
-            if (play == null) continue;
-            TrickCardMetrics.Slot slot = layout.slotForSeat(seat);
-            GameSession.PlayerSnapshot player = state.players().get(seat);
-            LinearLayout item = new LinearLayout(context);
-            item.setOrientation(VERTICAL);
-            item.setGravity(Gravity.CENTER);
-            int verticalPadding = dp(layout.itemVerticalPaddingDp() / 2);
-            item.setPadding(0, verticalPadding, 0, verticalPadding);
-
-            TextView card = text(play.card().shortLabel(), layout.cardFaceTextSizeSp(),
-                    play.card().suit().red() ? CARD_RED : CARD_DARK, true);
-            card.setTag("trick-face:" + seat);
-            card.setGravity(Gravity.CENTER);
-            card.setPadding(dp(2), dp(4), dp(2), dp(4));
-            card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
-            card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            item.addView(card, new LayoutParams(dp(layout.cardWidthDp()), dp(layout.cardHeightDp())));
-
-            TextView who = text(copy.trickPlayer(player), layout.playerLabelTextSizeSp(),
-                    Color.rgb(212, 223, 209), false);
-            who.setGravity(Gravity.CENTER);
-            who.setSingleLine(true);
-            who.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            who.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            if (layout.playerLabelHeightDp() > 0) {
-                item.addView(who, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        dp(layout.playerLabelHeightDp())));
-            }
-
-            item.setContentDescription(copy.trickCardAccessibility(player, play.card()));
-            item.setTag("trick-card:" + seat);
-            item.setFocusable(true);
-            item.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-            FrameLayout.LayoutParams itemParams = new FrameLayout.LayoutParams(
-                    dp(layout.cardWidthDp()), dp(layout.cellHeightDp()), Gravity.TOP | Gravity.LEFT);
-            itemParams.leftMargin = dp(slot.leftDp());
-            rowFor(cards, slot.row()).addView(item, itemParams);
-        }
-        return cards;
-    }
-
-    private FrameLayout rowFor(FrameLayout cards, int index) {
-        return (FrameLayout) cards.getChildAt(index);
+        return new PlayedCardsView(context, viewport.isCompact()).build(
+                WhistTableContent.plays(state, plays, copy), layout.shared(), copy.currentTrick());
     }
 
     private View buildHand() {
         int count = state.players().get(0).hand().size();
         CenteredHandView hand = new CenteredHandView(context, dp(HandLayoutMetrics.maxViewportWidthDp()),
-                width -> buildFan(count, width));
+                new HandFan(context,
+                        WhistTableContent.hand(state, playableCards, onCardSelected != null, bidding, copy),
+                        viewport.handClearanceDp(bidding), viewport.isCompact(),
+                        id -> onCardSelected.accept(WhistTableContent.selected(state.players().get(0).hand(), id)))::build);
         hand.setContentDescription(copy.handAccessibility(count));
         hand.setTag("player-hand");
         return hand;
-    }
-
-    private View buildFan(int cardCount, int widthPx) {
-        float fontScale = getResources().getConfiguration().fontScale;
-        FrameLayout fan = new FrameLayout(context);
-        fan.setClipChildren(false);
-        fan.setClipToPadding(false);
-        TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CARD_DARK, true);
-        float widestIndex = measurement.getPaint().measureText("10");
-        for (String symbol : List.of("♠", "♥", "♣", "♦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
-        int indexWidthPx = HandLayoutMetrics.indexBandWidthPx(widestIndex, dp(1));
-        if (cardCount == 0) return fan;
-        HandLayoutMetrics.Fan layout = HandLayoutMetrics.fan(cardCount, widthPx,
-                getResources().getDisplayMetrics().density, fontScale, indexWidthPx);
-        fan.setMinimumWidth(layout.width());
-        int cardHeightDp = HandLayoutMetrics.cardHeightDp();
-        int liftClearanceDp = viewport.handClearanceDp(bidding);
-        fan.setTag("player-hand-fan");
-        for (int index = 0; index < cardCount; index++) {
-            Card card = state.players().get(0).hand().get(index);
-            boolean playable = !bidding && onCardSelected != null && playableCards.contains(card);
-            boolean humanTurn = state.phase() != ro.whistlab.core.session.GamePhase.PLAYING
-                    || state.currentSeat() == 0;
-            FrameLayout slot = new FrameLayout(context);
-            slot.setClipChildren(false);
-            slot.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-            slot.setFocusable(true);
-            slot.setTag("hand-card:" + card.suit().name() + ":" + card.rank());
-            slot.setContentDescription(copy.cardLabel(card) + ". "
-                    + copy.cardState(bidding, humanTurn, playable));
-            slot.setEnabled(true);
-            slot.setClickable(playable);
-            slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
-            FrameLayout face = cardFace(card, playable, indexWidthPx);
-            FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(layout.cardWidth(),
-                    dp(cardHeightDp), Gravity.TOP | Gravity.START);
-            faceParams.topMargin = dp(liftClearanceDp);
-            slot.addView(face, faceParams);
-            if (playable) {
-                slot.setOnClickListener(ignored -> {
-                    slot.setClickable(false);
-                    slot.setTranslationZ(dp(HandLayoutMetrics.SELECTED_Z_DP));
-                    face.animate().translationY(-dp(HandLayoutMetrics.CARD_LIFT_DP))
-                            .scaleX(HandLayoutMetrics.CARD_LIFT_SCALE)
-                            .scaleY(HandLayoutMetrics.CARD_LIFT_SCALE)
-                            .setDuration(150L)
-                            .withEndAction(() -> onCardSelected.accept(card))
-                            .start();
-                });
-            }
-            FrameLayout.LayoutParams slotParams = new FrameLayout.LayoutParams(
-                    index == cardCount - 1 ? layout.cardWidth() : layout.advance(),
-                    dp((HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(bidding))));
-            slotParams.leftMargin = layout.left(index);
-            fan.addView(slot, slotParams);
-        }
-        return fan;
-    }
-
-    private FrameLayout cardFace(Card card, boolean playable, int indexWidthPx) {
-        FrameLayout face = new FrameLayout(context);
-        face.setBackground(new CardFaceBackground(card, getResources().getDisplayMetrics().density, playable ? GOLD : SOFT_BORDER));
-        face.setFocusable(false);
-        face.setClickable(false);
-
-        TextView label = text(card.rankLabel() + "\n" + card.suit().symbol(), HandLayoutMetrics.cardLabelSizeSp(),
-                card.suit().red() ? CARD_RED : CARD_DARK, true);
-        label.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        label.setIncludeFontPadding(false);
-        label.setPadding(dp(1), dp(5), dp(1), 0);
-        label.setTag("card-index");
-        face.addView(label, new FrameLayout.LayoutParams(
-                indexWidthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
-        return face;
-    }
-
-    private void addSeatFact(LinearLayout seat, String label, String value, boolean active) {
-        LinearLayout row = new LinearLayout(context);
-        int color = active ? INK : Color.rgb(229, 239, 230);
-        TextView caption = text(label, 11, color, false);
-        TextView amount = text(value, 11, color, true);
-        caption.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        amount.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        amount.setGravity(Gravity.END);
-        row.addView(caption, new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        row.addView(amount, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        seat.addView(row, matchWrap());
     }
 
     private TextView text(String value, int size, int color, boolean bold) {

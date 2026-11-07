@@ -10,7 +10,7 @@ import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
 import java.util.*;import com.fasterxml.jackson.databind.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
 @RunWith(Parameterized.class)
-public class ObservedLateMissRegressionTest {
+public class ObservedLateMissRegressionTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="{0}")public static Collection<Object[]> cases(){return List.of(new Object[][]{{"observed-miss-006",1},{"observed-miss-019",3}});}
  private final String id;private final int expectedLastWinner;public ObservedLateMissRegressionTest(String id,int winner){this.id=id;expectedLastWinner=winner;}
  private static List<int[]> plays(JsonNode list){var result=new ArrayList<int[]>();for(var play:list)result.add(new int[]{play.path("seat").asInt(),PublicEndgameOracle.id(LossMiningTest.card(play.path("card").asText()))});return result;}

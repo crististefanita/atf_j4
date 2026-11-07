@@ -17,7 +17,7 @@ public final class CostPositions {
     }
     private CostPositions() { }
     public static Scenario create(int size,int seed,Stage stage) {
-        GameSession game=GameSession.newGame(GameConfig.newMatch(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,seed,true,10));
+        GameSession game=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(4,GameMode.ROMANIAN_WHIST,AiDifficulty.HARD,seed,true,10)));
         while(game.snapshot().handSize()!=size) {
             bidAll(game,seed);
             while(game.snapshot().phase()==GamePhase.PLAYING)playOne(game);

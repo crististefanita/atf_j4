@@ -1,27 +1,31 @@
 package ro.whistlab.app.navigation;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import org.junit.Test;
 
-public class AppNavigationComponentTest {
+public class AppNavigationComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void backReturnsHomeFromEverySecondaryScreen() {
         var navigation = new AppNavigation();
-        assertFalse(navigation.backReturnsHome());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "navigation", navigation);
+        assertFalse("navigation.backReturnsHome() must remain false", navigation.backReturnsHome());
         for (var screen : AppNavigation.Screen.values()) {
             navigation.show(screen);
-            assertEquals(screen, navigation.screen());
-            assertEquals(screen == AppNavigation.Screen.GAME, navigation.gameVisible());
-            assertEquals(screen != AppNavigation.Screen.HOME, navigation.backReturnsHome());
+            assertEquals("navigation.screen() must equal screen", screen, navigation.screen());
+            assertEquals("navigation.gameVisible() must equal screen == AppNavigation.Screen.GAME", screen == AppNavigation.Screen.GAME, navigation.gameVisible());
+            assertEquals("navigation.backReturnsHome() must equal screen != AppNavigation.Screen.HOME", screen != AppNavigation.Screen.HOME, navigation.backReturnsHome());
         }
     }
 
     @Test public void aGameDialogBlocksAutomationAndResumesOnlyOnce() {
         var navigation = game();
         var dialog = navigation.openDialog();
-        assertTrue(navigation.blocksAutomation());
-        assertTrue(navigation.dismiss(dialog));
-        assertFalse(navigation.blocksAutomation());
-        assertFalse(navigation.dismiss(dialog));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "dialog", dialog, "navigation", navigation);
+        assertTrue("navigation.blocksAutomation() must hold", navigation.blocksAutomation());
+        assertTrue("navigation.dismiss(dialog) must hold", navigation.dismiss(dialog));
+        assertFalse("navigation.blocksAutomation() must remain false", navigation.blocksAutomation());
+        assertFalse("navigation.dismiss(dialog) must remain false", navigation.dismiss(dialog));
     }
 
     @Test public void nestedDialogsResumeOnlyAfterTheLastOneInEitherDismissalOrder() {
@@ -29,10 +33,12 @@ public class AppNavigationComponentTest {
             var navigation = game();
             var parent = navigation.openDialog();
             var history = navigation.openDialog();
-            assertFalse(navigation.dismiss(parentFirst ? parent : history));
-            assertTrue(navigation.blocksAutomation());
-            assertTrue(navigation.dismiss(parentFirst ? history : parent));
-            assertFalse(navigation.blocksAutomation());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "history", history, "navigation", navigation, "parent", parent, "parentFirst", parentFirst);
+            assertFalse("navigation.dismiss(parentFirst ? parent : history) must remain false", navigation.dismiss(parentFirst ? parent : history));
+            assertTrue("navigation.blocksAutomation() must hold", navigation.blocksAutomation());
+            assertTrue("navigation.dismiss(parentFirst ? history : parent) must hold", navigation.dismiss(parentFirst ? history : parent));
+            assertFalse("navigation.blocksAutomation() must remain false", navigation.blocksAutomation());
         }
     }
 
@@ -42,9 +48,11 @@ public class AppNavigationComponentTest {
         navigation.show(AppNavigation.Screen.HOME);
         navigation.show(AppNavigation.Screen.GAME);
         var current = navigation.openDialog();
-        assertFalse(navigation.dismiss(old));
-        assertTrue(navigation.blocksAutomation());
-        assertTrue(navigation.dismiss(current));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "current", current, "navigation", navigation, "old", old);
+        assertFalse("navigation.dismiss(old) must remain false", navigation.dismiss(old));
+        assertTrue("navigation.blocksAutomation() must hold", navigation.blocksAutomation());
+        assertTrue("navigation.dismiss(current) must hold", navigation.dismiss(current));
     }
 
     @Test public void foreignDialogWithTheSameSequenceCannotCloseThisOwnersDialog() {
@@ -52,11 +60,13 @@ public class AppNavigationComponentTest {
         var second = game();
         var foreign = first.openDialog();
         var local = second.openDialog();
-        assertFalse(second.dismiss(foreign));
-        assertTrue(second.blocksAutomation());
-        assertTrue(first.blocksAutomation());
-        assertTrue(second.dismiss(local));
-        assertTrue(first.dismiss(foreign));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "first", first, "foreign", foreign, "local", local, "second", second);
+        assertFalse("second.dismiss(foreign) must remain false", second.dismiss(foreign));
+        assertTrue("second.blocksAutomation() must hold", second.blocksAutomation());
+        assertTrue("first.blocksAutomation() must hold", first.blocksAutomation());
+        assertTrue("second.dismiss(local) must hold", second.dismiss(local));
+        assertTrue("first.dismiss(foreign) must hold", first.dismiss(foreign));
     }
 
     @Test public void closingADialogOnAMenuNeverRequestsGameAutomation() {
@@ -64,9 +74,11 @@ public class AppNavigationComponentTest {
         for (var screen : new AppNavigation.Screen[]{AppNavigation.Screen.HOME,
                 AppNavigation.Screen.SETUP, AppNavigation.Screen.INSTRUCTIONS}) {
             navigation.show(screen);
-            assertFalse(navigation.dismiss(navigation.openDialog()));
-            assertFalse(navigation.blocksAutomation());
-            assertEquals(screen, navigation.screen());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "navigation", navigation, "screen", screen);
+            assertFalse("navigation.dismiss(navigation.openDialog()) must remain false", navigation.dismiss(navigation.openDialog()));
+            assertFalse("navigation.blocksAutomation() must remain false", navigation.blocksAutomation());
+            assertEquals("navigation.screen() must equal screen", screen, navigation.screen());
         }
     }
 
@@ -75,10 +87,12 @@ public class AppNavigationComponentTest {
         var score = navigation.openDialog();
         var history = navigation.openDialog();
         navigation.show(AppNavigation.Screen.SETUP);
-        assertFalse(navigation.blocksAutomation());
-        assertFalse(navigation.dismiss(score));
-        assertFalse(navigation.dismiss(history));
-        assertEquals(AppNavigation.Screen.SETUP, navigation.screen());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "history", history, "navigation", navigation, "score", score);
+        assertFalse("navigation.blocksAutomation() must remain false", navigation.blocksAutomation());
+        assertFalse("navigation.dismiss(score) must remain false", navigation.dismiss(score));
+        assertFalse("navigation.dismiss(history) must remain false", navigation.dismiss(history));
+        assertEquals("navigation.screen() must equal AppNavigation.Screen.SETUP", AppNavigation.Screen.SETUP, navigation.screen());
     }
 
     private static AppNavigation game() {

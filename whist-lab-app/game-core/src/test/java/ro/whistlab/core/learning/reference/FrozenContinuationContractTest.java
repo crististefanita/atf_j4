@@ -8,7 +8,7 @@ import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.testing.CapturedRegression;
 import java.util.*;import java.lang.reflect.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
-public class FrozenContinuationContractTest {
+public class FrozenContinuationContractTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="cards={0},trump={1}")public static Collection<Object[]> cases(){var out=new ArrayList<Object[]>();for(int size=2;size<=8;size++)for(Trump trump:List.of(Trump.NO_TRUMP,Trump.SPADES))out.add(new Object[]{size,trump});return out;}
  final int size;final Trump trump;public FrozenContinuationContractTest(int size,Trump trump){this.size=size;this.trump=trump;}
  @Test public void expertCardContinuationKeepsTheFrozenV6Policy()throws Exception{

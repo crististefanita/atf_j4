@@ -36,8 +36,8 @@ public final class CollectionFixtures {
     }
 
     public static GameSession finishedMatch(int players) {
-        var game = GameSession.newGame(GameConfig.newMatch(players, GameMode.ROMANIAN_WHIST,
-                AiDifficulty.HARD, 31, true, 10));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(players, GameMode.ROMANIAN_WHIST,
+                AiDifficulty.HARD, 31, true, 10)));
         while (true) {
             bid(game);
             while (game.snapshot().phase() == GamePhase.PLAYING) playLegal(game);

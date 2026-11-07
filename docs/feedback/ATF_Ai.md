@@ -11,7 +11,7 @@ Responsabilul politicilor Whist deține aceste criterii de cercetare și calific
 | P1 | Inferența cărților la 2–8 cărți | Ponderarea generală după comportamentul fiecărui adversar rămâne experimentală. Activarea cere model identificat, suport legal, regularizare și progres separat pe loturi noi. Modelul activ de o carte are domeniu separat. |
 | P1 | Interpretarea probabilităților | Eșantionarea fezabilă și o medie de simulare nu certifică uniformitate sau calibrare. Declarați distribuția, bugetul și incertitudinea înainte de a folosi estimarea ca probabilitate. |
 | P1 | Cost pe mediul țintă și progres strategic | [Calificarea JVM](../ai/ATF_CostQualification.md) deține componentele, bugetele și măsurarea pe poziții generate la 2–8 cărți. Latența și consumul pe dispozitiv cer profil Android identificat; progresul strategic cere evaluare separată pe rol, adversar și loc, cu surse înghețate. Niciunul nu se deduce din costul JVM. |
-| P2 | Reproductibilitate între contexte | Scorurile absolute influențează inițializarea estimatorului. O eventuală invarianță la translația comună a scorurilor cere o cerință explicită și o calificare separată. |
+| P2 | Reproductibilitatea independentului între contexte | Hard folosește diferențe de scor în inițializarea estimatorului, conform [contractului deciziei](../ai/ATF_DecisionModel.md#reproductibilitate-și-limite). Jucătorul independent păstrează scorurile absolute în propriul seed; extinderea aceleiași invariante cere componente proprii și verificarea politicii independente. |
 
 ## Coordonarea evaluării și delimitarea mecanismelor
 

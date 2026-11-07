@@ -13,13 +13,13 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;
 import org.junit.Test;
 import ro.whistlab.coach.IndependentPlayer;
 
 /** Reachable public prefixes and universal outcomes, not fixed honor-to-trick values. */
-public class ContextualHonorDiscardTest {
+public class ContextualHonorDiscardTest extends atf.gradle.audit.GradleAuditedTest {
     private static Card card(String text){return LossMiningTest.card(text);}
     private static List<Card> hand(String... cards){return Arrays.stream(cards).map(ContextualHonorDiscardTest::card).toList();}
     private static List<PlayedCard> row(int leader,String... cards){

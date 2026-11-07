@@ -15,10 +15,10 @@ import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
 import ro.whistlab.coach.RolloutPlanner;
 import ro.whistlab.coach.WorldEnumerationProbe;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;import org.junit.Test;import ro.whistlab.coach.IndependentPlayer;
 /** Literal trick expectations, independently scored full hand, and both separate policy implementations. */
-public class RolloutPolicyRegressionTest {
+public class RolloutPolicyRegressionTest extends atf.gradle.audit.GradleAuditedTest {
  public static Card card(String code){int rank=switch(code.substring(0,code.length()-1)){case "A"->14;case "K"->13;case "Q"->12;case "J"->11;default->Integer.parseInt(code.substring(0,code.length()-1));};return new Card(Suit.values()["SHCD".indexOf(code.charAt(code.length()-1))],rank);}
  public static List<Card> hand(String...codes){return Arrays.stream(codes).map(RolloutPolicyRegressionTest::card).toList();}
  public static MonteCarloAi.View view(List<List<Card>> world,int hero,int dealer,Trump trump,List<PlayedCard> trick,int[] goals){

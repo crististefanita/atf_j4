@@ -117,16 +117,3 @@ Verificarea unei copii compilate și inspecția rădăcinii live au identități
 [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) și [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) păstrează coordonare și mai multe modele sau etape interne. Pragul pachetelor rămâne util, însă nu califică singur lizibilitatea metodelor și stabilitatea fațadelor.
 
 Extrageți o singură responsabilitate demonstrată pe increment, cu același contract public, aceleași alegeri și estimări pe observații fixate, conservarea scorului și verificări nominale și de refuz. Păstrați modificările de prezentare și candidații strategici în lucrări separate; o formatare amplă nu dovedește refactorizare semantică.
-
-## Pagina versiunii și politica adreselor tehnice
-
-**P1 · deschis · responsabil: documentația distribuției și guvernanța locală.**
-
-README-ul principal trimite la pagina unei versiuni concrete pentru accesul la Assets. [Filtrul adreselor tehnice](../../atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java) recunoaște adresa latest și APK-ul declarat, însă pagina tag-ului rămâne în proza inspectată și declanșează regula identificatorilor de proiect.
-
-- Reconciliați contractul aprobat al README-ului cu politica: pagina versiunii trebuie fie reprezentată prin ruta admisă, fie recunoscută strict prin repository-ul și tag-ul declarate.
-- Păstrați separat pagina, APK-ul și checksum-ul, cu aceeași versiune și destinații verificabile; clasificarea adresei nu califică transferul prin browser.
-- Păstrați refuzul identificatorilor din eticheta vizibilă, altor repository-uri, altor versiuni și adreselor modificate prin query, fragment sau sufix.
-- Nu ștergeți traseul util și nu extindeți global excepția pentru URL-uri doar ca testul să treacă; schimbarea gate-ului cere criteriu explicit și probe negative proprii.
-
-Reproducerea este în [rezultatul guvernanței](../../../../whist_back/atf-governance/20261106-cross-quality-6e8cd680-audit/maven-governance.log); [revizia](../../../../whist_back/atf-governance/20261106-cross-quality-6e8cd680-audit/REVIEW.md) separă această nealiniere de eșecurile de lansare și de modificările paralele.

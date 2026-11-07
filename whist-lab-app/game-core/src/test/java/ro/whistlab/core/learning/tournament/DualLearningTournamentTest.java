@@ -8,7 +8,7 @@ import static ro.whistlab.core.testing.match.OfflineMatchHarness.Policy.*;
 
 import ro.whistlab.core.testing.match.OfflineMatchHarness;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import com.fasterxml.jackson.databind.*;
 import java.nio.file.*;
 import java.util.*;
@@ -16,18 +16,20 @@ import org.junit.Test;
 
 
 /** Same deal and hero seat; frozen opponents prevent apparent progress by weakening the other side. */
-public class DualLearningTournamentTest {
+public class DualLearningTournamentTest extends atf.gradle.audit.GradleAuditedTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     private record Result(int points,int exact,double wins) { }
     @Test public void bothRolesMustImproveAgainstFrozenOpponentsAndEveryGameIsRetained()throws Exception{
         String corpus=property("whist.corpusDir"),out=property("whist.learningOutput"),candidate=property("whist.learningCandidate");
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "candidate", candidate, "corpus", corpus, "out", out);
         assertTrue("Candidate ID must be a safe immutable file component",candidate.matches("[a-z0-9-]+"));
         String phase=System.getProperty("whist.learningPhase","");if(phase.isBlank())phase="development";
-        assertTrue(phase.equals("development")||phase.equals("heldout"));boolean held=phase.equals("heldout");
+        assertTrue("phase.equals(\"development\") || phase.equals(\"heldout\") must hold", phase.equals("development")||phase.equals("heldout"));boolean held=phase.equals("heldout");
         Files.createDirectories(Path.of(out));var hashes=sourceHashes();Path manifest=Path.of(out,"candidate-source.json");
         if(Files.exists(manifest))assertEquals("Changed source requires a new candidate ID",JSON.valueToTree(hashes),JSON.readTree(Files.readString(manifest)));
         else {assertFalse("Heldout candidate must already have a source receipt",held);write(manifest,hashes);}
-        if(held){var frozen=JSON.readTree(Files.readString(Path.of(out,"candidate-freeze.json")));assertEquals(candidate,frozen.path("candidate").asText());assertEquals("FROZEN_BEFORE_HELDOUT",frozen.path("status").asText());assertEquals(JSON.valueToTree(hashes),frozen.path("sourceHashes"));}
+        if(held){var frozen=JSON.readTree(Files.readString(Path.of(out,"candidate-freeze.json")));assertEquals("frozen.path(\"candidate\").asText() must equal candidate", candidate,frozen.path("candidate").asText());assertEquals("frozen.path(\"status\").asText() must equal \"FROZEN_BEFORE_HELDOUT\"", "FROZEN_BEFORE_HELDOUT",frozen.path("status").asText());assertEquals("frozen.path(\"sourceHashes\") must equal JSON.valueToTree(hashes)", JSON.valueToTree(hashes),frozen.path("sourceHashes"));}
         int first=held?60000:2000,seeds=held?16:8;Path folder=Path.of(corpus,"games",phase);Files.createDirectories(folder);Files.createDirectories(Path.of(out));
         var receipt=new LinkedHashMap<String,Object>();var families=new ArrayList<Map<String,Object>>();receipt.put("candidate",candidate);receipt.put("phase",phase);receipt.put("firstSeed",first);receipt.put("seeds",seeds);receipt.put("families",families);receipt.put("criterion","Each fixed family: win share >= baseline and mean score drop <=2; each role: strict aggregate win or score gain");
         boolean passed=true;int pairs=0;String selected=System.getProperty("whist.learningRole","");
@@ -63,7 +65,7 @@ public class DualLearningTournamentTest {
     }
     private static Result game(Path folder,String phase,String id,long seed,int hero,OfflineMatchHarness.Policy policy,OfflineMatchHarness.Policy opponent)throws Exception{
         Path target=folder.resolve(id+".json");JsonNode data;
-        if(Files.exists(target)){data=JSON.readTree(Files.readString(target));assertEquals(id,data.path("id").asText());assertEquals(phase,data.path("partition").asText());assertEquals(24,data.path("hands").size());}
+        if(Files.exists(target)){data=JSON.readTree(Files.readString(target));assertEquals("data.path(\"id\").asText() must equal id", id,data.path("id").asText());assertEquals("data.path(\"partition\").asText() must equal phase", phase,data.path("partition").asText());assertEquals("data.path(\"hands\").size() must equal 24", 24,data.path("hands").size());}
         else{var record=OfflineMatchHarness.play(id,seed,hero,policy,opponent);record.put("partition",phase);write(target,record);data=JSON.valueToTree(record);}
         int score=data.path("finalScores").get(hero).asInt(),best=Integer.MIN_VALUE,ties=0,exact=0;
         for(var value:data.path("finalScores"))best=Math.max(best,value.asInt());for(var value:data.path("finalScores"))if(value.asInt()==best)ties++;

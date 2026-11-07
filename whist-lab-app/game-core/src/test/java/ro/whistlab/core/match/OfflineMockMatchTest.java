@@ -12,8 +12,8 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static atf.gradle.audit.assertions.GradleAssertions.assertEquals;
+import static atf.gradle.audit.assertions.GradleAssertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
@@ -27,7 +27,7 @@ import java.util.List;
 import org.junit.Test;
 
 /** Offline mock of every bid and public card in a complete Romanian 1-8-1 match. */
-public final class OfflineMockMatchTest {
+public final class OfflineMockMatchTest extends atf.gradle.audit.GradleAuditedTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     static final List<AiDifficulty> DEFAULT_ROSTER = List.of(
             AiDifficulty.NORMAL, AiDifficulty.HARD, AiDifficulty.NORMAL, AiDifficulty.HARD);
@@ -64,8 +64,8 @@ public final class OfflineMockMatchTest {
         if (roster.size() != 4 || roster.stream().anyMatch(p -> p != AiDifficulty.NORMAL && p != AiDifficulty.HARD)) {
             throw new IllegalArgumentException("A mock roster must contain four Normal/Hard players");
         }
-        GameSession game = GameSession.newGame(new GameConfig(4, GameMode.ROMANIAN_WHIST,
-                AiDifficulty.NORMAL, seed, true, 10));
+        GameSession game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4, GameMode.ROMANIAN_WHIST,
+                AiDifficulty.NORMAL, seed, true, 10)));
         List<HandRecord> hands = new ArrayList<>();
         List<String> privateDealCommitments = new ArrayList<>();
         int totalPlays = 0;
@@ -143,9 +143,9 @@ public final class OfflineMockMatchTest {
             game.startNextHand();
         }
         GameSession.Snapshot finished = game.snapshot();
-        assertEquals(24, hands.size());
-        assertEquals(376, totalPlays);
-        assertTrue(hands.stream().allMatch(hand -> hand.bids().size() == 4
+        assertEquals("hands.size() must equal 24", 24, hands.size());
+        assertEquals("totalPlays must equal 376", 376, totalPlays);
+        assertTrue("hands.stream().allMatch((hand)->hand.bids().size() == 4 && hand.plays().size() == hand.size() * 4 && hand.results().size() == 4) must hold", hands.stream().allMatch(hand -> hand.bids().size() == 4
                 && hand.plays().size() == hand.size() * 4 && hand.results().size() == 4));
         List<Integer> finalScores = finished.players().stream().map(GameSession.PlayerSnapshot::totalScore).toList();
         List<CardEvent> hardPlays = hands.stream().flatMap(hand -> hand.plays().stream())
@@ -156,10 +156,10 @@ public final class OfflineMockMatchTest {
                 && play.legalOptionCount() == 1).count();
         int certificateCount = (int) hardPlays.stream().filter(play -> play.decision().contains("public salvage dominance certificate")).count();
         if (seed == 20261104L && roster.equals(DEFAULT_ROSTER)) {
-            assertEquals(17, impossibleCount);
-            assertEquals(6, fallbackCount);
-            assertEquals(11, noChoiceCount);
-            assertTrue(hardPlays.stream().filter(play -> play.decision().contains("publicly unreachable contract"))
+            assertEquals("impossibleCount must equal 17", 17, impossibleCount);
+            assertEquals("fallbackCount must equal 6", 6, fallbackCount);
+            assertEquals("noChoiceCount must equal 11", 11, noChoiceCount);
+            assertTrue("hardPlays.stream().filter((play)->play.decision().contains(\"publicly unreachable contract\")).allMatch(OfflineMockMatchTest::salvageChoiceMatchesCandidateRanking) must hold", hardPlays.stream().filter(play -> play.decision().contains("publicly unreachable contract"))
                     .allMatch(OfflineMockMatchTest::salvageChoiceMatchesCandidateRanking));
         }
         MockMatch result = new MockMatch(3, GameMode.ROMANIAN_WHIST.name(), seed,

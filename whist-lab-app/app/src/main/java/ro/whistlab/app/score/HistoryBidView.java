@@ -28,6 +28,12 @@ final class HistoryBidView extends TextView {
         strike.setColor(BidStrikeGeometry.COLOR);
         strike.setStrokeWidth(BidStrikeGeometry.strokeWidth(density));
         strike.setStrokeCap(Paint.Cap.ROUND);
-        canvas.drawLine(line.left(), line.bottom(), line.right(), line.top(), strike);
+        int saved = canvas.save();
+        try {
+            canvas.translate(getScrollX(), getScrollY());
+            canvas.drawLine(line.left(), line.bottom(), line.right(), line.top(), strike);
+        } finally {
+            canvas.restoreToCount(saved);
+        }
     }
 }

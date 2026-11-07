@@ -5,9 +5,9 @@ import ro.whistlab.core.ai.engine.MonteCarloAi;
 import ro.whistlab.core.learning.mining.LossMiningTest;
 import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
-import static org.junit.Assert.*;import java.util.*;import com.fasterxml.jackson.databind.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
+import static atf.gradle.audit.assertions.GradleAssertions.*;import java.util.*;import com.fasterxml.jackson.databind.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
 @RunWith(Parameterized.class)
-public class LostGameContractRegressionTest {
+public class LostGameContractRegressionTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="{0}") public static Collection<Object[]> cases(){var out=new ArrayList<Object[]>();for(int i=1;i<=4;i++)out.add(new Object[]{String.format("mistake-%03d",i)});return out;}
  private final String id;public LostGameContractRegressionTest(String id){this.id=id;}
 

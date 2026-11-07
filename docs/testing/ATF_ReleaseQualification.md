@@ -26,7 +26,7 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 | Pas | Selecție și rezultat necesar |
 |---|---|
 | 1. Diferență | Identificați baza, fișierele modificate/adăugate/șterse și contractele afectate. Alegeți versiunea după comportament, apoi fixați inventarul complet al surselor și bibliotecilor copiate. |
-| 2. Componente | Executați întâi oracolele schimbate și refuzurile relevante. Istoricul are [suită auditată](ATF_DisplayComponents.md#raportarea-componentelor-istoricului); aplicația Gradle și restul componentelor își păstrează rezultatele native până la migrarea capturii comparațiilor. |
+| 2. Componente | Executați întâi oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. JUnit-ul temporar se confruntă cu HTML-ul selecției înaintea eliminării copiilor finale. |
 | 3. Publicare | Confruntați identitățile JUnit–HTML individual și prin suită, apoi Extent/fallback, cauza originală, abort-ul și lipsa capturii. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
 | 4. HTML | Aplicați [revizia interactivă minimă](../reporting/ATF_Audit.md#revizia-interactivă-minimă) pe HTML-ul identificat prin hash; păstrați proprietarii, controalele și limitele probei. |
 | 5. APK | Construiți din snapshot în TMP; verificați versiunea, SDK-urile, bytes, SHA-256, CRC, semnătura și alinierea. Debug și Release au identități distincte. |
@@ -65,6 +65,19 @@ Prima parte oferă raportul principal și starea calificării. Detaliile rămân
 - **Retratare:** la corecția documentelor, păstrați sursa rezultatelor și descrieți selecția reverificată; o compoziție de rezultate trecute nu devine o singură rulare integrală nouă.
 
 ## Comenzi și limite
+
+### Acceptanța APK-ului semnat
+
+Smoke-ul [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) verifică pachetul instalat, pagina inițială și configurarea fără pornirea altei partide. [Acceptanța licitației](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) are un domeniu separat: un prefix real de Whist românesc, recomandare, alegere manuală, dialog și contract restaurat.
+
+| Selecție | Precondiție suplimentară | Criteriu de închidere |
+|---|---|---|
+| Home și configurare | APK-ul semnat instalat și hash confruntat | Controale vizibile, configurare accesibilă și revenire la pagina inițială. |
+| Interfață comună | Backup verificat înaintea editării profilului și același APK identificat | Limbă RO/EN, anulare fără salvare, nume păstrat între limbi și preferințe restabilite după relansare. |
+| Licitație și restaurare | Copie verificată a datelor, rezervare exclusivă și restaurare obligatorie | Recomandarea legală rămâne neconfirmată; alegerea manuală supraviețuiește dialogului, iar contractul confirmat și scorurile publice se păstrează după oprirea procesului. |
+| Istoric și afișaj | Profil și intrări explicite, cu aceeași identitate a binarului verificat | Coloane, marcaje și accesul la conținut conform diferenței de cod; fixture-urile Debug se disting de execuția APK-ului Release. |
+
+Preflight-ul înregistrează identitatea și controlul datelor înaintea oricărei schimbări. Lipsa transportului ADB, a rezervării sau a copiei nu este o omitere de test trecută: pasul rămâne `PENDING` până la o execuție reală. Refuzul browserului de a deschide un raport local rămâne limită de revizie interactivă; auditul static al HTML-ului nu îl înlocuiește.
 
 Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Maven privat:
 

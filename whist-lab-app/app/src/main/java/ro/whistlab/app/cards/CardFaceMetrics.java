@@ -7,7 +7,7 @@ public record CardFaceMetrics(int heightDp) {
     }
 
     public int widthDp() {
-        return Math.max(1, Math.round(heightDp * 5f / 7));
+        return ro.cardtable.ui.cards.CardFaceMetrics.atHeight(heightDp).widthDp();
     }
 
     public static CardFaceMetrics atHeight(int heightDp) {

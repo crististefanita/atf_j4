@@ -11,10 +11,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /** Strict, read-only primitives shared by release checks; paths never escape the declared owner. */
-final class ReleaseFiles {
+public final class ReleaseFiles {
     private static final ObjectMapper JSON = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
-    static void require(boolean valid, String code, Object context) throws IOException {
+    public static void require(boolean valid, String code, Object context) throws IOException {
         if (!valid) throw new IOException("RELEASE-INTEGRITY-" + code + ": " + context);
     }
     static JsonNode json(Path file) throws IOException {
@@ -23,12 +23,12 @@ final class ReleaseFiles {
         }
         catch (IOException invalid) { throw new IOException("RELEASE-INTEGRITY-JSON: " + file, invalid); }
     }
-    static String text(JsonNode node, String key) throws IOException {
+    public static String text(JsonNode node, String key) throws IOException {
         JsonNode value = node.path(key);
         require(value.isTextual() && !value.textValue().isBlank(), "FIELD", key);
         return value.textValue();
     }
-    static long integer(JsonNode node, String key) throws IOException {
+    public static long integer(JsonNode node, String key) throws IOException {
         JsonNode value = node.path(key);
         require(value.isIntegralNumber() && value.canConvertToLong() && value.longValue() >= 0, "NUMBER", key);
         return value.longValue();
@@ -40,7 +40,7 @@ final class ReleaseFiles {
         try { return atf.tests.distribution.ReleasePaths.relative(value); }
         catch (IOException invalid) { throw new IOException("RELEASE-INTEGRITY-" + invalid.getMessage(), invalid); }
     }
-    static Path inside(Path owner, String value) throws IOException {
+    public static Path inside(Path owner, String value) throws IOException {
         Path file = owner.resolve(relative(value)).normalize();
         require(Files.isRegularFile(file) && !Files.isSymbolicLink(file)
                 && file.toRealPath().startsWith(owner.toRealPath()), "FILE", file);

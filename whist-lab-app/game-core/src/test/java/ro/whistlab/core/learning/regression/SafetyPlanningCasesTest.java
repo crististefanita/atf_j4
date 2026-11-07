@@ -12,7 +12,7 @@ import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
 import java.util.*;import org.junit.Test;
 /** Cover and public-auction cases; expected legality/winners do not call the engine. */
-public class SafetyPlanningCasesTest {
+public class SafetyPlanningCasesTest extends atf.gradle.audit.GradleAuditedTest {
  private static Card c(String s){return RolloutPolicyRegressionTest.card(s);}
  @Test public void smallCoversKeepTheKingUntilItCanDisappearUnderTheAce()throws Exception{
   var source=RolloutPolicyRegressionTest.fixture("low-card-covers");var world=RolloutPolicyRegressionTest.copy(RolloutPolicyRegressionTest.fixtureWorld(source.path("world")));int[] targets={3,0,0,0};

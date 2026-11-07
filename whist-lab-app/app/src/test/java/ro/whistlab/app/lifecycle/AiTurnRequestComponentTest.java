@@ -1,6 +1,6 @@
 package ro.whistlab.app.lifecycle;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import java.util.List;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-public class AiTurnRequestComponentTest {
+public class AiTurnRequestComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void bothLevelsComputeFromSnapshotAndApplyTheSameBidOnce() {
         for (AiDifficulty level : AiDifficulty.values()) for (int size = 2; size <= 8; size++) {
             var game = deal(size, level);
@@ -23,11 +23,13 @@ public class AiTurnRequestComponentTest {
             var request = new AiTurnRequest(game);
             var expected = AiPolicy.chooseBid(state, state.biddingSeat(), level);
             var decision = request.evaluate();
-            assertEquals(state, game.snapshot());
-            assertEquals(new AiTurnRequest.Bid(state.biddingSeat(), expected), decision);
-            assertTrue(request.applyTo(game, decision));
-            assertFalse(request.applyTo(game, decision));
-            assertEquals(1, game.snapshot().bidsSubmitted());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "decision", decision, "expected", expected, "game", game, "level", level, "request", request, "size", size, "state", state);
+            assertEquals("game.snapshot() must equal state", state, game.snapshot());
+            assertEquals("decision must equal new AiTurnRequest.Bid(state.biddingSeat(), expected)", new AiTurnRequest.Bid(state.biddingSeat(), expected), decision);
+            assertTrue("request.applyTo(game, decision) must hold", request.applyTo(game, decision));
+            assertFalse("request.applyTo(game, decision) must remain false", request.applyTo(game, decision));
+            assertEquals("game.snapshot().bidsSubmitted() must equal 1", 1, game.snapshot().bidsSubmitted());
         }
     }
 
@@ -40,25 +42,29 @@ public class AiTurnRequestComponentTest {
                         state.bidsSubmitted() == 3).get(0));
             }
             var state = game.snapshot();
-            assertNotEquals(0, state.currentSeat());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "level", level, "state", state);
+            assertNotEquals("state.currentSeat() must differ from 0", 0, state.currentSeat());
             var request = new AiTurnRequest(game);
             var decision = request.evaluate();
-            assertEquals(state, game.snapshot());
+            assertEquals("game.snapshot() must equal state", state, game.snapshot());
             var expected = AiPolicy.chooseCard(state, state.currentSeat(), level);
-            assertEquals(new AiTurnRequest.Play(state.currentSeat(), expected), decision);
-            assertTrue(request.applyTo(game, decision));
-            assertEquals(1, game.snapshot().history().size());
-            assertFalse(request.applyTo(game, decision));
+            assertEquals("decision must equal new AiTurnRequest.Play(state.currentSeat(), expected)", new AiTurnRequest.Play(state.currentSeat(), expected), decision);
+            assertTrue("request.applyTo(game, decision) must hold", request.applyTo(game, decision));
+            assertEquals("game.snapshot().history().size() must equal 1", 1, game.snapshot().history().size());
+            assertFalse("request.applyTo(game, decision) must remain false", request.applyTo(game, decision));
         }
     }
 
     @Test public void anEqualSnapshotFromAnotherSessionCannotReceiveTheResult() {
         var game = deal(2, AiDifficulty.NORMAL);
         var replacement = deal(2, AiDifficulty.NORMAL);
-        assertEquals(game.snapshot(), replacement.snapshot());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "replacement", replacement);
+        assertEquals("replacement.snapshot() must equal game.snapshot()", game.snapshot(), replacement.snapshot());
         var request = new AiTurnRequest(game);
-        assertFalse(request.applyTo(replacement, request.evaluate()));
-        assertEquals(0, replacement.snapshot().bidsSubmitted());
+        assertFalse("request.applyTo(replacement, request.evaluate()) must remain false", request.applyTo(replacement, request.evaluate()));
+        assertEquals("replacement.snapshot().bidsSubmitted() must equal 0", 0, replacement.snapshot().bidsSubmitted());
     }
 
     @Test public void changedStateRejectsLateResultEvenWhenTheSessionIdentityMatches() {
@@ -67,24 +73,30 @@ public class AiTurnRequestComponentTest {
         var decision = request.evaluate();
         game.submitBid(game.snapshot().biddingSeat(), 0);
         var newer = game.snapshot();
-        assertFalse(request.applyTo(game, decision));
-        assertEquals(newer, game.snapshot());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "decision", decision, "game", game, "newer", newer, "request", request);
+        assertFalse("request.applyTo(game, decision) must remain false", request.applyTo(game, decision));
+        assertEquals("game.snapshot() must equal newer", newer, game.snapshot());
     }
 
     @Test public void wrongActorOrDecisionKindIsRefusedBeforeMutation() {
         var game = deal(2, AiDifficulty.NORMAL);
         var state = game.snapshot();
         var request = new AiTurnRequest(game);
-        assertThrows(IllegalArgumentException.class, () -> request.applyTo(game, new AiTurnRequest.Bid(2, 0)));
-        assertThrows(IllegalArgumentException.class, () -> request.applyTo(game,
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "request", request, "state", state);
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> request.applyTo(game, new AiTurnRequest.Bid(2, 0)));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> request.applyTo(game,
                 new AiTurnRequest.Play(1, new Card(Suit.SPADES, 14))));
-        assertEquals(state, game.snapshot());
+        assertEquals("game.snapshot() must equal state", state, game.snapshot());
     }
 
     @Test public void humanTurnCannotBeScheduledAsAutomatedWork() {
         var game = deal(2, AiDifficulty.NORMAL);
         while (game.snapshot().biddingSeat() != 0) game.submitBid(game.snapshot().biddingSeat(), 0);
-        assertThrows(IllegalArgumentException.class, () -> new AiTurnRequest(game));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game);
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> new AiTurnRequest(game));
     }
 
     private static GameSession deal(int size, AiDifficulty level) {

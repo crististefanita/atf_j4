@@ -24,6 +24,14 @@ foreach ($module in @($policy.mavenModules) + @($policy.additionalSourceRoots | 
     $segments = $relative.Split('/')
     for ($i = 1; $i -le $segments.Length; $i++) { $null = $boundaries.Add(($segments[0..($i-1)] -join '/')) }
 }
+foreach ($buildRoot in $policy.buildRoots) {
+    $relative = Get-RelativeInputPath $buildRoot
+    if (-not (Test-Path -LiteralPath (Join-Path $root "$relative/settings.gradle")) -or
+        -not (Test-Path -LiteralPath (Join-Path $root "$relative/build.gradle"))) {
+        throw "Rădăcină Gradle fără settings și build explicite: $relative"
+    }
+    $null = $boundaries.Add($relative)
+}
 foreach ($source in $policy.additionalSourceRoots) { $protected.Add((Get-RelativeInputPath $source.path)) }
 foreach ($module in $policy.mavenModules) {
     [xml]$pom = Get-Content -LiteralPath (Join-Path $root "$module/pom.xml") -Raw

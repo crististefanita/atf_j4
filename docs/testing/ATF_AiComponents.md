@@ -31,6 +31,7 @@ Martorul poate conține distribuția completă pentru a demonstra că situația 
 | Context | Schimbarea controlată a necesarului sau oportunităților poate schimba alegerea, cu celelalte intrări fixate. |
 | Memorie | Cărțile publice și lipsurile demonstrate restrâng corect lumile fezabile. |
 | Scor | Punctele, seriile și totalurile se calculează independent de selectorul acțiunii. |
+| Estimare incertă | Se compară observații care diferă printr-un singur factor: atu, carte întoarsă, licitație publică ori serie. Pentru Hard, translația comună a scorurilor păstrează întregul vector al estimării, inclusiv bugetul consumat. |
 | Certificat | Enumerarea este completă, toate continuările relevante sunt acoperite, iar bugetul epuizat păstrează fallback-ul. |
 | Comparație | Acțiunile candidate folosesc aceleași lumi și bugete; politicile sunt comparate pe distribuții și locuri controlate. |
 
@@ -58,6 +59,7 @@ Un parcurs Android rămâne E2E numai când execută interacțiuni noi în aplic
 | [CertifiedContractRegressionTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java) | Certificat, lipsa garanției și fallback. |
 | [HardSalvageObjectiveTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | Ordinea obiectivelor când exactul este imposibil public. |
 | [IndependentPlayerModelTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java) | Fezabilitate și model independent. |
+| [HumanUncertainBidComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java) | Recomandarea Hard pe observație publică, atu, licitații adverse, translația scorului și formule independente pentru seriile configurabile. |
 
 ## Citirea observațiilor arhivate
 

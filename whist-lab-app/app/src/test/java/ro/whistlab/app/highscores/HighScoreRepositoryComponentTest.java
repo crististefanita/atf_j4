@@ -1,6 +1,6 @@
 package ro.whistlab.app.highscores;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-public class HighScoreRepositoryComponentTest {
+public class HighScoreRepositoryComponentTest extends atf.gradle.audit.GradleAuditedTest {
     private static final HighScores.Profile PROFILE = new HighScores.Profile(GameMode.ROMANIAN_WHIST, 4, AiDifficulty.HARD, true, 10, 10);
     private static final class Memory implements HighScoreRepository.Storage {
         String json; int writes; boolean fail;
@@ -27,15 +27,17 @@ public class HighScoreRepositoryComponentTest {
     @Test public void everyGameTypeStartsWithTenMarkedSamplesAndReloadDoesNotReseed() throws Exception {
         var disk = new Memory(); var repository = new HighScoreRepository(disk, new Random(7));
         var first = repository.boards();
-        assertEquals(GameMode.values().length, first.size());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "disk", disk, "first", first, "repository", repository);
+        assertEquals("first.size() must equal GameMode.values().length", GameMode.values().length, first.size());
         for (var board : first) {
-            assertEquals(10, board.entries().size());
-            assertTrue(board.entries().stream().allMatch(HighScores.Entry::sample));
-            assertTrue(board.entries().stream().map(HighScores.Entry::score).distinct().count() > 1);
+            assertEquals("board.entries().size() must equal 10", 10, board.entries().size());
+            assertTrue("board.entries().stream().allMatch(HighScores.Entry::sample) must hold", board.entries().stream().allMatch(HighScores.Entry::sample));
+            assertTrue("board.entries().stream().map(HighScores.Entry::score).distinct().count() > 1 must hold", board.entries().stream().map(HighScores.Entry::score).distinct().count() > 1);
         }
         String bytes = disk.json; int writes = disk.writes;
-        assertEquals(first, new HighScoreRepository(disk, new Random(999)).boards());
-        assertEquals(bytes, disk.json); assertEquals(writes, disk.writes);
+        assertEquals("new HighScoreRepository(disk, new Random(999)).boards() must equal first", first, new HighScoreRepository(disk, new Random(999)).boards());
+        assertEquals("disk.json must equal bytes", bytes, disk.json); assertEquals("disk.writes must equal writes", writes, disk.writes);
     }
 
     @Test public void rankingGrowsToTwentyThenRetainsTheBestScoresIncludingAiAndNegativeScores() {
@@ -43,72 +45,80 @@ public class HighScoreRepositoryComponentTest {
         for (int game = 0; game < 8; game++) {
             var entries = new ArrayList<HighScores.Entry>();
             for (int seat = 0; seat < 4; seat++) entries.add(new HighScores.Entry("Ana", game * 100 + seat, seat != 0, false, "game-" + game, seat, game));
-            assertTrue(data.record(PROFILE, "game-" + game, entries, new Random(2)));
-            assertEquals(Math.min(10 + 4 * (game + 1), 20), data.boards.get(PROFILE.key()).entries().size());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "data", data, "entries", entries, "game", game);
+            assertTrue("data.record(PROFILE, \"game-\" + game, entries, new Random(2)) must hold", data.record(PROFILE, "game-" + game, entries, new Random(2)));
+            assertEquals("data.boards.get(PROFILE.key()).entries().size() must equal Math.min(10 + 4 * (game + 1), 20)", Math.min(10 + 4 * (game + 1), 20), data.boards.get(PROFILE.key()).entries().size());
         }
         var top = data.boards.get(PROFILE.key()).entries();
-        assertEquals(703, top.get(0).score()); assertEquals(300, top.get(19).score());
-        assertTrue(top.stream().anyMatch(HighScores.Entry::ai));
-        assertTrue(top.stream().anyMatch(entry -> !entry.ai()));
+        assertEquals("top.get(0).score() must equal 703", 703, top.get(0).score()); assertEquals("top.get(19).score() must equal 300", 300, top.get(19).score());
+        assertTrue("top.stream().anyMatch(HighScores.Entry::ai) must hold", top.stream().anyMatch(HighScores.Entry::ai));
+        assertTrue("top.stream().anyMatch((entry)->!entry.ai()) must hold", top.stream().anyMatch(entry -> !entry.ai()));
         var empty = new HighScores();
         empty.record(PROFILE, "negative", List.of(new HighScores.Entry("Ana", -25, false, false, "negative", 0, 0)), new Random(1));
-        assertTrue(empty.boards.get(PROFILE.key()).entries().stream().anyMatch(entry -> entry.score() == -25));
+        assertTrue("empty.boards.get(PROFILE.key()).entries().stream().anyMatch((entry)->entry.score() == -25) must hold", empty.boards.get(PROFILE.key()).entries().stream().anyMatch(entry -> entry.score() == -25));
     }
 
     @Test public void onlyCompletedMatchesAreCommittedAndEachSeatIsRecordedExactlyOnceAcrossReload() throws Exception {
         var disk = new Memory(); var repository = new HighScoreRepository(disk, new Random(3));
-        var game = GameSession.newGame(GameConfig.newMatch(3, GameMode.LONG_ROMANIAN, AiDifficulty.NORMAL, 17, true, 10), "Cristi");
-        assertFalse(repository.record(game, 1)); assertNull(disk.json);
-        finishHand(game); assertFalse(repository.record(game, 1)); assertNull(disk.json);
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(3, GameMode.LONG_ROMANIAN, AiDifficulty.NORMAL, 17, true, 10)), atf.gradle.audit.GradleInputs.created("Human name before creation", "Cristi"));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "disk", disk, "game", game, "repository", repository);
+        assertFalse("repository.record(game, 1) must remain false", repository.record(game, 1)); assertNull("disk.json remains absent", disk.json);
+        finishHand(game); assertFalse("repository.record(game, 1) must remain false", repository.record(game, 1)); assertNull("disk.json remains absent", disk.json);
         while (!game.snapshot().finalHand() || game.snapshot().phase() != GamePhase.SCORE) {
             if (game.snapshot().phase() == GamePhase.SCORE) game.startNextHand();
             finishHand(game);
         }
-        assertTrue(repository.record(game, 123));
+        assertTrue("repository.record(game, 123) must hold", repository.record(game, 123));
         var board = repository.board(HighScores.Profile.from(game.config()));
         var actual = board.entries().stream().filter(entry -> !entry.sample()).toList();
-        assertEquals(3, actual.size());
+        assertEquals("actual.size() must equal 3", 3, actual.size());
         for (var player : game.snapshot().players()) {
             var entry = actual.stream().filter(value -> value.seat() == player.seat()).findFirst().orElseThrow();
-            assertEquals(player.totalScore(), entry.score()); assertEquals(player.name(), entry.name());
-            assertEquals(!player.human(), entry.ai());
+            assertEquals("entry.score() must equal player.totalScore()", player.totalScore(), entry.score()); assertEquals("entry.name() must equal player.name()", player.name(), entry.name());
+            assertEquals("entry.ai() must equal !player.human()", !player.human(), entry.ai());
         }
         int writes = disk.writes;
         game.renameHuman("AltNume");
-        assertFalse(new HighScoreRepository(disk, new Random(4)).record(GameSession.restoreComplete(game.saveState()), 456));
-        assertEquals(writes, disk.writes); assertEquals(board, repository.board(HighScores.Profile.from(game.config())));
+        assertFalse("new HighScoreRepository(disk, new Random(4)).record(GameSession.restoreComplete(game.saveState()), 456) must remain false", new HighScoreRepository(disk, new Random(4)).record(GameSession.restoreComplete(game.saveState()), 456));
+        assertEquals("disk.writes must equal writes", writes, disk.writes); assertEquals("repository.board(HighScores.Profile.from(game.config())) must equal board", board, repository.board(HighScores.Profile.from(game.config())));
         var legacyJson = GameSessionStore.encode(game.saveState()).put("version",1);
         legacyJson.remove("history");
         var legacy = GameSessionStore.fromJson(legacyJson.toString());
-        assertTrue(legacy.saveState().history().size() < legacy.snapshot().handSize() * legacy.config().playerCount());
-        assertTrue(repository.record("legacy-match", legacy, 500));
+        assertTrue("legacy.saveState().history().size() < legacy.snapshot().handSize() * legacy.config().playerCount() must hold", legacy.saveState().history().size() < legacy.snapshot().handSize() * legacy.config().playerCount());
+        assertTrue("repository.record(\"legacy-match\", legacy, 500) must hold", repository.record("legacy-match", legacy, 500));
     }
 
     @Test public void failedCommitCanBeRetriedAndCorruptionIsNotOverwritten() throws Exception {
         var disk = new Memory(); var repository = new HighScoreRepository(disk, new Random(3));
         repository.boards(); String original = disk.json;
         disk.fail = true;
-        assertThrows(IOException.class, () -> repository.board(PROFILE));
-        assertEquals(original, disk.json);
-        disk.fail = false; assertEquals(10, repository.board(PROFILE).entries().size());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "disk", disk, "original", original, "repository", repository);
+        assertThrows("The operation rejects its input with IOException.class", IOException.class, () -> repository.board(PROFILE));
+        assertEquals("disk.json must equal original", original, disk.json);
+        disk.fail = false; assertEquals("repository.board(PROFILE).entries().size() must equal 10", 10, repository.board(PROFILE).entries().size());
         disk.json = "{broken"; int writes = disk.writes;
-        assertThrows(IOException.class, repository::boards);
-        assertEquals("{broken", disk.json); assertEquals(writes, disk.writes);
+        assertThrows("The operation rejects its input with IOException.class", IOException.class, repository::boards);
+        assertEquals("disk.json must equal \"{broken\"", "{broken", disk.json); assertEquals("disk.writes must equal writes", writes, disk.writes);
     }
 
     @Test public void codecRejectsUnsupportedOrDuplicateDataAndSeparatesRuleProfiles() throws Exception {
         var data = HighScores.initial(new Random(2));
         String encoded = HighScoreCodec.encode(data);
-        assertEquals(encoded, HighScoreCodec.encode(HighScoreCodec.decode(encoded)));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "data", data, "encoded", encoded);
+        assertEquals("HighScoreCodec.encode(HighScoreCodec.decode(encoded)) must equal encoded", encoded, HighScoreCodec.encode(HighScoreCodec.decode(encoded)));
         var future = new JSONObject(encoded).put("schemaVersion", 99);
-        assertThrows(IOException.class, () -> HighScoreCodec.decode(future.toString()));
+        assertThrows("The operation rejects its input with IOException.class", IOException.class, () -> HighScoreCodec.decode(future.toString()));
         var duplicate = new JSONObject(encoded);
         duplicate.getJSONArray("profiles").put(duplicate.getJSONArray("profiles").getJSONObject(0));
-        assertThrows(IOException.class, () -> HighScoreCodec.decode(duplicate.toString()));
-        assertNotEquals(PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 3, PROFILE.difficulty(), true, 10, 10).key());
-        assertNotEquals(PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 4, AiDifficulty.NORMAL, true, 10, 10).key());
-        assertNotEquals(PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 4, PROFILE.difficulty(), true, 5, 5).key());
-        assertNotEquals(PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 4, PROFILE.difficulty(), true, 10, 5).key());
+        assertThrows("The operation rejects its input with IOException.class", IOException.class, () -> HighScoreCodec.decode(duplicate.toString()));
+        assertNotEquals("new HighScores.Profile(PROFILE.mode(), 3, PROFILE.difficulty(), true, 10, 10).key() must differ from PROFILE.key()", PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 3, PROFILE.difficulty(), true, 10, 10).key());
+        assertNotEquals("new HighScores.Profile(PROFILE.mode(), 4, AiDifficulty.NORMAL, true, 10, 10).key() must differ from PROFILE.key()", PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 4, AiDifficulty.NORMAL, true, 10, 10).key());
+        assertNotEquals("new HighScores.Profile(PROFILE.mode(), 4, PROFILE.difficulty(), true, 5, 5).key() must differ from PROFILE.key()", PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 4, PROFILE.difficulty(), true, 5, 5).key());
+        assertNotEquals("new HighScores.Profile(PROFILE.mode(), 4, PROFILE.difficulty(), true, 10, 5).key() must differ from PROFILE.key()", PROFILE.key(), new HighScores.Profile(PROFILE.mode(), 4, PROFILE.difficulty(), true, 10, 5).key());
     }
 
     @Test public void theLocalJsonFileCanBeReopenedWithoutAndroid() throws Exception {
@@ -119,26 +129,30 @@ public class HighScoreRepositoryComponentTest {
         };
         try {
             var before = new HighScoreRepository(disk, new Random(4)).boards();
-            assertTrue(Files.size(file) > 0);
-            assertEquals(before, new HighScoreRepository(disk, new Random(5)).boards());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "disk", disk, "file", file, "folder", folder);
+            assertTrue("Files.size(file) > 0 must hold", Files.size(file) > 0);
+            assertEquals("new HighScoreRepository(disk, new Random(5)).boards() must equal before", before, new HighScoreRepository(disk, new Random(5)).boards());
         } finally { Files.deleteIfExists(file); Files.deleteIfExists(folder); }
     }
 
     @Test public void failedFinalMatchWriteIsRetryableAndTheMatchIsNotMarkedProcessedPrematurely() throws Exception {
         var disk = new Memory(); var repository = new HighScoreRepository(disk, new Random(3));
-        var game = GameSession.newGame(GameConfig.newMatch(3, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 19, true, 5));
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(3, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 19, true, 5)));
         do { finishHand(game); if (game.snapshot().finalHand()) break; game.startNextHand(); } while (true);
         var profile = HighScores.Profile.from(game.config());
         repository.board(profile);
         String before = disk.json; disk.fail = true;
-        assertThrows(IOException.class, () -> repository.record("first-match", game, 1));
-        assertEquals(before, disk.json);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "disk", disk, "game", game, "profile", profile, "repository", repository);
+        assertThrows("The operation rejects its input with IOException.class", IOException.class, () -> repository.record("first-match", game, 1));
+        assertEquals("disk.json must equal before", before, disk.json);
         disk.fail = false;
-        assertTrue(repository.record("first-match", game, 1));
-        assertFalse(repository.record("first-match", game, 2));
-        assertEquals(3, repository.board(profile).entries().stream().filter(entry -> !entry.sample()).count());
-        assertTrue(repository.record("another-match-with-the-same-deal", game, 3));
-        assertEquals(6, repository.board(profile).entries().stream().filter(entry -> !entry.sample()).count());
+        assertTrue("repository.record(\"first-match\", game, 1) must hold", repository.record("first-match", game, 1));
+        assertFalse("repository.record(\"first-match\", game, 2) must remain false", repository.record("first-match", game, 2));
+        assertEquals("repository.board(profile).entries().stream().filter((entry)->!entry.sample()).count() must equal 3", 3, repository.board(profile).entries().stream().filter(entry -> !entry.sample()).count());
+        assertTrue("repository.record(\"another-match-with-the-same-deal\", game, 3) must hold", repository.record("another-match-with-the-same-deal", game, 3));
+        assertEquals("repository.board(profile).entries().stream().filter((entry)->!entry.sample()).count() must equal 6", 6, repository.board(profile).entries().stream().filter(entry -> !entry.sample()).count());
     }
 
     private static void finishHand(GameSession game) {

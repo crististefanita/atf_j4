@@ -3,8 +3,8 @@ package ro.whistlab.core.match;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.rules.GameMode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static atf.gradle.audit.assertions.GradleAssertions.assertEquals;
+import static atf.gradle.audit.assertions.GradleAssertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
@@ -15,7 +15,7 @@ import java.util.List;
 import org.junit.Test;
 
 /** Replays one fixed deal sequence with each seat acting as the sole Hard player. */
-public final class OfflinePerspectiveMatchTest {
+public final class OfflinePerspectiveMatchTest extends atf.gradle.audit.GradleAuditedTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     record Perspective(String name, String roster, int hardPoints, int normalPoints,
             int hardExactContracts, int normalExactContracts, OfflineMockMatchTest.MockMatch match) { }
@@ -43,12 +43,14 @@ public final class OfflinePerspectiveMatchTest {
             List<AiDifficulty> roster = rosters.get(index);
             OfflineMockMatchTest.MatchRun run = OfflineMockMatchTest.playMatch(seed, roster);
             OfflineMockMatchTest.MockMatch match = run.match();
-            assertTrue(match.complete());
-            assertEquals(24, run.privateDealCommitments().size());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "compared", compared, "index", index, "match", match, "referenceCommitments", referenceCommitments, "results", results, "roster", roster, "rosters", rosters, "run", run, "sameDeals", sameDeals, "seed", seed);
+            assertTrue("match.complete() must hold", match.complete());
+            assertEquals("run.privateDealCommitments().size() must equal 24", 24, run.privateDealCommitments().size());
             if (referenceCommitments == null) {
                 referenceCommitments = run.privateDealCommitments();
             } else {
-                assertEquals(referenceCommitments, run.privateDealCommitments());
+                assertEquals("run.privateDealCommitments() must equal referenceCommitments", referenceCommitments, run.privateDealCommitments());
                 compared += run.privateDealCommitments().size();
             }
             sameDeals &= referenceCommitments.equals(run.privateDealCommitments());
@@ -73,8 +75,8 @@ public final class OfflinePerspectiveMatchTest {
             results.add(new Perspective(name, match.policiesBySeat(), hardPoints, normalPoints,
                     hardExact, normalExact, match));
         }
-        assertTrue(sameDeals);
-        assertEquals(6, results.size());
+        assertTrue("sameDeals must hold", sameDeals);
+        assertEquals("results.size() must equal 6", 6, results.size());
         PerspectiveMatrix matrix = new PerspectiveMatrix(1, GameMode.ROMANIAN_WHIST.name(), seed,
                 results.size(), 24, compared, sameDeals, List.copyOf(results), false);
         writeIfRequested(matrix);

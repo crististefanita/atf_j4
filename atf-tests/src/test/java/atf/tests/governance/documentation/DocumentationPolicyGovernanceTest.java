@@ -60,7 +60,8 @@ class DocumentationPolicyGovernanceTest {
         var result = new StringBuffer();
         while (links.find()) {
             String replacement = (links.group(2).equals(repository + "/releases/latest")
-                    || published != null && (links.group(2).equals(published.publicUrl())
+                    || published != null && (links.group(2).equals(published.releasePageUrl())
+                            || links.group(2).equals(published.publicUrl())
                             || links.group(2).equals(published.publicUrl() + ".sha256")))
                     ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
             links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
@@ -98,6 +99,26 @@ class DocumentationPolicyGovernanceTest {
             AuditedAssertions.assertEquals(original, publicReleaseProse(original, repository, published), "Only the declared canonical asset URI is technical data");
         AuditedAssertions.assertThrows(IllegalArgumentException.class,
                 () -> publicReleaseProse("Control J4", "https://github.com/foreign/atf_j4", published));
+    }
+
+
+    @Test void onlyTheDeclaredReleasePageIsTechnicalDataAlongsideItsAsset() {
+        var published = new atf.tests.distribution.ApkDownloadTarget("example/atf_j4", "1.2.0", 42, "a".repeat(64));
+        String repository = "https://github.com/" + published.repository();
+        String page = repository + "/releases/tag/v1.2.0";
+        AuditedAssertions.assertEquals("[Versiune](<resursă-publică>)",
+                publicReleaseProse("[Versiune](" + page + ")", repository, published));
+        AuditedAssertions.assertEquals("Context J4. [atf_j4](<resursă-publică>)",
+                publicReleaseProse("Context J4. [atf_j4](" + page + ")", repository, published));
+        AuditedAssertions.assertEquals("[Versiune](" + page + ")",
+                publicReleaseProse("[Versiune](" + page + ")", repository), "An undeclared version page has no exemption");
+        for (String unchanged : List.of(page, "![Versiune](" + page + ")",
+                "[Versiune](" + page + "?download=1)", "[Versiune](" + page + "#Assets)",
+                "[Versiune](" + page + "/)", "[Versiune](" + page + ".sha256)",
+                "[Versiune](" + page.replace("1.2.0", "1.1.0") + ")",
+                "[Versiune](" + page.replace("/tag/v", "/tag/") + ")",
+                "[Versiune](" + page.replace("example/", "foreign/") + ")"))
+            AuditedAssertions.assertEquals(unchanged, publicReleaseProse(unchanged, repository, published), unchanged);
     }
 
     /** Only the named library guides may route maintenance to the source owner, in their footer. */

@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+group = 'ro.cardtable'
+version = '0.1.1'
+
+android {
+    namespace 'ro.cardtable.ui'
+    compileSdk 36
+    defaultConfig { minSdk 24 }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    publishing { singleVariant('release') { withSourcesJar() } }
+    testOptions.unitTests.all { systemProperty 'cardui.sourceRoot', projectDir.absolutePath }
+}
+dependencies { testImplementation 'junit:junit:4.13.2' }
+publishing {
+    repositories {
+        maven {
+            name = 'isolated'
+            url = uri(providers.gradleProperty('cardui.repository').getOrElse(layout.buildDirectory.dir('repository').get().asFile.absolutePath))
+        }
+    }
+}
+afterEvaluate {
+    publishing.publications.create('release', MavenPublication) {
+        from components.release
+        artifactId = 'card-table-ui'
+        pom { name = 'Card Table UI'; description = 'Game-independent Android Views and hand geometry' }
+    }
+}

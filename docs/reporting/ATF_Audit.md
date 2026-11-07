@@ -113,6 +113,8 @@ O corecție ulterioară a inventarului produce o identitate nouă; nu rescrie am
 
 ## Citirea unui raport
 
+[Puntea Gradle](../testing/ATF_GradleComponents.md) aplică aceleași contracte pentru JUnit 4, cu identitatea originală a parametrizării și context capturat înaintea comparației. Intenția publicării este metadată provenită din execuție și se verifică separat de HTML; un profil fără HTTP nu inventează transport. XML-ul rămâne numai oracol temporar pentru selecțiile migrate.
+
 README-ul dosarului indică întâi raportul canonic, scopul și identitatea verificată. HTML-ul păstrează datele necesare verdictului; README-ul orientează cititorul și explică selecția, suprapunerile și dovezile auxiliare justificate.
 
 | Ordine | Ce confruntăm |

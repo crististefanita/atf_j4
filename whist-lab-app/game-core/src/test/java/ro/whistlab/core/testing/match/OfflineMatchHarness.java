@@ -12,7 +12,7 @@ import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.*;
 import java.util.*;
@@ -36,7 +36,7 @@ public class OfflineMatchHarness {
     }
     public static Map<String,Object> playWithControllers(String id,long seed,int heroSeat,List<Policy> declaredControllers,java.util.function.Consumer<Map<String,Object>> checkpoint){
         List<Policy> controllers=List.copyOf(declaredControllers);if(controllers.size()!=4)throw new IllegalArgumentException("Four controllers required");
-        var game=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,true,10));
+        var game=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,true,10)));
         var players=new ArrayList<Map<String,Object>>();for(var p:game.snapshot().players())players.add(map("seat",p.seat(),"name",p.name(),"controller",label(controllers.get(p.seat()))));
         var hands=new ArrayList<Map<String,Object>>();int moves=0,tricks=0;
         while(true){
@@ -65,7 +65,7 @@ public class OfflineMatchHarness {
             hands.add(map("number",start.handNumber(),"size",start.handSize(),"dealer",start.dealerSeat(),"trump",start.trump()==Trump.NO_TRUMP?"NT":"SHCD".substring(start.trump().ordinal(),start.trump().ordinal()+1),"turnedCard",start.turnedCard()==null?null:code(start.turnedCard()),"deal",deal,"bids",bids,"tricks",rounds,"scores",scores));
             hands.get(hands.size()-1).put("remainingCards",end.players().stream().map(p->p.hand().size()).toList());
             var record=map("schemaVersion",1,"id",id,"partition","development","source",map("kind","component","heroSeat",heroSeat,"complete",end.finalHand(),"visibility","post-game full deal; not a decision input"),"rules",map("variant","ROMANIAN_WHIST","players",4,"seriesEnabled",true,"seriesBonus",10),"seed",Long.toString(seed),"players",players,"hands",hands,"finalScores",end.players().stream().map(GameSession.PlayerSnapshot::totalScore).toList());checkpoint.accept(record);
-            if(end.finalHand()){assertEquals(376,moves);assertEquals(94,tricks);return record;}
+            if(end.finalHand()){assertEquals("moves must equal 376", 376,moves);assertEquals("tricks must equal 94", 94,tricks);return record;}
             game.startNextHand();
         }
     }

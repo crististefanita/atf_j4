@@ -213,3 +213,23 @@ testChanges:
 Reproducerea este refuzul linkului public valid ca referință editorială; controalele negative păstrează etichetele, alte proiecte și variantele necanonice în perimetrul verificat. Contractul [documentației](ATF_Documentation.md#conținut-stabil-și-date-variabile) definește limita, fără excepții generale pentru URL-uri.
 
 </details>
+
+<details>
+<summary>Control verificat: pagina versiunii declarate</summary>
+
+```yaml
+testChanges:
+  - id: DOCUMENTATION-DECLARED-RELEASE-PAGE
+    status: VERIFIED
+    base: a5eebec1805b760c876f03d2439da8b73d8e3cec
+    expires: 2026-12-06
+    reason: Recunoaște strict pagina tag-ului livrării declarate, împreună cu APK-ul și checksum-ul; păstrează verificarea prozei vizibile, a altor versiuni și a adreselor modificate.
+    proof: 'mvn -B -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - atf-tests/src/main/java/atf/tests/distribution/ApkDownloadTarget.java
+```
+
+[Identitatea livrării](../platform/ATF_AndroidDelivery.md) stabilește versiunea; [politica documentară](ATF_Documentation.md#conținut-stabil-și-date-variabile) clasifică numai destinațiile canonice. Probele refuză pagina nedeclarată, altă versiune, alt repository, imaginea și URL-urile cu modificări; eticheta vizibilă nu primește excepție.
+
+</details>

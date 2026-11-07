@@ -19,8 +19,8 @@ public final class AwardRasterFixture {
 
     public static GameSession create(int players, Pattern pattern, int missedSeat) throws Exception {
         if (missedSeat < 0 || missedSeat >= players) throw new IllegalArgumentException("Missed seat outside table");
-        var game = GameSession.newGame(new GameConfig(players, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL,
-                171 + players, true, 10, 10), "Audit");
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(players, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL,
+                171 + players, true, 10, 10)), atf.gradle.audit.GradleInputs.created("Human name before creation", "Audit"));
         int eligible = 0, target = pattern == Pattern.PENALTY_WITH_POSITIVE_TOTAL ? 10 : 5;
         do {
             if (game.snapshot().handSize() > 1) eligible++;
@@ -39,8 +39,8 @@ public final class AwardRasterFixture {
         while (sizes.get(last) == 1) last--;
         int first = last, remaining = 4;
         while (remaining > 0) { first--; if (sizes.get(first) > 1) remaining--; }
-        var game = GameSession.newGame(new GameConfig(players, mode, AiDifficulty.NORMAL, 281 + players,
-                true, 10, 10), "Audit");
+        var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(players, mode, AiDifficulty.NORMAL, 281 + players,
+                true, 10, 10)), atf.gradle.audit.GradleInputs.created("Human name before creation", "Audit"));
         List<Integer> totals = List.of(), series = List.of();
         do {
             int missed = game.snapshot().handIndex() >= first ? 0 : 1;

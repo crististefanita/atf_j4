@@ -18,7 +18,7 @@ public final class GameReportAudit implements ComponentAuditAdapter {
                 input.add("JUnit invocation identity", context.getUniqueId());
                 var identity = new AssertionAuditReport.Identity(type.getName().substring(type.getPackageName().length() + 1),
                         type.getPackageName(), context.getDisplayName(), context.getTestMethod().map(java.lang.reflect.Method::getName).orElse("Class lifecycle"),
-                        List.of("component", "framework-acceptance", "offline"));
+                        List.of(context.getTags().contains("unit") ? "unit" : "component", "framework-acceptance", "offline"));
                 return new AndroidComponentPublication(run, identity, input);
             });
     @Override public ComponentAuditExtension auditExtension() { return extension; }

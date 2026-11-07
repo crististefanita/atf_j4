@@ -1,8 +1,8 @@
 package ro.whistlab.app.lifecycle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static atf.gradle.audit.assertions.GradleAssertions.assertEquals;
+import static atf.gradle.audit.assertions.GradleAssertions.assertFalse;
+import static atf.gradle.audit.assertions.GradleAssertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 
-public final class CompletedTrickPauseComponentTest {
+public final class CompletedTrickPauseComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test
     public void completedTrickRemainsVisibleForExactlyFifteenHundredMilliseconds() {
         GameSession game = completedFirstTrick();
@@ -26,26 +26,30 @@ public final class CompletedTrickPauseComponentTest {
         CompletedTrickPause pause = new CompletedTrickPause();
 
         CompletedTrickPause.DisplayState start = pause.evaluate(game.snapshot(), 10_000L);
-        assertTrue(start.active());
-        assertEquals(CompletedTrickPause.DISPLAY_MILLIS, start.remainingMillis());
-        assertEquals(completed, start.cards());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "completed", completed, "game", game, "pause", pause, "start", start);
+        assertTrue("start.active() must hold", start.active());
+        assertEquals("start.remainingMillis() must equal CompletedTrickPause.DISPLAY_MILLIS", CompletedTrickPause.DISPLAY_MILLIS, start.remainingMillis());
+        assertEquals("start.cards() must equal completed", completed, start.cards());
 
         CompletedTrickPause.DisplayState beforeDeadline = pause.evaluate(game.snapshot(), 11_499L);
-        assertTrue(beforeDeadline.active());
-        assertEquals(1L, beforeDeadline.remainingMillis());
-        assertEquals(completed, beforeDeadline.cards());
+        assertTrue("beforeDeadline.active() must hold", beforeDeadline.active());
+        assertEquals("beforeDeadline.remainingMillis() must equal 1L", 1L, beforeDeadline.remainingMillis());
+        assertEquals("beforeDeadline.cards() must equal completed", completed, beforeDeadline.cards());
 
-        assertFalse(pause.evaluate(game.snapshot(), 11_500L).active());
-        assertFalse(pause.evaluate(game.snapshot(), 12_000L).active());
+        assertFalse("pause.evaluate(game.snapshot(), 11500L).active() must remain false", pause.evaluate(game.snapshot(), 11_500L).active());
+        assertFalse("pause.evaluate(game.snapshot(), 12000L).active() must remain false", pause.evaluate(game.snapshot(), 12_000L).active());
     }
 
     @Test
     public void theNextCompletedTrickStartsANewDisplayWindow() {
         GameSession game = completedFirstTrick();
         CompletedTrickPause pause = new CompletedTrickPause();
-        assertTrue(pause.evaluate(game.snapshot(), 100L).active());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "pause", pause);
+        assertTrue("pause.evaluate(game.snapshot(), 100L).active() must hold", pause.evaluate(game.snapshot(), 100L).active());
         game.playCard(game.snapshot().currentSeat(), new Card(Suit.CLUBS, 14));
-        assertFalse(pause.evaluate(game.snapshot(), 200L).active());
+        assertFalse("pause.evaluate(game.snapshot(), 200L).active() must remain false", pause.evaluate(game.snapshot(), 200L).active());
 
         for (int seat = 1; seat < 4; seat++) {
             GameSession.Snapshot state = game.snapshot();
@@ -55,9 +59,9 @@ public final class CompletedTrickPauseComponentTest {
         }
 
         CompletedTrickPause.DisplayState next = pause.evaluate(game.snapshot(), 500L);
-        assertTrue(next.active());
-        assertEquals(CompletedTrickPause.DISPLAY_MILLIS, next.remainingMillis());
-        assertEquals(4, next.cards().size());
+        assertTrue("next.active() must hold", next.active());
+        assertEquals("next.remainingMillis() must equal CompletedTrickPause.DISPLAY_MILLIS", CompletedTrickPause.DISPLAY_MILLIS, next.remainingMillis());
+        assertEquals("next.cards().size() must equal 4", 4, next.cards().size());
     }
 
     private static GameSession completedFirstTrick() {

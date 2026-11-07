@@ -24,6 +24,8 @@ Fixture-ul descrie regiuni măsurate, fără să apeleze algoritmul de layout al
 
 ## Ce se mută în componente
 
+[Nucleul UI comun](../../whist-lab-app/card-table-ui/README.md) are teste JVM proprii pentru meniu, editarea numelui, geometrie și frontiera de dependențe. Aplicația păstrează testele adaptoarelor și ale mesei, iar mutarea implementării nu schimbă oracolele existente; widgeturile și pixelii Android au acceptanță separată.
+
 | Nivel | Intrare controlată | Proprietate verificată | Proprietar |
 |---|---|---|---|
 | Politici ale aplicației | Lățime, înălțime, densitate, font, număr de jucători și cărți | Distribuirea regiunilor, dimensiuni minime, spațiu disponibil, rotunjire și insets calculate | `app.table`, `app.hand`, `app.window` |
@@ -147,14 +149,16 @@ mvn -B -o -pl atf-test-android -am -Phistory-components '-Dtest=AndroidHistoryCo
 
 Clasele folosesc aserțiunile auditate, iar [lansatorul agregării](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) completează adaptorul numai când nu există unul explicit. Suitele display, istoric și timing sunt selecții focalizate; nu se adună peste populația intrării primare.
 
-Selecțiile Gradle ale aplicației au contract propriu și nu sunt incluse implicit în agregatul Maven. Prezența unui HTML al altei selecții nu le califică auditul.
+Selecțiile Gradle ale aplicației, motorului și bibliotecii grafice folosesc [puntea de audit Gradle](ATF_GradleComponents.md) și nu sunt incluse implicit în agregatul Maven. Fiecare task publică propriul HTML canonic și confruntă invocările cu JUnit-ul temporar; prezența raportului altei selecții nu îi califică auditul.
 
-- **Contract:** [probele adaptorului](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) verifică sesiunea comună, eșecul original, abort-ul, lipsa aserțiunilor și textul mai lung decât plafoanele. [Criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne deschis pentru componentele nemigrate.
+- **Contract:** [probele adaptorului](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) și [probele punții Gradle](../../whist-lab-app/test-audit/src/test/java/atf/gradle/audit/GradleAuditBridgeComponentTest.java) verifică sesiunea comună, eșecul original, abort-ul, lipsa aserțiunilor și textul mai lung decât plafoanele. [Criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) separă calificarea producătorilor de migrarea execuțiilor istorice.
 
 - **Lansator:** `-ComponentsOnly -ComponentSuite History` și `-ComponentRenderer fallback` restrâng selecția; `Display` este implicit. Raportul apare în `component-reports` al rulării externe, iar `WORKING_STATE.json` identifică exemplarul și domeniul.
 - **Compilare:** profilele Maven selectează testele la execuție; profilul larg nu omite sursele de istoric din compilare.
 
 ## Ce păstrează verificarea nativă
+
+[Componentele grafice native](../../whist-lab-app/app/src/androidTest/README.md) verifică desenul claselor Android într-un părinte real, fără activitate ori partidă. Sunt distincte de rasterul JVM și de fluxurile E2E; derularea internă a textului se aplică înaintea evaluării pixelilor marcajelor.
 
 | Proprietate | Verificare rămasă pe Android |
 |---|---|
@@ -164,3 +168,15 @@ Selecțiile Gradle ale aplicației au contract propriu și nu sunt incluse impli
 | Compoziție | Aceeași stare conține toate regiunile necesare în rasterul real. |
 
 O modificare de formulă rulează întâi componentele; o schimbare de randare sau de integrare cu sistemul adaugă [sanity-ul nativ selectat](ATF_Display.md). Rezultatele sunt externe și identifică sursele verificate.
+
+## Frontiera componentelor UI reutilizabile
+
+[card-table-ui](../../whist-lab-app/card-table-ui/README.md) are propriile componente pentru geometrie, meniu, editare și modelele vizibile ale mesei. Gardele de sursă refuză importurile de motoare sau sesiuni în producția și testele comune.
+
+| Comun | Integrare Whist, păstrată în aplicația Whist |
+|---|---|
+| Proporții, centrare, regiuni și chenare | Ordinea actorilor motorului și legalitatea cărții. |
+| Fapte ordonate și imuabile, însemne și identități | Licitație, atu, levate, punctaj și restaurare. |
+| Widgeturi și porturi de selecție | Snapshot → proiecție, comanda originală și lifecycle. |
+
+Aceleași teste Whist rulează înainte/după extragere cu surse și identități păstrate. Rentz își testează propriile reguli și proiecții Rentz; clasele de licitație sau punctaj Whist nu se mută în suita comună doar pentru a reutiliza desenul.

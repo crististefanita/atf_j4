@@ -2,9 +2,9 @@
 
 ## Pe scurt
 
-Această intrare Gradle construiește modulele JVM fără configurarea aplicației Android. [settings.gradle](settings.gradle) include `game-core` și `ai-lab`; fiecare modul deține sursele, dependențele și verificările sale.
+Această intrare Gradle construiește modulele JVM fără configurarea aplicației Android. [settings.gradle](settings.gradle) include `game-core`, `ai-lab` și fixture-urile `test-audit`; fiecare modul deține sursele, dependențele și verificările sale.
 
-Sunt necesare JDK 17 sau mai nou, lansatorul Gradle al proiectului și dependențele JVM în cache. Opțiunea `--offline` refuză dependențele lipsă; SDK-ul Android nu este necesar acestei intrări.
+Testarea auditată cere JDK 21, lansatorul Gradle al proiectului și dependențele JVM în cache. Motorul păstrează ținta Java declarată în modul; bibliotecile de testare nu intră în runtime-ul Android. Opțiunea `--offline` refuză dependențele lipsă; SDK-ul Android nu este necesar acestei intrări.
 
 ## Flux și responsabilități
 
@@ -14,7 +14,7 @@ flowchart LR
     COPY -->|configurează| BUILD[Intrare JVM]
     BUILD -->|include| CORE[game-core]
     BUILD -->|include| LAB[ai-lab]
-    CORE -->|produce| RESULT[Rezultate native]
+    CORE -->|produce| RESULT[Comparații auditate]
 ```
 
 <details>
@@ -57,6 +57,7 @@ Sarcina aleasă determină limita verificării:
 ## Ieșiri și concurență
 
 - XML-ul nativ și fișierele de construire apar în `game-core/build` al copiei temporare.
+- [Auditul componentelor](../../docs/testing/ATF_GradleComponents.md) produce un HTML canonic per selecție și confruntă temporar invocările cu XML-ul, fără a le număra de două ori.
 - `whist.componentEvidence` poate selecta un director extern pentru capturi de componentă; identitățile capturilor se păstrează fără suprascriere.
 - Cele două intrări Gradle ale aplicației folosesc aceleași directoare ale proiectului inclus; execuțiile concurente au nevoie de copii distincte.
 - Rezultatul identifică sursele și selecția executată; acceptanța Android și calificarea forței de joc au criterii separate.

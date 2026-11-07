@@ -4,7 +4,7 @@ import ro.whistlab.core.testing.match.OfflineMatchHarness;
 import ro.whistlab.core.testing.CapturedRegression;
 import java.util.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(Parameterized.class)
-public class ArenaProfileReplayTest {
+public class ArenaProfileReplayTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="{0}")public static Collection<Object[]> cases(){return List.of(new Object[][]{{"factorial"},{"mixed"}});}
  final String league;public ArenaProfileReplayTest(String league){this.league=league;}
  @Test public void archivedArenaProfilesKeepTheirActualStrategiesAfterReleaseBinding()throws Exception{

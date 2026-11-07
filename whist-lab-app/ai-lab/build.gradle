@@ -9,7 +9,10 @@ java {
 
 dependencies { testImplementation "junit:junit:4.13.2" }
 
-tasks.withType(Test).configureEach { maxHeapSize = "128m" }
+tasks.withType(Test).configureEach {
+    maxHeapSize = "128m"
+    systemProperty "whist.coach.runtimeClasspath", sourceSets.main.runtimeClasspath.asPath
+}
 
 // Default components use constructed local data. Archive replay has its own explicit entrypoint.
 tasks.register("testTools", Exec) {

@@ -1,6 +1,6 @@
 package ro.whistlab.core.testing.codec;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,7 +11,7 @@ import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.session.GameSession;
 
-public class ObservedPositionJsonComponentTest {
+public class ObservedPositionJsonComponentTest extends atf.gradle.audit.GradleAuditedTest {
     private final ObjectMapper json = new ObjectMapper();
 
     @Test public void absentLegacyPenaltyKeepsTheHistoricalFiveWithoutRewritingTheCapture() throws Exception {
@@ -19,15 +19,19 @@ public class ObservedPositionJsonComponentTest {
         captured.remove("streakPenaltyPoints");
         String before = captured.toString();
         var view = ObservedPositionJson.view(json, captured);
-        assertEquals(10, view.streakBonusPoints());
-        assertEquals(5, view.streakPenaltyPoints());
-        assertEquals(before, captured.toString());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "captured", captured, "view", view);
+        assertEquals("view.streakBonusPoints() must equal 10", 10, view.streakBonusPoints());
+        assertEquals("view.streakPenaltyPoints() must equal 5", 5, view.streakPenaltyPoints());
+        assertEquals("captured.toString() must equal before", before, captured.toString());
     }
 
     @Test public void anExplicitCurrentPenaltyRemainsSymmetric() throws Exception {
         var view = ObservedPositionJson.view(json, capture());
-        assertEquals(10, view.streakBonusPoints());
-        assertEquals(10, view.streakPenaltyPoints());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "view", view);
+        assertEquals("view.streakBonusPoints() must equal 10", 10, view.streakBonusPoints());
+        assertEquals("view.streakPenaltyPoints() must equal 10", 10, view.streakPenaltyPoints());
     }
 
     @Test public void explicitInvalidValuesAreRefusedRatherThanGivenTheLegacyDefault() {
@@ -35,12 +39,14 @@ public class ObservedPositionJsonComponentTest {
             ObjectNode captured = capture();
             try { captured.set("streakPenaltyPoints", json.readTree(value)); }
             catch (Exception unexpected) { throw new AssertionError(unexpected); }
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "captured", captured, "value", value);
             assertThrows(value, IllegalArgumentException.class, () -> ObservedPositionJson.view(json, captured));
         }
     }
 
     private ObjectNode capture() {
         var config = GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.HARD, 317, true, 10);
-        return json.valueToTree(MonteCarloAi.observe(GameSession.newGame(config).snapshot(), 0));
+        return json.valueToTree(MonteCarloAi.observe(GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", config)).snapshot(), 0));
     }
 }

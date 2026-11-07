@@ -12,9 +12,9 @@ import ro.whistlab.core.testing.PublicEndgameOracle;
 
 import java.util.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 
-public class PublicSalvageTest {
+public class PublicSalvageTest extends atf.gradle.audit.GradleAuditedTest {
     private static Card c(String s){return LossMiningTest.card(s);}
     private static List<Card> hand(String... cards){return Arrays.stream(cards).map(PublicSalvageTest::c).toList();}
     static MonteCarloAi.View fixture(int ownBid) {

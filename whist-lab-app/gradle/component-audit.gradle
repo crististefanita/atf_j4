@@ -1,0 +1,36 @@
+// Test-only bridge: the APK and AAR never depend on the audit fixture variant.
+subprojects { owner ->
+    ['com.android.application', 'com.android.library', 'java-library'].each { pluginName ->
+        owner.plugins.withId(pluginName) {
+            if (owner.name != 'test-audit') owner.dependencies.add('testImplementation', owner.dependencies.testFixtures(project(':test-audit')))
+            owner.tasks.withType(Test).configureEach { testTask ->
+                maxParallelForks = 1
+                forkEvery = 0
+                maxHeapSize = '512m'
+                def auditRoot = providers.gradleProperty('whist.auditOutput').map { rootProject.file(it) }
+                        .getOrElse(rootProject.layout.buildDirectory.dir('reports/component').get().asFile)
+                def report = new File(auditRoot, "${rootProject.name}-${owner.name}-${testTask.name}.html")
+                systemProperty 'atf.gradle.audit.report', report.absolutePath
+                systemProperty 'atf.gradle.audit.scope', "${rootProject.name}/${owner.name}:${testTask.name}"
+                systemProperty 'atf.gradle.audit.catalog', new File(rootProject.project(':test-audit').projectDir.parentFile.parentFile, 'config/gradle-audit-collections.properties').absolutePath
+                systemProperty 'atf.gradle.audit.source', providers.gradleProperty('whist.auditSource').getOrElse('Local workspace; source identity not supplied')
+                reports.html.required = false
+                reports.junitXml.required = true // Temporary independent oracle; not a second final report.
+                outputs.file(report)
+                doLast {
+                    def execution = owner.providers.exec {
+                        ignoreExitValue = true
+                        commandLine new File(System.getProperty('java.home'), 'bin/java').absolutePath,
+                                '-Xmx384m', '-cp', testTask.classpath.asPath,
+                                'atf.gradle.audit.verification.GradleReportVerifier', report.absolutePath,
+                                testTask.reports.junitXml.outputLocation.get().asFile.absolutePath
+                    }
+                    def result = execution.result.get()
+                    logger.lifecycle(execution.standardOutput.asText.get())
+                    if (result.exitValue != 0) logger.error(execution.standardError.asText.get())
+                    result.assertNormalExitValue()
+                }
+            }
+        }
+    }
+}

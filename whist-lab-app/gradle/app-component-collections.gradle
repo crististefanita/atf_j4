@@ -1,0 +1,38 @@
+// Bound publication memory by independent responsibilities, never by dropping cases or comparisons.
+def packages = new Properties()
+def catalog = new File(rootProject.projectDir.parentFile, 'config/gradle-app-collections.properties')
+catalog.withReader('UTF-8') { packages.load(it) }
+def names = [commands: 'Commands', bidding: 'Bidding', history: 'History', display: 'Display']
+if (packages.isEmpty() || packages.any { key, value -> !(key ==~ /[a-z]+/) || !names.containsKey(value) })
+    throw new GradleException('Invalid application component collection catalog')
+
+afterEvaluate {
+    def variant = 'Debug'
+    def original = tasks.named("test${variant}UnitTest", Test)
+    def collections = names.collect { collection, suffix ->
+        tasks.register("test${variant}${suffix}Components", Test) {
+            group = 'verification'
+            description = "Componente JVM ale aplicației: ${collection}; colecție primară fără suprapuneri."
+            dependsOn "compile${variant}UnitTestJavaWithJavac"
+            def base = original.get()
+            testClassesDirs = base.testClassesDirs
+            classpath = base.classpath
+            useJUnit()
+            packages.findAll { key, value -> value == collection }.keySet().sort().each { prefix ->
+                include "ro/whistlab/app/${prefix}/**"
+            }
+            base.excludes.each { pattern -> exclude pattern }
+            base.filter.includePatterns.each { pattern -> filter.includeTestsMatching(pattern) }
+            base.filter.excludePatterns.each { pattern -> filter.excludeTestsMatching(pattern) }
+            base.systemProperties.findAll { key, value -> key.startsWith('whist.') }.each { key, value -> systemProperty key, value }
+            systemProperty 'java.awt.headless', 'true'
+            jvmArgs '-XX:ActiveProcessorCount=2'
+            reports.html.required = false
+        }
+    }
+    original.configure {
+        enabled = false
+        dependsOn collections
+        description = 'Intrare agregată: execută colecțiile JVM primare; nu repetă testele și raportarea.'
+    }
+}

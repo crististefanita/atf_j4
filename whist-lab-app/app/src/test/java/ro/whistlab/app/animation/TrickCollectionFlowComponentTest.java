@@ -1,6 +1,6 @@
 package ro.whistlab.app.animation;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -9,30 +9,32 @@ import ro.whistlab.app.navigation.AppNavigation;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-public class TrickCollectionFlowComponentTest {
+public class TrickCollectionFlowComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void closingTheScoreDialogResumesEvenWhenTheWinnerIsTheHuman() {
         for (int count = 3; count <= 6; count++) {
             var h = new Harness(CollectionFixtures.completed(count, 0, 2, true));
             var before = h.game.saveState();
             h.enter();
-            assertEquals(0, h.game.snapshot().currentSeat());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "count", count, "h", h);
+            assertEquals("h.game.snapshot().currentSeat() must equal 0", 0, h.game.snapshot().currentSeat());
             h.now = 1200;
             h.surface().frame.accept(.4f);
             var old = h.surface();
             var score = h.navigation.openDialog();
-            assertEquals(1, old.released);
+            assertEquals("old.released must equal 1", 1, old.released);
             h.now = 50_000;
             old.frame.accept(1f);
             old.finished.run();
-            assertTrue(h.navigation.dismiss(score));
-            assertEquals(2, h.surfaces.size());
-            assertEquals(300, h.display.remainingMillis());
+            assertTrue("h.navigation.dismiss(score) must hold", h.navigation.dismiss(score));
+            assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
+            assertEquals("h.display.remainingMillis() must equal 300", 300, h.display.remainingMillis());
             assertEquals(.4f, h.surface().timing.startFraction(), .00001f);
             h.now = 50_300;
             h.show();
-            assertFalse(h.display.active());
-            assertEquals(GamePhase.PLAYING, h.nextPhase);
-            assertEquals(before, h.game.saveState());
+            assertFalse("h.display.active() must remain false", h.display.active());
+            assertEquals("h.nextPhase must equal GamePhase.PLAYING", GamePhase.PLAYING, h.nextPhase);
+            assertEquals("h.game.saveState() must equal before", before, h.game.saveState());
         }
     }
 
@@ -42,14 +44,16 @@ public class TrickCollectionFlowComponentTest {
         h.now = 700;
         var menu = h.navigation.openDialog();
         var score = h.navigation.openDialog();
-        assertFalse(h.navigation.dismiss(menu));
-        assertEquals(1, h.surfaces.size());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "h", h, "menu", menu, "score", score);
+        assertFalse("h.navigation.dismiss(menu) must remain false", h.navigation.dismiss(menu));
+        assertEquals("h.surfaces.size() must equal 1", 1, h.surfaces.size());
         h.now = 60_000;
-        assertTrue(h.navigation.dismiss(score));
-        assertEquals(800, h.display.remainingMillis());
-        assertEquals(2, h.surfaces.size());
-        assertFalse(h.navigation.dismiss(score));
-        assertEquals(2, h.surfaces.size());
+        assertTrue("h.navigation.dismiss(score) must hold", h.navigation.dismiss(score));
+        assertEquals("h.display.remainingMillis() must equal 800", 800, h.display.remainingMillis());
+        assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
+        assertFalse("h.navigation.dismiss(score) must remain false", h.navigation.dismiss(score));
+        assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
     }
 
     @Test public void homeNavigationCancelsTheOldSceneAndResumeKeepsItsRemainingTime() {
@@ -62,10 +66,12 @@ public class TrickCollectionFlowComponentTest {
         h.now = 30_000;
         old.frame.accept(1f);
         old.finished.run();
-        assertEquals(draws, old.draws.size());
-        assertFalse(old.completed);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "draws", draws, "h", h, "old", old);
+        assertEquals("old.draws.size() must equal draws", draws, old.draws.size());
+        assertFalse("old.completed must remain false", old.completed);
         h.enter();
-        assertEquals(200, h.display.remainingMillis());
+        assertEquals("h.display.remainingMillis() must equal 200", 200, h.display.remainingMillis());
         assertEquals(.6f, h.surface().timing.startFraction(), .00001f);
     }
 
@@ -77,12 +83,14 @@ public class TrickCollectionFlowComponentTest {
         h.foreground = false;
         h.suspend();
         h.now = 10_000;
-        assertTrue(h.navigation.dismiss(score));
-        assertEquals(1, h.surfaces.size());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "h", h, "score", score);
+        assertTrue("h.navigation.dismiss(score) must hold", h.navigation.dismiss(score));
+        assertEquals("h.surfaces.size() must equal 1", 1, h.surfaces.size());
         h.foreground = true;
         h.show();
-        assertEquals(500, h.display.remainingMillis());
-        assertEquals(2, h.surfaces.size());
+        assertEquals("h.display.remainingMillis() must equal 500", 500, h.display.remainingMillis());
+        assertEquals("h.surfaces.size() must equal 2", 2, h.surfaces.size());
     }
 
     @Test public void finalMatchScoreAppearsOnlyAfterTheRemainingVisibleBudgetAtEveryTableSize() {
@@ -96,17 +104,19 @@ public class TrickCollectionFlowComponentTest {
             h.now = 900_000;
             h.foreground = true;
             h.show();
-            assertEquals(1, h.display.remainingMillis());
-            assertNull(h.nextPhase);
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "count", count, "h", h);
+            assertEquals("h.display.remainingMillis() must equal 1", 1, h.display.remainingMillis());
+            assertNull("h.nextPhase remains absent", h.nextPhase);
             h.now++;
             h.show();
-            assertEquals(GamePhase.SCORE, h.nextPhase);
-            assertTrue(h.game.snapshot().finalHand());
+            assertEquals("h.nextPhase must equal GamePhase.SCORE", GamePhase.SCORE, h.nextPhase);
+            assertTrue("h.game.snapshot().finalHand() must hold", h.game.snapshot().finalHand());
             int countBefore = h.surfaces.size();
             h.now++;
             h.show();
-            assertEquals(countBefore, h.surfaces.size());
-            assertEquals(before, h.game.saveState());
+            assertEquals("h.surfaces.size() must equal countBefore", countBefore, h.surfaces.size());
+            assertEquals("h.game.saveState() must equal before", before, h.game.saveState());
         }
     }
 
@@ -115,14 +125,16 @@ public class TrickCollectionFlowComponentTest {
         h.enter();
         var dialog = h.navigation.openDialog();
         h.navigation.show(AppNavigation.Screen.GAME);
-        assertTrue(h.navigation.blocksAutomation());
-        assertTrue(h.navigation.dismiss(dialog));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "dialog", dialog, "h", h);
+        assertTrue("h.navigation.blocksAutomation() must hold", h.navigation.blocksAutomation());
+        assertTrue("h.navigation.dismiss(dialog) must hold", h.navigation.dismiss(dialog));
         h.now = 1500;
         h.show();
         int surfaces = h.surfaces.size();
         h.show();
-        assertEquals(surfaces, h.surfaces.size());
-        assertFalse(h.display.active());
+        assertEquals("h.surfaces.size() must equal surfaces", surfaces, h.surfaces.size());
+        assertFalse("h.display.active() must remain false", h.display.active());
     }
 
     private static final class Harness {

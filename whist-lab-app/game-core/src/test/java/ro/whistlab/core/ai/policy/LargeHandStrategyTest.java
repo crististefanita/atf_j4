@@ -14,14 +14,16 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
-import static org.junit.Assert.*;import java.util.*;import org.junit.Test;import ro.whistlab.core.baseline.v4.RoundFourAiPolicy;import ro.whistlab.core.baseline.v6.RoundSixMonteCarloAi;import ro.whistlab.coach.IndependentPlayer;
+import static atf.gradle.audit.assertions.GradleAssertions.*;import java.util.*;import org.junit.Test;import ro.whistlab.core.baseline.v4.RoundFourAiPolicy;import ro.whistlab.core.baseline.v6.RoundSixMonteCarloAi;import ro.whistlab.coach.IndependentPlayer;
 /** Strategy contracts follow the declared objective; frozen point-only policies remain explicit references. */
-public class LargeHandStrategyTest {
+public class LargeHandStrategyTest extends atf.gradle.audit.GradleAuditedTest {
  @Test public void oneCardBidsMaximizeExactChanceUnderTheSamePublicBidPrefix(){
-  int changed=0;for(int seed=91;seed<111;seed++){var game=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,true,10));
+  int changed=0;for(int seed=91;seed<111;seed++){var game=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,true,10)));
    while(game.snapshot().phase()==GamePhase.BIDDING){var s=game.snapshot();int seat=s.biddingSeat();var view=MonteCarloAi.observe(s,seat);double chance=OneCardBidBelief.probability(view);var legal=GameRules.allowedBids(1,s.bidTotal(),s.bidsSubmitted()==3);
     int expected=legal.size()==1?legal.get(0):Math.abs(2*chance-1)<1e-12?1:chance>.5?1:0;
     int old=RoundFourAiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT),actual=AiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT);
+
+    atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actual", actual, "chance", chance, "changed", changed, "expected", expected, "game", game, "legal", legal, "old", old, "s", s, "seat", seat, "seed", seed, "view", view);
     assertEquals("One-card contract follows posterior exact chance, not the old point threshold",expected,actual);assertEquals("Independent keeps its separately accepted V8 policy",ro.whistlab.coach.baseline.v8.RoundEightIndependentPlayer.bid(OfflineMatchHarness.roundEight(s,seat)).value(),IndependentPlayer.bid(PlayerObservations.independent(s,seat)).value());if(old!=actual)changed++;game.submitBid(seat,old);
    }
   }assertTrue("The intended objective change must be exercised by this retained prefix set",changed>0);
@@ -37,8 +39,10 @@ public class LargeHandStrategyTest {
  }
  @Test public void safetyRankingDoesNotRelabelPointEvidenceAsProbability(){
   int compared=0;for(int which=0;which<3;which++){var game=frame(which);var view=MonteCarloAi.observe(game.snapshot(),0);var current=MonteCarloAi.chooseCard(view);var frozen=(RoundSixMonteCarloAi.View)RolloutPolicyRegressionTest.frozenView(view);var reference=RoundSixMonteCarloAi.chooseCard(frozen);
-   assertEquals(reference.candidates().size(),current.candidates().size());for(var candidate:current.candidates()){double expected=reference.candidates().stream().filter(c->c.card().equals(candidate.card())).findFirst().orElseThrow().meanContractPoints();assertEquals("Public meanContractPoints retains its original numeric meaning",expected,candidate.meanContractPoints(),1e-10);compared++;}
-   assertTrue(GameRules.legalCards(view.hand(),view.trick().isEmpty()?null:view.trick().get(0).card().suit(),view.trump(),view.mode()).contains(current.card()));
-  }assertTrue(compared>=6);
+
+   atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "compared", compared, "current", current, "frozen", frozen, "game", game, "reference", reference, "view", view, "which", which);
+   assertEquals("current.candidates().size() must equal reference.candidates().size()", reference.candidates().size(),current.candidates().size());for(var candidate:current.candidates()){double expected=reference.candidates().stream().filter(c->c.card().equals(candidate.card())).findFirst().orElseThrow().meanContractPoints();assertEquals("Public meanContractPoints retains its original numeric meaning",expected,candidate.meanContractPoints(),1e-10);compared++;}
+   assertTrue("GameRules.legalCards(view.hand(), view.trick().isEmpty() ? null : view.trick().get(0).card().suit(), view.trump(), view.mode()).contains(current.card()) must hold", GameRules.legalCards(view.hand(),view.trick().isEmpty()?null:view.trick().get(0).card().suit(),view.trump(),view.mode()).contains(current.card()));
+  }assertTrue("compared >= 6 must hold", compared>=6);
  }
 }

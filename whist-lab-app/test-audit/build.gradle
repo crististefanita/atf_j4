@@ -1,0 +1,15 @@
+plugins { id 'java-library'; id 'java-test-fixtures' }
+java { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+dependencies {
+    testFixturesApi 'junit:junit:4.13.2'
+    testFixturesImplementation files('../../lib/atf-test-kit-1.0.0-k1.jar', '../../lib/atf-reporting-1.0.0-j22.jar')
+    testFixturesImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
+    testFixturesImplementation 'com.aventstack:extentreports:5.1.2'
+    testFixturesImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2'
+    testFixturesImplementation 'org.jsoup:jsoup:1.23.2'
+    testFixturesImplementation 'org.freemarker:freemarker:2.3.32'
+    testImplementation testFixtures(project())
+    testImplementation 'org.jsoup:jsoup:1.23.2'
+}
+tasks.withType(Test).configureEach { maxHeapSize = '384m' }
+tasks.named('test', Test) { include '**/*ComponentTest.class' }

@@ -5,7 +5,7 @@ import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.*;
 import java.time.Instant;
@@ -16,7 +16,7 @@ import org.junit.runners.Parameterized;
 
 /** Small executable rule examples, with independent literal expectations and captured comparisons. */
 @RunWith(Parameterized.class)
-public class HowToPlayDocumentationTest {
+public class HowToPlayDocumentationTest extends atf.gradle.audit.GradleAuditedTest {
     @Parameterized.Parameters(name="language={0}, example={1}") public static Collection<Object[]> cases(){
         var cases=new ArrayList<Object[]>();for(var language:HowToPlay.Language.values())for(String example:List.of("follow-after-trump","mandatory-undertrump","void-discard","no-trump-discard","trick-winner","last-bid","exact-zero","over-contract","under-contract","series-five","series-ten","series-missed","one-card-preserve","one-card-break","schedule","deck"))cases.add(new Object[]{language,example});return cases;
     }

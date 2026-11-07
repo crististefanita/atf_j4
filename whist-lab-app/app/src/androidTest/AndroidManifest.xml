@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <instrumentation
+        android:name="ro.whistlab.app.score.nativecomponent.HistoryMarksComponentInstrumentation"
+        android:targetPackage="ro.whistlab.app"
+        android:label="Componente native ale marcajelor de istoric" />
+</manifest>

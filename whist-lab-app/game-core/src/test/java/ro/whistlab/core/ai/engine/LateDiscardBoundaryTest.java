@@ -12,7 +12,7 @@ import ro.whistlab.core.testing.CapturedRegression;
 import ro.whistlab.core.testing.PublicEndgameOracle;
 import java.util.*;import java.lang.reflect.*;import org.junit.Test;import org.junit.runner.RunWith;import org.junit.runners.Parameterized;import ro.whistlab.coach.IndependentPlayer;
 @RunWith(Parameterized.class)
-public class LateDiscardBoundaryTest {
+public class LateDiscardBoundaryTest extends atf.gradle.audit.GradleAuditedTest {
  @Parameterized.Parameters(name="{0}")public static Collection<Object[]> cases(){return List.of(new Object[][]{{"avoid",0,0},{"need-one",1,0},{"already-over",0,1},{"fixed-win-stop",1,0},{"fixed-win-need",2,0},{"early-win",1,0},{"split-winner",1,0},{"different-suits",0,0},{"lead",0,0},{"oh-hell",0,0},{"missing-bid",0,0},{"one-card",0,0},{"undertrump-avoid",0,0},{"undertrump-need",1,0}});}
  private final String id;private final int bid,won;public LateDiscardBoundaryTest(String id,int bid,int won){this.id=id;this.bid=bid;this.won=won;}
  private static Card c(Suit s,int rank){return new Card(s,rank);}

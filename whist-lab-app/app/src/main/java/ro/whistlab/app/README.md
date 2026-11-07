@@ -6,6 +6,12 @@ Acest pachet compune interfața Android și transmite intențiile utilizatorului
 
 `MainActivity` leagă intențiile, serviciile sesiunii și ciclul Android. Clasele din `screens` compun ecranele, iar `AppNavigation` păstrează ruta și identitatea dialogurilor; componentele de geometrie și persistență au contracte distincte.
 
+## Nucleul vizual comun
+
+[Biblioteca card-table-ui](../../../../../../../card-table-ui/README.md) deține widgeturile, meniul de pornire, dialogul numelui, tema, desenul cărții și geometria mâinii. `WhistMenuContent` și `WhistCardFace` proiectează datele jocului; fațadele existente păstrează apelanții și identitatea componentelor Whist.
+
+Masa completă și `GameTablePanel` păstrează compoziția Whist, iar `WindowContent` rămâne politica de fereastră injectată în constructorii comuni. Configurarea jocului, regulile numelui, preferințele, istoricul și serviciile sesiunii rămân la proprietarii lor.
+
 ## Flux și responsabilități
 
 ```mermaid
@@ -35,6 +41,7 @@ Fereastra exclude barele sistemului și decupajul înaintea aranjării. Această
 | Schimbarea ferestrei | [PresentationRefresh](presentation/PresentationRefresh.java) grupează cererile de refacere și invalidează callback-urile unei prezentări înlocuite; coordonatorul citește geometria curentă la livrare. |
 | Fereastră Android | [WindowContent](window/WindowContent.java) aplică protecția nativă și măsoară spațiul util; [WindowPadding](window/WindowPadding.java) păstrează baza imuabilă. |
 | Masă și licitare | [GameBoardLayout](table/GameBoardLayout.java), [TableGeometry](table/TableGeometry.java) și [BidGridMetrics](bidding/BidGridMetrics.java) măsoară locurile și regiunea centrală. |
+| Licitația propusă omului | [HumanBidSelection](bidding/HumanBidSelection.java) păstrează recomandarea Hard, selecția manuală și identitatea contextului. Activitatea transmite evaluarea coordonatorului asincron; numai confirmarea depune licitația în sesiune. |
 | Nume și tură | [PlayerSeatView](seat/PlayerSeatView.java) măsoară textul acțiunii deasupra chenarului; [PlayerSeatMetrics](seat/PlayerSeatMetrics.java) rezervă regiunile fără suprapuneri. |
 | Mână | [HandLayoutMetrics](hand/HandLayoutMetrics.java) calculează evantaiul; [CenteredHandView](hand/CenteredHandView.java) gestionează poziția inițială a derulării. |
 | Levată și atu | [TrickCardMetrics](table/TrickCardMetrics.java) ancorează cărțile după loc; [TrumpIndicatorView](table/TrumpIndicatorView.java) afișează informația despre atu. |
@@ -62,7 +69,7 @@ Geometria păstrează separat locurile, țintele tactile, cărțile și textul. 
 - Evantaiul ține cont de lățime, densitate, scara textului și banda măsurată a indicelui; o mână mai lată păstrează accesul orizontal. Masa nu recuperează prin scroll vertical o regiune tăiată.
 - Selecția unei cărți rezervă spațiul ridicării și păstrează locul omului; decorul cărții aparține [CardFaceBackground](cards/CardFaceBackground.java).
 - Indicatorul de atu și locul activ folosesc stilurile comune. Atuul are două regiuni, titlu și valoare, iar dimensiunile sunt independente de modul jocului și de tipul valorii. Măsurarea comună a fontului păstrează înălțimea completă; descrierea accesibilă păstrează identitatea cărții sau a culorii.
-- Istoricul are toate locurile în același tabel cronologic, cu antete fixe la derularea verticală și deplasare orizontală comună.
+- Istoricul are toate locurile în același tabel cronologic, cu antete fixe în spațiu suficient și deplasare orizontală comună. Ferestrele prea scunde permit derularea conținutului integral, păstrând accesul la rânduri și legendă.
 - Prima coloană a istoricului arată numărul de cărți; ordinea mâinii rămâne în model și în descrierile accesibile. [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aliniază separatoarele și grupurile jucătorilor la densități fracționare.
 
 </details>
@@ -77,7 +84,7 @@ Punctele mâinii sunt derivate de domeniu din soldurile istoricului. Levatele ș
 
 - [ScoreHistoryMeasure](score/ScoreHistoryMeasure.java) agregă lățimile folosind furnizori de măsurători injectați; vederea Android deține fonturile și randarea.
 - [SeriesPointsFrame](score/award/SeriesPointsFrame.java) rezervă spațiul pentru numărul complet și font; [SeriesPointsView](score/award/SeriesPointsView.java) măsoară și desenează dreptunghiul în interiorul propriei celule, separat de licitație și de vecini.
-- [HistoryViewport](score/layout/HistoryViewport.java) rezervă antetele și legenda măsurate înaintea rândurilor. `ScoreHistoryView` compune un container vertical: coloanele se derulează orizontal, iar legenda se încadrează separat în lățimea dialogului și rămâne fixă.
+- [HistoryViewport](score/layout/HistoryViewport.java) rezervă antetele și legenda măsurate înaintea rândurilor. `ScoreHistoryView` păstrează coloanele și legenda în regiuni distincte; [HistoryContentScroll](score/layout/HistoryContentScroll.java) permite derularea integrală atunci când nu mai încape un rând complet.
 - Legenda folosește aceleași retrageri laterale ca tabelul. Spațiul pentru rânduri se recalculează din măsurătorile curente, fără o înălțime memorată din profilul anterior.
 - Componenta verifică politica asupra tuturor celulelor, iar [ScoreHistoryGridMetrics](score/ScoreHistoryGridMetrics.java) aplică minimele și protecția împotriva depășirilor numerice.
 
@@ -207,6 +214,17 @@ flowchart LR
 
 Calculul politicii rulează într-un executor separat, iar aplicarea mutării revine pe firul principal. [AiTurnRequest](lifecycle/AiTurnRequest.java) capturează starea imutabilă înaintea calculului și verifică identitatea partidei și egalitatea stării înaintea aplicării.
 
+Pentru om, [HumanBidSelection](bidding/HumanBidSelection.java) primește numai observația proprie și publică a motorului Hard. Evaluarea propune o selecție legală; sesiunea primește contractul numai prin confirmarea utilizatorului.
+
+| Continuitatea licitației | Comportament |
+|---|---|
+| Suspendare și reluare în aceeași sesiune | Alegerea deja făcută se păstrează. Calculul în curs este invalidat; în lipsa unei alegeri, reluarea poate solicita o estimare nouă. |
+| Restaurare din checkpoint JSON | Mâna, cartea întoarsă, licitațiile confirmate, scorurile și seriile se restaurează prin codec. Selecția neconfirmată rămâne stare de prezentare și se estimează din nou. |
+| Alegere manuală | Invalidează recomandarea în curs. Un succes sau un eșec întârziat nu o înlocuiește și nu o transformă în contract. |
+| Contract deja confirmat | Rămâne parte a partidei salvate; recomandarea omului nu mai rulează în tura altui loc ori în jocul cărților. |
+
+[Matricea licitației](../../../../../test/java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java) verifică 1–8 cărți, 3–6 jucători și fiecare poziție în ordinea licitării. [Componentele reluării](../../../../../test/java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java) folosesc codec-ul JSON real și evenimente controlate; nu califică stocarea Android, recrearea activității sau interacțiunea nativă.
+
 ```mermaid
 flowchart LR
     OWNER[Firul sesiunii] -->|capturează| SNAP[Stare imutabilă]
@@ -237,3 +255,11 @@ Calificările rămase sunt centralizate în [feedback-ul Android](../../../../..
 ## Catalogul testelor
 
 [Intrările și responsabilitățile testelor](../../../../../test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.
+
+## Proiecția mesei către biblioteca comună
+
+[WhistTableContent](table/content/WhistTableContent.java) traduce numai datele vizibile ale snapshot-ului în `SeatContent`, `HandCard` și `PlayedCardContent`. [GameTablePanel](table/GameTablePanel.java) păstrează licitația, legalitatea transmisă, levata vizibilă și colectarea; biblioteca desenează și măsoară fără motor Whist.
+
+- Chenarele păstrează ordinea licitat/levate, textele și actorul real; rendererul primește fapte etichetate, fără calculul scorului.
+- Selecția întoarce identitatea cărții din snapshot-ul afișat; adaptorul o rezolvă la obiectul original înaintea callback-ului existent.
+- Testele de reguli și integrare cu sesiunea rămân în aplicația Whist; modelele comune au componente fără importuri ale jocurilor.

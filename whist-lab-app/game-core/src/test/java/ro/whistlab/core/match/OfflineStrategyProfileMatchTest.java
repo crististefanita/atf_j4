@@ -4,8 +4,8 @@ import ro.whistlab.core.ai.profile.HardStrategyProfile;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.rules.GameMode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static atf.gradle.audit.assertions.GradleAssertions.assertEquals;
+import static atf.gradle.audit.assertions.GradleAssertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
@@ -16,7 +16,7 @@ import java.util.List;
 import org.junit.Test;
 
 /** Compares alternative decisions from every seat over identical deals, without exposing future hands. */
-public final class OfflineStrategyProfileMatchTest {
+public final class OfflineStrategyProfileMatchTest extends atf.gradle.audit.GradleAuditedTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     private static final List<HardStrategyProfile> PROFILES=List.of(HardStrategyProfile.CURRENT,
             HardStrategyProfile.PRUDENT_BID_04,HardStrategyProfile.PRUDENT_BID,
@@ -49,13 +49,15 @@ public final class OfflineStrategyProfileMatchTest {
         List<String> reference=null;int compared=0;boolean sameDeals=true;
         for(ProfileSpec spec:specs){
             OfflineMockMatchTest.MatchRun run=OfflineMockMatchTest.playMatch(seed,spec.roster(),spec.profile());
-            assertTrue(run.match().complete());assertEquals(24,run.privateDealCommitments().size());
+
+            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "compared", compared, "matches", matches, "reference", reference, "run", run, "runs", runs, "sameDeals", sameDeals, "seed", seed, "spec", spec, "specs", specs);
+            assertTrue("run.match().complete() must hold", run.match().complete());assertEquals("run.privateDealCommitments().size() must equal 24", 24,run.privateDealCommitments().size());
             if(reference==null)reference=run.privateDealCommitments();
-            else {assertEquals(reference,run.privateDealCommitments());compared+=reference.size();}
+            else {assertEquals("run.privateDealCommitments() must equal reference", reference,run.privateDealCommitments());compared+=reference.size();}
             sameDeals&=reference.equals(run.privateDealCommitments());
             runs.add(run);matches.add(run.match());
         }
-        assertTrue(sameDeals);assertEquals(24*24,compared);assertEquals(25,matches.size());
+        assertTrue("sameDeals must hold", sameDeals);assertEquals("compared must equal 24 * 24", 24*24,compared);assertEquals("matches.size() must equal 25", 25,matches.size());
         OfflineMockMatchTest.MockMatch normalBaseline=matches.get(0);
         List<BaselineSeat> baselineSeats=new ArrayList<>();
         for(int seat=0;seat<4;seat++)baselineSeats.add(metrics(normalBaseline,seat));

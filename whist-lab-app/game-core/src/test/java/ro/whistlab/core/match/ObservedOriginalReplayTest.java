@@ -7,21 +7,23 @@ import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
 /** Optional task with real recorded inputs; no expected outcomes are supplied to the engine. */
-public class ObservedOriginalReplayTest {
+public class ObservedOriginalReplayTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void allRecordedOriginalInputsProduceTheSameCumulativeScores()throws Exception {
         String fixture=System.getProperty("whist.originalReplay","");
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "fixture", fixture);
         assertFalse("Provide -Pwhist.originalReplay=<absolute original-match.properties>",fixture.isBlank());
         Properties p=new Properties();try(var in=Files.newInputStream(Path.of(fixture))){p.load(in);}
-        int count=Integer.parseInt(p.getProperty("match.handCount","0"));assertTrue(count>0);
+        int count=Integer.parseInt(p.getProperty("match.handCount","0"));assertTrue("count > 0 must hold", count>0);
         if(!Boolean.getBoolean("whist.allowPartialReplay")) {
-            assertEquals("true",p.getProperty("match.complete"));assertEquals(19,count);
+            assertEquals("p.getProperty(\"match.complete\") must equal \"true\"", "true",p.getProperty("match.complete"));assertEquals("count must equal 19", 19,count);
         }
         List<Integer> totals=Arrays.asList(0,0,0,0);int moves=0;
         for(int h=0;h<count;h++) {
@@ -42,13 +44,13 @@ public class ObservedOriginalReplayTest {
             for(int id:numbers(p.getProperty(k+"plays"))) {
                 int seat=game.snapshot().currentSeat();game.playCard(seat,card(id));moves++;
             }
-            assertEquals(GamePhase.SCORE,game.snapshot().phase());
+            assertEquals("game.snapshot().phase() must equal GamePhase.SCORE", GamePhase.SCORE,game.snapshot().phase());
             totals=game.snapshot().players().stream().map(GameSession.PlayerSnapshot::totalScore).toList();
             assertEquals("Original score parity at hand "+(h+1),numbers(p.getProperty(k+"totals")),totals);
-            assertEquals(size,game.snapshot().players().stream().mapToInt(GameSession.PlayerSnapshot::tricksWon).sum());
-            assertEquals(h==18,game.snapshot().finalHand());
+            assertEquals("game.snapshot().players().stream().mapToInt(GameSession.PlayerSnapshot::tricksWon).sum() must equal size", size,game.snapshot().players().stream().mapToInt(GameSession.PlayerSnapshot::tricksWon).sum());
+            assertEquals("game.snapshot().finalHand() must equal h == 18", h==18,game.snapshot().finalHand());
         }
-        if(!Boolean.getBoolean("whist.allowPartialReplay"))assertEquals(436,moves);
+        if(!Boolean.getBoolean("whist.allowPartialReplay"))assertEquals("moves must equal 436", 436,moves);
     }
     private static Card card(int id){return new Card(Suit.values()[id/13],id%13+2);}
     private static List<Integer> numbers(String csv){return Arrays.stream(csv.split(",")).map(Integer::parseInt).toList();}

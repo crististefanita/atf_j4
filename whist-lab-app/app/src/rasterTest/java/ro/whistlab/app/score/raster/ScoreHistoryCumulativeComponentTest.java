@@ -1,6 +1,6 @@
 package ro.whistlab.app.score.raster;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.Collections;
 import java.util.List;
 import java.nio.file.Files;
@@ -22,7 +22,7 @@ import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
 
-public final class ScoreHistoryCumulativeComponentTest {
+public final class ScoreHistoryCumulativeComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Rule public final TemporaryFolder temporary = new TemporaryFolder();
     @Test public void everyHistoricalRowShowsItsOwnClosingBalanceForEverySeatAndLanguage() {
         var balances = List.of(List.of(12, -9, 0, 3, -7, 15),
@@ -36,13 +36,15 @@ public final class ScoreHistoryCumulativeComponentTest {
                 var table = HistoryRasterProjection.all(game.snapshot(), history, language, 1, 1);
                 for (int hand = 0; hand < totals.size(); hand++) for (int seat = 0; seat < seats; seat++) {
                     var cell = table.rows().get(hand).cells().get(seat);
-                    assertEquals(totals.get(hand).get(seat).toString(), cell.points());
-                    assertEquals("RECORDED", table.rows().get(hand).status());
-                    assertEquals(0, cell.series());
+
+                    atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "balances", balances, "cell", cell, "game", game, "hand", hand, "history", history, "language", language, "mode", mode, "seat", seat, "seatCount", seatCount, "seats", seats, "table", table, "totals", totals);
+                    assertEquals("cell.points() must equal totals.get(hand).get(seat).toString()", totals.get(hand).get(seat).toString(), cell.points());
+                    assertEquals("table.rows().get(hand).status() must equal \"RECORDED\"", "RECORDED", table.rows().get(hand).status());
+                    assertEquals("cell.series() must equal 0", 0, cell.series());
                 }
-                assertEquals("10", table.rows().get(1).cells().get(0).points());
-                assertEquals("-2", table.rows().get(1).cells().get(0).handPoints());
-                assertTrue(table.rows().subList(totals.size(), table.rows().size()).stream()
+                assertEquals("table.rows().get(1).cells().get(0).points() must equal \"10\"", "10", table.rows().get(1).cells().get(0).points());
+                assertEquals("table.rows().get(1).cells().get(0).handPoints() must equal \"-2\"", "-2", table.rows().get(1).cells().get(0).handPoints());
+                assertTrue("table.rows().subList(totals.size(), table.rows().size()).stream().flatMap((row)->row.cells().stream()).allMatch((cell)->cell.points().equals(\"\\u2014\")) must hold", table.rows().subList(totals.size(), table.rows().size()).stream()
                         .flatMap(row -> row.cells().stream()).allMatch(cell -> cell.points().equals("—")));
             }
         }
@@ -57,33 +59,37 @@ public final class ScoreHistoryCumulativeComponentTest {
                 var table = HistoryRasterProjection.all(newGame(GameMode.ROMANIAN_WHIST, seats).snapshot(), history,
                         language, 1, 1);
                 for (int seat = 0; seat < seats; seat++) {
-                    assertEquals("—", table.rows().get(0).cells().get(seat).points());
+
+                    atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "closing", closing, "history", history, "language", language, "opening", opening, "seat", seat, "seats", seats, "table", table);
+                    assertEquals("table.rows().get(0).cells().get(seat).points() must equal \"\\u2014\"", "—", table.rows().get(0).cells().get(seat).points());
                     var boundary = table.rows().get(1).cells().get(seat);
-                    assertEquals(opening.get(seat).toString(), boundary.points());
-                    assertEquals("—", boundary.bid());
-                    assertEquals("—", boundary.handPoints());
-                    assertEquals(closing.get(seat).toString(), table.rows().get(2).cells().get(seat).points());
-                    assertEquals("—", table.rows().get(3).cells().get(seat).points());
+                    assertEquals("boundary.points() must equal opening.get(seat).toString()", opening.get(seat).toString(), boundary.points());
+                    assertEquals("boundary.bid() must equal \"\\u2014\"", "—", boundary.bid());
+                    assertEquals("boundary.handPoints() must equal \"\\u2014\"", "—", boundary.handPoints());
+                    assertEquals("table.rows().get(2).cells().get(seat).points() must equal closing.get(seat).toString()", closing.get(seat).toString(), table.rows().get(2).cells().get(seat).points());
+                    assertEquals("table.rows().get(3).cells().get(seat).points() must equal \"\\u2014\"", "—", table.rows().get(3).cells().get(seat).points());
                 }
             }
         }
     }
 
     private static GameSession newGame(GameMode mode, int seats) {
-        return GameSession.newGame(GameConfig.newMatch(seats, mode, AiDifficulty.NORMAL, 8, mode.isRomanian(), 10));
+        return GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.newMatch(seats, mode, AiDifficulty.NORMAL, 8, mode.isRomanian(), 10)));
     }
 
     @Test public void rasterShowsRectanglesOnlyInAwardedPointsAndRedEvenForAPositiveRunningTotal() throws Exception {
         for (int players = 3; players <= 6; players++) for (var pattern : AwardRasterFixture.Pattern.values()) {
             var game = AwardRasterFixture.create(players, pattern);
             if (pattern == AwardRasterFixture.Pattern.PENALTY_WITH_POSITIVE_TOTAL) {
-                assertEquals(-10, game.snapshot().players().get(0).streakPoints());
-                assertTrue(game.snapshot().players().get(0).totalScore() > 0);
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "pattern", pattern, "players", players);
+                assertEquals("game.snapshot().players().get(0).streakPoints() must equal -10", -10, game.snapshot().players().get(0).streakPoints());
+                assertTrue("game.snapshot().players().get(0).totalScore() > 0 must hold", game.snapshot().players().get(0).totalScore() > 0);
             }
             if (pattern == AwardRasterFixture.Pattern.ISOLATED_BONUS) {
-                assertEquals(0, game.snapshot().players().get(0).streakPoints());
-                assertEquals(0, game.snapshot().players().get(1).streakPoints());
-                assertEquals(10, game.snapshot().players().get(2).streakPoints());
+                assertEquals("game.snapshot().players().get(0).streakPoints() must equal 0", 0, game.snapshot().players().get(0).streakPoints());
+                assertEquals("game.snapshot().players().get(1).streakPoints() must equal 0", 0, game.snapshot().players().get(1).streakPoints());
+                assertEquals("game.snapshot().players().get(2).streakPoints() must equal 10", 10, game.snapshot().players().get(2).streakPoints());
             }
             for (var language : HowToPlay.Language.values()) for (float scale : new float[]{1, 1.5f}) {
                 var spec = raster(game, language, 2, scale);
@@ -92,7 +98,7 @@ public final class ScoreHistoryCumulativeComponentTest {
                 HistoryRasterAudit.rectanglesOnlyCoverTheirAwardedPointsCells(spec, baseline, image);
                 HistoryRasterAudit.separatorPixels(spec, image, 4);
                 var saved = temporary.newFile("raster-" + players + "-" + pattern + "-" + language + "-" + scale + ".png");
-                assertTrue(ImageIO.write(image, "png", saved));
+                assertTrue("ImageIO.write(image, \"png\", saved) must hold", ImageIO.write(image, "png", saved));
                 var reloaded = ImageIO.read(saved);
                 HistoryRasterAudit.rectanglesOnlyCoverTheirAwardedPointsCells(spec, baseline, reloaded);
                 if (players == 4 && language == HowToPlay.Language.RO && scale == 1.5f)
@@ -108,7 +114,9 @@ public final class ScoreHistoryCumulativeComponentTest {
             var game = AwardRasterFixture.create(players, AwardRasterFixture.Pattern.ISOLATED_BONUS);
             for (int index = 0; index < density.length; index++) {
                 var spec = raster(game, HowToPlay.Language.RO, density[index], 1);
-                assertEquals(pixels[index], spec.grid().separator());
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "density", density, "game", game, "index", index, "pixels", pixels, "players", players, "spec", spec);
+                assertEquals("spec.grid().separator() must equal pixels[index]", pixels[index], spec.grid().separator());
                 HistoryRasterAudit.separatorPixels(spec, HistoryRaster.render(spec, true), pixels[index]);
             }
         }
@@ -122,7 +130,7 @@ public final class ScoreHistoryCumulativeComponentTest {
         String configured = System.getProperty("whist.historyRasterOutput", "");
         if (configured.isBlank()) return;
         Path output = Path.of(configured);Files.createDirectories(output);
-        assertTrue(ImageIO.write(image, "png", output.resolve("history-" + name + ".png").toFile()));
+        assertTrue("ImageIO.write(image, \"png\", output.resolve(\"history-\" + name + \".png\").toFile()) must hold", ImageIO.write(image, "png", output.resolve("history-" + name + ".png").toFile()));
         Files.writeString(output.resolve("history-" + name + ".txt"),
                 "Controlled JVM component raster; not an Android screenshot.\nplayers=" + spec.players()
                         + "\ngrid=" + spec.grid() + "\nrows=" + spec.rows() + "\n");

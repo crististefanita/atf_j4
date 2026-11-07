@@ -10,7 +10,7 @@ import ro.whistlab.core.testing.PublicEndgameOracle;
 import ro.whistlab.coach.IndependentPlayer;
 import ro.whistlab.coach.WorldEnumerationProbe;
 import java.util.*;import org.junit.Test;import com.fasterxml.jackson.databind.*;import ro.whistlab.coach.*;import ro.whistlab.coach.baseline.v8.RoundEightIndependentPlayer;import ro.whistlab.core.baseline.v10.RoundTenMonteCarloAi;
-public class CertifiedContractRegressionTest {
+public class CertifiedContractRegressionTest extends atf.gradle.audit.GradleAuditedTest {
  private static final ObjectMapper JSON=new ObjectMapper();
  private JsonNode fixture(String key)throws Exception{return JSON.readTree(getClass().getResourceAsStream("/regressions/contract-certificate/cases.json")).path(key);}
  private MonteCarloAi.View view(JsonNode f)throws Exception{return ro.whistlab.core.testing.codec.ObservedPositionJson.view(JSON,f.path("input").path("before"));}
@@ -23,9 +23,11 @@ public class CertifiedContractRegressionTest {
   var v=view(fixture("positive"));var proposed=LossMiningTest.card("QH");
   for(int limit:List.of(0,1)) {
    var result=ContractGuarantee.choose(v,proposed,limit);
-   org.junit.Assert.assertFalse(result.certified());org.junit.Assert.assertEquals(proposed,result.card());
-   org.junit.Assert.assertTrue(result.nodes()<=limit);
+
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "limit", limit, "proposed", proposed, "result", result, "v", v);
+atf.gradle.audit.assertions.GradleAssertions.assertFalse("result.certified() must remain false", result.certified());atf.gradle.audit.assertions.GradleAssertions.assertEquals("result.card() must equal proposed", proposed,result.card());
+   atf.gradle.audit.assertions.GradleAssertions.assertTrue("result.nodes() <= limit must hold", result.nodes()<=limit);
   }
-  org.junit.Assert.assertThrows(IllegalArgumentException.class,()->ContractGuarantee.choose(v,proposed,-1));
+  atf.gradle.audit.assertions.GradleAssertions.assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->ContractGuarantee.choose(v,proposed,-1));
  }
 }

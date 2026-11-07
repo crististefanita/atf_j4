@@ -71,6 +71,29 @@ class LauncherSourceInventoryComponentTest {
         String service = "atf-tests/src/test/resources/META-INF/services/org.junit.jupiter.api.extension.Extension";
         AuditedAssertions.assertTrue(inputs.containsKey(service), service);
     }
+    @Test void alternateGradleEntriesExcludeOnlyTheirDeclaredGeneratedBoundaries(@TempDir Path scratch) throws Exception {
+        Path root = Files.createDirectory(scratch.resolve("reactor JVM"));
+        write(root, "config/atf-governance-policy.json", "{\"mavenModules\":[\"module\"],\"additionalSourceRoots\":[],\"buildRoots\":[\"jvm-entry\"]}");
+        write(root, "module/pom.xml", "<project/>");
+        write(root, "jvm-entry/settings.gradle", "rootProject.name='controlled'");
+        write(root, "jvm-entry/build.gradle", "// controlled build");
+        write(root, "jvm-entry/build/generated.txt", "generated");
+        write(root, "jvm-entry/.gradle/cache", "generated");
+        String legal = "jvm-entry/src/main/java/legal/build/Fixture.java";
+        write(root, legal, "package legal.build; class Fixture {}");
+        var inputs = inventory(root, scratch);
+        AuditedAssertions.assertTrue(inputs.containsKey(legal), "A package named build remains source");
+        AuditedAssertions.assertTrue(inputs.containsKey("jvm-entry/settings.gradle"), "The alternate reactor definition is an input");
+        AuditedAssertions.assertFalse(inputs.containsKey("jvm-entry/build/generated.txt"), "Build outputs are excluded at the declared boundary");
+        AuditedAssertions.assertFalse(inputs.containsKey("jvm-entry/.gradle/cache"), "The alternate Gradle cache is not source");
+    }
+    @Test void aDeclaredBuildRootWithoutItsSettingsIsRefused(@TempDir Path scratch) throws Exception {
+        Path root = Files.createDirectory(scratch.resolve("incomplete JVM reactor"));
+        write(root, "config/atf-governance-policy.json", "{\"mavenModules\":[],\"additionalSourceRoots\":[],\"buildRoots\":[\"jvm-entry\"]}");
+        write(root, "jvm-entry/build.gradle", "// settings absent");
+        String output = execute("Get-AtfSourceInputs.ps1", List.of("-SourceRoot", root.toString(), "-AsJson"), scratch, 1);
+        AuditedAssertions.assertTrue(output.contains("settings"), "A missing reactor definition cannot produce a partial source fingerprint");
+    }
 
     private static Map<String, String> inventory(Path root, Path scratch) throws Exception {
         String output = execute("Get-AtfSourceInputs.ps1", List.of("-SourceRoot", root.toString(), "-AsJson"), scratch, 0);

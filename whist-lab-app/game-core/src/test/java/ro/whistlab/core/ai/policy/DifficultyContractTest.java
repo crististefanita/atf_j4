@@ -18,12 +18,12 @@ import ro.whistlab.core.testing.PublicEndgameOracle;
 
 import java.util.*;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ro.whistlab.core.baseline.v11.RoundElevenAiPolicy;
 
 /** Menu levels, save compatibility and the strongest accepted policy are separate contracts. */
-public class DifficultyContractTest {
+public class DifficultyContractTest extends atf.gradle.audit.GradleAuditedTest {
     private static GameSession.Snapshot snapshot(MonteCarloAi.View v,List<List<Card>> world,GamePhase phase) {
         var players=new ArrayList<GameSession.PlayerSnapshot>();
         for(int seat=0;seat<world.size();seat++) {
@@ -54,7 +54,8 @@ public class DifficultyContractTest {
             c.equal("New Hard name",AiDifficulty.HARD,AiDifficulty.fromStoredName("HARD"));
             c.equal("Normal name",AiDifficulty.NORMAL,AiDifficulty.fromStoredName("NORMAL"));
             c.equal("New serialized name", "HARD",AiDifficulty.fromStoredName("EXPERT").name());
-            assertThrows(IllegalArgumentException.class,()->AiDifficulty.fromStoredName("IMPOSSIBLE"));
+
+            assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->AiDifficulty.fromStoredName("IMPOSSIBLE"));
         });
     }
     @Test public void hardBiddingUsesAnExactPosteriorInsteadOfTheOldHonorHint() throws Exception {

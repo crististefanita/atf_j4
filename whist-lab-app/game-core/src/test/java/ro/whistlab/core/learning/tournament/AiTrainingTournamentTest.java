@@ -10,7 +10,7 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import ro.whistlab.coach.IndependentPlayer;
 import ro.whistlab.core.baseline.legacy.LegacyAiPolicy;
 
 /** Prespecified paired adversarial evaluation. This is not proof of perfect hidden-information play. */
-public class AiTrainingTournamentTest {
+public class AiTrainingTournamentTest extends atf.gradle.audit.GradleAuditedTest {
     enum Player { NEW, OLD, CHALLENGER }
     private static final String VARIANT=System.getProperty("whist.aiCandidate","FULL");
     private static final int SERIES_REWARD=Integer.getInteger("whist.streakBonus",0);
@@ -41,18 +41,20 @@ public class AiTrainingTournamentTest {
             passed&=familyNew>=familyOld;oldPoints+=familyOld;newPoints+=familyNew;oldWins+=familyOldWins;newWins+=familyNewWins;
         }
         p.setProperty("variant",VARIANT);p.setProperty("phase",held?"heldout":"development");p.setProperty("seeds",first+".."+(first+seeds-1));p.setProperty("pairs",""+pair);p.setProperty("oldPoints",""+oldPoints);p.setProperty("newPoints",""+newPoints);p.setProperty("oldWins",""+oldWins);p.setProperty("newWins",""+newWins);p.setProperty("status",passed?"PASS":"REGRESSION");save(p,held);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "first", first, "held", held, "newPoints", newPoints, "newWins", newWins, "oldPoints", oldPoints, "oldWins", oldWins, "p", p, "pair", pair, "passed", passed, "seeds", seeds);
         assertTrue("New Expert regressed against at least one declared opponent family; retained every game",passed);
     }
     private static void save(Properties p,boolean held)throws Exception{String out=System.getProperty("whist.componentEvidence","");if(!out.isBlank()){Files.createDirectories(Path.of(out));try(var s=Files.newOutputStream(Path.of(out,held?"ai-heldout.properties":"ai-development.properties"))){p.store(s,"Paired same-deal same-seat normal games; all results retained");}}}
 
     private static int id(Card c){return c.suit().ordinal()*13+c.rank()-2;}
     private static Result play(long seed,int hero,Player policy,Player opponent){
-        GameSession g=GameSession.newGame(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,SERIES_REWARD!=0,SERIES_REWARD==0?5:SERIES_REWARD));int exact=0;long max=0;
+        GameSession g=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,seed,SERIES_REWARD!=0,SERIES_REWARD==0?5:SERIES_REWARD)));int exact=0;long max=0;
         while(true){
             while(g.snapshot().phase()==GamePhase.BIDDING){var s=g.snapshot();int seat=s.biddingSeat();Player p=seat==hero?policy:opponent;long at=System.nanoTime();int bid=p==Player.NEW&&!VARIANT.equals("CARD_ONLY")?AiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT):p==Player.OLD||p==Player.NEW?LegacyAiPolicy.chooseBid(s,seat,AiDifficulty.EXPERT):IndependentPlayer.bid(PlayerObservations.independent(s,seat)).value();max=Math.max(max,System.nanoTime()-at);g.submitBid(seat,bid);}
             while(g.snapshot().phase()==GamePhase.PLAYING){var s=g.snapshot();int seat=s.currentSeat();Player p=seat==hero?policy:opponent;long at=System.nanoTime();Card c;
                 if(p==Player.NEW&&!VARIANT.equals("BID_ONLY"))c=AiPolicy.chooseCard(s,seat,AiDifficulty.EXPERT);else if(p==Player.OLD||p==Player.NEW)c=LegacyAiPolicy.chooseCard(s,seat,AiDifficulty.EXPERT);else {int id=IndependentPlayer.card(PlayerObservations.independent(s,seat)).value();c=new Card(Suit.values()[id/13],id%13+2);}
-                max=Math.max(max,System.nanoTime()-at);var own=PlayerObservations.independent(s,seat);assertTrue(IndependentPlayer.legal(own.hand(),own.trick().isEmpty()?-1:own.trick().get(0).card()/13,own.trump()).contains(id(c)));g.playCard(seat,c);
+                max=Math.max(max,System.nanoTime()-at);var own=PlayerObservations.independent(s,seat);assertTrue("IndependentPlayer.legal(own.hand(), own.trick().isEmpty() ? -1 : own.trick().get(0).card() / 13, own.trump()).contains(id(c)) must hold", IndependentPlayer.legal(own.hand(),own.trick().isEmpty()?-1:own.trick().get(0).card()/13,own.trump()).contains(id(c)));g.playCard(seat,c);
             }
             var s=g.snapshot();var h=s.players().get(hero);if(h.bid()==h.tricksWon())exact++;
             if(s.finalHand()){int[] totals=s.players().stream().mapToInt(GameSession.PlayerSnapshot::totalScore).toArray();int best=Arrays.stream(totals).max().orElseThrow(),ties=0;for(int t:totals)if(t==best)ties++;return new Result(totals[hero],exact,totals[hero]==best?1.0/ties:0,totals,max);}g.startNextHand();

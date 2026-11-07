@@ -193,6 +193,7 @@ mvn -B -o -pl atf-tests -am '-Dtest=PublishedApkDownloadAcceptanceTest' '-Dsuref
 |---|---|
 | Manifest–payload | Registrul `integrity.files` enumeră exact toate fișierele dosarului, cu mărime și SHA-256; manifestul însuși este exclus pentru a evita autoreferința. Un fișier adăugat, șters sau modificat invalidează observația. |
 | Manifest–JUnit | Fiecare grup declară exact XML-urile păstrate. Cazurile sunt renumărate, identitatea clasă–invocare este unică, iar atributele XML și totalurile declarate trebuie să coincidă. |
+| Manifest–HTML auditat | Grupurile auditate declară un HTML canonic și protocolul receipt-ului. Invocările, comparațiile și verdictele sunt renumărate la ownerul lor; aceeași selecție nu păstrează și un grup XML paralel. Schema calificării distinge aceste grupuri de rezultatele istorice încă nemigrate. |
 | Rezultat calificat | Sunt necesare cazuri efective și zero eșecuri, erori ori omisiuni; un container gol nu inventează teste. Un antet cu zero eșecuri nu ascunde un element `failure`, `error` sau `skipped`. |
 | Manifest–intrări | Fișierul intrărilor sursă este inclus în registrul hash-urilor; amprenta și commit-ul declarate concordă, iar căile și hash-urile intrărilor sunt valide și fără duplicate. |
 

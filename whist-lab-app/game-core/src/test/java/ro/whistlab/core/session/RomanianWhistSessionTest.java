@@ -8,21 +8,23 @@ import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 
-import static org.junit.Assert.*;
+import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.*;
 import org.junit.Test;
 
-public class RomanianWhistSessionTest {
+public class RomanianWhistSessionTest extends atf.gradle.audit.GradleAuditedTest {
     private static final GameMode RO = GameMode.ROMANIAN_WHIST;
 
     @Test public void rw04DiscardIsRejectedWithoutChangingStateWhenTrumpIsHeld() {
         GameSession game = twoTricks();
         game.playCard(0, c(Suit.HEARTS,14));
         var before = game.snapshot();
-        assertThrows(IllegalArgumentException.class, () -> game.playCard(1, c(Suit.CLUBS,14)));
-        assertEquals(before, game.snapshot());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "game", game);
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> game.playCard(1, c(Suit.CLUBS,14)));
+        assertEquals("game.snapshot() must equal before", before, game.snapshot());
         game.playCard(1, c(Suit.SPADES,7));
-        assertEquals(2, game.snapshot().currentSeat());
+        assertEquals("game.snapshot().currentSeat() must equal 2", 2, game.snapshot().currentSeat());
     }
 
     @Test public void rw04FollowingSuitIsRequiredEvenWhenTheTrickWasAlreadyTrumped() {
@@ -30,8 +32,10 @@ public class RomanianWhistSessionTest {
         game.playCard(0, c(Suit.HEARTS,14));
         game.playCard(1, c(Suit.SPADES,7));
         var before = game.snapshot();
-        assertThrows(IllegalArgumentException.class, () -> game.playCard(2, c(Suit.SPADES,14)));
-        assertEquals(before, game.snapshot());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "game", game);
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> game.playCard(2, c(Suit.SPADES,14)));
+        assertEquals("game.snapshot() must equal before", before, game.snapshot());
         game.playCard(2, c(Suit.HEARTS,13));
     }
 
@@ -45,11 +49,13 @@ public class RomanianWhistSessionTest {
         game.playCard(1, c(Suit.SPADES,10));
         game.playCard(2, c(Suit.SPADES,7));
         game.playCard(3, c(Suit.HEARTS,7));
-        assertEquals(1, game.snapshot().lastTrickWinnerSeat());
-        assertEquals(1, game.snapshot().currentSeat());
-        assertEquals(1, game.snapshot().players().get(1).tricksWon());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "hands", hands);
+        assertEquals("game.snapshot().lastTrickWinnerSeat() must equal 1", 1, game.snapshot().lastTrickWinnerSeat());
+        assertEquals("game.snapshot().currentSeat() must equal 1", 1, game.snapshot().currentSeat());
+        assertEquals("game.snapshot().players().get(1).tricksWon() must equal 1", 1, game.snapshot().players().get(1).tricksWon());
         game.playCard(1, c(Suit.CLUBS,14));
-        assertEquals(2, game.snapshot().currentSeat());
+        assertEquals("game.snapshot().currentSeat() must equal 2", 2, game.snapshot().currentSeat());
     }
 
     @Test public void rw06ScoresOnlyAfterLastCardAndOnlyOnce() {
@@ -58,18 +64,20 @@ public class RomanianWhistSessionTest {
         game.playCard(0,c(Suit.HEARTS,14));
         game.playCard(1,c(Suit.HEARTS,13));
         game.playCard(2,c(Suit.HEARTS,12));
-        assertEquals(List.of(0,0,0,0), totals(game));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game);
+        assertEquals("totals(game) must equal List.of(0, 0, 0, 0)", List.of(0,0,0,0), totals(game));
         game.playCard(3,c(Suit.HEARTS,11));
-        assertEquals(List.of(6,5,5,-1), totals(game));
+        assertEquals("totals(game) must equal List.of(6, 5, 5, -1)", List.of(6,5,5,-1), totals(game));
         var scored = game.snapshot();
-        assertThrows(IllegalStateException.class, () -> game.playCard(3,c(Suit.HEARTS,11)));
-        assertThrows(IllegalStateException.class, () -> game.submitBid(0,0));
-        assertEquals(scored, game.snapshot());
-        assertEquals(scored, GameSession.restore(game.saveState()).snapshot());
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, () -> game.playCard(3,c(Suit.HEARTS,11)));
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, () -> game.submitBid(0,0));
+        assertEquals("game.snapshot() must equal scored", scored, game.snapshot());
+        assertEquals("GameSession.restore(game.saveState()).snapshot() must equal scored", scored, GameSession.restore(game.saveState()).snapshot());
         game.startNextHand();
-        assertEquals(List.of(6,5,5,-1), totals(game));
-        assertTrue(game.snapshot().players().stream().allMatch(p -> p.tricksWon()==0 && p.bid()==null));
-        assertEquals(0, game.snapshot().dealerSeat());
+        assertEquals("totals(game) must equal List.of(6, 5, 5, -1)", List.of(6,5,5,-1), totals(game));
+        assertTrue("game.snapshot().players().stream().allMatch((p)->p.tricksWon() == 0 && p.bid() == null) must hold", game.snapshot().players().stream().allMatch(p -> p.tricksWon()==0 && p.bid()==null));
+        assertEquals("game.snapshot().dealerSeat() must equal 0", 0, game.snapshot().dealerSeat());
     }
 
     @Test public void rw03DealerBidsLastAndForbiddenInputDoesNotAdvanceTheTurn() {
@@ -77,32 +85,38 @@ public class RomanianWhistSessionTest {
             GameSession game = GameSession.fromDeal(config(), oneCardHands(), Trump.SPADES, dealer);
             for (int i=1; i<4; i++) {
                 int expected=(dealer+i)%4;
-                assertEquals(expected, game.snapshot().biddingSeat());
+
+                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "dealer", dealer, "expected", expected, "game", game, "i", i);
+                assertEquals("game.snapshot().biddingSeat() must equal expected", expected, game.snapshot().biddingSeat());
                 game.submitBid(expected,0);
             }
             var before=game.snapshot();
             final int seat=dealer;
-            assertThrows(IllegalArgumentException.class, () -> game.submitBid(seat,1));
-            assertEquals(before,game.snapshot());
+            assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> game.submitBid(seat,1));
+            assertEquals("game.snapshot() must equal before", before,game.snapshot());
             game.submitBid(dealer,0);
-            assertEquals((dealer+1)%4,game.snapshot().currentSeat());
+            assertEquals("game.snapshot().currentSeat() must equal (dealer + 1) % 4", (dealer+1)%4,game.snapshot().currentSeat());
         }
     }
 
     @Test public void rw07WrongPhaseWrongSeatAndOutOfRangeBidLeaveStateUnchanged() {
         GameSession game=oneCard(); var before=game.snapshot();
-        assertThrows(IllegalStateException.class, () -> game.playCard(0,c(Suit.HEARTS,14)));
-        assertThrows(IllegalStateException.class, game::startNextHand);
-        assertThrows(IllegalStateException.class, () -> game.submitBid(1,0));
-        assertThrows(IllegalArgumentException.class, () -> game.submitBid(0,-1));
-        assertThrows(IllegalArgumentException.class, () -> game.submitBid(0,2));
-        assertEquals(before,game.snapshot());
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "game", game);
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, () -> game.playCard(0,c(Suit.HEARTS,14)));
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, game::startNextHand);
+        assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class, () -> game.submitBid(1,0));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> game.submitBid(0,-1));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> game.submitBid(0,2));
+        assertEquals("game.snapshot() must equal before", before,game.snapshot());
     }
 
     @Test public void rw04BothAiDifficultiesRespectMandatoryTrumpEvenAfterMeetingTheirBid() {
         GameSession game=twoTricks(); game.playCard(0,c(Suit.HEARTS,14));
         for (AiDifficulty difficulty : AiDifficulty.values())
-            assertEquals(c(Suit.SPADES,7), AiPolicy.chooseCard(game.snapshot(),1,difficulty));
+            {
+atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "difficulty", difficulty, "game", game);
+assertEquals("AiPolicy.chooseCard(game.snapshot(), 1, difficulty) must equal c(Suit.SPADES, 7)", c(Suit.SPADES,7), AiPolicy.chooseCard(game.snapshot(),1,difficulty)); }
     }
 
     private static GameSession twoTricks() {

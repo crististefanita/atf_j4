@@ -23,7 +23,7 @@ final class JunitIntegrity {
                     Math.addExact(errors, value.errors), Math.addExact(skipped, value.skipped));
         }
     }
-    static void verify(Path folder, JsonNode qualification) throws IOException {
+    static Set<String> verify(Path folder, JsonNode qualification) throws IOException {
         require(text(qualification, "state").equals("PASS"), "QUALIFICATION", folder);
         var groups = qualification.path("groups");require(groups.isObject() && !groups.isEmpty(), "JUNIT-GROUPS", folder);
         Path results = folder.resolve("reports/test-results");
@@ -40,6 +40,7 @@ final class JunitIntegrity {
             for (Path entry : entries.toList()) { require(Files.isDirectory(entry), "JUNIT-DIRECTORY", entry);actual.add(entry.getFileName().toString()); }
             require(actual.equals(expectedGroups), "JUNIT-GROUPS", results);
         }
+        return Set.copyOf(identities);
     }
     private static void group(Path directory, JsonNode declared, Set<String> identities) throws IOException {
         require(Files.isDirectory(directory), "JUNIT-DIRECTORY", directory);

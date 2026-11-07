@@ -109,7 +109,8 @@ Lipsa unui certificat păstrează fallback-ul și nu dovedește că alternativa 
 ## Reproductibilitate și limite
 
 - Aceeași observație completă și aceeași implementare produc aceeași decizie.
-- Seed-ul intern depinde și de scorurile publice absolute; invarianta la translația comună a scorurilor nu este un contract al implementării curente.
+- Pentru Hard, inițializarea estimatorului folosește diferențele de scor față de actor, calculate pe 64 de biți. O translație comună a totalurilor păstrează aceleași lumi și estimări; schimbarea diferențelor de scor rămâne parte a contextului. Jucătorul independent are propriul flux aleator și nu preia automat această invariantă.
+- Bonusurile și penalizările configurate schimbă utilitatea rezultatului, fără să schimbe singure distribuirea cărților. La mâinile eligibile, diferența valorii unei serii se ponderează cu frecvența exactului sau a ratării; o mână de o carte nu plătește seria.
 - Licitațiile necunoscute din simulare sunt estimări, iar cele deja publice rămân ținte obligatorii.
 - O carte forțată de legalitate nu dovedește intenția actorului.
 - Bugetul de simulare controlează costul și incertitudinea estimatorului; mărirea lui nu demonstrează singură progres strategic.
