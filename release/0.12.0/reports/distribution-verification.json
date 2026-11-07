@@ -48,5 +48,16 @@
       "status": 404,
       "verified": false
     }
-  ]
+  ],
+  "publicDownload": {
+    "url": "https://whist-lab-apk.totaloatcake.chatgpt.site/v0.12.0/WhistLab-0.12.0.apk",
+    "sha256": "27e4c3c298f1e05640438ccc0902a3d8c3515348fdbdfd04f5e9a8059b730d93",
+    "bytes": 832632,
+    "httpStatus": 200,
+    "pageUrl": "https://whist-lab-apk.totaloatcake.chatgpt.site/",
+    "pageStatus": 200,
+    "checksumUrl": "https://whist-lab-apk.totaloatcake.chatgpt.site/v0.12.0/WhistLab-0.12.0.apk.sha256",
+    "verifiedUtc": "2026-11-07T14:59:21.1591528+00:00",
+    "channel": "anonymous HTTPS GET without cookies or authorization"
+  }
 }

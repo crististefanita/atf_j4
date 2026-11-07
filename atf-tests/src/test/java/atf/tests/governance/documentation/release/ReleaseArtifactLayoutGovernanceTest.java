@@ -32,9 +32,10 @@ class ReleaseArtifactLayoutGovernanceTest {
         String current = releaseIndex.required("currentVersion").asText();
         var validation = new com.fasterxml.jackson.databind.ObjectMapper()
                 .readTree(root.resolve("release/" + current + "/release-validation.json").toFile());
+        String repository = GovernanceProject.policy(root).required("publicRepository").asText();
+        String download = ReleaseCatalogPresentation.downloadTarget(root.resolve("release/" + current), validation, repository);
         AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(root.resolve("README.md"), projectGuide,
-                releaseIndex, GovernanceProject.policy(root).required("publicRepository").asText(),
-                validation.path("publication").path("state").asText().equals("PUBLISHED")));
+                releaseIndex, repository, download));
         String currentSection = ReleaseCatalogPresentation.currentSection(root.resolve("release/README.md"), catalog);
         AuditedAssertions.assertTrue(currentSection.contains("(" + current + "/README.md)"), "The current entry follows the structured index");
         for (Path folder : ReleaseArtifactCatalog.folders(root)) {
@@ -55,13 +56,13 @@ class ReleaseArtifactLayoutGovernanceTest {
         var json = new com.fasterxml.jackson.databind.ObjectMapper();
         String version = json.readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
         String repository = GovernanceProject.policy(root).required("publicRepository").asText();
-        boolean published = json.readTree(root.resolve("release/" + version + "/release-validation.json").toFile())
-                .required("publication").required("state").asText().equals("PUBLISHED");
-        var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|release/[^)]+)\\)")
+        Path releaseFolder = root.resolve("release/" + version);
+        var manifest = json.readTree(releaseFolder.resolve("release-validation.json").toFile());
+        boolean published = manifest.required("publication").required("state").asText().equals("PUBLISHED");
+        var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|[^)]+\\.apk|release/[^)]+)\\)")
                 .matcher(section).results().map(result -> result.group(1)).toList();
-        var expected = published ? List.of(repository + "/releases/tag/v" + version,
-                repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk")
-                : List.of("release/" + version + "/README.md", "release/" + version + "/WhistLab-" + version + ".apk");
+        var expected = List.of(published ? repository + "/releases/tag/v" + version : "release/" + version + "/README.md",
+                ReleaseCatalogPresentation.downloadTarget(releaseFolder, manifest, repository));
         AuditedAssertions.assertEquals(expected, links, "Two product actions; catalog and audit details belong to documentation");
     }
 
@@ -93,11 +94,12 @@ class ReleaseArtifactLayoutGovernanceTest {
     @Test void theMainReadmeAlwaysTargetsTheCurrentVersionLocallyThenOnGitHub() throws Exception {
         var index = downloadIndex();
         AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(Path.of("README.md"),
-                downloadGuide(), index, "https://github.com/example/game", false));
+                downloadGuide(), index, "https://github.com/example/game", "release/1.2.0/WhistLab-1.2.0.apk"));
         String published = downloadGuide().replace("(release/1.2.0/WhistLab-1.2.0.apk)",
                 "(https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk)");
         AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(Path.of("README.md"),
-                published, index, "https://github.com/example/game", true));
+                published, index, "https://github.com/example/game",
+                "https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk"));
     }
 
     @ParameterizedTest
@@ -114,10 +116,31 @@ class ReleaseArtifactLayoutGovernanceTest {
             case "published-local" -> currentPublished = true;
             default -> throw new IllegalArgumentException(defect);
         }
-        String observed = guide;boolean published = currentPublished;
+        String observed = guide;
+        String repository = "https://github.com/example/game";
+        String target = ReleaseCatalogPresentation.releaseDownload(repository, "1.2.0", currentPublished);
         var failure = AuditedAssertions.assertThrows(IOException.class, () -> ReleaseCatalogPresentation.projectLinks(
-                Path.of("README.md"), observed, index, "https://github.com/example/game", published));
+                Path.of("README.md"), observed, index, repository, target));
         AuditedAssertions.assertTrue(failure.getMessage().startsWith("RELEASE-PROJECT-LINK-"), "Specific release-link diagnostic");
+    }
+
+    @Test void aPublicDownloadMustMatchThePublishedVersionAndHash() throws Exception {
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var manifest = json.createObjectNode();
+        manifest.putObject("release").put("versionName", "1.2.0").put("apkBytes", 50).put("apkSha256", "a".repeat(64));
+        manifest.putObject("publication").put("state", "PUBLISHED");
+        Path receipt = Files.createDirectories(temporary.resolve("reports")).resolve("distribution-verification.json");
+        var record = json.createObjectNode();
+        var mirror = record.putObject("publicDownload").put("url", "https://example.org/v1.2.0/WhistLab-1.2.0.apk")
+                .put("httpStatus", 200).put("bytes", 50).put("sha256", "a".repeat(64));
+        json.writeValue(receipt.toFile(), record);
+        String repository = "https://github.com/example/game";
+        AuditedAssertions.assertEquals(mirror.path("url").asText(),
+                ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        mirror.put("sha256", "b".repeat(64));
+        json.writeValue(receipt.toFile(), record);
+        AuditedAssertions.assertThrows(IOException.class,
+                () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
     }
 
     private static com.fasterxml.jackson.databind.node.ObjectNode downloadIndex() throws Exception {

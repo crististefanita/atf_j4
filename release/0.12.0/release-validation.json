@@ -70,7 +70,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-07T14:45:18.8407300+00:00",
+    "observedUtc": "2026-11-07T14:59:21.2433278+00:00",
     "files": [
       {
         "path": "github-release.json",
@@ -144,8 +144,8 @@
       },
       {
         "path": "reports/distribution-verification.json",
-        "bytes": 2055,
-        "sha256": "3a9f8fdc55a5f007e17942928a2a3025f95f9434f742a9fd6bd8b50fec2ad283"
+        "bytes": 2630,
+        "sha256": "c57b7dfea8aec50513c525aff0ac0b0e3f63e19fd1a2db2b5a17484f0d9078d7"
       },
       {
         "path": "reports/e2e/signed-release-smoke.html",

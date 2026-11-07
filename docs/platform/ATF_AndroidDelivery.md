@@ -44,7 +44,7 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 ## Distribuția prin GitHub
 
-- **Descărcare:** README-ul principal oferă APK-ul candidatului local; după publicare, folosește linkul direct fixat pe versiune și nume de asset din GitHub Releases. Autentificați-vă în același browser pentru canalul personal; directorul `release` al repository-ului păstrează documentația și copia locală.
+- **Descărcare:** README-ul principal oferă APK-ul candidatului local. După publicare, indică asset-ul versiunii din GitHub Releases sau o copie publică a aceluiași APK. Copia publică devine linkul direct după ce o descărcare fără autentificare confirmă dimensiunea și SHA-256 din manifest. Directorul `release` al repository-ului păstrează documentația și copia locală.
 - **Stare:** README-ul principal indică numai `currentVersion`. Pentru `PREPARED`, linkul identifică APK-ul local; după publicare, identifică asset-ul GitHub al aceleiași versiuni. O ediție anterioară poate fi reper în audit, fără a deveni descărcarea curentă.
 
 - **Copie locală:** [catalogul livrărilor](../../release/README.md) trimite la dosarul versiunii, care reunește APK-ul, checksum-ul și rapoartele; binarul și checksum-ul local sunt excluse din Git.
