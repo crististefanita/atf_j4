@@ -20,7 +20,8 @@ final class HighScoreCodec {
                 var profile = board.profile();
                 JSONObject item = new JSONObject().put("mode", profile.mode().name())
                         .put("players", profile.players()).put("difficulty", profile.difficulty().name())
-                        .put("series", profile.series()).put("reward", profile.reward()).put("penalty", profile.penalty());
+                        .put("series", profile.series()).put("reward", profile.reward()).put("penalty", profile.penalty())
+                        .put("allowZeroGame", profile.allowZeroGame());
                 JSONArray entries = new JSONArray();
                 for (var entry : board.entries()) entries.put(new JSONObject().put("name", entry.name())
                         .put("score", entry.score()).put("ai", entry.ai()).put("sample", entry.sample())
@@ -28,7 +29,7 @@ final class HighScoreCodec {
                 item.put("entries", entries).put("processedMatches", new JSONArray(board.processedMatches().stream().sorted().collect(java.util.stream.Collectors.toList())));
                 boards.put(item);
             }
-            return new JSONObject().put("schemaVersion", 1).put("capacity", HighScores.CAPACITY)
+            return new JSONObject().put("schemaVersion", 2).put("capacity", HighScores.CAPACITY)
                     .put("profiles", boards).toString(2);
         } catch (JSONException error) { throw new IOException("Could not encode high scores", error); }
     }
@@ -36,19 +37,22 @@ final class HighScoreCodec {
     static HighScores decode(String encoded) throws IOException {
         try {
             JSONObject root = new JSONObject(encoded);
-            if (integer(root, "schemaVersion") != 1 || integer(root, "capacity") != HighScores.CAPACITY)
+            int version = integer(root, "schemaVersion");
+            if ((version != 1 && version != 2) || integer(root, "capacity") != HighScores.CAPACITY)
                 throw new IllegalArgumentException("Unsupported high-score format");
             var result = new HighScores();
             JSONArray profiles = root.getJSONArray("profiles");
-            for (int index = 0; index < profiles.length(); index++) readBoard(profiles.getJSONObject(index), result);
+            for (int index = 0; index < profiles.length(); index++) readBoard(profiles.getJSONObject(index), result, version);
             return result;
         } catch (JSONException | IllegalArgumentException error) { throw new IOException("Invalid high-score file", error); }
     }
 
-    private static void readBoard(JSONObject item, HighScores result) throws JSONException {
+    private static void readBoard(JSONObject item, HighScores result, int version) throws JSONException {
+        Object zeroGame = version == 1 ? Boolean.FALSE : item.get("allowZeroGame");
+        if (!(zeroGame instanceof Boolean)) throw new JSONException("Boolean required: allowZeroGame");
         var profile = new HighScores.Profile(GameMode.valueOf(item.getString("mode")), integer(item, "players"),
                 AiDifficulty.valueOf(item.getString("difficulty")), item.getBoolean("series"),
-                integer(item, "reward"), integer(item, "penalty"));
+                integer(item, "reward"), integer(item, "penalty"), (Boolean) zeroGame);
         var entries = new ArrayList<HighScores.Entry>();
         JSONArray rows = item.getJSONArray("entries");
         for (int index = 0; index < rows.length(); index++) {

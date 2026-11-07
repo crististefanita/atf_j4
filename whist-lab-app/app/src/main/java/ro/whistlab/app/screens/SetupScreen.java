@@ -39,7 +39,8 @@ public final class SetupScreen {
         views.addQuietButton(page, copy.rulesAndSchedule(), () -> {
             new AlertDialog.Builder(activity).setTitle(copy.modeName(setup.mode()))
                     .setMessage(copy.modeDescription(setup.mode()) + "\n\n" + copy.schedulePreview(setup.mode(), setup.playerCount())
-                            + (setup.mode().isRomanian() ? "\n\n" + copy.streakToggle() : ""))
+                            + (setup.mode().isRomanian() ? "\n\n" + copy.streakToggle()
+                                    + "\n\n" + copy.zeroGameRule() : ""))
                     .setPositiveButton(copy.close(), null).show();
         });
         CheckBox streakBonuses=new CheckBox(activity);
@@ -63,6 +64,14 @@ public final class SetupScreen {
         streakRow.addView(streakBonuses, new LinearLayout.LayoutParams(0, views.dp(48), 1f));
         streakRow.addView(streakValue, new LinearLayout.LayoutParams(views.dp(138), views.dp(48)));
         page.addView(streakRow, views.matchWrap());
+        CheckBox zeroGame = new CheckBox(activity);
+        zeroGame.setText(copy.zeroGameToggle());
+        zeroGame.setTextSize(13);
+        zeroGame.setTag("romanian-zero-game");
+        zeroGame.setMinHeight(views.dp(48));
+        zeroGame.setChecked(setup.allowZeroGame());
+        zeroGame.setOnCheckedChangeListener((button, checked) -> setup.allowZeroGame(checked));
+        page.addView(zeroGame, views.matchWrap());
         players.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent,View view,int position,long id) {
                 setup.playerCount(position + 3);
@@ -76,7 +85,9 @@ public final class SetupScreen {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
         Runnable updateModeDetails = () -> {
-            streakRow.setVisibility(setup.mode().isRomanian() ? View.VISIBLE : View.GONE);
+            int visibility = setup.mode().isRomanian() ? View.VISIBLE : View.GONE;
+            streakRow.setVisibility(visibility);
+            zeroGame.setVisibility(visibility);
         };
         updateModeDetails.run();
         modes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -101,7 +112,13 @@ public final class SetupScreen {
             int playerCount = Integer.parseInt(String.valueOf(players.getSelectedItem()));
             GameMode mode = WhistUiText.MENU_MODES.get(modes.getSelectedItemPosition());
             AiDifficulty ai = AiDifficulty.values()[difficulty.getSelectedItemPosition()];
-            start.accept(GameConfig.newMatch(playerCount, mode, ai, System.nanoTime(), mode.isRomanian() && streakBonuses.isChecked(), streakValue.getSelectedItemPosition() == 0 ? 5 : 10));
+            setup.playerCount(playerCount);
+            setup.mode(mode);
+            setup.difficulty(ai);
+            setup.streaks(streakBonuses.isChecked());
+            setup.streakBonus(streakValue.getSelectedItemPosition() == 0 ? 5 : 10);
+            setup.allowZeroGame(zeroGame.isChecked());
+            start.accept(setup.config(System.nanoTime()));
         }, true);
         views.addQuietButton(page, copy.back(), back);
     }

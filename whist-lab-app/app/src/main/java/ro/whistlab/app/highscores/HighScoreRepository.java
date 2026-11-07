@@ -46,7 +46,7 @@ public final class HighScoreRepository {
         var profile = HighScores.Profile.from(game.config());
         String matchId = profile.key() + ":" + id;
         var results = new ArrayList<HighScores.Entry>();
-        for (var player : state.players()) results.add(new HighScores.Entry(player.name(), player.totalScore(),
+        for (var player : state.players()) results.add(new HighScores.Entry(player.name(), state.matchScore(player.seat()),
                 !player.human(), false, matchId, player.seat(), now));
         HighScores data = load();
         if (!data.record(profile, matchId, results, random)) return false;

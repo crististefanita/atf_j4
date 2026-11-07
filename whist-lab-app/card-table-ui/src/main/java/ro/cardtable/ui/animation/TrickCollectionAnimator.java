@@ -1,4 +1,4 @@
-package ro.whistlab.app.animation;
+package ro.cardtable.ui.animation;
 
 import android.os.SystemClock;
 import android.view.ViewGroup;
@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 public final class TrickCollectionAnimator {
     private final TrickCollectionRun run;
 
-    private TrickCollectionAnimator(ViewGroup board, TrickCollectionRequest request, long remainingMillis, Runnable resized) {
+    private TrickCollectionAnimator(ViewGroup board, CollectionTarget request, long remainingMillis, Runnable resized) {
         run = new TrickCollectionRun(request, remainingMillis, SystemClock::uptimeMillis,
                 new AndroidCollectionSurface(board), resized);
         run.start();
     }
 
-    public static TrickCollectionAnimator attach(ViewGroup board, TrickCollectionRequest request,
+    public static TrickCollectionAnimator attach(ViewGroup board, CollectionTarget request,
                                                  long remainingMillis, Runnable resized) {
         return remainingMillis > 0 ? new TrickCollectionAnimator(board, request, remainingMillis, resized) : null;
     }

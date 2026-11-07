@@ -1,4 +1,4 @@
-package ro.whistlab.app.animation;
+package ro.cardtable.ui.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -54,7 +54,7 @@ final class AndroidCollectionSurface implements TrickCollectionRun.Surface {
         return Build.VERSION.SDK_INT < 26 || ValueAnimator.areAnimatorsEnabled();
     }
 
-    @Override public TrickCollectionRun.Geometry measure(TrickCollectionRequest request) {
+    @Override public TrickCollectionRun.Geometry measure(CollectionTarget request) {
         if (!board.isAttachedToWindow() || board.getWidth() == 0 || board.getHeight() == 0) return null;
         View target = board.findViewWithTag("table-seat:" + request.winner());
         if (!hasSize(target)) return null;

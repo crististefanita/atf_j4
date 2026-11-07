@@ -5,7 +5,13 @@ import ro.whistlab.core.rules.GameMode;
 import java.util.Objects;
 
 public record GameConfig(int playerCount, GameMode mode, AiDifficulty aiDifficulty, long seed,
-        boolean streakBonuses, int streakBonusPoints, int streakPenaltyPoints) {
+        boolean streakBonuses, int streakBonusPoints, int streakPenaltyPoints, boolean allowZeroGame) {
+    /** Historical profiles and benchmarks keep their original scoring. */
+    public GameConfig(int playerCount, GameMode mode, AiDifficulty aiDifficulty, long seed,
+            boolean streakBonuses, int streakBonusPoints, int streakPenaltyPoints) {
+        this(playerCount, mode, aiDifficulty, seed, streakBonuses, streakBonusPoints, streakPenaltyPoints, false);
+    }
+
     /** Compatibility for existing training protocols that declared only the positive reward. */
     public GameConfig(int playerCount, GameMode mode, AiDifficulty aiDifficulty, long seed,
             boolean streakBonuses, int streakBonusPoints) {
@@ -27,6 +33,9 @@ public record GameConfig(int playerCount, GameMode mode, AiDifficulty aiDifficul
         if (streakBonuses && !mode.isRomanian()) {
             throw new IllegalArgumentException("Five-hand streaks apply only to Romanian Whist");
         }
+        if (allowZeroGame && !mode.isRomanian()) {
+            throw new IllegalArgumentException("Playing for zero applies only to Romanian Whist");
+        }
         if (streakBonusPoints != 5 && streakBonusPoints != 10) {
             throw new IllegalArgumentException("The positive five-hand bonus must be 5 or 10 points");
         }
@@ -42,6 +51,11 @@ public record GameConfig(int playerCount, GameMode mode, AiDifficulty aiDifficul
     /** Product configuration for a new match: equal five-hand reward and penalty. */
     public static GameConfig newMatch(int players, GameMode mode, AiDifficulty difficulty, long seed,
             boolean series, int points) {
-        return new GameConfig(players, mode, difficulty, seed, series, points, points);
+        return newMatch(players, mode, difficulty, seed, series, points, mode.isRomanian());
+    }
+
+    public static GameConfig newMatch(int players, GameMode mode, AiDifficulty difficulty, long seed,
+            boolean series, int points, boolean allowZeroGame) {
+        return new GameConfig(players, mode, difficulty, seed, series, points, points, allowZeroGame);
     }
 }

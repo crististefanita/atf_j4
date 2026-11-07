@@ -61,6 +61,21 @@ public class CompletedTrickOwnershipComponentTest extends atf.gradle.audit.Gradl
         }
     }
 
+    @Test public void aColdRestoreShowsTheFinalTrickOnceWithoutRescoring() {
+        var game = completedGeneratedTrick();
+        while (game.snapshot().phase() == GamePhase.PLAYING) playFirstLegal(game);
+        var restored = GameSession.restoreComplete(game.saveState());
+        var state = restored.snapshot();
+        var pause = new CompletedTrickPause();
+        atf.gradle.audit.GradleInputs.fixture("Restored final checkpoint", "state", state);
+        assertEquals("The saved hand is scored", GamePhase.SCORE, state.phase());
+        assertEquals("Only the persisted final trick is shown", state.lastTrick(), pause.evaluate(restored, 100).cards());
+        assertEquals("Cold restore opens one full window", 1500, pause.evaluate(restored, 100).remainingMillis());
+        assertFalse("The score page takes over at the deadline", pause.evaluate(restored, 1600).active());
+        assertFalse("Reevaluation cannot collect it again", pause.evaluate(restored, 1700).active());
+        assertEquals("The restored snapshot and scores are unchanged", state, restored.snapshot());
+    }
+
     private static GameSession completedGeneratedTrick() {
         var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 31)));
         while (game.snapshot().phase() == GamePhase.BIDDING) {
@@ -68,13 +83,15 @@ public class CompletedTrickOwnershipComponentTest extends atf.gradle.audit.Gradl
             game.submitBid(state.biddingSeat(), GameRules.allowedBids(state.handSize(), state.bidTotal(),
                     state.bidsSubmitted() == state.players().size() - 1).get(0));
         }
-        while (game.snapshot().history().size() < 4) {
-            var state = game.snapshot();
-            var led = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
-            var legal = GameRules.legalCards(state.players().get(state.currentSeat()).hand(), led, state.trump(), state.mode());
-            game.playCard(state.currentSeat(), legal.get(0));
-        }
+        while (game.snapshot().history().size() < 4) playFirstLegal(game);
         return game;
+    }
+
+    private static void playFirstLegal(GameSession game) {
+        var state = game.snapshot();
+        var led = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
+        var legal = GameRules.legalCards(state.players().get(state.currentSeat()).hand(), led, state.trump(), state.mode());
+        game.playCard(state.currentSeat(), legal.get(0));
     }
 
     private static GameSession completedTrick(int players, int winner, int size) {

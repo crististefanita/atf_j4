@@ -20,4 +20,5 @@ rootProject.name = "whist-lab-app"
 include(":game-core", ":ai-lab", ":app")
 
 include(":card-table-ui")
+include(":card-table-names")
 include(":test-audit")

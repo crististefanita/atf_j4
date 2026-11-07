@@ -212,10 +212,10 @@ public final class WhistUiText {
     }
 
     public String winner(GameSession.Snapshot state) {
-        int best = state.players().stream().mapToInt(GameSession.PlayerSnapshot::totalScore)
+        int best = state.players().stream().mapToInt(player -> state.matchScore(player.seat()))
                 .max().orElseThrow();
         List<String> names = state.players().stream()
-                .filter(player -> player.totalScore() == best)
+                .filter(player -> state.matchScore(player.seat()) == best)
                 .map(this::playerName).collect(Collectors.toList());
         return names.size() == 1
                 ? choose("Winner: ", "Câștigător: ") + names.get(0) + " (" + best
@@ -223,6 +223,21 @@ public final class WhistUiText {
                 : choose("Joint winners: ", "Câștigători la egalitate: ")
                         + String.join(", ", names) + " (" + best
                         + choose(" points)", " puncte)");
+    }
+
+    public String zeroGameToggle() { return choose("Allow playing for zero", "Permite joc la 0"); }
+
+    public String zeroGameRule() {
+        int score = ro.whistlab.core.rules.RomanianScoring.ZERO_GAME_SCORE;
+        return choose("Exactly 0 points after the last hand becomes " + score + " in the final standings.",
+                "Exact 0 puncte după ultima mână devin " + score + " în clasamentul final.");
+    }
+
+    public String zeroGameAwards(GameSession.Snapshot state) {
+        String names = state.players().stream().filter(player -> state.earnedZeroGame(player.seat()))
+                .map(this::playerName).collect(Collectors.joining(", "));
+        return names.isEmpty() ? "" : choose("Playing for zero", "Joc la 0") + " (0 → "
+                + ro.whistlab.core.rules.RomanianScoring.ZERO_GAME_SCORE + "): " + names;
     }
 
     public String scoreRule(GameSession.Snapshot state) {
@@ -374,6 +389,10 @@ public final class WhistUiText {
         return scoreLine(player, (earned >= 0 ? "+" : "") + earned);
     }
     public String scoreLine(GameSession.PlayerSnapshot player, String handValue) {
+        return scoreLine(player, handValue, player.totalScore());
+    }
+
+    public String scoreLine(GameSession.PlayerSnapshot player, String handValue, int total) {
         String line = playerName(player) + " | " + bidLabel() + ": "
                 + (player.bid() == null ? "—" : player.bid()) + " | "
                 + tricksWonLabel() + ": " + player.tricksWon() + " | "
@@ -382,7 +401,7 @@ public final class WhistUiText {
             line += choose(" (series ", " (serie ")
                     + (player.streakPoints() > 0 ? "+" : "") + player.streakPoints() + ")";
         }
-        return line + " | " + choose("Total", "Total") + ": " + player.totalScore();
+        return line + " | " + choose("Total", "Total") + ": " + total;
     }
     public String scoreAccessibility(GameSession.PlayerSnapshot player, int earned) {
         return scoreLine(player, earned);

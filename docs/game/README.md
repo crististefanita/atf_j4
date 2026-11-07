@@ -43,6 +43,7 @@ Configurația stabilește regulile aplicabile înainte de distribuire. Ajutorul 
 | Levata | Câștigă cel mai mare atu sau cel mai mare rang din culoarea cerută; câștigătorul conduce. |
 | Scor | Contract exact: 5 + levate; ratare: minus diferența absolută. |
 | Serii | Opțiuni configurate înainte de partidă, cu eligibilitate și resetare definite de RomanianScoring. |
+| Joc la 0 | Opțiune bifată implicit în ambele variante românești. După ultima mână, fiecare total exact 0 se afișează și se clasează ca 500. Istoricul mâinilor păstrează totalul calculat. |
 
 ## Principii de implementare
 

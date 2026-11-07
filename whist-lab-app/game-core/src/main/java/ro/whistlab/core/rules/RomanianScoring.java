@@ -2,6 +2,8 @@ package ro.whistlab.core.rules;
 
 /** Romanian five-hand scoring. A signed counter records up to four eligible results. */
 public final class RomanianScoring {
+    public static final int ZERO_GAME_SCORE = 500;
+
     private RomanianScoring() { }
 
     public record Result(int basePoints, int streakPoints, int nextStreak) {

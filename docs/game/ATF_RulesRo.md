@@ -67,6 +67,13 @@
 - O mână de o carte nu avansează o serie de același tip, dar un rezultat opus o întrerupe.
 - Bonusul de serie este separat de cele 5 puncte ale fiecărui contract exact.
 
+## Joc la 0
+
+- În ambele variante românești, opțiunea Permite joc la 0 este bifată implicit la pornire.
+- După punctarea ultimei mâini, inclusiv a seriilor, fiecare jucător cu total exact 0 primește 500 ca scor final.
+- Toate celelalte totaluri se păstrează.
+- Istoricul păstrează punctele pe mâini și explică separat transformarea finală.
+
 ## Nu confunda variantele
 
 - Acest ghid descrie Whist românesc standard din Whist Lab.

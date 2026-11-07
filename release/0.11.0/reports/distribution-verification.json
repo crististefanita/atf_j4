@@ -1,6 +1,6 @@
 {
   "state": "PASS",
-  "observedUtc": "2026-11-07T08:14:19.119Z",
+  "observedUtc": "2026-11-07T08:40:30.683Z",
   "tag": "v0.11.0",
   "targetCommit": "61a16105244e2504d7c0102956ef3e00019c0ca3",
   "evidenceCommit": "a03cb3189bd26f258ea3138869d7967549b0345b",
@@ -134,5 +134,34 @@
       "bytes": 2717862,
       "sha256": "f8b795d3cfcf438f0868dd7fe30f9389c177807e285630df5cbfa7aab64aa46f"
     }
-  ]
+  ],
+  "browserMcp": {
+    "state": "PASS",
+    "observedDate": "2026-11-07",
+    "session": "authenticated GitHub session with repository access",
+    "downloadedFrom": "GitHub release Assets",
+    "assetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.11.0/WhistLab-0.11.0.apk",
+    "bytes": 824639,
+    "sha256": "a7b0d6732bb4b68e4d8a855b2d204846e4b3140453ecc31bd53172caea3ea415",
+    "audit": {
+      "state": "PASS",
+      "url": "https://github.com/crististefanita/atf_j4/blob/a03cb3189bd26f258ea3138869d7967549b0345b/release/0.11.0/reports/README.md",
+      "commit": "a03cb3189bd26f258ea3138869d7967549b0345b"
+    }
+  },
+  "anonymousAccessDiagnosis": {
+    "state": "OPEN_EXTERNAL",
+    "repositoryVisibility": "public",
+    "anonymousRepositoryHttp": 404,
+    "anonymousOwnerProfileHttp": 404,
+    "providerSignal": {
+      "endpoint": "GitHub REST repository search by owner",
+      "authenticated": true,
+      "httpStatus": 422,
+      "message": "User flagged as spammy.",
+      "requestId": "C329:2AEA27:23AE733:368AB34:6AEEE439",
+      "observedUtc": "2026-11-07T08:40:59.223Z"
+    },
+    "resolution": "GitHub review of the account flag, followed by a successful anonymous download with matching bytes and SHA-256"
+  }
 }

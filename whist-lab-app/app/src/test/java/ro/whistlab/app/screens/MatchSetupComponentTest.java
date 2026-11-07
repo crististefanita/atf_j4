@@ -7,6 +7,26 @@ import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
 
 public class MatchSetupComponentTest extends atf.gradle.audit.GradleAuditedTest {
+    @Test public void zeroGameDefaultsOnForBothRomanianVariantsAndCanBeUnchecked() {
+        var setup = new MatchSetup();
+        var standard = GameMode.ROMANIAN_WHIST;
+        var longMode = GameMode.LONG_ROMANIAN;
+        atf.gradle.audit.GradleInputs.fixture("Start menu defaults and mode changes",
+                "Romanian variants", java.util.List.of(standard, longMode), "seed", 31);
+        assertTrue("The option starts checked", setup.allowZeroGame());
+        assertFalse("The non-Romanian default does not use the rule", setup.config(31).allowZeroGame());
+        setup.mode(standard);
+        var firstMatch = setup.config(31);
+        assertTrue("The standard Romanian variant starts enabled", firstMatch.allowZeroGame());
+        setup.mode(longMode);
+        assertTrue("The long Romanian variant starts enabled", setup.config(31).allowZeroGame());
+        setup.allowZeroGame(false);
+        setup.mode(GameMode.OH_HELL);
+        setup.mode(standard);
+        assertFalse("Returning to Romanian mode preserves an explicit opt-out", setup.config(31).allowZeroGame());
+        assertTrue("Changing setup cannot change an already started match", firstMatch.allowZeroGame());
+    }
+
     @Test public void initialChoicesProduceTheExistingDefaultConfiguration() {
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 4, "declared constant 2", 31, "declared constant 3", false, "declared constant 4", 10);

@@ -1,5 +1,9 @@
 package ro.whistlab.app.animation;
 
+import ro.cardtable.ui.animation.CollectionTarget;
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+import ro.cardtable.ui.animation.TrickCollectionRun;
+
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -61,7 +65,7 @@ public class TrickCollectionCleanupComponentTest extends atf.gradle.audit.Gradle
         var clock = new AtomicLong(100);
         var waiting = new ControlledCollectionSurface();
         waiting.ready = false;
-        var run = new TrickCollectionRun(new TrickCollectionRequest(0, List.of(0, 1, 2)), 1500, clock::get, waiting);
+        var run = new TrickCollectionRun(new CollectionTarget(0, List.of(0, 1, 2)), 1500, clock::get, waiting);
         run.start();
         clock.set(99);
         waiting.ready = true;
@@ -90,6 +94,6 @@ public class TrickCollectionCleanupComponentTest extends atf.gradle.audit.Gradle
     }
 
     private static TrickCollectionRun run(ControlledCollectionSurface surface) {
-        return new TrickCollectionRun(new TrickCollectionRequest(0, List.of(0, 1, 2)), 1500, () -> 0, surface);
+        return new TrickCollectionRun(new CollectionTarget(0, List.of(0, 1, 2)), 1500, () -> 0, surface);
     }
 }

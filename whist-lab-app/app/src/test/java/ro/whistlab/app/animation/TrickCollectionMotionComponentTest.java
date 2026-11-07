@@ -1,5 +1,7 @@
 package ro.whistlab.app.animation;
 
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import org.junit.Test;
 

@@ -548,7 +548,8 @@ public final class MonteCarloAi {
         return DecisionEvaluation.biddingTargets(view, hands, own);
     }
 
-    private static long seed(View view, int sample) {
+    /** Common reproducible seed for paired rollouts from the same public observation. */
+    public static long seed(View view, int sample) {
         // Neither wall-clock time nor hidden hands influence decisions. Replays are reproducible.
         long seed = 0x51A7C0DEL + sample * 0x9E3779B97F4A7C15L;
         seed = seed * 31 + view.mode().samplingId();

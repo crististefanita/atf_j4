@@ -1,5 +1,9 @@
 package ro.whistlab.app.animation;
 
+import ro.cardtable.ui.animation.CollectionTarget;
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+import ro.cardtable.ui.animation.TrickCollectionRun;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,7 +37,7 @@ final class ControlledCollectionSurface implements TrickCollectionRun.Surface {
 
     @Override public boolean animationsEnabled() { return enabled; }
 
-    @Override public TrickCollectionRun.Geometry measure(TrickCollectionRequest request) {
+    @Override public TrickCollectionRun.Geometry measure(CollectionTarget request) {
         if (!ready) return null;
         if (geometry == null) {
             var points = new ArrayList<TrickCollectionMotion.Point>();

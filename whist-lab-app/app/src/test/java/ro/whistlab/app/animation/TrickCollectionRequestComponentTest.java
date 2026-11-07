@@ -1,5 +1,7 @@
 package ro.whistlab.app.animation;
 
+import ro.cardtable.ui.animation.CollectionTarget;
+
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +76,13 @@ assertFalse("TrickCollectionRequest.from(CollectionFixtures.observation(s, s.pha
         duplicateCard.set(1, new PlayedCard(duplicateCard.get(1).seat(), duplicateCard.get(0).card()));
         assertFalse("TrickCollectionRequest.from(CollectionFixtures.observation(s, s.phase(), List.of(), duplicateCard, duplicateCard, s.lastTrickWinnerSeat()), duplicateCard).isPresent() must remain false", TrickCollectionRequest.from(CollectionFixtures.observation(s, s.phase(), List.of(), duplicateCard,
                 duplicateCard, s.lastTrickWinnerSeat()), duplicateCard).isPresent());
-        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> new TrickCollectionRequest(0, List.of(0, 0, 2)));
-        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> new TrickCollectionRequest(3, List.of(0, 1, 2)));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> new CollectionTarget(0, List.of(0, 0, 2)));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> new CollectionTarget(3, List.of(0, 1, 2)));
     }
 
     @Test public void capturedSeatOrderIsImmutable() {
         var seats = new ArrayList<>(List.of(2, 0, 1));
-        var request = new TrickCollectionRequest(1, seats);
+        var request = new CollectionTarget(1, seats);
         seats.clear();
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "request", request, "seats", seats);

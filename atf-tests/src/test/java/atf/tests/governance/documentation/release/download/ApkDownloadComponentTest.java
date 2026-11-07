@@ -57,12 +57,16 @@ class ApkDownloadComponentTest {
     @ParameterizedTest
     @ValueSource(strings = {"404", "error-text", "forged-error-metadata", "short", "oversize", "same-size-change", "bad-crc", "wrong-tag", "draft", "duplicate", "fractional-size"})
     void incompleteDeceptiveOrMisidentifiedResponsesCannotBecomeAnApk(String defect) throws Exception {
+        Path otherTransfer = Files.writeString(temporary.resolve(".whist-download-other.part"), "another transfer");
         try (var fixture = new Fixture(defect, false)) {
             var failure = assertThrows(IOException.class, () -> fixture.client().download(fixture.expected, temporary),
                     "Rejected HTTP/integrity defect: " + defect);
             String actual = failure.getMessage().split(":", 2)[0];
             assertEquals(expectedFailure(defect), actual, "Specific complete-download rejection: " + defect);
             assertFalse(Files.exists(temporary.resolve(fixture.expected.fileName())), "No invalid final .apk is published");
+            try (var files = Files.list(temporary)) {
+                assertEquals(java.util.List.of(otherTransfer), files.toList(), "Only the failed download's temporary file is removed");
+            }
         }
     }
     private static String expectedFailure(String defect) {

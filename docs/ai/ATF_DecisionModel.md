@@ -1,6 +1,6 @@
 # Modelul deciziei cu informație parțială
 
-Modelul transformă observația permisă într-o acțiune legală, evaluată față de obiectivul contractului. Separarea observației, lumilor ipotetice, continuării și criteriului de alegere permite schimbarea unui mecanism fără confundarea lui cu celelalte.
+Modelul transformă observația permisă într-o acțiune legală, evaluată față de obiectivul activ. Separarea observației, lumilor ipotetice, continuării și criteriului de alegere permite schimbarea unui mecanism fără confundarea lui cu celelalte.
 
 ## Contractul unei decizii
 
@@ -35,6 +35,20 @@ Politica vede mâna proprie și prefixul public. Simulatorul poate construi mâi
 | Scor și serie | Totaluri și contoare publice | Schimbă utilitatea rezultatului prin regulile de scor configurate. |
 
 Aceeași valoare Δ poate coexista cu necesare individuale foarte diferite. Pe măsură ce jocul avansează, R, incertitudinea și posibilitățile legale se schimbă, chiar dacă Δ rămâne fix.
+
+## Când AI-ul joacă la 0
+
+Cu opțiunea activă în Whist românesc 1–8–1 sau 8–1–8, Normal și Hard verifică obiectivul la fiecare licitație și alegere de carte.
+
+- **Activare.** Minimul posibil a cel puțin doi adversari trebuie să depășească strict maximul convențional al actorului, iar o secvență de rezultate individuale trebuie să poată duce la exact 0. O egalitate posibilă pentru locul al doilea păstrează strategia de contract.
+- **Informație.** Limitele conservatoare combină fiecare rezultat posibil al mâinii curente cu maximul și minimul programului rămas. Numărul plăților de serie pornește de la contorul pe care acel rezultat îl lasă fiecărui loc.
+- **Evaluare.** Modelul parcurge înapoi programul rămas și combină deltele posibile în funcție de contorul de serie. Ponderile egale ale rezultatelor individuale descriu o euristică de scor pentru mâinile viitoare.
+- **Ultima mână.** Simulatorul compară pe aceleași lumi ambele sensuri ale pierderii, când sunt posibile. La egalitate de sprijin pentru zero, preferă soldul final estimat mai apropiat de zero în valoare absolută, incluzând seriile.
+- **Penultima mână.** La egalitate de sprijin pentru zero, motorul compară perechile licitație–levate care pot închide soldul în ultima mână. Dacă actorul va licita ultimul, numără câte rezultate adiacente cu o levată rămân ratări legale ca număr de levate. Astfel, o pierdere maximă are puține variante, iar o ratare de un punct poate deveni contract exact la o abatere de o levată.
+- **Alegere.** Cel mai mare sprijin estimat pentru zero exact rămâne primul criteriu. Punctele convenționale departajează după criteriul specific mâinii.
+- **Limită.** Perechile pentru ultima mână măsoară libertatea aritmetică înainte de împărțire și licitare. Dacă simulările disponibile nu susțin nicio acțiune spre zero, motorul revine la strategia nivelului ales. [Regula formalizată](../../config/whist-play-objectives.yaml)
+
+Observarea în laborator distinge prima alegere pentru zero de o decizie eligibilă care a revenit la politica obișnuită. O singură acțiune legală nu intră în numărul schimbărilor de strategie. [Colecția pereche](../../whist-lab-app/game-core/src/test/README.md#evaluarea-jocului-la-0)
 
 ## Estimarea alternativelor
 

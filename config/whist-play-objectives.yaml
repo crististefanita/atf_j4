@@ -1,11 +1,11 @@
 schema_version: 1
 id: "NORMAL_HARD_CONTRACT_OBJECTIVES_V1"
 status: "ACTIVE_CODE_BOUND_RULES"
-runtime_influence: "Implemented by AiPolicy, NormalBidPolicy, NormalPlayPolicy, MonteCarloAi, and PublicSalvage."
+runtime_influence: "Implemented by AiPolicy, NormalBidPolicy, NormalPlayPolicy, MonteCarloAi, PublicSalvage, and ZeroMatchSearch."
 profile: "Romanian Whist, legal moves only, four seats, public information."
 information: ["own hand", "public bids", "tricks already won", "current trick", "public card history", "turned card", "remaining opportunities", "public scores"]
 normal:
-  objective: "Pursue the player's own bid through the entire hand."
+  objective: "Pursue the player's own bid through the entire hand unless the optional match-level zero objective activates."
   remaining_need: "own bid - own tricks already won; preserve the sign."
   policy:
     - id: "NORMAL_TAKE_WHILE_SHORT"
@@ -18,7 +18,7 @@ normal:
       tests: ["normalShedsTheLowestRiskWhenNoTrickIsNeeded"]
   information_boundary: "The policy input contains its own hand and public seat state only; opponent card lists are removed before the decision method is called."
   tests: ["bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates"]
-  limit: "Transparent local heuristic. No sampled opponent holdings or global-optimality claim."
+  limit: "Transparent local heuristic for ordinary contract pursuit. Match-level zero has its own public-world planner."
 independent:
   scope: "Test-only independent implementation; it does not call the Hard engine."
   objective: ["own expected Romanian points", "lower strongest rival score"]
@@ -54,6 +54,20 @@ hard:
     information_boundary: "The Hard decision view likewise contains only the actor's own hand and public information; simulated hidden deals are generated after observation and never expose the actual opponent holdings."
     tests: ["bothDifficultiesReceiveOnlyTheActorsHandAndPublicSeatStates", "runsAndCapturesACompleteFourSeatRomanian181MockMatch", "replaysTheSameDealsAndTurnOrderAcrossHardSeatPerspectives", "comparesBidAndCardProfilesOnTheSameDealsAtEverySeat", "currentTrickDiscardConstrainsHiddenHandsBeforeTheTrickIsScored", "publicIrrecoverabilityRanksOwnPointsBeforeRivalMisses", "rolloutUtilityCountsHowManyOpponentsMiss"]
   limitations: ["Salvage certificate currently covers two-card endings only.", "General bid-conditioned hidden-hand likelihood at 2-8 cards remains experimental; the specialized one-card model has a separate runtime domain.", "No claim of perfect Hard play or universal perfect play."]
+zero_match:
+  variants: ["ROMANIAN_WHIST", "LONG_ROMANIAN"]
+  players: [3, 4, 5, 6]
+  difficulties: ["NORMAL", "HARD"]
+  activation: "Rule enabled; at least two rivals have a conventional floor strictly above the actor ceiling; an exact-zero continuation remains arithmetically reachable."
+  bounds: "Evaluate each possible result of the current hand together with the remaining schedule. Its next streak determines the maximum remaining streak payouts for that seat."
+  precedence: "Recompute before bidding and before playing. Use the level's ordinary policy if no eligible action has support."
+  suffix: "Combine distinct scoring outcomes with equal weights over the actual schedule, including the configured streak transitions."
+  final_hand: "Compare each trick count that produces exact zero as a distinct continuation over the same public worlds."
+  final_tie: "Prefer the smaller expected absolute closing balance, including the scoring effect of a streak, before conventional points."
+  penultimate_tie: "Prefer final bid and trick-count pairs that settle the balance. When the actor closes the next auction, compare adjacent legal trick counts that would still miss, to account for one-trick errors."
+  action_priority: ["estimated_support_for_exact_zero", "phase_specific_tie_break", "expected_conventional_points"]
+  final_score: "After all scheduled hands and streak adjustments, each raw total of 0 becomes a final score of 500. The hand ledger stays raw."
+  limitation: "Public ranking bounds are conservative. Abstract suffix weights are not calibrated joint match probabilities."
 evolution:
   recompute_after: "Every public bid and every card played."
   accepted_evidence: "Small legal component examples plus same-deal paired complete matches, seat rotation, and fresh seeds; compare each strategy profile at the same seat before promotion."

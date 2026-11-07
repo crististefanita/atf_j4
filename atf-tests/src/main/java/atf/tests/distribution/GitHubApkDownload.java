@@ -49,18 +49,25 @@ public final class GitHubApkDownload {
         Files.createDirectories(outputDirectory);Path destination = outputDirectory.resolve(target.fileName());
         require(!Files.exists(destination), "Download destination already exists");
         URI uri = api.resolve("repos/" + target.repository() + "/releases/assets/" + asset.path("id").longValue());
-        Path partial = Files.createTempFile(outputDirectory, ".whist-download-", ".part");long count = 0;
-        var response = response(uri, "application/octet-stream");
-        try (var input = response.body();var output = Files.newOutputStream(partial)) {
-            byte[] buffer = new byte[16384];int read;
-            while ((read = input.read(buffer)) != -1) {
-                count = Math.addExact(count, read);require(count <= target.bytes(), "APK response exceeds the declared size");output.write(buffer, 0, read);
+        Path partial = Files.createTempFile(outputDirectory, ".whist-download-", ".part");
+        try (java.io.Closeable cleanup = () -> Files.deleteIfExists(partial)) {
+            var response = response(uri, "application/octet-stream");
+            long count = 0;
+            try (var input = response.body(); var output = Files.newOutputStream(partial)) {
+                byte[] buffer = new byte[16384];
+                int read;
+                while ((read = input.read(buffer)) != -1) {
+                    count = Math.addExact(count, read);
+                    require(count <= target.bytes(), "APK response exceeds the declared size");
+                    output.write(buffer, 0, read);
+                }
             }
+            require(count == target.bytes(), "APK response is incomplete");
+            ApkPayload.verify(partial, target.bytes(), target.sha256());
+            Files.move(partial, destination);
+            return new Proof(release.path("tag_name").asText().substring(1), asset.path("browser_download_url").asText(),
+                    Files.size(destination), ApkPayload.hash(destination), "PASS", response.statusCode(), destination);
         }
-        require(count == target.bytes(), "APK response is incomplete");ApkPayload.verify(partial, target.bytes(), target.sha256());
-        Files.move(partial, destination);
-        return new Proof(release.path("tag_name").asText().substring(1), asset.path("browser_download_url").asText(),
-                Files.size(destination), ApkPayload.hash(destination), "PASS", response.statusCode(), destination);
     }
     private JsonNode metadata(URI uri) throws IOException, InterruptedException {
         var response = response(uri, "application/vnd.github+json");

@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Random;
 import org.json.JSONObject;
 import org.junit.Test;
+import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.persistence.GameSessionStore;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.GameRules;
+import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
@@ -74,9 +76,11 @@ public class HighScoreRepositoryComponentTest extends atf.gradle.audit.GradleAud
         var board = repository.board(HighScores.Profile.from(game.config()));
         var actual = board.entries().stream().filter(entry -> !entry.sample()).toList();
         assertEquals("actual.size() must equal 3", 3, actual.size());
-        for (var player : game.snapshot().players()) {
+        var finished = game.snapshot();
+        for (var player : finished.players()) {
             var entry = actual.stream().filter(value -> value.seat() == player.seat()).findFirst().orElseThrow();
-            assertEquals("entry.score() must equal player.totalScore()", player.totalScore(), entry.score()); assertEquals("entry.name() must equal player.name()", player.name(), entry.name());
+            assertEquals("Entry uses the final match score", finished.matchScore(player.seat()), entry.score());
+            assertEquals("entry.name() must equal player.name()", player.name(), entry.name());
             assertEquals("entry.ai() must equal !player.human()", !player.human(), entry.ai());
         }
         int writes = disk.writes;
@@ -88,6 +92,45 @@ public class HighScoreRepositoryComponentTest extends atf.gradle.audit.GradleAud
         var legacy = GameSessionStore.fromJson(legacyJson.toString());
         assertTrue("legacy.saveState().history().size() < legacy.snapshot().handSize() * legacy.config().playerCount() must hold", legacy.saveState().history().size() < legacy.snapshot().handSize() * legacy.config().playerCount());
         assertTrue("repository.record(\"legacy-match\", legacy, 500) must hold", repository.record("legacy-match", legacy, 500));
+    }
+
+    @Test public void finalZeroIsRecordedAsFiveHundredInItsOwnProfileAcrossReload() throws Exception {
+        var config = GameConfig.newMatch(3, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 4, true, 10);
+        var game = GameSession.newGame(config);
+        var randomBids = new Random(config.seed() ^ 0xC0FFEE);
+        do {
+            finishHand(game, randomBids);
+            if (game.snapshot().finalHand()) break;
+            game.startNextHand();
+        } while (true);
+        var encoded = GameSessionStore.encode(game.saveState());
+        var restored = GameSessionStore.fromJson(encoded.toString());
+        var disk = new Memory();
+        var repository = new HighScoreRepository(disk, new Random(7));
+        var profile = HighScores.Profile.from(config);
+        var classicProfile = new HighScores.Profile(config.mode(), 3, AiDifficulty.NORMAL, true, 10, 10);
+        atf.gradle.audit.GradleInputs.fixture("Legal completed match, score zero at seat 1",
+                "config", config, "classic profile", classicProfile, "final scores", restored.snapshot().players());
+        assertEquals("The checkpoint preserves the raw total", 0, restored.snapshot().players().get(1).totalScore());
+        assertTrue("The checkpoint retains the match option", restored.config().allowZeroGame());
+        for (var language : HowToPlay.Language.values()) {
+            var copy = new WhistUiText(language);
+            assertTrue("Winner copy uses 500 in either language", copy.winner(restored.snapshot()).contains("(500 "));
+            assertTrue("The history legend explains the conversion", copy.zeroGameAwards(restored.snapshot()).contains("0 → 500"));
+        }
+        assertTrue("The first commit records the result", repository.record("zero", restored, 1));
+        var reopened = new HighScoreRepository(disk, new Random(8));
+        var winningEntry = reopened.board(profile).entries().get(0);
+        assertEquals("The zero player wins the local ranking", 1, winningEntry.seat());
+        assertEquals("The final score is 500", 500, winningEntry.score());
+        assertTrue("A classic board is kept separately", reopened.board(classicProfile).entries()
+                .stream().allMatch(HighScores.Entry::sample));
+        assertFalse("Replaying the commit is idempotent", reopened.record("zero", restored, 2));
+        encoded.put("version", 7);
+        encoded.remove("allowZeroGame");
+        var legacy = GameSessionStore.fromJson(encoded.toString());
+        assertFalse("Legacy saves keep their original rule profile", legacy.config().allowZeroGame());
+        assertEquals("A legacy zero stays zero", 0, legacy.snapshot().matchScore(1));
     }
 
     @Test public void failedCommitCanBeRetriedAndCorruptionIsNotOverwritten() throws Exception {
@@ -110,6 +153,11 @@ public class HighScoreRepositoryComponentTest extends atf.gradle.audit.GradleAud
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "data", data, "encoded", encoded);
         assertEquals("HighScoreCodec.encode(HighScoreCodec.decode(encoded)) must equal encoded", encoded, HighScoreCodec.encode(HighScoreCodec.decode(encoded)));
+        var oldFormat = new JSONObject(encoded).put("schemaVersion", 1);
+        var profiles = oldFormat.getJSONArray("profiles");
+        for (int index = 0; index < profiles.length(); index++) profiles.getJSONObject(index).remove("allowZeroGame");
+        assertEquals("Version-one rankings keep their classic identities", data.boards,
+                HighScoreCodec.decode(oldFormat.toString()).boards);
         var future = new JSONObject(encoded).put("schemaVersion", 99);
         assertThrows("The operation rejects its input with IOException.class", IOException.class, () -> HighScoreCodec.decode(future.toString()));
         var duplicate = new JSONObject(encoded);
@@ -156,9 +204,15 @@ public class HighScoreRepositoryComponentTest extends atf.gradle.audit.GradleAud
     }
 
     private static void finishHand(GameSession game) {
+        finishHand(game, null);
+    }
+
+    private static void finishHand(GameSession game, Random random) {
         while (game.snapshot().phase() == GamePhase.BIDDING) {
             var state = game.snapshot();
-            game.submitBid(state.biddingSeat(), GameRules.allowedBids(state.handSize(), state.bidTotal(), state.bidsSubmitted() == state.players().size() - 1).get(0));
+            var legal = GameRules.allowedBids(state.handSize(), state.bidTotal(),
+                    state.bidsSubmitted() == state.players().size() - 1);
+            game.submitBid(state.biddingSeat(), legal.get(random == null ? 0 : random.nextInt(legal.size())));
         }
         while (game.snapshot().phase() == GamePhase.PLAYING) {
             var state = game.snapshot(); var player = state.players().get(state.currentSeat());

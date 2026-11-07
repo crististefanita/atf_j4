@@ -1,0 +1,28 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'ro.cardtable'
+version = '0.1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.java
+            pom { name = 'Card Table Names'; description = 'Deterministic display names for card tables' }
+        }
+    }
+    repositories {
+        maven {
+            name = 'isolated'
+            url = uri(providers.gradleProperty('cardui.repository').getOrElse(layout.buildDirectory.dir('repository').get().asFile.absolutePath))
+        }
+    }
+}

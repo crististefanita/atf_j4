@@ -1,5 +1,9 @@
 package ro.whistlab.app.animation;
 
+import ro.cardtable.ui.animation.CollectionTarget;
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+import ro.cardtable.ui.animation.TrickCollectionRun;
+
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,7 @@ public class TrickCollectionResizeComponentTest extends atf.gradle.audit.GradleA
     @Test public void resizeCleansTheOldSceneBeforeRequestingAnotherAndNotifiesOnlyOnce() {
         var surface = new ControlledCollectionSurface();
         int[] notified = {0};
-        var run = new TrickCollectionRun(new TrickCollectionRequest(1, List.of(0, 1, 2)), 1500, () -> 0, surface, () -> {
+        var run = new TrickCollectionRun(new CollectionTarget(1, List.of(0, 1, 2)), 1500, () -> 0, surface, () -> {
 
             assertEquals("surface.released must equal 1", 1, surface.released);
             assertEquals("surface.unwatched must equal 1", 1, surface.unwatched);
@@ -35,7 +39,7 @@ public class TrickCollectionResizeComponentTest extends atf.gradle.audit.GradleA
         var surface = new ControlledCollectionSurface();
         var failure = new IllegalStateException("Resize cleanup failed");
         surface.stopFailure = failure;
-        new TrickCollectionRun(new TrickCollectionRequest(1, List.of(0, 1, 2)), 1500, () -> 0,
+        new TrickCollectionRun(new CollectionTarget(1, List.of(0, 1, 2)), 1500, () -> 0,
                 surface, () -> fail("A failed cleanup cannot replace the scene")).start();
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "failure", failure, "surface", surface);
@@ -49,7 +53,7 @@ public class TrickCollectionResizeComponentTest extends atf.gradle.audit.GradleA
     @Test public void failedResizeNotificationCannotRetainOrReopenTheOldScene() {
         var surface = new ControlledCollectionSurface();
         var failure = new IllegalStateException("Presentation unavailable");
-        new TrickCollectionRun(new TrickCollectionRequest(1, List.of(0, 1, 2)), 1500, () -> 0,
+        new TrickCollectionRun(new CollectionTarget(1, List.of(0, 1, 2)), 1500, () -> 0,
                 surface, () -> { throw failure; }).start();
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "failure", failure, "surface", surface);
@@ -204,7 +208,7 @@ public class TrickCollectionResizeComponentTest extends atf.gradle.audit.GradleA
         for (boolean finish : new boolean[]{false, true}) {
             var surface = new ControlledCollectionSurface();
             int[] refreshes = {0};
-            new TrickCollectionRun(new TrickCollectionRequest(0, List.of(0, 1, 2)), 1500, () -> 0,
+            new TrickCollectionRun(new CollectionTarget(0, List.of(0, 1, 2)), 1500, () -> 0,
                     surface, () -> refreshes[0]++).start();
             if (finish) surface.finished.run(); else surface.invalidated.run();
             int draws = surface.draws.size();

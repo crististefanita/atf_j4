@@ -1,5 +1,9 @@
 package ro.whistlab.app.animation;
 
+import ro.cardtable.ui.animation.CollectionTarget;
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+import ro.cardtable.ui.animation.TrickCollectionRun;
+
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -170,5 +174,5 @@ public class TrickCollectionRunComponentTest extends atf.gradle.audit.GradleAudi
         assertEquals("surface.released must equal 1", 1, surface.released);
     }
 
-    private static TrickCollectionRequest request() { return new TrickCollectionRequest(0, List.of(2, 0, 1)); }
+    private static CollectionTarget request() { return new CollectionTarget(0, List.of(2, 0, 1)); }
 }

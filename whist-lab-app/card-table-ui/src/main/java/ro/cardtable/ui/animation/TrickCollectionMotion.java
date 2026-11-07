@@ -1,4 +1,4 @@
-package ro.whistlab.app.animation;
+package ro.cardtable.ui.animation;
 
 /** Pure timing and pixel translation; all faces converge on the measured winning seat. */
 public final class TrickCollectionMotion {

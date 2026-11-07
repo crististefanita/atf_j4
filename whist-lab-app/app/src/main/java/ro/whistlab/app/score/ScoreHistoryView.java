@@ -81,7 +81,8 @@ public final class ScoreHistoryView extends LinearLayout {
         body.addView(rows);
         table.addView(body, new LayoutParams(-1, dp(380)));
         TextView legend = new TextView(context);
-        legend.setText(copy.historyLegend());
+        String awards = copy.zeroGameAwards(state);
+        legend.setText(copy.historyLegend() + (awards.isEmpty() ? "" : "\n" + awards));
         legend.setTextSize(HistoryTypography.LEGEND_SP);
         legend.setTextColor(0xff52634f);
         int captionInset = grid.outerPaddingPx() + dp(1);

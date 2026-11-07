@@ -2,7 +2,7 @@ package ro.whistlab.app.lifecycle;
 
 import java.util.List;
 import java.util.Objects;
-import ro.whistlab.app.animation.TrickCollectionMotion;
+import ro.cardtable.ui.animation.TrickCollectionMotion;
 import ro.whistlab.app.animation.TrickCollectionRequest;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.model.PlayedCard;

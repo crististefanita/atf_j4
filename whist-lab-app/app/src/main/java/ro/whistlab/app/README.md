@@ -45,7 +45,7 @@ Fereastra exclude barele sistemului și decupajul înaintea aranjării. Această
 | Nume și tură | [PlayerSeatView](seat/PlayerSeatView.java) măsoară textul acțiunii deasupra chenarului; [PlayerSeatMetrics](seat/PlayerSeatMetrics.java) rezervă regiunile fără suprapuneri. |
 | Mână | [HandLayoutMetrics](hand/HandLayoutMetrics.java) calculează evantaiul; [CenteredHandView](hand/CenteredHandView.java) gestionează poziția inițială a derulării. |
 | Levată și atu | [TrickCardMetrics](table/TrickCardMetrics.java) ancorează cărțile după loc; [TrumpIndicatorView](table/TrumpIndicatorView.java) afișează informația despre atu. |
-| Colectarea levatei | [TrickCollectionMotion](animation/TrickCollectionMotion.java) calculează cadrul și timpul; [TrickCollectionAnimator](animation/TrickCollectionAnimator.java) aplică animația pe vederile Android. |
+| Colectarea levatei | [TrickCollectionMotion](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) calculează cadrul și timpul. [TrickCollectionAnimator](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionAnimator.java) aplică animația pe vederile Android. |
 | Scor | [ScoreHistoryTable](score/ScoreHistoryTable.java) proiectează programul complet pentru toate locurile; [ScoreHistoryView](score/ScoreHistoryView.java) îl afișează cu descrieri accesibile. |
 | Comenzi și salvare | [GameCommandFlow](lifecycle/GameCommandFlow.java) delimitează refuzul comenzii; [GamePersistence](persistence/GamePersistence.java) ordonează checkpoint-ul, clasamentul și exportul. |
 | Stocare și ciclu Android | [GameSessionStore](persistence/GameSessionStore.java) deține schema salvării; [CompletedTrickPause](lifecycle/CompletedTrickPause.java) delimitează pauza levatei. |
@@ -151,13 +151,15 @@ flowchart LR
 
 Motorul stabilește câștigătorul și scorul înaintea efectului vizual. Pauza levatei folosește 1,5 secunde de timp vizibil, iar ultimele 500 ms deplasează și micșorează cărțile spre centrul măsurat al locului câștigătorului.
 
+La reluarea după oprirea procesului, un checkpoint aflat la final de levată prezintă o singură dată cărțile confirmate. Ultima levată a mâinii precedă pagina scorului. Scena și următorul ecran folosesc același termen, calculat cu ceasul Android, astfel încât construirea mesei să nu prelungească pauza.
+
 | Componentă | Contract |
 |---|---|
 | [TrickCollectionRequest](animation/TrickCollectionRequest.java) | Acceptă numai levata publică completă, cu toate locurile distincte, câștigătorul motorului și aceleași cărți la sfârșitul istoricului. O observație parțială ori depășită nu pornește colectarea. |
 | [CompletedTrickPause](lifecycle/CompletedTrickPause.java) | Fereastră unică per levată și sesiune; suspendarea conservă timpul rămas, fără reluarea unei levate expirate. Reluarea precedă inclusiv pagina scorului ultimei levate din partidă. |
-| [TrickCollectionMotion](animation/TrickCollectionMotion.java) | Model pur pentru întârziere, durată, translație, micșorare și transparență. Întârzierea layout-ului consumă timpul disponibil; nu extinde pauza. |
-| [TrickCollectionRun](animation/TrickCollectionRun.java) | Deține observarea, pornirea unică și curățarea scenei prin porturi. Cadrele depășite nu se aplică după anulare; erorile curățării nu înlocuiesc cauza inițială. |
-| [TrickCollectionAnimator](animation/TrickCollectionAnimator.java) | Leagă coordonatorul testabil de adaptorul Android al măsurării și animației. Detașarea sau schimbarea geometriei anulează scena; anularea restaurează transformările și regulile de clipping capturate. |
+| [TrickCollectionMotion](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Model pur pentru întârziere, durată, translație, micșorare și transparență. Întârzierea layout-ului consumă din timpul disponibil. |
+| [TrickCollectionRun](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java) | Deține observarea, pornirea unică și curățarea scenei prin porturi. Anularea invalidează cadrele depășite, iar tratarea erorilor păstrează cauza inițială. |
+| [TrickCollectionAnimator](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionAnimator.java) | Leagă coordonatorul testabil de adaptorul Android al măsurării și animației. Detașarea sau schimbarea geometriei anulează scena și restaurează transformările și regulile de clipping capturate. |
 | [GameScreen](screens/GameScreen.java) | Înlocuirea ecranului anulează efectul anterior; interacțiunea cu mâna rămâne suspendată până la expirarea pauzei. Fixture-urile statice păstrează afișarea fără animație. |
 
 - [Componentele mișcării](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java) confruntă capetele traiectoriei pentru toate locurile la 3–6 jucători, progresul și timpul rămas.
@@ -260,6 +262,6 @@ Calificările rămase sunt centralizate în [feedback-ul Android](../../../../..
 
 [WhistTableContent](table/content/WhistTableContent.java) traduce numai datele vizibile ale snapshot-ului în `SeatContent`, `HandCard` și `PlayedCardContent`. [GameTablePanel](table/GameTablePanel.java) păstrează licitația, legalitatea transmisă, levata vizibilă și colectarea; biblioteca desenează și măsoară fără motor Whist.
 
-- Chenarele păstrează ordinea licitat/levate, textele și actorul real; rendererul primește fapte etichetate, fără calculul scorului.
+- Chenarele păstrează numele integral și ordinea licitat/levate, cu o singură linie pentru fiecare. Rendererul măsoară textul îngroșat împreună cu eticheta și verifică lățimea după layout.
 - Selecția întoarce identitatea cărții din snapshot-ul afișat; adaptorul o rezolvă la obiectul original înaintea callback-ului existent.
 - Testele de reguli și integrare cu sesiunea rămân în aplicația Whist; modelele comune au componente fără importuri ale jocurilor.

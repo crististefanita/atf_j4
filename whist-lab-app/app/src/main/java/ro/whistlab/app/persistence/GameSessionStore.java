@@ -23,7 +23,14 @@ import ro.whistlab.core.model.Trump;
 public final class GameSessionStore {
     private static final String PREFERENCES = "whist_lab_game";
     private static final String SAVE_KEY = "current_session_v1";
-    private static final int VERSION = 7;
+    private static final int VERSION = 8;
+
+    private static boolean readZeroGame(JSONObject root) throws JSONException {
+        if (SavedNumbers.integer(root, "version") < 8 && !root.has("allowZeroGame")) return false;
+        Object value = root.get("allowZeroGame");
+        if (!(value instanceof Boolean)) throw new JSONException("Boolean required: allowZeroGame");
+        return (Boolean) value;
+    }
 
     private GameSessionStore() { }
 
@@ -108,7 +115,8 @@ public final class GameSessionStore {
         int remaining=state.players().stream().mapToInt(p->p.hand().size()).sum();
         // A resumed v1 hand cannot invent its missing early history. Keep its legacy
         // marker until the next fresh deal. The score ledger is independent of this marker.
-        root.put("version",state.history().size()==state.handSize()*state.config().playerCount()-remaining?VERSION:1);
+        boolean complete = state.history().size() == state.handSize() * state.config().playerCount() - remaining;
+        root.put("version", complete ? VERSION : 1);
         root.put("playerCount", state.config().playerCount());
         root.put("mode", state.config().mode().name());
         root.put("difficulty", state.config().aiDifficulty().name());
@@ -116,6 +124,7 @@ public final class GameSessionStore {
         root.put("streakBonuses", state.config().streakBonuses());
         root.put("streakBonusPoints", state.config().streakBonusPoints());
         root.put("streakPenaltyPoints", state.config().streakPenaltyPoints());
+        root.put("allowZeroGame", state.config().allowZeroGame());
         root.put("phase", state.phase().name());
         root.put("handIndex", state.handIndex());
         root.put("handSize", state.handSize());
@@ -167,7 +176,11 @@ public final class GameSessionStore {
     private static GameSession.SaveState decode(JSONObject root) throws JSONException {
         GameConfig config = new GameConfig(SavedNumbers.integer(root, "playerCount"),
                 savedMode(root.getString("mode")),
-                AiDifficulty.fromStoredName(root.getString("difficulty")), SavedNumbers.seed(root),root.optBoolean("streakBonuses",false),SavedNumbers.optionalInteger(root, "streakBonusPoints", 5), SavedNumbers.integer(root, "version") >= 6 || root.has("streakPenaltyPoints") ? SavedNumbers.integer(root, "streakPenaltyPoints") : 5);
+                AiDifficulty.fromStoredName(root.getString("difficulty")), SavedNumbers.seed(root),
+                root.optBoolean("streakBonuses", false), SavedNumbers.optionalInteger(root, "streakBonusPoints", 5),
+                SavedNumbers.integer(root, "version") >= 6 || root.has("streakPenaltyPoints")
+                        ? SavedNumbers.integer(root, "streakPenaltyPoints") : 5,
+                readZeroGame(root));
         JSONArray encodedPlayers = root.getJSONArray("players");
         List<GameSession.PlayerState> players = new ArrayList<>(encodedPlayers.length());
         for (int index = 0; index < encodedPlayers.length(); index++) {

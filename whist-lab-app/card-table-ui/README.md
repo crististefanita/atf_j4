@@ -17,7 +17,7 @@ Modulul Android Library extrage componente vizuale din aplicația Whist, păstr�
 | [table](src/main/java/ro/cardtable/ui/table/BoardLayout.java) | Regiuni ocupate, ordine vizuală, viewport și cărți publice poziționate după loc; conținutul centrului aparține consumatorului. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
 
-Compoziția specifică a mesei, legalitatea, licitația, atuul, istoricul, colectarea levatei și executorii AI rămân în aplicație. Biblioteca nu deține o activitate, permisiuni, salvări, seed-uri sau tipuri Whist/Rentz și nu depinde de bibliotecile ATF.
+Aplicația deține compoziția mesei, regulile, istoricul, câștigătorul și momentul afișării levatei. Biblioteca măsoară fețele și chenarul câștigător, apoi aplică mișcarea. Contractul comun folosește numai locuri și date vizibile.
 
 `CardTableTheme` păstrează cele șase atribute Android ale reperului; `AppTheme` Whist este aliasul acestei resurse. Consumatorul o adoptă explicit în manifest; admiterea AAR-ului și build-ul nu declară comparație de pixeli sau focus Android.
 
@@ -88,7 +88,15 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 .\gradlew.bat --offline --no-daemon :card-table-ui:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>
 ```
 
-- Coordonata este `ro.cardtable:card-table-ui:0.1.1`; artefactele sunt AAR, POM, metadata Gradle și surse.
+- Coordonata este `ro.cardtable:card-table-ui:0.1.5`. Exportul conține AAR, POM, metadata Gradle și surse.
+- [Politica de nume](../card-table-names/README.md) se publică separat ca JAR Java, pentru motoare și probe JVM.
+
+## Levata și informația din chenar
+
+- `CollectionTarget` primește locurile cărților publice și locul câștigător calculat în joc. `TrickCollectionMotion` păstrează fereastra de 1500 ms și folosește ultimele 500 ms pentru colectare.
+- `TrickCollectionRun` deține geometria, ciclul de viață și curățarea. Adaptorul Android caută fețele cărților și chenarul prin identitatea locului. Whist păstrează validarea snapshotului și momentul când publică levata.
+- Whist și Rentz folosesc `PlayerSeatFrame.buildInlineFacts`. Numele și cele două rânduri își păstrează textul integral și înălțimea, iar lățimea se adaptează după măsurarea finală a glifelor Android.
+- [Componenta nativă a chenarului](src/androidTest/README.md) verifică 36 de combinații. Include 3–6 locuri, lățimi de 240/320/393 dp, font 1/1,5/2, diacritice și valori semnate lungi, inclusiv Δ și Σ.
 - Biblioteca păstrează `minSdk 24`, compilare SDK 36 și Java 17. Consumatorul deține pachetul instalabil, versiunea și semnarea APK-ului.
 - POM-ul păstrează runtime-ul Kotlin adăugat automat de toolchain, deja prezent în aplicația reper. [Kotlin integrat în AGP](https://developer.android.com/build/migrate-to-built-in-kotlin) și [dependența standard](https://kotlinlang.org/docs/gradle-configure-project.html) explică această contribuție.
 - Admiterea confruntă SHA-256, conținutul AAR, manifestul și dependențele înaintea build-ului consumatorului. Publicarea locală nu închide acceptanța UI în alt joc.

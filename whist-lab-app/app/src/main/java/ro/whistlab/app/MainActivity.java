@@ -268,8 +268,8 @@ public final class MainActivity extends Activity {
                 presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
-    private void renderCollecting(CompletedTrickPause.DisplayState pause) {
-        gameScreen.playing(copy, game.snapshot(), pause.cards(), true, pause.remainingMillis(),
+    private void renderCollecting(CompletedTrickPause.DisplayState pause, long deadline) {
+        gameScreen.playing(copy, game.snapshot(), pause.cards(), true, deadline,
                 presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
@@ -329,8 +329,9 @@ public final class MainActivity extends Activity {
     }
 
     private void playAgain() {
-        startGame(GameConfig.newMatch(lastConfig.playerCount(), lastConfig.mode(),
-                lastConfig.aiDifficulty(), System.nanoTime(), lastConfig.streakBonuses(), lastConfig.streakBonusPoints()));
+        startGame(new GameConfig(lastConfig.playerCount(), lastConfig.mode(), lastConfig.aiDifficulty(),
+                System.nanoTime(), lastConfig.streakBonuses(), lastConfig.streakBonusPoints(),
+                lastConfig.streakPenaltyPoints(), lastConfig.allowZeroGame()));
     }
 
     private void showPlayerSettings() {
@@ -382,8 +383,9 @@ public final class MainActivity extends Activity {
         CompletedTrickPause.DisplayState trickPause = completedTrickPause.evaluate(
                 game, displayTime);
         if (trickPause.active()) {
-            renderCollecting(trickPause);
-            handler.postDelayed(this::driveAutomatedTurns, trickPause.remainingMillis());
+            long deadline = displayTime + trickPause.remainingMillis();
+            renderCollecting(trickPause, deadline);
+            handler.postAtTime(this::driveAutomatedTurns, deadline);
             return;
         }
         if (state.phase() == GamePhase.SCORE) {

@@ -1,7 +1,7 @@
 package ro.whistlab.app.table;
 
 import ro.whistlab.app.bidding.BidGridMetrics;
-import ro.whistlab.app.animation.TrickCollectionAnimator;
+import ro.cardtable.ui.animation.TrickCollectionAnimator;
 import ro.whistlab.app.animation.TrickCollectionRequest;
 import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
@@ -287,7 +287,7 @@ public final class GameTablePanel extends LinearLayout {
         var content = WhistTableContent.seat(player, activeSeat,
                 state.dealerSeat(), interactionPaused, bidding, copy);
         LinearLayout frame = new PlayerSeatFrame(context, viewport.isCompact())
-                .build(content, viewport.seatVerticalPaddingDp());
+                .buildInlineFacts(content, viewport.seatVerticalPaddingDp());
         return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding), content.active(),
                 player.seat(), viewport.isCompact());
     }

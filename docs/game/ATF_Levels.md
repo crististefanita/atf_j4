@@ -29,6 +29,7 @@ Ambele politici folosesc aceeași variantă și observație permisă. Motorul ve
 | Normal după contract | Evită levatele suplimentare și descarcă riscul viitor în limitele legale. |
 | Hard cu contract recuperabil | Prioritizează șansa estimată a exactului, punctele proprii și scorul rivalului principal. |
 | Hard cu imposibilitate publică | Protejează mai întâi punctele proprii estimate, apoi urmărește ratările adverse estimate. |
+| Normal și Hard cu „Joc la 0” | Trec la ținta de zero exact când limitele publice exclud primele două locuri prin scor convențional, iar zero rămâne posibil în programul rămas. |
 
 [Modelul deciziei](../ai/ATF_DecisionModel.md#prioritatea-obiectivelor) deține ordinea criteriilor, domeniile și certificatele runtime. [Manifestul obiectivelor](../../config/whist-play-objectives.yaml) leagă intenția de implementare și componente; parametrii și condițiile exacte se citesc din cod.
 

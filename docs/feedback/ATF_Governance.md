@@ -56,13 +56,13 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 
 ## Descărcarea prin browser
 
-[Contractul distribuției](../platform/ATF_AndroidDelivery.md#verificări-automate-ale-distribuției) separă linkul principal, identitatea versiunii și integritatea fișierului. Proba API nu califică automat browserul: blocarea locală `ERR_BLOCKED_BY_CLIENT` poate exista pentru același asset descărcat integral prin API.
+[Contractul distribuției](../platform/ATF_AndroidDelivery.md#verificări-automate-ale-distribuției) separă proba API, descărcarea efectivă din browser și accesul anonim. Verificarea browserului și hash-ul fișierului primit se consemnează în [dosarul versiunii active](../../release/README.md).
 
 | Prioritate | Lacună delimitată | Criteriu de închidere |
 |---|---|---|
-| P1 | Traseul linkului din README până la fișierul salvat în browser nu are încă o probă repetabilă pentru versiunea curentă publicată. | După publicare, verificați în sesiunea GitHub autentificată URL-ul exact, numele, numărul efectiv de bytes, SHA-256 și CRC. Păstrați separat identitatea browserului, rezultatul API și orice blocare a clientului; un rezultat al versiunii anterioare nu califică noul APK. |
+| P2 | Proba din browserul autentificat depinde de operator și de sesiunea GitHub disponibilă. | După publicare, verificați URL-ul versiunii, fișierul primit și SHA-256, apoi deschideți auditul de pe commitul din note. Înregistrați separat răspunsurile anonime și eventualele refuzuri locale ale browserului. |
 
-Transferul real DownloadManager pe API 28 este [calificat separat](../../release/0.10.2/reports/README.md#descărcare-reală-pe-android): fișier complet, identitate și certificat corecte. Nu închide proba browserului de mai sus. Păstrați distinct 404-ul frontend-ului fără sesiune, transferul autorizat reușit și refuzul local de automatizare; existența unui marcaj al contului sau cauza acestuia nu se deduc din acestea.
+Proba de transfer prin Android DownloadManager și verificarea certificatului aparțin dosarului versiunii efectiv testate. [Contractul transferului Android](../platform/ATF_AndroidDelivery.md#separarea-accesului-de-transferul-android) descrie datele necesare, iar [blocajul GitHub anonim](ATF_Android.md#distribuție-github-accesul-anonim) are propriul criteriu de închidere.
 
 ## Acceptanța nativă a distribuției
 

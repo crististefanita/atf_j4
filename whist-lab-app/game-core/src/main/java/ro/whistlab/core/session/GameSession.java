@@ -296,7 +296,7 @@ public final class GameSession {
                 history,
                 turnedCard,
                 config.streakBonuses(),
-                config.streakBonusPoints(), config.streakPenaltyPoints());
+                config.streakBonusPoints(), config.streakPenaltyPoints(), config.allowZeroGame());
     }
 
     public SaveState saveState() {
@@ -486,7 +486,18 @@ public final class GameSession {
             List<PlayedCard> history,
             Card turnedCard,
             boolean streakBonuses,
-            int streakBonusPoints, int streakPenaltyPoints) {
+            int streakBonusPoints, int streakPenaltyPoints, boolean allowZeroGame) {
+        public Snapshot(GamePhase phase, int handIndex, int handNumber, int handSize, Trump trump,
+                int dealerSeat, int biddingSeat, int currentSeat, int bidsSubmitted, int bidTotal,
+                List<PlayerSnapshot> players, List<PlayedCard> currentTrick, List<PlayedCard> lastTrick,
+                int lastTrickWinnerSeat, boolean finalHand, GameMode mode, List<PlayedCard> history,
+                Card turnedCard, boolean streakBonuses, int streakBonusPoints, int streakPenaltyPoints) {
+            this(phase, handIndex, handNumber, handSize, trump, dealerSeat, biddingSeat, currentSeat,
+                    bidsSubmitted, bidTotal, players, currentTrick, lastTrick, lastTrickWinnerSeat,
+                    finalHand, mode, history, turnedCard, streakBonuses, streakBonusPoints,
+                    streakPenaltyPoints, false);
+        }
+
         /** Legacy projections retain their historical five-point penalty. */
         public Snapshot(
             GamePhase phase,
@@ -516,6 +527,15 @@ public final class GameSession {
             currentTrick = ImmutableLists.copy(currentTrick);
             lastTrick = ImmutableLists.copy(lastTrick);
             history = ImmutableLists.copy(history);
+        }
+
+        public boolean earnedZeroGame(int seat) {
+            return allowZeroGame && mode.isRomanian() && finalHand && phase == GamePhase.SCORE
+                    && players.get(seat).totalScore() == 0;
+        }
+
+        public int matchScore(int seat) {
+            return earnedZeroGame(seat) ? RomanianScoring.ZERO_GAME_SCORE : players.get(seat).totalScore();
         }
     }
 

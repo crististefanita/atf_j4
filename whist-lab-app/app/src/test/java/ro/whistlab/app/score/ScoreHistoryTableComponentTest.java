@@ -228,9 +228,11 @@ public class ScoreHistoryTableComponentTest extends atf.gradle.audit.GradleAudit
         var json = GameSessionStore.encode(game.saveState());
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "json", json);
-        assertEquals("json.getInt(\"version\") must equal 7", 7, json.getInt("version"));
+        assertEquals("Current checkpoints use version eight", 8, json.getInt("version"));
         assertEquals("GameSessionStore.fromJson(json.toString()).config().streakPenaltyPoints() must equal 10", 10, GameSessionStore.fromJson(json.toString()).config().streakPenaltyPoints());
-        json.put("version", 5); json.remove("streakPenaltyPoints");
+        json.put("version", 5);
+        json.remove("streakPenaltyPoints");
+        json.remove("allowZeroGame");
         var legacy = GameSessionStore.fromJson(json.toString());
         assertEquals("legacy.config().streakBonusPoints() must equal 10", 10, legacy.config().streakBonusPoints()); assertEquals("legacy.config().streakPenaltyPoints() must equal 5", 5, legacy.config().streakPenaltyPoints());
         assertEquals("GameSessionStore.fromJson(GameSessionStore.encode(legacy.saveState()).toString()).config().streakPenaltyPoints() must equal 5", 5, GameSessionStore.fromJson(GameSessionStore.encode(legacy.saveState()).toString()).config().streakPenaltyPoints());

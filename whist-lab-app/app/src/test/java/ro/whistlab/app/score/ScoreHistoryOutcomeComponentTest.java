@@ -77,7 +77,7 @@ public final class ScoreHistoryOutcomeComponentTest extends atf.gradle.audit.Gra
         var encoded = GameSessionStore.encode(twoHands().saveState());
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "encoded", encoded);
-        assertEquals("encoded.getInt(\"version\") must equal 7", 7, encoded.getInt("version"));
+        assertEquals("Current checkpoints use version eight", 8, encoded.getInt("version"));
         JSONObject bad = new JSONObject(encoded.toString()); bad.getJSONObject("scores").remove("tricks"); rejects(bad);
         bad = new JSONObject(encoded.toString()); bad.getJSONObject("scores").getJSONArray("tricks").getJSONArray(0).put(0, 0.5); rejects(bad);
         bad = new JSONObject(encoded.toString()); bad.getJSONObject("scores").getJSONArray("tricks").getJSONArray(0).put(0, -1); rejects(bad);

@@ -58,7 +58,7 @@ public final class ScoreTableView extends LinearLayout {
             row.setBackgroundColor(player.human() ? HUMAN_ROW
                     : (player.seat() % 2 == 0 ? PAPER : STRIPE));
             row.setTag("score:" + player.seat());
-            row.setContentDescription(copy.scoreLine(player, handValue(player, state)));
+            row.setContentDescription(copy.scoreLine(player, handValue(player, state), state.matchScore(player.seat())));
             row.setFocusable(true);
             row.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         }
@@ -71,7 +71,7 @@ public final class ScoreTableView extends LinearLayout {
                 Gravity.CENTER, header, header);
         addCell(row, header ? copy.scoreColumnHand() : handValue(player, state), 0.82f,
                 Gravity.CENTER, header, header);
-        addCell(row, header ? copy.scoreColumnTotal() : Integer.toString(player.totalScore()), 0.9f,
+        addCell(row, header ? copy.scoreColumnTotal() : Integer.toString(state.matchScore(player.seat())), 0.9f,
                 Gravity.CENTER, header || player.human(), header);
         return row;
     }

@@ -5,7 +5,7 @@ import java.util.Map;
 
 /** Opt-in per-thread work accounting. It neither changes random streams nor exposes hidden deals. */
 public final class SearchWork {
-    public enum Event { SAMPLE, WORLD, MATCHING, ENUMERATION, ROLLOUT, PROOF, ENDGAME }
+    public enum Event { SAMPLE, WORLD, MATCHING, ENUMERATION, ROLLOUT, PROOF, ENDGAME, ZERO_ELIGIBLE, ZERO_SELECTED }
     public record Metrics(long workUnits, Map<Event, Long> events, String stopReason, long elapsedNanos) { }
     public static final class LimitExceeded extends RuntimeException {
         private LimitExceeded() { super("AI work limit exceeded; no complete decision"); }

@@ -2,12 +2,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 group = 'ro.cardtable'
-version = '0.1.1'
+version = '0.1.5'
 
 android {
     namespace 'ro.cardtable.ui'
     compileSdk 36
-    defaultConfig { minSdk 24 }
+    defaultConfig {
+        minSdk 24
+        testInstrumentationRunner 'ro.cardtable.ui.seat.SeatFrameComponentInstrumentation'
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17

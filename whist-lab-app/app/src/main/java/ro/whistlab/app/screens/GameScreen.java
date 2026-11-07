@@ -6,6 +6,7 @@ import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.table.TrumpIndicatorView;
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,7 @@ public final class GameScreen {
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
-    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick, boolean pauseActive, long remainingMillis, Runnable resized, java.util.function.Consumer<Card> selected, MenuActions actions) {
+    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick, boolean pauseActive, long collectionDeadline, Runnable resized, java.util.function.Consumer<Card> selected, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = views.gamePage();
@@ -59,7 +60,8 @@ public final class GameScreen {
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        if (pauseActive && remainingMillis > 0) table.collectCompletedTrick(remainingMillis, resized);
+        if (pauseActive && collectionDeadline > 0)
+            table.collectCompletedTrick(collectionDeadline - SystemClock.uptimeMillis(), resized);
     }
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
             boolean currentPlayerHighlighted, WhistUiText copy, MenuActions actions) {

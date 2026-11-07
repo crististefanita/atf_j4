@@ -1,6 +1,6 @@
-# Auditul candidatului 0.11.0
+# Auditul livrării 0.11.0
 
-## Domeniu și citire
+## Pe scurt
 
 Componentele Gradle publică inputuri efective, comparații evaluate și identitatea invocării în HTML. Unitățile, componentele și guvernanța păstrează categoria declarată. Turneele și corpusurile externe nu fac parte din această selecție.
 
@@ -30,27 +30,28 @@ Oracolele de scor, istoric, geometrie și raster evaluează toate combinațiile 
 - [Profil și localizare](e2e/signed-release-home-profile.html).
 - [Pornire și configurație](e2e/signed-release-smoke.html).
 
-[Proveniența](diagnostics/native-provenance.json) leagă execuțiile noi de APK-ul instalat și confirmă restaurarea stării inițiale. Raportarea include capturile reale inline. Dovezile altui binar rămân în dosarul său. Selecția nu califică o partidă completă sau toate dispozitivele.
+Proveniența leagă execuțiile de APK-ul instalat și confirmă restaurarea stării inițiale. Raportarea include capturile reale inline. [Proveniența Android](diagnostics/native-provenance.json)
+
+Dovezile sunt organizate pe binar. Selecția acoperă fluxurile Android enumerate mai sus.
 
 ## Reproducere și retenție
 
-[Manifestul surselor](apk-inputs.json) și [arhiva exactă](diagnostics/source-snapshot.zip) fixează snapshot-ul, inclusiv bibliotecile fizice. XML-ul componentelor a servit confruntării temporare JUnit–HTML; dosarul păstrează numai HTML-ul canonic al fiecărei selecții. JUnit-ul nativ păstrează identitatea și duratele originale.
-
-Candidatul este local PREPARED; catalogul activ și publicarea remote rămân distincte.
-
-[Reconcilierea surselor](diagnostics/source-scope-reconciliation.json) confirmă aceeași amprentă pentru buildul Android și selecția JVM a motorului. [Reîmprospătarea snapshot-ului](diagnostics/snapshot-refresh.json) identifică testele modificate pentru a agrega capturile exhaustive. Amprentele capturate în HTML-uri nu sunt rescrise.
+- Manifestul și arhiva fixează snapshot-ul, inclusiv bibliotecile fizice. [Manifestul surselor](apk-inputs.json) · [Arhiva exactă](diagnostics/source-snapshot.zip)
+- XML-ul componentelor a servit confruntării temporare JUnit–HTML. Dosarul păstrează HTML-ul canonic al fiecărei selecții, iar JUnit-ul nativ păstrează identitatea și duratele originale.
+- Rapoartele califică APK-ul publicat cu tagul `v0.11.0`. Verificarea distribuției separă descărcarea prin API, proba în browserul autentificat și răspunsurile anonime. [Manifestul livrării](../release-validation.json) · [Verificarea distribuției](distribution-verification.json)
+- Buildul Android și selecția JVM a motorului au aceeași amprentă. Snapshot-ul indică testele modificate pentru agregarea capturilor, iar fișierele HTML păstrează amprentele înregistrate. [Reconcilierea surselor](diagnostics/source-scope-reconciliation.json) · [Reîmprospătarea snapshot-ului](diagnostics/snapshot-refresh.json)
 
 ## Revizia HTML finală
 
-Cele 14 rapoarte canonice au fost inspectate în browserul MCP prin UI-debug read-only pe loopback. Directorul de revizie conține doar HTML-uri. [Recepția reviziei](diagnostics/browser-review.json) fixează hash-urile și controalele observate, inclusiv comparația licitației și vizualizatorul PNG. Autonomia statică este verificată separat; revizia nu a interceptat rețeaua.
+Cele 14 rapoarte canonice au fost inspectate în browserul MCP prin UI-debug read-only pe loopback. Recepția fixează hash-urile și controalele observate, inclusiv comparația licitației și vizualizatorul PNG. [Recepția reviziei](diagnostics/browser-review.json)
 
-[Reconcilierea surselor](diagnostics/source-reconciliation.json) confruntă inventarul complet cu snapshot-ul calificat, cu override-ul declarat de versiune. 
-
-[Actualizarea paralelă a metadatelor Reporting](diagnostics/live-library-metadata.json) a fost verificată separat. JAR-ul fizic și sursele de execuție coincid; arhiva păstrează exact fișierele din rulare.
+- Directorul de revizie conține HTML-urile. Autonomia statică a fost verificată separat de revizia în browser.
+- Inventarul complet corespunde snapshot-ului calificat cu override-ul declarat de versiune. [Reconcilierea surselor](diagnostics/source-reconciliation.json)
+- JAR-ul fizic și sursele de execuție coincid, iar arhiva păstrează exact fișierele din rulare. [Verificarea metadatelor Reporting](diagnostics/live-library-metadata.json)
 
 ## Sursele livrării
 
-Tagul indică [sursele calificate](https://github.com/crististefanita/atf_j4/tree/61a16105244e2504d7c0102956ef3e00019c0ca3).
+Tagul indică sursele calificate din commitul `61a16105244e2504d7c0102956ef3e00019c0ca3`.
 
 [Legarea de Git](diagnostics/git-source-binding.json) verifică fișierele sursă și conversia CRLF în LF la indexare. Arhiva păstrează octeții folosiți la build.
 

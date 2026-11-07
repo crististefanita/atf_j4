@@ -4,22 +4,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import ro.cardtable.ui.animation.CollectionTarget;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
 /** Complete public trick and the engine's winner; never infers a winner from screen geometry. */
-public record TrickCollectionRequest(int winner, List<Integer> seats) {
-    public TrickCollectionRequest {
-        seats = List.copyOf(seats);
-        int count = seats.size();
-        if (count < 3 || count > 6 || winner < 0 || winner >= count
-                || new HashSet<>(seats).size() != count
-                || seats.stream().anyMatch(seat -> seat < 0 || seat >= count))
-            throw new IllegalArgumentException("A collection needs every seat and its winning actor");
-    }
+public final class TrickCollectionRequest {
+    private TrickCollectionRequest() { }
 
-    public static Optional<TrickCollectionRequest> from(GameSession.Snapshot state, List<PlayedCard> cards) {
+    public static Optional<CollectionTarget> from(GameSession.Snapshot state, List<PlayedCard> cards) {
         Objects.requireNonNull(state);
         Objects.requireNonNull(cards);
         int count = state.players().size();
@@ -32,6 +26,6 @@ public record TrickCollectionRequest(int winner, List<Integer> seats) {
         var seats = cards.stream().map(PlayedCard::seat).collect(java.util.stream.Collectors.toList());
         if (new HashSet<>(seats).size() != count || seats.stream().anyMatch(seat -> seat < 0 || seat >= count)
                 || cards.stream().map(PlayedCard::card).distinct().count() != count) return Optional.empty();
-        return Optional.of(new TrickCollectionRequest(state.lastTrickWinnerSeat(), seats));
+        return Optional.of(new CollectionTarget(state.lastTrickWinnerSeat(), seats));
     }
 }

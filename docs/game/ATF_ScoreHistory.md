@@ -32,6 +32,7 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 |---|---|
 | Punctele mâinii | Diferența dintre totalul nou și soldul anterior, incluzând seria. |
 | Punctajul afișat | Totalul după mâna rândului, pentru fiecare loc; prima și ultima înregistrare păstrează propriul sold. |
+| Joc la 0 | La finalul partidei eligibile, rezultatul și clasamentul transformă totalul exact 0 în 500. Celula ultimei mâini păstrează soldul, iar legenda indică jucătorii care au primit transformarea. |
 | Licitația | Asociată explicit locului, chiar dacă acțiunile au fost capturate în altă ordine. |
 | Levate | Valorile sunt întregi, încadrate în mână, iar suma pe locuri este numărul cărților mâinii. Ultima mână încheiată concordă cu starea jucătorilor. |
 | Rezultatul contractului | Realizat, ratat sau necunoscut; punctele pozitive nu implică realizarea contractului. Zero este o licitație distinctă de valoarea necunoscută. |

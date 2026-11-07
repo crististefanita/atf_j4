@@ -11,6 +11,7 @@ Testele verifică regulile, sesiunile și politicile din observația permisă ac
 | Reguli și scor | Cărți legale, câștigător, contracte, serii și vecinii invalizi, cu așteptări independente. |
 | Sesiune și restaurare | Comenzi, avansarea unică a mâinii, istoric și refuzul stărilor inconsistente. |
 | Politică AI | Observația actorului, legalitatea, necesarul și alegeri justificate în domenii controlate. |
+| Joc la 0 | Scorul final în ambele variante românești, tranziția AI către zero exact și păstrarea strategiei obișnuite când locul al doilea rămâne posibil. |
 | Cercetare | Inferență și continuări experimentale, separate de regresia implicită. |
 | Evaluare offline | Roluri, surse și loturi identificate; progresul strategic are protocol și date rezervate proprii. |
 
@@ -23,5 +24,18 @@ O regresie mică fixează regula și defectul distinct, fără a rula din nou î
 ## Interpretarea rezultatului
 
 Corectitudinea unei reguli, costul unei decizii și superioritatea politicii sunt calificări diferite. [Protocolul de învățare](../../../../docs/learning/README.md) păstrează proveniența, selecția și criteriile de promovare; un rollout ori un certificat finit nu garantează câștigarea fiecărei partide.
+
+## Evaluarea jocului la 0
+
+Sarcina `:game-core:zeroMatchPairedTest` rulează explicit partide complete pe JVM. Perechea păstrează locurile, seria, distribuția, ordinea mâinilor și atuurile, cu regula dezactivată și activată.
+
+| Parametru Gradle | Rol |
+|---|---|
+| `whist.zero.firstSeed`, `whist.zero.repeats` | Intervalul determinist de distribuții pentru fiecare combinație de variantă și număr de locuri. |
+| `whist.zero.pressure` | Alege lotul cu prefix controlat, în care un loc primește licitații adverse legale înainte de ultimele cinci mâini. Loturile naturale și controlate se interpretează separat. |
+| `whist.zero.output`, `whist.zero.reference` | Scrie perechile JSON într-un dosar nou și confruntă controlul cu referința înghețată, când este disponibilă. |
+| `whist.auditOutput`, `whist.auditSource` | Destinația Extent și identificarea sursei de execuție. |
+
+JSON-ul reține mutările publice, scorurile, alegerile către zero și amprentele distribuțiilor. Compararea finală separă intervalele de dezvoltare de cele rezervate.
 
 [Motorul](../../README.md) · [Strategia comună](../../../../docs/testing/README.md) · [Proiectarea componentelor AI](../../../../docs/testing/ATF_AiComponents.md)

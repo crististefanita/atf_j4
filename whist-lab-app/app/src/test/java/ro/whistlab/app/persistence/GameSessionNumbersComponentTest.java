@@ -8,6 +8,20 @@ import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.session.GameSession;
 
 public class GameSessionNumbersComponentTest extends atf.gradle.audit.GradleAuditedTest {
+    @Test public void currentCheckpointsRequireAnExplicitBooleanRule() throws Exception {
+        var json = fixture();
+        atf.gradle.audit.GradleInputs.fixture("Current save with the rule disabled", "checkpoint", json.toString());
+        assertFalse("The saved false value is respected", GameSessionStore.fromJson(json.toString()).config().allowZeroGame());
+        json.remove("allowZeroGame");
+        assertThrows("A current save may not silently lose its rule profile", IllegalStateException.class,
+                () -> GameSessionStore.fromJson(json.toString()));
+        for (Object invalid : new Object[]{"false", 0, JSONObject.NULL}) {
+            json.put("allowZeroGame", invalid);
+            assertThrows("Strings, numbers and null are invalid rule flags", IllegalStateException.class,
+                    () -> GameSessionStore.fromJson(json.toString()));
+        }
+    }
+
     @Test public void validCheckpointsRetainTheExactSeedAndAcceptedBid() throws Exception {
         for (long seed : new long[] {0, Long.MIN_VALUE, Long.MAX_VALUE}) {
             var game = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.defaults(seed)));

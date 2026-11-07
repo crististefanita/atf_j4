@@ -95,7 +95,7 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 |---|---|---|
 | P1 extern | API-ul Search autentificat confirmă `User flagged as spammy.`; profilul, repository-ul public și asset-ul returnează 404 anonim. | Solicitați revizuirea marcajului contului prin formularul oficial GitHub; după ridicare, URL-ul public al asset-ului trebuie să răspundă 200 și să producă exact mărimea și SHA-256 ale binarului verificat. |
 
-[Registrul distribuției](../../release/README.md) identifică dosarul activ și starea lui de pregătire ori publicare. Semnalul furnizorului și răspunsurile anonime aparțin probei care le-a capturat; un candidat local `PREPARED` nu confirmă publicarea și nu închide incidentul distribuției anterioare.
+[Registrul distribuției](../../release/README.md) identifică dosarul activ și probele sale. Starea publicării, descărcarea în browserul autentificat și accesul anonim au verdicte separate. Semnalul furnizorului și codurile HTTP rămân în proba de distribuție.
 
 Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-256 aparțin înregistrării distribuției și cererii de suport, fără duplicarea lor în ghid. Distribuția publică rămâne necalificată; modificarea APK-ului nu compensează un răspuns HTTP negativ.
 

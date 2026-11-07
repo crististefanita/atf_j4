@@ -22,15 +22,19 @@ public final class HighScores {
             .thenComparing(Entry::matchId).thenComparingInt(Entry::seat);
 
     public record Profile(GameMode mode, int players, AiDifficulty difficulty,
-            boolean series, int reward, int penalty) {
-        public Profile { new GameConfig(players, mode, difficulty, 0, series, reward, penalty); }
+            boolean series, int reward, int penalty, boolean allowZeroGame) {
+        public Profile(GameMode mode, int players, AiDifficulty difficulty, boolean series, int reward, int penalty) {
+            this(mode, players, difficulty, series, reward, penalty, false);
+        }
+        public Profile { new GameConfig(players, mode, difficulty, 0, series, reward, penalty, allowZeroGame); }
         public static Profile from(GameConfig config) {
             return new Profile(config.mode(), config.playerCount(), config.aiDifficulty(),
-                    config.streakBonuses(), config.streakBonusPoints(), config.streakPenaltyPoints());
+                    config.streakBonuses(), config.streakBonusPoints(), config.streakPenaltyPoints(),
+                    config.allowZeroGame());
         }
         public String key() {
             return mode.name() + ":" + players + ":" + difficulty.name() + ":"
-                    + (series ? reward + ":" + penalty : "off");
+                    + (series ? reward + ":" + penalty : "off") + (allowZeroGame ? ":zero" : "");
         }
     }
 

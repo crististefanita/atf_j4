@@ -31,12 +31,15 @@ public final class ScoreScreens {
         views.addText(page, state.finalHand() ? copy.gameComplete() : copy.handComplete(),
                 16, MUTED, false, 0, 12);
         if(state.finalHand())views.addText(page,copy.winner(state),18,ACCENT,true,0,12);
+        String awards = copy.zeroGameAwards(state);
+        if (!awards.isEmpty()) views.addText(page, awards, 14, ACCENT, false, 0, 8);
         LinearLayout.LayoutParams scoreTableParams = views.matchWrap();
         scoreTableParams.setMargins(0, 0, 0, views.dp(8));
         page.addView(new ScoreTableView(activity, state, copy, history), scoreTableParams);
         views.addQuietButton(page, copy.scoringDetails(), () -> new AlertDialog.Builder(activity)
                 .setTitle(copy.scoringDetails()).setMessage(copy.scoreRule(state)
-                        + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : ""))
+                        + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : "")
+                        + (state.allowZeroGame() ? "\n\n" + copy.zeroGameRule() : ""))
                 .setPositiveButton(copy.close(), null).show());
 
         if (!state.finalHand()) {

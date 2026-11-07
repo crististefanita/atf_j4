@@ -15,7 +15,7 @@ Nucleul extras este independent de motoare și ATF. Compoziția mesei, configura
 | Masă și mână | [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) păstrează `GameSession.Snapshot`, `Card` și `PlayedCard`; [GameScreen](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java) calculează legalitatea prin `GameRules`. | Proiecție tipizată, imuabilă și limitată la informația permisă; legalitatea și comanda se decid în adaptor, înainte și după intenția UI. Mutarea fișierelor cu aceleași importuri nu închide criteriul. |
 | Geometrie | [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java), [HandLayoutMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/hand/HandLayoutMetrics.java), [TableGeometry](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableGeometry.java). | Implementare comună, cu fațade Whist și aceleași rotunjiri, ancore și rezultate înainte/după. Testele existente din pachetele Whist păstrează oracolele și identitățile. |
 | Scor | [ScoreHistoryColumn](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java) proiectează licitatul, rezultatul contractului și totalul Whist. | Extrageți măsurarea, grila, cadrul dialogului și derularea; proiecția și marcajele de serie rămân Whist. Rentz furnizează propriile coloane și date. |
-| Mișcare | [Colectarea levatei](../../whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRun.java), [navigarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java) și [refacerea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java). | Decuplați scena și evenimentele de tipurile jocului, păstrând timpul vizibil, anularea, generația rutei și aplicarea unică. Colectarea nu este animație de distribuire. |
+| Mișcare | [Colectarea levatei](../../whist-lab-app/card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java), [navigarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java) și [refacerea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java). | Decuplați scena și evenimentele de tipurile jocului, păstrând timpul vizibil, anularea, generația rutei și aplicarea unică. Colectarea nu este animație de distribuire. |
 
 Nu este justificată extragerea întregii activități sau a motorului într-un modul numit generic. Biblioteca grafică nu primește seed, mâini adverse, `GameSession`, motor AI sau acces direct la salvările consumatorului.
 
@@ -52,6 +52,18 @@ Diagrama descrie relația dintre adaptoare și biblioteca comună; meniul, profi
 Modelați numai variațiile demonstrate de cele două jocuri. Evitați un constructor cu zeci de flag-uri, dependențele de activitățile consumatorilor și un serviciu comun care preia implicit persistența sau execuția AI.
 
 ## Priorități și condiții de închidere
+
+| Contract comun | Responsabilitate și verificare |
+|---|---|
+| Nume la masă · EXTRAS | `card-table-names` păstrează ordinea listei, seed-ul derivat, excluderea numelui uman și asocierea cu locul. Gradle și reactorul Maven includ sursa Java comună. |
+| Colectarea levatei · EXTRASĂ | Temporizarea, geometria, animatorul și curățarea Android sunt în `card-table-ui`. Componentele Whist păstrează cazurile de anulare, redimensionare, animație dezactivată și termen unic. |
+| Rândurile din chenar · EXTRASE | Consumatorul alege explicit varianta cu etichetă și valoare pe o singură linie. Afișarea Whist cu două coloane rămâne reper pentru apelul implicit. |
+
+[Registrul consumatorului Rentz](../../../atf_j5/docs/feedback/ATF_Rentz_UI_ToDo.md) urmărește separat integrarea și calificarea nativă U10–U12.
+
+[Dosarul extracției](../../../../whist_back/ui-extraction/shared-seats-collection/README.md) leagă versiunile exportate, componentele Whist și verificarea sursei live.
+
+**Verificarea colectării după restart.** Pe API 28, Whist a afișat o singură dată ultima levată din checkpoint și a revenit la scor cu salvarea identică. Proba cadrelor distinge întârzierea, deplasarea și dispariția. Matricea nativă a numelui și a celor două rânduri de statistici închide separat încadrarea la font mărit. [Dovezile Whist și Rentz](../../../../rentz_back/ui-review/restart-collection-j5/README.md)
 
 | ID și stare | Lucrare chirurgicală | Acceptanță |
 |---|---|---|

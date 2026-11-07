@@ -67,6 +67,13 @@
 - A one-card hand does not advance a matching series, but an opposite outcome breaks it.
 - This bonus is separate from the 5 points awarded for each exact contract.
 
+## Playing for zero
+
+- In both Romanian variants, Allow playing for zero is checked by default at setup.
+- After the last hand is scored, including streaks, each player with an exact total of 0 gets a final score of 500.
+- All other totals stay the same.
+- History keeps the hand scores and explains the final conversion separately.
+
 ## Keep variants distinct
 
 - This guide describes standard Romanian Whist in Whist Lab.

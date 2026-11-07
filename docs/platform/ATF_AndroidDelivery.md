@@ -62,7 +62,7 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișierului salvat. Reușita construirii și instalării locale nu dovedește reușita descărcării publice; integritatea și proveniența copiei descărcate se verifică separat.
 
-- Copiați fișierul local într-un nume temporar, verificați-l și publicați-l prin redenumire atomică. Descărcați din nou asset-ul GitHub și confruntați-l înainte de handoff; răspunsurile HTTP negative rămân erori, fără promovarea lor la pachet instalabil.
+- Scrieți transferul într-un fișier temporar și publicați APK-ul prin mutare în același director, după verificare. La eșec, descărcătorul elimină fișierul temporar propriu și păstrează eroarea inițială. Descărcați din nou asset-ul GitHub și confruntați-l înainte de predare.
 
 - Calificați separat accesul autentificat și accesul anonim. `visibility=public`, starea `uploaded` și digest-ul corect al asset-ului nu dovedesc că browserul unui vizitator poate descărca binarul. Proba păstrează codul HTTP, numărul de bytes și hash-ul copiei primite; un blocaj de vizibilitate rămâne deschis până la răspunsul public reușit.
 

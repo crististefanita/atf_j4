@@ -24,7 +24,7 @@ final class RecordsFixtures {
 
     static Fixture history() {
         var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST,
-                AiDifficulty.NORMAL, 70231, true, 10), "HistUser");
+                AiDifficulty.NORMAL, 70231, true, 10, false), "HistUser");
         do { finishHand(game); if (game.snapshot().finalHand()) break; game.startNextHand(); } while (true);
         return new Fixture(game, encode(game, false));
     }
@@ -45,7 +45,8 @@ final class RecordsFixtures {
     }
 
     private static GameSession seriesStart(int magnitude) {
-        var config = GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 70240 + magnitude, true, magnitude);
+        var config = GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL, 70240 + magnitude,
+                true, magnitude, false);
         var hands = List.of(List.of(new Card(Suit.SPADES,14),new Card(Suit.SPADES,13)),
                 List.of(new Card(Suit.HEARTS,12),new Card(Suit.HEARTS,11)),
                 List.of(new Card(Suit.HEARTS,10),new Card(Suit.HEARTS,9)),
@@ -63,7 +64,7 @@ final class RecordsFixtures {
         for (long index = 0; index < 100; index++) {
             long seed = 70300 + index * 100003;
             var candidate = GameSession.newGame(GameConfig.newMatch(4,GameMode.ROMANIAN_WHIST,
-                    AiDifficulty.NORMAL,seed,true,10),"RankUser");
+                    AiDifficulty.NORMAL,seed,true,10,false),"RankUser");
             if (candidate.snapshot().dealerSeat() == 1) { game = candidate; break; }
         }
         if (game == null) throw new IllegalStateException("No suitable deterministic dealer");
@@ -87,6 +88,7 @@ final class RecordsFixtures {
 
     static ObjectNode encode(GameSession game, boolean eligible) {
         var state = game.saveState(); var config = state.config();
+        if (config.allowZeroGame()) throw new IllegalArgumentException("Version seven fixtures require classic scoring");
         ObjectNode json = JSON.createObjectNode();
         json.put("version",7).put("playerCount",config.playerCount()).put("mode",config.mode().name())
                 .put("difficulty",config.aiDifficulty().name()).put("seed",config.seed())

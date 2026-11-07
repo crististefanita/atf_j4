@@ -59,6 +59,16 @@
       "path": "whist-lab-app/card-table-ui/src/test/java"
     },
     {
+      "module": "whist-lab-app/card-table-ui",
+      "test": true,
+      "path": "whist-lab-app/card-table-ui/src/androidTest/java"
+    },
+    {
+      "module": "whist-lab-app/card-table-names",
+      "test": false,
+      "path": "whist-lab-app/card-table-names/src/main/java"
+    },
+    {
       "module": "whist-lab-app/test-audit",
       "test": true,
       "path": "whist-lab-app/test-audit/src/testFixtures/java"
@@ -123,6 +133,14 @@
       "ro.whistlab",
       "ro.rentzlab",
       "ro.atf.holdem"
+    ],
+    "whist-lab-app/card-table-names": [
+      "android",
+      "atf",
+      "org.junit",
+      "ro.whistlab",
+      "ro.rentzlab",
+      "ro.cardtable.ui"
     ]
   },
   "reviewedPackages": {},

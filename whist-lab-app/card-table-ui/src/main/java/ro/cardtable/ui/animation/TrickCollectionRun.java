@@ -1,4 +1,4 @@
-package ro.whistlab.app.animation;
+package ro.cardtable.ui.animation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +15,14 @@ public final class TrickCollectionRun {
     public interface Surface {
         Runnable watch(Runnable ready, Runnable invalidated, Runnable resized);
         boolean animationsEnabled();
-        Geometry measure(TrickCollectionRequest request);
+        Geometry measure(CollectionTarget request);
         void render(List<TrickCollectionMotion.Frame> frames);
         Runnable animate(TrickCollectionMotion.Timing timing, Consumer<Float> frame, Runnable finished);
         void release(boolean completed);
     }
 
     private enum State { NEW, WAITING, RUNNING, CANCELLED, FINISHED }
-    private final TrickCollectionRequest request;
+    private final CollectionTarget request;
     private final long remainingMillis;
     private final long createdAt;
     private final LongSupplier clock;
@@ -34,12 +34,12 @@ public final class TrickCollectionRun {
     private Runnable stopWatching;
     private Runnable stopAnimation;
 
-    public TrickCollectionRun(TrickCollectionRequest request, long remainingMillis,
+    public TrickCollectionRun(CollectionTarget request, long remainingMillis,
                               LongSupplier clock, Surface surface) {
         this(request, remainingMillis, clock, surface, () -> { });
     }
 
-    public TrickCollectionRun(TrickCollectionRequest request, long remainingMillis,
+    public TrickCollectionRun(CollectionTarget request, long remainingMillis,
                               LongSupplier clock, Surface surface, Runnable resized) {
         this.request = Objects.requireNonNull(request);
         TrickCollectionMotion.timing(remainingMillis, 0);

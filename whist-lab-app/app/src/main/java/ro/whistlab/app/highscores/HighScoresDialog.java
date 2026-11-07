@@ -89,7 +89,8 @@ public final class HighScoresDialog {
 
     private static String profileLabel(HighScores.Profile profile, WhistUiText copy) {
         return copy.modeName(profile.mode()) + " · " + profile.players() + " · " + copy.difficultyName(profile.difficulty())
-                + (profile.series() ? " · +" + profile.reward() + "/−" + profile.penalty() : "");
+                + (profile.series() ? " · +" + profile.reward() + "/−" + profile.penalty() : "")
+                + (profile.allowZeroGame() ? " · " + copy.zeroGameToggle() : "");
     }
     private static Spinner selector(Context context, List<String> labels) {
         Spinner spinner = new Spinner(context);
