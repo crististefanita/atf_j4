@@ -1,0 +1,52 @@
+{
+  "state": "PASS",
+  "observedUtc": "2026-11-07T14:45:14.3374042+00:00",
+  "tag": "v0.12.0",
+  "targetCommit": "82e18ae7f9428d2aed3914724c32a8221d6201f9",
+  "evidenceCommit": "9625821e9320c3535438ce8b15589102d12f9f5b",
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/9625821e9320c3535438ce8b15589102d12f9f5b/release/0.12.0/reports/README.md",
+  "evidenceSha256": "cd009ceff00348ec7a145c4bb6b10a7048872afa592f6bbc6d37b3e0503ae6cd",
+  "releaseId": 437635372,
+  "releaseUrl": "https://github.com/crististefanita/atf_j4/releases/tag/v0.12.0",
+  "verifiedChannel": "authenticated GitHub release, binary asset and contents APIs",
+  "anonymousChannel": "UNAVAILABLE",
+  "repositoryVisibility": "public",
+  "assets": [
+    {
+      "id": 720966107,
+      "name": "WhistLab-0.12.0.apk",
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.12.0/WhistLab-0.12.0.apk",
+      "size": 832632,
+      "digest": "sha256:27e4c3c298f1e05640438ccc0902a3d8c3515348fdbdfd04f5e9a8059b730d93"
+    },
+    {
+      "id": 720966178,
+      "name": "WhistLab-0.12.0.apk.sha256",
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.12.0/WhistLab-0.12.0.apk.sha256",
+      "size": 87,
+      "digest": "sha256:a99752904bb10a1e681126b152a74e072a09c51395ee44a92a31fc2d2220298b"
+    }
+  ],
+  "links": [
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.12.0/WhistLab-0.12.0.apk",
+      "status": 404,
+      "verified": false
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.12.0/WhistLab-0.12.0.apk.sha256",
+      "status": 404,
+      "verified": false
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/tag/v0.12.0",
+      "status": 404,
+      "verified": false
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/blob/9625821e9320c3535438ce8b15589102d12f9f5b/release/0.12.0/reports/README.md",
+      "status": 404,
+      "verified": false
+    }
+  ]
+}
