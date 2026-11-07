@@ -10,8 +10,8 @@ evaluări offline și scenarii UI proprii. Experimentele compară politici pe di
 
 ## Jocul
 
-- **[Whist Lab 0.10.2](https://github.com/crististefanita/atf_j4/releases/tag/v0.10.2)** — release-ul curent, cu noutăți și acces la rapoarte.
-- **[Descarcă APK 0.10.2](https://github.com/crististefanita/atf_j4/releases/download/v0.10.2/WhistLab-0.10.2.apk)** — autentifică-te în același browser.
+- **[Whist Lab 0.11.0](release/0.11.0/README.md)** — release-ul curent, cu noutăți și acces la rapoarte.
+- **[Descarcă APK 0.11.0](release/0.11.0/WhistLab-0.11.0.apk)** — autentifică-te în același browser.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 

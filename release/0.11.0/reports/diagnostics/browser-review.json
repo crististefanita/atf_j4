@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 2,
+  "observedUtc": "2026-11-07T07:46:34.247Z",
+  "state": "PASS",
+  "browser": "MCP in-app browser",
+  "serving": {
+    "module": "atf-debug-ui",
+    "url": "http://127.0.0.1:58376/",
+    "root": "C:/work/whist_back/maintenance/20261107-gradle-release-final/detached-html",
+    "readOnly": true,
+    "loopbackOnly": true,
+    "onlyHtmlCopies": true
+  },
+  "scope": "Rendered overview or visible owner on each canonical HTML and focused checks of representative comparison and image evidence",
+  "autonomy": {
+    "detachedHtml": true,
+    "networkInterception": false,
+    "staticInspection": "Separate build and qualification gates"
+  },
+  "checks": [
+    {
+      "name": "audit-bridge",
+      "tests": 12,
+      "sha256": "7bd86551543137753469f61e75ee98c0ac28d26784ee979a3faf08e2af6857ae",
+      "observedUtc": "2026-11-07T07:24:54.137Z",
+      "checks": [
+        "Overview: 12 passed, 0 failed; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-audit-bridge.html"
+    },
+    {
+      "name": "shared-ui",
+      "tests": 14,
+      "sha256": "13278e777f396f05a4a66b0fb4b4fc080583619ae349ad21538569bb5ead520b",
+      "observedUtc": "2026-11-07T07:25:33.382Z",
+      "checks": [
+        "Overview: 14 passed, 0 failed; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-shared-ui.html"
+    },
+    {
+      "name": "core",
+      "tests": 190,
+      "sha256": "5bfe0cc3adc0fb67ea232fa2a7248e786c67486c88025204c56702789c2015c9",
+      "observedUtc": "2026-11-07T07:25:25.542Z",
+      "checks": [
+        "Overview: 190 passed, 0 failed; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-core.html"
+    },
+    {
+      "name": "independent",
+      "tests": 10,
+      "sha256": "32cd29c2a9d3e2832abad56c54fbc78c92a57a9b1baba6db4567c1a521c54210",
+      "observedUtc": "2026-11-07T07:25:30.722Z",
+      "checks": [
+        "Overview: 10 passed, 0 failed; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-independent.html"
+    },
+    {
+      "name": "governance",
+      "tests": 210,
+      "sha256": "ad8bb5e620a076c46531e5a48644379e7e56838f9b437b023ccca7299311dd1f",
+      "observedUtc": "2026-11-07T07:25:46.724Z",
+      "checks": [
+        "Overview: 210 passed, 0 failed; Unit category and JVM environment visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-governance.html"
+    },
+    {
+      "name": "app-bidding",
+      "tests": 248,
+      "sha256": "10e9bd03de4b4502d1540ee27201c7eecf065141d973604a666be2a5ba74af7a",
+      "observedUtc": "2026-11-07T07:46:05.345Z",
+      "timestampKind": "receiptRecordedAfterObservation",
+      "checks": [
+        "Tests view shows five passing bidding owners; expanded HumanBidContextComponentTest",
+        "Last bidder: captured context node visible; expected 1 and actual 1, accepted application true and true, forbidden value rejected with matching IllegalArgumentException"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-app-bidding.html"
+    },
+    {
+      "name": "app-commands",
+      "tests": 105,
+      "sha256": "bb6267dd234e6aadcdc32998a07ae6e13f7907bd7bf0672015a84cf76b5c020f",
+      "observedUtc": "2026-11-07T07:46:05.507Z",
+      "timestampKind": "receiptRecordedAfterObservation",
+      "checks": [
+        "Overview: 105 passed, 0 failed; 17 passing classes; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-app-commands.html"
+    },
+    {
+      "name": "app-display",
+      "tests": 83,
+      "sha256": "6257acac68a50ed6eb473c5a071522fac82329bae8aea246cfbbcc01aeb158ae",
+      "observedUtc": "2026-11-07T07:39:15.450Z",
+      "checks": [
+        "Overview: 83 passed, 0 failed; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-app-display.html"
+    },
+    {
+      "name": "app-history",
+      "tests": 61,
+      "sha256": "f66547bc199d4d4a8cc82aa56f29a99e1e12cfcc4dad0c1519f691ea76d11f93",
+      "observedUtc": "2026-11-07T07:40:13.186Z",
+      "checks": [
+        "Overview: 61 passed, 0 failed; qualified source SHA-256 visible"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-app-history.html"
+    },
+    {
+      "name": "raster",
+      "tests": 9,
+      "sha256": "64a085dba5a2f91162a0da175d1e474dde921ec0942ab086ac0002b8b4ba6541",
+      "observedUtc": "2026-11-07T07:44:09.589Z",
+      "checks": [
+        "Overview: 9 passed, 0 failed; qualified source SHA-256 visible",
+        "Synthetic phase distinguishes RO/EN and font scale; opened RO inline image, saw Original size and Close, returned to same expanded raster case"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-raster.html"
+    },
+    {
+      "name": "native-smoke",
+      "tests": 1,
+      "sha256": "f8b795d3cfcf438f0868dd7fe30f9389c177807e285630df5cbfa7aab64aa46f",
+      "observedUtc": "2026-11-07T07:44:53.352Z",
+      "checks": [
+        "Exact detached report; overview: 1 passed, 0 failed"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-e2e-signed-release-smoke.html"
+    },
+    {
+      "name": "native-home-profile",
+      "tests": 1,
+      "sha256": "f303289e0855e2b1c31ee84a629871f0648c81404a7d9cc1a4f3fb004b405e9c",
+      "observedUtc": "2026-11-07T07:44:56.227Z",
+      "checks": [
+        "Exact detached report; overview: 1 passed, 0 failed"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-e2e-signed-release-home-profile.html"
+    },
+    {
+      "name": "native-bidding",
+      "tests": 1,
+      "sha256": "35c9e5dab984edf4e2bea92f05f369aab7f8b0e4626c596521dde5308a3e7676",
+      "observedUtc": "2026-11-07T07:45:08.049Z",
+      "checks": [
+        "Exact detached report; overview: 1 passed, 0 failed"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-e2e-signed-release-bidding.html"
+    },
+    {
+      "name": "native-history-marks",
+      "tests": 1,
+      "sha256": "843ac0d005e6eea29bd4c0ace052eb68c9554e3653d913840228aa673279c163",
+      "observedUtc": "2026-11-07T07:45:17.941Z",
+      "checks": [
+        "Overview: 1 passing report scenario; target APK SHA-256 visible; 54 fixture cases and zero JUnit invocations explicitly distinguished"
+      ],
+      "state": "PASS",
+      "url": "http://127.0.0.1:58376/release-component-native-history-marks.html"
+    }
+  ],
+  "reports": [
+    {
+      "name": "app-commands",
+      "path": "component/app-commands.html",
+      "bytes": 20829123,
+      "sha256": "bb6267dd234e6aadcdc32998a07ae6e13f7907bd7bf0672015a84cf76b5c020f",
+      "url": "http://127.0.0.1:58376/release-component-app-commands.html",
+      "tests": 105,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:46:05.507Z"
+    },
+    {
+      "name": "app-bidding",
+      "path": "component/app-bidding.html",
+      "bytes": 16476295,
+      "sha256": "10e9bd03de4b4502d1540ee27201c7eecf065141d973604a666be2a5ba74af7a",
+      "url": "http://127.0.0.1:58376/release-component-app-bidding.html",
+      "tests": 248,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:46:05.345Z"
+    },
+    {
+      "name": "app-history",
+      "path": "component/app-history.html",
+      "bytes": 19226389,
+      "sha256": "f66547bc199d4d4a8cc82aa56f29a99e1e12cfcc4dad0c1519f691ea76d11f93",
+      "url": "http://127.0.0.1:58376/release-component-app-history.html",
+      "tests": 61,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:40:13.186Z"
+    },
+    {
+      "name": "app-display",
+      "path": "component/app-display.html",
+      "bytes": 25676078,
+      "sha256": "6257acac68a50ed6eb473c5a071522fac82329bae8aea246cfbbcc01aeb158ae",
+      "url": "http://127.0.0.1:58376/release-component-app-display.html",
+      "tests": 83,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:39:15.450Z"
+    },
+    {
+      "name": "core",
+      "path": "component/core.html",
+      "bytes": 10556350,
+      "sha256": "5bfe0cc3adc0fb67ea232fa2a7248e786c67486c88025204c56702789c2015c9",
+      "url": "http://127.0.0.1:58376/release-component-core.html",
+      "tests": 190,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:25:25.542Z"
+    },
+    {
+      "name": "independent",
+      "path": "component/independent.html",
+      "bytes": 2688449,
+      "sha256": "32cd29c2a9d3e2832abad56c54fbc78c92a57a9b1baba6db4567c1a521c54210",
+      "url": "http://127.0.0.1:58376/release-component-independent.html",
+      "tests": 10,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:25:30.722Z"
+    },
+    {
+      "name": "raster",
+      "path": "component/raster.html",
+      "bytes": 20534163,
+      "sha256": "64a085dba5a2f91162a0da175d1e474dde921ec0942ab086ac0002b8b4ba6541",
+      "url": "http://127.0.0.1:58376/release-component-raster.html",
+      "tests": 9,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:44:09.589Z"
+    },
+    {
+      "name": "shared-ui",
+      "path": "component/shared-ui.html",
+      "bytes": 3833357,
+      "sha256": "13278e777f396f05a4a66b0fb4b4fc080583619ae349ad21538569bb5ead520b",
+      "url": "http://127.0.0.1:58376/release-component-shared-ui.html",
+      "tests": 14,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:25:33.382Z"
+    },
+    {
+      "name": "audit-bridge",
+      "path": "component/audit-bridge.html",
+      "bytes": 2908328,
+      "sha256": "7bd86551543137753469f61e75ee98c0ac28d26784ee979a3faf08e2af6857ae",
+      "url": "http://127.0.0.1:58376/release-component-audit-bridge.html",
+      "tests": 12,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:24:54.137Z"
+    },
+    {
+      "name": "governance",
+      "path": "component/governance.html",
+      "bytes": 21491650,
+      "sha256": "ad8bb5e620a076c46531e5a48644379e7e56838f9b437b023ccca7299311dd1f",
+      "url": "http://127.0.0.1:58376/release-component-governance.html",
+      "tests": 210,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:25:46.724Z"
+    },
+    {
+      "name": "native-bidding",
+      "path": "e2e/signed-release-bidding.html",
+      "bytes": 5055862,
+      "sha256": "35c9e5dab984edf4e2bea92f05f369aab7f8b0e4626c596521dde5308a3e7676",
+      "url": "http://127.0.0.1:58376/release-e2e-signed-release-bidding.html",
+      "tests": 1,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:45:08.049Z"
+    },
+    {
+      "name": "native-home-profile",
+      "path": "e2e/signed-release-home-profile.html",
+      "bytes": 2875514,
+      "sha256": "f303289e0855e2b1c31ee84a629871f0648c81404a7d9cc1a4f3fb004b405e9c",
+      "url": "http://127.0.0.1:58376/release-e2e-signed-release-home-profile.html",
+      "tests": 1,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:44:56.227Z"
+    },
+    {
+      "name": "native-smoke",
+      "path": "e2e/signed-release-smoke.html",
+      "bytes": 2717862,
+      "sha256": "f8b795d3cfcf438f0868dd7fe30f9389c177807e285630df5cbfa7aab64aa46f",
+      "url": "http://127.0.0.1:58376/release-e2e-signed-release-smoke.html",
+      "tests": 1,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:44:53.352Z"
+    },
+    {
+      "name": "native-history-marks",
+      "path": "component/native-history-marks.html",
+      "bytes": 2767972,
+      "sha256": "843ac0d005e6eea29bd4c0ace052eb68c9554e3653d913840228aa673279c163",
+      "url": "http://127.0.0.1:58376/release-component-native-history-marks.html",
+      "tests": 1,
+      "review": "MCP_LIVE",
+      "observedUtc": "2026-11-07T07:45:17.941Z"
+    }
+  ]
+}

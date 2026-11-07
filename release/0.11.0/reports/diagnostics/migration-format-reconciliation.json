@@ -1,0 +1,716 @@
+{
+  "observedUtc": "2026-11-07T07:13:08.378Z",
+  "previousFingerprint": "e3aefa0182ebe92574b8e97a5ff5f23bbf4b3ceb8e81a3fa51a68c21677ec58b",
+  "changes": [
+    {
+      "path": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java",
+      "before": "04fa97cf0817f79bc1d86bed9587771f76a4c4e86e2f639df83ab0a5ddfe5a7e",
+      "after": "3bc4cb1773b5b1cfb0b06b0232d1da0a05788f92401c12601ec68b84715777f1",
+      "kind": "restore-experiment-reference"
+    },
+    {
+      "path": "whist-lab-app/ai-lab/experiments/bid-models/r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java",
+      "before": "d8dd23366679783db4b6e0bf7b5f28b303204af4570fd73dfb7fadec3c216f75",
+      "after": "fcdb49f22d31934f9f3c148fe4affda03dcf01a9940c639c5bb3fd4aab48c0df",
+      "kind": "restore-experiment-reference"
+    },
+    {
+      "path": "whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java",
+      "before": "fead816c9ea9ea04dcccf548bdf21a2a2887f8ce9896ba39ca59b3204c6b0e26",
+      "after": "41e1f7da4ad8eff24552b051d47e9bcc2ba9206ed294fa83faebbd5061a32460",
+      "kind": "restore-experiment-reference"
+    },
+    {
+      "path": "whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java",
+      "before": "29499b41e778504d6d894c2c0c524d2305d91437b9a1447eed91f0aa0f5ec75d",
+      "after": "f541fcf21ea803014674f453cc2172a7e89c09f4441cb17dbff56c339053b4e9",
+      "kind": "restore-experiment-reference"
+    },
+    {
+      "path": "whist-lab-app/ai-lab/src/test/java/ro/whistlab/coach/IndependentPlayerContractTest.java",
+      "before": "3de11bb5c1c48192292c89b70a06334d2f3c7986ba170511d2d72b018b64d84b",
+      "after": "fbf03adf6614cbf8caa69508dd175cd5014d48ff69c212640ba4e0eb8143a684",
+      "kind": "strip-trailing-whitespace",
+      "lines": 9
+    },
+    {
+      "path": "whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java",
+      "before": "8c94465f80a3057970d8f6ea3c69c4dc2fa103ac8f46c65ad59c19bd9ed9ad00",
+      "after": "3cac930ad2ba7b9567132e06373d2ad4cad9e9b4c035a727740f7b9ea3abf83d",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryPhoneRasterComponentTest.java",
+      "before": "29c7aedc7395f1dcd1809353ffa985143999879d617db8a3ec3170e411721088",
+      "after": "55c66f7524a2f42d578a8350bb2bd8f40177002183b2cf1c299d60b9a1955ffd",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryRecoveryRasterComponentTest.java",
+      "before": "1fc9ce69b03258297e31be44c21dcfb402ec6253feb2d5014959eb9f62a9fad2",
+      "after": "033b4b06a1589234a9e16615f3468eb68e586301844a8aa3aaff80a161c2a679",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryResponsiveRasterComponentTest.java",
+      "before": "e60217577cbb5a1ca4045d7b17814e15be0981798fa99eb7922de9037d80141e",
+      "after": "3c65cc8f9cf62944db6922a02cd25f14be62dd8c91dd1127cea0924f379218a0",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionCleanupComponentTest.java",
+      "before": "1c05eee52ee9d88d4df5c037a98bd7ae6a402896b5470f5a9283240f960aabb1",
+      "after": "bfa4ab2801b0d8e2b26316cb87d916677331faa3c2623936ee954aec25672b6f",
+      "kind": "strip-trailing-whitespace",
+      "lines": 5
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionFlowComponentTest.java",
+      "before": "fd014719e3abadd4d0f9dff54f4b284a400927d8d84eb4a72889ea31df5f9a4c",
+      "after": "c319503ef7f866398e4cbe5dde6ec5db1d234dad522b8fb3f7f34b832fdf2bba",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java",
+      "before": "9e1f26758ee1807385a7b587e8c86272ce07fa9ac2e000bed8ef13ed5e993f98",
+      "after": "305bf0f1bf880606ba585437deffbead72f7e7703d46c6dea8a2b2086ad9ea08",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionRequestComponentTest.java",
+      "before": "d220bd57e526b1063cc142e9f21c8bda1b9dcb723edbd80558302c46fc019974",
+      "after": "ceb99245feb16062cc52a60d969d6cac8e198c5cbf60dbad94a1e13d3474fb57",
+      "kind": "strip-trailing-whitespace",
+      "lines": 5
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionResizeComponentTest.java",
+      "before": "7a347d0349d3098b1461e946db6e380391dd34f2d74fbbb5f4502be800462099",
+      "after": "217665313830260bd2e2c669ed8058a1136377cfd34cf469dca038bed641bcfe",
+      "kind": "strip-trailing-whitespace",
+      "lines": 9
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/animation/TrickCollectionRunComponentTest.java",
+      "before": "22c4f13f5618b6cc58f85e62a996050436f187621a5716d1b9e6e0fd01fbf7d3",
+      "after": "5fe8fb868e9fe19963da3bf7fa00bc3fe8b11624bf4a54c0f157cd79432b2fbd",
+      "kind": "strip-trailing-whitespace",
+      "lines": 9
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DisplayFixtureDealsTest.java",
+      "before": "ff4834390e96530a9d6434070804c1b4593c120d355b8a31a23109cbb2c0cdad",
+      "after": "a5a167b811a8e222c78b312885f86f9384eeb5243d8e2d7a1e3c3d72e3349f9b",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/highscores/HighScoreRepositoryComponentTest.java",
+      "before": "bc7b168b9deda472ba6257d318024ab5a32122160a15c5db26d253b807316389",
+      "after": "5ccc11ef3d036c1f3a11f4403b6355d2316e68c6b515503ed758a14a83a48f9a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 7
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/AiTurnCoordinatorComponentTest.java",
+      "before": "127f475c27988b1c2106b41efb72d40fe2ffcfd0fe92dd7a4e267e62067a398a",
+      "after": "30e71fb8e9ebdb5ed0ea52f2e0ebaec7ff157f381f95239b00720f90e1ebaf5a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 8
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java",
+      "before": "9f0eb08716be29ff00a97034b1306e4958bef64792d3b82afcb005a1aedec141",
+      "after": "e9845c8898ae577af1dbd5dd6dfe058be71554ca1de52ee512b8c10c135db8a7",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickOwnershipComponentTest.java",
+      "before": "6105ba261967cdd55fd851a7798e9bce4404434cfdd1328f4fbffc190509762d",
+      "after": "2e9b46b67207cd0d4d2392a5a0323065a0ff9ba161268c6cbac3bc8fb3d8d9cc",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseComponentTest.java",
+      "before": "db8e60116f165a5275ec13c3e88190f79e4006e5d13b516bb2c0bed15f5e8c6a",
+      "after": "c5695db54189132dfc83817c8b36525c81219e46b797b66b50c4830943878e2f",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseResumeComponentTest.java",
+      "before": "a37d85861a29bc759b3f6a146cc7f3ece24789befba649123a018d389278a94e",
+      "after": "d52aca63c02451d1b25e803413b3e1b3ee35dc4183c978d9cc294b7cb2e0ae75",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/lifecycle/GameCommandFlowComponentTest.java",
+      "before": "405913f1430a3885e7fa6114782e1a40f66b9d210055397faa488d5600bc3e5e",
+      "after": "f7c7e6e8a2dead84f574c78d4abbce0f3b9245e902954e91bb81080b94798948",
+      "kind": "strip-trailing-whitespace",
+      "lines": 8
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java",
+      "before": "54885b9f2980d435e6a830e829b62bb965eb43ecce6a140c58278695a86bf5af",
+      "after": "f46b7635786037c610d810158c5ef01c5ee1281bcda428b0d41923efc17f650d",
+      "kind": "strip-trailing-whitespace",
+      "lines": 16
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/navigation/AppNavigationComponentTest.java",
+      "before": "767c9e8d51c8d721c33e2ae84a3ade73e0b856526aaf7daf2b69270a606b3c78",
+      "after": "3cffc62c6009be417c22eb0b2e170f7648d0876b83fbd275b0952e7c26cad626",
+      "kind": "strip-trailing-whitespace",
+      "lines": 7
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceComponentTest.java",
+      "before": "c104ab38ea8359aa075226afe7cba20a8fb653b8c0e022dd35393251b021f75d",
+      "after": "e6c5427726259e2b64c6e398e19507182432ec73c5056f83280997de1f09a63a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java",
+      "before": "86c7f073b8846944bc36d4a2b452ef0976f2d42931fce2f33e1c7d331917c874",
+      "after": "a835a7d4f9e688b67d1c56d021097c6f64a9486bc25f20a5d0cacb75ef1c5fa4",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+      "before": "6a8cb22af194f5c9431c265da472bbe3cceadb7981c54622f6aa65a798a8d12c",
+      "after": "847c9d14233eaf74d78d542191c862d69c22360914a63fbd23494b77c025560c",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/presentation/PresentationRefreshComponentTest.java",
+      "before": "921126d62b6f1827669e3b9ea45a9ca47e5e32b39206d08750f0dde9747676e2",
+      "after": "96b374bbb74d3e5ee532226ce9e360e2c4badbb81fa191c0ed6ec48a5bc39b3d",
+      "kind": "strip-trailing-whitespace",
+      "lines": 7
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ArchivedScoreHistoryReplayTest.java",
+      "before": "cf1b7d0970d01fe6561da5ea99a7c9ffaca06e902fcd7e4442686abb1f6aa0ba",
+      "after": "cc341b75061383242fab3eca50319fbe5f3f394549c88997bb24e8c20bc46e32",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryCheckpointTest.java",
+      "before": "9e0663f2049af73918562aa9c50b7f8a392acff03a47994bc4851e3c0c9d7373",
+      "after": "79eec0fc7e1468da7c9894422b67af51ee2480417016cbce09211d6a52b54a1e",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java",
+      "before": "636833d542898455e65299f8058d300b7dc2b8f7bb7a1a6c37124bf101db1faa",
+      "after": "9ba7d6f07689726135a84955b48efd3f4d79c03e78850fde0269aa7a8e21d0ea",
+      "kind": "strip-trailing-whitespace",
+      "lines": 11
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java",
+      "before": "ca04042937c840e0269b662826a8c67bd9c9f703dae105101ea939f7a1b0a464",
+      "after": "407333fcf4ae2dc6c2e13ef9ed0dd5ac52338e065038dcb6c63d77a3431c7384",
+      "kind": "strip-trailing-whitespace",
+      "lines": 10
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryOutcomeComponentTest.java",
+      "before": "cbe6091dd84497fe242506107ad37e6e499cc19e840c6d7827e43c525e2f09b8",
+      "after": "3ca9e78f7e6bba5c0496d5fae1bc035278c12f311b8f060785048972289dc7f7",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java",
+      "before": "dc5ccce00cc43ac593c008bf9c8bb775ce44d6d1b963dedddfaf4341c34cfe2e",
+      "after": "340eb2555a40bc03e4ecad9e5bea069869db2421c2528be86489cd0a78bdbaf8",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryTableComponentTest.java",
+      "before": "b085f55c75563ad198320b3ac11e46ca6f93400c620116307f7524f41afb38a6",
+      "after": "ab489bb80a89ff2db0e8d672364fd023725e91af2462e044ae26e90130ed1ec4",
+      "kind": "strip-trailing-whitespace",
+      "lines": 8
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/award/SeriesPointsFrameComponentTest.java",
+      "before": "30aa6c3f1c69d0fcefcc5e3eb4ad98defc5e08be61feb1a4e92ca533dea6d965",
+      "after": "6795a5d898d90f6072331a549eed9a780e4a1ca2ceaac8f130d51071c53eb9b0",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/score/layout/HistoryViewportComponentTest.java",
+      "before": "9e7103ea3781339bf9ec7d2130f50b0bd6f8f9598eb4937a4951330bec826011",
+      "after": "5b23804f2be24a4818c1c98990fbd470917120e0769405a6ceadab15043ec8db",
+      "kind": "strip-trailing-whitespace",
+      "lines": 8
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/screens/MatchSetupComponentTest.java",
+      "before": "5d2a345ab21629afc4db9b17915a25504bbd7241d170fbd6034a7d00375da9a3",
+      "after": "ae2a5b1e110085b5b715408b2bebabcadc1ad440deeaa5a8e000c8bd5ef5a6f2",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/seat/PlayerSeatMetricsComponentTest.java",
+      "before": "75cfe693a8414664a1c0e86d98eacb4a4b80f43d92f3e00df90f97a60d2c7255",
+      "after": "4fc25d8572a1d700deed27690236f867ce3a79ce7ef665a108cc9a677a2929b6",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java",
+      "before": "d42be1c6aa9c2e1df682aea48f6c17212941c1cf1cc8f5a4141cf32da9475803",
+      "after": "f894861f8be9ef78da64e567cf98fa71333624bfe47194d92d512fce20b39369",
+      "kind": "strip-trailing-whitespace",
+      "lines": 14
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java",
+      "before": "cc3dab77f554c104e0a2f1a93f3ede164bd164358a167393a732c02d75ed78d9",
+      "after": "4677b1044a2b2e674e884215689c7a0c709a68140dfa0e6c0cf18b29fd5faff6",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java",
+      "before": "680412ac5e96ad56dbe8d9f628b6f96ff4fdcc64706ae58e9926eaed08927fc1",
+      "after": "4b1cf56fb92a1fb3cee4377c03dad921a9ea4da3eb78f740b7ad701b5fa70a25",
+      "kind": "strip-trailing-whitespace",
+      "lines": 7
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java",
+      "before": "ee2640905fa98063efe9db8ee6100521ae994bca655e9e971f7a046d96ff6116",
+      "after": "ee584240068f34cac6e08a287a6b263fbcd0fe3d1131144f955d52ecf5bcd971",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java",
+      "before": "daadf822034769d2898e6efd1677cb4d94d6e1f4f33d8ccce2344a0320d04b93",
+      "after": "678a98308eb3174892f9c13f4f0b51e95fe02c70eb4f75e54ec40382ead2e5be",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/theme/GameHeaderTypographyComponentTest.java",
+      "before": "bfca8ba76f8f314740a940d6254c046f81f98059279be8246e873af3fc318a7a",
+      "after": "b612ccdae6c362d7be465b557595a2983c4a4cd9656ad9a018edbebc31dcc903",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java",
+      "before": "f9812e37c2cda4324e49ee68420a35b6905c83db67ba35c9c1605682b19e0e28",
+      "after": "7af857c9a3ec2cced0bd884eeb37ec4df76beda376f9c88402e6197c3cc1d45f",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java",
+      "before": "d64d2067be9b2463647c2f49151081be4aceca9f6d4391ba26ff04ea2ce70009",
+      "after": "339f0c26deb597a5670aae71533c9c235d106e39f46007c7db7cefd205c4c5af",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java",
+      "before": "1c878677d76d2d917e1adda1d56004c2a941a1d5cf5ac47c09b723aefcafbeeb",
+      "after": "6a3079eff0eda222225ebc774450c59c2270d4883de5ab0d2eeadae756142274",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/AiCostQualificationTest.java",
+      "before": "de5ecaacb2496600bc7d9b668f61f2c938002770724e5a78e4f5368e4e0618ec",
+      "after": "194fabd12b5d5bd1a43eda48a0d37dcee8c96e663f7d7e4fee4d9fabc31b3b07",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/CostProfileTest.java",
+      "before": "da1527da3d39d3b6c5e15e65a77c49297b61e85c76f38c1de8c4c1fe37828034",
+      "after": "39fa8a64a9c77bb74989f4552e4e083d46da099591e9202095d9c302e8370b5f",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java",
+      "before": "92cdbb6d65c7439d5f941db4fd59f9ade27abc3bec683b0205504a4de8b551c7",
+      "after": "8d1d2a8b72973aedb2cbe2e16e9c88906ffa2aa0f07e0500e5f640533ae2135b",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/MonteCarloAiTest.java",
+      "before": "4f11afc3aea372236b5756755d5c3c6dcb92965f5c5e50b0c1b60addda3558fb",
+      "after": "ff1a75a1290f3bd6d2d6cd29eb8a539ab223b9b6f1446d9a522f18de86255d83",
+      "kind": "strip-trailing-whitespace",
+      "lines": 8
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/OneCardBidBeliefTest.java",
+      "before": "d19e52029edaba4cd1fc7398e903f1c45353c7fd0ce3c04f518039cd4f1b819a",
+      "after": "dffd5760435a4f7300c8c3119d433917132e029bd2c0bb070337695c9ad2603a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/forecast/ExactBeliefTest.java",
+      "before": "b1c44effba89e8ce69b9e8306d4afc74a52b722483da8cf6561d635ca759b739",
+      "after": "a2ea39cdbd94f31226e5bd311ef02ad8e3df2b0b6c956980bec41c11d3d1c159",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/forecast/StreakForecastTest.java",
+      "before": "2599fd163cc8623eb49e85ef5221b7877584bf2b978edcf2b2bf8633532cb62b",
+      "after": "c3270ea73272eeb0dd3f84928f0a4742eb8078cc3662e40e9ad0f1253cce07d6",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/BlindPolicyObservationTest.java",
+      "before": "4366cf7a9dc25298e6858a296181db8dd37606812aa60cbfd63275f9e466a863",
+      "after": "026946e833a3e01ac52fc7523664372b431164dd28b4620ccacbaf7ca3aab7ef",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java",
+      "before": "9e1070bfec9553d1ed00c15aeb7bd4d193ee475080953ae91294e14b803ee357",
+      "after": "0b0641796dc358fbe2aa5281b452e2e1218e7a348c1c4f9912e135bfb0798802",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java",
+      "before": "8d67370ec8ee22fa9137a700852d539fe8f1368f0f853971b75fee1c00076aae",
+      "after": "2db8de6ef96cfde070be61eb3e3628013f34c3501700b9439dfdb5a0aef5734d",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/AiStrategyRegressionTest.java",
+      "before": "1b8a0af15aff55d19e5531c672feedfece887f80212c4a123dc6bbdca84aae96",
+      "after": "651256103a7cfda676005730300701c60e6f41609b250353f64d7cd9853065b1",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/DifficultyContractTest.java",
+      "before": "95c9a4d90e05d378076ccebfb561b3c209ecc3c39bff1597d073f2acb94b818a",
+      "after": "bc3827735c00bd6a9da8c50ef01aaa99692a75ed7ef98de80bd053c882bd9c8a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/LargeHandStrategyTest.java",
+      "before": "105f9d3482c745f9aea43dfdec5642c84b6cb863a500200ed9806dcbd2c0bf6f",
+      "after": "27fdca2f2d605d4497ac96c17d1120be36393b169d17b8a01aed92056a16e55a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/NormalContractPursuitTest.java",
+      "before": "1d1df94af111ee2d190b09ea6b78532fcb8f87466b0963888d33ebd982e285ed",
+      "after": "ba05d33bf16c6ab6d861c0d8793d9225780dc2cf1f789cbbe3060175174b0736",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/SafetyPreferenceTest.java",
+      "before": "913ed129fa74cf6b245515e811300edc2dcfa101e7ff2b47a035c3283238d836",
+      "after": "6b7ac2b725564fa2391c246c16a79533e42e7636975fcd560ad97e168eafc582",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/profile/HardStrategyProfileTest.java",
+      "before": "29c422d477a0cbc5707c6877d7cf4979c096f2494520b9f74278c16e4b7c8f5b",
+      "after": "4acfe45fa13246465a8bd8560d08c084f0d71bd0c614d43cc61c02d3baecf42b",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/simulation/SearchCancellationComponentTest.java",
+      "before": "7a936145c9adfeabd1eab96ce1986a7d7cc25fadb9823c2109b503d1e43e1aeb",
+      "after": "a31310f11560b75978cda889b5ee8d7b3dcbf5d95ebde3601e653f31dffa86b6",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/simulation/SearchWorkComponentTest.java",
+      "before": "089e184fdfd11a9b9d84fd2c615e08e37d1d6068177e5d6591f6fafdf9d4f6e5",
+      "after": "03975e37249a3b94fa0b3cc6ccca0d95aebcdc9c5752a636667a8eb8c57cb44d",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundEighteenTournamentTest.java",
+      "before": "a0de6094558a2b8d8a9a40aaebd3a503b9cd36bc06ef8bc7aa2006aa07b8a840",
+      "after": "2465162dade82f14c9521d8b83d1e8c5ed5abd3e558c3bece781fdf53de0c060",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundElevenTournamentTest.java",
+      "before": "ef71c6efc028fe70c206ba6b57fbbefae3fd46a88664921a9da5df5c4d93c92e",
+      "after": "ad15777fd00f28fb6e83f2fda9affffc25cfeb8d961a8a203d4a50754cfef553",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundFifteenTournamentTest.java",
+      "before": "dc7d02a156d2206edf6f37e2cb55860262e611c9d56d46089c114cf15e772e3c",
+      "after": "41224120de35553e3ce76ee71e6e1143bb31fdf1bb4331f99185b4fae85e91e3",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundFourGameOracleTest.java",
+      "before": "a6042b52c9516bf35692498967f31c040f3a90b78acd1b12e58f42c945074d19",
+      "after": "f639dbacbc6cc0d8778582efe5b11197c8d22014667bd0f9d80e2867e56b460d",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/evaluation/RoundTwelveTournamentTest.java",
+      "before": "89a24c295826534e33036206d6ab6725c671a8c462cf10af9403c1b83fc00980",
+      "after": "6b204edf18a7bf0e8da8afcc2accc3553b6e4bd8d4f69fa089f1488ffc414d07",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/reference/RoundThreeBaselineParityTest.java",
+      "before": "6889cfffa8e11a767a59e4536057eb8612ecde7c9fa979ee92c37f88aad9581a",
+      "after": "75df07d0e3b880a4a175b803203a92d2b89790488882c7c0890be530b47aba16",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/AiTournamentTest.java",
+      "before": "5ce0ffc8549420189acd1fea06f4fd269e156acb5d7cbc5832df891c9bfc031b",
+      "after": "35301fc8c3344723dcb52baa8ea5fe532168720211f39f5135aa2a166b701f0b",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/AiTrainingTournamentTest.java",
+      "before": "3c82d3cbe968caefae52889f6f88dddf28f88c66eaf5c14c594167335f2f5a00",
+      "after": "32e732b02af9e58c59412a4c108c60018dafa0214dea3f58b31de2cc864ae487",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/DualLearningTournamentTest.java",
+      "before": "4eab0a554b6a5a78b84cac5298e3f2359c057b47e2044d785751c23079004846",
+      "after": "147f89d715f9c9b4a72bbee21e6ab9250009e6ff376ff16ffc558b1bca848d1f",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundFiveTournamentTest.java",
+      "before": "391f4da0701c55e9643801677c86729e852ba62a758204aa94f1b6b0888c842f",
+      "after": "6fcc34f12ff964dc02e56e6a90695e57e05f98a2775a240db1049eb7c7209433",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundFourTournamentTest.java",
+      "before": "e1dc5d92ccbc947f7025e5dce1aef4a7d42f06e831fff0a9160a7db3da9a6a0c",
+      "after": "4421482039510bc0b969e6adcd1f7af75c55a6b69e88803a9d3c7605165ca3b4",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundSevenTournamentTest.java",
+      "before": "eab31a4f0957c38d9ca3e18fb56036dd37c972e8e7633002b4d44b149849e2ec",
+      "after": "fa1e3a40d27be42f0b022140a1bd07e6f87e06a3ed124bba1a504e3e2c525249",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/learning/tournament/RoundSixTournamentTest.java",
+      "before": "c496db76a16061541c8ccc3a62a9bd63b6a1e3750c8c5135f18bc65c825fd0c1",
+      "after": "1e247731b1a238e0602c62adc5f32c244f92d327fcc913a0ff3240896c0f9c1e",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/ObservedOriginalReplayTest.java",
+      "before": "5e179c0ee4b1e8b9fa35cb94b08b585b5992839b076e979dff52fc85a14bfbf6",
+      "after": "128e404cf8566d0e9d343b9248b6f2fe3205f4d06f8f3d85df8280c41c9676c2",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflinePerspectiveMatchTest.java",
+      "before": "5b0b5dd92a05fbe43ce654788f921ae9e59b7e7f76b1a1163d9637beb1e14774",
+      "after": "98f2923ea084466ae3edec75f3049182eab94f90a5415371219b6fb238057900",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflineStrategyProfileMatchTest.java",
+      "before": "7531b63662da78db263ddecb5d2650ea809e6f10f7260dbb683548ceb5c5864a",
+      "after": "8ebc141027f0b21b8a911826cddb2172cd7e02b08e9894392ff6b1729fad2536",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/model/CardPresentationTest.java",
+      "before": "fa6428af1ded8e857c6b7f2f0d71d8f56c282c2f0e7291459d2c1124cd70552f",
+      "after": "fd6ff1166244898294f638785c45a74e3d6ebc6a4595d0a76722a8ce5271da9e",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/model/RomanianStreakContractTest.java",
+      "before": "7537e5b6086118da56a6c9d835f5cfc989fe2f7737bc4ec039484da816280a95",
+      "after": "f495a30e29a1f92ed4ac4b75ba6012d696a8bb041fabd55687073fa7a3cd35ff",
+      "kind": "strip-trailing-whitespace",
+      "lines": 8
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/player/PlayerNamesComponentTest.java",
+      "before": "7eebec7cb9ba25feac8045a98942b6034251bb29adb0d0bdc204b5b029515675",
+      "after": "4b805fbd96913218432462a59491471c2e188336be5f894f7733c560b5c051f3",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressureTest.java",
+      "before": "8b28e8250efc4b24fb2cae3827a09997774478c43eaa0d9c9f2eaeb7c548718f",
+      "after": "e151b180f1eb687f85aea10a107aae93b8730afe220347277c1bfe6ac35db815",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/GameRulesBoundaryTest.java",
+      "before": "c75f5e21d8162e76f4cec943ed222b3fed1edaff9dbbc7502127f55b1ba9a524",
+      "after": "5e80e62faa9118b269631c6b0733d1fc7b6e47f17653ba0d341c876c0a1c0b22",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/GameRulesTest.java",
+      "before": "400d57dba675087e52d0b308897f2e313703e5620d5088e6f949f84d25d872ba",
+      "after": "6f9e87b600e6379a938c9d3a8073e8ec67ef7cdef16fd76fd8df219e5fae295a",
+      "kind": "strip-trailing-whitespace",
+      "lines": 18
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/OriginalInstructionsContractTest.java",
+      "before": "87a837ef9c8d0685e3c8d3d84d16f29028d6d6cc00d4f84e1c9d568b0e4c6dea",
+      "after": "f2be5aed3fce5948064825665676836a10f533a96201c209d248d36046e9e9c4",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/OriginalVariantContractTest.java",
+      "before": "733580c9da9372d87c92dd5566682635a521d39a410656059b3c3af9e5d4d60c",
+      "after": "cf6b20073fab935b0bce4666b5c4ca31a76d8350f427c19ba72250538c2102c1",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistExhaustiveTest.java",
+      "before": "a3e370317d6326bcc32164309f3e74ac18110673ba8f7d6f9e2b2925c4faeaaa",
+      "after": "ebbedd4da143bd4c2e8cf561a8922d41320b7ec938a5a6511a4b0a7b00957087",
+      "kind": "strip-trailing-whitespace",
+      "lines": 2
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistModelTest.java",
+      "before": "6d804bb48c9ceafcaa0415b4b3517867e4f63dd63fb3c42a279219323ae597b7",
+      "after": "936dc726f0c355db20de4e9f132573a866421f24f2895b50dc392b3751c164cf",
+      "kind": "strip-trailing-whitespace",
+      "lines": 1
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistRulesTest.java",
+      "before": "cbb08a4a0d2af58217d82668028e348920a3ac78ae0047b6835b800fe557844a",
+      "after": "76f36e1f1ab08778fb42d09d2a74ad00def4c41f1f91cdbbdac43aef305e6af2",
+      "kind": "strip-trailing-whitespace",
+      "lines": 12
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/scoring/SymmetricSeriesComponentTest.java",
+      "before": "ded636d74c371c9221d1efe5feb923f7fa99c259016df7d5318e4da6215bcad6",
+      "after": "8331be06bd2ba9078ceb112ef88e464700bdd1daa74b93a824ad3c7edeef6bca",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/CheckpointHistoryAuditTest.java",
+      "before": "3e6d992dcdda091a56d2ceddb8651e151c28b385cb5c3b9c1bec4e665d5de20d",
+      "after": "9a653eb0c79c040ce03cb8443d9a94b27d8b4b735ee09491ab7b99e02a3e1fc2",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/GameCheckpointIntegrityTest.java",
+      "before": "3458cf7e990e320dd88951ac06ac8e1b4963b09dfc181c54c46a970143a1da8d",
+      "after": "2494f42c598210144a8ee14bc8f57759036488665910fa375f2839d96a8174aa",
+      "kind": "strip-trailing-whitespace",
+      "lines": 4
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/GameSessionTest.java",
+      "before": "30c17ea4994b0b4b41e294d9039ee9233e4bcf555a5830c2d319ef3caa2cc416",
+      "after": "5c99614a0c74b62dd423e579bb1faf63291ae6552ffe7915102bbcc774699112",
+      "kind": "strip-trailing-whitespace",
+      "lines": 14
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/MatchSummaryTest.java",
+      "before": "d16fc11fa83ea98847da96fabdf13ae75bf99424ad36c5c402de395afea7d196",
+      "after": "fd04cbd7760f561187b227cd401d32c6227d1c0730c8ece2cd1c20858c40b413",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/RomanianWhistSessionTest.java",
+      "before": "bb7336bb3d330654effa7704c04d7404c6d31d22e3e986ac1ec70e1fd8c27382",
+      "after": "a68a43cb962629ded7bf646d4a916d3c6ded57595f8a79019e7f69d48420cd17",
+      "kind": "strip-trailing-whitespace",
+      "lines": 7
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/ScoreHistoryInvariantTest.java",
+      "before": "96285d8cebb850dad735df6e1d2433ed84a674ede13713165b281f1ee3fd994d",
+      "after": "e2b5b5d6187e2094c1f023426e3411f177361390bb7a494e4db495c8f34fbfdf",
+      "kind": "strip-trailing-whitespace",
+      "lines": 6
+    },
+    {
+      "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJsonComponentTest.java",
+      "before": "2e622e9ef833b926c6b7ba51c64705b92039435432fde71ee87ae3e75c2b8236",
+      "after": "61177d99e0421585df115090795ed79a4d38da10602a0ae9cb005108c7760789",
+      "kind": "strip-trailing-whitespace",
+      "lines": 3
+    }
+  ]
+}

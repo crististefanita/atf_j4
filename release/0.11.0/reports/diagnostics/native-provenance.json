@@ -1,0 +1,67 @@
+{
+  "state": "FRESH_EXACT_SIGNED_BINARY",
+  "apkSha256": "a7b0d6732bb4b68e4d8a855b2d204846e4b3140453ecc31bd53172caea3ea415",
+  "api": 28,
+  "executedInThisIteration": true,
+  "sourceFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+  "reports": [
+    {
+      "name": "native-bidding",
+      "path": "e2e/signed-release-bidding.html",
+      "tests": 1,
+      "comparisons": 26,
+      "inlinePngs": 13,
+      "sha256": "35c9e5dab984edf4e2bea92f05f369aab7f8b0e4626c596521dde5308a3e7676"
+    },
+    {
+      "name": "native-home-profile",
+      "path": "e2e/signed-release-home-profile.html",
+      "tests": 1,
+      "comparisons": 11,
+      "inlinePngs": 5,
+      "sha256": "f303289e0855e2b1c31ee84a629871f0648c81404a7d9cc1a4f3fb004b405e9c"
+    },
+    {
+      "name": "native-smoke",
+      "path": "e2e/signed-release-smoke.html",
+      "tests": 1,
+      "comparisons": 6,
+      "inlinePngs": 3,
+      "sha256": "f8b795d3cfcf438f0868dd7fe30f9389c177807e285630df5cbfa7aab64aa46f"
+    },
+    {
+      "name": "native-history-marks",
+      "path": "component/native-history-marks.html",
+      "tests": 1,
+      "fixtureCases": 54,
+      "sha256": "843ac0d005e6eea29bd4c0ace052eb68c9554e3653d913840228aa673279c163"
+    }
+  ],
+  "nativeExecution": {
+    "exitCode": 0,
+    "completedAt": "2026-11-07T07:41:10.2279726+00:00",
+    "selection": [
+      "atf.android.e2e.display.flow.WhistReleaseSmokeE2eTest",
+      "atf.android.e2e.release.WhistReleaseHomeE2eTest",
+      "atf.android.e2e.release.WhistReleaseBidE2eTest"
+    ],
+    "apkSha256": "a7b0d6732bb4b68e4d8a855b2d204846e4b3140453ecc31bd53172caea3ea415"
+  },
+  "restoration": {
+    "state": "PASS",
+    "displayChanged": false,
+    "restoredFiles": 3
+  },
+  "marks": {
+    "startedUtc": "2026-11-07T07:35:16.214Z",
+    "finishedUtc": "2026-11-07T07:35:17.091Z",
+    "cases": 54,
+    "failures": 0,
+    "helperSha256": "dbd8427a6a4dd1d0ba1e54d9142ce3c4a303d87f2d00eff9b07f4ebcffa88319"
+  },
+  "previousCandidateExcluded": {
+    "path": "C:/work/whist_back/release-candidates/table-ui-reconciled-20261107/release/0.11.0",
+    "sha256": "889731f451a8b972f591bb37af3af7028cc52074e0369011cf6ed28c9d9a68ba",
+    "reason": "Different signed binary; no historical report reused as current acceptance"
+  }
+}

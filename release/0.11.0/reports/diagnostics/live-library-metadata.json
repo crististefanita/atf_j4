@@ -1,0 +1,25 @@
+{
+  "state": "PASS",
+  "observedUtc": "2026-11-07T07:49:32.893Z",
+  "scope": "Parallel Reporting documentation/provenance update after test freeze; source archive and reports remain exact original qualified bytes",
+  "fingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+  "reportingJarSha256": "de747a0382027210d3443b98be8594fc97661b07a7a34e6b61a220984d6bf41b",
+  "reviewed": [
+    {
+      "path": "lib/README.Reporting.md",
+      "qualifiedSha256": "deea28d13b4163adebc27a28d37dc0b762a292f1f5f2d60c0a09f57fc2a286cd",
+      "liveSha256": "1fdc497a2e745415f78354087708e6f40e8e90a59fcbc1dff216a9bba13d3353"
+    },
+    {
+      "path": "library-provenance.json",
+      "qualifiedSha256": "910afb207cfc203cd653f7402b5c4469e80013da311ebfce004e3f6bbd76a7b4",
+      "liveSha256": "ff127b2737d42dcfe7757645af66a7c035c8d903abe1234161682f9f8a618f7e"
+    }
+  ],
+  "liveDocumentationGovernance": {
+    "tests": 10,
+    "outcome": "PASS",
+    "countedAgain": false
+  },
+  "ownerNativeAcceptance": "OPEN: REPORT-BROWSER-LIFECYCLE-154"
+}

@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "state": "QUALIFIED_LOCAL_PREPARED",
+  "sourceFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+  "apk": {
+    "versionName": "0.11.0",
+    "versionCode": 16,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "apkName": "WhistLab-0.11.0.apk",
+    "apkRelativePath": "WhistLab-0.11.0.apk",
+    "apkBytes": 824639,
+    "apkSha256": "a7b0d6732bb4b68e4d8a855b2d204846e4b3140453ecc31bd53172caea3ea415",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
+  },
+  "auditedGroups": {
+    "app-commands": {
+      "tests": 105,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/app-commands.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "app-bidding": {
+      "tests": 248,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/app-bidding.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "app-history": {
+      "tests": 61,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/app-history.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "app-display": {
+      "tests": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/app-display.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "core": {
+      "tests": 190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/core.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "independent": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/independent.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "raster": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/raster.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "shared-ui": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/shared-ui.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "audit-bridge": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/audit-bridge.html",
+      "protocol": "GRADLE_COMPONENT_V1",
+      "provenance": "Fresh runtime capture; exact identity/outcome reconciled against temporary original Gradle JUnit XML"
+    },
+    "governance": {
+      "tests": 210,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "report": "reports/component/governance.html",
+      "protocol": "JUPITER_COMPONENT_V1",
+      "provenance": "Fresh controlled component/unit/governance selection on reconciled sources"
+    }
+  },
+  "uniqueJunitInvocations": 945,
+  "freshJunitInvocations": 945,
+  "reusedNativeInvocations": 0,
+  "scope": "Only the named tasks/selections ran; Training tournaments, opt-in external corpora and complete-match claims excluded; selected small regression cases retain their declared layer",
+  "matrixPublication": "All declared scoring, history, layout and raster pairs are evaluated; passing pairs are aggregated by invariant, first mismatch retains exact values and position; pair counts are not additional JUnit invocations",
+  "nativeProvenance": "diagnostics/native-provenance.json",
+  "browserReview": {
+    "state": "PASS",
+    "networkInterception": false,
+    "receipt": "diagnostics/browser-review.json"
+  },
+  "sourceReconciliation": {
+    "observedUtc": "2026-11-07T07:49:40.781Z",
+    "codeAndBuildInputsMatch": true,
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "allInputsMatchIncludingMetadata": false,
+    "reviewedMetadata": [
+      {
+        "path": "lib/README.Reporting.md",
+        "qualifiedSha256": "deea28d13b4163adebc27a28d37dc0b762a292f1f5f2d60c0a09f57fc2a286cd",
+        "liveSha256": "1fdc497a2e745415f78354087708e6f40e8e90a59fcbc1dff216a9bba13d3353"
+      },
+      {
+        "path": "library-provenance.json",
+        "qualifiedSha256": "910afb207cfc203cd653f7402b5c4469e80013da311ebfce004e3f6bbd76a7b4",
+        "liveSha256": "ff127b2737d42dcfe7757645af66a7c035c8d903abe1234161682f9f8a618f7e"
+      }
+    ],
+    "sourceFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+    "explicitOverrides": [
+      "App versionName 0.11.0 / versionCode 16 in frozen build only",
+      "SDK local.properties is external environment configuration, excluded from source inventory"
+    ],
+    "documentationQualification": {
+      "schemaVersion": 1,
+      "state": "PASS",
+      "observedUtc": "2026-11-07T07:30:12.076Z",
+      "fromFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+      "toFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+      "changed": [],
+      "scope": "The final Gradle Android and algorithm-only selections ran from the same fingerprint, reconciled with the live complete source inventory. No post-run edits were promoted.",
+      "applicationTestsRuntimeAndBuildInputsUnchanged": true
+    }
+  }
+}

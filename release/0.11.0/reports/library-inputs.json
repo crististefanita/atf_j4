@@ -1,0 +1,69 @@
+{
+  "scope": "Physical libraries in the qualified source snapshot; no Reporting source copied",
+  "files": [
+    {
+      "path": "lib/atf-console-1.0.0-c2.jar",
+      "sha256": "5a1cc9f3125a2e43134a2048476793e0b733b61e37a7f00b171a42990cc2a6aa"
+    },
+    {
+      "path": "lib/atf-console-1.0.0-c2.pom",
+      "sha256": "0543abbd00fb384c25236c6feafec728fae36d036a8917b2177ddc186914388d"
+    },
+    {
+      "path": "lib/atf-core-1.0.0-c4.jar",
+      "sha256": "7c72a3f08c27f1a5cc1b2d61e2378801e130dd4d54d7eec99481348e1b1752b4"
+    },
+    {
+      "path": "lib/atf-core-1.0.0-c4.pom",
+      "sha256": "2cd642e7deba1b7787e1ccef6cab60245d56f3450f8fea75e83134132a82536f"
+    },
+    {
+      "path": "lib/atf-mock-1.0.0-m2.jar",
+      "sha256": "0ae87d84905e3d3177e60a3c3ac2db6d0775852eb88162476f554ba247456704"
+    },
+    {
+      "path": "lib/atf-mock-1.0.0-m2.pom",
+      "sha256": "e75e514f5b4dbcd689644e1b7bc38ca46b6b06e26139327ffd0b62ac295d7567"
+    },
+    {
+      "path": "lib/atf-reporting-1.0.0-j22.jar",
+      "sha256": "de747a0382027210d3443b98be8594fc97661b07a7a34e6b61a220984d6bf41b"
+    },
+    {
+      "path": "lib/atf-reporting-1.0.0-j22.pom",
+      "sha256": "08bf0167b0f896e59d93711ed4b19c66c234b9eb20b2bc5c7265ac9afe57f08c"
+    },
+    {
+      "path": "lib/atf-test-kit-1.0.0-k1.jar",
+      "sha256": "c2d0416ec449fff356e8ba900ec2b4cde1cf1386ba1a1373d8b68782f3cc34cd"
+    },
+    {
+      "path": "lib/atf-test-kit-1.0.0-k1.pom",
+      "sha256": "c1779239d4dc3ed6f0ea0d65ec1432f5e281a3dd596ba66daaa02911e420e5e4"
+    },
+    {
+      "path": "lib/README.Console.md",
+      "sha256": "4988978807ee793396eb7d96f1a7c3e61a38ecf4127f7e2263060b8e2fc33f7c"
+    },
+    {
+      "path": "lib/README.Core.md",
+      "sha256": "000492c49ff5729181520848280cf539285e93345ef80131159a94802d37425b"
+    },
+    {
+      "path": "lib/README.md",
+      "sha256": "b45c72436d040fa85d35384f8f74ec9bd01db8592bb2d1a713fc927dd3e1279c"
+    },
+    {
+      "path": "lib/README.Mock.md",
+      "sha256": "3bc9cea3a12e6b7cdea55328f8c0afe4ac9a8f1f62996e87d2500b17b29f0ff8"
+    },
+    {
+      "path": "lib/README.Reporting.md",
+      "sha256": "deea28d13b4163adebc27a28d37dc0b762a292f1f5f2d60c0a09f57fc2a286cd"
+    },
+    {
+      "path": "lib/README.TestKit.md",
+      "sha256": "8c8ed621472ceb9384c41af18bd14ca5cd7d356266f73027add9d2cad3a13e73"
+    }
+  ]
+}

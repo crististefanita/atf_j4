@@ -1,0 +1,35 @@
+{
+  "observedUtc": "2026-11-07T07:49:40.781Z",
+  "codeAndBuildInputsMatch": true,
+  "added": [],
+  "removed": [],
+  "changed": [],
+  "allInputsMatchIncludingMetadata": false,
+  "reviewedMetadata": [
+    {
+      "path": "lib/README.Reporting.md",
+      "qualifiedSha256": "deea28d13b4163adebc27a28d37dc0b762a292f1f5f2d60c0a09f57fc2a286cd",
+      "liveSha256": "1fdc497a2e745415f78354087708e6f40e8e90a59fcbc1dff216a9bba13d3353"
+    },
+    {
+      "path": "library-provenance.json",
+      "qualifiedSha256": "910afb207cfc203cd653f7402b5c4469e80013da311ebfce004e3f6bbd76a7b4",
+      "liveSha256": "ff127b2737d42dcfe7757645af66a7c035c8d903abe1234161682f9f8a618f7e"
+    }
+  ],
+  "sourceFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+  "explicitOverrides": [
+    "App versionName 0.11.0 / versionCode 16 in frozen build only",
+    "SDK local.properties is external environment configuration, excluded from source inventory"
+  ],
+  "documentationQualification": {
+    "schemaVersion": 1,
+    "state": "PASS",
+    "observedUtc": "2026-11-07T07:30:12.076Z",
+    "fromFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+    "toFingerprint": "f10c7bb228e6995a0815dc2430d70191a92090f741fae1d6aa4d2bd6c82739a0",
+    "changed": [],
+    "scope": "The final Gradle Android and algorithm-only selections ran from the same fingerprint, reconciled with the live complete source inventory. No post-run edits were promoted.",
+    "applicationTestsRuntimeAndBuildInputsUnchanged": true
+  }
+}
