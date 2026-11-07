@@ -6,6 +6,16 @@ import static atf.gradle.audit.assertions.GradleAssertions.*;
 import org.junit.Test;
 
 public class TrickCollectionMotionComponentTest extends atf.gradle.audit.GradleAuditedTest {
+    @Test public void aLateAndroidFrameUsesTheOriginalDeadline() {
+        var timing = TrickCollectionMotion.timing(1500, 0);
+        var reattached = TrickCollectionMotion.timing(200, 0);
+        atf.gradle.audit.GradleInputs.fixture("Frame clock", "first collection", timing, "reattached collection", reattached,
+                "before start", -40, "late frame", 360, "past deadline", 620, "after reattach", 100);
+        assertEquals("Before movement keep the first frame", 0f, TrickCollectionMotion.progress(timing, -40), .001f);
+        assertEquals("A delayed callback jumps to the elapsed fraction", .72f, TrickCollectionMotion.progress(timing, 360), .001f);
+        assertEquals("A late final callback finishes immediately", 1f, TrickCollectionMotion.progress(timing, 620), .001f);
+        assertEquals("A new surface keeps the fraction already spent", .8f, TrickCollectionMotion.progress(reattached, 100), .001f);
+    }
     @Test public void collectionUsesTheEndOfTheExistingPauseAndAccountsForLayoutDelay() {
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 1000, "declared constant 2", 500, "declared constant 3", 0, "declared constant 4", 1500, "declared constant 5", 700, "declared constant 6", 300, "declared constant 7", 1200, "declared constant 8", .4f, "declared constant 9", .00001f, "declared constant 10", 1);

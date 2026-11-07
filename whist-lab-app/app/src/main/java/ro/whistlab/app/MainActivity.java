@@ -264,12 +264,19 @@ public final class MainActivity extends Activity {
     }
 
     private void renderPlay(List<PlayedCard> completedTrick, boolean pauseActive) {
-        gameScreen.playing(copy, game.snapshot(), completedTrick, pauseActive, 0,
+        gameScreen.playing(copy, game.snapshot(), completedTrick, pauseActive, null,
                 presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
-    private void renderCollecting(CompletedTrickPause.DisplayState pause, long deadline) {
-        gameScreen.playing(copy, game.snapshot(), pause.cards(), true, deadline,
+    private void renderCollecting(CompletedTrickPause.DisplayState pause) {
+        gameScreen.playing(copy, game.snapshot(), pause.cards(), true, () -> {
+            if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return 0;
+            long firstDraw = SystemClock.uptimeMillis();
+            completedTrickPause.resume(firstDraw);
+            long deadline = firstDraw + pause.remainingMillis();
+            handler.postAtTime(this::driveAutomatedTurns, deadline);
+            return deadline;
+        },
                 presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
@@ -383,9 +390,8 @@ public final class MainActivity extends Activity {
         CompletedTrickPause.DisplayState trickPause = completedTrickPause.evaluate(
                 game, displayTime);
         if (trickPause.active()) {
-            long deadline = displayTime + trickPause.remainingMillis();
-            renderCollecting(trickPause, deadline);
-            handler.postAtTime(this::driveAutomatedTurns, deadline);
+            completedTrickPause.suspend(displayTime);
+            renderCollecting(trickPause);
             return;
         }
         if (state.phase() == GamePhase.SCORE) {

@@ -10,12 +10,14 @@ import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.LongSupplier;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.rules.GameRules;
@@ -26,8 +28,11 @@ import ro.whistlab.core.model.Suit;
 /** Game table and header composition; decisions and navigation stay with their owners. */
 public final class GameScreen {
     private GameTablePanel currentTable;
+    private Runnable cancelFirstDraw = () -> { };
 
     public void cancelCollection() {
+        cancelFirstDraw.run();
+        cancelFirstDraw = () -> { };
         if (currentTable != null) { currentTable.cancelCollection(); currentTable = null; }
     }
     private final ScreenViews views;
@@ -45,7 +50,9 @@ public final class GameScreen {
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
-    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick, boolean pauseActive, long collectionDeadline, Runnable resized, java.util.function.Consumer<Card> selected, MenuActions actions) {
+    public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick,
+            boolean pauseActive, LongSupplier startCollection, Runnable resized,
+            java.util.function.Consumer<Card> selected, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = views.gamePage();
@@ -60,8 +67,23 @@ public final class GameScreen {
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
-        if (pauseActive && collectionDeadline > 0)
-            table.collectCompletedTrick(collectionDeadline - SystemClock.uptimeMillis(), resized);
+        if (pauseActive && startCollection != null) attachAtFirstDraw(table, startCollection, resized);
+    }
+
+    private void attachAtFirstDraw(GameTablePanel table, LongSupplier startCollection, Runnable resized) {
+        var observer = table.getViewTreeObserver();
+        ViewTreeObserver.OnPreDrawListener firstDraw = () -> {
+            cancelFirstDraw.run();
+            cancelFirstDraw = () -> { };
+            if (currentTable == table) {
+                long deadline = startCollection.getAsLong();
+                if (deadline > 0) table.collectCompletedTrick(deadline - SystemClock.uptimeMillis(), resized);
+            }
+            return true;
+        };
+        cancelFirstDraw = () -> (observer.isAlive() ? observer : table.getViewTreeObserver())
+                .removeOnPreDrawListener(firstDraw);
+        observer.addOnPreDrawListener(firstDraw);
     }
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
             boolean currentPlayerHighlighted, WhistUiText copy, MenuActions actions) {

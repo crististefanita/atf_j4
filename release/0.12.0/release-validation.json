@@ -70,7 +70,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-07T14:59:21.2433278+00:00",
+    "observedUtc": "2026-11-07T16:14:15.066Z",
     "files": [
       {
         "path": "github-release.json",
@@ -79,8 +79,8 @@
       },
       {
         "path": "README.md",
-        "bytes": 560,
-        "sha256": "7d545c4ff4c9f3f79cefc289c7079edc6620b8ffbec2ef949ecd4d6cdd7ccafa"
+        "bytes": 624,
+        "sha256": "a870863df30308cd7acdbe42ffeb454c8f33a40add73db8a00ccc8234e3360f8"
       },
       {
         "path": "release-notes.md",
@@ -154,8 +154,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 740,
-        "sha256": "cd009ceff00348ec7a145c4bb6b10a7048872afa592f6bbc6d37b3e0503ae6cd"
+        "bytes": 753,
+        "sha256": "55c2d6a71f49fad5edd5f8682223d9718555319c9c297a571d75a92833abe741"
       },
       {
         "path": "reports/test-results/native/TEST-signed-install-smoke.xml",

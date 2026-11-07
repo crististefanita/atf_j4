@@ -1,12 +1,11 @@
 package ro.cardtable.ui.animation;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.os.Build;
+import android.os.SystemClock;
+import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -104,20 +103,29 @@ final class AndroidCollectionSurface implements TrickCollectionRun.Surface {
     }
 
     @Override public Runnable animate(TrickCollectionMotion.Timing timing, Consumer<Float> frame, Runnable finished) {
-        ValueAnimator animator = ValueAnimator.ofFloat(timing.startFraction(), 1);
-        animator.setStartDelay(timing.delayMillis());
-        animator.setDuration(timing.durationMillis());
-        animator.setInterpolator(new LinearInterpolator());
-        animator.addUpdateListener(value -> frame.accept((Float) value.getAnimatedValue()));
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override public void onAnimationEnd(Animator animation) { finished.run(); }
-        });
-        try { animator.start(); }
-        catch (RuntimeException | Error failure) {
-            try { animator.cancel(); } catch (RuntimeException | Error cleanup) { if (cleanup != failure) failure.addSuppressed(cleanup); }
-            throw failure;
+        var choreographer = Choreographer.getInstance();
+        long start = SystemClock.uptimeMillis() + timing.delayMillis();
+        final class CollectionFrames implements Choreographer.FrameCallback {
+            private boolean stopped;
+
+            @Override public void doFrame(long ignored) {
+                if (stopped) return;
+                long now = SystemClock.uptimeMillis();
+                float progress = TrickCollectionMotion.progress(timing, now - start);
+                frame.accept(progress);
+                if (stopped) return;
+                if (progress >= 1f) finished.run();
+                else choreographer.postFrameCallback(this);
+            }
+
+            void cancel() {
+                stopped = true;
+                choreographer.removeFrameCallback(this);
+            }
         }
-        return animator::cancel;
+        var frames = new CollectionFrames();
+        choreographer.postFrameCallbackDelayed(frames, timing.delayMillis());
+        return frames::cancel;
     }
 
     @Override public void release(boolean completed) {

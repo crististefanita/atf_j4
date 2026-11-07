@@ -63,7 +63,7 @@ Modelați numai variațiile demonstrate de cele două jocuri. Evitați un constr
 
 [Dosarul extracției](../../../../whist_back/ui-extraction/shared-seats-collection/README.md) leagă versiunile exportate, componentele Whist și verificarea sursei live.
 
-**Verificarea colectării după restart.** Pe API 28, Whist a afișat o singură dată ultima levată din checkpoint și a revenit la scor cu salvarea identică. Proba cadrelor distinge întârzierea, deplasarea și dispariția. Matricea nativă a numelui și a celor două rânduri de statistici închide separat încadrarea la font mărit. [Dovezile Whist și Rentz](../../../../rentz_back/ui-review/restart-collection-j5/README.md)
+**Verificarea colectării după restart.** Pe API 28, Whist a afișat o singură dată ultima levată din checkpoint și a revenit la scor cu salvarea identică. Timpul de pregătire al mesei a scurtat o captură la pornirea rece; acum ceasul pornește la primul desen și păstrează bugetul rămas la refacerea mesei. Matricea nativă a calificat separat numele și cele două rânduri de statistici la font mărit. [Dovezile Whist și Rentz](../../../../rentz_back/ui-review/restart-collection-j5/README.md)
 
 | ID și stare | Lucrare chirurgicală | Acceptanță |
 |---|---|---|

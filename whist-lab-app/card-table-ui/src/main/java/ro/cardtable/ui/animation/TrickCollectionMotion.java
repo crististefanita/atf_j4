@@ -24,6 +24,13 @@ public final class TrickCollectionMotion {
                 (COLLECT_MILLIS - duration) / (float) COLLECT_MILLIS);
     }
 
+    /** Frame progress follows elapsed uptime, including time spent waiting for a busy Android frame. */
+    public static float progress(Timing timing, long elapsedMillis) {
+        if (elapsedMillis >= timing.durationMillis()) return 1f;
+        float elapsed = Math.max(0, elapsedMillis) / (float) timing.durationMillis();
+        return timing.startFraction() + (1f - timing.startFraction()) * elapsed;
+    }
+
     public static Frame frame(Point source, Point target, float fraction) {
         if (!Float.isFinite(fraction)) throw new IllegalArgumentException("Invalid animation fraction");
         float progress = Math.max(0, Math.min(1, fraction));

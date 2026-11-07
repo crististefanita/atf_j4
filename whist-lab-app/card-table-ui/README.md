@@ -88,13 +88,14 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 .\gradlew.bat --offline --no-daemon :card-table-ui:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>
 ```
 
-- Coordonata este `ro.cardtable:card-table-ui:0.1.5`. Exportul conține AAR, POM, metadata Gradle și surse.
+- Coordonata este `ro.cardtable:card-table-ui:0.1.6`. Exportul conține AAR, POM, metadata Gradle și surse.
 - [Politica de nume](../card-table-names/README.md) se publică separat ca JAR Java, pentru motoare și probe JVM.
 
 ## Levata și informația din chenar
 
 - `CollectionTarget` primește locurile cărților publice și locul câștigător calculat în joc. `TrickCollectionMotion` păstrează fereastra de 1500 ms și folosește ultimele 500 ms pentru colectare.
 - `TrickCollectionRun` deține geometria, ciclul de viață și curățarea. Adaptorul Android caută fețele cărților și chenarul prin identitatea locului. Whist păstrează validarea snapshotului și momentul când publică levata.
+- Cadrele Android folosesc ceasul monoton. Un callback întârziat sare la poziția corespunzătoare timpului scurs, iar un callback după termen termină mișcarea.
 - Whist și Rentz folosesc `PlayerSeatFrame.buildInlineFacts`. Numele și cele două rânduri își păstrează textul integral și înălțimea, iar lățimea se adaptează după măsurarea finală a glifelor Android.
 - [Componenta nativă a chenarului](src/androidTest/README.md) verifică 36 de combinații. Include 3–6 locuri, lățimi de 240/320/393 dp, font 1/1,5/2, diacritice și valori semnate lungi, inclusiv Δ și Σ.
 - Biblioteca păstrează `minSdk 24`, compilare SDK 36 și Java 17. Consumatorul deține pachetul instalabil, versiunea și semnarea APK-ului.

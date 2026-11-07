@@ -8,7 +8,7 @@ Proiectul consumă Core, Reporting, Console și Mock ca perechi JAR/POM. Reactor
 
 - [Cod, feedback și sincronizare](../../lib/README.md) explică responsabilitatea comună și acceptanța separată a consumatorilor.
 - [Integrarea API-urilor](ATF_Integration.md) definește identitatea binară, adaptoarele și sincronizarea.
-- [Livrarea Android](ATF_AndroidDelivery.md) leagă sursele de APK, instalare și păstrarea salvărilor.
+- [Livrarea Android](ATF_AndroidDelivery.md) explică build-ul, publicarea și instalarea APK-ului, inclusiv păstrarea salvărilor. [Verificarea accesului anonim](ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică) acoperă ruta publică și diagnosticul HTTP 404.
 - [Retenția și pregătirea release-ului](ATF_ReleaseRetention.md) separă candidatul local, publicarea și retragerea versiunilor precedente.
 
 ## Responsabilități

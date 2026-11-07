@@ -32,6 +32,22 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 - Verificați binarul instalat înainte de a atribui unui scenariu comportamentul acelei livrări.
 - Distingeți build-ul local de distribuția prin magazin și de gestionarea cheilor de distribuție.
 
+## Planul de semnare și de migrare
+
+Calificați schimbarea cheii pornind de la ultimul APK disponibil utilizatorilor. Identificați pachetul, `versionCode`, `minSdk`, SHA-256 al APK-ului și amprenta SHA-256 a certificatului cu `apksigner verify --verbose --print-certs`. Dacă certificatul publicat este `Android Debug`, tratați-l ca semnatar vechi și verificați că puteți recupera exact cheia, cu acces controlat, înainte să pregătiți rotația. [Semnarea aplicațiilor Android](https://developer.android.com/studio/publish/app-signing)
+
+1. Pregătiți o cheie dedicată livrării, cu stocare protejată și copie de siguranță testată. Păstrați cheia, parolele și configurația locală în afara Git și a rapoartelor. Procesul de build primește o configurație explicită de semnare și se oprește dacă identitatea nu poate fi verificată. Publicați doar amprentele certificatelor și datele de verificare.
+2. Dacă aveți cheia veche exactă și poate fi utilizată în siguranță, construiți un candidat cu același `applicationId`, `versionCode` mai mare și un istoric de rotație verificabil. Stabiliți explicit nivelul de la care intră în vigoare cheia nouă. Rotația implicită din `apksigner` folosește cheia nouă de la API 33. Pentru rotație începând de la API 28, configurați și calificați separat pragul 28. Sub prag, compatibilitatea upgrade-ului depinde de semnatarul vechi. API 24–27 nu pot folosi rotația v3. [Opțiunile `apksigner`](https://developer.android.com/tools/apksigner)
+3. Dacă cheia veche lipsește ori nu mai este sigură, opriți publicarea ca upgrade transparent pentru instalările afectate. O migrare către instalare nouă cere un traseu de transfer al salvării disponibil pentru versiunea instalată, verificat complet înainte de distribuție. Tratați separat orice decizie de schimbare a pachetului sau a nivelului Android minim.
+
+| Profil Android | Probă înainte de publicare |
+|---|---|
+| API 24–27 | Upgrade de la APK-ul publicat cu semnatarul compatibil. Verificați prima instalare și păstrarea datelor. |
+| API 28–32 | Upgrade și instalare curată. Verificați semnatarul efectiv pentru pragul de rotație ales. |
+| API 33 și mai nou | Upgrade și instalare curată. Verificați semnatarul nou și istoricul de rotație. |
+
+Pe fiecare profil de upgrade, creați o partidă cu istoric și o mână în curs în versiunea publicată. Instalați candidatul peste ea, reluați partida și comparați preferințele, scorul, istoricul și următoarea acțiune legală. Păstrați versiunea anterioară, nivelul API, amprentele certificatelor și hash-ul APK-ului instalat. Un profil care lipsește sau pierde salvarea blochează lansarea migrării pentru publicul respectiv. Calificați același binar pe care îl veți distribui.
+
 ## Compatibilitate și calificare
 
 Compatibilitatea unei versiuni Android noi se califică separat de alegerea `targetSdk`. Numărul SDK-ului din APK nu dovedește instalarea, afișarea ori stabilitatea pe acel sistem.
@@ -45,7 +61,7 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 ## Distribuția prin GitHub
 
 - **Descărcare:** README-ul principal oferă APK-ul candidatului local. După publicare, indică asset-ul versiunii din GitHub Releases sau o copie publică a aceluiași APK. Copia publică devine linkul direct după ce o descărcare fără autentificare confirmă dimensiunea și SHA-256 din manifest. Directorul `release` al repository-ului păstrează documentația și copia locală.
-- **Stare:** README-ul principal indică numai `currentVersion`. Pentru `PREPARED`, linkul identifică APK-ul local; după publicare, identifică asset-ul GitHub al aceleiași versiuni. O ediție anterioară poate fi reper în audit, fără a deveni descărcarea curentă.
+- README-ul principal indică numai APK-ul din `currentVersion`. Pentru `PREPARED`, linkul duce la fișierul local. Pentru `PUBLISHED`, duce la asset-ul GitHub sau la copia publică verificată a aceleiași versiuni.
 
 - **Copie locală:** [catalogul livrărilor](../../release/README.md) trimite la dosarul versiunii, care reunește APK-ul, checksum-ul și rapoartele; binarul și checksum-ul local sunt excluse din Git.
 - **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
@@ -149,12 +165,42 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 | Situație | Prezentare și verificare |
 |---|---|
 | Candidat local | Link la dosarul exact din `release/<versionName>/`, stare `PREPARED` și APK local; fără afirmație de publicare GitHub. |
-| Asset publicat | Link direct `releases/download/<tag>/<apkName>`; eticheta vizibilă, tag-ul și fișierul identifică aceeași versiune. |
+| Asset publicat | Link direct `releases/download/<tag>/<apkName>`. Eticheta, tag-ul și fișierul identifică aceeași versiune. |
+| Copie publică verificată | Link HTTPS fixat pe versiune și numele APK-ului, consemnat în `publicDownload` după descărcare anonimă și comparație cu manifestul. |
 | Copie completă | Răspuns reușit, mărime și SHA-256 identice cu asset-ul și binarul declarat; ZIP cu CRC valid, manifest Android și cod. Un răspuns de eroare nu se redenumește `.apk`. |
 | Canal verificat | API autentificat și browser sunt probe distincte. Reușita API nu marchează browserul drept verificat și nu închide blocajul accesului anonim. |
 | Identitate unică | `currentVersion`, manifestul, eticheta, numele APK-ului și URL-ul identifică aceeași ediție. Dovezile unei versiuni anterioare rămân numai referințe de audit. |
 
-Fișierul se descarcă într-un nume temporar și primește extensia finală numai după verificări. README-ul principal păstrează exclusiv candidatul curent; după `PUBLISHED`, linkul local se înlocuiește cu asset-ul aceleiași versiuni. Lipsa publicării nu permite revenirea la APK-ul anterior.
+Fișierul se descarcă într-un nume temporar și primește extensia finală după verificări. La trecerea în `PUBLISHED`, înlocuiți linkul local cu adresa de distribuție a aceleiași versiuni.
+
+### Accesul anonim și ruta publică
+
+1. După publicare, deschideți README-ul livrat într-o sesiune de browser fără cont. Urmați linkul APK din pagina afișată. Descărcați fișierul și checksum-ul fără cookie-uri, antet de autorizare sau token. Comparați mărimea și SHA-256 cu `release-validation.json` și cu fișierul checksum publicat.
+2. La HTTP 404, verificați separat repository-ul, README-ul, pagina release-ului și asset-ul. Comparați rezultatul anonim cu cel din sesiunea proprietarului. Dacă și profilul sau alte repository-uri marcate public sunt inaccesibile, păstrați URL-urile, ora UTC, codurile HTTP și ID-urile cererilor pentru [GitHub Support](https://docs.github.com/en/support/contacting-github-support/creating-a-support-ticket). Un 404 anonim singur nu identifică motivul.
+3. Dacă asset-ul GitHub rămâne inaccesibil anonim, publicați APK-ul semnat și checksum-ul pe o gazdă HTTPS publică, controlată de proiect. Linkul APK se termină în `/v<versionName>/WhistLab-<versionName>.apk` și folosește o adresă stabilă, fără parametri de interogare sau fragment. Dacă și README-ul de pe GitHub este inaccesibil, publicați o copie din commitul identificat pe pagina publică și verificați linkul din ea. O copie nouă a README-ului se publică după fiecare schimbare de versiune sau de destinație a descărcării.
+4. Înregistrați canalul alternativ în `release/<versionName>/reports/distribution-verification.json` sub `publicDownload`. Includeți `url`, `httpStatus`, `bytes`, `sha256` și momentul observației. Păstrați separat rezultatul adresei GitHub. Actualizați linkul principal, reînregistrați integritatea dosarului și rulați guvernanța. După push, recitiți README-ul publicat și repetați descărcarea folosind exact acel link.
+
+Rulați verificarea din rădăcina proiectului și introduceți adresa directă copiată din README-ul publicat.
+
+```powershell
+$version = (Get-Content release/index.json -Raw | ConvertFrom-Json).currentVersion
+$expected = (Get-Content "release/$version/release-validation.json" -Raw | ConvertFrom-Json).release
+$downloadUrl = Read-Host 'URL-ul direct din README'
+$payload = [IO.Path]::GetTempFileName()
+try {
+    $status = curl.exe -q --fail --location --silent --show-error --max-time 60 `
+        --proto '=https' --proto-redir '=https' --output $payload --write-out '%{http_code}' -- $downloadUrl
+    if ($LASTEXITCODE -ne 0 -or $status -ne '200') { throw "Descărcarea a returnat HTTP $status" }
+    $bytes = (Get-Item -LiteralPath $payload).Length
+    $sha256 = (Get-FileHash -LiteralPath $payload -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($bytes -ne $expected.apkBytes -or $sha256 -ne $expected.apkSha256) {
+        throw 'APK-ul descărcat diferă de manifest'
+    }
+    [pscustomobject]@{ HttpStatus = [int]$status; Bytes = $bytes; Sha256 = $sha256 }
+} finally {
+    Remove-Item -LiteralPath $payload
+}
+```
 
 ### Verificări automate ale distribuției
 
