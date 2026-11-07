@@ -10,7 +10,7 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.13.0](https://github.com/crististefanita/atf_j4/releases/tag/v0.13.0)** — release-ul Android și notele de publicare.
+- **[Whist Lab 0.13.0 — informații publice](https://whist-lab-apk.totaloatcake.chatgpt.site/readme/)** — versiunea și pașii de descărcare fără cont.
 - **[Descarcă APK 0.13.0 fără cont](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.13.0/WhistLab-0.13.0.apk)** — link direct verificat; SHA-256: `451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0`.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
