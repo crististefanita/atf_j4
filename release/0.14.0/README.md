@@ -17,7 +17,9 @@ APK-ul 0.14.0 este disponibil public pe Android. Fișa păstrează identitatea, 
 
 ## Verificare
 
-- Componente Android: 502 teste; componentele bibliotecii UI: 16 teste. XML-ul JUnit original este păstrat în `reports/test-results/gradle/`.
+- Componente Gradle: 518 invocări; XML-ul JUnit original este păstrat în `reports/test-results/gradle/`.
+- Componente ATF: 569 invocări în trei rapoarte Extent; capturile sunt inline Base64, fără fișiere imagine paralele.
+- Smoke nativ pe emulator: 4 verificări JUnit, în `reports/test-results/native/`.
 - Actualizarea pe emulatorul API 28 a păstrat `firstInstallTime`; APK-ul extras din dispozitiv are hash-ul candidatului, iar `MainActivity` a pornit.
 - Calificarea ATF și rapoartele Extent sunt legate din [indexul rapoartelor](reports/README.md).
 

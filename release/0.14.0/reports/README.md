@@ -2,21 +2,30 @@
 
 ## Pe scurt
 
-Acest dosar păstrează rezultatele reproductibile pe componentă, identitatea instalării și calificarea release-ului. XML-ul JUnit este materialul de reconciliere, iar raportul HTML indicat în manifest este cel de citit.
+Dosarul leagă APK-ul curent de raportarea componentelor, rezultatul instalării native și dovada descărcării publice. [Fișa versiunii](../README.md) identifică APK-ul și destinația lui directă.
+
+## Suite Extent ATF
+
+| Suită | Invocări | Raport HTML | Receipt |
+|---|---:|---|---|
+| Validare comună | 19 | [Extent](component/atf-validation.html) | [Execuție](component/atf-validation-execution.json) |
+| Adaptor Android | 257 | [Extent](component/atf-test-android.html) | [Execuție](component/atf-test-android-execution.json) |
+| Arhitectură și guvernanță | 293 | [Extent](component/atf-tests.html) | [Execuție](component/atf-tests-execution.json) |
+
+Cele trei suite însumează 569 de invocări reușite. Capturile incluse în HTML sunt URI-uri Base64; dosarul nu păstrează copii PNG separate. [Inventarul surselor execuției](component/source-inputs.json) și receipt-urile leagă numărul de teste de rapoartele calculate.
 
 ## Componente Gradle
 
-- [Raport de sinteză Android](component/gradle-components.html)
-- [XML JUnit original](test-results/gradle/)
+518 invocări Android și ale bibliotecii UI sunt păstrate ca rezultate JUnit originale, grupate în `test-results/gradle/`. Acestea sunt o colecție distinctă de suitele ATF, nu copii ale rapoartelor Extent de mai sus.
 
 ## Instalare nativă
 
 - [Identitate și verificări pe emulator](diagnostics/native-identity.json)
-- [Rezultat JUnit pentru actualizare și pornire](test-results/native/TEST-ro.whistlab.release.SignedUpgradeSmoke.xml)
+- [Rezultat JUnit pentru actualizare și pornire](test-results/native/TEST-ro.whistlab.release.SignedUpgradeSmoke.xml) — 4 verificări.
 
 ## Distribuție și proveniență
 
 - [Descărcare anonimă, octeți și SHA-256](distribution-verification.json)
 - [Inventarul surselor APK](apk-inputs.json)
-- [Manifest de release](../release-validation.json)
-- [Catalog](../../README.md) · [Strategia comună](../../../docs/testing/README.md)
+- [Manifestul de release](../release-validation.json)
+- [Catalogul curent](../../README.md) · [Strategia comună de testare](../../../docs/testing/README.md)

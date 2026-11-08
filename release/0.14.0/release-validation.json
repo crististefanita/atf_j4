@@ -23,10 +23,10 @@
     "state": "PREPARED"
   },
   "qualification": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "state": "PASS",
-    "scope": "ANDROID_GRADLE_COMPONENTS_AND_SIGNED_UPGRADE_SMOKE",
-    "uniqueJunitInvocations": 522,
+    "scope": "ANDROID_GRADLE_AND_ATF_COMPONENTS_WITH_SIGNED_UPGRADE_SMOKE",
+    "uniqueJunitInvocations": 1091,
     "groups": {
       "gradle": {
         "tests": 518,
@@ -97,22 +97,48 @@
           "TEST-ro.whistlab.release.SignedUpgradeSmoke.xml"
         ]
       }
+    },
+    "auditedGroups": {
+      "atf-validation": {
+        "report": "reports/component/atf-validation.html",
+        "protocol": "JUPITER_COMPONENT_V1",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "atf-test-android": {
+        "report": "reports/component/atf-test-android.html",
+        "protocol": "JUPITER_COMPONENT_V1",
+        "tests": 257,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "atf-tests": {
+        "report": "reports/component/atf-tests.html",
+        "protocol": "JUPITER_COMPONENT_V1",
+        "tests": 293,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
     }
   },
   "evidenceRetention": {
-    "state": "GRADLE_JUNIT_AND_NATIVE_SMOKE",
-    "canonicalReport": "reports/component/gradle-components.html",
-    "canonicalReportSha256": "8e0d53d24cd45d88a4cf34b13510b3d4830b85474f1f220f7e5e04df5ae65ec1"
+    "state": "GRADLE_XML_NATIVE_SMOKE_AND_ATF_EXTENT",
+    "canonicalReport": "reports/component/atf-tests.html",
+    "canonicalReportSha256": "88bec5db10c780739ddd620d2f18894d5ae39ac1952b1e91f42041b4cb622fdb"
   },
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-08T10:05:36.994Z",
+    "observedUtc": "2026-11-08T10:18:14.070Z",
     "files": [
       {
         "path": "README.md",
-        "bytes": 1375,
-        "sha256": "6fbe807e8449fb8bf133be70189168ac5f412e0f340a2c6812db73945d3fdc94"
+        "bytes": 1545,
+        "sha256": "bc188359d2f2d9689fb110a8f4241d41fa01e15c8a276e4944f2f813b059ef3c"
       },
       {
         "path": "WhistLab-0.14.0.apk",
@@ -136,8 +162,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 916,
-        "sha256": "38623dd32e65a87ba929fdbe2c697149829be1f205308a31138d558170a081b8"
+        "bytes": 1789,
+        "sha256": "40307f00678adbf15f40de7f02d09ecb3b105022a8e627c6d5be2effa4d9acb6"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -145,9 +171,39 @@
         "sha256": "6a893e378ced76b592b7d446b2362ff998e6d9e3582cdaedbb75f07ab746b85a"
       },
       {
-        "path": "reports/component/gradle-components.html",
-        "bytes": 451,
-        "sha256": "8e0d53d24cd45d88a4cf34b13510b3d4830b85474f1f220f7e5e04df5ae65ec1"
+        "path": "reports/component/atf-test-android-execution.json",
+        "bytes": 545,
+        "sha256": "bc1c81a1a0b851e5649d9c607688ea6c122b90d343613c9c518fd36a43bd4c9a"
+      },
+      {
+        "path": "reports/component/atf-test-android.html",
+        "bytes": 25887687,
+        "sha256": "65a79e754e83e17d596afe3f64fd290d8df116d7cd670d7c262f69a1b9acad15"
+      },
+      {
+        "path": "reports/component/atf-tests-execution.json",
+        "bytes": 539,
+        "sha256": "c91dc5e2633c989eb36a0297a68e777c35dc09cade64ad559bacaeea40ce8eb7"
+      },
+      {
+        "path": "reports/component/atf-tests.html",
+        "bytes": 6902199,
+        "sha256": "88bec5db10c780739ddd620d2f18894d5ae39ac1952b1e91f42041b4cb622fdb"
+      },
+      {
+        "path": "reports/component/atf-validation-execution.json",
+        "bytes": 549,
+        "sha256": "10adc0a593d3dd1b0253f1664ab9c87e279daaed4d12cc997c92024dab6d3f89"
+      },
+      {
+        "path": "reports/component/atf-validation.html",
+        "bytes": 2663347,
+        "sha256": "78379d5a6145d3e2bf8a71f959859fb7d644a33358c0455aaaecb4f198dcadb8"
+      },
+      {
+        "path": "reports/component/source-inputs.json",
+        "bytes": 163822,
+        "sha256": "e7d8c45b08b619ebe8b6e469d8f2654ef6e27d7d4246281947ab2bc06e0f2eda"
       },
       {
         "path": "reports/diagnostics/build.log",
