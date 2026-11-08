@@ -12,7 +12,7 @@
 
 ## Verificare și publicare
 
-J4 verifică politica și recuperarea partidei prin componentele din `game-core`. Consumatorii verifică separat numele randate și restaurarea.
+Testele de componentă verifică politica și recuperarea partidei prin `game-core`. Consumatorii verifică separat numele randate și restaurarea.
 
 ```powershell
 .\gradlew.bat --offline --no-daemon :card-table-names:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>

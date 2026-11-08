@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.table.content.WhistTableContentComponentTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:24:38.016Z" hostname="DESKTOP-BLFSO18" time="2.582">
+  <properties/>
+  <testcase name="depositedCardsKeepActualActorAndCompletedTrickWithoutExposingOtherHands" classname="ro.whistlab.app.table.content.WhistTableContentComponentTest" time="0.862"/>
+  <testcase name="snapshotBoundHandKeepsOrderMarksLegalityAndOriginalCardIdentity" classname="ro.whistlab.app.table.content.WhistTableContentComponentTest" time="0.325"/>
+  <testcase name="originalSeatFactsDescriptionsAndPausedActorArePreservedAcrossAllWhistModes" classname="ro.whistlab.app.table.content.WhistTableContentComponentTest" time="1.394"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

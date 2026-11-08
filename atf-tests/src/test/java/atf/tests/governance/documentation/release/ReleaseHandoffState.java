@@ -10,7 +10,7 @@ final class ReleaseHandoffState {
     static boolean prepared(JsonNode validation, boolean hasPublishedRecord) {
         String state = validation.path("publication").path("state").asText();
         if (state.isEmpty() && hasPublishedRecord) return false;
-        if (state.equals("PUBLISHED")) {
+        if (state.equals("PUBLISHED") || state.equals("PUBLISHED_SITE")) {
             require(hasPublishedRecord, "STATE");
             require(validation.path("source").path("sourceCommit").asText().matches("[0-9a-f]{40}"), "COMMIT");
             return false;

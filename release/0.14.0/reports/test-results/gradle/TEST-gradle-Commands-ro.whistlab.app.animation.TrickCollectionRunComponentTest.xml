@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.animation.TrickCollectionRunComponentTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:21.539Z" hostname="DESKTOP-BLFSO18" time="0.482">
+  <properties/>
+  <testcase name="synchronousReadyAndCompletionReleaseBothHandlesReturnedAfterCompletion" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.011"/>
+  <testcase name="disabledAnimationsLeaveTheSceneStaticAndReleaseTheWatcher" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.007"/>
+  <testcase name="cancelledWaitingLayoutIgnoresPostedReadyAndDetachEvents" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.012"/>
+  <testcase name="resumedCollectionStartsAtItsRemainingFractionAndNeverMovesBackwards" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.008"/>
+  <testcase name="everyFaceReachesTheEnginesWinnerAndCompletesOnlyOnce" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.324"/>
+  <testcase name="activeSceneInvalidationCancelsWithoutTreatingCancelAsSuccessfulCollection" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.063"/>
+  <testcase name="synchronousCancellationWhileRegisteringStillClosesTheReturnedWatcher" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.02"/>
+  <testcase name="layoutReadyAfterExpiryNeverDrawsOrStartsAnAnimator" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.019"/>
+  <testcase name="anUnmeasuredLayoutCanBecomeReadyWithoutStartingTwiceOrExtendingTime" classname="ro.whistlab.app.animation.TrickCollectionRunComponentTest" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

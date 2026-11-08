@@ -15,12 +15,18 @@ final class ReleaseCatalogPresentation {
     static String downloadTarget(Path releaseFolder, JsonNode manifest, String repository) throws IOException {
         var release = manifest.required("release");
         String version = release.required("versionName").asText();
-        boolean published = manifest.path("publication").path("state").asText().equals("PUBLISHED");
+        String publicationState = manifest.path("publication").path("state").asText();
         Path receipt = releaseFolder.resolve("reports/distribution-verification.json");
-        if (!published || !Files.isRegularFile(receipt)) return releaseDownload(repository, version, published);
+        if (!Files.isRegularFile(receipt)) {
+            require(!publicationState.equals("PUBLISHED_SITE"), "SITE-RECEIPT", receipt);
+            return releaseDownload(repository, version, publicationState.equals("PUBLISHED"));
+        }
 
         var publicDownload = new ObjectMapper().readTree(receipt.toFile()).path("publicDownload");
-        if (publicDownload.isMissingNode()) return releaseDownload(repository, version, true);
+        if (publicDownload.isMissingNode()) {
+            require(!publicationState.equals("PUBLISHED_SITE"), "SITE-RECEIPT", receipt);
+            return releaseDownload(repository, version, publicationState.equals("PUBLISHED"));
+        }
         String url = publicDownload.path("url").asText();
         var address = URI.create(url);
         require("https".equals(address.getScheme()) && address.getHost() != null && address.getUserInfo() == null

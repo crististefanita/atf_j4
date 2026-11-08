@@ -1,0 +1,6 @@
+<testsuite name="ro.whistlab.release.SignedUpgradeSmoke" tests="4" failures="0" errors="0" skipped="0">
+  <testcase classname="ro.whistlab.release.SignedUpgradeSmoke" name="installedPackageIdentity" />
+  <testcase classname="ro.whistlab.release.SignedUpgradeSmoke" name="existingInstallPreserved" />
+  <testcase classname="ro.whistlab.release.SignedUpgradeSmoke" name="installedApkMatchesCandidate" />
+  <testcase classname="ro.whistlab.release.SignedUpgradeSmoke" name="launcherActivityStarted" />
+</testsuite>

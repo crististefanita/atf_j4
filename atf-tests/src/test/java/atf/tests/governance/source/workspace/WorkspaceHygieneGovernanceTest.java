@@ -42,6 +42,17 @@ class WorkspaceHygieneGovernanceTest {
         Files.writeString(temporary.resolve("README.md"), "# Proiect");
         AuditedAssertions.assertTrue(WorkspaceHygieneRules.inspect(temporary, WorkspaceHygieneRules.roots(policy)).isEmpty());
     }
+    @Test void nativePlatformAndWorkflowDirectoriesHaveExplicitRootOwners() throws Exception {
+        var mapper = new ObjectMapper();
+        var policy = mapper.readTree("{\"projectRootOwners\":[\".github\",\"ios\"]}");
+        AuditedAssertions.assertTrue(WorkspaceHygieneRules.roots(policy).containsAll(Set.of(".github", "ios")));
+        for (String invalid : new String[]{"../ios", "nested/ios", "C:\\ios"}) {
+            var invalidPolicy = mapper.createObjectNode();
+            invalidPolicy.putArray("projectRootOwners").add(invalid);
+            AuditedAssertions.assertThrows(IllegalArgumentException.class,
+                    () -> WorkspaceHygieneRules.roots(invalidPolicy));
+        }
+    }
     @Test void registeringAFlattenedTemporaryPathDoesNotMakeItASourceOwner() throws Exception {
         String name = "UsersSomeoneAppDataLocalTempcompile";Files.createDirectory(temporary.resolve(name));
         AuditedAssertions.assertEquals(1, WorkspaceHygieneRules.inspect(temporary, Set.of(name)).size());

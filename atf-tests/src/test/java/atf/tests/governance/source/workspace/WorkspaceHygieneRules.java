@@ -17,7 +17,13 @@ final class WorkspaceHygieneRules {
         var names = new HashSet<>(Set.of(".git", ".mvn", ".locks", ".idea", "target", "docs", "config", "lib", "scripts", "release"));
         policy.path("mavenModules").forEach(module -> names.add(first(module.asText())));
         policy.path("additionalSourceRoots").forEach(source -> names.add(first(source.path("module").asText())));
+        policy.path("projectRootOwners").forEach(owner -> names.add(rootOwner(owner.asText())));
         return Set.copyOf(names);
+    }
+    private static String rootOwner(String owner) {
+        if (owner.isBlank() || owner.contains("/") || owner.contains("\\") || owner.equals(".") || owner.equals(".."))
+            throw new IllegalArgumentException("Expected a direct project-root owner: " + owner);
+        return owner;
     }
     private static String first(String module) {
         if (module.isBlank() || module.startsWith("/") || module.contains("\\") || module.contains(":"))

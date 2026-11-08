@@ -176,7 +176,7 @@ Transferul unei implementări către o bibliotecă păstrează toate contractele
 
 ```yaml
 testChanges:
-  - id: LIBRARY-USAGE-GUIDES-J4
+  - id: LIBRARY-USAGE-GUIDES
     status: VERIFIED
     base: 52270cdbff4a7234c2cc6581c910d3431105f76e
     expires: 2026-11-30

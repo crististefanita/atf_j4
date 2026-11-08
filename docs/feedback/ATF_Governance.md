@@ -85,7 +85,7 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 
 ```yaml
 testChanges:
-  - id: LIBRARY-OWNERSHIP-README-J4
+  - id: LIBRARY-OWNERSHIP-README
     status: VERIFIED
     base: d46948264e7b35347ad812be1e67e9fba30eef05
     expires: 2026-11-30

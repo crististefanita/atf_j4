@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.cards.WhistCardFaceComponentTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:24:13.039Z" hostname="DESKTOP-BLFSO18" time="3.292">
+  <properties/>
+  <testcase name="allRanksAndSuitsKeepTheVisibleMarksAcrossTheLibraryBoundary" classname="ro.whistlab.app.cards.WhistCardFaceComponentTest" time="3.275"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:22:45.781Z" hostname="DESKTOP-BLFSO18" time="0.245">
+  <properties/>
+  <testcase name="theFifthSuccessAddsTheConfiguredBonusWeightedByExactProbability" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.146"/>
+  <testcase name="aCommonScoreTranslationPreservesTheCompleteUncertainBidEstimate" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.039"/>
+  <testcase name="aStrongPublicBidChangesTheEstimateWithoutBecomingKnowledgeOfHiddenCards" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.01"/>
+  <testcase name="aTurnedHigherTrumpIsExcludedAndImprovesTheExactOneCardEstimate" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.012"/>
+  <testcase name="theSameUncertainQueenRecommendsOneAsTrumpAndZeroOffTrump" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.016"/>
+  <testcase name="theFifthMissAppliesTheConfiguredPenaltyWeightedByMissProbability" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.007"/>
+  <testcase name="theLeadingRivalIncludesCurrentTotalsAndEachPlayersOwnSeriesPayment" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.004"/>
+  <testcase name="oneCardHandsNeverPayEitherFiveHandSeriesAdjustment" classname="ro.whistlab.app.bidding.HumanUncertainBidComponentTest" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

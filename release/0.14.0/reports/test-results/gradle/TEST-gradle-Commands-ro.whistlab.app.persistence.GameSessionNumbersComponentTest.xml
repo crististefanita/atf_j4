@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.persistence.GameSessionNumbersComponentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:34.422Z" hostname="DESKTOP-BLFSO18" time="0.182">
+  <properties/>
+  <testcase name="currentCheckpointsRequireAnExplicitBooleanRule" classname="ro.whistlab.app.persistence.GameSessionNumbersComponentTest" time="0.024"/>
+  <testcase name="validCheckpointsRetainTheExactSeedAndAcceptedBid" classname="ro.whistlab.app.persistence.GameSessionNumbersComponentTest" time="0.019"/>
+  <testcase name="structuralIntegersRejectFractionsOverflowStringsAndNullBeforeDomainValidation" classname="ro.whistlab.app.persistence.GameSessionNumbersComponentTest" time="0.081"/>
+  <testcase name="playerAndCardNumbersRejectLossyCoercionAndPreserveAHealthyNeighbour" classname="ro.whistlab.app.persistence.GameSessionNumbersComponentTest" time="0.032"/>
+  <testcase name="seedRejectsFractionsAndOutOfRangeNumbers" classname="ro.whistlab.app.persistence.GameSessionNumbersComponentTest" time="0.024"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -17,14 +17,12 @@ runtime-ul simulatorului și această pagină după verificarea documentației o
 
 ## Calificarea pe GitHub Actions
 
-Un runner macOS găzduit permite build și teste fără Mac local. Pentru repository-
-uri publice, runner-ele standard găzduite sunt gratuite și nelimitate. Pentru
-repository-uri private, consumul intră în minutele incluse ale planului și apoi
-se taxează la tariful planului; verificați vizibilitatea repository-ului și
-facturarea înainte de a trata execuția ca gratuită. Imaginea `xcode-27` este
-public preview, deci GitHub o oferă fără garanțiile unui runner stabil. La
-7 noiembrie 2026 imaginea include Xcode 27.2 și runtime-ul/simulatorul iOS 27.2;
-workflow-ul fixează versiunea folosită în loc să aleagă automat `latest`.
+Un runner macOS găzduit permite build și teste fără Mac local.
+
+- Pentru repository-uri publice, runner-ele standard sunt gratuite și nelimitate.
+- Pentru repository-uri private, consumul folosește minutele incluse, apoi se taxează la tariful planului. Verificați vizibilitatea și facturarea înainte de a estima costul.
+- Imaginea `xcode-27` este public preview și nu are garanțiile unui runner stabil.
+- La 7 noiembrie 2026, imaginea include Xcode 27.2 și simulatorul iOS 27.2. Workflow-ul fixează versiunea în loc să aleagă `latest`.
 [Runner-e și condiții GitHub](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) ·
 [Imaginea curentă macOS Xcode 27](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md) ·
 [Preview Xcode 27](https://github.blog/changelog/2026-09-10-xcode-27-runner-image-now-runs-on-macos-27/)

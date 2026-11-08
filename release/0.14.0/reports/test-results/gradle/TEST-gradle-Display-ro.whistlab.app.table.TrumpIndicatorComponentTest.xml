@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.table.TrumpIndicatorComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:24:37.068Z" hostname="DESKTOP-BLFSO18" time="0.431">
+  <properties/>
+  <testcase name="noTrumpHasAnExplicitLocalizedValueInsteadOfAnExtraStatusRow" classname="ro.whistlab.app.table.TrumpIndicatorComponentTest" time="0.049"/>
+  <testcase name="longValuesFitTheFrameWithoutChangingItsWidthOrGrowingSmallText" classname="ro.whistlab.app.table.TrumpIndicatorComponentTest" time="0.125"/>
+  <testcase name="bidSubmissionIsTenPercentNarrowerWithAFullTouchTarget" classname="ro.whistlab.app.table.TrumpIndicatorComponentTest" time="0.023"/>
+  <testcase name="everyModeUsesOneSuitOrTurnedCardValueInBothLanguages" classname="ro.whistlab.app.table.TrumpIndicatorComponentTest" time="0.214"/>
+  <testcase name="invalidMeasurementsFailBeforeAnUnusableFrameIsDeclared" classname="ro.whistlab.app.table.TrumpIndicatorComponentTest" time="0.007"/>
+  <testcase name="aCommonFrameReservesTwoCompleteLinesAtEachDensityAndTextScale" classname="ro.whistlab.app.table.TrumpIndicatorComponentTest" time="0.011"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

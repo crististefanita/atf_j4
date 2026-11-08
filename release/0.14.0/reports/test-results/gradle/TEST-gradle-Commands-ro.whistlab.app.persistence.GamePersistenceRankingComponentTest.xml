@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:33.163Z" hostname="DESKTOP-BLFSO18" time="0.269">
+  <properties/>
+  <testcase name="retryAndRestoredSessionRecordEachSeatOnceWithTheSameMatchIdentity" classname="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" time="0.198"/>
+  <testcase name="rankingIoFailureStillExportsReplayWithoutChangingOrRepeatingTheMatch" classname="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" time="0.017"/>
+  <testcase name="unexpectedRankingDefectPropagatesWithoutReplayOrIoTranslation" classname="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" time="0.008"/>
+  <testcase name="aFailedFinalCheckpointCannotPublishTheRankingOrReplay" classname="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" time="0.023"/>
+  <testcase name="excludedAndUnfinishedMatchesNeverReadTheRankingClock" classname="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" time="0.014"/>
+  <testcase name="completedMatchKeepsCheckpointRankingAndReplayOrderAndIdentity" classname="ro.whistlab.app.persistence.GamePersistenceRankingComponentTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

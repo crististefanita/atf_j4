@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.table.TableSeatOrderComponentTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:24:31.175Z" hostname="DESKTOP-BLFSO18" time="0.379">
+  <properties/>
+  <testcase name="namesAndPlayedCardsKeepTheSameClockwiseOrderForThreeToSixSeats" classname="ro.whistlab.app.table.TableSeatOrderComponentTest" time="0.211"/>
+  <testcase name="everyGameModeBidsAndPlaysInTheDisplayedSeatOrderFromItsActualLeader" classname="ro.whistlab.app.table.TableSeatOrderComponentTest" time="0.164"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

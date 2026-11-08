@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.navigation.AppNavigationComponentTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:31.354Z" hostname="DESKTOP-BLFSO18" time="0.044">
+  <properties/>
+  <testcase name="leavingGameInvalidatesAllNestedDialogLeases" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.009"/>
+  <testcase name="foreignDialogWithTheSameSequenceCannotCloseThisOwnersDialog" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.006"/>
+  <testcase name="closingADialogOnAMenuNeverRequestsGameAutomation" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.004"/>
+  <testcase name="oldDismissalCannotResumeANewRouteOrCloseItsDialog" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.011"/>
+  <testcase name="backReturnsHomeFromEverySecondaryScreen" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.004"/>
+  <testcase name="nestedDialogsResumeOnlyAfterTheLastOneInEitherDismissalOrder" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.006"/>
+  <testcase name="aGameDialogBlocksAutomationAndResumesOnlyOnce" classname="ro.whistlab.app.navigation.AppNavigationComponentTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

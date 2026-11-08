@@ -6,6 +6,10 @@
     "atf-test-android",
     "atf-tests"
   ],
+  "projectRootOwners": [
+    ".github",
+    "ios"
+  ],
   "packageLimit": 8,
   "additionalSourceRoots": [
     {
@@ -17,6 +21,16 @@
       "module": "whist-lab-app/game-core",
       "test": true,
       "path": "whist-lab-app/game-core/src/test/java"
+    },
+    {
+      "module": "whist-lab-app/ios-bridge",
+      "test": false,
+      "path": "whist-lab-app/ios-bridge/src/main/java"
+    },
+    {
+      "module": "whist-lab-app/ios-bridge",
+      "test": true,
+      "path": "whist-lab-app/ios-bridge/src/test/java"
     },
     {
       "module": "whist-lab-app/ai-lab",
@@ -141,6 +155,16 @@
       "ro.whistlab",
       "ro.rentzlab",
       "ro.cardtable.ui"
+    ],
+    "whist-lab-app/ios-bridge": [
+      "android",
+      "atf",
+      "org.junit",
+      "ro.whistlab.app",
+      "ro.whistlab.core.baseline",
+      "ro.whistlab.core.learning",
+      "ro.whistlab.core.testing",
+      "ro.whistlab.coach"
     ]
   },
   "reviewedPackages": {},

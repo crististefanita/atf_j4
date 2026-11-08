@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:25:26.335Z" hostname="DESKTOP-BLFSO18" time="0.631">
+  <properties/>
+  <testcase name="invalidMetricsAndOverflowFailBeforeLayout" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.058"/>
+  <testcase name="allDigitsSignsAndTheFullNameParticipateInWidthMeasurement" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.043"/>
+  <testcase name="theLastSeatAndLastRowCannotBeSkippedByAnOptimization" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.021"/>
+  <testcase name="aFontFailureKeepsItsOriginalCauseInsteadOfReturningZeroWidth" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.014"/>
+  <testcase name="cumulativeTotalsDetermineTheVisiblePointsWidth" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.186"/>
+  <testcase name="aHiddenHandDeltaCannotWidenTheCumulativePointsColumn" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.066"/>
+  <testcase name="captionAndNumericFontsHaveIndependentMeasurements" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.017"/>
+  <testcase name="seriesRectanglesReserveSpaceOnlyInPointsForBonusAndPenaltyAtEverySeatCount" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.077"/>
+  <testcase name="seriesRectangleWidthIncludesTheLongestTotal" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.107"/>
+  <testcase name="enlargedFontsFitAtEverySupportedFractionalDensity" classname="ro.whistlab.app.score.ScoreHistoryMeasureComponentTest" time="0.038"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

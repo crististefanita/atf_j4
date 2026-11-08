@@ -58,10 +58,11 @@ class ReleaseArtifactLayoutGovernanceTest {
         String repository = GovernanceProject.policy(root).required("publicRepository").asText();
         Path releaseFolder = root.resolve("release/" + version);
         var manifest = json.readTree(releaseFolder.resolve("release-validation.json").toFile());
-        boolean published = manifest.required("publication").required("state").asText().equals("PUBLISHED");
+        String publicationState = manifest.required("publication").required("state").asText();
+        boolean githubPublished = publicationState.equals("PUBLISHED");
         var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|[^)]+\\.apk|release/[^)]+)\\)")
                 .matcher(section).results().map(result -> result.group(1)).toList();
-        var expected = List.of(published ? repository + "/releases/tag/v" + version : "release/" + version + "/README.md",
+        var expected = List.of(githubPublished ? repository + "/releases/tag/v" + version : "release/" + version + "/README.md",
                 ReleaseCatalogPresentation.downloadTarget(releaseFolder, manifest, repository));
         AuditedAssertions.assertEquals(expected, links, "Two product actions; catalog and audit details belong to documentation");
     }
@@ -128,7 +129,7 @@ class ReleaseArtifactLayoutGovernanceTest {
         var json = new com.fasterxml.jackson.databind.ObjectMapper();
         var manifest = json.createObjectNode();
         manifest.putObject("release").put("versionName", "1.2.0").put("apkBytes", 50).put("apkSha256", "a".repeat(64));
-        manifest.putObject("publication").put("state", "PUBLISHED");
+        manifest.putObject("publication").put("state", "PUBLISHED_SITE");
         Path receipt = Files.createDirectories(temporary.resolve("reports")).resolve("distribution-verification.json");
         var record = json.createObjectNode();
         var mirror = record.putObject("publicDownload").put("url", "https://example.org/v1.2.0/WhistLab-1.2.0.apk")
@@ -139,6 +140,9 @@ class ReleaseArtifactLayoutGovernanceTest {
                 ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
         mirror.put("sha256", "b".repeat(64));
         json.writeValue(receipt.toFile(), record);
+        AuditedAssertions.assertThrows(IOException.class,
+                () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        Files.delete(receipt);
         AuditedAssertions.assertThrows(IOException.class,
                 () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
     }

@@ -5,12 +5,15 @@ import atf.tests.governance.support.GovernanceProject;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import static atf.testkit.assertions.AuditedAssertions.*;
 
 /** Source ownership and coverage gates for the JUnit 4 fixture variant; no reporting-library exception. */
 @AtfComponentTest
 public final class GradleAuditGovernanceTest {
+    private static final Pattern JUNIT4_TEST_IMPORT = Pattern.compile("\\bimport\\s+org\\.junit\\.(?:Test|\\*)\\s*;");
+
     @Test void everyGradleTestClassHasOneExplicitLayerAndAnAuditedBase() throws Exception {
         var root = GovernanceProject.locateProjectRoot(); var found = new TreeMap<String, String>();
         for (var file : GovernanceProject.sources(root)) {
@@ -18,7 +21,7 @@ public final class GradleAuditGovernanceTest {
             String name = file.file().getFileName().toString();
             if (!name.endsWith("Test.java")) continue;
             String source = Files.readString(file.file());
-            if (!source.contains("org.junit.Test")) continue;
+            if (!usesJUnit4Test(source)) continue;
             var declaration = java.util.regex.Pattern.compile("(?m)^\\s*package\\s+([\\w.]+)\\s*;").matcher(source);
             assertTrue(declaration.find(), "Each test has an explicit package: " + file.file());
             String owner = declaration.group(1) + "." + name.substring(0, name.length() - 5);
@@ -36,6 +39,15 @@ public final class GradleAuditGovernanceTest {
         }
         assertFalse(found.isEmpty(), "The Gradle source perimeter cannot be empty");
         assertEquals(found.keySet(), catalog.keySet(), "The catalog includes every test class exactly once, including opt-in collections");
+    }
+    @Test void inventoryRecognizesExplicitAndWildcardJUnit4ImportsWithoutTreatingJupiterAsJUnit4() {
+        assertTrue(usesJUnit4Test("import org.junit.Test; class Explicit {}"));
+        assertTrue(usesJUnit4Test("import org.junit.*; class Wildcard {}"));
+        assertFalse(usesJUnit4Test("import org.junit.jupiter.api.Test; class Jupiter {}"));
+    }
+
+    private static boolean usesJUnit4Test(String source) {
+        return JUNIT4_TEST_IMPORT.matcher(source).find();
     }
     @Test void productTestsDoNotKeepRawJUnitAssertionsBesideTheAuditFacade() throws Exception {
         var root = GovernanceProject.locateProjectRoot(); var violations = new java.util.ArrayList<String>();

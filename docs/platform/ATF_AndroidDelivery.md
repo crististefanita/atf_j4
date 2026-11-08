@@ -46,7 +46,10 @@ Calificați schimbarea cheii pornind de la ultimul APK disponibil utilizatorilor
 | API 28–32 | Upgrade și instalare curată. Verificați semnatarul efectiv pentru pragul de rotație ales. |
 | API 33 și mai nou | Upgrade și instalare curată. Verificați semnatarul nou și istoricul de rotație. |
 
-Pe fiecare profil de upgrade, creați o partidă cu istoric și o mână în curs în versiunea publicată. Instalați candidatul peste ea, reluați partida și comparați preferințele, scorul, istoricul și următoarea acțiune legală. Păstrați versiunea anterioară, nivelul API, amprentele certificatelor și hash-ul APK-ului instalat. Un profil care lipsește sau pierde salvarea blochează lansarea migrării pentru publicul respectiv. Calificați același binar pe care îl veți distribui.
+- Pentru fiecare profil, creați o partidă salvată și o mână în curs în versiunea publicată.
+- Instalați candidatul peste ea, reluați partida și comparați preferințele, scorul, istoricul și următoarea acțiune legală.
+- Înregistrați versiunea anterioară, nivelul API, amprentele certificatelor și hash-ul APK-ului instalat.
+- Un profil absent sau o salvare pierdută blochează migrarea publicului respectiv. Calificați exact binarul distribuit.
 
 ## Compatibilitate și calificare
 

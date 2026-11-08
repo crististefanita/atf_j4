@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.layout.HistoryViewportComponentTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:26:03.296Z" hostname="DESKTOP-BLFSO18" time="0.379">
+  <properties/>
+  <testcase name="dialogUsesTheUsableWindowWithSmallMarginsAndSurvivesResizing" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.174"/>
+  <testcase name="zeroAndMaximumPixelDimensionsRemainBoundedWithoutOverflow" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.017"/>
+  <testcase name="invalidWindowsFailBeforeNativeWindowSizing" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.057"/>
+  <testcase name="eachNewMeasurementCanGrowAgainAfterACompactWindow" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.01"/>
+  <testcase name="aPartialRowSwitchesToWholeContentScrollingAndAGrowingWindowRestoresPinnedHeaders" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.011"/>
+  <testcase name="invalidMeasurementsFailBeforeLayout" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.025"/>
+  <testcase name="densityAndTextGrowthNeverConsumeTheLegendBudget" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.065"/>
+  <testcase name="wrappedLegendAndHeadersRetainTheirWholeMeasuredHeight" classname="ro.whistlab.app.score.layout.HistoryViewportComponentTest" time="0.016"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

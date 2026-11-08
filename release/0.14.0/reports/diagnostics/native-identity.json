@@ -1,0 +1,35 @@
+{
+  "package": "ro.whistlab.app",
+  "versionName": "0.14.0",
+  "versionCode": 20,
+  "deviceSerial": "emulator-5554",
+  "api": 28,
+  "firstInstallTime": "2026-11-03 21:00:09",
+  "installedApkBytes": 1224345,
+  "installedApkSha256": "1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5",
+  "candidateApkSha256": "1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5",
+  "launcherActivity": "ro.whistlab.app/.MainActivity",
+  "checks": [
+    {
+      "name": "installedPackageIdentity",
+      "message": "Installed application id and version are 0.14.0 / versionCode 20",
+      "ok": true
+    },
+    {
+      "name": "existingInstallPreserved",
+      "message": "Existing firstInstallTime preserved: 2026-11-03 21:00:09",
+      "ok": true
+    },
+    {
+      "name": "installedApkMatchesCandidate",
+      "message": "Installed bytes=1224345; SHA-256=1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5",
+      "ok": true
+    },
+    {
+      "name": "launcherActivityStarted",
+      "message": "MainActivity is resumed after launcher start",
+      "ok": true
+    }
+  ],
+  "result": "PASS"
+}

@@ -36,7 +36,11 @@ class ReleasePresentationGovernanceTest {
             var validation = JSON.readTree(folder.resolve("release-validation.json").toFile());
             var presentation = JSON.readTree(folder.resolve("release-presentation.json").toFile());
             String version = validation.required("release").required("versionName").asText();
-            boolean prepared = ReleaseHandoffState.prepared(validation, Files.isRegularFile(folder.resolve("github-release.json")));
+            String publicationState = validation.path("publication").path("state").asText();
+            boolean sitePublished = publicationState.equals("PUBLISHED_SITE");
+            boolean publishedRecord = Files.isRegularFile(folder.resolve("github-release.json"))
+                    || sitePublished && Files.isRegularFile(folder.resolve("reports/distribution-verification.json"));
+            boolean prepared = ReleaseHandoffState.prepared(validation, publishedRecord);
             String evidence = ReleaseHandoffState.evidence(presentation, repository, version, prepared);
             if (prepared) {
                 String asset = repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk";
@@ -45,6 +49,27 @@ class ReleasePresentationGovernanceTest {
                         java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
                 AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.template.md"))), folder.toString());
                 AuditedAssertions.assertFalse(Files.exists(folder.resolve("release-notes.md")), "Unbound notes remain a template");
+                releases++;
+                continue;
+            }
+            if (sitePublished) {
+                var receipt = JSON.readTree(folder.resolve("reports/distribution-verification.json").toFile());
+                var download = receipt.required("publicDownload");
+                String asset = ReleaseCatalogPresentation.downloadTarget(folder, validation, repository);
+                AuditedAssertions.assertEquals(asset, download.required("url").asText(), folder.toString());
+                AuditedAssertions.assertEquals(200, download.required("httpStatus").asInt());
+                AuditedAssertions.assertEquals(validation.required("release").required("apkBytes").asLong(),
+                        download.required("bytes").asLong());
+                AuditedAssertions.assertEquals(validation.required("release").required("apkSha256").asText(),
+                        download.required("sha256").asText());
+                AuditedAssertions.assertEquals(version, presentation.required("version").asText());
+                var edition = new Edition(version, asset, asset + ".sha256", evidence,
+                        presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
+                        java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false)
+                                .map(JsonNode::asText).toList());
+                AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
+                AuditedAssertions.assertFalse(Files.exists(folder.resolve("github-release.json")),
+                        "A Site publication does not invent a GitHub release record");
                 releases++;
                 continue;
             }
@@ -83,6 +108,9 @@ class ReleasePresentationGovernanceTest {
         AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
         AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(JSON.createObjectNode(), false));
         ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("publication")).put("state", "PUBLISHED");
+        AuditedAssertions.assertFalse(ReleaseHandoffState.prepared(candidate, true));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("publication")).put("state", "PUBLISHED_SITE");
         AuditedAssertions.assertFalse(ReleaseHandoffState.prepared(candidate, true));
         AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
         ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).putNull("sourceCommit");

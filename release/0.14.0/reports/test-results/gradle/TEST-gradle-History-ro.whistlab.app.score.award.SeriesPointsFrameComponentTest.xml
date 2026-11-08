@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:26:02.256Z" hostname="DESKTOP-BLFSO18" time="0.777">
+  <properties/>
+  <testcase name="theRectangleUsesOnlyThePointsWidthAndCentresItsIndependentHeight" classname="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" time="0.098"/>
+  <testcase name="longTotalsAndEnlargedFontsReserveBothDimensionsBeforeDrawing" classname="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" time="0.011"/>
+  <testcase name="everySeatAndFractionalDensityKeepsItsRectangleOutOfBidsAndNeighbours" classname="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" time="0.617"/>
+  <testcase name="penaltyInkDependsOnTheSeriesAdjustmentInsteadOfTheRunningTotal" classname="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" time="0.006"/>
+  <testcase name="invalidMeasurementsAndOverflowAreRejectedExplicitly" classname="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" time="0.038"/>
+  <testcase name="emptyOrConstrainedCellsCannotDrawIntoAnotherColumn" classname="ro.whistlab.app.score.award.SeriesPointsFrameComponentTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

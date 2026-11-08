@@ -1,0 +1,15 @@
+{
+  "publicDownload": {
+    "url": "https://whist-lab-apk.totaloatcake.chatgpt.site/v0.14.0/WhistLab-0.14.0.apk",
+    "httpStatus": 200,
+    "bytes": 1224345,
+    "sha256": "1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5",
+    "pageUrl": "https://whist-lab-apk.totaloatcake.chatgpt.site/",
+    "pageStatus": 200,
+    "checksumUrl": "https://whist-lab-apk.totaloatcake.chatgpt.site/v0.14.0/WhistLab-0.14.0.apk.sha256",
+    "checksumStatus": 200,
+    "siteVersion": 4,
+    "siteSourceCommit": "1d68c2613a6c8433555d561a1d6ca8e21abe4580",
+    "channel": "anonymous HTTPS GET without cookies or authorization"
+  }
+}

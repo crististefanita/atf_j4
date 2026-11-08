@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.animation.TrickCollectionRequestComponentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:18.471Z" hostname="DESKTOP-BLFSO18" time="1.379">
+  <properties/>
+  <testcase name="theActualLastMatchTrickRemainsEligibleAtEveryTableSize" classname="ro.whistlab.app.animation.TrickCollectionRequestComponentTest" time="0.758"/>
+  <testcase name="duplicateFacesMissingSeatsAndInvalidWinnersAreRejected" classname="ro.whistlab.app.animation.TrickCollectionRequestComponentTest" time="0.33"/>
+  <testcase name="partialForeignOrStalePublicCardsCannotStartACollection" classname="ro.whistlab.app.animation.TrickCollectionRequestComponentTest" time="0.015"/>
+  <testcase name="everySeatCanCollectACompleteRomanianTrickWithOrWithoutATrumpWinner" classname="ro.whistlab.app.animation.TrickCollectionRequestComponentTest" time="0.248"/>
+  <testcase name="capturedSeatOrderIsImmutable" classname="ro.whistlab.app.animation.TrickCollectionRequestComponentTest" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

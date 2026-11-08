@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:20.691Z" hostname="DESKTOP-BLFSO18" time="0.205">
+  <properties/>
+  <testcase name="detachAndLateResizeAfterCompletionDoNotRequestAReplacement" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.014"/>
+  <testcase name="orientationInsideNestedDialogsDefersUntilTheLastValidClosureInEitherOrder" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.022"/>
+  <testcase name="aQueuedResizeCannotRenderAfterNavigationOrCancelANewlyResumedScene" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.015"/>
+  <testcase name="failedResizeNotificationCannotRetainOrReopenTheOldScene" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.018"/>
+  <testcase name="portraitLandscapeAndResizeBurstsUseOnlyTheLatestGeometryForEveryWinningSeat" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.082"/>
+  <testcase name="resizeCleanupFailurePreservesItsCauseAndNeverRequestsAnotherScene" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.005"/>
+  <testcase name="resizeCleansTheOldSceneBeforeRequestingAnotherAndNotifiesOnlyOnce" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.007"/>
+  <testcase name="delayedMeasurementUsesTheChangedViewportAndIgnoresReadinessAfterSceneReplacement" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.008"/>
+  <testcase name="backgroundAndConfigurationCallbacksPreserveTheLastMatchTricksFinalMillisecond" classname="ro.whistlab.app.animation.TrickCollectionResizeComponentTest" time="0.03"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.animation.TrickCollectionCleanupComponentTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:06.107Z" hostname="DESKTOP-BLFSO18" time="2.026">
+  <properties/>
+  <testcase name="aBadClockOrNonFiniteFrameClosesTheSceneWithoutReplacingTheOriginalFault" classname="ro.whistlab.app.animation.TrickCollectionCleanupComponentTest" time="1.715"/>
+  <testcase name="failedCancellationStillUnwatchesAndRestoresBeforeRethrowingTheFirstFailure" classname="ro.whistlab.app.animation.TrickCollectionCleanupComponentTest" time="0.034"/>
+  <testcase name="aMalformedMeasurementFailsBeforeAnyFrameOrAnimator" classname="ro.whistlab.app.animation.TrickCollectionCleanupComponentTest" time="0.209"/>
+  <testcase name="failedFramePreservesItsCauseAndAttemptsEveryCleanupDespiteCleanupFailures" classname="ro.whistlab.app.animation.TrickCollectionCleanupComponentTest" time="0.028"/>
+  <testcase name="navigationReenteringDuringTheFirstRenderCannotStartAnAnimatorAfterCancellation" classname="ro.whistlab.app.animation.TrickCollectionCleanupComponentTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

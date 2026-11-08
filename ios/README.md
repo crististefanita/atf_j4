@@ -1,5 +1,9 @@
 # Aplicația iOS Whist Lab
 
+## Pe scurt
+
+Ținta nativă iOS este separată de APK-ul Android și necesită calificare pe Xcode și simulator înainte de distribuire.
+
 ## Stare
 
 Ținta nativă iOS este în calificare. Proiectul folosește SwiftUI pentru interfață
@@ -25,18 +29,19 @@ de release înainte ca suportul să fie declarat calificat.
 
 ## Dezvoltare și verificare
 
-Build-ul iOS are nevoie de macOS, Xcode 27.2, JDK 21, Homebrew, XcodeGen și
-J2ObjC 3.1. Mașina Windows de dezvoltare nu include Xcode. Workflow-ul folosește
-runner-ul public `xcode-27`, construiește distribuția J2ObjC din tag-ul fixat,
-rulează testele motorului și ale adaptorului, apoi build-ul și testul simulator
-pe iOS 27.2. Proiectul leagă `libjre_emul` și `libiconv`, necesare runtime-ului
-J2ObjC. Vezi [ghidul iOS](../docs/platform/ATF_iOSDelivery.md).
+- **Cerințe:** macOS, Xcode 27.2, JDK 21, Homebrew, XcodeGen și J2ObjC 3.1.
+  Mașina Windows de dezvoltare nu include Xcode.
+- **Workflow:** runner-ul public `xcode-27` construiește distribuția J2ObjC din
+  tag-ul fixat, rulează testele motorului și adaptorului, apoi build-ul aplicației
+  și testul în simulatorul iOS 27.2.
+- **Dependențe native:** proiectul leagă `libjre_emul` și `libiconv`, necesare
+  runtime-ului J2ObjC. Vezi [ghidul iOS](../docs/platform/ATF_iOSDelivery.md).
 
 ```sh
 cd whist-lab-app
 ./gradlew :game-core:test :ios-bridge:test
 ```
 
-Build-ul simulatorului nu este un IPA semnat și nu îl instalează pe un iPhone.
-Publicarea prin TestFlight sau App Store necesită arhivare și semnare Apple; pașii
-de distribuție iOS rămân separați de APK-ul Android.
+- Build-ul simulatorului nu este un IPA semnat și nu îl instalează pe un iPhone.
+- Publicarea prin TestFlight sau App Store necesită arhivare și semnare Apple;
+  pașii de distribuție iOS rămân separați de APK-ul Android.

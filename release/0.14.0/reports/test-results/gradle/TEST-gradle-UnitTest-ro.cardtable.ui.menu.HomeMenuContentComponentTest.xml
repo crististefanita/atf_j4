@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.cardtable.ui.menu.HomeMenuContentComponentTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:22:07.640Z" hostname="DESKTOP-BLFSO18" time="0.107">
+  <properties/>
+  <testcase name="blankNameUsesLocalizedDefaultWithoutMutatingTheProvidedName" classname="ro.cardtable.ui.menu.HomeMenuContentComponentTest" time="0.027"/>
+  <testcase name="eachControlRetainsOnlyItsOwnCallbackAndOldPlansKeepTheirResumeState" classname="ro.cardtable.ui.menu.HomeMenuContentComponentTest" time="0.03"/>
+  <testcase name="currentHomeOrderTagsAndResumeStateRemainStableInBothLanguages" classname="ro.cardtable.ui.menu.HomeMenuContentComponentTest" time="0.049"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

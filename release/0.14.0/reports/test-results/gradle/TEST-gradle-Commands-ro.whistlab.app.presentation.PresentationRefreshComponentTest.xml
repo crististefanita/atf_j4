@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.presentation.PresentationRefreshComponentTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:23:34.897Z" hostname="DESKTOP-BLFSO18" time="0.098">
+  <properties/>
+  <testcase name="cancellationRejectsTheOldQueuedCallbackWithoutDroppingANewerRequest" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.022"/>
+  <testcase name="navigationDuringAvailabilityCheckCannotRenderAfterItsLifetimeWasCancelled" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.009"/>
+  <testcase name="failedQueueKeepsItsCauseAndDoesNotBlockTheNextRequest" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.006"/>
+  <testcase name="navigationDuringSuspensionPreventsEnqueuingTheObsoleteRequest" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.016"/>
+  <testcase name="aBurstFreezesOnceAndReadsTheLatestViewportWhenTheQueueRuns" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.028"/>
+  <testcase name="anUnavailablePresentationDoesNotRenderAndCannotLeaveTheQueueStuck" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.005"/>
+  <testcase name="failedSuspensionKeepsItsCauseAndAllowsANewAttempt" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.006"/>
+  <testcase name="synchronousDeliveryCanScheduleTheNextGeometryWithoutLosingIt" classname="ro.whistlab.app.presentation.PresentationRefreshComponentTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

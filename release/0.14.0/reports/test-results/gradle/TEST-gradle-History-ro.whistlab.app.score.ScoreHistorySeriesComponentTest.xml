@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.whistlab.app.score.ScoreHistorySeriesComponentTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:25:28.938Z" hostname="DESKTOP-BLFSO18" time="27.144">
+  <properties/>
+  <testcase name="disabledSeriesKeepEveryRowUnboxedThroughTheLastHandAndReload" classname="ro.whistlab.app.score.ScoreHistorySeriesComponentTest" time="1.788"/>
+  <testcase name="changingContractsClearOppositeStreaksAndOneCardHandsCannotPayASeries" classname="ro.whistlab.app.score.ScoreHistorySeriesComponentTest" time="0.702"/>
+  <testcase name="completeMatchesRetainEverySeatsTotalsAndBothSeriesPaymentsAcrossJsonRestarts" classname="ro.whistlab.app.score.ScoreHistorySeriesComponentTest" time="24.652"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

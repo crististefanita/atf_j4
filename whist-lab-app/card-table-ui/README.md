@@ -15,6 +15,7 @@ Modulul Android Library extrage componente vizuale din aplicația Whist, păstr�
 | [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometrie, centrare/derulare și rendererul `HandFan`; `HandCard` furnizează numai identitate, însemne, accesibilitate și interactivitate. |
 | [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; cadrul și regiunea indicatorului sunt măsurate identic cu reperul Whist. |
 | [table](src/main/java/ro/cardtable/ui/table/BoardLayout.java) | Regiuni ocupate, ordine vizuală, viewport și cărți publice poziționate după loc; conținutul centrului aparține consumatorului. |
+| [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Așteaptă primul cadru vizibil, aplică intervalul comun și invalidează acțiunea dacă scena s-a schimbat. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
 
 Aplicația deține compoziția mesei, regulile, istoricul, câștigătorul și momentul afișării levatei. Biblioteca măsoară fețele și chenarul câștigător, apoi aplică mișcarea. Contractul comun folosește numai locuri și date vizibile.
@@ -60,6 +61,7 @@ Din copia temporară a rădăcinii Android `whist-lab-app`, în PowerShell 7, cu
 | Geometria mâinii | Dimensiuni istorice, o carte centrată, extreme și indici măsurați; parametri nevalizi refuzați. |
 | Frontiera bibliotecii | Inventar nevid; producția și testele comune nu importă motoare, sesiuni sau reguli ale consumatorilor. Fără stocare, activitate ori permisiuni proprii. |
 | Modele de masă | Identități stabile, fapte ordonate și imuabile, regiuni măsurate și dimensiuni identice indiferent de numărul locurilor. |
+| Temporizarea turei automate | `TurnPacingComponentTest` verifică randarea înaintea întârzierii de 550 ms, acțiune unică și anulare pentru actor uman, blocaj sau scenă înlocuită. |
 | Adaptoarele Whist | Textele reale, limba, callback-urile și însemnele tuturor cărților. |
 
 Componentele existente de masă și mână rămân verificări de integrare, cu aserțiunile lor păstrate. Comparația cu snapshot-ul anterior și inspecția corpurilor de desen califică refactorizarea; pixelii, focusul și atingerea Android cer sanity nativ distinct.
@@ -71,7 +73,7 @@ Componentele existente de masă și mână rămân verificări de integrare, cu 
 | Biblioteca comună | Desen, măsurare, centrare, chenare, fapte afișate și mecanica widgeturilor; fără oracole de joc. |
 | Whist | `WhistTableContent`, configurație, legalitate, licitație, atu, punctaj și lifecycle; componentele existente cu motor rămân în aplicația Whist, cu așteptările originale. |
 | Rentz | Adaptor propriu pentru observația Rentz, alegere/reveal, pas, secvențe și punctaj. Datele de scor nu sunt convertite în licitat sau levate fictive. |
-| Hold'em | Consumator viitor; aplicația actuală este JVM/console. Nu adăugați Android motorului și nu prezentați drept suportate mesele de 2 sau peste 6 locuri. |
+| Alt consumator de joc de cărți | Consumator Android; păstrează regulile, sesiunea, checkpoint-ul și decizia în motorul propriu, apoi folosește cadrul activ, pacing-ul după primul cadru și geometria comună a mișcării. |
 
 - Ordinea vizuală pentru 3–6 locuri păstrează omul la indicele zero; adaptorul deține maparea stabilă spre identitățile motorului și actorul real.
 - `SeatContent.Fact` păstrează textul și ordinea; biblioteca nu adună puncte, nu interpretează valori negative și nu decide câștigătorul.
@@ -88,7 +90,7 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 .\gradlew.bat --offline --no-daemon :card-table-ui:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>
 ```
 
-- Coordonata este `ro.cardtable:card-table-ui:0.1.6`. Exportul conține AAR, POM, metadata Gradle și surse.
+- Coordonata este `ro.cardtable:card-table-ui:0.1.7`. Exportul conține AAR, POM, metadata Gradle și surse.
 - [Politica de nume](../card-table-names/README.md) se publică separat ca JAR Java, pentru motoare și probe JVM.
 
 ## Levata și informația din chenar

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ro.cardtable.ui.boundary.UiLibraryBoundaryComponentTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:22:00.487Z" hostname="DESKTOP-BLFSO18" time="5.233">
+  <properties/>
+  <testcase name="productLibraryHasNoGameEngineAtfOrStorageDependency" classname="ro.cardtable.ui.boundary.UiLibraryBoundaryComponentTest" time="5.089"/>
+  <testcase name="sharedTestsCannotImportConsumerRulesOrSessions" classname="ro.cardtable.ui.boundary.UiLibraryBoundaryComponentTest" time="0.107"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

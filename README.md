@@ -1,8 +1,8 @@
-# Whist Lab: Android, iOS și motor comun
+# Whist Lab: Android și motor comun
 
 ## Pe scurt
 
-Whist Lab este un joc local Android și o țintă nativă iOS aflată în calificare.
+Whist Lab este un joc local Android, cu o țintă nativă iOS menținută separat.
 Motorul Java comun este independent de interfață. Include jucători automați, reguli și
 scor comune, teste de componentă și evaluări offline.
 
@@ -10,20 +10,20 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.13.0 — informații publice](https://whist-lab-apk.totaloatcake.chatgpt.site/readme/)** — versiunea și pașii de descărcare fără cont.
-- **[Descarcă APK 0.13.0 fără cont](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.13.0/WhistLab-0.13.0.apk)** — link direct verificat; SHA-256: `451d8c413988c9a533a8a39c1a644583723beb8351ee1ecf95410b2af759cfa0`.
+- **[Fișa Whist Lab 0.14.0](release/0.14.0/README.md)** — ediția curentă, calificarea și raportarea ei.
+- **[Descarcă APK 0.14.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.14.0/WhistLab-0.14.0.apk)** — link public verificat; SHA-256: `1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5`.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
-Profilul principal este Whist românesc, patru jucători, cu programul 1–8–1.
-Jucătorul urmează culoarea cerută; când nu o are, joacă atu dacă are atu.
-Motorul aplică regulile variantei selectate, inclusiv pachetul, ordinea
-licitațiilor, restricția ultimei licitații și calculul scorului.
+- Profilul principal este Whist românesc, patru jucători, cu programul 1–8–1.
+- Jucătorul urmează culoarea cerută; dacă nu o are, joacă atu când deține atu.
+- Motorul aplică regulile variantei selectate, pachetul, ordinea licitațiilor,
+  restricția ultimei licitații și calculul scorului.
 
-Un contract românesc exact primește `5 + levate`; abaterea se penalizează cu
-numărul levatelor în plus sau în minus. Bonusul pentru o serie de cinci mâini eligibile
-reușite se alege înaintea partidei: **5 sau 10**, implicit **10**; seria de
-cinci ratări se penalizează cu valoarea în oglindă: **−5 sau −10**.
+- Un contract românesc exact primește `5 + levate`; abaterea se penalizează cu
+  numărul levatelor în plus sau în minus.
+- Bonusul după cinci mâini eligibile reușite se alege înaintea partidei: **5 sau 10**,
+  implicit **10**; seria de cinci ratări primește penalizarea în oglindă: **−5 sau −10**.
 
 - Interfața și instrucțiunile sunt disponibile în română și engleză.
 - Doar mâinile de 2–8 cărți avansează seria; la o carte, un rezultat de același tip păstrează contorul, iar rezultatul opus îl întrerupe.
@@ -40,11 +40,9 @@ Jocul are două niveluri. **Normal** urmărește levatele licitate și evită s�
 
 ## iOS
 
-Ținta iOS folosește o interfață SwiftUI și traduce motorul comun Java pentru
-dispozitive Apple. Configurația declară iOS 17 ca versiune minimă; calificarea pe
-simulatorul iOS 27.2 este încă în așteptarea CI. APK-ul nu se instalează pe
-iPhone sau iPad. Pașii și cerințele de distribuție sunt în
-[ghidul iOS](docs/platform/ATF_iOSDelivery.md).
+Ținta SwiftUI este separată de APK-ul Android și se califică separat; ediția curentă livrează Android.
+APK-ul nu se instalează pe iPhone sau iPad; pașii iOS sunt în
+[ghidul dedicat](docs/platform/ATF_iOSDelivery.md).
 
 ## Arhitectura
 
@@ -135,7 +133,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
 
-[Dosarul versiunii curente](release/0.13.0/README.md) · [Catalogul livrărilor](release/README.md)
+[Dosarul versiunii curente](release/0.14.0/README.md) · [Catalogul livrărilor](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

@@ -59,11 +59,11 @@ Modelați numai variațiile demonstrate de cele două jocuri. Evitați un constr
 | Colectarea levatei · EXTRASĂ | Temporizarea, geometria, animatorul și curățarea Android sunt în `card-table-ui`. Componentele Whist păstrează cazurile de anulare, redimensionare, animație dezactivată și termen unic. |
 | Rândurile din chenar · EXTRASE | Consumatorul alege explicit varianta cu etichetă și valoare pe o singură linie. Afișarea Whist cu două coloane rămâne reper pentru apelul implicit. |
 
-[Registrul consumatorului Rentz](../../../atf_j5/docs/feedback/ATF_Rentz_UI_ToDo.md) urmărește separat integrarea și calificarea nativă U10–U12.
+Integrarea unui consumator și calificarea lui nativă se urmăresc separat de contractele și verificările bibliotecii comune.
 
 [Dosarul extracției](../../../../whist_back/ui-extraction/shared-seats-collection/README.md) leagă versiunile exportate, componentele Whist și verificarea sursei live.
 
-**Verificarea colectării după restart.** Pe API 28, Whist a afișat o singură dată ultima levată din checkpoint și a revenit la scor cu salvarea identică. Timpul de pregătire al mesei a scurtat o captură la pornirea rece; acum ceasul pornește la primul desen și păstrează bugetul rămas la refacerea mesei. Matricea nativă a calificat separat numele și cele două rânduri de statistici la font mărit. [Dovezile Whist și Rentz](../../../../rentz_back/ui-review/restart-collection-j5/README.md)
+**Criterii pentru starea restaurată.** După restaurarea unui checkpoint, colectarea ultimei levate trebuie să aibă efect o singură dată, iar scorul să rămână identic. Temporizatorul pornește la primul cadru vizibil și își păstrează timpul rămas la refacerea mesei. Numele și statisticile rămân lizibile la font mărit.
 
 | ID și stare | Lucrare chirurgicală | Acceptanță |
 |---|---|---|

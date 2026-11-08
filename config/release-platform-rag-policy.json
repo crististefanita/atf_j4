@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "evidenceStatuses": [
+    "PASS",
+    "FAIL",
+    "BLOCKED",
+    "NOT_RUN",
+    "NOT_APPLICABLE",
+    "NOT_IMPLEMENTED"
+  ],
+  "sharedGates": [
+    "sourceSnapshot",
+    "gameCoreComponents"
+  ],
+  "platforms": {
+    "android": {
+      "artifactKinds": ["apk"],
+      "requiredGates": [
+        "androidComponents",
+        "apkBuild",
+        "apkIdentity",
+        "signing",
+        "publicDownload"
+      ]
+    },
+    "ios": {
+      "artifactKinds": ["ipa", "xcarchive"],
+      "requiredGates": [
+        "iosBridgeComponents",
+        "xcodeSimulator",
+        "iosArtifactIdentity",
+        "signing",
+        "iosDistribution"
+      ]
+    }
+  },
+  "rules": {
+    "legacyApkManifestPlatforms": ["android"],
+    "androidEvidenceSatisfiesIos": false,
+    "catalogMustMatchManifestAndPublicLinks": true,
+    "readyRequiresEveryDeclaredPlatform": true,
+    "allowedAggregateStatuses": ["BLOCKED", "READY_FOR_HUMAN_REVIEW"],
+    "ragMayExecuteCommands": false,
+    "ragMayBuildOrSign": false,
+    "ragMayPublish": false,
+    "ragMayInferPassFromDocumentation": false
+  }
+}
