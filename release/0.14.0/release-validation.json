@@ -14,13 +14,13 @@
     "productionManagedKey": false
   },
   "source": {
-    "sourceCommit": null,
+    "sourceCommit": "d3d584cefd1e0174667a46a5ac1b26fcf643db94",
     "workingTreeFingerprint": "3c1aae299760169302211cb68b3c6d8a17bd6360b934bf81e9e00bf3a6012266",
     "inputManifest": "reports/apk-inputs.json",
     "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records"
   },
   "publication": {
-    "state": "PREPARED"
+    "state": "PUBLISHED_SITE"
   },
   "qualification": {
     "schemaVersion": 2,
@@ -128,12 +128,12 @@
   "evidenceRetention": {
     "state": "GRADLE_XML_NATIVE_SMOKE_AND_ATF_EXTENT",
     "canonicalReport": "reports/component/atf-tests.html",
-    "canonicalReportSha256": "88bec5db10c780739ddd620d2f18894d5ae39ac1952b1e91f42041b4cb622fdb"
+    "canonicalReportSha256": "7a4d8657dba331d987d8f8c43f7a4f6d8eda20f2e759b95b1bfdd877eef52b27"
   },
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-08T10:18:14.070Z",
+    "observedUtc": "2026-11-08T10:37:13.994Z",
     "files": [
       {
         "path": "README.md",
@@ -151,59 +151,64 @@
         "sha256": "89b11ab60bea3b4907ee10bc1c25b2a9ea81ee95845b91ff64fd5fb3c4e2932a"
       },
       {
-        "path": "release-notes.template.md",
-        "bytes": 581,
-        "sha256": "5adb5aab8e85c28b69cf9e2a29255b69698af14674fcb09dc81214c38aa83a05"
+        "path": "release-notes.md",
+        "bytes": 580,
+        "sha256": "a2948b351abc4ddab4cbdc40f0ca2ee1f34bacc8239eeaf2d825abe1dd5b5e0c"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 423,
-        "sha256": "f17d5906bfd71296fb2c265187f794598742ef0b617755aebef2a61e7ba550bf"
+        "bytes": 430,
+        "sha256": "8dbb4df16c8f6bf18f1cf449956b341334a3349f46d81be79c02a6a4ae968c10"
       },
       {
         "path": "reports/README.md",
-        "bytes": 1789,
-        "sha256": "40307f00678adbf15f40de7f02d09ecb3b105022a8e627c6d5be2effa4d9acb6"
+        "bytes": 1967,
+        "sha256": "847fb5f1451724cdcdfa8e4991f0fe64a0c51dfacc0d80730b3d16136ad73f6d"
       },
       {
         "path": "reports/apk-inputs.json",
-        "bytes": 194072,
-        "sha256": "6a893e378ced76b592b7d446b2362ff998e6d9e3582cdaedbb75f07ab746b85a"
+        "bytes": 190099,
+        "sha256": "8ca888ae823a7f662ab0c69612780f2aa0bff262112bd5ade32eb01c77b6416e"
       },
       {
         "path": "reports/component/atf-test-android-execution.json",
         "bytes": 545,
-        "sha256": "bc1c81a1a0b851e5649d9c607688ea6c122b90d343613c9c518fd36a43bd4c9a"
+        "sha256": "c9521b872ff833d7b66666147850a25cbaf80b2111fb17b809d3d935e81eb762"
       },
       {
         "path": "reports/component/atf-test-android.html",
-        "bytes": 25887687,
-        "sha256": "65a79e754e83e17d596afe3f64fd290d8df116d7cd670d7c262f69a1b9acad15"
+        "bytes": 25887644,
+        "sha256": "34d7c83a33c5702abc845a9dcb923e1225fa1e69f0882556cf53d4d348db1453"
       },
       {
         "path": "reports/component/atf-tests-execution.json",
         "bytes": 539,
-        "sha256": "c91dc5e2633c989eb36a0297a68e777c35dc09cade64ad559bacaeea40ce8eb7"
+        "sha256": "58af06126e5089f114deb072b6b22077bd7efa59b9110355a3d92bb3a1291e23"
       },
       {
         "path": "reports/component/atf-tests.html",
-        "bytes": 6902199,
-        "sha256": "88bec5db10c780739ddd620d2f18894d5ae39ac1952b1e91f42041b4cb622fdb"
+        "bytes": 6903019,
+        "sha256": "7a4d8657dba331d987d8f8c43f7a4f6d8eda20f2e759b95b1bfdd877eef52b27"
       },
       {
         "path": "reports/component/atf-validation-execution.json",
         "bytes": 549,
-        "sha256": "10adc0a593d3dd1b0253f1664ab9c87e279daaed4d12cc997c92024dab6d3f89"
+        "sha256": "3a5923165a45f77aee38cd8dc5ce9167a0b47d75afef3340ae9f454dff2497d5"
       },
       {
         "path": "reports/component/atf-validation.html",
-        "bytes": 2663347,
-        "sha256": "78379d5a6145d3e2bf8a71f959859fb7d644a33358c0455aaaecb4f198dcadb8"
+        "bytes": 2663360,
+        "sha256": "cfa83a9ef2e0725b23f18bb4715109948c36c8c9d17a7e1d9ca766b71d1a818d"
+      },
+      {
+        "path": "reports/component/source-component-run.json",
+        "bytes": 2659,
+        "sha256": "4dbcb8fac3fe29437891ec71ab621f5a770afab04c727d8ab604d5f1db1546b6"
       },
       {
         "path": "reports/component/source-inputs.json",
         "bytes": 163822,
-        "sha256": "e7d8c45b08b619ebe8b6e469d8f2654ef6e27d7d4246281947ab2bc06e0f2eda"
+        "sha256": "c1e4c0361916fad1026193b59393063c0f7f6e967a4ddcefae1fb73528c8c6a0"
       },
       {
         "path": "reports/diagnostics/build.log",

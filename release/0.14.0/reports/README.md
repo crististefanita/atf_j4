@@ -12,7 +12,7 @@ Dosarul leagă APK-ul curent de raportarea componentelor, rezultatul instalării
 | Adaptor Android | 257 | [Extent](component/atf-test-android.html) | [Execuție](component/atf-test-android-execution.json) |
 | Arhitectură și guvernanță | 293 | [Extent](component/atf-tests.html) | [Execuție](component/atf-tests-execution.json) |
 
-Cele trei suite însumează 569 de invocări reușite. Capturile incluse în HTML sunt URI-uri Base64; dosarul nu păstrează copii PNG separate. [Inventarul surselor execuției](component/source-inputs.json) și receipt-urile leagă numărul de teste de rapoartele calculate.
+Cele trei suite însumează 569 de invocări reușite. Capturile incluse în HTML sunt URI-uri Base64; dosarul nu păstrează copii PNG separate. [Inventarul surselor execuției](component/source-inputs.json) și receipt-urile leagă numărul de teste de rapoartele calculate. [Receipt-ul rulării comune](component/source-component-run.json) confirmă `PASS`, `sourceStable=true` și faptul că această suită de sursă nu este o calificare a APK-ului.
 
 ## Componente Gradle
 

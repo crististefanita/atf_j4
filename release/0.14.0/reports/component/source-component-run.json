@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "c1e4c0361916fad1026193b59393063c0f7f6e967a4ddcefae1fb73528c8c6a0",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\whist-component-suites-9b9ab5a4c07141e58443df2fb7fcffdc",
+  "results": [
+    {
+      "module": "atf-validation",
+      "suite": "atf.validation.suites.ValidationComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.validation.suites.ValidationComponentSuite",
+        "tests": 19,
+        "outcomes": {
+          "PASS": 19
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "f72e31ccbd6501227471e60204428a2f203bad173b06dc72e872f5a4d8ef40fa",
+        "provenanceSha256": "fa5e75703ce9b637f53d8275ac54bc27e80d4769896132a5a5b39585a8773375",
+        "reportSha256": "cfa83a9ef2e0725b23f18bb4715109948c36c8c9d17a7e1d9ca766b71d1a818d"
+      }
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.android.suites.AndroidComponentSuite",
+        "tests": 257,
+        "outcomes": {
+          "PASS": 257
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "e898578f94c64b8ae4de320196c6aa4ab2b6638c41afda260c3602577a6e59a4",
+        "provenanceSha256": "fa5e75703ce9b637f53d8275ac54bc27e80d4769896132a5a5b39585a8773375",
+        "reportSha256": "34d7c83a33c5702abc845a9dcb923e1225fa1e69f0882556cf53d4d348db1453"
+      }
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 293,
+        "outcomes": {
+          "PASS": 293
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "979b373b42efd8819285b5c317998841567516ef247de214e893dfea73457cbf",
+        "provenanceSha256": "fa5e75703ce9b637f53d8275ac54bc27e80d4769896132a5a5b39585a8773375",
+        "reportSha256": "7a4d8657dba331d987d8f8c43f7a4f6d8eda20f2e759b95b1bfdd877eef52b27"
+      }
+    }
+  ]
+}
