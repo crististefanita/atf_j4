@@ -10,4 +10,4 @@
 
 ## Documentație
 
-- [Rapoarte](https://github.com/crististefanita/atf_j4/blob/c77413fb545882b27e2a50d94b217cb4c4393f48/release/0.14.0/reports/README.md)
+- [Rapoarte](https://github.com/crististefanita/atf_j4/blob/0ee0ebcefb14966ac5353877442affe3e66ab802/release/0.14.0/reports/README.md)
