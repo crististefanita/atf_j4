@@ -245,6 +245,12 @@ flowchart LR
 
 Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea. Replay-ul determinist păstrează propria cale de aplicare; salvarea și avansarea sesiunii rămân la proprietarul stării.
 
+### AutoGame pentru mâna activă
+
+Acțiunea din meniul mesei pornește un lease tranzitoriu, limitat la indexul mâinii curente. El permite `AiTurnRequest` să calculeze pentru locul uman numai cât timp lease-ul este activ și lasă coordonarea, verificarea snapshot-ului și aplicarea unică pe calea AI existentă. Ajungerea la scor, schimbarea mâinii, pornirea unei partide sau revenirea la meniul principal închide lease-ul; nu se transferă automat la următoarea mână.
+
+[AutoGameHand](lifecycle/AutoGameHand.java) fixează limita de ciclu, [GameMenuContent](screens/GameMenuContent.java) proiectează eticheta localizată de pornire/oprire, iar [componenta lifecycle](../../../../../test/java/ro/whistlab/app/lifecycle/AutoGameHandComponentTest.java) și [componenta meniului](../../../../../test/java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) verifică delimitarea, acțiunea și ambele limbi. Fluxul complet pe APK semnat aparține calificării Android, deoarece componentele nu verifică interacțiunea nativă sau animațiile de joc.
+
 - [Componentele coordonatorului](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnCoordinatorComponentTest.java) verifică firul calculului, predarea, anularea, dublurile și cauza eșecului.
 - [Componentele cererii](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java) verifică ambele niveluri, starea neschimbată în calcul și refuzul rezultatelor depășite ori destinate altei partide.
 

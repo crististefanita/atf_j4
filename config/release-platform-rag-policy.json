@@ -40,6 +40,10 @@
     "outputSchema": "ATF_RELEASE_RAG_VERDICT",
     "outputMustBeOutsideInputs": true,
     "citationsRequire": ["path", "sha256", "jsonPointerAndLineForJson"],
+    "publicReadmeSurface": {
+      "path": "README.md",
+      "forbidRawSha256Digest": true
+    },
     "sourceVerification": "every listed source file plus exact input-manifest fingerprint",
     "requiredComponentGroup": "atf-tests",
     "requiredComponentGroupsByPlatform": {
@@ -62,6 +66,7 @@
     "componentSourceBinding": {
       "inputManifest": "reports/component/source-inputs.json",
       "runReceipt": "reports/component/source-component-run.json",
+      "provenanceReceipt": "reports/component/source-provenance.json",
       "executionReceiptPattern": "reports/component/{group}/execution.json",
       "sourceSetMustEqualReleaseInputManifest": true,
       "eachExtentMustMatchExecutionReceipt": true,

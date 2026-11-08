@@ -65,6 +65,8 @@ public final class WhistUiText {
     }
     public String mainMenu() { return choose("Main menu", "Meniu principal"); }
     public String gameMenu() { return choose("Game menu", "Meniu joc"); }
+    public String autoGameHand() { return choose("Auto-play this hand", "Joacă automat mâna curentă"); }
+    public String stopAutoGameHand() { return choose("Stop auto-play", "Oprește jocul automat"); }
     public String nextHand() { return choose("Next hand", "Mâna următoare"); }
     public String playAgain() { return choose("Play again", "Joacă din nou"); }
     public String currentScores(int hand) { return choose("Current scores · Hand " + hand,

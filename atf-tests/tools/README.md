@@ -28,7 +28,7 @@ node atf-tests/tools/record-release-integrity.mjs
 
 ## Evaluarea RAG a candidatului
 
-[evaluate-release-rag.mjs](evaluate-release-rag.mjs) citește planul, politica, manifestul, payload-ul, rapoartele Extent și snapshot-ul sursă. Verifică SHA-256 și ordinea ordinală declarată, leagă fiecare HTML de receipt-ul selecției și compară setul sursă al componentelor cu cel folosit la APK. Pentru Android sunt obligatorii cele trei suite Maven primare și cele patru selecții Gradle ale aplicației; fiecare raport rămâne distinct, iar JUnit XML singur nu satisface poarta.
+[evaluate-release-rag.mjs](evaluate-release-rag.mjs) citește planul, politica, manifestul, payload-ul, rapoartele Extent și snapshot-ul sursă. Verifică SHA-256 și ordinea ordinală declarată, leagă fiecare HTML de receipt-ul selecției și confruntă manifestul, proveniența exactă în octeți și hash-ul fiecărui Extent. Pentru Android sunt obligatorii cele trei suite Maven primare și cele patru selecții Gradle ale aplicației; fiecare raport rămâne distinct, iar JUnit XML singur nu satisface poarta.
 
 ```powershell
 $ProjectRoot = (Get-Location).Path

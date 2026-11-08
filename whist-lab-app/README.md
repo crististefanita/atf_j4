@@ -39,6 +39,18 @@ La tura jucătorului, motorul Hard estimează și preselectează o licitație le
 - Alegerea manuală are prioritate; un rezultat întârziat nu înlocuiește selecția și nu se aplică altei mâini ori partide.
 - Dacă estimarea nu este disponibilă, se poate alege manual orice valoare legală. [Selecția contextuală](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) păstrează această stare separat de contractele depuse.
 
+În timpul unei mâini, meniul jocului poate prelua temporar licitarea și jocul cărților prin `Auto-play this hand` / `Joacă automat mâna curentă`.
+
+Controlul revine la om după scorul mâinii. Detaliile fluxului sunt în [documentația activității Android](app/src/main/java/ro/whistlab/app/README.md#autogame-pentru-mâna-activă).
+
+## Joacă automat mâna curentă
+
+- În timpul licitării sau al jocului cărților, deschide `Game menu` / `Meniu joc` și selectează `Auto-play this hand` / `Joacă automat mâna curentă`.
+- Aplicația folosește nivelul Normal sau Hard ales pentru adversari și controlează temporar și locul uman. La ecranul scorului automatizarea se oprește, iar următoarea mână revine la controlul manual.
+- În timpul mâinii, aceeași acțiune devine `Stop auto-play` / `Oprește jocul automat` și oprește preluarea turelor.
+
+Automatizarea afectează numai tura de licitare și turele de joc ale mâinii active. Nu schimbă nivelul AI, regulile, scorul sau salvarea partidei. Deschiderea unui dialog, trecerea aplicației în fundal și revenirea suspendă și reiau deciziile prin coordonatorul AI existent.
+
 ## Flux și responsabilități
 
 ```mermaid

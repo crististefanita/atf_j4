@@ -76,10 +76,10 @@ public final class GameTablePanel extends LinearLayout {
 
     public static GameTablePanel bidding(Context context, GameSession.Snapshot state,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
-            Runnable onBidSubmitted, WhistUiText copy) {
+            Runnable onBidSubmitted, boolean interactionPaused, WhistUiText copy) {
         return new GameTablePanel(context, state, true, Collections.emptyList(), null,
                 null, bidOptions, selectedBid, onBidSelected, onBidSubmitted, copy,
-                Collections.emptyList(), false);
+                Collections.emptyList(), interactionPaused);
     }
 
     public static GameTablePanel playing(Context context, GameSession.Snapshot state,
@@ -204,8 +204,8 @@ public final class GameTablePanel extends LinearLayout {
                 choice.setStateListAnimator(null);
                 choice.setTag("bid-choice:" + bid);
                 choice.setSelected(bid == selectedBid);
-                choice.setEnabled(state.biddingSeat() == 0);
-                choice.setAlpha(state.biddingSeat() == 0 ? 1f : 0.5f);
+                choice.setEnabled(state.biddingSeat() == 0 && !interactionPaused);
+                choice.setAlpha(state.biddingSeat() == 0 && !interactionPaused ? 1f : 0.5f);
                 choice.setFocusable(true);
                 styleBidChoice(choice, bid == selectedBid);
                 choice.setOnClickListener(ignored -> selectBid(bid));
@@ -252,7 +252,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     private void selectBid(int bid) {
-        if (state.biddingSeat() != 0) return;
+        if (state.biddingSeat() != 0 || interactionPaused) return;
         selectedBid = bid;
         updateBidSubmission();
         for (Button choice : bidChoiceButtons) {
@@ -264,7 +264,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     private void updateBidSubmission() {
-        boolean available = state.biddingSeat() == 0 && bidOptions.contains(selectedBid);
+        boolean available = state.biddingSeat() == 0 && !interactionPaused && bidOptions.contains(selectedBid);
         bidSubmitButton.setEnabled(available);
         bidSubmitButton.setAlpha(available ? 1f : 0.5f);
     }

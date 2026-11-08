@@ -90,15 +90,15 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 |---|---|---|
 | P2 | [CommandProcess](../../atf-test-android/src/main/java/atf/android/process/CommandProcess.java) citește fluxurile integral, fără bugete separate pentru text și binar. | Componente cu ieșire controlată: depășire explicită a fiecărui buget, memorie delimitată și PNG incomplet refuzat înaintea publicării; termenul și cauza inițială se păstrează. |
 
-## Distribuție GitHub: accesul anonim
+## Acces anonim pe ruta GitHub
 
 | Prioritate | Blocaj observat | Criteriu de închidere |
 |---|---|---|
-| P1 extern | API-ul Search autentificat confirmă `User flagged as spammy.`; profilul, repository-ul public și asset-ul returnează 404 anonim. | Solicitați revizuirea marcajului contului prin formularul oficial GitHub; după ridicare, URL-ul public al asset-ului trebuie să răspundă 200 și să producă exact mărimea și SHA-256 ale binarului verificat. |
+| P1 extern pentru ruta GitHub | Proba istorică a consemnat `User flagged as spammy.` în Search autentificat și 404 anonim pentru profil, repository și asset. | Revizuirea stării contului, apoi verificarea descărcării anonime GitHub cu HTTP 200, mărime și SHA-256 identice binarului verificat. |
 
 [Registrul distribuției](../../release/README.md) identifică dosarul activ și probele sale. Starea publicării, descărcarea în browserul autentificat și accesul anonim au verdicte separate. Semnalul furnizorului și codurile HTTP rămân în proba de distribuție.
 
-Identitatea repository-ului, a release-ului și a asset-ului, mărimea și SHA-256 aparțin înregistrării distribuției și cererii de suport, fără duplicarea lor în ghid. Distribuția publică rămâne necalificată; modificarea APK-ului nu compensează un răspuns HTTP negativ.
+Dosarul ediției 0.14.0 consemnează descărcarea anonimă calificată pe ruta HTTPS directă. Rezultatul pentru acea rută și cazul GitHub au receipt-uri distincte. [Dovada descărcării 0.14.0](../../release/0.14.0/reports/distribution-verification.json)
 
 ## Automatizarea publicării
 

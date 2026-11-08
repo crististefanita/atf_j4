@@ -6,13 +6,9 @@ Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea
 
 ## RPT-OBSERVATION-CONTRACT — validare după capabilitățile declarate
 
-**P2 · responsabil Reporting: contractul artefactului pentru observații.** O probă de componentă poate citi imagini controlate și publica comparații reale fără HTTP, Playwright sau acțiuni pe dispozitiv. Validatorul trebuie să cunoască acest domeniu, fără introducerea unor pași fictivi pentru completarea unei secțiuni.
+**P2 · integrarea adaptorului.** Profilurile explicite acoperă deja rapoarte neutre fără HTTP. Asocierea unei capturi OBSERVE cu acțiunea și ownerul declarați urmează contractul comun; feedback-ul local păstrează calificarea adaptorului și a datelor consumate.
 
-- Declarați separat schimburi API, acțiuni UI, observații UI și imagini de componentă; inventarul expected/actual, proprietatea capturilor și autonomia rămân obligatorii pentru domeniul selectat.
-- Absența unui canal nefolosit nu este eșec al probei; lipsa unei capturi ori comparații declarate trebuie să rămână eșec explicit.
-- Calificați cu API-ul public și cu un JAR fizic un raport numai cu `OBSERVE`, apoi controlați eliminarea PNG-ului, schimbarea proprietarului și alterarea rezultatului unei comparații.
-
-[Criteriile responsabilului comun](README.md) păstrează problema generică; adaptorul nu modifică JAR-ul sau HTML-ul publicat pentru a trece validatorul.
+- [ ] După livrarea capabilității comune, calificați adaptorul real și raportul produs cu biblioteca efectiv consumată. Verificați proprietarul capturii, inventarul expected/actual și refuzul la eliminarea capturii declarate.
 
 ## RPT-ANDROID-HTML-ONLY — livrabilul de audit fără copii auxiliare
 
@@ -65,13 +61,12 @@ Confruntarea inventarului și a hash-urilor dovedește păstrarea identității 
 
 **P1 · responsabil adaptor și pregătirea release-ului: calificarea colecțiilor și migrarea istorică.** [Agregarea pe sursa live](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) execută intrările primare Maven, iar [task-urile Gradle](../testing/ATF_GradleComponents.md) confruntă fiecare selecție cu propriul HTML. Identitățile se numără o singură dată; unitățile, componentele și cercetarea își păstrează categoria. O nouă execuție nu primește identitatea unui APK anterior.
 
-**Constatare curentă pentru dosarul activ:** release-ul `0.14.0` include Extent pentru cele trei suite ATF, însă cele 518 rezultate Gradle sunt păstrate doar ca JUnit XML, iar manifestul nu declară HTML-urile Extent Gradle și nici o suită E2E Extent. Puntea Gradle produce Extent în workspace, dar această capabilitate nu este legată de agregarea livrării. Dosarul rămâne o evidență istorică a ceea ce a fost publicat; nu îl „reparăm” prin copierea unui raport vechi sau prin atribuirea unei rulări noi APK-ului deja calificat.
+Dosarele de release păstrează numai raportările produse și identitatea lor originală. Calificarea agregării trebuie să lege fiecare selecție executată de propriul HTML canonic, receipt și amprentă a sursei; o rulare ulterioară nu completează retrospectiv dovezile unui APK deja calificat.
 
 - [ ] Extindeți captura în timpul evaluării la familiile Gradle: input, expected independent, actual și verdict. Păstrați clasificarea semantică și separarea de unități, cercetare și corpus.
 - [ ] Calificați o intrare canonică pentru fiecare selecție încă nemigrată, cu invocări parametrizate distincte și refuz la omisiune, duplicare ori rezultat divergent.
 - [ ] Încorporați datele originale obligatorii înaintea eliminării XML/PNG/JSON istorice. Când comparațiile nu au fost capturate, o nouă execuție primește identitate proprie; tabelul PASS din XML nu reconstruiește expected/actual și nu recalifică APK-ul vechi.
-- [ ] Conectați selecțiile primare componentă și E2E la dosarul candidatului: un HTML Extent canonic prin `atf-reporting` pentru fiecare selecție rulată, egalitate exactă JUnit–HTML, sursă/versiune identificate și capturi efectiv produse inline Base64. XML-ul rămâne temporar pentru confruntare și nu se păstrează ca raport duplicat în dosarul final.
-- [ ] Adăugați la manifest câte un grup auditat pentru fiecare HTML Gradle și E2E executat; eliminați numai XML-ul aceleiași populații după trecerea verificatorului și revizia autonomă. Păstrați separate suita unit, smoke-ul nativ și diagnosticele cu valoare unică.
+- [ ] Calificați popularea dosarului candidatului pentru selecțiile Gradle și E2E rămase. Fiecare selecție rulată are HTML Extent canonic, egalitate JUnit–HTML, identitate de sursă și capturile produse inline Base64. Înlocuiți rezultatul XML al aceleiași populații după verificator și revizia autonomă. Păstrați separate suita unit, smoke-ul nativ și diagnosticele cu valoare unică.
 - [ ] Guvernați legătura de la amprenta TMP la APK și commit: același inventar sursă trebuie să fie în candidatul verificat și arborele promovat în `main`; orice diferență invalidează calificarea dependentă.
 
 **Închidere:** HTML-urile canonice permit auditul selecțiilor declarate, cu metadate justificate și proveniență distinctă. Dovezile unice nemigrate rămân identificate; eliminarea lor ori mascarea unei dependențe nu reprezintă agregare.
@@ -92,18 +87,7 @@ Consumatorul deține momentul validării și datele transmise. Dacă API-ul publ
 
 ## RPT-EXTENT-REPEATED-PAYLOAD — compactare fără pierderea auditului
 
-**P2 · responsabilul bibliotecii de raportare: costul HTML-ului component fără reducerea dovezilor.** Măsurarea Extent dintr-o execuție primară de componentă:
-
-| Măsurătoare | Valoare |
-|---|---:|
-| Teste promovate | 257 |
-| Dimensiune HTML | 25.887.708 octeți |
-| Blocuri `atf-observation-body` | 2.008 |
-| Text escapate în blocuri | 19.425.351 caractere |
-| Duplicări byte-identice | 700 blocuri / 11.105.130 caractere repetate |
-| PNG Base64 | 75 apariții / 9 payload-uri distincte |
-
-Rezultatul componentelor a fost PASS; constatarea privește costul raportului și navigarea lui.
+**P2 · compactarea HTML-ului de componentă fără reducerea dovezilor.** Payload-urile identice pot crește dimensiunea și timpul de navigare al raportului. Profilarea exactă aparține dosarului extern al execuției; criteriul urmărește mecanismul de compactare și păstrarea auditabilității. Capabilitățile reutilizabile urmează [rutarea comună](README.md#responsabilitatea-schimbării).
 
 - [ ] Profilul compact trebuie să păstreze fiecare owner, comparație, verdict și corp integral accesibil offline în același HTML. Nu eliminați valori și nu mutați conținutul în ZIP, JSON ori fișiere externe.
 - [ ] Evaluați referințe interne content-addressed pentru corpuri byte-identice repetate. Fiecare invocare trebuie să afișeze conținutul integral corect; conținutul poate fi stocat o singură dată în HTML autonom.

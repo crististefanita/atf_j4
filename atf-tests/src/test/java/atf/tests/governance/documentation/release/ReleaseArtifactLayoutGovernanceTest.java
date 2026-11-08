@@ -67,6 +67,18 @@ class ReleaseArtifactLayoutGovernanceTest {
         AuditedAssertions.assertEquals(expected, links, "Two product actions; catalog and audit details belong to documentation");
     }
 
+    @Test void theMainReadmeOmitsRawApkDigestWhileTheVersionManifestRetainsIt() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot();
+        String projectGuide = Files.readString(root.resolve("README.md"));
+        AuditedAssertions.assertFalse(Pattern.compile("(?i)\\b[0-9a-f]{64}\\b").matcher(projectGuide).find(),
+                "The public project README must not expose a raw APK digest");
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        String version = json.readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
+        var release = json.readTree(root.resolve("release/" + version + "/release-validation.json").toFile()).required("release");
+        AuditedAssertions.assertTrue(release.required("apkSha256").asText().matches("[0-9a-f]{64}"),
+                "The versioned release manifest retains the machine-verifiable digest");
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"README.md", "reports/README.md"})
     void releaseOverviewAndReportIndexAreBothRequired(String missing) throws Exception {

@@ -66,6 +66,8 @@ class ReleaseRagPlatformGovernanceTest {
         assertEquals("atf-tests/tools/evaluate-release-rag.mjs", evaluator.path("entrypoint").asText());
         assertEquals("ATF_RELEASE_RAG_VERDICT", evaluator.path("outputSchema").asText());
         assertTrue(evaluator.path("outputMustBeOutsideInputs").asBoolean());
+        assertEquals("README.md", evaluator.path("publicReadmeSurface").path("path").asText());
+        assertTrue(evaluator.path("publicReadmeSurface").path("forbidRawSha256Digest").asBoolean());
         assertEquals("atf-tests", evaluator.path("requiredComponentGroup").asText());
         assertEquals(List.of("atf-validation", "atf-test-android", "atf-tests",
                 "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history"),
@@ -75,6 +77,7 @@ class ReleaseRagPlatformGovernanceTest {
         assertEquals(List.of("publicDownload"), strings(evaluator.path("platformGates").path("androidAfterPublication")));
         assertTrue(evaluator.path("platformGates").path("gateReceiptMustBeHashBound").asBoolean());
         assertEquals("reports/component/source-inputs.json", evaluator.path("componentSourceBinding").path("inputManifest").asText());
+        assertEquals("reports/component/source-provenance.json", evaluator.path("componentSourceBinding").path("provenanceReceipt").asText());
         assertEquals("reports/component/{group}/execution.json", evaluator.path("componentSourceBinding").path("executionReceiptPattern").asText());
         assertTrue(evaluator.path("componentSourceBinding").path("sourceSetMustEqualReleaseInputManifest").asBoolean());
         assertTrue(evaluator.path("componentSourceBinding").path("eachExtentMustMatchExecutionReceipt").asBoolean());
@@ -105,22 +108,25 @@ class ReleaseRagPlatformGovernanceTest {
 
     @Test void releaseGuideExplainsTempQualificationBeforePromotionAndCanonicalReporting() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
-        String ragGuide = Files.readString(root.resolve("docs/feedback/ATF_Release_RAG.md"));
+        String ragFeedback = Files.readString(root.resolve("docs/feedback/ATF_Release_RAG.md"));
         String qualificationGuide = Files.readString(root.resolve("docs/testing/ATF_ReleaseQualification.md"));
         String evaluator = Files.readString(root.resolve("atf-tests/tools/evaluate-release-rag.mjs"));
-        assertTrue(ragGuide.contains("## Ciclul candidatului"));
-        assertTrue(ragGuide.contains("READY_FOR_HUMAN_REVIEW"));
-        assertTrue(ragGuide.contains("snapshot-ul calificat"));
-        assertTrue(ragGuide.contains("Fiecare selecție are propriul HTML Extent și receipt"));
-        assertTrue(ragGuide.contains("Evaluatorul RAG este acum un CLI read-only"));
-        assertTrue(ragGuide.contains("evaluate-release-rag.mjs"));
-        assertTrue(ragGuide.contains("nu verifică indexul Git"));
+        assertTrue(evaluator.contains("MAIN_README_SURFACE"));
+        assertTrue(qualificationGuide.contains("## Ciclul candidatului"));
+        assertTrue(qualificationGuide.contains("READY_FOR_HUMAN_REVIEW"));
+        assertTrue(qualificationGuide.contains("Fiecare selecție Gradle are HTML Extent"));
+        assertTrue(qualificationGuide.contains("Evaluatorul nu inspectează indexul Git"));
         assertTrue(qualificationGuide.contains("ATF_Release_RAG.md"));
         assertTrue(qualificationGuide.contains("JUnit-ul temporar"));
         assertTrue(qualificationGuide.contains("--plan-file"));
         assertTrue(qualificationGuide.contains("`NOT_RUN`"));
         assertTrue(qualificationGuide.contains("nu devine rezultat pozitiv"));
         assertTrue(qualificationGuide.contains("`whist-lab-app-bidding`"));
+        assertTrue(ragFeedback.contains("Inventarul complet al snapshot-ului"));
+        assertTrue(ragFeedback.contains("Legătura independentă risc–teste"));
+        assertTrue(ragFeedback.contains("Producător și handoff unic"));
+        assertTrue(ragFeedback.contains("Prospețimea receipt-urilor"));
+        assertFalse(ragFeedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");
         assertTrue(evaluator.contains("READY_FOR_HUMAN_REVIEW"));
     }
 

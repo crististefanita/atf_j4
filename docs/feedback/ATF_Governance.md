@@ -38,11 +38,12 @@ Profilarea și timpii concreți rămân în arhiva externă. Optimizarea parseru
 
 ## Calificarea afirmațiilor și lansatoarelor
 
+Proveniența și completitudinea snapshot-ului pentru calificarea release-ului au un singur proprietar în [registrul RAG](ATF_Release_RAG.md). Integritatea APK-ului și a payload-ului din dosarele înregistrate rămâne verificată de [guvernanța integrității release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
+
 | Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
 |---|---|---|
 | P1 | Guvernanța documentară: verificările structurale nu confruntă automat toate afirmațiile despre profilul nou și cel istoric. | Controale factuale cu defecte injectate pentru scor, ajutor și documentație; fiecare afirmație identifică sursa și domeniul, fără deducerea comportamentului dintr-un cuvânt izolat. |
 | P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. Pentru Python, detectați aliasul de instalare separat de un interpretor executabil; pentru [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verificați disponibilitatea, refuzul, timeout-ul și starea transportului cu proces controlat, separat de parsare și de clientul Java. |
-| P1 | Proveniența completă a livrării: [integritatea locală](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) confruntă APK-ul, CRC-ul, checksum-ul, payload-ul și rezultatele JUnit; coerența listei de intrări nu verifică încă întreaga arhivă a surselor și legarea de commit. | Gardă versionată pentru arhivă absentă sau modificată, intrări lipsă/suplimentare și surse adăugate/șterse după snapshot. Comparația live include fișiere noi; diferența blochează atribuirea calificării către acel cod, fără rescrierea dovezii istorice. Semnătura și metadatele Android se confruntă separat cu binarul. |
 
 [Retenția copiilor inline](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) verifică separat lipsa PNG-urilor identice lângă HTML. Această gardă nu dovedește autonomia datelor, lizibilitatea imaginilor sau integritatea APK-ului; [criteriul adaptorului](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) rămâne distinct.
 
@@ -62,7 +63,7 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 |---|---|---|
 | P2 | Proba din browserul autentificat depinde de operator și de sesiunea GitHub disponibilă. | După publicare, verificați URL-ul versiunii, fișierul primit și SHA-256, apoi deschideți auditul de pe commitul din note. Înregistrați separat răspunsurile anonime și eventualele refuzuri locale ale browserului. |
 
-Proba de transfer prin Android DownloadManager și verificarea certificatului aparțin dosarului versiunii efectiv testate. [Contractul transferului Android](../platform/ATF_AndroidDelivery.md#separarea-accesului-de-transferul-android) descrie datele necesare, iar [blocajul GitHub anonim](ATF_Android.md#distribuție-github-accesul-anonim) are propriul criteriu de închidere.
+Proba de transfer prin Android DownloadManager și verificarea certificatului aparțin dosarului versiunii efectiv testate. [Contractul transferului Android](../platform/ATF_AndroidDelivery.md#separarea-accesului-de-transferul-android) descrie datele necesare, iar [accesul anonim pe ruta GitHub](ATF_Android.md#acces-anonim-pe-ruta-github) are propriul criteriu de închidere.
 
 ## Acceptanța nativă a distribuției
 
@@ -77,29 +78,6 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
 | P2 | Publicarea nu are încă un lansator versionat care salvează imediat identitatea fiecărei operații remote și permite reluarea sigură. | Jurnal atomic cu ID-ul draftului înainte de upload, commit-ul surselor, asset-urile și hash-urile. API controlat demonstrează creare reușită urmată de 404 la căutarea după tag, upload acceptat cu răspuns pierdut și promovare deja efectuată. Reluarea recitește obiectele după ID și refuză diferențele; nu recreează, nu reîncarcă și nu mută tag-ul prin repetare oarbă. |
-
-## Control tehnic activ
-
-<details>
-<summary>Control activ: proprietatea și documentația bibliotecilor</summary>
-
-```yaml
-testChanges:
-  - id: LIBRARY-OWNERSHIP-README
-    status: VERIFIED
-    base: d46948264e7b35347ad812be1e67e9fba30eef05
-    expires: 2026-11-30
-    reason: Require exactly four flat JAR/POM pairs plus the dedicated README and common producer ownership of library source and feedback; preserve physical binary identity, independent negative oracles and consumer acceptance.
-    proof: 'mvn -B -ntp -pl atf-tests -am -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest -Dsurefire.failIfNoSpecifiedTests=false test'
-    paths:
-      - atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
-```
-
-Controalele negative resping README-ul absent, documentele suplimentare, un director în locul README-ului și atribuirea codului ori feedback-ului unui consumer. Bibliotecile distribuite își păstrează coordonatele și hash-urile.
-
-</details>
 
 ## Identitatea completă a auditului
 
@@ -117,3 +95,17 @@ Verificarea unei copii compilate și inspecția rădăcinii live au identități
 [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) și [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) păstrează coordonare și mai multe modele sau etape interne. Pragul pachetelor rămâne util, însă nu califică singur lizibilitatea metodelor și stabilitatea fațadelor.
 
 Extrageți o singură responsabilitate demonstrată pe increment, cu același contract public, aceleași alegeri și estimări pe observații fixate, conservarea scorului și verificări nominale și de refuz. Păstrați modificările de prezentare și candidații strategici în lucrări separate; o formatare amplă nu dovedește refactorizare semantică.
+
+## Creșterea calității codului și a arhitecturii
+
+Limitele actuale de pachet și dimensiune nu măsoară suficient responsabilitățile din interiorul claselor. [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java), [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) și [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) sunt coordonatori identificați, dar proiectul nu are încă o calificare unitară care să arate dacă mutarea codului a redus cuplarea sau doar a redistribuit-o. Ridicarea notei cere închiderea acestor constatări prin schimbări comportamentale dovedite, nu prin reorganizare cosmetică.
+
+| Ordine | Acțiune | Criteriu de acceptare |
+|---|---|---|
+| 1 | Măsurați aceleași clase înainte de fiecare increment: responsabilități, colaboratori direcți, ramificații și duplicarea regulilor; identificați locurile unde decizia sau starea au mai mulți proprietari. | Inventarul indică sursele și regula folosită, iar selecția următoarei extracții se bazează pe cuplarea și schimbarea reală, nu doar pe numărul de linii. |
+| 2 | Extrageți o singură responsabilitate confirmată dintr-un coordonator per increment; păstrați fațadele și comportamentul public, fără funcții noi sau schimbări de interfață. | O singură cale de decizie și proprietar al stării; dependențele urmează direcția UI → aplicație → domeniu, fără ciclu și fără duplicate rămase sub alt nume. |
+| 3 | Înghețați contractul existent înainte de refactor și adăugați teste unitare/componente pentru rezultate, limite, stare salvată, ordinea evenimentelor și propagarea erorilor. | Comparațiile înainte/după trec pe aceleași intrări, inclusiv controale negative; testele arată că extragerea păstrează contractul și că defectul injectat este detectat. |
+| 4 | Extindeți guvernanța doar pentru încălcări arhitecturale observabile: dependențe între straturi, cicluri, proprietari dubli și fixture-uri de test accesibile din Release. | Fiecare regulă are un fixture sănătos și unul defect; fără excepții pe clasă sau suprimări de prag pentru a trece suita. |
+| 5 | Repetați pentru toate hotspot-urile încă deschise și actualizați nota numai după calificarea completă. | Raportul de revizie arată ce constatări s-au închis, ce rămâne și ce teste le susțin; simpla mutare de fișiere, reducerea artificială a pragurilor sau o suită verde fără controale negative nu crește nota. |
+
+Punctul slab actual este lipsa probei că refactorizarea micșorează responsabilitățile și elimină proprietatea duplicată. Prioritatea este să închidem mai întâi coordonatorii deja identificați și să facem guvernanța să detecteze revenirea acestor defecte; apoi se reevaluează codul și arhitectura pe aceeași grilă.

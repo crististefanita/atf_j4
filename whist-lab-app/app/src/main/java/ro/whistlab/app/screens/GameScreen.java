@@ -39,31 +39,33 @@ public final class GameScreen {
     private final Activity activity;
     public GameScreen(ScreenViews views) { this.views = views; this.activity = views.activity(); }
     public record MenuActions(Runnable scoreboard, Runnable settings, Runnable scores, Runnable home,
+                              Runnable autoGame, boolean autoGameActive, boolean autoGameAvailable,
                               java.util.function.Supplier<Runnable> opened) { }
     public void bidding(WhistUiText copy, GameSession.Snapshot state, List<Integer> choices, int selectedBid,
-            java.util.function.IntConsumer selected, Runnable submitted, MenuActions actions) {
+            boolean autoGame, java.util.function.IntConsumer selected, Runnable submitted, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = views.gamePage();
-        addGameHeader(page, state, true, copy, actions);
-        GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted, copy);
+        addGameHeader(page, state, !autoGame, copy, actions);
+        GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted,
+                autoGame, copy);
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
     public void playing(WhistUiText copy, GameSession.Snapshot state, List<PlayedCard> completedTrick,
-            boolean pauseActive, LongSupplier startCollection, Runnable resized,
+            boolean pauseActive, boolean autoGame, LongSupplier startCollection, Runnable resized,
             java.util.function.Consumer<Card> selected, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = views.gamePage();
-        addGameHeader(page, state, !pauseActive, copy, actions);
-        boolean humanTurn = !pauseActive && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
+        addGameHeader(page, state, !pauseActive && !autoGame, copy, actions);
+        boolean humanTurn = !pauseActive && !autoGame && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
         List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
         String instruction = humanTurn ? copy.playHint(state) : null;
         GameTablePanel table = GameTablePanel.playing(activity, state,
                 humanTurn ? legal : java.util.Collections.emptyList(),
-                selected, instruction, completedTrick, pauseActive, copy);
+                selected, instruction, completedTrick, pauseActive || autoGame, copy);
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
@@ -136,16 +138,12 @@ public final class GameScreen {
     }
     private void showMenu(View anchor, WhistUiText copy, MenuActions actions) {
         PopupMenu menu = new PopupMenu(activity, anchor);
-        menu.getMenu().add(copy.scoreSheet()).setOnMenuItemClickListener(item -> {
-            actions.scoreboard().run();
-            return true;
-        });
-        menu.getMenu().add(copy.playerSettings()).setOnMenuItemClickListener(item -> { actions.settings().run(); return true; });
-        menu.getMenu().add(copy.highestScores()).setOnMenuItemClickListener(item -> { actions.scores().run(); return true; });
-        menu.getMenu().add(copy.mainMenu()).setOnMenuItemClickListener(item -> {
-            actions.home().run();
-            return true;
-        });
+        for (GameMenuContent.Item entry : GameMenuContent.items(copy, actions)) {
+            menu.getMenu().add(entry.label()).setOnMenuItemClickListener(item -> {
+                entry.action().run();
+                return true;
+            });
+        }
         Runnable dismissed = actions.opened().get();
         menu.setOnDismissListener(ignored -> dismissed.run());
         menu.show();

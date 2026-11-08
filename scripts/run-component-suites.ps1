@@ -36,6 +36,9 @@ $libraries = @($before | Where-Object {$_.path -like 'lib/*.jar'})
 $provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputCount=$before.Count;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries}
 $provenanceFile = Join-Path $stage 'execution-provenance.json'
 $provenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $provenanceFile -Encoding utf8
+$provenanceReceipt = Join-Path $RunRoot 'source-provenance.json'
+Copy-Item -LiteralPath $provenanceFile -Destination $provenanceReceipt
+$provenanceFingerprint = (Get-FileHash -LiteralPath $provenanceReceipt -Algorithm SHA256).Hash.ToLowerInvariant()
 $policy = Get-Content -LiteralPath (Join-Path $sourceRoot 'config/atf-governance-policy.json') -Raw | ConvertFrom-Json
 & (Join-Path $PSScriptRoot 'Copy-AtfSourceInputs.ps1') -SourceRoot $sourceRoot -Destination $stage -InputManifest (Join-Path $RunRoot 'source-inputs.json')
 $repository = Join-Path $stage 'maven-repository'
@@ -115,7 +118,7 @@ try {
                 $execution = [ordered]@{
                     schemaVersion=1;kind='live-source-components';apkQualification=$false;selection=$taskName
                     tests=$testCount;outcomes=$totals;coverageErrors=@();containerFailures=@()
-                    provenanceSha256=$fingerprint;reportSha256=$reportHash
+                    provenanceSha256=$provenanceFingerprint;reportSha256=$reportHash
                 }
                 if ($reportHash) { $execution | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destination 'execution.json') -Encoding utf8 }
                 $results.Add([pscustomobject]@{
@@ -133,7 +136,7 @@ try {
 $after = Get-Inputs
 $stable = $serialized -ceq (ConvertTo-Json -InputObject $after -Depth 5 -Compress)
 $passed = $stable -and $results.Count -gt 0 -and @($results | Where-Object {$_.exitCode -ne 0}).Count -eq 0
-$run = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;sourceFingerprint=$fingerprint;sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$before.Count;results=$results}
+$run = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;sourceFingerprint=$fingerprint;provenanceReceiptSha256=$provenanceFingerprint;inputManifest='source-inputs.json';sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$before.Count;results=$results}
 $run | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-component-run.json') -Encoding utf8
 $lines = @('# Rapoartele componentelor pe sursa fixată','','## Pe scurt','','Această execuție verifică suitele primare Maven și cele patru selecții Gradle ale aplicației. Nu califică un APK și nu folosește un dispozitiv; fiecare selecție are Extent și receipt proprii.','','| Selecție | Raport | Metadate |','|---|---|---|')
 foreach ($result in $results) {
@@ -141,7 +144,7 @@ foreach ($result in $results) {
     $receiptPath = $result.module + '/execution.json'
     $lines += '| ' + $result.module + ' | [Extent](' + $reportPath + ') | [Execuție](' + $receiptPath + ') |'
 }
-$lines += @('','`source-inputs.json` și `source-component-run.json` leagă toate selecțiile de aceeași amprentă. XML-ul JUnit rămâne temporar pentru confruntare; nu se păstrează ca raport duplicat în dosarul final. E2E rămâne separat și neexecutat.')
+$lines += @('','`source-inputs.json`, `source-provenance.json` și `source-component-run.json` leagă toate selecțiile de aceeași amprentă și de receipt-ul nativ de proveniență. XML-ul JUnit rămâne temporar pentru confruntare; nu se păstrează ca raport duplicat în dosarul final. E2E rămâne separat și neexecutat.')
 $lines | Set-Content -LiteralPath (Join-Path $RunRoot 'README.md') -Encoding utf8
 if (-not $passed) { throw "Execuția, acoperirea HTML sau stabilitatea surselor a eșuat. Consultați $RunRoot/source-component-run.json și $stage." }
 Write-Output "PASS: $RunRoot/README.md"

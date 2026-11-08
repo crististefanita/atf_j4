@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Actual signed-package evidence; match-changing acceptance requires a verified reversible backup. */
-final class ReleaseBidContext {
-    static final String PACKAGE = "ro.whistlab.app";
+public final class ReleaseBidContext {
+    public static final String PACKAGE = "ro.whistlab.app";
     final Path output;
     final AndroidUiFlowTrace trace;
-    final AndroidUiDriver ui;
-    final JsonNode setup;
+    public final AndroidUiDriver ui;
+    public final JsonNode setup;
     private final Path leaseFile;
     private final String leaseId;
     private final AdbClient adb = AdbClient.fromSystemProperties();
@@ -67,13 +67,13 @@ final class ReleaseBidContext {
             throw new java.io.IOException("Signed release acceptance lost its exclusive device lease");
     }
 
-    String installedHash() throws Exception {
+    public String installedHash() throws Exception {
         verifyLease();
         var result = adb.run("shell", "sha256sum", setup.required("installedPath").asText());
         result.requireSuccess(); return result.output().trim().split("\\s+")[0];
     }
 
-    BidChoiceObservation.State awaitRecommendation(String label) throws Exception {
+    public BidChoiceObservation.State awaitRecommendation(String label) throws Exception {
         long deadline = System.nanoTime() + Duration.ofSeconds(30).toNanos();
         do {
             String xml = ui.dump();
@@ -86,7 +86,7 @@ final class ReleaseBidContext {
         throw new IllegalStateException("The signed app did not expose a selected human recommendation");
     }
 
-    void checkpoint(String title, Comparisons comparisons) throws Exception {
+    public void checkpoint(String title, Comparisons comparisons) throws Exception {
         var captured = ui.capture(title.replaceAll("[^A-Za-z0-9]+", "-").toLowerCase(java.util.Locale.ROOT));
         evidence.addAll(captured);
         Path xml = captured.stream().filter(file -> file.toString().endsWith(".xml")).findFirst().orElseThrow();
@@ -148,9 +148,9 @@ final class ReleaseBidContext {
         }
     }
 
-    static AtfAssertion equal(String label, Object expected, Object actual) {
+    public static AtfAssertion equal(String label, Object expected, Object actual) {
         return new AtfAssertion(label, String.valueOf(expected), String.valueOf(actual), java.util.Objects.equals(expected, actual));
     }
-    @FunctionalInterface interface Comparisons { List<AtfAssertion> read(String xml) throws Exception; }
+    @FunctionalInterface public interface Comparisons { List<AtfAssertion> read(String xml) throws Exception; }
     @FunctionalInterface interface Flow { void run(ReleaseBidContext context) throws Exception; }
 }

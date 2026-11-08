@@ -11,6 +11,7 @@ import ro.whistlab.app.bidding.HumanBidSelection;
 
 import ro.whistlab.app.fixtures.DisplayFixtureDeals;
 import ro.whistlab.app.fixtures.OriginalMatchReplay;
+import ro.whistlab.app.lifecycle.AutoGameHand;
 import ro.whistlab.app.lifecycle.CompletedTrickPause;
 import ro.whistlab.app.lifecycle.AiTurnCoordinator;
 import ro.whistlab.app.lifecycle.AiTurnRequest;
@@ -55,6 +56,7 @@ public final class MainActivity extends Activity {
     private final Handler aiResults = new Handler(Looper.getMainLooper());
     private final AiTurnCoordinator aiTurns = new AiTurnCoordinator(command -> aiResults.post(command));
     private final GameCommandFlow commands = new GameCommandFlow(this::persistGame, this::driveAutomatedTurns);
+    private final AutoGameHand autoGameHand = new AutoGameHand();
     private boolean automationActive = true;
     private final CompletedTrickPause completedTrickPause = new CompletedTrickPause();
     private GameSession game;
@@ -176,6 +178,7 @@ public final class MainActivity extends Activity {
     }
 
     private void renderHome() {
+        autoGameHand.stop();
         navigation.show(AppNavigation.Screen.HOME);
         views.applyStandardWindowChrome();
         menuScreens.home(copy, playerPreferences.name(), game != null,
@@ -205,6 +208,7 @@ public final class MainActivity extends Activity {
 
     private void startGame(GameConfig config) {
         cancelAutomatedTurns();
+        autoGameHand.stop();
         recordedReplay = null;
         humanBids.reset();
         lastConfig = config;
@@ -217,15 +221,17 @@ public final class MainActivity extends Activity {
 
     private void renderBidding() {
         var state = game.snapshot();
+        boolean autoGame = autoGameHand.activeFor(state);
         List<Integer> choices = GameRules.allowedBids(state.handSize(), state.bidTotal(),
                 state.bidsSubmitted() == state.players().size() - 1);
-        int selected = state.biddingSeat() == 0 ? humanBids.selected(game).orElse(-1) : choices.get(0);
-        gameScreen.bidding(copy, state, choices, selected, bid -> {
+        int selected = state.biddingSeat() == 0 && !autoGame ? humanBids.selected(game).orElse(-1)
+                : state.biddingSeat() == 0 ? -1 : choices.get(0);
+        gameScreen.bidding(copy, state, choices, selected, autoGame, bid -> {
                     humanBids.select(game, bid);
                     aiTurns.cancel();
                 },
                 this::submitSelectedBid, gameMenuActions());
-        if (state.biddingSeat() == 0) suggestHumanBid();
+        if (state.biddingSeat() == 0 && !autoGame) suggestHumanBid();
     }
 
     private void suggestHumanBid() {
@@ -264,12 +270,14 @@ public final class MainActivity extends Activity {
     }
 
     private void renderPlay(List<PlayedCard> completedTrick, boolean pauseActive) {
-        gameScreen.playing(copy, game.snapshot(), completedTrick, pauseActive, null,
+        var state = game.snapshot();
+        gameScreen.playing(copy, state, completedTrick, pauseActive, autoGameHand.activeFor(state), null,
                 presentationRefresh::request, this::playHumanCard, gameMenuActions());
     }
 
     private void renderCollecting(CompletedTrickPause.DisplayState pause) {
-        gameScreen.playing(copy, game.snapshot(), pause.cards(), true, () -> {
+        var state = game.snapshot();
+        gameScreen.playing(copy, state, pause.cards(), true, autoGameHand.activeFor(state), () -> {
             if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return 0;
             long firstDraw = SystemClock.uptimeMillis();
             completedTrickPause.resume(firstDraw);
@@ -281,8 +289,27 @@ public final class MainActivity extends Activity {
     }
 
     private GameScreen.MenuActions gameMenuActions() {
+        GameSession.Snapshot state = game == null ? null : game.snapshot();
+        boolean autoGameActive = state != null && autoGameHand.activeFor(state);
+        boolean autoGameAvailable = state != null
+                && (state.phase() == GamePhase.BIDDING || state.phase() == GamePhase.PLAYING);
         return new GameScreen.MenuActions(this::showLiveScoreboard, this::showPlayerSettings,
-                this::showHighScores, this::renderHome, this::suspendGameMenu);
+                this::showHighScores, this::renderHome, this::toggleAutoGameHand,
+                autoGameActive, autoGameAvailable, this::suspendGameMenu);
+    }
+
+    private void toggleAutoGameHand() {
+        if (game == null) return;
+        GameSession.Snapshot state = game.snapshot();
+        if (autoGameHand.activeFor(state)) {
+            autoGameHand.stop();
+            aiTurns.cancel();
+            humanBids.cancel();
+        } else if (state.phase() == GamePhase.BIDDING || state.phase() == GamePhase.PLAYING) {
+            humanBids.cancel();
+            autoGameHand.start(state);
+        } else return;
+        driveAutomatedTurns();
     }
 
     private Runnable suspendGameMenu() {
@@ -329,6 +356,7 @@ public final class MainActivity extends Activity {
 
     private void nextHand(GameSession.Snapshot state) {
         cancelAutomatedTurns();
+        autoGameHand.stop();
         if (recordedReplay != null) game = recordedReplay.startHand(state.handIndex() + 1, game.scoreHistory());
         else game.startNextHand();
         persistGame();
@@ -384,6 +412,7 @@ public final class MainActivity extends Activity {
             return;
         }
         GameSession.Snapshot state = game.snapshot();
+        boolean autoGame = autoGameHand.activeFor(state);
         navigation.show(AppNavigation.Screen.GAME);
         long displayTime = SystemClock.uptimeMillis();
         completedTrickPause.resume(displayTime);
@@ -404,7 +433,7 @@ public final class MainActivity extends Activity {
         }
         if (state.phase() == GamePhase.BIDDING) {
             renderBidding();
-            if (state.biddingSeat() == 0 || debugHoldAiBids) {
+            if ((state.biddingSeat() == 0 && !autoGame) || debugHoldAiBids) {
                 return;
             }
             int seat = state.biddingSeat();
@@ -417,7 +446,7 @@ public final class MainActivity extends Activity {
             driveAutomatedTurns();
             return;
         }
-        if (state.currentSeat() == 0) {
+        if (state.currentSeat() == 0 && !autoGame) {
             renderPlay();
             return;
         }
@@ -428,7 +457,7 @@ public final class MainActivity extends Activity {
                 return;
             }
             GameSession.Snapshot current = game.snapshot();
-            if (current.currentSeat() == 0) {
+            if (current.currentSeat() == 0 && !autoGameHand.activeFor(current)) {
                 renderPlay();
                 return;
             }
@@ -446,7 +475,7 @@ public final class MainActivity extends Activity {
     }
 
     private void submitAiTurn() {
-        AiTurnRequest request = new AiTurnRequest(game);
+        AiTurnRequest request = new AiTurnRequest(game, autoGameHand.activeFor(game.snapshot()));
         aiTurns.submit(request::evaluate, decision -> {
             if (!automationActive || !navigation.gameVisible() || navigation.blocksAutomation()) return;
             if (request.applyTo(game, decision)) persistGame();

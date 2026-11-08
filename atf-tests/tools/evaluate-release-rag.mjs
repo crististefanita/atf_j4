@@ -177,6 +177,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.ragEvaluator?.onlyHumanReviewVerdict === 'READY_FOR_HUMAN_REVIEW'
       && policy.ragEvaluator?.doesNotPerformPromotionOrPublication === true
       && policy.ragEvaluator?.outputMustBeOutsideInputs === true
+      && policy.ragEvaluator?.publicReadmeSurface?.path === 'README.md'
+      && policy.ragEvaluator?.publicReadmeSurface?.forbidRawSha256Digest === true
       && Array.isArray(policy.ragEvaluator?.requiredComponentGroupsByPlatform?.android)
       && REQUIRED_ANDROID_COMPONENT_GROUPS.every(name => policy.ragEvaluator.requiredComponentGroupsByPlatform.android.includes(name))
       && Array.isArray(policy.ragEvaluator?.platformGates?.androidBeforeHumanReview)
@@ -186,6 +188,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.ragEvaluator?.componentSourceBinding?.sourceSetMustEqualReleaseInputManifest === true
       && policy.ragEvaluator?.componentSourceBinding?.eachExtentMustMatchExecutionReceipt === true
       && policy.ragEvaluator?.componentSourceBinding?.allReceiptsMustBindSameSourceFingerprint === true
+      && policy.ragEvaluator?.componentSourceBinding?.provenanceReceipt === 'reports/component/source-provenance.json'
       && policy.ragEvaluator?.e2e?.notRunNeverMeansPass === true
       && policy.rules?.ragMayExecuteCommands === false && policy.rules?.ragMayBuildOrSign === false
       && policy.rules?.ragMayPublish === false && policy.candidateLifecycle?.ragMayAdvanceLifecycle === false;
@@ -279,6 +282,29 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   addCheck(checks, 'SOURCE_SNAPSHOT', sourceOkay,
       sourceOkay ? 'Commitul, manifestul de intrări, amprenta și fișierele sursă corespund.' : 'Snapshot-ul sursă nu poate fi reprodus din manifestul fixat.',
       [...evidence('/source'), ...(inputDoc ? [citation(posix(path.relative(candidate, path.join(candidate, inputRel))), inputDoc.sha256, '/fingerprint', inputDoc.lines.get('/fingerprint') ?? 1)] : [])], sourceProblems);
+
+  const readmePolicy = policy.ragEvaluator?.publicReadmeSurface;
+  let readmeOkay = false;
+  const readmeProblems = [];
+  const readmeEvidence = [];
+  try {
+    const relative = safeRelative(readmePolicy?.path);
+    if (!Array.isArray(inputDoc?.value?.files) || !inputDoc.value.files.some(row => row.path === relative)) {
+      readmeProblems.push('README-ul principal lipsește din manifestul sursei fixate.');
+    }
+    const file = await regularFile(source, relative);
+    const bytes = await fs.readFile(file);
+    const text = bytes.toString('utf8');
+    const match = /\b[0-9a-f]{64}\b/i.exec(text);
+    if (match) readmeProblems.push(`README-ul principal expune un digest brut SHA-256 la linia ${lineCount(text.slice(0, match.index))}.`);
+    readmeOkay = readmeProblems.length === 0;
+    readmeEvidence.push(citation(relative, digest(bytes), null, 1));
+  } catch (error) {
+    readmeProblems.push(`README-ul principal nu poate fi verificat: ${error.message}`);
+  }
+  addCheck(checks, 'MAIN_README_SURFACE', readmeOkay,
+      readmeOkay ? 'README-ul principal este în snapshot și nu expune un digest APK brut.' : 'README-ul principal lipsește din snapshot sau publică un digest APK brut.',
+      readmeEvidence, readmeProblems);
 
   const release = manifest.release ?? {}, apkRelative = release.apkRelativePath ?? release.apkName;
   let apkOkay = false;
@@ -389,12 +415,13 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       groupResults.flatMap(item => item.evidence), componentProblems);
 
   const binding = policy.ragEvaluator?.componentSourceBinding ?? {};
-  let componentSourceBound = false, componentInputsDoc, componentRunDoc;
+  let componentSourceBound = false, componentInputsDoc, componentRunDoc, componentProvenanceDoc;
   const bindingProblems = [];
   try {
     const inputRelative = binding.inputManifest, runRelative = binding.runReceipt;
     componentInputsDoc = await strictJson(await regularFile(candidate, inputRelative));
     componentRunDoc = await strictJson(await regularFile(candidate, runRelative));
+    componentProvenanceDoc = await strictJson(await regularFile(candidate, binding.provenanceReceipt));
     const releaseRows = inputDoc?.value?.files ?? [], componentRows = componentInputsDoc.value;
     const toMap = rows => {
       if (!Array.isArray(rows)) throw Error('INPUT_LIST_REQUIRED');
@@ -413,8 +440,15 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     const sourceFingerprint = componentRunDoc.value.sourceFingerprint;
     const rootRunOkay = componentRunDoc.value.kind === 'live-source-components'
         && componentRunDoc.value.status === 'PASS' && componentRunDoc.value.sourceStable === true
-        && sourceFingerprint === componentInputsDoc.sha256 && componentRunDoc.value.inputCount === componentSet.size;
+        && sourceFingerprint === componentInputsDoc.sha256 && componentRunDoc.value.inputCount === componentSet.size
+        && componentRunDoc.value.inputManifest === path.posix.basename(inputRelative);
     if (!rootRunOkay) bindingProblems.push('Receipt-ul rădăcină nu este PASS/stabil sau nu se leagă de hash-ul manifestului și numărul de intrări.');
+    const provenanceOkay = componentProvenanceDoc.value.kind === 'live-source-components'
+        && componentProvenanceDoc.value.sourceFingerprint === sourceFingerprint
+        && componentProvenanceDoc.value.inputCount === componentSet.size
+        && componentProvenanceDoc.value.inputManifest === path.posix.basename(inputRelative)
+        && componentRunDoc.value.provenanceReceiptSha256 === componentProvenanceDoc.sha256;
+    if (!provenanceOkay) bindingProblems.push('Receipt-ul de proveniență nu se leagă de manifestul componentei, cardinalitate și rularea agregată.');
     let selectedReceiptsOkay = true;
     for (const name of selectedGroups) {
       const group = groups[name], relative = binding.executionReceiptPattern.replace('{group}', name);
@@ -428,23 +462,24 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
           && execution.tests === group.tests && countsPass
           && Array.isArray(execution.coverageErrors) && execution.coverageErrors.length === 0
           && Array.isArray(execution.containerFailures) && execution.containerFailures.length === 0
-          && execution.provenanceSha256 === sourceFingerprint
+          && execution.provenanceSha256 === componentProvenanceDoc.sha256
           && execution.reportSha256 === digest(reportBytes)
           && receipt?.exitCode === 0 && rootReceipt?.reportSha256 === execution.reportSha256
-          && rootReceipt?.provenanceSha256 === sourceFingerprint;
+          && rootReceipt?.provenanceSha256 === componentProvenanceDoc.sha256;
       if (!receiptPass) {
         selectedReceiptsOkay = false;
         bindingProblems.push(`${name}: receipt-ul execuției, numărătoarea, provenance-ul sau hash-ul Extent nu corespunde rulării rădăcină.`);
       }
     }
-    componentSourceBound = sameSourceSet && rootRunOkay && selectedReceiptsOkay;
+    componentSourceBound = sameSourceSet && rootRunOkay && provenanceOkay && selectedReceiptsOkay;
   } catch (error) { componentSourceBound = false; bindingProblems.push(`Nu s-a putut verifica legarea surselor componentelor: ${error.message}`); }
   addCheck(checks, 'COMPONENT_SOURCE_BINDING', componentSourceBound,
       componentSourceBound ? 'Listele sursă pentru APK și componente sunt identice; fiecare Extent este legat de receipt-ul execuției și de aceeași amprentă.'
         : 'Receiptele componentei lipsesc, sunt neconcordante cu APK-ul sau nu sunt legate de aceeași amprentă de sursă.',
       [...evidence('/source'),
         ...(componentInputsDoc ? [citation(binding.inputManifest ?? 'reports/component/source-inputs.json', componentInputsDoc.sha256, '', 1)] : []),
-        ...(componentRunDoc ? [citation(binding.runReceipt ?? 'reports/component/source-component-run.json', componentRunDoc.sha256, '/sourceFingerprint', componentRunDoc.lines.get('/sourceFingerprint') ?? 1)] : [])], bindingProblems);
+        ...(componentRunDoc ? [citation(binding.runReceipt ?? 'reports/component/source-component-run.json', componentRunDoc.sha256, '/sourceFingerprint', componentRunDoc.lines.get('/sourceFingerprint') ?? 1)] : []),
+        ...(componentProvenanceDoc ? [citation(binding.provenanceReceipt ?? 'reports/component/source-provenance.json', componentProvenanceDoc.sha256, '/sourceFingerprint', componentProvenanceDoc.lines.get('/sourceFingerprint') ?? 1)] : [])], bindingProblems);
 
   const canonical = manifest.evidenceRetention?.canonicalReport;
   const canonicalHash = declared.get(canonical)?.sha256;

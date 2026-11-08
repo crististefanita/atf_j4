@@ -99,11 +99,51 @@ public class AiTurnRequestComponentTest extends atf.gradle.audit.GradleAuditedTe
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> new AiTurnRequest(game));
     }
 
+    @Test public void autoGameCanEvaluateAndApplyTheHumanBidAndCardOnlyWhenExplicitlyEnabled() {
+        var bidding = deal(2, AiDifficulty.NORMAL, 3);
+        var bidState = bidding.snapshot();
+        var bidRequest = new AiTurnRequest(bidding, true);
+        var expectedBid = AiPolicy.chooseBid(bidState, 0, AiDifficulty.NORMAL);
+        var bid = bidRequest.evaluate();
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bid", bid,
+                "bidRequest", bidRequest, "bidding", bidding, "bidState", bidState);
+        assertEquals("bidState.biddingSeat() must equal 0", 0, bidState.biddingSeat());
+        assertEquals("bid must equal the Normal policy for the human seat", new AiTurnRequest.Bid(0, expectedBid), bid);
+        assertTrue("bidRequest.applyTo(bidding, bid) must hold", bidRequest.applyTo(bidding, bid));
+        assertFalse("a repeated human bid must remain unapplied", bidRequest.applyTo(bidding, bid));
+
+        while (bidding.snapshot().phase() == GamePhase.BIDDING) {
+            var state = bidding.snapshot();
+            int value = GameRules.allowedBids(state.handSize(), state.bidTotal(),
+                    state.bidsSubmitted() == state.players().size() - 1).get(0);
+            bidding.submitBid(state.biddingSeat(), value);
+        }
+        while (bidding.snapshot().currentSeat() != 0) {
+            var state = bidding.snapshot();
+            var player = state.players().get(state.currentSeat());
+            var lead = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
+            var card = GameRules.legalCards(player.hand(), lead, state.trump(), state.mode()).get(0);
+            bidding.playCard(state.currentSeat(), card);
+        }
+        var playState = bidding.snapshot();
+        var playRequest = new AiTurnRequest(bidding, true);
+        var expectedCard = AiPolicy.chooseCard(playState, 0, AiDifficulty.NORMAL);
+        var play = playRequest.evaluate();
+        assertEquals("play must equal the Normal policy for the human seat", new AiTurnRequest.Play(0, expectedCard), play);
+        assertTrue("playRequest.applyTo(bidding, play) must hold", playRequest.applyTo(bidding, play));
+        assertFalse("a repeated human card must remain unapplied", playRequest.applyTo(bidding, play));
+    }
+
     private static GameSession deal(int size, AiDifficulty level) {
+        return deal(size, level, 0);
+    }
+
+    private static GameSession deal(int size, AiDifficulty level, int dealerSeat) {
         var config = GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, level, 317, true, 10);
         var cards = GameRules.deck(config.mode(), 4);
         var hands = new java.util.ArrayList<List<Card>>();
         for (int seat = 0; seat < 4; seat++) hands.add(List.copyOf(cards.subList(seat * size, (seat + 1) * size)));
-        return GameSession.fromDeal(config, hands, Trump.NO_TRUMP, 0);
+        return GameSession.fromDeal(config, hands, Trump.NO_TRUMP, dealerSeat);
     }
 }

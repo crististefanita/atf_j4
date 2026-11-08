@@ -8,6 +8,7 @@ Colecția verifică legarea recomandării de interfața Android reală. Politica
 |---|---|---|
 | Componentă | [Decodorul](BidChoiceObservation.java) citește o singură observație XML; [probele sale](BidChoiceObservationComponentTest.java) refuză selecții multiple, confirmări contradictorii și valori ilegale. | Nu citește un dispozitiv și nu estimează licitația. |
 | E2E | [Scenariul](ReleaseBidScenario.java) configurează prin UI Whist românesc, patru locuri și Hard; joacă prefixul de o carte și verifică recomandarea la două cărți. | Nu injectează checkpoint-uri sau extras de debug și nu citește mâinile private adverse. |
+| E2E AutoGame | [Scenariul](autogame/AutoGameReleaseScenario.java) pornește AutoGame din meniul real, verifică finalizarea mâinii la ecranul scorului și confirmă că următoarea mână revine la controlul manual. | Rulează pe APK-ul candidat identificat și cere aceeași rezervare exclusivă și restaurare a datelor; componentele nu înlocuiesc această probă. |
 | E2E interfață comună | [Meniul și profilul](WhistReleaseHomeE2eTest.java) verifică RO/EN, anularea și salvarea numelui, apoi preferințele după relansare. | Folosește același backup verificat și nu pornește o partidă. |
 | Predare | [Testul](WhistReleaseBidE2eTest.java) păstrează cauza originală și publică observațiile, comparațiile și PNG-urile prin raportarea UI comună. | Publicarea raportului nu substituie restaurarea datelor de către runner. |
 

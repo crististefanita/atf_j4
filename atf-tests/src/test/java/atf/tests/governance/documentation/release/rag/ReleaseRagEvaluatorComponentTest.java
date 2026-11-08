@@ -32,6 +32,7 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("NOT_RUN", verdict.path("e2e").path("status").asText());
         AuditedAssertions.assertEquals("NONE", verdict.path("lifecycleEffect").asText());
         AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
+        AuditedAssertions.assertEquals("PASS", check(verdict, "MAIN_README_SURFACE"));
         AuditedAssertions.assertEquals("PASS", check(verdict, "COMPONENT_EXTENT"));
         AuditedAssertions.assertTrue(verdict.path("checks").findValuesAsText("status").contains("PASS"));
         AuditedAssertions.assertEquals(candidateBefore, treeHash(fixture.candidate()), "Evaluator must not mutate the candidate");
@@ -56,6 +57,16 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertTrue(details(verdict, "PAYLOAD_INTEGRITY").stream().anyMatch(value -> value.contains("PAYLOAD_MISMATCH")));
     }
 
+    @Test void anApkDigestInThePinnedMainReadmeBlocksRagWithoutMaskingTheSourceCheck() throws Exception {
+        Fixture fixture = fixture("# Whist Lab\nSHA-256: " + "a".repeat(64) + "\n");
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "MAIN_README_SURFACE"));
+        AuditedAssertions.assertTrue(details(verdict, "MAIN_README_SURFACE").stream().anyMatch(value -> value.contains("linia 2")));
+    }
+
     @Test void aProductionPlanCannotReuseTheDebugTestCertificate() throws Exception {
         Fixture fixture = fixture();
         ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile()); plan.put("channel", "PRODUCTION");
@@ -69,7 +80,10 @@ class ReleaseRagEvaluatorComponentTest {
     @Test void componentReportsFromAnotherSourceInventoryCannotQualifyTheApk() throws Exception {
         Fixture fixture = fixture();
         Path inputs = fixture.candidate().resolve("reports/component/source-inputs.json");
-        var componentRows = JSON.readTree(inputs.toFile()); ((ObjectNode) componentRows.get(0)).put("sha256", "b".repeat(64));
+        var componentRows = (com.fasterxml.jackson.databind.node.ArrayNode) JSON.readTree(inputs.toFile());
+        for (JsonNode row : componentRows) {
+            if (row.path("path").asText().equals("src/Game.java")) { ((ObjectNode) row).put("sha256", "b".repeat(64)); break; }
+        }
         JSON.writeValue(inputs.toFile(), componentRows); refreshPayload(fixture.candidate());
         int exit = evaluate(fixture, fixture.output());
         JsonNode verdict = JSON.readTree(fixture.output().toFile());
@@ -90,6 +104,21 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals(2, exit);
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_EXTENT"));
         AuditedAssertions.assertTrue(details(verdict, "COMPONENT_EXTENT").stream().anyMatch(value -> value.contains("whist-lab-app-history")));
+    }
+
+    @Test void provenanceReceiptMustBindTheSameComponentManifestAndAggregateRun() throws Exception {
+        Fixture fixture = fixture();
+        Path file = fixture.candidate().resolve("reports/component/source-provenance.json");
+        ObjectNode provenance = (ObjectNode) JSON.readTree(file.toFile());
+        provenance.put("sourceFingerprint", "b".repeat(64));
+        JSON.writeValue(file.toFile(), provenance);
+        refreshPayload(fixture.candidate());
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_SOURCE_BINDING"));
+        AuditedAssertions.assertTrue(details(verdict, "COMPONENT_SOURCE_BINDING").stream()
+                .anyMatch(value -> value.contains("proveniență") && value.contains("manifestul")));
     }
 
     @Test void missingPrePublicationAndroidGateReceiptBlocksHumanReview() throws Exception {
@@ -147,12 +176,15 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertFalse(Files.exists(forbidden));
     }
 
-    private Fixture fixture() throws Exception {
+    private Fixture fixture() throws Exception { return fixture("# Whist Lab\n\n[Descarcă](release/1.2.0/WhistLab-1.2.0.apk)\n"); }
+
+    private Fixture fixture(String readmeText) throws Exception {
         Path candidate = Files.createDirectories(temporary.resolve("candidate/release/" + VERSION));
-        Path source = Files.createDirectories(temporary.resolve("source/src"));
-        Path sourceFile = source.resolve("Game.java"); Files.writeString(sourceFile, "class Game {}\n");
-        String sourceHash = hash(sourceFile);
-        String fingerprint = hashText("src/Game.java\t" + sourceHash + "\n");
+        Path source = Files.createDirectories(temporary.resolve("source"));
+        Path sourceFile = Files.createDirectories(source.resolve("src")).resolve("Game.java"); Files.writeString(sourceFile, "class Game {}\n");
+        Path readmeFile = source.resolve("README.md"); Files.writeString(readmeFile, readmeText);
+        String sourceHash = hash(sourceFile), readmeHash = hash(readmeFile);
+        String fingerprint = hashText("README.md\t" + readmeHash + "\n" + "src/Game.java\t" + sourceHash + "\n");
         String commit = "d".repeat(40);
         Path apk = candidate.resolve("WhistLab-" + VERSION + ".apk"); Files.write(apk, "APK-FIXTURE".getBytes(StandardCharsets.UTF_8));
         String apkHash = hash(apk);
@@ -160,16 +192,24 @@ class ReleaseRagEvaluatorComponentTest {
         Files.createDirectories(candidate.resolve("reports"));
         Path inputManifest = candidate.resolve("reports/apk-inputs.json");
         ObjectNode inputs = JSON.createObjectNode().put("sourceCommit", commit).put("fingerprint", fingerprint);
-        inputs.putArray("files").addObject().put("path", "src/Game.java").put("sha256", sourceHash);
+        inputs.putArray("files").addObject().put("path", "README.md").put("sha256", readmeHash);
+        ((com.fasterxml.jackson.databind.node.ArrayNode) inputs.path("files")).addObject().put("path", "src/Game.java").put("sha256", sourceHash);
         JSON.writeValue(inputManifest.toFile(), inputs);
         Path componentInputs = candidate.resolve("reports/component/source-inputs.json");
         Files.createDirectories(componentInputs.getParent());
         var componentRows = JSON.createArrayNode();
+        componentRows.addObject().put("path", "README.md").put("sha256", readmeHash);
         componentRows.addObject().put("path", "src/Game.java").put("sha256", sourceHash);
         JSON.writeValue(componentInputs.toFile(), componentRows);
         String componentFingerprint = hash(componentInputs);
+        Path provenanceFile = candidate.resolve("reports/component/source-provenance.json");
+        ObjectNode provenance = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "live-source-components")
+                .put("sourceFingerprint", componentFingerprint).put("inputCount", 2).put("inputManifest", "source-inputs.json");
+        JSON.writeValue(provenanceFile.toFile(), provenance);
+        String provenanceFingerprint = hash(provenanceFile);
         ObjectNode run = JSON.createObjectNode().put("kind", "live-source-components").put("status", "PASS")
-                .put("sourceStable", true).put("sourceFingerprint", componentFingerprint).put("inputCount", 1);
+                .put("sourceStable", true).put("sourceFingerprint", componentFingerprint).put("inputCount", 2)
+                .put("inputManifest", "source-inputs.json").put("provenanceReceiptSha256", provenanceFingerprint);
         var groups = JSON.createObjectNode(); var runResults = run.putArray("results");
         for (String module : List.of("atf-validation", "atf-test-android", "atf-tests",
                 "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history")) {
@@ -178,7 +218,7 @@ class ReleaseRagEvaluatorComponentTest {
             Path report = groupFolder.resolve("component-report.html");
             Files.writeString(report, "<!doctype html><html><body>" + module + " Extent component</body></html>");
             ObjectNode execution = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "live-source-components")
-                    .put("apkQualification", false).put("tests", tests).put("provenanceSha256", componentFingerprint)
+                    .put("apkQualification", false).put("tests", tests).put("provenanceSha256", provenanceFingerprint)
                     .put("reportSha256", hash(report));
             execution.putObject("outcomes").put("PASS", tests); execution.putArray("coverageErrors"); execution.putArray("containerFailures");
             JSON.writeValue(groupFolder.resolve("execution.json").toFile(), execution);
@@ -232,7 +272,7 @@ class ReleaseRagEvaluatorComponentTest {
                 .put("rationale", "RAG and governance-only changes; application E2E remains frozen."));
         JSON.writeValue(plan.toFile(), candidatePlan);
         Path outputDirectory = Files.createDirectories(temporary.resolve("verdict"));
-        return new Fixture(candidate, source.getParent(), plan, outputDirectory.resolve("rag.json"));
+        return new Fixture(candidate, source, plan, outputDirectory.resolve("rag.json"));
     }
 
     private static void capturePayload(Path candidate, ObjectNode manifest) throws Exception {

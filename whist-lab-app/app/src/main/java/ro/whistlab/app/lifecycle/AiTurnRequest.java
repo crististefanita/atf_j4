@@ -20,6 +20,10 @@ public final class AiTurnRequest {
     private final AiDifficulty difficulty;
 
     public AiTurnRequest(GameSession session) {
+        this(session, false);
+    }
+
+    public AiTurnRequest(GameSession session, boolean autoGameControlsHuman) {
         this.session = Objects.requireNonNull(session);
         state = session.snapshot();
         difficulty = session.config().aiDifficulty();
@@ -27,7 +31,7 @@ public final class AiTurnRequest {
             throw new IllegalArgumentException("No automated decision in this phase");
         }
         int seat = state.phase() == GamePhase.BIDDING ? state.biddingSeat() : state.currentSeat();
-        if (seat == 0) throw new IllegalArgumentException("The human owns this turn");
+        if (seat == 0 && !autoGameControlsHuman) throw new IllegalArgumentException("The human owns this turn");
     }
 
     public Decision evaluate() {

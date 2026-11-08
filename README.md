@@ -11,7 +11,7 @@ scor comune, teste de componentă și evaluări offline.
 ## Jocul
 
 - **[Fișa Whist Lab 0.14.0](release/0.14.0/README.md)** — ediția curentă, calificarea și raportarea ei.
-- **[Descarcă APK 0.14.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.14.0/WhistLab-0.14.0.apk)** — link public verificat; SHA-256: `1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5`.
+- **[Descarcă APK 0.14.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.14.0/WhistLab-0.14.0.apk)** — link public verificat.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 

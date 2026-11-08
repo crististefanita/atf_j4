@@ -81,6 +81,8 @@ flowchart LR
 
 Receipt-ul JUnit este independent de receipt-ul publicat în HTML. [Confruntarea](../../atf-tests/src/main/java/atf/tests/reporting/aggregate/ComponentReportCoverage.java) refuză identități lipsă, suplimentare ori duplicate și verdicte diferite; totalurile egale nu sunt suficiente.
 
+Fiecare dintre cele trei suite ATF primare are un HTML canonic, propriul receipt și inventarul comun al surselor. Receipt-ul de componente pe sursă declară separat `apkQualification`; asocierea cu APK-ul cere calificarea candidatului. [Indexul versiunii active](../../release/README.md) păstrează rapoartele și identitățile concrete.
+
 </details>
 
 | Frontieră | Contract |

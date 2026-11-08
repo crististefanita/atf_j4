@@ -233,3 +233,26 @@ testChanges:
 [Identitatea livrării](../platform/ATF_AndroidDelivery.md) stabilește versiunea; [politica documentară](ATF_Documentation.md#conținut-stabil-și-date-variabile) clasifică numai destinațiile canonice. Probele refuză pagina nedeclarată, altă versiune, alt repository, imaginea și URL-urile cu modificări; eticheta vizibilă nu primește excepție.
 
 </details>
+
+<details>
+<summary>Control verificat: proprietatea și documentația bibliotecilor</summary>
+
+```yaml
+testChanges:
+  - id: LIBRARY-OWNERSHIP-README
+    status: VERIFIED
+    base: d46948264e7b35347ad812be1e67e9fba30eef05
+    expires: 2026-11-30
+    reason: Require exactly four flat JAR/POM pairs plus the dedicated README and common producer ownership of library source and feedback; preserve physical binary identity, independent negative oracles and consumer acceptance.
+    proof: 'mvn -B -ntp -pl atf-tests -am -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    paths:
+      - atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java
+      - atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java
+      - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
+```
+
+Controalele negative resping README-ul absent, documentele suplimentare, un director în locul README-ului și atribuirea codului ori feedback-ului unui consumer. Bibliotecile distribuite își păstrează coordonatele și hash-urile.
+
+Inventarul de la baza Git declarată este cel al incrementului verificat. Perechile și ghidurile curente sunt definite în [contractul lib](../../lib/README.md).
+
+</details>

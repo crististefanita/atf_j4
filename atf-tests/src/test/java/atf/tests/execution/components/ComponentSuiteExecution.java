@@ -24,7 +24,8 @@ public final class ComponentSuiteExecution {
                 && entry.path("role").asText().equals("primary") && entry.path("layer").asText().equals("component")) allowed = true;
         if (!allowed) throw new IllegalArgumentException("Only a declared primary component gate can run here: " + args[0]);
         Files.createDirectories(output);
-        var provenance = mapper.readTree(Files.readString(Path.of(args[2])));
+        byte[] provenanceBytes = Files.readAllBytes(Path.of(args[2]));
+        var provenance = mapper.readTree(provenanceBytes);
         if (!provenance.path("kind").asText().equals("live-source-components") || provenance.path("apkQualification").asBoolean(true))
             throw new IllegalArgumentException("Explicit live-source provenance without APK qualification required");
         System.setProperty("atf.governance.root", root.toString());
@@ -54,7 +55,7 @@ public final class ComponentSuiteExecution {
         result.put("outcomes", listener.counts());result.put("coverageErrors", errors);
         result.put("containerFailures", listener.containerFailures());
         result.put("junitIdentitySha256", digest(mapper.writeValueAsBytes(listener.invocations())));
-        result.put("provenanceSha256", digest(provenance.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        result.put("provenanceSha256", provenanceFingerprint(provenanceBytes));
         if (Files.exists(canonical)) result.put("reportSha256", digest(Files.readAllBytes(canonical)));
         mapper.writerWithDefaultPrettyPrinter().writeValue(output.resolve("execution.json").toFile(), result);
         System.out.println(mapper.writeValueAsString(result));
@@ -63,5 +64,6 @@ public final class ComponentSuiteExecution {
     private static String digest(byte[] bytes) throws Exception {
         return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
     }
+    static String provenanceFingerprint(byte[] provenanceBytes) throws Exception { return digest(provenanceBytes); }
     private ComponentSuiteExecution() { }
 }

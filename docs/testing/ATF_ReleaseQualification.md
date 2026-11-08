@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Un singur dosar candidat grupează planul, rezultatele și raportul fiecărei selecții. Pregătirea se face în afara proiectului; dosarul activ se înlocuiește numai după calificarea noului APK, conform [retenției](../platform/ATF_ReleaseRetention.md). [Politica RAG](../feedback/ATF_Release_RAG.md) fixează proveniența și verdictul read-only înaintea promovării.
+Un singur dosar candidat grupează planul, rezultatele și raportul fiecărei selecții. Pregătirea se face în afara proiectului; dosarul activ se înlocuiește numai după calificarea noului APK, conform [retenției](../platform/ATF_ReleaseRetention.md). [Politica de dovezi pe platforme](../../config/release-platform-rag-policy.json) fixează proveniența și porțile verdictului read-only înaintea promovării.
 
 ## Ordinea verificărilor
 
@@ -74,15 +74,37 @@ Evaluatorul RAG consumă dovezile deja produse și emite un verdict read-only.
 - Nu construiește, nu rulează teste, nu apelează Git și nu mută ori publică fișiere.
 - Scrie numai verdictul JSON, în afara proiectului, candidatului și snapshot-ului.
 - Fiecare verificare citează calea, SHA-256 și JSON Pointer/linia sursei.
-- Contractul detaliat este în [guvernanța RAG](../feedback/ATF_Release_RAG.md).
+- Lacunele nerezolvate sunt urmărite în [registrul RAG](../feedback/ATF_Release_RAG.md).
 
 Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, platformele, grupurile componente, schimbarea fluxului utilizatorului și decizia E2E cu motiv.
+
+## Ciclul candidatului
+
+```mermaid
+flowchart LR
+    SNAP[Snapshot TMP] -->|selectează| TEST[Teste alese]
+    TEST -->|raportează| EXT[Extent și receipt]
+    EXT -->|leagă| APK[APK și identitate]
+    APK -->|califică| RAG[RAG read-only]
+    RAG -->|blochează| FIX[Corecție în TMP]
+    FIX -->|reia| TEST
+    RAG -->|acceptă| REVIEW[Revizie umană]
+    REVIEW -->|promovează| MAIN[Arbore identic]
+    MAIN -->|publică| PUB[Descărcare verificată]
+```
+
+<details>
+<summary>Legendă: etapele și responsabilitățile candidatului</summary>
+
+Snapshot-ul fixat este baza tuturor selecțiilor. RAG-ul verifică receipt-urile, hash-urile și proveniența declarată; responsabilul candidatului asigură completitudinea inventarului și selecția potrivită riscului. Verdictul maxim permite doar revizie umană, iar promovarea și publicarea rămân etape separate.
+
+</details>
 
 | Grup Android | Dovadă necesară |
 | --- | --- |
 | `atf-validation`, `atf-test-android`, `atf-tests` | Fiecare suită Maven primară are HTML Extent canonic și rezultate fără FAIL/ERROR/SKIP. |
 | `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Fiecare selecție Gradle are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. Rapoartele distincte nu se concatenează; JUnit XML singur nu satisface poarta. |
-| Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK. |
+| Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK; `source-provenance.json` leagă manifestul și receiptele native prin SHA-256 al octeților JSON păstrați. |
 
 Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare. Stadiul publicat cere și dovada descărcării anonime.
 
@@ -102,9 +124,11 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
   --output $VerdictFile
 ```
 
-Variabilele indică dosarul de versiune din candidatul TMP, rădăcina completă a surselor fixate, planul JSON și destinația verdictului. Creează destinația separat, în afara tuturor intrărilor.
-
-`READY_FOR_HUMAN_REVIEW` înseamnă numai că probele citite au trecut verificările implementate. Evaluatorul nu inspectează indexul Git și nu poate dovedi absența unor fișiere omise din input manifest; înainte de promovare, operatorul confruntă commitul și arborele complet. O ieșire `BLOCKED` conține verificările care au eșuat și hash-urile dovezilor, nu o corecție automată.
+- Variabilele indică dosarul de versiune din candidatul TMP, rădăcina completă a surselor fixate, planul JSON și destinația verdictului; creează destinația separat, în afara tuturor intrărilor.
+- `READY_FOR_HUMAN_REVIEW` confirmă numai probele citite care au trecut verificările implementate.
+- Evaluatorul nu inspectează indexul Git și nu poate dovedi absența fișierelor omise din manifest; producătorul snapshot-ului și operatorul confruntă inventarul complet, commitul și arborele înainte de promovare.
+- Riscul și selecțiile sunt declarate în plan, nu deduse automat din diff; lacunele acestor controale sunt urmărite în registrul RAG.
+- `BLOCKED` arată verificările eșuate și hash-urile dovezilor, fără să aplice o corecție automată.
 
 ### Acceptanța APK-ului semnat
 
