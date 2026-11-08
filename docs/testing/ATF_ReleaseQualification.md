@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Un singur dosar candidat grupează planul, rezultatele și raportul fiecărei selecții. Pregătirea se face în afara proiectului; dosarul activ se înlocuiește numai după calificarea noului APK, conform [retenției](../platform/ATF_ReleaseRetention.md).
+Un singur dosar candidat grupează planul, rezultatele și raportul fiecărei selecții. Pregătirea se face în afara proiectului; dosarul activ se înlocuiește numai după calificarea noului APK, conform [retenției](../platform/ATF_ReleaseRetention.md). [Politica RAG](../feedback/ATF_Release_RAG.md) fixează proveniența și verdictul read-only înaintea promovării.
 
 ## Ordinea verificărilor
 
@@ -25,9 +25,9 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 
 | Pas | Selecție și rezultat necesar |
 |---|---|
-| 1. Diferență | Identificați baza, fișierele modificate/adăugate/șterse și contractele afectate. Alegeți versiunea după comportament, apoi fixați inventarul complet al surselor și bibliotecilor copiate. |
-| 2. Componente | Executați întâi oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. JUnit-ul temporar se confruntă cu HTML-ul selecției înaintea eliminării copiilor finale. |
-| 3. Publicare | Confruntați identitățile JUnit–HTML individual și prin suită, apoi Extent/fallback, cauza originală, abort-ul și lipsa capturii. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
+| 1. Diferență | Identificați baza, fișierele modificate/adăugate/șterse și contractele afectate. Selectați straturile după risc, nu doar după eticheta versiunii; fixați în TMP inventarul complet al surselor și bibliotecilor copiate. |
+| 2. Componente | Executați oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. Fiecare selecție executată publică HTML Extent prin `atf-reporting`; JUnit-ul temporar se confruntă cu HTML-ul înaintea eliminării copiilor finale. |
+| 3. Publicare | Confruntați exact identitățile și rezultatele JUnit–HTML pe fiecare selecție; inspectați fallback-ul numai dacă a fost selectat și calificat. Verificați cauza originală, abort-ul, lipsa capturii și imaginile inline Base64. XML-ul rămâne oracol temporar, nu raport duplicat în dosarul final. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
 | 4. HTML | Aplicați [revizia interactivă minimă](../reporting/ATF_Audit.md#revizia-interactivă-minimă) pe HTML-ul identificat prin hash; păstrați proprietarii, controalele și limitele probei. |
 | 5. APK | Construiți din snapshot în TMP; verificați versiunea, SDK-urile, bytes, SHA-256, CRC, semnătura și alinierea. Debug și Release au identități distincte. |
 | 6. Android | Rezervați dispozitivul; rulați scenariul scurt al schimbării și profilul care distinge riscul. Restaurați datele și configurația. O partidă completă nu se repetă pe toate rezoluțiile. |
@@ -65,6 +65,46 @@ Prima parte oferă raportul principal și starea calificării. Detaliile rămân
 - **Retratare:** la corecția documentelor, păstrați sursa rezultatelor și descrieți selecția reverificată; o compoziție de rezultate trecute nu devine o singură rulare integrală nouă.
 
 ## Comenzi și limite
+
+### Verdictul RAG read-only
+
+Evaluatorul RAG consumă dovezile deja produse și emite un verdict read-only.
+
+- Intrări: plan JSON, manifestul candidatului, raportările Extent selectate și rădăcina snapshot-ului sursă.
+- Nu construiește, nu rulează teste, nu apelează Git și nu mută ori publică fișiere.
+- Scrie numai verdictul JSON, în afara proiectului, candidatului și snapshot-ului.
+- Fiecare verificare citează calea, SHA-256 și JSON Pointer/linia sursei.
+- Contractul detaliat este în [guvernanța RAG](../feedback/ATF_Release_RAG.md).
+
+Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, platformele, grupurile componente, schimbarea fluxului utilizatorului și decizia E2E cu motiv.
+
+| Grup Android | Dovadă necesară |
+| --- | --- |
+| `atf-validation`, `atf-test-android`, `atf-tests` | Fiecare suită Maven primară are HTML Extent canonic și rezultate fără FAIL/ERROR/SKIP. |
+| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Fiecare selecție Gradle are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. Rapoartele distincte nu se concatenează; JUnit XML singur nu satisface poarta. |
+| Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK. |
+
+Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare. Stadiul publicat cere și dovada descărcării anonime.
+
+- Flux neschimbat: E2E poate rămâne `NOT_RUN` cu justificare explicită.
+- Flux schimbat: verdictul cere rapoarte E2E trecute.
+- `NOT_RUN` nu devine rezultat pozitiv.
+
+Din rădăcina proiectului, cu planul și candidatul păstrate în locația TMP:
+
+```powershell
+$ProjectRoot = (Get-Location).Path
+node .\atf-tests\tools\evaluate-release-rag.mjs `
+  --project-root $ProjectRoot `
+  --candidate-dir $CandidateDir `
+  --source-root $SourceSnapshotDir `
+  --plan-file $QualificationPlan `
+  --output $VerdictFile
+```
+
+Variabilele indică dosarul de versiune din candidatul TMP, rădăcina completă a surselor fixate, planul JSON și destinația verdictului. Creează destinația separat, în afara tuturor intrărilor.
+
+`READY_FOR_HUMAN_REVIEW` înseamnă numai că probele citite au trecut verificările implementate. Evaluatorul nu inspectează indexul Git și nu poate dovedi absența unor fișiere omise din input manifest; înainte de promovare, operatorul confruntă commitul și arborele complet. O ieșire `BLOCKED` conține verificările care au eșuat și hash-urile dovezilor, nu o corecție automată.
 
 ### Acceptanța APK-ului semnat
 

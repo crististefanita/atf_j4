@@ -26,6 +26,104 @@ class ReleaseRagPlatformGovernanceTest {
         assertFalse(policy.path("rules").path("androidEvidenceSatisfiesIos").asBoolean());
     }
 
+    @Test void candidateLifecycleKeepsBuildAndPublicationOutsideRagAndRequiresAnExactMainSnapshot() throws Exception {
+        JsonNode lifecycle = policy().path("candidateLifecycle");
+        assertEquals(List.of("TEMP_SOURCE_PINNED", "TEMP_QUALIFIED", "READY_FOR_HUMAN_REVIEW", "PROMOTED_TO_MAIN", "PUBLISHED"),
+                strings(lifecycle.path("states")));
+        assertTrue(lifecycle.path("candidateArtifactsOutsideCheckoutUntilPromotion").asBoolean());
+        assertTrue(strings(lifecycle.path("promotionRequires")).containsAll(List.of(
+                "aggregateStatus=READY_FOR_HUMAN_REVIEW", "mainTreeSha256EqualsQualifiedSnapshotSha256")));
+        assertTrue(strings(lifecycle.path("publicationRequires")).containsAll(List.of(
+                "promotedCommitMatchesQualifiedSnapshot", "publishedApkSha256EqualsQualifiedApkSha256",
+                "anonymousDownloadSha256EqualsPublishedApkSha256")));
+        assertFalse(lifecycle.path("ragMayAdvanceLifecycle").asBoolean());
+        assertTrue(lifecycle.path("ragOutputOutsideCheckout").asBoolean());
+    }
+
+    @Test void componentAndE2eReportsUseAtfExtentAndKeepJUnitOnlyAsATemporaryOracle() throws Exception {
+        JsonNode reporting = policy().path("reportingContract");
+        assertEquals("atf-reporting", reporting.path("owner").asText());
+        assertEquals("Extent", reporting.path("renderer").asText());
+        assertTrue(reporting.path("oneCanonicalHtmlPerExecutedSuiteSelection").asBoolean());
+        assertTrue(reporting.path("componentAndE2eScopesRemainDistinct").asBoolean());
+        assertTrue(reporting.path("exactJUnitIdentityAndOutcomeParity").asBoolean());
+        assertEquals("temporary-independent-oracle", reporting.path("junitXmlRole").asText());
+        assertFalse(reporting.path("duplicateJUnitXmlInFinalRelease").asBoolean());
+        assertTrue(reporting.path("capturedImagesMustBeInlineBase64").asBoolean());
+        assertTrue(reporting.path("reportBindsQualifiedSourceSnapshot").asBoolean());
+    }
+
+    @Test void apkSigningGateDistinguishesTestDistributionFromProduction() throws Exception {
+        JsonNode signing = policy().path("signingChannels");
+        assertTrue(signing.path("channelMustBeDeclared").asBoolean());
+        assertTrue(signing.path("testDistributionMayUseDebugCertificate").asBoolean());
+        assertTrue(signing.path("productionDistributionRequiresManagedKey").asBoolean());
+        assertTrue(signing.path("allChannelsRequireCertificateFingerprintAndUpgradeCompatibility").asBoolean());
+    }
+
+    @Test void executableRagIsReadOnlyCitedAndKeepsUnchangedApplicationE2eFrozen() throws Exception {
+        JsonNode evaluator = policy().path("ragEvaluator");
+        assertEquals("atf-tests/tools/evaluate-release-rag.mjs", evaluator.path("entrypoint").asText());
+        assertEquals("ATF_RELEASE_RAG_VERDICT", evaluator.path("outputSchema").asText());
+        assertTrue(evaluator.path("outputMustBeOutsideInputs").asBoolean());
+        assertEquals("atf-tests", evaluator.path("requiredComponentGroup").asText());
+        assertEquals(List.of("atf-validation", "atf-test-android", "atf-tests",
+                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history"),
+                strings(evaluator.path("requiredComponentGroupsByPlatform").path("android")));
+        assertEquals(List.of("androidComponents", "apkBuild", "apkIdentity", "signing"),
+                strings(evaluator.path("platformGates").path("androidBeforeHumanReview")));
+        assertEquals(List.of("publicDownload"), strings(evaluator.path("platformGates").path("androidAfterPublication")));
+        assertTrue(evaluator.path("platformGates").path("gateReceiptMustBeHashBound").asBoolean());
+        assertEquals("reports/component/source-inputs.json", evaluator.path("componentSourceBinding").path("inputManifest").asText());
+        assertEquals("reports/component/{group}/execution.json", evaluator.path("componentSourceBinding").path("executionReceiptPattern").asText());
+        assertTrue(evaluator.path("componentSourceBinding").path("sourceSetMustEqualReleaseInputManifest").asBoolean());
+        assertTrue(evaluator.path("componentSourceBinding").path("eachExtentMustMatchExecutionReceipt").asBoolean());
+        assertTrue(strings(evaluator.path("citationsRequire")).containsAll(List.of("path", "sha256", "jsonPointerAndLineForJson")));
+        assertTrue(evaluator.path("doesNotInspectGitIndexOrExecuteGit").asBoolean());
+        assertTrue(evaluator.path("doesNotPerformPromotionOrPublication").asBoolean());
+        assertTrue(evaluator.path("e2e").path("notRunNeverMeansPass").asBoolean());
+        assertTrue(evaluator.path("e2e").path("changedUserFlowRequiresPass").asBoolean());
+        assertTrue(policy().path("suiteQualification").path("currentApplicationE2eMayBeFrozenWhenNoUserFlowChanges").asBoolean());
+        Path root = GovernanceProject.locateProjectRoot();
+        String cli = Files.readString(root.resolve(evaluator.path("entrypoint").asText()));
+        assertFalse(cli.contains("node:child_process"));
+        assertFalse(cli.contains("execSync("));
+        assertFalse(cli.contains("spawn("));
+    }
+
+    @Test void changeRiskSelectsCoverageInsteadOfTheVersionLabel() throws Exception {
+        JsonNode scope = policy().path("suiteQualification");
+        assertTrue(scope.path("scopeComesFromChangedContractsAndRisk").asBoolean());
+        assertFalse(scope.path("versionLabelMayReduceRequiredCoverage").asBoolean());
+        assertTrue(scope.path("e2eNotSelectedRequiresRiskRationale").asBoolean());
+        assertTrue(strings(scope.path("profiles").path("maintenanceOrRefactor")).containsAll(
+                List.of("affectedUnitOrComponent", "documentationAndGovernance")));
+        assertTrue(strings(scope.path("profiles").path("behaviorChange")).contains("targetedE2eWhenUserFlowChanges"));
+        assertTrue(strings(scope.path("profiles").path("structuralOrReleaseChange")).containsAll(
+                List.of("broadUnitAndComponent", "riskSelectedE2e", "releaseArtifactAndDownload")));
+    }
+
+    @Test void releaseGuideExplainsTempQualificationBeforePromotionAndCanonicalReporting() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot();
+        String ragGuide = Files.readString(root.resolve("docs/feedback/ATF_Release_RAG.md"));
+        String qualificationGuide = Files.readString(root.resolve("docs/testing/ATF_ReleaseQualification.md"));
+        String evaluator = Files.readString(root.resolve("atf-tests/tools/evaluate-release-rag.mjs"));
+        assertTrue(ragGuide.contains("## Ciclul candidatului"));
+        assertTrue(ragGuide.contains("READY_FOR_HUMAN_REVIEW"));
+        assertTrue(ragGuide.contains("snapshot-ul calificat"));
+        assertTrue(ragGuide.contains("Fiecare selecție are propriul HTML Extent și receipt"));
+        assertTrue(ragGuide.contains("Evaluatorul RAG este acum un CLI read-only"));
+        assertTrue(ragGuide.contains("evaluate-release-rag.mjs"));
+        assertTrue(ragGuide.contains("nu verifică indexul Git"));
+        assertTrue(qualificationGuide.contains("ATF_Release_RAG.md"));
+        assertTrue(qualificationGuide.contains("JUnit-ul temporar"));
+        assertTrue(qualificationGuide.contains("--plan-file"));
+        assertTrue(qualificationGuide.contains("`NOT_RUN`"));
+        assertTrue(qualificationGuide.contains("nu devine rezultat pozitiv"));
+        assertTrue(qualificationGuide.contains("`whist-lab-app-bidding`"));
+        assertTrue(evaluator.contains("READY_FOR_HUMAN_REVIEW"));
+    }
+
     @Test void androidPassCannotSatisfyAnExplicitIosClaim() throws Exception {
         JsonNode policy = policy();
         JsonNode candidate = candidate(List.of("android", "ios"), true, "apk", true, "PASS");

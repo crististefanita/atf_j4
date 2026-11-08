@@ -34,3 +34,5 @@ O regulă JUnit deține invocarea, inclusiv fixture-urile before/after. Durata a
 ## Rulare
 
 Task-urile Gradle de testare aplică automat puntea. `whist.auditOutput` alege directorul rapoartelor, iar `whist.auditSource` fixează identitatea inventarului sursei pentru calificare. Verificarea finală confruntă HTML-ul cu JUnit-ul original și cu inspectorul bibliotecii; simpla existență a fișierului nu este acceptanță.
+
+Versiunile Kitului și Reporting se citesc din `atf.testkit.version` și `atf.reporting.version` ale POM-ului rădăcină. Configurarea refuză perechile locale JAR/POM absente sau cu coordonate divergente; nu duplică versiuni și nu alege Reporting prin sortare lexicală în build-ul Gradle.

@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-- [Agregarea componentelor Maven](run-component-suites.ps1) compilează într-un staging propriu și execută suitele primare, cu un HTML canonic per modul. [Contractul auditului](../docs/reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) explică inventarul, refuzurile și separarea de calificarea APK-ului.
+- [Agregarea componentelor Maven și Gradle](run-component-suites.ps1) compilează într-un staging propriu și execută suitele Maven primare plus cele patru colecții Android JVM. Fiecare selecție păstrează un HTML Extent și receipt proprii. [Contractul auditului](../docs/reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) explică inventarul, refuzurile și separarea de calificarea APK-ului.
 
 Acest director coordonează operații care traversează modulele: verificări, construirea aplicației și scenarii Android activate explicit. Algoritmii, validatoarele și testele uneltelor aparțin modulelor care dețin comportamentul.
 

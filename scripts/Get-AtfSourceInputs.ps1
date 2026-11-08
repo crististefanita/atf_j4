@@ -65,5 +65,9 @@ function Visit-InputDirectory([string]$directory) {
     }
 }
 Visit-InputDirectory $root
-$result = @($rows | Sort-Object path)
+$rows.Sort([System.Comparison[object]]{
+    param($left,$right)
+    [StringComparer]::Ordinal.Compare([string]$left.path,[string]$right.path)
+})
+$result = $rows.ToArray()
 if ($AsJson) { ConvertTo-Json -InputObject $result -Depth 5 -Compress } else { $result }

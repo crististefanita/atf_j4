@@ -65,7 +65,7 @@ Fiecare producător se califică pe suprafața API efectiv folosită. Trecerea u
 
 ## Agregarea componentelor pe sursa live
 
-[Lansatorul componentelor](../../scripts/run-component-suites.ps1) execută intrările primare de componentă din [catalogul Maven](../../config/atf-test-suites.json). Compilarea și cache-ul aparțin unei copii TMP; fiecare modul produce un HTML canonic cu invocări distincte, comparațiile evaluate și proveniența surselor.
+[Lansatorul componentelor](../../scripts/run-component-suites.ps1) execută intrările primare de componentă din [catalogul Maven](../../config/atf-test-suites.json) și cele patru colecții Gradle ale aplicației (comenzi, licitare, afișaj și istoric). Compilarea și cache-ul Maven aparțin unei copii TMP; fiecare modul și selecție Gradle produce propriul HTML Extent cu invocări distincte, comparațiile evaluate și proveniența surselor. Cele patru HTML-uri Gradle nu se concatenează într-un raport sintetic.
 
 ```mermaid
 flowchart LR
@@ -91,9 +91,9 @@ Receipt-ul JUnit este independent de receipt-ul publicat în HTML. [Confruntarea
 | Calificare HTML | Profilul așteptat provine din captură, independent de fișierul publicat. Etichetele vizibile se confruntă cu spațiile normalizate conform HTML; etichetele publicate, valorile și corpurile originale rămân păstrate. |
 | Proveniență | HTML-ul indică amprenta surselor, configurația și cardinalitatea inventarului; manifestul unic de hash-uri este metadată tehnică a distribuției. Comparațiile și inputurile testului rămân în HTML, fără copii XML. |
 | Dimensiunea părților | `InputPartCharacters` configurează corpurile integrale ale agregatului, păstrând preview-ul aserțiunilor și valorile evaluate. Părțile mai mari evită multiplicarea marcajelor HTML; nu elimină text și nu schimbă bugetul semantic al componentei testate. |
-| Domeniu | Execuția califică sursa și suitele Maven declarate. Nu califică un APK istoric, componentele Gradle ori o interacțiune nouă pe Android. |
+| Domeniu | Execuția califică sursa și suitele Maven și Gradle declarate. Nu califică un APK și nu execută interacțiuni Android; E2E rămâne selecție separată. |
 
-Din rădăcina proiectului, cu JDK-ul și cache-ul Maven pregătite:
+Din rădăcina proiectului, cu JDK, Android SDK 36 și cache-urile Maven/Gradle pregătite:
 
 ```powershell
 .\scripts\run-component-suites.ps1 -JavaHome '<cale-JDK>' -MavenCache '<cache-Maven>'

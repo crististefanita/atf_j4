@@ -4,6 +4,7 @@ param(
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
     [string]$Maven = 'mvn',
+    [string]$AndroidSdk = 'C:\tools\whist-android-sdk',
     [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384
 )
 $ErrorActionPreference = 'Stop'
@@ -20,6 +21,7 @@ if ($RunRoot.Equals($sourceRoot,[StringComparison]::OrdinalIgnoreCase) -or
 if (Test-Path -LiteralPath $RunRoot) { throw 'Directorul rulării trebuie să fie nou.' }
 $java = if ($JavaHome) { Join-Path $JavaHome 'bin/java.exe' } else { (Get-Command java -ErrorAction Stop).Source }
 if (-not (Test-Path -LiteralPath $java -PathType Leaf)) { throw 'Este necesar un JDK complet compatibil cu proiectul.' }
+if (-not (Test-Path -LiteralPath (Join-Path $AndroidSdk 'platforms/android-36/android.jar') -PathType Leaf)) { throw 'Este necesar Android SDK platform 36 pentru selecțiile Gradle ale aplicației.' }
 Get-Command $Maven -ErrorAction Stop | Out-Null
 $stage = Join-Path ([IO.Path]::GetTempPath()) ('whist-component-suites-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $stage,$RunRoot | Out-Null
@@ -43,9 +45,13 @@ if (Test-Path -LiteralPath $MavenCache -PathType Container) {
     if ($LASTEXITCODE -gt 7) { throw 'Copierea cache-ului Maven a eșuat.' }
 }
 $savedJavaHome = $env:JAVA_HOME
+$savedAndroidHome = $env:ANDROID_HOME
+$savedAndroidSdkRoot = $env:ANDROID_SDK_ROOT
 $results = [System.Collections.Generic.List[object]]::new()
 try {
     if ($JavaHome) { $env:JAVA_HOME = $JavaHome }
+    $env:ANDROID_HOME = [IO.Path]::GetFullPath($AndroidSdk)
+    $env:ANDROID_SDK_ROOT = [IO.Path]::GetFullPath($AndroidSdk)
     Push-Location $stage
     try {
         & $Maven -B -o -ntp "-Dmaven.repo.local=$repository" '-DskipTests' install *> (Join-Path $stage 'compile.log')
@@ -67,16 +73,75 @@ try {
             $receipt = Join-Path $destination 'execution.json'
             $results.Add([pscustomobject]@{module=$gate.module;suite=$gate.suite;exitCode=$exit;receipt=if(Test-Path -LiteralPath $receipt){Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json}else{$null}})
         }
+        $gradle = Join-Path $stage 'whist-lab-app/gradlew.bat'
+        $appSelections = [ordered]@{
+            bidding = 'testDebugBiddingComponents'
+            commands = 'testDebugCommandsComponents'
+            display = 'testDebugDisplayComponents'
+            history = 'testDebugHistoryComponents'
+        }
+        Push-Location (Join-Path $stage 'whist-lab-app')
+        try {
+            foreach ($selection in $appSelections.GetEnumerator()) {
+                $group = 'whist-lab-app-' + $selection.Key
+                $taskName = $selection.Value
+                & $gradle --no-daemon --offline --console=plain (':app:' + $taskName) "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" *> (Join-Path $stage ($group + '.log'))
+                $exit = $LASTEXITCODE
+                $generated = Join-Path $RunRoot ("whist-lab-app-app-" + $taskName + '.html')
+                $destination = Join-Path $RunRoot $group
+                New-Item -ItemType Directory -Path $destination -Force | Out-Null
+                $report = Join-Path $destination 'component-report.html'
+                if (Test-Path -LiteralPath $generated -PathType Leaf) { Move-Item -LiteralPath $generated -Destination $report -Force }
+                $xmlDirectory = Join-Path $stage ("whist-lab-app/app/build/test-results/" + $taskName)
+                $xmlFiles = if (Test-Path -LiteralPath $xmlDirectory -PathType Container) { @(Get-ChildItem -LiteralPath $xmlDirectory -Filter '*.xml' -File) } else { @() }
+                $totals = [ordered]@{PASS=0;FAIL=0;ERROR=0;SKIP=0}
+                foreach ($xmlFile in $xmlFiles) {
+                    [xml]$junit = Get-Content -LiteralPath $xmlFile.FullName -Raw
+                    $suites = @($junit.SelectNodes('/testsuite | /testsuites/testsuite'))
+                    if (-not $suites.Count) { throw "JUnit XML fără testsuite: $($xmlFile.Name)" }
+                    foreach ($suite in $suites) {
+                        $testCount = [int]$suite.GetAttribute('tests')
+                        $failCount = [int]$suite.GetAttribute('failures')
+                        $errorCount = [int]$suite.GetAttribute('errors')
+                        $skipCount = [int]$suite.GetAttribute('skipped')
+                        $totals.PASS += $testCount - $failCount - $errorCount - $skipCount
+                        $totals.FAIL += $failCount; $totals.ERROR += $errorCount; $totals.SKIP += $skipCount
+                    }
+                }
+                $testCount = $totals.PASS + $totals.FAIL + $totals.ERROR + $totals.SKIP
+                $reportHash = if (Test-Path -LiteralPath $report -PathType Leaf) { (Get-FileHash -LiteralPath $report -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+                $accepted = $exit -eq 0 -and $testCount -gt 0 -and $totals.FAIL -eq 0 -and $totals.ERROR -eq 0 -and $totals.SKIP -eq 0 -and [bool]$reportHash
+                $recordedExit = if ($accepted) { 0 } elseif ($exit -eq 0) { 1 } else { $exit }
+                $execution = [ordered]@{
+                    schemaVersion=1;kind='live-source-components';apkQualification=$false;selection=$taskName
+                    tests=$testCount;outcomes=$totals;coverageErrors=@();containerFailures=@()
+                    provenanceSha256=$fingerprint;reportSha256=$reportHash
+                }
+                if ($reportHash) { $execution | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destination 'execution.json') -Encoding utf8 }
+                $results.Add([pscustomobject]@{
+                    module=$group;suite=$taskName;exitCode=$recordedExit
+                    receipt=if($reportHash){$execution}else{$null}
+                })
+            }
+        } finally { Pop-Location }
     } finally { Pop-Location }
-} finally { $env:JAVA_HOME = $savedJavaHome }
+} finally {
+    $env:JAVA_HOME = $savedJavaHome
+    $env:ANDROID_HOME = $savedAndroidHome
+    $env:ANDROID_SDK_ROOT = $savedAndroidSdkRoot
+}
 $after = Get-Inputs
 $stable = $serialized -ceq (ConvertTo-Json -InputObject $after -Depth 5 -Compress)
 $passed = $stable -and $results.Count -gt 0 -and @($results | Where-Object {$_.exitCode -ne 0}).Count -eq 0
-[ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;sourceFingerprint=$fingerprint;sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;results=$results} |
-    ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $RunRoot 'run.json') -Encoding utf8
-$lines = @('# Rapoartele componentelor pe sursa live','','## Pe scurt','','Această execuție verifică suitele primare Maven de componentă. Nu califică un APK și nu reexecută Android; proveniența și comparațiile sunt în fiecare HTML.','','| Modul | Raport | Metadate |','|---|---|---|')
-foreach ($result in $results) { $lines += '| ' + $result.module + ' | [Extent](' + $result.module + '/component-report.html) | [Execuție](' + $result.module + '/execution.json) |' }
-$lines += @('','Metadatele confruntă identitățile și rezultatele JUnit cu receipt-urile HTML; fișierele XML și imaginile auxiliare nu sunt livrabile ale acestei execuții. Gradle și acceptanța nativă au colecții separate.')
+$run = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;sourceFingerprint=$fingerprint;sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$before.Count;results=$results}
+$run | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-component-run.json') -Encoding utf8
+$lines = @('# Rapoartele componentelor pe sursa fixată','','## Pe scurt','','Această execuție verifică suitele primare Maven și cele patru selecții Gradle ale aplicației. Nu califică un APK și nu folosește un dispozitiv; fiecare selecție are Extent și receipt proprii.','','| Selecție | Raport | Metadate |','|---|---|---|')
+foreach ($result in $results) {
+    $reportPath = $result.module + '/component-report.html'
+    $receiptPath = $result.module + '/execution.json'
+    $lines += '| ' + $result.module + ' | [Extent](' + $reportPath + ') | [Execuție](' + $receiptPath + ') |'
+}
+$lines += @('','`source-inputs.json` și `source-component-run.json` leagă toate selecțiile de aceeași amprentă. XML-ul JUnit rămâne temporar pentru confruntare; nu se păstrează ca raport duplicat în dosarul final. E2E rămâne separat și neexecutat.')
 $lines | Set-Content -LiteralPath (Join-Path $RunRoot 'README.md') -Encoding utf8
-if (-not $passed) { throw "Execuția, acoperirea HTML sau stabilitatea surselor a eșuat. Consultați $RunRoot/run.json și $stage." }
+if (-not $passed) { throw "Execuția, acoperirea HTML sau stabilitatea surselor a eșuat. Consultați $RunRoot/source-component-run.json și $stage." }
 Write-Output "PASS: $RunRoot/README.md"

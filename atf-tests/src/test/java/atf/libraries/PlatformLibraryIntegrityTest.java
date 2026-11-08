@@ -62,6 +62,28 @@ class PlatformLibraryIntegrityTest {
         }
     }
 
+    @Test void gradleAuditFixturesFollowThePomSelectedTestKitPair() throws Exception {
+        Path project = PlatformLibrarySurface.workspace();
+        String kitVersion = PlatformLibrarySurface.version(project, "test-kit");
+        String reportingVersion = PlatformLibrarySurface.version(project, "reporting");
+        Path kitJar = project.resolve("lib/atf-test-kit-" + kitVersion + ".jar");
+        Path kitPom = project.resolve("lib/atf-test-kit-" + kitVersion + ".pom");
+        Path reportingJar = project.resolve("lib/atf-reporting-" + reportingVersion + ".jar");
+        Path reportingPom = project.resolve("lib/atf-reporting-" + reportingVersion + ".pom");
+        String build = Files.readString(project.resolve("whist-lab-app/test-audit/build.gradle"));
+
+        AuditedAssertions.assertTrue(Files.isRegularFile(kitJar), "The Maven-selected Test Kit JAR must exist for Gradle fixtures");
+        AuditedAssertions.assertTrue(Files.isRegularFile(kitPom), "The Maven-selected Test Kit POM must exist for Gradle fixtures");
+        AuditedAssertions.assertTrue(Files.isRegularFile(reportingJar), "The Maven-selected Reporting JAR must exist for Gradle fixtures");
+        AuditedAssertions.assertTrue(Files.isRegularFile(reportingPom), "The Maven-selected Reporting POM must exist for Gradle fixtures");
+        AuditedAssertions.assertTrue(build.contains("atf.testkit.version") && build.contains("atf.reporting.version"),
+                "Gradle must derive both dependency versions from the root Maven POM");
+        AuditedAssertions.assertTrue(build.contains("lib/atf-test-kit-${testKitVersion}.jar"), "Gradle must consume the matched JAR");
+        AuditedAssertions.assertTrue(build.contains("lib/atf-reporting-${reportingVersion}.jar"), "Gradle must consume the matched Reporting JAR");
+        AuditedAssertions.assertFalse(build.contains("reportingPairs"), "Reporting must not be selected by lexical version ordering");
+        AuditedAssertions.assertFalse(build.contains("atf-test-kit-1.0.0-k1.jar"), "An old release must not remain pinned");
+    }
+
     private void prepare(String artifact) throws Exception {
         Files.createDirectories(root.resolve("lib"));
         Files.writeString(root.resolve("pom.xml"), "<project><properties><atf.core.version>fixture</atf.core.version><atf."

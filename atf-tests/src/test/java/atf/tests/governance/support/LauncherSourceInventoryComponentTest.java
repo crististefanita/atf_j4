@@ -37,6 +37,8 @@ class LauncherSourceInventoryComponentTest {
         for (String path : Set.of("release/old.java", "build/noise", "module/target/noise",
                 "game/logic/build/noise", "game/build/noise", ".git/noise")) write(root, path, "generated");
         Map<String, String> before = inventory(root, scratch);
+        AuditedAssertions.assertEquals(before.keySet().stream().sorted().toList(), List.copyOf(before.keySet()),
+                "Fingerprint inputs use deterministic ordinal path order, not host locale order");
         AuditedAssertions.assertEquals(Set.of("config/atf-governance-policy.json", "module/pom.xml",
                 release, target, build, custom, service), before.keySet());
         AuditedAssertions.assertEquals(hash(release), before.get(release));

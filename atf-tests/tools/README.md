@@ -26,4 +26,27 @@ node atf-tests/tools/record-release-integrity.mjs
 
 `--project <root>` și `--version <version>` permit o rădăcină și o ediție explicite. Unealta nu execută teste și nu promovează calificarea; [verificatorul Java](../src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseIntegrity.java) confruntă separat octeții și rezultatele JUnit. [Componentele manifestului](../src/test/java/atf/tests/governance/documentation/release/integrity/ManifestIntegrityComponentTest.java) exercită și lansatorul real pe fișiere temporare, inclusiv pe căi cu spații și diacritice.
 
+## Evaluarea RAG a candidatului
+
+[evaluate-release-rag.mjs](evaluate-release-rag.mjs) citește planul, politica, manifestul, payload-ul, rapoartele Extent și snapshot-ul sursă. Verifică SHA-256 și ordinea ordinală declarată, leagă fiecare HTML de receipt-ul selecției și compară setul sursă al componentelor cu cel folosit la APK. Pentru Android sunt obligatorii cele trei suite Maven primare și cele patru selecții Gradle ale aplicației; fiecare raport rămâne distinct, iar JUnit XML singur nu satisface poarta.
+
+```powershell
+$ProjectRoot = (Get-Location).Path
+node .\atf-tests\tools\evaluate-release-rag.mjs `
+  --project-root $ProjectRoot `
+  --candidate-dir $CandidateDir `
+  --source-root $SourceSnapshotDir `
+  --plan-file $QualificationPlan `
+  --output $VerdictFile
+```
+
+Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Singura scriere este `$VerdictFile`, în afara tuturor intrărilor.
+
+- Codul `0` înseamnă `READY_FOR_HUMAN_REVIEW`; `2` înseamnă `BLOCKED`; `1` indică intrare sau invocare invalidă.
+- Înaintea reviziei umane se cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.
+- Starea publicată cere și receipt pentru descărcarea anonimă.
+- E2E neexecutat rămâne `NOT_RUN`; schimbarea unui flux utilizator cere grupuri E2E Extent trecute.
+
+Evaluatorul nu rulează Git, nu verifică indexul și nu inspectează fișierele omise din input manifest. Revizia operatorului rămâne necesară pentru arborele complet, promovare și publicare. Contractul detaliat este în [guvernanța RAG](../../docs/feedback/ATF_Release_RAG.md) și [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md).
+
 [Modulul de integrare](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)

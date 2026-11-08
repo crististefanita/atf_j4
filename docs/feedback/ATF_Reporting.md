@@ -65,9 +65,14 @@ Confruntarea inventarului și a hash-urilor dovedește păstrarea identității 
 
 **P1 · responsabil adaptor și pregătirea release-ului: calificarea colecțiilor și migrarea istorică.** [Agregarea pe sursa live](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) execută intrările primare Maven, iar [task-urile Gradle](../testing/ATF_GradleComponents.md) confruntă fiecare selecție cu propriul HTML. Identitățile se numără o singură dată; unitățile, componentele și cercetarea își păstrează categoria. O nouă execuție nu primește identitatea unui APK anterior.
 
+**Constatare curentă pentru dosarul activ:** release-ul `0.14.0` include Extent pentru cele trei suite ATF, însă cele 518 rezultate Gradle sunt păstrate doar ca JUnit XML, iar manifestul nu declară HTML-urile Extent Gradle și nici o suită E2E Extent. Puntea Gradle produce Extent în workspace, dar această capabilitate nu este legată de agregarea livrării. Dosarul rămâne o evidență istorică a ceea ce a fost publicat; nu îl „reparăm” prin copierea unui raport vechi sau prin atribuirea unei rulări noi APK-ului deja calificat.
+
 - [ ] Extindeți captura în timpul evaluării la familiile Gradle: input, expected independent, actual și verdict. Păstrați clasificarea semantică și separarea de unități, cercetare și corpus.
 - [ ] Calificați o intrare canonică pentru fiecare selecție încă nemigrată, cu invocări parametrizate distincte și refuz la omisiune, duplicare ori rezultat divergent.
 - [ ] Încorporați datele originale obligatorii înaintea eliminării XML/PNG/JSON istorice. Când comparațiile nu au fost capturate, o nouă execuție primește identitate proprie; tabelul PASS din XML nu reconstruiește expected/actual și nu recalifică APK-ul vechi.
+- [ ] Conectați selecțiile primare componentă și E2E la dosarul candidatului: un HTML Extent canonic prin `atf-reporting` pentru fiecare selecție rulată, egalitate exactă JUnit–HTML, sursă/versiune identificate și capturi efectiv produse inline Base64. XML-ul rămâne temporar pentru confruntare și nu se păstrează ca raport duplicat în dosarul final.
+- [ ] Adăugați la manifest câte un grup auditat pentru fiecare HTML Gradle și E2E executat; eliminați numai XML-ul aceleiași populații după trecerea verificatorului și revizia autonomă. Păstrați separate suita unit, smoke-ul nativ și diagnosticele cu valoare unică.
+- [ ] Guvernați legătura de la amprenta TMP la APK și commit: același inventar sursă trebuie să fie în candidatul verificat și arborele promovat în `main`; orice diferență invalidează calificarea dependentă.
 
 **Închidere:** HTML-urile canonice permit auditul selecțiilor declarate, cu metadate justificate și proveniență distinctă. Dovezile unice nemigrate rămân identificate; eliminarea lor ori mascarea unei dependențe nu reprezintă agregare.
 
@@ -84,6 +89,29 @@ Consumatorul deține momentul validării și datele transmise. Dacă API-ul publ
 | Prioritate | Responsabil și calificare rămasă | Nivel și criteriu de închidere |
 |---|---|---|
 | P2 | Consumatorul raportării: costul selecției și compoziției la populații mari ori predominant cu eșec. | Componente cu populații controlate și mediu identificat: cost, număr de comparații și corp opțional, cu toate eșecurile, valorile obligatorii și inventarul omisiunilor păstrate. |
+
+## RPT-EXTENT-REPEATED-PAYLOAD — compactare fără pierderea auditului
+
+**P2 · responsabilul bibliotecii de raportare: costul HTML-ului component fără reducerea dovezilor.** Măsurarea Extent dintr-o execuție primară de componentă:
+
+| Măsurătoare | Valoare |
+|---|---:|
+| Teste promovate | 257 |
+| Dimensiune HTML | 25.887.708 octeți |
+| Blocuri `atf-observation-body` | 2.008 |
+| Text escapate în blocuri | 19.425.351 caractere |
+| Duplicări byte-identice | 700 blocuri / 11.105.130 caractere repetate |
+| PNG Base64 | 75 apariții / 9 payload-uri distincte |
+
+Rezultatul componentelor a fost PASS; constatarea privește costul raportului și navigarea lui.
+
+- [ ] Profilul compact trebuie să păstreze fiecare owner, comparație, verdict și corp integral accesibil offline în același HTML. Nu eliminați valori și nu mutați conținutul în ZIP, JSON ori fișiere externe.
+- [ ] Evaluați referințe interne content-addressed pentru corpuri byte-identice repetate. Fiecare invocare trebuie să afișeze conținutul integral corect; conținutul poate fi stocat o singură dată în HTML autonom.
+- [ ] Păstrați capturile PNG inline Base64 și navigarea către checkpoint-ul original; optimizarea textului nu trebuie să altereze identitatea capturii sau asocierea ownerului.
+- [ ] Expuneți un sumar de dimensiune pe categorie și o opțiune de prezentare configurabilă. Preview-ul se poate scurta, dar corpul integral și criteriul PASS/FAIL rămân verificabile.
+- [ ] Calificați HTML-ul singur într-un director gol, cu payload-uri repetate, lungi, diferite și Base64. Confruntați byte-for-byte fiecare valoare vizibilă și verificați hash-ul raportului final.
+
+Măsurarea justifică investigarea reducerii redundanței; nu dovedește că toate corpuri similare au același sens. Referințele se pot unifica numai pentru payload-uri identice, iar verdictul nu poate depinde de modul compact.
 
 ## Contractele responsabile
 

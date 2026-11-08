@@ -12,6 +12,99 @@
     "sourceSnapshot",
     "gameCoreComponents"
   ],
+  "candidateLifecycle": {
+    "states": [
+      "TEMP_SOURCE_PINNED",
+      "TEMP_QUALIFIED",
+      "READY_FOR_HUMAN_REVIEW",
+      "PROMOTED_TO_MAIN",
+      "PUBLISHED"
+    ],
+    "candidateArtifactsOutsideCheckoutUntilPromotion": true,
+    "promotionRequires": [
+      "aggregateStatus=READY_FOR_HUMAN_REVIEW",
+      "mainTreeSha256EqualsQualifiedSnapshotSha256"
+    ],
+    "publicationRequires": [
+      "promotedCommitMatchesQualifiedSnapshot",
+      "publishedApkSha256EqualsQualifiedApkSha256",
+      "anonymousDownloadSha256EqualsPublishedApkSha256"
+    ],
+    "ragMayAdvanceLifecycle": false,
+    "ragOutputOutsideCheckout": true
+  },
+  "ragEvaluator": {
+    "entrypoint": "atf-tests/tools/evaluate-release-rag.mjs",
+    "runtime": "Node.js standard library",
+    "readOnlyInputs": ["release-validation.json", "release payload", "source input manifest", "pinned source files", "candidate plan", "policy"],
+    "outputSchema": "ATF_RELEASE_RAG_VERDICT",
+    "outputMustBeOutsideInputs": true,
+    "citationsRequire": ["path", "sha256", "jsonPointerAndLineForJson"],
+    "sourceVerification": "every listed source file plus exact input-manifest fingerprint",
+    "requiredComponentGroup": "atf-tests",
+    "requiredComponentGroupsByPlatform": {
+      "android": [
+        "atf-validation",
+        "atf-test-android",
+        "atf-tests",
+        "whist-lab-app-bidding",
+        "whist-lab-app-commands",
+        "whist-lab-app-display",
+        "whist-lab-app-history"
+      ]
+    },
+    "platformGates": {
+      "androidBeforeHumanReview": ["androidComponents", "apkBuild", "apkIdentity", "signing"],
+      "androidAfterPublication": ["publicDownload"],
+      "gateReceiptShape": {"status": "PASS", "receipt": "payload-relative path"},
+      "gateReceiptMustBeHashBound": true
+    },
+    "componentSourceBinding": {
+      "inputManifest": "reports/component/source-inputs.json",
+      "runReceipt": "reports/component/source-component-run.json",
+      "executionReceiptPattern": "reports/component/{group}/execution.json",
+      "sourceSetMustEqualReleaseInputManifest": true,
+      "eachExtentMustMatchExecutionReceipt": true,
+      "allReceiptsMustBindSameSourceFingerprint": true
+    },
+    "onlyHumanReviewVerdict": "READY_FOR_HUMAN_REVIEW",
+    "doesNotInspectGitIndexOrExecuteGit": true,
+    "doesNotPerformPromotionOrPublication": true,
+    "e2e": {
+      "decisionMustBeExplicit": true,
+      "notRunNeverMeansPass": true,
+      "changedUserFlowRequiresPass": true,
+      "frozenUnchangedUserFlowMayRemainNotRunWithRationale": true
+    }
+  },
+  "suiteQualification": {
+    "scopeComesFromChangedContractsAndRisk": true,
+    "versionLabelMayReduceRequiredCoverage": false,
+    "profiles": {
+      "maintenanceOrRefactor": ["affectedUnitOrComponent", "documentationAndGovernance"],
+      "behaviorChange": ["affectedUnitOrComponent", "documentationAndGovernance", "targetedE2eWhenUserFlowChanges"],
+      "structuralOrReleaseChange": ["broadUnitAndComponent", "documentationAndGovernance", "riskSelectedE2e", "releaseArtifactAndDownload"]
+    },
+    "e2eNotSelectedRequiresRiskRationale": true,
+    "currentApplicationE2eMayBeFrozenWhenNoUserFlowChanges": true
+  },
+  "reportingContract": {
+    "owner": "atf-reporting",
+    "renderer": "Extent",
+    "oneCanonicalHtmlPerExecutedSuiteSelection": true,
+    "componentAndE2eScopesRemainDistinct": true,
+    "exactJUnitIdentityAndOutcomeParity": true,
+    "junitXmlRole": "temporary-independent-oracle",
+    "duplicateJUnitXmlInFinalRelease": false,
+    "capturedImagesMustBeInlineBase64": true,
+    "reportBindsQualifiedSourceSnapshot": true
+  },
+  "signingChannels": {
+    "channelMustBeDeclared": true,
+    "testDistributionMayUseDebugCertificate": true,
+    "productionDistributionRequiresManagedKey": true,
+    "allChannelsRequireCertificateFingerprintAndUpgradeCompatibility": true
+  },
   "platforms": {
     "android": {
       "artifactKinds": ["apk"],

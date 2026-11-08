@@ -1,14 +1,32 @@
 plugins { id 'java-library'; id 'java-test-fixtures' }
 java { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
-def reportingPairs = fileTree('../../lib') { include 'atf-reporting-*.pom' }.files
-        .collect { pom -> [pom: pom, jar: new File(pom.parentFile, pom.name.replaceFirst(/\.pom$/, '.jar'))] }
-        .findAll { pair -> pair.jar.isFile() }
-        .sort { left, right -> right.pom.name <=> left.pom.name }
-if (reportingPairs.isEmpty()) throw new GradleException('No complete local Reporting JAR/POM pair is available for Gradle audit fixtures')
-def reportingJar = reportingPairs.first().jar
+def projectRoot = rootProject.projectDir.parentFile
+def projectPom = new groovy.xml.XmlSlurper(false, false).parse(new File(projectRoot, 'pom.xml'))
+def reportingVersion = projectPom.properties.'atf.reporting.version'.text()
+if (!(reportingVersion ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/))
+    throw new GradleException('The root Maven POM must declare a safe atf.reporting.version for Gradle audit fixtures')
+def reportingJar = new File(projectRoot, "lib/atf-reporting-${reportingVersion}.jar")
+def reportingPom = new File(projectRoot, "lib/atf-reporting-${reportingVersion}.pom")
+if (!reportingJar.isFile() || !reportingPom.isFile())
+    throw new GradleException("The root Maven Reporting ${reportingVersion} must have a complete local JAR/POM pair")
+def publishedReporting = new groovy.xml.XmlSlurper(false, false).parse(reportingPom)
+if (publishedReporting.groupId.text() != 'atf.api' || publishedReporting.artifactId.text() != 'atf-reporting'
+        || publishedReporting.version.text() != reportingVersion)
+    throw new GradleException("The local Reporting pair does not match atf.reporting.version=${reportingVersion}")
+def testKitVersion = projectPom.properties.'atf.testkit.version'.text()
+if (!(testKitVersion ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/))
+    throw new GradleException('The root Maven POM must declare a safe atf.testkit.version for Gradle audit fixtures')
+def testKitJar = new File(projectRoot, "lib/atf-test-kit-${testKitVersion}.jar")
+def testKitPom = new File(projectRoot, "lib/atf-test-kit-${testKitVersion}.pom")
+if (!testKitJar.isFile() || !testKitPom.isFile())
+    throw new GradleException("The root Maven Test Kit ${testKitVersion} must have a complete local JAR/POM pair")
+def publishedTestKit = new groovy.xml.XmlSlurper(false, false).parse(testKitPom)
+if (publishedTestKit.groupId.text() != 'atf.api' || publishedTestKit.version.text() != testKitVersion
+        || publishedTestKit.artifactId.text() != 'atf-test-kit')
+    throw new GradleException("The local Test Kit pair does not match atf.testkit.version=${testKitVersion}")
 dependencies {
     testFixturesApi 'junit:junit:4.13.2'
-    testFixturesImplementation files('../../lib/atf-test-kit-1.0.0-k1.jar', reportingJar)
+    testFixturesImplementation files(testKitJar, reportingJar)
     testFixturesImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
     testFixturesImplementation 'com.aventstack:extentreports:5.1.2'
     testFixturesImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.2'
