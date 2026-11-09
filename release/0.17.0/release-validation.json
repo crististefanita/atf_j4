@@ -141,32 +141,52 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-09T17:30:53.9627392Z",
+    "observedUtc": "2026-11-09T17:51:57.056Z",
     "files": [
-      {
-        "path": "github-release.json",
-        "bytes": 618,
-        "sha256": "ad39e52f5a5be24dd700fc692d444d33382f25ac9fbee45fb980514e7c2a7794"
-      },
       {
         "path": "README.md",
         "bytes": 1021,
         "sha256": "d4b965307debc39195eafb87e2ab57c46c6e22b99b2126bd88f0508eab6b1072"
       },
       {
-        "path": "release-notes.template.md",
-        "bytes": 534,
-        "sha256": "689a62b5e4b212385f53be5017e4be46d4ec22d3127ec36f1892006c868e2244"
+        "path": "WhistLab-0.17.0.apk",
+        "bytes": 1228809,
+        "sha256": "a7bd68a07e464ab8eacfee6af5ffaadce4468f3ca62d620eac47511063518934"
+      },
+      {
+        "path": "WhistLab-0.17.0.apk.sha256",
+        "bytes": 86,
+        "sha256": "77b082f8afb7a6860812e547263457a480a11194d72a745bc8c19abdfadb9464"
+      },
+      {
+        "path": "github-release.json",
+        "bytes": 618,
+        "sha256": "ad39e52f5a5be24dd700fc692d444d33382f25ac9fbee45fb980514e7c2a7794"
+      },
+      {
+        "path": "release-notes.md",
+        "bytes": 559,
+        "sha256": "4d690df6d0cc6ba9412de459dced80e8c105ed6e6b01b6b6aaea0a26c3f97198"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 359,
-        "sha256": "d9620dd9f19f35e3332e7c0c63f5dd931c8e9189f177f31f991e79efb1a1f6ae"
+        "bytes": 377,
+        "sha256": "40f5b47675e59dd760cda75c2a5f60ca27d4c3148d546ffd364becfc9428bded"
+      },
+      {
+        "path": "reports/README.md",
+        "bytes": 1756,
+        "sha256": "adaf1350b730e0dd80318550e9d87ca8723659b95b40acf62990ef73ae5e3679"
       },
       {
         "path": "reports/apk-inputs.json",
         "bytes": 196098,
         "sha256": "da666afb5e3cbd74368dcf70cd2d1cbcbb625bb4f5924ec1d199990cddb47415"
+      },
+      {
+        "path": "reports/component/README.md",
+        "bytes": 1236,
+        "sha256": "a9752005bb65619649cdfc60c73c6f9fc4ec34c3fa7a3a5fa011706221e73a49"
       },
       {
         "path": "reports/component/atf-test-android/component-report.html",
@@ -197,11 +217,6 @@
         "path": "reports/component/atf-validation/execution.json",
         "bytes": 549,
         "sha256": "842f44f050f75bad120143cc0a91ffcf117cc409a51a980761999e75e53edcca"
-      },
-      {
-        "path": "reports/component/README.md",
-        "bytes": 1236,
-        "sha256": "a9752005bb65619649cdfc60c73c6f9fc4ec34c3fa7a3a5fa011706221e73a49"
       },
       {
         "path": "reports/component/source-component-run.json",
@@ -292,21 +307,6 @@
         "path": "reports/e2e/signed-release-auto-game/restoration.json",
         "bytes": 382,
         "sha256": "99e73e5b25754c3d5f115ef3c73a7cdada5974b9e1b8fbb705eeb18ea958d59f"
-      },
-      {
-        "path": "reports/README.md",
-        "bytes": 1756,
-        "sha256": "adaf1350b730e0dd80318550e9d87ca8723659b95b40acf62990ef73ae5e3679"
-      },
-      {
-        "path": "WhistLab-0.17.0.apk",
-        "bytes": 1228809,
-        "sha256": "a7bd68a07e464ab8eacfee6af5ffaadce4468f3ca62d620eac47511063518934"
-      },
-      {
-        "path": "WhistLab-0.17.0.apk.sha256",
-        "bytes": 86,
-        "sha256": "77b082f8afb7a6860812e547263457a480a11194d72a745bc8c19abdfadb9464"
       }
     ]
   }

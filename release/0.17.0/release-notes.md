@@ -9,4 +9,4 @@
 
 ## Documentație
 
-- [Rapoarte și proveniență](https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.17.0/reports/README.md)
+- [Rapoarte și proveniență](https://github.com/crististefanita/atf_j4/blob/329b8e145cd84f00acf07b5a1872c577b485520f/release/0.17.0/reports/README.md)
