@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "android-signed-release-e2e",
+  "status": "PASS",
+  "protocol": "ANDROID_SIGNED_RELEASE_E2E",
+  "testClass": "atf.android.e2e.release.WhistReleaseBidE2eTest",
+  "testMethod": "autoGamePlaysOnlyTheCurrentHandAndReturnsControlForTheNext",
+  "tests": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "releaseVersion": "0.16.0",
+  "installedApkSha256": "02c87599e44721054e2cc39c086ad9ce39801a43d451e1be97193d6f4c49d3ca",
+  "sourceFingerprint": "a765062895f5548429beeffbe5d268e61f8ff28852e950b7543d73ee8acb495e",
+  "sourceCommit": "26f40c044637c09139b62ad4081bc752c2aa3781",
+  "androidApi": 28,
+  "emulatorSerial": "emulator-5554",
+  "headless": true,
+  "inlinePngCount": 7,
+  "reportSha256": "e392b55400279a7f9d877444d1c5865ae5c555e1352060947f5961fc8fd2039d",
+  "previousApkSha256": "e8b38d53c4b9a83da3801e609ebe8ea1006e39e4531280b26f89da99a8dfffdf",
+  "restoredPreviousApkSha256": "e8b38d53c4b9a83da3801e609ebe8ea1006e39e4531280b26f89da99a8dfffdf",
+  "backupSha256": "8cab3dc1ab134f8cc6cf06cd3e02c414c5914c94f70e5c97f58bb907754fab46",
+  "privateDataRestored": true,
+  "privateDataFiles": [
+    "59019579bf553963b2ccab70e81d9e48f0bf56b57d1605f4a1574a3325699d6a  shared_prefs/whist_lab_profile.xml",
+    "77407dfe619e9ec3ed9da4604fbdf7c2a8357a19957c73970918ca227ecc8347  files/highestScores.json",
+    "c767c5f4dfa0a0cc2e4959adf6276f8bc2a18558f5bf76796a2834d46369195c  shared_prefs/whist_lab_game.xml"
+  ]
+}
