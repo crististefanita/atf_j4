@@ -3,7 +3,6 @@ package ro.whistlab.app.table;
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import org.junit.Test;
-import ro.whistlab.app.bidding.BidGridMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.config.GameConfig;
@@ -100,22 +99,6 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
         }
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TableLayoutMetrics.trumpHeightPx(1f, 0, 24));
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TableLayoutMetrics.trumpHeightPx(1f, 11, -1));
-    }
-
-    @Test public void bidSubmissionIsTenPercentNarrowerWithAFullTouchTarget() {
-
-        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 132, "declared constant 2", 0.9f, "declared constant 3", 14, "declared constant 4", 48, "declared constant 5", 44, "declared constant 6", 2, "declared constant 7", 1f, "declared constant 8", 1.5f, "declared constant 9", 2.25f, "declared constant 10", 2.75f, "declared constant 11", 3.5f, "declared constant 12", 0);
-        assertEquals("BidGridMetrics.SUBMIT_WIDTH_DP must equal Math.round(132 * 0.9F)", Math.round(132 * 0.9f), BidGridMetrics.SUBMIT_WIDTH_DP);
-        assertEquals("BidGridMetrics.SUBMIT_TEXT_SP must equal Math.round(14 * 0.9F)", Math.round(14 * 0.9f), BidGridMetrics.SUBMIT_TEXT_SP);
-        assertEquals("BidGridMetrics.SUBMIT_TARGET_DP must equal 48", 48, BidGridMetrics.SUBMIT_TARGET_DP);
-        assertEquals("BidGridMetrics.SUBMIT_TARGET_DP - 2 * BidGridMetrics.SUBMIT_VISUAL_INSET_DP must equal 44", 44, BidGridMetrics.SUBMIT_TARGET_DP - 2 * BidGridMetrics.SUBMIT_VISUAL_INSET_DP);
-        for (float density : new float[]{1f, 1.5f, 2.25f, 2.75f, 3.5f}) {
-            int touchHeight = Math.round(BidGridMetrics.SUBMIT_TARGET_DP * density);
-            int inset = Math.round(BidGridMetrics.SUBMIT_VISUAL_INSET_DP * density);
-            assertTrue("touchHeight - 2 * inset > 0 must hold", touchHeight - 2 * inset > 0);
-            assertTrue("touchHeight - 2 * inset < touchHeight must hold", touchHeight - 2 * inset < touchHeight);
-            assertTrue("Math.round(BidGridMetrics.SUBMIT_WIDTH_DP * density) >= touchHeight must hold", Math.round(BidGridMetrics.SUBMIT_WIDTH_DP * density) >= touchHeight);
-        }
     }
 
     private static GameSession.Snapshot withTrump(GameSession.Snapshot base, Trump trump, Card turned) {

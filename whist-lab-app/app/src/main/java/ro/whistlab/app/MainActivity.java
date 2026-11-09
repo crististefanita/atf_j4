@@ -291,11 +291,9 @@ public final class MainActivity extends Activity {
     private GameScreen.MenuActions gameMenuActions() {
         GameSession.Snapshot state = game == null ? null : game.snapshot();
         boolean autoGameActive = state != null && autoGameHand.activeFor(state);
-        boolean autoGameAvailable = state != null
-                && (state.phase() == GamePhase.BIDDING || state.phase() == GamePhase.PLAYING);
         return new GameScreen.MenuActions(this::showLiveScoreboard, this::showPlayerSettings,
                 this::showHighScores, this::renderHome, this::toggleAutoGameHand,
-                autoGameActive, autoGameAvailable, this::suspendGameMenu);
+                autoGameActive, this::suspendGameMenu);
     }
 
     private void toggleAutoGameHand() {

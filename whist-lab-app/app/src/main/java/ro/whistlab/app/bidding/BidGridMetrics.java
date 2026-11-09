@@ -10,16 +10,16 @@ public final class BidGridMetrics {
     public static final int SUBMIT_TARGET_DP = 48;
     public static final int SUBMIT_WIDTH_DP = 119;
     public static final int SUBMIT_TEXT_SP = 13;
-    public static final int SUBMIT_VISUAL_INSET_DP = 2;
-    public static final int AUTO_GAME_TOGGLE_BASE_WIDTH_DP = 128;
+    private static final int LEGACY_SUBMIT_VERTICAL_INSET_DP = 2;
+    private static final float SUBMIT_FACE_SCALE = .85f;
+    private static final int AUTO_GAME_TOGGLE_BASE_WIDTH_DP = 128;
     public static final int AUTO_GAME_TOGGLE_TARGET_DP = 48;
-    public static final int AUTO_GAME_ACTION_GAP_DP = 8;
     public static final int AUTO_GAME_STACK_GAP_DP = 2;
     public static final int DENSE_MIN_WIDTH_DP = DENSE_COLUMNS * (CHOICE_TARGET_DP + 4);
     public static final int DENSE_MAX_WIDTH_DP = 400;
 
-    public record ActionLayout(boolean autoGameInline, int centerWidthDp, int centerHeightDp,
-            int controlsWidthDp, int autoGameToggleWidthDp) { }
+    public record ActionLayout(int centerWidthDp, int centerHeightDp) { }
+    public record SubmitInsets(int horizontalPx, int verticalPx) { }
 
     private BidGridMetrics() { }
 
@@ -44,27 +44,35 @@ public final class BidGridMetrics {
                 : COMPACT_COLUMNS;
     }
 
-    /** Keeps the AutoGame toggle beside the bid button only when the table still has room for its seats. */
-    public static ActionLayout actionLayout(int optionCount, int tableWidthDp, int seatWidthDp,
-            int regionGapDp, float fontScale) {
-        if (optionCount < 0 || tableWidthDp < 1 || seatWidthDp < 1 || regionGapDp < 0
-                || !Float.isFinite(fontScale) || fontScale <= 0) {
-            throw new IllegalArgumentException("Bid controls need a valid viewport, seats and font scale");
+    /** Places both actions on the center line, with a separate touch row for each. */
+    public static ActionLayout actionLayout(int optionCount, int tableWidthDp, float fontScale) {
+        if (optionCount < 0 || tableWidthDp < 1 || !Float.isFinite(fontScale) || fontScale <= 0) {
+            throw new IllegalArgumentException("Bid controls need a valid viewport and font scale");
         }
 
         int toggleWidth = Math.min(tableWidthDp,
                 (int) Math.ceil(AUTO_GAME_TOGGLE_BASE_WIDTH_DP * Math.max(1f, fontScale)));
         int columns = columnCount(optionCount, tableWidthDp);
         int gridWidth = Math.max(132, Math.min(optionCount, columns) * 52);
-        int inlineWidth = SUBMIT_WIDTH_DP + AUTO_GAME_ACTION_GAP_DP + toggleWidth;
-        int inlineCenterWidth = Math.max(gridWidth, inlineWidth);
-        boolean inline = inlineCenterWidth + 2 * seatWidthDp + 2 * regionGapDp <= tableWidthDp;
-        int controlsWidth = inline ? inlineWidth : toggleWidth;
+        int controlsWidth = Math.max(SUBMIT_WIDTH_DP, toggleWidth);
         int centerWidth = Math.max(gridWidth, controlsWidth);
-        int controlHeight = SUBMIT_TARGET_DP + (inline ? 0
-                : AUTO_GAME_STACK_GAP_DP + AUTO_GAME_TOGGLE_TARGET_DP);
-        int centerHeight = rowCount(optionCount, tableWidthDp) * CHOICE_ROW_DP + controlHeight;
-        return new ActionLayout(inline, centerWidth, centerHeight, controlsWidth, toggleWidth);
+        int controlsHeight = SUBMIT_TARGET_DP + AUTO_GAME_STACK_GAP_DP + AUTO_GAME_TOGGLE_TARGET_DP;
+        int centerHeight = rowCount(optionCount, tableWidthDp) * CHOICE_ROW_DP + controlsHeight;
+        return new ActionLayout(centerWidth, centerHeight);
     }
 
+    /** Shrinks the frame inside the touch target while leaving room for the measured label. */
+    public static SubmitInsets submitInsets(float density, int textWidthPx, int textHeightPx) {
+        int width = Math.round(SUBMIT_WIDTH_DP * density);
+        int height = Math.round(SUBMIT_TARGET_DP * density);
+        int legacyHeight = height - 2 * Math.round(LEGACY_SUBMIT_VERTICAL_INSET_DP * density);
+        return new SubmitInsets(
+                visualInset(width, width, textWidthPx + 2 * Math.round(6 * density)),
+                visualInset(height, legacyHeight, textHeightPx + 2 * Math.round(3 * density)));
+    }
+
+    private static int visualInset(int target, int legacyFace, int minimumFace) {
+        int desiredInset = Math.round((target - legacyFace * SUBMIT_FACE_SCALE) / 2);
+        return Math.max(0, Math.min(desiredInset, (target - minimumFace) / 2));
+    }
 }

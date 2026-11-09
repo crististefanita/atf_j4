@@ -39,7 +39,7 @@ public final class GameScreen {
     private final Activity activity;
     public GameScreen(ScreenViews views) { this.views = views; this.activity = views.activity(); }
     public record MenuActions(Runnable scoreboard, Runnable settings, Runnable scores, Runnable home,
-                              Runnable autoGame, boolean autoGameActive, boolean autoGameAvailable,
+                              Runnable autoGame, boolean autoGameActive,
                               java.util.function.Supplier<Runnable> opened) { }
     public void bidding(WhistUiText copy, GameSession.Snapshot state, List<Integer> choices, int selectedBid,
             boolean autoGame, java.util.function.IntConsumer selected, Runnable submitted, MenuActions actions) {

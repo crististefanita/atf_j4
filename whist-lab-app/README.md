@@ -39,14 +39,14 @@ La tura jucătorului, motorul Hard estimează și preselectează o licitație le
 - Alegerea manuală are prioritate; un rezultat întârziat nu înlocuiește selecția și nu se aplică altei mâini ori partide.
 - Dacă estimarea nu este disponibilă, se poate alege manual orice valoare legală. [Selecția contextuală](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) păstrează această stare separat de contractele depuse.
 
-În timpul unei mâini, meniul jocului poate prelua temporar licitarea și jocul cărților prin `Auto-play this hand` / `Joacă automat mâna curentă`.
+Pe Android, bifa `Auto-play` / `Automat` pornește preluarea temporară a licitării și jocului cărților.
 
 Controlul revine la om după scorul mâinii. Detaliile fluxului sunt în [documentația activității Android](app/src/main/java/ro/whistlab/app/README.md#autogame-pentru-mâna-activă).
 
 ## Joacă automat mâna curentă
 
-- În timpul licitării, bifa `Auto-play` / `Automat` stă lângă butonul `Place bid` / `Licitează` când lățimea permite; pe ecrane înguste se mută sub el, fără să acopere locurile mesei. Bifa pornește automatizarea mâinii curente.
-- În timpul jocului cărților sau pentru oprire, `Game menu` / `Meniu joc` oferă `Auto-play this hand` / `Joacă automat mâna curentă` ori `Stop auto-play` / `Oprește jocul automat`.
+- Bifa stă centrată sub `Place bid` / `Licitează`, pe axa mesei, și pornește automatizarea mâinii curente.
+- Cât timp automatizarea este activă, `Game menu` / `Meniu joc` oferă `Stop auto-play` / `Oprește jocul automat`.
 - Aplicația folosește nivelul Normal sau Hard ales pentru adversari și controlează temporar și locul uman. La ecranul scorului automatizarea se oprește, iar următoarea mână revine la controlul manual.
 
 Automatizarea afectează numai tura de licitare și turele de joc ale mâinii active. Nu schimbă nivelul AI, regulile, scorul sau salvarea partidei. Deschiderea unui dialog, trecerea aplicației în fundal și revenirea suspendă și reiau deciziile prin coordonatorul AI existent.

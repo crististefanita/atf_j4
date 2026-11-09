@@ -15,8 +15,8 @@ public final class GameMenuContent {
         Objects.requireNonNull(actions);
         var items = new java.util.ArrayList<Item>();
         items.add(new Item(copy.scoreSheet(), actions.scoreboard()));
-        if (actions.autoGameAvailable() || actions.autoGameActive()) {
-            items.add(new Item(actions.autoGameActive() ? copy.stopAutoGameHand() : copy.autoGameHand(), actions.autoGame()));
+        if (actions.autoGameActive()) {
+            items.add(new Item(copy.stopAutoGameHand(), actions.autoGame()));
         }
         items.add(new Item(copy.playerSettings(), actions.settings()));
         items.add(new Item(copy.highestScores(), actions.scores()));

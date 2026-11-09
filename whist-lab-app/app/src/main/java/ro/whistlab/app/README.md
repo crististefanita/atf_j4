@@ -247,7 +247,7 @@ Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea
 
 ### AutoGame pentru mâna activă
 
-- Bifa de lângă licitație pornește un lease tranzitoriu, limitat la indexul mâinii curente. Pe ecranele înguste se așază sub butonul de licitare; meniul mesei păstrează aceeași comandă ca alternativă.
+- Bifa centrată sub butonul de licitare pornește automatizarea pentru mâna curentă. Meniul mesei afișează oprirea numai cât timp automatizarea este activă. [Geometria licitării](../../../../../../../../docs/testing/ATF_Display.md#profil-și-domeniu-de-calificare) documentează conturul și țintele tactile.
 - Lease-ul permite `AiTurnRequest` să calculeze pentru locul uman numai cât timp este activ; coordonarea, verificarea snapshot-ului și aplicarea unică rămân pe calea AI existentă.
 - Ajungerea la scor, schimbarea mâinii, pornirea unei partide sau revenirea la meniul principal închide lease-ul. Automatizarea nu se transferă la mâna următoare.
 

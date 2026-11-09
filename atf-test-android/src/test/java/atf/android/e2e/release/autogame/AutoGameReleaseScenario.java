@@ -1,7 +1,7 @@
 package atf.android.e2e.release.autogame;
 
 import atf.android.e2e.release.ReleaseBidContext;
-import java.nio.file.Path;
+import atf.android.e2e.driver.AndroidUiDriver.Bounds;
 import java.time.Duration;
 import java.util.List;
 
@@ -28,9 +28,9 @@ public final class AutoGameReleaseScenario {
         c.awaitRecommendation(labels.submit());
         c.checkpoint("Current hand is awaiting the human bid", xml -> List.of(
                 ReleaseBidContext.equal("Real bid control is visible", true, c.ui.hasText(xml, labels.submit())),
-                ReleaseBidContext.equal("AutoGame toggle is visible beside or below the bid action", true,
+                ReleaseBidContext.equal("AutoGame is visible below the bid action on the same center line", true,
                         c.ui.hasText(xml, labels.autoGameToggle())
-                                && nextToOrBelow(c.ui.boundsForText(xml, labels.submit()),
+                                && centeredBelow(c.ui.boundsForText(xml, labels.submit()),
                                         c.ui.boundsForText(xml, labels.autoGameToggle()))),
                 ReleaseBidContext.equal("AutoGame starts unchecked with an explicit accessible action", true,
                         c.ui.hasDescription(xml, labels.startAutoGame()))));
@@ -53,11 +53,9 @@ public final class AutoGameReleaseScenario {
         c.ui.back();
     }
 
-    private static boolean nextToOrBelow(atf.android.e2e.driver.AndroidUiDriver.Bounds bid,
-            atf.android.e2e.driver.AndroidUiDriver.Bounds toggle) {
-        boolean inline = toggle.top() < bid.bottom() && toggle.bottom() > bid.top()
-                && toggle.left() >= bid.right();
-        return inline || toggle.top() >= bid.bottom();
+    private static boolean centeredBelow(Bounds bid, Bounds toggle) {
+        return toggle.top() >= bid.bottom()
+                && Math.abs(toggle.left() + toggle.right() - bid.left() - bid.right()) <= 2;
     }
 
     private record Labels(boolean ro) {

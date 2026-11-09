@@ -100,7 +100,7 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
         for (int width : widths) for (int players = 3; players <= 6; players++) for (int options = 1; options <= 18; options++) {
             for (int gap : gaps) for (int seatHeight : seatHeights) for (float fontScale : fontScales) {
                 int seatWidth = ro.cardtable.ui.table.TableSizing.seatWidthDp(width, gap == 1);
-                var actionLayout = BidGridMetrics.actionLayout(options, width, seatWidth, gap, fontScale);
+                var actionLayout = BidGridMetrics.actionLayout(options, width, fontScale);
                 int centerWidth = actionLayout.centerWidthDp();
                 int centerHeight = actionLayout.centerHeightDp();
                 int minimum = TableGeometry.minimumHeight(players, seatHeight, centerHeight, gap);
@@ -133,8 +133,7 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
         checks.publish();
     }
     @Test public void nineBidsAtFourSeatsCannotOverlapTheSideNames() {
-        var actions = BidGridMetrics.actionLayout(9, 353,
-                ro.cardtable.ui.table.TableSizing.seatWidthDp(353, false), 8, 1f);
+        var actions = BidGridMetrics.actionLayout(9, 353, 1f);
         int height = TableGeometry.minimumHeight(4, 70, actions.centerHeightDp(), 8);
         var plan = TableGeometry.arrange(353, height, 4, 102, 70,
                 actions.centerWidthDp(), actions.centerHeightDp(), 8);

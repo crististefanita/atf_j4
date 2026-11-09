@@ -168,7 +168,9 @@ public final class GameTablePanel extends LinearLayout {
         TrickCardMetrics.Layout trickLayout = bidding
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp,
                         getResources().getConfiguration().fontScale, viewport);
-        int centerWidthDp = bidding ? bidActionLayout(tableWidthDp).centerWidthDp()
+        var bidLayout = bidding ? BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp,
+                getResources().getConfiguration().fontScale) : null;
+        int centerWidthDp = bidding ? bidLayout.centerWidthDp()
                 : trickLayout.safeCenterWidthDp();
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
                 viewport, !bidding, bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
@@ -181,18 +183,16 @@ public final class GameTablePanel extends LinearLayout {
         for (GameSession.PlayerSnapshot player : state.players()) {
             board.addView(buildSeat(player));
         }
-        View center = bidding ? buildBiddingCenter() : buildCurrentTrick(trickLayout);
+        View center = bidding ? buildBiddingCenter(tableWidthDp) : buildCurrentTrick(trickLayout);
         board.addView(center);
         return board;
     }
 
-    private View buildBiddingCenter() {
+    private View buildBiddingCenter(int tableWidthDp) {
         LinearLayout center = new LinearLayout(context);
         center.setOrientation(VERTICAL);
         center.setGravity(Gravity.CENTER);
-        int tableWidthDp = Math.min(availableContentWidthDp(), 760);
         int columns = BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp);
-        BidGridMetrics.ActionLayout actions = bidActionLayout(tableWidthDp);
 
         center.setContentDescription(copy.bidSelector());
 
@@ -227,32 +227,23 @@ public final class GameTablePanel extends LinearLayout {
             center.addView(row, new LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(BidGridMetrics.CHOICE_ROW_DP)));
         }
-        center.addView(buildBidActions(actions), new LayoutParams(dp(actions.controlsWidthDp()), dp(actions.centerHeightDp()
-                - BidGridMetrics.rowCount(bidOptions.size(), tableWidthDp) * BidGridMetrics.CHOICE_ROW_DP)));
+        center.addView(buildBidSubmission(), new LayoutParams(dp(BidGridMetrics.SUBMIT_WIDTH_DP),
+                dp(BidGridMetrics.SUBMIT_TARGET_DP)));
+        var toggleParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                dp(BidGridMetrics.AUTO_GAME_TOGGLE_TARGET_DP));
+        toggleParams.topMargin = dp(BidGridMetrics.AUTO_GAME_STACK_GAP_DP);
+        center.addView(buildAutoGameToggle(), toggleParams);
         return center;
     }
 
-    private BidGridMetrics.ActionLayout bidActionLayout(int tableWidthDp) {
-        int seatWidthDp = ro.cardtable.ui.table.TableSizing.seatWidthDp(tableWidthDp, viewport.isCompact());
-        return BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp, seatWidthDp,
-                viewport.regionGapDp(), getResources().getConfiguration().fontScale);
-    }
-
-    private View buildBidActions(BidGridMetrics.ActionLayout layout) {
-        LinearLayout actions = new LinearLayout(context);
-        actions.setOrientation(layout.autoGameInline() ? HORIZONTAL : VERTICAL);
-        actions.setGravity(Gravity.CENTER);
-        actions.setTag(layout.autoGameInline() ? "bid-actions-inline" : "bid-actions-stacked");
-
-        actions.addView(buildBidSubmission(), new LayoutParams(dp(BidGridMetrics.SUBMIT_WIDTH_DP),
-                dp(BidGridMetrics.SUBMIT_TARGET_DP)));
-
+    private CheckBox buildAutoGameToggle() {
         CheckBox autoGame = new CheckBox(context);
         autoGame.setText(copy.autoGameToggle());
         autoGame.setTextSize(13);
         autoGame.setTextColor(Color.rgb(245, 248, 240));
         autoGame.setButtonTintList(android.content.res.ColorStateList.valueOf(Color.rgb(245, 248, 240)));
         autoGame.setSingleLine(true);
+        autoGame.setPadding(0, 0, 0, 0);
         autoGame.setEllipsize(android.text.TextUtils.TruncateAt.END);
         autoGame.setContentDescription(autoGameActive ? copy.stopAutoGameHand() : copy.autoGameHand());
         autoGame.setTag("auto-game-bid-toggle");
@@ -266,18 +257,10 @@ public final class GameTablePanel extends LinearLayout {
             if (onAutoGameToggled != null) onAutoGameToggled.run();
         });
 
-        LayoutParams toggleParams = new LayoutParams(dp(layout.autoGameToggleWidthDp()),
-                dp(BidGridMetrics.AUTO_GAME_TOGGLE_TARGET_DP));
-        if (layout.autoGameInline()) toggleParams.leftMargin = dp(BidGridMetrics.AUTO_GAME_ACTION_GAP_DP);
-        else toggleParams.topMargin = dp(BidGridMetrics.AUTO_GAME_STACK_GAP_DP);
-        actions.addView(autoGame, toggleParams);
-        return actions;
+        return autoGame;
     }
 
     private View buildBidSubmission() {
-        LinearLayout row = new LinearLayout(context);
-        row.setGravity(Gravity.CENTER);
-
         Button submit = new Button(context);
         bidSubmitButton = submit;
         submit.setAllCaps(false);
@@ -289,18 +272,19 @@ public final class GameTablePanel extends LinearLayout {
         updateBidSubmission();
         submit.setMinimumWidth(0);
         submit.setMinHeight(dp(BidGridMetrics.SUBMIT_TARGET_DP));
-        submit.setPadding(dp(6), 0, dp(6), 0);
         submit.setStateListAnimator(null);
+        var font = submit.getPaint().getFontMetricsInt();
+        int textWidth = (int) Math.ceil(android.text.Layout.getDesiredWidth(submit.getText(), submit.getPaint()));
+        var inset = BidGridMetrics.submitInsets(getResources().getDisplayMetrics().density,
+                textWidth, font.bottom - font.top);
         submit.setBackground(new InsetDrawable(
-                rounded(Color.TRANSPARENT, Color.rgb(194, 216, 199), 12), 0,
-                dp(BidGridMetrics.SUBMIT_VISUAL_INSET_DP), 0,
-                dp(BidGridMetrics.SUBMIT_VISUAL_INSET_DP)));
+                rounded(Color.TRANSPARENT, Color.rgb(194, 216, 199), 12),
+                inset.horizontalPx(), inset.verticalPx(), inset.horizontalPx(), inset.verticalPx()));
+        submit.setPadding(dp(6), 0, dp(6), 0);
         submit.setOnClickListener(ignored -> {
             if (onBidSubmitted != null) onBidSubmitted.run();
         });
-        row.addView(submit, new LayoutParams(dp(BidGridMetrics.SUBMIT_WIDTH_DP),
-                dp(BidGridMetrics.SUBMIT_TARGET_DP)));
-        return row;
+        return submit;
     }
 
     private void selectBid(int bid) {
