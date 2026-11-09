@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "result": "PASS",
+  "signingCertificate": "Android Debug",
+  "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+  "priorPublishedVersion": "0.17.0",
+  "priorPublishedCertificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+  "priorPublishedApkSha256": "a7bd68a07e464ab8eacfee6af5ffaadce4468f3ca62d620eac47511063518934",
+  "upgradeCompatibility": "PASS",
+  "productionManagedKey": false
+}

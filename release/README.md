@@ -6,13 +6,13 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 ## Versiunea curentă
 
-[0.17.0 — build, verificări și proveniență](0.17.0/README.md) este ediția curentă. Dosarul păstrează identitatea APK-ului și dovezile legate de versiunea calificată.
+[0.17.1 — build, verificări și proveniență](0.17.1/README.md) este ediția curentă. Dosarul păstrează identitatea APK-ului și dovezile legate de versiunea calificată.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
-| 0.17.0 | Android TEST; GitHub autentificat | [Dosarul și raportarea](0.17.0/README.md) |
+| 0.17.1 | Android TEST; pregătit local | [Dosarul și raportarea](0.17.1/README.md) |
 
 ## Cum publicăm o versiune
 

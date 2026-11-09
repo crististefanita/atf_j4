@@ -1,5 +1,7 @@
 {
-  "currentVersion": "0.17.0",
-  "versions": ["0.17.0"],
+  "currentVersion": "0.17.1",
+  "versions": [
+    "0.17.1"
+  ],
   "schemaVersion": 2
 }

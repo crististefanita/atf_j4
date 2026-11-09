@@ -1,0 +1,194 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :card-table-names:compileJava
+> Task :game-core:compileJava
+> Task :game-core:processResources NO-SOURCE
+> Task :game-core:classes
+> Task :game-core:jar
+> Task :app:generateDebugBuildConfig
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :card-table-ui:preBuild UP-TO-DATE
+> Task :card-table-ui:preDebugBuild UP-TO-DATE
+> Task :card-table-ui:processDebugNavigationResources
+> Task :app:processDebugNavigationResources
+> Task :app:parseDebugLocalResources
+> Task :app:generateDebugRFile
+> Task :card-table-ui:generateDebugResources
+> Task :card-table-ui:packageDebugResources
+> Task :card-table-ui:parseDebugLocalResources
+> Task :card-table-ui:generateDebugRFile
+> Task :card-table-ui:compileDebugKotlin NO-SOURCE
+> Task :card-table-ui:javaPreCompileDebug
+
+> Task :card-table-ui:compileDebugJavaWithJavac
+Note: C:\Users\Cristi\AppData\Local\Temp\j4-release-0171-9ef9312e\source\whist-lab-app\card-table-ui\src\main\java\ro\cardtable\ui\screens\ScreenViews.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :card-table-ui:bundleLibCompileToJarDebug
+> Task :app:compileDebugKotlin NO-SOURCE
+> Task :app:javaPreCompileDebug
+
+> Task :app:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :card-table-ui:generateDebugAssets UP-TO-DATE
+> Task :card-table-ui:mergeDebugAssets
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:generateDebugGlobalSynthetics
+> Task :card-table-names:processResources NO-SOURCE
+> Task :card-table-names:classes
+> Task :card-table-names:jar
+> Task :app:compressDebugJavaRes NO-SOURCE
+> Task :card-table-ui:compressDebugJavaRes NO-SOURCE
+> Task :app:checkDebugDuplicateClasses
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJavaResource
+> Task :card-table-ui:bundleLibRuntimeToDirDebug
+> Task :app:mergeExtDexDebug
+> Task :card-table-ui:writeDebugAarMetadata
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:compileDebugNavigationResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :card-table-ui:extractDeepLinksDebug
+> Task :card-table-ui:processDebugManifest
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :card-table-ui:mapDebugSourceSetPaths
+> Task :card-table-ui:compileDebugLibraryResources
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :card-table-ui:mergeDebugJniLibFolders
+> Task :card-table-ui:mergeDebugNativeLibs NO-SOURCE
+> Task :card-table-ui:copyDebugJniLibsProjectOnly
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders
+> Task :card-table-ui:preReleaseBuild UP-TO-DATE
+> Task :card-table-ui:mergeReleaseJniLibFolders
+> Task :card-table-ui:mergeReleaseNativeLibs NO-SOURCE
+> Task :card-table-ui:copyReleaseJniLibsProjectOnly
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :card-table-ui:generateReleaseResources
+> Task :card-table-ui:packageReleaseResources
+> Task :card-table-ui:processReleaseNavigationResources
+> Task :card-table-ui:parseReleaseLocalResources
+> Task :card-table-ui:generateReleaseRFile
+> Task :card-table-ui:compileReleaseKotlin NO-SOURCE
+> Task :card-table-ui:javaPreCompileRelease
+> Task :app:processDebugResources
+
+> Task :card-table-ui:compileReleaseJavaWithJavac
+Note: C:\Users\Cristi\AppData\Local\Temp\j4-release-0171-9ef9312e\source\whist-lab-app\card-table-ui\src\main\java\ro\cardtable\ui\screens\ScreenViews.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :card-table-ui:bundleLibRuntimeToDirRelease
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:generateReleaseBuildConfig
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:processReleaseNavigationResources
+> Task :app:parseReleaseLocalResources
+> Task :app:generateReleaseRFile
+> Task :card-table-ui:bundleLibCompileToJarRelease
+> Task :app:compileReleaseKotlin NO-SOURCE
+> Task :app:javaPreCompileRelease
+
+> Task :app:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :card-table-ui:writeReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:checkReleaseAarMetadata
+> Task :app:compileReleaseNavigationResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :card-table-ui:extractDeepLinksRelease
+> Task :card-table-ui:processReleaseManifest
+> Task :app:mergeReleaseResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :card-table-ui:mapReleaseSourceSetPaths
+> Task :card-table-ui:compileReleaseLibraryResources
+> Task :app:processReleaseManifestForPackage
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseStartupProfile
+> Task :app:processReleaseResources
+> Task :app:mergeExtDexRelease
+> Task :app:dexBuilderRelease
+> Task :card-table-ui:prepareReleaseArtProfile
+> Task :app:mergeReleaseArtProfile
+> Task :card-table-ui:bundleLibRuntimeToJarRelease
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :card-table-ui:generateReleaseAssets UP-TO-DATE
+> Task :card-table-ui:mergeReleaseAssets
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:mergeDexRelease
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:compileReleaseArtProfile
+> Task :app:extractProguardFiles
+> Task :card-table-ui:compressReleaseJavaRes NO-SOURCE
+> Task :card-table-ui:createFullJarRelease
+> Task :card-table-ui:extractProguardFiles
+> Task :card-table-ui:generateReleaseLintModel
+> Task :card-table-ui:checkReleaseAarMetadata
+> Task :card-table-ui:extractDeepLinksForAarRelease
+> Task :card-table-ui:prepareLintJarForPublish
+> Task :card-table-ui:extractReleaseAnnotations
+> Task :app:generateReleaseLintVitalReportModel
+> Task :card-table-ui:mergeReleaseGeneratedProguardFiles
+> Task :card-table-ui:mergeReleaseConsumerProguardFiles
+> Task :card-table-ui:mergeReleaseJavaResource
+> Task :card-table-ui:syncReleaseLibJars
+> Task :card-table-ui:bundleReleaseLocalLintAar
+> Task :card-table-ui:writeReleaseLintModelMetadata
+> Task :card-table-ui:generateReleaseLintVitalModel
+> Task :app:compressReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseJavaResource
+> Task :app:optimizeReleaseResources
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :card-table-ui:lintVitalAnalyzeRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+
+[Incubating] Problems report is available at: file:///C:/Users/Cristi/AppData/Local/Temp/j4-release-0171-9ef9312e/source/whist-lab-app/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.6.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 2m 33s
+133 actionable tasks: 133 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html

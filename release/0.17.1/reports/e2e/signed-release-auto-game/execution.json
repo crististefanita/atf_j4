@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "android-signed-release-e2e",
+  "status": "PASS",
+  "protocol": "ATF_ANDROID_E2E_EXTENT_J24",
+  "tests": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "releaseVersion": "0.17.1",
+  "installedApkSha256": "d5571c440a49147278a78b8c0f31e103ec990e2c3dbe7316e60c2c6e253f2c7c",
+  "sourceCommit": "c5d0b666007c5db80d438a4e26a01707f1b71a81",
+  "sourceFingerprint": "c20a6847df832f7ce0fc7bfba79e6c4500d1e5e08f8e9474376f65974b203c6b",
+  "inlinePngCount": 7,
+  "reportSha256": "0f3bec5fa93abdd3a6d370835580bc302c8a1b78c48a2810d9f998eb5b783fcc"
+}

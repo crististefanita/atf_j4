@@ -10,8 +10,8 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.17.0 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.17.0)** — ediția Android curentă și asset-urile livrării.
-- **[Descarcă APK 0.17.0](https://github.com/crististefanita/atf_j4/releases/download/v0.17.0/WhistLab-0.17.0.apk)** — pentru utilizatorii autentificați cu acces la repository.
+- **[Whist Lab 0.17.1](release/0.17.1/README.md)** — dosarul ediției Android.
+- **[Descarcă APK 0.17.1](release/0.17.1/WhistLab-0.17.1.apk)** — candidatul local semnat.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -133,7 +133,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
 
-[Dosarul versiunii curente](release/0.17.0/README.md) · [Catalogul livrărilor](release/README.md)
+[Dosarul versiunii curente](release/0.17.1/README.md) · [Catalogul livrărilor](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

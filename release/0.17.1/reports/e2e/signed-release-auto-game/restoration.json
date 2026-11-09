@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "originalApkSha256": "e8b38d53c4b9a83da3801e609ebe8ea1006e39e4531280b26f89da99a8dfffdf",
+  "restoredApkSha256": "e8b38d53c4b9a83da3801e609ebe8ea1006e39e4531280b26f89da99a8dfffdf",
+  "backupSha256": "aa80621f12d99a1ccbd9b4faf150471cbb9eb30dbbfd2d385167402242e39063",
+  "afterArchiveSha256": "204125ee05b028a1438ffe9dd3157b837b4c7d124daf6eaa4a3085721ae56c17",
+  "beforeEntryCount": 8,
+  "afterEntryCount": 8,
+  "dataContentsMatch": true,
+  "previousVersion": "0.15.0",
+  "restoredPath": "/data/app/ro.whistlab.app--YloUNIQvrqXkY0wMazFAg==/base.apk",
+  "verifiedUtc": "2026-11-09T18:12:24.8652660Z"
+}
