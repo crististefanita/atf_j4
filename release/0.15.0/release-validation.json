@@ -133,12 +133,12 @@
   "evidenceRetention": {
     "state": "COMPONENT_EXTENT_AND_SIGNED_ANDROID_E2E_EXTENT",
     "canonicalReport": "reports/component/atf-tests/component-report.html",
-    "canonicalReportSha256": "33e981644e167f4c9b8f4c45983a7bc281f9eed0765f26905a4501cf0979b960"
+    "canonicalReportSha256": "7cc27a9e1ffb02502ae62cd5091eb885d371cf1089fd79f0bd7ecbbcd7a52012"
   },
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-09T06:31:35.957Z",
+    "observedUtc": "2026-11-09T06:40:11.110Z",
     "files": [
       {
         "path": "README.md",
@@ -157,13 +157,13 @@
       },
       {
         "path": "release-notes.md",
-        "bytes": 512,
-        "sha256": "20229bef9dadc7264ed59e19bf32881c881fc764b6556e2a6074048df37b7701"
+        "bytes": 514,
+        "sha256": "cd95b2a5eb3a63511244b5f200128415514a3d833dfff6472af8ac06e8ae91db"
       },
       {
         "path": "release-presentation.json",
         "bytes": 338,
-        "sha256": "7625e224bdfe5f773ac37e42ac4a42eee2d47b000d92232199b4515af77ef07a"
+        "sha256": "51f846398e0fee951d4ec404ccded10d507176fa3544a15d2f6c020c5fca7bb7"
       },
       {
         "path": "reports/README.md",
@@ -192,13 +192,13 @@
       },
       {
         "path": "reports/component/atf-tests/component-report.html",
-        "bytes": 7232906,
-        "sha256": "33e981644e167f4c9b8f4c45983a7bc281f9eed0765f26905a4501cf0979b960"
+        "bytes": 7233022,
+        "sha256": "7cc27a9e1ffb02502ae62cd5091eb885d371cf1089fd79f0bd7ecbbcd7a52012"
       },
       {
         "path": "reports/component/atf-tests/execution.json",
         "bytes": 539,
-        "sha256": "28ba0b7577e7ef64e0fa8df92ae551a9cc1ae0a277357a410303c77ac739ce30"
+        "sha256": "149bb0a775f05e4be430cb88646e6add195584b27c17ab55410efba4f6ab2587"
       },
       {
         "path": "reports/component/atf-validation/component-report.html",
@@ -213,7 +213,7 @@
       {
         "path": "reports/component/source-component-run.json",
         "bytes": 5573,
-        "sha256": "a6bb91688d70b402676ed636a18ff735cc49a02c63ada6204edb669230aabf0f"
+        "sha256": "d93f3d807957aaf0082836b7e6d9587999acc49d61ad0b9adee258f7f2153109"
       },
       {
         "path": "reports/component/source-inputs.json",
