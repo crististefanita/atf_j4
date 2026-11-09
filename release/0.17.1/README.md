@@ -9,6 +9,6 @@
 ## Descărcare
 
 - Canal Android TEST, cu certificatul ediției anterioare.
-- Distribuția este pregătită pentru GitHub Releases, cu acces autentificat.
+- [GitHub Release](https://github.com/crististefanita/atf_j4/releases/tag/v0.17.1) și [APK](https://github.com/crististefanita/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk) sunt disponibile prin contul autorizat.
 
 [Rapoarte și proveniență](reports/README.md) · [Manifestul versiunii](release-validation.json) · [Catalogul livrărilor](../README.md)

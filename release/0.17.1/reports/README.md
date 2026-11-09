@@ -25,3 +25,7 @@ Calificarea urmărește centrarea licitării și intrarea în automatizarea mâi
 - Guvernanța linkurilor relative a folosit [referințele documentare J0](diagnostics/documentation-references.json) în staging.
 
 [Catalogul livrărilor](../../README.md) · [Strategia comună](../../../docs/testing/README.md)
+
+## Distribuție
+
+APK-ul complet și checksum-ul au fost descărcate prin GitHub autentificat. HTTP 200, dimensiunea, SHA-256 și CRC-ul tuturor intrărilor coincid cu binarul calificat. [Dovada descărcării](distribution-verification.json)

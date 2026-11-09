@@ -12,7 +12,7 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
-| 0.17.1 | Android TEST; pregătit local | [Dosarul și raportarea](0.17.1/README.md) |
+| 0.17.1 | Android TEST; GitHub autentificat | [Dosarul și raportarea](0.17.1/README.md) |
 
 ## Cum publicăm o versiune
 

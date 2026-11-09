@@ -10,8 +10,8 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.17.1](release/0.17.1/README.md)** — dosarul ediției Android.
-- **[Descarcă APK 0.17.1](release/0.17.1/WhistLab-0.17.1.apk)** — candidatul local semnat.
+- **[Whist Lab 0.17.1 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.17.1)** — ediția Android curentă și asset-urile livrării.
+- **[Descarcă APK 0.17.1](https://github.com/crististefanita/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk)** — pentru utilizatorii autentificați cu acces la repository.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 

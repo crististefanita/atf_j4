@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "observedUtc": "2026-11-09T18:47:31.0659792Z",
+  "readmeBlob": null,
+  "authenticatedDownload": {
+    "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk",
+    "authenticated": true,
+    "authMode": "GITHUB_ACCOUNT",
+    "httpStatus": 200,
+    "bytes": 1228793,
+    "sha256": "d5571c440a49147278a78b8c0f31e103ec990e2c3dbe7316e60c2c6e253f2c7c",
+    "zipCrc": "PASS",
+    "channel": "GitHub API authenticated",
+    "tag": "v0.17.1",
+    "targetCommit": "c5d0b666007c5db80d438a4e26a01707f1b71a81",
+    "checksumAsset": "https://github.com/crististefanita/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk.sha256",
+    "zipEntries": 35
+  }
+}
