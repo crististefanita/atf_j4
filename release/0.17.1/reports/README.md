@@ -29,3 +29,7 @@ Calificarea urmărește centrarea licitării și intrarea în automatizarea mâi
 ## Distribuție
 
 APK-ul complet și checksum-ul au fost descărcate prin GitHub autentificat. HTTP 200, dimensiunea, SHA-256 și CRC-ul tuturor intrărilor coincid cu binarul calificat. [Dovada descărcării](distribution-verification.json)
+
+Adresa a fost extrasă din README-ul principal publicat pe GitHub.
+
+[Extent pentru acceptanța descărcării](download-extent.html)

@@ -141,7 +141,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-09T18:47:31.977Z",
+    "observedUtc": "2026-11-09T18:49:06.903Z",
     "files": [
       {
         "path": "README.md",
@@ -175,8 +175,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 2534,
-        "sha256": "77da2726ddf9440483cd72be790a3a06ee4d193662f2127b1d0ea8ddfe927253"
+        "bytes": 2667,
+        "sha256": "f560fdaca68aa05e41a250cad6aa8546ced9addfd3aacfed96b77e596197c0aa"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -295,8 +295,13 @@
       },
       {
         "path": "reports/distribution-verification.json",
-        "bytes": 751,
-        "sha256": "bbf3790f7a0a9079949585e19bb088461749a9814ba25b6140f369be23a84f5f"
+        "bytes": 789,
+        "sha256": "645cf56a9aa4ca20eee9b7110e70b7c6db689d7e5756c95465fb5e6616a0f4e8"
+      },
+      {
+        "path": "reports/download-extent.html",
+        "bytes": 2413015,
+        "sha256": "e3de97f75146fdd61a9de136db3a32f6c6f0d51a6356324512ccfe69fdf5217a"
       },
       {
         "path": "reports/e2e/signed-release-auto-game/execution.json",
