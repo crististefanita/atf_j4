@@ -1,0 +1,9 @@
+{
+  "version": "0.17.0",
+  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.17.0/reports/README.md",
+  "mode": "changes",
+  "previousVersion": "0.16.0",
+  "points": [
+    "Adaugă un control Auto-play lângă licitare, cu așezare adaptivă și reluarea controlului manual la următoarea mână."
+  ]
+}

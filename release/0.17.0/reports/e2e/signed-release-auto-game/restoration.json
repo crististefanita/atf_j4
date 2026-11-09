@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "android-e2e-restoration",
+  "status": "PASS",
+  "api": 28,
+  "baselineVersion": "0.15.0",
+  "restoredApkSha256": "e8b38d53c4b9a83da3801e609ebe8ea1006e39e4531280b26f89da99a8dfffdf",
+  "dataContentsMatch": true,
+  "beforeEntryCount": 8,
+  "afterEntryCount": 8,
+  "leaseReleased": true,
+  "verifiedUtc": "2026-11-09T16:58:10.0457596Z"
+}
