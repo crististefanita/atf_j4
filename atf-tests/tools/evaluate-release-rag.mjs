@@ -77,7 +77,13 @@ class StrictJsonReader {
 }
 
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const inlinePngCount = html => [...html.matchAll(/data:image\/png;base64,/g)].length;
 const posix = value => value.split(path.sep).join('/');
+function hasCredentialField(value) {
+  if (!value || typeof value !== 'object') return false;
+  return Object.entries(value).some(([key, child]) =>
+    /authorization|token|cookie|password|secret|credential/i.test(key) || hasCredentialField(child));
+}
 function safeRelative(value) {
   if (typeof value !== 'string' || value.length === 0 || value.includes('\\') || path.posix.isAbsolute(value)
       || value.split('/').some(part => part === '' || part === '.' || part === '..')) throw Error('UNSAFE_RELATIVE_PATH:' + value);
@@ -184,12 +190,30 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && Array.isArray(policy.ragEvaluator?.platformGates?.androidBeforeHumanReview)
       && policy.ragEvaluator.platformGates.androidBeforeHumanReview.includes('signing')
       && Array.isArray(policy.ragEvaluator?.platformGates?.androidAfterPublication)
-      && policy.ragEvaluator.platformGates.androidAfterPublication.includes('publicDownload')
+      && policy.ragEvaluator.platformGates.androidAfterPublication.includes('distributionDownload')
       && policy.ragEvaluator?.componentSourceBinding?.sourceSetMustEqualReleaseInputManifest === true
       && policy.ragEvaluator?.componentSourceBinding?.eachExtentMustMatchExecutionReceipt === true
       && policy.ragEvaluator?.componentSourceBinding?.allReceiptsMustBindSameSourceFingerprint === true
       && policy.ragEvaluator?.componentSourceBinding?.provenanceReceipt === 'reports/component/source-provenance.json'
       && policy.ragEvaluator?.e2e?.notRunNeverMeansPass === true
+      && policy.ragEvaluator?.e2e?.executionReceiptPattern === 'reports/e2e/{suite}/execution.json'
+      && policy.ragEvaluator?.e2e?.receiptMustMatchManifestReleaseAndSource === true
+      && policy.ragEvaluator?.e2e?.receiptMustMatchExtentHashAndOutcomes === true
+      && policy.ragEvaluator?.e2e?.inlinePngCountMustMatchExtent === true
+      && policy.ragEvaluator?.e2e?.reportPathsUniqueAcrossScopes === true
+      && policy.reportingContract?.owner === 'atf-reporting'
+      && policy.reportingContract?.renderer === 'Extent'
+      && policy.reportingContract?.oneCanonicalHtmlPerExecutedSuiteSelection === true
+      && policy.reportingContract?.componentReportPathPattern === 'reports/component/{group}/component-report.html'
+      && policy.reportingContract?.e2eReportPathPattern === 'reports/e2e/{suite}/report.html'
+      && policy.reportingContract?.eachSuiteOwnsUniqueReportPath === true
+      && policy.reportingContract?.everyExecutedSuiteRequiresInlinePngEvidence === true
+      && policy.reportingContract?.componentAndE2eScopesRemainDistinct === true
+      && policy.reportingContract?.exactJUnitIdentityAndOutcomeParity === true
+      && policy.reportingContract?.junitXmlRole === 'temporary-independent-oracle'
+      && policy.reportingContract?.duplicateJUnitXmlInFinalRelease === false
+      && policy.reportingContract?.capturedImagesMustBeInlineBase64 === true
+      && policy.reportingContract?.reportBindsQualifiedSourceSnapshot === true
       && policy.rules?.ragMayExecuteCommands === false && policy.rules?.ragMayBuildOrSign === false
       && policy.rules?.ragMayPublish === false && policy.candidateLifecycle?.ragMayAdvanceLifecycle === false;
   addCheck(checks, 'RAG_POLICY', policyContract, policyContract
@@ -358,13 +382,28 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
             okay = okay && signing.result === 'PASS' && signing.certificateSha256 === release.certificateSha256
                 && signing.upgradeCompatibility === 'PASS';
           }
-        } else if (name === 'publicDownload') {
+        } else if (name === 'distributionDownload') {
           receiptDoc = await strictJson(receiptFile);
-          const download = receiptDoc.value.publicDownload ?? {};
-          okay = okay && typeof download.url === 'string' && download.url.startsWith('https://')
-              && download.httpStatus === 200 && download.pageStatus === 200 && download.checksumStatus === 200
-              && download.bytes === release.apkBytes && download.sha256 === release.apkSha256
-              && /anonymous HTTPS GET without cookies or authorization/i.test(download.channel ?? '');
+          const publication = manifest.publication ?? {};
+          if (publication.accessMode === 'AUTHENTICATED' && publication.state === 'PUBLISHED') {
+            const download = receiptDoc.value.authenticatedDownload ?? {};
+            const repository = publication.repository ?? '';
+            const expectedUrl = `https://github.com/${repository}/releases/download/v${release.versionName}/${release.apkName}`;
+            okay = okay && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository)
+                && download.url === expectedUrl && download.authenticated === true
+                && download.authMode === 'GITHUB_ACCOUNT' && download.httpStatus === 200
+                && download.bytes === release.apkBytes && download.sha256 === release.apkSha256
+                && download.zipCrc === 'PASS' && download.channel === 'GitHub API authenticated'
+                && !hasCredentialField(download);
+          } else if (publication.accessMode === 'ANONYMOUS' && publication.state === 'PUBLISHED_SITE') {
+            const download = receiptDoc.value.publicDownload ?? {};
+            okay = okay && typeof download.url === 'string' && download.url.startsWith('https://')
+                && download.httpStatus === 200 && download.pageStatus === 200 && download.checksumStatus === 200
+                && download.bytes === release.apkBytes && download.sha256 === release.apkSha256
+                && /anonymous HTTPS GET without cookies or authorization/i.test(download.channel ?? '');
+          } else {
+            okay = false;
+          }
         }
       } catch { okay = false; }
     }
@@ -379,30 +418,37 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   }
   addCheck(checks, 'PLATFORM_GATES', platformGatesOkay,
       platformGatesOkay ? `Porțile Android necesare etapei ${published ? 'publicate' : 'pre-publicare'} au receipt-uri valide și hash-uri legate de payload.`
-        : 'Lipsește o poartă Android obligatorie ori receipt-ul ei nu dovedește statusul, identitatea, semnarea, compatibilitatea sau distribuția anonimă.',
+        : 'Lipsește o poartă Android obligatorie ori receipt-ul ei nu dovedește statusul, identitatea, semnarea, compatibilitatea sau accesul de distribuție declarat.',
       platformGateEvidence, platformGateProblems);
 
   const groups = manifest.qualification?.auditedGroups ?? {}, groupResults = [];
   const selectedGroups = validPlan ? plan.componentGroups : [];
   const requiredComponentGroups = policy.ragEvaluator?.requiredComponentGroupsByPlatform?.android ?? REQUIRED_ANDROID_COMPONENT_GROUPS;
   let componentsOkay = requiredComponentGroups.every(name => selectedGroups.includes(name));
+  const reporting = policy.reportingContract ?? {};
+  const selectedReportPaths = new Set();
   const componentProblems = requiredComponentGroups.filter(name => !selectedGroups.includes(name))
       .map(name => `Grup obligatoriu neselectat: ${name}`);
   for (const name of selectedGroups) {
-    const group = groups[name]; let okay = Boolean(group && Number.isSafeInteger(group.tests) && group.tests > 0
+    const group = groups[name];
+    const expectedReport = reporting.componentReportPathPattern?.replace('{group}', name);
+    const pathUnique = typeof group?.report === 'string' && !selectedReportPaths.has(group.report);
+    if (typeof group?.report === 'string') selectedReportPaths.add(group.report);
+    let okay = Boolean(group && group.report === expectedReport && pathUnique && Number.isSafeInteger(group.tests) && group.tests > 0
         && group.failures === 0 && group.errors === 0 && group.skipped === 0
         && typeof group.report === 'string' && typeof group.protocol === 'string' && group.protocol.includes('COMPONENT'));
     if (okay) {
       try {
         const reportBytes = await fs.readFile(await regularFile(candidate, group.report));
         const payload = declared.get(group.report);
+        const html = reportBytes.toString('utf8');
         okay = Boolean(payload && digest(reportBytes) === payload.sha256
-            && /<html\b/i.test(reportBytes.toString('utf8').slice(0, 8192)));
+            && /<html\b/i.test(html.slice(0, 8192)) && inlinePngCount(html) > 0);
       } catch { okay = false; }
     }
     if (!okay) {
       componentsOkay = false;
-      componentProblems.push(`${name}: group sau Extent invalid (teste=${group?.tests ?? 'absent'}, failures=${group?.failures ?? 'absent'}, errors=${group?.errors ?? 'absent'}, skipped=${group?.skipped ?? 'absent'}, report=${group?.report ?? 'absent'}).`);
+      componentProblems.push(`${name}: grup, cale Extent canonică/unică sau rezultate invalide (așteptat=${expectedReport ?? 'absent'}, raport=${group?.report ?? 'absent'}, teste=${group?.tests ?? 'absent'}, failures=${group?.failures ?? 'absent'}, errors=${group?.errors ?? 'absent'}, skipped=${group?.skipped ?? 'absent'}).`);
     }
     groupResults.push({name, status: okay ? 'PASS' : 'BLOCKED', invocations: group?.tests ?? null,
       evidence: [citation('release-validation.json', manifestDoc.sha256,
@@ -492,25 +538,65 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       [...evidence('/evidenceRetention'), ...(canonicalOkay ? [citation(canonical, canonicalHash)] : [])]);
 
   const e2e = plan.e2e ?? {};
+  const e2eBinding = policy.ragEvaluator?.e2e ?? {};
   let e2eReceiptsOkay = e2e.status !== 'PASS' || Array.isArray(e2e.groups);
+  const e2eProblems = [], e2eEvidence = [];
+  const e2eReportPaths = new Set();
   if (e2eReceiptsOkay && e2e.status === 'PASS') {
     for (const name of e2e.groups) {
       const group = manifest.qualification?.e2eGroups?.[name];
       if (!group || !Number.isSafeInteger(group.tests) || group.tests < 1 || group.failures !== 0
-          || group.errors !== 0 || group.skipped !== 0 || !String(group.protocol ?? '').includes('E2E')) { e2eReceiptsOkay = false; break; }
+          || group.errors !== 0 || group.skipped !== 0 || !String(group.protocol ?? '').includes('E2E')) {
+        e2eReceiptsOkay = false; e2eProblems.push(`${name}: grupul E2E lipsește sau numărătoarea/protocolul nu este promovat.`); continue;
+      }
+      const reportPath = group.report, receiptPath = group.executionReceipt;
+      const reportDirectory = typeof reportPath === 'string' ? path.posix.dirname(reportPath) : '';
+      const suiteDirectory = path.posix.basename(reportDirectory);
+      const expectedReport = reporting.e2eReportPathPattern?.replace('{suite}', suiteDirectory);
+      const expectedReceipt = e2eBinding.executionReceiptPattern?.replace('{suite}', suiteDirectory);
+      if (reportPath !== expectedReport || !reportPath || selectedReportPaths.has(reportPath) || e2eReportPaths.has(reportPath)
+          || receiptPath !== expectedReceipt || !receiptPath || receiptPath === reportPath) {
+        e2eReceiptsOkay = false;
+        e2eProblems.push(`${name}: raport/receipt lipsă, necanonic sau cu o cale reutilizată (așteptat raport=${expectedReport}, receipt=${expectedReceipt}; observat raport=${reportPath ?? 'absent'}, receipt=${receiptPath ?? 'absent'}).`);
+        continue;
+      }
+      e2eReportPaths.add(reportPath);
       try {
-        const file = await regularFile(candidate, group.report), bytes = await fs.readFile(file), item = declared.get(group.report);
-        if (!item || digest(bytes) !== item.sha256) { e2eReceiptsOkay = false; break; }
-      } catch { e2eReceiptsOkay = false; break; }
+        const reportFile = await regularFile(candidate, reportPath), reportBytes = await fs.readFile(reportFile);
+        const html = reportBytes.toString('utf8'), reportHash = digest(reportBytes), imageCount = inlinePngCount(html);
+        const reportItem = declared.get(reportPath), receiptItem = declared.get(receiptPath);
+        const receiptDoc = await strictJson(await regularFile(candidate, receiptPath)), receipt = receiptDoc.value;
+        const countsMatch = receipt.tests === group.tests && receipt.failures === group.failures
+            && receipt.errors === group.errors && receipt.skipped === group.skipped;
+        const bindingMatches = receipt.status === 'PASS' && receipt.protocol === group.protocol && countsMatch && imageCount > 0
+            && receipt.releaseVersion === manifest.release?.versionName
+            && receipt.installedApkSha256 === manifest.release?.apkSha256
+            && receipt.sourceCommit === manifest.source?.sourceCommit
+            && receipt.sourceFingerprint === manifest.source?.workingTreeFingerprint
+            && receipt.reportSha256 === reportHash && receipt.inlinePngCount === imageCount;
+        const reportMatches = Boolean(reportItem && digest(reportBytes) === reportItem.sha256 && /<html\b/i.test(html.slice(0, 8192)));
+        const receiptMatches = Boolean(receiptItem && receiptItem.sha256 === receiptDoc.sha256);
+        if (!reportMatches || !receiptMatches || !bindingMatches) {
+          e2eReceiptsOkay = false;
+          e2eProblems.push(`${name}: Extent-ul, receipt-ul, APK-ul, sursa, numărătoarea sau capturile inline nu se leagă între ele.`);
+        }
+        e2eEvidence.push(citation('release-validation.json', manifestDoc.sha256,
+            `/qualification/e2eGroups/${name}`, manifestDoc.lines.get(`/qualification/e2eGroups/${name}`) ?? 1));
+        if (receiptItem) e2eEvidence.push(citation(receiptPath, receiptItem.sha256, '/reportSha256', receiptDoc.lines.get('/reportSha256') ?? 1));
+        if (reportItem) e2eEvidence.push(citation(reportPath, reportItem.sha256));
+      } catch (error) {
+        e2eReceiptsOkay = false;
+        e2eProblems.push(`${name}: receipt sau raport E2E ilizibil/neinclus în payload (${error.message}).`);
+      }
     }
   }
   const e2eOkay = e2eReceiptsOkay && (!plan.userFlowChanged
       ? (e2e.status === 'PASS' || (['NOT_RUN', 'NOT_APPLICABLE'].includes(e2e.status) && e2e.rationale?.trim().length >= 12))
       : e2e.status === 'PASS');
   addCheck(checks, 'E2E_SCOPE', e2eOkay,
-      e2eOkay ? `E2E: ${e2e.status}; decizia este explicită, cu receipte verificate pentru PASS.`
+      e2eOkay ? `E2E: ${e2e.status}; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.`
         : 'Flux de utilizator schimbat fără E2E trecut, raport E2E lipsă/nepotrivit sau omitere fără justificare.',
-      [citation(path.relative(project, planFile), planDoc.sha256, '/e2e', planDoc.lines.get('/e2e') ?? 1)]);
+      [citation(path.relative(project, planFile), planDoc.sha256, '/e2e', planDoc.lines.get('/e2e') ?? 1), ...e2eEvidence], e2eProblems);
 
   const allowedVerdicts = policy.rules?.allowedAggregateStatuses;
   const allPass = checks.every(check => check.status === 'PASS') && policyContract

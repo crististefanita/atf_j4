@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 
-/** Verifies the menu-driven AutoGame boundary on the signed APK using a real one-card hand. */
+/** Verifies the bid-screen AutoGame control and its one-hand boundary on the signed APK. */
 public final class AutoGameReleaseScenario {
     public static void run(ReleaseBidContext c) throws Exception {
         String installed = c.installedHash();
@@ -28,10 +28,14 @@ public final class AutoGameReleaseScenario {
         c.awaitRecommendation(labels.submit());
         c.checkpoint("Current hand is awaiting the human bid", xml -> List.of(
                 ReleaseBidContext.equal("Real bid control is visible", true, c.ui.hasText(xml, labels.submit())),
-                ReleaseBidContext.equal("Game menu is accessible", true, c.ui.hasDescription(xml, labels.gameMenu()))));
+                ReleaseBidContext.equal("AutoGame toggle is visible beside or below the bid action", true,
+                        c.ui.hasText(xml, labels.autoGameToggle())
+                                && nextToOrBelow(c.ui.boundsForText(xml, labels.submit()),
+                                        c.ui.boundsForText(xml, labels.autoGameToggle()))),
+                ReleaseBidContext.equal("AutoGame starts unchecked with an explicit accessible action", true,
+                        c.ui.hasDescription(xml, labels.startAutoGame()))));
 
-        c.ui.tapDescription(labels.gameMenu());
-        c.ui.tapText(labels.autoGame());
+        c.ui.tapText(labels.autoGameToggle());
         c.ui.awaitText(labels.next(), Duration.ofSeconds(45));
         c.checkpoint("AutoGame completes the current hand at its real score boundary", xml -> List.of(
                 ReleaseBidContext.equal("One-card hand reached the score screen", true, c.ui.hasText(xml, labels.next())),
@@ -40,12 +44,20 @@ public final class AutoGameReleaseScenario {
 
         c.ui.tapText(labels.next());
         c.awaitRecommendation(labels.submit());
-        c.ui.tapDescription(labels.gameMenu());
         c.checkpoint("AutoGame does not leak into the next hand", xml -> List.of(
-                ReleaseBidContext.equal("Start AutoGame is available again", true, c.ui.hasText(xml, labels.autoGame())),
-                ReleaseBidContext.equal("Stop AutoGame is absent after the score boundary", false,
-                        c.ui.hasText(xml, labels.stopAutoGame()))));
+                ReleaseBidContext.equal("The next hand exposes the same visible bid control", true,
+                        c.ui.hasText(xml, labels.autoGameToggle())),
+                ReleaseBidContext.equal("The new hand returns to the unchecked state", true,
+                        c.ui.hasDescription(xml, labels.startAutoGame())
+                                && !c.ui.hasDescription(xml, labels.stopAutoGame()))));
         c.ui.back();
+    }
+
+    private static boolean nextToOrBelow(atf.android.e2e.driver.AndroidUiDriver.Bounds bid,
+            atf.android.e2e.driver.AndroidUiDriver.Bounds toggle) {
+        boolean inline = toggle.top() < bid.bottom() && toggle.bottom() > bid.top()
+                && toggle.left() >= bid.right();
+        return inline || toggle.top() >= bid.bottom();
     }
 
     private record Labels(boolean ro) {
@@ -56,8 +68,8 @@ public final class AutoGameReleaseScenario {
         String start() { return ro ? "Începe partida" : "Start game"; }
         String submit() { return ro ? "Licitează" : "Place bid"; }
         String next() { return ro ? "Mâna următoare" : "Next hand"; }
-        String gameMenu() { return ro ? "Meniu joc" : "Game menu"; }
-        String autoGame() { return ro ? "Joacă automat mâna curentă" : "Auto-play this hand"; }
+        String autoGameToggle() { return ro ? "Automat" : "Auto-play"; }
+        String startAutoGame() { return ro ? "Joacă automat mâna curentă" : "Auto-play this hand"; }
         String stopAutoGame() { return ro ? "Oprește jocul automat" : "Stop auto-play"; }
     }
 

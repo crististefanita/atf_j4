@@ -19,12 +19,34 @@ final class ReleaseCatalogPresentation {
         Path receipt = releaseFolder.resolve("reports/distribution-verification.json");
         if (!Files.isRegularFile(receipt)) {
             require(!publicationState.equals("PUBLISHED_SITE"), "SITE-RECEIPT", receipt);
+            String planned = plannedAuthenticatedTarget(manifest, repository, version, release.path("apkName").asText());
+            if (planned != null) return planned;
             return releaseDownload(repository, version, publicationState.equals("PUBLISHED"));
         }
 
-        var publicDownload = new ObjectMapper().readTree(receipt.toFile()).path("publicDownload");
+        JsonNode distribution = new ObjectMapper().readTree(receipt.toFile());
+        var authenticatedDownload = distribution.path("authenticatedDownload");
+        if (!authenticatedDownload.isMissingNode()) {
+            String expected = releaseDownload(repository, version, true);
+            require(publicationState.equals("PUBLISHED")
+                    && manifest.path("publication").path("accessMode").asText().equals("AUTHENTICATED"),
+                    "AUTHENTICATED-STATE", receipt);
+            require(authenticatedDownload.path("url").asText().equals(expected)
+                    && authenticatedDownload.path("authenticated").asBoolean()
+                    && authenticatedDownload.path("authMode").asText().equals("GITHUB_ACCOUNT")
+                    && authenticatedDownload.path("httpStatus").asInt() == 200
+                    && authenticatedDownload.path("bytes").asLong(-1) == release.required("apkBytes").asLong()
+                    && authenticatedDownload.path("sha256").asText().equals(release.required("apkSha256").asText())
+                    && authenticatedDownload.path("zipCrc").asText().equals("PASS")
+                    && authenticatedDownload.path("channel").asText().equals("GitHub API authenticated"),
+                    "AUTHENTICATED-EVIDENCE", receipt);
+            return expected;
+        }
+        var publicDownload = distribution.path("publicDownload");
         if (publicDownload.isMissingNode()) {
             require(!publicationState.equals("PUBLISHED_SITE"), "SITE-RECEIPT", receipt);
+            String planned = plannedAuthenticatedTarget(manifest, repository, version, release.path("apkName").asText());
+            if (planned != null) return planned;
             return releaseDownload(repository, version, publicationState.equals("PUBLISHED"));
         }
         String url = publicDownload.path("url").asText();
@@ -36,6 +58,19 @@ final class ReleaseCatalogPresentation {
                 && publicDownload.path("bytes").asLong(-1) == release.required("apkBytes").asLong()
                 && publicDownload.path("sha256").asText().equals(release.required("apkSha256").asText()), "PUBLIC-EVIDENCE", receipt);
         return url;
+    }
+
+    private static String plannedAuthenticatedTarget(JsonNode manifest, String repository, String version, String apkName)
+            throws IOException {
+        var publication = manifest.path("publication");
+        String target = publication.path("targetUrl").asText();
+        if (target.isBlank()) return null;
+        String expected = releaseDownload(repository, version, true);
+        require(publication.path("state").asText().equals("PREPARED")
+                && publication.path("accessMode").asText().equals("AUTHENTICATED")
+                && expected.endsWith("/" + apkName) && target.equals(expected), "PLANNED-AUTHENTICATED-URL",
+                Path.of("release-validation.json"));
+        return expected;
     }
 
     static String releaseDownload(String repository, String version, boolean published) {

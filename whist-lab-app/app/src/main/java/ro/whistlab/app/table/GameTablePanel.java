@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,8 @@ public final class GameTablePanel extends LinearLayout {
     private final List<Button> bidChoiceButtons = new ArrayList<>();
     private final IntConsumer onBidSelected;
     private final Runnable onBidSubmitted;
+    private final Runnable onAutoGameToggled;
+    private final boolean autoGameActive;
     private int selectedBid;
     private Button bidSubmitButton;
     private boolean collectionAttached;
@@ -76,10 +79,11 @@ public final class GameTablePanel extends LinearLayout {
 
     public static GameTablePanel bidding(Context context, GameSession.Snapshot state,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
-            Runnable onBidSubmitted, boolean interactionPaused, WhistUiText copy) {
+            Runnable onBidSubmitted, boolean autoGameActive, Runnable onAutoGameToggled,
+            WhistUiText copy) {
         return new GameTablePanel(context, state, true, Collections.emptyList(), null,
                 null, bidOptions, selectedBid, onBidSelected, onBidSubmitted, copy,
-                Collections.emptyList(), interactionPaused);
+                Collections.emptyList(), autoGameActive, autoGameActive, onAutoGameToggled);
     }
 
     public static GameTablePanel playing(Context context, GameSession.Snapshot state,
@@ -92,21 +96,23 @@ public final class GameTablePanel extends LinearLayout {
             List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
             List<PlayedCard> completedTrickToDisplay, WhistUiText copy) {
         return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
-                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay, false);
+                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay, false, false, null);
     }
 
     public static GameTablePanel playing(Context context, GameSession.Snapshot state,
             List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
             List<PlayedCard> completedTrickToDisplay, boolean interactionPaused, WhistUiText copy) {
         return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
-                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay, interactionPaused);
+                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay,
+                interactionPaused, false, null);
     }
 
     private GameTablePanel(Context context, GameSession.Snapshot state, boolean bidding,
             List<Card> playableCards, Consumer<Card> onCardSelected, String hint,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
             Runnable onBidSubmitted,
-            WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused) {
+            WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused,
+            boolean autoGameActive, Runnable onAutoGameToggled) {
         super(context);
         this.context = context;
         this.viewport = new TableViewportPolicy(WindowContent.heightDp(context),
@@ -122,6 +128,8 @@ public final class GameTablePanel extends LinearLayout {
         this.selectedBid = selectedBid;
         this.onBidSelected = onBidSelected;
         this.onBidSubmitted = onBidSubmitted;
+        this.autoGameActive = autoGameActive;
+        this.onAutoGameToggled = onAutoGameToggled;
 
         setOrientation(VERTICAL);
         setGravity(Gravity.BOTTOM);
@@ -160,8 +168,7 @@ public final class GameTablePanel extends LinearLayout {
         TrickCardMetrics.Layout trickLayout = bidding
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp,
                         getResources().getConfiguration().fontScale, viewport);
-        int centerWidthDp = bidding
-                ? Math.max(132, Math.min(bidOptions.size(), BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp)) * 52)
+        int centerWidthDp = bidding ? bidActionLayout(tableWidthDp).centerWidthDp()
                 : trickLayout.safeCenterWidthDp();
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
                 viewport, !bidding, bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
@@ -183,7 +190,9 @@ public final class GameTablePanel extends LinearLayout {
         LinearLayout center = new LinearLayout(context);
         center.setOrientation(VERTICAL);
         center.setGravity(Gravity.CENTER);
-        int columns = BidGridMetrics.columnCount(bidOptions.size(), availableContentWidthDp());
+        int tableWidthDp = Math.min(availableContentWidthDp(), 760);
+        int columns = BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp);
+        BidGridMetrics.ActionLayout actions = bidActionLayout(tableWidthDp);
 
         center.setContentDescription(copy.bidSelector());
 
@@ -218,8 +227,51 @@ public final class GameTablePanel extends LinearLayout {
             center.addView(row, new LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(BidGridMetrics.CHOICE_ROW_DP)));
         }
-        center.addView(buildBidSubmission(), new LayoutParams(dp(132), dp(BidGridMetrics.SUBMIT_TARGET_DP)));
+        center.addView(buildBidActions(actions), new LayoutParams(dp(actions.controlsWidthDp()), dp(actions.centerHeightDp()
+                - BidGridMetrics.rowCount(bidOptions.size(), tableWidthDp) * BidGridMetrics.CHOICE_ROW_DP)));
         return center;
+    }
+
+    private BidGridMetrics.ActionLayout bidActionLayout(int tableWidthDp) {
+        int seatWidthDp = ro.cardtable.ui.table.TableSizing.seatWidthDp(tableWidthDp, viewport.isCompact());
+        return BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp, seatWidthDp,
+                viewport.regionGapDp(), getResources().getConfiguration().fontScale);
+    }
+
+    private View buildBidActions(BidGridMetrics.ActionLayout layout) {
+        LinearLayout actions = new LinearLayout(context);
+        actions.setOrientation(layout.autoGameInline() ? HORIZONTAL : VERTICAL);
+        actions.setGravity(Gravity.CENTER);
+        actions.setTag(layout.autoGameInline() ? "bid-actions-inline" : "bid-actions-stacked");
+
+        actions.addView(buildBidSubmission(), new LayoutParams(dp(BidGridMetrics.SUBMIT_WIDTH_DP),
+                dp(BidGridMetrics.SUBMIT_TARGET_DP)));
+
+        CheckBox autoGame = new CheckBox(context);
+        autoGame.setText(copy.autoGameToggle());
+        autoGame.setTextSize(13);
+        autoGame.setTextColor(Color.rgb(245, 248, 240));
+        autoGame.setButtonTintList(android.content.res.ColorStateList.valueOf(Color.rgb(245, 248, 240)));
+        autoGame.setSingleLine(true);
+        autoGame.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        autoGame.setContentDescription(autoGameActive ? copy.stopAutoGameHand() : copy.autoGameHand());
+        autoGame.setTag("auto-game-bid-toggle");
+        autoGame.setChecked(autoGameActive);
+        autoGame.setMinHeight(dp(BidGridMetrics.AUTO_GAME_TOGGLE_TARGET_DP));
+        autoGame.setMinimumWidth(0);
+        autoGame.setFocusable(true);
+        autoGame.setEnabled(onAutoGameToggled != null);
+        autoGame.setOnCheckedChangeListener((button, checked) -> {
+            button.setContentDescription(checked ? copy.stopAutoGameHand() : copy.autoGameHand());
+            if (onAutoGameToggled != null) onAutoGameToggled.run();
+        });
+
+        LayoutParams toggleParams = new LayoutParams(dp(layout.autoGameToggleWidthDp()),
+                dp(BidGridMetrics.AUTO_GAME_TOGGLE_TARGET_DP));
+        if (layout.autoGameInline()) toggleParams.leftMargin = dp(BidGridMetrics.AUTO_GAME_ACTION_GAP_DP);
+        else toggleParams.topMargin = dp(BidGridMetrics.AUTO_GAME_STACK_GAP_DP);
+        actions.addView(autoGame, toggleParams);
+        return actions;
     }
 
     private View buildBidSubmission() {

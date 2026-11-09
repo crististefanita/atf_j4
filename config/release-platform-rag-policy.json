@@ -28,7 +28,7 @@
     "publicationRequires": [
       "promotedCommitMatchesQualifiedSnapshot",
       "publishedApkSha256EqualsQualifiedApkSha256",
-      "anonymousDownloadSha256EqualsPublishedApkSha256"
+      "downloadReceiptMatchesDeclaredAccessModeAndApkSha256"
     ],
     "ragMayAdvanceLifecycle": false,
     "ragOutputOutsideCheckout": true
@@ -59,7 +59,7 @@
     },
     "platformGates": {
       "androidBeforeHumanReview": ["androidComponents", "apkBuild", "apkIdentity", "signing"],
-      "androidAfterPublication": ["publicDownload"],
+      "androidAfterPublication": ["distributionDownload"],
       "gateReceiptShape": {"status": "PASS", "receipt": "payload-relative path"},
       "gateReceiptMustBeHashBound": true
     },
@@ -79,7 +79,12 @@
       "decisionMustBeExplicit": true,
       "notRunNeverMeansPass": true,
       "changedUserFlowRequiresPass": true,
-      "frozenUnchangedUserFlowMayRemainNotRunWithRationale": true
+      "frozenUnchangedUserFlowMayRemainNotRunWithRationale": true,
+      "executionReceiptPattern": "reports/e2e/{suite}/execution.json",
+      "receiptMustMatchManifestReleaseAndSource": true,
+      "receiptMustMatchExtentHashAndOutcomes": true,
+      "inlinePngCountMustMatchExtent": true,
+      "reportPathsUniqueAcrossScopes": true
     }
   },
   "suiteQualification": {
@@ -97,6 +102,10 @@
     "owner": "atf-reporting",
     "renderer": "Extent",
     "oneCanonicalHtmlPerExecutedSuiteSelection": true,
+    "componentReportPathPattern": "reports/component/{group}/component-report.html",
+    "e2eReportPathPattern": "reports/e2e/{suite}/report.html",
+    "eachSuiteOwnsUniqueReportPath": true,
+    "everyExecutedSuiteRequiresInlinePngEvidence": true,
     "componentAndE2eScopesRemainDistinct": true,
     "exactJUnitIdentityAndOutcomeParity": true,
     "junitXmlRole": "temporary-independent-oracle",
@@ -118,7 +127,7 @@
         "apkBuild",
         "apkIdentity",
         "signing",
-        "publicDownload"
+        "distributionDownload"
       ]
     },
     "ios": {
@@ -137,6 +146,8 @@
     "androidEvidenceSatisfiesIos": false,
     "catalogMustMatchManifestAndPublicLinks": true,
     "readyRequiresEveryDeclaredPlatform": true,
+    "distributionAccessModes": ["AUTHENTICATED", "ANONYMOUS"],
+    "authenticatedDownloadReceiptMustOmitCredentials": true,
     "allowedAggregateStatuses": ["BLOCKED", "READY_FOR_HUMAN_REVIEW"],
     "ragMayExecuteCommands": false,
     "ragMayBuildOrSign": false,

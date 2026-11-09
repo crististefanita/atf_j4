@@ -306,6 +306,7 @@ public final class MainActivity extends Activity {
             aiTurns.cancel();
             humanBids.cancel();
         } else if (state.phase() == GamePhase.BIDDING || state.phase() == GamePhase.PLAYING) {
+            aiTurns.cancel();
             humanBids.cancel();
             autoGameHand.start(state);
         } else return;

@@ -115,6 +115,21 @@ class ReleaseArtifactLayoutGovernanceTest {
                 "https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk"));
     }
 
+    @Test void aPreparedAuthenticatedCandidateMayDeclareOnlyItsExactFutureGithubAsset() throws Exception {
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var manifest = json.createObjectNode();
+        manifest.putObject("release").put("versionName", "1.2.0").put("apkName", "WhistLab-1.2.0.apk");
+        manifest.putObject("publication").put("state", "PREPARED").put("accessMode", "AUTHENTICATED")
+                .put("targetUrl", "https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk");
+        String repository = "https://github.com/example/game";
+        AuditedAssertions.assertEquals("https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk",
+                ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) manifest.path("publication"))
+                .put("targetUrl", "https://github.com/example/game/releases/download/v1.1.0/WhistLab-1.2.0.apk");
+        AuditedAssertions.assertThrows(IOException.class,
+                () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"wrong-current", "latest", "wrong-label", "wrong-asset", "duplicate", "old-extra-asset", "published-local"})
     void staleAmbiguousAndUnpublishedDownloadClaimsAreRejected(String defect) throws Exception {
@@ -155,6 +170,33 @@ class ReleaseArtifactLayoutGovernanceTest {
         AuditedAssertions.assertThrows(IOException.class,
                 () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
         Files.delete(receipt);
+        AuditedAssertions.assertThrows(IOException.class,
+                () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+    }
+
+    @Test void authenticatedGithubDownloadMustMatchTheDeclaredAccountChannelAndApk() throws Exception {
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var manifest = json.createObjectNode();
+        manifest.putObject("release").put("versionName", "1.2.0").put("apkName", "WhistLab-1.2.0.apk")
+                .put("apkBytes", 50).put("apkSha256", "a".repeat(64));
+        manifest.putObject("publication").put("state", "PUBLISHED").put("accessMode", "AUTHENTICATED");
+        Path receipt = Files.createDirectories(temporary.resolve("reports")).resolve("distribution-verification.json");
+        var record = json.createObjectNode();
+        var download = record.putObject("authenticatedDownload")
+                .put("url", "https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk")
+                .put("authenticated", true).put("authMode", "GITHUB_ACCOUNT").put("httpStatus", 200)
+                .put("bytes", 50).put("sha256", "a".repeat(64)).put("zipCrc", "PASS")
+                .put("channel", "GitHub API authenticated");
+        json.writeValue(receipt.toFile(), record);
+        String repository = "https://github.com/example/game";
+        AuditedAssertions.assertEquals(download.path("url").asText(),
+                ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        download.put("sha256", "b".repeat(64));
+        json.writeValue(receipt.toFile(), record);
+        AuditedAssertions.assertThrows(IOException.class,
+                () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        download.put("sha256", "a".repeat(64)).put("authMode", "ANONYMOUS");
+        json.writeValue(receipt.toFile(), record);
         AuditedAssertions.assertThrows(IOException.class,
                 () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
     }

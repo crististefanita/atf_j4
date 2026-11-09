@@ -63,14 +63,14 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 ## Distribuția prin GitHub
 
-- **Descărcare:** README-ul principal oferă APK-ul candidatului local. După publicare, indică asset-ul versiunii din GitHub Releases sau o copie publică a aceluiași APK. Copia publică devine linkul direct după ce o descărcare fără autentificare confirmă dimensiunea și SHA-256 din manifest. Directorul `release` al repository-ului păstrează documentația și copia locală.
+- **Descărcare:** README-ul principal oferă APK-ul candidatului local. După publicare, indică asset-ul versiunii din GitHub Releases sau o copie publică a aceluiași APK. Canalul și accesul sunt declarate separat: asset GitHub autentificat pentru conturi cu permisiune ori copie publică verificată anonim. Directorul `release` al repository-ului păstrează documentația și copia locală.
 - README-ul principal indică numai APK-ul din `currentVersion`. Pentru `PREPARED`, linkul duce la fișierul local. Pentru `PUBLISHED`, duce la asset-ul GitHub sau la copia publică verificată a aceleiași versiuni.
 
 - **Copie locală:** [catalogul livrărilor](../../release/README.md) trimite la dosarul versiunii, care reunește APK-ul, checksum-ul și rapoartele; binarul și checksum-ul local sunt excluse din Git.
 - **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
 
 - **Identitate:** [registrul release-ului](../../release/README.md) deține versiunea, adresele asset-urilor și probele de integritate.
-- **Canale:** descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului personal verificat.
+- **Canale:** descărcarea personală autentificată și accesul anonim au calificări separate; lipsa accesului anonim nu blochează acceptarea canalului autentificat dacă acesta este canalul declarat.
 
 | Etapă | Criteriu de acceptare |
 |---|---|
@@ -169,9 +169,10 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 |---|---|
 | Candidat local | Link la dosarul exact din `release/<versionName>/`, stare `PREPARED` și APK local; fără afirmație de publicare GitHub. |
 | Asset publicat | Link direct `releases/download/<tag>/<apkName>`. Eticheta, tag-ul și fișierul identifică aceeași versiune. |
-| Copie publică verificată | Link HTTPS fixat pe versiune și numele APK-ului, consemnat în `publicDownload` după descărcare anonimă și comparație cu manifestul. |
+| Asset GitHub autentificat | `PUBLISHED` cu `accessMode=AUTHENTICATED`; receipt-ul `authenticatedDownload` confirmă API-ul contului, URL-ul versiunii, HTTP 200, octeții, SHA-256 și CRC, fără token sau cookie. |
+| Copie publică verificată | `PUBLISHED_SITE` cu `accessMode=ANONYMOUS`; receipt-ul `publicDownload` confirmă pagina, APK-ul și checksum-ul prin HTTPS fără credențiale. |
 | Copie completă | Răspuns reușit, mărime și SHA-256 identice cu asset-ul și binarul declarat; ZIP cu CRC valid, manifest Android și cod. Un răspuns de eroare nu se redenumește `.apk`. |
-| Canal verificat | API autentificat și browser sunt probe distincte. Reușita API nu marchează browserul drept verificat și nu închide blocajul accesului anonim. |
+| Canal verificat | Fiecare receipt califică numai modul de acces pe care îl declară. Un rezultat autentificat nu afirmă acces anonim, iar o copie publică nu afirmă permisiunile conturilor GitHub. |
 | Identitate unică | `currentVersion`, manifestul, eticheta, numele APK-ului și URL-ul identifică aceeași ediție. Dovezile unei versiuni anterioare rămân numai referințe de audit. |
 
 Fișierul se descarcă într-un nume temporar și primește extensia finală după verificări. La trecerea în `PUBLISHED`, înlocuiți linkul local cu adresa de distribuție a aceleiași versiuni.
@@ -181,7 +182,7 @@ Fișierul se descarcă într-un nume temporar și primește extensia finală dup
 1. După publicare, deschideți README-ul livrat într-o sesiune de browser fără cont. Urmați linkul APK din pagina afișată. Descărcați fișierul și checksum-ul fără cookie-uri, antet de autorizare sau token. Comparați mărimea și SHA-256 cu `release-validation.json` și cu fișierul checksum publicat.
 2. La HTTP 404, verificați separat repository-ul, README-ul, pagina release-ului și asset-ul. Comparați rezultatul anonim cu cel din sesiunea proprietarului. Dacă și profilul sau alte repository-uri marcate public sunt inaccesibile, păstrați URL-urile, ora UTC, codurile HTTP și ID-urile cererilor pentru [GitHub Support](https://docs.github.com/en/support/contacting-github-support/creating-a-support-ticket). Un 404 anonim singur nu identifică motivul.
 3. Dacă asset-ul GitHub rămâne inaccesibil anonim, publicați APK-ul semnat și checksum-ul pe o gazdă HTTPS publică, controlată de proiect. Linkul APK se termină în `/v<versionName>/WhistLab-<versionName>.apk` și folosește o adresă stabilă, fără parametri de interogare sau fragment. Dacă și README-ul de pe GitHub este inaccesibil, publicați o copie din commitul identificat pe pagina publică și verificați linkul din ea. O copie nouă a README-ului se publică după fiecare schimbare de versiune sau de destinație a descărcării.
-4. Înregistrați canalul alternativ în `release/<versionName>/reports/distribution-verification.json` sub `publicDownload`. Includeți `url`, `httpStatus`, `bytes`, `sha256` și momentul observației. Păstrați separat rezultatul adresei GitHub. Actualizați linkul principal, reînregistrați integritatea dosarului și rulați guvernanța. După push, recitiți README-ul publicat și repetați descărcarea folosind exact acel link.
+4. Înregistrați modul declarat în `release/<versionName>/reports/distribution-verification.json`: `authenticatedDownload` pentru GitHub cu autentificare sau `publicDownload` pentru Site anonim. Includeți numai metadatele verificabile, nu tokenul, cookie-ul sau antetele de autorizare. Actualizați linkul principal, reînregistrați integritatea dosarului și rulați guvernanța. După push, recitiți README-ul și repetați descărcarea folosind exact acel link și același mod de acces.
 
 Rulați verificarea din rădăcina proiectului și introduceți adresa directă copiată din README-ul publicat.
 
@@ -232,7 +233,7 @@ mvn -B -o -pl atf-tests -am '-Dtest=PublishedApkDownloadAcceptanceTest' '-Dsuref
 - **Suită offline:** guvernanța obișnuită exclude tag-ul `release-download-live`; acceptanța de rețea se selectează explicit, fără a transforma omisiunea ei într-un rezultat pozitiv.
 
 - **Inventar:** indexul structurat, dosarele și catalogul formează aceeași populație verificată.
-- **Calificare:** validarea structurală și [legarea notelor de asset-ul publicat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) sunt controale distincte; trecerea lor nu dovedește accesul anonim, proveniența Git completă sau autonomia raportului.
+- **Calificare:** validarea structurală și [legarea notelor de asset-ul publicat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) sunt controale distincte; trecerea lor nu dovedește accesul în modul declarat, proveniența Git completă sau autonomia raportului.
 
 ### Integritatea fișierelor și rezultatelor
 

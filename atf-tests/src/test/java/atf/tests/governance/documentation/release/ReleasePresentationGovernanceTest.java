@@ -86,6 +86,20 @@ class ReleasePresentationGovernanceTest {
             String asset = repository + "/releases/download/" + tag + "/" + assets.getFirst().required("name").asText();
             AuditedAssertions.assertEquals(asset, assets.getFirst().required("url").asText());
             AuditedAssertions.assertEquals(validation.required("release").required("apkBytes").asLong(), assets.getFirst().required("size").asLong());
+            if (validation.path("publication").path("accessMode").asText().equals("AUTHENTICATED")) {
+                var receipt = JSON.readTree(folder.resolve("reports/distribution-verification.json").toFile());
+                var download = receipt.required("authenticatedDownload");
+                AuditedAssertions.assertEquals(asset, download.required("url").asText());
+                AuditedAssertions.assertTrue(download.required("authenticated").asBoolean());
+                AuditedAssertions.assertEquals("GITHUB_ACCOUNT", download.required("authMode").asText());
+                AuditedAssertions.assertEquals(200, download.required("httpStatus").asInt());
+                AuditedAssertions.assertEquals(validation.required("release").required("apkBytes").asLong(), download.required("bytes").asLong());
+                AuditedAssertions.assertEquals(validation.required("release").required("apkSha256").asText(), download.required("sha256").asText());
+                AuditedAssertions.assertEquals("PASS", download.required("zipCrc").asText());
+                AuditedAssertions.assertEquals("GitHub API authenticated", download.required("channel").asText());
+                AuditedAssertions.assertFalse(download.has("token") || download.has("authorization") || download.has("cookie"),
+                        "Authentication material is never persisted in distribution receipts");
+            }
             AuditedAssertions.assertTrue(java.util.stream.StreamSupport.stream(published.required("assets").spliterator(), false)
                     .anyMatch(row -> row.path("url").asText().equals(asset + ".sha256")), "Checksum asset must exist");
             AuditedAssertions.assertEquals(version, presentation.required("version").asText());

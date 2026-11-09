@@ -35,7 +35,7 @@ class ReleaseRagPlatformGovernanceTest {
                 "aggregateStatus=READY_FOR_HUMAN_REVIEW", "mainTreeSha256EqualsQualifiedSnapshotSha256")));
         assertTrue(strings(lifecycle.path("publicationRequires")).containsAll(List.of(
                 "promotedCommitMatchesQualifiedSnapshot", "publishedApkSha256EqualsQualifiedApkSha256",
-                "anonymousDownloadSha256EqualsPublishedApkSha256")));
+                "downloadReceiptMatchesDeclaredAccessModeAndApkSha256")));
         assertFalse(lifecycle.path("ragMayAdvanceLifecycle").asBoolean());
         assertTrue(lifecycle.path("ragOutputOutsideCheckout").asBoolean());
     }
@@ -45,6 +45,10 @@ class ReleaseRagPlatformGovernanceTest {
         assertEquals("atf-reporting", reporting.path("owner").asText());
         assertEquals("Extent", reporting.path("renderer").asText());
         assertTrue(reporting.path("oneCanonicalHtmlPerExecutedSuiteSelection").asBoolean());
+        assertEquals("reports/component/{group}/component-report.html", reporting.path("componentReportPathPattern").asText());
+        assertEquals("reports/e2e/{suite}/report.html", reporting.path("e2eReportPathPattern").asText());
+        assertTrue(reporting.path("eachSuiteOwnsUniqueReportPath").asBoolean());
+        assertTrue(reporting.path("everyExecutedSuiteRequiresInlinePngEvidence").asBoolean());
         assertTrue(reporting.path("componentAndE2eScopesRemainDistinct").asBoolean());
         assertTrue(reporting.path("exactJUnitIdentityAndOutcomeParity").asBoolean());
         assertEquals("temporary-independent-oracle", reporting.path("junitXmlRole").asText());
@@ -74,7 +78,7 @@ class ReleaseRagPlatformGovernanceTest {
                 strings(evaluator.path("requiredComponentGroupsByPlatform").path("android")));
         assertEquals(List.of("androidComponents", "apkBuild", "apkIdentity", "signing"),
                 strings(evaluator.path("platformGates").path("androidBeforeHumanReview")));
-        assertEquals(List.of("publicDownload"), strings(evaluator.path("platformGates").path("androidAfterPublication")));
+        assertEquals(List.of("distributionDownload"), strings(evaluator.path("platformGates").path("androidAfterPublication")));
         assertTrue(evaluator.path("platformGates").path("gateReceiptMustBeHashBound").asBoolean());
         assertEquals("reports/component/source-inputs.json", evaluator.path("componentSourceBinding").path("inputManifest").asText());
         assertEquals("reports/component/source-provenance.json", evaluator.path("componentSourceBinding").path("provenanceReceipt").asText());
@@ -84,8 +88,16 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(strings(evaluator.path("citationsRequire")).containsAll(List.of("path", "sha256", "jsonPointerAndLineForJson")));
         assertTrue(evaluator.path("doesNotInspectGitIndexOrExecuteGit").asBoolean());
         assertTrue(evaluator.path("doesNotPerformPromotionOrPublication").asBoolean());
+        assertTrue(strings(policy().path("rules").path("distributionAccessModes")).containsAll(
+                List.of("AUTHENTICATED", "ANONYMOUS")));
+        assertTrue(policy().path("rules").path("authenticatedDownloadReceiptMustOmitCredentials").asBoolean());
         assertTrue(evaluator.path("e2e").path("notRunNeverMeansPass").asBoolean());
         assertTrue(evaluator.path("e2e").path("changedUserFlowRequiresPass").asBoolean());
+        assertEquals("reports/e2e/{suite}/execution.json", evaluator.path("e2e").path("executionReceiptPattern").asText());
+        assertTrue(evaluator.path("e2e").path("receiptMustMatchManifestReleaseAndSource").asBoolean());
+        assertTrue(evaluator.path("e2e").path("receiptMustMatchExtentHashAndOutcomes").asBoolean());
+        assertTrue(evaluator.path("e2e").path("inlinePngCountMustMatchExtent").asBoolean());
+        assertTrue(evaluator.path("e2e").path("reportPathsUniqueAcrossScopes").asBoolean());
         assertTrue(policy().path("suiteQualification").path("currentApplicationE2eMayBeFrozenWhenNoUserFlowChanges").asBoolean());
         Path root = GovernanceProject.locateProjectRoot();
         String cli = Files.readString(root.resolve(evaluator.path("entrypoint").asText()));
@@ -110,6 +122,7 @@ class ReleaseRagPlatformGovernanceTest {
         Path root = GovernanceProject.locateProjectRoot();
         String ragFeedback = Files.readString(root.resolve("docs/feedback/ATF_Release_RAG.md"));
         String qualificationGuide = Files.readString(root.resolve("docs/testing/ATF_ReleaseQualification.md"));
+        String deliveryGuide = Files.readString(root.resolve("docs/platform/ATF_AndroidDelivery.md"));
         String evaluator = Files.readString(root.resolve("atf-tests/tools/evaluate-release-rag.mjs"));
         assertTrue(evaluator.contains("MAIN_README_SURFACE"));
         assertTrue(qualificationGuide.contains("## Ciclul candidatului"));
@@ -118,10 +131,24 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("Evaluatorul nu inspectează indexul Git"));
         assertTrue(qualificationGuide.contains("ATF_Release_RAG.md"));
         assertTrue(qualificationGuide.contains("JUnit-ul temporar"));
+        assertTrue(qualificationGuide.contains("Fiecare selecție primară executată deține un raport Extent canonic"));
+        assertTrue(qualificationGuide.contains("executionReceipt"));
+        assertTrue(qualificationGuide.contains("amprenta sursei"));
+        assertTrue(qualificationGuide.contains("numărul imaginilor PNG inline"));
         assertTrue(qualificationGuide.contains("--plan-file"));
         assertTrue(qualificationGuide.contains("`NOT_RUN`"));
         assertTrue(qualificationGuide.contains("nu devine rezultat pozitiv"));
         assertTrue(qualificationGuide.contains("`whist-lab-app-bidding`"));
+        assertTrue(qualificationGuide.contains("### Promovarea, push-ul și linkul public"));
+        assertTrue(qualificationGuide.contains("Comite sursele, împinge commit-ul"));
+        assertTrue(qualificationGuide.contains("citește README-ul din repository"));
+        assertTrue(qualificationGuide.contains("Pentru `AUTHENTICATED`"));
+        assertTrue(qualificationGuide.contains("tokenul și antetele nu se salvează"));
+        assertTrue(qualificationGuide.contains("repetă citirea README-ului și descărcarea folosind exact acel link"));
+        assertTrue(qualificationGuide.contains("contul GitHub care are acces"));
+        assertTrue(deliveryGuide.contains("## Commit-ul surselor și commit-ul dovezilor"));
+        assertTrue(deliveryGuide.contains("recitiți README-ul din GitHub"));
+        assertTrue(deliveryGuide.contains("repetați descărcarea folosind exact acel link"));
         assertTrue(ragFeedback.contains("Inventarul complet al snapshot-ului"));
         assertTrue(ragFeedback.contains("Legătura independentă risc–teste"));
         assertTrue(ragFeedback.contains("Producător și handoff unic"));
@@ -203,7 +230,7 @@ class ReleaseRagPlatformGovernanceTest {
         var ios = JSON.createObjectNode().put("implemented", implemented).put("artifactKind", artifactKind);
         ios.set("gates", gates);
         var androidGates = JSON.createObjectNode();
-        for (String gate : List.of("androidComponents", "apkBuild", "apkIdentity", "signing", "publicDownload"))
+        for (String gate : List.of("androidComponents", "apkBuild", "apkIdentity", "signing", "distributionDownload"))
             androidGates.put(gate, "PASS");
         var android = JSON.createObjectNode().put("implemented", true).put("artifactKind", "apk");
         android.set("gates", androidGates);

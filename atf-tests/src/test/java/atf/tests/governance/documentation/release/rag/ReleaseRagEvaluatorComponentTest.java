@@ -15,6 +15,8 @@ import java.util.HexFormat;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @AtfComponentTest
 class ReleaseRagEvaluatorComponentTest {
@@ -134,12 +136,45 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertTrue(details(verdict, "PLATFORM_GATES").stream().anyMatch(value -> value.contains("apkIdentity")));
     }
 
-    @Test void publishedStageRequiresTheAnonymousDownloadReceipt() throws Exception {
+    @Test void publishedStageRequiresAReceiptForItsDeclaredAccessMode() throws Exception {
         Fixture fixture = fixture();
         Path manifestFile = fixture.candidate().resolve("release-validation.json");
         ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
         ((ObjectNode) manifest.path("publication")).put("state", "PUBLISHED_SITE");
         JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "PLATFORM_GATES"));
+    }
+
+    @Test void authenticatedGithubDownloadCanSatisfyThePublishedGateWithoutPersistingCredentials() throws Exception {
+        Fixture fixture = fixture();
+        selectAuthenticatedPublication(fixture);
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(0, exit, JSON.writeValueAsString(verdict.path("checks")));
+        AuditedAssertions.assertEquals("READY_FOR_HUMAN_REVIEW", verdict.path("verdict").asText());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "PLATFORM_GATES"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"wrongUrl", "wrongHash", "credentialLeak", "anonymousChannel"})
+    void authenticatedGithubDownloadRejectsMismatchedOrSensitiveReceipts(String defect) throws Exception {
+        Fixture fixture = fixture();
+        selectAuthenticatedPublication(fixture);
+        Path receiptFile = fixture.candidate().resolve("reports/distribution-verification.json");
+        ObjectNode receipt = (ObjectNode) JSON.readTree(receiptFile.toFile());
+        ObjectNode download = (ObjectNode) receipt.path("authenticatedDownload");
+        switch (defect) {
+            case "wrongUrl" -> download.put("url", "https://github.com/other/repo/releases/download/v" + VERSION + "/WhistLab-" + VERSION + ".apk");
+            case "wrongHash" -> download.put("sha256", "b".repeat(64));
+            case "credentialLeak" -> download.put("token", "must-never-be-persisted");
+            case "anonymousChannel" -> download.put("channel", "anonymous HTTPS GET");
+            default -> throw new IllegalArgumentException(defect);
+        }
+        JSON.writeValue(receiptFile.toFile(), receipt);
+        refreshPayload(fixture.candidate());
         int exit = evaluate(fixture, fixture.output());
         JsonNode verdict = JSON.readTree(fixture.output().toFile());
         AuditedAssertions.assertEquals(2, exit);
@@ -157,15 +192,79 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("NOT_RUN", verdict.path("e2e").path("status").asText());
     }
 
+    @Test void aPassingE2eReceiptBindsTheInstalledApkSourceOutcomesAndInlineExtentImages() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture);
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(0, exit, JSON.writeValueAsString(verdict.path("checks")));
+        AuditedAssertions.assertEquals("READY_FOR_HUMAN_REVIEW", verdict.path("verdict").asText());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertTrue(findCheck(verdict, "E2E_SCOPE").path("evidence").size() >= 3);
+    }
+
     @Test void aClaimedE2ePassNeedsAnExecutedExtentReceipt() throws Exception {
         Fixture fixture = fixture();
-        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile()); plan.put("userFlowChanged", true);
-        plan.set("e2e", JSON.createObjectNode().put("status", "PASS").putArray("groups").add("android-e2e"));
-        JSON.writeValue(fixture.plan().toFile(), plan);
+        selectPassingE2e(fixture);
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        ((ObjectNode) manifest.path("qualification").path("e2eGroups").path("android-e2e")).remove("executionReceipt");
+        JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
+        refreshPayload(fixture.candidate());
         int exit = evaluate(fixture, fixture.output());
         JsonNode verdict = JSON.readTree(fixture.output().toFile());
         AuditedAssertions.assertEquals(2, exit);
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertFalse(details(verdict, "E2E_SCOPE").isEmpty(), details(verdict, "E2E_SCOPE").toString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"installedApkSha256", "sourceCommit", "sourceFingerprint", "reportSha256", "inlinePngCount", "tests"})
+    void anE2eReceiptCannotDriftFromItsApkSourceExtentOrResults(String field) throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture);
+        Path receiptFile = fixture.candidate().resolve("reports/e2e/android-e2e/execution.json");
+        ObjectNode receipt = (ObjectNode) JSON.readTree(receiptFile.toFile());
+        if (field.equals("inlinePngCount") || field.equals("tests")) receipt.put(field, receipt.path(field).asInt() + 1);
+        else receipt.put(field, "f".repeat(64));
+        JSON.writeValue(receiptFile.toFile(), receipt);
+        refreshPayload(fixture.candidate());
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertFalse(details(verdict, "E2E_SCOPE").isEmpty(), details(verdict, "E2E_SCOPE").toString());
+    }
+
+    @Test void componentAndE2eSelectionsCannotReuseAnExtentPath() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture);
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        String componentReport = manifest.path("qualification").path("auditedGroups").path("atf-tests").path("report").asText();
+        ((ObjectNode) manifest.path("qualification").path("e2eGroups").path("android-e2e")).put("report", componentReport);
+        JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
+        refreshPayload(fixture.candidate());
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertFalse(details(verdict, "E2E_SCOPE").isEmpty(), details(verdict, "E2E_SCOPE").toString());
+    }
+
+    @Test void componentSelectionsCannotReuseOneCanonicalExtentForTwoSuites() throws Exception {
+        Fixture fixture = fixture();
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        String sharedReport = manifest.path("qualification").path("auditedGroups").path("atf-tests").path("report").asText();
+        ((ObjectNode) manifest.path("qualification").path("auditedGroups").path("whist-lab-app-history")).put("report", sharedReport);
+        JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
+        refreshPayload(fixture.candidate());
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_EXTENT"));
+        AuditedAssertions.assertTrue(details(verdict, "COMPONENT_EXTENT").stream().anyMatch(value -> value.contains("cale Extent canonică/unică")));
     }
 
     @Test void evaluatorRefusesToWriteItsVerdictInsideAnyInputTree() throws Exception {
@@ -216,7 +315,8 @@ class ReleaseRagEvaluatorComponentTest {
             int tests = module.equals("atf-tests") ? 3 : module.startsWith("whist-lab-app-") ? 4 : 2;
             Path groupFolder = Files.createDirectories(candidate.resolve("reports/component/" + module));
             Path report = groupFolder.resolve("component-report.html");
-            Files.writeString(report, "<!doctype html><html><body>" + module + " Extent component</body></html>");
+            Files.writeString(report, "<!doctype html><html><body>" + module
+                    + " Extent component<img src=\"data:image/png;base64,iVBORw0KGgo=\"></body></html>");
             ObjectNode execution = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "live-source-components")
                     .put("apkQualification", false).put("tests", tests).put("provenanceSha256", provenanceFingerprint)
                     .put("reportSha256", hash(report));
@@ -295,6 +395,56 @@ class ReleaseRagEvaluatorComponentTest {
         ObjectNode manifest = (ObjectNode) JSON.readTree(candidate.resolve("release-validation.json").toFile());
         capturePayload(candidate, manifest);
         JSON.writerWithDefaultPrettyPrinter().writeValue(candidate.resolve("release-validation.json").toFile(), manifest);
+    }
+
+    private static void selectPassingE2e(Fixture fixture) throws Exception {
+        Path report = fixture.candidate().resolve("reports/e2e/android-e2e/report.html");
+        Files.createDirectories(report.getParent());
+        Files.writeString(report, "<!doctype html><html><body><img src=\"data:image/png;base64,iVBORw0KGgo=\"></body></html>");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(fixture.candidate().resolve("release-validation.json").toFile());
+        ObjectNode release = (ObjectNode) manifest.path("release");
+        ObjectNode source = (ObjectNode) manifest.path("source");
+        ObjectNode receipt = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "android-signed-release-e2e")
+                .put("status", "PASS").put("protocol", "ANDROID_E2E_FIXTURE")
+                .put("tests", 1).put("failures", 0).put("errors", 0).put("skipped", 0)
+                .put("releaseVersion", VERSION).put("installedApkSha256", release.path("apkSha256").asText())
+                .put("sourceCommit", source.path("sourceCommit").asText())
+                .put("sourceFingerprint", source.path("workingTreeFingerprint").asText())
+                .put("inlinePngCount", 1).put("reportSha256", hash(report));
+        JSON.writeValue(fixture.candidate().resolve("reports/e2e/android-e2e/execution.json").toFile(), receipt);
+        ObjectNode e2eGroup = JSON.createObjectNode().put("report", "reports/e2e/android-e2e/report.html")
+                .put("executionReceipt", "reports/e2e/android-e2e/execution.json")
+                .put("protocol", "ANDROID_E2E_FIXTURE").put("tests", 1).put("failures", 0).put("errors", 0).put("skipped", 0);
+        ((ObjectNode) manifest.path("qualification")).putObject("e2eGroups").set("android-e2e", e2eGroup);
+        JSON.writerWithDefaultPrettyPrinter().writeValue(fixture.candidate().resolve("release-validation.json").toFile(), manifest);
+        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
+        plan.put("userFlowChanged", true);
+        ObjectNode e2ePlan = JSON.createObjectNode().put("status", "PASS");
+        e2ePlan.putArray("groups").add("android-e2e");
+        plan.set("e2e", e2ePlan);
+        JSON.writeValue(fixture.plan().toFile(), plan);
+        refreshPayload(fixture.candidate());
+    }
+
+    private static void selectAuthenticatedPublication(Fixture fixture) throws Exception {
+        var manifestFile = fixture.candidate().resolve("release-validation.json");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        ObjectNode publication = (ObjectNode) manifest.path("publication");
+        publication.put("state", "PUBLISHED").put("accessMode", "AUTHENTICATED").put("repository", "example/game");
+        Path receiptFile = fixture.candidate().resolve("reports/distribution-verification.json");
+        Files.createDirectories(receiptFile.getParent());
+        String apkHash = manifest.path("release").path("apkSha256").asText();
+        long apkBytes = manifest.path("release").path("apkBytes").asLong();
+        String url = "https://github.com/example/game/releases/download/v" + VERSION + "/WhistLab-" + VERSION + ".apk";
+        ObjectNode receipt = JSON.createObjectNode();
+        receipt.putObject("authenticatedDownload").put("url", url).put("authenticated", true)
+                .put("authMode", "GITHUB_ACCOUNT").put("httpStatus", 200).put("bytes", apkBytes)
+                .put("sha256", apkHash).put("zipCrc", "PASS").put("channel", "GitHub API authenticated");
+        JSON.writeValue(receiptFile.toFile(), receipt);
+        ((ObjectNode) manifest.path("qualification").path("platforms").path("android").path("gates"))
+                .set("distributionDownload", gate("reports/distribution-verification.json"));
+        JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
+        refreshPayload(fixture.candidate());
     }
 
     private int evaluate(Fixture fixture, Path output) throws Exception {

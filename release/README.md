@@ -6,19 +6,19 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 ## Versiunea curentă
 
-[0.16.0 — build, verificări și proveniență](0.16.0/README.md) este ediția curentă. Dosarul păstrează identitatea APK-ului și dovezile legate de versiunea calificată.
+[0.17.0 — build, verificări și proveniență](0.17.0/README.md) este ediția curentă. Dosarul păstrează identitatea APK-ului și dovezile legate de versiunea calificată.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
-| 0.16.0 | Android TEST; Site public | [Dosarul și raportarea](0.16.0/README.md) |
+| 0.17.0 | Android TEST; GitHub autentificat | [Dosarul și raportarea](0.17.0/README.md) |
 
 ## Cum publicăm o versiune
 
 1. Pregătiți candidatul, construiți APK-ul semnat și verificați identitatea lui înainte de publicare. [Calificarea release-ului](../docs/testing/ATF_ReleaseQualification.md)
-2. Alegeți canalul publicat și înregistrați-l explicit: `PUBLISHED` pentru release GitHub sau `PUBLISHED_SITE` pentru Site-ul public. Nu declarați un canal pe baza celuilalt.
-3. Deschideți pagina fără cont și descărcați APK-ul și checksum-ul. Confruntați HTTP, numărul de octeți și SHA-256 cu manifestul versiunii. [Ghidul livrării Android](../docs/platform/ATF_AndroidDelivery.md) · [Verificarea accesului anonim](../docs/platform/ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică)
+2. Alegeți canalul publicat și înregistrați-l explicit: `PUBLISHED` cu `AUTHENTICATED` pentru asset GitHub accesibil conturilor autorizate sau `PUBLISHED_SITE` cu `ANONYMOUS` pentru Site public. Nu declarați un canal pe baza celuilalt.
+3. Descărcați APK-ul în modul declarat de manifest: cu un cont autorizat pentru asset-ul GitHub sau fără autentificare pentru copia Site publică. Confruntați HTTP, numărul de octeți, SHA-256 și CRC cu manifestul versiunii. [Ghidul livrării Android](../docs/platform/ATF_AndroidDelivery.md) · [Verificarea accesului](../docs/platform/ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică)
 
 ## Citire rapidă
 

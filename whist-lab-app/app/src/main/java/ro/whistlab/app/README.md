@@ -247,9 +247,12 @@ Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea
 
 ### AutoGame pentru mâna activă
 
-Acțiunea din meniul mesei pornește un lease tranzitoriu, limitat la indexul mâinii curente. El permite `AiTurnRequest` să calculeze pentru locul uman numai cât timp lease-ul este activ și lasă coordonarea, verificarea snapshot-ului și aplicarea unică pe calea AI existentă. Ajungerea la scor, schimbarea mâinii, pornirea unei partide sau revenirea la meniul principal închide lease-ul; nu se transferă automat la următoarea mână.
+- Bifa de lângă licitație pornește un lease tranzitoriu, limitat la indexul mâinii curente. Pe ecranele înguste se așază sub butonul de licitare; meniul mesei păstrează aceeași comandă ca alternativă.
+- Lease-ul permite `AiTurnRequest` să calculeze pentru locul uman numai cât timp este activ; coordonarea, verificarea snapshot-ului și aplicarea unică rămân pe calea AI existentă.
+- Ajungerea la scor, schimbarea mâinii, pornirea unei partide sau revenirea la meniul principal închide lease-ul. Automatizarea nu se transferă la mâna următoare.
 
-[AutoGameHand](lifecycle/AutoGameHand.java) fixează limita de ciclu, [GameMenuContent](screens/GameMenuContent.java) proiectează eticheta localizată de pornire/oprire, iar [componenta lifecycle](../../../../../test/java/ro/whistlab/app/lifecycle/AutoGameHandComponentTest.java) și [componenta meniului](../../../../../test/java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) verifică delimitarea, acțiunea și ambele limbi. Fluxul complet pe APK semnat aparține calificării Android, deoarece componentele nu verifică interacțiunea nativă sau animațiile de joc.
+- [AutoGameHand](lifecycle/AutoGameHand.java) fixează limita de ciclu, iar [BidGridMetrics](bidding/BidGridMetrics.java) plasează controlul fără să acopere locurile.
+- Textele accesibile păstrează acțiunea completă pentru cititoarele de ecran. Componentele verifică 3–6 jucători, lățimi, text mărit, delimitarea lease-ului și ambele limbi; scenariul semnat verifică bifa, jocul până la scor și revenirea la control manual.
 
 - [Componentele coordonatorului](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnCoordinatorComponentTest.java) verifică firul calculului, predarea, anularea, dublurile și cauza eșecului.
 - [Componentele cererii](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java) verifică ambele niveluri, starea neschimbată în calcul și refuzul rezultatelor depășite ori destinate altei partide.

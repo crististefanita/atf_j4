@@ -91,20 +91,23 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
 
     @Test public void everyMeasuredTableRegionFitsWithoutCoveringAnotherRegion() {
         var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
-        int[] widths = {280, 313, 353, 560, 760}, gaps = {3, 8}, seatHeights = {62, 82, 110}, extras = {0, 80, 240};
+        int[] widths = {280, 313, 353, 560, 760}, gaps = {1, 8}, seatHeights = {62, 82, 110}, extras = {0, 80, 240};
+        float[] fontScales = {1f, 1.3f, 1.5f, 2f};
         atf.gradle.audit.GradleInputs.fixture("Complete measured table parameter grid", "widths", widths,
                 "player range", "3..6 inclusive", "bid option range", "1..18 inclusive", "gaps", gaps,
-                "seat heights", seatHeights, "extra heights", extras, "horizontal tolerance", .5);
+                "seat heights", seatHeights, "extra heights", extras, "font scales", fontScales,
+                "horizontal tolerance", .5);
         for (int width : widths) for (int players = 3; players <= 6; players++) for (int options = 1; options <= 18; options++) {
-            for (int gap : gaps) for (int seatHeight : seatHeights) {
-                int seatWidth = TableLayoutMetrics.seatWidthDp(width);
-                int centerWidth = Math.max(132, Math.min(options, BidGridMetrics.columnCount(options, width)) * 52);
-                int centerHeight = BidGridMetrics.rowCount(options, width) * 50 + 48;
+            for (int gap : gaps) for (int seatHeight : seatHeights) for (float fontScale : fontScales) {
+                int seatWidth = ro.cardtable.ui.table.TableSizing.seatWidthDp(width, gap == 1);
+                var actionLayout = BidGridMetrics.actionLayout(options, width, seatWidth, gap, fontScale);
+                int centerWidth = actionLayout.centerWidthDp();
+                int centerHeight = actionLayout.centerHeightDp();
                 int minimum = TableGeometry.minimumHeight(players, seatHeight, centerHeight, gap);
                 for (int extra : extras) {
                     var plan = TableGeometry.arrange(width, minimum + extra, players, seatWidth, seatHeight, centerWidth, centerHeight, gap);
                     String context = "width=" + width + ", players=" + players + ", options=" + options + ", gap=" + gap
-                            + ", seatHeight=" + seatHeight + ", extra=" + extra + ", plan=" + plan;
+                            + ", fontScale=" + fontScale + ", seatHeight=" + seatHeight + ", extra=" + extra + ", plan=" + plan;
                     var boxes = new ArrayList<>(plan.seats()); boxes.add(plan.center());
                     for (int i = 0; i < boxes.size(); i++) {
                         var box = boxes.get(i); checks.at(context + " / region " + i);
@@ -124,12 +127,17 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
         }
         long perGrid = java.util.stream.IntStream.rangeClosed(3, 6).map(players ->
                 2 * (players + 1) + (players + 1) * players / 2 + 2).sum();
-        long expectedPairs = (long) widths.length * 18 * gaps.length * seatHeights.length * extras.length * perGrid;
+        long expectedPairs = (long) widths.length * 18 * gaps.length * seatHeights.length
+                * fontScales.length * extras.length * perGrid;
         assertEquals("Every declared region, pair and anchor in the Cartesian grid was checked", expectedPairs, checks.checkedPairs());
         checks.publish();
     }
     @Test public void nineBidsAtFourSeatsCannotOverlapTheSideNames() {
-        var plan = TableGeometry.arrange(353, 368, 4, 102, 70, 260, 148, 8);
+        var actions = BidGridMetrics.actionLayout(9, 353,
+                ro.cardtable.ui.table.TableSizing.seatWidthDp(353, false), 8, 1f);
+        int height = TableGeometry.minimumHeight(4, 70, actions.centerHeightDp(), 8);
+        var plan = TableGeometry.arrange(353, height, 4, 102, 70,
+                actions.centerWidthDp(), actions.centerHeightDp(), 8);
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "plan", plan);
         assertTrue("plan.seats().get(1).bottom() < plan.center().top() must hold", plan.seats().get(1).bottom() < plan.center().top());

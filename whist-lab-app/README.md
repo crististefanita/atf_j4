@@ -45,9 +45,9 @@ Controlul revine la om după scorul mâinii. Detaliile fluxului sunt în [docume
 
 ## Joacă automat mâna curentă
 
-- În timpul licitării sau al jocului cărților, deschide `Game menu` / `Meniu joc` și selectează `Auto-play this hand` / `Joacă automat mâna curentă`.
+- În timpul licitării, bifa `Auto-play` / `Automat` stă lângă butonul `Place bid` / `Licitează` când lățimea permite; pe ecrane înguste se mută sub el, fără să acopere locurile mesei. Bifa pornește automatizarea mâinii curente.
+- În timpul jocului cărților sau pentru oprire, `Game menu` / `Meniu joc` oferă `Auto-play this hand` / `Joacă automat mâna curentă` ori `Stop auto-play` / `Oprește jocul automat`.
 - Aplicația folosește nivelul Normal sau Hard ales pentru adversari și controlează temporar și locul uman. La ecranul scorului automatizarea se oprește, iar următoarea mână revine la controlul manual.
-- În timpul mâinii, aceeași acțiune devine `Stop auto-play` / `Oprește jocul automat` și oprește preluarea turelor.
 
 Automatizarea afectează numai tura de licitare și turele de joc ale mâinii active. Nu schimbă nivelul AI, regulile, scorul sau salvarea partidei. Deschiderea unui dialog, trecerea aplicației în fundal și revenirea suspendă și reiau deciziile prin coordonatorul AI existent.
 

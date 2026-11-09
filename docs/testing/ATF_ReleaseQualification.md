@@ -45,6 +45,25 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 
 Nu copiați PNG/XML/JSON deja incluse integral în HTML după confruntarea octeților și a accesului offline. Păstrați încă dovezile unice necesare și declarați excepția; [predarea compactă](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) deține criteriul complet.
 
+## Contractul rapoartelor pe suite
+
+Fiecare selecție primară executată deține un raport Extent canonic și un receipt al execuției.
+
+- Căile sunt unice: componenta folosește `reports/component/{group}/component-report.html`; E2E folosește `reports/e2e/{suite}/report.html` și `execution.json` alături.
+- Capturile PNG sunt încorporate Base64 în raportul suitei.
+- Rapoartele de componentă și E2E au proprietari diferiți și nu se reunesc într-o populație comună.
+
+| Selecție | Receipt-ul minim | Legătura verificată |
+|---|---|---|
+| Componentă Maven sau Gradle | `execution.json` per grup și receipt-urile comune de sursă | Hash-ul HTML-ului, numărul și rezultatele, proveniența și inventarul sursei corespund manifestului calificat. |
+| E2E Android | `execution.json` alături de HTML-ul suitei | APK-ul instalat, versiunea, commitul și amprenta sursei, protocolul, rezultatele, hash-ul Extent și numărul imaginilor PNG inline corespund manifestului și raportului. |
+
+- Manifestul de release hash-ează separat HTML-ul și receipt-ul.
+- Evaluatorul blochează căile lipsă, duplicate sau necanonice, receipt-urile absente și nepotrivirile de rezultate, hash sau proveniență.
+- Câmpul `executionReceipt` leagă grupul E2E de receipt-ul alăturat raportului.
+- JUnit XML rămâne oracol temporar independent; dosarul final nu păstrează un al doilea raport.
+- Capturile sunt inline Base64; dosarul de release nu duplică fișiere PNG deja încorporate.
+
 ## README-ul dosarului
 
 Prima parte oferă raportul principal și starea calificării. Detaliile rămân schematice, cu o singură sursă pentru fiecare rezultat; README-ul trimite la inventar și la [strategia comună](README.md), fără a copia regulile generale.
@@ -110,11 +129,23 @@ Snapshot-ul fixat este baza tuturor selecțiilor. RAG-ul verifică receipt-urile
 | `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Fiecare selecție Gradle are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. Rapoartele distincte nu se concatenează; JUnit XML singur nu satisface poarta. |
 | Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK; `source-provenance.json` leagă manifestul și receiptele native prin SHA-256 al octeților JSON păstrați. |
 
-Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare. Stadiul publicat cere și dovada descărcării anonime.
+Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare. Stadiul publicat cere dovada descărcării în modul de acces declarat: `AUTHENTICATED` pentru un asset GitHub accesibil conturilor autorizate sau `ANONYMOUS` pentru o copie publică.
 
 - Flux neschimbat: E2E poate rămâne `NOT_RUN` cu justificare explicită.
 - Flux schimbat: verdictul cere rapoarte E2E trecute.
 - `NOT_RUN` nu devine rezultat pozitiv.
+
+### Promovarea, push-ul și linkul public
+
+Verdictul read-only nu comite, nu împinge și nu publică artefacte. După `READY_FOR_HUMAN_REVIEW`, responsabilul release-ului închide separat fiecare pas:
+
+1. Compară inventarul candidatului cu snapshot-ul calificat, inclusiv fișiere noi și excluderi; confirmă același fingerprint și un arbore Git curat care conține exact sursele calificate.
+2. Comite sursele, împinge commit-ul pe ramura publicată și creează tag-ul versiunii numai pe commit-ul verificat. Build-ul și manifestul trebuie să identifice acel commit și același APK calificat.
+3. Publică APK-ul și checksum-ul pe canalul declarat. Actualizează `release/index.json`, catalogul și README-ul principal astfel încât versiunea curentă și linkul direct să indice același artefact.
+4. După push, citește README-ul din repository, extrage linkul afișat efectiv și descarcă URL-ul în modul declarat de `publication.accessMode`. Pentru `AUTHENTICATED`, folosește contul GitHub care are acces și păstrează în receipt numai faptul autentificării, URL-ul, HTTP 200, numărul de octeți, SHA-256 și CRC; tokenul și antetele nu se salvează. Pentru `ANONYMOUS`, descarcă fără cookie-uri sau autorizare și păstrează separat confirmarea paginii și a checksum-ului.
+5. Înregistrează probele de publicare și descărcare în dosarul versiunii, comite și împinge dovezile, apoi repetă citirea README-ului și descărcarea folosind exact acel link și același mod de acces declarat.
+
+Instrucțiunile executabile și formatul chitanței de distribuție sunt în [ghidul livrării Android](../platform/ATF_AndroidDelivery.md#commit-ul-surselor-și-commit-ul-dovezilor). Dacă un pas nu poate fi verificat, starea rămâne `PENDING` sau `BLOCKED`; nu se promovează dintr-o verificare locală.
 
 Din rădăcina proiectului, cu planul și candidatul păstrate în locația TMP:
 

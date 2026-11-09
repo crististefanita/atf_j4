@@ -40,6 +40,8 @@ class PublishedApkDownloadAcceptanceTest {
         Files.createDirectories(directory);Path report = directory.resolve("download-" + scope + "-" + java.util.UUID.randomUUID() + ".html");
         var settings = AtfReportConfigurationLoader.load().reportingSettings();var redactor = new atf.reporting.security.SensitiveDataRedactor();
         var rows = new RecordedAssertions(new AssertionValueDisplay(settings.assertionMaxDisplayCharacters(), redactor::redactField));
+        GitHubApkDownload.Proof proof = null;
+        String channel = "GitHub API anonymous";
         try (var session = new ExtentReportSession(report, settings);
              var scenario = session.startScenario(getClass().getSimpleName(), getClass().getPackageName(),
                      "Complete GitHub APK download — " + scope, List.of("integration", "github", "network-live"));
@@ -51,12 +53,16 @@ class PublishedApkDownloadAcceptanceTest {
                 String repository = GovernanceProject.policy(root).required("publicRepository").asText().replace("https://github.com/", "");
                 var target = ReleaseDownloadSelection.select(scope, repository, index, manifest);
                 String token = System.getenv("GH_TOKEN");if (token == null || token.isBlank()) token = System.getenv("GITHUB_TOKEN");
+                boolean authenticated = token != null && !token.isBlank();
+                if (Boolean.getBoolean("atf.release.download.authenticated") && !authenticated)
+                    throw new IllegalStateException("The selected release channel requires an authenticated GitHub account");
+                channel = authenticated ? "GitHub API authenticated" : "GitHub API anonymous";
                 phase.observation(new ReportObservation("Declared download identity", List.of(new ReportField("Scope", scope),
                         new ReportField("Version", target.version()), new ReportField("Public asset URL", target.publicUrl()),
-                        new ReportField("Channel", token == null || token.isBlank() ? "GitHub API anonymous" : "GitHub API authenticated"),
+                        new ReportField("Channel", channel),
                         new ReportField("Expected bytes", Long.toString(target.bytes())), new ReportField("Expected SHA-256", target.sha256())),
                         List.of(), List.of()));
-                var proof = new GitHubApkDownload(token).download(target, temporary);
+                proof = new GitHubApkDownload(token).download(target, temporary);
                 rows.equals("Downloaded version", target.version(), proof.version());
                 rows.equals("Actual completed bytes", target.bytes(), proof.bytes());
                 rows.equals("Actual SHA-256", target.sha256(), proof.sha256());
@@ -70,7 +76,9 @@ class PublishedApkDownloadAcceptanceTest {
                         .map(row -> new AtfAssertion(row.name(), row.expected(), row.actual(), row.passed())).toList(), AtfReportStatus.INFO);
                 else if (failure == null) throw new IllegalStateException("Download acceptance has no captured comparisons");
                 else phase.detail("Comparison state", "Download stopped before the declared identity could be compared");
-                AtfReportStatus status = failure == null ? AtfReportStatus.PASS : AtfReportStatus.FAIL;
+                boolean passed = failure == null && proof != null && rows.checks().stream().allMatch(row -> row.passed());
+                if (passed) writeReceipt(directory, proof, channel);
+                AtfReportStatus status = passed ? AtfReportStatus.PASS : AtfReportStatus.FAIL;
                 phase.complete(status);scenario.complete(status);
             } catch (Exception | AssertionError publication) {
                 if (failure == null) failure = publication;else if (failure != publication) failure.addSuppressed(publication);
@@ -80,5 +88,24 @@ class PublishedApkDownloadAcceptanceTest {
             if (failure instanceof Exception original) throw original;
             if (failure instanceof AssertionError original) throw original;
         }
+    }
+
+    private static void writeReceipt(Path directory, GitHubApkDownload.Proof proof, String channel) throws Exception {
+        Path receipt = directory.resolve("distribution-verification.json");
+        if (Files.exists(receipt)) throw new IllegalStateException("Distribution receipt destination already exists");
+        boolean authenticated = channel.equals("GitHub API authenticated");
+        var download = new ObjectMapper().createObjectNode()
+                .put("url", proof.publicUrl())
+                .put("authenticated", authenticated)
+                .put("authMode", authenticated ? "GITHUB_ACCOUNT" : "ANONYMOUS")
+                .put("httpStatus", proof.httpStatus())
+                .put("bytes", proof.bytes())
+                .put("sha256", proof.sha256())
+                .put("zipCrc", proof.zipCrc())
+                .put("channel", channel);
+        var root = new ObjectMapper().createObjectNode().put("schemaVersion", 1)
+                .put("status", "PASS").put("observedUtc", java.time.Instant.now().toString());
+        root.set(authenticated ? "authenticatedDownload" : "publicDownload", download);
+        new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(receipt.toFile(), root);
     }
 }

@@ -48,7 +48,7 @@ public final class GameScreen {
         LinearLayout page = views.gamePage();
         addGameHeader(page, state, !autoGame, copy, actions);
         GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted,
-                autoGame, copy);
+                autoGame, actions.autoGame(), copy);
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
