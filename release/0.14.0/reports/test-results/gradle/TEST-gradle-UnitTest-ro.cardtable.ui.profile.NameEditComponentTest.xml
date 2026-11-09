@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ro.cardtable.ui.profile.NameEditComponentTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:22:07.949Z" hostname="DESKTOP-BLFSO18" time="0.075">
-  <properties/>
-  <testcase name="resetUsesTheExistingEmptyPreferenceWithoutCallingNameValidation" classname="ro.cardtable.ui.profile.NameEditComponentTest" time="0.015"/>
-  <testcase name="saveNormalizesBeforeCallingTheProductExactlyOnce" classname="ro.cardtable.ui.profile.NameEditComponentTest" time="0.015"/>
-  <testcase name="validationAndStorageFailuresKeepTheirOriginalIdentityWithoutRetry" classname="ro.cardtable.ui.profile.NameEditComponentTest" time="0.044"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

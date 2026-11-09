@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Set;
 import static atf.tests.governance.documentation.release.integrity.ReleaseFiles.*;
 
 /** Reconciles the declared manifest with retained bytes and independently decoded JUnit results. */
@@ -16,8 +17,15 @@ public final class ReleaseIntegrity {
         require(text(manifest.path("release"), "versionName").equals(folder.getFileName().toString()), "VERSION", folder);
         ApkIntegrity.verify(project, folder, manifest.path("release"));
         payload(folder, manifest.path("integrity"));
-        var identities = JunitIntegrity.verify(folder, manifest.path("qualification"));
-        atf.tests.governance.documentation.release.integrity.html.HtmlInvocationIntegrity.verify(folder, manifest.path("qualification"), identities);
+        JsonNode qualification = manifest.path("qualification");
+        var identities = qualification.path("schemaVersion").asInt(1) >= 2
+                ? Set.<String>of() : JunitIntegrity.verify(folder, qualification);
+        if (qualification.path("schemaVersion").asInt(1) >= 2) {
+            atf.tests.governance.documentation.release.integrity.html.HtmlInvocationIntegrity.verify(
+                    folder, qualification, identities, java.util.Set.of("atf-tests"));
+        } else {
+            atf.tests.governance.documentation.release.integrity.html.HtmlInvocationIntegrity.verify(folder, qualification, identities);
+        }
         inputManifest(folder, manifest.path("source"));
         JsonNode retained = manifest.path("evidenceRetention");
         require(hash(inside(folder, text(retained, "canonicalReport"))).equals(digest(retained, "canonicalReportSha256")), "REPORT-HASH", folder);

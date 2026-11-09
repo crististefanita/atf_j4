@@ -6,13 +6,13 @@ Artefactele active însoțesc un singur APK. Build-urile și încercările inter
 
 ## Versiunea curentă
 
-[0.14.0 — build, verificări și proveniență](0.14.0/README.md) este ediția curentă. APK-ul este publicat prin Site și descărcabil anonim.
+[0.15.0 — build, verificări și proveniență](0.15.0/README.md) este ediția curentă. APK-ul este publicat pentru testare prin Site-ul public; descărcarea anonimă a fost verificată.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dovezi |
 |---|---|---|
-| 0.14.0 | Android publicat prin Site public | [Dosarul și raportarea](0.14.0/README.md) |
+| 0.15.0 | Android TEST; Site public verificat anonim | [Dosarul și raportarea](0.15.0/README.md) |
 
 ## Cum publicăm o versiune
 

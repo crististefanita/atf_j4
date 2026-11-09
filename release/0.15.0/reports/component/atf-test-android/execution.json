@@ -1,0 +1,15 @@
+{
+  "schemaVersion" : 1,
+  "kind" : "live-source-components",
+  "apkQualification" : false,
+  "suite" : "atf.android.suites.AndroidComponentSuite",
+  "tests" : 257,
+  "outcomes" : {
+    "PASS" : 257
+  },
+  "coverageErrors" : [ ],
+  "containerFailures" : [ ],
+  "junitIdentitySha256" : "e898578f94c64b8ae4de320196c6aa4ab2b6638c41afda260c3602577a6e59a4",
+  "provenanceSha256" : "40fdee0b3257d0beed44ec3fd8b1f4cea27ff985a5327af60e262566cee2135e",
+  "reportSha256" : "60f8c425af186bd99ecd6f99d6cf5afcfd19a25538805595e72be1933604d614"
+}

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ro.cardtable.ui.seat.SeatContentComponentTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:22:08.262Z" hostname="DESKTOP-BLFSO18" time="0.066">
-  <properties/>
-  <testcase name="emptyFactsAreValidAndInvalidIdentityOrMissingTextIsRejected" classname="ro.cardtable.ui.seat.SeatContentComponentTest" time="0.044"/>
-  <testcase name="orderedFactsAreImmutableAndIndependentOfTheirGameMeaning" classname="ro.cardtable.ui.seat.SeatContentComponentTest" time="0.022"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

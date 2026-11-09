@@ -1,0 +1,9 @@
+{
+  "version": "0.15.0",
+  "mode": "summary",
+  "points": [
+    "Adaugă redarea automată limitată la mâna curentă.",
+    "Păstrează controlul manual pentru mâna următoare."
+  ],
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/0000000000000000000000000000000000000000/release/0.15.0/reports/README.md"
+}

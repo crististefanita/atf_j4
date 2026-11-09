@@ -1,0 +1,30 @@
+{
+  "result": "PASS",
+  "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+  "signingCertificate": "Android Debug",
+  "channel": "TEST",
+  "productionManagedKey": false,
+  "upgradeCompatibility": "PASS",
+  "previousVersion": "0.14.0",
+  "candidateVersion": "0.15.0",
+  "candidateInstalledOverPreviousVersion": true,
+  "candidateApkSha256": "e8b38d53c4b9a83da3801e609ebe8ea1006e39e4531280b26f89da99a8dfffdf",
+  "previousApkSha256": "1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5",
+  "restoredPreviousApkSha256": "1ca2ff6f7e2fe1d665a414beee1b8e2d46331c7c039a37b6e7189b3c1a2a9cb5",
+  "backupSha256": "7a00c708b9ee790828bca019226396ea8572b7bf4b999cf9547ccdb0d55bf178",
+  "privateDataRestored": true,
+  "privateFilesRestored": [
+    {
+      "file": "files/highestScores.json",
+      "sha256": "77407dfe619e9ec3ed9da4604fbdf7c2a8357a19957c73970918ca227ecc8347"
+    },
+    {
+      "file": "shared_prefs/whist_lab_profile.xml",
+      "sha256": "59019579bf553963b2ccab70e81d9e48f0bf56b57d1605f4a1574a3325699d6a"
+    },
+    {
+      "file": "shared_prefs/whist_lab_game.xml",
+      "sha256": "3325d2a819fdd8062c2cdc48a09b995c9b012915bcdf88b1cf9742a7f057c793"
+    }
+  ]
+}

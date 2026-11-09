@@ -98,7 +98,7 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 
 [Registrul distribuției](../../release/README.md) identifică dosarul activ și probele sale. Starea publicării, descărcarea în browserul autentificat și accesul anonim au verdicte separate. Semnalul furnizorului și codurile HTTP rămân în proba de distribuție.
 
-Dosarul ediției 0.14.0 consemnează descărcarea anonimă calificată pe ruta HTTPS directă. Rezultatul pentru acea rută și cazul GitHub au receipt-uri distincte. [Dovada descărcării 0.14.0](../../release/0.14.0/reports/distribution-verification.json)
+Dosarul ediției curente consemnează ruta HTTPS anonimă și confruntă răspunsul cu identitatea APK-ului din manifest. [Dovada descărcării publice curente](../../release/0.15.0/reports/distribution-verification.json)
 
 ## Automatizarea publicării
 

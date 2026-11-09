@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ro.cardtable.ui.table.TablePresentationComponentTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-08T08:22:08.470Z" hostname="DESKTOP-BLFSO18" time="0.121">
-  <properties/>
-  <testcase name="publicCardIdentityAndCompactSizingAreSeparateFromAnyGameRules" classname="ro.cardtable.ui.table.TablePresentationComponentTest" time="0.062"/>
-  <testcase name="perimeterKeepsHumanBelowAndSeatOrderStableWithoutAssumingTheActor" classname="ro.cardtable.ui.table.TablePresentationComponentTest" time="0.058"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

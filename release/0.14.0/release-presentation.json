@@ -1,9 +1,0 @@
-{
-  "version": "0.14.0",
-  "mode": "summary",
-  "points": [
-    "Turele automate sunt lansate după primul cadru vizibil și revalidează contextul înainte de acțiune.",
-    "Pachetul Android rămâne conectat la motorul comun de reguli și la configurațiile de masă existente."
-  ],
-  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/0ee0ebcefb14966ac5353877442affe3e66ab802/release/0.14.0/reports/README.md"
-}

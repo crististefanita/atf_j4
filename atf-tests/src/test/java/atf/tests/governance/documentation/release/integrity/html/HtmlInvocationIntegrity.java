@@ -13,6 +13,10 @@ import static atf.tests.governance.documentation.release.integrity.ReleaseFiles.
 public final class HtmlInvocationIntegrity {
     private HtmlInvocationIntegrity() { }
     public static void verify(Path folder, JsonNode qualification, Set<String> originalIdentities) throws IOException {
+        verify(folder, qualification, originalIdentities, Set.of());
+    }
+    public static void verify(Path folder, JsonNode qualification, Set<String> originalIdentities,
+                              Set<String> deferredToExecutionReceipt) throws IOException {
         var groups = qualification.path("auditedGroups");
         if (groups.isMissingNode() && qualification.path("schemaVersion").asInt(1) < 2) return;
         require(groups.isObject() && !groups.isEmpty(), "HTML-GROUPS", folder);
@@ -25,6 +29,13 @@ public final class HtmlInvocationIntegrity {
             require(!qualification.path("groups").has(name), "DUPLICATE-TEST-GROUP", name);
             require(!Files.exists(folder.resolve("reports/test-results").resolve(name)), "DUPLICATE-AUDITED-JUNIT", name);
             String file = text(group, "report"); require(file.endsWith(".html") && reports.add(file), "HTML-REPORT-OWNER", file);
+            if (deferredToExecutionReceipt.contains(name)) {
+                require(Files.isRegularFile(inside(folder, file)) && text(group, "protocol").contains("COMPONENT"), "HTML-DEFERRED-REPORT", file);
+                require(integer(group, "tests") > 0 && integer(group, "failures") == 0
+                        && integer(group, "errors") == 0 && integer(group, "skipped") == 0, "HTML-TOTALS", name);
+                count = Math.addExact(count, integer(group, "tests"));
+                continue;
+            }
             long actual = inspect(inside(folder, file), text(group, "protocol"), identities);
             require(actual > 0 && actual == integer(group, "tests") && integer(group, "failures") == 0
                     && integer(group, "errors") == 0 && integer(group, "skipped") == 0, "HTML-TOTALS", name);
@@ -33,29 +44,41 @@ public final class HtmlInvocationIntegrity {
         require(count == integer(qualification, "uniqueJunitInvocations"), "HTML-UNIQUE-TOTAL", folder);
     }
     static long inspect(Path file, String protocol, Set<String> identities) throws IOException {
-        require(Set.of("GRADLE_COMPONENT_V1", "JUPITER_COMPONENT_V1").contains(protocol), "HTML-PROTOCOL", protocol);
+        require(Set.of("GRADLE_COMPONENT_V1", "JUPITER_COMPONENT_V1", "ATF_J24_COMPONENT_EXTENT").contains(protocol), "HTML-PROTOCOL", protocol);
         var doc = Jsoup.parse(file.toFile(), "UTF-8"); doc.select("template,noscript").remove();
         require(atf.reporting.artifact.resources.ReportArtifactResources.inspect(doc).isAutonomous(), "HTML-AUTONOMY", file);
-        String title = protocol.equals("GRADLE_COMPONENT_V1") ? "JUnit invocation receipt" : "Component invocation receipt";
+        boolean currentAtfReceipt = protocol.equals("ATF_J24_COMPONENT_EXTENT");
+        String expectedTitle = protocol.equals("GRADLE_COMPONENT_V1") ? "JUnit invocation receipt" : "Component invocation receipt";
         long count = 0;
         for (var owner : doc.select("#test-view .test-list-wrapper > .test-list-item > .test-item")) {
             var contents = owner.selectFirst(".test-contents"); var accordion = contents == null ? null : contents.selectFirst(".mt-4 > .accordion");
             if (accordion == null) continue;
             for (var scenario : accordion.children()) {
                 if (!scenario.hasClass("card")) continue;
-                var receipts = receiptNodes(scenario, title); require(receipts.size() == 1, "HTML-RECEIPT-COUNT", file);
+                boolean gradleReceipt = expectedTitle.equals("JUnit invocation receipt");
+                var receipts = receiptNodes(scenario, expectedTitle);
+                if (currentAtfReceipt) {
+                    var jupiter = receiptNodes(scenario, "Component invocation receipt");
+                    var gradle = receiptNodes(scenario, "JUnit invocation receipt");
+                    require(jupiter.size() + gradle.size() == 1, "HTML-RECEIPT-COUNT", file);
+                    gradleReceipt = !gradle.isEmpty();
+                    receipts = gradleReceipt ? gradle : jupiter;
+                } else require(receipts.size() == 1, "HTML-RECEIPT-COUNT", file);
                 var bodies = receipts.get(0).select("pre"); require(bodies.size() == 1, "HTML-RECEIPT-BODY", file);
                 var receipt = new com.fasterxml.jackson.databind.ObjectMapper().readTree(bodies.first().wholeText());
                 require(identities.add(text(receipt, "invocationId")), "HTML-DUPLICATE-INVOCATION", file);
-                String outcome = text(receipt, protocol.equals("GRADLE_COMPONENT_V1") ? "junitOutcome" : "outcome");
+                String outcome = text(receipt, gradleReceipt ? "junitOutcome" : "outcome");
                 var rows = scenario.select("table.helm-validation-table > tbody > tr");
                 require(outcome.equals("PASS") && !rows.isEmpty() && rows.size() == integer(receipt, "comparisons"), "HTML-COMPARISON-COUNT", file);
                 require(rows.stream().allMatch(row -> row.select("td").size() == 4 && row.select("td").last().text().contains("✅")), "HTML-COMPARISON-VERDICT", file);
-                if (protocol.equals("GRADLE_COMPONENT_V1")) require(receipt.path("fixtureCaptured").asBoolean(), "HTML-FIXTURE", file);
+                if (gradleReceipt) require(receipt.path("fixtureCaptured").asBoolean(), "HTML-FIXTURE", file);
                 count++;
             }
         }
-        require(count > 0 && receiptNodes(doc, title).size() == count, "HTML-RECEIPT-OWNERSHIP", file);
+        long owned = currentAtfReceipt
+                ? receiptNodes(doc, "Component invocation receipt").size() + receiptNodes(doc, "JUnit invocation receipt").size()
+                : receiptNodes(doc, expectedTitle).size();
+        require(count > 0 && owned == count, "HTML-RECEIPT-OWNERSHIP", file);
         return count;
     }
     private static java.util.List<org.jsoup.nodes.Element> receiptNodes(org.jsoup.nodes.Element parent, String title) {
