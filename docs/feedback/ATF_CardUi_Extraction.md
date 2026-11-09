@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-**P1 · nucleu extras și consumat.** [Nucleul card-table-ui](../../whist-lab-app/card-table-ui/README.md) deține meniul de pornire, dialogul numelui, widgeturile, tema Android, chenarele, geometria mesei, mâna și depunerile publice. Rentz consumă AAR-ul în UI-ul live; finisarea scorului și paritatea completă rămân distincte. Interfața și testele Whist se păstrează.
+**P1 · nucleu extras și integrat în Whist.** [Nucleul card-table-ui](../../whist-lab-app/card-table-ui/README.md) deține meniul de pornire, dialogul numelui, widgeturile, tema Android, chenarele, geometria mesei, mâna și depunerile publice. Finisarea scorului și calificarea nativă rămân distincte. Interfața și testele Whist se păstrează.
 
 ## Diagnosticul sursei live
 
@@ -14,7 +14,7 @@ Nucleul extras este independent de motoare și ATF. Compoziția mesei, configura
 | Nume | [Dialogul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/profile/PlayerSettingsDialog.java) și [preferințele](../../whist-lab-app/app/src/main/java/ro/whistlab/app/profile/PlayerPreferences.java) folosesc `PlayerNames`. | Dialog comun prin porturi de validare și salvare; păstrați regulile, cheile, erorile și efectele actuale în integrarea Whist. Nu faceți motorul dependent de Android. |
 | Masă și mână | [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) păstrează `GameSession.Snapshot`, `Card` și `PlayedCard`; [GameScreen](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java) calculează legalitatea prin `GameRules`. | Proiecție tipizată, imuabilă și limitată la informația permisă; legalitatea și comanda se decid în adaptor, înainte și după intenția UI. Mutarea fișierelor cu aceleași importuri nu închide criteriul. |
 | Geometrie | [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java), [HandLayoutMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/hand/HandLayoutMetrics.java), [TableGeometry](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableGeometry.java). | Implementare comună, cu fațade Whist și aceleași rotunjiri, ancore și rezultate înainte/după. Testele existente din pachetele Whist păstrează oracolele și identitățile. |
-| Scor | [ScoreHistoryColumn](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java) proiectează licitatul, rezultatul contractului și totalul Whist. | Extrageți măsurarea, grila, cadrul dialogului și derularea; proiecția și marcajele de serie rămân Whist. Rentz furnizează propriile coloane și date. |
+| Scor | [ScoreHistoryColumn](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java) proiectează licitatul, rezultatul contractului și totalul Whist. | Extrageți măsurarea, grila, cadrul dialogului și derularea; proiecția și marcajele de serie rămân Whist. Semantica valorilor aparține adaptorului jocului. |
 | Mișcare | [Colectarea levatei](../../whist-lab-app/card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java), [navigarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java) și [refacerea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java). | Decuplați scena și evenimentele de tipurile jocului, păstrând timpul vizibil, anularea, generația rutei și aplicarea unică. Colectarea nu este animație de distribuire. |
 
 Nu este justificată extragerea întregii activități sau a motorului într-un modul numit generic. Biblioteca grafică nu primește seed, mâini adverse, `GameSession`, motor AI sau acces direct la salvările consumatorului.
@@ -28,9 +28,9 @@ Modulul Android Library `card-table-ui` este produs în proiectul Whist și publ
 ```mermaid
 flowchart LR
     WHIST[Adaptor Whist] -->|proiectează date permise| UI[Interfață comună]
-    RENTZ[Adaptor Rentz] -->|proiectează date permise| UI
+    OTHER[Adaptor specific jocului] -->|proiectează date permise| UI
     UI -->|emite intenții identificate| WHIST
-    UI -->|emite intenții identificate| RENTZ
+    UI -->|emite intenții identificate| OTHER
     CONTRACT[Componente comune] -->|verifică desenul și ordinea| UI
 ```
 
@@ -45,7 +45,7 @@ Diagrama descrie relația dintre adaptoare și biblioteca comună; meniul, profi
 |---|---|
 | Meniu și profil | Texte, limbă, capabilități, starea reluării, valoarea numelui și porturi de salvare/validare. Fără `HowToPlay.Language`, chei globale de preferințe sau reguli de clasament în bibliotecă. |
 | Masă și cărți | Identități stabile de loc și carte, stare activă, valori publice, carte legală și intenție de selecție. Fără reordonare după nume ori tură și fără tipuri din `ro.whistlab.core`. |
-| Regiunea centrală | Compoziție extensibilă pentru levată, licitație sau tabla Rentz. Interfața nu inventează licitație ori atu pentru un joc care nu le are. |
+| Regiunea centrală | Compoziție extensibilă pentru conținutul activ al jocului. Interfața nu inventează licitație, atu sau alte date de domeniu. |
 | Scor | Rânduri, grupuri și coloane cu semnificație furnizată de consumator, valori exacte și etichete accesibile. Calculul punctelor și migrarea istoricului rămân în joc. |
 | Viewport și evenimente | Spațiu util, densitate, font, insets, ceas și porturi de programare injectabile. Starea tactilă nu mută chenarele și nu schimbă motorul. |
 
@@ -61,7 +61,7 @@ Modelați numai variațiile demonstrate de cele două jocuri. Evitați un constr
 
 Integrarea unui consumator și calificarea lui nativă se urmăresc separat de contractele și verificările bibliotecii comune.
 
-[Dosarul extracției](../../../../whist_back/ui-extraction/shared-seats-collection/README.md) leagă versiunile exportate, componentele Whist și verificarea sursei live.
+Rezultatele unei calificări aparțin dosarului release care identifică sursa și selecțiile executate; acest registru păstrează contractele și lacunele, nu copii de rapoarte istorice.
 
 **Criterii pentru starea restaurată.** După restaurarea unui checkpoint, colectarea ultimei levate trebuie să aibă efect o singură dată, iar scorul să rămână identic. Temporizatorul pornește la primul cadru vizibil și își păstrează timpul rămas la refacerea mesei. Numele și statisticile rămân lizibile la font mărit.
 
@@ -72,24 +72,23 @@ Integrarea unui consumator și calificarea lui nativă se urmăresc separat de c
 | **UIX03 · PARȚIAL** | Decuplați meniul, profilul și localizarea prin proiecții și porturi. | Aceleași controale, ordini, texte, tag-uri, identificatori accesibili, focus, back și callback-uri Whist. Validarea numelui, resetarea, stocarea și efectele asupra partidei au aceeași semantică, inclusiv la eșec. |
 | **UIX04 · PARȚIAL** | Extrageți compoziția mesei și interacțiunea cu mâna. | Poziții, raportul cărții, indici, ridicare și z-order păstrate la 3–6 locuri și în toate profilurile existente. Legalitatea și aplicarea unică rămân verificate în integrarea Whist. |
 | **UIX05 · DESCHIS** | Separați cadrul scorului și scena levatei de proiecțiile Whist. | Aceleași coloane, valori, marcaje, legendă, derulare, checkpoint-uri și timp vizibil. Pauza, dialogurile, resize-ul și callback-urile depășite păstrează contractele actuale. |
-| **UIX06 · PARȚIAL** | Împachetați și admiteți consumul Rentz. | AAR/POM, versiune, SHA-256, namespace, manifest și dependențe verificate; compilare offline în ambele proiecte din workspaces izolate. Păstrați compatibilitatea Whist `minSdk 24` și Rentz `minSdk 26`, fără a ridica pragul aplicației prin manifestul bibliotecii. Fără referință la checkout-ul vecin și fără publicarea codului jocului în AAR. |
+| **UIX06 · PARȚIAL** | Împachetați și admiteți un consumator extern fără cuplarea surselor. | AAR/POM, versiune, SHA-256, namespace, manifest și dependențe verificate; compilare izolată, fără referire la checkout-ul producătorului și fără publicarea codului jocului în bibliotecă. |
 
 **Whist Lab admite numai refactorizare în această lucrare.** O corecție vizuală, schimbarea regulilor numelui, o animație de distribuire nouă sau modificarea scorului se raportează separat; nu se ascund în extragere și nu se rescrie oracolul pentru a accepta noul rezultat.
 
 ## Etapa calificată și limitele ei
 
-[Prima etapă](../../../../whist_back/ui-extraction/793832b0a5/README.md) și [extragerea mesei](../../../../whist_back/ui-extraction/a4c96eeb71/README.md) identifică snapshot-urile anterioare, componentele și build-urile în TMP, AAR-ul și admiterea tehnică Rentz. Raportul Extent păstrează comparațiile evaluate, sursele înainte/după și proveniența; nu declară o nouă execuție Android a interfeței.
+Starea curentă se confruntă cu sursele, testele și selecția din dosarul release relevant. Un raport istoric nu închide singur paritatea sau comportamentul nativ.
 
 - **UIX01 — parțial:** reper de sursă înghețat și selecție de componente trecută înainte/după; comparația nativă cu APK-ul de referință rămâne distinctă.
 - **UIX02 — nucleu extras:** tema, desenul, widgeturile și geometria mâinii au implementare comună, cu fațade Whist. `TableGeometry`, locurile, regiunile măsurate și renderer-ele mâinii/depunerilor sunt comune; adaptorul Whist păstrează proiecțiile și compoziția modurilor.
 - **UIX02 — temă extrasă:** `CardTableTheme` păstrează cele șase atribute, iar [AppTheme](../../whist-lab-app/app/src/main/res/values/styles.xml) rămâne alias în Whist. Consumatorul adoptă explicit resursa; pixelii și focusul nativ nu sunt calificate prin build.
 - **UIX03 — parțial:** meniul de pornire, dropdown-ul și dialogul numelui sunt comune; textele, politica numelui, preferințele, configurarea și rutele rămân ale jocului.
 - **Consumator JVM — pregătire:** modelul de prezentare nu impune licitat, atu sau punctaj. O aplicație de consolă nu folosește direct modulul Android; un front-end Android viitor cere adaptor și componente proprii, inclusiv geometrie pentru alte populații de locuri.
-- **UIX06 — consum activ:** Rentz folosește AAR-ul local fixat prin hash, tema, meniul și adaptoarele proprii. [Calificarea consumatorului](../../../../rentz_back/ui-review/shared-ui-cb695c1461/README.md) identifică 49 de componente și sanity API 28; nu închide întreaga paritate U02–U07 sau calificarea unui release Whist.
 
 **UIX04 este extras la nivel de prezentare:** `SeatContent`, `HandCard` și `PlayedCardContent` sunt neutre; `WhistTableContent` rămâne adaptorul jocului. `GameTablePanel` păstrează licitația, alegerea levatei vizibile și animația.
 
-Rentz are adaptor live și probe native focalizate; comparația nativă pereche Whist și UIX05 rămân distincte, iar componentele de reguli Whist rămân în consumator.
+Comparația nativă pereche cu APK-ul de referință și UIX05 rămân distincte, iar componentele de reguli Whist rămân în adaptorul jocului.
 
 **UIX03 — reconciliere necesară:** dialogul comun aplică `InputFilter.LengthFilter(10)` pe unități UTF-16, iar politica numelui acceptă zece puncte de cod. Permiteți un filtru furnizat de consumator sau un contract echivalent, cu probe pentru litere suplimentare și perechi surrogate; schimbarea comportamentului Whist se califică separat de refactorizare.
 
@@ -101,7 +100,7 @@ Rentz are adaptor live și probe native focalizate; comparația nativă pereche 
 | Integrare Whist | Păstrați [MatchSetup](../../whist-lab-app/app/src/test/java/ro/whistlab/app/screens/MatchSetupComponentTest.java), [ordinea reală](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java), [navigarea](../../whist-lab-app/app/src/test/java/ro/whistlab/app/navigation/AppNavigationComponentTest.java), [viewport-ul](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java) și familiile de mână, istoric și colectare. Testele cu motor nu dispar odată cu mutarea testelor geometrice. |
 | Raster | Aceleași proiecții, fonturi și regiuni măsurate înainte/după, cu restaurare și text mărit; fixture-uri deterministe și diferențe explicate. Rasterul JVM nu declară paritate Android. |
 | Sanity Android | Meniu → limbă → nume → configurare → masă → istoric → revenire/relansare; apoi numai extremele geometrice relevante. Aceeași captură de referință și același profil, fără repetarea partidei complete pe toate rezoluțiile. |
-| Consumator Rentz | Aceleași contracte vizuale pe adaptoare Rentz reale; modelul de scor, alegerile și secvențele au propriile oracole. Copierea fixture-ului Whist și înlocuirea etichetelor nu înseamnă acceptanță. |
+| Consumator extern | Contractele vizuale se verifică prin adaptorul real; regulile, alegerile și secvențele au oracole proprii. Copierea fixture-ului Whist și înlocuirea etichetelor nu înseamnă acceptanță. |
 
 Inventariați selecția înainte și după mutare: clasă, metodă, invocare și proprietarul testului. O clasă mutată nu devine caz nou; un caz exclus de filtrul Gradle sau de suita agregată este omisiune, nu optimizare.
 

@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-`ro.cardtable:card-table-names:0.1.0` este un JAR Java 17. El furnizează politica de nume folosită de Whist și Rentz, inclusiv validarea NFC și repartizarea adversarilor pe locuri.
+`ro.cardtable:card-table-names:0.1.0` este un JAR Java 17. El furnizează politica neutră de nume, inclusiv validarea NFC și repartizarea adversarilor pe locuri.
 
 ## Contract
 

@@ -179,4 +179,4 @@ O modificare de formulă rulează întâi componentele; o schimbare de randare s
 | Fapte ordonate și imuabile, însemne și identități | Licitație, atu, levate, punctaj și restaurare. |
 | Widgeturi și porturi de selecție | Snapshot → proiecție, comanda originală și lifecycle. |
 
-Aceleași teste Whist rulează înainte/după extragere cu surse și identități păstrate. Rentz își testează propriile reguli și proiecții Rentz; clasele de licitație sau punctaj Whist nu se mută în suita comună doar pentru a reutiliza desenul.
+Aceleași teste Whist rulează înainte/după extragere cu surse și identități păstrate. Regulile și proiecțiile aparțin adaptorului fiecărui joc; clasele de licitație sau punctaj Whist nu se mută în suita comună doar pentru a reutiliza desenul.

@@ -10,8 +10,8 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Fișa Whist Lab 0.15.0](release/0.15.0/README.md)** — ediția curentă, calificarea și raportarea ei.
-- **[Descarcă APK 0.15.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.15.0/WhistLab-0.15.0.apk)** — link public verificat.
+- **[Fișa Whist Lab 0.16.0](release/0.16.0/README.md)** — ediția curentă, calificarea și raportarea ei.
+- **[Descarcă APK 0.16.0](https://whist-lab-apk.totaloatcake.chatgpt.site/v0.16.0/WhistLab-0.16.0.apk)** — descărcare directă.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -133,7 +133,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
 
-[Dosarul versiunii curente](release/0.15.0/README.md) · [Catalogul livrărilor](release/README.md)
+[Dosarul versiunii curente](release/0.16.0/README.md) · [Catalogul livrărilor](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

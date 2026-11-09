@@ -72,15 +72,14 @@ Componentele existente de masă și mână rămân verificări de integrare, cu 
 |---|---|
 | Biblioteca comună | Desen, măsurare, centrare, chenare, fapte afișate și mecanica widgeturilor; fără oracole de joc. |
 | Whist | `WhistTableContent`, configurație, legalitate, licitație, atu, punctaj și lifecycle; componentele existente cu motor rămân în aplicația Whist, cu așteptările originale. |
-| Rentz | Adaptor propriu pentru observația Rentz, alegere/reveal, pas, secvențe și punctaj. Datele de scor nu sunt convertite în licitat sau levate fictive. |
-| Alt consumator de joc de cărți | Consumator Android; păstrează regulile, sesiunea, checkpoint-ul și decizia în motorul propriu, apoi folosește cadrul activ, pacing-ul după primul cadru și geometria comună a mișcării. |
+| Consumator extern | Adaptor Android; păstrează regulile, sesiunea, checkpoint-ul și decizia în propriul motor, apoi folosește cadrul activ, temporizarea după primul cadru și geometria comună a mișcării. |
 
 - Ordinea vizuală pentru 3–6 locuri păstrează omul la indicele zero; adaptorul deține maparea stabilă spre identitățile motorului și actorul real.
 - `SeatContent.Fact` păstrează textul și ordinea; biblioteca nu adună puncte, nu interpretează valori negative și nu decide câștigătorul.
 - `HandCard` nu conține mâini adverse sau comenzi. Adaptorul proiectează numai informația vizibilă și rezolvă identitatea selectată în snapshot-ul afișat.
-- `PlayedCardsView` este prezentarea depunerilor pe locuri. Tabla de secvențe Rentz și viitoarele cărți comunitare Hold'em sunt compoziții distincte ale centrului.
+- `PlayedCardsView` este prezentarea depunerilor pe locuri. Compoziția regiunii centrale aparține adaptorului activ.
 
-[Calificarea extragerii mesei](../../../../whist_back/ui-extraction/a4c96eeb71/README.md) identifică reperul Whist și separă rezultatele de componentă, admiterea Rentz și verificarea raportului de acceptanța nativă.
+[Testele Android ale modulului](src/androidTest/README.md) și [catalogul componentelor display](../../docs/testing/ATF_DisplayComponents.md) descriu selecțiile și limitele de acceptanță.
 
 ## Împachetare și consum
 
@@ -98,10 +97,10 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 - `CollectionTarget` primește locurile cărților publice și locul câștigător calculat în joc. `TrickCollectionMotion` păstrează fereastra de 1500 ms și folosește ultimele 500 ms pentru colectare.
 - `TrickCollectionRun` deține geometria, ciclul de viață și curățarea. Adaptorul Android caută fețele cărților și chenarul prin identitatea locului. Whist păstrează validarea snapshotului și momentul când publică levata.
 - Cadrele Android folosesc ceasul monoton. Un callback întârziat sare la poziția corespunzătoare timpului scurs, iar un callback după termen termină mișcarea.
-- Whist și Rentz folosesc `PlayerSeatFrame.buildInlineFacts`. Numele și cele două rânduri își păstrează textul integral și înălțimea, iar lățimea se adaptează după măsurarea finală a glifelor Android.
+- `PlayerSeatFrame.buildInlineFacts` păstrează textul și înălțimea rândurilor; lățimea se adaptează după măsurarea finală a glifelor Android.
 - [Componenta nativă a chenarului](src/androidTest/README.md) verifică 36 de combinații. Include 3–6 locuri, lățimi de 240/320/393 dp, font 1/1,5/2, diacritice și valori semnate lungi, inclusiv Δ și Σ.
 - Biblioteca păstrează `minSdk 24`, compilare SDK 36 și Java 17. Consumatorul deține pachetul instalabil, versiunea și semnarea APK-ului.
 - POM-ul păstrează runtime-ul Kotlin adăugat automat de toolchain, deja prezent în aplicația reper. [Kotlin integrat în AGP](https://developer.android.com/build/migrate-to-built-in-kotlin) și [dependența standard](https://kotlinlang.org/docs/gradle-configure-project.html) explică această contribuție.
-- Admiterea confruntă SHA-256, conținutul AAR, manifestul și dependențele înaintea build-ului consumatorului. Publicarea locală nu închide acceptanța UI în alt joc.
+- Admiterea confruntă SHA-256, conținutul AAR, manifestul și dependențele înaintea build-ului consumatorului. Publicarea locală nu închide acceptanța UI a consumatorului.
 
 [Aplicația Whist](../app/src/main/java/ro/whistlab/app/README.md) · [Strategia componentelor](../../docs/testing/ATF_DisplayComponents.md) · [Extragerea rămasă](../../docs/feedback/ATF_CardUi_Extraction.md)

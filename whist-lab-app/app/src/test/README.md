@@ -35,4 +35,4 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 
 [WhistTableContentComponentTest](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică toate modurile Whist și mesele de 3–6 locuri: faptele și accesibilitatea, actorul suspendat, ordinea și identitatea cărților, callback-ul indisponibil și levata publică completată. Testul folosește motorul Whist real și rămâne în aplicație.
 
-Componentele din bibliotecă nu importă această sesiune. Ele verifică prezentarea neutră; Rentz păstrează propriile oracole de reveal, pas, secvențe și punctaj.
+Componentele din bibliotecă nu importă această sesiune. Ele verifică prezentarea neutră; fiecare adaptor păstrează oracolele propriilor reguli, alegeri, secvențe și punctaj.

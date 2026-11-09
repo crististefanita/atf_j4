@@ -63,7 +63,7 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 |---|---|---|
 | P2 | Proba din browserul autentificat depinde de operator și de sesiunea GitHub disponibilă. | După publicare, verificați URL-ul versiunii, fișierul primit și SHA-256, apoi deschideți auditul de pe commitul din note. Înregistrați separat răspunsurile anonime și eventualele refuzuri locale ale browserului. |
 
-Proba de transfer prin Android DownloadManager și verificarea certificatului aparțin dosarului versiunii efectiv testate. [Contractul transferului Android](../platform/ATF_AndroidDelivery.md#separarea-accesului-de-transferul-android) descrie datele necesare, iar [accesul anonim pe ruta GitHub](ATF_Android.md#acces-anonim-pe-ruta-github) are propriul criteriu de închidere.
+Proba de transfer prin Android DownloadManager și verificarea certificatului aparțin dosarului versiunii efectiv testate. [Contractul transferului Android](../platform/ATF_AndroidDelivery.md#separarea-accesului-de-transferul-android) descrie datele necesare, iar [accesul anonim pe ruta publică](../platform/ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică) are propriul criteriu de închidere.
 
 ## Acceptanța nativă a distribuției
 
@@ -86,7 +86,7 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | P2 | [Inventarul lansatorului](../../scripts/Get-AtfSourceInputs.ps1) exclude dosarul release, însă suita inspectează și documentele și integritatea acelui dosar din rădăcina live. | Identificați separat toate intrările release citite de guvernanță; alterarea, adăugarea sau ștergerea lor în timpul rulării invalidează atribuirea rezultatului, fără introducerea rapoartelor generate în sursele compilate. |
 | P2 | [Politica documentară](../../atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java) recunoaște forma controalelor testChanges; această recunoaștere nu confruntă singură baza Git, căile schimbate și expirarea. | Definiți explicit partea locală și contractul comun, cu refuz pentru bază lipsă, cale neacoperită, control expirat și modificare neautorizată a unui gate. Păstrați distinct validarea formatului și validarea schimbării efective. |
 
-Verificarea unei copii compilate și inspecția rădăcinii live au identități distincte. Un rezultat trecut se atribuie codului curent numai după comparația intrărilor efectiv citite; [auditul extern](../../../../whist_back/atf-governance/20261106-cross-quality-6e8cd680-audit/REVIEW.md) păstrează inventarul și limitele verificării.
+Verificarea unei copii compilate și inspecția rădăcinii live au identități distincte. Un rezultat trecut se atribuie codului curent numai după comparația intrărilor efectiv citite și a amprentelor declarate; rapoartele unei rulări rămân în dosarul ei de calificare, nu în contractul permanent.
 
 ## Lizibilitatea coordonatorilor de domeniu
 

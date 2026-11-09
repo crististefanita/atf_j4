@@ -60,6 +60,10 @@ Prima parte oferă raportul principal și starea calificării. Detaliile rămân
 | Dovezi separate | Pentru fiecare fișier: motiv concret, consumator ori întrebare diagnostică și identitate; JUnit fără comparații capturate își păstrează limita. |
 | Limite și pas următor | Cazuri neexecutate, surse schimbate după rulare și criteriul rămas înaintea build-ului sau promovării. |
 
+## Suprafața README-ului public
+
+README-ul rădăcinii oferă numai versiunea curentă și acțiunea directă de descărcare. SHA-256-ul APK-ului rămâne în manifestul versiunii și în dovezile ei, nu în pagina principală. Guvernanța structurii și evaluatorul RAG verifică separat aceeași regulă; checksum-ul nu înlocuiește linkul descărcabil.
+
 - **Stări:** `PENDING` exprimă un pas neexecutat; `SKIP`/abort exprimă rezultatul invocării. Un rezultat `FAIL` sau o eroare de publicare se păstrează, împreună cu impactul asupra calificării.
 - **Istoric:** o probă anterioară poate fi reper explicit, cu binarul și scopul ei. Mutarea documentelor sau actualizarea README-ului nu califică un APK nou.
 - **Retratare:** la corecția documentelor, păstrați sursa rezultatelor și descrieți selecția reverificată; o compoziție de rezultate trecute nu devine o singură rulare integrală nouă.

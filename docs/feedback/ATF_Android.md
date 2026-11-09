@@ -90,16 +90,6 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 |---|---|---|
 | P2 | [CommandProcess](../../atf-test-android/src/main/java/atf/android/process/CommandProcess.java) citește fluxurile integral, fără bugete separate pentru text și binar. | Componente cu ieșire controlată: depășire explicită a fiecărui buget, memorie delimitată și PNG incomplet refuzat înaintea publicării; termenul și cauza inițială se păstrează. |
 
-## Acces anonim pe ruta GitHub
-
-| Prioritate | Blocaj observat | Criteriu de închidere |
-|---|---|---|
-| P1 extern pentru ruta GitHub | Proba istorică a consemnat `User flagged as spammy.` în Search autentificat și 404 anonim pentru profil, repository și asset. | Revizuirea stării contului, apoi verificarea descărcării anonime GitHub cu HTTP 200, mărime și SHA-256 identice binarului verificat. |
-
-[Registrul distribuției](../../release/README.md) identifică dosarul activ și probele sale. Starea publicării, descărcarea în browserul autentificat și accesul anonim au verdicte separate. Semnalul furnizorului și codurile HTTP rămân în proba de distribuție.
-
-Dosarul ediției curente consemnează ruta HTTPS anonimă și confruntă răspunsul cu identitatea APK-ului din manifest. [Dovada descărcării publice curente](../../release/0.15.0/reports/distribution-verification.json)
-
 ## Automatizarea publicării
 
 ### P1 — sursa tag-ului trebuie să existe și pe un branch remote
@@ -108,7 +98,6 @@ Acceptanța nativă a versiunii publicate rămâne condiționată de provenienț
 
 - **Defect urmărit:** un tag poate identifica sursa APK-ului fără ca acea sursă să fie accesibilă din istoricul unui branch remote. Descărcarea autentificată verificată și un commit ulterior cu documentele nu închid această diferență de proveniență.
 - **Criteriu de închidere:** proprietarul publicării păstrează sursa release-ului pe un branch remote; după `git fetch`, enumerarea branch-urilor și verificarea strămoșului trebuie să confirme exact commit-ul tag-ului. Nu rescrieți istoricul comun sau tag-ul publicat pentru a masca discrepanța.
-- **Dovadă externă:** [verificarea porții release-ului](../../../../whist_back/release-acceptance/1.9.2/release-gate.json), împreună cu receipt-ul publicării și APK-ul arhivat în același dosar. Instalarea și rezervarea emulatorului nu au început.
 
 | Prioritate | Lacună rămasă | Criteriu de închidere |
 |---|---|---|

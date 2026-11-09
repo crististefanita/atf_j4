@@ -13,7 +13,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 |---|---|
 | [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
-| [Interfață comună](ATF_CardUi_Extraction.md) | Refactorizarea meniului, profilului și prezentării mesei pentru consumul Rentz, cu interfața și contractele Whist păstrate. |
+| [Interfață comună](ATF_CardUi_Extraction.md) | Limitele dintre prezentarea reutilizabilă și adaptorul Whist: meniu, profil, masă, istoric și animații. |
 | [Publicare](ATF_Reporting.md) | HTML autonom, componente auditabile și calificarea publicării. |
 | [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Suprafața publică a README-ului, inventarul complet al snapshot-ului, selecția risc–teste, handoff-ul candidatului și prospețimea receipt-urilor. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
