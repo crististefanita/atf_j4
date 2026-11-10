@@ -1,0 +1,11 @@
+{
+  "version": "0.19.1",
+  "mode": "changes",
+  "previousVersion": "0.19.0",
+  "points": [
+    "Păstrează pozițiile jucătorilor între licitare și joc.",
+    "Adaptează dinamic spațiul inferior al mesei pentru vizibilitatea cărților.",
+    "Adaugă teste de componentă pentru geometrie pe rezoluții și configurații variate."
+  ],
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/75970a0db707f24b70406b98da11059bc59b8c37/release/0.19.1/reports/README.md"
+}

@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 2,
+  "release": {
+    "versionName": "0.19.1",
+    "versionCode": 27,
+    "applicationId": "ro.whistlab.app",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "platforms": [
+      "android"
+    ],
+    "artifactKind": "apk",
+    "apkName": "WhistLab-0.19.1.apk",
+    "apkRelativePath": "WhistLab-0.19.1.apk",
+    "apkBytes": 959865,
+    "apkSha256": "646460cc04ebb1ace669f37cab45978b096453f09112733231d2d672b3382b8e",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+    "signingCertificate": "Android Debug",
+    "productionManagedKey": false
+  },
+  "source": {
+    "sourceCommit": "75970a0db707f24b70406b98da11059bc59b8c37",
+    "workingTreeFingerprint": "8cca3c9093d59e24a2ee4c9bf64d9a64ab51144f6bfdc18479dadc2a4e06fe39",
+    "inputManifest": "reports/apk-inputs.json",
+    "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records"
+  },
+  "publication": {
+    "state": "PUBLISHED",
+    "channel": "TEST",
+    "accessMode": "AUTHENTICATED",
+    "repository": "crististefanita/atf_j4",
+    "targetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.19.1/WhistLab-0.19.1.apk"
+  },
+  "qualification": {
+    "schemaVersion": 2,
+    "state": "PASS",
+    "scope": "ANDROID_SOURCE_COMPONENTS_NO_E2E",
+    "uniqueJunitInvocations": 1157,
+    "auditedGroups": {
+      "atf-validation": {
+        "report": "reports/component/atf-validation/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "atf-test-android": {
+        "report": "reports/component/atf-test-android/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 257,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "atf-tests": {
+        "report": "reports/component/atf-tests/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 341,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "whist-lab-app-achievements": {
+        "report": "reports/component/whist-lab-app-achievements/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "whist-lab-app-bidding": {
+        "report": "reports/component/whist-lab-app-bidding/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 253,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "whist-lab-app-commands": {
+        "report": "reports/component/whist-lab-app-commands/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 115,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "whist-lab-app-display": {
+        "report": "reports/component/whist-lab-app-display/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 91,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "whist-lab-app-history": {
+        "report": "reports/component/whist-lab-app-history/component-report.html",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "e2eGroups": {},
+    "platforms": {
+      "android": {
+        "implemented": true,
+        "artifactKind": "apk",
+        "gates": {
+          "androidComponents": {
+            "status": "PASS",
+            "receipt": "reports/component/source-component-run.json"
+          },
+          "apkBuild": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/build.log"
+          },
+          "apkIdentity": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/apk-identity.json"
+          },
+          "signing": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/signing-compatibility.json"
+          },
+          "distributionDownload": {
+            "status": "PASS",
+            "receipt": "reports/distribution-verification.json"
+          }
+        }
+      }
+    }
+  },
+  "evidenceRetention": {
+    "state": "COMPONENT_EXTENT_INLINE",
+    "canonicalReport": "reports/component/atf-tests/component-report.html",
+    "canonicalReportSha256": "06d3c29ab8d3f47dd18f39947e7ce26bbf66a6db70445bbee3778af39035f53f"
+  },
+  "integrity": {
+    "schemaVersion": 1,
+    "kind": "OBSERVED_PAYLOAD_HASHES",
+    "observedUtc": "2026-11-10T23:03:53.553Z",
+    "files": [
+      {
+        "path": "README.md",
+        "bytes": 1284,
+        "sha256": "c95ad62bbee205696558dab4ca6760d42d63f00b397532b31be24b47be6cbee1"
+      },
+      {
+        "path": "WhistLab-0.19.1.apk",
+        "bytes": 959865,
+        "sha256": "646460cc04ebb1ace669f37cab45978b096453f09112733231d2d672b3382b8e"
+      },
+      {
+        "path": "WhistLab-0.19.1.apk.idsig",
+        "bytes": 13699,
+        "sha256": "2155b9339d4d7174149406c350126fd75a39b84cff7dea66f51cc40e5da32328"
+      },
+      {
+        "path": "WhistLab-0.19.1.apk.sha256",
+        "bytes": 86,
+        "sha256": "7f20a77d73c1504a2b5137e9175c8352d2ffdbbacf13f9c112c15de394ec2397"
+      },
+      {
+        "path": "github-release.json",
+        "bytes": 664,
+        "sha256": "f8c05984ba7c7b70bab04a6e1ead059398013d4af9e3b0b908d82f64229a2393"
+      },
+      {
+        "path": "release-notes.md",
+        "bytes": 1031,
+        "sha256": "8da86d33588e2bdebacee322bf1d1ca03a18d4231c97bbf8d1cf0cf4477a44ff"
+      },
+      {
+        "path": "release-presentation.json",
+        "bytes": 495,
+        "sha256": "194d2bd8f58e629e33a59afb2f5563335b3dcabfa4228af99aeec1e6736b745a"
+      },
+      {
+        "path": "reports/README.md",
+        "bytes": 1092,
+        "sha256": "8a46301d3d0a9ce0e367a926db84854a71c5ccfcf6ae5382323becfee26f60f1"
+      },
+      {
+        "path": "reports/apk-inputs.json",
+        "bytes": 195310,
+        "sha256": "0405273d0ea507399a190de896f4f6bfe3dfd1f0950887660a4e5709d1373ae8"
+      },
+      {
+        "path": "reports/component/README.md",
+        "bytes": 1564,
+        "sha256": "445558aa04df372782ced6d942ad1691e8060db5aeca37026dce9e3f784c7be5"
+      },
+      {
+        "path": "reports/component/atf-test-android/component-report.html",
+        "bytes": 25894342,
+        "sha256": "786a267a7b4c9ced6746bce6a1e2c7d8ab618727df9c0381c6c72a6c08c2bf7c"
+      },
+      {
+        "path": "reports/component/atf-test-android/execution.json",
+        "bytes": 545,
+        "sha256": "340835169dd418b22d85d5ebd7b1fc1b29a77ede40e2d63c5b74bf8365b5a152"
+      },
+      {
+        "path": "reports/component/atf-tests/component-report.html",
+        "bytes": 7604057,
+        "sha256": "06d3c29ab8d3f47dd18f39947e7ce26bbf66a6db70445bbee3778af39035f53f"
+      },
+      {
+        "path": "reports/component/atf-tests/execution.json",
+        "bytes": 539,
+        "sha256": "b7c29be5a993eea954cc1d9f97cf5d30ccf377cf81b5a971e14a6304570e88bb"
+      },
+      {
+        "path": "reports/component/atf-validation/component-report.html",
+        "bytes": 2664217,
+        "sha256": "2e4ed69ee3e1466f7971f6d2d1c0891c2674336cf56b3062127d4787b40207e5"
+      },
+      {
+        "path": "reports/component/atf-validation/execution.json",
+        "bytes": 549,
+        "sha256": "9807abc98234faa4a213a3a39a48ed3c4a101a44894e308fd40b26bac1477c48"
+      },
+      {
+        "path": "reports/component/source-component-run.json",
+        "bytes": 6414,
+        "sha256": "9ac226bbb0187d655c009a5698900f348fd6ac812a53d043f8adfcccce638413"
+      },
+      {
+        "path": "reports/component/source-inputs.json",
+        "bytes": 168420,
+        "sha256": "88a011dbaf6c803ad75dd68d57d5057e648131f0670ef1bd6b6bae00809fba1d"
+      },
+      {
+        "path": "reports/component/source-provenance.json",
+        "bytes": 1156,
+        "sha256": "ef8731b99628c931f8ed79a8b39e0a1562623579624d654d303cec6b06f1a2b7"
+      },
+      {
+        "path": "reports/component/whist-lab-app-achievements/component-report.html",
+        "bytes": 3086715,
+        "sha256": "ea10c95c1035ab35ec7d3f41026406f311e0e730d649c02ff21722ecd7844273"
+      },
+      {
+        "path": "reports/component/whist-lab-app-achievements/execution.json",
+        "bytes": 481,
+        "sha256": "8e527684dddc5d6dc40b059095a10b2a45be2904ebd48bc3ec3bf616fdfdbde2"
+      },
+      {
+        "path": "reports/component/whist-lab-app-bidding/component-report.html",
+        "bytes": 16978807,
+        "sha256": "7c8d44ff07fa5df0f6a51f2d877f31f49a9b834ee295a5b0c22e79560e4585f8"
+      },
+      {
+        "path": "reports/component/whist-lab-app-bidding/execution.json",
+        "bytes": 478,
+        "sha256": "d20f6803c204bbcd0dcb2749bf966bcb8d40c7cf1ca09ca828186f7d4c5f4b49"
+      },
+      {
+        "path": "reports/component/whist-lab-app-commands/component-report.html",
+        "bytes": 21033622,
+        "sha256": "6002c7c4eb7996942880b0cc9eb022164e743bb96f44e7104e446daf62e02c5d"
+      },
+      {
+        "path": "reports/component/whist-lab-app-commands/execution.json",
+        "bytes": 479,
+        "sha256": "742472dca9c031174faa6e2cd4576fd39d5288d89f1f20485cc407534b1126f0"
+      },
+      {
+        "path": "reports/component/whist-lab-app-display/component-report.html",
+        "bytes": 30513813,
+        "sha256": "a31532d1b4ae80bb0465ef074f42abe67f886fa37f226db85f1366562381cdc4"
+      },
+      {
+        "path": "reports/component/whist-lab-app-display/execution.json",
+        "bytes": 476,
+        "sha256": "86675657e12f5de5ff0b5c007f363c04f2d8ad9f1443cc55358a1efcb37e9534"
+      },
+      {
+        "path": "reports/component/whist-lab-app-history/component-report.html",
+        "bytes": 19248800,
+        "sha256": "1785bd8c18d60ac8058d7157ef00ed1b03c7a9f3a2b79bb1705fde886d3641a6"
+      },
+      {
+        "path": "reports/component/whist-lab-app-history/execution.json",
+        "bytes": 476,
+        "sha256": "146ca9e285031af601d3041b6dbd70a6d4d8aec6b15862201f687569e303dc98"
+      },
+      {
+        "path": "reports/diagnostics/README.md",
+        "bytes": 467,
+        "sha256": "56f51aeaa72a87dc380f9da59d50f0638eadedf15b53a8088c4c8f20dcbf784f"
+      },
+      {
+        "path": "reports/diagnostics/aapt-badging.txt",
+        "bytes": 862,
+        "sha256": "b8cbe69e21eaf3a146ad5625ab9ae4d991cc42483cbac5c0514776a67c4f3579"
+      },
+      {
+        "path": "reports/diagnostics/apk-identity.json",
+        "bytes": 259,
+        "sha256": "3a1d802032f6503a4da8386de02578dd7191cc737597c31416a3315b87a59506"
+      },
+      {
+        "path": "reports/diagnostics/apksigner-verify.txt",
+        "bytes": 971,
+        "sha256": "8ea575401afe32e39e59e381e44c06d72f93cd18edede2659817a135b1479a44"
+      },
+      {
+        "path": "reports/diagnostics/build.log",
+        "bytes": 6468,
+        "sha256": "56dc3d0bf979d207fe9b5b81a92ead03bd795bfa13db0c3d9a8fd7878d9c83f5"
+      },
+      {
+        "path": "reports/diagnostics/signing-compatibility.json",
+        "bytes": 358,
+        "sha256": "10a4c7bbdfd1fe7b87992f232cb9a20ea85c518b9d66b002cf588d3a42f6e685"
+      },
+      {
+        "path": "reports/diagnostics/zip-crc.json",
+        "bytes": 72,
+        "sha256": "7b2714267af2d2fa32fc93ba31a92f9a3830b3a91d3bf007986bf86ceaf90dfc"
+      },
+      {
+        "path": "reports/diagnostics/zipalign-align.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "reports/diagnostics/zipalign-check.log",
+        "bytes": 1214,
+        "sha256": "f0dc62489f622345c6f1a677caa88035296cf51141562d0014ad6febf8e825b5"
+      },
+      {
+        "path": "reports/distribution-verification.json",
+        "bytes": 583,
+        "sha256": "d82aa44aebf6ad1de5b3b222d5b3f39baab861e59072e69fcf5d1c053ba57028"
+      }
+    ]
+  }
+}

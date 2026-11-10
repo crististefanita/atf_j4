@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "applicationId": "ro.whistlab.app",
+  "versionCode": 27,
+  "versionName": "0.19.1",
+  "minSdk": 24,
+  "targetSdk": 36,
+  "apkBytes": 959865,
+  "apkSha256": "646460cc04ebb1ace669f37cab45978b096453f09112733231d2d672b3382b8e"
+}

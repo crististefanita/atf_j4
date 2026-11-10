@@ -1,9 +1,0 @@
-{
-  "result": "PASS",
-  "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
-  "signingCertificate": "Android Debug",
-  "productionManagedKey": false,
-  "upgradeCompatibility": "PASS",
-  "previousVersion": "0.17.1",
-  "previousCertificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
-}
