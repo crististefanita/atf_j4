@@ -1,7 +1,10 @@
 package ro.whistlab.app.table;
 
+import ro.whistlab.app.bidding.BidGridMetrics;
+
 /** Seat dimensions; played-card sizing belongs to TrickCardMetrics. */
 final class TableLayoutMetrics {
+    record CenterReservation(int biddingHeightDp, int playingHeightDp, int reservedHeightDp) { }
     static final int TRUMP_WIDTH_DP = 57;
     static final int TRUMP_MIN_HEIGHT_DP = 48;
     static final int TRUMP_PADDING_DP = 4;
@@ -21,6 +24,16 @@ final class TableLayoutMetrics {
 
     static float fitTextSizePx(float sizePx, float textWidthPx, int availableWidthPx) {
         return sizePx * Math.min(1f, Math.max(1, availableWidthPx) / Math.max(1f, textWidthPx));
+    }
+
+    static CenterReservation centerReservation(int players, int handSize, int tableWidthDp,
+            float fontScale, TableViewportPolicy viewport) {
+        if (players < 3 || players > 6 || handSize < 1 || handSize > 13) {
+            throw new IllegalArgumentException("A table reservation needs 3–6 players and a 1–13 card hand");
+        }
+        int biddingHeight = BidGridMetrics.actionLayout(handSize + 1, tableWidthDp, fontScale).centerHeightDp();
+        int playingHeight = TrickCardMetrics.forTable(players, tableWidthDp, fontScale, viewport).centerHeightDp();
+        return new CenterReservation(biddingHeight, playingHeight, Math.max(biddingHeight, playingHeight));
     }
 
     private TableLayoutMetrics() { }

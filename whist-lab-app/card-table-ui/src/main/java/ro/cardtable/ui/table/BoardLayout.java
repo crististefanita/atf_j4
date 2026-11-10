@@ -12,19 +12,31 @@ public class BoardLayout extends ViewGroup {
     private final int regionGapDp;
     private final boolean compact;
     private final boolean centerUsesFullWidth;
+    private final int reservedCenterHeightDp;
+    private final boolean stableSeatAnchors;
     private final TableGeometry.CenterAlignment centerAlignment;
     private int seatWidth;
     private int seatHeight;
 
     public BoardLayout(Context context, int players, int centerWidthDp, TableViewportPolicy viewport,
             boolean centerUsesFullWidth, TableGeometry.CenterAlignment centerAlignment) {
+        this(context, players, centerWidthDp, viewport, centerUsesFullWidth, 0, false, centerAlignment);
+    }
+
+    /** Reserves a phase-independent center band and optional play-phase seat anchors. */
+    public BoardLayout(Context context, int players, int centerWidthDp, TableViewportPolicy viewport,
+            boolean centerUsesFullWidth, int reservedCenterHeightDp, boolean stableSeatAnchors,
+            TableGeometry.CenterAlignment centerAlignment) {
         super(context);
+        if (reservedCenterHeightDp < 0) throw new IllegalArgumentException("Reserved center height cannot be negative");
         this.players = players;
         this.centerWidthDp = centerWidthDp;
         this.minimumHeightDp = viewport.minimumBoardHeightDp();
         this.regionGapDp = viewport.regionGapDp();
         this.compact = viewport.isCompact();
         this.centerUsesFullWidth = centerUsesFullWidth;
+        this.reservedCenterHeightDp = reservedCenterHeightDp;
+        this.stableSeatAnchors = stableSeatAnchors;
         this.centerAlignment = centerAlignment;
         setClipChildren(false);
     }
@@ -49,23 +61,24 @@ public class BoardLayout extends ViewGroup {
         int measuredCenterWidth = centerUsesFullWidth ? width : Math.min(width, dp(centerWidthDp));
         center.measure(MeasureSpec.makeMeasureSpec(measuredCenterWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        int geometryCenterHeight = Math.max(center.getMeasuredHeight(), dp(reservedCenterHeightDp));
         int minimum = Math.max(dp(minimumHeightDp),
-                TableGeometry.minimumHeight(players, seatHeight, center.getMeasuredHeight(), gap));
+                TableGeometry.minimumHeight(players, seatHeight, geometryCenterHeight, gap));
         setMeasuredDimension(width, Math.max(minimum, resolveSize(minimum, heightSpec)));
     }
 
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         View center = getChildAt(players);
+        int geometryCenterHeight = Math.max(center.getMeasuredHeight(), dp(reservedCenterHeightDp));
         var plan = TableGeometry.arrangeDisplay(right - left, bottom - top, players, seatWidth, seatHeight,
-                dp(centerWidthDp), center.getMeasuredHeight(), dp(regionGapDp), centerUsesFullWidth,
+                dp(centerWidthDp), geometryCenterHeight, dp(regionGapDp),
+                stableSeatAnchors || centerUsesFullWidth,
                 centerAlignment);
         for (int index = 0; index < players; index++) place(getChildAt(index), plan.seats().get(index));
-        if (centerUsesFullWidth) {
-            place(center, new TableGeometry.Rect(0, plan.center().top(), right - left,
-                    plan.center().bottom()));
-        } else {
-            place(center, plan.center());
-        }
+        int centerLeft = centerUsesFullWidth ? 0 : plan.center().left();
+        int centerTop = plan.center().top() + (geometryCenterHeight - center.getMeasuredHeight()) / 2;
+        place(center, new TableGeometry.Rect(centerLeft, centerTop,
+                centerLeft + center.getMeasuredWidth(), centerTop + center.getMeasuredHeight()));
     }
 
     private static void place(View view, TableGeometry.Rect box) {

@@ -7,7 +7,7 @@ import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.rules.HowToPlay;
 
 public final class AutoGameBidActionComponentTest extends atf.gradle.audit.GradleAuditedTest {
-    @Test public void bothCenteredActionsReserveSeparateRowsAtEveryWidth() {
+    @Test public void bidChoicesAndSubmissionReserveOnlyTheirRowsAtEveryWidth() {
         int[] widths = {280, 313, 353, 560, 760};
         int[] options = {1, 3, 9, 14, 18};
         float[] fontScales = {1f, 1.3f, 1.5f, 2f};
@@ -15,7 +15,8 @@ public final class AutoGameBidActionComponentTest extends atf.gradle.audit.Gradl
             var layout = BidGridMetrics.actionLayout(count, width, scale);
             atf.gradle.audit.GradleInputs.fixture("Centered bid controls",
                     "available width", width, "font scale", scale, "bid options", count, "layout", layout);
-            assertEquals("Two 48 dp controls and their 2 dp gap follow the choice rows", 98 + 50 * BidGridMetrics.rowCount(count, width),
+            assertEquals("The submit target follows the bid-choice rows", BidGridMetrics.SUBMIT_TARGET_DP
+                            + 50 * BidGridMetrics.rowCount(count, width),
                     layout.centerHeightDp());
             assertTrue("The submit target fits inside the board center", layout.centerWidthDp() >= 119);
             assertTrue("The board center stays inside the table", layout.centerWidthDp() <= width);

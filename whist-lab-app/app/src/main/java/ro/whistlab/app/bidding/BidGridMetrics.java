@@ -12,9 +12,6 @@ public final class BidGridMetrics {
     public static final int SUBMIT_TEXT_SP = 13;
     private static final int LEGACY_SUBMIT_VERTICAL_INSET_DP = 2;
     private static final float SUBMIT_FACE_SCALE = .85f;
-    private static final int AUTO_GAME_TOGGLE_BASE_WIDTH_DP = 128;
-    public static final int AUTO_GAME_TOGGLE_TARGET_DP = 48;
-    public static final int AUTO_GAME_STACK_GAP_DP = 2;
     public static final int DENSE_MIN_WIDTH_DP = DENSE_COLUMNS * (CHOICE_TARGET_DP + 4);
     public static final int DENSE_MAX_WIDTH_DP = 400;
 
@@ -44,20 +41,16 @@ public final class BidGridMetrics {
                 : COMPACT_COLUMNS;
     }
 
-    /** Places both actions on the center line, with a separate touch row for each. */
+    /** Keeps bid choices and submission inside the center band; hand automation belongs in the header. */
     public static ActionLayout actionLayout(int optionCount, int tableWidthDp, float fontScale) {
         if (optionCount < 0 || tableWidthDp < 1 || !Float.isFinite(fontScale) || fontScale <= 0) {
             throw new IllegalArgumentException("Bid controls need a valid viewport and font scale");
         }
 
-        int toggleWidth = Math.min(tableWidthDp,
-                (int) Math.ceil(AUTO_GAME_TOGGLE_BASE_WIDTH_DP * Math.max(1f, fontScale)));
         int columns = columnCount(optionCount, tableWidthDp);
         int gridWidth = Math.max(132, Math.min(optionCount, columns) * 52);
-        int controlsWidth = Math.max(SUBMIT_WIDTH_DP, toggleWidth);
-        int centerWidth = Math.max(gridWidth, controlsWidth);
-        int controlsHeight = SUBMIT_TARGET_DP + AUTO_GAME_STACK_GAP_DP + AUTO_GAME_TOGGLE_TARGET_DP;
-        int centerHeight = rowCount(optionCount, tableWidthDp) * CHOICE_ROW_DP + controlsHeight;
+        int centerWidth = Math.max(gridWidth, SUBMIT_WIDTH_DP);
+        int centerHeight = rowCount(optionCount, tableWidthDp) * CHOICE_ROW_DP + SUBMIT_TARGET_DP;
         return new ActionLayout(centerWidth, centerHeight);
     }
 

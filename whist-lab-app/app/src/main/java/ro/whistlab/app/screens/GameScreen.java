@@ -4,6 +4,7 @@ import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.table.GameTablePanel;
 import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.table.TrumpIndicatorView;
+import ro.whistlab.app.window.WindowContent;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.SystemClock;
@@ -14,6 +15,7 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +29,25 @@ import ro.whistlab.core.model.Suit;
 
 /** Game table and header composition; decisions and navigation stay with their owners. */
 public final class GameScreen {
+    static final class AutoGameHeaderContent {
+        static final int TOUCH_TARGET_DP = 48;
+        static final int INLINE_MIN_WIDTH_DP = 520;
+        enum Placement { INLINE, BELOW_HEADER }
+        record State(boolean visible, boolean checked, String label, String description, Placement placement) { }
+
+        static State state(GamePhase phase, boolean active, WhistUiText copy, int windowWidthDp) {
+            java.util.Objects.requireNonNull(phase);
+            java.util.Objects.requireNonNull(copy);
+            if (windowWidthDp < 1) throw new IllegalArgumentException("Header width must be positive");
+            boolean visible = phase == GamePhase.BIDDING || phase == GamePhase.PLAYING;
+            return new State(visible, visible && active, copy.autoGameToggle(),
+                    visible && active ? copy.stopAutoGameHand() : copy.autoGameHand(),
+                    windowWidthDp >= INLINE_MIN_WIDTH_DP ? Placement.INLINE : Placement.BELOW_HEADER);
+        }
+
+        private AutoGameHeaderContent() { }
+    }
+
     private GameTablePanel currentTable;
     private Runnable cancelFirstDraw = () -> { };
 
@@ -48,7 +69,7 @@ public final class GameScreen {
         LinearLayout page = views.gamePage();
         addGameHeader(page, state, !autoGame, copy, actions);
         GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted,
-                autoGame, actions.autoGame(), copy);
+                copy);
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
@@ -90,9 +111,12 @@ public final class GameScreen {
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
             boolean currentPlayerHighlighted, WhistUiText copy, MenuActions actions) {
         LinearLayout header = new LinearLayout(activity);
-        header.setOrientation(LinearLayout.HORIZONTAL);
-        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setOrientation(LinearLayout.VERTICAL);
         header.setTag("game-header");
+
+        LinearLayout identityRow = new LinearLayout(activity);
+        identityRow.setOrientation(LinearLayout.HORIZONTAL);
+        identityRow.setGravity(Gravity.CENTER_VERTICAL);
 
         FrameLayout menuButton = new FrameLayout(activity);
         menuButton.setTag("btn_game_menu");
@@ -110,7 +134,7 @@ public final class GameScreen {
             lineParams.topMargin = views.dp(offset);
             menuButton.addView(line, lineParams);
         }
-        header.addView(menuButton, new LinearLayout.LayoutParams(views.dp(48), views.dp(48)));
+        identityRow.addView(menuButton, new LinearLayout.LayoutParams(views.dp(48), views.dp(48)));
 
         LinearLayout status = new LinearLayout(activity);
         status.setOrientation(LinearLayout.VERTICAL);
@@ -125,16 +149,55 @@ public final class GameScreen {
         status.addView(title, views.matchWrap());
         status.addView(progress, views.matchWrap());
         status.addView(summary, views.matchWrap());
-        header.addView(status, new LinearLayout.LayoutParams(0,
+        identityRow.addView(status, new LinearLayout.LayoutParams(0,
                 ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        AutoGameHeaderContent.State autoGame = AutoGameHeaderContent.state(state.phase(),
+                actions.autoGameActive(), copy, WindowContent.widthDp(activity));
+        CheckBox autoGameToggle = autoGame.visible() ? autoGameToggle(autoGame, actions, copy) : null;
+        if (autoGameToggle != null && autoGame.placement() == AutoGameHeaderContent.Placement.INLINE) {
+            identityRow.addView(autoGameToggle, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, views.dp(AutoGameHeaderContent.TOUCH_TARGET_DP)));
+        }
         LinearLayout.LayoutParams trumpParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         trumpParams.leftMargin = views.dp(8);
-        header.addView(new TrumpIndicatorView(activity, state, copy, currentPlayerHighlighted), trumpParams);
+        identityRow.addView(new TrumpIndicatorView(activity, state, copy, currentPlayerHighlighted), trumpParams);
+        header.addView(identityRow, views.matchWrap());
+
+        if (autoGameToggle != null && autoGame.placement() == AutoGameHeaderContent.Placement.BELOW_HEADER) {
+            LinearLayout actionRow = new LinearLayout(activity);
+            actionRow.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+            actionRow.setTag("game-header-actions");
+            actionRow.addView(autoGameToggle, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, views.dp(AutoGameHeaderContent.TOUCH_TARGET_DP)));
+            header.addView(actionRow, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, views.dp(AutoGameHeaderContent.TOUCH_TARGET_DP)));
+        }
 
         LinearLayout.LayoutParams params = views.matchWrap();
         params.bottomMargin = views.dp(4);
         page.addView(header, params);
+    }
+    private CheckBox autoGameToggle(AutoGameHeaderContent.State state, MenuActions actions, WhistUiText copy) {
+        CheckBox toggle = new CheckBox(activity);
+        toggle.setText(state.label());
+        toggle.setTextSize(13);
+        toggle.setTextColor(Color.rgb(245, 248, 240));
+        toggle.setButtonTintList(android.content.res.ColorStateList.valueOf(Color.rgb(245, 248, 240)));
+        toggle.setSingleLine(true);
+        toggle.setPadding(0, 0, 0, 0);
+        toggle.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        toggle.setContentDescription(state.description());
+        toggle.setTag("auto-game-header-toggle");
+        toggle.setChecked(state.checked());
+        toggle.setMinHeight(views.dp(AutoGameHeaderContent.TOUCH_TARGET_DP));
+        toggle.setMinimumWidth(0);
+        toggle.setFocusable(true);
+        toggle.setOnCheckedChangeListener((button, checked) -> {
+            button.setContentDescription(checked ? copy.stopAutoGameHand() : copy.autoGameHand());
+            if (actions.autoGame() != null) actions.autoGame().run();
+        });
+        return toggle;
     }
     private void showMenu(View anchor, WhistUiText copy, MenuActions actions) {
         PopupMenu menu = new PopupMenu(activity, anchor);
