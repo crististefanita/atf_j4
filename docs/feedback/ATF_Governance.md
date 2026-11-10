@@ -34,11 +34,17 @@ Profilarea și timpii concreți rămân în arhiva externă. Optimizarea parseru
 
 [Politica executabilă](../../config/atf-governance-policy.json) aplică limita fără derogări pentru structura curentă. [Responsabilitățile pachetelor](../governance/ATF_Packages.md) delimitează API-urile, suportul comun și selecțiile testelor.
 
+**P2 · Restaurarea sesiunii Whist.** [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) deține mutările, scorul și rehidratarea checkpoint-ului.
+
+- Probele restaurează aceeași salvare în licitare, joc și scor și confruntă prima comandă legală după reluare.
+- O extragere a asamblării checkpoint-ului păstrează refuzul unei istorii incompatibile și compatibilitatea salvărilor existente.
+- Decizia privind o frontieră separată se bazează pe aceste probe.
+
 [Guvernanța calității](../governance/README.md) · [Bune practici documentare](../governance/ATF_Documentation.md)
 
 ## Calificarea afirmațiilor și lansatoarelor
 
-Proveniența și completitudinea snapshot-ului pentru calificarea release-ului au un singur proprietar în [registrul RAG](ATF_Release_RAG.md). Integritatea APK-ului și a payload-ului din dosarele înregistrate rămâne verificată de [guvernanța integrității release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
+Legarea dovezilor de sursa calificată ține de [registrul RAG](ATF_Release_RAG.md). Integritatea APK-ului și a payload-ului din dosarele înregistrate rămâne verificată de [guvernanța integrității release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
 
 | Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
 |---|---|---|
@@ -53,7 +59,8 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 
 | Prioritate | Responsabil și suprafață | Criteriu de închidere |
 |---|---|---|
-| P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul; prin [responsabilul comun](README.md), promovați un contract generic al acestor probe și sincronizați clarificările ghidurilor în livrările următoare. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
+| P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
+| P2 | Referințe externe reproductibile în checkout izolat | Declarați commitul și fișierele externe necesare ori folosiți rute versionate. O clonă fără directoare-surori trebuie să dea același verdict folosind numai intrările declarate; documentele și ancorele lipsă se raportează punctual. |
 
 ## Descărcarea prin browser
 

@@ -36,8 +36,8 @@ class ReleaseSuiteReportingGovernanceTest {
 
         String componentPattern = reporting.required("componentReportPathPattern").asText();
         String componentReceiptPattern = rag.required("componentSourceBinding").required("executionReceiptPattern").asText();
-        for (JsonNode required : rag.required("requiredComponentGroupsByPlatform").required("android")) {
-            String name = required.asText();
+        Set<String> requiredComponentGroups = requiredComponentGroups(rag, version);
+        for (String name : requiredComponentGroups) {
             JsonNode group = manifest.required("qualification").required("auditedGroups").required(name);
             String report = group.required("report").asText();
             String expected = componentPattern.replace("{group}", name);
@@ -81,6 +81,28 @@ class ReleaseSuiteReportingGovernanceTest {
             assertEquals(hash(release.resolve(report)), receipt.required("reportSha256").asText());
             assertEquals(inlinePngCount(release.resolve(report)), receipt.required("inlinePngCount").asInt());
         }
+    }
+
+    private static Set<String> requiredComponentGroups(JsonNode rag, String version) {
+        Set<String> required = new HashSet<>();
+        rag.required("requiredComponentGroupsByPlatform").required("android")
+                .forEach(group -> required.add(group.asText()));
+        rag.path("introducedComponentGroupsByPlatform").path("android").forEach(rule -> {
+            if (releaseVersionAtLeast(version, rule.path("sinceReleaseVersion").asText()))
+                required.add(rule.path("group").asText());
+        });
+        return required;
+    }
+
+    private static boolean releaseVersionAtLeast(String version, String minimum) {
+        String[] current = version.split("-", 2)[0].split("\\.");
+        String[] threshold = minimum.split("-", 2)[0].split("\\.");
+        if (current.length != 3 || threshold.length != 3) return false;
+        for (int index = 0; index < current.length; index++) {
+            int comparison = Integer.compare(Integer.parseInt(current[index]), Integer.parseInt(threshold[index]));
+            if (comparison != 0) return comparison > 0;
+        }
+        return true;
     }
 
     private static Map<String, String> payloadHashes(JsonNode manifest) {

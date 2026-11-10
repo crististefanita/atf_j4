@@ -24,6 +24,7 @@ Componentele aplicației, motorului, jucătorului independent, bibliotecii grafi
 | Licitare | `testDebugBiddingComponents`: recomandare, alegere și reluare. |
 | Istoric | `testDebugHistoryComponents`: scor, serii, tabel și geometrie. |
 | Afișare | `testDebugDisplayComponents`: modele de prezentare, masă, cărți și localizare. |
+| Realizări | `testDebugAchievementsComponents`: catalog, fapte de joc, progres durabil și notificări confirmate de utilizator. |
 
 Intrarea `testDebugUnitTest` deleagă colecțiilor, fără a repeta populația. Acestea păstrează toate cazurile și comparațiile și limitează memoria publicării prin responsabilități independente, cu un HTML canonic per task; compilarea și semnarea APK-ului Release se califică separat.
 

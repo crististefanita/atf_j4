@@ -8,8 +8,8 @@ import static atf.gradle.audit.assertions.GradleAssertions.*;
 public final class HomeMenuContentComponentTest extends atf.gradle.audit.GradleAuditedTest {
     private HomeMenuContent content(boolean romanian) {
         return romanian
-                ? new HomeMenuContent("Card room", "Limbă", 1, "Jucător", "Tu", "Partidă nouă", "Continuă", "Scoruri", "Reguli")
-                : new HomeMenuContent("Card room", "Language", 0, "Player", "You", "New game", "Resume", "Scores", "Rules");
+                ? new HomeMenuContent("Card room", "Limbă", 1, "Jucător", "Tu", "Partidă nouă", "Continuă", "Scoruri", "Realizări", "Reguli")
+                : new HomeMenuContent("Card room", "Language", 0, "Player", "You", "New game", "Resume", "Scores", "Achievements", "Rules");
     }
 
     @Test public void currentHomeOrderTagsAndResumeStateRemainStableInBothLanguages() {
@@ -18,13 +18,13 @@ public final class HomeMenuContentComponentTest extends atf.gradle.audit.GradleA
             var controls=copy.controls("Ana",resume,actions(new ArrayList<>()));
             
             atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "controls", controls, "copy", copy, "resume", resume, "romanian", romanian);
-            assertEquals("controls.size() must equal 5", 5,controls.size());
-            assertEquals("controls.stream().map(HomeMenuContent.Control::kind).toList() must equal List.of(HomeMenuContent.Kind.QUIET, HomeMenuContent.Kind.BUTTON, HomeMenuContent.Kind.BUTTON, HomeMenuContent.Kind.QUIET, HomeMenuContent.Kind.BUTTON)", List.of(HomeMenuContent.Kind.QUIET,HomeMenuContent.Kind.BUTTON,HomeMenuContent.Kind.BUTTON,
-                    HomeMenuContent.Kind.QUIET,HomeMenuContent.Kind.BUTTON),controls.stream().map(HomeMenuContent.Control::kind).toList());
-            assertEquals("controls.stream().map(HomeMenuContent.Control::tag).toList() must equal List.of(copy.profile() + \": Ana\", \"btn_new_game\", \"btn_resume_game\", copy.scores(), \"btn_instructions\")", List.of(copy.profile()+": Ana","btn_new_game","btn_resume_game",copy.scores(),"btn_instructions"),
+            assertEquals("controls.size() must equal 6", 6,controls.size());
+            assertEquals("controls.stream().map(HomeMenuContent.Control::kind).toList() must equal List.of(HomeMenuContent.Kind.QUIET, HomeMenuContent.Kind.BUTTON, HomeMenuContent.Kind.BUTTON, HomeMenuContent.Kind.QUIET, HomeMenuContent.Kind.QUIET, HomeMenuContent.Kind.BUTTON)", List.of(HomeMenuContent.Kind.QUIET,HomeMenuContent.Kind.BUTTON,HomeMenuContent.Kind.BUTTON,
+                    HomeMenuContent.Kind.QUIET,HomeMenuContent.Kind.QUIET,HomeMenuContent.Kind.BUTTON),controls.stream().map(HomeMenuContent.Control::kind).toList());
+            assertEquals("controls.stream().map(HomeMenuContent.Control::tag).toList() must include the localized achievement control", List.of(copy.profile()+": Ana","btn_new_game","btn_resume_game",copy.scores(),"btn_achievements","btn_instructions"),
                     controls.stream().map(HomeMenuContent.Control::tag).toList());
             assertEquals("controls.get(2).enabled() must equal resume", resume,controls.get(2).enabled());
-            assertEquals("controls.stream().map(HomeMenuContent.Control::primary).toList() must equal List.of(false, true, false, false, false)", List.of(false,true,false,false,false),controls.stream().map(HomeMenuContent.Control::primary).toList());
+            assertEquals("controls.stream().map(HomeMenuContent.Control::primary).toList() must keep only new game primary", List.of(false,true,false,false,false,false),controls.stream().map(HomeMenuContent.Control::primary).toList());
             assertEquals("copy.selectedLanguage() must equal romanian ? 1 : 0", romanian?1:0,copy.selectedLanguage());
         }
     }
@@ -45,12 +45,12 @@ public final class HomeMenuContentComponentTest extends atf.gradle.audit.GradleA
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actions", actions, "copy", copy, "original", original, "seen", seen);
         assertFalse("original.get(2).enabled() must remain false", original.get(2).enabled());assertEquals("original.get(0).label() must equal \"Player: Ana\"", "Player: Ana",original.get(0).label());
         for(var control:original)control.action().run();
-        assertEquals("seen must equal List.of(\"settings\", \"setup\", \"resume\", \"scores\", \"help\")", List.of("settings","setup","resume","scores","help"),seen);
+        assertEquals("seen must include achievements without changing the other callbacks", List.of("settings","setup","resume","scores","achievements","help"),seen);
         assertThrows("The operation rejects its input with UnsupportedOperationException.class", UnsupportedOperationException.class,()->original.clear());
     }
 
     private HomeMenuContent.Actions actions(List<String> seen) {
         return new HomeMenuContent.Actions(()->seen.add("settings"),()->seen.add("setup"),()->seen.add("resume"),
-                ()->seen.add("scores"),()->seen.add("help"));
+                ()->seen.add("scores"),()->seen.add("achievements"),()->seen.add("help"));
     }
 }

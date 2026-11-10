@@ -2,7 +2,7 @@
 def packages = new Properties()
 def catalog = new File(rootProject.projectDir.parentFile, 'config/gradle-app-collections.properties')
 catalog.withReader('UTF-8') { packages.load(it) }
-def names = [commands: 'Commands', bidding: 'Bidding', history: 'History', display: 'Display']
+def names = [commands: 'Commands', bidding: 'Bidding', history: 'History', display: 'Display', achievements: 'Achievements']
 if (packages.isEmpty() || packages.any { key, value -> !(key ==~ /[a-z]+/) || !names.containsKey(value) })
     throw new GradleException('Invalid application component collection catalog')
 

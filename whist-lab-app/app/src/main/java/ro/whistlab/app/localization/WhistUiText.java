@@ -11,6 +11,7 @@ import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
+import ro.whistlab.app.achievements.WhistAchievementCatalog;
 
 /** Player-facing copy for the Android UI. Rule calculations stay in game-core. */
 public final class WhistUiText {
@@ -73,6 +74,44 @@ public final class WhistUiText {
     public String currentScores(int hand) { return choose("Current scores · Hand " + hand,
             "Scor curent · Mâna " + hand); }
     public String close() { return choose("Close", "Închide"); }
+    public String achievements() { return choose("Achievements", "Realizări"); }
+    public String achievementsUnlocked(int count) {
+        return count == 1 ? choose("Achievement unlocked", "Realizare nouă")
+                : choose("Achievements unlocked", "Realizări noi");
+    }
+    public String achievementsSummary(int earned, int total, int recommendedGroup) {
+        if (recommendedGroup == 0) return choose(earned + " of " + total + " achievements earned. Every group has a completed step; choose any remaining goal.",
+                "Ai obținut " + earned + " din " + total + " de realizări. Fiecare grup are un pas încheiat; poți continua oricare obiectiv rămas.");
+        return choose(earned + " of " + total + " achievements earned. Recommended group: " + recommendedGroup + ".",
+                "Ai obținut " + earned + " din " + total + " de realizări. Grup recomandat: " + recommendedGroup + ".");
+    }
+    public String achievementGroupCount(int earned, int total) {
+        return choose(earned + "/" + total + " complete", earned + "/" + total + " obținute");
+    }
+    public String achievementLevel(WhistAchievementCatalog.Level level) {
+        return switch (level) {
+            case EASY -> choose("Easy", "Ușor");
+            case MEDIUM -> choose("Medium", "Mediu");
+            case HARD -> choose("Hard", "Greu");
+        };
+    }
+    public String achievementProgress(int current, int target) {
+        return choose("Progress " + current + "/" + target, "Progres " + current + "/" + target);
+    }
+    public String achievementNoticeSummary(int unlocked, int earned, int total, int handNumber,
+            boolean matchComplete, int recommendedGroup) {
+        String timing = matchComplete
+                ? choose("Match complete", "Partidă încheiată")
+                : choose("Hand " + handNumber + " complete", "Mâna " + handNumber + " s-a încheiat");
+        String path = recommendedGroup == 0 ? ""
+                : choose(" · Suggested chapter " + recommendedGroup, " · Capitol recomandat " + recommendedGroup);
+        return choose("Unlocked " + unlocked + " · " + earned + " / " + total + " achievements · " + timing + path,
+                "Ai obținut " + unlocked + " · " + earned + " / " + total + " realizări · " + timing + path);
+    }
+    public String achievementPercent(int current, int target) {
+        return choose("Progress " + current + "%/" + target + "%", "Progres " + current + "%/" + target + "%");
+    }
+    public String recommended() { return choose("Recommended", "Recomandat"); }
     public String gameComplete() { return choose("Game complete", "Partidă încheiată"); }
     public String handComplete() { return choose("Hand complete", "Mână încheiată"); }
     public String unsupportedSavedMode() { return choose("This saved game uses a retired mode. Starting a new game will replace it.",

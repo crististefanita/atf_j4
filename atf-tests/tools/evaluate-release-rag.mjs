@@ -13,6 +13,26 @@ const REQUIRED_ANDROID_COMPONENT_GROUPS = [
   'whist-lab-app-display', 'whist-lab-app-history'
 ];
 
+function releaseVersionAtLeast(version, minimum) {
+  if (!VERSION.test(version ?? '') || !VERSION.test(minimum ?? '')) return false;
+  const current = version.split('-')[0].split('.').map(Number);
+  const threshold = minimum.split('-')[0].split('.').map(Number);
+  for (let index = 0; index < current.length; index++) {
+    if (current[index] !== threshold[index]) return current[index] > threshold[index];
+  }
+  return true;
+}
+
+function componentGroupsRequiredForVersion(policy, platform, version) {
+  const configuredBase = policy.ragEvaluator?.requiredComponentGroupsByPlatform?.[platform];
+  const configuredIntroduced = policy.ragEvaluator?.introducedComponentGroupsByPlatform?.[platform];
+  const base = Array.isArray(configuredBase) ? configuredBase : [];
+  const introduced = Array.isArray(configuredIntroduced) ? configuredIntroduced : [];
+  return [...new Set([...base, ...introduced
+    .filter(item => item && releaseVersionAtLeast(version, item.sinceReleaseVersion))
+    .map(item => item.group)])];
+}
+
 // A small strict JSON reader keeps duplicate keys and trailing data from changing a receipt silently.
 class StrictJsonReader {
   constructor(text) { this.text = text; this.at = 0; this.line = 1; this.lines = new Map(); }
@@ -187,6 +207,13 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.ragEvaluator?.publicReadmeSurface?.forbidRawSha256Digest === true
       && Array.isArray(policy.ragEvaluator?.requiredComponentGroupsByPlatform?.android)
       && REQUIRED_ANDROID_COMPONENT_GROUPS.every(name => policy.ragEvaluator.requiredComponentGroupsByPlatform.android.includes(name))
+      && Array.isArray(policy.ragEvaluator?.introducedComponentGroupsByPlatform?.android)
+      && policy.ragEvaluator.introducedComponentGroupsByPlatform.android.every(item => item
+        && typeof item.group === 'string' && item.group.trim().length > 0
+        && VERSION.test(item.sinceReleaseVersion ?? '')
+        && !policy.ragEvaluator.requiredComponentGroupsByPlatform.android.includes(item.group))
+      && new Set(policy.ragEvaluator.introducedComponentGroupsByPlatform.android.map(item => item.group)).size
+        === policy.ragEvaluator.introducedComponentGroupsByPlatform.android.length
       && Array.isArray(policy.ragEvaluator?.platformGates?.androidBeforeHumanReview)
       && policy.ragEvaluator.platformGates.androidBeforeHumanReview.includes('signing')
       && Array.isArray(policy.ragEvaluator?.platformGates?.androidAfterPublication)
@@ -423,7 +450,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
 
   const groups = manifest.qualification?.auditedGroups ?? {}, groupResults = [];
   const selectedGroups = validPlan ? plan.componentGroups : [];
-  const requiredComponentGroups = policy.ragEvaluator?.requiredComponentGroupsByPlatform?.android ?? REQUIRED_ANDROID_COMPONENT_GROUPS;
+  const requiredComponentGroups = componentGroupsRequiredForVersion(policy, 'android', version);
   let componentsOkay = requiredComponentGroups.every(name => selectedGroups.includes(name));
   const reporting = policy.reportingContract ?? {};
   const selectedReportPaths = new Set();

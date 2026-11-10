@@ -25,6 +25,9 @@ import ro.whistlab.app.highscores.HighScores;
 import ro.whistlab.app.highscores.HighScoresDialog;
 import ro.whistlab.app.profile.PlayerPreferences;
 import ro.whistlab.app.profile.PlayerSettingsDialog;
+import ro.whistlab.app.achievements.AndroidWhistAchievementStorage;
+import ro.whistlab.app.achievements.WhistAchievementDialog;
+import ro.whistlab.app.achievements.WhistAchievementRepository;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,7 +39,9 @@ import android.os.SystemClock;
 import android.widget.Toast;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.model.Card;
@@ -78,6 +83,9 @@ public final class MainActivity extends Activity {
     private final HumanBidSelection humanBids = new HumanBidSelection();
     private PlayerPreferences playerPreferences;
     private HighScoreRepository highScores;
+    private WhistAchievementRepository achievements;
+    private boolean achievementNoticeOpen;
+    private final Set<String> suppressedAchievementNoticeIds = new HashSet<>();
     private GamePersistence persistence;
     private boolean rankingEligible;
     private String matchId = java.util.UUID.randomUUID().toString();
@@ -109,9 +117,10 @@ public final class MainActivity extends Activity {
         scoreScreens = new ScoreScreens(views);
         playerPreferences = new PlayerPreferences(this);
         highScores = new HighScoreRepository(new AndroidHighScoreStorage(this), new java.util.Random());
+        achievements = new WhistAchievementRepository(new AndroidWhistAchievementStorage(this));
         persistence = new GamePersistence(
                 (session, eligible, id) -> GameSessionStore.save(this, session, eligible, id),
-                highScores::record, System::currentTimeMillis,
+                highScores::record, (id, session) -> achievements.record(id, session), System::currentTimeMillis,
                 failure -> Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show());
         try { highScores.boards(); } catch (java.io.IOException failure) {
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
@@ -183,7 +192,7 @@ public final class MainActivity extends Activity {
         views.applyStandardWindowChrome();
         menuScreens.home(copy, playerPreferences.name(), game != null,
                 new MenuScreens.Actions(this::showPlayerSettings, this::renderSetup, this::renderCurrentState,
-                        this::showHighScores, this::renderInstructions, this::setUiLanguage));
+                        this::showHighScores, this::showAchievements, this::renderInstructions, this::setUiLanguage));
     }
 
     private void setUiLanguage(HowToPlay.Language language) {
@@ -351,6 +360,44 @@ public final class MainActivity extends Activity {
         var state = game.snapshot();
         scoreScreens.score(copy, state, game.scoreHistory(), new ScoreScreens.Actions(
                 () -> nextHand(state), this::playAgain, () -> showScoreHistory(state, game.scoreHistory()), this::renderHome));
+        showPendingAchievementNotice(state);
+    }
+
+    private void showPendingAchievementNotice(GameSession.Snapshot state) {
+        if (achievementNoticeOpen) return;
+        try {
+            var unlocked = achievements.pendingNotifications().stream()
+                    .filter(goal -> !suppressedAchievementNoticeIds.contains(goal.id()))
+                    .collect(java.util.stream.Collectors.toList());
+            if (unlocked.isEmpty()) return;
+            var saved = achievements.state();
+            AlertDialog dialog = WhistAchievementDialog.showUnlocked(this, copy, unlocked, saved,
+                    state.handNumber(), state.finalHand());
+            var token = openDialog();
+            achievementNoticeOpen = true;
+            boolean[] acknowledged = {false};
+            dialog.setOnDismissListener(ignored -> {
+                if (!acknowledged[0])
+                    unlocked.forEach(goal -> suppressedAchievementNoticeIds.add(goal.id()));
+                achievementNoticeOpen = false;
+                navigation.dismiss(token);
+            });
+            dialog.show();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
+                try {
+                    achievements.acknowledgeNotifications(unlocked.stream()
+                            .map(ro.whistlab.app.achievements.WhistAchievementCatalog.Goal::id)
+                            .collect(java.util.stream.Collectors.toList()));
+                    acknowledged[0] = true;
+                    dialog.dismiss();
+                } catch (java.io.IOException failure) {
+                    Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }
+            });
+        } catch (java.io.IOException failure) {
+            Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void nextHand(GameSession.Snapshot state) {
@@ -391,6 +438,17 @@ public final class MainActivity extends Activity {
         } catch (java.io.IOException failure) {
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
             navigation.dismiss(token);
+        }
+    }
+
+    private void showAchievements() {
+        var token = openDialog();
+        try {
+            AlertDialog dialog = WhistAchievementDialog.show(this, copy, achievements);
+            dialog.setOnDismissListener(ignored -> navigation.dismiss(token));
+        } catch (java.io.IOException failure) {
+            navigation.dismiss(token);
+            Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
         }
     }
 

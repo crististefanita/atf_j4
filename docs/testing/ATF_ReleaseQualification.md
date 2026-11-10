@@ -26,7 +26,7 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 | Pas | Selecție și rezultat necesar |
 |---|---|
 | 1. Diferență | Identificați baza, fișierele modificate/adăugate/șterse și contractele afectate. Selectați straturile după risc, nu doar după eticheta versiunii; fixați în TMP inventarul complet al surselor și bibliotecilor copiate. |
-| 2. Componente | Executați oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. Fiecare selecție executată publică HTML Extent prin `atf-reporting`; JUnit-ul temporar se confruntă cu HTML-ul înaintea eliminării copiilor finale. |
+| 2. Componente | Executați oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. Fiecare selecție Gradle are HTML Extent și receipt proprii, publicate prin `atf-reporting`; JUnit-ul temporar se confruntă cu HTML-ul înaintea eliminării copiilor finale. |
 | 3. Publicare | Confruntați exact identitățile și rezultatele JUnit–HTML pe fiecare selecție; inspectați fallback-ul numai dacă a fost selectat și calificat. Verificați cauza originală, abort-ul, lipsa capturii și imaginile inline Base64. XML-ul rămâne oracol temporar, nu raport duplicat în dosarul final. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
 | 4. HTML | Aplicați [revizia interactivă minimă](../reporting/ATF_Audit.md#revizia-interactivă-minimă) pe HTML-ul identificat prin hash; păstrați proprietarii, controalele și limitele probei. |
 | 5. APK | Construiți din snapshot în TMP; verificați versiunea, SDK-urile, bytes, SHA-256, CRC, semnătura și alinierea. Debug și Release au identități distincte. |
@@ -83,6 +83,10 @@ Prima parte oferă raportul principal și starea calificării. Detaliile rămân
 
 README-ul rădăcinii oferă numai versiunea curentă și acțiunea directă de descărcare. SHA-256-ul APK-ului rămâne în manifestul versiunii și în dovezile ei, nu în pagina principală. Guvernanța structurii și evaluatorul RAG verifică separat aceeași regulă; checksum-ul nu înlocuiește linkul descărcabil.
 
+În pregătirea locală, `release/index.json` păstrează `currentVersion` și `versions` pentru livrările publicate și poate anunța temporar candidatul prin `candidateVersion`. README-ul se verifică față de acel candidat folosind `release/candidate.json`, cu `publication.state=PREPARED` și URL-ul autentificat declarat. Manifestul candidatului nu intră în inventarul release-urilor publicate.
+
+După calificare și publicare, mutați manifestul și dovezile în `release/{version}/`, eliminați `candidateVersion`, actualizați `currentVersion` și `versions`, apoi păstrați neschimbat linkul README deja calificat. `release/` este exclus din amprenta surselor; README-ul rămâne în ea, deci schimbarea linkului după probe cere reluarea calificării.
+
 - **Stări:** `PENDING` exprimă un pas neexecutat; `SKIP`/abort exprimă rezultatul invocării. Un rezultat `FAIL` sau o eroare de publicare se păstrează, împreună cu impactul asupra calificării.
 - **Istoric:** o probă anterioară poate fi reper explicit, cu binarul și scopul ei. Mutarea documentelor sau actualizarea README-ului nu califică un APK nou.
 - **Retratare:** la corecția documentelor, păstrați sursa rezultatelor și descrieți selecția reverificată; o compoziție de rezultate trecute nu devine o singură rulare integrală nouă.
@@ -126,8 +130,11 @@ Snapshot-ul fixat este baza tuturor selecțiilor. RAG-ul verifică receipt-urile
 | Grup Android | Dovadă necesară |
 | --- | --- |
 | `atf-validation`, `atf-test-android`, `atf-tests` | Fiecare suită Maven primară are HTML Extent canonic și rezultate fără FAIL/ERROR/SKIP. |
-| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Fiecare selecție Gradle are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. Rapoartele distincte nu se concatenează; JUnit XML singur nu satisface poarta. |
+| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Colecțiile Android de bază; fiecare are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. |
+| `whist-lab-app-achievements` | Colecție introdusă prin `introducedComponentGroupsByPlatform`; `sinceReleaseVersion` o face obligatorie de la pragul declarat. Raportul este separat, iar JUnit XML singur nu satisface poarta. |
 | Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK; `source-provenance.json` leagă manifestul și receiptele native prin SHA-256 al octeților JSON păstrați. |
+
+Schimbările vizibile în fluxul utilizatorului cer un E2E focalizat pe acel flux. Pentru catalogul realizărilor, selecția de release deschide ecranul din APK-ul semnat, verifică progresul local și revine la pagina principală; testele de componentă păstrează oracolele pentru praguri, deduplicare și persistența popup-ului.
 
 Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare. Stadiul publicat cere dovada descărcării în modul de acces declarat: `AUTHENTICATED` pentru un asset GitHub accesibil conturilor autorizate sau `ANONYMOUS` pentru o copie publică.
 

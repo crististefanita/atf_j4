@@ -14,6 +14,7 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 | Acțiunile la licitare | [Componentele de layout](java/ro/whistlab/app/bidding/AutoGameBidActionComponentTest.java) verifică rândurile centrate, conturul redus separat de zona tactilă, densitățile și spațiul recuperat pentru textul mărit. [Componenta meniului](java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) verifică opțiunea de oprire în RO și EN, numai în timpul automatizării. |
 | Continuitatea licitației | [Salvare și reluare](java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java): codec JSON real, recomandare recalculată, alegere manuală prioritară și contract confirmat păstrat; livrările întârziate nu schimbă sesiunea. |
 | Licitație incertă | [Factori de context](java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java): atu și carte întoarsă, ținte adverse publice, scor relativ și plata seriilor. Oracolele disting schimbarea legitimă a utilității de schimbarea accidentală a lumilor simulate. |
+| Realizări | [Catalogul și progresul](java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java): 40 de obiective în opt grupe, trepte Ușor/Mediu/Greu, fapte derivate din mâini încheiate și partide complete, popup-uri persistente până la confirmarea utilizatorului și deduplicare la salvare/reluare. |
 | Persistență și istoric | Comenzi legale, checkpoint JSON, solduri și migrare; refuzul datelor corupte. |
 | Ciclu de viață | Ceas, executor, navigare și callback-uri controlate; anulare și reluare fără efect repetat. |
 | Colectarea levatei | Geometrie, jucători, ultima levată și evenimente întârziate; starea partidei se păstrează. |
@@ -23,6 +24,8 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 [Componentele bibliotecii UI](../../../card-table-ui/README.md#verificare) au sarcina Gradle proprie. Filtrul de afișaj al aplicației include adaptoarele din `screens` și `cards`; testele existente de geometrie rămân la integrarea Whist și nu sunt numărate din nou ca teste noi ale bibliotecii.
 
 - **Selecție focalizată:** `:app:testDebugUnitTest --tests 'ro.whistlab.app.bidding.*'` include matricea, reluarea și cazurile mici ale estimării. Fixture-urile avansează motorul prin comenzi legale, cu scor și carte întoarsă reale, fără arhivă externă sau emulator.
+
+- **Realizări:** `:app:testDebugAchievementsComponents` este colecția primară pentru catalog, măsurători și stare. `:app:testDebugCommandsComponents` acoperă ordinea în care partida completă persistă rezultatele derivate.
 
 - **Execuție:** dintr-o copie temporară a aplicației, [configurația Gradle](../../build.gradle) selectează componentele prin `whist.displayComponents=true`. SDK-ul este necesar compilării; testele rulează pe JVM, fără comenzi ADB.
 

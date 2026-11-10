@@ -12,6 +12,20 @@ import static atf.testkit.assertions.AuditedAssertions.*;
 @AtfComponentTest
 class DownloadSelectionComponentTest {
     @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
+    @Test void announcedCandidateCanDriveTheMainReadmeWithoutReplacingPublishedIdentity() throws Exception {
+        var json = new ObjectMapper();
+        var index = json.createObjectNode().put("currentVersion", "1.2.0").put("candidateVersion", "1.3.0");
+        var manifest = json.createObjectNode();
+        manifest.putObject("publication").put("state", "PREPARED").put("accessMode", "AUTHENTICATED")
+                .put("targetUrl", "https://github.com/example/game/releases/download/v1.3.0/WhistLab-1.3.0.apk");
+        manifest.putObject("release").put("versionName", "1.3.0").put("apkBytes", 43).put("apkSha256", "b".repeat(64));
+
+        var advertised = ReleaseDownloadSelection.select("advertised", "example/game", index, manifest);
+        assertEquals("1.3.0", advertised.version());
+        assertEquals("https://github.com/example/game/releases/download/v1.3.0/WhistLab-1.3.0.apk", advertised.publicUrl());
+        assertThrows(IOException.class, () -> ReleaseDownloadSelection.select("current", "example/game", index, manifest));
+    }
+
     @Test void aPreparedCandidateCannotBorrowTheOlderPublishedVersionOrItsPassingDownload() throws Exception {
         var json = new ObjectMapper();var index = json.createObjectNode().put("currentVersion", "1.2.0");
         index.putObject("publishedDownload").put("version", "1.1.0").put("bytes", 42).put("sha256", "a".repeat(64))

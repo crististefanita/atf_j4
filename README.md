@@ -10,8 +10,8 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.17.1 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.17.1)** — ediția Android curentă și asset-urile livrării.
-- **[Descarcă APK 0.17.1](https://github.com/crististefanita/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk)** — pentru utilizatorii autentificați cu acces la repository.
+- **[Whist Lab 0.18.0 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.18.0)** — ediția Android curentă și asset-urile livrării.
+- **[Descarcă APK 0.18.0](https://github.com/crististefanita/atf_j4/releases/download/v0.18.0/WhistLab-0.18.0.apk)** — pentru utilizatorii autentificați cu acces la repository.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
@@ -29,6 +29,7 @@ scor comune, teste de componentă și evaluări offline.
 - Doar mâinile de 2–8 cărți avansează seria; la o carte, un rezultat de același tip păstrează contorul, iar rezultatul opus îl întrerupe.
 - Numele omului se configurează din meniul inițial; adversarii primesc nume scurte aleatorii la fiecare partidă.
 - [Istoricul comun](docs/game/ATF_ScoreHistory.md) și [clasamentele locale](docs/game/ATF_PlayerRecords.md) păstrează separat evoluția partidei și cele mai bune rezultate.
+- [Realizările](docs/game/ATF_Achievements.md) urmăresc progresul local pe capitole; orice obiectiv poate avansa fără să blocheze celelalte.
 
 Jocul are două niveluri. **Normal** urmărește levatele licitate și evită să treacă peste contract. **Hard** evaluează șansa contractului din informația publică, apoi poate căuta ratări la adversari când limitele jocului îi arată că propriul contract a devenit imposibil.
 
@@ -133,7 +134,7 @@ suprascrie o execuție închisă pentru a o transforma în rezultat curent.
 
 ## Documentație
 
-[Dosarul versiunii curente](release/0.17.1/README.md) · [Catalogul livrărilor](release/README.md)
+[Catalogul și dosarul versiunii curente](release/README.md)
 
 [Indexul documentației](docs/README.md) pornește de la arhitectură, reguli,
 testare și contractele de date. Modificările de comportament trebuie însoțite

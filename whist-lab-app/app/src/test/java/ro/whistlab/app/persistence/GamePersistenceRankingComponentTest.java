@@ -39,19 +39,80 @@ public class GamePersistenceRankingComponentTest extends atf.gradle.audit.Gradle
         assertEquals("game.snapshot() must equal before", before, game.snapshot());
     }
 
-    @Test public void excludedAndUnfinishedMatchesNeverReadTheRankingClock() {
+    @Test public void achievementsAreRecordedAfterCheckpointAndBeforeRankingAndReplay() {
+        var game = finishedMatch();
+        var events = new ArrayList<String>();
+        var persistence = new GamePersistence((saved, eligible, id) -> {
+            assertSame("saved checkpoint must be the completed game", game, saved);
+            events.add("checkpoint");
+        }, (id, saved, now) -> events.add("ranking"), (id, saved) -> {
+            assertEquals("achievement recorder must receive the stable match ID", "achievement-match", id);
+            assertSame("achievement recorder must receive the completed game", game, saved);
+            events.add("achievements");
+        }, () -> 1234, error -> fail(error.toString()));
+        persistence.save(atf.gradle.audit.GradleInputs.created("Persistence or profile input before save", game),
+                true, "achievement-match", saved -> events.add("replay"));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "events", events,
+                "game", game, "persistence", persistence);
+        assertEquals("completion must be durable after checkpoint and before the derived ranking and replay",
+                List.of("checkpoint", "achievements", "ranking", "replay"), events);
+    }
+
+    @Test public void completedHandRecordsAchievementProgressWithoutPublishingMatchRanking() {
+        var game = GameSession.newGame(GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST,
+                AiDifficulty.NORMAL, 44, true, 10));
+        finishHand(game);
+        var events = new ArrayList<String>();
+        var persistence = new GamePersistence((saved, eligible, id) -> events.add("checkpoint"),
+                (id, saved, now) -> fail("A nonfinal hand cannot publish a match ranking"),
+                (id, saved) -> events.add("hand-progress"), () -> { throw new AssertionError("Clock"); },
+                error -> fail(error.toString()));
+        persistence.save(atf.gradle.audit.GradleInputs.created("Persistence or profile input before save", game),
+                true, "hand-progress", saved -> events.add("replay"));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "events", events,
+                "game", game, "persistence", persistence);
+        assertFalse("fixture must stop after a completed but nonfinal hand", game.snapshot().finalHand());
+        assertEquals("a completed hand saves progress between checkpoint and replay",
+                List.of("checkpoint", "hand-progress", "replay"), events);
+    }
+
+    @Test public void completionStorageFailureIsReportedWithoutSuppressingRankingOrReplay() {
+        var failure = new IOException("Achievement storage unavailable");
+        var errors = new ArrayList<IOException>();
+        var events = new ArrayList<String>();
+        var persistence = new GamePersistence((game, eligible, id) -> events.add("checkpoint"),
+                (id, game, now) -> events.add("ranking"), (id, game) -> { events.add("achievements"); throw failure; },
+                () -> 1234, errors::add);
+        persistence.save(atf.gradle.audit.GradleInputs.created("Persistence or profile input before save", finishedMatch()),
+                true, "retryable-achievement", game -> events.add("replay"));
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "errors", errors,
+                "events", events, "failure", failure, "persistence", persistence);
+        assertEquals("achievement failure must not abort independent persistence outputs",
+                List.of("checkpoint", "achievements", "ranking", "replay"), events);
+        assertEquals("the storage error must be surfaced", List.of(failure), errors);
+    }
+
+    @Test public void excludedMatchesSkipProgressAndUnfinishedSessionsWaitForARecordedHand() {
+        var progress = new ArrayList<String>();
         var persistence = new GamePersistence((game, eligible, id) -> { },
-                (id, game, time) -> fail("Ranking"), () -> { throw new AssertionError("Clock"); },
+                (id, game, time) -> fail("Ranking"), (id, game) -> progress.add(id),
+                () -> { throw new AssertionError("Clock"); },
                 error -> fail(error.toString()));
         var finished = finishedMatch();
         persistence.save(atf.gradle.audit.GradleInputs.created("Persistence or profile input before save", finished), false, "fixture-match", game -> { });
         var unfinished = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", GameConfig.defaults(31)));
         persistence.save(atf.gradle.audit.GradleInputs.created("Persistence or profile input before save", unfinished), true, "fixture-match", game -> { });
+        assertEquals("no score row means no hand progress event", List.of(), progress);
         finishHand(unfinished);
 
-        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "finished", finished, "persistence", persistence, "unfinished", unfinished);
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "finished", finished,
+                "persistence", persistence, "progress", progress, "unfinished", unfinished);
         assertFalse("unfinished.snapshot().finalHand() must remain false", unfinished.snapshot().finalHand());
         persistence.save(atf.gradle.audit.GradleInputs.created("Persistence or profile input before save", unfinished), true, "fixture-match", game -> { });
+        assertEquals("only the persisted completed hand receives a progress event", List.of("fixture-match"), progress);
     }
 
     @Test public void aFailedFinalCheckpointCannotPublishTheRankingOrReplay() {

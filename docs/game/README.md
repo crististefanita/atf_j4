@@ -12,6 +12,7 @@ Fiecare variantă are propriul contract pentru pachet, program, atu, licitare ș
 | Ce schimbă nivelul jucătorului? | [Normal și Hard](ATF_Levels.md). |
 | Ce date păstrează fiecare mână încheiată? | [Istoricul scorului](ATF_ScoreHistory.md). |
 | Cum se configurează numele și se păstrează topurile? | [Profilul jucătorului și clasamentele locale](ATF_PlayerRecords.md). |
+| Cum se organizează și se acordă obiectivele progresului? | [Realizările Whist](ATF_Achievements.md). |
 
 ## Responsabilități
 

@@ -14,11 +14,11 @@ public final class MenuScreens {
     private final HomeMenu home;
     public MenuScreens(ScreenViews views) { this.views = views; this.home = new HomeMenu(views); }
     public record Actions(Runnable settings, Runnable setup, Runnable resume, Runnable scores,
-                          Runnable help, java.util.function.Consumer<HowToPlay.Language> language) { }
+                          Runnable achievements, Runnable help, java.util.function.Consumer<HowToPlay.Language> language) { }
     public void home(WhistUiText copy, String preferredName, boolean canResume, Actions actions) {
         var content=WhistMenuContent.from(copy);
         var callbacks=new HomeMenuContent.Actions(actions.settings(),actions.setup(),
-                actions.resume(),actions.scores(),actions.help());
+                actions.resume(),actions.scores(),actions.achievements(),actions.help());
         home.home(content,preferredName,canResume,callbacks,
                 index->actions.language().accept(index==0?HowToPlay.Language.EN:HowToPlay.Language.RO));
     }

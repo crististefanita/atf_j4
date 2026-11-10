@@ -79,13 +79,13 @@ final class ReleaseCatalogPresentation {
     }
 
     static void projectLinks(Path file, String guide, JsonNode index, String repository, String expected) throws IOException {
-        String current = index.path("currentVersion").asText();
-        require(guide.contains("(release/" + current + "/README.md)"), "CURRENT", file);
+        String advertised = index.path("candidateVersion").asText(index.path("currentVersion").asText());
+        require(guide.contains("(release/README.md)"), "CATALOG", file);
         require(!guide.contains("](" + repository + "/releases/latest)"), "UNPINNED", file);
-        require(current.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?"), "VERSION", file);
+        require(advertised.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?"), "VERSION", file);
 
         var download = Pattern.compile("\\[Descarcă APK ([^]]+)\\]\\(([^)]+)\\)").matcher(guide);
-        require(download.find() && current.equals(download.group(1)) && expected.equals(download.group(2)), "DOWNLOAD", file);
+        require(download.find() && advertised.equals(download.group(1)) && expected.equals(download.group(2)), "DOWNLOAD", file);
         require(!download.find(), "AMBIGUOUS", file);
         var binaries = Pattern.compile("\\[[^]]*\\]\\(([^)]*\\.apk)\\)").matcher(guide);int count = 0;
         while (binaries.find()) { require(expected.equals(binaries.group(1)), "STALE-ASSET", file);count++; }

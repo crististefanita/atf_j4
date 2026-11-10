@@ -10,6 +10,6 @@ public final class WhistMenuContent {
     public static HomeMenuContent from(WhistUiText copy) {
         return new HomeMenuContent(copy.homeTitle(),copy.languageLabel(),
                 copy.language()==HowToPlay.Language.EN?0:1,copy.playerSettings(),copy.romanian()?"Tu":"You",
-                copy.newGame(),copy.resumeGame(),copy.highestScores(),copy.help());
+                copy.newGame(),copy.resumeGame(),copy.highestScores(),copy.achievements(),copy.help());
     }
 }

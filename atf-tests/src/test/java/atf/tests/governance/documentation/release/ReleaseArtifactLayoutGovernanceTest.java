@@ -30,10 +30,13 @@ class ReleaseArtifactLayoutGovernanceTest {
         String catalog = Files.readString(root.resolve("release/README.md"));
         var releaseIndex = new com.fasterxml.jackson.databind.ObjectMapper().readTree(root.resolve("release/index.json").toFile());
         String current = releaseIndex.required("currentVersion").asText();
-        var validation = new com.fasterxml.jackson.databind.ObjectMapper()
-                .readTree(root.resolve("release/" + current + "/release-validation.json").toFile());
+        String advertised = releaseIndex.path("candidateVersion").asText(current);
+        Path advertisedFolder = root.resolve("release").resolve(advertised);
+        Path validationPath = releaseIndex.path("candidateVersion").isTextual()
+                ? root.resolve("release/candidate.json") : advertisedFolder.resolve("release-validation.json");
+        var validation = new com.fasterxml.jackson.databind.ObjectMapper().readTree(validationPath.toFile());
         String repository = GovernanceProject.policy(root).required("publicRepository").asText();
-        String download = ReleaseCatalogPresentation.downloadTarget(root.resolve("release/" + current), validation, repository);
+        String download = ReleaseCatalogPresentation.downloadTarget(advertisedFolder, validation, repository);
         AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(root.resolve("README.md"), projectGuide,
                 releaseIndex, repository, download));
         String currentSection = ReleaseCatalogPresentation.currentSection(root.resolve("release/README.md"), catalog);
@@ -54,12 +57,15 @@ class ReleaseArtifactLayoutGovernanceTest {
         int end = guide.indexOf("\n## ", start + 1);
         String section = guide.substring(start, end < 0 ? guide.length() : end);
         var json = new com.fasterxml.jackson.databind.ObjectMapper();
-        String version = json.readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
+        var index = json.readTree(root.resolve("release/index.json").toFile());
+        String version = index.path("candidateVersion").asText(index.required("currentVersion").asText());
         String repository = GovernanceProject.policy(root).required("publicRepository").asText();
-        Path releaseFolder = root.resolve("release/" + version);
-        var manifest = json.readTree(releaseFolder.resolve("release-validation.json").toFile());
+        Path releaseFolder = root.resolve("release").resolve(version);
+        Path manifestPath = index.path("candidateVersion").isTextual()
+                ? root.resolve("release/candidate.json") : releaseFolder.resolve("release-validation.json");
+        var manifest = json.readTree(manifestPath.toFile());
         String publicationState = manifest.required("publication").required("state").asText();
-        boolean githubPublished = publicationState.equals("PUBLISHED");
+        boolean githubPublished = publicationState.equals("PUBLISHED") || index.path("candidateVersion").asText().equals(version);
         var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|[^)]+\\.apk|release/[^)]+)\\)")
                 .matcher(section).results().map(result -> result.group(1)).toList();
         var expected = List.of(githubPublished ? repository + "/releases/tag/v" + version : "release/" + version + "/README.md",
@@ -73,8 +79,11 @@ class ReleaseArtifactLayoutGovernanceTest {
         AuditedAssertions.assertFalse(Pattern.compile("(?i)\\b[0-9a-f]{64}\\b").matcher(projectGuide).find(),
                 "The public project README must not expose a raw APK digest");
         var json = new com.fasterxml.jackson.databind.ObjectMapper();
-        String version = json.readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
-        var release = json.readTree(root.resolve("release/" + version + "/release-validation.json").toFile()).required("release");
+        var index = json.readTree(root.resolve("release/index.json").toFile());
+        String version = index.path("candidateVersion").asText(index.required("currentVersion").asText());
+        Path manifestPath = index.path("candidateVersion").isTextual()
+                ? root.resolve("release/candidate.json") : root.resolve("release/" + version + "/release-validation.json");
+        var release = json.readTree(manifestPath.toFile()).required("release");
         AuditedAssertions.assertTrue(release.required("apkSha256").asText().matches("[0-9a-f]{64}"),
                 "The versioned release manifest retains the machine-verifiable digest");
     }

@@ -44,6 +44,23 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("/source", citation.path("jsonPointer").asText());
     }
 
+    @Test void aCollectionIntroducedForTheCandidateVersionCannotBeOmittedFromItsPlan() throws Exception {
+        Fixture fixture = fixture();
+        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
+        var groups = (com.fasterxml.jackson.databind.node.ArrayNode) plan.path("componentGroups");
+        for (int index = groups.size() - 1; index >= 0; index--)
+            if (groups.get(index).asText().equals("whist-lab-app-achievements")) groups.remove(index);
+        JSON.writeValue(fixture.plan().toFile(), plan);
+
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", verdict.path("verdict").asText());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_EXTENT"));
+        AuditedAssertions.assertTrue(details(verdict, "COMPONENT_EXTENT").stream()
+                .anyMatch(value -> value.contains("whist-lab-app-achievements")));
+    }
+
     @Test void changedSourceAndArtifactBytesBlockWithSeparateDiagnostics() throws Exception {
         Fixture fixture = fixture();
         Files.writeString(fixture.source().resolve("src/Game.java"), "class Changed {}\n");
@@ -311,7 +328,8 @@ class ReleaseRagEvaluatorComponentTest {
                 .put("inputManifest", "source-inputs.json").put("provenanceReceiptSha256", provenanceFingerprint);
         var groups = JSON.createObjectNode(); var runResults = run.putArray("results");
         for (String module : List.of("atf-validation", "atf-test-android", "atf-tests",
-                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history")) {
+                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history",
+                "whist-lab-app-achievements")) {
             int tests = module.equals("atf-tests") ? 3 : module.startsWith("whist-lab-app-") ? 4 : 2;
             Path groupFolder = Files.createDirectories(candidate.resolve("reports/component/" + module));
             Path report = groupFolder.resolve("component-report.html");
@@ -367,7 +385,8 @@ class ReleaseRagEvaluatorComponentTest {
         candidatePlan.putArray("declaredPlatforms").add("android");
         var selectedGroups = candidatePlan.putArray("componentGroups");
         for (String module : List.of("atf-validation", "atf-test-android", "atf-tests",
-                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history")) selectedGroups.add(module);
+                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history",
+                "whist-lab-app-achievements")) selectedGroups.add(module);
         candidatePlan.set("e2e", JSON.createObjectNode().put("status", "NOT_RUN")
                 .put("rationale", "RAG and governance-only changes; application E2E remains frozen."));
         JSON.writeValue(plan.toFile(), candidatePlan);

@@ -74,7 +74,8 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(evaluator.path("publicReadmeSurface").path("forbidRawSha256Digest").asBoolean());
         assertEquals("atf-tests", evaluator.path("requiredComponentGroup").asText());
         assertEquals(List.of("atf-validation", "atf-test-android", "atf-tests",
-                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history"),
+                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history",
+                "whist-lab-app-achievements"),
                 strings(evaluator.path("requiredComponentGroupsByPlatform").path("android")));
         assertEquals(List.of("androidComponents", "apkBuild", "apkIdentity", "signing"),
                 strings(evaluator.path("platformGates").path("androidBeforeHumanReview")));
@@ -104,6 +105,42 @@ class ReleaseRagPlatformGovernanceTest {
         assertFalse(cli.contains("node:child_process"));
         assertFalse(cli.contains("execSync("));
         assertFalse(cli.contains("spawn("));
+    }
+
+    @Test void everyDeclaredApplicationCollectionIsIncludedInReleaseExtentAndRag() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot();
+        var packageOwners = new java.util.Properties();
+        try (var reader = Files.newBufferedReader(root.resolve("config/gradle-app-collections.properties"))) {
+            packageOwners.load(reader);
+        }
+        var expectedGroups = packageOwners.values().stream().map(Object::toString).distinct().sorted()
+                .map(value -> "whist-lab-app-" + value).toList();
+        JsonNode rag = policy().path("ragEvaluator");
+        var declaredGroups = new java.util.TreeSet<String>();
+        strings(rag.path("requiredComponentGroupsByPlatform").path("android")).stream()
+                .filter(value -> value.startsWith("whist-lab-app-")).forEach(declaredGroups::add);
+        rag.path("introducedComponentGroupsByPlatform").path("android").forEach(rule ->
+                declaredGroups.add(rule.path("group").asText()));
+        assertEquals(expectedGroups, declaredGroups,
+                "Each application component collection must have its own release Extent gate");
+
+        boolean achievementVersionIsDeclared = false;
+        for (JsonNode rule : rag.path("introducedComponentGroupsByPlatform").path("android")) {
+            if (!rule.path("group").asText().equals("whist-lab-app-achievements")) continue;
+            assertEquals("0.18.0", rule.path("sinceReleaseVersion").asText());
+            achievementVersionIsDeclared = true;
+        }
+        assertTrue(achievementVersionIsDeclared,
+                "A new release collection starts at its first qualified version without rewriting historical manifests");
+
+        String runner = Files.readString(root.resolve("scripts/run-component-suites.ps1"));
+        assertTrue(runner.contains("gradle-app-collections.properties"),
+                "Release Extent selections must be discovered from the application collection catalog");
+        assertTrue(runner.contains("ToTitleCase($_)"),
+                "Each catalog collection must resolve to its matching Gradle component task");
+        assertTrue(Files.readString(root.resolve("docs/testing/ATF_GradleComponents.md"))
+                .contains("testDebugAchievementsComponents"),
+                "The achievements suite must be documented as a primary collection");
     }
 
     @Test void changeRiskSelectsCoverageInsteadOfTheVersionLabel() throws Exception {

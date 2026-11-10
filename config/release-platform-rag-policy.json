@@ -57,6 +57,14 @@
         "whist-lab-app-history"
       ]
     },
+    "introducedComponentGroupsByPlatform": {
+      "android": [
+        {
+          "group": "whist-lab-app-achievements",
+          "sinceReleaseVersion": "0.18.0"
+        }
+      ]
+    },
     "platformGates": {
       "androidBeforeHumanReview": ["androidComponents", "apkBuild", "apkIdentity", "signing"],
       "androidAfterPublication": ["distributionDownload"],

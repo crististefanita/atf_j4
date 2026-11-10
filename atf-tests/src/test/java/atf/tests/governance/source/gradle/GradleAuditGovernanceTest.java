@@ -90,7 +90,10 @@ public final class GradleAuditGovernanceTest {
             found.add(path.substring("whist-lab-app/app/src/test/java/ro/whistlab/app/".length()).split("/")[0]);
         }
         assertEquals(found, mapping.keySet(), "New or obsolete package ownership cannot silently omit or duplicate tests");
-        assertEquals(java.util.Set.of("commands", "bidding", "history", "display"), new java.util.HashSet<>(mapping.values()), "Each declared collection owns actual test packages");
+        var collections = new java.util.TreeSet<>(mapping.values());
+        assertFalse(collections.isEmpty(), "The application collection catalog cannot be empty");
+        assertTrue(collections.stream().allMatch(collection -> collection.matches("[a-z][a-z0-9-]*")),
+                "Every primary collection has a valid stable identifier");
         String build = Files.readString(root.resolve("whist-lab-app/gradle/app-component-collections.gradle"));
         assertTrue(build.contains("enabled = false") && build.contains("dependsOn collections"), "The original task delegates and does not execute a duplicate population");
     }

@@ -15,7 +15,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
 | [Interfață comună](ATF_CardUi_Extraction.md) | Limitele dintre prezentarea reutilizabilă și adaptorul Whist: meniu, profil, masă, istoric și animații. |
 | [Publicare](ATF_Reporting.md) | HTML autonom, componente auditabile și calificarea publicării. |
-| [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Suprafața publică a README-ului, inventarul complet al snapshot-ului, selecția risc–teste, handoff-ul candidatului și prospețimea receipt-urilor. |
+| [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Legătura dintre riscuri și testele selectate, predarea candidatului și valabilitatea receipt-urilor. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
 

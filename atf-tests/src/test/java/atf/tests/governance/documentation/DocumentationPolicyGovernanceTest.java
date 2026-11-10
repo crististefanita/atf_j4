@@ -21,9 +21,13 @@ class DocumentationPolicyGovernanceTest {
         String publicRepository = GovernanceProject.policy(root).path("publicRepository").asText("");
         var json = new com.fasterxml.jackson.databind.ObjectMapper();
         var index = json.readTree(root.resolve("release/index.json").toFile());
-        String current = atf.tests.distribution.ReleasePaths.relative(index.required("currentVersion").asText());
-        var manifest = json.readTree(root.resolve("release").resolve(current).resolve("release-validation.json").toFile());
-        var declaredDownload = atf.tests.distribution.ReleaseDownloadSelection.select("current",
+        String advertised = atf.tests.distribution.ReleasePaths.relative(index.path("candidateVersion").asText(
+                index.required("currentVersion").asText()));
+        Path manifestPath = index.path("candidateVersion").isTextual()
+                ? root.resolve("release/candidate.json")
+                : root.resolve("release").resolve(advertised).resolve("release-validation.json");
+        var manifest = json.readTree(manifestPath.toFile());
+        var declaredDownload = atf.tests.distribution.ReleaseDownloadSelection.select("advertised",
                 publicRepository.replace("https://github.com/", ""), index, manifest);
         AuditedAssertions.assertTrue(files.contains(root.resolve("README.md")));
         var modules = GovernanceProject.policy(root).required("mavenModules");

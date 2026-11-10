@@ -77,17 +77,16 @@ try {
             $results.Add([pscustomobject]@{module=$gate.module;suite=$gate.suite;exitCode=$exit;receipt=if(Test-Path -LiteralPath $receipt){Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json}else{$null}})
         }
         $gradle = Join-Path $stage 'whist-lab-app/gradlew.bat'
-        $appSelections = [ordered]@{
-            bidding = 'testDebugBiddingComponents'
-            commands = 'testDebugCommandsComponents'
-            display = 'testDebugDisplayComponents'
-            history = 'testDebugHistoryComponents'
-        }
+        $collectionProperties = ConvertFrom-StringData (Get-Content -LiteralPath (Join-Path $stage 'config/gradle-app-collections.properties') -Raw)
+        $appSelections = @($collectionProperties.Values | Sort-Object -Unique | ForEach-Object {
+            $suffix = [Globalization.CultureInfo]::InvariantCulture.TextInfo.ToTitleCase($_)
+            [pscustomobject]@{ collection = $_; task = "testDebug${suffix}Components" }
+        })
         Push-Location (Join-Path $stage 'whist-lab-app')
         try {
-            foreach ($selection in $appSelections.GetEnumerator()) {
-                $group = 'whist-lab-app-' + $selection.Key
-                $taskName = $selection.Value
+            foreach ($selection in $appSelections) {
+                $group = 'whist-lab-app-' + $selection.collection
+                $taskName = $selection.task
                 & $gradle --no-daemon --offline --console=plain (':app:' + $taskName) "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" *> (Join-Path $stage ($group + '.log'))
                 $exit = $LASTEXITCODE
                 $generated = Join-Path $RunRoot ("whist-lab-app-app-" + $taskName + '.html')
@@ -138,7 +137,7 @@ $stable = $serialized -ceq (ConvertTo-Json -InputObject $after -Depth 5 -Compres
 $passed = $stable -and $results.Count -gt 0 -and @($results | Where-Object {$_.exitCode -ne 0}).Count -eq 0
 $run = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;sourceFingerprint=$fingerprint;provenanceReceiptSha256=$provenanceFingerprint;inputManifest='source-inputs.json';sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$before.Count;results=$results}
 $run | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-component-run.json') -Encoding utf8
-$lines = @('# Rapoartele componentelor pe sursa fixată','','## Pe scurt','','Această execuție verifică suitele primare Maven și cele patru selecții Gradle ale aplicației. Nu califică un APK și nu folosește un dispozitiv; fiecare selecție are Extent și receipt proprii.','','| Selecție | Raport | Metadate |','|---|---|---|')
+$lines = @('# Rapoartele componentelor pe sursa fixată','','## Pe scurt','','Această execuție verifică suitele primare Maven și colecțiile Gradle declarate de catalogul aplicației. Nu califică un APK și nu folosește un dispozitiv; fiecare selecție are Extent și receipt proprii.','','| Selecție | Raport | Metadate |','|---|---|---|')
 foreach ($result in $results) {
     $reportPath = $result.module + '/component-report.html'
     $receiptPath = $result.module + '/execution.json'
