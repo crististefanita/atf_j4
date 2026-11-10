@@ -81,11 +81,9 @@ Prima parte oferă raportul principal și starea calificării. Detaliile rămân
 
 ## Suprafața README-ului public
 
-README-ul rădăcinii oferă numai versiunea curentă și acțiunea directă de descărcare. SHA-256-ul APK-ului rămâne în manifestul versiunii și în dovezile ei, nu în pagina principală. Guvernanța structurii și evaluatorul RAG verifică separat aceeași regulă; checksum-ul nu înlocuiește linkul descărcabil.
-
-În pregătirea locală, `release/index.json` păstrează `currentVersion` și `versions` pentru livrările publicate și poate anunța temporar candidatul prin `candidateVersion`. README-ul se verifică față de acel candidat folosind `release/candidate.json`, cu `publication.state=PREPARED` și URL-ul autentificat declarat. Manifestul candidatului nu intră în inventarul release-urilor publicate.
-
-După calificare și publicare, mutați manifestul și dovezile în `release/{version}/`, eliminați `candidateVersion`, actualizați `currentVersion` și `versions`, apoi păstrați neschimbat linkul README deja calificat. `release/` este exclus din amprenta surselor; README-ul rămâne în ea, deci schimbarea linkului după probe cere reluarea calificării.
+- **README public:** pagina principală oferă versiunea curentă și descărcarea directă. SHA-256 rămâne în manifest și în dovezi; RAG verifică separat că linkul corespunde binarului.
+- **Candidat local:** `release/index.json` păstrează edițiile publicate și poate declara `candidateVersion`. README-ul se confruntă cu `release/candidate.json`, în starea `PREPARED`; candidatul nu intră în inventarul publicat.
+- **Promovare:** după calificare, mutați manifestul și dovezile în `release/{version}/`, actualizați `currentVersion` și `versions`, apoi eliminați `candidateVersion`. README-ul face parte din amprenta surselor; orice schimbare a linkului după selecții cere reluarea calificării.
 
 - **Stări:** `PENDING` exprimă un pas neexecutat; `SKIP`/abort exprimă rezultatul invocării. Un rezultat `FAIL` sau o eroare de publicare se păstrează, împreună cu impactul asupra calificării.
 - **Istoric:** o probă anterioară poate fi reper explicit, cu binarul și scopul ei. Mutarea documentelor sau actualizarea README-ului nu califică un APK nou.

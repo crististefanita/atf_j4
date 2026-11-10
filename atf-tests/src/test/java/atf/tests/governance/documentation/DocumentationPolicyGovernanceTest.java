@@ -40,8 +40,10 @@ class DocumentationPolicyGovernanceTest {
                 AuditedAssertions.assertFalse(hasEnglishReadmeProse(Files.readString(file)), () -> "README prose must be Romanian: " + file);
             }
             String prose = deploymentProse(Files.readString(file));
+            String relative = GovernanceProject.relative(root, file);
             prose = libraryMaintenanceProse(GovernanceProject.relative(root, file), prose);
             prose = publicReleaseProse(prose, publicRepository, declaredDownload);
+            prose = historicalReleaseProse(relative, prose, publicRepository);
             if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
             AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
                     () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
@@ -71,6 +73,46 @@ class DocumentationPolicyGovernanceTest {
             links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
         }
         return links.appendTail(result).toString();
+    }
+
+    /** Historical release READMEs may link to their own tagged asset; visible labels remain governed prose. */
+    static String historicalReleaseProse(String relative, String source, String repository) {
+        var archive = java.util.regex.Pattern.compile(
+                "^release/([0-9]+\\.[0-9]+\\.[0-9]+)/README\\.md$").matcher(relative.replace('\\', '/'));
+        if (!archive.matches() || repository.isEmpty()) return source;
+        String version = archive.group(1);
+        String page = repository + "/releases/tag/v" + version;
+        String apk = repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk";
+        var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
+        var result = new StringBuffer();
+        while (links.find()) {
+            String replacement = links.group(2).equals(page) || links.group(2).equals(apk)
+                    ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
+            links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
+        }
+        return links.appendTail(result).toString();
+    }
+
+    @Test void historicalReleaseReadmeRecognizesOnlyItsOwnTaggedUrisAsTechnicalData() {
+        String repository = "https://github.com/example/atf_j4";
+        String page = repository + "/releases/tag/v0.17.1";
+        String apk = repository + "/releases/download/v0.17.1/WhistLab-0.17.1.apk";
+        String source = "[GitHub Release](" + page + ") · [APK](" + apk + ")";
+        AuditedAssertions.assertEquals(
+                "[GitHub Release](<resursă-publică>) · [APK](<resursă-publică>)",
+                historicalReleaseProse("release/0.17.1/README.md", source, repository));
+        AuditedAssertions.assertEquals("Context J4. [APK](<resursă-publică>)",
+                historicalReleaseProse("release/0.17.1/README.md", "Context J4. [APK](" + apk + ")", repository));
+        for (String unchanged : List.of(
+                "[APK](" + repository + "/releases/download/v0.17.0/WhistLab-0.17.0.apk)",
+                "[APK](" + repository + "/releases/download/v0.17.1/Other.apk)",
+                "[APK](https://github.com/foreign/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk)",
+                "![APK](" + apk + ")")) {
+            AuditedAssertions.assertEquals(unchanged,
+                    historicalReleaseProse("release/0.17.1/README.md", unchanged, repository));
+        }
+        AuditedAssertions.assertEquals("[APK](" + apk + ")",
+                historicalReleaseProse("README.md", "[APK](" + apk + ")", repository));
     }
 
     @Test void publicReleaseUriDoesNotExemptVisibleProseOrForeignAndAlteredDestinations() {

@@ -9,7 +9,7 @@ Contractul stabil al RAG aparține [ghidului de calificare](../testing/ATF_Relea
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
 | P1 | Legătura independentă risc–teste | Planul declară riscul și selecțiile. Evaluatorul nu deduce suprafața schimbată din diferența surselor și nu demonstrează independent că selecția minimă acoperă contractele afectate. Un selector verificabil trebuie să lege schimbarea de unități, componente, E2E și motivarea omisiunilor, cu controale negative. |
-| P1 | Producător și handoff unic al candidatului | CLI-ul RAG doar citește și evaluează receipt-uri; pregătirea snapshot-ului, selecțiile, APK-ul, manifestul și predarea rămân coordonate manual. Un flux reproductibil trebuie să producă toate intrările în afara checkout-ului, să lege aceleași identități și să blocheze verdictul când snapshot-ul candidatului diferă de sursa calificată. |
+| P1 | Inventarul complet al snapshot-ului; Producător și handoff unic al candidatului | CLI-ul RAG doar citește și evaluează receipt-uri; pregătirea snapshot-ului, selecțiile, APK-ul, manifestul și predarea rămân coordonate manual. Un flux reproductibil trebuie să producă toate intrările în afara checkout-ului, să lege aceleași identități și să blocheze verdictul când snapshot-ul candidatului diferă de sursa calificată. |
 | P2 | Prospețimea receipt-urilor | Receipt-urile sunt legate prin hash, dar nu au un interval de valabilitate sau un criteriu temporal de expirare. Declarați originea temporală și termenul, apoi blocați automatizarea publicării pentru dovezi expirate ori fără timp verificabil. |
 
 ## Reproducere și criterii de acceptare

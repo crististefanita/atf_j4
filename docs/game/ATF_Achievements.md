@@ -2,9 +2,9 @@
 
 ## Scop și model
 
-Realizările descriu rezultate observabile ale unei partide Whist și oferă o cale de progres ușor de urmărit. Catalogul are 40 de obiective stabile, în opt grupuri tematice de câte cinci. Fiecare grup conține două obiective Ușoare, două Medii și unul Greu. Nivelul realizării exprimă efortul obiectivului și nu selectează nivelul AI-ului.
+Catalogul cuprinde 40 de obiective stabile, în opt grupuri tematice de câte cinci, bazate pe rezultate observabile ale jocului. Fiecare grup conține două obiective Ușoare, două Medii și unul Greu; dificultatea realizării este distinctă de nivelul AI-ului.
 
-Toate cele cinci obiective dintr-un grup sunt vizibile și acumulează progres din prima mână eligibilă. Recomandarea se mută la primul grup în care jucătorul nu a obținut încă niciun obiectiv. Aceasta este o orientare, nu o condiție de deblocare: obiectivele rămase din grupurile anterioare și cele din grupurile următoare pot fi obținute în orice ordine. Nicio realizare validă nu se pierde pentru că jucătorul a urmat alt traseu.
+Toate cele cinci obiective sunt vizibile și acumulează progres de la prima mână eligibilă. Grupul recomandat este primul în care jucătorul nu a obținut încă un obiectiv. Recomandarea este orientativă; obiectivele din toate grupurile rămân disponibile în orice ordine.
 
 ```mermaid
 flowchart LR
@@ -18,6 +18,13 @@ flowchart LR
     STATE -->|afișează| VIEW[Dialog Realizări RO/EN]
     STATE -->|recomandă fără să blocheze| PATH[Grup recomandat; fără blocarea celorlalte]
 ```
+
+<details>
+<summary>Legendă: fapte, stare și notificări</summary>
+
+Mâinile și partidele furnizează fapte distincte. Evaluarea actualizează starea locală cu identificatori idempotenti, iar notificarea rămâne în așteptare până la confirmarea utilizatorului.
+
+</details>
 
 ## Grupele și obiectivele
 
@@ -46,11 +53,9 @@ Catalogul executabil și textele în română și engleză sunt în [WhistAchiev
 
 ## Acumulare și reluare
 
-Obiectivele cumulative folosesc `SUM`, aplicat pe mână când evenimentul este local mâinii și pe partidă când cere o partidă încheiată. Obiectivele care spun „într-o partidă” sau „consecutive” folosesc `BEST_MATCH`; o serie exactă nu se poate lipi de mâini din partide diferite. Mâinile și partidele au ID-uri de eveniment persistente, derivate din `matchId`; repetarea salvării, reluarea după restart sau reconcilierea unui istoric deja persistat nu adaugă progres de două ori.
-
-La trecerea unui obiectiv de prag, ID-ul său intră în lista locală a notificărilor neafișate. Ecranul de scor arată un singur popup grupat după mâna completată sau după finalul partidei, cu realizările noi și totalul de progres. Lista se șterge numai după închiderea popup-ului; dacă aplicația se oprește înainte, notificarea reapare la reluare.
-
-Starea este JSON versionat, într-un spațiu separat de clasamente și de numele profilului. Schema anterioară se migrează păstrând progresul și ID-urile partidelor; nu inventează ID-uri de mâini sau notificări vechi. Dacă starea este coruptă sau de o versiune incompatibilă, aplicația semnalează eroarea de salvare; nu o resetează în tăcere.
+- `SUM` adună evenimentele eligibile, iar `BEST_MATCH` păstrează cel mai bun rezultat dintr-o partidă; seriile nu se unesc între partide. ID-urile persistente, derivate din `matchId`, fac salvarea, reluarea și reconcilierea idempotente.
+- La atingerea pragului, ID-ul realizării intră în coada locală. Ecranul de scor grupează notificările după mână sau partidă; elementele rămân în coadă până la închidere și reapar după o oprire prematură.
+- Starea JSON versionată este separată de clasamente și profil. Migrarea păstrează progresul și ID-urile existente; datele corupte sau incompatibile produc o eroare explicită, fără resetare tăcută.
 
 ## Verificare
 

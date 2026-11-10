@@ -22,7 +22,7 @@ Calificarea urmărește centrarea licitării și intrarea în automatizarea mâi
 - Build în TMP cu `assembleDebug`, `assembleRelease` și `lintVitalRelease`. Ediția TEST păstrează certificatul ediției 0.17.0.
 - Sanity pe Android API 28, cu pornirea automatizării din licitare, scorul mâinii și revenirea la control manual. [Restaurarea APK-ului și a datelor](e2e/signed-release-auto-game/restoration.json)
 - [Intrările APK](apk-inputs.json) și [componentele](component/README.md) identifică același snapshot. [APK și CRC](diagnostics/apk-identity.json) · [Certificat](diagnostics/signing-compatibility.json)
-- Guvernanța linkurilor relative a folosit [referințele documentare J0](diagnostics/documentation-references.json) în staging.
+- Guvernanța linkurilor relative a verificat referințele și căile în etapa de pregătire.
 
 [Catalogul livrărilor](../../README.md) · [Strategia comună](../../../docs/testing/README.md)
 

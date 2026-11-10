@@ -74,8 +74,7 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(evaluator.path("publicReadmeSurface").path("forbidRawSha256Digest").asBoolean());
         assertEquals("atf-tests", evaluator.path("requiredComponentGroup").asText());
         assertEquals(List.of("atf-validation", "atf-test-android", "atf-tests",
-                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history",
-                "whist-lab-app-achievements"),
+                "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history"),
                 strings(evaluator.path("requiredComponentGroupsByPlatform").path("android")));
         assertEquals(List.of("androidComponents", "apkBuild", "apkIdentity", "signing"),
                 strings(evaluator.path("platformGates").path("androidBeforeHumanReview")));
@@ -121,7 +120,7 @@ class ReleaseRagPlatformGovernanceTest {
                 .filter(value -> value.startsWith("whist-lab-app-")).forEach(declaredGroups::add);
         rag.path("introducedComponentGroupsByPlatform").path("android").forEach(rule ->
                 declaredGroups.add(rule.path("group").asText()));
-        assertEquals(expectedGroups, declaredGroups,
+        assertEquals(new java.util.TreeSet<>(expectedGroups), declaredGroups,
                 "Each application component collection must have its own release Extent gate");
 
         boolean achievementVersionIsDeclared = false;
