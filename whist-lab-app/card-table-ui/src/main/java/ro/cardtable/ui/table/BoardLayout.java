@@ -14,6 +14,7 @@ public class BoardLayout extends ViewGroup {
     private final boolean centerUsesFullWidth;
     private final int reservedCenterHeightDp;
     private final boolean stableSeatAnchors;
+    private final int requestedHandClearanceDp;
     private final TableGeometry.CenterAlignment centerAlignment;
     private int seatWidth;
     private int seatHeight;
@@ -27,8 +28,18 @@ public class BoardLayout extends ViewGroup {
     public BoardLayout(Context context, int players, int centerWidthDp, TableViewportPolicy viewport,
             boolean centerUsesFullWidth, int reservedCenterHeightDp, boolean stableSeatAnchors,
             TableGeometry.CenterAlignment centerAlignment) {
+        this(context, players, centerWidthDp, viewport, centerUsesFullWidth, reservedCenterHeightDp,
+                stableSeatAnchors, centerAlignment, 0);
+    }
+
+    /** Keeps a requested gap above the player's hand when the measured board has spare height. */
+    public BoardLayout(Context context, int players, int centerWidthDp, TableViewportPolicy viewport,
+            boolean centerUsesFullWidth, int reservedCenterHeightDp, boolean stableSeatAnchors,
+            TableGeometry.CenterAlignment centerAlignment, int requestedHandClearanceDp) {
         super(context);
-        if (reservedCenterHeightDp < 0) throw new IllegalArgumentException("Reserved center height cannot be negative");
+        if (reservedCenterHeightDp < 0 || requestedHandClearanceDp < 0) {
+            throw new IllegalArgumentException("Reserved table dimensions cannot be negative");
+        }
         this.players = players;
         this.centerWidthDp = centerWidthDp;
         this.minimumHeightDp = viewport.minimumBoardHeightDp();
@@ -37,6 +48,7 @@ public class BoardLayout extends ViewGroup {
         this.centerUsesFullWidth = centerUsesFullWidth;
         this.reservedCenterHeightDp = reservedCenterHeightDp;
         this.stableSeatAnchors = stableSeatAnchors;
+        this.requestedHandClearanceDp = requestedHandClearanceDp;
         this.centerAlignment = centerAlignment;
         setClipChildren(false);
     }
@@ -73,7 +85,7 @@ public class BoardLayout extends ViewGroup {
         var plan = TableGeometry.arrangeDisplay(right - left, bottom - top, players, seatWidth, seatHeight,
                 dp(centerWidthDp), geometryCenterHeight, dp(regionGapDp),
                 stableSeatAnchors || centerUsesFullWidth,
-                centerAlignment);
+                centerAlignment, dp(requestedHandClearanceDp));
         for (int index = 0; index < players; index++) place(getChildAt(index), plan.seats().get(index));
         int centerLeft = centerUsesFullWidth ? 0 : plan.center().left();
         int centerTop = plan.center().top() + (geometryCenterHeight - center.getMeasuredHeight()) / 2;

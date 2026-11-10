@@ -10,12 +10,13 @@ scor comune, teste de componentă și evaluări offline.
 
 ## Jocul
 
-- **[Whist Lab 0.19.0 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.19.0)** — ediția Android curentă și asset-urile livrării.
-- **[Descarcă APK 0.19.0](https://github.com/crististefanita/atf_j4/releases/download/v0.19.0/WhistLab-0.19.0.apk)** — pentru utilizatorii autentificați cu acces la repository.
+- **[Whist Lab 0.19.1 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.19.1)** — ediția Android curentă și asset-urile livrării.
+- **[Descarcă APK 0.19.1](https://github.com/crististefanita/atf_j4/releases/download/v0.19.1/WhistLab-0.19.1.apk)** — pentru utilizatorii autentificați cu acces la repository.
 
 [Livrare și instalare](docs/platform/ATF_AndroidDelivery.md) · [Verificarea jocului pe mai multe ecrane](docs/testing/ATF_Display.md)
 
 - Profilul principal este Whist românesc, patru jucători, cu programul 1–8–1.
+- Masa lasă un spațiu adaptiv între jucătorul de jos și cărțile din mână, păstrând pozițiile locurilor între licitare și joc.
 - Jucătorul urmează culoarea cerută; dacă nu o are, joacă atu când deține atu.
 - Motorul aplică regulile variantei selectate, pachetul, ordinea licitațiilor,
   restricția ultimei licitații și calculul scorului.

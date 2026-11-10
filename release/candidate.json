@@ -1,0 +1,27 @@
+{
+  "release": {
+    "versionName": "0.19.1",
+    "versionCode": 27,
+    "applicationId": "ro.whistlab.app",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "platforms": [
+      "android"
+    ],
+    "artifactKind": "apk",
+    "apkName": "WhistLab-0.19.1.apk",
+    "apkRelativePath": "WhistLab-0.19.1.apk",
+    "apkBytes": 959865,
+    "apkSha256": "646460cc04ebb1ace669f37cab45978b096453f09112733231d2d672b3382b8e",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+    "signingCertificate": "Android Debug",
+    "productionManagedKey": false
+  },
+  "publication": {
+    "state": "PREPARED",
+    "channel": "TEST",
+    "accessMode": "AUTHENTICATED",
+    "repository": "crististefanita/atf_j4",
+    "targetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.19.1/WhistLab-0.19.1.apk"
+  }
+}

@@ -32,6 +32,13 @@ final class TableGeometry {
                 seatHeight, centerWidth, centerHeight, gap, fullWidthCardRows,
                 ro.cardtable.ui.table.TableGeometry.CenterAlignment.valueOf(alignment.name())));
     }
+    static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
+            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows, CenterAlignment alignment,
+            int requestedHandClearance) {
+        return Shared.plan(ro.cardtable.ui.table.TableGeometry.arrangeDisplay(width, height, players, seatWidth,
+                seatHeight, centerWidth, centerHeight, gap, fullWidthCardRows,
+                ro.cardtable.ui.table.TableGeometry.CenterAlignment.valueOf(alignment.name()), requestedHandClearance));
+    }
     static Plan arrange(int width, int height, int players, int seatWidth, int seatHeight, int centerWidth, int centerHeight, int gap) {
         return arrange(width, height, players, seatWidth, seatHeight, centerWidth, centerHeight, gap, false);
     }

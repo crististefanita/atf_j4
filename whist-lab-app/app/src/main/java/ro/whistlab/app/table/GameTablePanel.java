@@ -169,7 +169,8 @@ public final class GameTablePanel extends LinearLayout {
         int centerWidthDp = bidding ? bidLayout.centerWidthDp()
                 : trickLayout.safeCenterWidthDp();
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
-                viewport, !bidding, reservedCenterHeightDp, bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
+                viewport, !bidding, reservedCenterHeightDp, TableLayoutMetrics.humanHandClearanceDp(),
+                bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
                         : TableGeometry.CenterAlignment.BALANCED);
         board.setBackgroundColor(Color.TRANSPARENT);
         board.setContentDescription(copy.boardSurface());

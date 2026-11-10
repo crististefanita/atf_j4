@@ -15,13 +15,25 @@ public final class TableGeometry {
 
     public record Plan(List<Rect> seats, Rect center) { }
 
-    /** Reserve five percent above the composition; keep the human seat clear of the hand. */
+    /** Reserves the display inset; the overload accepts an optional bottom gap from spare height. */
     public static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
             int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows,
             CenterAlignment centerAlignment) {
-        int inset = Math.min(TableSizing.topInsetPx(height),
-                Math.max(0, height - minimumHeight(players, seatHeight, centerHeight, gap)));
-        Plan base = arrange(width, height - inset, players, seatWidth, seatHeight,
+        return arrangeDisplay(width, height, players, seatWidth, seatHeight, centerWidth, centerHeight,
+                gap, fullWidthCardRows, centerAlignment, 0);
+    }
+
+    /** Uses available vertical slack to separate the table from the hand without shrinking card regions. */
+    public static Plan arrangeDisplay(int width, int height, int players, int seatWidth, int seatHeight,
+            int centerWidth, int centerHeight, int gap, boolean fullWidthCardRows,
+            CenterAlignment centerAlignment, int requestedHandClearance) {
+        if (requestedHandClearance < 0) throw new IllegalArgumentException("Hand clearance cannot be negative");
+        int minimumHeight = minimumHeight(players, seatHeight, centerHeight, gap);
+        int handClearance = Math.min(requestedHandClearance, Math.max(0, height - minimumHeight));
+        int geometryHeight = height - handClearance;
+        int inset = Math.min(TableSizing.topInsetPx(geometryHeight),
+                Math.max(0, geometryHeight - minimumHeight));
+        Plan base = arrange(width, geometryHeight - inset, players, seatWidth, seatHeight,
                 centerWidth, centerHeight, gap, fullWidthCardRows, centerAlignment);
         List<Rect> seats = new ArrayList<>();
         for (Rect box : base.seats()) seats.add(lower(box, inset));

@@ -86,7 +86,8 @@ class DocumentationPolicyGovernanceTest {
         var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
         var result = new StringBuffer();
         while (links.find()) {
-            String replacement = links.group(2).equals(page) || links.group(2).equals(apk)
+            String replacement = links.group(2).equals(repository)
+                    || links.group(2).equals(page) || links.group(2).equals(apk)
                     ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
             links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
         }
@@ -97,20 +98,24 @@ class DocumentationPolicyGovernanceTest {
         String repository = "https://github.com/example/atf_j4";
         String page = repository + "/releases/tag/v0.17.1";
         String apk = repository + "/releases/download/v0.17.1/WhistLab-0.17.1.apk";
-        String source = "[GitHub Release](" + page + ") · [APK](" + apk + ")";
+        String source = "[README principal](" + repository + ") · [GitHub Release](" + page + ") · [APK](" + apk + ")";
         AuditedAssertions.assertEquals(
-                "[GitHub Release](<resursă-publică>) · [APK](<resursă-publică>)",
+                "[README principal](<resursă-publică>) · [GitHub Release](<resursă-publică>) · [APK](<resursă-publică>)",
                 historicalReleaseProse("release/0.17.1/README.md", source, repository));
         AuditedAssertions.assertEquals("Context J4. [APK](<resursă-publică>)",
                 historicalReleaseProse("release/0.17.1/README.md", "Context J4. [APK](" + apk + ")", repository));
         for (String unchanged : List.of(
                 "[APK](" + repository + "/releases/download/v0.17.0/WhistLab-0.17.0.apk)",
                 "[APK](" + repository + "/releases/download/v0.17.1/Other.apk)",
+                "[README](" + repository + "/tree/main)",
+                "[README](https://github.com/foreign/atf_j4)",
                 "[APK](https://github.com/foreign/atf_j4/releases/download/v0.17.1/WhistLab-0.17.1.apk)",
                 "![APK](" + apk + ")")) {
             AuditedAssertions.assertEquals(unchanged,
                     historicalReleaseProse("release/0.17.1/README.md", unchanged, repository));
         }
+        AuditedAssertions.assertEquals("[README](" + repository + ")",
+                historicalReleaseProse("README.md", "[README](" + repository + ")", repository));
         AuditedAssertions.assertEquals("[APK](" + apk + ")",
                 historicalReleaseProse("README.md", "[APK](" + apk + ")", repository));
     }

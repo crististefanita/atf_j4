@@ -9,6 +9,7 @@ final class TableLayoutMetrics {
     static final int TRUMP_MIN_HEIGHT_DP = 48;
     static final int TRUMP_PADDING_DP = 4;
     static final int TRUMP_VALUE_GAP_DP = 2;
+    static final int HUMAN_HAND_CLEARANCE_DP = 16;
 
     /** Two measured line boxes keep every trump representation in the same frame. */
     static int trumpHeightPx(float density, int headingHeightPx, int valueHeightPx) {
@@ -37,6 +38,8 @@ final class TableLayoutMetrics {
     }
 
     private TableLayoutMetrics() { }
+
+    static int humanHandClearanceDp() { return HUMAN_HAND_CLEARANCE_DP; }
 
     static int centerPlayWidthDp(int tableWidthDp) {
         return centerPlayWidthDp(tableWidthDp, false);
