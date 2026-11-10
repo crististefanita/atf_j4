@@ -1,5 +1,9 @@
 # Whist Lab 0.18.0 — ediție Android
 
+## Pe scurt
+
+Această versiune adaugă catalogul local de realizări și notificările de progres.
+
 ## Scop
 
 Această versiune adaugă catalogul local de realizări și notificările de progres după confirmarea unei mâini sau a unei partide.
@@ -11,7 +15,7 @@ APK-ul `WhistLab-0.18.0.apk` este publicat ca asset GitHub pentru conturile aute
 ## Calificare
 
 - Build Release și `lintVitalRelease`: PASS.
-- 1.150 de teste de componentă în opt suite Extent J24: PASS, fără FAIL, ERROR sau SKIP.
+- 1.150 de teste de componentă în opt suite Extent: PASS, fără FAIL, ERROR sau SKIP.
 - E2E pe APK-ul semnat: 1/1 PASS; verifică deschiderea catalogului, progresul afișat, ordinea capitolelor și revenirea la ecranul principal.
 - Testul a folosit Android API 28. Datele emulatorului au fost restaurate după verificare.
 - APK-ul din acest dosar este același hash cu artefactul instalat și testat.

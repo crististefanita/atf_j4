@@ -1,8 +1,13 @@
 # Dovezile Whist Lab 0.18.0
 
+## Pe scurt
+
+Acest index descrie rapoartele canonice și proveniența dovezilor versiunii.
+
 ## Suita de componente
 
-Opt suite Extent J24 au raportat 1.150 de teste promovate, fără eșecuri, erori sau teste omise. Receipt-urile leagă fiecare raport de aceeași amprentă a sursei folosită pentru build.
+Opt suite Extent au raportat 1.150 de teste promovate, fără eșecuri, erori sau teste omise.
+Receipt-urile leagă fiecare raport de aceeași amprentă a sursei folosită pentru build.
 
 ## Android E2E
 

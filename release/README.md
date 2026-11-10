@@ -1,5 +1,9 @@
 # Catalogul livrărilor
 
+## Pe scurt
+
+Catalogul indică versiunea curentă și păstrează proveniența livrărilor anterioare.
+
 ## Versiunea curentă
 
 [0.18.0 — APK, verificări și proveniență](0.18.0/README.md) este ultima ediție Android. Descărcarea APK-ului din README-ul principal duce la asset-ul GitHub pentru conturile autorizate.

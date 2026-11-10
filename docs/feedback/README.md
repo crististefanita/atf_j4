@@ -36,8 +36,8 @@ Un criteriu numește comportamentul, sursa și nivelul de verificare necesar. Re
 
 </details>
 
-Core, Reporting, Console și Mock au [responsabilul comun al bibliotecilor](../../../atf_j0/docs/feedback/README.md).
-Principiile editoriale se aliniază cu [bunele practici documentare comune](../../../atf_j0/docs/README_Atf_DocumentationBestPractices.md), adaptate la domeniul Whist și formalizate în [ghidul local](../governance/ATF_Documentation.md).
+Core, Reporting, Console și Mock au [responsabilul comun al bibliotecilor](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/README.md).
+Principiile editoriale se aliniază cu [bunele practici documentare comune](https://github.com/crististefanita/atf_j0/blob/master/docs/README_Atf_DocumentationBestPractices.md), adaptate la domeniul Whist și formalizate în [ghidul local](../governance/ATF_Documentation.md).
 
 ## Închiderea și promovarea
 
@@ -50,8 +50,8 @@ Principiile editoriale se aliniază cu [bunele practici documentare comune](../.
 
 ## Contractul comun de autonomie
 
-[Criteriul comun de autonomie a raportului](../../../atf_j0/docs/feedback/ATF_Reporting_Feedback.md#report-artifact-autonomy-150--calificare-fără-dependențe-externe) aparține responsabilului bibliotecilor. [Feedback-ul consumatorului Android](ATF_Reporting.md) păstrează colectarea, publicarea și calificarea livrabilului propriu.
+[Criteriul comun de autonomie a raportului](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/ATF_Reporting_Feedback.md#report-artifact-autonomy-150--calificare-f%C4%83r%C4%83-dependen%C8%9Be-externe) aparține responsabilului bibliotecilor. [Feedback-ul consumatorului Android](ATF_Reporting.md) păstrează colectarea, publicarea și calificarea livrabilului propriu.
 
 ## Suportul comun al testelor
 
-[Primitivele și concurența Kitului](../../../atf_j0/docs/feedback/ATF_Common_Test_Support_Feedback.md#kit-concurrency-152--calificare-jupiter-paralelă) au responsabil comun. Consumatorul folosește perechea binară declarată în POM, iar acceptanța adaptorului Android rămâne locală; transferul responsabilității nu constituie calificarea paralelismului.
+[Primitivele și concurența Kitului](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/ATF_Common_Test_Support_Feedback.md#kit-concurrency-152--calificare-jupiter-paralel%C4%83) au responsabil comun. Consumatorul folosește perechea binară declarată în POM, iar acceptanța adaptorului Android rămâne locală; transferul responsabilității nu constituie calificarea paralelismului.
