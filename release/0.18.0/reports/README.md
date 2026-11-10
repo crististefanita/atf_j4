@@ -23,6 +23,10 @@ Asset-ul APK a fost descărcat cu un cont GitHub autentificat prin acceptance-ul
 
 ## Organizarea dovezilor
 
-Rapoartele HTML sunt dovezile canonice. Fiecare suită are un singur raport și receipt; XML-ul JUnit, capturile PNG și rezultatele intermediare nu sunt duplicate aici. Raportul E2E este separat în `e2e/signed-release-achievements/`. [Receipt-ul de distribuție](distribution-verification.json) și [metadatele release-ului GitHub](../github-release.json) leagă publicarea de tag și commitul calificat.
+Rapoartele HTML sunt dovezile canonice. Fiecare suită are un singur raport și receipt.
+
+- XML-ul JUnit, capturile PNG și rezultatele intermediare nu sunt duplicate aici.
+- Raportul E2E este separat în `e2e/signed-release-achievements/`.
+- [Receipt-ul de distribuție](distribution-verification.json) și [metadatele release-ului GitHub](../github-release.json) leagă publicarea de tag și commitul calificat.
 
 [README-ul release-ului](../../README.md) · [Strategia comună de testare](../../../docs/testing/README.md)
