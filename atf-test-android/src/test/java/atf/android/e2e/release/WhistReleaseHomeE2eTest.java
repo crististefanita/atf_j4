@@ -46,9 +46,9 @@ class WhistReleaseHomeE2eTest {
         c.checkpoint("Achievement catalogue exposes ordered, localized progress", xml -> List.of(
                 ReleaseBidContext.equal("Catalogue title is visible", true, c.ui.hasText(xml, achievements)),
                 ReleaseBidContext.equal("Local progress is reported against the forty-goal catalogue", true,
-                        c.ui.hasText(xml, progress)),
-                ReleaseBidContext.equal("The first chapter starts the ordered path", true, c.ui.hasText(xml, firstChapter)),
-                ReleaseBidContext.equal("The first easy goal is visible", true, c.ui.hasText(xml, firstGoal)),
+                        hasVisibleTextContaining(xml, progress)),
+                ReleaseBidContext.equal("The first chapter starts the ordered path", true, hasVisibleTextContaining(xml, firstChapter)),
+                ReleaseBidContext.equal("The first easy goal is visible", true, hasVisibleTextContaining(xml, firstGoal)),
                 ReleaseBidContext.equal("The progress dialog can be dismissed", true, c.ui.hasText(xml, close))));
 
         c.ui.tapText(close);
@@ -105,5 +105,9 @@ class WhistReleaseHomeE2eTest {
                 .map(HierarchyDocument.Node::text).filter(text -> text.startsWith(prefix)).toList();
         if (buttons.size() != 1) throw new IllegalStateException("Exactly one profile control is required");
         return buttons.getFirst();
+    }
+
+    private static boolean hasVisibleTextContaining(String xml, String fragment) throws Exception {
+        return HierarchyDocument.nodes(xml).stream().anyMatch(node -> node.text().contains(fragment));
     }
 }

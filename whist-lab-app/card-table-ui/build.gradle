@@ -12,13 +12,17 @@ android {
         testInstrumentationRunner 'ro.cardtable.ui.seat.SeatFrameComponentInstrumentation'
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
     publishing { singleVariant('release') { withSourcesJar() } }
     testOptions.unitTests.all { systemProperty 'cardui.sourceRoot', projectDir.absolutePath }
 }
-dependencies { testImplementation 'junit:junit:4.13.2' }
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+    testImplementation 'junit:junit:4.13.2'
+}
 publishing {
     repositories {
         maven {

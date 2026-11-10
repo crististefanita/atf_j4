@@ -27,6 +27,7 @@ import ro.whistlab.app.profile.PlayerPreferences;
 import ro.whistlab.app.profile.PlayerSettingsDialog;
 import ro.whistlab.app.achievements.AndroidWhistAchievementStorage;
 import ro.whistlab.app.achievements.WhistAchievementDialog;
+import ro.whistlab.app.achievements.notice.WhistAchievementNoticeCoordinator;
 import ro.whistlab.app.achievements.WhistAchievementRepository;
 
 import android.app.Activity;
@@ -39,9 +40,7 @@ import android.os.SystemClock;
 import android.widget.Toast;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.model.Card;
@@ -84,8 +83,7 @@ public final class MainActivity extends Activity {
     private PlayerPreferences playerPreferences;
     private HighScoreRepository highScores;
     private WhistAchievementRepository achievements;
-    private boolean achievementNoticeOpen;
-    private final Set<String> suppressedAchievementNoticeIds = new HashSet<>();
+    private WhistAchievementNoticeCoordinator achievementNotices;
     private GamePersistence persistence;
     private boolean rankingEligible;
     private String matchId = java.util.UUID.randomUUID().toString();
@@ -118,6 +116,7 @@ public final class MainActivity extends Activity {
         playerPreferences = new PlayerPreferences(this);
         highScores = new HighScoreRepository(new AndroidHighScoreStorage(this), new java.util.Random());
         achievements = new WhistAchievementRepository(new AndroidWhistAchievementStorage(this));
+        achievementNotices = new WhistAchievementNoticeCoordinator(achievements);
         persistence = new GamePersistence(
                 (session, eligible, id) -> GameSessionStore.save(this, session, eligible, id),
                 highScores::record, (id, session) -> achievements.record(id, session), System::currentTimeMillis,
@@ -364,31 +363,21 @@ public final class MainActivity extends Activity {
     }
 
     private void showPendingAchievementNotice(GameSession.Snapshot state) {
-        if (achievementNoticeOpen) return;
         try {
-            var unlocked = achievements.pendingNotifications().stream()
-                    .filter(goal -> !suppressedAchievementNoticeIds.contains(goal.id()))
-                    .collect(java.util.stream.Collectors.toList());
-            if (unlocked.isEmpty()) return;
-            var saved = achievements.state();
-            AlertDialog dialog = WhistAchievementDialog.showUnlocked(this, copy, unlocked, saved,
-                    state.handNumber(), state.finalHand());
+            var pending = achievementNotices.openNext(state.handNumber(), state.finalHand());
+            if (pending.isEmpty()) return;
+            var notice = pending.get();
+            AlertDialog dialog = WhistAchievementDialog.showUnlocked(this, copy, notice.goals(), notice.state(),
+                    notice.handNumber(), notice.matchComplete());
             var token = openDialog();
-            achievementNoticeOpen = true;
-            boolean[] acknowledged = {false};
             dialog.setOnDismissListener(ignored -> {
-                if (!acknowledged[0])
-                    unlocked.forEach(goal -> suppressedAchievementNoticeIds.add(goal.id()));
-                achievementNoticeOpen = false;
+                achievementNotices.dismiss(notice);
                 navigation.dismiss(token);
             });
             dialog.show();
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(view -> {
                 try {
-                    achievements.acknowledgeNotifications(unlocked.stream()
-                            .map(ro.whistlab.app.achievements.WhistAchievementCatalog.Goal::id)
-                            .collect(java.util.stream.Collectors.toList()));
-                    acknowledged[0] = true;
+                    achievementNotices.acknowledge(notice);
                     dialog.dismiss();
                 } catch (java.io.IOException failure) {
                     Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();

@@ -55,11 +55,15 @@ Catalogul executabil și textele în română și engleză sunt în [WhistAchiev
 
 - `SUM` adună evenimentele eligibile, iar `BEST_MATCH` păstrează cel mai bun rezultat dintr-o partidă; seriile nu se unesc între partide. ID-urile persistente, derivate din `matchId`, fac salvarea, reluarea și reconcilierea idempotente.
 - La atingerea pragului, ID-ul realizării intră în coada locală. Ecranul de scor grupează notificările după mână sau partidă; elementele rămân în coadă până la închidere și reapar după o oprire prematură.
+- [WhistAchievementPresentation](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementPresentation.java) proiectează catalogul și notificarea în text localizat, cu progres plafonat și ordine stabilă. [WhistAchievementNoticeCoordinator](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/notice/WhistAchievementNoticeCoordinator.java) deține fereastra unică, confirmarea durabilă și suprimarea repetării doar în procesul curent; dialogul Android rămâne renderer.
 - Starea JSON versionată este separată de clasamente și profil. Migrarea păstrează progresul și ID-urile existente; datele corupte sau incompatibile produc o eroare explicită, fără resetare tăcută.
 
 ## Verificare
 
-[WhistAchievementComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java) verifică forma catalogului, disponibilitatea obiectivelor între grupuri, pragurile `SUM`/`BEST_MATCH`, ambele variante românești, mesele de 3 și 6 locuri, faptele pe mână și pe partidă, notificările persistente și idempotenta după restart și redenumire. [GamePersistenceRankingComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) verifică ordinea checkpoint–progres la mâna încheiată–clasament–replay și izolarea erorilor de stocare.
+- [WhistAchievementComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java) verifică regulile, pragurile, variantele, faptele de joc, migrarea și idempotenta.
+- [WhistAchievementPresentationComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) compară toate rândurile RO/EN și verifică ordinea și progresul afișat.
+- [WhistAchievementNoticeCoordinatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java) verifică dialogul unic, confirmarea, închiderea, erorile de stocare și revenirea după restart.
+- [GamePersistenceRankingComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) verifică ordinea checkpoint–realizări–clasament–replay și izolarea erorilor de stocare.
 
 Corpusul offline activ este selectat pentru lecții AI, nu pentru a estima șansa unui jucător uman de a obține o realizare. El poate depista obiective fără exemple observate sau praguri cu probleme, dar procentele din acel corpus nu sunt prezentate ca probabilități de utilizator.
 

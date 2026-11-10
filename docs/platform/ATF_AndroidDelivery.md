@@ -26,7 +26,7 @@ Build-ul verifică producerea binarului, iar controalele statice verifică pache
 
 - Citiți identitatea pachetului, SDK-urile și versiunea din [configurația Gradle a aplicației](../../whist-lab-app/app/build.gradle).
 - Construiți într-o copie temporară proprie, cu dependențe identificate.
-- Verificați API-urile Java disponibile pe platforma Android vizată; nivelul `sourceCompatibility` nu adaugă metode absente din sistem. Configurați explicit desugaring-ul bibliotecilor de bază dacă produsul depinde de el.
+- Verificați API-urile Java disponibile pe platforma Android vizată; nivelul `sourceCompatibility` nu adaugă metode absente din sistem. Pentru API-uri Java mai noi decât `minSdk`, declarați `coreLibraryDesugaringEnabled` și o versiune fixată `desugar_jdk_libs` în aplicație și în modulele Android care necesită verificare izolată. Guvernanța trebuie să confrunte folosirea acestor API-uri cu configurația de desugaring.
 - Verificați integritatea, semnătura, alinierea și compatibilitatea cheii pentru upgrade.
 - Păstrați APK-ul și checksum-ul în `release/<versionName>/`, lângă manifest și README; dovezile aparțin subdirectorului `reports`. [Catalogul livrărilor](../../release/README.md) identifică versiunea curentă, iar rulările intermediare rămân externe.
 - Verificați binarul instalat înainte de a atribui unui scenariu comportamentul acelei livrări.
