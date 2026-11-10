@@ -2,7 +2,7 @@
 
 ## Responsabilitate
 
-Directorul de lucru păstrează ultimele dovezi calificate, asociate unui singur APK. Istoricul surselor, arhiva externă și distribuția GitHub au roluri distincte; pregătirea locală nu publică și nu șterge release-uri.
+Directorul de lucru păstrează ediția curentă și imediat anterioară, fiecare cu propriul APK calificat și dovezi. Istoricul mai vechi se arhivează în afara catalogului activ; pregătirea locală nu publică și nu șterge release-uri.
 
 ## Structură activă
 
@@ -16,17 +16,20 @@ release/
     WhistLab-<versionName>.apk.sha256
     release-validation.json
     release-presentation.json
-    release-notes.template.md
+    release-notes.md
+    github-release.json
     reports/
       README.md
-      test-results/
+      component/
       e2e/
+      distribution-verification.json
+      download-extent.html
 ```
 
-- Indexul folosește `schemaVersion: 2`, `currentVersion` și exact o intrare în `versions`.
+- Indexul folosește `schemaVersion: 2`, `currentVersion` și cel mult două intrări în `versions`, începând cu ediția curentă și apoi ediția imediat anterioară.
 - README-ul principal și indexul identifică exclusiv versiunea curentă. Un reper anterior poate documenta auditul, dar nu înlocuiește APK-ul, linkul sau proba descărcării candidatului activ.
 - APK-ul și checksum-ul aparțin aceluiași dosar cu manifestul versiunii; nu se păstrează o a doua copie activă într-un director de distribuție. README-ul principal trimite la catalogul `release`.
-- `release` conține catalogul, indexul și un singur dosar de versiune. Numele dosarului, manifestul și versiunea curentă trebuie să coincidă.
+- `release` conține catalogul, indexul și cel mult două dosare de versiune. Numele fiecărui dosar și manifestul trebuie să coincidă; `currentVersion` trebuie să existe în prima poziție.
 - README-ul versiunii prezintă livrarea și trimite la `reports/README.md`, care explică selecțiile, rezultatele și limitele. Manifestul și metadatele prezentării aparțin versiunii; raportul canonic și diagnosticele aparțin subdirectorului `reports`.
 - Dosarul păstrează raportul canonic și numai dovezile ori diagnosticele auxiliare justificate pentru APK. [Contractul predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) cere eliminarea copiilor deja încorporate și păstrarea dovezii unice până la publicarea completă. Un rezultat omis sau blocat rămâne explicit; nu se preia automat verdictul altei versiuni.
 - Build-urile, candidații intermediari și diagnosticele istorice rămân în TMP sau în arhiva externă. [Strategia comună](../testing/README.md) rămâne independentă de versiune.
@@ -36,7 +39,7 @@ release/
 1. Pregătiți noul dosar în afara directorului activ; fixați sursele și dependențele executate.
 2. Arhivați dosarul precedent, manifestul și indexul. Confruntați fișierele prin SHA-256 și verificați arhiva înaintea mutării surselor vechi.
 3. Calificați noul APK și toate selecțiile cerute de diferența de cod. Păstrați explicit tipul de binar: E2E cu fixture Debug și smoke Release au identități separate.
-4. Înlocuiți dosarul activ și actualizați catalogul, indexul, prezentarea versiunii și indexul rapoartelor. Refuzați o populație goală, două versiuni active, dosare nerecunoscute sau redenumirea unui raport vechi drept versiune nouă.
+4. Adăugați ediția calificată, păstrați versiunea curentă precedentă drept reper și arhivați numai edițiile mai vechi după verificarea arhivei. Actualizați catalogul, indexul, prezentarea versiunii și indexul rapoartelor. Refuzați o populație goală, mai mult de două versiuni, dosare nerecunoscute sau redenumirea unui raport vechi drept versiune nouă.
 5. Păstrați jurnalul de retenție, identitatea arhivei externe și hash-urile originale. La eșec, restaurați întregul dosar și indexul anterior.
 
 - **Directoare retrase:** `artifacts/` și `dist/` nu mai apar în rădăcina activă. Înaintea eliminării, inventariați și arhivați datele unice; confruntați hash-urile și referințele mutate în `release`.

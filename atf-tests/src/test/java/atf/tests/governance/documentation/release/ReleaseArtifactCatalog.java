@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** One active release; historical evidence lives outside the working artifact store. */
+/** Retains the current and immediately preceding release; older evidence lives outside the active catalog. */
 final class ReleaseArtifactCatalog {
     private static final ObjectMapper JSON = new ObjectMapper();
     private ReleaseArtifactCatalog() { }
@@ -42,7 +42,7 @@ final class ReleaseArtifactCatalog {
             result.add(folder);
         }
         require(index.path("currentVersion").isTextual() && names.contains(index.path("currentVersion").asText()), "CURRENT", root);
-        require(names.size() == 1, "RETENTION", root);
+        require(names.size() >= 1 && names.size() <= 2, "RETENTION", root);
         require(Files.isRegularFile(root.resolve("README.md")), "README", root);
         Set<String> expected = new HashSet<>(names);
         expected.addAll(Set.of("README.md", "index.json"));

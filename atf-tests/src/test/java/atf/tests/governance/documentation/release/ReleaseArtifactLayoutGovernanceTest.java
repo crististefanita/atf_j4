@@ -96,8 +96,13 @@ class ReleaseArtifactLayoutGovernanceTest {
         rejected(root, "REQUIRED");
     }
 
-    @Test void aSecondRegisteredVersionCannotRemainInTheActiveStore() throws Exception {
-        Path root = project("1.2.0", List.of("1.1.0", "1.2.0"));
+    @Test void currentAndPreviousRegisteredVersionsRemainInTheActiveStore() throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0", "1.1.0"));
+        AuditedAssertions.assertEquals(2, ReleaseArtifactCatalog.folders(root).size());
+    }
+
+    @Test void aThirdRegisteredVersionCannotRemainInTheActiveStore() throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0", "1.1.0", "1.0.0"));
         rejected(root, "RETENTION");
     }
 

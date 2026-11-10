@@ -25,7 +25,7 @@
     "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records"
   },
   "publication": {
-    "state": "PREPARED",
+    "state": "PUBLISHED",
     "channel": "TEST",
     "accessMode": "AUTHENTICATED",
     "repository": "crististefanita/atf_j4",
@@ -133,6 +133,10 @@
           "signing": {
             "status": "PASS",
             "receipt": "reports/diagnostics/signing-compatibility.json"
+          },
+          "distributionDownload": {
+            "status": "PASS",
+            "receipt": "reports/distribution-verification.json"
           }
         }
       }
@@ -146,7 +150,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-10T16:53:36.426Z",
+    "observedUtc": "2026-11-10T17:22:21.896Z",
     "files": [
       {
         "path": "README.md",
@@ -169,14 +173,24 @@
         "sha256": "6f14ab1a5ad9347be4f8eeeab73205dd5790b11d32342baff8ad94f36c32b19f"
       },
       {
+        "path": "github-release.json",
+        "bytes": 617,
+        "sha256": "1da6ecad4b5c71b01e3dc118106a4a3070f13b5bbf008d2b6ad9f15aa1fe727b"
+      },
+      {
         "path": "release-notes.md",
-        "bytes": 462,
-        "sha256": "87695d139c091c364e9001f1b78b932586e1eb9a2d3acb39586961addee370ab"
+        "bytes": 686,
+        "sha256": "0f3dfe68cb4ef498c945223e56c42318dcd46372518237d80ff7179ad34ddaa6"
+      },
+      {
+        "path": "release-presentation.json",
+        "bytes": 505,
+        "sha256": "0b1596fcd95af3518de5daafeba9aa7d027b58a3be216352d628b89d8f9e9c2f"
       },
       {
         "path": "reports/README.md",
-        "bytes": 1017,
-        "sha256": "944cfac30651c7d0f305039dea8de0fcc1a4ebe7aec51b6081864eae962c179a"
+        "bytes": 1639,
+        "sha256": "4145e34521089f09662d1a7072d6859f06a9ddb3e81de20f5af215d31c7ebfbb"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -327,6 +341,16 @@
         "path": "reports/diagnostics/zipalign-check.log",
         "bytes": 1225,
         "sha256": "38c56ce4a7ed2b9a36a793e17c568439780875fbe5bcf5b329cddd75af53be3c"
+      },
+      {
+        "path": "reports/distribution-verification.json",
+        "bytes": 792,
+        "sha256": "fe94dfb7dd021038f128933dd2c29893e965188f33bd8147ce451596e48c1196"
+      },
+      {
+        "path": "reports/download-extent.html",
+        "bytes": 2413012,
+        "sha256": "703026faf2c69474cc7e41f913d9110af3eb6821339c5947c8597420cf55bac7"
       },
       {
         "path": "reports/e2e/signed-release-achievements/execution.json",

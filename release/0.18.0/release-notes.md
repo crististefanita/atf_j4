@@ -1,11 +1,14 @@
-# 0.18.0 — realizări Whist
+## Descărcare
 
-## Modificări
+- [APK](https://github.com/crististefanita/atf_j4/releases/download/v0.18.0/WhistLab-0.18.0.apk)
+- [Checksum](https://github.com/crististefanita/atf_j4/releases/download/v0.18.0/WhistLab-0.18.0.apk.sha256)
 
-- Adaugă un catalog persistent cu 40 de realizări în opt capitole și trei niveluri de dificultate.
-- Creditează progresul din fapte confirmate și previne dublarea la reluarea aceleiași partide.
-- Prezintă obiectivele nou obținute după înregistrarea scorului.
+## Îmbunătățiri față de 0.17.1
 
-## Compatibilitate
+- Adaugă 40 de realizări locale, grupate în opt capitole și trei niveluri.
+- Înregistrează progresul din rezultate confirmate și evită dublarea la reluarea aceleiași partide.
+- Afișează progresul nou după confirmarea mâinii sau a partidei.
 
-APK-ul de test folosește același certificat Android Debug ca ediția precedentă și nu folosește o cheie de producție.
+## Documentație
+
+- [Rapoarte și proveniență](https://github.com/crististefanita/atf_j4/blob/0117267bbf3930a7c3fe0d54259f054bcf35f1c7/release/0.18.0/reports/README.md)
