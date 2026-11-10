@@ -46,6 +46,19 @@ final class ReleaseArtifactCatalog {
         require(Files.isRegularFile(root.resolve("README.md")), "README", root);
         Set<String> expected = new HashSet<>(names);
         expected.addAll(Set.of("README.md", "index.json"));
+        var candidateVersion = index.path("candidateVersion");
+        if (!candidateVersion.isMissingNode()) {
+            String version = candidateVersion.asText();
+            require(candidateVersion.isTextual()
+                    && version.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?")
+                    && !names.contains(version), "CANDIDATE-VERSION", root);
+            Path receipt = root.resolve("candidate.json");
+            require(Files.isRegularFile(receipt) && receipt.toRealPath().getParent().equals(root.toRealPath()),
+                    "CANDIDATE-REQUIRED", receipt);
+            var candidate = JSON.readTree(receipt.toFile());
+            require(version.equals(candidate.path("release").path("versionName").asText()), "CANDIDATE-IDENTITY", receipt);
+            expected.add("candidate.json");
+        }
         try (var files = Files.list(root)) {
             var actual = files.map(path -> path.getFileName().toString()).collect(java.util.stream.Collectors.toSet());
             require(expected.equals(actual), "UNREGISTERED", root);

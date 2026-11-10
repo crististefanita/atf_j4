@@ -247,6 +247,36 @@ class ReleaseArtifactLayoutGovernanceTest {
         rejected(root, "UNREGISTERED");
     }
 
+    @Test void aPreparedCandidateReceiptIsRegisteredOnlyByItsMatchingAnnouncement() throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0"));
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var index = json.createObjectNode().put("schemaVersion", 2).put("currentVersion", "1.2.0")
+                .putArray("versions").add("1.2.0");
+        index.put("candidateVersion", "1.3.0");
+        json.writeValue(root.resolve("release/index.json").toFile(), index);
+        var candidate = json.createObjectNode().putObject("release").put("versionName", "1.3.0");
+        json.writeValue(root.resolve("release/candidate.json").toFile(), candidate);
+
+        AuditedAssertions.assertDoesNotThrow(() -> ReleaseArtifactCatalog.folders(root));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("release")).put("versionName", "1.2.0");
+        json.writeValue(root.resolve("release/candidate.json").toFile(), candidate);
+        rejected(root, "CANDIDATE-IDENTITY");
+    }
+
+    @Test void candidateReceiptAndAnnouncementMustBePresentTogether() throws Exception {
+        Path root = project("1.2.0", List.of("1.2.0"));
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        json.writeValue(root.resolve("release/candidate.json").toFile(), json.createObjectNode());
+        rejected(root, "UNREGISTERED");
+
+        Files.delete(root.resolve("release/candidate.json"));
+        var index = json.createObjectNode().put("schemaVersion", 2).put("currentVersion", "1.2.0")
+                .putArray("versions").add("1.2.0");
+        index.put("candidateVersion", "1.3.0");
+        json.writeValue(root.resolve("release/index.json").toFile(), index);
+        rejected(root, "CANDIDATE-REQUIRED");
+    }
+
     @Test void anUnregisteredRetiredRunCannotRemainInsideReports() throws Exception {
         Path root = project("1.2.0", List.of("1.2.0"));
         Files.createDirectories(root.resolve("release/1.1.0"));
