@@ -101,8 +101,8 @@ Un răspuns HTTP de eroare nu constituie un APK, indiferent de extensia fișieru
 
 [Modelul GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) leagă livrarea de un tag și permite atașarea binarelor. APK-ul se distribuie ca asset; dosarul local `release` păstrează livrarea verificată, fără să creeze o secțiune GitHub sau un redirect HTTP.
 
-1. Identificați commit-ul surselor și versiunea aplicației; fixați copia de construire în TMP.
-2. Construiți și semnați o singură dată, apoi verificați pachetul și scenariile relevante ale acelui binar.
+1. Identificați commit-ul surselor și versiunea aplicației. Împingeți commit-ul pe ramura de release și confirmați după `git fetch` că `git merge-base --is-ancestor <commit> origin/<ramură>` reușește; tag-ul trebuie să indice exact acel commit.
+2. Fixați copia de construire în TMP, apoi construiți și semnați o singură dată. Verificați pachetul și scenariile relevante ale aceluiași binar.
 3. Pregătiți un draft legat de tag, cu APK și checksum; confruntați identitatea asset-ului cu registrul livrării.
 4. Publicați versiunea completă și marcați-o drept ultima versiune; păstrați binarul publicat stabil, iar corecțiile primesc o versiune nouă.
 5. Verificați descărcarea în canalul cerut și actualizați registrul, legăturile și dosarul de dovezi.

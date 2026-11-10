@@ -92,13 +92,6 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 
 ## Automatizarea publicării
 
-### P1 — sursa tag-ului trebuie să existe și pe un branch remote
-
-Acceptanța nativă a versiunii publicate rămâne condiționată de proveniența completă: tag-ul identifică sursa declarată, iar același commit este accesibil din istoricul unui branch remote. Publicarea asset-ului și un commit ulterior cu documentele versiunii nu demonstrează această relație.
-
-- **Defect urmărit:** un tag poate identifica sursa APK-ului fără ca acea sursă să fie accesibilă din istoricul unui branch remote. Descărcarea autentificată verificată și un commit ulterior cu documentele nu închid această diferență de proveniență.
-- **Criteriu de închidere:** proprietarul publicării păstrează sursa release-ului pe un branch remote; după `git fetch`, enumerarea branch-urilor și verificarea strămoșului trebuie să confirme exact commit-ul tag-ului. Nu rescrieți istoricul comun sau tag-ul publicat pentru a masca discrepanța.
-
 | Prioritate | Lacună rămasă | Criteriu de închidere |
 |---|---|---|
 | P2 | [Procesul versiunii](../platform/ATF_AndroidDelivery.md#procesul-unei-versiuni) este documentat, iar operațiile de publicare folosesc încă unelte temporare. | Un lansator versionat confruntă tag-ul, APK-ul, checksum-ul și notele înainte de publicare; reluarea unui draft verifică asset-urile existente, iar o versiune publicată nu este înlocuită implicit. Actualizează atomic dosarul versiunii, indexul și catalogul, cu linkul Release către auditul fixat pe commit. |
