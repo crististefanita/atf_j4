@@ -1,31 +1,24 @@
 # Catalogul livrărilor
 
-## Pe scurt
-
-Artefactele active însoțesc un singur APK. Build-urile și încercările intermediare rămân în TMP sau în arhiva externă.
-
 ## Versiunea curentă
 
-[0.17.1 — build, verificări și proveniență](0.17.1/README.md) este ediția curentă. Dosarul păstrează identitatea APK-ului și dovezile legate de versiunea calificată.
+[0.18.0 — APK, verificări și proveniență](0.18.0/README.md) este ultima ediție Android. Descărcarea APK-ului din README-ul principal duce la asset-ul GitHub pentru conturile autorizate.
 
-## Versiuni disponibile
+## Versiuni păstrate
 
-| Versiune | Stare | Dovezi |
+| Versiune | Stare | Dosar |
 |---|---|---|
-| 0.17.1 | Android TEST; GitHub autentificat | [Dosarul și raportarea](0.17.1/README.md) |
+| 0.18.0 | Android TEST; GitHub autentificat | [APK și dovezi](0.18.0/README.md) |
+| 0.17.1 | Ediție anterioară; păstrată pentru proveniență | [Dosar și raportare](0.17.1/README.md) |
 
-## Cum publicăm o versiune
+## Publicare și verificare
 
-1. Pregătiți candidatul, construiți APK-ul semnat și verificați identitatea lui înainte de publicare. [Calificarea release-ului](../docs/testing/ATF_ReleaseQualification.md)
-2. Alegeți canalul publicat și înregistrați-l explicit: `PUBLISHED` cu `AUTHENTICATED` pentru asset GitHub accesibil conturilor autorizate sau `PUBLISHED_SITE` cu `ANONYMOUS` pentru Site public. Nu declarați un canal pe baza celuilalt.
-3. Descărcați APK-ul în modul declarat de manifest: cu un cont autorizat pentru asset-ul GitHub sau fără autentificare pentru copia Site publică. Confruntați HTTP, numărul de octeți, SHA-256 și CRC cu manifestul versiunii. [Ghidul livrării Android](../docs/platform/ATF_AndroidDelivery.md) · [Verificarea accesului](../docs/platform/ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică)
+Pregătirea, calificarea și publicarea urmează [procesul de release](../docs/testing/ATF_ReleaseQualification.md) și [ghidul de livrare Android](../docs/platform/ATF_AndroidDelivery.md). Pentru un asset GitHub cu acces autentificat, verificați descărcarea cu un cont autorizat și confruntați numărul de octeți și hash-ul cu manifestul versiunii. README-ul principal rămâne o pagină de produs și nu afișează hash-uri.
 
 ## Citire rapidă
 
-1. Deschideți dosarul versiunii curente și verificați scopul, APK-ul și sursele identificate.
-2. Urmați raportul HTML principal; README-ul dosarului explică selecțiile și controalele efectuate asupra raportului.
-3. Consultați inventarul pentru rezultatele native încă nemigrate și diagnosticele cu scop separat. Un total JUnit nu reconstruiește comparațiile necapturate.
+1. Deschideți README-ul versiunii curente pentru scop și pașii de instalare.
+2. Urmați raportul Extent canonic; README-ul său explică suitele și proveniența.
+3. Consultați manifestul pentru identitatea APK-ului, semnare, calificare și inventarul payload-ului.
 
-Catalogul arată ultima calificare păstrată. [Pregătirea următorului candidat](../docs/feedback/README.md#registre-active) și codul live au identități proprii; dezvoltarea ulterioară nu moștenește verdictul acestui APK.
-
-[Strategia comună](../docs/testing/README.md) · [Retenție și publicare](../docs/platform/ATF_ReleaseRetention.md)
+Strategia de testare este descrisă generic în [documentația testării](../docs/testing/README.md); rezultatele de mai sus sunt dovezi specifice versiunii.

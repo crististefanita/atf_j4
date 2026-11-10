@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "ATF_ANDROID_E2E_EXECUTION",
+  "status": "PASS",
+  "protocol": "ATF_J22_ANDROID_E2E_EXTENT",
+  "suite": "signed-release-achievements",
+  "testClass": "atf.android.e2e.release.WhistReleaseHomeE2eTest",
+  "testMethod": "signedAchievementsCatalogueOpensWithOrderedLocalProgress",
+  "tests": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "releaseVersion": "0.18.0",
+  "installedApkSha256": "3c171d7a101f527668316371378d160631e2a7dc1557c8e1f855bbb20cb2cf7d",
+  "sourceCommit": "7e7d23d2f1f0fa4868b05e89a4ec2269186c0612",
+  "sourceFingerprint": "bab11291193b9a59f169586b34ee8c076c2bfefc905384349654fb78a0ae5158",
+  "reportSha256": "2104c1e890520d5334cfcbac188ccadd6e9d7c75ce1ebe5ecbe23a2cd6fd10df",
+  "inlinePngCount": 5,
+  "device": {
+    "api": 28,
+    "serial": "127.0.0.1:5555"
+  },
+  "dataRestore": {
+    "status": "PASS",
+    "backedUpRoots": [
+      "files",
+      "shared_prefs"
+    ],
+    "restoredTreeInventoryMatched": true,
+    "candidateApkSha256": "3c171d7a101f527668316371378d160631e2a7dc1557c8e1f855bbb20cb2cf7d"
+  }
+}
