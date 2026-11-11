@@ -19,7 +19,7 @@
   },
   "source": {
     "sourceCommit": null,
-    "workingTreeFingerprint": "1350d28afe7f38ebfa283b133e89e707c6ac718384493ebdcc2bbc9640f49206",
+    "workingTreeFingerprint": "0e888efdbe48225e8ed03820d0747f3f1868f15786c68e790491c5792912ed67",
     "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records",
     "qualificationStatus": "PREVIEW_NOT_QUALIFIED",
     "builtFromCommit": "e62de6bf2b3235d21605555b9945251d35574840"
@@ -33,11 +33,30 @@
   },
   "qualification": {
     "state": "INCOMPLETE",
-    "scope": "ANDROID_PREVIEW_BUILD_AND_PARTIAL_COMPONENT_DELTA",
+    "scope": "ANDROID_PREVIEW_WITH_HEADLESS_AUTOGAME",
     "build": "PASS",
     "signatureVerification": "PASS",
-    "currentApkE2e": "NOT_RUN",
-    "currentSourceComponents": "NOT_QUALIFIED",
+    "currentApkE2e": "PASS",
+    "currentSourceComponents": "BLOCKED",
+    "e2eEvidence": {
+      "suite": "signed-release-auto-game",
+      "api": 28,
+      "headless": true,
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "inlinePngCount": 9,
+      "installedApkSha256": "10d4692cb450010ff347892759834ce13c51edd73048ed4320dcfe63023a0079",
+      "reportSha256": "cb285147477e765e448835984aa91429e42b6b97691425fdc2ef77e2c2cff315",
+      "disposableContainerRemoved": true
+    },
+    "componentEvidence": {
+      "reused": ["atf-validation", "atf-test-android"],
+      "blockingGroup": "atf-tests",
+      "blockingRunTests": 343,
+      "blockingRunFailures": 2
+    },
     "previousAutoGameAttempt": {
       "apkSha256": "97c312b3509cc59881bd9bb173f5cc593b737770331ce834fd7ad0e9bb79b496",
       "outcome": "ERROR",

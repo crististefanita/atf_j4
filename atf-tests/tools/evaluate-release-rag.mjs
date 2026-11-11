@@ -35,6 +35,14 @@ function componentGroupsRequiredForVersion(policy, platform, version) {
     .map(item => item.group)])];
 }
 
+function stableComponentRun(run) {
+  const results = run.results;
+  if (run.kind !== 'live-source-components' || run.sourceStable !== true || !Array.isArray(results)
+      || !results.length || !results.every(row => typeof row?.module === 'string' && Number.isInteger(row.exitCode))
+      || new Set(results.map(row => row.module)).size !== results.length) return false;
+  return run.status === (results.every(row => row.exitCode === 0) ? 'PASS' : 'FAIL');
+}
+
 // A small strict JSON reader keeps duplicate keys and trailing data from changing a receipt silently.
 class StrictJsonReader {
   constructor(text) { this.text = text; this.at = 0; this.line = 1; this.lines = new Map(); }
@@ -392,8 +400,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         okay = Boolean(payload && payload.sha256 === digest(bytes));
         if (name === 'androidComponents') {
           receiptDoc = await strictJson(receiptFile);
-          okay = okay && receiptDoc.value.kind === 'live-source-components' && receiptDoc.value.status === 'PASS'
-              && receiptDoc.value.sourceStable === true;
+          okay = okay && stableComponentRun(receiptDoc.value)
+              && receiptDoc.value.results.some(row => row.exitCode === 0);
         } else if (name === 'apkBuild') {
           const log = bytes.toString('utf8'); okay = okay && /BUILD SUCCESSFUL/.test(log) && !/BUILD FAILED/.test(log);
         } else if (name === 'apkIdentity' || name === 'signing') {
@@ -523,7 +531,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const matchesInputs = receipt => receipt.kind === 'live-source-components'
           && receipt.sourceFingerprint === inputs.sha256 && receipt.inputCount === sourceSet.size
           && receipt.inputManifest === path.posix.basename(inputRelative);
-      if (!matchesInputs(run) || run.status !== 'PASS' || run.sourceStable !== true
+      if (!matchesInputs(run) || !stableComponentRun(run)
           || !matchesInputs(provenance.value) || run.provenanceReceiptSha256 !== provenance.sha256)
         throw Error('Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor.');
       origins.set(id, {sourceSet, sourceFingerprint: inputs.sha256, run, provenance});
@@ -538,9 +546,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const origin = await readOrigin(group.componentEvidenceOrigin);
       const relative = binding.executionReceiptPattern.replace('{group}', name);
       const execution = (await readPayloadJson(relative)).value;
-      const receipts = origin.run.results?.filter(row => row.module === name) ?? [];
-      const receipt = receipts[0];
-      const rootReceipt = receipt?.receipt;
+      const receipt = origin.run.results.find(row => row.module === name);
       const countsPass = execution.outcomes?.PASS === group.tests
           && (execution.outcomes?.FAIL ?? 0) === 0 && (execution.outcomes?.ERROR ?? 0) === 0 && (execution.outcomes?.SKIP ?? 0) === 0;
       const receiptPass = execution.kind === 'live-source-components' && execution.apkQualification === false
@@ -549,7 +555,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
           && Array.isArray(execution.containerFailures) && execution.containerFailures.length === 0
           && execution.provenanceSha256 === origin.provenance.sha256
           && execution.reportSha256 === componentReportHashes.get(name)
-          && receipts.length === 1 && receipt.exitCode === 0 && isDeepStrictEqual(rootReceipt, execution);
+          && receipt?.exitCode === 0 && isDeepStrictEqual(receipt.receipt, execution);
       if (!receiptPass) throw Error('Receipt-ul execuției, numărătoarea sau hash-ul Extent nu corespunde rulării rădăcină.');
       const scope = componentEvidenceScope(name, releaseSet, origin.sourceSet);
       result.sourceEvidence = {decision: scope.decision, originalSourceFingerprint: origin.sourceFingerprint,

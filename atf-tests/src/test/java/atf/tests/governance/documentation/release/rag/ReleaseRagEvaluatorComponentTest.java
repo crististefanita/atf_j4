@@ -139,6 +139,13 @@ class ReleaseRagEvaluatorComponentTest {
         for (String name : List.of("source-inputs.json", "source-provenance.json", "source-component-run.json")) {
             Files.copy(component.resolve(name), original.resolve(name));
         }
+        Path originalRunFile = original.resolve("source-component-run.json");
+        var originalRun = (ObjectNode) JSON.readTree(originalRunFile.toFile());
+        originalRun.put("status", "FAIL");
+        originalRun.path("results").forEach(row -> {
+            if (row.path("module").asText().equals("atf-tests")) ((ObjectNode) row).put("exitCode", 1);
+        });
+        JSON.writeValue(originalRunFile.toFile(), originalRun);
         var group = (ObjectNode) manifest.at("/qualification/auditedGroups/atf-validation");
         group.put("componentEvidenceOrigin", "original");
         capturePayload(fixture.candidate(), manifest);

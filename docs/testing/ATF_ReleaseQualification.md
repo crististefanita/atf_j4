@@ -150,6 +150,7 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 
 - `componentEvidenceOrigin` din grup identifică tripletul original `source-inputs.json`, `source-provenance.json` și `source-component-run.json` din `reports/component/snapshots/{id}/`.
 - Extent și `execution.json` păstrează calea canonică a suitei și intră în inventarul cu hash-uri al candidatului.
+- O rulare agregată cu eșecuri poate furniza dovezi pentru grupurile trecute dacă sursa a rămas stabilă. Fiecare grup obligatoriu trebuie să aibă propria dovadă validată.
 - Lansatorul acceptă numai grupuri din catalog. [Componente](../../scripts/README.md)
 
 ### Probe native și porți Android
