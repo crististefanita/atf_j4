@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "a757524ce55f3c6698755cfb2c31127b701134baa49193c3e2f7d3ac76e7e5c3",
+  "provenanceReceiptSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\whist-component-suites-fd5626e34cb447178ad0f8180e3be76e",
+  "inputCount": 1043,
+  "results": [
+    {
+      "module": "atf-validation",
+      "suite": "atf.validation.suites.ValidationComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.validation.suites.ValidationComponentSuite",
+        "tests": 19,
+        "outcomes": {
+          "PASS": 19
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "f72e31ccbd6501227471e60204428a2f203bad173b06dc72e872f5a4d8ef40fa",
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "aed64d9c3217e7e10d17c3d735120d218d0085f5eee171e0307b8e5073a247ea"
+      }
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.android.suites.AndroidComponentSuite",
+        "tests": 257,
+        "outcomes": {
+          "PASS": 257
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "e898578f94c64b8ae4de320196c6aa4ab2b6638c41afda260c3602577a6e59a4",
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "f75fe3edabc634e755340bc0b40640d077bbb6366b29120206aec69425b9cf73"
+      }
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 342,
+        "outcomes": {
+          "PASS": 342
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "217f801aa38eab00f479fd0433212950046adc704d30c86e6b9258a27f183e22",
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "2d2ed5f785118abbb64fd149f09dbad72ee7764dad0d73a9b06d33e9ef86490a"
+      }
+    },
+    {
+      "module": "whist-lab-app-achievements",
+      "suite": "testDebugAchievementsComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugAchievementsComponents",
+        "tests": 23,
+        "outcomes": {
+          "PASS": 23,
+          "FAIL": 0,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "14b56413e8c865dc5d0b365625f1448c0bfc37fcd461d9129be6ecec6e552c23"
+      }
+    },
+    {
+      "module": "whist-lab-app-bidding",
+      "suite": "testDebugBiddingComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugBiddingComponents",
+        "tests": 253,
+        "outcomes": {
+          "PASS": 253,
+          "FAIL": 0,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "0f1cb106488fee1078781e2a63b349176ac97e28b829e5e46470c733a6323004"
+      }
+    },
+    {
+      "module": "whist-lab-app-commands",
+      "suite": "testDebugCommandsComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugCommandsComponents",
+        "tests": 115,
+        "outcomes": {
+          "PASS": 115,
+          "FAIL": 0,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "589ac414944ed6b41cb15d99b82d0eb59065aec93902249e5f52a6a477fcd170"
+      }
+    },
+    {
+      "module": "whist-lab-app-display",
+      "suite": "testDebugDisplayComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugDisplayComponents",
+        "tests": 91,
+        "outcomes": {
+          "PASS": 91,
+          "FAIL": 0,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "2e505ebc4b1846134ed5fde4593372503ddb7de0f65790e1dd1ba55a0fd01dad"
+      }
+    },
+    {
+      "module": "whist-lab-app-history",
+      "suite": "testDebugHistoryComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugHistoryComponents",
+        "tests": 61,
+        "outcomes": {
+          "PASS": 61,
+          "FAIL": 0,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "9349fa2d9a9a0ad3d23da5407a4df189455a2b9ae47badff5c0f092d9e289862",
+        "reportSha256": "371caf38bbb7443f6046f840e33de650fd515534b906b7c326eaed03ef80be90"
+      }
+    }
+  ],
+  "selectionComposition": "Initial seven passing selections plus exact-source atf-tests retry after restoring the retained prior APK"
+}

@@ -1,0 +1,17 @@
+Verifying alignment of C:\work\whist_back\release-candidates\0.20.0-20261111\apk-aligned-unsigned.apk (4)...
+      87 META-INF/com/android/build/gradle/app-metadata.properties (OK - compressed)
+     208 META-INF/version-control-info.textproto (OK - compressed)
+     297 classes.dex (OK - compressed)
+  853639 classes2.dex (OK - compressed)
+  854125 classes3.dex (OK - compressed)
+  945540 kotlin/annotation/annotation.kotlin_builtins (OK - compressed)
+  946149 kotlin/collections/collections.kotlin_builtins (OK - compressed)
+  948062 kotlin/concurrent/atomics/atomics.kotlin_builtins (OK - compressed)
+  949218 kotlin/coroutines/coroutines.kotlin_builtins (OK - compressed)
+  949404 kotlin/internal/internal.kotlin_builtins (OK - compressed)
+  949820 kotlin/kotlin.kotlin_builtins (OK - compressed)
+  955228 kotlin/ranges/ranges.kotlin_builtins (OK - compressed)
+  956650 kotlin/reflect/reflect.kotlin_builtins (OK - compressed)
+  958134 AndroidManifest.xml (OK - compressed)
+  958976 resources.arsc (OK)
+Verification successful
