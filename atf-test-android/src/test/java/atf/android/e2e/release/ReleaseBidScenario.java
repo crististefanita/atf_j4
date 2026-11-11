@@ -102,7 +102,10 @@ final class ReleaseBidScenario {
         long deadline = System.nanoTime() + Duration.ofSeconds(45).toNanos();
         do {
             String xml = c.ui.dump();
-            if (c.ui.hasText(xml, labels.next())) return;
+            if (c.ui.hasText(xml, labels.handComplete())) {
+                c.ui.revealText(labels.next());
+                return;
+            }
             var legal = c.ui.legalCardDescriptions(xml);
             if (!legal.isEmpty()) c.ui.tapDescription(legal.getFirst());
             else Thread.sleep(120);
@@ -125,6 +128,7 @@ final class ReleaseBidScenario {
     private record Labels(boolean ro) {
         String newGame() { return ro ? "Joc nou" : "New game"; }
         String submit() { return ro ? "Licitează" : "Place bid"; }
+        String handComplete() { return ro ? "Mână încheiată" : "Hand complete"; }
         String next() { return ro ? "Mâna următoare" : "Next hand"; }
         String close() { return (ro ? "Închide" : "Close").toUpperCase(java.util.Locale.ROOT); }
         String history() { return ro ? "Istoricul scorului" : "Score history"; }

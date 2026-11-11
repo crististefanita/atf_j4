@@ -37,6 +37,12 @@ final class TableLayoutMetrics {
         return new CenterReservation(biddingHeight, playingHeight, Math.max(biddingHeight, playingHeight));
     }
 
+    /** The bid and play screens reserve exactly the same fully visible hand band. */
+    static int privateHandHeightPx(float density) {
+        return Math.round(ro.whistlab.app.hand.HandLayoutMetrics.CARD_HEIGHT_DP * density)
+                + Math.round(ro.whistlab.app.hand.HandLayoutMetrics.LIFT_CLEARANCE_DP * density);
+    }
+
     private TableLayoutMetrics() { }
 
     static int humanHandClearanceDp() { return HUMAN_HAND_CLEARANCE_DP; }

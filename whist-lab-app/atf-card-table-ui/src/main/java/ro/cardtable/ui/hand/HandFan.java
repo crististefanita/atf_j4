@@ -89,7 +89,7 @@ public final class HandFan {
             }
             FrameLayout.LayoutParams slotParams = new FrameLayout.LayoutParams(
                     index == cardCount - 1 ? layout.cardWidth() : layout.advance(),
-                    dp((HandLayoutMetrics.cardHeightDp() + clearanceDp)));
+                    dp(HandLayoutMetrics.cardHeightDp()) + dp(clearanceDp));
             slotParams.leftMargin = layout.left(index);
             fan.addView(slot, slotParams);
         }

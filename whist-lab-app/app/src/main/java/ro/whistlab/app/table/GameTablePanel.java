@@ -152,7 +152,7 @@ public final class GameTablePanel extends LinearLayout {
             addView(hintSlot, params);
         }
         LayoutParams handParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(HandLayoutMetrics.cardHeightDp() + viewport.handClearanceDp(true)));
+                TableLayoutMetrics.privateHandHeightPx(getResources().getDisplayMetrics().density));
         handParams.gravity = Gravity.CENTER_HORIZONTAL;
         addView(buildHand(), handParams);
     }
@@ -309,7 +309,7 @@ public final class GameTablePanel extends LinearLayout {
         CenteredHandView hand = new CenteredHandView(context, dp(HandLayoutMetrics.maxViewportWidthDp()),
                 new HandFan(context,
                         WhistTableContent.hand(state, playableCards, onCardSelected != null, bidding, copy),
-                        viewport.handClearanceDp(bidding), viewport.isCompact(),
+                        HandLayoutMetrics.LIFT_CLEARANCE_DP, viewport.isCompact(),
                         id -> onCardSelected.accept(WhistTableContent.selected(state.players().get(0).hand(), id)))::build);
         hand.setContentDescription(copy.handAccessibility(count));
         hand.setTag("player-hand");

@@ -3,8 +3,6 @@ package ro.cardtable.ui.seat;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.text.LineBreaker;
-import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.LinearLayout;
@@ -23,14 +21,8 @@ public class PlayerSeatView extends ViewGroup {
         this.compact = compact;
         setTag("table-seat-region:" + seat);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-        action = new TextView(context);
-        action.setText(label);
-        action.setTextSize(10);
+        action = new FittedSeatLine(context, label, 10, Color.rgb(255, 220, 150), true);
         action.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        action.setTextColor(Color.rgb(255, 220, 150));
-        action.setGravity(Gravity.CENTER);
-        action.setIncludeFontPadding(false);
-        action.setBreakStrategy(LineBreaker.BREAK_STRATEGY_SIMPLE);
         action.setTag("seat-turn-badge:" + seat);
         action.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
         // INVISIBLE preserves the action region and stops the frames jumping between turns.

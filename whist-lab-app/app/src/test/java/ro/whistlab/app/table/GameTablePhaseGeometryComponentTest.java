@@ -99,6 +99,18 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
         }
     }
 
+    @Test public void theFullPrivateFaceAndLiftFitInTheSameBandAcrossBothPhases() {
+        for (float density : new float[]{1f, 1.5f, 2.25f, 2.625f, 2.75f, 3.5f}) {
+            int expectedFace = Math.round(88 * density);
+            int expectedLiftSpace = Math.round(28 * density);
+            int band = TableLayoutMetrics.privateHandHeightPx(density);
+            atf.gradle.audit.GradleInputs.fixture("Private card face and lift in the fixed hand region",
+                    "density", density, "facePx", expectedFace, "liftSpacePx", expectedLiftSpace);
+            assertEquals("A full face and its top clearance fit with native pixel rounding",
+                    expectedFace + expectedLiftSpace, band);
+        }
+    }
+
     @Test public void aHandReservesTheLargerOfItsMaximumBidGridAndTrickBand() {
         for (int players = 3; players <= 6; players++) for (int handSize : new int[]{1, 8, 13}) {
             int width = 353;

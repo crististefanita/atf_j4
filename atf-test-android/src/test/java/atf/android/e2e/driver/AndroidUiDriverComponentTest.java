@@ -85,6 +85,31 @@ class AndroidUiDriverComponentTest {
                 physicalCapture, 63, 768.5, 720, 1280)[1]);
     }
 
+    @Test
+    void nextHandIsRevealedInsideTheScoreViewport(@TempDir Path output) throws Exception {
+        String before = xml("class=\"android.widget.FrameLayout\" bounds=\"[0,0][720,1280]\"",
+                "class=\"android.widget.ScrollView\" scrollable=\"true\" bounds=\"[36,100][684,1110]\"",
+                "text=\"Hand complete\"");
+        String after = xml("text=\"Next hand\" class=\"android.widget.Button\"");
+        var fixture = new WaitingFixture(output, before, after);
+
+        fixture.driver.revealText("Next hand");
+
+        assertEquals(List.of(List.of("shell", "input", "swipe", "360", "908", "360", "436", "350")),
+                fixture.swipes);
+        assertEquals(2, fixture.observations);
+    }
+
+    @Test
+    void nextHandAlreadyVisibleNeedsNoGesture(@TempDir Path output) throws Exception {
+        var fixture = new WaitingFixture(output, xml("text=\"Next hand\" class=\"android.widget.Button\""));
+
+        fixture.driver.revealText("Next hand");
+
+        assertEquals(List.of(), fixture.swipes);
+        assertEquals(1, fixture.observations);
+    }
+
     @Nested
     class Waiting {
         @ParameterizedTest
@@ -179,6 +204,7 @@ class AndroidUiDriverComponentTest {
     private static final class WaitingFixture {
         private final AtomicLong ticks = new AtomicLong();
         private final List<Long> pauses = new ArrayList<>();
+        private final List<List<String>> swipes = new ArrayList<>();
         private final AndroidUiDriver driver;
         private int observations;
         private InterruptedException pauseFailure;
@@ -193,6 +219,8 @@ class AndroidUiDriverComponentTest {
                         Files.writeString(Path.of(arguments[2]), states[observations++]);
                     } else if (arguments[1].equals("uiautomator")) {
                         result = "UI hierarchy dumped to: controlled.xml";
+                    } else if (arguments[1].equals("input") && arguments[2].equals("swipe")) {
+                        swipes.add(List.of(arguments));
                     } else if (!arguments[1].equals("rm")) {
                         throw new AssertionError("Unexpected waiting command: " + List.of(arguments));
                     }

@@ -2,6 +2,9 @@ package atf.android.e2e.release.autogame;
 
 import atf.android.e2e.release.ReleaseBidContext;
 import atf.android.e2e.driver.AndroidUiDriver.Bounds;
+import atf.android.e2e.driver.hierarchy.HierarchyDocument;
+import java.util.Map;
+import java.util.TreeMap;
 import java.time.Duration;
 import java.util.List;
 
@@ -34,11 +37,15 @@ public final class AutoGameReleaseScenario {
                         c.ui.hasDescription(xml, labels.startAutoGame()))));
 
         c.ui.tapText(labels.autoGameToggle());
-        c.ui.awaitText(labels.next(), Duration.ofSeconds(45));
+        c.ui.awaitText(labels.handComplete(), Duration.ofSeconds(45));
         c.checkpoint("AutoGame completes the current hand at its real score boundary", xml -> List.of(
-                ReleaseBidContext.equal("One-card hand reached the score screen", true, c.ui.hasText(xml, labels.next())),
-                ReleaseBidContext.equal("Next hand is offered only after the current hand completes", true,
-                        c.ui.hasText(xml, labels.next()))));
+                ReleaseBidContext.equal("One-card hand reached the score screen", true,
+                        c.ui.hasText(xml, labels.handComplete()))));
+        c.ui.revealText(labels.next());
+        c.checkpoint("The score page exposes the continuation action after scrolling when needed", xml -> List.of(
+                ReleaseBidContext.equal("The Next hand button is visible and enabled", true,
+                        HierarchyDocument.nodes(xml).stream()
+                                .anyMatch(node -> node.text().equals(labels.next()) && node.clickable() && node.enabled()))));
 
         c.ui.tapText(labels.next());
         c.awaitRecommendation(labels.submit());
@@ -48,7 +55,52 @@ public final class AutoGameReleaseScenario {
                 ReleaseBidContext.equal("The new hand returns to the unchecked state", true,
                         c.ui.hasDescription(xml, labels.startAutoGame())
                                 && !c.ui.hasDescription(xml, labels.stopAutoGame()))));
+        String bid = c.ui.dump();
+        Map<String, Bounds> bidSeats = seatFrames(bid, labels);
+        c.checkpoint("The new hand exposes the active bidder and its table positions", xml -> List.of(
+                ReleaseBidContext.equal("All four seat frames are visible", 4, seatFrames(xml, labels).size()),
+                ReleaseBidContext.equal("Exactly one player has the bidding indicator", 1L, badgeCount(xml, labels.bidBadge()))));
+
+        c.ui.tapText(labels.submit());
+        c.ui.awaitText(labels.playBadge(), Duration.ofSeconds(30));
+        c.checkpoint("Play retains the same seat rectangles and shows the active player", xml -> List.of(
+                ReleaseBidContext.equal("Each seat frame occupies the same pixel rectangle", bidSeats, seatFrames(xml, labels)),
+                ReleaseBidContext.equal("Exactly one player has the play indicator", 1L, badgeCount(xml, labels.playBadge())),
+                ReleaseBidContext.equal("The full private card remains visible below the seats", true,
+                        privateHandIsVisible(c, xml, labels, bidSeats))));
         c.ui.back();
+    }
+
+    private static Map<String, Bounds> seatFrames(String xml, Labels labels) throws Exception {
+        Map<String, Bounds> frames = new TreeMap<>();
+        for (var node : HierarchyDocument.nodes(xml)) {
+            int marker = node.description().indexOf(labels.seatMarker());
+            if (marker > 0 && node.className().equals("android.widget.LinearLayout")) {
+                frames.put(node.description().substring(0, marker), HierarchyDocument.toBounds(node.bounds()));
+            }
+        }
+        return frames;
+    }
+
+    private static long badgeCount(String xml, String label) throws Exception {
+        return HierarchyDocument.nodes(xml).stream().filter(node -> node.text().equals(label)).count();
+    }
+
+    private static boolean privateHandIsVisible(ReleaseBidContext c, String xml, Labels labels,
+            Map<String, Bounds> seats) throws Exception {
+        int densityDpi = c.setup.path("display").path("density").asInt();
+        if (densityDpi <= 0) return false;
+        float density = densityDpi / 160f;
+        int expected = Math.round(88 * density) + Math.round(28 * density);
+        int seatBottom = seats.values().stream().mapToInt(Bounds::bottom).max().orElseThrow();
+        Bounds hand = c.ui.boundsForDescriptionContaining(xml, labels.handPrefix());
+        return HierarchyDocument.nodes(xml).stream()
+                .filter(node -> node.className().equals("android.widget.FrameLayout"))
+                .filter(node -> node.description().contains(labels.cardStateMarker()))
+                .map(node -> HierarchyDocument.toBounds(node.bounds()))
+                .anyMatch(card -> card.bottom() - card.top() == expected
+                        && card.top() >= seatBottom && card.top() >= hand.top() && card.bottom() <= hand.bottom()
+                        && card.left() >= hand.left() && card.right() <= hand.right());
     }
 
     private static boolean headerPlacement(ReleaseBidContext c, String xml, Labels labels) throws Exception {
@@ -71,6 +123,12 @@ public final class AutoGameReleaseScenario {
         String difficulty() { return ro ? "Nivelul adversarilor" : "AI level"; }
         String start() { return ro ? "Începe partida" : "Start game"; }
         String submit() { return ro ? "Licitează" : "Place bid"; }
+        String handComplete() { return ro ? "Mână încheiată" : "Hand complete"; }
+        String bidBadge() { return ro ? "LICITEAZĂ" : "BID NOW"; }
+        String playBadge() { return ro ? "JOACĂ ACUM" : "PLAY NOW"; }
+        String seatMarker() { return ro ? ". Licitat " : ". Bid "; }
+        String handPrefix() { return ro ? "Cărțile tale, " : "Your hand, "; }
+        String cardStateMarker() { return ". "; }
         String next() { return ro ? "Mâna următoare" : "Next hand"; }
         String title() { return ro ? "Whist · Românesc" : "Whist · Romanian"; }
         String trumpPrefix() { return ro ? "Atu " : "Trump "; }

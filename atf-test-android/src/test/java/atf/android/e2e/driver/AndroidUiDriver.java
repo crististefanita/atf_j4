@@ -285,7 +285,7 @@ public final class AndroidUiDriver {
         reveal(
                 node ->
                         node.className().equals("android.widget.Spinner")
-                                && matchesSpinnerLabel(description, node.description()));
+                                && matchesSpinnerLabel(description, node.description()), description);
         var matches =
                 nodes(dump()).stream()
                         .filter(
@@ -301,35 +301,30 @@ public final class AndroidUiDriver {
     }
 
     public void revealText(String expected) throws Exception {
-        reveal(node -> node.text().equals(expected));
+        reveal(node -> node.text().equals(expected), expected);
     }
 
-    private void reveal(java.util.function.Predicate<Node> target) throws Exception {
-        for (int attempt = 0; attempt < 8; attempt++) {
+    private void reveal(java.util.function.Predicate<Node> target, String label) throws Exception {
+        for (int attempt = 0; attempt <= 8; attempt++) {
             var current = nodes(dump());
             if (current.stream().anyMatch(target)) return;
-            int width = 0, height = 0;
-            for (Node node : current) {
-                var match = HierarchyDocument.matchBounds(node.bounds());
-                if (match.matches()) {
-                    width = Math.max(width, Integer.parseInt(match.group(3)));
-                    height = Math.max(height, Integer.parseInt(match.group(4)));
-                }
-            }
-            if (width == 0 || height == 0)
-                throw new IllegalStateException("No visible scroll bounds");
-            int startX = width / 2, startY = height * 4 / 5, endX = width / 2, endY = height / 3;
+            if (attempt == 8) break;
+            Bounds viewport = verticalScrollBounds(current);
+            int height = viewport.bottom() - viewport.top();
+            int startX = (viewport.left() + viewport.right()) / 2;
+            int startY = viewport.top() + height * 4 / 5;
+            int endY = viewport.top() + height / 3;
             long started = nanoTime.getAsLong();
             try {
                 adb.run(
-                                "shell", "input", "swipe", "" + startX, "" + startY, "" + endX,
+                                "shell", "input", "swipe", "" + startX, "" + startY, "" + startX,
                                 "" + endY, "350")
                         .requireSuccess();
             } catch (Exception failure) {
                 record(
                         "Swipe",
-                        "Android setup viewport",
-                        "Reveal the configured setup control",
+                        "Android scroll viewport",
+                        "Reveal " + label,
                         failure.toString(),
                         started,
                         AtfReportStatus.FAIL);
@@ -337,14 +332,31 @@ public final class AndroidUiDriver {
             }
             record(
                     "Swipe",
-                    "Android setup viewport",
-                    "Reveal the configured setup control",
-                    "ADB accepted swipe " + startX + "," + startY + " → " + endX + "," + endY,
+                    "Android scroll viewport",
+                    "Reveal " + label,
+                    "ADB accepted swipe " + startX + "," + startY + " → " + startX + "," + endY,
                     started,
                     AtfReportStatus.PASS);
             pause.sleep(250);
         }
-        throw new IllegalStateException("Setup control not found after scrolling");
+        throw new IllegalStateException("UI did not reveal '" + label + "' after 8 scroll gestures");
+    }
+
+    private static Bounds verticalScrollBounds(List<Node> nodes) {
+        int width = 0;
+        int height = 0;
+        for (Node node : nodes) {
+            if (!HierarchyDocument.matchBounds(node.bounds()).matches()) continue;
+            Bounds bounds = HierarchyDocument.toBounds(node.bounds());
+            if (node.scrollable() && node.className().equals("android.widget.ScrollView")
+                    && bounds.right() > bounds.left() && bounds.bottom() > bounds.top()) {
+                return bounds;
+            }
+            width = Math.max(width, bounds.right());
+            height = Math.max(height, bounds.bottom());
+        }
+        if (width == 0 || height == 0) throw new IllegalStateException("No visible scroll bounds");
+        return new Bounds(0, 0, width, height);
     }
 
     private void selectOpenedSpinnerOption(String expectedText) throws Exception {
