@@ -59,7 +59,7 @@ public final class AutoGameBidActionComponentTest extends atf.gradle.audit.Gradl
                     "language", language, "toggle", copy.autoGameToggle(),
                     "start description", copy.autoGameHand(), "stop description", copy.stopAutoGameHand());
             assertEquals("the compact label must follow the selected language",
-                    language == HowToPlay.Language.EN ? "Auto-play" : "Automat", copy.autoGameToggle());
+                    language == HowToPlay.Language.EN ? "Auto play" : "Automat", copy.autoGameToggle());
             assertTrue("the start description must remain explicit", copy.autoGameHand().length() > copy.autoGameToggle().length());
             assertTrue("the stop description must remain explicit", copy.stopAutoGameHand().length() > copy.autoGameToggle().length());
         }

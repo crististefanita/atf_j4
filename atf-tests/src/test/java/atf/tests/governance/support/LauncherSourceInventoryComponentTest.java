@@ -97,6 +97,16 @@ class LauncherSourceInventoryComponentTest {
         AuditedAssertions.assertTrue(output.contains("settings"), "A missing reactor definition cannot produce a partial source fingerprint");
     }
 
+    @Test void gitWorktreePointerDoesNotEnterTheSourceFingerprint(@TempDir Path scratch) throws Exception {
+        Path root = Files.createDirectory(scratch.resolve("release worktree"));
+        write(root, "config/atf-governance-policy.json", "{\"mavenModules\":[],\"additionalSourceRoots\":[]}");
+        write(root, ".git", "gitdir: C:/private/repository/worktrees/release");
+        write(root, ".gitattributes", "release/** -text");
+        var inputs = inventory(root, scratch);
+        AuditedAssertions.assertFalse(inputs.containsKey(".git"), "Worktree-local Git metadata is excluded");
+        AuditedAssertions.assertTrue(inputs.containsKey(".gitattributes"), "Repository source configuration remains hashed");
+    }
+
     private static Map<String, String> inventory(Path root, Path scratch) throws Exception {
         String output = execute("Get-AtfSourceInputs.ps1", List.of("-SourceRoot", root.toString(), "-AsJson"), scratch, 0);
         Map<String, String> result = new LinkedHashMap<>();

@@ -18,4 +18,4 @@ Testele de componentă verifică politica și recuperarea partidei prin `game-co
 .\gradlew.bat --offline --no-daemon :card-table-names:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>
 ```
 
-[Rendererul Android comun](../card-table-ui/README.md)
+[Rendererul Android comun](../atf-card-table-ui/README.md)

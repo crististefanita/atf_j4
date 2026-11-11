@@ -98,8 +98,8 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
         boolean exactFinalFive = schedule.size() >= 5
                 && exactInRange(history, schedule.size() - 4, schedule.size());
         return Optional.of(new WhistMatchFacts(game.config().playerCount(), game.config().mode(), exact,
-                oneCard, zeroLarge, percent(exact, schedule.size()), percent(exactSmall, smallHands),
-                percent(exactMiddle, middleHands), percent(exactLarge, largeHands), bestStreak, won, topTwo,
+                oneCard, zeroLarge, percentage(exact, schedule.size()), percentage(exactSmall, smallHands),
+                percentage(exactMiddle, middleHands), percentage(exactLarge, largeHands), bestStreak, won, topTwo,
                 game.config().streakBonuses() && game.config().mode().isRomanian(), positiveAwards,
                 state.earnedZeroGame(0), exactSizes.size(), exactFinalHand, exactFinalThree, exactFinalFive,
                 finalRank <= midpointRank, game.config().playerCount() == 4 && finalRank <= 3,
@@ -113,8 +113,8 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
         return true;
     }
 
-    private static int percent(int value, int total) {
-        return total == 0 ? 0 : Math.round(100f * value / total);
+    static int percentage(int value, int total) {
+        return total == 0 ? 0 : Math.toIntExact(100L * value / total);
     }
 
     int measure(Metric metric) {

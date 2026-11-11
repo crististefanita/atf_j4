@@ -8,7 +8,7 @@ Acest pachet compune interfața Android și transmite intențiile utilizatorului
 
 ## Nucleul vizual comun
 
-[Biblioteca card-table-ui](../../../../../../../card-table-ui/README.md) deține widgeturile, meniul de pornire, dialogul numelui, tema, desenul cărții și geometria mâinii. `WhistMenuContent` și `WhistCardFace` proiectează datele jocului; fațadele existente păstrează apelanții și identitatea componentelor Whist.
+[Biblioteca atf-card-table-ui](../../../../../../../atf-card-table-ui/README.md) deține widgeturile, meniul de pornire, dialogul numelui, tema, desenul cărții și geometria mâinii. `WhistMenuContent` și `WhistCardFace` proiectează datele jocului; fațadele existente păstrează apelanții și identitatea componentelor Whist.
 
 Masa completă și `GameTablePanel` păstrează compoziția Whist, iar `WindowContent` rămâne politica de fereastră injectată în constructorii comuni. Configurarea jocului, regulile numelui, preferințele, istoricul și serviciile sesiunii rămân la proprietarii lor.
 
@@ -45,7 +45,7 @@ Fereastra exclude barele sistemului și decupajul înaintea aranjării. Această
 | Nume și tură | [PlayerSeatView](seat/PlayerSeatView.java) măsoară textul acțiunii deasupra chenarului; [PlayerSeatMetrics](seat/PlayerSeatMetrics.java) rezervă regiunile fără suprapuneri. |
 | Mână | [HandLayoutMetrics](hand/HandLayoutMetrics.java) calculează evantaiul; [CenteredHandView](hand/CenteredHandView.java) gestionează poziția inițială a derulării. |
 | Levată și atu | [TrickCardMetrics](table/TrickCardMetrics.java) ancorează cărțile după loc; [TrumpIndicatorView](table/TrumpIndicatorView.java) afișează informația despre atu. |
-| Colectarea levatei | [TrickCollectionMotion](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) calculează cadrul și timpul. [TrickCollectionAnimator](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionAnimator.java) aplică animația pe vederile Android. |
+| Colectarea levatei | [TrickCollectionMotion](../../../../../../../atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) calculează cadrul și timpul. [TrickCollectionAnimator](../../../../../../../atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionAnimator.java) aplică animația pe vederile Android. |
 | Scor | [ScoreHistoryTable](score/ScoreHistoryTable.java) proiectează programul complet pentru toate locurile; [ScoreHistoryView](score/ScoreHistoryView.java) îl afișează cu descrieri accesibile. |
 | Comenzi și salvare | [GameCommandFlow](lifecycle/GameCommandFlow.java) delimitează refuzul comenzii; [GamePersistence](persistence/GamePersistence.java) ordonează checkpoint-ul, clasamentul și exportul. |
 | Stocare și ciclu Android | [GameSessionStore](persistence/GameSessionStore.java) deține schema salvării; [CompletedTrickPause](lifecycle/CompletedTrickPause.java) delimitează pauza levatei. |
@@ -157,9 +157,9 @@ La reluarea după oprirea procesului, un checkpoint aflat la final de levată pr
 |---|---|
 | [TrickCollectionRequest](animation/TrickCollectionRequest.java) | Acceptă numai levata publică completă, cu toate locurile distincte, câștigătorul motorului și aceleași cărți la sfârșitul istoricului. O observație parțială ori depășită nu pornește colectarea. |
 | [CompletedTrickPause](lifecycle/CompletedTrickPause.java) | Fereastră unică per levată și sesiune; suspendarea conservă timpul rămas, fără reluarea unei levate expirate. Reluarea precedă inclusiv pagina scorului ultimei levate din partidă. |
-| [TrickCollectionMotion](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Model pur pentru întârziere, durată, translație, micșorare și transparență. Întârzierea layout-ului consumă din timpul disponibil. |
-| [TrickCollectionRun](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java) | Deține observarea, pornirea unică și curățarea scenei prin porturi. Anularea invalidează cadrele depășite, iar tratarea erorilor păstrează cauza inițială. |
-| [TrickCollectionAnimator](../../../../../../../card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionAnimator.java) | Leagă coordonatorul testabil de adaptorul Android al măsurării și animației. Detașarea sau schimbarea geometriei anulează scena și restaurează transformările și regulile de clipping capturate. |
+| [TrickCollectionMotion](../../../../../../../atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Model pur pentru întârziere, durată, translație, micșorare și transparență. Întârzierea layout-ului consumă din timpul disponibil. |
+| [TrickCollectionRun](../../../../../../../atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java) | Deține observarea, pornirea unică și curățarea scenei prin porturi. Anularea invalidează cadrele depășite, iar tratarea erorilor păstrează cauza inițială. |
+| [TrickCollectionAnimator](../../../../../../../atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionAnimator.java) | Leagă coordonatorul testabil de adaptorul Android al măsurării și animației. Detașarea sau schimbarea geometriei anulează scena și restaurează transformările și regulile de clipping capturate. |
 | [GameScreen](screens/GameScreen.java) | Înlocuirea ecranului anulează efectul anterior; interacțiunea cu mâna rămâne suspendată până la expirarea pauzei. Fixture-urile statice păstrează afișarea fără animație. |
 
 - [Componentele mișcării](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java) confruntă capetele traiectoriei pentru toate locurile la 3–6 jucători, progresul și timpul rămas.
@@ -247,7 +247,7 @@ Oprirea, revenirea la meniu și deschiderea dialogurilor suspendă automatizarea
 
 ### AutoGame pentru mâna activă
 
-- Bifa centrată sub butonul de licitare pornește automatizarea pentru mâna curentă. Meniul mesei afișează oprirea numai cât timp automatizarea este activă. [Geometria licitării](../../../../../../../../docs/testing/ATF_Display.md#profil-și-domeniu-de-calificare) documentează conturul și țintele tactile.
+- Bifa din dreapta antetului pornește automatizarea pentru mâna curentă. Antetul comun păstrează titlul și bifa deasupra rândului cu progres, licitații și atu. Meniul mesei afișează oprirea cât timp automatizarea este activă. [Antetul comun](../../../../../../../atf-card-table-ui/README.md#antetul-mesei)
 - Lease-ul permite `AiTurnRequest` să calculeze pentru locul uman numai cât timp este activ; coordonarea, verificarea snapshot-ului și aplicarea unică rămân pe calea AI existentă.
 - Ajungerea la scor, schimbarea mâinii, pornirea unei partide sau revenirea la meniul principal închide lease-ul. Automatizarea nu se transferă la mâna următoare.
 

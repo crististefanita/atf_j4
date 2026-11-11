@@ -18,6 +18,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 | [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Legătura dintre riscuri și testele selectate, predarea candidatului și valabilitatea receipt-urilor. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
+| [Realizări Whist](ATF_Achievements.md) | Praguri exacte, calificarea Android, compatibilitatea progresului și calibrarea pe configurațiile eligibile. |
 
 ## Responsabilitatea schimbării
 

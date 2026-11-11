@@ -1,0 +1,10 @@
+<resources>
+    <style name="CardTableThemeBase" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#306F4E</item>
+        <item name="android:statusBarColor">#1D362B</item>
+        <item name="android:navigationBarColor">#F6F5ED</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+    <style name="CardTableTheme" parent="CardTableThemeBase" />
+</resources>

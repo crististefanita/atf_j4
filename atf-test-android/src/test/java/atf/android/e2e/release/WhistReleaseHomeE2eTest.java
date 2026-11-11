@@ -31,6 +31,7 @@ class WhistReleaseHomeE2eTest {
         boolean ro = c.ui.hasText(c.ui.dump(), "Joc nou");
         String achievements = ro ? "Realizări" : "Achievements";
         String close = ro ? "ÎNCHIDE" : "CLOSE";
+        String back = ro ? "Înapoi" : "Back";
         String newGame = ro ? "Joc nou" : "New game";
         String progress = ro ? "din 40 de realizări" : "of 40 achievements earned";
         String firstChapter = ro ? "1. Primii pași" : "1. Getting started";
@@ -42,16 +43,25 @@ class WhistReleaseHomeE2eTest {
                         c.ui.hasText(xml, achievements))));
 
         c.ui.tapText(achievements);
-        c.ui.awaitText(close, Duration.ofSeconds(15));
+        c.ui.awaitText(back, Duration.ofSeconds(15));
         c.checkpoint("Achievement catalogue exposes ordered, localized progress", xml -> List.of(
                 ReleaseBidContext.equal("Catalogue title is visible", true, c.ui.hasText(xml, achievements)),
                 ReleaseBidContext.equal("Local progress is reported against the forty-goal catalogue", true,
                         hasVisibleTextContaining(xml, progress)),
                 ReleaseBidContext.equal("The first chapter starts the ordered path", true, hasVisibleTextContaining(xml, firstChapter)),
                 ReleaseBidContext.equal("The first easy goal is visible", true, hasVisibleTextContaining(xml, firstGoal)),
-                ReleaseBidContext.equal("The progress dialog can be dismissed", true, c.ui.hasText(xml, close))));
+                ReleaseBidContext.equal("The catalogue has a visible return action", true, c.ui.hasText(xml, back))));
 
+        c.ui.tapText(firstGoal);
+        c.ui.awaitText(close, Duration.ofSeconds(15));
+        String condition = ro ? "Încheie o partidă validă." : "Finish one valid match.";
+        c.checkpoint("The first goal exposes its own eligibility condition", xml -> List.of(
+                ReleaseBidContext.equal("The selected goal opens its detail", true, c.ui.hasText(xml, firstGoal)),
+                ReleaseBidContext.equal("Eligibility is explained in the active language", true,
+                        hasVisibleTextContaining(xml, condition))));
         c.ui.tapText(close);
+        c.ui.awaitText(back, Duration.ofSeconds(15));
+        c.ui.tapText(back);
         c.checkpoint("Achievement catalogue returns to the home screen", xml -> List.of(
                 ReleaseBidContext.equal("Home remains ready for a new match", true, c.ui.hasText(xml, newGame))));
     }

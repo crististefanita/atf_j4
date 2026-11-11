@@ -15,7 +15,7 @@ flowchart LR
     CATALOG -->|SUM pe mână/meci sau cel mai bun meci| STATE[Stare locală versionată]
     ID[matchId stabil] -->|deduplicare| STATE
     STATE -->|realizare nouă în așteptare| POPUP[Popup după scorul mâinii/meciului]
-    STATE -->|afișează| VIEW[Dialog Realizări RO/EN]
+    STATE -->|afișează| VIEW[Ecran Realizări RO/EN]
     STATE -->|recomandă fără să blocheze| PATH[Grup recomandat; fără blocarea celorlalte]
 ```
 
@@ -39,14 +39,15 @@ Mâinile și partidele furnizează fapte distincte. Evaluarea actualizează star
 | 7. Închidere și versatilitate | Contract exact în ultima mână; exactitate la șapte mărimi de mână | Final cu trei contracte exacte; exactitate la toate mărimile 1–8 | Cinci contracte exacte în ultimele cinci mâini |
 | 8. Clasament și reveniri | Păstrează/îmbunătățește locul de la jumătatea jocului; top trei la patru jucători | Top doi la patru jucători; urcă cel puțin un loc după jumătatea jocului | De pe ultimul loc la jumătate, termină în primii doi |
 
-Catalogul executabil și textele în română și engleză sunt în [WhistAchievementCatalog](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/WhistAchievementCatalog.java). Interfața afișează progresul plafonat la țintă; modelul păstrează valoarea acumulată pentru ca obiectivele cu praguri diferite să poată folosi aceeași măsură.
+- Catalogul YAML declară grupurile, ordinea, textele RO/EN, metricile și pragurile. Gradle validează schema și generează definițiile tipizate. [Catalogul executabil](../../whist-lab-app/app/src/main/achievement-rules/whist-achievements.yaml)
+- Identificatorii stabili leagă progresul salvat de obiectivul afișat. Interfața plafonează progresul la țintă, iar modelul păstrează valoarea acumulată pentru pragurile care folosesc aceeași măsură.
 
 ## Sursa de adevăr
 
 - Progresul de mână se acordă numai după ce levatele, licitațiile și scorul acelei mâini au fost înregistrate. Obiectivele care depind de întreaga partidă se acordă numai după `SCORE` și `finalHand`, pentru locul uman de la scaunul 0.
 - O partidă este utilizabilă dacă registrul include întregul program de mâini, ofertele și levatele înregistrate pentru fiecare mână. Un checkpoint vechi cu istoric incomplet nu inventează evenimente și nu acordă realizări.
 - Contractul exact este decis de perechea salvată `bid == tricks`, nu de o deducție din scorul final. Mărimea mâinii provine din `GameRules.handSizes` pentru varianta și masa configurate.
-- Pragurile exprimate în procente folosesc numărul real de mâini din partida și categoria respectivă. Astfel, aceeași realizare nu devine mai ușoară doar pentru că varianta sau numărul jucătorilor distribuie mai multe mâini dintr-o anumită mărime.
+- Pragurile procentuale folosesc numărul real de mâini din partidă și din categoria respectivă. Progresul întreg este partea întreagă a raportului, deci un rezultat sub prag nu este rotunjit în sus la deblocare. Astfel, aceeași realizare nu devine mai ușoară doar pentru că varianta sau numărul jucătorilor distribuie mai multe mâini dintr-o anumită mărime.
 - Clasamentul folosește `matchScore`, deci egalitatea pe primul loc este victorie comună, iar primii doi sunt determinați ținând cont de egalități. Bonusul de 500 pentru Joc la 0 este inclus în această valoare.
 - Un bonus de serie este recunoscut numai dacă diferența dintre schimbarea înregistrată și punctajul de bază este pozitivă. Penalizarea de serie nu este o realizare și nu este recompensată.
 - Realizările sunt locale instalării și nu sunt legate de numele editabil al jucătorului. Partidele de fixture sau replay rămân excluse prin eligibilitatea existentă a partidei. Auto-play-ul mâinii este inclus: rezultatul jocului este măsurat, iar proveniența manuală/automată nu este persistată de modelul actual.
@@ -55,7 +56,7 @@ Catalogul executabil și textele în română și engleză sunt în [WhistAchiev
 
 - `SUM` adună evenimentele eligibile, iar `BEST_MATCH` păstrează cel mai bun rezultat dintr-o partidă; seriile nu se unesc între partide. ID-urile persistente, derivate din `matchId`, fac salvarea, reluarea și reconcilierea idempotente.
 - La atingerea pragului, ID-ul realizării intră în coada locală. Ecranul de scor grupează notificările după mână sau partidă; elementele rămân în coadă până la închidere și reapar după o oprire prematură.
-- [WhistAchievementPresentation](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementPresentation.java) proiectează catalogul și notificarea în text localizat, cu progres plafonat și ordine stabilă. [WhistAchievementNoticeCoordinator](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/notice/WhistAchievementNoticeCoordinator.java) deține fereastra unică, confirmarea durabilă și suprimarea repetării doar în procesul curent; dialogul Android rămâne renderer.
+- Proiecția Whist pregătește textul și ordinea pentru lista și panoul comune. Coordonatorul păstrează fereastra unică și confirmarea durabilă. [Proiecția](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementPresentation.java) · [Coordonatorul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/notice/WhistAchievementNoticeCoordinator.java) · [Interfața comună](../../whist-lab-app/atf-card-table-ui/README.md#realizări)
 - Starea JSON versionată este separată de clasamente și profil. Migrarea păstrează progresul și ID-urile existente; datele corupte sau incompatibile produc o eroare explicită, fără resetare tăcută.
 
 ## Verificare
@@ -64,7 +65,15 @@ Catalogul executabil și textele în română și engleză sunt în [WhistAchiev
 - [WhistAchievementPresentationComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) compară toate rândurile RO/EN și verifică ordinea și progresul afișat.
 - [WhistAchievementNoticeCoordinatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java) verifică dialogul unic, confirmarea, închiderea, erorile de stocare și revenirea după restart.
 - [GamePersistenceRankingComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) verifică ordinea checkpoint–realizări–clasament–replay și izolarea erorilor de stocare.
+- [WhistAchievementOfflineCalibrationTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) joacă partide complete Normal/Greu pe aceleași seed-uri, măsoară separat țintele `SUM` și `BEST_MATCH`, verifică reluarea fără credit dublu și scrie un raport Extent compact plus CSV-uri în afara depozitului. Sarcina opt-in `:app:testDebugAchievementCalibration` acceptă o fază de calibrare sau holdout; intervalele de seed trebuie să fie disjuncte.
 
-Corpusul offline activ este selectat pentru lecții AI, nu pentru a estima șansa unui jucător uman de a obține o realizare. El poate depista obiective fără exemple observate sau praguri cu probleme, dar procentele din acel corpus nu sunt prezentate ca probabilități de utilizator.
+- Începe cu 1–8–1 la patru locuri; extinde apoi la mesele românești de 3–6 locuri și la 8–1–8.
+- Rulează Normal și Greu pe aceeași distribuire și păstrează progresul separat pe nivel.
+- Compară eligibilitatea, ocaziile cu progres, reușitele pe partidă și deblocarea cumulativă.
+- Compară valorile 5 și 10 ale bonusului/penalizării pe aceleași seed-uri; raportează Joc la 0 separat.
+- Folosește intervale de seed disjuncte între calibrare și holdout, păstrând împerecherea configurațiilor în fiecare fază.
+- Frecvența mică în auto-joc nu dovedește imposibilitatea umană; orice prag schimbat trebuie confirmat și să păstreze progresul salvat.
+
+Simularea de calibrare este un experiment separat de corpusul activ de învățare AI. Ea poate depista obiective fără ocazii, progresii redundante și praguri care nu se potrivesc politicilor simulate; rezultatele sale descriu auto-jocul Normal/Greu și nu sunt prezentate ca probabilități pentru oameni. Selecția de calibrare și holdout, seed-urile, configurația și hash-urile surselor trebuie păstrate împreună, în artefacte externe.
 
 [Contractele variantelor](README.md) · [Componente JVM ale aplicației](../../whist-lab-app/app/src/test/README.md) · [Strategia de testare](../testing/README.md)

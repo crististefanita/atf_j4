@@ -63,19 +63,19 @@
       "path": "whist-lab-app/app/src/rasterTest/java"
     },
     {
-      "module": "whist-lab-app/card-table-ui",
+      "module": "whist-lab-app/atf-card-table-ui",
       "test": false,
-      "path": "whist-lab-app/card-table-ui/src/main/java"
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java"
     },
     {
-      "module": "whist-lab-app/card-table-ui",
+      "module": "whist-lab-app/atf-card-table-ui",
       "test": true,
-      "path": "whist-lab-app/card-table-ui/src/test/java"
+      "path": "whist-lab-app/atf-card-table-ui/src/test/java"
     },
     {
-      "module": "whist-lab-app/card-table-ui",
+      "module": "whist-lab-app/atf-card-table-ui",
       "test": true,
-      "path": "whist-lab-app/card-table-ui/src/androidTest/java"
+      "path": "whist-lab-app/atf-card-table-ui/src/androidTest/java"
     },
     {
       "module": "whist-lab-app/card-table-names",
@@ -141,7 +141,7 @@
       "ro.whistlab.core.baseline",
       "ro.whistlab.coach"
     ],
-    "whist-lab-app/card-table-ui": [
+    "whist-lab-app/atf-card-table-ui": [
       "atf",
       "org.junit",
       "ro.whistlab",

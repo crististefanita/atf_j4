@@ -21,6 +21,7 @@ afterEvaluate {
             packages.findAll { key, value -> value == collection }.keySet().sort().each { prefix ->
                 include "ro/whistlab/app/${prefix}/**"
             }
+            if (collection == 'achievements') exclude '**/WhistAchievementOfflineCalibrationTest.class'
             base.excludes.each { pattern -> exclude pattern }
             base.filter.includePatterns.each { pattern -> filter.includeTestsMatching(pattern) }
             base.filter.excludePatterns.each { pattern -> filter.excludeTestsMatching(pattern) }
@@ -34,5 +35,35 @@ afterEvaluate {
         enabled = false
         dependsOn collections
         description = 'Intrare agregată: execută colecțiile JVM primare; nu repetă testele și raportarea.'
+    }
+
+    tasks.register('testDebugAchievementCalibration', Test) {
+        group = 'verification'
+        description = 'Simulare offline opt-in pentru calibrarea realizărilor Whist; cohortă separată de regresia rapidă.'
+        dependsOn 'compileDebugUnitTestJavaWithJavac'
+        def base = original.get()
+        testClassesDirs = base.testClassesDirs
+        classpath = base.classpath
+        useJUnit()
+        include 'ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.class'
+        systemProperty 'java.awt.headless', 'true'
+        [
+            'whist.achievementCalibrationPhase',
+            'whist.achievementCalibrationFirstSeed',
+            'whist.achievementCalibrationMatches',
+            'whist.achievementCalibrationOutput',
+            'whist.achievementCalibrationStreaks',
+            'whist.achievementCalibrationZero',
+            'whist.achievementCalibrationSeriesBonus',
+            'whist.achievementCalibrationPlayers',
+            'whist.achievementCalibrationMode'
+        ].each { key ->
+            providers.gradleProperty(key).orNull?.with { systemProperty key, it }
+        }
+        base.systemProperties.findAll { key, value -> key.startsWith('whist.') }
+                .each { key, value -> systemProperty key, value }
+        jvmArgs '-XX:ActiveProcessorCount=2'
+        reports.html.required = false
+        outputs.upToDateWhen { false }
     }
 }

@@ -1,0 +1,91 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+abstract class GenerateWhistAchievementCatalog extends DefaultTask {
+    @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract RegularFileProperty getRulesFile()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDirectory()
+
+    @TaskAction
+    void generate() {
+        def catalog = new JsonSlurper().parse(rulesFile.get().asFile, 'UTF-8')
+        if (catalog.keySet() != ['schemaVersion', 'groups', 'goals'].toSet() ||
+                catalog.schemaVersion != 1 || !(catalog.groups instanceof List) ||
+                catalog.groups.isEmpty() || !(catalog.goals instanceof List)) {
+            throw new GradleException('Invalid Whist achievement catalog')
+        }
+        def numbers = [] as Set
+        def groups = catalog.groups.collect { group ->
+            if (group.keySet() != ['number', 'titleRo', 'titleEn'].toSet() ||
+                    !(group.number instanceof Integer) || group.number != numbers.size() + 1 ||
+                    !GenerateWhistAchievementCatalog.validCopy(group, ['titleRo', 'titleEn'])) {
+                throw new GradleException("Invalid Whist achievement group: $group")
+            }
+            numbers.add(group.number)
+            def titles = GenerateWhistAchievementCatalog.quoted(group, ['titleRo', 'titleEn'])
+            "            new Group(${group.number}, $titles, goalsIn(goals, ${group.number}))"
+        }
+        def copy = ['titleRo', 'titleEn', 'descriptionRo', 'descriptionEn']
+        def ids = [] as Set
+        def usedGroups = [] as Set
+        def goals = catalog.goals.collect { goal ->
+            if (goal.keySet() != (['id', 'group', 'level', 'target', 'metric', 'aggregation'] + copy).toSet() ||
+                    !(goal.id ==~ /[a-z][a-z0-9_]*/) || !ids.add(goal.id) ||
+                    !numbers.contains(goal.group) || !(goal.target instanceof Integer) || goal.target < 1 ||
+                    !['EASY', 'MEDIUM', 'HARD'].contains(goal.level) ||
+                    !(goal.metric ==~ /[A-Z][A-Z0-9_]*/) || !['SUM', 'BEST_MATCH'].contains(goal.aggregation) ||
+                    !GenerateWhistAchievementCatalog.validCopy(goal, copy)) {
+                throw new GradleException("Invalid or duplicate Whist achievement: $goal")
+            }
+            usedGroups.add(goal.group)
+            def labels = GenerateWhistAchievementCatalog.quoted(goal, copy)
+            "            new Goal(${JsonOutput.toJson(goal.id)}, ${goal.group}, Level.${goal.level}, ${goal.target}, " +
+                    "$labels, Metric.${goal.metric}, Aggregation.${goal.aggregation})"
+        }
+        if (usedGroups != numbers) throw new GradleException('Empty Whist achievement group')
+        def file = outputDirectory.get().file('ro/whistlab/app/achievements/WhistAchievementCatalogData.java').asFile
+        file.parentFile.mkdirs()
+        file.setText("""package ro.whistlab.app.achievements;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import ro.whistlab.app.achievements.WhistAchievementCatalog.*;
+
+final class WhistAchievementCatalogData {
+    private WhistAchievementCatalogData() { }
+    static List<Goal> goals() {
+        return List.of(
+${goals.join(',\n')}
+        );
+    }
+    static List<Group> groups(List<Goal> goals) {
+        return List.of(
+${groups.join(',\n')}
+        );
+    }
+    private static List<Goal> goalsIn(List<Goal> goals, int number) {
+        return goals.stream().filter(goal -> goal.group() == number).collect(Collectors.toList());
+    }
+}
+""", 'UTF-8')
+    }
+
+    static boolean validCopy(Map row, List fields) {
+        fields.every { row[it] instanceof String && !row[it].isBlank() }
+    }
+
+    static String quoted(Map row, List fields) {
+        fields.collect { JsonOutput.toJson(row[it]) }.join(', ')
+    }
+}
+
+def generateWhistAchievementCatalog = tasks.register('generateWhistAchievementCatalog', GenerateWhistAchievementCatalog) {
+    rulesFile.set(layout.projectDirectory.file('src/main/achievement-rules/whist-achievements.yaml'))
+    outputDirectory.set(layout.buildDirectory.dir('generated/sources/whistAchievements/java'))
+}
+androidComponents.onVariants(androidComponents.selector().all()) { variant ->
+    variant.sources.java.addGeneratedSourceDirectory(generateWhistAchievementCatalog) { it.outputDirectory }
+}

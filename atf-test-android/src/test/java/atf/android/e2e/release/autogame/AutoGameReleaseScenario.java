@@ -28,10 +28,8 @@ public final class AutoGameReleaseScenario {
         c.awaitRecommendation(labels.submit());
         c.checkpoint("Current hand is awaiting the human bid", xml -> List.of(
                 ReleaseBidContext.equal("Real bid control is visible", true, c.ui.hasText(xml, labels.submit())),
-                ReleaseBidContext.equal("AutoGame is visible below the bid action on the same center line", true,
-                        c.ui.hasText(xml, labels.autoGameToggle())
-                                && centeredBelow(c.ui.boundsForText(xml, labels.submit()),
-                                        c.ui.boundsForText(xml, labels.autoGameToggle()))),
+                ReleaseBidContext.equal("AutoGame is in the upper right of the header, above trump and bidding", true,
+                        headerPlacement(c, xml, labels)),
                 ReleaseBidContext.equal("AutoGame starts unchecked with an explicit accessible action", true,
                         c.ui.hasDescription(xml, labels.startAutoGame()))));
 
@@ -53,9 +51,17 @@ public final class AutoGameReleaseScenario {
         c.ui.back();
     }
 
-    private static boolean centeredBelow(Bounds bid, Bounds toggle) {
-        return toggle.top() >= bid.bottom()
-                && Math.abs(toggle.left() + toggle.right() - bid.left() - bid.right()) <= 2;
+    private static boolean headerPlacement(ReleaseBidContext c, String xml, Labels labels) throws Exception {
+        if (!c.ui.hasText(xml, labels.autoGameToggle()) || !c.ui.hasText(xml, labels.title())) return false;
+        Bounds title = c.ui.boundsForText(xml, labels.title());
+        Bounds toggle = c.ui.boundsForText(xml, labels.autoGameToggle());
+        Bounds trump = c.ui.hasDescriptionContaining(xml, labels.trumpPrefix())
+                ? c.ui.boundsForDescriptionContaining(xml, labels.trumpPrefix())
+                : c.ui.boundsForDescription(xml, labels.noTrump());
+        boolean sameLine = toggle.top() < title.bottom() && title.top() < toggle.bottom();
+        boolean separateLine = toggle.top() >= title.bottom() && toggle.right() >= title.right();
+        return (sameLine && toggle.left() >= title.right() || separateLine)
+                && toggle.bottom() <= trump.top() && toggle.bottom() <= c.ui.boundsForText(xml, labels.submit()).top();
     }
 
     private record Labels(boolean ro) {
@@ -66,7 +72,10 @@ public final class AutoGameReleaseScenario {
         String start() { return ro ? "Începe partida" : "Start game"; }
         String submit() { return ro ? "Licitează" : "Place bid"; }
         String next() { return ro ? "Mâna următoare" : "Next hand"; }
-        String autoGameToggle() { return ro ? "Automat" : "Auto-play"; }
+        String title() { return ro ? "Whist · Românesc" : "Whist · Romanian"; }
+        String trumpPrefix() { return ro ? "Atu " : "Trump "; }
+        String noTrump() { return ro ? "Fără atu" : "No trump"; }
+        String autoGameToggle() { return ro ? "Automat" : "Auto play"; }
         String startAutoGame() { return ro ? "Joacă automat mâna curentă" : "Auto-play this hand"; }
         String stopAutoGame() { return ro ? "Oprește jocul automat" : "Stop auto-play"; }
     }

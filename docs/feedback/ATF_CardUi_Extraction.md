@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-**P1 · nucleu extras și integrat în Whist.** [Nucleul card-table-ui](../../whist-lab-app/card-table-ui/README.md) deține meniul de pornire, dialogul numelui, widgeturile, tema Android, chenarele, geometria mesei, mâna și depunerile publice. Finisarea scorului și calificarea nativă rămân distincte. Interfața și testele Whist se păstrează.
+**P1 · nucleu extras și integrat în Whist.** [Nucleul atf-card-table-ui](../../whist-lab-app/atf-card-table-ui/README.md) deține meniul de pornire, dialogul numelui, widgeturile, tema Android, chenarele, geometria mesei, mâna și depunerile publice. Finisarea scorului și calificarea nativă rămân distincte. Interfața și testele Whist se păstrează.
 
 ## Diagnosticul sursei live
 
@@ -15,13 +15,13 @@ Nucleul extras este independent de motoare și ATF. Compoziția mesei, configura
 | Masă și mână | [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) păstrează `GameSession.Snapshot`, `Card` și `PlayedCard`; [GameScreen](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java) calculează legalitatea prin `GameRules`. | Proiecție tipizată, imuabilă și limitată la informația permisă; legalitatea și comanda se decid în adaptor, înainte și după intenția UI. Mutarea fișierelor cu aceleași importuri nu închide criteriul. |
 | Geometrie | [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java), [HandLayoutMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/hand/HandLayoutMetrics.java), [TableGeometry](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableGeometry.java). | Implementare comună, cu fațade Whist și aceleași rotunjiri, ancore și rezultate înainte/după. Testele existente din pachetele Whist păstrează oracolele și identitățile. |
 | Scor | [ScoreHistoryColumn](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java) proiectează licitatul, rezultatul contractului și totalul Whist. | Extrageți măsurarea, grila, cadrul dialogului și derularea; proiecția și marcajele de serie rămân Whist. Semantica valorilor aparține adaptorului jocului. |
-| Mișcare | [Colectarea levatei](../../whist-lab-app/card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java), [navigarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java) și [refacerea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java). | Decuplați scena și evenimentele de tipurile jocului, păstrând timpul vizibil, anularea, generația rutei și aplicarea unică. Colectarea nu este animație de distribuire. |
+| Mișcare | [Colectarea levatei](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java), [navigarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java) și [refacerea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java). | Decuplați scena și evenimentele de tipurile jocului, păstrând timpul vizibil, anularea, generația rutei și aplicarea unică. Colectarea nu este animație de distribuire. |
 
 Nu este justificată extragerea întregii activități sau a motorului într-un modul numit generic. Biblioteca grafică nu primește seed, mâini adverse, `GameSession`, motor AI sau acces direct la salvările consumatorului.
 
 ## Contractul bibliotecii și extinderile rămase
 
-Modulul Android Library `card-table-ui` este produs în proiectul Whist și publică un AAR/POM versionat. Implementarea curentă și porturile sunt descrise în README-ul modulului; tabelul următor delimitează și extensiile încă propuse pentru masa completă.
+Modulul Android Library `atf-card-table-ui` este produs în proiectul Whist și publică un AAR/POM versionat. Implementarea curentă și porturile sunt descrise în README-ul modulului; tabelul următor delimitează și extensiile încă propuse pentru masa completă.
 
 [Ghidul Android Library](https://developer.android.com/studio/projects/android-library) justifică AAR pentru clase, resurse și manifest reutilizabile între aplicații. [Separarea stării UI](https://developer.android.com/topic/architecture/ui-layer/stateholders) susține proiecțiile și evenimentele delimitate; propunerea locală păstrează Views și nu cere rescrierea interfeței în alt toolkit.
 
@@ -56,7 +56,7 @@ Modelați numai variațiile demonstrate de cele două jocuri. Evitați un constr
 | Contract comun | Responsabilitate și verificare |
 |---|---|
 | Nume la masă · EXTRAS | `card-table-names` păstrează ordinea listei, seed-ul derivat, excluderea numelui uman și asocierea cu locul. Gradle și reactorul Maven includ sursa Java comună. |
-| Colectarea levatei · EXTRASĂ | Temporizarea, geometria, animatorul și curățarea Android sunt în `card-table-ui`. Componentele Whist păstrează cazurile de anulare, redimensionare, animație dezactivată și termen unic. |
+| Colectarea levatei · EXTRASĂ | Temporizarea, geometria, animatorul și curățarea Android sunt în `atf-card-table-ui`. Componentele Whist păstrează cazurile de anulare, redimensionare, animație dezactivată și termen unic. |
 | Rândurile din chenar · EXTRASE | Consumatorul alege explicit varianta cu etichetă și valoare pe o singură linie. Afișarea Whist cu două coloane rămâne reper pentru apelul implicit. |
 
 Integrarea unui consumator și calificarea lui nativă se urmăresc separat de contractele și verificările bibliotecii comune.
@@ -91,6 +91,22 @@ Starea curentă se confruntă cu sursele, testele și selecția din dosarul rele
 Comparația nativă pereche cu APK-ul de referință și UIX05 rămân distincte, iar componentele de reguli Whist rămân în adaptorul jocului.
 
 **UIX03 — reconciliere necesară:** dialogul comun aplică `InputFilter.LengthFilter(10)` pe unități UTF-16, iar politica numelui acceptă zece puncte de cod. Permiteți un filtru furnizat de consumator sau un contract echivalent, cu probe pentru litere suplimentare și perechi surrogate; schimbarea comportamentului Whist se califică separat de refactorizare.
+
+## P1 · Calificarea controlului comun „Automat”
+
+**Responsabil · biblioteca de interfață și adaptorul Whist**
+
+Whist folosește `GameTitleBar` din modulul `atf-card-table-ui`. Consumatorul furnizează starea, textele și acțiunea cerută. Următoarea livrare a bibliotecii permite calificarea aceluiași renderer în ceilalți consumatori. [Antetul comun](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
+
+| Zonă | Criteriu de închidere |
+|---|---|
+| Control comun | Text vizibil „Automat” în RO și „Auto play” în EN, stare bifată nativă, cheie stabilă și țintă de cel puțin 48 × 48 dp. Inițializarea și refacerea vederii trimit zero comenzi. Fiecare atingere trimite o singură intenție. |
+| Poziționare | Bifa în dreapta titlului când încape. La lățime mică sau font mărit, bifa are un rând propriu aliniat la dreapta. Atuul, numărul mâinii și rezumatul licitațiilor rămân dedesubt în Whist. |
+| Stare | Adaptorul stabilește vizibilitatea, activarea și limita mâinii. Refacerea antetului păstrează valoarea furnizată de joc. Debifarea oprește mutările automate ale locului uman după ultima mutare deja confirmată. |
+| Probe | Componente pentru poziționare cu măsurători controlate, 320/360/393/600 dp, text la 100/150/200%, RO/EN și stările bifat, debifat, indisponibil. O probă Android focalizată verifică atingerea și lipsa suprapunerilor în profil compact. |
+| Guvernanță | Producătorul publică un AAR versionat. Verificarea manifestului și a checksum-ului precede adoptarea. Protejați în consumatori identificatorul, textele, poziția și existența unui singur control de delegare. |
+
+În Whist, `AutoGameHand` rămâne responsabil de licitare și joc pentru mâna curentă. Verificați bifarea în licitație, debifarea în joc cu o decizie în așteptare și oprirea la scor, pauză și reluare. Folosiți un executant controlat în testul de componentă pentru a livra răspunsul AI după debifare și a confirma că revizia rămâne aceeași. [Activitatea Whist](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java)
 
 ## Testele care protejează extragerea
 

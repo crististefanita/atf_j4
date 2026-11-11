@@ -39,13 +39,13 @@ La tura jucătorului, motorul Hard estimează și preselectează o licitație le
 - Alegerea manuală are prioritate; un rezultat întârziat nu înlocuiește selecția și nu se aplică altei mâini ori partide.
 - Dacă estimarea nu este disponibilă, se poate alege manual orice valoare legală. [Selecția contextuală](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) păstrează această stare separat de contractele depuse.
 
-Pe Android, bifa `Auto-play` / `Automat` pornește preluarea temporară a licitării și jocului cărților.
+Pe Android, bifa `Auto play` / `Automat` pornește preluarea temporară a licitării și jocului cărților.
 
 Controlul revine la om după scorul mâinii. Detaliile fluxului sunt în [documentația activității Android](app/src/main/java/ro/whistlab/app/README.md#autogame-pentru-mâna-activă).
 
 ## Joacă automat mâna curentă
 
-- Bifa stă centrată sub `Place bid` / `Licitează`, pe axa mesei, și pornește automatizarea mâinii curente.
+- Bifa stă în dreapta titlului când încape. La text mărit, poate ocupa propriul rând în antet, deasupra atuului. Numărul mâinii și rezumatul licitațiilor apar dedesubt.
 - Cât timp automatizarea este activă, `Game menu` / `Meniu joc` oferă `Stop auto-play` / `Oprește jocul automat`.
 - Aplicația folosește nivelul Normal sau Hard ales pentru adversari și controlează temporar și locul uman. La ecranul scorului automatizarea se oprește, iar următoarea mână revine la controlul manual.
 
@@ -75,7 +75,7 @@ GameSession validează comenzile înaintea schimbării stării; UI-ul redă star
 | Componentă | Responsabilitate |
 |---|---|
 | [game-core](game-core/README.md) | Reguli, sesiune, scor, salvare și politica AI a aplicației; teste JVM. |
-| [card-table-ui](card-table-ui/README.md) | Nucleu Android reutilizabil: meniu/profil, widgeturi, cărți, temă și geometria mâinii; fără motorul jocului sau biblioteci ATF. |
+| [atf-card-table-ui](atf-card-table-ui/README.md) | Nucleu Android reutilizabil: meniu/profil, widgeturi, cărți, temă și geometria mâinii; fără motorul jocului sau biblioteci ATF. |
 | [card-table-names](card-table-names/README.md) | Politica Java comună pentru repartizarea numelor pe locuri și validarea numelui uman. |
 | [app](app/src/main/java/ro/whistlab/app/) | Activitatea Android, configurarea mesei, prezentarea jocului și persistența locală. |
 | [ai-lab](ai-lab/README.md) | Modul JVM al jucătorului independent, uneltelor și experimentelor offline; consumat numai la testare. |

@@ -24,7 +24,7 @@ Fixture-ul descrie regiuni măsurate, fără să apeleze algoritmul de layout al
 
 ## Ce se mută în componente
 
-[Nucleul UI comun](../../whist-lab-app/card-table-ui/README.md) are teste JVM proprii pentru meniu, editarea numelui, geometrie și frontiera de dependențe. Aplicația păstrează testele adaptoarelor și ale mesei, iar mutarea implementării nu schimbă oracolele existente; widgeturile și pixelii Android au acceptanță separată.
+[Nucleul UI comun](../../whist-lab-app/atf-card-table-ui/README.md) are teste JVM proprii pentru meniu, editarea numelui, geometrie și frontiera de dependențe. Aplicația păstrează testele adaptoarelor și ale mesei, iar mutarea implementării nu schimbă oracolele existente; widgeturile și pixelii Android au acceptanță separată.
 
 | Nivel | Intrare controlată | Proprietate verificată | Proprietar |
 |---|---|---|---|
@@ -171,7 +171,7 @@ O modificare de formulă rulează întâi componentele; o schimbare de randare s
 
 ## Frontiera componentelor UI reutilizabile
 
-[card-table-ui](../../whist-lab-app/card-table-ui/README.md) are propriile componente pentru geometrie, meniu, editare și modelele vizibile ale mesei. Gardele de sursă refuză importurile de motoare sau sesiuni în producția și testele comune.
+[atf-card-table-ui](../../whist-lab-app/atf-card-table-ui/README.md) are propriile componente pentru geometrie, meniu, editare și modelele vizibile ale mesei. Gardele de sursă refuză importurile de motoare sau sesiuni în producția și testele comune.
 
 | Comun | Integrare Whist, păstrată în aplicația Whist |
 |---|---|

@@ -367,7 +367,7 @@ public final class MainActivity extends Activity {
             var pending = achievementNotices.openNext(state.handNumber(), state.finalHand());
             if (pending.isEmpty()) return;
             var notice = pending.get();
-            AlertDialog dialog = WhistAchievementDialog.showUnlocked(this, copy, notice.goals(), notice.state(),
+            AlertDialog dialog = WhistAchievementDialog.showUnlocked(views, copy, notice.goals(), notice.state(),
                     notice.handNumber(), notice.matchComplete());
             var token = openDialog();
             dialog.setOnDismissListener(ignored -> {
@@ -431,12 +431,12 @@ public final class MainActivity extends Activity {
     }
 
     private void showAchievements() {
-        var token = openDialog();
         try {
-            AlertDialog dialog = WhistAchievementDialog.show(this, copy, achievements);
-            dialog.setOnDismissListener(ignored -> navigation.dismiss(token));
+            var progress = achievements.state();
+            navigation.show(AppNavigation.Screen.ACHIEVEMENTS);
+            ro.whistlab.app.achievements.presentation.WhistAchievementsScreen.show(views, copy, progress,
+                    new ro.cardtable.ui.achievements.AchievementScreen.State(), this::renderHome);
         } catch (java.io.IOException failure) {
-            navigation.dismiss(token);
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
         }
     }

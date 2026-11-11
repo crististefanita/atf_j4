@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AndroidJavaApiGovernanceTest {
     // ai-lab is a game-core test dependency and is not packaged in the Android application.
     private static final List<String> ANDROID_RUNTIME_MODULES =
-            List.of("app", "game-core", "card-table-ui", "card-table-names");
+            List.of("app", "game-core", "atf-card-table-ui", "card-table-names");
 
     @Test void androidProductionAvoidsTheJava16StreamTerminal() throws Exception {
         Path root = GovernanceProject.locateProjectRoot().resolve("whist-lab-app");
@@ -57,7 +57,7 @@ class AndroidJavaApiGovernanceTest {
     @Test void newerCollectionFactoriesAreDesugaredForTheDeclaredMinimumSdk() throws Exception {
         Path project = GovernanceProject.locateProjectRoot().resolve("whist-lab-app");
         Path appBuild = project.resolve("app/build.gradle");
-        Path uiBuild = project.resolve("card-table-ui/build.gradle");
+        Path uiBuild = project.resolve("atf-card-table-ui/build.gradle");
         String app = Files.readString(appBuild);
         String ui = Files.readString(uiBuild);
         Pattern factory = Pattern.compile("\\b(?:List|Set|Map)\\s*\\.\\s*(?:of|copyOf)\\s*\\(");

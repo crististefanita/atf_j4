@@ -4,6 +4,7 @@ import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import ro.whistlab.app.achievements.WhistAchievementCatalog.Level;
 import ro.whistlab.app.localization.WhistUiText;
@@ -16,9 +17,21 @@ import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
 public final class WhistAchievementComponentTest extends atf.gradle.audit.GradleAuditedTest {
-    @Test public void catalogHasEightGroupsOfFiveWithEveryTierReachableInEachGroup() {
+    private static final Set<String> LEGACY_CATALOG_IDS = Set.of(
+            "first_match", "first_exact", "five_matches", "twenty_exact", "three_wins",
+            "exact_one_card", "exact_zero_large", "exact_small_rate", "exact_middle_rate", "exact_large_rate",
+            "three_exact_in_row", "fifty_percent_exact", "sixty_percent_exact", "sixty_five_percent_exact",
+            "seventy_five_percent_exact", "series_enabled_match", "first_positive_series", "three_positive_series",
+            "win_with_series", "five_series_matches", "short_romanian_match", "long_romanian_match",
+            "short_romanian_win", "long_romanian_win", "zero_game_500", "three_player_match", "six_player_match",
+            "top_two_five_players", "top_two_six_players", "three_six_player_wins", "exact_final_hand",
+            "exact_seven_hand_sizes", "exact_final_three", "exact_all_hand_sizes", "exact_final_five",
+            "hold_mid_match_rank", "top_three_four_players", "top_two_four_players", "climb_one_rank", "last_to_top_two");
+
+    @Test public void catalogGroupsKeepTheirContractAndEveryLegacyIdRemainsAvailable() {
         var groups = WhistAchievementCatalog.groups();
-        var ids = WhistAchievementCatalog.goals().stream().map(WhistAchievementCatalog.Goal::id).toList();
+        var goalIds = WhistAchievementCatalog.goals().stream().map(WhistAchievementCatalog.Goal::id)
+                .collect(java.util.stream.Collectors.toSet());
         var levelCounts = groups.stream().map(group -> group.goals().stream()
                 .collect(java.util.stream.Collectors.groupingBy(WhistAchievementCatalog.Goal::level,
                         java.util.stream.Collectors.counting()))).toList();
@@ -27,10 +40,12 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
                 .map(WhistAchievementCatalog.Goal::target).toList();
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "groups", groups,
-                "ids", ids, "levelCounts", levelCounts);
-        assertEquals("groups must contain eight chapters", 8, groups.size());
-        assertEquals("goals must contain forty distinct stable IDs", 40, ids.size());
-        assertEquals("stable IDs must be unique", ids.size(), ids.stream().distinct().count());
+                "legacy IDs", LEGACY_CATALOG_IDS, "catalog IDs", goalIds, "levelCounts", levelCounts);
+        assertFalse("the catalog must define at least one learning group", groups.isEmpty());
+        assertEquals("each group has exactly five independent alternatives", groups.size() * 5,
+                WhistAchievementCatalog.goals().size());
+        assertEquals("catalog IDs must be unique", WhistAchievementCatalog.goals().size(), goalIds.size());
+        assertTrue("the catalog must retain every previously persisted ID", goalIds.containsAll(LEGACY_CATALOG_IDS));
         assertEquals("accuracy goals must use increasing match-relative thresholds", List.of(50, 60, 65, 75), accuracy);
         for (int index = 0; index < groups.size(); index++) {
             var group = groups.get(index);
@@ -57,6 +72,22 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
                 WhistAchievementCatalog.goal("last_to_top_two").target());
         assertThrows("group recommendation rejects an invalid group number", IllegalArgumentException.class,
                 () -> WhistAchievementState.empty().earnedInGroup(0));
+    }
+
+    @Test public void stableIdsAndTheirProgressRoundTripThroughVersionedStorage() throws Exception {
+        var progress = LEGACY_CATALOG_IDS.stream().collect(java.util.stream.Collectors.toMap(id -> id, id -> 1));
+        var saved = new WhistAchievementState(progress, Set.of("legacy-career"),
+                Set.of("legacy-career#hand:1"), Set.of("first_match"));
+        String encoded = WhistAchievementCodec.encode(saved);
+        var restored = WhistAchievementCodec.decode(encoded);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "encoded versioned state", encoded,
+                "legacy catalog IDs", LEGACY_CATALOG_IDS, "restored progress", restored.progress());
+        assertEquals("all previous progress values survive a save/load cycle", saved.progress(), restored.progress());
+        assertEquals("processed match IDs still deduplicate after restore", saved.processedMatches(), restored.processedMatches());
+        assertEquals("processed hand IDs still deduplicate after restore", saved.processedHands(), restored.processedHands());
+        assertEquals("pending notices survive restore without changing their achievement identity",
+                saved.pendingNotifications(), restored.pendingNotifications());
     }
 
     @Test public void unlockNoticeNamesTheMomentAndTotalProgressInRomanianAndEnglish() {
@@ -98,6 +129,10 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
                 "afterFirstMatch", afterFirstMatch, "finalState", state, "streakState", streakState);
         assertEquals("a later chapter goal is recorded by the same match without a lock", 1,
                 afterEarlyLaterGoal.progress("six_player_match"));
+        assertEquals("one eligible long Romanian match can advance multiple goals together", 1,
+                afterEarlyLaterGoal.progress("long_romanian_match"));
+        assertTrue("all newly completed goals are queued from the same match event",
+                afterEarlyLaterGoal.pendingNotifications().containsAll(Set.of("six_player_match", "long_romanian_match")));
         assertEquals("the first completed goal advances the recommendation", 2,
                 afterEarlyLaterGoal.recommendedGroup());
         assertEquals("any earned goal advances the recommended chapter, even when several goals arrive together",
@@ -108,6 +143,34 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
                 streakState.progress("three_exact_in_row"));
         assertEquals("best match accuracy is not summed across matches", 45,
                 state.progress("fifty_percent_exact"));
+    }
+
+    @Test public void percentageGoalsUseTheExactBoundaryAndKeepPreviouslySavedProgress() {
+        int belowBoundary = WhistMatchFacts.percentage(11, 17);
+        int aboveBoundary = WhistMatchFacts.percentage(12, 17);
+        var goal = WhistAchievementCatalog.goal("sixty_five_percent_exact");
+        var belowFacts = new WhistMatchFacts(3, GameMode.ROMANIAN_WHIST, 11, 0, 0,
+                belowBoundary, 0, 0, 0, 0, false, false, false, 0, false);
+        var aboveFacts = new WhistMatchFacts(3, GameMode.ROMANIAN_WHIST, 12, 0, 0,
+                aboveBoundary, 0, 0, 0, 0, false, false, false, 0, false);
+        var below = WhistAchievementState.empty().recordMatch("below-exact-boundary", belowFacts);
+        var above = WhistAchievementState.empty().recordMatch("meets-exact-boundary", aboveFacts);
+        var historicalProgress = new WhistAchievementState(java.util.Map.of(goal.id(), goal.target()), Set.of());
+        var afterHistoricalMatch = historicalProgress.recordMatch("preserve-earned-boundary", belowFacts);
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "below ratio", "11/17",
+                "below integer percentage", belowBoundary, "above ratio", "12/17",
+                "above integer percentage", aboveBoundary, "threshold", goal.target(),
+                "previously saved progress", historicalProgress, "after a below-boundary match", afterHistoricalMatch);
+        assertEquals("an under-threshold fraction must not round upward", 64, belowBoundary);
+        assertEquals("a fraction above the threshold is represented without upward rounding", 70, aboveBoundary);
+        assertEquals("an under-threshold match keeps its measured progress", 64, below.progress(goal.id()));
+        assertFalse("an under-threshold match cannot earn a 65-percent goal", below.earned(goal));
+        assertTrue("an above-threshold match earns the existing goal", above.earned(goal));
+        assertEquals("historical saved progress remains intact", goal.target(), afterHistoricalMatch.progress(goal.id()));
+        assertTrue("a historically earned goal stays earned after the formula correction", afterHistoricalMatch.earned(goal));
+        assertFalse("formula correction does not queue a duplicate notice for the historical goal",
+                afterHistoricalMatch.pendingNotifications().contains(goal.id()));
     }
 
     @Test public void completeRomanianAndLongRomanianMatchesProduceFactsFromTheFullScoreLedger() {
@@ -129,8 +192,8 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
                 if (exact) smallExact++;
             }
         }
-        int independentMatchRate = Math.round(100f * independentlyCountedExact / schedule.size());
-        int independentSmallRate = Math.round(100f * smallExact / smallHands);
+        int independentMatchRate = 100 * independentlyCountedExact / schedule.size();
+        int independentSmallRate = 100 * smallExact / smallHands;
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "shortFacts", shortFacts,
                 "longFacts", longFacts, "ohHellFacts", ohHellFacts, "shortMatch", shortMatch,
@@ -152,6 +215,39 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
                 longFacts.measure(WhistAchievementCatalog.Metric.PLAYER_COUNT_SIX));
         assertEquals("Romanian hand-size mastery cannot be earned in a different Whist variant", 0,
                 ohHellFacts.measure(WhistAchievementCatalog.Metric.EXACT_HAND_SIZE_COUNT));
+    }
+
+    @Test public void eligibilityFollowsRomanianVariantSeatCountAndEnabledRules() {
+        var shortWithoutSeries = finishedMatch(3, GameMode.ROMANIAN_WHIST, false, false, 4110L);
+        var longWithSeries = finishedMatch(6, GameMode.LONG_ROMANIAN, true, false, 4111L);
+        var ohHell = finishedMatch(4, GameMode.OH_HELL, false, false, 4112L);
+        var shortFacts = WhistMatchFacts.from(shortWithoutSeries).orElseThrow();
+        var longFacts = WhistMatchFacts.from(longWithSeries).orElseThrow();
+        var ohHellFacts = WhistMatchFacts.from(ohHell).orElseThrow();
+
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "short facts", shortFacts,
+                "long facts", longFacts, "Oh Hell facts", ohHellFacts);
+        assertEquals("1–8–1 is available only to its matching Romanian mode", 1,
+                shortFacts.measure(WhistAchievementCatalog.Metric.SHORT_ROMANIAN_MATCHES));
+        assertEquals("1–8–1 cannot credit the 8–1–8 objective", 0,
+                shortFacts.measure(WhistAchievementCatalog.Metric.LONG_ROMANIAN_MATCHES));
+        assertEquals("8–1–8 is available only to its matching Romanian mode", 1,
+                longFacts.measure(WhistAchievementCatalog.Metric.LONG_ROMANIAN_MATCHES));
+        assertEquals("6-seat goal eligibility follows the configured table", 1,
+                longFacts.measure(WhistAchievementCatalog.Metric.PLAYER_COUNT_SIX));
+        assertEquals("3-seat eligibility cannot leak to a 6-seat table", 0,
+                longFacts.measure(WhistAchievementCatalog.Metric.PLAYER_COUNT_THREE));
+        assertEquals("series goals require enabled Romanian series", 0,
+                shortFacts.measure(WhistAchievementCatalog.Metric.SERIES_ENABLED_MATCHES));
+        assertEquals("series eligibility is available when enabled in Romanian play", 1,
+                longFacts.measure(WhistAchievementCatalog.Metric.SERIES_ENABLED_MATCHES));
+        assertEquals("non-Romanian play cannot credit a Romanian series configuration", 0,
+                ohHellFacts.measure(WhistAchievementCatalog.Metric.SERIES_ENABLED_MATCHES));
+        assertEquals("non-Romanian play cannot credit either Romanian schedule", 0,
+                ohHellFacts.measure(WhistAchievementCatalog.Metric.SHORT_ROMANIAN_MATCHES)
+                        + ohHellFacts.measure(WhistAchievementCatalog.Metric.LONG_ROMANIAN_MATCHES));
+        assertEquals("enabling Joc la 0 does not itself credit the award without a 500-point outcome", 0,
+                ohHellFacts.measure(WhistAchievementCatalog.Metric.ZERO_GAME_MATCHES));
     }
 
     @Test public void unfinishedAndLegacyPartialLedgersCannotMintAchievements() {

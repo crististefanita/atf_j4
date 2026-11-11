@@ -6,7 +6,7 @@ import java.util.Set;
 
 /** Owner-thread routes and dialog leases; an obsolete dismissal cannot resume a new screen. */
 public final class AppNavigation {
-    public enum Screen { HOME, SETUP, INSTRUCTIONS, GAME }
+    public enum Screen { HOME, SETUP, INSTRUCTIONS, ACHIEVEMENTS, GAME }
     public static final class Dialog {
         private final AppNavigation owner;
         private final long route;

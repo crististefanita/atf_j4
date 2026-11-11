@@ -58,6 +58,7 @@ $rows = [Collections.Generic.List[object]]::new()
 function Visit-InputDirectory([string]$directory) {
     foreach ($entry in Get-ChildItem -LiteralPath $directory -Force) {
         $relative = [IO.Path]::GetRelativePath($root,$entry.FullName).Replace('\','/')
+        if ($relative -ceq '.git') { continue }
         if ($entry.PSIsContainer -and $excluded.Contains($relative)) { continue }
         if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Intrare indirectă neinventariată: $relative" }
         if ($entry.PSIsContainer) { Visit-InputDirectory $entry.FullName }
