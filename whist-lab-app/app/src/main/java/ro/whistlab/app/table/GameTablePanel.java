@@ -310,7 +310,8 @@ public final class GameTablePanel extends LinearLayout {
                 new HandFan(context,
                         WhistTableContent.hand(state, playableCards, onCardSelected != null, bidding, copy),
                         HandLayoutMetrics.LIFT_CLEARANCE_DP, viewport.isCompact(),
-                        id -> onCardSelected.accept(WhistTableContent.selected(state.players().get(0).hand(), id)))::build);
+                        id -> onCardSelected.accept(WhistTableContent.selected(state.players().get(0).hand(), id)),
+                        card -> false, !bidding && !interactionPaused && onCardSelected != null)::build);
         hand.setContentDescription(copy.handAccessibility(count));
         hand.setTag("player-hand");
         return hand;

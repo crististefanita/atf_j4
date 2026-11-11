@@ -116,6 +116,10 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 - Sub antet, Whist așază progresul și licitațiile în stânga, iar atuul în dreapta. Rentz și Hold’em pot așeza în același loc detaliile specifice mâinii sau etapei.
 - Verificările JVM acoperă decizia de dispunere, inclusiv la limita unui pixel. Proba instrumentată măsoară textele în RO și EN și ținta tactilă de minimum 48 × 48 dp. [Testele native](src/androidTest/README.md)
 
+## Atingerea unei cărți indisponibile
+
+Jocul transmite cărțile legale și activează indiciul doar când jucătorul poate muta. O atingere invalidă marchează cartea respinsă în roșu discret și cărțile legale în auriu. Indiciul expiră, dispare la o mutare acceptată și se resetează la refacerea mâinii. Marcajele păstrează geometria evantaiului, inclusiv pe ecrane compacte.
+
 ## Levata și informația din chenar
 
 - `CollectionTarget` primește locurile cărților publice și locul câștigător calculat în joc. `TrickCollectionMotion` păstrează fereastra de 1500 ms și folosește ultimele 500 ms pentru colectare.
