@@ -1,0 +1,170 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.6.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :card-table-names:compileJava
+> Task :game-core:compileJava
+> Task :game-core:processResources NO-SOURCE
+> Task :game-core:classes
+> Task :game-core:jar
+> Task :card-table-names:processResources NO-SOURCE
+> Task :card-table-names:classes
+> Task :card-table-names:jar
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders
+> Task :atf-card-table-ui:preBuild UP-TO-DATE
+> Task :atf-card-table-ui:preReleaseBuild UP-TO-DATE
+> Task :atf-card-table-ui:mergeReleaseJniLibFolders
+> Task :atf-card-table-ui:mergeReleaseNativeLibs NO-SOURCE
+> Task :atf-card-table-ui:copyReleaseJniLibsProjectOnly
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :atf-card-table-ui:prepareReleaseArtProfile
+> Task :app:mergeReleaseArtProfile
+> Task :app:expandReleaseL8ArtProfileWildcards
+> Task :atf-card-table-ui:generateReleaseResources
+> Task :atf-card-table-ui:packageReleaseResources
+> Task :atf-card-table-ui:processReleaseNavigationResources
+> Task :atf-card-table-ui:parseReleaseLocalResources
+> Task :atf-card-table-ui:generateReleaseRFile
+> Task :atf-card-table-ui:compileReleaseKotlin NO-SOURCE
+> Task :atf-card-table-ui:javaPreCompileRelease
+
+> Task :atf-card-table-ui:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :atf-card-table-ui:bundleLibRuntimeToDirRelease
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:generateReleaseBuildConfig
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:processReleaseNavigationResources
+> Task :app:parseReleaseLocalResources
+> Task :app:generateReleaseRFile
+> Task :app:generateWhistAchievementCatalog
+> Task :atf-card-table-ui:bundleLibCompileToJarRelease
+> Task :app:compileReleaseKotlin NO-SOURCE
+> Task :app:javaPreCompileRelease
+
+> Task :app:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :atf-card-table-ui:writeReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:checkReleaseAarMetadata
+> Task :app:compileReleaseNavigationResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :atf-card-table-ui:extractDeepLinksRelease
+> Task :app:mergeReleaseResources
+> Task :atf-card-table-ui:mapReleaseSourceSetPaths
+> Task :atf-card-table-ui:compileReleaseLibraryResources
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseStartupProfile
+> Task :atf-card-table-ui:processReleaseManifest
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:processReleaseResources
+> Task :app:mergeExtDexRelease
+> Task :app:dexBuilderRelease
+> Task :atf-card-table-ui:bundleLibRuntimeToJarRelease
+> Task :app:mergeDexRelease
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :atf-card-table-ui:generateReleaseAssets UP-TO-DATE
+> Task :atf-card-table-ui:mergeReleaseAssets
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:extractProguardFiles
+> Task :atf-card-table-ui:compressReleaseJavaRes NO-SOURCE
+> Task :atf-card-table-ui:createFullJarRelease
+> Task :atf-card-table-ui:extractProguardFiles
+> Task :atf-card-table-ui:generateReleaseLintModel
+> Task :atf-card-table-ui:prepareLintJarForPublish
+> Task :app:generateReleaseLintVitalReportModel
+> Task :atf-card-table-ui:checkReleaseAarMetadata
+> Task :atf-card-table-ui:extractDeepLinksForAarRelease
+> Task :atf-card-table-ui:extractReleaseAnnotations
+> Task :atf-card-table-ui:mergeReleaseGeneratedProguardFiles
+> Task :atf-card-table-ui:mergeReleaseConsumerProguardFiles
+> Task :atf-card-table-ui:mergeReleaseJavaResource
+> Task :atf-card-table-ui:syncReleaseLibJars
+> Task :atf-card-table-ui:bundleReleaseLocalLintAar
+> Task :app:l8DexDesugarLibRelease
+> Task :atf-card-table-ui:lintVitalAnalyzeRelease
+> Task :app:compileReleaseArtProfile
+> Task :atf-card-table-ui:writeReleaseLintModelMetadata
+> Task :atf-card-table-ui:generateReleaseLintVitalModel
+> Task :app:compressReleaseJavaRes NO-SOURCE
+> Task :app:mergeReleaseJavaResource
+> Task :app:optimizeReleaseResources
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :test-audit:compileJava NO-SOURCE
+> Task :test-audit:compileTestFixturesJava
+> Task :test-audit:processTestFixturesResources NO-SOURCE
+> Task :test-audit:testFixturesClasses
+> Task :test-audit:testFixturesJar
+> Task :test-audit:processResources NO-SOURCE
+> Task :test-audit:classes UP-TO-DATE
+> Task :test-audit:jar
+> Task :atf-card-table-ui:preDebugBuild UP-TO-DATE
+> Task :atf-card-table-ui:generateDebugResources
+> Task :atf-card-table-ui:packageDebugResources
+> Task :atf-card-table-ui:processDebugNavigationResources
+> Task :atf-card-table-ui:parseDebugLocalResources
+> Task :atf-card-table-ui:generateDebugRFile
+> Task :atf-card-table-ui:compileDebugKotlin NO-SOURCE
+> Task :atf-card-table-ui:javaPreCompileDebug
+
+> Task :atf-card-table-ui:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :atf-card-table-ui:bundleLibRuntimeToJarDebug
+> Task :atf-card-table-ui:bundleLibCompileToJarDebug
+> Task :atf-card-table-ui:preDebugUnitTestBuild UP-TO-DATE
+> Task :atf-card-table-ui:generateDebugUnitTestStubRFile
+> Task :atf-card-table-ui:compileDebugUnitTestKotlin NO-SOURCE
+> Task :atf-card-table-ui:javaPreCompileDebugUnitTest
+> Task :atf-card-table-ui:compileDebugUnitTestJavaWithJavac
+> Task :atf-card-table-ui:compressDebugJavaRes NO-SOURCE
+> Task :atf-card-table-ui:compressDebugUnitTestJavaRes NO-SOURCE
+> Task :atf-card-table-ui:extractDebugUnitTestJavaRes
+> Task :app:lintVitalAnalyzeRelease
+> Task :atf-card-table-ui:testDebugUnitTest
+PASS: 24 exact JUnit/HTML identities and outcomes; one canonical HTML
+
+
+> Task :app:lintVitalReportRelease
+> Task :atf-card-table-ui:generateReleaseLintReportModel
+> Task :app:lintVitalRelease
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+> Task :atf-card-table-ui:lintAnalyzeRelease
+
+> Task :atf-card-table-ui:lintReportRelease
+Wrote HTML report to file:///C:/work/whist_back/release-candidates/0.20.1-20261111-fit/build-source/whist-lab-app/atf-card-table-ui/build/reports/lint-results-release.html
+Wrote SARIF report to file:///C:/work/whist_back/release-candidates/0.20.1-20261111-fit/build-source/whist-lab-app/atf-card-table-ui/build/reports/lint-results-release.sarif
+
+> Task :atf-card-table-ui:lintRelease
+
+[Incubating] Problems report is available at: file:///C:/work/whist_back/release-candidates/0.20.1-20261111-fit/build-source/whist-lab-app/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.6.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 5m 59s
+106 actionable tasks: 106 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.6.1/userguide/configuration_cache_enabling.html

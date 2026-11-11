@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "protocol": "ATF_ANDROID_E2E_EXTENT_J24",
+  "tests": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "releaseVersion": "0.20.1",
+  "installedApkSha256": "1a86b31fa5c7b6f5ea3e9847f0f214f2d4251bbf1c8a604954df6587be114334",
+  "sourceCommit": "06d16afe171b43f3dc773ad15a44f594a6092372",
+  "sourceFingerprint": "5dbc0925228464162890d95fbd13bd45fcb63922e50fbc9654da9aeb963b27c6",
+  "reportSha256": "1cc3feb5c74ff3d087b853c65dc68d075df75ae9b796c6c022a5874d7c4ab4a4",
+  "inlinePngCount": 10
+}
