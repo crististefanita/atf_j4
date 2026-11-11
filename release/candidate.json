@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 2,
+  "release": {
+    "versionName": "0.20.2",
+    "versionCode": 30,
+    "applicationId": "ro.whistlab.app",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "platforms": [
+      "android"
+    ],
+    "artifactKind": "apk",
+    "apkName": "WhistLab-0.20.2.apk",
+    "apkBytes": 2183434,
+    "apkSha256": "10d4692cb450010ff347892759834ce13c51edd73048ed4320dcfe63023a0079",
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+    "signingCertificate": "Android Debug",
+    "productionManagedKey": false
+  },
+  "source": {
+    "sourceCommit": null,
+    "workingTreeFingerprint": "1350d28afe7f38ebfa283b133e89e707c6ac718384493ebdcc2bbc9640f49206",
+    "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records",
+    "qualificationStatus": "PREVIEW_NOT_QUALIFIED",
+    "builtFromCommit": "e62de6bf2b3235d21605555b9945251d35574840"
+  },
+  "publication": {
+    "state": "PREPARED",
+    "channel": "TEST",
+    "accessMode": "AUTHENTICATED",
+    "repository": "crististefanita/atf_j4",
+    "targetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.20.2/WhistLab-0.20.2.apk"
+  },
+  "qualification": {
+    "state": "INCOMPLETE",
+    "scope": "ANDROID_PREVIEW_BUILD_AND_PARTIAL_COMPONENT_DELTA",
+    "build": "PASS",
+    "signatureVerification": "PASS",
+    "currentApkE2e": "NOT_RUN",
+    "currentSourceComponents": "NOT_QUALIFIED",
+    "previousAutoGameAttempt": {
+      "apkSha256": "97c312b3509cc59881bd9bb173f5cc593b737770331ce834fd7ad0e9bb79b496",
+      "outcome": "ERROR",
+      "reason": "PLAY NOW was not observed before timeout",
+      "appliesToCurrentApk": false
+    },
+    "targetedComponents": {
+      "tests": 8,
+      "outcome": "PASS",
+      "source": "Before final integration guard; excluded from current APK qualification"
+    },
+    "previousFullRuns": "Earlier source snapshot; not reused as current qualification"
+  },
+  "previewDistribution": {
+    "state": "PUBLISHED_PRERELEASE",
+    "tag": "v0.20.2",
+    "isPrerelease": true,
+    "releaseId": 442184653,
+    "releaseUrl": "https://github.com/crististefanita/atf_j4/releases/tag/v0.20.2",
+    "apkAssetId": 736895635,
+    "checksumAssetId": 736895673,
+    "authenticatedDownloadStatus": 200,
+    "downloadBytes": 2183434,
+    "downloadSha256": "10d4692cb450010ff347892759834ce13c51edd73048ed4320dcfe63023a0079",
+    "checksumAssetVerified": true
+  }
+}
