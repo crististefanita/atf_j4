@@ -1,0 +1,11 @@
+{
+  "version": "0.20.1",
+  "mode": "changes",
+  "previousVersion": "0.20.0",
+  "points": [
+    "Păstrează chenarele în aceeași poziție la licitație și în joc.",
+    "Afișează întreaga carte a jucătorului sub masă și păstrează indicatorul actorului.",
+    "Verifică Mâna următoare pe ecran scund, după derularea foii de scor."
+  ],
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/1a960b4809123cc9cc17dc86638d0d7019fbc6c6/release/0.20.1/reports/README.md"
+}
