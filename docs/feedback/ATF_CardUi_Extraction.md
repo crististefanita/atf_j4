@@ -53,13 +53,7 @@ Modelați numai variațiile demonstrate de cele două jocuri. Evitați un constr
 
 ## Priorități și condiții de închidere
 
-| Contract comun | Responsabilitate și verificare |
-|---|---|
-| Nume la masă · EXTRAS | `card-table-names` păstrează ordinea listei, seed-ul derivat, excluderea numelui uman și asocierea cu locul. Gradle și reactorul Maven includ sursa Java comună. |
-| Colectarea levatei · EXTRASĂ | Temporizarea, geometria, animatorul și curățarea Android sunt în `atf-card-table-ui`. Componentele Whist păstrează cazurile de anulare, redimensionare, animație dezactivată și termen unic. |
-| Rândurile din chenar · EXTRASE | Consumatorul alege explicit varianta cu etichetă și valoare pe o singură linie. Afișarea Whist cu două coloane rămâne reper pentru apelul implicit. |
-
-Integrarea unui consumator și calificarea lui nativă se urmăresc separat de contractele și verificările bibliotecii comune.
+Contractele pentru nume, animația levatei și rândurile din chenar sunt în ghidurile modulelor responsabile. Aici rămân integrarea consumatorilor și calificarea nativă. [Nume la masă](../../whist-lab-app/card-table-names/README.md) · [Biblioteca UI](../../whist-lab-app/atf-card-table-ui/README.md)
 
 Rezultatele unei calificări aparțin dosarului release care identifică sursa și selecțiile executate; acest registru păstrează contractele și lacunele, nu copii de rapoarte istorice.
 

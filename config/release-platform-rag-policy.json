@@ -80,9 +80,9 @@
       "runReceipt": "reports/component/source-component-run.json",
       "provenanceReceipt": "reports/component/source-provenance.json",
       "executionReceiptPattern": "reports/component/{group}/execution.json",
-      "sourceSetMustEqualReleaseInputManifest": true,
+      "historicalReuseRequiresUnchangedSuiteInputs": true,
       "eachExtentMustMatchExecutionReceipt": true,
-      "allReceiptsMustBindSameSourceFingerprint": true
+      "eachReceiptMustBindItsOriginalSourceFingerprint": true
     },
     "onlyHumanReviewVerdict": "READY_FOR_HUMAN_REVIEW",
     "doesNotInspectGitIndexOrExecuteGit": true,

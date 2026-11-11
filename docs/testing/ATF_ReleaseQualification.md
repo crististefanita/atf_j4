@@ -121,22 +121,43 @@ flowchart LR
 <details>
 <summary>Legendă: etapele și responsabilitățile candidatului</summary>
 
-Snapshot-ul fixat este baza tuturor selecțiilor. RAG-ul verifică receipt-urile, hash-urile și proveniența declarată; responsabilul candidatului asigură completitudinea inventarului și selecția potrivită riscului. Verdictul maxim permite doar revizie umană, iar promovarea și publicarea rămân etape separate.
+Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG verifică receipt-urile, hash-urile și proveniența. Responsabilul candidatului confruntă inventarul complet și motivează selecția în funcție de risc. Verdictul permite revizia umană înainte de promovare și publicare.
 
 </details>
 
 | Grup Android | Dovadă necesară |
 | --- | --- |
 | `atf-validation`, `atf-test-android`, `atf-tests` | Fiecare suită Maven primară are HTML Extent canonic și rezultate fără FAIL/ERROR/SKIP. |
-| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Colecțiile Android de bază; fiecare are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. |
+| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Colecțiile Android de bază au fiecare HTML Extent și receipt proprii. Modificările în sursele compilate împreună cer o rulare nouă. |
 | `whist-lab-app-achievements` | Colecție introdusă prin `introducedComponentGroupsByPlatform`; `sinceReleaseVersion` o face obligatorie de la pragul declarat. Raportul este separat, iar JUnit XML singur nu satisface poarta. |
 | `whist-lab-app-atf-card-table-ui` | Suită JVM distinctă pentru contractele bibliotecii grafice comune; introdusă la `0.20.2`, cu Extent și receipt separat. |
-| Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK; `source-provenance.json` leagă manifestul și receiptele native prin SHA-256 al octeților JSON păstrați. |
+| Fiecare grup selectat | Receipt propriu și intrări identice în perimetrul suitei. `source-provenance.json` păstrează legătura dintre inventarul original, execuție și raport. |
+
+### Reutilizarea dovezilor de componentă
+
+Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) stabilește ce diferențe pot afecta rezultatul.
+
+- Guvernanța verifică inventarul complet.
+- Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android dacă dependențele lor rămân identice.
+- O cale necunoscută cere o execuție nouă.
+
+| Decizie | Acțiune |
+|---|---|
+| `MATCH` | Folosește execuția cu inventar identic. |
+| `REUSE` | Păstrează Extent și receipt-ul cu amprenta execuției originale. Toate diferențele sunt în afara perimetrului suitei. |
+| `RUN` | Rulează selecția indicată și consultă intrările afectate din verdict. |
+| `INVALID` | Recuperează dovezile originale sau execută selecția dacă receipt-ul, proveniența ori raportul nu pot fi validate. |
+
+- `componentEvidenceOrigin` din grup identifică tripletul original `source-inputs.json`, `source-provenance.json` și `source-component-run.json` din `reports/component/snapshots/{id}/`.
+- Extent și `execution.json` păstrează calea canonică a suitei și intră în inventarul cu hash-uri al candidatului.
+- Lansatorul acceptă numai grupuri din catalog. [Componente](../../scripts/README.md)
+
+### Probe native și porți Android
 
 Schimbările vizibile în fluxul utilizatorului cer un E2E focalizat pe acel flux. Pentru catalogul realizărilor, selecția de release deschide ecranul din APK-ul semnat, verifică progresul local și revine la pagina principală; testele de componentă păstrează oracolele pentru praguri, deduplicare și persistența popup-ului.
 
-Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare. Stadiul publicat cere dovada descărcării în modul de acces declarat: `AUTHENTICATED` pentru un asset GitHub accesibil conturilor autorizate sau `ANONYMOUS` pentru o copie publică.
-
+- Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.
+- Stadiul publicat cere dovada descărcării în modul declarat, `AUTHENTICATED` pentru conturile autorizate sau `ANONYMOUS` pentru o copie publică.
 - Flux neschimbat: E2E poate rămâne `NOT_RUN` cu justificare explicită.
 - Flux schimbat: verdictul cere rapoarte E2E trecute.
 - `NOT_RUN` nu devine rezultat pozitiv.

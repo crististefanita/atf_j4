@@ -75,4 +75,4 @@ Durata HTTP provine din `ReportResponse.duration()`; `detail(...)` păstrează t
 
 ---
 
-[Cod și feedback comune](../../atf_j0/docs/feedback/README.md) · [Mentenanță locală](README.md#mentenanță-și-feedback).
+Pentru codul comun din `atf_j0`, consultați [responsabilul bibliotecilor](../docs/feedback/README.md#responsabilitatea-schimbării). [Mentenanță locală](README.md#mentenanță-și-feedback)

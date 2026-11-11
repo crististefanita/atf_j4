@@ -111,7 +111,55 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals(2, exit);
         AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_SOURCE_BINDING"));
-        AuditedAssertions.assertTrue(details(verdict, "COMPONENT_SOURCE_BINDING").stream().anyMatch(value -> value.contains("SHA-256 mismatch: src/Game.java")));
+        AuditedAssertions.assertEquals("INVALID", componentDecision(verdict, "atf-validation"));
+    }
+
+    @Test void reusesAnOriginalReceiptOnlyOutsideItsSuiteInputs() throws Exception {
+        Fixture fixture = fixture();
+        String added = "whist-lab-app/app/src/main/java/ro/whistlab/app/Screen.java";
+        Path file = fixture.source().resolve(added);
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, "class Screen {}\n");
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        var manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        Path inputsFile = fixture.candidate().resolve("reports/apk-inputs.json");
+        var inputs = (ObjectNode) JSON.readTree(inputsFile.toFile());
+        var rows = (com.fasterxml.jackson.databind.node.ArrayNode) inputs.path("files");
+        rows.addObject().put("path", added).put("sha256", hash(file));
+        var contents = new StringBuilder();
+        rows.forEach(row -> contents.append(row.path("path").asText()).append('\t')
+                .append(row.path("sha256").asText()).append('\n'));
+        String fingerprint = hashText(contents.toString());
+        inputs.put("fingerprint", fingerprint);
+        ((ObjectNode) manifest.path("source")).put("workingTreeFingerprint", fingerprint);
+        JSON.writeValue(inputsFile.toFile(), inputs);
+
+        Path component = fixture.candidate().resolve("reports/component");
+        Path original = Files.createDirectories(component.resolve("snapshots/original"));
+        for (String name : List.of("source-inputs.json", "source-provenance.json", "source-component-run.json")) {
+            Files.copy(component.resolve(name), original.resolve(name));
+        }
+        var group = (ObjectNode) manifest.at("/qualification/auditedGroups/atf-validation");
+        group.put("componentEvidenceOrigin", "original");
+        capturePayload(fixture.candidate(), manifest);
+        JSON.writeValue(manifestFile.toFile(), manifest);
+
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
+        AuditedAssertions.assertEquals("REUSE", componentDecision(verdict, "atf-validation"));
+        AuditedAssertions.assertEquals("REUSE", componentDecision(verdict, "atf-test-android"));
+        AuditedAssertions.assertEquals("RUN", componentDecision(verdict, "whist-lab-app-display"));
+        AuditedAssertions.assertEquals("RUN", componentDecision(verdict, "atf-tests"));
+        AuditedAssertions.assertTrue(details(verdict, "COMPONENT_SOURCE_BINDING").stream()
+                .anyMatch(value -> value.contains("APK-source-only: " + added)));
+    }
+
+    private static String componentDecision(JsonNode verdict, String group) {
+        for (JsonNode entry : verdict.path("componentGroups")) {
+            if (group.equals(entry.path("name").asText())) return entry.path("sourceEvidence").path("decision").asText();
+        }
+        throw new IllegalArgumentException("Missing group " + group);
     }
 
     @Test void aMissingApplicationExtentGroupCannotBeReplacedByTheGovernanceSuite() throws Exception {

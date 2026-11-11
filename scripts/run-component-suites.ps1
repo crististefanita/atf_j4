@@ -1,6 +1,8 @@
 #requires -Version 7.0
 param(
     [string]$RunRoot = '',
+    [string]$SourceRoot = (Split-Path -Parent $PSScriptRoot),
+    [string[]]$Groups = @(),
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
     [string]$Maven = 'mvn',
@@ -8,7 +10,19 @@ param(
     [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384
 )
 $ErrorActionPreference = 'Stop'
-$sourceRoot = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
+$sourceRoot = [IO.Path]::GetFullPath($SourceRoot)
+$catalog = Get-Content -LiteralPath (Join-Path $sourceRoot 'config/atf-test-suites.json') -Raw | ConvertFrom-Json
+$primaryComponents = @($catalog.suites | Where-Object {$_.role -eq 'primary' -and $_.layer -eq 'component'})
+$collectionProperties = ConvertFrom-StringData (Get-Content -LiteralPath (Join-Path $sourceRoot 'config/gradle-app-collections.properties') -Raw)
+$collections = @($collectionProperties.Values | Sort-Object -Unique)
+$knownGroups = @($primaryComponents.module) + @($collections | ForEach-Object {"whist-lab-app-$_"}) + @('whist-lab-app-atf-card-table-ui')
+if (@($Groups | Where-Object {$_ -cnotin $knownGroups}).Count -or
+        @($Groups | Sort-Object -Unique).Count -ne $Groups.Count) {
+    throw 'Groups trebuie să conțină numai identificatori distincți din catalogul componentelor.'
+}
+function Select-Group([string]$Name) {
+    $Groups.Count -eq 0 -or $Name -cin $Groups
+}
 if (-not $RunRoot) {
     $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
     $RunRoot = Join-Path $archive ('component-suites/' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
@@ -65,8 +79,7 @@ try {
         $entries = @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/test-classes" })
         $entries += @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/classes" })
         $classpath = ($entries + @((Get-Content -LiteralPath $classpathFile -Raw).Trim())) -join [IO.Path]::PathSeparator
-        $catalog = Get-Content -LiteralPath (Join-Path $stage 'config/atf-test-suites.json') -Raw | ConvertFrom-Json
-        foreach ($gate in $catalog.suites | Where-Object {$_.role -eq 'primary' -and $_.layer -eq 'component'}) {
+        foreach ($gate in $primaryComponents | Where-Object {Select-Group $_.module}) {
             $destination = Join-Path $RunRoot $gate.module
             Push-Location (Join-Path $stage $gate.module)
             try {
@@ -77,8 +90,7 @@ try {
             $results.Add([pscustomobject]@{module=$gate.module;suite=$gate.suite;exitCode=$exit;receipt=if(Test-Path -LiteralPath $receipt){Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json}else{$null}})
         }
         $gradle = Join-Path $stage 'whist-lab-app/gradlew.bat'
-        $collectionProperties = ConvertFrom-StringData (Get-Content -LiteralPath (Join-Path $stage 'config/gradle-app-collections.properties') -Raw)
-        $appSelections = @($collectionProperties.Values | Sort-Object -Unique | ForEach-Object {
+        $appSelections = @($collections | ForEach-Object {
             $suffix = [Globalization.CultureInfo]::InvariantCulture.TextInfo.ToTitleCase($_)
             [pscustomobject]@{ collection = $_; task = "testDebug${suffix}Components" }
         })
@@ -144,14 +156,17 @@ try {
         try {
             foreach ($selection in $appSelections) {
                 $group = 'whist-lab-app-' + $selection.collection
+                if (!(Select-Group $group)) { continue }
                 Invoke-GradleComponentSelection -Group $group -ProjectPath 'whist-lab-app/app' `
                     -TaskName $selection.task -GradleTask (':app:' + $selection.task) `
                     -Selection $selection.task
             }
-            Invoke-GradleComponentSelection -Group 'whist-lab-app-atf-card-table-ui' `
-                -ProjectPath 'whist-lab-app/atf-card-table-ui' -TaskName 'testDebugUnitTest' `
-                -GradleTask ':atf-card-table-ui:testDebugUnitTest' `
-                -Selection ':atf-card-table-ui:testDebugUnitTest'
+            if (Select-Group 'whist-lab-app-atf-card-table-ui') {
+                Invoke-GradleComponentSelection -Group 'whist-lab-app-atf-card-table-ui' `
+                    -ProjectPath 'whist-lab-app/atf-card-table-ui' -TaskName 'testDebugUnitTest' `
+                    -GradleTask ':atf-card-table-ui:testDebugUnitTest' `
+                    -Selection ':atf-card-table-ui:testDebugUnitTest'
+            }
         } finally { Pop-Location }
     } finally { Pop-Location }
 } finally {

@@ -83,7 +83,8 @@ class ReleaseRagPlatformGovernanceTest {
         assertEquals("reports/component/source-inputs.json", evaluator.path("componentSourceBinding").path("inputManifest").asText());
         assertEquals("reports/component/source-provenance.json", evaluator.path("componentSourceBinding").path("provenanceReceipt").asText());
         assertEquals("reports/component/{group}/execution.json", evaluator.path("componentSourceBinding").path("executionReceiptPattern").asText());
-        assertTrue(evaluator.path("componentSourceBinding").path("sourceSetMustEqualReleaseInputManifest").asBoolean());
+        assertTrue(evaluator.path("componentSourceBinding").path("historicalReuseRequiresUnchangedSuiteInputs").asBoolean());
+        assertTrue(evaluator.path("componentSourceBinding").path("eachReceiptMustBindItsOriginalSourceFingerprint").asBoolean());
         assertTrue(evaluator.path("componentSourceBinding").path("eachExtentMustMatchExecutionReceipt").asBoolean());
         assertTrue(strings(evaluator.path("citationsRequire")).containsAll(List.of("path", "sha256", "jsonPointerAndLineForJson")));
         assertTrue(evaluator.path("doesNotInspectGitIndexOrExecuteGit").asBoolean());

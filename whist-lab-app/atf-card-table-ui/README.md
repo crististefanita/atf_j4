@@ -118,7 +118,11 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 
 ## Atingerea unei cărți indisponibile
 
-Jocul transmite cărțile legale și activează indiciul doar când jucătorul poate muta. O atingere invalidă marchează cartea respinsă în roșu discret și cărțile legale în auriu. Indiciul expiră, dispare la o mutare acceptată și se resetează la refacerea mâinii. Marcajele păstrează geometria evantaiului, inclusiv pe ecrane compacte.
+Jocul transmite cărțile legale și activează indiciul când jucătorul poate muta.
+
+- O atingere invalidă marchează cartea respinsă în roșu discret și cărțile legale în auriu.
+- Indiciul expiră, dispare la o mutare acceptată și se resetează la refacerea mâinii.
+- Marcajele păstrează geometria evantaiului pe ecrane compacte.
 
 ## Levata și informația din chenar
 

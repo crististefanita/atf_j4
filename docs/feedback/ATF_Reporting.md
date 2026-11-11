@@ -64,10 +64,9 @@ Confruntarea inventarului și a hash-urilor dovedește păstrarea identității 
 Dosarele de release păstrează numai raportările produse și identitatea lor originală. Calificarea agregării trebuie să lege fiecare selecție executată de propriul HTML canonic, receipt și amprentă a sursei; o rulare ulterioară nu completează retrospectiv dovezile unui APK deja calificat.
 
 - [ ] Extindeți captura în timpul evaluării la familiile Gradle: input, expected independent, actual și verdict. Păstrați clasificarea semantică și separarea de unități, cercetare și corpus.
-- [ ] Calificați o intrare canonică pentru fiecare selecție încă nemigrată, cu invocări parametrizate distincte și refuz la omisiune, duplicare ori rezultat divergent.
 - [ ] Încorporați datele originale obligatorii înaintea eliminării XML/PNG/JSON istorice. Când comparațiile nu au fost capturate, o nouă execuție primește identitate proprie; tabelul PASS din XML nu reconstruiește expected/actual și nu recalifică APK-ul vechi.
 - [ ] Calificați popularea dosarului candidatului pentru selecțiile Gradle și E2E rămase. Fiecare selecție rulată are HTML Extent canonic, egalitate JUnit–HTML, identitate de sursă și capturile produse inline Base64. Înlocuiți rezultatul XML al aceleiași populații după verificator și revizia autonomă. Păstrați separate suita unit, smoke-ul nativ și diagnosticele cu valoare unică.
-- [ ] Guvernați legătura de la amprenta TMP la APK și commit: același inventar sursă trebuie să fie în candidatul verificat și arborele promovat în `main`; orice diferență invalidează calificarea dependentă.
+- [ ] Calificați automat predarea de la snapshot la tag și descărcare. Păstrați identitatea fiecărei execuții de componentă după [regula de reutilizare](../testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă).
 
 **Închidere:** HTML-urile canonice permit auditul selecțiilor declarate, cu metadate justificate și proveniență distinctă. Dovezile unice nemigrate rămân identificate; eliminarea lor ori mascarea unei dependențe nu reprezintă agregare.
 
