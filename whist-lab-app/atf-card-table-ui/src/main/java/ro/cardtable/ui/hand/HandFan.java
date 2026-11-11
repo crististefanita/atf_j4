@@ -11,6 +11,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import ro.cardtable.ui.cards.CardFaceDrawable;
@@ -29,6 +30,8 @@ public final class HandFan {
     private final boolean compact;
     private final Consumer<String> onCardSelected;
     private final Predicate<HandCard> highlight;
+    private final boolean rejectedTapHint;
+    private static final long HINT_DURATION_MS = 1100L;
 
     public HandFan(Context context, List<HandCard> cards, int clearanceDp, boolean compact, Consumer<String> onCardSelected) {
         this(context, cards, clearanceDp, compact, onCardSelected, card -> false);
@@ -36,9 +39,15 @@ public final class HandFan {
 
     public HandFan(Context context, List<HandCard> cards, int clearanceDp, boolean compact,
             Consumer<String> onCardSelected, Predicate<HandCard> highlight) {
+        this(context, cards, clearanceDp, compact, onCardSelected, highlight, false);
+    }
+
+    public HandFan(Context context, List<HandCard> cards, int clearanceDp, boolean compact,
+            Consumer<String> onCardSelected, Predicate<HandCard> highlight, boolean rejectedTapHint) {
         this.context = context; this.cards = List.copyOf(cards); this.clearanceDp = clearanceDp;
         this.compact = compact; this.onCardSelected = java.util.Objects.requireNonNull(onCardSelected);
         this.highlight = java.util.Objects.requireNonNull(highlight);
+        this.rejectedTapHint = rejectedTapHint;
         if (cards.stream().map(HandCard::id).distinct().count() != cards.size()) throw new IllegalArgumentException("Duplicate visible card identity");
     }
     public View build(int widthPx) {
@@ -58,6 +67,16 @@ public final class HandFan {
         int cardHeightDp = HandLayoutMetrics.cardHeightDp();
         int liftClearanceDp = clearanceDp;
         fan.setTag("player-hand-fan");
+        var input = new HandInput(cards, rejectedTapHint);
+        var faces = new LinkedHashMap<HandCard, CardFaceDrawable>();
+        float density = context.getResources().getDisplayMetrics().density;
+        Runnable repaint = () -> faces.forEach((card, drawable) -> {
+            drawable.restoreStyle(card.playable() ? GOLD : SOFT_BORDER);
+            if (input.rejects(card)) CardHighlightView.paint(drawable, CardHighlight.REJECTED, density);
+            else if (input.suggests(card) || highlight.test(card)) {
+                CardHighlightView.paint(drawable, CardHighlight.IN_PLACE, density);
+            }
+        });
         for (int index = 0; index < cardCount; index++) {
             HandCard card = cards.get(index);
             boolean playable = card.playable();
@@ -68,15 +87,29 @@ public final class HandFan {
             slot.setTag("hand-card:" + card.id());
             slot.setContentDescription(card.description());
             slot.setEnabled(true);
-            slot.setClickable(playable);
+            slot.setClickable(input.acceptsTap(card));
             slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
-            FrameLayout face = cardFace(card, playable, indexWidthPx);
+            var drawable = new CardFaceDrawable(card.face(), density, playable ? GOLD : SOFT_BORDER);
+            faces.put(card, drawable);
+            FrameLayout face = cardFace(card, drawable, indexWidthPx);
             FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(layout.cardWidth(),
                     dp(cardHeightDp), Gravity.TOP | Gravity.START);
             faceParams.topMargin = dp(liftClearanceDp);
             slot.addView(face, faceParams);
-            if (playable) {
+            if (input.acceptsTap(card)) {
                 slot.setOnClickListener(ignored -> {
+                    switch (input.tap(card)) {
+                        case IGNORE -> { return; }
+                        case HINT -> {
+                            repaint.run();
+                            long revision = input.revision();
+                            fan.postDelayed(() -> {
+                                if (input.clearHint(revision)) repaint.run();
+                            }, HINT_DURATION_MS);
+                            return;
+                        }
+                        case PLAY -> repaint.run();
+                    }
                     slot.setClickable(false);
                     slot.setTranslationZ(dp(HandLayoutMetrics.SELECTED_Z_DP));
                     face.animate().translationY(-dp(HandLayoutMetrics.CARD_LIFT_DP))
@@ -94,13 +127,11 @@ public final class HandFan {
             slotParams.leftMargin = layout.left(index);
             fan.addView(slot, slotParams);
         }
+        repaint.run();
         return fan;
     }
-    private FrameLayout cardFace(HandCard card, boolean playable, int indexWidthPx) {
+    private FrameLayout cardFace(HandCard card, CardFaceDrawable background, int indexWidthPx) {
         FrameLayout face = new FrameLayout(context);
-        float density = context.getResources().getDisplayMetrics().density;
-        var background = new CardFaceDrawable(card.face(), density, playable ? GOLD : SOFT_BORDER);
-        if (playable && highlight.test(card)) CardHighlightView.paint(background, CardHighlight.IN_PLACE, density);
         face.setBackground(background);
         face.setFocusable(false);
         face.setClickable(false);

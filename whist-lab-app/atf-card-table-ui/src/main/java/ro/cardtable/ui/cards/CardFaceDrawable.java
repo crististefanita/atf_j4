@@ -15,12 +15,16 @@ public class CardFaceDrawable extends GradientDrawable {
     public CardFaceDrawable(CardFace card, float density, int border) {
         this.card = card;
         this.density = density;
-        setColor(Color.rgb(255, 254, 248));
-        setStroke(Math.round(density), border);
-        setCornerRadius(9 * density);
+        restoreStyle(border);
         ink.setColor(card.red() ? Color.rgb(173, 57, 58) : Color.rgb(42, 53, 47));
         ink.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         ink.setTextAlign(Paint.Align.CENTER);
+    }
+
+    public void restoreStyle(int border) {
+        setColor(Color.rgb(255, 254, 248));
+        setStroke(Math.round(density), border);
+        setCornerRadius(9 * density);
     }
 
     @Override public void draw(Canvas canvas) {

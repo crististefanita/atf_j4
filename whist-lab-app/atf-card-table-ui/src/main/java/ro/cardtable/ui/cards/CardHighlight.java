@@ -3,6 +3,7 @@ package ro.cardtable.ui.cards;
 /** Visual emphasis for a visible card selected by the game. */
 public enum CardHighlight {
     IN_PLACE(1.5f, 9, 0),
+    REJECTED(1.5f, 9, 0),
     RAISED(1f, 6, 8);
 
     private final float strokeDp;
@@ -15,8 +16,8 @@ public enum CardHighlight {
         this.elevationDp = elevationDp;
     }
 
-    public int fill() { return 0xfffff6d7; }
-    public int outline() { return 0xffc99537; }
+    public int fill() { return this == REJECTED ? 0xffffeee8 : 0xfffff6d7; }
+    public int outline() { return this == REJECTED ? 0xffb7544d : 0xffc99537; }
     public float radiusPx(float density) {
         return this == RAISED ? Math.round(radiusDp * density) : radiusDp * density;
     }
