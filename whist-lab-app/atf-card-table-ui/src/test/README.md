@@ -7,7 +7,7 @@ Testele JVM verifică geometria mâinii, modelele de prezentare și frontiera bi
 | Familie | Proprietate verificată |
 |---|---|
 | Masă și cărți | 3–6 locuri, bandă centrală, compactare, însemne și marcaj la densitate fracționară. |
-| Locuri și meniu | Conținutul modelului de prezentare, inclusiv editarea numelui. |
+| Locuri și meniu | Conținutul modelului de prezentare, inclusiv editarea numelui și o înălțime comună a badge-ului pentru etichetele celor două faze. |
 | Realizări | Ordinea catalogului, cheile de restaurare și calculul detaliului la deschidere. |
 | Frontieră | Inventarele de producție, JVM și instrumentare exclud dependențele de joc. |
 

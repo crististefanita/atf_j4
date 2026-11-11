@@ -37,10 +37,20 @@ public final class AutoGameReleaseScenario {
                         c.ui.hasDescription(xml, labels.startAutoGame()))));
 
         c.ui.tapText(labels.autoGameToggle());
+        c.ui.awaitText(labels.playBadge(), Duration.ofSeconds(25));
+        c.checkpoint("AutoGame keeps the acting seat marked during play", xml -> List.of(
+                ReleaseBidContext.equal("Exactly one seat identifies the current player", 1L,
+                        badgeCount(xml, labels.playBadge())),
+                ReleaseBidContext.equal("The visible table retains every seat", 4,
+                        seatFrames(xml, labels).size()),
+                ReleaseBidContext.equal("Autoplay remains active while the actor is marked", true,
+                        c.ui.hasDescription(xml, labels.stopAutoGame()))));
         c.ui.awaitText(labels.handComplete(), Duration.ofSeconds(45));
         c.checkpoint("AutoGame completes the current hand at its real score boundary", xml -> List.of(
                 ReleaseBidContext.equal("One-card hand reached the score screen", true,
-                        c.ui.hasText(xml, labels.handComplete()))));
+                        c.ui.hasText(xml, labels.handComplete())),
+                ReleaseBidContext.equal("The score screen has no stale actor badge", 0L,
+                        badgeCount(xml, labels.playBadge()) + badgeCount(xml, labels.bidBadge()))));
         c.ui.revealText(labels.next());
         c.checkpoint("The score page exposes the continuation action after scrolling when needed", xml -> List.of(
                 ReleaseBidContext.equal("The Next hand button is visible and enabled", true,

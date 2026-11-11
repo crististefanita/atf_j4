@@ -44,12 +44,14 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("/source", citation.path("jsonPointer").asText());
     }
 
-    @Test void aCollectionIntroducedForTheCandidateVersionCannotBeOmittedFromItsPlan() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"whist-lab-app-achievements", "whist-lab-app-atf-card-table-ui"})
+    void aCollectionIntroducedForTheCandidateVersionCannotBeOmittedFromItsPlan(String collection) throws Exception {
         Fixture fixture = fixture();
         ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
         var groups = (com.fasterxml.jackson.databind.node.ArrayNode) plan.path("componentGroups");
         for (int index = groups.size() - 1; index >= 0; index--)
-            if (groups.get(index).asText().equals("whist-lab-app-achievements")) groups.remove(index);
+            if (groups.get(index).asText().equals(collection)) groups.remove(index);
         JSON.writeValue(fixture.plan().toFile(), plan);
 
         int exit = evaluate(fixture, fixture.output());
@@ -58,7 +60,7 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("BLOCKED", verdict.path("verdict").asText());
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_EXTENT"));
         AuditedAssertions.assertTrue(details(verdict, "COMPONENT_EXTENT").stream()
-                .anyMatch(value -> value.contains("whist-lab-app-achievements")));
+                .anyMatch(value -> value.contains(collection)));
     }
 
     @Test void changedSourceAndArtifactBytesBlockWithSeparateDiagnostics() throws Exception {
@@ -329,7 +331,7 @@ class ReleaseRagEvaluatorComponentTest {
         var groups = JSON.createObjectNode(); var runResults = run.putArray("results");
         for (String module : List.of("atf-validation", "atf-test-android", "atf-tests",
                 "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history",
-                "whist-lab-app-achievements")) {
+                "whist-lab-app-achievements", "whist-lab-app-atf-card-table-ui")) {
             int tests = module.equals("atf-tests") ? 3 : module.startsWith("whist-lab-app-") ? 4 : 2;
             Path groupFolder = Files.createDirectories(candidate.resolve("reports/component/" + module));
             Path report = groupFolder.resolve("component-report.html");
@@ -386,7 +388,7 @@ class ReleaseRagEvaluatorComponentTest {
         var selectedGroups = candidatePlan.putArray("componentGroups");
         for (String module : List.of("atf-validation", "atf-test-android", "atf-tests",
                 "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history",
-                "whist-lab-app-achievements")) selectedGroups.add(module);
+                "whist-lab-app-achievements", "whist-lab-app-atf-card-table-ui")) selectedGroups.add(module);
         candidatePlan.set("e2e", JSON.createObjectNode().put("status", "NOT_RUN")
                 .put("rationale", "RAG and governance-only changes; application E2E remains frozen."));
         JSON.writeValue(plan.toFile(), candidatePlan);

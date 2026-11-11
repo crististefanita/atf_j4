@@ -9,7 +9,7 @@ final class TableLayoutMetrics {
     static final int TRUMP_MIN_HEIGHT_DP = 48;
     static final int TRUMP_PADDING_DP = 4;
     static final int TRUMP_VALUE_GAP_DP = 2;
-    static final int HUMAN_HAND_CLEARANCE_DP = 16;
+    static final int HUMAN_HAND_CLEARANCE_DP = 28;
 
     /** Two measured line boxes keep every trump representation in the same frame. */
     static int trumpHeightPx(float density, int headingHeightPx, int valueHeightPx) {
@@ -37,10 +37,10 @@ final class TableLayoutMetrics {
         return new CenterReservation(biddingHeight, playingHeight, Math.max(biddingHeight, playingHeight));
     }
 
-    /** The bid and play screens reserve exactly the same fully visible hand band. */
+    /** The bid and play screens reserve one full face plus its complete lift region. */
     static int privateHandHeightPx(float density) {
-        return Math.round(ro.whistlab.app.hand.HandLayoutMetrics.CARD_HEIGHT_DP * density)
-                + Math.round(ro.whistlab.app.hand.HandLayoutMetrics.LIFT_CLEARANCE_DP * density);
+        return ro.cardtable.ui.hand.HandLayoutMetrics.slotHeightPx(
+                density, ro.whistlab.app.hand.HandLayoutMetrics.LIFT_CLEARANCE_DP);
     }
 
     private TableLayoutMetrics() { }

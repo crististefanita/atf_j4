@@ -19,7 +19,7 @@
 | [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | Dialogul și ruta salvare/resetare; normalizarea, persistența și excepția originală aparțin consumatorului. |
 | [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Însemne, proporții și marcaj crem-auriu. Jocul furnizează cartea vizibilă și decide când se marchează. |
 | [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometrie, centrare/derulare și rendererul `HandFan`; `HandCard` furnizează numai identitate, însemne, accesibilitate și interactivitate. |
-| [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; cadrul și regiunea indicatorului sunt măsurate identic cu reperul Whist. |
+| [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; etichetele se măsoară la lățimea locului, iar cadrul primește aceeași rezervare între faze. |
 | [table](src/main/java/ro/cardtable/ui/table/BoardLayout.java) | Regiuni ocupate, ordine vizuală, viewport și bandă centrală măsurată între locuri. Consumatorul compune conținutul benzii. |
 | [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Așteaptă primul cadru vizibil, aplică intervalul comun și invalidează acțiunea dacă scena s-a schimbat. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |

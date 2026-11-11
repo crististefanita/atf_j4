@@ -15,6 +15,7 @@ Motorul deține datele partidei, iar aplicația Android deține persistența și
 | Prioritate | Calificare rămasă | Criteriu de închidere |
 |---|---|---|
 | P1 | Extinderea calificării native dincolo de profilul compact; componentele nu substituie fonturile și interacțiunea Android. | Profil înalt și text mărit: 13 cărți, levată completă la 5 locuri și succesiunea actorilor la 3/5/6 locuri, cu nume și indici lizibili. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
+| P1 | Actorul vizibil și poziția locurilor nu au fost încă acceptate nativ împreună în modul manual și AutoGame. | Pe APK-ul identificat, verificați licitarea și jocul la 3–6 locuri, în RO/EN și pe profil compact plus text mărit: numai actorul curent are badge, badge-ul rămâne vizibil când AutoGame joacă locul omului, comenzile manuale rămân blocate, iar colectarea levatei și ecranul scorului nu marchează un actor. Locurile nu se deplasează la schimbarea fazei, iar fața și ridicarea cărții rămân vizibile. Componentele verifică proiecția și geometria; numai observația Android cu APK/hash și captură poate închide criteriul. |
 
 [Catalogul livrărilor](../../release/README.md) păstrează proba compactă cu 13 cărți, levată completă la patru locuri și licitare, inclusiv auditul pixelilor indicilor. Calificarea acestui profil nu închide restul matricei.
 

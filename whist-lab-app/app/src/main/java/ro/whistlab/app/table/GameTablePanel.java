@@ -7,6 +7,7 @@ import ro.whistlab.app.hand.CenteredHandView;
 import ro.whistlab.app.hand.HandLayoutMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.seat.PlayerSeatView;
+import ro.whistlab.app.seat.PlayerSeatMetrics;
 import ro.whistlab.app.theme.WhistUiPalette;
 import ro.whistlab.app.window.WindowContent;
 import ro.whistlab.app.table.content.WhistTableContent;
@@ -49,7 +50,8 @@ public final class GameTablePanel extends LinearLayout {
     private final WhistUiText copy;
     private final ViewGroup tableBoard;
     private final boolean bidding;
-    private final boolean interactionPaused;
+    private final WhistTableContent.Turn turn;
+    private final boolean collecting;
     private final List<PlayedCard> completedTrickToDisplay;
     private final Set<Card> playableCards;
     private final Consumer<Card> onCardSelected;
@@ -67,7 +69,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     public void collectCompletedTrick(long remainingMillis, Runnable resized) {
-        if (collectionAttached || !interactionPaused || remainingMillis <= 0) return;
+        if (collectionAttached || !collecting || remainingMillis <= 0) return;
         var request = TrickCollectionRequest.from(state, completedTrickToDisplay);
         if (!request.isPresent()) return;
         collectionAttached = true;
@@ -77,9 +79,16 @@ public final class GameTablePanel extends LinearLayout {
     public static GameTablePanel bidding(Context context, GameSession.Snapshot state,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
             Runnable onBidSubmitted, WhistUiText copy) {
+        return bidding(context, state, bidOptions, selectedBid, onBidSelected, onBidSubmitted,
+                WhistTableContent.turn(state, false, false), copy);
+    }
+
+    public static GameTablePanel bidding(Context context, GameSession.Snapshot state,
+            List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
+            Runnable onBidSubmitted, WhistTableContent.Turn turn, WhistUiText copy) {
         return new GameTablePanel(context, state, true, Collections.emptyList(), null,
                 null, bidOptions, selectedBid, onBidSelected, onBidSubmitted, copy,
-                Collections.emptyList(), false);
+                Collections.emptyList(), turn, false);
     }
 
     public static GameTablePanel playing(Context context, GameSession.Snapshot state,
@@ -92,22 +101,32 @@ public final class GameTablePanel extends LinearLayout {
             List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
             List<PlayedCard> completedTrickToDisplay, WhistUiText copy) {
         return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
-                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay, false);
+                Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay,
+                WhistTableContent.turn(state, false, false), false);
     }
 
     public static GameTablePanel playing(Context context, GameSession.Snapshot state,
             List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
             List<PlayedCard> completedTrickToDisplay, boolean interactionPaused, WhistUiText copy) {
+        return playing(context, state, legalCards, onCardSelected, hint, completedTrickToDisplay,
+                WhistTableContent.turn(state, interactionPaused, false), interactionPaused, copy);
+    }
+
+    public static GameTablePanel playing(Context context, GameSession.Snapshot state,
+            List<Card> legalCards, Consumer<Card> onCardSelected, String hint,
+            List<PlayedCard> completedTrickToDisplay, WhistTableContent.Turn turn,
+            boolean collecting, WhistUiText copy) {
         return new GameTablePanel(context, state, false, legalCards, onCardSelected, hint,
                 Collections.emptyList(), 0, null, null, copy, completedTrickToDisplay,
-                interactionPaused);
+                turn, collecting);
     }
 
     private GameTablePanel(Context context, GameSession.Snapshot state, boolean bidding,
             List<Card> playableCards, Consumer<Card> onCardSelected, String hint,
             List<Integer> bidOptions, int selectedBid, IntConsumer onBidSelected,
             Runnable onBidSubmitted,
-            WhistUiText copy, List<PlayedCard> completedTrickToDisplay, boolean interactionPaused) {
+            WhistUiText copy, List<PlayedCard> completedTrickToDisplay,
+            WhistTableContent.Turn turn, boolean collecting) {
         super(context);
         this.context = context;
         this.viewport = new TableViewportPolicy(WindowContent.heightDp(context),
@@ -115,7 +134,8 @@ public final class GameTablePanel extends LinearLayout {
         this.state = state;
         this.copy = copy;
         this.bidding = bidding;
-        this.interactionPaused = interactionPaused;
+        this.turn = java.util.Objects.requireNonNull(turn);
+        this.collecting = collecting;
         this.completedTrickToDisplay = List.copyOf(completedTrickToDisplay);
         this.playableCards = new HashSet<>(playableCards);
         this.onCardSelected = onCardSelected;
@@ -168,6 +188,12 @@ public final class GameTablePanel extends LinearLayout {
                 state.handSize(), tableWidthDp, fontScale, viewport).reservedHeightDp();
         int centerWidthDp = bidding ? bidLayout.centerWidthDp()
                 : trickLayout.safeCenterWidthDp();
+        float density = getResources().getDisplayMetrics().density;
+        int boardWidthDp = Math.round(dp(tableWidthDp) / density);
+        int seatWidthPx = dp(TableLayoutMetrics.seatWidthDp(boardWidthDp, viewport.isCompact()));
+        int stableBadgeHeightPx = PlayerSeatMetrics.stableBadgeHeightPx(
+                PlayerSeatView.measureActionHeightPx(context, copy.seatTurnBadge(true), seatWidthPx),
+                PlayerSeatView.measureActionHeightPx(context, copy.seatTurnBadge(false), seatWidthPx));
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
                 viewport, !bidding, reservedCenterHeightDp, TableLayoutMetrics.humanHandClearanceDp(),
                 bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
@@ -178,7 +204,7 @@ public final class GameTablePanel extends LinearLayout {
         board.setClipChildren(false);
 
         for (GameSession.PlayerSnapshot player : state.players()) {
-            board.addView(buildSeat(player));
+            board.addView(buildSeat(player, stableBadgeHeightPx));
         }
         View center = bidding ? buildBiddingCenter(tableWidthDp) : buildCurrentTrick(trickLayout);
         board.addView(center);
@@ -210,8 +236,8 @@ public final class GameTablePanel extends LinearLayout {
                 choice.setStateListAnimator(null);
                 choice.setTag("bid-choice:" + bid);
                 choice.setSelected(bid == selectedBid);
-                choice.setEnabled(state.biddingSeat() == 0 && !interactionPaused);
-                choice.setAlpha(state.biddingSeat() == 0 && !interactionPaused ? 1f : 0.5f);
+                choice.setEnabled(turn.manual());
+                choice.setAlpha(turn.manual() ? 1f : 0.5f);
                 choice.setFocusable(true);
                 styleBidChoice(choice, bid == selectedBid);
                 choice.setOnClickListener(ignored -> selectBid(bid));
@@ -257,7 +283,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     private void selectBid(int bid) {
-        if (state.biddingSeat() != 0 || interactionPaused) return;
+        if (!turn.manual()) return;
         selectedBid = bid;
         updateBidSubmission();
         for (Button choice : bidChoiceButtons) {
@@ -269,7 +295,7 @@ public final class GameTablePanel extends LinearLayout {
     }
 
     private void updateBidSubmission() {
-        boolean available = state.biddingSeat() == 0 && !interactionPaused && bidOptions.contains(selectedBid);
+        boolean available = turn.manual() && bidOptions.contains(selectedBid);
         bidSubmitButton.setEnabled(available);
         bidSubmitButton.setAlpha(available ? 1f : 0.5f);
     }
@@ -287,14 +313,12 @@ public final class GameTablePanel extends LinearLayout {
         choice.setContentDescription(copy.bidChoiceDescription(bid, selected));
     }
 
-    private View buildSeat(GameSession.PlayerSnapshot player) {
-        int activeSeat = bidding ? state.biddingSeat() : state.currentSeat();
-        var content = WhistTableContent.seat(player, activeSeat,
-                state.dealerSeat(), interactionPaused, bidding, copy);
+    private View buildSeat(GameSession.PlayerSnapshot player, int stableBadgeHeightPx) {
+        var content = WhistTableContent.seat(player, turn.seat(), state.dealerSeat(), bidding, copy);
         LinearLayout frame = new PlayerSeatFrame(context, viewport.isCompact())
                 .buildInlineFacts(content, viewport.seatVerticalPaddingDp());
         return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding), content.active(),
-                player.seat(), viewport.isCompact());
+                player.seat(), viewport.isCompact(), stableBadgeHeightPx);
     }
 
     private View buildCurrentTrick(TrickCardMetrics.Layout layout) {
@@ -308,7 +332,7 @@ public final class GameTablePanel extends LinearLayout {
         int count = state.players().get(0).hand().size();
         CenteredHandView hand = new CenteredHandView(context, dp(HandLayoutMetrics.maxViewportWidthDp()),
                 new HandFan(context,
-                        WhistTableContent.hand(state, playableCards, onCardSelected != null, bidding, copy),
+                        WhistTableContent.hand(state, playableCards, turn, bidding, copy),
                         HandLayoutMetrics.LIFT_CLEARANCE_DP, viewport.isCompact(),
                         id -> onCardSelected.accept(WhistTableContent.selected(state.players().get(0).hand(), id)))::build);
         hand.setContentDescription(copy.handAccessibility(count));

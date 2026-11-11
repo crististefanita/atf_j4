@@ -15,6 +15,11 @@ public final class PlayerSeatMetrics {
         return ro.cardtable.ui.seat.PlayerSeatMetrics.frameHeightPx(naturalHeightPx);
     }
 
+    public static int stableBadgeHeightPx(int biddingBadgeHeightPx, int playingBadgeHeightPx) {
+        return ro.cardtable.ui.seat.PlayerSeatMetrics.stableBadgeHeightPx(
+                biddingBadgeHeightPx, playingBadgeHeightPx);
+    }
+
     public static Plan arrange(int naturalFrameHeightPx, int measuredBadgeHeightPx, int gapPx) {
         var plan = ro.cardtable.ui.seat.PlayerSeatMetrics.arrange(naturalFrameHeightPx, measuredBadgeHeightPx, gapPx);
         return new Plan(plan.badgeHeightPx(), plan.frameTopPx(), plan.frameHeightPx(), plan.heightPx());

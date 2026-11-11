@@ -62,6 +62,10 @@
         {
           "group": "whist-lab-app-achievements",
           "sinceReleaseVersion": "0.18.0"
+        },
+        {
+          "group": "whist-lab-app-atf-card-table-ui",
+          "sinceReleaseVersion": "0.20.2"
         }
       ]
     },

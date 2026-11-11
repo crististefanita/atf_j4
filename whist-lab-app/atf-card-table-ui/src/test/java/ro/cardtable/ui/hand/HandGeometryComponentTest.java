@@ -29,4 +29,34 @@ public final class HandGeometryComponentTest extends atf.gradle.audit.GradleAudi
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->HandLayoutMetrics.fan(8,360,Float.NaN,1f,18));
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->CardFaceMetrics.atHeight(0));
     }
+
+    @Test public void completeFaceAndLiftRemainInsideEachSlotAtFractionalDensities() {
+        float[] densities = {1f, 1.5f, 2f, 2.25f, 2.625f, 2.75f, 3.5f};
+        int[] clearances = {16, 28};
+        for (float density : densities) for (int clearanceDp : clearances) {
+            int facePx = Math.round(HandLayoutMetrics.CARD_HEIGHT_DP * density);
+            int clearancePx = Math.round(clearanceDp * density);
+            int slotPx = HandLayoutMetrics.slotHeightPx(density, clearanceDp);
+
+            atf.gradle.audit.GradleInputs.fixture("Card slot contains separately rounded face and lift",
+                    "density", density, "clearanceDp", clearanceDp, "facePx", facePx,
+                    "clearancePx", clearancePx, "slotPx", slotPx);
+            assertEquals("The complete face and lift fit without a one-pixel rounding loss",
+                    facePx + clearancePx, slotPx);
+        }
+        float selectedScaleOverflowDp = (HandLayoutMetrics.CARD_LIFT_SCALE - 1f)
+                * HandLayoutMetrics.CARD_HEIGHT_DP / 2f;
+        float selectedTopDp = HandLayoutMetrics.LIFT_CLEARANCE_DP - HandLayoutMetrics.CARD_LIFT_DP
+                - selectedScaleOverflowDp;
+        float selectedBottomDp = HandLayoutMetrics.LIFT_CLEARANCE_DP
+                + HandLayoutMetrics.CARD_HEIGHT_DP - HandLayoutMetrics.CARD_LIFT_DP
+                + selectedScaleOverflowDp;
+        assertTrue("The lifted card face stays below the top of its slot", selectedTopDp >= 0);
+        assertTrue("The lifted card face and scale stay inside its slot",
+                selectedBottomDp <= HandLayoutMetrics.reservedHandHeightDp());
+        assertThrows("A nonpositive density is rejected", IllegalArgumentException.class,
+                () -> HandLayoutMetrics.slotHeightPx(0f, 28));
+        assertThrows("A negative lift region is rejected", IllegalArgumentException.class,
+                () -> HandLayoutMetrics.slotHeightPx(1f, -1));
+    }
 }

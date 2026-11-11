@@ -82,49 +82,76 @@ try {
             $suffix = [Globalization.CultureInfo]::InvariantCulture.TextInfo.ToTitleCase($_)
             [pscustomobject]@{ collection = $_; task = "testDebug${suffix}Components" }
         })
+        function Invoke-GradleComponentSelection {
+            param(
+                [string]$Group,
+                [string]$ProjectPath,
+                [string]$TaskName,
+                [string]$GradleTask,
+                [string]$Selection
+            )
+            & $gradle --no-daemon --offline --console=plain $GradleTask `
+                "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" `
+                *> (Join-Path $stage ($Group + '.log'))
+            $exit = $LASTEXITCODE
+            $projectName = Split-Path -Leaf $ProjectPath
+            $generated = Join-Path $RunRoot ("whist-lab-app-" + $projectName + "-" + $TaskName + '.html')
+            $destination = Join-Path $RunRoot $Group
+            New-Item -ItemType Directory -Path $destination -Force | Out-Null
+            $report = Join-Path $destination 'component-report.html'
+            if (Test-Path -LiteralPath $generated -PathType Leaf) {
+                Move-Item -LiteralPath $generated -Destination $report -Force
+            }
+            $xmlDirectory = Join-Path $stage (Join-Path $ProjectPath "build/test-results/$TaskName")
+            $xmlFiles = if (Test-Path -LiteralPath $xmlDirectory -PathType Container) {
+                @(Get-ChildItem -LiteralPath $xmlDirectory -Filter '*.xml' -File)
+            } else { @() }
+            $totals = [ordered]@{PASS=0;FAIL=0;ERROR=0;SKIP=0}
+            foreach ($xmlFile in $xmlFiles) {
+                [xml]$junit = Get-Content -LiteralPath $xmlFile.FullName -Raw
+                $suites = @($junit.SelectNodes('/testsuite | /testsuites/testsuite'))
+                if (-not $suites.Count) { throw "JUnit XML fără testsuite: $($xmlFile.Name)" }
+                foreach ($suite in $suites) {
+                    $testCount = [int]$suite.GetAttribute('tests')
+                    $failCount = [int]$suite.GetAttribute('failures')
+                    $errorCount = [int]$suite.GetAttribute('errors')
+                    $skipCount = [int]$suite.GetAttribute('skipped')
+                    $totals.PASS += $testCount - $failCount - $errorCount - $skipCount
+                    $totals.FAIL += $failCount; $totals.ERROR += $errorCount; $totals.SKIP += $skipCount
+                }
+            }
+            $testCount = $totals.PASS + $totals.FAIL + $totals.ERROR + $totals.SKIP
+            $reportHash = if (Test-Path -LiteralPath $report -PathType Leaf) {
+                (Get-FileHash -LiteralPath $report -Algorithm SHA256).Hash.ToLowerInvariant()
+            } else { $null }
+            $accepted = $exit -eq 0 -and $testCount -gt 0 -and $totals.FAIL -eq 0 -and
+                $totals.ERROR -eq 0 -and $totals.SKIP -eq 0 -and [bool]$reportHash
+            $recordedExit = if ($accepted) { 0 } elseif ($exit -eq 0) { 1 } else { $exit }
+            $execution = [ordered]@{
+                schemaVersion=1;kind='live-source-components';apkQualification=$false;selection=$Selection
+                tests=$testCount;outcomes=$totals;coverageErrors=@();containerFailures=@()
+                provenanceSha256=$provenanceFingerprint;reportSha256=$reportHash
+            }
+            if ($reportHash) {
+                $execution | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destination 'execution.json') -Encoding utf8
+            }
+            $results.Add([pscustomobject]@{
+                module=$Group;suite=$Selection;exitCode=$recordedExit
+                receipt=if($reportHash){$execution}else{$null}
+            })
+        }
         Push-Location (Join-Path $stage 'whist-lab-app')
         try {
             foreach ($selection in $appSelections) {
                 $group = 'whist-lab-app-' + $selection.collection
-                $taskName = $selection.task
-                & $gradle --no-daemon --offline --console=plain (':app:' + $taskName) "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" *> (Join-Path $stage ($group + '.log'))
-                $exit = $LASTEXITCODE
-                $generated = Join-Path $RunRoot ("whist-lab-app-app-" + $taskName + '.html')
-                $destination = Join-Path $RunRoot $group
-                New-Item -ItemType Directory -Path $destination -Force | Out-Null
-                $report = Join-Path $destination 'component-report.html'
-                if (Test-Path -LiteralPath $generated -PathType Leaf) { Move-Item -LiteralPath $generated -Destination $report -Force }
-                $xmlDirectory = Join-Path $stage ("whist-lab-app/app/build/test-results/" + $taskName)
-                $xmlFiles = if (Test-Path -LiteralPath $xmlDirectory -PathType Container) { @(Get-ChildItem -LiteralPath $xmlDirectory -Filter '*.xml' -File) } else { @() }
-                $totals = [ordered]@{PASS=0;FAIL=0;ERROR=0;SKIP=0}
-                foreach ($xmlFile in $xmlFiles) {
-                    [xml]$junit = Get-Content -LiteralPath $xmlFile.FullName -Raw
-                    $suites = @($junit.SelectNodes('/testsuite | /testsuites/testsuite'))
-                    if (-not $suites.Count) { throw "JUnit XML fără testsuite: $($xmlFile.Name)" }
-                    foreach ($suite in $suites) {
-                        $testCount = [int]$suite.GetAttribute('tests')
-                        $failCount = [int]$suite.GetAttribute('failures')
-                        $errorCount = [int]$suite.GetAttribute('errors')
-                        $skipCount = [int]$suite.GetAttribute('skipped')
-                        $totals.PASS += $testCount - $failCount - $errorCount - $skipCount
-                        $totals.FAIL += $failCount; $totals.ERROR += $errorCount; $totals.SKIP += $skipCount
-                    }
-                }
-                $testCount = $totals.PASS + $totals.FAIL + $totals.ERROR + $totals.SKIP
-                $reportHash = if (Test-Path -LiteralPath $report -PathType Leaf) { (Get-FileHash -LiteralPath $report -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
-                $accepted = $exit -eq 0 -and $testCount -gt 0 -and $totals.FAIL -eq 0 -and $totals.ERROR -eq 0 -and $totals.SKIP -eq 0 -and [bool]$reportHash
-                $recordedExit = if ($accepted) { 0 } elseif ($exit -eq 0) { 1 } else { $exit }
-                $execution = [ordered]@{
-                    schemaVersion=1;kind='live-source-components';apkQualification=$false;selection=$taskName
-                    tests=$testCount;outcomes=$totals;coverageErrors=@();containerFailures=@()
-                    provenanceSha256=$provenanceFingerprint;reportSha256=$reportHash
-                }
-                if ($reportHash) { $execution | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destination 'execution.json') -Encoding utf8 }
-                $results.Add([pscustomobject]@{
-                    module=$group;suite=$taskName;exitCode=$recordedExit
-                    receipt=if($reportHash){$execution}else{$null}
-                })
+                Invoke-GradleComponentSelection -Group $group -ProjectPath 'whist-lab-app/app' `
+                    -TaskName $selection.task -GradleTask (':app:' + $selection.task) `
+                    -Selection $selection.task
             }
+            Invoke-GradleComponentSelection -Group 'whist-lab-app-atf-card-table-ui' `
+                -ProjectPath 'whist-lab-app/atf-card-table-ui' -TaskName 'testDebugUnitTest' `
+                -GradleTask ':atf-card-table-ui:testDebugUnitTest' `
+                -Selection ':atf-card-table-ui:testDebugUnitTest'
         } finally { Pop-Location }
     } finally { Pop-Location }
 } finally {

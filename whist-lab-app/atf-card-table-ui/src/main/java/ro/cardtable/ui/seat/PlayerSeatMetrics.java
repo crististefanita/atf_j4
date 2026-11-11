@@ -19,6 +19,14 @@ public final class PlayerSeatMetrics {
         return Math.toIntExact((naturalHeightPx * 5L + 3) / 4);
     }
 
+    /** One phase-independent badge slot sized for both measured action labels. */
+    public static int stableBadgeHeightPx(int biddingBadgeHeightPx, int playingBadgeHeightPx) {
+        if (biddingBadgeHeightPx < 1 || playingBadgeHeightPx < 1) {
+            throw new IllegalArgumentException("Both phase badges must have positive measured heights");
+        }
+        return Math.max(biddingBadgeHeightPx, playingBadgeHeightPx);
+    }
+
     public static Plan arrange(int naturalFrameHeightPx, int measuredBadgeHeightPx, int gapPx) {
         return arrange(naturalFrameHeightPx, measuredBadgeHeightPx, gapPx, 0);
     }

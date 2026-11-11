@@ -12,7 +12,7 @@ Componentele aplicației, motorului, jucătorului independent, bibliotecii grafi
 | Motor | Unități și componente de reguli, scor și decizie; colecțiile de învățare se activează separat. |
 | Jucător independent | `:ai-lab:test` verifică observații publice, decizii legale, bugete și izolarea classpath-ului de producție. |
 | Referințe experimentale | Suprapunerile de surse se păstrează separat de colecțiile Gradle curente. |
-| Interfață comună | Prezentare neutră și frontiere; regulile jocului rămân în consumator. |
+| Interfață comună | Prezentare neutră și frontiere; regulile jocului rămân în consumator. Testele JVM se califică separat de colecțiile aplicației. |
 | Raster | Componente JVM cu imagini sintetice și oracole independente ale pixelilor. |
 | Puntea auditului | Componente controlate pentru lifecycle, captură, refuz, parametrizare și publicare. |
 
@@ -25,8 +25,9 @@ Componentele aplicației, motorului, jucătorului independent, bibliotecii grafi
 | Istoric | `testDebugHistoryComponents`: scor, serii, tabel și geometrie. |
 | Afișare | `testDebugDisplayComponents`: modele de prezentare, masă, cărți și localizare. |
 | Realizări | `testDebugAchievementsComponents`: catalog, fapte de joc, progres durabil și notificări confirmate de utilizator. |
+| Interfață comună | `:atf-card-table-ui:testDebugUnitTest`: geometria mâinii și stabilitatea cadrului etichetelor de acțiune. |
 
-Intrarea `testDebugUnitTest` deleagă colecțiilor, fără a repeta populația. Acestea păstrează toate cazurile și comparațiile și limitează memoria publicării prin responsabilități independente, cu un HTML canonic per task; compilarea și semnarea APK-ului Release se califică separat.
+Intrarea `testDebugUnitTest` deleagă colecțiilor, fără a repeta populația. Modulul comun `atf-card-table-ui` are un task separat și un HTML canonic distinct; nu se amestecă în colecțiile aplicației. Acestea păstrează cazurile și comparațiile și limitează memoria publicării prin responsabilități independente; compilarea și semnarea APK-ului Release se califică separat.
 
 [Catalogul](../../config/gradle-audit-collections.properties) atribuie o singură categorie fiecărei clase. Categoria nu schimbă oracolul și nu include automat clasa în selecția release-ului. O colecție focalizată rămâne submulțime declarată; rularea ei și a colecției mari nu creează două populații unice.
 

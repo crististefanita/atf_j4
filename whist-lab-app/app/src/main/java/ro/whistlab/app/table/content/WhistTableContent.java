@@ -10,25 +10,43 @@ import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.session.GameSession;
-import ro.whistlab.core.session.GamePhase;
 /** Projects the original Whist snapshot and copy; no rule or point computation moves into UI. */
 public final class WhistTableContent {
     private WhistTableContent() { }
+
+    /** Public actor and whether the human may act; autoplay never hides the actor. */
+    public record Turn(int seat, boolean manual) {
+        public Turn {
+            if (seat < -1 || seat > 5) throw new IllegalArgumentException("Invalid active seat");
+            if (manual && seat != 0) throw new IllegalArgumentException("Only the human seat can act manually");
+        }
+    }
+
+    public static Turn turn(GameSession.Snapshot state, boolean collecting, boolean autoGame) {
+        java.util.Objects.requireNonNull(state);
+        int seat = collecting ? -1 : switch (state.phase()) {
+            case BIDDING -> state.biddingSeat();
+            case PLAYING -> state.currentSeat();
+            case SCORE -> -1;
+        };
+        return new Turn(seat, seat == 0 && !collecting && !autoGame);
+    }
+
     public static SeatContent seat(GameSession.PlayerSnapshot player, int activeSeat, int dealerSeat,
-            boolean paused, boolean bidding, WhistUiText copy) {
-        boolean active = !paused && player.seat() == activeSeat;
+            boolean bidding, WhistUiText copy) {
+        boolean active = player.seat() == activeSeat;
         return new SeatContent(player.seat(), copy.seatName(player), List.of(
                 new SeatContent.Fact(copy.bidLabel() + ":", player.bid() == null ? "—" : player.bid().toString()),
                 new SeatContent.Fact(copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()))),
                 active, copy.seatAccessibility(player, player.seat() == dealerSeat, active, bidding));
     }
     public static List<HandCard> hand(GameSession.Snapshot state, Set<Card> legalCards,
-            boolean callbackAvailable, boolean bidding, WhistUiText copy) {
-        boolean humanTurn = state.phase() != GamePhase.PLAYING || state.currentSeat() == 0;
+            Turn turn, boolean bidding, WhistUiText copy) {
+        java.util.Objects.requireNonNull(turn);
         return state.players().get(0).hand().stream().map(card -> {
-            boolean playable = !bidding && callbackAvailable && legalCards.contains(card);
+            boolean playable = !bidding && turn.manual() && legalCards.contains(card);
             return new HandCard(id(card), WhistCardFace.from(card), copy.cardLabel(card) + ". "
-                    + copy.cardState(bidding, humanTurn, playable), playable);
+                    + copy.cardState(bidding, turn.manual(), playable), playable);
         }).collect(java.util.stream.Collectors.collectingAndThen(java.util.stream.Collectors.toList(), List::copyOf));
     }
     public static List<PlayedCardContent> plays(GameSession.Snapshot state, List<PlayedCard> visible, WhistUiText copy) {

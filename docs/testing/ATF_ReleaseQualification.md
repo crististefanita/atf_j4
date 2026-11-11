@@ -130,6 +130,7 @@ Snapshot-ul fixat este baza tuturor selecțiilor. RAG-ul verifică receipt-urile
 | `atf-validation`, `atf-test-android`, `atf-tests` | Fiecare suită Maven primară are HTML Extent canonic și rezultate fără FAIL/ERROR/SKIP. |
 | `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Colecțiile Android de bază; fiecare are HTML Extent și receipt proprii, legate de aceeași amprentă ca APK-ul. |
 | `whist-lab-app-achievements` | Colecție introdusă prin `introducedComponentGroupsByPlatform`; `sinceReleaseVersion` o face obligatorie de la pragul declarat. Raportul este separat, iar JUnit XML singur nu satisface poarta. |
+| `whist-lab-app-atf-card-table-ui` | Suită JVM distinctă pentru contractele bibliotecii grafice comune; introdusă la `0.20.2`, cu Extent și receipt separat. |
 | Fiecare grup selectat | Receipt propriu și aceleași căi/hash-uri de sursă ca build-ul APK; `source-provenance.json` leagă manifestul și receiptele native prin SHA-256 al octeților JSON păstrați. |
 
 Schimbările vizibile în fluxul utilizatorului cer un E2E focalizat pe acel flux. Pentru catalogul realizărilor, selecția de release deschide ecranul din APK-ul semnat, verifică progresul local și revine la pagina principală; testele de componentă păstrează oracolele pentru praguri, deduplicare și persistența popup-ului.

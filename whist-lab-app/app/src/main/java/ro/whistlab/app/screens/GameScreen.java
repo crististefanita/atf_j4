@@ -2,6 +2,7 @@ package ro.whistlab.app.screens;
 
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.table.GameTablePanel;
+import ro.whistlab.app.table.content.WhistTableContent;
 import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.table.TrumpIndicatorView;
 import ro.cardtable.ui.screens.GameTitleBar;
@@ -65,8 +66,9 @@ public final class GameScreen {
         views.applyTableWindowChrome();
         LinearLayout page = tablePage(state.handNumber());
         addGameHeader(page, state, !autoGame, copy, actions);
+        var turn = WhistTableContent.turn(state, false, autoGame);
         GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted,
-                copy);
+                turn, copy);
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
     }
@@ -77,13 +79,14 @@ public final class GameScreen {
         views.applyTableWindowChrome();
         LinearLayout page = tablePage(state.handNumber());
         addGameHeader(page, state, !pauseActive && !autoGame, copy, actions);
-        boolean humanTurn = !pauseActive && !autoGame && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
+        var turn = WhistTableContent.turn(state, pauseActive, autoGame);
+        boolean humanTurn = turn.manual();
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
         List<Card> legal = GameRules.legalCards(state.players().get(0).hand(), ledSuit, state.trump(), state.mode());
         String instruction = humanTurn ? copy.playHint(state) : null;
         GameTablePanel table = GameTablePanel.playing(activity, state,
                 humanTurn ? legal : java.util.Collections.emptyList(),
-                selected, instruction, completedTrick, pauseActive || autoGame, copy);
+                selected, instruction, completedTrick, turn, pauseActive, copy);
         currentTable = table;
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));

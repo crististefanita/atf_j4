@@ -8,7 +8,7 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 
 | Familie | Intrare controlată și oracol |
 |---|---|
-| Layout și text | Dimensiuni, densitate, font și număr de locuri; limite și măsurători independente. |
+| Layout și text | Dimensiuni, densitate, font și număr de locuri; măsurarea etichetei active, spațiul stabil între faze și fața completă a cărții ridicate. |
 | Adaptoare UI comune | [Textele și callback-urile](java/ro/whistlab/app/screens/WhistMenuContentComponentTest.java) și [toate fețele de carte](java/ro/whistlab/app/cards/WhistCardFaceComponentTest.java) păstrează semantica Whist la frontiera bibliotecii. |
 | Selecția licitației | [Matricea contextuală](java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java): 1–8 cărți, 3–6 locuri și fiecare poziție de licitare; observație publică, evaluare Hard și oracol aritmetic independent pentru legalitate. |
 | Acțiunile la licitare | [Componentele de layout](java/ro/whistlab/app/bidding/AutoGameBidActionComponentTest.java) verifică rândurile centrate, conturul redus separat de zona tactilă, densitățile și spațiul recuperat pentru textul mărit. [Componenta meniului](java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) verifică opțiunea de oprire în RO și EN, numai în timpul automatizării. |
@@ -18,6 +18,7 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 | Calibrarea realizărilor | [Jocurile offline pereche](java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) folosesc politicile AI reale pe seed-uri repetabile, compară progresul per partidă cu progresul cumulativ și verifică persistența/replay-ul. Sunt excluse din colecția rapidă; `:app:testDebugAchievementCalibration` rulează separat, pe intervale externe și disjuncte, pentru 3–6 locuri și variante românești 1–8–1/8–1–8. Rezultatele măsoară auto-jocul, eligibilitatea și realizările pe meci și nu estimează reușita umană. |
 | Persistență și istoric | Comenzi legale, checkpoint JSON, solduri și migrare; refuzul datelor corupte. |
 | Ciclu de viață | Ceas, executor, navigare și callback-uri controlate; anulare și reluare fără efect repetat. |
+| Actorul mesei | [Proiecția Whist](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică actorul la licitare și joc pentru 3–6 locuri, marcajul în AutoGame, lipsa marcajului la colectarea levatei și dezactivarea coerentă a comenzilor umane. |
 | Colectarea levatei | Geometrie, jucători, ultima levată și evenimente întârziate; starea partidei se păstrează. |
 
 ## Execuție și limite
@@ -40,6 +41,6 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 
 ## Proiecția Whist a mesei comune
 
-[WhistTableContentComponentTest](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică toate modurile Whist și mesele de 3–6 locuri: faptele și accesibilitatea, actorul suspendat, ordinea și identitatea cărților, callback-ul indisponibil și levata publică completată. Testul folosește motorul Whist real și rămâne în aplicație.
+[WhistTableContentComponentTest](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică toate modurile Whist și mesele de 3–6 locuri: faptele și accesibilitatea, actorul la licitare/joc/AutoGame/colectare, ordinea și identitatea cărților, controlul uman dezactivat și levata publică completată. Testul folosește motorul Whist real și rămâne în aplicație.
 
 Componentele din bibliotecă nu importă această sesiune. Ele verifică prezentarea neutră; fiecare adaptor păstrează oracolele propriilor reguli, alegeri, secvențe și punctaj.

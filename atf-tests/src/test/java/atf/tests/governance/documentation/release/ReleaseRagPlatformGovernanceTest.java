@@ -106,7 +106,7 @@ class ReleaseRagPlatformGovernanceTest {
         assertFalse(cli.contains("spawn("));
     }
 
-    @Test void everyDeclaredApplicationCollectionIsIncludedInReleaseExtentAndRag() throws Exception {
+    @Test void everyDeclaredApplicationAndSharedUiCollectionIsIncludedInReleaseExtentAndRag() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         var packageOwners = new java.util.Properties();
         try (var reader = Files.newBufferedReader(root.resolve("config/gradle-app-collections.properties"))) {
@@ -114,14 +114,16 @@ class ReleaseRagPlatformGovernanceTest {
         }
         var expectedGroups = packageOwners.values().stream().map(Object::toString).distinct().sorted()
                 .map(value -> "whist-lab-app-" + value).toList();
+        var allExpectedGroups = new java.util.TreeSet<>(expectedGroups);
+        allExpectedGroups.add("whist-lab-app-atf-card-table-ui");
         JsonNode rag = policy().path("ragEvaluator");
         var declaredGroups = new java.util.TreeSet<String>();
         strings(rag.path("requiredComponentGroupsByPlatform").path("android")).stream()
                 .filter(value -> value.startsWith("whist-lab-app-")).forEach(declaredGroups::add);
         rag.path("introducedComponentGroupsByPlatform").path("android").forEach(rule ->
                 declaredGroups.add(rule.path("group").asText()));
-        assertEquals(new java.util.TreeSet<>(expectedGroups), declaredGroups,
-                "Each application component collection must have its own release Extent gate");
+        assertEquals(allExpectedGroups, declaredGroups,
+                "Each application and shared UI component collection must have its own release Extent gate");
 
         boolean achievementVersionIsDeclared = false;
         for (JsonNode rule : rag.path("introducedComponentGroupsByPlatform").path("android")) {
@@ -132,14 +134,28 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(achievementVersionIsDeclared,
                 "A new release collection starts at its first qualified version without rewriting historical manifests");
 
+        boolean sharedUiVersionIsDeclared = false;
+        for (JsonNode rule : rag.path("introducedComponentGroupsByPlatform").path("android")) {
+            if (!rule.path("group").asText().equals("whist-lab-app-atf-card-table-ui")) continue;
+            assertEquals("0.20.2", rule.path("sinceReleaseVersion").asText());
+            sharedUiVersionIsDeclared = true;
+        }
+        assertTrue(sharedUiVersionIsDeclared,
+                "The shared UI component suite must become mandatory with the release that first reports it");
+
         String runner = Files.readString(root.resolve("scripts/run-component-suites.ps1"));
         assertTrue(runner.contains("gradle-app-collections.properties"),
                 "Release Extent selections must be discovered from the application collection catalog");
         assertTrue(runner.contains("ToTitleCase($_)"),
                 "Each catalog collection must resolve to its matching Gradle component task");
+        assertTrue(runner.contains(":atf-card-table-ui:testDebugUnitTest"),
+                "The shared UI module must execute as a separate Extent selection");
         assertTrue(Files.readString(root.resolve("docs/testing/ATF_GradleComponents.md"))
                 .contains("testDebugAchievementsComponents"),
                 "The achievements suite must be documented as a primary collection");
+        assertTrue(Files.readString(root.resolve("docs/testing/ATF_GradleComponents.md"))
+                .contains(":atf-card-table-ui:testDebugUnitTest"),
+                "The shared UI suite must be documented as its own primary selection");
     }
 
     @Test void changeRiskSelectsCoverageInsteadOfTheVersionLabel() throws Exception {

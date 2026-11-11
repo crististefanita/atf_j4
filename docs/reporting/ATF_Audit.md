@@ -65,7 +65,7 @@ Fiecare producător se califică pe suprafața API efectiv folosită. Trecerea u
 
 ## Agregarea componentelor pe sursa live
 
-[Lansatorul componentelor](../../scripts/run-component-suites.ps1) execută intrările primare de componentă din [catalogul Maven](../../config/atf-test-suites.json) și cele patru colecții Gradle ale aplicației (comenzi, licitare, afișaj și istoric). Compilarea și cache-ul Maven aparțin unei copii TMP; fiecare modul și selecție Gradle produce propriul HTML Extent cu invocări distincte, comparațiile evaluate și proveniența surselor. Cele patru HTML-uri Gradle nu se concatenează într-un raport sintetic.
+[Lansatorul componentelor](../../scripts/run-component-suites.ps1) execută intrările primare de componentă din [catalogul Maven](../../config/atf-test-suites.json), colecțiile Gradle declarate ale aplicației și selecția distinctă a bibliotecii UI comune. Compilarea și cache-ul Maven aparțin unei copii TMP; fiecare modul și selecție Gradle produce propriul HTML Extent cu invocări distincte, comparațiile evaluate și proveniența surselor. Rapoartele Gradle nu se concatenează într-un raport sintetic.
 
 ```mermaid
 flowchart LR

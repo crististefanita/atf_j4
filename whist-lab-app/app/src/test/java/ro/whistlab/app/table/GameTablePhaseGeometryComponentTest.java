@@ -111,6 +111,40 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
         }
     }
 
+    @Test public void theLargerHandGapRaisesTheHumanSeatAcrossPlayerCountsAndDensities() {
+        for (float density : new float[]{1f, 1.5f, 2f, 2.75f, 3.5f})
+            for (int players = 3; players <= 6; players++) {
+                int width = Math.round(353 * density);
+                int seatWidth = Math.round(ro.cardtable.ui.table.TableSizing.seatWidthDp(353, true) * density);
+                int seatHeight = Math.round(82 * density);
+                int centerHeight = Math.round(145 * density);
+                int gap = Math.max(1, Math.round(density));
+                int minimum = TableGeometry.minimumHeight(players, seatHeight, centerHeight, gap);
+                int height = minimum + Math.round(96 * density);
+                int centerWidth = Math.round(170 * density);
+                var previous = TableGeometry.arrangeDisplay(width, height, players, seatWidth,
+                        seatHeight, centerWidth, centerHeight, gap, true,
+                        TableGeometry.CenterAlignment.BALANCED, Math.round(16 * density));
+                var raised = TableGeometry.arrangeDisplay(width, height, players, seatWidth,
+                        seatHeight, centerWidth, centerHeight, gap, true,
+                        TableGeometry.CenterAlignment.BALANCED,
+                        Math.round(TableLayoutMetrics.humanHandClearanceDp() * density));
+
+                atf.gradle.audit.GradleInputs.fixture("The larger card gap raises seats only into available space",
+                        "players", players, "density", density, "previous", previous, "raised", raised);
+                assertEquals("The south seat rises by the additional twelve dp",
+                        Math.round(12 * density), previous.seats().getFirst().bottom()
+                                - raised.seats().getFirst().bottom());
+                for (int seat = 1; seat < players; seat++) {
+                    assertTrue("No other seat moves lower when the south seat rises",
+                            raised.seats().get(seat).top() <= previous.seats().get(seat).top()
+                                    && raised.seats().get(seat).bottom() <= previous.seats().get(seat).bottom());
+                }
+                assertTrue("The raised seats remain clear of the trick area",
+                        raised.seats().stream().noneMatch(raised.center()::overlaps));
+            }
+    }
+
     @Test public void aHandReservesTheLargerOfItsMaximumBidGridAndTrickBand() {
         for (int players = 3; players <= 6; players++) for (int handSize : new int[]{1, 8, 13}) {
             int width = 353;

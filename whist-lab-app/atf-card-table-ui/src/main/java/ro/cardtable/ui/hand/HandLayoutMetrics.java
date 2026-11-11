@@ -99,6 +99,14 @@ public final class HandLayoutMetrics {
         return CARD_HEIGHT_DP + LIFT_CLEARANCE_DP;
     }
 
+    /** Pixel height reserved by each card slot; face and lift use the same rounding as their children. */
+    public static int slotHeightPx(float density, int clearanceDp) {
+        if (!Float.isFinite(density) || density <= 0 || clearanceDp < 0) {
+            throw new IllegalArgumentException("Hand density must be positive and clearance nonnegative");
+        }
+        return Math.addExact(Math.round(CARD_HEIGHT_DP * density), Math.round(clearanceDp * density));
+    }
+
     public static int minVisibleAdvanceDp(float fontScale) {
         requireFontScale(fontScale);
         return Math.round(MIN_VISIBLE_ADVANCE_DP * Math.min(fontScale, 1.5f));
