@@ -55,6 +55,7 @@ public final class AutoGameReleaseScenario {
                 ReleaseBidContext.equal("The new hand returns to the unchecked state", true,
                         c.ui.hasDescription(xml, labels.startAutoGame())
                                 && !c.ui.hasDescription(xml, labels.stopAutoGame()))));
+        c.ui.revealDescriptionWithHeight(labels.handPrefix(), privateHandHeight(c));
         String bid = c.ui.dump();
         Map<String, Bounds> bidSeats = seatFrames(bid, labels);
         c.checkpoint("The new hand exposes the active bidder and its table positions", xml -> List.of(
@@ -88,10 +89,7 @@ public final class AutoGameReleaseScenario {
 
     private static boolean privateHandIsVisible(ReleaseBidContext c, String xml, Labels labels,
             Map<String, Bounds> seats) throws Exception {
-        int densityDpi = c.setup.path("display").path("density").asInt();
-        if (densityDpi <= 0) return false;
-        float density = densityDpi / 160f;
-        int expected = Math.round(88 * density) + Math.round(28 * density);
+        int expected = privateHandHeight(c);
         int seatBottom = seats.values().stream().mapToInt(Bounds::bottom).max().orElseThrow();
         Bounds hand = c.ui.boundsForDescriptionContaining(xml, labels.handPrefix());
         return HierarchyDocument.nodes(xml).stream()
@@ -101,6 +99,13 @@ public final class AutoGameReleaseScenario {
                 .anyMatch(card -> card.bottom() - card.top() == expected
                         && card.top() >= seatBottom && card.top() >= hand.top() && card.bottom() <= hand.bottom()
                         && card.left() >= hand.left() && card.right() <= hand.right());
+    }
+
+    private static int privateHandHeight(ReleaseBidContext context) {
+        int densityDpi = context.setup.required("display").required("density").asInt();
+        if (densityDpi <= 0) throw new IllegalStateException("Missing native display density");
+        float density = densityDpi / 160f;
+        return Math.round(88 * density) + Math.round(28 * density);
     }
 
     private static boolean headerPlacement(ReleaseBidContext c, String xml, Labels labels) throws Exception {

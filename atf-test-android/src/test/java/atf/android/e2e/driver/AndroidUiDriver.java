@@ -304,6 +304,15 @@ public final class AndroidUiDriver {
         reveal(node -> node.text().equals(expected), expected);
     }
 
+    public void revealDescriptionWithHeight(String prefix, int minimumHeight) throws Exception {
+        reveal(node -> {
+            if (!node.description().startsWith(prefix)
+                    || !HierarchyDocument.matchBounds(node.bounds()).matches()) return false;
+            Bounds bounds = HierarchyDocument.toBounds(node.bounds());
+            return bounds.bottom() - bounds.top() >= minimumHeight;
+        }, prefix + " at full height");
+    }
+
     private void reveal(java.util.function.Predicate<Node> target, String label) throws Exception {
         for (int attempt = 0; attempt <= 8; attempt++) {
             var current = nodes(dump());

@@ -10,6 +10,14 @@ import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 /** The opt-in control follows the Rentz header pattern and only exists during an active hand. */
 public final class AutoGameHeaderComponentTest extends atf.gradle.audit.GradleAuditedTest {
+    @Test public void gameViewportKeepsItsOffsetAcrossPhasesOfTheSameHand() {
+        atf.gradle.audit.GradleInputs.fixture("A scrolled game page is redrawn within the same hand",
+                "hand", 2, "scrollOffset", 341);
+        assertEquals("Bidding and play preserve the visible table", 341, GameScreen.retainedScrollY(2, 2, 341, true));
+        assertEquals("The next hand opens at the header", 0, GameScreen.retainedScrollY(2, 3, 341, true));
+        assertEquals("Returning from the menu opens at the header", 0, GameScreen.retainedScrollY(2, 2, 341, false));
+    }
+
     @Test public void headerControlIsVisibleAndMirrorsTheHandLeaseDuringBiddingAndPlay() {
         for (GamePhase phase : new GamePhase[]{GamePhase.BIDDING, GamePhase.PLAYING})
             for (boolean active : new boolean[]{false, true})

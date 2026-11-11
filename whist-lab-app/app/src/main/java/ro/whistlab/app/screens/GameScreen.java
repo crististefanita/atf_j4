@@ -15,6 +15,7 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +44,8 @@ public final class GameScreen {
     }
 
     private GameTablePanel currentTable;
+    private ScrollView tableViewport;
+    private int viewportHand;
     private Runnable cancelFirstDraw = () -> { };
 
     public void cancelCollection() {
@@ -60,7 +63,7 @@ public final class GameScreen {
             boolean autoGame, java.util.function.IntConsumer selected, Runnable submitted, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
-        LinearLayout page = views.gamePage();
+        LinearLayout page = tablePage(state.handNumber());
         addGameHeader(page, state, !autoGame, copy, actions);
         GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted,
                 copy);
@@ -72,7 +75,7 @@ public final class GameScreen {
             java.util.function.Consumer<Card> selected, MenuActions actions) {
         cancelCollection();
         views.applyTableWindowChrome();
-        LinearLayout page = views.gamePage();
+        LinearLayout page = tablePage(state.handNumber());
         addGameHeader(page, state, !pauseActive && !autoGame, copy, actions);
         boolean humanTurn = !pauseActive && !autoGame && state.phase() == GamePhase.PLAYING && state.currentSeat() == 0;
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
@@ -85,6 +88,36 @@ public final class GameScreen {
         page.addView(table, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         if (pauseActive && startCollection != null) attachAtFirstDraw(table, startCollection, resized);
+    }
+
+    private LinearLayout tablePage(int handNumber) {
+        int scrollY = tableViewport == null ? 0 : retainedScrollY(viewportHand, handNumber,
+                tableViewport.getScrollY(), tableViewport.isAttachedToWindow());
+        LinearLayout root = views.gamePage();
+        var scroll = new ScrollView(activity);
+        scroll.setFillViewport(true);
+        scroll.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+        var page = new LinearLayout(activity);
+        page.setOrientation(LinearLayout.VERTICAL);
+        scroll.addView(page, new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        tableViewport = scroll;
+        viewportHand = handNumber;
+        if (scrollY > 0) {
+            scroll.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    view.removeOnLayoutChangeListener(this);
+                    scroll.scrollTo(0, scrollY);
+                }
+            });
+        }
+        return page;
+    }
+
+    static int retainedScrollY(int previousHand, int currentHand, int offset, boolean viewportAttached) {
+        return viewportAttached && previousHand == currentHand ? offset : 0;
     }
 
     private void attachAtFirstDraw(GameTablePanel table, LongSupplier startCollection, Runnable resized) {
