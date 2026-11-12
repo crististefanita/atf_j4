@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "authenticatedDownload": {
+    "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.21.1/WhistLab-0.21.1.apk",
+    "sha256": "638a75793fd4fd1f18b0dd23b236f92da6f8b8775dd25e3bc4a895ce5816f122",
+    "zipCrc": "PASS",
+    "authenticated": true,
+    "channel": "GitHub API authenticated",
+    "bytes": 2159046,
+    "authMode": "GITHUB_ACCOUNT",
+    "httpStatus": 200
+  }
+}

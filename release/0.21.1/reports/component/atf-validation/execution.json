@@ -1,0 +1,15 @@
+{
+  "schemaVersion" : 1,
+  "kind" : "live-source-components",
+  "apkQualification" : false,
+  "suite" : "atf.validation.suites.ValidationComponentSuite",
+  "tests" : 19,
+  "outcomes" : {
+    "PASS" : 19
+  },
+  "coverageErrors" : [ ],
+  "containerFailures" : [ ],
+  "junitIdentitySha256" : "f72e31ccbd6501227471e60204428a2f203bad173b06dc72e872f5a4d8ef40fa",
+  "provenanceSha256" : "0d9ed8e002c1beef54aca85cc9a4da718e6a04f0846f453b3244924d6efa0ffb",
+  "reportSha256" : "581e868f05e8056ebea12a39611fd9f3c22a51663a2cd4179966f2f0e1374f4d"
+}
