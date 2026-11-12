@@ -78,7 +78,7 @@
 
 - Acest ghid descrie Whist românesc standard din Whist Lab.
 - La Oh Hell poți arunca sau tăia când nu ai culoarea, iar scorul este levate +10 pentru contract exact.
-- Long Romanian inversează programul românesc.
+- Long Romanian joacă programul 8–1–8: fiecare mărime de mână N din 1–8–1 devine 9 − N.
 - Descending rotește pică, cupă, treflă, caro, fără atu.
 - Regulile casei pot diferi; aici testele fixează explicit profilul și bonusul.
 

@@ -165,8 +165,11 @@ tasks.register("quickRegressionTest", Test) {
         includeTestsMatching "ro.whistlab.core.scoring.ZeroMatchScoringComponentTest"
     }
 }
+def ruleDocuments = ["README.md", "ATF_RulesRo.md", "ATF_RulesEn.md"].collect {
+    new File(projectDir, "../../docs/game/${it}")
+}
 tasks.named("test", Test) {
-    inputs.file(new File(projectDir, "../../docs/game/README.md"))
+    inputs.files(ruleDocuments)
 }
 
 tasks.register("documentationTest", Test) {
@@ -174,9 +177,9 @@ tasks.register("documentationTest", Test) {
     classpath=sourceSets.test.runtimeClasspath
     filter {
         includeTestsMatching "ro.whistlab.core.rules.HowToPlayDocumentationTest"
-        includeTestsMatching "ro.whistlab.core.rules.documentation.DocumentedScoringComponentTest"
+        includeTestsMatching "ro.whistlab.core.rules.documentation.*ComponentTest"
     }
-    for(def key:["whist.documentationEvidence","whist.documentationMarkdown","whist.documentationRunId"])systemProperty key,providers.gradleProperty(key).getOrElse("")
+    inputs.files(ruleDocuments)
     outputs.upToDateWhen { false }
 }
 

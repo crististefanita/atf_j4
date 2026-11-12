@@ -101,7 +101,11 @@ Trasabilitatea unei afirmații este `afirmație → sursă live → document res
 
 [Suita locală](README.md) verifică structura, proza, stilul, diagramele, linkurile și perimetrul surselor. Linkurile locale trebuie să se rezolve în checkout, inclusiv după rezolvarea unei căi simbolice. Referințele către alte proiecte folosesc URL-uri stabile.
 
-Pentru afirmații verificabile, folosiți un tabel în ghidul responsabil și confruntați valorile cu implementarea directă. Păstrați un caz corect și mutații controlate pentru valori, rânduri lipsă sau duplicate. [Tabelul de scor Whist](../game/README.md#scor-și-serii) este verificat în [colecția de documentație](../testing/ATF_Collections.md).
+Pentru afirmații verificabile, folosiți un tabel în ghidul responsabil și confruntați valorile cu implementarea directă. Păstrați un caz corect și mutații controlate pentru valori, rânduri lipsă sau duplicate. [Colecția de documentație](../testing/ATF_Collections.md) confruntă [tabelul de scor Whist](../game/README.md#scor-și-serii) cu motorul.
+
+- Comparați fiecare ghid tradus cu ajutorul din aplicație în limba sa.
+- Confruntați regulile motorului cu date și așteptări independente de text.
+- Introduceți o schimbare controlată de sens și cereți diagnosticul la nivel de afirmație.
 
 | Criteriu editorial | Punctaj maxim |
 |---|---:|

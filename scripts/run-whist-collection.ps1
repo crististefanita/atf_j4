@@ -126,7 +126,7 @@ $stageRoot=Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_COLLECTION_'+[guid]::Ne
 $stageApp=Join-Path $stageRoot 'whist-lab-app'
 New-Item -ItemType Directory -Path $RunRoot,$stageApp | Out-Null
 $inventory=@()
-$sharedInputs = @('pom.xml', 'config/gradle-audit-collections.properties', 'config/test-collections.json', 'docs/game/README.md')
+$sharedInputs = @('pom.xml', 'config/gradle-audit-collections.properties', 'config/test-collections.json', 'docs/game/README.md', 'docs/game/ATF_RulesRo.md', 'docs/game/ATF_RulesEn.md')
 $sharedInputs += @(Get-ChildItem -LiteralPath (Join-Path $sourceRoot 'lib') -File |
     Where-Object Extension -In '.jar','.pom' | ForEach-Object { "lib/$($_.Name)" })
 foreach ($relative in $sharedInputs) {
@@ -222,9 +222,7 @@ $arguments=@('-p','algorithm-build','--offline','--no-daemon','--console=plain',
 if($Collection -eq 'learning'){if($protocol.version -eq 18){$arguments[-1]=':game-core:roundEighteenTest';$learningPrefix='whist.round18'}elseif($protocol.version -in @(15,16)){$arguments[-1]=':game-core:roundFifteenTest';$learningPrefix='whist.round15'}elseif($protocol.version -eq 12){$arguments[-1]=':game-core:roundTwelveTest';$learningPrefix='whist.round12'}elseif($protocol.version -eq 11){$arguments[-1]=':game-core:roundElevenTest';$learningPrefix='whist.round11'}else{$arguments[-1]=':game-core:roundSevenTest';$learningPrefix='whist.round7'}}
 if ($Collection -eq 'documentation') {
     $fingerprint = (Get-FileHash -LiteralPath $inventoryFile -Algorithm SHA256).Hash.ToLowerInvariant()
-    $arguments += @("-Pwhist.auditOutput=$RunRoot", "-Pwhist.auditSource=source-inventory SHA-256 $fingerprint",
-        "-Pwhist.documentationEvidence=$RunRoot", "-Pwhist.documentationMarkdown=$RunRoot\rules",
-        "-Pwhist.documentationRunId=$([IO.Path]::GetFileName($RunRoot))")
+    $arguments += @("-Pwhist.auditOutput=$RunRoot", "-Pwhist.auditSource=source-inventory SHA-256 $fingerprint")
 }
 if($Collection -eq 'cost'){$arguments+=@("-Pwhist.aiCost.profile=$RunRoot\cost-profile.json","-Pwhist.aiCost.output=$RunRoot")}
 if($Collection -eq 'learning'){$arguments+=@("-P$learningPrefix.output=$RunRoot","-P$learningPrefix.corpus=$CorpusRoot","-P$learningPrefix.candidate=$Candidate","-P$learningPrefix.phase=$Phase","-P$learningPrefix.firstSeed=$($range.firstSeed)","-P$learningPrefix.seeds=$($range.seeds)")}

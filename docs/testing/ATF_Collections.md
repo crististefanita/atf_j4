@@ -128,6 +128,8 @@ Calitatea surselor și documentației se verifică separat de colecțiile joculu
 
 Colecția `documentation` confruntă ajutorul bilingv și tabelul de scor cu motorul. [Ajutorul din aplicație](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) · [Reguli RO](../game/ATF_RulesRo.md) · [Reguli EN](../game/ATF_RulesEn.md)
 
+- Testele de componentă confruntă distribuirea la 3–6 jucători, ambele programe românești, atuul, licitarea, levatele, scorul și jocul la 0 cu motorul.
+- Ghidurile publicate se compară integral cu ajutorul generat în aceeași limbă. Cazurile negative identifică punctual o regulă alterată.
 - Raportul Extent păstrează intrările, comparațiile și refuzul modificărilor controlate.
 - Raportul identifică inventarul sursei și se confruntă cu invocările JUnit în aceeași execuție.
 

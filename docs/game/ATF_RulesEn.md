@@ -78,7 +78,7 @@
 
 - This guide describes standard Romanian Whist in Whist Lab.
 - In Oh Hell you may discard or trump when void, and score tricks plus 10 for an exact contract.
-- Long Romanian reverses the Romanian schedule.
+- Long Romanian plays the 8–1–8 schedule: each hand size N in 1–8–1 becomes 9 − N.
 - Descending cycles spades, hearts, clubs, diamonds, no trump.
 - House rules may differ; tests here explicitly fix the profile and bonus.
 
