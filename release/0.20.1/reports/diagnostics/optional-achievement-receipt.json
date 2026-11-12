@@ -1,7 +1,0 @@
-{
-  "title": "Achievements unlocked",
-  "expected": "The optional achievement notification closes through its native Close button",
-  "observed": "ADB accepted the tap on the enabled app button",
-  "bounds": "[461,817][657,925]",
-  "sha256": "c10e9389a2151ff8e81bb2bb762276acf455f80e52deaf6be29ced4566ac8a0c"
-}

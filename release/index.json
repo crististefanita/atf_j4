@@ -1,8 +1,8 @@
 {
+  "currentVersion": "0.21.1",
   "schemaVersion": 2,
-  "currentVersion": "0.21.0",
   "versions": [
-    "0.21.0",
-    "0.20.1"
+    "0.21.1",
+    "0.21.0"
   ]
 }
