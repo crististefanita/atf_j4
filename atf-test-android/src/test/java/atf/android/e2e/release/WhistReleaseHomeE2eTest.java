@@ -46,7 +46,7 @@ class WhistReleaseHomeE2eTest {
         c.ui.awaitText(back, Duration.ofSeconds(15));
         c.checkpoint("Achievement catalogue exposes ordered, localized progress", xml -> List.of(
                 ReleaseBidContext.equal("Catalogue title is visible", true, c.ui.hasText(xml, achievements)),
-                ReleaseBidContext.equal("Local progress is reported against the forty-goal catalogue", true,
+                ReleaseBidContext.equal("Local progress is reported against the 55-goal catalogue", true,
                         hasVisibleTextContaining(xml, progress)),
                 ReleaseBidContext.equal("The first chapter starts the ordered path", true, hasVisibleTextContaining(xml, firstChapter)),
                 ReleaseBidContext.equal("The first easy goal is visible", true, hasVisibleTextContaining(xml, firstGoal)),
