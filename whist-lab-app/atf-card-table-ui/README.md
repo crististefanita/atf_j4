@@ -89,15 +89,20 @@ Componentele existente de masă și mână rămân verificări de integrare, cu 
 
 [Testele Android ale modulului](src/androidTest/README.md) și [catalogul componentelor display](../../docs/testing/ATF_DisplayComponents.md) descriu selecțiile și limitele de acceptanță.
 
+## Rânduri adaptive în chenar
+
+Un rând de etichetă și valoare își rezervă spațiul măsurat pentru cifre. Când spațiul disponibil scade, valoarea trece sub etichetă. Jocul stabilește stilul textului și descrierea accesibilă a chenarului.
+
 ## Împachetare și consum
 
-Tot din copia temporară, cu destinația Maven externă explicită:
+Din rădăcina ATF, cu destinația Maven externă explicită:
 
 ```powershell
-.\gradlew.bat --offline --no-daemon :atf-card-table-ui:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>
+.\scripts\export-card-table-ui.ps1 -Repository '<repository-extern>'
 ```
 
 - `:atf-card-table-ui` este numele proiectului Gradle. Coordonata de distribuție este `ro.cardtable:card-table-ui`, cu versiunea declarată în build. Exportul conține AAR, POM, metadate Gradle și JAR-ul de surse.
+- [Exportul](../../scripts/export-card-table-ui.ps1) păstrează manifestul intrărilor de producție și SHA-256 pentru fiecare fișier al coordonatei. Un export repetat cu aceleași intrări verifică artefactele și le reutilizează. Modificarea intrărilor sub o coordonată existentă cere o versiune nouă.
 - Whist consumă proiectul din sursă. Rentz și Hold’em admit fiecare versiunea fixată, după confruntarea conținutului și a provenienței. O mutare de director nu schimbă identitatea AAR-urilor deja distribuite.
 - AAR-ul include clasele, manifestul și resursele Android, inclusiv CardTableTheme. Dependența se fixează prin coordonata Maven, cu proveniență și hash-uri, după modelul celorlalte biblioteci.
 - [Politica de nume](../card-table-names/README.md) se publică separat ca JAR Java, pentru motoare și probe JVM. O componentă de geometrie poate avea propria coordonată JAR dacă este Android-independentă și are cel puțin doi consumatori JVM reali.
@@ -113,6 +118,7 @@ Tot din copia temporară, cu destinația Maven externă explicită:
 
 [`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) măsoară titlul și bifa nativă înainte de a alege rândul. Când ambele încap, bifa stă la dreapta titlului. La lățime mică sau text mărit, același control primește un rând propriu la dreapta, înaintea detaliilor jocului.
 
+- Rentz poate furniza două rânduri de titlu prin același antet măsurat. Jocul păstrează contractul, progresul și acțiunile din meniu.
 - Adaptorul furnizează `Automat` în română și `Auto play` în engleză, descrierea acțiunii și valoarea curentă. Încărcarea stării nu emite intenții, iar o atingere emite o schimbare booleană.
 - Sub antet, Whist așază progresul și licitațiile în stânga, iar atuul în dreapta. Rentz și Hold’em pot așeza în același loc detaliile specifice mâinii sau etapei.
 - Verificările JVM acoperă decizia de dispunere, inclusiv la limita unui pixel. Proba instrumentată măsoară textele în RO și EN și ținta tactilă de minimum 48 × 48 dp. [Testele native](src/androidTest/README.md)

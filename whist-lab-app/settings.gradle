@@ -17,9 +17,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "whist-lab-app"
-include(":game-core", ":ai-lab", ":app")
-
+def uiMode = providers.gradleProperty("cardui.only").getOrElse("")
+if (!(uiMode in ["", "package", "component"])) throw new GradleException("Unknown cardui.only mode")
 include(":atf-card-table-ui")
-include(":card-table-names")
-include(":test-audit")
-include(":ios-bridge")
+if (uiMode != "package") include(":test-audit")
+if (uiMode.isEmpty()) include(":game-core", ":ai-lab", ":app", ":card-table-names", ":ios-bridge")

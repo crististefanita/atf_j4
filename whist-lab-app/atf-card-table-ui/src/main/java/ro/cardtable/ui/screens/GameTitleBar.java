@@ -18,7 +18,7 @@ public final class GameTitleBar extends ViewGroup {
             boolean checked, boolean enabled, int color, Consumer<Boolean> changed) { }
 
     private final View leading;
-    private final TextView title;
+    private final View title;
     private final CheckBox toggle;
     private final int touchTarget;
     private final int gap;
@@ -26,6 +26,11 @@ public final class GameTitleBar extends ViewGroup {
     private int titleLineHeight;
 
     public GameTitleBar(Context context, View leading, TextView title, AutoPlay autoPlay) {
+        this(context, leading, (View) title, autoPlay);
+    }
+
+    /** Allows a game to supply a compact group of heading views as the measured title. */
+    public GameTitleBar(Context context, View leading, View title, AutoPlay autoPlay) {
         super(context);
         this.leading = leading;
         this.title = title;

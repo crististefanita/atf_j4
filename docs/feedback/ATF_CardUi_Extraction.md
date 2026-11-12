@@ -107,7 +107,7 @@ Whist folosește `GameTitleBar` din modulul `atf-card-table-ui`. Consumatorul fu
 | Prioritate | Suprafață | Limită de adopție |
 |---|---|---|
 | P1 | Realizări | Whist și Rentz folosesc lista, detaliile și notificările comune. Adopția în Hold’em poate folosi aceleași proiecții după fixarea versiunii AAR. Catalogul, eligibilitatea, progresul și stocarea se păstrează în fiecare joc. |
-| P1 | Antet și chenare | Refolosiți antetul comun în ecranele cu aceeași intenție de delegare. Pentru rândurile de statistici, păstrați în joc etichetele, valorile și accesibilitatea semantică. Extrageți împachetarea adaptivă etichetă–valoare numai după comparații comune la lățime mică și text mărit. |
+| P1 | Probe native pentru antet și chenare | Verificați antetul comun cu două rânduri de titlu și control automat în Rentz. Verificați așezarea adaptivă a statisticilor în Hold’em și stabilitatea chenarelor la text mărit. |
 | P2 | Scor și clasament | Extrageți cadrul tabelului după demonstrarea unui contract de coloane în doi consumatori. Istoricul levatelor, totalurile, premiile și clasamentul de turneu au proiecții proprii. |
 
 - Împachetați Android Views, tema și resursele în AAR. Măsurați costul build-ului consumatorului din sursă și din AAR în aceleași condiții.

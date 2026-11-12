@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {digest} from './evaluate-release-rag.mjs';
 import {prepareComponentReuse} from './prepare-component-reuse.mjs';
 
@@ -103,4 +104,25 @@ test('a changed provenance document invalidates every linked receipt', async t =
   await fs.appendFile(path.join(previous, provenanceReceipt), '\n');
   const results = await prepareComponentReuse(target, previous, groups);
   assert.deepEqual(results.map(row => row.decision), ['INVALID', 'INVALID']);
+});
+
+test('the detached card-table suite can reuse consumer edits and invalidates its own code, resources and audit inputs', () => {
+  const group = 'whist-lab-app-atf-card-table-ui';
+  const original = new Map([['whist-lab-app/atf-card-table-ui/src/main/AndroidManifest.xml', 'original']]);
+  for (const file of ['whist-lab-app/app/build.gradle', 'whist-lab-app/app/src/main/GameScreen.java',
+    'whist-lab-app/game-core/src/main/Rules.java', 'config/gradle-app-collections.properties']) {
+    const changed = new Map([...original, [file, 'new']]);
+    assert.equal(componentEvidenceScope(group, changed, original).decision, 'REUSE', file);
+    assert.equal(componentEvidenceScope('whist-lab-app-display', changed, original).decision, 'RUN', file);
+  }
+  for (const file of ['whist-lab-app/atf-card-table-ui/src/main/AndroidManifest.xml',
+    'whist-lab-app/atf-card-table-ui/src/main/res/values/styles.xml',
+    'whist-lab-app/atf-card-table-ui/src/test/SeatFactLayoutComponentTest.java',
+    'whist-lab-app/test-audit/build.gradle', 'config/gradle-audit-collections.properties',
+    'whist-lab-app/gradle/wrapper/gradle-wrapper.properties', 'lib/atf-reporting.jar', 'unknown-input']) {
+    const changed = new Map([...original, [file, 'new']]);
+    const scope = componentEvidenceScope(group, changed, original);
+    assert.equal(scope.decision, 'RUN', file);
+    assert.deepEqual(scope.affected, [file]);
+  }
 });

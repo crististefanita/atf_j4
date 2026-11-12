@@ -6,6 +6,8 @@
 
 - Pentru calificare incrementală, `-SourceRoot` indică snapshot-ul fixat și `-Groups` primește identificatorii selecțiilor care trebuie rulate. Lista omisă selectează toate grupurile. Parametrul -ReuseFrom indică dosarul anterior de componente. Lansatorul rulează grupurile cu intrări afectate sau dovezi invalide. [Regula de reutilizare](../docs/testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă)
 
+- [Exportul AAR al bibliotecii grafice](export-card-table-ui.ps1) construiește coordonata lipsă din intrările modulului și ale uneltelor Gradle. Un export repetat verifică manifestul și hash-urile pachetului existent.
+
 Acest director coordonează operații care traversează modulele: verificări, construirea aplicației și scenarii Android activate explicit. Algoritmii, validatoarele și testele uneltelor aparțin modulelor care dețin comportamentul.
 
 Lansatoarele citesc rădăcina proiectului din propria poziție și pregătesc copii temporare. Rezultatele se păstrează în depozitul extern configurat.

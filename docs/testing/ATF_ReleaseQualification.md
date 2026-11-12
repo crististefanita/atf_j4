@@ -138,6 +138,7 @@ Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG 
 Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) stabilește ce diferențe pot afecta rezultatul.
 
 - Guvernanța verifică inventarul complet.
+- Componentele bibliotecii grafice au perimetru propriu. Modificările în consumatorii de joc permit reutilizarea raportului bibliotecii. Sursele, testele, resursele, configurația de compilare și puntea auditului fac parte din perimetrul acestei suite.
 - Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android dacă dependențele lor rămân identice.
 - O cale necunoscută cere o execuție nouă.
 

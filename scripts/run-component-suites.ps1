@@ -175,11 +175,12 @@ if ($groupsToRun.Count) {
             }
             $gradle = Join-Path $stage 'whist-lab-app/gradlew.bat'
             $tasks = @($gradleSelections.path)
+            $uiMode = if ($tasks.Count -eq 1 -and $tasks[0] -ceq $uiTask) { @("-Pcardui.only=component") } else { @() }
             $log = Join-Path $RunRoot 'gradle-components.log'
             Push-Location (Join-Path $stage 'whist-lab-app')
             try {
                 $clock = [Diagnostics.Stopwatch]::StartNew()
-                & $gradle --no-daemon --offline --console=plain --continue @tasks "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" *> $log
+                & $gradle --no-daemon --offline --console=plain --continue @uiMode @tasks "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" *> $log
                 $exit = $LASTEXITCODE
                 $clock.Stop()
             } finally { Pop-Location }

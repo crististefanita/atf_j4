@@ -10,7 +10,10 @@ const independentChange = new Map([
       || file.startsWith('atf-test-android/') || file.startsWith('atf-tests/')],
   ['atf-test-android', file => productDocumentation(file) || androidUi(file)
       || file.startsWith('atf-tests/')],
-  ...['achievements', 'bidding', 'commands', 'display', 'history', 'atf-card-table-ui']
+  ['whist-lab-app-atf-card-table-ui', file => productDocumentation(file) || file.startsWith('docs/')
+      || /^(whist-lab-app\/(app|game-core|ai-lab|ios-bridge|card-table-names|algorithm-build)\/|atf-test-android\/|atf-validation\/)/.test(file)
+      || file === 'config/gradle-app-collections.properties'],
+  ...['achievements', 'bidding', 'commands', 'display', 'history']
     .map(name => ['whist-lab-app-' + name, productDocumentation])
 ]);
 

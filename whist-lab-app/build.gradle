@@ -3,4 +3,6 @@
 plugins {
     id "com.android.application" version "9.5.0" apply false
 }
-apply from: 'gradle/component-audit.gradle'
+if (providers.gradleProperty('cardui.only').getOrElse('') != 'package') {
+    apply from: 'gradle/component-audit.gradle'
+}
