@@ -184,8 +184,8 @@ public final class GameTablePanel extends LinearLayout {
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp, fontScale, viewport);
         var bidLayout = bidding ? BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp,
                 fontScale) : null;
-        int reservedCenterHeightDp = TableLayoutMetrics.centerReservation(state.players().size(),
-                state.handSize(), tableWidthDp, fontScale, viewport).reservedHeightDp();
+        int reservedCenterHeightDp = TableLayoutMetrics.matchCenterReservation(state.mode(),
+                state.players().size(), tableWidthDp, fontScale, viewport).reservedHeightDp();
         int centerWidthDp = bidding ? bidLayout.centerWidthDp()
                 : trickLayout.safeCenterWidthDp();
         float density = getResources().getDisplayMetrics().density;

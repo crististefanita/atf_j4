@@ -1,6 +1,8 @@
 package ro.whistlab.app.table;
 
 import ro.whistlab.app.bidding.BidGridMetrics;
+import ro.whistlab.core.rules.GameMode;
+import ro.whistlab.core.rules.GameRules;
 
 /** Seat dimensions; played-card sizing belongs to TrickCardMetrics. */
 final class TableLayoutMetrics {
@@ -29,12 +31,22 @@ final class TableLayoutMetrics {
 
     static CenterReservation centerReservation(int players, int handSize, int tableWidthDp,
             float fontScale, TableViewportPolicy viewport) {
-        if (players < 3 || players > 6 || handSize < 1 || handSize > 13) {
-            throw new IllegalArgumentException("A table reservation needs 3–6 players and a 1–13 card hand");
+        if (players < 3 || players > 6 || handSize < 1 || handSize > 17) {
+            throw new IllegalArgumentException("A table reservation needs 3–6 players and a 1–17 card hand");
         }
         int biddingHeight = BidGridMetrics.actionLayout(handSize + 1, tableWidthDp, fontScale).centerHeightDp();
         int playingHeight = TrickCardMetrics.forTable(players, tableWidthDp, fontScale, viewport).centerHeightDp();
         return new CenterReservation(biddingHeight, playingHeight, Math.max(biddingHeight, playingHeight));
+    }
+
+    /** Reserves the same center band for every hand in the selected match schedule. */
+    static CenterReservation matchCenterReservation(GameMode mode, int players, int tableWidthDp,
+            float fontScale, TableViewportPolicy viewport) {
+        int largestHand = GameRules.handSizes(mode, players).stream()
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElseThrow(() -> new IllegalArgumentException("A table schedule must contain a hand"));
+        return centerReservation(players, largestHand, tableWidthDp, fontScale, viewport);
     }
 
     /** The bid and play screens reserve one full face plus its complete lift region. */

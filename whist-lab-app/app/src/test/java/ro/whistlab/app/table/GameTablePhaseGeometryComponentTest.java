@@ -2,6 +2,8 @@ package ro.whistlab.app.table;
 
 import org.junit.Test;
 import ro.whistlab.app.bidding.BidGridMetrics;
+import ro.whistlab.core.rules.GameMode;
+import ro.whistlab.core.rules.GameRules;
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 /** A hand keeps the same measured table anchors while the center changes from bid to trick. */
@@ -162,5 +164,120 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
             assertEquals("The play band's source measurement remains explicit", expectedPlay,
                     reservation.playingHeightDp());
         }
+    }
+
+    @Test public void threePlayerSchedulesKeepAnchorsStableAcrossEveryModeAndHandSize() {
+        int[] widths = {280, 360, 393};
+        int[] heights = {440, 560, 620};
+        float[] fontScales = {1f, 1.5f, 2f};
+        for (GameMode mode : GameMode.values()) {
+            var schedule = GameRules.handSizes(mode, 3);
+            int largestHand = schedule.stream().mapToInt(Integer::intValue).max().orElseThrow();
+            for (int width : widths) for (int height : heights) for (float fontScale : fontScales) {
+                var viewport = new TableViewportPolicy(height, fontScale);
+                var reservation = TableLayoutMetrics.matchCenterReservation(mode, 3, width,
+                        fontScale, viewport);
+                var trick = TrickCardMetrics.forTable(3, width, fontScale, viewport);
+                int seatWidth = ro.cardtable.ui.table.TableSizing.seatWidthDp(width, viewport.isCompact());
+                int seatHeight = Math.round(64 * Math.max(1f, fontScale));
+                int gap = viewport.regionGapDp();
+                int boardHeight = Math.max(height - 170,
+                        TableGeometry.minimumHeight(3, seatHeight, reservation.reservedHeightDp(), gap));
+                var baseline = TableGeometry.arrangeDisplay(width, boardHeight, 3, seatWidth, seatHeight,
+                        width, reservation.reservedHeightDp(), gap, true,
+                        TableGeometry.CenterAlignment.BALANCED,
+                        TableLayoutMetrics.humanHandClearanceDp());
+
+                atf.gradle.audit.GradleInputs.fixture("Three-player complete schedule geometry",
+                        "mode", mode, "schedule", schedule, "widthDp", width,
+                        "heightDp", height, "fontScale", fontScale,
+                        "largestHand", largestHand, "reservation", reservation, "baseline", baseline);
+                assertEquals("The reservation covers the largest bid grid in the full schedule",
+                        BidGridMetrics.actionLayout(largestHand + 1, width, fontScale).centerHeightDp(),
+                        reservation.biddingHeightDp());
+                assertEquals("The reservation covers the current table's complete trick",
+                        trick.centerHeightDp(), reservation.playingHeightDp());
+
+                for (int handSize : schedule) {
+                    var bids = BidGridMetrics.actionLayout(handSize + 1, width, fontScale);
+                    var bidding = TableGeometry.arrangeDisplay(width, boardHeight, 3, seatWidth, seatHeight,
+                            bids.centerWidthDp(), reservation.reservedHeightDp(), gap, true,
+                            TableGeometry.CenterAlignment.TOWARD_HUMAN,
+                            TableLayoutMetrics.humanHandClearanceDp());
+                    var playing = TableGeometry.arrangeDisplay(width, boardHeight, 3, seatWidth, seatHeight,
+                            trick.safeCenterWidthDp(), reservation.reservedHeightDp(), gap, true,
+                            TableGeometry.CenterAlignment.BALANCED,
+                            TableLayoutMetrics.humanHandClearanceDp());
+                    assertEquals("Every scheduled hand preserves all three seat anchors",
+                            baseline.seats(), bidding.seats());
+                    assertEquals("The table stays fixed between bidding and playing",
+                            bidding.seats(), playing.seats());
+                    assertTrue("The bid selector stays clear of the seats",
+                            bidding.seats().stream().noneMatch(bidding.center()::overlaps));
+                    assertTrue("The trick stays clear of the seats",
+                            playing.seats().stream().noneMatch(playing.center()::overlaps));
+                }
+            }
+        }
+    }
+
+    @Test public void fivePlayerReverseOhHellKeepsItsAnchorsAcrossTheMatchSchedule() {
+        int[] widths = {280, 360, 393};
+        int[] heights = {440, 560, 620};
+        float[] fontScales = {1f, 2f};
+        var schedule = GameRules.handSizes(GameMode.REVERSE_OH_HELL, 5);
+        int largestHand = schedule.stream().mapToInt(Integer::intValue).max().orElseThrow();
+        for (int width : widths) for (int height : heights) for (float fontScale : fontScales) {
+            var viewport = new TableViewportPolicy(height, fontScale);
+            var reservation = TableLayoutMetrics.matchCenterReservation(GameMode.REVERSE_OH_HELL,
+                    5, width, fontScale, viewport);
+            var trick = TrickCardMetrics.forTable(5, width, fontScale, viewport);
+            int seatWidth = ro.cardtable.ui.table.TableSizing.seatWidthDp(width, viewport.isCompact());
+            int seatHeight = Math.round(64 * Math.max(1f, fontScale));
+            int gap = viewport.regionGapDp();
+            int boardHeight = Math.max(height - 170,
+                    TableGeometry.minimumHeight(5, seatHeight, reservation.reservedHeightDp(), gap));
+            var baseline = TableGeometry.arrangeDisplay(width, boardHeight, 5, seatWidth, seatHeight,
+                    width, reservation.reservedHeightDp(), gap, true,
+                    TableGeometry.CenterAlignment.BALANCED,
+                    TableLayoutMetrics.humanHandClearanceDp());
+
+            atf.gradle.audit.GradleInputs.fixture("Five-player Reverse Oh Hell schedule geometry",
+                    "schedule", schedule, "widthDp", width, "boardHeightDp", boardHeight,
+                    "fontScale", fontScale, "reservation", reservation, "baseline", baseline);
+            assertEquals("All five seats reserve the maximum scheduled bid grid",
+                    BidGridMetrics.actionLayout(largestHand + 1, width, fontScale).centerHeightDp(),
+                    reservation.biddingHeightDp());
+            assertEquals("All five seats reserve the complete trick band",
+                    trick.centerHeightDp(), reservation.playingHeightDp());
+
+            for (int handSize : schedule) {
+                var bids = BidGridMetrics.actionLayout(handSize + 1, width, fontScale);
+                var bidding = TableGeometry.arrangeDisplay(width, boardHeight, 5, seatWidth, seatHeight,
+                        bids.centerWidthDp(), reservation.reservedHeightDp(), gap, true,
+                        TableGeometry.CenterAlignment.TOWARD_HUMAN,
+                        TableLayoutMetrics.humanHandClearanceDp());
+                var playing = TableGeometry.arrangeDisplay(width, boardHeight, 5, seatWidth, seatHeight,
+                        trick.safeCenterWidthDp(), reservation.reservedHeightDp(), gap, true,
+                        TableGeometry.CenterAlignment.BALANCED,
+                        TableLayoutMetrics.humanHandClearanceDp());
+                assertEquals("Every scheduled hand preserves the five seat anchors",
+                        baseline.seats(), bidding.seats());
+                assertEquals("The same player frames remain during bidding and play",
+                        bidding.seats(), playing.seats());
+            }
+        }
+    }
+
+    @Test public void threePlayerScheduleAcceptsSeventeenCardsAndRejectsEighteen() {
+        var viewport = new TableViewportPolicy(569);
+        var largest = TableLayoutMetrics.centerReservation(3, 17, 353, 1f, viewport);
+        atf.gradle.audit.GradleInputs.fixture("Three-player legal maximum hand", "cards", 17,
+                "bid grid", BidGridMetrics.actionLayout(18, 353, 1f), "reservation", largest);
+        assertEquals("The maximum legal three-player hand reserves its responsive bid grid",
+                BidGridMetrics.actionLayout(18, 353, 1f).centerHeightDp(), largest.biddingHeightDp());
+        org.junit.Assert.assertThrows("An eighteen-card selector is outside a 52-card deal to three players",
+                IllegalArgumentException.class,
+                () -> TableLayoutMetrics.centerReservation(3, 18, 353, 1f, viewport));
     }
 }

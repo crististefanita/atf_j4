@@ -116,7 +116,7 @@ Din rădăcina ATF. Exportul folosește directorul libraries/card-table-ui din d
 
 ## Antetul mesei
 
-[`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) măsoară titlul și bifa nativă înainte de a alege rândul. Când ambele încap, bifa stă la dreapta titlului. La lățime mică sau text mărit, același control primește un rând propriu la dreapta, înaintea detaliilor jocului.
+[`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) măsoară titlul și bifa nativă înainte de a alege rândul. Titlul poate ocupa cel mult două rânduri și păstrează descrierea completă pentru accesibilitate. Bifa rămâne pe primul rând cât timp titlul are cel puțin 1,5 ori lățimea acțiunii din stânga; controlul trece pe rândul următor când spațiul ar face titlul ilizibil.
 
 - Rentz poate furniza două rânduri de titlu prin același antet măsurat. Jocul păstrează contractul, progresul și acțiunile din meniu.
 - Adaptorul furnizează `Automat` în română și `Auto play` în engleză, descrierea acțiunii și valoarea curentă. Încărcarea stării nu emite intenții, iar o atingere emite o schimbare booleană.

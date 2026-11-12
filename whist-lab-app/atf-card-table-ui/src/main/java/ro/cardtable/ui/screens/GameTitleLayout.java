@@ -5,7 +5,9 @@ record GameTitleLayout(int titleLeft, int titleWidth, boolean trailingOnTitleLin
     static GameTitleLayout measure(int width, int leadingWidth, int gap, int titleWidth, int trailingWidth) {
         int titleLeft = Math.min(width, leadingWidth + gap);
         int available = width - titleLeft;
-        boolean inline = trailingWidth > 0 && titleWidth + gap + trailingWidth <= available;
+        int wrappedTitleWidth = available - gap - trailingWidth;
+        int minimumWrappedTitleWidth = leadingWidth + leadingWidth / 2;
+        boolean inline = trailingWidth > 0 && wrappedTitleWidth >= minimumWrappedTitleWidth;
         return new GameTitleLayout(titleLeft, inline ? available - gap - trailingWidth : available, inline);
     }
 }

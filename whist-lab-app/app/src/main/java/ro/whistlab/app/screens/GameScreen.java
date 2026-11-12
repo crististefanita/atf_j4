@@ -163,6 +163,7 @@ public final class GameScreen {
         int titleColor = Color.rgb(245, 248, 240);
         TextView title = views.text(copy.gameTitle(state.mode()), GameHeaderTypography.TITLE_SP, titleColor, true);
         title.setSingleLine(false);
+        title.setContentDescription(copy.gameTitle(state.mode()));
         title.setTag("game-title");
         var autoGame = AutoGameHeaderContent.state(state.phase(), actions.autoGameActive(), copy);
         var control = autoGame.visible() ? new GameTitleBar.AutoPlay(autoGame.label(),

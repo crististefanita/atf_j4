@@ -2,6 +2,7 @@ package ro.cardtable.ui.screens;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -34,6 +35,10 @@ public final class GameTitleBar extends ViewGroup {
         super(context);
         this.leading = leading;
         this.title = title;
+        if (title instanceof TextView textTitle) {
+            textTitle.setMaxLines(2);
+            textTitle.setEllipsize(TextUtils.TruncateAt.END);
+        }
         float density = getResources().getDisplayMetrics().density;
         touchTarget = Math.round(TOUCH_TARGET_DP * density);
         gap = Math.round(8 * density);

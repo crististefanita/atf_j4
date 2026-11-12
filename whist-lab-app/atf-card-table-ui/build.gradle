@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 group = 'ro.cardtable'
-version = '0.1.12'
+version = '0.1.13'
 
 android {
     namespace 'ro.cardtable.ui'

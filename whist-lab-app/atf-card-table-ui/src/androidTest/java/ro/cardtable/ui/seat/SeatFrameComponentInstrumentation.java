@@ -76,6 +76,7 @@ public final class SeatFrameComponentInstrumentation extends Instrumentation {
                 for (boolean romanian : new boolean[]{true, false}) {
                     var title = new TextView(context);
                     title.setText(romanian ? "Masă de joc · Turneu românesc" : "Game table · Practice tournament");
+                    title.setContentDescription(title.getText());
                     title.setTextSize(16);
                     var changes = new ArrayList<Boolean>();
                     var bar = new GameTitleBar(context, new View(context), title, new GameTitleBar.AutoPlay(
@@ -85,10 +86,13 @@ public final class SeatFrameComponentInstrumentation extends Instrumentation {
                     CheckBox toggle = bar.findViewWithTag(GameTitleBar.AUTO_PLAY_TAG);
                     boolean sameLine = toggle.getTop() < title.getBottom();
                     boolean initial = toggle.isChecked() && changes.isEmpty() && "Stop".contentEquals(toggle.getContentDescription());
+                    boolean titleReadable = title.getLineCount() <= 2
+                            && (title.getLayout().getEllipsisCount(title.getLineCount() - 1) == 0
+                                    || title.getText().toString().contentEquals(title.getContentDescription()));
                     toggle.performClick();
                     boolean fits = toggle.getRight() == bar.getWidth() && toggle.getWidth() >= target && toggle.getHeight() >= target
                             && (!sameLine || title.getRight() <= toggle.getLeft()) && toggle.getBottom() <= bar.getHeight()
-                            && title.getLayout().getEllipsisCount(title.getLineCount() - 1) == 0
+                            && titleReadable
                             && toggle.getLayout().getEllipsisCount(toggle.getLineCount() - 1) == 0;
                     boolean passed = initial && fits && changes.equals(List.of(false))
                             && "Start".contentEquals(toggle.getContentDescription());

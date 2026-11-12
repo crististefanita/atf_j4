@@ -8,7 +8,7 @@ Aceste teste verifică politicile și modelele aplicației fără instalare sau 
 
 | Familie | Intrare controlată și oracol |
 |---|---|
-| Layout și text | Dimensiuni, densitate, font și număr de locuri; măsurarea etichetei active, spațiul stabil între faze și fața completă a cărții ridicate. |
+| Layout și text | Dimensiuni, densitate, font și număr de locuri; rezervarea maximului programului complet, inclusiv 17 cărți la trei locuri, ancore stabile între faze și titlul accesibil pe cel mult două rânduri. |
 | Adaptoare UI comune | [Textele și callback-urile](java/ro/whistlab/app/screens/WhistMenuContentComponentTest.java) și [toate fețele de carte](java/ro/whistlab/app/cards/WhistCardFaceComponentTest.java) păstrează semantica Whist la frontiera bibliotecii. |
 | Selecția licitației | [Matricea contextuală](java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java): 1–8 cărți, 3–6 locuri și fiecare poziție de licitare; observație publică, evaluare Hard și oracol aritmetic independent pentru legalitate. |
 | Acțiunile la licitare | [Componentele de layout](java/ro/whistlab/app/bidding/AutoGameBidActionComponentTest.java) verifică rândurile centrate, conturul redus separat de zona tactilă, densitățile și spațiul recuperat pentru textul mărit. [Componenta meniului](java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) verifică opțiunea de oprire în RO și EN, numai în timpul automatizării. |

@@ -84,6 +84,17 @@ Consumatorul deține momentul validării și datele transmise. Dacă API-ul publ
 |---|---|---|
 | P2 | Consumatorul raportării: costul selecției și compoziției la populații mari ori predominant cu eșec. | Componente cu populații controlate și mediu identificat: cost, număr de comparații și corp opțional, cu toate eșecurile, valorile obligatorii și inventarul omisiunilor păstrate. |
 
+## RPT-BOUNDED-REPORT-HEAP — finalizare sigură pentru suite mari
+
+**P1 · responsabil biblioteci: publicarea și verificarea HTML; consumatorul: dimensiunea intrărilor.** O suită poate avea teste JUnit verzi și totuși să nu producă raportul canonic dacă injecția navigării ori verificarea DOM epuizează heap-ul. Eroarea de publicare nu trebuie să ascundă rezultatul testelor sau să lase un raport parțial prezentat ca acceptat.
+
+- [ ] Măsurați separat memoria de vârf pentru randarea inițială, injectarea navigării și verificarea raportului, în funcție de numărul comparațiilor, corpurilor și capturilor inline.
+- [ ] Evitați copiile integrale repetate ale documentului în etapele de publicare și verificare; fiecare etapă trebuie să poată procesa un raport mare valid sub limita de heap declarată.
+- [ ] Calificați limitele cu rapoarte sintetice mici, medii și mari, inclusiv payload-uri repetate și imagini inline. Verificați identitățile JUnit–HTML, toate capturile și octeții obligatorii după publicare.
+- [ ] La depășirea unei limite explicite, emiteți un diagnostic localizat care identifică etapa și păstrează rezultatul JUnit și dovezile disponibile; nu lăsați o excepție de heap să se transforme într-o lipsă ambiguă de fișier.
+
+Calificarea este comună producătorului și verificatorului: mărirea heap-ului unui singur proces nu închide criteriul și nu demonstrează că raportul rămâne publicabil în mediul standard.
+
 ## RPT-EXTENT-REPEATED-PAYLOAD — compactare fără pierderea auditului
 
 **P2 · compactarea HTML-ului de componentă fără reducerea dovezilor.** Payload-urile identice pot crește dimensiunea și timpul de navigare al raportului. Profilarea exactă aparține dosarului extern al execuției; criteriul urmărește mecanismul de compactare și păstrarea auditabilității. Capabilitățile reutilizabile urmează [rutarea comună](README.md#responsabilitatea-schimbării).
