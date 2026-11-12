@@ -158,8 +158,13 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-12T11:34:23.177Z",
+    "observedUtc": "2026-11-12T11:37:12.438Z",
     "files": [
+      {
+        "path": "README.md",
+        "bytes": 919,
+        "sha256": "2e529eedd55ab92fd97f2415c1650a234462652e10edea5b2391928c14b7973b"
+      },
       {
         "path": "WhistLab-0.21.0.apk",
         "bytes": 2157870,
@@ -171,9 +176,34 @@
         "sha256": "af13c156f4b38e2dc659e3b63e8058a4538fd16e6df3c48b15e4a820d3f1a72b"
       },
       {
+        "path": "github-release.json",
+        "bytes": 644,
+        "sha256": "bd3eab6341535b1183975de53c3ff66966b1d52a7530416fdb81a303048b13db"
+      },
+      {
+        "path": "release-notes.md",
+        "bytes": 725,
+        "sha256": "0b775276aa0e0ee9a6d918cce3b0bd1e178bb7921ffc15e89487d3f27437ed0a"
+      },
+      {
+        "path": "release-presentation.json",
+        "bytes": 512,
+        "sha256": "18adc8761e0563dd0dbf0cc2c9fc19ebcdc7e9400ef2bc2c5931079d03b40a18"
+      },
+      {
+        "path": "reports/README.md",
+        "bytes": 757,
+        "sha256": "32c11002729fc0d1481d9f679eb6c436f00745d9635c903d45ba97b1cc2f4c17"
+      },
+      {
         "path": "reports/apk-inputs.json",
         "bytes": 204766,
         "sha256": "5bd181f715d63d1bb6209e9a0902eddf03c8077234535f9b76a6cb92f533372a"
+      },
+      {
+        "path": "reports/component/README.md",
+        "bytes": 1378,
+        "sha256": "ca999f8cc6bce00ce1d783b32848901d9e73b85ee15dda6600210a64e3ba929e"
       },
       {
         "path": "reports/component/atf-test-android/component-report.html",
@@ -286,11 +316,6 @@
         "sha256": "cbd27e0d5c8f882037837e3a745da3be6913a4c837e2eea32b3cfadd6238ede5"
       },
       {
-        "path": "reports/diagnostics/android-system-ui-anr.html",
-        "bytes": 2578257,
-        "sha256": "8938459bbbdc85a11193e353caadea67415ed74c19f353da09afff9d9d464486"
-      },
-      {
         "path": "reports/diagnostics/apk-identity.json",
         "bytes": 513,
         "sha256": "8730e1544fad112187b9981dd90075779a074b0f9b2dd664795234fcff4d837f"
@@ -311,6 +336,11 @@
         "sha256": "f46fd516dde7490f41c45f0e0de83383ffed75b0883bab50ac278296b36ad285"
       },
       {
+        "path": "reports/distribution-verification.json",
+        "bytes": 413,
+        "sha256": "60d13e6317dc32e3b33de0a2f8d53fc41e31572611d299c294b12400f2e93aca"
+      },
+      {
         "path": "reports/e2e/signed-release-achievements/execution.json",
         "bytes": 700,
         "sha256": "0e20df9a02e08104677f21ad1855b7778830c7e135766e41e273215da65fb692"
@@ -319,6 +349,11 @@
         "path": "reports/e2e/signed-release-achievements/report.html",
         "bytes": 3678984,
         "sha256": "3814ae41fe80bd6160bcbcb8901f731bf5439ae481ae83a4815f8d18fa324b34"
+      },
+      {
+        "path": "reports/rag-prepublication.json",
+        "bytes": 23873,
+        "sha256": "a2b50e4c4095de8ec35caacaa48d197bbe5e15dfcc565f9160087231720afd1d"
       }
     ]
   }

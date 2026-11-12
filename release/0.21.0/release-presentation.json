@@ -1,0 +1,11 @@
+{
+  "points": [
+    "Adaugă 15 realizări pentru contracte de zero, licitații pozitive și reveniri după ratări.",
+    "Păstrează ID-urile, pragurile și progresul celor 40 de realizări existente.",
+    "Clarifică ordinea mâinilor pentru 8–1–8 în ajutorul român și englez."
+  ],
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/1702e18e28d40634de7a6d0590418c37482f96ac/release/0.21.0/reports/README.md",
+  "previousVersion": "0.20.1",
+  "mode": "changes",
+  "version": "0.21.0"
+}
