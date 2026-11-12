@@ -27,7 +27,7 @@ if (@($Groups | Where-Object {$_ -cnotin $knownGroups}).Count -or
         @($Groups | Sort-Object -Unique).Count -ne $Groups.Count) {
     throw 'Groups trebuie să conțină numai identificatori distincți din catalogul componentelor.'
 }
-$selectedGroups = if ($Groups.Count) { @($Groups) } else { @($knownGroups) }
+$selectedGroups = @(if ($Groups.Count) { $Groups } else { $knownGroups })
 if (-not $RunRoot) {
     $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
     $RunRoot = Join-Path $archive ('component-suites/' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
@@ -175,12 +175,14 @@ if ($groupsToRun.Count) {
             }
             $gradle = Join-Path $stage 'whist-lab-app/gradlew.bat'
             $tasks = @($gradleSelections.path)
-            $uiMode = if ($tasks.Count -eq 1 -and $tasks[0] -ceq $uiTask) { @("-Pcardui.only=component") } else { @() }
+            $arguments = @('--no-daemon', '--offline', '--console=plain', '--continue') + $tasks +
+                @("-Pwhist.auditOutput=$RunRoot", "-Pwhist.auditSource=$fingerprint")
+            if ($tasks.Count -eq 1 -and $tasks[0] -ceq $uiTask) { $arguments += '-Pcardui.only=component' }
             $log = Join-Path $RunRoot 'gradle-components.log'
             Push-Location (Join-Path $stage 'whist-lab-app')
             try {
                 $clock = [Diagnostics.Stopwatch]::StartNew()
-                & $gradle --no-daemon --offline --console=plain --continue @uiMode @tasks "-Pwhist.auditOutput=$RunRoot" "-Pwhist.auditSource=$fingerprint" *> $log
+                & $gradle @arguments *> $log
                 $exit = $LASTEXITCODE
                 $clock.Stop()
             } finally { Pop-Location }

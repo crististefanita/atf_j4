@@ -1,11 +1,15 @@
 #requires -Version 7.0
 param(
-    [Parameter(Mandatory)][string]$Repository,
+    [string]$Repository = '',
     [string]$SourceRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk'
 )
 $ErrorActionPreference = 'Stop'
 $source = [IO.Path]::GetFullPath($SourceRoot)
+if (!$Repository) {
+    $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
+    $Repository = Join-Path $archive 'libraries/card-table-ui'
+}
 $repositoryRoot = [IO.Path]::GetFullPath($Repository)
 if ($repositoryRoot.Equals($source, [StringComparison]::OrdinalIgnoreCase) -or
     $repositoryRoot.StartsWith($source + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {

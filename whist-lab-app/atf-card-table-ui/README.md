@@ -95,10 +95,10 @@ Un rând de etichetă și valoare își rezervă spațiul măsurat pentru cifre.
 
 ## Împachetare și consum
 
-Din rădăcina ATF, cu destinația Maven externă explicită:
+Din rădăcina ATF. Exportul folosește directorul libraries/card-table-ui din depozitul extern de dovezi. Parametrul `-Repository` permite o destinație Maven externă explicită.
 
 ```powershell
-.\scripts\export-card-table-ui.ps1 -Repository '<repository-extern>'
+.\scripts\export-card-table-ui.ps1
 ```
 
 - `:atf-card-table-ui` este numele proiectului Gradle. Coordonata de distribuție este `ro.cardtable:card-table-ui`, cu versiunea declarată în build. Exportul conține AAR, POM, metadate Gradle și JAR-ul de surse.
