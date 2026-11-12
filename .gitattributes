@@ -1,2 +1,5 @@
 # Release evidence is hashed byte for byte; checkout must not convert line endings.
 release/** -text
+
+# Published POM bytes must match their producer hash and the copy inside the JAR.
+lib/*.pom -text
