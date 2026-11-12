@@ -31,6 +31,8 @@ import ro.whistlab.core.session.GameSession;
 /** Opt-in paired self-play calibration. Kept out of the fast component collection. */
 public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.audit.GradleAuditedTest {
     private static final List<AiDifficulty> LEVELS = List.of(AiDifficulty.NORMAL, AiDifficulty.HARD);
+    private static final List<Goal> AUDITED_CONTRACT_GOALS = WhistAchievementCatalog.goals().stream()
+            .filter(goal -> goal.group() >= 9).toList();
 
     @Test public void policiesCompletePairedRomanianDealsAndProduceAuditableAchievementRates() throws Exception {
         String phase = required("whist.achievementCalibrationPhase");
@@ -55,7 +57,8 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
         for (AiDifficulty level : LEVELS) cohorts.put(level, new Cohort());
         Set<String> distinctDeals = new HashSet<>();
         List<String> gameRows = new ArrayList<>();
-        gameRows.add("phase,difficulty,playerCount,mode,seed,dealSha256,seat0Score,seat0Rank,exactContracts,exactRate,shortRate,middleRate,largeRate,longestExactRun,positiveSeriesAwards,zeroAward");
+        gameRows.add("phase,difficulty,playerCount,mode,seed,dealSha256,seat0Score,seat0Rank,exactContracts,exactRate,shortRate,middleRate,largeRate,longestExactRun,positiveSeriesAwards,zeroAward,"
+                + String.join(",", AUDITED_CONTRACT_GOALS.stream().map(Goal::id).toList()));
         writeCheckpoint(output, phase, firstSeed, matches, 0, distinctDeals, gameRows, startedAt);
         var expectedSchedule = List.of(1, 1, 1, 1, 2, 3, 4, 5, 6, 7,
                 8, 8, 8, 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1);
@@ -122,8 +125,8 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
 
     private static void observe(Cohort cohort, MatchRun match, String phase, long seed, int index,
             List<String> gameRows, boolean streaks, boolean zeroGame, GameMode mode, int playerCount) throws IOException {
-        var matchFacts = WhistMatchFacts.from(match.game()).orElseThrow();
         var handFacts = WhistHandFacts.from(match.game());
+        var matchFacts = WhistMatchFacts.from(match.game(), handFacts).orElseThrow();
         var schedule = GameRules.handSizes(mode, playerCount);
         require(schedule.size() == handFacts.size(), "a complete deal must record every scheduled hand");
         String matchId = phase + ":" + mode + ":" + playerCount + ":" + match.difficulty() + ":" + seed;
@@ -136,7 +139,7 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
 
         for (Goal goal : WhistAchievementCatalog.goals()) {
             GoalStats stats = cohort.goals.get(goal.id());
-            if (!eligible(goal.metric(), match.game(), streaks, zeroGame)) continue;
+            if (!eligible(goal.metric(), match.game(), matchFacts, streaks, zeroGame)) continue;
             stats.eligibleMatches++;
             int matchEvidence = evidence(goal, handFacts, matchFacts);
             if (matchEvidence > 0) stats.contributingMatches++;
@@ -154,11 +157,14 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
                 Integer.toString(matchFacts.exactMatchRate()), Integer.toString(matchFacts.exactSmallHandRate()),
                 Integer.toString(matchFacts.exactMiddleHandRate()), Integer.toString(matchFacts.exactLargeHandRate()),
                 Integer.toString(matchFacts.longestExactStreak()), Integer.toString(matchFacts.positiveSeriesAwards()),
-                Boolean.toString(matchFacts.zeroGameAward())));
+                Boolean.toString(matchFacts.zeroGameAward()),
+                String.join(",", AUDITED_CONTRACT_GOALS.stream().map(goal ->
+                        eligible(goal.metric(), match.game(), matchFacts, streaks, zeroGame)
+                                ? Integer.toString(evidence(goal, handFacts, matchFacts)) : "NA").toList())));
     }
 
     private static int evidence(Goal goal, List<WhistHandFacts> hands, WhistMatchFacts match) {
-        if (!handMetric(goal.metric())) return match.measure(goal.metric());
+        if (!goal.metric().isHandMetric()) return match.measure(goal.metric());
         int value = 0;
         for (WhistHandFacts hand : hands) {
             int measured = hand.measure(goal.metric());
@@ -167,14 +173,8 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
         return value;
     }
 
-    private static boolean handMetric(Metric metric) {
-        return switch (metric) {
-            case EXACT_CONTRACTS, EXACT_ONE_CARD, EXACT_ZERO_LARGE, POSITIVE_SERIES_AWARDS, EXACT_STREAK -> true;
-            default -> false;
-        };
-    }
-
-    private static boolean eligible(Metric metric, GameSession game, boolean streaks, boolean zeroGame) {
+    private static boolean eligible(Metric metric, GameSession game, WhistMatchFacts facts,
+            boolean streaks, boolean zeroGame) {
         return switch (metric) {
             case LONG_ROMANIAN_MATCHES, LONG_ROMANIAN_WINS -> game.config().mode() == GameMode.LONG_ROMANIAN;
             case SERIES_ENABLED_MATCHES, POSITIVE_SERIES_AWARDS, POSITIVE_SERIES_MATCHES, WIN_WITH_SERIES_AWARD -> streaks;
@@ -182,6 +182,8 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
             case PLAYER_COUNT_THREE -> game.config().playerCount() == 3;
             case PLAYER_COUNT_SIX, TOP_TWO_AT_SIX, WINS_AT_SIX -> game.config().playerCount() == 6;
             case TOP_TWO_AT_FIVE -> game.config().playerCount() == 5;
+            case TOP_TWO_AT_FOUR, TOP_THREE_AT_FOUR -> game.config().playerCount() == 4;
+            case EXACT_POSITIVE_RATE -> facts.contracts().positiveOpportunities() >= 8;
             case SHORT_ROMANIAN_MATCHES, SHORT_ROMANIAN_WINS -> game.config().mode() == GameMode.ROMANIAN_WHIST;
             default -> true;
         };
@@ -209,7 +211,8 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
             boolean zeroGame, GameMode mode, int playerCount) {
         var config = GameConfig.newMatch(playerCount, mode, difficulty, seed, streaks, seriesBonus, zeroGame);
         GameSession game = GameSession.newGame(config);
-        String dealHash = digest(dealSignature(game, mode, playerCount));
+        var deal = new StringBuilder();
+        appendDeal(deal, game.snapshot());
         int actions = 0;
         while (actions++ < 2_000) {
             var state = game.snapshot();
@@ -217,26 +220,27 @@ public final class WhistAchievementOfflineCalibrationTest extends atf.gradle.aud
                 case BIDDING -> game.submitBid(state.biddingSeat(), AiPolicy.chooseBid(state, state.biddingSeat(), difficulty));
                 case PLAYING -> game.playCard(state.currentSeat(), AiPolicy.chooseCard(state, state.currentSeat(), difficulty));
                 case SCORE -> {
-                    if (state.finalHand()) return new MatchRun(game, difficulty, dealHash);
+                    if (state.finalHand()) return new MatchRun(game, difficulty, digest(deal.toString()));
                     game.startNextHand();
+                    appendDeal(deal, game.snapshot());
                 }
             }
         }
         throw new AssertionError("AI self-play exceeded 2,000 legal transitions for seed " + seed + "/" + difficulty);
     }
 
-    private static String dealSignature(GameSession game, GameMode mode, int playerCount) {
-        var state = game.snapshot();
-        var result = new StringBuilder().append(mode).append('|').append(playerCount).append('|')
-                .append(state.dealerSeat()).append('|').append(state.trump()).append('|')
-                .append(state.turnedCard()).append('|');
+    private static void appendDeal(StringBuilder result, GameSession.Snapshot state) {
+        result.append(state.mode()).append('|').append(state.players().size()).append('|')
+                .append(state.handNumber()).append('|').append(state.dealerSeat()).append('|')
+                .append(state.trump()).append('|').append(state.turnedCard()).append('|');
         for (var player : state.players()) {
             result.append(player.seat()).append(':');
             player.hand().stream().map(card -> card.suit().ordinal() * 13 + card.rank())
                     .sorted().forEach(card -> result.append(card).append('.'));
             result.append('|');
         }
-        return result.toString();
+
+        result.append('\n');
     }
 
     private static String digest(String value) {

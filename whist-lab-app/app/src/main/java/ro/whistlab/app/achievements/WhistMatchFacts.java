@@ -1,5 +1,6 @@
 package ro.whistlab.app.achievements;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +18,7 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
         boolean streaksEnabled, int positiveSeriesAwards, boolean zeroGameAward,
         int exactHandSizeCount, boolean exactFinalHand, boolean exactFinalThree, boolean exactFinalFive,
         boolean holdOrImproveRank, boolean topThreeAtFour, boolean topTwoAtFour,
-        boolean climbOneRank, boolean lastToTopTwo) {
+        boolean climbOneRank, boolean lastToTopTwo, ContractPatterns contracts) {
 
     WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int exactOneCard,
             int exactZeroLarge, int exactMatchRate, int exactSmallHandRate, int exactMiddleHandRate,
@@ -26,10 +27,14 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
         this(playerCount, mode, exactContracts, exactOneCard, exactZeroLarge, exactMatchRate,
                 exactSmallHandRate, exactMiddleHandRate, exactLargeHandRate, longestExactStreak,
                 won, topTwo, streaksEnabled, positiveSeriesAwards, zeroGameAward,
-                0, false, false, false, false, false, false, false, false);
+                0, false, false, false, false, false, false, false, false, ContractPatterns.from(List.of()));
     }
 
     static Optional<WhistMatchFacts> from(GameSession game) {
+        return from(game, WhistHandFacts.from(game));
+    }
+
+    static Optional<WhistMatchFacts> from(GameSession game, List<WhistHandFacts> hands) {
         if (game == null) return Optional.empty();
         var state = game.snapshot();
         if (state.phase() != GamePhase.SCORE || !state.finalHand() || state.players().isEmpty()
@@ -37,20 +42,14 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
 
         var schedule = GameRules.handSizes(game.config().mode(), game.config().playerCount());
         ScoreHistory history = game.scoreHistory();
-        if (history.priorHands() != 0 || history.completedHands() != schedule.size()
-                || history.recordedBids().size() != schedule.size()
-                || history.recordedTricks().size() != schedule.size()) return Optional.empty();
+        if (hands.size() != schedule.size()) return Optional.empty();
 
-        int exact = 0, oneCard = 0, zeroLarge = 0, streak = 0, bestStreak = 0, positiveAwards = 0;
+        int exact = 0, oneCard = 0, zeroLarge = 0, bestStreak = 0, positiveAwards = 0;
         int exactSmall = 0, smallHands = 0, exactMiddle = 0, middleHands = 0, exactLarge = 0, largeHands = 0;
         Set<Integer> exactSizes = new HashSet<>();
-        for (int index = 0; index < schedule.size(); index++) {
-            int handNumber = index + 1;
-            int size = schedule.get(index);
-            Integer bid = history.bid(handNumber, 0);
-            Integer tricks = history.tricks(handNumber, 0);
-            if (bid == null || tricks == null) return Optional.empty();
-            boolean exactHand = bid.equals(tricks);
+        for (var hand : hands) {
+            int size = hand.size();
+            boolean exactHand = hand.exact();
             if (size == 1) {
                 if (exactHand) oneCard++;
             } else if (size >= 2 && size <= 3) {
@@ -63,22 +62,15 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
                 largeHands++;
                 if (exactHand) {
                     exactLarge++;
-                    if (bid == 0) zeroLarge++;
+                    if (hand.exactZeroLarge()) zeroLarge++;
                 }
             }
             if (exactHand) {
                 exact++;
                 exactSizes.add(size);
-                streak++;
-                bestStreak = Math.max(bestStreak, streak);
-            } else {
-                streak = 0;
+                bestStreak = Math.max(bestStreak, hand.exactStreak());
             }
-            if (game.config().mode().isRomanian()) {
-                int seriesDelta = history.points(handNumber, 0)
-                        - GameRules.scoreDelta(tricks, bid, game.config().mode());
-                if (seriesDelta > 0) positiveAwards++;
-            }
+            if (hand.positiveSeriesAward()) positiveAwards++;
         }
 
         int humanScore = state.matchScore(0);
@@ -104,7 +96,7 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
                 state.earnedZeroGame(0), exactSizes.size(), exactFinalHand, exactFinalThree, exactFinalFive,
                 finalRank <= midpointRank, game.config().playerCount() == 4 && finalRank <= 3,
                 game.config().playerCount() == 4 && finalRank <= 2, midpointRank - finalRank >= 1,
-                midpointRank == game.config().playerCount() && finalRank <= 2));
+                midpointRank == game.config().playerCount() && finalRank <= 2, ContractPatterns.from(hands)));
     }
 
     private static boolean exactInRange(ScoreHistory history, int firstHand, int lastHand) {
@@ -152,6 +144,63 @@ record WhistMatchFacts(int playerCount, GameMode mode, int exactContracts, int e
             case TOP_TWO_AT_FOUR -> topTwoAtFour ? 1 : 0;
             case CLIMB_ONE_RANK -> climbOneRank ? 1 : 0;
             case LAST_TO_TOP_TWO -> lastToTopTwo ? 1 : 0;
+            case EXACT_ZERO_BANDS -> contracts.zeroBands();
+            case EXACT_POSITIVE_RATE -> contracts.positiveRate();
+            case RECOVERY_AFTER_MISS -> contracts.recovery().starts();
+            case RECOVERY_AFTER_TWO_MISSES -> contracts.recovery().afterTwoMisses();
+            case RECOVERY_TWO_EXACT -> contracts.recovery().twoExact();
+            case RECOVERY_BOTH_MISS_TYPES -> contracts.recovery().balancedRecoveries();
+            case RECOVERY_THREE_EXACT -> contracts.recovery().threeExact();
+            case EXACT_ZERO_MULTICARD, EXACT_ZERO_SHORT, EXACT_ZERO_MIDDLE, EXACT_ZERO_EIGHT,
+                    EXACT_ONE_TRICK, EXACT_TWO_PLUS, EXACT_THREE_PLUS, EXACT_POSITIVE_LARGE -> 0;
         };
+    }
+
+    record ContractPatterns(int zeroBands, int positiveOpportunities, int positiveRate, Recovery recovery) {
+        static ContractPatterns from(List<WhistHandFacts> hands) {
+            Set<Integer> zeroBands = new HashSet<>();
+            int opportunities = 0;
+            int exact = 0;
+            for (var hand : hands) {
+                if (!hand.inLearningRange()) continue;
+                if (hand.bid() > 0) {
+                    opportunities++;
+                    if (hand.exact()) exact++;
+                } else if (hand.exact()) {
+                    zeroBands.add(Math.min(2, (hand.size() - 2) / 2));
+                }
+            }
+            return new ContractPatterns(zeroBands.size(), opportunities,
+                    opportunities < 8 ? 0 : percentage(exact, opportunities), Recovery.from(hands));
+        }
+    }
+
+    record Recovery(int starts, int afterTwoMisses, int twoExact, int balancedRecoveries, int threeExact) {
+        static Recovery from(List<WhistHandFacts> hands) {
+            int misses = 0, run = 0, starts = 0, afterTwoMisses = 0, twoExact = 0, threeExact = 0;
+            int lastMiss = 0;
+            int recoveredOvershoots = 0, recoveredShortfalls = 0;
+            for (var hand : hands) {
+                if (!hand.exact()) {
+                    misses++;
+                    lastMiss = Integer.signum(hand.tricks() - hand.bid());
+                    run = 0;
+                    continue;
+                }
+                if (misses > 0) {
+                    starts++;
+                    if (misses >= 2) afterTwoMisses++;
+                    if (lastMiss > 0) recoveredOvershoots++;
+                    else recoveredShortfalls++;
+                    misses = 0;
+                    run = 1;
+                } else if (run > 0) {
+                    run++;
+                    if (run == 2) twoExact++;
+                    if (run == 3) threeExact++;
+                }
+            }
+            return new Recovery(starts, afterTwoMisses, twoExact, Math.min(recoveredOvershoots, recoveredShortfalls), threeExact);
+        }
     }
 }

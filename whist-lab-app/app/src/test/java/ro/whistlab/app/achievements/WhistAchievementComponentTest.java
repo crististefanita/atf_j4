@@ -120,10 +120,10 @@ public final class WhistAchievementComponentTest extends atf.gradle.audit.Gradle
         var afterFirstMatch = state;
         state = state.recordMatch("match-two", firstChapterFacts);
         var streakState = WhistAchievementState.empty()
-                .recordHand("streak-one#hand:1", new WhistHandFacts(1, 1, true, false, false, 1))
-                .recordHand("streak-one#hand:2", new WhistHandFacts(2, 2, true, false, false, 2))
-                .recordHand("streak-two#hand:1", new WhistHandFacts(1, 1, true, false, false, 1))
-                .recordHand("streak-two#hand:2", new WhistHandFacts(2, 2, true, false, false, 2));
+                .recordHand("streak-one#hand:1", new WhistHandFacts(1, 1, 1, 1, false, 1))
+                .recordHand("streak-one#hand:2", new WhistHandFacts(2, 2, 1, 1, false, 2))
+                .recordHand("streak-two#hand:1", new WhistHandFacts(1, 1, 1, 1, false, 1))
+                .recordHand("streak-two#hand:2", new WhistHandFacts(2, 2, 1, 1, false, 2));
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "afterEarlyLaterGoal", afterEarlyLaterGoal,
                 "afterFirstMatch", afterFirstMatch, "finalState", state, "streakState", streakState);

@@ -33,7 +33,7 @@ class WhistReleaseHomeE2eTest {
         String close = ro ? "ÎNCHIDE" : "CLOSE";
         String back = ro ? "Înapoi" : "Back";
         String newGame = ro ? "Joc nou" : "New game";
-        String progress = ro ? "din 40 de realizări" : "of 40 achievements earned";
+        String progress = ro ? "din 55 de realizări" : "of 55 achievements earned";
         String firstChapter = ro ? "1. Primii pași" : "1. Getting started";
         String firstGoal = ro ? "Prima partidă" : "First match";
         c.checkpoint("Signed APK home offers achievements", xml -> List.of(

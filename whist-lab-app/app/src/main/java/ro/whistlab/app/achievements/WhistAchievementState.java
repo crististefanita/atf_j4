@@ -7,14 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import ro.whistlab.app.achievements.WhistAchievementCatalog.Aggregation;
-import ro.whistlab.app.achievements.WhistAchievementCatalog.Metric;
 
 /** Immutable career progress, replay guards, and durable achievement notices awaiting dismissal. */
 public record WhistAchievementState(Map<String, Integer> progress, Set<String> processedMatches,
         Set<String> processedHands, Set<String> pendingNotifications) {
-    private static final Set<Metric> HAND_METRICS = Set.of(Metric.EXACT_CONTRACTS, Metric.EXACT_ONE_CARD,
-            Metric.EXACT_ZERO_LARGE, Metric.POSITIVE_SERIES_AWARDS, Metric.EXACT_STREAK);
-
     public WhistAchievementState {
         if (progress == null || processedMatches == null || processedHands == null || pendingNotifications == null)
             throw new IllegalArgumentException("Missing achievement state");
@@ -77,7 +73,7 @@ public record WhistAchievementState(Map<String, Integer> progress, Set<String> p
         var nextProgress = new LinkedHashMap<>(progress);
         var nextPending = new LinkedHashSet<>(pendingNotifications);
         for (var goal : WhistAchievementCatalog.goals()) {
-            if (HAND_METRICS.contains(goal.metric())) continue;
+            if (goal.metric().isHandMetric()) continue;
             int evidence = facts.measure(goal.metric());
             if (evidence > 0) apply(goal, evidence, nextProgress, nextPending);
         }

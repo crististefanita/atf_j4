@@ -21,7 +21,7 @@ public final class WhistAchievementRepository {
         if (matchId == null || matchId.isBlank() || matchId.length() > 128)
             throw new IllegalArgumentException("Invalid match identity");
         List<WhistHandFacts> hands = WhistHandFacts.from(game);
-        var matchFacts = WhistMatchFacts.from(game);
+        var matchFacts = WhistMatchFacts.from(game, hands);
         if (hands.isEmpty() && matchFacts.isEmpty()) return false;
         WhistAchievementState before = load();
         WhistAchievementState after = before;

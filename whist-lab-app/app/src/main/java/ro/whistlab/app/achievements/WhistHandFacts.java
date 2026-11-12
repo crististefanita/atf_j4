@@ -8,8 +8,11 @@ import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
 
 /** Immutable, ledger-derived facts for every completed hand observed in a saved session. */
-record WhistHandFacts(int number, int size, boolean exact, boolean exactZeroLarge,
-        boolean positiveSeriesAward, int exactStreak) {
+record WhistHandFacts(int number, int size, int bid, int tricks, boolean positiveSeriesAward, int exactStreak) {
+    boolean exact() { return bid == tricks; }
+    boolean inLearningRange() { return size >= 2 && size <= 8; }
+
+    boolean exactZeroLarge() { return exact() && bid == 0 && size >= 6 && size <= 8; }
 
     static List<WhistHandFacts> from(GameSession game) {
         if (game == null || game.snapshot().players().isEmpty()
@@ -32,8 +35,7 @@ record WhistHandFacts(int number, int size, boolean exact, boolean exactZeroLarg
             int size = schedule.get(number - 1);
             int base = GameRules.scoreDelta(tricks, bid, game.config().mode());
             int seriesDelta = history.points(number, 0) - base;
-            facts.add(new WhistHandFacts(number, size, exact,
-                    exact && bid == 0 && size >= 6 && size <= 8,
+            facts.add(new WhistHandFacts(number, size, bid, tricks,
                     seriesDelta > 0 && game.config().mode().isRomanian(), streak));
         }
         return List.copyOf(facts);
@@ -43,9 +45,17 @@ record WhistHandFacts(int number, int size, boolean exact, boolean exactZeroLarg
 
     int measure(Metric metric) {
         return switch (metric) {
-            case EXACT_CONTRACTS -> exact ? 1 : 0;
-            case EXACT_ONE_CARD -> exact && size == 1 ? 1 : 0;
-            case EXACT_ZERO_LARGE -> exactZeroLarge ? 1 : 0;
+            case EXACT_CONTRACTS -> exact() ? 1 : 0;
+            case EXACT_ONE_CARD -> exact() && size == 1 ? 1 : 0;
+            case EXACT_ZERO_LARGE -> exactZeroLarge() ? 1 : 0;
+            case EXACT_ZERO_MULTICARD -> exact() && bid == 0 && inLearningRange() ? 1 : 0;
+            case EXACT_ZERO_SHORT -> exact() && bid == 0 && size >= 2 && size <= 3 ? 1 : 0;
+            case EXACT_ZERO_MIDDLE -> exact() && bid == 0 && size >= 4 && size <= 5 ? 1 : 0;
+            case EXACT_ZERO_EIGHT -> exact() && bid == 0 && size == 8 ? 1 : 0;
+            case EXACT_ONE_TRICK -> exact() && bid == 1 && inLearningRange() ? 1 : 0;
+            case EXACT_TWO_PLUS -> exact() && bid >= 2 && inLearningRange() ? 1 : 0;
+            case EXACT_THREE_PLUS -> exact() && bid >= 3 && inLearningRange() ? 1 : 0;
+            case EXACT_POSITIVE_LARGE -> exact() && bid > 0 && size >= 6 && size <= 8 ? 1 : 0;
             case POSITIVE_SERIES_AWARDS -> positiveSeriesAward ? 1 : 0;
             case EXACT_STREAK -> exactStreak;
             default -> 0;

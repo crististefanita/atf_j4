@@ -25,8 +25,8 @@ public final class WhistAchievementPresentationComponentTest extends atf.gradle.
         atf.gradle.audit.GradleInputs.fixture("Projection inputs before first assertion", "state", state,
                 "catalogue", catalogue, "firstExact", firstExact, "firstMatch", firstMatch,
                 "smallRate", smallRate);
-        assertEquals("the catalogue keeps all eight chapters", 8, catalogue.groups().size());
-        assertEquals("all forty goals remain visible", 40,
+        assertEquals("the catalogue shows all eleven chapters", 11, catalogue.groups().size());
+        assertEquals("all fifty-five goals remain visible", 55,
                 catalogue.groups().stream().mapToInt(group -> group.goals().size()).sum());
         assertEquals("the first chapter keeps its five catalog entries", 5, firstGroup.goals().size());
         assertEquals("progress above a threshold is displayed at the completed target", "Progres 1/1",
@@ -39,7 +39,7 @@ public final class WhistAchievementPresentationComponentTest extends atf.gradle.
         assertTrue("the earliest untouched chapter is marked as recommended",
                 catalogue.groups().get(2).recommended() && catalogue.groups().get(2).heading().contains("Recomandat"));
         assertTrue("the summary reports earned progress without hiding other chapters",
-                catalogue.summary().contains("2 din 40 de realizări"));
+                catalogue.summary().contains("2 din 55 de realizări"));
         assertThrows("projected chapter lists cannot be mutated", UnsupportedOperationException.class,
                 () -> catalogue.groups().clear());
         assertThrows("projected goal rows cannot be mutated", UnsupportedOperationException.class,
@@ -54,7 +54,7 @@ public final class WhistAchievementPresentationComponentTest extends atf.gradle.
 
             atf.gradle.audit.GradleInputs.fixture("Localized catalogue inputs before first assertion",
                     "language", language, "catalogue", catalogue);
-            assertEquals("summary follows the current language", copy.achievementsSummary(0, 40, 1),
+            assertEquals("summary follows the current language", copy.achievementsSummary(0, 55, 1),
                     catalogue.summary());
             for (int groupIndex = 0; groupIndex < WhistAchievementCatalog.groups().size(); groupIndex++) {
                 var expectedGroup = WhistAchievementCatalog.groups().get(groupIndex);
@@ -102,7 +102,7 @@ public final class WhistAchievementPresentationComponentTest extends atf.gradle.
                 "requestedOrder", List.of(oneCard, firstExact), "notice", notice);
         assertEquals("multiple unlocks use the localized plural title", "Realizări noi", notice.title());
         assertTrue("summary names this hand, the total progress, and the recommendation",
-                notice.summary().contains("Ai obținut 2 · 2 / 40 realizări · Mâna 5 s-a încheiat")
+                notice.summary().contains("Ai obținut 2 · 2 / 55 realizări · Mâna 5 s-a încheiat")
                         && notice.summary().contains("Capitol recomandat 3"));
         assertEquals("notice rows follow stable catalog order instead of set insertion order",
                 List.of("first_exact", "exact_one_card"), notice.goals().stream()
