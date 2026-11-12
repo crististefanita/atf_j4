@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "release": {
-    "versionName": "0.20.2",
-    "versionCode": 30,
+    "versionName": "0.21.0",
+    "versionCode": 31,
     "applicationId": "ro.whistlab.app",
     "minSdk": 24,
     "targetSdk": 36,
@@ -10,77 +10,55 @@
       "android"
     ],
     "artifactKind": "apk",
-    "apkName": "WhistLab-0.20.2.apk",
-    "apkBytes": 2183434,
-    "apkSha256": "10d4692cb450010ff347892759834ce13c51edd73048ed4320dcfe63023a0079",
+    "apkName": "WhistLab-0.21.0.apk",
+    "apkBytes": 2157870,
+    "apkSha256": "6f433b8ffee417068554899e293fcaeef9ae30d9e9dca9a270830ca2c82dac92",
+    "apkCrc32": "abf29c8d",
     "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
     "signingCertificate": "Android Debug",
     "productionManagedKey": false
   },
   "source": {
-    "sourceCommit": null,
-    "workingTreeFingerprint": "0e888efdbe48225e8ed03820d0747f3f1868f15786c68e790491c5792912ed67",
-    "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records",
     "qualificationStatus": "PREVIEW_NOT_QUALIFIED",
-    "builtFromCommit": "e62de6bf2b3235d21605555b9945251d35574840"
+    "builtFromCommit": "1d27610b8ee939163ed73719bc1a62480730eccc",
+    "workingTreeFingerprint": "e1a200d3e113c25319d1fbb0104db4acd88dcabb9f5ae44aff039cb7fcd428e1",
+    "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records",
+    "sourceCommit": null
   },
   "publication": {
-    "state": "PREPARED",
+    "targetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.21.0/WhistLab-0.21.0.apk",
     "channel": "TEST",
-    "accessMode": "AUTHENTICATED",
+    "state": "PREPARED",
     "repository": "crististefanita/atf_j4",
-    "targetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.20.2/WhistLab-0.20.2.apk"
+    "accessMode": "AUTHENTICATED"
   },
   "qualification": {
-    "state": "INCOMPLETE",
-    "scope": "ANDROID_PREVIEW_WITH_HEADLESS_AUTOGAME",
-    "build": "PASS",
+    "currentApkE2eReason": "System UI ANR a împiedicat observarea meniului.",
     "signatureVerification": "PASS",
-    "currentApkE2e": "PASS",
-    "currentSourceComponents": "BLOCKED",
-    "e2eEvidence": {
-      "suite": "signed-release-auto-game",
-      "api": 28,
-      "headless": true,
-      "tests": 1,
-      "failures": 0,
-      "errors": 0,
-      "skipped": 0,
-      "inlinePngCount": 9,
-      "installedApkSha256": "10d4692cb450010ff347892759834ce13c51edd73048ed4320dcfe63023a0079",
-      "reportSha256": "cb285147477e765e448835984aa91429e42b6b97691425fdc2ef77e2c2cff315",
-      "disposableContainerRemoved": true
+    "scope": "ANDROID_PREVIEW",
+    "state": "INCOMPLETE",
+    "build": "PASS",
+    "rag": {
+      "verdict": "BLOCKED",
+      "sha256": "573a93eec3132b8c31e7ab6cc5a9325f8b6360afe77ef8324a9b10aebe709ef8",
+      "blockedChecks": [
+        "QUALIFICATION_STATE",
+        "E2E_SCOPE"
+      ]
     },
-    "componentEvidence": {
-      "reused": ["atf-validation", "atf-test-android"],
-      "blockingGroup": "atf-tests",
-      "blockingRunTests": 343,
-      "blockingRunFailures": 2
-    },
-    "previousAutoGameAttempt": {
-      "apkSha256": "97c312b3509cc59881bd9bb173f5cc593b737770331ce834fd7ad0e9bb79b496",
-      "outcome": "ERROR",
-      "reason": "PLAY NOW was not observed before timeout",
-      "appliesToCurrentApk": false
-    },
-    "targetedComponents": {
-      "tests": 8,
-      "outcome": "PASS",
-      "source": "Before final integration guard; excluded from current APK qualification"
-    },
-    "previousFullRuns": "Earlier source snapshot; not reused as current qualification"
+    "currentApkE2e": "FAIL"
   },
   "previewDistribution": {
+    "checksumAssetId": 739220247,
+    "apkAssetId": 739220143,
+    "downloadSha256": "6f433b8ffee417068554899e293fcaeef9ae30d9e9dca9a270830ca2c82dac92",
+    "tag": "v0.21.0",
+    "downloadBytes": 2157870,
+    "releaseId": 442850951,
+    "checksumAssetVerified": true,
     "state": "PUBLISHED_PRERELEASE",
-    "tag": "v0.20.2",
-    "isPrerelease": true,
-    "releaseId": 442184653,
-    "releaseUrl": "https://github.com/crististefanita/atf_j4/releases/tag/v0.20.2",
-    "apkAssetId": 736895635,
-    "checksumAssetId": 736895673,
     "authenticatedDownloadStatus": 200,
-    "downloadBytes": 2183434,
-    "downloadSha256": "10d4692cb450010ff347892759834ce13c51edd73048ed4320dcfe63023a0079",
-    "checksumAssetVerified": true
+    "releaseUrl": "https://github.com/crististefanita/atf_j4/releases/tag/v0.21.0",
+    "isPrerelease": true
   }
 }
