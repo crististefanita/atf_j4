@@ -1,10 +1,14 @@
 package ro.whistlab.app.persistence;
 
 import static atf.gradle.audit.assertions.GradleAssertions.*;
+import atf.gradle.audit.GradleInputs;
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import ro.whistlab.app.screens.MatchSetup;
 import ro.whistlab.core.config.GameConfig;
+import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.session.GameSession;
 
 public class GameSessionNumbersComponentTest extends atf.gradle.audit.GradleAuditedTest {
@@ -30,6 +34,44 @@ public class GameSessionNumbersComponentTest extends atf.gradle.audit.GradleAudi
 
             atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "game", game, "restored", restored, "seed", seed);
             assertEquals("restored.saveState() must equal game.saveState()", game.saveState(), restored.saveState());
+        }
+    }
+
+    @Test public void romanianSetupOptionsRoundTripThroughTheCurrentCheckpoint() throws Exception {
+        for (var mode : List.of(GameMode.ROMANIAN_WHIST, GameMode.LONG_ROMANIAN)) {
+            verifySeriesCheckpoint(mode, true, 5);
+            verifySeriesCheckpoint(mode, true, 10);
+            verifySeriesCheckpoint(mode, false, 10);
+        }
+    }
+
+    private static void verifySeriesCheckpoint(GameMode mode, boolean enabled, int points) throws Exception {
+        var setup = new MatchSetup();
+        setup.mode(mode);
+        setup.streaks(enabled);
+        if (points == 5) {
+            setup.streakBonus(5);
+        }
+        var game = GameSession.newGame(setup.config(31));
+        game.submitBid(game.snapshot().biddingSeat(), 0);
+        var saved = game.saveState();
+        var json = GameSessionStore.encode(saved);
+        GradleInputs.fixture("Real setup and serialized checkpoint", "variant", mode,
+                "enabled", enabled, "points", points, "checkpoint", json.toString());
+
+        assertEquals("New complete checkpoints use the current schema", 8, json.getInt("version"));
+        assertEquals("The checkbox controls series scoring", enabled, json.getBoolean("streakBonuses"));
+        assertEquals("The selected bonus is saved", points, json.getInt("streakBonusPoints"));
+        assertEquals("The penalty has the same magnitude", points, json.getInt("streakPenaltyPoints"));
+        assertEquals("The rules and every saved field survive decoding", saved,
+                GameSessionStore.fromJson(json.toString()).saveState());
+
+        for (String field : List.of("streakBonusPoints", "streakPenaltyPoints")) {
+            var invalid = new JSONObject(json.toString()).put(field, 7);
+            GradleInputs.fixture("Unsupported integer series magnitude", "field", field,
+                    "invalid", invalid.toString());
+            assertThrows("The codec rejects an unsupported magnitude in " + field, IllegalStateException.class,
+                    () -> GameSessionStore.fromJson(invalid.toString()));
         }
     }
 

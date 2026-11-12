@@ -49,14 +49,16 @@ class CompleteRomanianExpertE2eTest {
             adb.run("shell","am","start","-W","-n",APP_COMPONENT).requireSuccess();
             ui.selectNamedSpinnerOption("interface-language","English");
             ui.tapText("New game");ui.selectNamedSpinnerOption("game-type","Romanian (1–8–1)");ui.selectNamedSpinnerOption("ai-level",displayLevel);
-            if(seriesReward==0)ui.tapDescription("Romanian five-hand streaks (missed series: -5)");
-            else ui.selectNamedSpinnerOption("romanian-streak-value",seriesReward==5?"5 points (original)":"10 points");
+            int seriesPoints = seriesReward == 0 ? 10 : seriesReward;
+            String expectedSeries = "±" + seriesPoints + " points";
+            if (seriesReward == 0) {
+                ui.tapDescription("Romanian five-hand streaks (equal reward and penalty)");
+            } else {
+                ui.selectNamedSpinnerOption("romanian-streak-value", expectedSeries);
+            }
             ui.capture("ro-setup");String setup=ui.dump();var checks=new ArrayList<AtfAssertion>();
-            // Semantic profile is also asserted from the fresh checkpoint after the normal menu action.
-            String expectedSeries=seriesReward==0?"series disabled":seriesReward==5?"5 points (original)":"10 points";
-            String observedSeries=seriesReward==0?"series disabled":ui.spinnerValue(setup,"Five-hand exact-contract bonus");
-            RomanianMatchOracle.truth(checks,"Selected series value in setup",expectedSeries,observedSeries,
-                    seriesReward==0||expectedSeries.equals(observedSeries));
+            String observedSeries = ui.spinnerValue(setup, "Five-hand reward / penalty");
+            RomanianMatchOracle.equal(checks, "Displayed series magnitude", expectedSeries, observedSeries);
             checkpoint(trace,out,"SETUP","Select normal four-seat Romanian Whist and "+displayLevel,"ro-setup","No debug replay, seed or deal is supplied",checks,List.of());
             trace.beginPhase("TEST BODY");
             ui.revealText("Start game");ui.tapText("Start game");JsonNode start=stable(adb);long seed=start.path("seed").asLong();int initialDealer=start.path("dealerSeat").asInt();
@@ -64,7 +66,7 @@ class CompleteRomanianExpertE2eTest {
             var schedule=RomanianMatchOracle.schedule(4);
             for(int h=0;h<limit;h++){
                 String prefix=String.format("ro-h%02d",h+1);if(h>0)start=stable(adb);
-                RomanianMatchOracle oracle=new RomanianMatchOracle(start,h,(initialDealer+h)%4,totals,level,streaks,seriesReward!=0,seriesReward==0?5:seriesReward,seriesReward==0?5:seriesReward);
+                RomanianMatchOracle oracle=new RomanianMatchOracle(start,h,(initialDealer+h)%4,totals,level,streaks,seriesReward != 0, seriesPoints, seriesPoints);
                 checks=new ArrayList<>(oracle.start(start));RomanianMatchOracle.equal(checks,"Same normal match seed",seed,start.path("seed").asLong());
                 int size=schedule.get(h);String optionXml=ui.dump();
                 int sum=start.path("bidTotal").asInt();boolean last=start.path("bidsSubmitted").asInt()==3;

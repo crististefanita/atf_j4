@@ -8,9 +8,9 @@ Prioritatea rămasă este calificarea Android a ecranului comun și validarea ge
 
 **Responsabil · adaptorul și acceptanța Android**
 
-Proba APK-ului semnat caută încă butonul „Închide” pe ecranul catalogului. Ecranul comun folosește „Înapoi” pentru întoarcerea la meniu. Adaptorul creează și o stare nouă la fiecare deschidere, astfel că derularea și detaliul selectat se pierd. [Proba Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java) · [Adoptarea ecranului](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java)
+Proba APK-ului semnat acoperă revenirea din catalog și închiderea detaliului. Adaptorul creează o stare nouă la fiecare deschidere, astfel că derularea și detaliul selectat se pierd. [Proba Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java) · [Adoptarea ecranului](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java)
 
-- Actualizează proba pentru lista curentă în RO/EN. Pe ecran compact cu font mărit, verifică un rând, regula din detaliu și revenirea la aceeași poziție după recreare.
+- Păstrează poziția listei și detaliul deschis la recrearea ecranului. Verifică restaurarea pe profil compact, cu font mărit, în RO/EN.
 - Adaugă un traseu scurt de la o mână decontată la notificare. O relansare înainte de confirmare păstrează notificarea. După confirmare, progresul rămâne salvat și notificarea dispare la reluare.
 
 ## P1 înainte de revizia catalogului · Compatibilitate și YAML
@@ -26,9 +26,4 @@ Starea recalculează deblocarea după pragul curent, iar codec-ul cere ca ID-uri
 
 **Responsabil · calibrare și produs**
 
-- Calibrarea offline acoperă 1–8–1 la patru locuri, 8–1–8 și mesele de 3, 5 și 6; valorile 5 și 10 sunt comparate pe aceleași distribuiri, cu holdout disjunct.
-- Pragurile numerice au rămas stabile: loturile independente păstrează progresia ușor–mediu–greu, iar treptele procentuale produc diferențe măsurabile.
-- Auto-jocul nu stabilește singur cât de firească este ordinea pentru oameni; validarea umană rămâne cercetare ulterioară.
-- Ratele, eligibilitatea și seed-urile rămân în raportul extern: [suita de calibrare](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) · [protocol](../game/ATF_Achievements.md).
-
-- Într-o evaluare manuală, verifică dacă ordinea celor opt grupe ghidează firesc jucătorii și dacă regulile din detalii se înțeleg fără explicații externe. Păstrează rezultatele ca cercetare separată; schimbă pragurile numai după un semnal repetat și după migrarea compatibilă a progresului salvat.
+Într-o evaluare manuală, verifică dacă ordinea grupelor ghidează firesc jucătorii și dacă regulile din detalii se înțeleg fără explicații externe. Păstrează rezultatele în cercetarea de produs. Ajustează pragurile după un semnal repetat și după migrarea compatibilă a progresului salvat. [Protocolul de calibrare](../game/ATF_Achievements.md)

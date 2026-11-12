@@ -30,6 +30,16 @@ public class HowToPlayDocumentationTest extends atf.gradle.audit.GradleAuditedTe
         var help=HowToPlay.sections(language).stream().filter(s->s.id().equals(section)).findFirst().orElseThrow();
         context.put("purpose",help.title());context.put("rule",help.explanation());context.put("profile","Standard Romanian Whist; four players; series bonus explicitly supplied per example");context.put("notation","SPADES=pică; HEARTS=cupă; CLUBS=treflă; DIAMONDS=caro. Rank 14=Ace. Seat indices are 0-based clockwise. Expected values below are literal independent examples, not policy predictions.");
         try{
+            if (example.equals("mandatory-undertrump")) {
+                boolean romanian = language == HowToPlay.Language.RO;
+                check("The help section has the localized rule heading",
+                        romanian ? "Atu obligatoriu când nu ai culoarea" : "Mandatory trump when void",
+                        help.title());
+                check("The help requires playing trump when void", true, help.explanation().contains(
+                        romanian ? "trebuie să pui atu" : "you must play trump"));
+                check("The help explicitly allows playing a lower trump", true, help.explanation().contains(
+                        romanian ? "nu este obligatoriu să supratai" : "overtrumping is not compulsory"));
+            }
             switch(example){
                 case "follow-after-trump" -> {var hand=List.of(c(Suit.HEARTS,7),c(Suit.SPADES,14));context.put("before","Hearts led; spades trump; another player may already have trumped. Holding 7 hearts and ace spades.");check("Follow hearts even after a trump",List.of(c(Suit.HEARTS,7)),GameRules.legalCards(hand,Suit.HEARTS,Trump.SPADES,GameMode.ROMANIAN_WHIST));}
                 case "mandatory-undertrump" -> {var hand=List.of(c(Suit.SPADES,7),c(Suit.SPADES,9),c(Suit.CLUBS,14));context.put("before","Hearts led; already a king of spades in the trick. Holding spades 7 and 9, clubs ace; no hearts.");check("Both lower trumps remain legal; discard is forbidden",hand.subList(0,2),GameRules.legalCards(hand,Suit.HEARTS,Trump.SPADES,GameMode.ROMANIAN_WHIST));}

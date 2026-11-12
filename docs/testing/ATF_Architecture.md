@@ -120,6 +120,7 @@ Rezultatele se păstrează în afara surselor. Testele unitare nu sunt obligate 
 | Geometrie, intersecții și centrare | Măsurători tipizate, extreme legale, text mărit și vecini care încalcă o singură limită. | Fontul efectiv, insets, ținta tactilă și aceeași compoziție în raster. |
 | Interpretarea ierarhiei | XML controlat: stare validă, nod lipsă, duplicat, regiune tăiată și document malformat. | Captura proaspătă după acțiune și identitatea ecranului observat. |
 | Tranziție sau reluare | Porturi mici, motorul real și evenimente livrate controlat, inclusiv după anulare. | Comanda prin controlul afișat, callback-urile și persistența platformei. |
+| Reguli localizate și opțiuni de salvare | Textul furnizat aplicației în fiecare limbă, opțiunile de configurare, codec-ul real și intrările nevalide. | Schimbarea limbii și redeschiderea ajutorului, câte o acțiune pentru selector și bifă, reluarea după oprirea procesului. |
 | Publicare | Date capturate, comparații și eșecuri originale; Extent/fallback și mutații ale rezultatului. | Revizia interactivă a HTML-ului rămâne audit de raport, cu propriul mediu. |
 
 - **Echivalență:** mapați cazul vechi la cazurile noi prin proprietate și identitate; păstrați situația nominală, refuzul și vecinul sănătos.

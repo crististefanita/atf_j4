@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Proiectul consumă Core, Reporting, Console și Mock ca perechi JAR/POM. Reactorul păstrează Kit, Validation, infrastructura Android și verificările locale de integrare; sursele și testele native ale bibliotecilor aparțin producătorului comun.
+Proiectul consumă Core, Reporting, Console, Mock și Test Kit ca perechi JAR/POM. Reactorul conține Validation, infrastructura Android și verificările locale de integrare. Producătorul comun deține sursele și testele bibliotecilor.
 
 ## Ghiduri complementare
 
@@ -35,13 +35,14 @@ Producătorul califică implementarea și testele native. Consumatorul verifică
 | Reporting | Publicarea și randarea datelor evaluate | Consumă comparațiile și capturile originale; nu decide regulile jocului. |
 | Console | Formatarea evenimentelor și proiecția ciclului JUnit | Legătura JUnit păstrează dependența opțională de Kit; consumatorul o declară când o folosește. |
 | Mock | Înlocuirea deterministă a transportului HTTP și potrivirea exactă | Datele și catalogul de scenarii aparțin consumatorului; nu simulează motorul jocului. |
+| Test Kit | Configurarea rulărilor și extensiile JUnit | Suitele și selecțiile Whist sunt definite în proiect. |
 
 Console și Mock nu depind de Reporting, Validation sau modulele aplicației. POM-ul publicat fixează dependențele bibliotecii, independent de versiunea reactorului local.
 
 ## Identitate și integritate
 
 - [POM-ul rădăcină](../../pom.xml) selectează coordonatele și versiunile efective.
-- `lib` conține o singură pereche fizică JAR/POM pentru fiecare bibliotecă, direct în director, alături de indexul README și cele patru ghiduri de utilizare.
+- `lib` conține o singură pereche fizică JAR/POM pentru fiecare bibliotecă, direct în director, alături de indexul README și cele cinci ghiduri de utilizare.
 - `library-provenance.json` păstrează hash-urile, intrările producătorului, catalogul testelor native și referința acceptanței curente.
 - POM-ul încorporat în JAR coincide octet cu octet cu POM-ul publicat alăturat.
 - Sursele paralele, versiunile suplimentare, perechile incomplete și depozitele imbricate sunt refuzate.

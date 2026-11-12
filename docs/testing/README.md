@@ -64,6 +64,12 @@ Selecția urmează riscul observabil. [Matricea de afișaj](ATF_Display.md#matri
 - **Randare:** confruntați pașii, secțiunile expandabile și imaginile cu trace-ul; consemnați distinct verificarea statică și interacțiunea efectivă în browser.
 - **Limite:** un test omis, un diagnostic incomplet ori un eșec de publicare rămâne explicit în dosarul rezultatului; nu este transformat în PASS funcțional.
 
+### Transferul verificărilor
+
+- Identifică proprietatea și intrările care o pot infirma.
+- Rulează matricea pe implementarea reală a componentei. Adaugă un control negativ pentru fiecare refuz pe care îl transferi.
+- Păstrează un parcurs Android pentru fiecare legătură distinctă dintre controlul vizibil, efectul din motor și stocarea platformei. [Matricea transferului](ATF_Architecture.md#mutarea-verificărilor-din-e2e-în-componente)
+
 ## Ce înseamnă verificat
 
 | Verdict | Dovadă | Limită |
