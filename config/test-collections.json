@@ -42,8 +42,8 @@
       "id": "documentation",
       "task": ":game-core:documentationTest",
       "targetMinutes": 1,
-      "trigger": "Rules/help or report reader contract changes",
-      "evidence": "Exemple bilingve ale regulilor, comparații evaluate și ajutor RO/EN generat; publicare numai când este selectată explicit."
+      "trigger": "Schimbări ale regulilor, punctajului sau ajutorului",
+      "evidence": "Raport Extent al colecției, confruntat cu JUnit, cu probe factuale și exemple de reguli în RO/EN."
     },
     {
       "id": "learning",

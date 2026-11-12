@@ -99,7 +99,9 @@ Trasabilitatea unei afirmații este `afirmație → sursă live → document res
 
 ## Verificare și evaluare editorială
 
-[Suita locală](README.md) verifică structura, proza, stilul, diagramele, linkurile și perimetrul surselor. Validatoarele documentare se aplică unei rădăcini și unei populații explicite, cu probe negative și diagnostic localizat.
+[Suita locală](README.md) verifică structura, proza, stilul, diagramele, linkurile și perimetrul surselor. Linkurile locale trebuie să se rezolve în checkout, inclusiv după rezolvarea unei căi simbolice. Referințele către alte proiecte folosesc URL-uri stabile.
+
+Pentru afirmații verificabile, folosiți un tabel în ghidul responsabil și confruntați valorile cu implementarea directă. Păstrați un caz corect și mutații controlate pentru valori, rânduri lipsă sau duplicate. [Tabelul de scor Whist](../game/README.md#scor-și-serii) este verificat în [colecția de documentație](../testing/ATF_Collections.md).
 
 | Criteriu editorial | Punctaj maxim |
 |---|---:|

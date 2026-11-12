@@ -48,7 +48,7 @@ Legarea dovezilor de sursa calificată ține de [registrul RAG](ATF_Release_RAG.
 
 | Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
 |---|---|---|
-| P1 | Guvernanța documentară: verificările structurale nu confruntă automat toate afirmațiile despre profilul nou și cel istoric. | Controale factuale cu defecte injectate pentru scor, ajutor și documentație; fiecare afirmație identifică sursa și domeniul, fără deducerea comportamentului dintr-un cuvânt izolat. |
+| P2 | Extinderea confruntării factuale de la scor și serii la restul regulilor RO/EN. | Folosiți observația motorului pentru fiecare afirmație selectată. Adăugați un caz corect și o modificare controlată care schimbă sensul aceleiași reguli. [Contractul editorial](../governance/ATF_Documentation.md#verificare-și-evaluare-editorială) |
 | P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. Pentru Python, detectați aliasul de instalare separat de un interpretor executabil; pentru [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verificați disponibilitatea, refuzul, timeout-ul și starea transportului cu proces controlat, separat de parsare și de clientul Java. |
 
 [Retenția copiilor inline](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) verifică separat lipsa PNG-urilor identice lângă HTML. Această gardă nu dovedește autonomia datelor, lizibilitatea imaginilor sau integritatea APK-ului; [criteriul adaptorului](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) rămâne distinct.
@@ -60,7 +60,6 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 | Prioritate | Responsabil și suprafață | Criteriu de închidere |
 |---|---|---|
 | P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
-| P2 | Referințe externe reproductibile în checkout izolat | Declarați commitul și fișierele externe necesare ori folosiți rute versionate. O clonă fără directoare-surori trebuie să dea același verdict folosind numai intrările declarate; documentele și ancorele lipsă se raportează punctual. |
 
 ## Descărcarea prin browser
 

@@ -54,4 +54,4 @@ Verificați întâi compilarea pe perechile fizice JAR/POM, apoi comportamentul 
 
 ## Mentenanță și feedback
 
-Codul, testele native și feedback-ul bibliotecilor aparțin `atf_j0` (`atf_j0/docs/feedback/README.md`). Remedierea și regresia în J0 preced sincronizarea și acceptanța locală; feedback-ul include JAR/hash, reproducere și așteptat/observat.
+Producătorul comun, `atf_j0`, deține codul și testele native. Acceptanța Whist folosește perechile din acest director și suita locală de guvernanță. Pentru defecte includeți perechea JAR/POM, hash-ul, reproducerea și valorile așteptate și observate. [Responsabilul feedback-ului](../docs/feedback/README.md)

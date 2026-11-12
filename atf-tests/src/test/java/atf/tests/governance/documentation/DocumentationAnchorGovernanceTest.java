@@ -49,6 +49,26 @@ public class DocumentationAnchorGovernanceTest {
     }
 
     @Test
+    void rejectsMachinePathsAndExistingSiblingTargets(@TempDir Path workspace) throws Exception {
+        Path root = Files.createDirectory(workspace.resolve("whist"));
+        Path sibling = Files.createDirectory(workspace.resolve("alt"));
+        Files.writeString(sibling.resolve("owner.md"), "# Owner\n");
+        Path owner = Files.writeString(root.resolve("owner.md"), "# Owner\n");
+        Path source = root.resolve("README.md");
+        var lines = List.of("# Contract",
+                "[sibling](../alt/owner.md#owner)",
+                "[file URI](" + owner.toUri() + ")",
+                "[drive](C:/work/owner.md)",
+                "[local](owner.md#owner)",
+                "[remote](https://example.org/docs/owner.md)");
+        var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
+        DocumentationReadmeStructureGovernanceTest.inspectLocalLinks(source, root, lines, violations);
+        AuditedAssertions.assertEquals(List.of(2, 3, 4),
+                violations.stream().map(DocumentationGovernanceSupport.Violation::line).toList());
+        AuditedAssertions.assertTrue(violations.stream().allMatch(v -> v.code().equals("DOC-LINK-PORTABILITY")));
+    }
+
+    @Test
     void aRemovedHeadingFailsAtTheOriginalLinkLineWithRemediation(@TempDir Path root) throws Exception {
         Path source = root.resolve("README.md");
         Path target = root.resolve("owner.md");

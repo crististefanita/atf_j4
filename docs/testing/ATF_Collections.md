@@ -30,7 +30,7 @@ Colecția restrânge cazurile la proprietatea schimbată. Evaluarea unei politic
 | `quick` | Reguli, scor, serii, checkpoint-uri și gărzi de decizie | Subset al regresiei |
 | `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Regresie JVM, fără turnee |
 | `strategy` | Invariante și contraexemple mici pentru licitare și joc | Componente JVM selectate |
-| `documentation` | Exemple de reguli și ajutor în română/engleză | Reguli și ajutor bilingv generate |
+| `documentation` | Punctaj documentat și reguli RO/EN | Extent confruntat cu JUnit și ajutor bilingv generat |
 | `learning` | Comparație între un candidat și politici înghețate | Partide complete definite prin protocol |
 | `arena` | Strategii distincte la aceeași masă și locuri rotite | Ligă virtuală definită prin protocol |
 | `research` | Modele experimentale izolate de regresia implicită | Cercetare JVM activată explicit |
@@ -126,6 +126,9 @@ Calitatea surselor și documentației se verifică separat de colecțiile joculu
 
 ## Reguli, ajutor și Android
 
-[HowToPlay](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) furnizează catalogul comun pentru ajutor și exemplele RO/EN. Colecția `documentation` verifică regulile și produce proiecțiile în directorul execuției. Documentele de reguli sunt [română](../game/ATF_RulesRo.md) și [engleză](../game/ATF_RulesEn.md).
+Colecția `documentation` confruntă ajutorul bilingv și tabelul de scor cu motorul. [Ajutorul din aplicație](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) · [Reguli RO](../game/ATF_RulesRo.md) · [Reguli EN](../game/ATF_RulesEn.md)
+
+- Raportul Extent păstrează intrările, comparațiile și refuzul modificărilor controlate.
+- Raportul identifică inventarul sursei și se confruntă cu invocările JUnit în aceeași execuție.
 
 Pentru infrastructura dispozitivului și activarea explicită a fluxurilor UI, folosește [testarea Android](ATF_Android.md). Compilarea JVM, construirea unui APK și executarea pe dispozitiv sunt verificări distincte.

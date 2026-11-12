@@ -126,6 +126,15 @@ $stageRoot=Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_COLLECTION_'+[guid]::Ne
 $stageApp=Join-Path $stageRoot 'whist-lab-app'
 New-Item -ItemType Directory -Path $RunRoot,$stageApp | Out-Null
 $inventory=@()
+$sharedInputs = @('pom.xml', 'config/gradle-audit-collections.properties', 'config/test-collections.json', 'docs/game/README.md')
+$sharedInputs += @(Get-ChildItem -LiteralPath (Join-Path $sourceRoot 'lib') -File |
+    Where-Object Extension -In '.jar','.pom' | ForEach-Object { "lib/$($_.Name)" })
+foreach ($relative in $sharedInputs) {
+    $destination = Join-Path $stageRoot $relative
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
+    Copy-Item -LiteralPath (Join-Path $sourceRoot $relative) -Destination $destination
+    $inventory += @{file="../$relative";sha256=(Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash.ToLowerInvariant()}
+}
 if($Collection -eq 'cost'){[IO.File]::WriteAllBytes((Join-Path $RunRoot 'cost-profile.json'),$costSnapshot.bytes)}
 if($Collection -in @("learning","arena")){[IO.File]::WriteAllBytes((Join-Path $RunRoot "protocol.json"),$protocolSnapshot.bytes)}
 if($CasesFile){$stagedCasesFile=Join-Path $RunRoot "case-selection.json";Copy-Item -LiteralPath $CasesFile -Destination $stagedCasesFile}
@@ -166,7 +175,7 @@ if($CandidateOverlay){
     @{candidate=$Candidate;role=$candidateSpec.role;status='ISOLATED_CANDIDATE_SOURCE';scope='Explicit source overlay in TEMP only; no production activation or strength acceptance.';sourceManifest=$candidateOverlayFile;sourceRoot=$candidateSourceRoot;overlaySha256=$candidateOverlaySha;baselineGuards=$candidateSpec.baselineGuards;baselineInventory=$candidateBaseline;copiedBaselineInventory=$stagedBaseline;candidateInventory=$stagedCandidate;files=$candidateSpec.files} | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath (Join-Path $RunRoot 'candidate-overlay-proof.json') -Encoding utf8
 }
 # Inventory the final staged bytes, including explicit overlays, before checking any source freeze.
-$inventory=@(foreach($file in Get-ChildItem -LiteralPath $stageApp -Recurse -File){
+$inventory+=@(foreach($file in Get-ChildItem -LiteralPath $stageApp -Recurse -File){
     $relative=[IO.Path]::GetRelativePath($stageApp,$file.FullName)
     @{file=$relative;sha256=(Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
 })
@@ -207,10 +216,16 @@ if($Collection -in @('learning','arena')){
     }
 }
 
-$inventory | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $RunRoot 'source-inventory.json') -Encoding utf8
+$inventoryFile = Join-Path $RunRoot 'source-inventory.json'
+$inventory | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $inventoryFile -Encoding utf8
 $arguments=@('-p','algorithm-build','--offline','--no-daemon','--console=plain','--max-workers=1','-Dorg.gradle.jvmargs=-Xms32m -Xmx256m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC -XX:ActiveProcessorCount=2',$selection[0].task)
 if($Collection -eq 'learning'){if($protocol.version -eq 18){$arguments[-1]=':game-core:roundEighteenTest';$learningPrefix='whist.round18'}elseif($protocol.version -in @(15,16)){$arguments[-1]=':game-core:roundFifteenTest';$learningPrefix='whist.round15'}elseif($protocol.version -eq 12){$arguments[-1]=':game-core:roundTwelveTest';$learningPrefix='whist.round12'}elseif($protocol.version -eq 11){$arguments[-1]=':game-core:roundElevenTest';$learningPrefix='whist.round11'}else{$arguments[-1]=':game-core:roundSevenTest';$learningPrefix='whist.round7'}}
-if($Collection -eq 'documentation'){$arguments+=@("-Pwhist.documentationEvidence=$RunRoot","-Pwhist.documentationMarkdown=$RunRoot\rules","-Pwhist.documentationRunId=$([IO.Path]::GetFileName($RunRoot))")}
+if ($Collection -eq 'documentation') {
+    $fingerprint = (Get-FileHash -LiteralPath $inventoryFile -Algorithm SHA256).Hash.ToLowerInvariant()
+    $arguments += @("-Pwhist.auditOutput=$RunRoot", "-Pwhist.auditSource=source-inventory SHA-256 $fingerprint",
+        "-Pwhist.documentationEvidence=$RunRoot", "-Pwhist.documentationMarkdown=$RunRoot\rules",
+        "-Pwhist.documentationRunId=$([IO.Path]::GetFileName($RunRoot))")
+}
 if($Collection -eq 'cost'){$arguments+=@("-Pwhist.aiCost.profile=$RunRoot\cost-profile.json","-Pwhist.aiCost.output=$RunRoot")}
 if($Collection -eq 'learning'){$arguments+=@("-P$learningPrefix.output=$RunRoot","-P$learningPrefix.corpus=$CorpusRoot","-P$learningPrefix.candidate=$Candidate","-P$learningPrefix.phase=$Phase","-P$learningPrefix.firstSeed=$($range.firstSeed)","-P$learningPrefix.seeds=$($range.seeds)")}
 if($Collection -eq "learning" -and $declaredRoles.Count -eq 1){$arguments+=("-P$learningPrefix.role="+$declaredRoles[0])}
@@ -233,7 +248,9 @@ try{
     if(Test-Path -LiteralPath $results){Copy-Item -LiteralPath $results -Destination (Join-Path $RunRoot 'native-results') -Recurse}
 }finally{
     $watch.Stop();Pop-Location;$env:JAVA_HOME=$savedJava;$env:ANDROID_HOME=$savedAndroid;$env:Path=$savedPath
-    @{collection=$Collection;startedAt=$began.ToString('o');endedAt=[DateTimeOffset]::UtcNow.ToString('o');executionMilliseconds=$watch.ElapsedMilliseconds;exitCode=$exitCode;status=$(if($exitCode -eq 0){'PASS'}else{'FAIL'});stage=$stageRoot;reportScope='Native collection execution only; no inferred Extent, device or complete-game acceptance.'} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot 'collection-result.json') -Encoding utf8
+    $scope = if ($Collection -eq 'documentation') { 'JVM documentation collection and canonical Extent validation.' }
+        else { 'Native collection execution only; no inferred Extent, device or complete-game acceptance.' }
+    @{collection=$Collection;startedAt=$began.ToString('o');endedAt=[DateTimeOffset]::UtcNow.ToString('o');executionMilliseconds=$watch.ElapsedMilliseconds;exitCode=$exitCode;status=$(if($exitCode -eq 0){'PASS'}else{'FAIL'});stage=$stageRoot;reportScope=$scope} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $RunRoot 'collection-result.json') -Encoding utf8
 }
 if($exitCode -ne 0){throw "Collection failed; preserved results: $RunRoot"}
 Write-Output $RunRoot

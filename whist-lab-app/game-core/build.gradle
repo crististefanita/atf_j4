@@ -165,10 +165,17 @@ tasks.register("quickRegressionTest", Test) {
         includeTestsMatching "ro.whistlab.core.scoring.ZeroMatchScoringComponentTest"
     }
 }
+tasks.named("test", Test) {
+    inputs.file(new File(projectDir, "../../docs/game/README.md"))
+}
+
 tasks.register("documentationTest", Test) {
     testClassesDirs=sourceSets.test.output.classesDirs
     classpath=sourceSets.test.runtimeClasspath
-    filter { includeTestsMatching "ro.whistlab.core.rules.HowToPlayDocumentationTest" }
+    filter {
+        includeTestsMatching "ro.whistlab.core.rules.HowToPlayDocumentationTest"
+        includeTestsMatching "ro.whistlab.core.rules.documentation.DocumentedScoringComponentTest"
+    }
     for(def key:["whist.documentationEvidence","whist.documentationMarkdown","whist.documentationRunId"])systemProperty key,providers.gradleProperty(key).getOrElse("")
     outputs.upToDateWhen { false }
 }

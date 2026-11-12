@@ -38,7 +38,7 @@ Un criteriu numește comportamentul, sursa și nivelul de verificare necesar. Re
 </details>
 
 Core, Reporting, Console și Mock au [responsabilul comun al bibliotecilor](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/README.md).
-Principiile editoriale se aliniază cu [bunele practici documentare comune](https://github.com/crististefanita/atf_j0/blob/master/docs/README_Atf_DocumentationBestPractices.md), adaptate la domeniul Whist și formalizate în [ghidul local](../governance/ATF_Documentation.md).
+[Ghidul editorial Whist](../governance/ATF_Documentation.md) deține regulile documentare și verificarea lor în checkout.
 
 ## Închiderea și promovarea
 

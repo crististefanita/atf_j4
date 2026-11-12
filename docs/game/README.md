@@ -42,9 +42,23 @@ Configurația stabilește regulile aplicabile înainte de distribuire. Ajutorul 
 | Culoare | Urmarea culorii este obligatorie când există în mână. |
 | Atu | În lipsa culorii, tăierea este obligatorie dacă există atu; supratăierea nu este obligatorie. |
 | Levata | Câștigă cel mai mare atu sau cel mai mare rang din culoarea cerută; câștigătorul conduce. |
-| Scor | Contract exact: 5 + levate; ratare: minus diferența absolută. |
-| Serii | Opțiuni configurate înainte de partidă, cu eligibilitate și resetare definite de RomanianScoring. |
+| Scor și serii | Punctele pentru contract, abatere și serii sunt definite în tabelul de mai jos. |
 | Joc la 0 | Opțiune bifată implicit în ambele variante românești. După ultima mână, fiecare total exact 0 se afișează și se clasează ca 500. Istoricul mâinilor păstrează totalul calculat. |
+
+## Scor și serii
+
+| Regulă | 1–8–1 | 8–1–8 |
+|---|---:|---:|
+| Puncte adăugate la levatele unui contract exact | 5 | 5 |
+| Puncte pe levată de abatere | -1 | -1 |
+| Mâini eligibile pentru plata seriei | 5 | 5 |
+| Bonus și penalizare la opțiunea 5 | 5, -5 | 5, -5 |
+| Bonus și penalizare la opțiunea 10 | 10, -10 | 10, -10 |
+| Penalizare de serie în profilul istoric asimetric | -5 | -5 |
+
+La o carte, un rezultat de același tip păstrează seria. Rezultatul opus întrerupe seria. Plata unei serii resetează contorul.
+
+[Testul factual](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java) confruntă tabelul cu formulele motorului și verifică refuzul declarațiilor greșite.
 
 ## Principii de implementare
 
