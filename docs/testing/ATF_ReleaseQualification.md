@@ -151,7 +151,8 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 - `componentEvidenceOrigin` din grup identifică tripletul original `source-inputs.json`, `source-provenance.json` și `source-component-run.json` din `reports/component/snapshots/{id}/`.
 - Extent și `execution.json` păstrează calea canonică a suitei și intră în inventarul cu hash-uri al candidatului.
 - O rulare agregată cu eșecuri poate furniza dovezi pentru grupurile trecute dacă sursa a rămas stabilă. Fiecare grup obligatoriu trebuie să aibă propria dovadă validată.
-- Lansatorul acceptă numai grupuri din catalog. [Componente](../../scripts/README.md)
+- Lansatorul acceptă numai grupuri din catalog. Parametrul -ReuseFrom primește o rulare anterioară de componente sau dosarul reports/component cu receipt-urile originale.
+- Planul component-reuse.json indică motivul deciziei și ID-ul snapshot-ului. Păstrați planul, Extent, receipt-ul de execuție și snapshot-ul original la asamblarea candidatului. În manifest, setați componentEvidenceOrigin pentru fiecare grup refolosit și folosiți calea androidComponentsReceipt, relativă la reports/component, pentru poarta Android de componente. [Componente](../../scripts/README.md)
 
 ### Probe native și porți Android
 

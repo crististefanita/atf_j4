@@ -30,7 +30,7 @@ node atf-tests/tools/record-release-integrity.mjs
 
 [Evaluatorul](evaluate-release-rag.mjs) confruntă planul, manifestul, payload-ul și snapshot-ul APK.
 
-- [Perimetrul suitei](component-evidence-scope.mjs) stabilește când se poate reutiliza o execuție. Evaluatorul verifică hash-urile și receipt-ul original înaintea reutilizării.
+- [Perimetrul suitei](component-evidence-scope.mjs) stabilește când se poate reutiliza o execuție. [Pregătirea dovezilor](prepare-component-reuse.mjs) și evaluatorul folosesc aceleași verificări pentru receipt-uri și hash-uri. Lansatorul componentelor folosește această pregătire la cerere.
 - Politica pe versiuni stabilește grupurile Maven și Gradle obligatorii. Fiecare grup are propriul Extent și receipt.
 
 ```powershell

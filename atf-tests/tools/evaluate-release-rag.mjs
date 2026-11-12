@@ -36,11 +36,47 @@ function componentGroupsRequiredForVersion(policy, platform, version) {
 }
 
 function stableComponentRun(run) {
-  const results = run.results;
-  if (run.kind !== 'live-source-components' || run.sourceStable !== true || !Array.isArray(results)
+  const results = run?.results;
+  if (run?.kind !== 'live-source-components' || run.sourceStable !== true || !Array.isArray(results)
       || !results.length || !results.every(row => typeof row?.module === 'string' && Number.isInteger(row.exitCode))
       || new Set(results.map(row => row.module)).size !== results.length) return false;
   return run.status === (results.every(row => row.exitCode === 0) ? 'PASS' : 'FAIL');
+}
+
+export function componentInputMap(rows) {
+  if (!Array.isArray(rows) || rows.length === 0) throw Error('INPUT_LIST_REQUIRED');
+  const result = new Map();
+  for (const row of rows) {
+    const name = safeRelative(row.path);
+    if (!HASH.test(row.sha256 ?? '') || result.has(name)) throw Error('INPUT_ROW_INVALID:' + name);
+    result.set(name, row.sha256);
+  }
+  return result;
+}
+
+export function verifyComponentOrigin(inputs, run, provenance, inputManifest = 'source-inputs.json') {
+  const sourceSet = componentInputMap(inputs.value);
+  const matchesInputs = receipt => receipt?.kind === 'live-source-components'
+      && receipt.sourceFingerprint === inputs.sha256 && receipt.inputCount === sourceSet.size
+      && receipt.inputManifest === inputManifest;
+  if (!matchesInputs(run) || !stableComponentRun(run)
+      || !matchesInputs(provenance.value) || run.provenanceReceiptSha256 !== provenance.sha256)
+    throw Error('Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor.');
+  return {sourceSet, sourceFingerprint: inputs.sha256, run, provenance};
+}
+
+export function verifyComponentExecution(origin, name, execution, tests, reportHash) {
+  const receipt = origin.run.results.find(row => row.module === name);
+  const countsPass = execution?.outcomes?.PASS === tests
+      && (execution.outcomes?.FAIL ?? 0) === 0 && (execution.outcomes?.ERROR ?? 0) === 0 && (execution.outcomes?.SKIP ?? 0) === 0;
+  const receiptPass = Number.isSafeInteger(tests) && tests > 0 && execution?.kind === 'live-source-components' && execution.apkQualification === false
+      && execution.tests === tests && countsPass
+      && Array.isArray(execution.coverageErrors) && execution.coverageErrors.length === 0
+      && Array.isArray(execution.containerFailures) && execution.containerFailures.length === 0
+      && execution.provenanceSha256 === origin.provenance.sha256
+      && execution.reportSha256 === reportHash
+      && receipt?.exitCode === 0 && isDeepStrictEqual(receipt.receipt, execution);
+  if (!receiptPass) throw Error('Receipt-ul execuției, numărătoarea sau hash-ul Extent nu corespunde rulării rădăcină.');
 }
 
 // A small strict JSON reader keeps duplicate keys and trailing data from changing a receipt silently.
@@ -106,8 +142,8 @@ class StrictJsonReader {
   }
 }
 
-const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-const inlinePngCount = html => [...html.matchAll(/data:image\/png;base64,/g)].length;
+export const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+export const inlinePngCount = html => [...html.matchAll(/data:image\/png;base64,/g)].length;
 const posix = value => value.split(path.sep).join('/');
 function hasCredentialField(value) {
   if (!value || typeof value !== 'object') return false;
@@ -127,13 +163,13 @@ function inside(root, relative) {
 function isWithin(parent, child) { return child === parent || child.startsWith(parent + path.sep); }
 function lineCount(text) { return text.split('\n').length; }
 
-async function strictJson(file) {
+export async function strictJson(file) {
   if ((await fs.lstat(file)).isSymbolicLink()) throw Error('JSON_SYMLINK:' + file);
   const bytes = await fs.readFile(file); const text = bytes.toString('utf8');
   const parsed = new StrictJsonReader(text).parse();
   return {value: parsed.value, lines: parsed.lines, bytes, sha256: digest(bytes), text};
 }
-async function regularFile(root, relative) {
+export async function regularFile(root, relative) {
   const file = inside(root, relative), segments = safeRelative(relative).split('/');
   let current = root;
   for (let index = 0; index < segments.length; index++) {
@@ -501,16 +537,6 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
 
   const binding = policy.ragEvaluator?.componentSourceBinding ?? {};
   const bindingProblems = [], bindingEvidence = [];
-  const toMap = rows => {
-    if (!Array.isArray(rows) || rows.length === 0) throw Error('INPUT_LIST_REQUIRED');
-    const result = new Map();
-    for (const row of rows) {
-      const name = safeRelative(row.path);
-      if (!HASH.test(row.sha256 ?? '') || result.has(name)) throw Error('INPUT_ROW_INVALID:' + name);
-      result.set(name, row.sha256);
-    }
-    return result;
-  };
   const readPayloadJson = async relative => {
     const document = await strictJson(await regularFile(candidate, relative));
     if (declared.get(relative)?.sha256 !== document.sha256) throw Error('RECEIPT_HASH:' + relative);
@@ -527,18 +553,11 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const inputs = await readPayloadJson(inputRelative);
       const run = (await readPayloadJson(resolve(binding.runReceipt))).value;
       const provenance = await readPayloadJson(resolve(binding.provenanceReceipt));
-      const sourceSet = toMap(inputs.value);
-      const matchesInputs = receipt => receipt.kind === 'live-source-components'
-          && receipt.sourceFingerprint === inputs.sha256 && receipt.inputCount === sourceSet.size
-          && receipt.inputManifest === path.posix.basename(inputRelative);
-      if (!matchesInputs(run) || !stableComponentRun(run)
-          || !matchesInputs(provenance.value) || run.provenanceReceiptSha256 !== provenance.sha256)
-        throw Error('Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor.');
-      origins.set(id, {sourceSet, sourceFingerprint: inputs.sha256, run, provenance});
+      origins.set(id, verifyComponentOrigin(inputs, run, provenance, path.posix.basename(inputRelative)));
     }
     return origins.get(id);
   };
-  const releaseSet = sourceOkay ? toMap(inputDoc.value.files) : null;
+  const releaseSet = sourceOkay ? componentInputMap(inputDoc.value.files) : null;
   for (const result of groupResults) {
     const name = result.name, group = groups[name];
     try {
@@ -546,17 +565,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const origin = await readOrigin(group.componentEvidenceOrigin);
       const relative = binding.executionReceiptPattern.replace('{group}', name);
       const execution = (await readPayloadJson(relative)).value;
-      const receipt = origin.run.results.find(row => row.module === name);
-      const countsPass = execution.outcomes?.PASS === group.tests
-          && (execution.outcomes?.FAIL ?? 0) === 0 && (execution.outcomes?.ERROR ?? 0) === 0 && (execution.outcomes?.SKIP ?? 0) === 0;
-      const receiptPass = execution.kind === 'live-source-components' && execution.apkQualification === false
-          && execution.tests === group.tests && countsPass
-          && Array.isArray(execution.coverageErrors) && execution.coverageErrors.length === 0
-          && Array.isArray(execution.containerFailures) && execution.containerFailures.length === 0
-          && execution.provenanceSha256 === origin.provenance.sha256
-          && execution.reportSha256 === componentReportHashes.get(name)
-          && receipt?.exitCode === 0 && isDeepStrictEqual(receipt.receipt, execution);
-      if (!receiptPass) throw Error('Receipt-ul execuției, numărătoarea sau hash-ul Extent nu corespunde rulării rădăcină.');
+      verifyComponentExecution(origin, name, execution, group.tests, componentReportHashes.get(name));
       const scope = componentEvidenceScope(name, releaseSet, origin.sourceSet);
       result.sourceEvidence = {decision: scope.decision, originalSourceFingerprint: origin.sourceFingerprint,
         changedInputCount: scope.changed.length, affectedInputs: scope.affected.slice(0, 30)};

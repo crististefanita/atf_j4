@@ -162,6 +162,45 @@ class ReleaseRagEvaluatorComponentTest {
                 .anyMatch(value -> value.contains("APK-source-only: " + added)));
     }
 
+    @Test void preparedOriginalReceiptsSatisfyEveryComponentGateWithoutANewRun() throws Exception {
+        Fixture fixture = fixture();
+        Path component = fixture.candidate().resolve("reports/component");
+        Path prepared = Files.createDirectory(temporary.resolve("prepared"));
+        Files.copy(component.resolve("source-inputs.json"), prepared.resolve("source-inputs.json"));
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        var manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        var groups = (ObjectNode) manifest.at("/qualification/auditedGroups");
+        Path root = GovernanceProject.locateProjectRoot();
+        var command = new java.util.ArrayList<>(List.of("node",
+                root.resolve("atf-tests/tools/prepare-component-reuse.mjs").toString(), prepared.toString(), component.toString()));
+        groups.fieldNames().forEachRemaining(command::add);
+        var process = new ProcessBuilder(command).redirectErrorStream(true).start();
+        if (!process.waitFor(45, TimeUnit.SECONDS)) {
+            process.destroyForcibly();
+            throw new AssertionError("Component reuse preparation exceeded 45 seconds");
+        }
+        AuditedAssertions.assertEquals(0, process.exitValue(), new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+
+        var plan = JSON.readTree(prepared.resolve("component-reuse.json").toFile());
+        String id = plan.path("decisions").get(0).path("componentEvidenceOrigin").asText();
+        for (var row : plan.path("decisions")) {
+            AuditedAssertions.assertEquals("MATCH", row.path("decision").asText());
+            ((ObjectNode) groups.path(row.path("group").asText())).put("componentEvidenceOrigin", id);
+        }
+        Files.move(prepared.resolve("snapshots"), component.resolve("snapshots"));
+        Files.delete(component.resolve("source-component-run.json"));
+        ((ObjectNode) manifest.at("/qualification/platforms/android/gates")).set("androidComponents",
+                gate("reports/component/snapshots/" + id + "/source-component-run.json"));
+        capturePayload(fixture.candidate(), manifest);
+        JSON.writeValue(manifestFile.toFile(), manifest);
+
+        AuditedAssertions.assertEquals(0, evaluate(fixture, fixture.output()));
+        var verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "PLATFORM_GATES"));
+        AuditedAssertions.assertEquals("PASS", check(verdict, "COMPONENT_SOURCE_BINDING"));
+    }
+
+
     private static String componentDecision(JsonNode verdict, String group) {
         for (JsonNode entry : verdict.path("componentGroups")) {
             if (group.equals(entry.path("name").asText())) return entry.path("sourceEvidence").path("decision").asText();

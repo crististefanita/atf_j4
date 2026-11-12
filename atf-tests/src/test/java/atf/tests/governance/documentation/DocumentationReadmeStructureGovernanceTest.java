@@ -39,6 +39,44 @@ public class DocumentationReadmeStructureGovernanceTest {
         DocumentationGovernanceSupport.assertNoViolations("README structure governance", violations);
     }
 
+
+    @Test
+    void declaredReleaseReportIndexKeepsItsOriginalShape(@org.junit.jupiter.api.io.TempDir Path root) throws Exception {
+        Path release = Files.createDirectories(root.resolve("release/1.2.3/reports/component"));
+        Path evidence = Files.writeString(release.resolve("README.md"), "# Component report index\n");
+        Path manifest = release.getParent().getParent().resolve("release-validation.json");
+        Files.writeString(manifest, """
+                {"integrity":{"files":[{"path":"reports/component/README.md"}]}}
+                """);
+        var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
+        validate(evidence, root, violations);
+        DocumentationGovernanceSupport.assertNoViolations("Release evidence index", violations);
+
+        Path owner = Files.writeString(release.getParent().getParent().resolve("README.md"), "# Release owner\n");
+        validate(owner, root, violations);
+        Files.writeString(manifest, """
+                {"integrity":{"files":[]}}
+                """);
+        validate(evidence, root, violations);
+        atf.testkit.assertions.AuditedAssertions.assertEquals(
+                List.of("DOC-README-OVERALL", "DOC-README-OVERALL"),
+                violations.stream().map(DocumentationGovernanceSupport.Violation::code).toList());
+    }
+
+    private static boolean isReleaseEvidence(Path root, Path file) throws java.io.IOException {
+        Path relative = root.relativize(file);
+        if (relative.getNameCount() < 4 || !relative.getName(0).toString().equals("release")
+                || !relative.getName(2).toString().equals("reports")) return false;
+        Path manifest = root.resolve(relative.subpath(0, 2)).resolve("release-validation.json");
+        if (!Files.isRegularFile(manifest)) return false;
+        String evidencePath = relative.subpath(2, relative.getNameCount()).toString().replace('\\', '/');
+        var entries = new com.fasterxml.jackson.databind.ObjectMapper().readTree(manifest.toFile()).at("/integrity/files");
+        for (var entry : entries) {
+            if (entry.path("path").asText().equals(evidencePath)) return true;
+        }
+        return false;
+    }
+
     static void validate(Path path, Path root,
                          List<DocumentationGovernanceSupport.Violation> violations) {
         try {
@@ -56,7 +94,7 @@ public class DocumentationReadmeStructureGovernanceTest {
     }
 
     private static void inspectTitleAndOrientation(Path path, Path root, List<String> lines,
-                                                   List<DocumentationGovernanceSupport.Violation> violations) {
+                                                   List<DocumentationGovernanceSupport.Violation> violations) throws java.io.IOException {
         List<Integer> titles = matchingLines(lines, H1);
         if (titles.size() != 1) {
             violations.add(DocumentationGovernanceSupport.violation(
@@ -66,7 +104,7 @@ public class DocumentationReadmeStructureGovernanceTest {
                     "keep one `# ...` title and convert additional top-level titles to `## ...`"));
         }
         if (!path.equals(root.resolve("README.md").toAbsolutePath().normalize())
-                && matchingLines(lines, H2_ORIENTATION).isEmpty()) {
+                && matchingLines(lines, H2_ORIENTATION).isEmpty() && !isReleaseEvidence(root, path)) {
             violations.add(DocumentationGovernanceSupport.violation(
                     "DOC-README-OVERALL", root, path, 1,
                     "README-ul nu are secțiunea de orientare `## Pe scurt`",

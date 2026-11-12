@@ -102,6 +102,18 @@ Whist folosește `GameTitleBar` din modulul `atf-card-table-ui`. Consumatorul fu
 
 În Whist, `AutoGameHand` rămâne responsabil de licitare și joc pentru mâna curentă. Verificați bifarea în licitație, debifarea în joc cu o decizie în așteptare și oprirea la scor, pauză și reluare. Folosiți un executant controlat în testul de componentă pentru a livra răspunsul AI după debifare și a confirma că revizia rămâne aceeași. [Activitatea Whist](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java)
 
+## Adopție între jocuri
+
+| Prioritate | Suprafață | Limită de adopție |
+|---|---|---|
+| P1 | Realizări | Whist și Rentz folosesc lista, detaliile și notificările comune. Adopția în Hold’em poate folosi aceleași proiecții după fixarea versiunii AAR. Catalogul, eligibilitatea, progresul și stocarea se păstrează în fiecare joc. |
+| P1 | Antet și chenare | Refolosiți antetul comun în ecranele cu aceeași intenție de delegare. Pentru rândurile de statistici, păstrați în joc etichetele, valorile și accesibilitatea semantică. Extrageți împachetarea adaptivă etichetă–valoare numai după comparații comune la lățime mică și text mărit. |
+| P2 | Scor și clasament | Extrageți cadrul tabelului după demonstrarea unui contract de coloane în doi consumatori. Istoricul levatelor, totalurile, premiile și clasamentul de turneu au proiecții proprii. |
+
+- Împachetați Android Views, tema și resursele în AAR. Măsurați costul build-ului consumatorului din sursă și din AAR în aceleași condiții.
+- Un JAR de geometrie are sens când există consumatori JVM și probe fără Android.
+- Verificați încărcarea temei, compatibilitatea manifestului, SHA-256, compilarea izolată a consumatorului și numărul de invocări înaintea adoptării.
+
 ## Testele care protejează extragerea
 
 | Nivel | Controale obligatorii |

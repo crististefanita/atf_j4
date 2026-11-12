@@ -84,4 +84,8 @@ Schema de calificare cu grupuri auditate renumără invocările în HTML, iar me
 
 [Configurarea comună](../../whist-lab-app/gradle/component-audit.gradle) se aplică atât reactorului Android, cât și [intrării exclusiv JVM](../../whist-lab-app/algorithm-build/README.md). `whist.auditOutput` identifică directorul execuției, iar `whist.auditSource` fixează amprenta sursei. Fiecare task are un singur worker și un HTML propriu; paralelismul suplimentar cere calificare distinctă.
 
+- Lansatorul agregat pornește taskurile Gradle necesare o singură dată, cu un worker de test pentru fiecare task.
+- Verificarea JUnit–Extent lasă un marker temporar per task numai după confruntarea identităților și verdictelor.
+- Un task independent poate publica dovada sa și când alt task eșuează. Rezultatul agregat păstrează eșecul și durata lansării.
+
 Compilarea, auditul structural și revizia interactivă sunt controale diferite. Numai cazurile executate primesc rezultat; clasificarea unei colecții de învățare nu dovedește rularea ei. Acceptanța unui APK se leagă de binarul identificat, conform [calificării livrării](ATF_ReleaseQualification.md).

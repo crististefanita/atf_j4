@@ -17,6 +17,9 @@ subprojects { owner ->
                 reports.html.required = false
                 reports.junitXml.required = true // Temporary independent oracle; not a second final report.
                 outputs.file(report)
+                def verification = owner.layout.buildDirectory.file("component-verification/${testTask.name}.ok")
+                outputs.file(verification)
+                doFirst { verification.get().asFile.delete() }
                 doLast {
                     def execution = owner.providers.exec {
                         ignoreExitValue = true
@@ -29,6 +32,9 @@ subprojects { owner ->
                     logger.lifecycle(execution.standardOutput.asText.get())
                     if (result.exitValue != 0) logger.error(execution.standardError.asText.get())
                     result.assertNormalExitValue()
+                    def marker = verification.get().asFile
+                    marker.parentFile.mkdirs()
+                    marker.text = 'PASS'
                 }
             }
         }
