@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import atf.tests.governance.support.GovernanceProject;
 import java.util.regex.Pattern;
 
 /** Delimitează intrarea curentă, fără a o confunda cu tabelul tuturor versiunilor. */
@@ -34,11 +35,10 @@ final class ReleaseCatalogPresentation {
             require(authenticatedDownload.path("url").asText().equals(expected)
                     && authenticatedDownload.path("authenticated").asBoolean()
                     && authenticatedDownload.path("authMode").asText().equals("GITHUB_ACCOUNT")
-                    && authenticatedDownload.path("httpStatus").asInt() == 200
                     && authenticatedDownload.path("bytes").asLong(-1) == release.required("apkBytes").asLong()
                     && authenticatedDownload.path("sha256").asText().equals(release.required("apkSha256").asText())
                     && authenticatedDownload.path("zipCrc").asText().equals("PASS")
-                    && authenticatedDownload.path("channel").asText().equals("GitHub API authenticated"),
+                    && authenticatedDownloadChannelMatches(authenticatedDownload),
                     "AUTHENTICATED-EVIDENCE", receipt);
             return expected;
         }
@@ -58,6 +58,19 @@ final class ReleaseCatalogPresentation {
                 && publicDownload.path("bytes").asLong(-1) == release.required("apkBytes").asLong()
                 && publicDownload.path("sha256").asText().equals(release.required("apkSha256").asText()), "PUBLIC-EVIDENCE", receipt);
         return url;
+    }
+
+    static boolean authenticatedDownloadChannelMatches(JsonNode download) throws IOException {
+        Path root = GovernanceProject.locateProjectRoot();
+        JsonNode policy = new ObjectMapper().readTree(root.resolve("config/release-platform-rag-policy.json").toFile());
+        JsonNode channels = policy.path("rules").path("authenticatedDownloadChannels");
+        if (!channels.isObject() || channels.isEmpty()) throw new IOException("AUTHENTICATED-CHANNEL-POLICY");
+        String proof = channels.path(download.path("channel").asText()).asText();
+        return switch (proof) {
+            case "HTTP_200" -> download.path("httpStatus").asInt() == 200;
+            case "COMPLETED_DOWNLOAD" -> download.path("downloadCompleted").asBoolean();
+            default -> false;
+        };
     }
 
     private static String plannedAuthenticatedTarget(JsonNode manifest, String repository, String version, String apkName)

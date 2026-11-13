@@ -261,9 +261,19 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "PLATFORM_GATES"));
     }
 
-    @Test void authenticatedGithubDownloadCanSatisfyThePublishedGateWithoutPersistingCredentials() throws Exception {
+    @Test void authenticatedGithubApiDownloadCanSatisfyThePublishedGateWithoutPersistingCredentials() throws Exception {
         Fixture fixture = fixture();
         selectAuthenticatedPublication(fixture);
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(0, exit, JSON.writeValueAsString(verdict.path("checks")));
+        AuditedAssertions.assertEquals("READY_FOR_HUMAN_REVIEW", verdict.path("verdict").asText());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "PLATFORM_GATES"));
+    }
+
+    @Test void authenticatedBrowserMcpDownloadCanSatisfyThePublishedGateWithoutPersistingCredentials() throws Exception {
+        Fixture fixture = fixture();
+        selectAuthenticatedPublication(fixture, "Browser MCP authenticated");
         int exit = evaluate(fixture, fixture.output());
         JsonNode verdict = JSON.readTree(fixture.output().toFile());
         AuditedAssertions.assertEquals(0, exit, JSON.writeValueAsString(verdict.path("checks")));
@@ -542,6 +552,10 @@ class ReleaseRagEvaluatorComponentTest {
     }
 
     private static void selectAuthenticatedPublication(Fixture fixture) throws Exception {
+        selectAuthenticatedPublication(fixture, "GitHub API authenticated");
+    }
+
+    private static void selectAuthenticatedPublication(Fixture fixture, String channel) throws Exception {
         var manifestFile = fixture.candidate().resolve("release-validation.json");
         ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
         ObjectNode publication = (ObjectNode) manifest.path("publication");
@@ -552,9 +566,11 @@ class ReleaseRagEvaluatorComponentTest {
         long apkBytes = manifest.path("release").path("apkBytes").asLong();
         String url = "https://github.com/example/game/releases/download/v" + VERSION + "/WhistLab-" + VERSION + ".apk";
         ObjectNode receipt = JSON.createObjectNode();
-        receipt.putObject("authenticatedDownload").put("url", url).put("authenticated", true)
-                .put("authMode", "GITHUB_ACCOUNT").put("httpStatus", 200).put("bytes", apkBytes)
-                .put("sha256", apkHash).put("zipCrc", "PASS").put("channel", "GitHub API authenticated");
+        ObjectNode download = receipt.putObject("authenticatedDownload").put("url", url).put("authenticated", true)
+                .put("authMode", "GITHUB_ACCOUNT").put("bytes", apkBytes)
+                .put("sha256", apkHash).put("zipCrc", "PASS").put("channel", channel);
+        if (channel.equals("Browser MCP authenticated")) download.put("downloadCompleted", true);
+        else download.put("httpStatus", 200);
         JSON.writeValue(receiptFile.toFile(), receipt);
         ((ObjectNode) manifest.path("qualification").path("platforms").path("android").path("gates"))
                 .set("distributionDownload", gate("reports/distribution-verification.json"));

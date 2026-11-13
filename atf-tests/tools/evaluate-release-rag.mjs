@@ -287,6 +287,11 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.reportingContract?.duplicateJUnitXmlInFinalRelease === false
       && policy.reportingContract?.capturedImagesMustBeInlineBase64 === true
       && policy.reportingContract?.reportBindsQualifiedSourceSnapshot === true
+      && policy.rules?.authenticatedDownloadChannels
+      && typeof policy.rules.authenticatedDownloadChannels === 'object'
+      && !Array.isArray(policy.rules.authenticatedDownloadChannels)
+      && policy.rules.authenticatedDownloadChannels['GitHub API authenticated'] === 'HTTP_200'
+      && policy.rules.authenticatedDownloadChannels['Browser MCP authenticated'] === 'COMPLETED_DOWNLOAD'
       && policy.rules?.ragMayExecuteCommands === false && policy.rules?.ragMayBuildOrSign === false
       && policy.rules?.ragMayPublish === false && policy.candidateLifecycle?.ragMayAdvanceLifecycle === false;
   addCheck(checks, 'RAG_POLICY', policyContract, policyContract
@@ -464,9 +469,13 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
             const expectedUrl = `https://github.com/${repository}/releases/download/v${release.versionName}/${release.apkName}`;
             okay = okay && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository)
                 && download.url === expectedUrl && download.authenticated === true
-                && download.authMode === 'GITHUB_ACCOUNT' && download.httpStatus === 200
+                && download.authMode === 'GITHUB_ACCOUNT'
                 && download.bytes === release.apkBytes && download.sha256 === release.apkSha256
-                && download.zipCrc === 'PASS' && download.channel === 'GitHub API authenticated'
+                && download.zipCrc === 'PASS'
+                && (policy.rules.authenticatedDownloadChannels?.[download.channel] === 'HTTP_200'
+                    ? download.httpStatus === 200
+                    : policy.rules.authenticatedDownloadChannels?.[download.channel] === 'COMPLETED_DOWNLOAD'
+                        && download.downloadCompleted === true)
                 && !hasCredentialField(download);
           } else if (publication.accessMode === 'ANONYMOUS' && publication.state === 'PUBLISHED_SITE') {
             const download = receiptDoc.value.publicDownload ?? {};

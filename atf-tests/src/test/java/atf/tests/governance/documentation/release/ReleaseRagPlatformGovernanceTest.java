@@ -92,6 +92,9 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(strings(policy().path("rules").path("distributionAccessModes")).containsAll(
                 List.of("AUTHENTICATED", "ANONYMOUS")));
         assertTrue(policy().path("rules").path("authenticatedDownloadReceiptMustOmitCredentials").asBoolean());
+        JsonNode channels = policy().path("rules").path("authenticatedDownloadChannels");
+        assertEquals("HTTP_200", channels.path("GitHub API authenticated").asText());
+        assertEquals("COMPLETED_DOWNLOAD", channels.path("Browser MCP authenticated").asText());
         assertTrue(evaluator.path("e2e").path("notRunNeverMeansPass").asBoolean());
         assertTrue(evaluator.path("e2e").path("changedUserFlowRequiresPass").asBoolean());
         assertEquals("reports/e2e/{suite}/execution.json", evaluator.path("e2e").path("executionReceiptPattern").asText());

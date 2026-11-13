@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "decisions": [
+    {
+      "group": "atf-validation",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 19,
+      "reportSha256": "095442cb784d73edceca164c7306bb1f51dd417dee1df7c67b32f8b9a56feb3a",
+      "executionSha256": "6a83316b0efa918372245dfac7d4be65cbd4a8a5e60deb3c03f9c828646fba5f"
+    },
+    {
+      "group": "atf-test-android",
+      "decision": "MATCH",
+      "changedInputs": [],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "6dcb72a14ba9c3d5e4217e86b7763e28c6dc77a3607b5e06ce24460895099bdc",
+      "tests": 259,
+      "reportSha256": "3d9b8f57ac1eb88f92b4679519d4b5f249894e84bd2d9de102532a4e28c0e330",
+      "executionSha256": "1cdbe59bc7c2615becc584667b0cf1f76dd14af844f0b0478312a72fa1a51895"
+    },
+    {
+      "group": "atf-tests",
+      "decision": "INVALID",
+      "reason": "Receipt-ul execuției, numărătoarea sau hash-ul Extent nu corespunde rulării rădăcină."
+    },
+    {
+      "group": "whist-lab-app-achievements",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 27,
+      "reportSha256": "c170eb31176a34bc347634465da61d94389ff22d0496a796c21b6b868e474bd8",
+      "executionSha256": "7d179c39439085caf5fcd816db06aaadda02d15a68b76715aade3f64c34f1386"
+    },
+    {
+      "group": "whist-lab-app-bidding",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 253,
+      "reportSha256": "c1960b6742aae07c376541a675142708eeafce18317f804374b05777f873988d",
+      "executionSha256": "72b002d302c9eb9511d285c7f52f53212b5ab04d773805a3d0eddedda8ff4a94"
+    },
+    {
+      "group": "whist-lab-app-commands",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 116,
+      "reportSha256": "f3fa35261d1a8814bcafe07967f543cbca5ab7673da9c45d9ce5231b7ba6232a",
+      "executionSha256": "506b74f73b5f7b1c08739987e64c6a92ac85242a3fde6948ad2a3819506e0e81"
+    },
+    {
+      "group": "whist-lab-app-display",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 99,
+      "reportSha256": "a190a5ebdf2092c574eb847d83fd340c11f9578853e61ecb51bf92e4af668be9",
+      "executionSha256": "4bd6de8f13d72abc24baa4796e620c15409d0fc114a0dd38442edc106ce7c0a3"
+    },
+    {
+      "group": "whist-lab-app-history",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 61,
+      "reportSha256": "8b48d27cf6d1ef8a146868aef9c54e0eb5ab35ab8f60125f63cfa9bb35b49743",
+      "executionSha256": "a7ec944b8266ceebdf9cc5625a4d0c03502e05dd1fb969275a91cd865fc17ab0"
+    },
+    {
+      "group": "whist-lab-app-atf-card-table-ui",
+      "decision": "REUSE",
+      "changedInputs": [
+        "README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "atf-test-android/src/test/java/atf/android/e2e/release/ThreePlayerDownAndUpLayoutScenario.java",
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "atf-tests/tools/README.md",
+        "atf-tests/tools/component-evidence-scope.mjs",
+        "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "docs/testing/ATF_ReleaseQualification.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "10418a3d96121b55fe6d35e5c2b88e2fe81672e691902af00a1dc709a9f226d1",
+      "tests": 34,
+      "reportSha256": "5007e298694709900d94ec774ca8716e1c8459c945dec976618db062d938aef0",
+      "executionSha256": "b4220321a0a6a383bd0c12ef2cf8228b08d3ac4e6bfccadcb2930aa286f3f983"
+    }
+  ]
+}

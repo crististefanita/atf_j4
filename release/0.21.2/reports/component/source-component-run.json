@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "89c9cc1ba903fbdde3f4b5577f0d8de4de1c92250c2b4018ecc7cdcf2bbfad41",
+  "provenanceReceiptSha256": "5ce874fa49f582729b370a99565c750994df51cd0dc573b78b5ca66f7822833c",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "C:\\Users\\Cristi\\AppData\\Local\\Temp\\whist-component-suites-7f1ddb758b4c40bc9d169489cfc39cc9",
+  "inputCount": 1060,
+  "results": [
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 348,
+        "outcomes": {
+          "PASS": 348
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "d3e10e283bd35d112bc81d6920599e6a8ba380a9f73cc64faca82571c796be28",
+        "provenanceSha256": "5ce874fa49f582729b370a99565c750994df51cd0dc573b78b5ca66f7822833c",
+        "reportSha256": "3cd2fa1970ddbd85133ec15cc2b340623ef078f294b3a6af23b913bbed8e82aa"
+      }
+    }
+  ],
+  "reusedGroups": [
+    "atf-validation",
+    "atf-test-android",
+    "whist-lab-app-achievements",
+    "whist-lab-app-bidding",
+    "whist-lab-app-commands",
+    "whist-lab-app-display",
+    "whist-lab-app-history",
+    "whist-lab-app-atf-card-table-ui"
+  ],
+  "gradleBatch": null,
+  "androidComponentsReceipt": "source-component-run.json"
+}

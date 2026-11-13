@@ -188,7 +188,7 @@ class ReleaseArtifactLayoutGovernanceTest {
                 () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
     }
 
-    @Test void authenticatedGithubDownloadMustMatchTheDeclaredAccountChannelAndApk() throws Exception {
+    @Test void authenticatedDownloadMustMatchADeclaredAccountChannelAndApk() throws Exception {
         var json = new com.fasterxml.jackson.databind.ObjectMapper();
         var manifest = json.createObjectNode();
         manifest.putObject("release").put("versionName", "1.2.0").put("apkName", "WhistLab-1.2.0.apk")
@@ -196,7 +196,7 @@ class ReleaseArtifactLayoutGovernanceTest {
         manifest.putObject("publication").put("state", "PUBLISHED").put("accessMode", "AUTHENTICATED");
         Path receipt = Files.createDirectories(temporary.resolve("reports")).resolve("distribution-verification.json");
         var record = json.createObjectNode();
-        var download = record.putObject("authenticatedDownload")
+        com.fasterxml.jackson.databind.node.ObjectNode download = record.putObject("authenticatedDownload")
                 .put("url", "https://github.com/example/game/releases/download/v1.2.0/WhistLab-1.2.0.apk")
                 .put("authenticated", true).put("authMode", "GITHUB_ACCOUNT").put("httpStatus", 200)
                 .put("bytes", 50).put("sha256", "a".repeat(64)).put("zipCrc", "PASS")
@@ -205,6 +205,17 @@ class ReleaseArtifactLayoutGovernanceTest {
         String repository = "https://github.com/example/game";
         AuditedAssertions.assertEquals(download.path("url").asText(),
                 ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        download.remove("httpStatus");
+        download.put("channel", "Browser MCP authenticated").put("downloadCompleted", true);
+        json.writeValue(receipt.toFile(), record);
+        AuditedAssertions.assertEquals(download.path("url").asText(),
+                ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        download.put("channel", "Unconfigured authenticated route");
+        json.writeValue(receipt.toFile(), record);
+        AuditedAssertions.assertThrows(IOException.class,
+                () -> ReleaseCatalogPresentation.downloadTarget(temporary, manifest, repository));
+        download.remove("downloadCompleted");
+        download.put("channel", "GitHub API authenticated").put("httpStatus", 200);
         download.put("sha256", "b".repeat(64));
         json.writeValue(receipt.toFile(), record);
         AuditedAssertions.assertThrows(IOException.class,

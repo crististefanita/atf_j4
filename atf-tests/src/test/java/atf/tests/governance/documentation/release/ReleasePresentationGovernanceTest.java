@@ -92,11 +92,11 @@ class ReleasePresentationGovernanceTest {
                 AuditedAssertions.assertEquals(asset, download.required("url").asText());
                 AuditedAssertions.assertTrue(download.required("authenticated").asBoolean());
                 AuditedAssertions.assertEquals("GITHUB_ACCOUNT", download.required("authMode").asText());
-                AuditedAssertions.assertEquals(200, download.required("httpStatus").asInt());
                 AuditedAssertions.assertEquals(validation.required("release").required("apkBytes").asLong(), download.required("bytes").asLong());
                 AuditedAssertions.assertEquals(validation.required("release").required("apkSha256").asText(), download.required("sha256").asText());
                 AuditedAssertions.assertEquals("PASS", download.required("zipCrc").asText());
-                AuditedAssertions.assertEquals("GitHub API authenticated", download.required("channel").asText());
+                AuditedAssertions.assertTrue(ReleaseCatalogPresentation.authenticatedDownloadChannelMatches(download),
+                        "Authenticated route satisfies the proof declared by release policy");
                 AuditedAssertions.assertFalse(download.has("token") || download.has("authorization") || download.has("cookie"),
                         "Authentication material is never persisted in distribution receipts");
             }

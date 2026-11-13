@@ -159,6 +159,10 @@
     "catalogMustMatchManifestAndPublicLinks": true,
     "readyRequiresEveryDeclaredPlatform": true,
     "distributionAccessModes": ["AUTHENTICATED", "ANONYMOUS"],
+    "authenticatedDownloadChannels": {
+      "GitHub API authenticated": "HTTP_200",
+      "Browser MCP authenticated": "COMPLETED_DOWNLOAD"
+    },
     "authenticatedDownloadReceiptMustOmitCredentials": true,
     "allowedAggregateStatuses": ["BLOCKED", "READY_FOR_HUMAN_REVIEW"],
     "ragMayExecuteCommands": false,

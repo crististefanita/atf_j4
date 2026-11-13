@@ -1,0 +1,10 @@
+{
+  "version": "0.21.2",
+  "mode": "summary",
+  "points": [
+    "Păstrează experiența Whist Lab pentru trei până la șase jucători.",
+    "Păstrează regulile și interfața de joc existente.",
+    "Leagă ediția Android de identitatea binară și de dovezile sale."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.21.2/reports/README.md"
+}
