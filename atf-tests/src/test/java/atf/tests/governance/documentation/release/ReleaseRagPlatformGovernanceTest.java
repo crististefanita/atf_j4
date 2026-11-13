@@ -69,6 +69,11 @@ class ReleaseRagPlatformGovernanceTest {
         JsonNode evaluator = policy().path("ragEvaluator");
         assertEquals("atf-tests/tools/evaluate-release-rag.mjs", evaluator.path("entrypoint").asText());
         assertEquals("ATF_RELEASE_RAG_VERDICT", evaluator.path("outputSchema").asText());
+        JsonNode retention = evaluator.path("githubRetention");
+        assertEquals("atf-tests/tools/collect-github-release-retention.mjs", retention.path("collector").asText());
+        assertEquals("release/index.json", retention.path("catalog").asText());
+        assertEquals(2, retention.path("retainedReleaseCount").asInt());
+        assertTrue(retention.path("requiredAfterGithubPublication").asBoolean());
         JsonNode selection = evaluator.path("testScope");
         assertEquals("atf-tests/tools/plan-release-tests.mjs", selection.path("selectionEntrypoint").asText());
         assertEquals("release/index.json", selection.path("baseline").asText());
@@ -231,6 +236,8 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("android-preflight.json"));
         assertTrue(qualificationGuide.contains("plan-release-tests.mjs"));
         assertTrue(qualificationGuide.contains("requiredE2eGroups"));
+        assertTrue(qualificationGuide.contains("--github-retention-file"));
+        assertTrue(evaluator.contains("GITHUB_RETENTION"));
         assertTrue(qualificationGuide.contains("schemaVersion: 2"));
         assertTrue(evaluator.contains("DIFF_SCOPE"));
         assertTrue(ragFeedback.contains("Costul pregătirii componentelor Maven"));

@@ -321,6 +321,38 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "PLATFORM_GATES"));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"missing", "extraDraft", "orphanTag", "wrongCommit", "wrongChecksum"})
+    void publishedGithubReleaseRequiresMatchingRetentionEvidence(String defect) throws Exception {
+        Fixture fixture = fixture();
+        selectAuthenticatedPublication(fixture);
+        Path file = fixture.output().resolveSibling("github-retention.json");
+        var observation = (ObjectNode) JSON.readTree(file.toFile());
+        switch (defect) {
+            case "missing" -> Files.delete(file);
+            case "extraDraft" -> ((com.fasterxml.jackson.databind.node.ArrayNode) observation.path("releases"))
+                    .addObject().put("tag", "v1.0.0").put("draft", true);
+            case "orphanTag" -> ((com.fasterxml.jackson.databind.node.ArrayNode) observation.path("tags"))
+                    .addObject().put("tag", "v1.0.0").put("commit", BASELINE_COMMIT);
+            case "wrongCommit" -> ((ObjectNode) observation.at("/tags/0")).put("commit", BASELINE_COMMIT);
+            case "wrongChecksum" -> ((ObjectNode) observation.at("/releases/0/assets/1/download")).put("sha256", "0".repeat(64));
+            default -> throw new IllegalArgumentException(defect);
+        }
+        if (Files.exists(file)) JSON.writeValue(file.toFile(), observation);
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        var verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "PLATFORM_GATES"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "GITHUB_RETENTION"));
+        AuditedAssertions.assertTrue(details(verdict, "GITHUB_RETENTION").stream().anyMatch(value -> value.contains(switch (defect) {
+            case "missing" -> "RETENTION_OBSERVATION_REQUIRED";
+            case "extraDraft" -> "RELEASES: unexpected";
+            case "orphanTag" -> "TAGS: unexpected";
+            case "wrongCommit" -> "TAG_COMMIT";
+            case "wrongChecksum" -> "ASSET_DOWNLOAD";
+            default -> throw new IllegalArgumentException(defect);
+        })));
+    }
+
     @Test void changedUserFlowRequiresPassingE2eAndAnOmissionKeepsItsOwnStatus() throws Exception {
         Fixture fixture = fixture();
         ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile()); plan.put("userFlowChanged", true);
@@ -710,6 +742,7 @@ class ReleaseRagEvaluatorComponentTest {
         String apkHash = manifest.path("release").path("apkSha256").asText();
         long apkBytes = manifest.path("release").path("apkBytes").asLong();
         String url = "https://github.com/example/game/releases/download/v" + VERSION + "/WhistLab-" + VERSION + ".apk";
+        publication.put("targetUrl", url);
         ObjectNode receipt = JSON.createObjectNode();
         ObjectNode download = receipt.putObject("authenticatedDownload").put("url", url).put("authenticated", true)
                 .put("authMode", "GITHUB_ACCOUNT").put("bytes", apkBytes)
@@ -721,15 +754,71 @@ class ReleaseRagEvaluatorComponentTest {
                 .set("distributionDownload", gate("reports/distribution-verification.json"));
         JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
         refreshPayload(fixture.candidate());
+        writeGithubRetention(fixture);
+    }
+
+    private static void writeGithubRetention(Fixture fixture) throws Exception {
+        Path catalog = fixture.project().resolve("release/index.json");
+        ObjectNode index = (ObjectNode) JSON.readTree(catalog.toFile());
+        index.put("currentVersion", VERSION).putArray("versions").add(VERSION).add(BASELINE);
+        JSON.writeValue(catalog.toFile(), index);
+        Path currentDir = Files.createDirectories(fixture.project().resolve("release/" + VERSION));
+        Path currentManifest = currentDir.resolve("release-validation.json");
+        Files.copy(fixture.candidate().resolve("release-validation.json"), currentManifest);
+
+        Path previousManifest = fixture.project().resolve("release/" + BASELINE + "/release-validation.json");
+        var previous = (ObjectNode) JSON.readTree(previousManifest.toFile());
+        String apk = "WhistLab-" + BASELINE + ".apk";
+        ((ObjectNode) previous.path("release")).put("apkName", apk).put("apkRelativePath", apk)
+                .put("apkBytes", 100).put("apkSha256", "a".repeat(64));
+        ((ObjectNode) previous.path("publication")).put("repository", "example/game")
+                .put("targetUrl", "https://github.com/example/game/releases/download/v" + BASELINE + "/" + apk);
+        var inventory = (com.fasterxml.jackson.databind.node.ArrayNode) previous.at("/integrity/files");
+        inventory.addObject().put("path", apk).put("bytes", 100).put("sha256", "a".repeat(64));
+        inventory.addObject().put("path", apk + ".sha256").put("bytes", 88).put("sha256", "b".repeat(64));
+        JSON.writeValue(previousManifest.toFile(), previous);
+
+        var observation = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "github-release-retention")
+                .put("repository", "example/game").put("catalogSha256", hash(catalog))
+                .put("mainCommit", "e".repeat(40)).put("releaseListAccess", "AUTHENTICATED_WRITE");
+        var mainFiles = observation.putObject("mainFileSha256").put("release/index.json", hash(catalog));
+        for (Path file : List.of(currentManifest, previousManifest)) {
+            mainFiles.put(fixture.project().relativize(file).toString().replace('\\', '/'), hash(file));
+        }
+        var refs = observation.putArray("tags");
+        var releases = observation.putArray("releases");
+        long id = 1;
+        for (Path manifestPath : List.of(currentManifest, previousManifest)) {
+            JsonNode manifest = JSON.readTree(manifestPath.toFile());
+            String name = manifest.at("/release/apkName").asText();
+            String tag = "v" + manifest.at("/release/versionName").asText();
+            refs.addObject().put("tag", tag).put("commit", manifest.at("/source/sourceCommit").asText());
+            var assets = releases.addObject().put("tag", tag).put("id", id++).put("draft", false)
+                    .put("publishedAt", "2026-11-13T00:00:00Z").putArray("assets");
+            for (String asset : List.of(name, name + ".sha256")) {
+                for (JsonNode entry : manifest.at("/integrity/files")) {
+                    if (!asset.equals(entry.path("path").asText())) continue;
+                    long bytes = entry.path("bytes").asLong();
+                    String digest = entry.path("sha256").asText();
+                    assets.addObject().put("name", asset).put("id", id++).put("state", "uploaded")
+                            .put("url", "https://github.com/example/game/releases/download/" + tag + "/" + asset)
+                            .put("size", bytes).put("sha256", digest).putObject("download")
+                            .put("httpStatus", 200).put("bytes", bytes).put("sha256", digest);
+                }
+            }
+        }
+        JSON.writeValue(fixture.output().resolveSibling("github-retention.json").toFile(), observation);
     }
 
     private int evaluate(Fixture fixture, Path output) throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         Path log = temporary.resolve("rag-evaluator.log");
-        Process process = new ProcessBuilder("node", root.resolve("atf-tests/tools/evaluate-release-rag.mjs").toString(),
+        var command = new java.util.ArrayList<>(List.of("node", root.resolve("atf-tests/tools/evaluate-release-rag.mjs").toString(),
                 "--project-root", fixture.project().toString(), "--candidate-dir", fixture.candidate().toString(),
-                "--source-root", fixture.source().toString(), "--plan-file", fixture.plan().toString(), "--output", output.toString())
-                .redirectErrorStream(true).redirectOutput(log.toFile()).start();
+                "--source-root", fixture.source().toString(), "--plan-file", fixture.plan().toString(), "--output", output.toString()));
+        Path observation = fixture.output().resolveSibling("github-retention.json");
+        if (Files.exists(observation)) command.addAll(List.of("--github-retention-file", observation.toString()));
+        Process process = new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         if (!process.waitFor(45, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("RAG evaluator exceeded 45 seconds"); }
         if (process.exitValue() == 1) throw new AssertionError(Files.readString(log));
         return process.exitValue();

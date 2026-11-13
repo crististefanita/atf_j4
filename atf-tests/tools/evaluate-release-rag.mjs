@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
+import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
 
 const VERSION = /^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
 const HASH = /^[0-9a-f]{64}$/;
@@ -344,11 +345,32 @@ export async function loadReleaseTestScope(project, source, version, rows) {
   return readTestScope(project, source, version, inputs, policy);
 }
 
-export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, planFile, outputFile}) {
+export async function loadGithubRetentionCatalog(project) {
+  const read = async relative => {
+    const doc = await strictJson(await regularFile(project, relative));
+    return {value: doc.value, citation: citation(relative, doc.sha256, '/', 1)};
+  };
+  const catalog = await read(githubRetentionPolicy.catalog);
+  const versions = catalogVersions(catalog.value);
+  const editions = [], evidence = [catalog.citation];
+  for (const version of versions) {
+    const manifest = await read('release/' + version + '/release-validation.json');
+    editions.push(expectedEdition(version, manifest.value));
+    evidence.push(manifest.citation);
+  }
+  const repository = editions[0].repository;
+  if (editions.some(edition => edition.repository !== repository)) throw Error('RETENTION_REPOSITORY: catalog spans repositories');
+  return {repository, catalogSha256: catalog.citation.sha256, editions, evidence};
+}
+
+export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, planFile, outputFile, githubRetentionFile}) {
   const project = await fs.realpath(projectRoot), candidate = await fs.realpath(candidateDir), source = await fs.realpath(sourceRoot);
   const out = path.resolve(outputFile), outParent = await fs.realpath(path.dirname(out));
   const output = path.join(outParent, path.basename(out));
   if ([project, candidate, source].some(root => isWithin(root, output))) throw Error('OUTPUT_MUST_BE_OUTSIDE_INPUTS');
+  if (githubRetentionFile && await fs.realpath(githubRetentionFile).catch(() => path.resolve(githubRetentionFile)) === output) {
+    throw Error('OUTPUT_MUST_BE_OUTSIDE_INPUTS');
+  }
   if ((await fs.lstat(output).catch(error => error.code === 'ENOENT' ? null : Promise.reject(error)))?.isSymbolicLink()) throw Error('OUTPUT_SYMLINK');
 
   const checks = [];
@@ -364,6 +386,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   const policyContract = policy.schemaVersion === 1
       && policy.ragEvaluator?.entrypoint === 'atf-tests/tools/evaluate-release-rag.mjs'
       && isDeepStrictEqual({...policy.ragEvaluator?.testScope}, scopePolicy)
+      && isDeepStrictEqual({...policy.ragEvaluator?.githubRetention}, githubRetentionPolicy)
       && policy.ragEvaluator?.preMavenSnapshot?.governanceRequiresReleaseInventoryForNewCandidates === true
       && policy.ragEvaluator?.onlyHumanReviewVerdict === 'READY_FOR_HUMAN_REVIEW'
       && policy.ragEvaluator?.doesNotPerformPromotionOrPublication === true
@@ -637,6 +660,25 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         : 'Lipsește o poartă Android obligatorie ori receipt-ul ei nu dovedește statusul, identitatea, semnarea, compatibilitatea sau accesul de distribuție declarat.',
       platformGateEvidence, platformGateProblems);
 
+  if (manifest.publication?.state === 'PUBLISHED') {
+    const retentionEvidence = [], retentionProblems = [];
+    try {
+      const catalog = await loadGithubRetentionCatalog(project);
+      retentionEvidence.push(...catalog.evidence);
+      const edition = expectedEdition(version, manifest);
+      const expected = catalog.editions.find(row => row.tag === edition.tag);
+      if (!isDeepStrictEqual(edition, expected)) retentionProblems.push('RETENTION_CANDIDATE: published candidate differs from the active catalog');
+      if (!githubRetentionFile) throw Error('RETENTION_OBSERVATION_REQUIRED: provide --github-retention-file');
+      const observed = await strictJson(githubRetentionFile);
+      retentionEvidence.push(citation(posix(path.relative(project, githubRetentionFile)), observed.sha256, '/', 1));
+      if (hasCredentialField(observed.value)) throw Error('RETENTION_OBSERVATION_CONTAINS_CREDENTIAL_FIELD');
+      retentionProblems.push(...githubRetentionProblems(catalog, observed.value));
+    } catch (error) { retentionProblems.push(error.message); }
+    addCheck(checks, 'GITHUB_RETENTION', retentionProblems.length === 0,
+        retentionProblems.length ? 'Inventarul GitHub nu corespunde catalogului activ.' : 'Cele două release-uri, tagurile și asset-urile descărcate corespund catalogului activ.',
+        retentionEvidence, retentionProblems);
+  }
+
   const groups = manifest.qualification?.auditedGroups ?? {}, groupResults = [];
   const selectedGroups = validPlan ? plan.componentGroups : [];
   const requiredComponentGroups = testScope?.componentGroups ?? componentGroupsRequiredForVersion(policy, 'android', version);
@@ -843,14 +885,15 @@ function parseArgs(args) {
   const values = new Map();
   for (let index = 0; index < args.length; index += 2) {
     const key = args[index], value = args[index + 1];
-    if (!['--project-root', '--candidate-dir', '--source-root', '--plan-file', '--output'].includes(key)
-        || !value || values.has(key)) throw Error('Use --project-root <dir> --candidate-dir <dir> --source-root <dir> --plan-file <json> --output <external-json>');
+    if (!['--project-root', '--candidate-dir', '--source-root', '--plan-file', '--output', '--github-retention-file'].includes(key)
+        || !value || values.has(key)) throw Error('Use --project-root <dir> --candidate-dir <dir> --source-root <dir> --plan-file <json> --output <external-json> [--github-retention-file <json>]');
     values.set(key, value);
   }
   for (const key of ['--project-root', '--candidate-dir', '--source-root', '--plan-file', '--output'])
     if (!values.has(key)) throw Error('Missing ' + key);
   const names = new Map([['--project-root', 'projectRoot'], ['--candidate-dir', 'candidateDir'],
-    ['--source-root', 'sourceRoot'], ['--plan-file', 'planFile'], ['--output', 'outputFile']]);
+    ['--source-root', 'sourceRoot'], ['--plan-file', 'planFile'], ['--output', 'outputFile'],
+    ['--github-retention-file', 'githubRetentionFile']]);
   return Object.fromEntries([...values].map(([key, value]) => [names.get(key), path.resolve(value)]));
 }
 

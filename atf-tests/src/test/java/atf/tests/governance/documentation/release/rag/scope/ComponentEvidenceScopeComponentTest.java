@@ -13,7 +13,8 @@ class ComponentEvidenceScopeComponentTest {
         var root = GovernanceProject.locateProjectRoot();
         var command = new ProcessBuilder("node", "--test",
                 root.resolve("atf-tests/tools/prepare-component-reuse.test.mjs").toString(),
-                root.resolve("atf-tests/tools/release-test-scope.test.mjs").toString())
+                root.resolve("atf-tests/tools/release-test-scope.test.mjs").toString(),
+                root.resolve("atf-tests/tools/github-release-retention.test.mjs").toString())
                 .directory(root.toFile()).redirectErrorStream(true).start();
         if (!command.waitFor(30, TimeUnit.SECONDS)) {
             command.destroyForcibly();

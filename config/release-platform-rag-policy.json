@@ -28,7 +28,8 @@
     "publicationRequires": [
       "promotedCommitMatchesQualifiedSnapshot",
       "publishedApkSha256EqualsQualifiedApkSha256",
-      "downloadReceiptMatchesDeclaredAccessModeAndApkSha256"
+      "downloadReceiptMatchesDeclaredAccessModeAndApkSha256",
+      "githubRetentionMatchesActiveCatalogAfterGithubPublication"
     ],
     "ragMayAdvanceLifecycle": false,
     "ragOutputOutsideCheckout": true
@@ -36,7 +37,7 @@
   "ragEvaluator": {
     "entrypoint": "atf-tests/tools/evaluate-release-rag.mjs",
     "runtime": "Node.js standard library",
-    "readOnlyInputs": ["release-validation.json", "release payload", "source input manifest", "pinned source files", "candidate plan", "policy"],
+    "readOnlyInputs": ["release-validation.json", "release payload", "source input manifest", "pinned source files", "candidate plan", "policy", "GitHub retention observation after GitHub publication"],
     "outputSchema": "ATF_RELEASE_RAG_VERDICT",
     "outputMustBeOutsideInputs": true,
     "citationsRequire": ["path", "sha256", "jsonPointerAndLineForJson"],
@@ -81,6 +82,12 @@
       "androidAfterPublication": ["distributionDownload"],
       "gateReceiptShape": {"status": "PASS", "receipt": "payload-relative path"},
       "gateReceiptMustBeHashBound": true
+    },
+    "githubRetention": {
+      "collector": "atf-tests/tools/collect-github-release-retention.mjs",
+      "catalog": "release/index.json",
+      "retainedReleaseCount": 2,
+      "requiredAfterGithubPublication": true
     },
     "preMavenSnapshot": {
       "launcherHelper": "scripts/AtfQualificationSnapshot.ps1",

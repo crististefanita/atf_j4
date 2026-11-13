@@ -75,7 +75,7 @@ Snapshot-ul și APK-ul se califică înaintea predării. Operatorul fixează ult
 | Pregătire locală | Surse înghețate prin hash, APK, rezultate și note pregătite. | Commit, push, publicare și ștergeri GitHub. |
 | Fixarea surselor | Operatorul identifică și împinge commit-ul construit; diferențele față de snapshot sunt confruntate. | Mutarea tag-urilor vechi sau calificarea implicită a surselor schimbate. |
 | Publicare | Draft, APK și checksum, apoi release curent și descărcare verificată. | Ștergerea versiunii funcționale înaintea validării înlocuitorului. |
-| Resetare cerută | Inventarul release-urilor vechi și asset-urile sunt arhivate; se retrag numai obiectele confirmate din plan. | Rescrierea istoricului Git sau ștergerea tag-urilor surselor. |
+| Resetare cerută | Se arhivează release-urile, asset-urile și tagurile vechi. Se retrag obiectele din afara catalogului confirmate în plan. | Rescrierea istoricului Git sau retragerea unei ediții încă prezente în catalog. |
 
 Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezentat ca un commit. Publicarea cere confruntarea ulterioară cu commit-ul efectiv și completarea legăturii imuabile a documentației. Template-ul notelor nu constituie note deja publicate.
 
@@ -91,7 +91,7 @@ Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezen
 
 - Folosiți un inventar explicit de ID-uri, tag-uri, asset-uri și digest-uri. Nu deduceți populația doar dintr-o pagină ori listă care poate fi filtrată.
 - Arhivați metadatele și asset-urile vechi înaintea ștergerii. Noul APK trebuie să fie publicat ca ultimul release și descărcat integral prin canalul declarat.
-- [Ștergerea unui release prin GitHub](https://docs.github.com/en/rest/releases/releases#delete-a-release) este o operație separată de [ștergerea tag-ului](https://hub.github.com/hub-release.1.html). Păstrați tag-urile pentru recuperarea surselor.
-- La final, confruntați release-ul curent, checksum-ul și inventarul tag-urilor. Un eșec de arhivare sau verificare oprește resetarea.
+- [Ștergerea unui release prin GitHub](https://docs.github.com/en/rest/releases/releases#delete-a-release) este o operație separată de [ștergerea tag-ului](https://hub.github.com/hub-release.1.html). Arhivați referințele înainte de retragerea tagurilor din afara catalogului.
+- La final, colectați inventarul GitHub și verificați-l prin poarta RAG. Catalogul activ cuprinde exact două release-uri și tagurile lor, fiecare cu APK și checksum verificate. [Comanda de verificare](../testing/ATF_ReleaseQualification.md#retenția-pe-github-după-publicare)
 
 [Contractul livrării](ATF_AndroidDelivery.md) deține build-ul și identitatea APK-ului; [guvernanța](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) verifică structura activă și refuzurile.

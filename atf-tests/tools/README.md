@@ -47,7 +47,7 @@ Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Singur
 
 - Codul `0` înseamnă `READY_FOR_HUMAN_REVIEW`; `2` înseamnă `BLOCKED`; `1` indică intrare sau invocare invalidă.
 - Înaintea reviziei umane se cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.
-- Starea publicată cere și receipt pentru descărcarea în modul de acces declarat.
+- Starea publicată cere și receipt pentru descărcarea în modul de acces declarat. Pentru GitHub se verifică și retenția celor două ediții, inclusiv tagurile și asset-urile. [Comanda de colectare](../../docs/testing/ATF_ReleaseQualification.md#retenția-pe-github-după-publicare)
 - E2E neexecutat rămâne `NOT_RUN`; schimbarea unui flux utilizator cere grupuri E2E Extent trecute.
 
 Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizia operatorului verifică indexul Git, arborele de promovare și publicarea. Contractul detaliat este în [guvernanța RAG](../../docs/feedback/ATF_Release_RAG.md) și [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md).

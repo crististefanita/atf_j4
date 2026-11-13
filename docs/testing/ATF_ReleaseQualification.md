@@ -249,6 +249,18 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 - Verdictul include `DIFF_SCOPE`, cu identitatea bazei și a candidatului, regulile aplicate pe căi și grupurile rezultate.
 - `BLOCKED` arată verificările eșuate și hash-urile dovezilor, fără să aplice o corecție automată.
 
+### Retenția pe GitHub după publicare
+
+Din checkout-ul `main` sincronizat, colectorul citește catalogul și manifestele de la commitul observat pe GitHub. El inventariază toate paginile de release-uri, inclusiv ciornele, toate tagurile și toate asset-urile. Folosiți `GH_TOKEN` sau `GITHUB_TOKEN` în mediul procesului, cu acces la ciornele repository-ului.
+
+```powershell
+node .\atf-tests\tools\collect-github-release-retention.mjs $ProjectRoot $GithubRetentionFile
+```
+
+Evaluatorul post-publicare primește aceeași observație prin `--github-retention-file $GithubRetentionFile`. Poarta `GITHUB_RETENTION` cere exact cele două versiuni din `release/index.json`, cu tagurile la commiturile sursă declarate. Fiecare release trebuie să aibă exact APK-ul și checksum-ul, cu numele, URL-ul, dimensiunea și SHA-256 confruntate inclusiv după descărcare.
+
+Colectorul scrie inventarul într-un fișier extern nou și semnalează abaterile prin `BLOCKED`. Dacă accesul sau colectarea eșuează, diagnosticul identifică pasul, iar evaluatorul cere o observație completă. După retragerea autorizată, colectați o observație nouă și reluați evaluarea. [Procesul de retenție](../platform/ATF_ReleaseRetention.md#resetarea-github)
+
 ### Preflight Android
 
 [Lansatorul responsive](../../scripts/run-whist-responsive-sanity.ps1) rezervă dispozitivul și rulează [preflight-ul comun](../../scripts/check-android-release-device.ps1) înainte să copieze sursele sau cache-ul Maven. Pentru o selecție pe APK semnat, apelați aceeași comandă imediat după obținerea rezervării, înainte de instalare, backup sau interacțiuni cu aplicația.
