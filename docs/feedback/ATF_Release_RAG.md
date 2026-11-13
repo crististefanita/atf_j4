@@ -27,7 +27,7 @@ Contractul stabil al RAG aparține [ghidului de calificare](../testing/ATF_Relea
 - **Gradle și Maven.** Păstrați cache-urile offline de dependențe identificate prin JDK, Maven, Gradle, SDK și amprenta bibliotecilor. Lansatorul grupează taskurile Gradle necesare și păstrează câte un oracol JUnit și Extent per task. Parametrul -ReuseFrom verifică proveniența fiecărei suite înainte de a planifica execuția.
 - **Android.** Verificați conectarea autorizată în dispozitivul de test înainte de Maven. Pe un emulator Podman izolat, verificați ADB-ul intern prin transportul local. Un timeout de transport sau un dialog System UI se înregistrează cu captură și cauză, iar o reluare păstrează separat dovada inițială.
 - **Același APK.** La trecerea din preview în ediție curentă, refolosiți binarul semnat și receipt-urile care corespund sursei fixate. Reutilizați E2E numai cu același APK instalat, selector, protocol și profil relevant. Reevaluați porțile RAG după schimbarea metadatelor.
-- **Distribuție.** Recitiți metadatele assetului după ieșirea din draft. Verificați URL-ul din README-ul împins, descărcarea autentificată, hash-ul și CRC-ul. Tratați rapoartele și receipt-urile drept fișiere cu identitate de octeți, iar regulile de formatare aplicați-le documentelor scrise manual.
+- **Distribuție.** Recitiți metadatele assetului după ieșirea din draft. Verificați URL-ul din README-ul împins pe `main`, descărcarea autentificată, hash-ul și CRC-ul. Tratați rapoartele și receipt-urile drept fișiere cu identitate de octeți, iar regulile de formatare aplicați-le documentelor scrise manual.
 
 ## Proprietari și limite
 

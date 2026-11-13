@@ -2,7 +2,7 @@ name: iOS simulator qualification
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - ".github/workflows/ios.yml"
       - "ios/**"
