@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "selection": ":atf-card-table-ui:testDebugUnitTest",
+  "tests": 34,
+  "outcomes": {
+    "PASS": 34,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  },
+  "coverageErrors": [],
+  "containerFailures": [],
+  "provenanceSha256": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+  "reportSha256": "625318fa3b478dc7cc4c5f7c31a2939bbdec1da06f92d361c58ff938a35ff1db"
+}

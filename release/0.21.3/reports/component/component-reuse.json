@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "decisions": [
+    {
+      "group": "atf-validation",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 19,
+      "reportSha256": "ce1f743a32630288610ee28fc72ed03faf9848bd0f2b736546f58f0ead2bd0bd",
+      "executionSha256": "561b9dd77b500433a699ef27c19cbcb6a5bf8ea5555eb5a7ff14874d9a13e9c3"
+    },
+    {
+      "group": "atf-test-android",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 259,
+      "reportSha256": "84665165627923442097833904080fcab5d908dfedd4fe37c4c777fa339b0074",
+      "executionSha256": "dda82c8cfbdcfb181128e0176453961660471a2174fbece5695428cf56c1dc53"
+    },
+    {
+      "group": "whist-lab-app-achievements",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 27,
+      "reportSha256": "58449c6092a7a917c9c5ffbdc34450fbc79a043e24851d92a706a0cfe9c18fa0",
+      "executionSha256": "8ab69726fd773a1035c34d7022a5e05caca0de62ac7ee07df7bb14224e286ddb"
+    },
+    {
+      "group": "whist-lab-app-bidding",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 253,
+      "reportSha256": "d796a47d0e65bd7f9beb5c84b07883551b6a1cea2d175548264032151c75aca0",
+      "executionSha256": "6318ab7caba1083460545364c85b8e9a8c10defe29e14c7eb10b88e6f46f2e37"
+    },
+    {
+      "group": "whist-lab-app-commands",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 116,
+      "reportSha256": "e22e2d0fb921cdce126794a4612d05e0e69c58bc6de95143d66696f803902890",
+      "executionSha256": "fc11e114fd4ab02898339c30748fbdf0b3a83a2b254e8247c0eeb5bd53b4cbe9"
+    },
+    {
+      "group": "whist-lab-app-display",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 99,
+      "reportSha256": "e687426dee0c4e4416748aa816379314d82cccadd35de40d5ce0849431abd84b",
+      "executionSha256": "873dac6d601278a5963fe0b9722ca9d65fe8dc7207bf6bdffc97815b8daa7571"
+    },
+    {
+      "group": "whist-lab-app-history",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 61,
+      "reportSha256": "10ba6b6a6bd885592c3a38203a37b4a6b4870828af780747e12006eeba6ccd04",
+      "executionSha256": "7f0a833120bcd8e85e0ea18442753a95059ce26a6d8795f3e3cbca9374385f33"
+    },
+    {
+      "group": "whist-lab-app-atf-card-table-ui",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java",
+        "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "docs/feedback/README.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b",
+      "tests": 34,
+      "reportSha256": "625318fa3b478dc7cc4c5f7c31a2939bbdec1da06f92d361c58ff938a35ff1db",
+      "executionSha256": "e252bcb52fd6d9cf8e517df6ae3cdb024137c12f5d0f5d91f86aa542f966da1a"
+    },
+    {
+      "group": "atf-tests",
+      "decision": "RUN",
+      "reason": "Rerun after publishing the release catalog and receipt; eight unaffected component selections reuse their verified reports.",
+      "changedInputs": [],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "2f7aeb0e48f1b3063b942931c5da09299b41caf2da0748b4a5278fd583497e34",
+      "tests": 361,
+      "reportSha256": "e7f82856ba1e3b194c7e8d124df2e256a41b8e198bc67f8559b3a8f7bbc264a9",
+      "executionSha256": "b1389dde41aac26188af2df91eb9cc5edc244488704cb7e57713c37dde1f2baf"
+    }
+  ]
+}

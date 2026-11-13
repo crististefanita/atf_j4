@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "targetCommit": "28a4b5dc423c443c0dad2800f3acb220330ec585",
+  "assets": [
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.21.3/WhistLab-0.21.3.apk",
+      "name": "WhistLab-0.21.3.apk",
+      "size": 2159634,
+      "sha256": "635d235fa3a84f1b259bb5ac9bd5b902a535dd2376317a6631580dec09bf216e"
+    },
+    {
+      "url": "https://github.com/crististefanita/atf_j4/releases/download/v0.21.3/WhistLab-0.21.3.apk.sha256",
+      "name": "WhistLab-0.21.3.apk.sha256",
+      "size": 85,
+      "sha256": "bef5f5c18161cb95d8dc5f0600a7c3a728b046a76e3f148d585a1ca6c69c7b7b"
+    }
+  ],
+  "url": "https://github.com/crististefanita/atf_j4/releases/tag/v0.21.3",
+  "draft": false,
+  "prerelease": true,
+  "tag": "v0.21.3"
+}

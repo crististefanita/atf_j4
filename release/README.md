@@ -6,18 +6,18 @@ Catalogul indică versiunea Android curentă și păstrează o singură ediție 
 
 ## Versiunea curentă
 
-[0.21.2 — APK, verificări și proveniență](0.21.2/README.md) este ediția Android publicată curentă.
+[0.21.3 — APK, verificări și proveniență](0.21.3/README.md) este ediția Android publicată curentă. Descărcarea directă pentru utilizatorii autentificați este indicată și în README-ul principal.
 
-## Candidat
+## Versiunea anterioară
 
-[0.21.3 — candidat Android](candidate.json) este în curs de calificare. Linkul din README-ul principal indică asset-ul viitor exact, disponibil după publicare.
+[0.21.2 — APK și dovezi](0.21.2/README.md) rămâne în catalog pentru proveniență și comparații.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dosar |
 |---|---|---|
-| 0.21.2 | Publicată · APK verificat | [APK și dovezi](0.21.2/README.md) |
-| 0.21.1 | Ediția anterioară | [APK și dovezi](0.21.1/README.md) |
+| 0.21.3 | Publicată · APK autentificat verificat | [APK și dovezi](0.21.3/README.md) |
+| 0.21.2 | Ediția anterioară | [APK și dovezi](0.21.2/README.md) |
 
 ## Publicare și verificare
 
@@ -25,8 +25,8 @@ Pregătirea, calificarea și publicarea urmează [procesul de release](../docs/t
 
 ## Citire rapidă
 
-1. Deschideți README-ul versiunii curente pentru scop și pașii de instalare.
-2. Urmați raportul Extent canonic; README-ul său explică suitele și proveniența.
-3. Consultați manifestul pentru identitatea APK-ului, semnare, calificare și inventarul payload-ului.
+1. Deschideți README-ul versiunii curente pentru scop și descărcare.
+2. Urmați raportul Extent canonic; indexul lui explică selecțiile și proveniența.
+3. Consultați manifestul pentru identitatea APK-ului, semnarea, calificarea și inventarul payload-ului.
 
 Strategia de testare este descrisă generic în [documentația testării](../docs/testing/README.md); rezultatele sunt dovezi specifice versiunii.
