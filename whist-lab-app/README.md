@@ -10,26 +10,14 @@ motor se află în directorul `../ios`.
 
 Configurarea permite alegerea variantei, a unei mese de 3–6 jucători și a nivelului Normal sau Hard.
 
-În română, Hard este afișat ca „Dificil”. Limba EN/RO se schimbă din selectorul interfeței și se păstrează între porniri. Regulile și programul mâinilor sunt disponibile din `Rules & schedule` / `Reguli și program`.
+În configurarea în română, Hard apare ca „Dificil”. Limba EN/RO se schimbă din selectorul interfeței și se păstrează între porniri. Regulile și programul mâinilor sunt disponibile din `Rules & schedule` / `Reguli și program`.
 
 Variantele disponibile sunt definite în catalogul de reguli.
 
 O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizatorul pornește o partidă nouă. Tipurile de reguli sunt definite în [GameMode](game-core/src/main/java/ro/whistlab/core/rules/GameMode.java), iar textele și etichetele efective în [WhistUiText](app/src/main/java/ro/whistlab/app/localization/WhistUiText.java). Regulile afișate se construiesc în [HowToPlay](game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) pentru varianta, limba și numărul de jucători selectate.
 
-În Whistul românesc se urmează culoarea cerută; dacă lipsește și există atu, tăierea este obligatorie.
-
-- La opt cărți nu există atu.
-- Contractul exact valorează `5 + levate`, iar ratarea scade diferența absolută.
-- Configurarea unei partide noi aplică aceeași valoare de 5 sau 10 pentru bonusul și penalizarea după cinci mâini eligibile; profilurile istorice își păstrează configurația la restaurare.
-- [Motorul de reguli](game-core/README.md) descrie domeniul și diferențele față de celelalte variante.
-
-| Istoricul scorului | Folosire și comportament |
-|---|---|
-| Acces | `Game menu → Score sheet → Score history` / `Meniu joc → Scorul partidei → Istoricul scorului`. |
-| Coloane | Fiecare jucător are licitația cunoscută și totalul după mâna respectivă. Dreptunghiul seriei apare numai în `P`, pe rândul plății; diferența mâinii rămâne în registru și în descrierea accesibilă. |
-| Date păstrate | Totalurile încheiate determină punctele mâinii, inclusiv seriile; datele lipsă nu sunt inventate. [ScoreHistory](game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) și [GameSessionStore](app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) dețin registrul și restaurarea. |
-| Adaptare | Dialogul distribuie fereastra disponibilă, cu margini proporționate și scara textului păstrată. Coloanele late se derulează orizontal; o fereastră prea scundă permite derularea conținutului integral. |
-| Licitație ratată | Diagonală roșie proprie, distinctă de dreptunghiul seriei; [contractul istoricului](../docs/game/ATF_ScoreHistory.md#adaptarea-la-fereastră) explică geometria și adaptarea. |
+- [Regulile jocului](../docs/game/README.md) dețin programul mâinilor, atuul, scorul și seriile pentru fiecare profil.
+- Istoricul se deschide din `Meniu joc → Scorul partidei → Istoricul scorului`. [Contractul istoricului](../docs/game/ATF_ScoreHistory.md) explică licitația, totalul fiecărui jucător, marcajele și adaptarea la fereastră.
 
 ## Licitarea asistată
 
@@ -39,12 +27,9 @@ La tura jucătorului, motorul Hard estimează și preselectează o licitație le
 - Alegerea manuală are prioritate; un rezultat întârziat nu înlocuiește selecția și nu se aplică altei mâini ori partide.
 - Dacă estimarea nu este disponibilă, se poate alege manual orice valoare legală. [Selecția contextuală](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) păstrează această stare separat de contractele depuse.
 
-Pe Android, bifa `Auto play` / `Automat` pornește preluarea temporară a licitării și jocului cărților.
-
-Controlul revine la om după scorul mâinii. Detaliile fluxului sunt în [documentația activității Android](app/src/main/java/ro/whistlab/app/README.md#autogame-pentru-mâna-activă).
-
 ## Joacă automat mâna curentă
 
+- Pe Android, bifa `Auto play` / `Automat` preia temporar licitarea și jocul cărților. [Documentația activității Android](app/src/main/java/ro/whistlab/app/README.md#autogame-pentru-mâna-activă) descrie coordonarea fluxului.
 - Bifa stă în dreapta titlului când încape. La text mărit, poate ocupa propriul rând în antet, deasupra atuului. Numărul mâinii și rezumatul licitațiilor apar dedesubt.
 - Cât timp automatizarea este activă, `Game menu` / `Meniu joc` oferă `Stop auto-play` / `Oprește jocul automat`.
 - Aplicația folosește nivelul Normal sau Hard ales pentru adversari și controlează temporar și locul uman. La ecranul scorului automatizarea se oprește, iar următoarea mână revine la controlul manual.

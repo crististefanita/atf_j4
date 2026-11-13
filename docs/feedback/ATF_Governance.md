@@ -84,14 +84,13 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 |---|---|---|
 | P2 | Publicarea nu are încă un lansator versionat care salvează imediat identitatea fiecărei operații remote și permite reluarea sigură. | Jurnal atomic cu ID-ul draftului înainte de upload, commit-ul surselor, asset-urile și hash-urile. API controlat demonstrează creare reușită urmată de 404 la căutarea după tag, upload acceptat cu răspuns pierdut și promovare deja efectuată. Reluarea recitește obiectele după ID și refuză diferențele; nu recreează, nu reîncarcă și nu mută tag-ul prin repetare oarbă. |
 
-## Identitatea completă a auditului
+## Confruntarea afirmațiilor documentare
 
 | Prioritate | Lacună și sursă | Criteriu de închidere |
 |---|---|---|
-| P2 | [Inventarul lansatorului](../../scripts/Get-AtfSourceInputs.ps1) exclude dosarul release, însă suita inspectează și documentele și integritatea acelui dosar din rădăcina live. | Identificați separat toate intrările release citite de guvernanță; alterarea, adăugarea sau ștergerea lor în timpul rulării invalidează atribuirea rezultatului, fără introducerea rapoartelor generate în sursele compilate. |
 | P2 | [Politica documentară](../../atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java) recunoaște forma controalelor testChanges; această recunoaștere nu confruntă singură baza Git, căile schimbate și expirarea. | Definiți explicit partea locală și contractul comun, cu refuz pentru bază lipsă, cale neacoperită, control expirat și modificare neautorizată a unui gate. Păstrați distinct validarea formatului și validarea schimbării efective. |
 
-Verificarea unei copii compilate și inspecția rădăcinii live au identități distincte. Un rezultat trecut se atribuie codului curent numai după comparația intrărilor efectiv citite și a amprentelor declarate; rapoartele unei rulări rămân în dosarul ei de calificare, nu în contractul permanent.
+Inventarul fișierelor `release/` citite în timpul guvernanței aparține [criteriului de identitate RAG](ATF_Release_RAG.md#identitatea-surselor-și-a-dosarului).
 
 ## Lizibilitatea coordonatorilor de domeniu
 
@@ -101,16 +100,6 @@ Verificarea unei copii compilate și inspecția rădăcinii live au identități
 
 Extrageți o singură responsabilitate demonstrată pe increment, cu același contract public, aceleași alegeri și estimări pe observații fixate, conservarea scorului și verificări nominale și de refuz. Păstrați modificările de prezentare și candidații strategici în lucrări separate; o formatare amplă nu dovedește refactorizare semantică.
 
-## Creșterea calității codului și a arhitecturii
-
-Limitele actuale de pachet și dimensiune nu măsoară suficient responsabilitățile din interiorul claselor. [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java), [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) și [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) sunt coordonatori identificați, dar proiectul nu are încă o calificare unitară care să arate dacă mutarea codului a redus cuplarea sau doar a redistribuit-o. Ridicarea notei cere închiderea acestor constatări prin schimbări comportamentale dovedite, nu prin reorganizare cosmetică.
-
-| Ordine | Acțiune | Criteriu de acceptare |
-|---|---|---|
-| 1 | Măsurați aceleași clase înainte de fiecare increment: responsabilități, colaboratori direcți, ramificații și duplicarea regulilor; identificați locurile unde decizia sau starea au mai mulți proprietari. | Inventarul indică sursele și regula folosită, iar selecția următoarei extracții se bazează pe cuplarea și schimbarea reală, nu doar pe numărul de linii. |
-| 2 | Extrageți o singură responsabilitate confirmată dintr-un coordonator per increment; păstrați fațadele și comportamentul public, fără funcții noi sau schimbări de interfață. | O singură cale de decizie și proprietar al stării; dependențele urmează direcția UI → aplicație → domeniu, fără ciclu și fără duplicate rămase sub alt nume. |
-| 3 | Înghețați contractul existent înainte de refactor și adăugați teste unitare/componente pentru rezultate, limite, stare salvată, ordinea evenimentelor și propagarea erorilor. | Comparațiile înainte/după trec pe aceleași intrări, inclusiv controale negative; testele arată că extragerea păstrează contractul și că defectul injectat este detectat. |
-| 4 | Extindeți guvernanța doar pentru încălcări arhitecturale observabile: dependențe între straturi, cicluri, proprietari dubli și fixture-uri de test accesibile din Release. | Fiecare regulă are un fixture sănătos și unul defect; fără excepții pe clasă sau suprimări de prag pentru a trece suita. |
-| 5 | Repetați pentru toate hotspot-urile încă deschise și actualizați nota numai după calificarea completă. | Raportul de revizie arată ce constatări s-au închis, ce rămâne și ce teste le susțin; simpla mutare de fișiere, reducerea artificială a pragurilor sau o suită verde fără controale negative nu crește nota. |
-
-Punctul slab actual este lipsa probei că refactorizarea micșorează responsabilitățile și elimină proprietatea duplicată. Prioritatea este să închidem mai întâi coordonatorii deja identificați și să facem guvernanța să detecteze revenirea acestor defecte; apoi se reevaluează codul și arhitectura pe aceeași grilă.
+- O regulă nouă de stratificare sau de proprietate a stării cere o intrare sănătoasă și una defectă.
+- [Registrul adaptorului](ATF_Android.md#persistență-și-coordonare) deține probele pentru fixture-urile Android din Release.
+- [Registrul motorului](ATF_Ai.md#evoluția-motorului) deține gestionarea mostrelor Monte Carlo.

@@ -8,26 +8,23 @@ Contractul stabil al RAG aparține [ghidului de calificare](../testing/ATF_Relea
 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
-| P1 | Legătura independentă risc–teste | Planul declară riscul și selecțiile. Evaluatorul nu deduce suprafața schimbată din diferența surselor și nu demonstrează independent că selecția minimă acoperă contractele afectate. Un selector verificabil trebuie să lege schimbarea de unități, componente, E2E și motivarea omisiunilor, cu controale negative. |
-| P1 | Snapshot unitar și preflight al artefactelor | CLI-ul RAG doar citește și evaluează receipt-uri; pregătirea snapshot-ului, selecțiile, manifestul și predarea rămân coordonate manual. Un flux reproductibil trebuie să producă toate intrările în afara checkout-ului, să lege aceleași identități și să blocheze verdictul când snapshot-ul candidatului diferă de sursa calificată. APK-ul și sidecar-ul fiecărei versiuni păstrate sunt payload-uri versionate; preflight-ul trebuie să confrunte numele, mărimea și SHA-256 cu manifestul înaintea guvernanței costisitoare și să oprească imediat fluxul la lipsă ori nepotrivire. |
+| P1 | Legătura independentă risc–teste | Planul declară riscul și selecțiile. Adăugați un selector verificabil care leagă diferența de sursă de unități, componente și E2E. Testați un diff de licitare cu `userFlowChanged` fals și un diff editorial care poate păstra selecția minimă. Diagnosticul indică regula și căile afectate. |
+| P1 | Snapshot unitar și preflight al artefactelor | [Criteriile de mai jos](#identitatea-surselor-și-a-dosarului) acoperă verificarea timpurie a artefactelor și intrările citite de guvernanță. |
 | P2 | Prospețimea receipt-urilor | Receipt-urile sunt legate prin hash, dar nu au un interval de valabilitate sau un criteriu temporal de expirare. Declarați originea temporală și termenul, apoi blocați automatizarea publicării pentru dovezi expirate ori fără timp verificabil. |
-| P1 | Verificarea timpurie a dispozitivului Android | Înainte de rularea nativă, verificați KVM, pornirea, transportul ADB autorizat, profilul și răspunsul interfeței. Păstrați distincte eșecul de infrastructură și verdictul aplicației. |
+| P1 | Verificarea timpurie a dispozitivului Android | [Ghidul](../testing/ATF_ReleaseQualification.md) descrie verificarea dispozitivului. Integrați verificarea în lansatorul selecției native și testați separat transportul refuzat, pornirea incompletă și profilul greșit. |
 | P2 | Costul pregătirii componentelor Maven | Măsurați separat copierea cache-ului, compilarea, testele și publicarea Extent. Pregătirea poate fi omisă când toate selecțiile Maven au dovezi valide. |
 | P2 | Cronologia incompletă a calificării | Înregistrați începutul, sfârșitul și durata fiecărei etape, inclusiv cea de pornire la rece. Marcați suprapunerile. Cronometrați separat evaluatorul read-only, probele, publicarea și descărcarea. |
 
-## Reproducere și criterii de acceptare
+## Identitatea surselor și a dosarului
 
-- **P1 · Risc și selecție.** Comparați tagul anterior cu sursa fixată și afișați regula care leagă fiecare cale relevantă de o suită. Un diff care mută controlul de licitare trebuie să ceară verificarea comportamentului chiar dacă planul declară flux neschimbat. Un diff exclusiv editorial păstrează selecția minimă cu motiv. Contradicția se vede înaintea verdictului, cu citarea căii și a selectorului.
-- **P1 · Snapshot și preflight.** Produceți planul, inventarul și receipt-urile pornind de la sursa fixată. Înaintea suitei de guvernanță, confruntați APK-ul și sidecar-ul versionate cu numele, mărimea și SHA-256 declarate de manifest; opriți fluxul înainte de Maven la fișier lipsă, checksum divergent sau intrare de build schimbată după fixare. Păstrați distincte identitatea sursei, a binarului și a dovezilor de predare.
-- **P2 · Perimetre mai precise.** [Contractul reutilizării](../testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă) acoperă perimetrele cunoscute și păstrează originea fiecărei execuții. Pentru a reduce și selecțiile Gradle, demonstrați dependențele de cod, resurse și configurație ale fiecărei colecții. Verificați o schimbare în codul partajat, o intrare citită dinamic și o dependență adăugată înainte de a restrânge perimetrul.
+Verificatoarele controlează deja integritatea dosarului și proveniența selecțiilor. Mai rămâne un flux reproductibil care produce intrările din același snapshot și le confruntă la fiecare trecere de la pregătire la publicare. [Evaluatorul](../../atf-tests/tools/evaluate-release-rag.mjs) · [Integritatea dosarului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java)
 
-## Reutilizare la următoarea livrare
+- Înainte de Maven, confruntați numele, dimensiunea și SHA-256 ale APK-ului și checksum-ului cu manifestul. Cazurile negative trebuie să oprească fluxul înaintea compilării la fișier lipsă, hash divergent sau intrare de build modificată după fixare.
+- Inventariați și dosarul `release/` citit de suita de guvernanță. Adăugarea, modificarea sau ștergerea unei intrări între începutul și sfârșitul suitei invalidează atribuirea rezultatului. Dosarul rămâne separat de sursele compilate. [Inventarul surselor](../../scripts/Get-AtfSourceInputs.ps1)
 
-- **Componente.** Începeți cu manifestul intrărilor și receipt-urile ultimului snapshot calificat. Reutilizați dovezile numai pentru `MATCH` sau `REUSE` și păstrați tripletul de proveniență și hash-ul Extent originale. Un verdict `RUN` trebuie să listeze căile afectate înainte de lansare.
-- **Gradle și Maven.** Păstrați cache-urile offline de dependențe identificate prin JDK, Maven, Gradle, SDK și amprenta bibliotecilor. Lansatorul grupează taskurile Gradle necesare și păstrează câte un oracol JUnit și Extent per task. Parametrul -ReuseFrom verifică proveniența fiecărei suite înainte de a planifica execuția.
-- **Android.** Verificați conectarea autorizată în dispozitivul de test înainte de Maven. Pe un emulator Podman izolat, verificați ADB-ul intern prin transportul local. Un timeout de transport sau un dialog System UI se înregistrează cu captură și cauză, iar o reluare păstrează separat dovada inițială.
-- **Același APK.** La trecerea din preview în ediție curentă, refolosiți binarul semnat și receipt-urile care corespund sursei fixate. Reutilizați E2E numai cu același APK instalat, selector, protocol și profil relevant. Reevaluați porțile RAG după schimbarea metadatelor.
-- **Distribuție.** Recitiți metadatele assetului după ieșirea din draft. Verificați URL-ul din README-ul împins pe `main`, descărcarea autentificată, hash-ul și CRC-ul. Tratați rapoartele și receipt-urile drept fișiere cu identitate de octeți, iar regulile de formatare aplicați-le documentelor scrise manual.
+## Perimetrul reutilizării
+
+Pentru perimetre Gradle mai înguste, demonstrați dependențele de cod, resurse și configurație ale fiecărei colecții. Controalele trebuie să detecteze o modificare în codul partajat, o intrare citită dinamic și o dependență adăugată. [Contractul reutilizării](../testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă) · [Verificatorul perimetrelor actuale](../../atf-tests/tools/component-evidence-scope.mjs)
 
 ## Proprietari și limite
 

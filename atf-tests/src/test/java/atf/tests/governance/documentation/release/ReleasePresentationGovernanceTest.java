@@ -52,6 +52,10 @@ class ReleasePresentationGovernanceTest {
                 releases++;
                 continue;
             }
+            String evidenceCommit = evidence.substring((repository + "/blob/").length()).split("/", 2)[0];
+            AuditedAssertions.assertEquals(validation.at("/evidenceRetention/canonicalReportSha256").asText(),
+                    atf.tests.governance.documentation.release.handoff.ReleaseCommitEvidence.verify(root, version, evidenceCommit, validation),
+                    "The published audit points to the exact retained report in Git");
             if (sitePublished) {
                 var receipt = JSON.readTree(folder.resolve("reports/distribution-verification.json").toFile());
                 var download = receipt.required("publicDownload");

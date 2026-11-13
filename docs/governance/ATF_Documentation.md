@@ -55,6 +55,16 @@ La o contradicție, confruntați codul și configurația, restrângeți afirmaț
 
 Scopul, responsabilitatea și limita principală rămân vizibile. Detaliile secundare, excepțiile și justificările lungi pot sta în blocuri pliabile.
 
+## README-ul principal
+
+README-ul principal orientează cititorul către produs, surse și verificare:
+
+- Prezintă jocul și oferă pagina ediției Android și descărcarea directă, conform [contractului de livrare](../testing/ATF_ReleaseQualification.md#suprafața-readme-ului-public).
+- Arată cine deține regulile, interfețele, cercetarea și infrastructura de test. Harta vizuală explică o singură relație; tabelul de module completează imaginea cu zonele care nu participă la acel flux.
+- Arată o verificare locală scurtă și trimite la strategia de testare, la guvernanță și la calificarea livrării. Regulile detaliate, pașii de publicare și rezultatele rămân în ghidurile și dosarele responsabile.
+
+Confruntați rolurile din hartă cu [reactorul Maven](../../pom.xml), [modulele Gradle](../../whist-lab-app/settings.gradle) și configurația modulului care consumă dependența. Pentru o dependență de test, sursa de adevăr este declarația ei din build. [Guvernanța hărții](../../atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java) confruntă modulele, dependențele directe și muchiile aplicației și verifică omisiunile, scope-urile greșite și inversarea direcției.
+
 ## Limbă, stil și proză
 
 - Toate README-urile sunt în română cu diacritice; ghidurile bilingve de reguli au limba declarată în nume.

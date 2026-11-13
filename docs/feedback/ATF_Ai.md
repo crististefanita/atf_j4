@@ -46,9 +46,10 @@ Responsabilul modulului AI deține intrările și verificarea proprie. Testele d
 
 | Prioritate | Risc | Criteriu de închidere |
 |---|---|---|
-| P1 | Un AI care schimbă ținta când vede locul trei abandonează partide încă recuperabile. O limită care omite seriile sau mâna curentă poate produce aceeași eroare. | Păstrați pragul strict al celor doi adversari garantați înainte. Verificați egalitatea pentru locul doi, zero aritmetic imposibil, ultima licitație interzisă și penalizarea plătită în ultima mână. [Contractul deciziei](../ai/ATF_DecisionModel.md#când-ai-ul-joacă-la-0) |
 | P2 | Ponderile abstracte pot favoriza o cale aritmetică greu de jucat. Un exemplu de componentă nu stabilește frecvența conversiei la 500 ori costul căutării. | Comparați partide noi pereche, cu ambele programe, 3–6 locuri și serii pornite/oprite. Măsurați conversiile la 500, schimbările de țintă, locurile în clasament și latența înainte de a declara progres strategic. |
 | P2 | Ratele dintr-un prefix advers controlat supraestimează cât de frecvent apare ocazia în jocul liber. Eșantionarea poate lăsa fără sprijin o cale aritmetic posibilă. | Raportați lotul natural separat de lotul controlat, cu numitor, faza primei alegeri și conversii pentru fiecare nivel. Păstrați loturi mai mari cu rotații de dificultate și măsurați costul pentru mâinile în care se evaluează mai multe ținte. |
+
+Activarea condiționată de doi adversari garantați înainte, egalitatea posibilă pentru locul doi, restricția ultimei licitații și penalizarea de serie au probe de componentă. Calificarea frecvenței și a costului rămâne în loturile de mai sus. [Activarea](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchPolicyComponentTest.java) · [Limitele și seriile](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchBoundsComponentTest.java) · [Contractul deciziei](../ai/ATF_DecisionModel.md#când-ai-ul-joacă-la-0)
 
 ## Evoluția motorului
 

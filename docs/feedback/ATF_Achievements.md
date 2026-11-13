@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Catalogul și progresul au contracte proprii în [documentația realizărilor](../game/ATF_Achievements.md). Acest registru păstrează numai verificările încă necesare pentru compatibilitatea YAML/runtime și pentru ecranul Android; pragurile și identitățile existente nu se schimbă fără migrare versionată.
+Validarea YAML la build și compatibilitatea progresului sunt documentate în [contractul realizărilor](../game/ATF_Achievements.md). Lucrările de mai jos urmăresc restaurarea ecranului Android și calibrarea cu jucători umani.
 
 ## P1 · Restaurarea stării ecranului comun pe Android
 
@@ -10,10 +10,10 @@ Adaptorul Whist creează o stare nouă a ecranului la fiecare deschidere. Compon
 
 - Păstrează starea de navigare și selecția în proprietarul Android potrivit ciclului de viață, fără să schimbi ordinea sau conținutul catalogului.
 - Verifică RO/EN, selectarea unui obiectiv, derularea până la un rând, recrearea ecranului și revenirea la aceeași poziție și selecție.
-- Verifică separat coada durabilă a notificărilor: oprirea înainte de confirmare nu o pierde, confirmarea nu acordă progres din nou, iar reluarea nu afișează duplicate.
+- Componentele acoperă păstrarea cozii la închidere, reapariția notificării neconfirmate și refuzul unei confirmări depășite. Pe APK, recreează activitatea înainte și după confirmare și confruntă fiecare apariție cu starea cozii și progresul salvat. [Componentele notificării](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java)
 - Actualizează proba APK-ului semnat pentru etichetele efective „Înapoi/Back” și „Închide/Close”, cu checkpoint-uri distincte pentru catalog și detaliu.
 
-**Surse:** [adaptorul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementsScreen.java), [ecranul comun](../../whist-lab-app/atf-card-table-ui/README.md#realizări), [acceptanța Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java), [testele de stare și notificare](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java).
+[Adaptorul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementsScreen.java) · [Ecranul comun](../../whist-lab-app/atf-card-table-ui/README.md#realizări) · [Acceptanța Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java)
 
 ## P2 · Calibrarea ordinii cu jucători umani
 

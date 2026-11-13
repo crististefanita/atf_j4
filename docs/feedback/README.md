@@ -14,11 +14,11 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 | [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
 | [Interfață comună](ATF_CardUi_Extraction.md) | Limitele dintre prezentarea reutilizabilă și adaptorul Whist: meniu, profil, masă, istoric și animații. |
-| [Publicare](ATF_Reporting.md) | HTML autonom, componente auditabile și calificarea publicării. |
+| [Raportare](ATF_Reporting.md) | Calificarea autonomiei, comparațiilor și consumului de memorie în Extent. |
 | [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Legătura dintre riscuri și testele selectate, predarea candidatului și valabilitatea receipt-urilor. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
-| [Realizări Whist](ATF_Achievements.md) | Praguri exacte, calificarea Android, compatibilitatea progresului și calibrarea pe configurațiile eligibile. |
+| [Realizări Whist](ATF_Achievements.md) | Restaurarea stării ecranului Android și calibrarea cu jucători umani. |
 
 ## ToDo-uri prioritizate
 
@@ -27,21 +27,21 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
 |---|---:|---:|---|
 | RAG-01 | P1 | 98 | Leagă automat schimbările relevante de selecția minimă de teste; respinge planul care declară flux neschimbat când diff-ul afectează un flux. [Registru](ATF_Release_RAG.md#lacune-deschise) |
-| RPT-01 | P1 | 95 | Livrează un HTML Extent autonom, cu PNG inline, fără copii auxiliare redundante; acceptă auditul offline după desprinderea de runner. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
-| RAG-02 | P1 | 94 | Produce planul, inventarul și receipt-urile dintr-un snapshot fixat; verifică înaintea guvernanței costisitoare că APK-ul și sidecar-ul versionate corespund manifestului și blochează diferențele față de candidatul predat. [Registru](ATF_Release_RAG.md#lacune-deschise) |
-| RPT-02 | P1 | 94 | Păstrează comparațiile input–expected–actual–verdict și paritatea exactă JUnit/Extent pentru fiecare suită primară. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
+| RPT-01 | P1 | 95 | Verifică fiecare producător prin HTML detașat și controale negative pentru conținut lipsă, extern ori atribuit greșit. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
+| RAG-02 | P1 | 94 | Verifică APK-ul și checksum-ul înainte de Maven, fixează intrările de audit și detectează modificarea dosarului în timpul guvernanței. [Registru](ATF_Release_RAG.md#identitatea-surselor-și-a-dosarului) |
+| RPT-02 | P1 | 94 | Probează pe producătorii rămași respingerea invocărilor pierdute și utilitatea comparațiilor originale, inclusiv la FAIL, ERROR și SKIP. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |
 | AND-02 | P1 | 92 | Califică pe APK actorul, geometria stabilă și mâna vizibilă în licitație/joc/AutoGame pentru 3–6 locuri, RO/EN și text mărit. [Registru](ATF_Android.md) |
 | AI-01 | P1 | 91 | Calibrează inferența Hard pentru 2–8 cărți din licitații și cărți jucate pe loturi noi; separă exactitatea probabilităților de scorul simulat. [Registru](ATF_Ai.md) |
-| ACH-01 | P1 | 90 | Califică pe APK restaurarea stării ecranului Realizări, progresul păstrat și notificările fără credit sau afișare duplicate. [Registru](ATF_Achievements.md) |
+| ACH-01 | P1 | 90 | Califică pe APK restaurarea poziției și selecției din Realizări, apoi reluarea notificărilor după recrearea activității. [Registru](ATF_Achievements.md) |
 | AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
 | GOV-01 | P1 | 87 | Oferă validatoare cu API/CLI autonom, rădăcini explicite și inventar complet; controalele negative resping surse sau excepții neacoperite. [Registru](ATF_Governance.md#api-reutilizabil-pentru-verificatoare) |
-| UI-01 | P1 | 86 | Califică adoptarea contractelor comune pentru antet, chenare și notificări fără a muta regulile specifice jocului. [Registru](ATF_CardUi_Extraction.md#adopție-între-jocuri) |
+| UI-01 | P1 | 86 | Califică antetul, chenarele și notificările în consumatorii reali și reconciliază limita Unicode a câmpului de nume cu politica Whist. [Registru](ATF_CardUi_Extraction.md) |
 | RAG-03 | P2 | 85 | Leagă prospețimea receipt-urilor și cronologia etapelor de politica de reutilizare și de expirarea dovezilor. [Registru](ATF_Release_RAG.md#lacune-deschise) |
 | TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
-| AI-02 | P2 | 82 | Verifică ruta la zero doar când matematica o permite și fără a abandona un top doi încă posibil; păstrează perechi noi și latența. [Registru](ATF_Ai.md) |
-| GOV-02 | P2 | 80 | Face verificarea documentației, lansatoarelor și inventarului de release completă, reproductibilă și fără excepții istorice implicite. [Registru](ATF_Governance.md) |
+| AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
+| GOV-02 | P2 | 80 | Validează baza Git, căile schimbate și expirarea controalelor `testChanges`. [Registru](ATF_Governance.md#confruntarea-afirmațiilor-documentare) |
 | REF-01 | P2 | 78 | Reduce clasele și testele supradimensionate prin responsabilități clare, fără schimbarea contractelor observabile. [Registre tematice](ATF_Android.md) |
 
 ## Responsabilitatea schimbării

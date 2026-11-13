@@ -128,7 +128,7 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 
 1. Actualizați `versionName` și incrementați `versionCode` în Gradle; fixați commit-ul construit. Sursele relevante schimbate în paralel se confruntă înainte de publicare.
 2. Rulați selecția de mai sus în TMP; pregătiți comenzile, rezultatele JUnit și jurnalele pentru `release/<versionName>/reports/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
-3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `release/<versionName>/`; păstrați ediția curentă și imediat anterioară. Arhivați edițiile mai vechi în afara catalogului activ numai după confruntarea identității și a hash-urilor. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
+3. Puneți copia de audit a APK-ului semnat `WhistLab-<versionName>.apk` și checksum-ul în `release/<versionName>/`; păstrați ediția curentă și imediat anterioară. Arhivați edițiile mai vechi în afara catalogului activ numai după confruntarea identității și a hash-urilor. Canalul de descărcare din README este asset-ul GitHub Release; copia din dosar servește verificării integrității.
 4. Actualizați manifestul și README-ul noii versiuni, `release/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
 5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi descărcați asset-ul complet în canalul declarat. Actualizați dovada descărcării și linkul direct din README numai după confruntarea versiunii curente, mărimii, SHA-256 și CRC; portalul `releases/latest` nu fixează identitatea APK-ului.
 
@@ -139,6 +139,7 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 - **Surse:** tag-ul fixează commit-ul calificat înaintea publicării. Confruntați toate intrările APK-ului și fișierele noi; modificările documentației ori ale probelor ulterioare nu mută tag-ul.
 - **Dovezi:** descărcarea reală se verifică după publicare și are un commit ulterior al rapoartelor. Nota Release fixează acest commit în `evidenceUrl`; metadatele păstrează separat `sourceCommit`.
 - **Legare:** commit-ul dovezilor există înaintea introducerii hash-ului său în note. Un commit final înregistrează legătura și răspunsul GitHub; nu se încearcă autoreferențierea hash-ului unui commit.
+- **Identitatea auditului:** [Guvernanța predării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) citește indexul, manifestul și raportul direct din commitul indicat și compară SHA-256 cu raportul canonic declarat în dosarul predat. Dacă o reluare schimbă raportul canonic, fixați noul commit de dovezi în note.
 - **Închidere:** după ultimul push, recitiți README-ul din GitHub și confruntați URL-ul exact cu asset-ul descărcat. Verificarea locală nu dovedește singură că documentul online a fost actualizat.
 - **Reluarea draftului:** păstrați ID-ul răspunsului de creare și recitiți draftul după ID. Un 404 la căutarea după tag nu justifică repetarea creării; confruntați mai întâi inventarul drafturilor autorizate și asset-urile existente, fără upload sau înlocuire oarbă.
 

@@ -10,12 +10,12 @@ Nucleul extras este independent de motoare și ATF. Compoziția mesei, configura
 
 | Zonă | Sursă și cuplaj | Consecință pentru extragere |
 |---|---|---|
-| Meniu și configurare | [MenuScreens](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MenuScreens.java) primește `WhistUiText` și `HowToPlay.Language`; [SetupScreen](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/SetupScreen.java) construiește `GameConfig`. | Extrageți compoziția vizuală și callback-urile; opțiunile, regulile și construirea configurației rămân în adaptorul Whist. |
-| Nume | [Dialogul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/profile/PlayerSettingsDialog.java) și [preferințele](../../whist-lab-app/app/src/main/java/ro/whistlab/app/profile/PlayerPreferences.java) folosesc `PlayerNames`. | Dialog comun prin porturi de validare și salvare; păstrați regulile, cheile, erorile și efectele actuale în integrarea Whist. Nu faceți motorul dependent de Android. |
+| Meniu și configurare | [MenuScreens](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MenuScreens.java) integrează meniul comun, iar [SetupScreen](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/SetupScreen.java) construiește `GameConfig`. | Verificați nativ focusul, ordinea, textele și navigarea. Configurația și validarea opțiunilor rămân în adaptorul Whist. |
+| Nume | [Dialogul comun](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/profile/PlayerNameDialog.java) limitează lungimea în unități UTF-16. [Politica Whist](../../whist-lab-app/card-table-names/src/main/java/ro/cardtable/names/PlayerNames.java) numără puncte de cod. | Reconciliați limita la introducere și la lipire. Proba acceptă zece litere din afara planului multilingv de bază, respinge a unsprezecea și verifică perechile surrogate la frontieră. |
 | Masă și mână | [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) păstrează `GameSession.Snapshot`, `Card` și `PlayedCard`; [GameScreen](../../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/GameScreen.java) calculează legalitatea prin `GameRules`. | Proiecție tipizată, imuabilă și limitată la informația permisă; legalitatea și comanda se decid în adaptor, înainte și după intenția UI. Mutarea fișierelor cu aceleași importuri nu închide criteriul. |
-| Geometrie | [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java), [HandLayoutMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/hand/HandLayoutMetrics.java), [TableGeometry](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableGeometry.java). | Implementare comună, cu fațade Whist și aceleași rotunjiri, ancore și rezultate înainte/după. Testele existente din pachetele Whist păstrează oracolele și identitățile. |
+| Geometrie | Tema, desenul și geometria măsurată sunt implementate în [bibliotecă](../../whist-lab-app/atf-card-table-ui/README.md). | Comparați nativ rotunjirile, ancorele și lizibilitatea pe același profil, înainte și după schimbare. |
 | Scor | [ScoreHistoryColumn](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryColumn.java) proiectează licitatul, rezultatul contractului și totalul Whist. | Extrageți măsurarea, grila, cadrul dialogului și derularea; proiecția și marcajele de serie rămân Whist. Semantica valorilor aparține adaptorului jocului. |
-| Mișcare | [Colectarea levatei](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java), [navigarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/navigation/AppNavigation.java) și [refacerea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java). | Decuplați scena și evenimentele de tipurile jocului, păstrând timpul vizibil, anularea, generația rutei și aplicarea unică. Colectarea nu este animație de distribuire. |
+| Mișcare | [Colectarea levatei](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionRun.java) are deja un coordonator comun. | Calificați nativ scena Whist la refacere, anulare și ultima levată. [Criteriile Android](ATF_Android.md#calificarea-modificărilor-vizuale) |
 
 Nu este justificată extragerea întregii activități sau a motorului într-un modul numit generic. Biblioteca grafică nu primește seed, mâini adverse, `GameSession`, motor AI sau acces direct la salvările consumatorului.
 
@@ -62,11 +62,11 @@ Rezultatele unei calificări aparțin dosarului release care identifică sursa �
 | ID și stare | Lucrare chirurgicală | Acceptanță |
 |---|---|---|
 | **UIX01 · PARȚIAL** | Fixați reperul Whist înaintea mutării. | Surse, configurație și probe identificate; aceleași intrări, nume, seed și profil înainte/după. Interfața live și ultimul APK calificat sunt reconciliate, fără a atribui unui release schimbări ulterioare. |
-| **UIX02 · PARȚIAL** | Extrageți întâi geometria, tema și desenul cărții; păstrați fațade temporare când protejează integrarea. | Aceleași rezultate geometrice și aceeași randare Whist la aceiași parametri. Nicio dependență nouă a motorului către Android, UI sau Reporting. |
-| **UIX03 · PARȚIAL** | Decuplați meniul, profilul și localizarea prin proiecții și porturi. | Aceleași controale, ordini, texte, tag-uri, identificatori accesibili, focus, back și callback-uri Whist. Validarea numelui, resetarea, stocarea și efectele asupra partidei au aceeași semantică, inclusiv la eșec. |
-| **UIX04 · PARȚIAL** | Extrageți compoziția mesei și interacțiunea cu mâna. | Poziții, raportul cărții, indici, ridicare și z-order păstrate la 3–6 locuri și în toate profilurile existente. Legalitatea și aplicarea unică rămân verificate în integrarea Whist. |
-| **UIX05 · DESCHIS** | Separați cadrul scorului și scena levatei de proiecțiile Whist. | Aceleași coloane, valori, marcaje, legendă, derulare, checkpoint-uri și timp vizibil. Pauza, dialogurile, resize-ul și callback-urile depășite păstrează contractele actuale. |
-| **UIX06 · PARȚIAL** | Împachetați și admiteți un consumator extern fără cuplarea surselor. | AAR/POM, versiune, SHA-256, namespace, manifest și dependențe verificate; compilare izolată, fără referire la checkout-ul producătorului și fără publicarea codului jocului în bibliotecă. |
+| **UIX02 · PARȚIAL** | Calificați nativ geometria, tema și desenul comun. | Aceleași ancore și aceeași randare Whist la aceiași parametri. [Contractul bibliotecii](../../whist-lab-app/atf-card-table-ui/README.md) |
+| **UIX03 · PARȚIAL** | Calificați integrarea meniului, profilului și localizării. | Aceleași controale, ordini, texte, tag-uri, identificatori accesibili, focus și callback-uri Whist. Reconciliați limita Unicode și verificați salvarea și resetarea numelui. |
+| **UIX04 · PARȚIAL** | Calificați nativ proiecțiile comune ale mesei și mâinii. | Poziții, raportul cărții, indici, ridicare și z-order păstrate la 3–6 locuri. Verificați legalitatea și aplicarea unică în integrarea Whist. |
+| **UIX05 · DESCHIS** | Verificați cadrul comun de scor pe doi consumatori și scena nativă a levatei în Whist. | Coloane, valori, marcaje, legendă și derulare conforme jocului. [Criteriile scenei Whist](ATF_Android.md#calificarea-modificărilor-vizuale) |
+| **UIX06 · PARȚIAL** | Măsurați costul și verificați acceptanța nativă a consumatorilor AAR. | Compilați din sursă și din AAR cu aceleași intrări, comparați duratele și testați aceleași controale native ale versiunii admise. [Împachetarea și admiterea](../../whist-lab-app/atf-card-table-ui/README.md#împachetare-și-consum) |
 
 **Whist Lab admite numai refactorizare în această lucrare.** O corecție vizuală, schimbarea regulilor numelui, o animație de distribuire nouă sau modificarea scorului se raportează separat; nu se ascund în extragere și nu se rescrie oracolul pentru a accepta noul rezultat.
 
@@ -75,22 +75,13 @@ Rezultatele unei calificări aparțin dosarului release care identifică sursa �
 Starea curentă se confruntă cu sursele, testele și selecția din dosarul release relevant. Un raport istoric nu închide singur paritatea sau comportamentul nativ.
 
 - **UIX01 — parțial:** reper de sursă înghețat și selecție de componente trecută înainte/după; comparația nativă cu APK-ul de referință rămâne distinctă.
-- **UIX02 — nucleu extras:** tema, desenul, widgeturile și geometria mâinii au implementare comună, cu fațade Whist. `TableGeometry`, locurile, regiunile măsurate și renderer-ele mâinii/depunerilor sunt comune; adaptorul Whist păstrează proiecțiile și compoziția modurilor.
-- **UIX02 — temă extrasă:** `CardTableTheme` păstrează cele șase atribute, iar [AppTheme](../../whist-lab-app/app/src/main/res/values/styles.xml) rămâne alias în Whist. Consumatorul adoptă explicit resursa; pixelii și focusul nativ nu sunt calificate prin build.
-- **UIX03 — parțial:** meniul de pornire, dropdown-ul și dialogul numelui sunt comune; textele, politica numelui, preferințele, configurarea și rutele rămân ale jocului.
-- **Consumator JVM — pregătire:** modelul de prezentare nu impune licitat, atu sau punctaj. O aplicație de consolă nu folosește direct modulul Android; un front-end Android viitor cere adaptor și componente proprii, inclusiv geometrie pentru alte populații de locuri.
-
-**UIX04 este extras la nivel de prezentare:** `SeatContent`, `HandCard` și `PlayedCardContent` sunt neutre; `WhistTableContent` rămâne adaptorul jocului. `GameTablePanel` păstrează licitația, alegerea levatei vizibile și animația.
-
-Comparația nativă pereche cu APK-ul de referință și UIX05 rămân distincte, iar componentele de reguli Whist rămân în adaptorul jocului.
-
-**UIX03 — reconciliere necesară:** dialogul comun aplică `InputFilter.LengthFilter(10)` pe unități UTF-16, iar politica numelui acceptă zece puncte de cod. Permiteți un filtru furnizat de consumator sau un contract echivalent, cu probe pentru litere suplimentare și perechi surrogate; schimbarea comportamentului Whist se califică separat de refactorizare.
+- **UIX02–UIX04:** suprafețele extrase și frontiera adaptorului sunt inventariate în [ghidul bibliotecii](../../whist-lab-app/atf-card-table-ui/README.md). Verificările rămase sunt în tabelul de acceptanță de mai sus.
 
 ## P1 · Calificarea controlului comun „Automat”
 
 **Responsabil · biblioteca de interfață și adaptorul Whist**
 
-Whist folosește `GameTitleBar` din modulul `atf-card-table-ui`. Consumatorul furnizează starea, textele și acțiunea cerută. Următoarea livrare a bibliotecii permite calificarea aceluiași renderer în ceilalți consumatori. [Antetul comun](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
+Whist folosește `GameTitleBar` din modulul `atf-card-table-ui`. Calificați același renderer în consumatori, pe versiunea AAR efectiv admisă. [Antetul comun](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
 
 | Zonă | Criteriu de închidere |
 |---|---|
@@ -110,9 +101,7 @@ Whist folosește `GameTitleBar` din modulul `atf-card-table-ui`. Consumatorul fu
 | P1 | Probe native pentru antet și chenare | Verificați antetul comun cu două rânduri de titlu și control automat în Rentz. Verificați așezarea adaptivă a statisticilor în Hold’em și stabilitatea chenarelor la text mărit. |
 | P2 | Scor și clasament | Extrageți cadrul tabelului după demonstrarea unui contract de coloane în doi consumatori. Istoricul levatelor, totalurile, premiile și clasamentul de turneu au proiecții proprii. |
 
-- Împachetați Android Views, tema și resursele în AAR. Măsurați costul build-ului consumatorului din sursă și din AAR în aceleași condiții.
-- Un JAR de geometrie are sens când există consumatori JVM și probe fără Android.
-- Verificați încărcarea temei, compatibilitatea manifestului, SHA-256, compilarea izolată a consumatorului și numărul de invocări înaintea adoptării.
+Măsurarea comparativă și calificarea nativă a consumatorilor rămân la UIX06. [Procesul de consum al AAR](../../whist-lab-app/atf-card-table-ui/README.md#împachetare-și-consum)
 
 ## Testele care protejează extragerea
 
