@@ -4,10 +4,12 @@ import atf.testkit.assertions.AuditedAssertions;
 
 import atf.testkit.AtfComponentTest;
 import atf.tests.governance.support.GovernanceProject;
+import atf.tests.governance.documentation.release.handoff.ReleaseCommitEvidence;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +33,7 @@ class ReleasePresentationGovernanceTest {
     @Test void everyHandoffKeepsSchematicNotesBoundToItsActualStateAndAsset() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var repository = GovernanceProject.policy(root).required("publicRepository").asText();
+        Path gitRoot = Path.of(System.getProperty(ReleaseCommitEvidence.GIT_ROOT, root.toString()));
         int releases = 0;
         for (var folder : ReleaseArtifactCatalog.folders(root)) {
             var validation = JSON.readTree(folder.resolve("release-validation.json").toFile());
@@ -54,7 +57,7 @@ class ReleasePresentationGovernanceTest {
             }
             String evidenceCommit = evidence.substring((repository + "/blob/").length()).split("/", 2)[0];
             AuditedAssertions.assertEquals(validation.at("/evidenceRetention/canonicalReportSha256").asText(),
-                    atf.tests.governance.documentation.release.handoff.ReleaseCommitEvidence.verify(root, version, evidenceCommit, validation),
+                    ReleaseCommitEvidence.verify(gitRoot, version, evidenceCommit, validation),
                     "The published audit points to the exact retained report in Git");
             if (sitePublished) {
                 var receipt = JSON.readTree(folder.resolve("reports/distribution-verification.json").toFile());

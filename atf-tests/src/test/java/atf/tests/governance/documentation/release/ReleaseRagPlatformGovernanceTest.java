@@ -78,6 +78,11 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(evaluator.path("outputMustBeOutsideInputs").asBoolean());
         assertEquals("README.md", evaluator.path("publicReadmeSurface").path("path").asText());
         assertTrue(evaluator.path("publicReadmeSurface").path("forbidRawSha256Digest").asBoolean());
+        JsonNode snapshot = evaluator.path("preMavenSnapshot");
+        assertEquals("scripts/AtfQualificationSnapshot.ps1", snapshot.path("launcherHelper").asText());
+        assertEquals("atf-tests/tools/check-release-artifacts.mjs", snapshot.path("artifactPreflight").asText());
+        assertEquals("release-inputs.json", snapshot.path("releaseInventory").asText());
+        assertTrue(snapshot.path("governanceRequiresReleaseInventoryForNewCandidates").asBoolean());
         assertEquals("atf-tests", evaluator.path("requiredComponentGroup").asText());
         assertEquals(List.of("atf-validation", "atf-test-android", "atf-tests",
                 "whist-lab-app-bidding", "whist-lab-app-commands", "whist-lab-app-display", "whist-lab-app-history"),
@@ -211,7 +216,10 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(deliveryGuide.contains("## Commit-ul surselor și commit-ul dovezilor"));
         assertTrue(deliveryGuide.contains("recitiți README-ul din GitHub"));
         assertTrue(deliveryGuide.contains("repetați descărcarea folosind exact acel link"));
-        assertTrue(ragFeedback.contains("Snapshot unitar și preflight al artefactelor"));
+        assertTrue(qualificationGuide.contains("### Snapshot și preflight înainte de Maven"));
+        assertTrue(qualificationGuide.contains("check-release-artifacts.mjs"));
+        assertTrue(qualificationGuide.contains("-PinnedSourceInputs"));
+        assertTrue(qualificationGuide.contains("release-inputs.json"));
         assertTrue(qualificationGuide.contains("plan-release-tests.mjs"));
         assertTrue(qualificationGuide.contains("requiredE2eGroups"));
         assertTrue(qualificationGuide.contains("schemaVersion: 2"));

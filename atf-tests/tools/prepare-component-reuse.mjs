@@ -3,12 +3,13 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {
-  componentInputMap, digest, inlinePngCount, regularFile, strictJson, verifyComponentExecution, verifyComponentOrigin
+  componentInputMap, digest, inlinePngCount, regularFile, strictJson, verifyComponentExecution, verifyComponentOrigin, verifyReleaseInputs
 } from './evaluate-release-rag.mjs';
 
 const inputManifest = 'source-inputs.json';
 const provenanceReceipt = 'source-provenance.json';
 const runReceipt = 'source-component-run.json';
+const releaseInputs = 'release-inputs.json';
 const originFiles = [inputManifest, provenanceReceipt, runReceipt];
 const reusePlan = 'component-reuse.json';
 const groupPattern = /^[a-z0-9][a-z0-9-]{0,79}$/;
@@ -22,6 +23,7 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups) {
   const previous = await fs.realpath(previousRoot);
   if (target === previous) throw Error('REUSE_SOURCE_EQUALS_DESTINATION');
   const current = componentInputMap((await strictJson(await regularFile(target, inputManifest))).value);
+  const currentRelease = await readReleaseInputs(target, '');
   const previousPlan = await readPreviousPlan(previous);
   const origins = new Map();
   const published = new Set();
@@ -35,6 +37,9 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups) {
         origins.set(previousOrigin, readOrigin(previous, previousOrigin));
       }
       const origin = await origins.get(previousOrigin);
+      if (group === 'atf-tests' && currentRelease?.sha256 !== origin.releaseInputs?.sha256) {
+        throw Error('GOVERNANCE_RELEASE_SNAPSHOT_CHANGED');
+      }
       const execution = await strictJson(await regularFile(previous, group + '/execution.json'));
       const report = await fs.readFile(await regularFile(previous, group + '/component-report.html'));
       const html = report.toString('utf8');
@@ -59,6 +64,7 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups) {
       for (const [index, name] of originFiles.entries()) {
         await fs.writeFile(path.join(originDir, name), origin.files[index].bytes, {flag: 'wx'});
       }
+      if (origin.releaseInputs) await fs.writeFile(path.join(originDir, releaseInputs), origin.releaseInputs.bytes, {flag: 'wx'});
       published.add(id);
     }
     const destination = path.join(target, group);
@@ -96,7 +102,17 @@ async function readOrigin(root, id) {
   const files = await Promise.all(originFiles.map(async name => strictJson(await regularFile(root, prefix + name))));
   const [inputs, provenance, run] = files;
   if (id !== undefined && id !== provenance.sha256) throw Error('INVALID_PREVIOUS_ORIGIN_HASH');
-  return {...verifyComponentOrigin(inputs, run.value, provenance), files};
+  const origin = verifyComponentOrigin(inputs, run.value, provenance);
+  const release = await readReleaseInputs(root, prefix);
+  if (release || provenance.value.releaseInputManifest !== undefined || run.value.releaseInputManifest !== undefined) {
+    verifyReleaseInputs(origin, release);
+  }
+  return {...origin, files, releaseInputs: release};
+}
+
+async function readReleaseInputs(root, prefix) {
+  try { return await strictJson(await regularFile(root, prefix + releaseInputs)); }
+  catch (error) { if (error.code === 'ENOENT') return null; throw error; }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

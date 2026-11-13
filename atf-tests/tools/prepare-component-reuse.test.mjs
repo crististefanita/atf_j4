@@ -29,6 +29,14 @@ async function fixture(t, options = {}) {
   await writeJson(target, inputManifest, options.current ?? inputs);
   const original = {...componentRun, sourceFingerprint: digest(await read(previous, inputManifest)),
     inputCount: inputs.length, inputManifest};
+  if (options.release) {
+    const rows = [{path: 'release/index.json', sha256: 'd'.repeat(64)}];
+    await writeJson(previous, 'release-inputs.json', rows);
+    await writeJson(target, 'release-inputs.json', options.release === 'changed'
+      ? [...rows, {path: 'release/extra.json', sha256: 'e'.repeat(64)}] : rows);
+    original.releaseInputManifest = 'release-inputs.json';
+    original.releaseFingerprint = digest(await read(previous, original.releaseInputManifest));
+  }
   await writeJson(previous, provenanceReceipt, original);
   const provenanceSha256 = digest(await read(previous, provenanceReceipt));
   const results = [];
@@ -73,6 +81,15 @@ test('editorial changes retain the independent suite and schedule the governance
   assert.deepEqual(results.map(row => row.decision), ['RUN', 'REUSE']);
   assert.deepEqual(results.map(row => row.affectedInputs), [['README.md'], []]);
   await assert.rejects(fs.stat(path.join(target, groups[0])), {code: 'ENOENT'});
+});
+
+test('only governance requires a matching release inventory for reuse', async t => {
+  const {previous, target, provenanceSha256} = await fixture(t, {release: 'changed'});
+  const decisions = await prepareComponentReuse(target, previous, groups);
+  assert.deepEqual(decisions.map(row => row.decision), ['INVALID', 'MATCH']);
+  assert.equal(decisions[0].reason, 'GOVERNANCE_RELEASE_SNAPSHOT_CHANGED');
+  const original = 'snapshots/' + provenanceSha256 + '/release-inputs.json';
+  assert.deepEqual(await read(target, original), await read(previous, 'release-inputs.json'));
 });
 
 test('a modified source file within the selection schedules fresh execution', async t => {

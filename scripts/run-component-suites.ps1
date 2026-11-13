@@ -4,6 +4,7 @@ param(
     [string]$SourceRoot = (Split-Path -Parent $PSScriptRoot),
     [string[]]$Groups = @(),
     [string]$ReuseFrom = '',
+    [string]$PinnedSourceInputs = '',
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
     [string]$Maven = 'mvn',
@@ -11,23 +12,8 @@ param(
     [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
 $sourceRoot = [IO.Path]::GetFullPath($SourceRoot)
-$catalog = Get-Content -LiteralPath (Join-Path $sourceRoot 'config/atf-test-suites.json') -Raw | ConvertFrom-Json
-$primaryComponents = @($catalog.suites | Where-Object {$_.role -eq 'primary' -and $_.layer -eq 'component'})
-$collectionProperties = ConvertFrom-StringData (Get-Content -LiteralPath (Join-Path $sourceRoot 'config/gradle-app-collections.properties') -Raw)
-$gradleGroups = @($collectionProperties.Values | Sort-Object -Unique | ForEach-Object {
-    $suffix = [Globalization.CultureInfo]::InvariantCulture.TextInfo.ToTitleCase($_)
-    $task = 'testDebug' + $suffix + 'Components'
-    [pscustomobject]@{group="whist-lab-app-$_";project='whist-lab-app/app';task=$task;path=":app:$task";selection=$task}
-})
-$uiTask = ':atf-card-table-ui:testDebugUnitTest'
-$gradleGroups += [pscustomobject]@{group='whist-lab-app-atf-card-table-ui';project='whist-lab-app/atf-card-table-ui';task='testDebugUnitTest';path=$uiTask;selection=$uiTask}
-$knownGroups = @($primaryComponents.module) + @($gradleGroups.group)
-if (@($Groups | Where-Object {$_ -cnotin $knownGroups}).Count -or
-        @($Groups | Sort-Object -Unique).Count -ne $Groups.Count) {
-    throw 'Groups trebuie să conțină numai identificatori distincți din catalogul componentelor.'
-}
-$selectedGroups = @(if ($Groups.Count) { $Groups } else { $knownGroups })
 if (-not $RunRoot) {
     $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
     $RunRoot = Join-Path $archive ('component-suites/' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
@@ -39,27 +25,24 @@ if ($RunRoot.Equals($sourceRoot,[StringComparison]::OrdinalIgnoreCase) -or
 }
 if (Test-Path -LiteralPath $RunRoot) { throw 'Directorul rulării trebuie să fie nou.' }
 
-function Get-Inputs {
-    return @(& (Join-Path $PSScriptRoot 'Get-AtfSourceInputs.ps1') -SourceRoot $sourceRoot)
-}
-
 function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
     $java = if ($JavaHome) { Join-Path $JavaHome 'bin/java.exe' } else { (Get-Command java -ErrorAction Stop).Source }
     if (-not (Test-Path -LiteralPath $java -PathType Leaf)) { throw 'Este necesar un JDK complet compatibil cu proiectul.' }
     Get-Command $Maven -ErrorAction Stop | Out-Null
-    $repository = Join-Path $stage 'maven-repository'
+    $repository = Join-Path (Split-Path -Parent $stage) 'maven-repository'
     New-Item -ItemType Directory -Path $repository | Out-Null
     if (Test-Path -LiteralPath $MavenCache -PathType Container) {
-        & robocopy $MavenCache $repository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $stage 'copy-cache.log')
+        & robocopy $MavenCache $repository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-cache.log')
         if ($LASTEXITCODE -gt 7) { throw 'Copierea cache-ului Maven a eșuat.' }
     }
     Push-Location $stage
     try {
-        & $Maven -B -o -ntp "-Dmaven.repo.local=$repository" '-DskipTests' install *> (Join-Path $stage 'compile.log')
-        if ($LASTEXITCODE -ne 0) { throw "Compilarea a eșuat: $stage/compile.log" }
-        $classpathFile = Join-Path $stage 'component-classpath.txt'
-        & $Maven -B -o -ntp "-Dmaven.repo.local=$repository" -pl atf-tests 'org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath' '-DincludeScope=test' "-Dmdep.outputFile=$classpathFile" *> (Join-Path $stage 'classpath.log')
-        if ($LASTEXITCODE -ne 0) { throw "Classpath-ul nu a fost rezolvat: $stage/classpath.log" }
+        Assert-AtfQualificationSnapshot $snapshot $stage $sourceRoot
+        & $Maven -B -o -ntp "-Dmaven.repo.local=$repository" '-DskipTests' install *> (Join-Path $RunRoot 'compile.log')
+        if ($LASTEXITCODE -ne 0) { throw "Compilarea a eșuat: $RunRoot/compile.log" }
+        $classpathFile = Join-Path (Split-Path -Parent $stage) 'component-classpath.txt'
+        & $Maven -B -o -ntp "-Dmaven.repo.local=$repository" -pl atf-tests 'org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath' '-DincludeScope=test' "-Dmdep.outputFile=$classpathFile" *> (Join-Path $RunRoot 'classpath.log')
+        if ($LASTEXITCODE -ne 0) { throw "Classpath-ul nu a fost rezolvat: $RunRoot/classpath.log" }
         $policy = Get-Content -LiteralPath (Join-Path $stage 'config/atf-governance-policy.json') -Raw | ConvertFrom-Json
         $entries = @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/test-classes" })
         $entries += @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/classes" })
@@ -68,7 +51,7 @@ function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
             $destination = Join-Path $RunRoot $gate.module
             Push-Location (Join-Path $stage $gate.module)
             try {
-                & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' "-Datf.component.input-part-characters=$InputPartCharacters" -cp $classpath atf.tests.execution.components.ComponentSuiteExecution $gate.suite $destination $provenanceFile $sourceRoot *> (Join-Path $stage ($gate.module + '.log'))
+                & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' "-Datf.component.input-part-characters=$InputPartCharacters" "-Datf.governance.gitRoot=$sourceRoot" -cp $classpath atf.tests.execution.components.ComponentSuiteExecution $gate.suite $destination $provenanceFile $stage *> (Join-Path $RunRoot ($gate.module + '.log'))
                 $exit = $LASTEXITCODE
             } finally { Pop-Location }
             $receipt = Join-Path $destination 'execution.json'
@@ -128,18 +111,38 @@ function Read-GradleSelection($item, $stage, $provenanceFingerprint) {
 }
 
 New-Item -ItemType Directory -Path $RunRoot | Out-Null
-$before = Get-Inputs
-$serialized = ConvertTo-Json -InputObject $before -Depth 5 -Compress
-$fingerprint = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($serialized))).ToLowerInvariant()
-[IO.File]::WriteAllText((Join-Path $RunRoot 'source-inputs.json'),$serialized,[Text.UTF8Encoding]::new($false))
-$libraries = @($before | Where-Object {$_.path -like 'lib/*.jar'})
-$provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputCount=$before.Count;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries}
+$work = Join-Path ([IO.Path]::GetTempPath()) ('whist-component-suites-' + [guid]::NewGuid().ToString('N'))
+$stage = Join-Path $work 'project'
+New-Item -ItemType Directory -Path $stage | Out-Null
+$snapshot = New-AtfQualificationSnapshot $sourceRoot $stage $RunRoot $PinnedSourceInputs
+$catalog = Get-Content -LiteralPath (Join-Path $stage 'config/atf-test-suites.json') -Raw | ConvertFrom-Json
+$primaryComponents = @($catalog.suites | Where-Object {$_.role -eq 'primary' -and $_.layer -eq 'component'})
+$collectionProperties = ConvertFrom-StringData (Get-Content -LiteralPath (Join-Path $stage 'config/gradle-app-collections.properties') -Raw)
+$gradleGroups = @($collectionProperties.Values | Sort-Object -Unique | ForEach-Object {
+    $suffix = [Globalization.CultureInfo]::InvariantCulture.TextInfo.ToTitleCase($_)
+    $task = 'testDebug' + $suffix + 'Components'
+    [pscustomobject]@{group="whist-lab-app-$_";project='whist-lab-app/app';task=$task;path=":app:$task";selection=$task}
+})
+$uiTask = ':atf-card-table-ui:testDebugUnitTest'
+$gradleGroups += [pscustomobject]@{group='whist-lab-app-atf-card-table-ui';project='whist-lab-app/atf-card-table-ui';task='testDebugUnitTest';path=$uiTask;selection=$uiTask}
+$knownGroups = @($primaryComponents.module) + @($gradleGroups.group)
+if (@($Groups | Where-Object {$_ -cnotin $knownGroups}).Count -or
+        @($Groups | Sort-Object -Unique).Count -ne $Groups.Count) {
+    throw 'Groups trebuie să conțină numai identificatori distincți din catalogul componentelor.'
+}
+$selectedGroups = @(if ($Groups.Count) { $Groups } else { $knownGroups })
+
+$fingerprint = Get-AtfInputFingerprint $snapshot.source
+$releaseFingerprint = Get-AtfInputFingerprint $snapshot.release
+$libraries = @($snapshot.source | ConvertFrom-Json | Where-Object {$_.path -like 'lib/*.jar'})
+$provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputCount=$snapshot.inputCount;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries
+    releaseFingerprint=$releaseFingerprint;releaseInputManifest='release-inputs.json'}
 $provenanceReceipt = Join-Path $RunRoot 'source-provenance.json'
 $provenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $provenanceReceipt -Encoding utf8
 $provenanceFingerprint = (Get-FileHash -LiteralPath $provenanceReceipt -Algorithm SHA256).Hash.ToLowerInvariant()
 $reused = @()
 if ($ReuseFrom) {
-    $reuseTool = Join-Path $PSScriptRoot '../atf-tests/tools/prepare-component-reuse.mjs'
+    $reuseTool = Join-Path $stage 'atf-tests/tools/prepare-component-reuse.mjs'
     & node $reuseTool $RunRoot ([IO.Path]::GetFullPath($ReuseFrom)) @selectedGroups
     if ($LASTEXITCODE -ne 0) { throw 'Verificarea dovezilor anterioare a eșuat.' }
     $plan = Get-Content -LiteralPath (Join-Path $RunRoot 'component-reuse.json') -Raw | ConvertFrom-Json
@@ -149,15 +152,11 @@ $groupsToRun = @($selectedGroups | Where-Object {$_ -cnotin @($reused.group)})
 $mavenSelections = @($primaryComponents | Where-Object {$_.module -cin $groupsToRun})
 $gradleSelections = @($gradleGroups | Where-Object {$_.group -cin $groupsToRun})
 
-$stage = $null
 $gradleBatch = $null
 $results = @()
 if ($groupsToRun.Count) {
-    $stage = Join-Path ([IO.Path]::GetTempPath()) ('whist-component-suites-' + [guid]::NewGuid().ToString('N'))
-    New-Item -ItemType Directory -Path $stage | Out-Null
-    $provenanceFile = Join-Path $stage 'execution-provenance.json'
+    $provenanceFile = Join-Path $work 'execution-provenance.json'
     Copy-Item -LiteralPath $provenanceReceipt -Destination $provenanceFile
-    & (Join-Path $PSScriptRoot 'Copy-AtfSourceInputs.ps1') -SourceRoot $sourceRoot -Destination $stage -InputManifest (Join-Path $RunRoot 'source-inputs.json')
 
     $savedJavaHome = $env:JAVA_HOME
     $savedAndroidHome = $env:ANDROID_HOME
@@ -201,8 +200,8 @@ if ($groupsToRun.Count) {
     }
 }
 
-$after = Get-Inputs
-$stable = $serialized -ceq (ConvertTo-Json -InputObject $after -Depth 5 -Compress)
+$snapshotDifferences = @(Get-AtfSnapshotDifferences $snapshot $stage $sourceRoot)
+$stable = $snapshotDifferences.Count -eq 0
 $passed = $stable -and ($results.Count + $reused.Count) -eq $selectedGroups.Count -and @($results | Where-Object {$_.exitCode -ne 0}).Count -eq 0
 $androidComponentsReceipt = if ($results.Count) { 'source-component-run.json' } elseif ($reused.Count) {
     'snapshots/' + $reused[0].componentEvidenceOrigin + '/source-component-run.json'
@@ -210,7 +209,8 @@ $androidComponentsReceipt = if ($results.Count) { 'source-component-run.json' } 
 $run = [ordered]@{
     schemaVersion=1;kind='live-source-components';apkQualification=$false
     sourceFingerprint=$fingerprint;provenanceReceiptSha256=$provenanceFingerprint;inputManifest='source-inputs.json'
-    sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$before.Count
+    sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$snapshot.inputCount
+    releaseFingerprint=$releaseFingerprint;releaseInputManifest='release-inputs.json';snapshotDifferences=$snapshotDifferences
     results=$results;reusedGroups=@($reused | ForEach-Object {$_.group});gradleBatch=$gradleBatch
     androidComponentsReceipt=$androidComponentsReceipt
 }

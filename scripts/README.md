@@ -50,7 +50,7 @@ PowerShell se verifică sintactic separat de execuția operației. Un scenariu A
 | Intrare | Resurse și date necesare | Ce verifică executarea |
 |---|---|---|
 | `run-whist-collection.ps1` | JDK selectat prin `JavaHome`, wrapper Gradle și cache JVM; protocol, candidat și corpus când colecția le cere. | Validează colecția și identitățile, pregătește copia și apelează Gradle cu `--offline`; raportează separat codul de ieșire. |
-| `run-atf-governance.ps1` | JDK, `mvn` disponibil, POM-uri și perechi JAR/POM; cache Maven pentru depozitul copiei. | Compară inventarul înainte/după, păstrează rezultatul Maven și refuză certificarea unei surse schimbate. |
+| `run-atf-governance.ps1` | JDK, `mvn` disponibil, POM-uri și perechi JAR/POM; cache Maven pentru depozitul copiei. | Verifică APK-urile înainte de Maven și confruntă inventarele surselor și ale dosarului de release. [Snapshot](../docs/testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) |
 | `run-offline-*` | Uneltele și parametrii declarați de fiecare fișier; unele intrări folosesc căi locale explicite. | Execută protocolul acelei intrări; disponibilitatea uneltei nu se deduce din parsarea scriptului. |
 | Flux Android | Configurația ADB, binarul aplicației, rezervare și backup verificat. | [Contractul infrastructurii](../atf-test-android/README.md) delimitează transportul, comanda și observația. |
 

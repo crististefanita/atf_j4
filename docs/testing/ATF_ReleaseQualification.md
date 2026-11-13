@@ -135,6 +135,18 @@ Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG 
 | `whist-lab-app-atf-card-table-ui` | Suită JVM distinctă pentru contractele bibliotecii grafice comune; introdusă la `0.20.2`, cu Extent și receipt separat. |
 | Fiecare grup selectat | Receipt propriu și intrări identice în perimetrul suitei. `source-provenance.json` păstrează legătura dintre inventarul original, execuție și raport. |
 
+### Snapshot și preflight înainte de Maven
+
+[Lansatorul de componente](../../scripts/run-component-suites.ps1) și [lansatorul de guvernanță](../../scripts/run-atf-governance.ps1) folosesc [aceeași pregătire](../../scripts/AtfQualificationSnapshot.ps1). Maven compilează și verifică fișierele din aceeași copie temporară. Verificarea probelor publicate citește obiecte Git istorice din checkout-ul indicat, prin commit, fără a citi fișierele live din acesta.
+
+| Moment | Control și dovadă |
+| --- | --- |
+| Fixarea | `source-inputs.json` descrie sursele de build. `release-inputs.json` fixează separat toate fișierele din `release/`, inclusiv catalogul și dosarele păstrate. |
+| Înainte de Maven | [Preflight-ul](../../atf-tests/tools/check-release-artifacts.mjs) confruntă numele, octeții și SHA-256 pentru APK-urile din catalog și fișierele lor `.sha256`. `release-preflight.log` păstrează identitățile observate sau cauza refuzului. |
+| Închiderea | Inventarul copiei și al checkout-ului se confruntă din nou. Orice fișier adăugat, modificat sau șters invalidează rezultatul, iar receipt-ul indică locul și calea. |
+
+`-PinnedSourceInputs` leagă lansarea de lista folosită la selecție. O modificare între plan și execuție oprește procesul înainte de Maven. Amprenta `release/` se păstrează separat, astfel încât dosarul de dovezi să nu intre în amprenta sursei APK.
+
 ### Selecția testelor din diff
 
 Calculați selecția înainte de build, din snapshot-ul copiat de lansatoarele de inventariere.
@@ -168,7 +180,7 @@ Folosiți selecția calculată la lansarea componentelor. `$PreviousComponentEvi
 
 ```powershell
 $Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
-.\scripts\run-component-suites.ps1 -SourceRoot $SourceSnapshotDir `
+.\scripts\run-component-suites.ps1 -SourceRoot $ProjectRoot -PinnedSourceInputs $SourceInputsFile `
   -Groups $Selection.componentGroups -ReuseFrom $PreviousComponentEvidence
 ```
 
@@ -190,7 +202,8 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 | `RUN` | Rulează selecția indicată și consultă intrările afectate din verdict. |
 | `INVALID` | Recuperează dovezile originale sau execută selecția dacă receipt-ul, proveniența ori raportul nu pot fi validate. |
 
-- `componentEvidenceOrigin` din grup identifică tripletul original `source-inputs.json`, `source-provenance.json` și `source-component-run.json` din `reports/component/snapshots/{id}/`.
+- `componentEvidenceOrigin` identifică dosarul original din `reports/component/snapshots/{id}/`. Acesta păstrează `source-inputs.json`, `source-provenance.json`, `source-component-run.json` și, când este declarată, lista `release-inputs.json`.
+- Pentru un candidat nou, evaluatorul cere suitei `atf-tests` inventarul de release și îl confruntă cu dosarul catalogului. O proveniență mai veche fără inventar separat poate susține în continuare celelalte suite, conform perimetrului fiecăreia.
 - Extent și `execution.json` păstrează calea canonică a suitei și intră în inventarul cu hash-uri al candidatului.
 - O rulare agregată cu eșecuri poate furniza dovezi pentru grupurile trecute dacă sursa a rămas stabilă. Fiecare grup obligatoriu trebuie să aibă propria dovadă validată.
 - Lansatorul acceptă numai grupuri din catalog. Parametrul -ReuseFrom primește o rulare anterioară de componente sau dosarul reports/component cu receipt-urile originale.

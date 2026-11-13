@@ -82,6 +82,12 @@
       "gateReceiptShape": {"status": "PASS", "receipt": "payload-relative path"},
       "gateReceiptMustBeHashBound": true
     },
+    "preMavenSnapshot": {
+      "launcherHelper": "scripts/AtfQualificationSnapshot.ps1",
+      "artifactPreflight": "atf-tests/tools/check-release-artifacts.mjs",
+      "releaseInventory": "release-inputs.json",
+      "governanceRequiresReleaseInventoryForNewCandidates": true
+    },
     "componentSourceBinding": {
       "inputManifest": "reports/component/source-inputs.json",
       "runReceipt": "reports/component/source-component-run.json",

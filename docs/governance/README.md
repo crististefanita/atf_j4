@@ -78,7 +78,7 @@ Din rădăcina proiectului:
 .\scripts\run-atf-governance.ps1
 ```
 
-Lansatorul compilează într-o copie temporară proprie și verifică explicit proiectul sursă. Inventarul cu hash-uri este comparat înainte și după verificare; schimbările concurente invalidează certificarea acelei copii.
+Lansatorul compilează și verifică aceeași copie temporară. [Preflight-ul de calificare](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) confruntă artefactele și fixează separat sursele și dosarul de release. Schimbările din checkout sau copie invalidează rezultatul.
 
 Depozitul Maven al rulării este propriu copiei temporare. Cache-ul existent poate inițializa dependențele prin `-MavenCache`; instalarea bibliotecilor din `lib` nu înlocuiește fișierele folosite de alte procese.
 
@@ -88,7 +88,7 @@ Pentru o copie de lucru deja pregătită, cu bibliotecile și modulele necesare:
 mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-`atf.governance.root` poate selecta explicit rădăcina verificată. O rădăcină invalidă produce eroare, fără revenire tacită la alt proiect.
+`atf.governance.root` selectează rădăcina verificată. Pentru o copie fără metadate Git, `atf.governance.gitRoot` identifică depozitul folosit numai pentru obiectele istorice ale dovezilor publicate.
 
 ## Dovezi și limite
 

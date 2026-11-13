@@ -66,6 +66,18 @@ export function verifyComponentOrigin(inputs, run, provenance, inputManifest = '
   return {sourceSet, sourceFingerprint: inputs.sha256, run, provenance};
 }
 
+export function verifyReleaseInputs(origin, document) {
+  if (!document || ![origin.run, origin.provenance.value].every(receipt =>
+    receipt.releaseInputManifest === 'release-inputs.json' && receipt.releaseFingerprint === document.sha256)) {
+    throw Error('COMPONENT_RELEASE_SNAPSHOT_BINDING');
+  }
+  const files = componentInputMap(document.value);
+  if (!files.has('release/index.json') || [...files.keys()].some(file => !file.startsWith('release/'))) {
+    throw Error('COMPONENT_RELEASE_SNAPSHOT_INVENTORY');
+  }
+  return files;
+}
+
 export function verifyComponentExecution(origin, name, execution, tests, reportHash) {
   const receipt = origin.run.results.find(row => row.module === name);
   const countsPass = execution?.outcomes?.PASS === tests
@@ -183,6 +195,18 @@ export async function regularFile(root, relative) {
   if (!isWithin(root, real)) throw Error('INVALID_FILE:' + relative);
   return file;
 }
+export async function readApkArtifact(root, release) {
+  const apkPath = release.apkRelativePath ?? release.apkName;
+  const sidecarPath = apkPath + '.sha256';
+  const bytes = await fs.readFile(await regularFile(root, apkPath));
+  const sha256 = digest(bytes);
+  if (bytes.length !== release.apkBytes || sha256 !== release.apkSha256) throw Error('APK_BYTES_OR_HASH:' + apkPath);
+  const sidecar = await fs.readFile(await regularFile(root, sidecarPath));
+  if (sidecar.toString('utf8').trim() !== sha256 + '  ' + path.posix.basename(apkPath)) throw Error('APK_CHECKSUM:' + sidecarPath);
+  return {apk: {path: apkPath, bytes: bytes.length, sha256},
+    sidecar: {path: sidecarPath, bytes: sidecar.length, sha256: digest(sidecar)}};
+}
+
 async function inventory(root) {
   const found = [];
   async function visit(directory) {
@@ -240,6 +264,19 @@ function inputFingerprint(inputs) {
   return digest(records.join(''));
 }
 
+async function verifyGovernanceReleaseSnapshot(project, inputs) {
+  if (!inputs) throw Error('COMPONENT_RELEASE_SNAPSHOT_REQUIRED');
+  const releaseRoot = path.dirname(await regularFile(project, 'release/index.json'));
+  const paths = (await inventory(releaseRoot)).map(file => 'release/' + file);
+  const differences = summarizeListDiff([...inputs.keys()], paths, 'receipt', 'catalog');
+  if (differences.length) throw Error('COMPONENT_RELEASE_SNAPSHOT_CHANGED: ' + differences.join(', '));
+  for (const [file, expected] of inputs) {
+    if (digest(await fs.readFile(await regularFile(project, file))) !== expected) {
+      throw Error('COMPONENT_RELEASE_SNAPSHOT_CHANGED: ' + file);
+    }
+  }
+}
+
 async function sourceInventoryProblems(source, inputs) {
   const expected = [...inputs.keys()].sort(), actual = await inventory(source);
   return summarizeListDiff(expected, actual, 'manifest', 'snapshot');
@@ -285,7 +322,7 @@ async function readTestScope(project, source, version, candidateInputs, policy) 
   const groups = componentGroupsRequiredForVersion(policy, 'android', version);
   if (!REQUIRED_ANDROID_COMPONENT_GROUPS.every(group => groups.includes(group))) throw Error('REQUIRED_COMPONENT_GROUPS_MISSING');
   return {
-    schemaVersion: 2, releaseVersion: version,
+    schemaVersion: 2, releaseVersion: version, catalogued: index >= 0,
     scope: {baselineVersion, baselineCommit: baseline.source.sourceCommit, baselineFingerprint,
       candidateFingerprint: inputFingerprint(candidateInputs)},
     ...deriveReleaseTestScope(previous, candidateInputs, groups, metadataOnly),
@@ -327,6 +364,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   const policyContract = policy.schemaVersion === 1
       && policy.ragEvaluator?.entrypoint === 'atf-tests/tools/evaluate-release-rag.mjs'
       && isDeepStrictEqual({...policy.ragEvaluator?.testScope}, scopePolicy)
+      && policy.ragEvaluator?.preMavenSnapshot?.governanceRequiresReleaseInventoryForNewCandidates === true
       && policy.ragEvaluator?.onlyHumanReviewVerdict === 'READY_FOR_HUMAN_REVIEW'
       && policy.ragEvaluator?.doesNotPerformPromotionOrPublication === true
       && policy.ragEvaluator?.outputMustBeOutsideInputs === true
@@ -508,13 +546,9 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       readmeOkay ? 'README-ul principal este în snapshot și nu expune un digest APK brut.' : 'README-ul principal lipsește din snapshot sau publică un digest APK brut.',
       readmeEvidence, readmeProblems);
 
-  const release = manifest.release ?? {}, apkRelative = release.apkRelativePath ?? release.apkName;
+  const release = manifest.release ?? {};
   let apkOkay = false;
-  try {
-    const apk = await regularFile(candidate, apkRelative), bytes = await fs.readFile(apk);
-    const apkHash = digest(bytes), sidecarPath = `${apkRelative}.sha256`, sidecar = await fs.readFile(await regularFile(candidate, sidecarPath), 'utf8');
-    apkOkay = bytes.length === release.apkBytes && apkHash === release.apkSha256 && sidecar.trim() === `${apkHash}  ${path.posix.basename(apkRelative)}`;
-  } catch { apkOkay = false; }
+  try { apkOkay = Boolean(await readApkArtifact(candidate, release)); } catch { apkOkay = false; }
   addCheck(checks, 'APK_IDENTITY', apkOkay, apkOkay ? 'APK-ul, dimensiunea și sidecar-ul SHA-256 coincid.' : 'APK-ul sau sidecar-ul SHA-256 lipsește ori diferă.', evidence('/release/apkSha256'));
 
   const certValid = HASH.test(release.certificateSha256 ?? '') && typeof release.signingCertificate === 'string'
@@ -662,7 +696,13 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const inputs = await readPayloadJson(inputRelative);
       const run = (await readPayloadJson(resolve(binding.runReceipt))).value;
       const provenance = await readPayloadJson(resolve(binding.provenanceReceipt));
-      origins.set(id, verifyComponentOrigin(inputs, run, provenance, path.posix.basename(inputRelative)));
+      const origin = verifyComponentOrigin(inputs, run, provenance, path.posix.basename(inputRelative));
+      if (origin.provenance.value.releaseInputManifest !== undefined || origin.run.releaseInputManifest !== undefined) {
+        const releaseInputs = await readPayloadJson(resolve('reports/component/release-inputs.json'));
+        origin.releaseInputs = verifyReleaseInputs(origin, releaseInputs);
+        origin.releaseFingerprint = releaseInputs.sha256;
+      }
+      origins.set(id, origin);
     }
     return origins.get(id);
   };
@@ -675,9 +715,13 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const relative = binding.executionReceiptPattern.replace('{group}', name);
       const execution = (await readPayloadJson(relative)).value;
       verifyComponentExecution(origin, name, execution, group.tests, componentReportHashes.get(name));
+      if (name === 'atf-tests' && testScope?.catalogued === false) {
+        await verifyGovernanceReleaseSnapshot(project, origin.releaseInputs);
+      }
       const scope = componentEvidenceScope(name, releaseSet, origin.sourceSet);
       result.sourceEvidence = {decision: scope.decision, originalSourceFingerprint: origin.sourceFingerprint,
-        changedInputCount: scope.changed.length, affectedInputs: scope.affected.slice(0, 30)};
+        changedInputCount: scope.changed.length, affectedInputs: scope.affected.slice(0, 30),
+        ...(origin.releaseFingerprint ? {releaseFingerprint: origin.releaseFingerprint} : {})};
       if (scope.decision === 'RUN') {
         result.status = 'BLOCKED';
         const affected = new Set(scope.affected);

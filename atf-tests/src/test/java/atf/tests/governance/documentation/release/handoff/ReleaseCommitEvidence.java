@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 /** Reads immutable Git blobs, with no checkout, filters or network access. */
 public final class ReleaseCommitEvidence {
+    public static final String GIT_ROOT = "atf.governance.gitRoot";
     private static final ObjectMapper JSON = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
             .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
     private static final Pattern LINK = Pattern.compile("(?<!!)\\[[^]\\r\\n]+]\\(([^)\\s]+)\\)");

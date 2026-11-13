@@ -90,7 +90,7 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 |---|---|---|
 | P2 | [Politica documentară](../../atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java) recunoaște forma controalelor testChanges; această recunoaștere nu confruntă singură baza Git, căile schimbate și expirarea. | Definiți explicit partea locală și contractul comun, cu refuz pentru bază lipsă, cale neacoperită, control expirat și modificare neautorizată a unui gate. Păstrați distinct validarea formatului și validarea schimbării efective. |
 
-Inventarul fișierelor `release/` citite în timpul guvernanței aparține [criteriului de identitate RAG](ATF_Release_RAG.md#identitatea-surselor-și-a-dosarului).
+Inventarul fișierelor `release/` citite în timpul guvernanței aparține [contractului de snapshot RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven).
 
 ## Lizibilitatea coordonatorilor de domeniu
 

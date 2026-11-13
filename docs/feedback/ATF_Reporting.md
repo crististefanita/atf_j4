@@ -37,7 +37,7 @@ Publicarea incompletă păstrează diagnosticul și materialul unic. Replay-ul i
 
 **P1 · responsabil adaptor și pregătirea release-ului.** Lansatoarele Maven și Gradle confruntă selecțiile rulate cu propriul HTML. Calificați predarea pentru selecțiile Gradle și E2E care încă nu au o execuție demonstrată în dosarul candidatului. [Agregarea componentelor](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live)
 
-- Confruntați invocările, identitatea sursei, receipt-ul și capturile inline. La reutilizare, verificați hash-ul și proveniența execuției originale. [Identitatea dovezii RAG](ATF_Release_RAG.md#identitatea-surselor-și-a-dosarului)
+- Confruntați invocările, identitatea sursei, receipt-ul și capturile inline. La reutilizare, verificați hash-ul și proveniența execuției originale. [Identitatea dovezii RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven)
 - Pentru datele istorice nemigrate, inventariați conținutul unic. O execuție nouă primește propria identitate, iar [criteriul comparațiilor](#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne deschis pentru valorile care nu au fost capturate.
 
 ## Validarea timpurie a checkpoint-ului
