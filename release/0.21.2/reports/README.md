@@ -28,4 +28,4 @@ Total: **1.216 de invocări unice**, toate cu rezultat PASS. [Indexul selecțiil
 
 ## Proveniență
 
-[Manifestul versiunii](../release-validation.json) · [Strategia de testare](../../../docs/testing/README.md) · [Ghidul de livrare Android](../../../docs/platform/ATF_AndroidDelivery.md)
+[Catalogul livrărilor](../../README.md) · [Manifestul versiunii](../release-validation.json) · [Strategia de testare](../../../docs/testing/README.md) · [Ghidul de livrare Android](../../../docs/platform/ATF_AndroidDelivery.md)

@@ -27,7 +27,7 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
 |---|---:|---:|---|
 | RAG-01 | P1 | 98 | Leagă automat schimbările relevante de selecția minimă de teste; respinge planul care declară flux neschimbat când diff-ul afectează un flux. [Registru](ATF_Release_RAG.md#lacune-deschise) |
-| RAG-02 | P1 | 96 | Produce planul, inventarul și receipt-urile dintr-un singur snapshot; materializează și verifică APK/checksum-urile istorice ignorate de Git înaintea guvernanței costisitoare; blochează diferențele față de candidatul predat. [Registru](ATF_Release_RAG.md#lacune-deschise) |
+| RAG-02 | P1 | 94 | Produce planul, inventarul și receipt-urile dintr-un snapshot fixat; verifică înaintea guvernanței costisitoare că APK-ul și sidecar-ul versionate corespund manifestului și blochează diferențele față de candidatul predat. [Registru](ATF_Release_RAG.md#lacune-deschise) |
 | RPT-01 | P1 | 95 | Livrează un HTML Extent autonom, cu PNG inline, fără copii auxiliare redundante; acceptă auditul offline după desprinderea de runner. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
 | RPT-02 | P1 | 94 | Păstrează comparațiile input–expected–actual–verdict și paritatea exactă JUnit/Extent pentru fiecare suită primară. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |

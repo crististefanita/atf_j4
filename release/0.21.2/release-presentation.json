@@ -6,5 +6,5 @@
     "Păstrează regulile și interfața de joc existente.",
     "Leagă ediția Android de identitatea binară și de dovezile sale."
   ],
-  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{evidenceCommit}/release/0.21.2/reports/README.md"
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/091e4425b10ed64d93a56ec41a1948a6123c5fbb/release/0.21.2/reports/README.md"
 }

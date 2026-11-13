@@ -25,10 +25,8 @@ __pycache__/
 .project
 .settings/
 
-# Păstrăm numai dosarul livrării active; rulările intermediare sunt externe.
+# Păstrăm numai versiunile curentă și precedentă; rulările intermediare sunt externe.
 !/release/
 !/release/**
 
-# APK-ul și checksum-ul local însoțesc versiunea; distribuția este în GitHub Releases.
-/release/**/*.apk
-/release/**/*.apk.sha256
+# APK-urile și checksum-urile sunt payload-uri versionate, verificate față de manifest.
