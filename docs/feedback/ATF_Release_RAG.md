@@ -8,7 +8,6 @@ Contractul stabil al RAG aparține [ghidului de calificare](../testing/ATF_Relea
 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
-| P1 | Legătura independentă risc–teste | Planul declară riscul și selecțiile. Adăugați un selector verificabil care leagă diferența de sursă de unități, componente și E2E. Testați un diff de licitare cu `userFlowChanged` fals și un diff editorial care poate păstra selecția minimă. Diagnosticul indică regula și căile afectate. |
 | P1 | Snapshot unitar și preflight al artefactelor | [Criteriile de mai jos](#identitatea-surselor-și-a-dosarului) acoperă verificarea timpurie a artefactelor și intrările citite de guvernanță. |
 | P2 | Prospețimea receipt-urilor | Receipt-urile sunt legate prin hash, dar nu au un interval de valabilitate sau un criteriu temporal de expirare. Declarați originea temporală și termenul, apoi blocați automatizarea publicării pentru dovezi expirate ori fără timp verificabil. |
 | P1 | Verificarea timpurie a dispozitivului Android | [Ghidul](../testing/ATF_ReleaseQualification.md) descrie verificarea dispozitivului. Integrați verificarea în lansatorul selecției native și testați separat transportul refuzat, pornirea incompletă și profilul greșit. |

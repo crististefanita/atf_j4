@@ -28,7 +28,7 @@ node atf-tests/tools/record-release-integrity.mjs
 
 ## Evaluarea RAG a candidatului
 
-[Evaluatorul](evaluate-release-rag.mjs) confruntă planul, manifestul, payload-ul și snapshot-ul APK.
+[Selectorul](plan-release-tests.mjs) compară inventarul fixat cu ultima sursă publicată relevantă din catalog. Generează câmpurile planului v2 și grupurile E2E cerute înainte de build. [Evaluatorul](evaluate-release-rag.mjs) recalculează selecția și confruntă planul, manifestul, payload-ul și snapshot-ul APK. [Comanda de selecție](../../docs/testing/ATF_ReleaseQualification.md#selecția-testelor-din-diff)
 
 - [Perimetrul suitei](component-evidence-scope.mjs) stabilește când se poate reutiliza o execuție. Pentru colecțiile Gradle, documentația și intrările exclusiv Maven ori Android E2E nu invalidează dovada aplicației; sursele, configurația de compilare, dependențele și căile necunoscute cer selecție nouă. [Pregătirea dovezilor](prepare-component-reuse.mjs) și evaluatorul folosesc aceleași verificări pentru receipt-uri și hash-uri. Lansatorul componentelor folosește această pregătire la cerere.
 - Politica pe versiuni stabilește grupurile Maven și Gradle obligatorii. Fiecare grup are propriul Extent și receipt.
@@ -47,9 +47,9 @@ Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Singur
 
 - Codul `0` înseamnă `READY_FOR_HUMAN_REVIEW`; `2` înseamnă `BLOCKED`; `1` indică intrare sau invocare invalidă.
 - Înaintea reviziei umane se cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.
-- Starea publicată cere și receipt pentru descărcarea anonimă.
+- Starea publicată cere și receipt pentru descărcarea în modul de acces declarat.
 - E2E neexecutat rămâne `NOT_RUN`; schimbarea unui flux utilizator cere grupuri E2E Extent trecute.
 
-Evaluatorul nu rulează Git, nu verifică indexul și nu inspectează fișierele omise din input manifest. Revizia operatorului rămâne necesară pentru arborele complet, promovare și publicare. Contractul detaliat este în [guvernanța RAG](../../docs/feedback/ATF_Release_RAG.md) și [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md).
+Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizia operatorului verifică indexul Git, arborele de promovare și publicarea. Contractul detaliat este în [guvernanța RAG](../../docs/feedback/ATF_Release_RAG.md) și [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md).
 
 [Modulul de integrare](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)

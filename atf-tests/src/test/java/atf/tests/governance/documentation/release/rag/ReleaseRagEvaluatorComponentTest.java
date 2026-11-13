@@ -22,6 +22,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ReleaseRagEvaluatorComponentTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final String VERSION = "1.2.0";
+    private static final String BASELINE = "1.1.0";
+    private static final String BASELINE_COMMIT = "c".repeat(40);
     @TempDir Path temporary;
 
     @Test void aPinnedComponentCandidateProducesCitedHumanReviewWithoutChangingInputsOrCallingE2e() throws Exception {
@@ -398,6 +400,86 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertFalse(Files.exists(forbidden));
     }
 
+    @Test void aBiddingDiffBlocksAPlanThatDeclaresNoFlowChange() throws Exception {
+        Fixture fixture = fixture();
+        String biddingPath = "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidPolicy.java";
+        Path changed = fixture.source().resolve(biddingPath);
+        Files.createDirectories(changed.getParent());
+        Files.writeString(changed, "class BidPolicy {}\n");
+        Path inputsFile = fixture.candidate().resolve("reports/apk-inputs.json");
+        ObjectNode inputs = (ObjectNode) JSON.readTree(inputsFile.toFile());
+        var rows = (com.fasterxml.jackson.databind.node.ArrayNode) inputs.path("files");
+        String bidHash = hash(changed);
+        rows.addObject().put("path", biddingPath).put("sha256", bidHash);
+        String fingerprint = hashText("README.md\t" + rows.get(0).path("sha256").asText()
+                + "\nsrc/Game.java\t" + rows.get(1).path("sha256").asText() + "\n" + biddingPath + "\t" + bidHash + "\n");
+        inputs.put("fingerprint", fingerprint);
+        JSON.writeValue(inputsFile.toFile(), inputs);
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        ((ObjectNode) manifest.path("source")).put("workingTreeFingerprint", fingerprint);
+        capturePayload(fixture.candidate(), manifest);
+        JSON.writeValue(manifestFile.toFile(), manifest);
+        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
+        ((ObjectNode) plan.path("scope")).put("candidateFingerprint", fingerprint);
+        JSON.writeValue(fixture.plan().toFile(), plan);
+
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "DIFF_SCOPE"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertEquals(biddingPath, verdict.path("testScope").path("changes").get(1).path("path").asText());
+        AuditedAssertions.assertTrue(details(verdict, "E2E_SCOPE").stream().anyMatch(value -> value.contains("signed-release-bidding")));
+
+        selectPassingE2e(fixture);
+        plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
+        plan.put("changeRisk", "behaviorChange");
+        JSON.writeValue(fixture.plan().toFile(), plan);
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "DIFF_SCOPE"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertTrue(details(verdict, "E2E_SCOPE").stream().anyMatch(value -> value.contains("signed-release-auto-game")));
+
+        selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "DIFF_SCOPE"));
+        AuditedAssertions.assertEquals("PASS", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "COMPONENT_SOURCE_BINDING"));
+    }
+
+    @Test void docsOnlyRequiresGovernanceAndKeepsE2eNotRun() throws Exception {
+        Fixture fixture = fixture();
+        AuditedAssertions.assertEquals(0, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        JsonNode scope = verdict.path("testScope");
+        AuditedAssertions.assertEquals("PASS", check(verdict, "DIFF_SCOPE"));
+        AuditedAssertions.assertEquals("DOCUMENTATION_ONLY", scope.path("kind").asText());
+        AuditedAssertions.assertEquals(1, scope.path("runComponentGroups").size());
+        AuditedAssertions.assertEquals("atf-tests", scope.path("runComponentGroups").get(0).asText());
+        AuditedAssertions.assertEquals(0, scope.path("requiredE2eGroups").size());
+        AuditedAssertions.assertEquals("NOT_RUN", verdict.path("e2e").path("status").asText());
+    }
+
+    @Test void refusesAPlanThatSubstitutesItsOwnBaselineOrOmitsSnapshotFiles() throws Exception {
+        Fixture fixture = fixture();
+        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
+        ((ObjectNode) plan.path("scope")).put("baselineVersion", "1.0.0");
+        JSON.writeValue(fixture.plan().toFile(), plan);
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "DIFF_SCOPE"));
+        AuditedAssertions.assertEquals(BASELINE, verdict.path("testScope").path("scope").path("baselineVersion").asText());
+
+        Files.writeString(fixture.source().resolve("src/Unlisted.java"), "class Unlisted {}\n");
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "SOURCE_SNAPSHOT"));
+        AuditedAssertions.assertTrue(details(verdict, "SOURCE_SNAPSHOT").stream().anyMatch(value -> value.contains("src/Unlisted.java")));
+    }
+
     private Fixture fixture() throws Exception { return fixture("# Whist Lab\n\n[Descarcă](release/1.2.0/WhistLab-1.2.0.apk)\n"); }
 
     private Fixture fixture(String readmeText) throws Exception {
@@ -486,8 +568,12 @@ class ReleaseRagEvaluatorComponentTest {
         capturePayload(candidate, manifest);
         JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
         Path plan = temporary.resolve("plan.json");
-        ObjectNode candidatePlan = JSON.createObjectNode().put("schemaVersion", 1).put("releaseVersion", VERSION)
+        Path project = Files.createDirectories(temporary.resolve("project"));
+        String baselineFingerprint = createBaseline(project, sourceHash);
+        ObjectNode candidatePlan = JSON.createObjectNode().put("schemaVersion", 2).put("releaseVersion", VERSION)
                 .put("channel", "TEST").put("changeRisk", "maintenanceOrRefactor").put("userFlowChanged", false);
+        candidatePlan.putObject("scope").put("baselineVersion", BASELINE).put("baselineCommit", BASELINE_COMMIT)
+                .put("baselineFingerprint", baselineFingerprint).put("candidateFingerprint", fingerprint);
         candidatePlan.putArray("declaredPlatforms").add("android");
         var selectedGroups = candidatePlan.putArray("componentGroups");
         for (String module : List.of("atf-validation", "atf-test-android", "atf-tests",
@@ -497,7 +583,32 @@ class ReleaseRagEvaluatorComponentTest {
                 .put("rationale", "RAG and governance-only changes; application E2E remains frozen."));
         JSON.writeValue(plan.toFile(), candidatePlan);
         Path outputDirectory = Files.createDirectories(temporary.resolve("verdict"));
-        return new Fixture(candidate, source, plan, outputDirectory.resolve("rag.json"));
+        return new Fixture(candidate, source, plan, outputDirectory.resolve("rag.json"), project);
+    }
+
+    private static String createBaseline(Path project, String sourceHash) throws Exception {
+        Path config = Files.createDirectories(project.resolve("config")).resolve("release-platform-rag-policy.json");
+        Files.copy(GovernanceProject.locateProjectRoot().resolve("config").resolve(config.getFileName()), config);
+        Path baseline = Files.createDirectories(project.resolve("release/" + BASELINE));
+        ObjectNode index = JSON.createObjectNode().put("schemaVersion", 2).put("currentVersion", BASELINE);
+        index.putArray("versions").add(BASELINE);
+        JSON.writeValue(project.resolve("release/index.json").toFile(), index);
+        String readmeHash = hashText("# Published fixture\n");
+        String fingerprint = hashText("README.md\t" + readmeHash + "\nsrc/Game.java\t" + sourceHash + "\n");
+        ObjectNode inputs = JSON.createObjectNode().put("sourceCommit", BASELINE_COMMIT).put("fingerprint", fingerprint);
+        var files = inputs.putArray("files");
+        files.addObject().put("path", "README.md").put("sha256", readmeHash);
+        files.addObject().put("path", "src/Game.java").put("sha256", sourceHash);
+        JSON.writeValue(Files.createDirectories(baseline.resolve("reports")).resolve("apk-inputs.json").toFile(), inputs);
+        ObjectNode manifest = JSON.createObjectNode();
+        manifest.putObject("release").put("versionName", BASELINE).put("versionCode", 19);
+        manifest.putObject("publication").put("state", "PUBLISHED");
+        manifest.putObject("qualification").put("state", "PASS");
+        manifest.putObject("source").put("sourceCommit", BASELINE_COMMIT).put("workingTreeFingerprint", fingerprint)
+                .put("inputManifest", "reports/apk-inputs.json");
+        capturePayload(baseline, manifest);
+        JSON.writeValue(baseline.resolve("release-validation.json").toFile(), manifest);
+        return fingerprint;
     }
 
     private static void capturePayload(Path candidate, ObjectNode manifest) throws Exception {
@@ -523,10 +634,28 @@ class ReleaseRagEvaluatorComponentTest {
     }
 
     private static void selectPassingE2e(Fixture fixture) throws Exception {
-        Path report = fixture.candidate().resolve("reports/e2e/android-e2e/report.html");
+        selectPassingE2e(fixture, "android-e2e");
+    }
+
+    private static void selectPassingE2e(Fixture fixture, String... names) throws Exception {
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        ObjectNode manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        ObjectNode groups = ((ObjectNode) manifest.path("qualification")).putObject("e2eGroups");
+        for (String name : names) groups.set(name, passingE2eGroup(fixture.candidate(), name, manifest));
+        JSON.writerWithDefaultPrettyPrinter().writeValue(manifestFile.toFile(), manifest);
+        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
+        plan.put("userFlowChanged", true);
+        var selected = plan.putObject("e2e").put("status", "PASS").putArray("groups");
+        for (String name : names) selected.add(name);
+        JSON.writeValue(fixture.plan().toFile(), plan);
+        refreshPayload(fixture.candidate());
+    }
+
+    private static ObjectNode passingE2eGroup(Path candidate, String name, ObjectNode manifest) throws Exception {
+        String directory = "reports/e2e/" + name + "/";
+        Path report = candidate.resolve(directory + "report.html");
         Files.createDirectories(report.getParent());
         Files.writeString(report, "<!doctype html><html><body><img src=\"data:image/png;base64,iVBORw0KGgo=\"></body></html>");
-        ObjectNode manifest = (ObjectNode) JSON.readTree(fixture.candidate().resolve("release-validation.json").toFile());
         ObjectNode release = (ObjectNode) manifest.path("release");
         ObjectNode source = (ObjectNode) manifest.path("source");
         ObjectNode receipt = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "android-signed-release-e2e")
@@ -536,19 +665,10 @@ class ReleaseRagEvaluatorComponentTest {
                 .put("sourceCommit", source.path("sourceCommit").asText())
                 .put("sourceFingerprint", source.path("workingTreeFingerprint").asText())
                 .put("inlinePngCount", 1).put("reportSha256", hash(report));
-        JSON.writeValue(fixture.candidate().resolve("reports/e2e/android-e2e/execution.json").toFile(), receipt);
-        ObjectNode e2eGroup = JSON.createObjectNode().put("report", "reports/e2e/android-e2e/report.html")
-                .put("executionReceipt", "reports/e2e/android-e2e/execution.json")
+        JSON.writeValue(candidate.resolve(directory + "execution.json").toFile(), receipt);
+        return JSON.createObjectNode().put("report", directory + "report.html")
+                .put("executionReceipt", directory + "execution.json")
                 .put("protocol", "ANDROID_E2E_FIXTURE").put("tests", 1).put("failures", 0).put("errors", 0).put("skipped", 0);
-        ((ObjectNode) manifest.path("qualification")).putObject("e2eGroups").set("android-e2e", e2eGroup);
-        JSON.writerWithDefaultPrettyPrinter().writeValue(fixture.candidate().resolve("release-validation.json").toFile(), manifest);
-        ObjectNode plan = (ObjectNode) JSON.readTree(fixture.plan().toFile());
-        plan.put("userFlowChanged", true);
-        ObjectNode e2ePlan = JSON.createObjectNode().put("status", "PASS");
-        e2ePlan.putArray("groups").add("android-e2e");
-        plan.set("e2e", e2ePlan);
-        JSON.writeValue(fixture.plan().toFile(), plan);
-        refreshPayload(fixture.candidate());
     }
 
     private static void selectAuthenticatedPublication(Fixture fixture) throws Exception {
@@ -582,7 +702,7 @@ class ReleaseRagEvaluatorComponentTest {
         Path root = GovernanceProject.locateProjectRoot();
         Path log = temporary.resolve("rag-evaluator.log");
         Process process = new ProcessBuilder("node", root.resolve("atf-tests/tools/evaluate-release-rag.mjs").toString(),
-                "--project-root", root.toString(), "--candidate-dir", fixture.candidate().toString(),
+                "--project-root", fixture.project().toString(), "--candidate-dir", fixture.candidate().toString(),
                 "--source-root", fixture.source().toString(), "--plan-file", fixture.plan().toString(), "--output", output.toString())
                 .redirectErrorStream(true).redirectOutput(log.toFile()).start();
         if (!process.waitFor(45, TimeUnit.SECONDS)) { process.destroyForcibly(); throw new AssertionError("RAG evaluator exceeded 45 seconds"); }
@@ -611,5 +731,5 @@ class ReleaseRagEvaluatorComponentTest {
     private static String hashUnchecked(Path file) { try { return hash(file); } catch (Exception error) { throw new RuntimeException(error); } }
     private static String hash(Path file) throws Exception { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file))); }
     private static String hashText(String value) throws Exception { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8))); }
-    private record Fixture(Path candidate, Path source, Path plan, Path output) { }
+    private record Fixture(Path candidate, Path source, Path plan, Path output, Path project) { }
 }

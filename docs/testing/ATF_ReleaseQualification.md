@@ -10,8 +10,8 @@ Ramura oficială a repository-ului este `main`. Codul calificat se împinge pe `
 
 ```mermaid
 flowchart LR
-    DIFF[Diferență și riscuri] -->|fixează| SOURCE[Surse și dependențe]
-    SOURCE -->|execută în TMP| JVM[Componente și contracte]
+    SOURCE[Snapshot fixat] -->|compară cu ediția publicată| DIFF[Selecție din diff]
+    DIFF -->|rulează sau reutilizează în TMP| JVM[Componente și contracte]
     JVM -->|confruntă datele| HTML[HTML detașat]
     HTML -->|permite| APK[Build și identitate APK]
     APK -->|verifică schimbarea| NATIVE[Sanity Android selectat]
@@ -27,7 +27,7 @@ Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul c
 
 | Pas | Selecție și rezultat necesar |
 |---|---|
-| 1. Diferență | Identificați baza, fișierele modificate/adăugate/șterse și contractele afectate. Selectați straturile după risc, nu doar după eticheta versiunii; fixați în TMP inventarul complet al surselor și bibliotecilor copiate. |
+| 1. Diferență | Fixați în TMP inventarul complet al surselor și bibliotecilor copiate. [Selectorul](#selecția-testelor-din-diff) identifică baza, căile schimbate și probele cerute de fluxurile afectate. |
 | 2. Componente | Executați oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. Fiecare selecție Gradle are HTML Extent și receipt proprii, publicate prin `atf-reporting`; JUnit-ul temporar se confruntă cu HTML-ul înaintea eliminării copiilor finale. |
 | 3. Publicare | Confruntați exact identitățile și rezultatele JUnit–HTML pe fiecare selecție; inspectați fallback-ul numai dacă a fost selectat și calificat. Verificați cauza originală, abort-ul, lipsa capturii și imaginile inline Base64. XML-ul rămâne oracol temporar, nu raport duplicat în dosarul final. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
 | 4. HTML | Aplicați [revizia interactivă minimă](../reporting/ATF_Audit.md#revizia-interactivă-minimă) pe HTML-ul identificat prin hash; păstrați proprietarii, controalele și limitele probei. |
@@ -135,6 +135,45 @@ Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG 
 | `whist-lab-app-atf-card-table-ui` | Suită JVM distinctă pentru contractele bibliotecii grafice comune; introdusă la `0.20.2`, cu Extent și receipt separat. |
 | Fiecare grup selectat | Receipt propriu și intrări identice în perimetrul suitei. `source-provenance.json` păstrează legătura dintre inventarul original, execuție și raport. |
 
+### Selecția testelor din diff
+
+Calculați selecția înainte de build, din snapshot-ul copiat de lansatoarele de inventariere.
+
+- Pentru o versiune nouă, baza este ediția curentă din `release/index.json`.
+- La reevaluarea unei versiuni reținute, baza este ediția anterioară din același catalog.
+- Baza trebuie să fie publicată și calificată, cu inventarul surselor legat prin hash de manifest.
+
+```powershell
+$ProjectRoot = (Get-Location).Path
+node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
+  $SourceInputsFile $ReleaseVersion $SelectionFile
+```
+
+`$SourceInputsFile` este lista ordinală JSON produsă de [Get-AtfSourceInputs.ps1](../../scripts/Get-AtfSourceInputs.ps1), în afara snapshot-ului și a checkout-ului. `$SelectionFile` este un fișier nou în directorul de lucru extern. Rezultatul arată căile adăugate, modificate și șterse, regula aplicată, suitele obligatorii și selecțiile E2E cerute. [Regulile selectorului](../../atf-tests/tools/release-test-scope.mjs)
+
+| Rezultat | Acțiune |
+| --- | --- |
+| Schimbare editorială | Rulează guvernanța. Refolosește dovezile compatibile pentru celelalte suite. E2E poate rămâne `NOT_RUN` cu motiv. |
+| Schimbare de licitare, masă, scor, profil sau alt flux identificat | Selectează probele native indicate în `requiredE2eGroups`. Testele de componentă rămân obligatorii pentru contractele lor. |
+| Cale de produs ori intrare partajată neclasificată | Selectează toate probele de flux prevăzute de selector și verifică perimetrele de componentă. |
+| Creștere a versiunii Android | Excepția de E2E se aplică dacă înlocuirea celor două valori `versionName` și `versionCode` reproduce exact hash-ul fișierului de build publicat. Dovezile de componentă se verifică separat pe intrările lor. |
+
+În planul calificării cu `schemaVersion: 2`, păstrați `releaseVersion`, `scope`, `componentGroups` și `userFlowChanged` din selecție.
+
+- Completați `channel`, `declaredPlatforms`, `changeRisk` și `e2e`. Planul poate cere probe suplimentare.
+- Pentru `e2e.status: PASS`, enumerați în `e2e.groups` grupurile trecute, inclusiv toate cele cerute de diff.
+- Evaluatorul recalculează selecția și blochează legătura cu altă bază, subestimarea unui flux sau omiterea unui grup.
+
+Folosiți selecția calculată la lansarea componentelor. `$PreviousComponentEvidence` indică dosarul cu dovezile disponibile pentru reutilizare.
+
+```powershell
+$Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
+.\scripts\run-component-suites.ps1 -SourceRoot $SourceSnapshotDir `
+  -Groups $Selection.componentGroups -ReuseFrom $PreviousComponentEvidence
+```
+
+`runComponentGroups` arată suitele afectate față de baza publicată. Lansatorul verifică fiecare dovadă față de sursa ei originală înainte să decidă ce rulează efectiv.
+
 ### Reutilizarea dovezilor de componentă
 
 Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) stabilește ce diferențe pot afecta rezultatul.
@@ -143,7 +182,6 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 - Componentele bibliotecii grafice au perimetru propriu. Modificările în consumatorii de joc permit reutilizarea raportului bibliotecii. Sursele, testele, resursele, configurația de compilare și puntea auditului fac parte din perimetrul acestei suite.
 - Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android dacă dependențele lor rămân identice.
 - Colecțiile Gradle ale jocului urmăresc codul și configurația lor compilată; documentația și fișierele exclusiv din alte suite nu le invalidează. Calea necunoscută păstrează decizia sigură `RUN`.
-- O cale necunoscută cere o execuție nouă.
 
 | Decizie | Acțiune |
 |---|---|
@@ -194,8 +232,8 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 
 - Variabilele indică dosarul de versiune din candidatul TMP, rădăcina completă a surselor fixate, planul JSON și destinația verdictului; creează destinația separat, în afara tuturor intrărilor.
 - `READY_FOR_HUMAN_REVIEW` confirmă numai probele citite care au trecut verificările implementate.
-- Evaluatorul nu inspectează indexul Git și nu poate dovedi absența fișierelor omise din manifest; producătorul snapshot-ului și operatorul confruntă inventarul complet, commitul și arborele înainte de promovare.
-- Riscul și selecțiile sunt declarate în plan, nu deduse automat din diff; lacunele acestor controale sunt urmărite în registrul RAG.
+- Evaluatorul nu inspectează indexul Git. Compară inventarul complet din directorul fixat cu manifestul, iar operatorul confruntă commitul și arborele înainte de promovare.
+- Verdictul include `DIFF_SCOPE`, cu identitatea bazei și a candidatului, regulile aplicate pe căi și grupurile rezultate.
 - `BLOCKED` arată verificările eșuate și hash-urile dovezilor, fără să aplice o corecție automată.
 
 ### Acceptanța APK-ului semnat

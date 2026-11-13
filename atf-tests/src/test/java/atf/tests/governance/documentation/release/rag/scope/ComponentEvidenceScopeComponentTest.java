@@ -12,7 +12,8 @@ class ComponentEvidenceScopeComponentTest {
     @Test void nodeContractTestsKeepReuseClassificationInsideTheRealBuildBoundary() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var command = new ProcessBuilder("node", "--test",
-                root.resolve("atf-tests/tools/prepare-component-reuse.test.mjs").toString())
+                root.resolve("atf-tests/tools/prepare-component-reuse.test.mjs").toString(),
+                root.resolve("atf-tests/tools/release-test-scope.test.mjs").toString())
                 .directory(root.toFile()).redirectErrorStream(true).start();
         if (!command.waitFor(30, TimeUnit.SECONDS)) {
             command.destroyForcibly();
@@ -22,5 +23,7 @@ class ComponentEvidenceScopeComponentTest {
         AuditedAssertions.assertEquals(0, command.exitValue(), output);
         AuditedAssertions.assertTrue(output.contains("documentation and separate test-harness changes reuse unaffected Gradle game components"),
                 "The Extent component group must include the precise dependency-scope regression");
+        AuditedAssertions.assertTrue(output.contains("a bidding change requires the native bidding and AutoGame selections"),
+                "The Extent component group must include the executable RAG selection contract");
     }
 }

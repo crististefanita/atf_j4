@@ -44,7 +44,14 @@
       "path": "README.md",
       "forbidRawSha256Digest": true
     },
-    "sourceVerification": "every listed source file plus exact input-manifest fingerprint",
+    "sourceVerification": "exact pinned source inventory, every source file hash and input-manifest fingerprint",
+    "testScope": {
+      "selectionEntrypoint": "atf-tests/tools/plan-release-tests.mjs",
+      "baseline": "release/index.json",
+      "sourceDiff": "sha256-path-inventory",
+      "recomputedAtEvaluation": true,
+      "changedFlowRequiresSelectedE2e": true
+    },
     "requiredComponentGroup": "atf-tests",
     "requiredComponentGroupsByPlatform": {
       "android": [

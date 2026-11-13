@@ -69,6 +69,12 @@ class ReleaseRagPlatformGovernanceTest {
         JsonNode evaluator = policy().path("ragEvaluator");
         assertEquals("atf-tests/tools/evaluate-release-rag.mjs", evaluator.path("entrypoint").asText());
         assertEquals("ATF_RELEASE_RAG_VERDICT", evaluator.path("outputSchema").asText());
+        JsonNode selection = evaluator.path("testScope");
+        assertEquals("atf-tests/tools/plan-release-tests.mjs", selection.path("selectionEntrypoint").asText());
+        assertEquals("release/index.json", selection.path("baseline").asText());
+        assertEquals("sha256-path-inventory", selection.path("sourceDiff").asText());
+        assertTrue(selection.path("recomputedAtEvaluation").asBoolean());
+        assertTrue(selection.path("changedFlowRequiresSelectedE2e").asBoolean());
         assertTrue(evaluator.path("outputMustBeOutsideInputs").asBoolean());
         assertEquals("README.md", evaluator.path("publicReadmeSurface").path("path").asText());
         assertTrue(evaluator.path("publicReadmeSurface").path("forbidRawSha256Digest").asBoolean());
@@ -206,7 +212,10 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(deliveryGuide.contains("recitiți README-ul din GitHub"));
         assertTrue(deliveryGuide.contains("repetați descărcarea folosind exact acel link"));
         assertTrue(ragFeedback.contains("Snapshot unitar și preflight al artefactelor"));
-        assertTrue(ragFeedback.contains("Legătura independentă risc–teste"));
+        assertTrue(qualificationGuide.contains("plan-release-tests.mjs"));
+        assertTrue(qualificationGuide.contains("requiredE2eGroups"));
+        assertTrue(qualificationGuide.contains("schemaVersion: 2"));
+        assertTrue(evaluator.contains("DIFF_SCOPE"));
         assertTrue(ragFeedback.contains("Costul pregătirii componentelor Maven"));
         assertTrue(ragFeedback.contains("Prospețimea receipt-urilor"));
         assertFalse(ragFeedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");

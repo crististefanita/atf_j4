@@ -1,5 +1,12 @@
-const nonBuildDocumentation = file => file === 'README.md' || file.startsWith('docs/')
-    || file.startsWith('release/') || file.endsWith('/README.md') || file.startsWith('lib/README.');
+export const nonBuildDocumentation = file => file === 'README.md'
+    || (/^(?:docs\/|lib\/README\.)/.test(file) && file.endsWith('.md'))
+    || (!file.includes('/src/') && file.endsWith('/README.md'));
+
+export function changedInputs(candidate, previous) {
+  const paths = new Set([...candidate.keys(), ...previous.keys()]);
+  return [...paths].filter(file => candidate.get(file) !== previous.get(file)).sort();
+}
+const ragPolicy = 'config/release-platform-rag-policy.json';
 const androidUi = file => file.startsWith('whist-lab-app/app/')
     || file.startsWith('whist-lab-app/atf-card-table-ui/')
     || file === 'config/gradle-audit-collections.properties';
@@ -20,9 +27,9 @@ const independentChange = new Map([
 ]);
 
 export function componentEvidenceScope(group, releaseInputs, executionInputs) {
-  const paths = new Set([...releaseInputs.keys(), ...executionInputs.keys()]);
-  const changed = [...paths].filter(file => releaseInputs.get(file) !== executionInputs.get(file)).sort();
+  const changed = changedInputs(releaseInputs, executionInputs);
   const outsideSuite = independentChange.get(group) ?? (() => false);
-  const affected = changed.filter(file => !outsideSuite(file));
+  const affected = changed.filter(file => !(outsideSuite(file)
+    || (file === ragPolicy && independentChange.has(group))));
   return {decision: affected.length ? 'RUN' : changed.length ? 'REUSE' : 'MATCH', changed, affected};
 }

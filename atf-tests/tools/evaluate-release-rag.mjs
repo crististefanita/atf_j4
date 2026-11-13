@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
+import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 
 const VERSION = /^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
 const HASH = /^[0-9a-f]{64}$/;
@@ -226,6 +227,86 @@ function citation(file, sha256, jsonPointer = null, line = null) {
   return {path: file, sha256, ...(jsonPointer === null ? {} : {jsonPointer}), ...(line === null ? {} : {line})};
 }
 
+const scopePolicy = {
+  selectionEntrypoint: 'atf-tests/tools/plan-release-tests.mjs',
+  baseline: 'release/index.json',
+  sourceDiff: 'sha256-path-inventory',
+  recomputedAtEvaluation: true,
+  changedFlowRequiresSelectedE2e: true
+};
+
+function inputFingerprint(inputs) {
+  const records = [...inputs.keys()].sort().map(file => `${file}\t${inputs.get(file)}\n`);
+  return digest(records.join(''));
+}
+
+async function sourceInventoryProblems(source, inputs) {
+  const expected = [...inputs.keys()].sort(), actual = await inventory(source);
+  return summarizeListDiff(expected, actual, 'manifest', 'snapshot');
+}
+
+async function readTestScope(project, source, version, candidateInputs, policy) {
+  const catalogFile = scopePolicy.baseline;
+  const catalogDoc = await strictJson(await regularFile(project, catalogFile));
+  const {currentVersion, versions} = catalogDoc.value;
+  if (!VERSION.test(version) || catalogDoc.value.schemaVersion !== 2 || !Array.isArray(versions)
+      || !versions.length || currentVersion !== versions[0] || new Set(versions).size !== versions.length
+      || !versions.every((value, index) => VERSION.test(value)
+        && (!index || releaseVersionAtLeast(versions[index - 1], value)))) throw Error('INVALID_RELEASE_CATALOG');
+  const index = versions.indexOf(version);
+  const newer = releaseVersionAtLeast(version, currentVersion) && !releaseVersionAtLeast(currentVersion, version);
+  const baselineVersion = index >= 0 ? versions[index + 1] : newer ? currentVersion : undefined;
+  if (!baselineVersion) throw Error('MISSING_BASELINE_FOR_VERSION:' + version);
+
+  const directory = `release/${baselineVersion}/`;
+  const baselineFile = directory + 'release-validation.json';
+  const baselineDoc = await strictJson(await regularFile(project, baselineFile));
+  const baseline = baselineDoc.value;
+  if (baseline.release?.versionName !== baselineVersion || baseline.qualification?.state !== 'PASS'
+      || !['PUBLISHED', 'PUBLISHED_SITE'].includes(baseline.publication?.state)
+      || !COMMIT.test(baseline.source?.sourceCommit ?? '')
+      || baseline.source?.inputManifest !== 'reports/apk-inputs.json') throw Error('BASELINE_NOT_QUALIFIED:' + baselineVersion);
+
+  const inputFile = directory + baseline.source.inputManifest;
+  const baselineInputsDoc = await strictJson(await regularFile(project, inputFile));
+  const previous = componentInputMap(baselineInputsDoc.value.files);
+  const baselineFingerprint = inputFingerprint(previous);
+  const entries = baseline.integrity?.files?.filter(entry => entry.path === baseline.source.inputManifest);
+  if (entries?.length !== 1 || entries[0].bytes !== baselineInputsDoc.bytes.length
+      || entries[0].sha256 !== baselineInputsDoc.sha256
+      || baselineInputsDoc.value.sourceCommit !== baseline.source.sourceCommit
+      || baselineInputsDoc.value.fingerprint !== baselineFingerprint
+      || baseline.source.workingTreeFingerprint !== baselineFingerprint) throw Error('BASELINE_SOURCE_BINDING:' + baselineVersion);
+
+  const buildPath = 'whist-lab-app/app/build.gradle';
+  const buildText = candidateInputs.has(buildPath) && previous.has(buildPath) && candidateInputs.get(buildPath) !== previous.get(buildPath)
+    ? await fs.readFile(await regularFile(source, buildPath), 'utf8') : null;
+  const metadataOnly = isOnlyAndroidVersionChange(previous, candidateInputs, buildText, baseline.release, version, digest);
+  const groups = componentGroupsRequiredForVersion(policy, 'android', version);
+  if (!REQUIRED_ANDROID_COMPONENT_GROUPS.every(group => groups.includes(group))) throw Error('REQUIRED_COMPONENT_GROUPS_MISSING');
+  return {
+    schemaVersion: 2, releaseVersion: version,
+    scope: {baselineVersion, baselineCommit: baseline.source.sourceCommit, baselineFingerprint,
+      candidateFingerprint: inputFingerprint(candidateInputs)},
+    ...deriveReleaseTestScope(previous, candidateInputs, groups, metadataOnly),
+    evidence: [citation(catalogFile, catalogDoc.sha256, '/versions', catalogDoc.lines.get('/versions')),
+      citation(baselineFile, baselineDoc.sha256, '/source', baselineDoc.lines.get('/source')),
+      citation(inputFile, baselineInputsDoc.sha256, '/fingerprint', baselineInputsDoc.lines.get('/fingerprint'))]
+  };
+}
+
+export async function loadReleaseTestScope(project, source, version, rows) {
+  const inputs = componentInputMap(rows);
+  const differences = await sourceInventoryProblems(source, inputs);
+  if (differences.length) throw Error('PINNED_SOURCE_INVENTORY: ' + differences.join(', '));
+  for (const [relative, sha256] of inputs) {
+    if (digest(await fs.readFile(await regularFile(source, relative))) !== sha256) throw Error('PINNED_SOURCE_HASH:' + relative);
+  }
+  const policy = (await strictJson(await regularFile(project, 'config/release-platform-rag-policy.json'))).value;
+  if (!isDeepStrictEqual({...policy.ragEvaluator?.testScope}, scopePolicy)) throw Error('RAG_TEST_SCOPE_POLICY');
+  return readTestScope(project, source, version, inputs, policy);
+}
+
 export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, planFile, outputFile}) {
   const project = await fs.realpath(projectRoot), candidate = await fs.realpath(candidateDir), source = await fs.realpath(sourceRoot);
   const out = path.resolve(outputFile), outParent = await fs.realpath(path.dirname(out));
@@ -234,7 +315,6 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   if ((await fs.lstat(output).catch(error => error.code === 'ENOENT' ? null : Promise.reject(error)))?.isSymbolicLink()) throw Error('OUTPUT_SYMLINK');
 
   const checks = [];
-  const policyPath = path.join(project, 'config/release-platform-rag-policy.json');
   const [manifestDoc, policyDoc, planDoc] = await Promise.all([
     strictJson(await regularFile(candidate, 'release-validation.json')),
     strictJson(await regularFile(project, 'config/release-platform-rag-policy.json')),
@@ -246,6 +326,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
 
   const policyContract = policy.schemaVersion === 1
       && policy.ragEvaluator?.entrypoint === 'atf-tests/tools/evaluate-release-rag.mjs'
+      && isDeepStrictEqual({...policy.ragEvaluator?.testScope}, scopePolicy)
       && policy.ragEvaluator?.onlyHumanReviewVerdict === 'READY_FOR_HUMAN_REVIEW'
       && policy.ragEvaluator?.doesNotPerformPromotionOrPublication === true
       && policy.ragEvaluator?.outputMustBeOutsideInputs === true
@@ -299,7 +380,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       [citation('config/release-platform-rag-policy.json', policyDoc.sha256, '/ragEvaluator', policyDoc.lines.get('/ragEvaluator') ?? 1)]);
 
   const version = plan.releaseVersion;
-  const validPlan = plan.schemaVersion === 1 && VERSION.test(version ?? '')
+  const validPlan = plan.schemaVersion === 2 && VERSION.test(version ?? '')
       && ['LOCAL', 'TEST', 'PRODUCTION'].includes(plan.channel)
       && ['maintenanceOrRefactor', 'behaviorChange', 'structuralOrReleaseChange'].includes(plan.changeRisk)
       && Array.isArray(plan.declaredPlatforms) && plan.declaredPlatforms.length === 1 && plan.declaredPlatforms[0] === 'android'
@@ -309,7 +390,9 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && typeof plan.userFlowChanged === 'boolean'
       && plan.e2e && ['PASS', 'NOT_RUN', 'NOT_APPLICABLE'].includes(plan.e2e.status)
       && (plan.e2e.status === 'PASS'
-        ? Array.isArray(plan.e2e.groups) && plan.e2e.groups.length > 0 && plan.e2e.groups.every(name => typeof name === 'string')
+        ? Array.isArray(plan.e2e.groups) && plan.e2e.groups.length > 0
+          && plan.e2e.groups.every(name => typeof name === 'string' && name.length > 0)
+          && new Set(plan.e2e.groups).size === plan.e2e.groups.length
         : typeof plan.e2e.rationale === 'string' && plan.e2e.rationale.trim().length >= 12);
   addCheck(checks, 'PLAN_SCHEMA', validPlan, validPlan ? 'Planul fixează versiunea, platforma, riscul, componentele și decizia E2E.' : 'Plan absent, incomplet sau cu enum invalid.',
       [citation(path.relative(project, planFile), planDoc.sha256, '/schemaVersion', planDoc.lines.get('/schemaVersion') ?? 1)]);
@@ -379,11 +462,28 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         if (actualHash !== row.sha256) sourceProblems.push(`Hash diferit pentru ${relative}: manifest=${row.sha256}, sursă=${actualHash}`);
       } catch (error) { sourceProblems.push(`Sursă lipsă sau inaccesibilă pentru ${relative}: ${error.message}`); }
     }
+    sourceProblems.push(...await sourceInventoryProblems(source, componentInputMap(rows)));
     sourceOkay = sourceProblems.length === 0;
   } catch (error) { sourceOkay = false; sourceProblems.push(`Manifestul sursă nu poate fi citit: ${error.message}`); }
   addCheck(checks, 'SOURCE_SNAPSHOT', sourceOkay,
       sourceOkay ? 'Commitul, manifestul de intrări, amprenta și fișierele sursă corespund.' : 'Snapshot-ul sursă nu poate fi reprodus din manifestul fixat.',
       [...evidence('/source'), ...(inputDoc ? [citation(posix(path.relative(candidate, path.join(candidate, inputRel))), inputDoc.sha256, '/fingerprint', inputDoc.lines.get('/fingerprint') ?? 1)] : [])], sourceProblems);
+
+  let testScope;
+  const diffProblems = [];
+  const diffEvidence = [citation(path.relative(project, planFile), planDoc.sha256, '/scope', planDoc.lines.get('/scope') ?? 1)];
+  if (sourceOkay) {
+    try {
+      testScope = await readTestScope(project, source, version, componentInputMap(inputDoc.value.files), policy);
+      diffEvidence.push(...testScope.evidence, citation(inputRel, inputDoc.sha256, '/fingerprint', inputDoc.lines.get('/fingerprint') ?? 1));
+      if (!isDeepStrictEqual({...plan.scope}, testScope.scope)) diffProblems.push('Legătura declarată cu sursa publicată și candidatul nu coincide cu diff-ul calculat.');
+      if (testScope.userFlowChanged && plan.userFlowChanged !== true) diffProblems.push('Diff-ul afectează fluxuri, iar planul declară flux neschimbat.');
+      if (testScope.userFlowChanged && plan.changeRisk === 'maintenanceOrRefactor') diffProblems.push('Riscul declarat nu acoperă schimbarea de flux calculată.');
+    } catch (error) { diffProblems.push(error.message); }
+  } else diffProblems.push('Calculul cere un snapshot sursă valid.');
+  addCheck(checks, 'DIFF_SCOPE', Boolean(testScope) && diffProblems.length === 0,
+      diffProblems.length ? 'Selecția declarată nu se poate justifica prin diff.' : 'Selecția a fost recalculată din inventarele surselor.',
+      diffEvidence, diffProblems);
 
   const readmePolicy = policy.ragEvaluator?.publicReadmeSurface;
   let readmeOkay = false;
@@ -505,7 +605,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
 
   const groups = manifest.qualification?.auditedGroups ?? {}, groupResults = [];
   const selectedGroups = validPlan ? plan.componentGroups : [];
-  const requiredComponentGroups = componentGroupsRequiredForVersion(policy, 'android', version);
+  const requiredComponentGroups = testScope?.componentGroups ?? componentGroupsRequiredForVersion(policy, 'android', version);
   let componentsOkay = requiredComponentGroups.every(name => selectedGroups.includes(name));
   const reporting = policy.reportingContract ?? {};
   const selectedReportPaths = new Set(), componentReportHashes = new Map();
@@ -623,7 +723,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       const suiteDirectory = path.posix.basename(reportDirectory);
       const expectedReport = reporting.e2eReportPathPattern?.replace('{suite}', suiteDirectory);
       const expectedReceipt = e2eBinding.executionReceiptPattern?.replace('{suite}', suiteDirectory);
-      if (reportPath !== expectedReport || !reportPath || selectedReportPaths.has(reportPath) || e2eReportPaths.has(reportPath)
+      if (suiteDirectory !== name || reportPath !== expectedReport || !reportPath
+          || selectedReportPaths.has(reportPath) || e2eReportPaths.has(reportPath)
           || receiptPath !== expectedReceipt || !receiptPath || receiptPath === reportPath) {
         e2eReceiptsOkay = false;
         e2eProblems.push(`${name}: raport/receipt lipsă, necanonic sau cu o cale reutilizată (așteptat raport=${expectedReport}, receipt=${expectedReceipt}; observat raport=${reportPath ?? 'absent'}, receipt=${receiptPath ?? 'absent'}).`);
@@ -659,9 +760,13 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       }
     }
   }
-  const e2eOkay = e2eReceiptsOkay && (!plan.userFlowChanged
-      ? (e2e.status === 'PASS' || (['NOT_RUN', 'NOT_APPLICABLE'].includes(e2e.status) && e2e.rationale?.trim().length >= 12))
-      : e2e.status === 'PASS');
+  const selectedE2e = e2e.status === 'PASS' && Array.isArray(e2e.groups) ? e2e.groups : [];
+  const missingE2e = (testScope?.requiredE2eGroups ?? []).filter(name => !selectedE2e.includes(name));
+  e2eProblems.push(...missingE2e.map(name => `Grup E2E cerut de diff și neselectat: ${name}`));
+  const e2eOkay = e2eReceiptsOkay && missingE2e.length === 0 && (plan.userFlowChanged || testScope?.userFlowChanged
+      ? e2e.status === 'PASS'
+      : (e2e.status === 'PASS' || (['NOT_RUN', 'NOT_APPLICABLE'].includes(e2e.status)
+        && typeof e2e.rationale === 'string' && e2e.rationale.trim().length >= 12)));
   addCheck(checks, 'E2E_SCOPE', e2eOkay,
       e2eOkay ? `E2E: ${e2e.status}; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.`
         : 'Flux de utilizator schimbat fără E2E trecut, raport E2E lipsă/nepotrivit sau omitere fără justificare.',
@@ -676,11 +781,11 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     channel: plan.channel ?? null, sourceCommit: manifest.source?.sourceCommit ?? null,
     workingTreeFingerprint: manifest.source?.workingTreeFingerprint ?? null,
     candidateManifestSha256: manifestDoc.sha256, planSha256: planDoc.sha256,
-    checks, componentGroups: groupResults,
+    checks, testScope: testScope ?? null, componentGroups: groupResults,
     e2e: {status: e2e.status ?? 'NOT_RUN', userFlowChanged: plan.userFlowChanged ?? null,
       rationale: e2e.rationale ?? null, note: 'NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației.'},
     lifecycleEffect: 'NONE', writesOnly: posix(path.relative(project, output)),
-    limitations: ['Verificarea sursei acoperă exact lista din input manifest; nu execută Git și nu certifică starea indexului Git.',
+    limitations: ['Verificarea leagă inventarul complet al snapshot-ului de manifest; nu execută Git și nu certifică starea indexului Git.',
       'Verdictul este o recomandare auditabilă pentru revizie umană; nu promovează, semnează sau publică.']
   };
   await fs.mkdir(path.dirname(output), {recursive: true});
