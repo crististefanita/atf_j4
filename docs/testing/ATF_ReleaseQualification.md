@@ -249,6 +249,29 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 - Verdictul include `DIFF_SCOPE`, cu identitatea bazei și a candidatului, regulile aplicate pe căi și grupurile rezultate.
 - `BLOCKED` arată verificările eșuate și hash-urile dovezilor, fără să aplice o corecție automată.
 
+### Preflight Android
+
+[Lansatorul responsive](../../scripts/run-whist-responsive-sanity.ps1) rezervă dispozitivul și rulează [preflight-ul comun](../../scripts/check-android-release-device.ps1) înainte să copieze sursele sau cache-ul Maven. Pentru o selecție pe APK semnat, apelați aceeași comandă imediat după obținerea rezervării, înainte de instalare, backup sau interacțiuni cu aplicația.
+
+```powershell
+$device = @{
+    AdbExecutable=$AdbExecutable; Serial=$Serial; AdbServerSocket=$AdbServerSocket
+    LeasePath=$LeasePath; LeaseId=$LeaseId; Receipt=(Join-Path $CandidateRun 'android-preflight.json')
+    ExpectedApi=$ExpectedApi; ExpectedDisplayProfile=$ExpectedDisplayProfile
+}
+.\scripts\check-android-release-device.ps1 @device
+```
+
+| Control | Criteriu de acceptare |
+| --- | --- |
+| Rezervare și ADB | Rezervarea activă corespunde serialului și ID-ului. ADB răspunde `device` pe ruta cerută în limita de timp a fiecărei comenzi. |
+| Boot | `sys.boot_completed` este exact `1`. |
+| Profil | API-ul este numeric și corespunde valorii așteptate dacă este specificată. Pentru rezoluție și DPI se compară valorile efective în format `LĂȚIMExÎNĂLȚIME@DPI`, cu `Override` înainte de `Physical`. |
+
+Stabiliți valorile așteptate din planul selecției. `ExpectedApi=0` și profilul de afișaj gol cer numai observarea unor valori valide. În modul responsive, profilul așteptat descrie starea inițială a dispozitivului, iar `Profiles` descrie matricea aplicată în timpul scenariului.
+
+`android-preflight.json` păstrează rezultatul și observația sau cauza refuzului. Un refuz rămâne `BLOCKED` și oprește execuția. Un preflight trecut permite continuarea către verificarea APK-ului, backup și E2E.
+
 ### Acceptanța APK-ului semnat
 
 Smoke-ul [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) verifică pachetul instalat, pagina inițială și configurarea fără pornirea altei partide. [Acceptanța licitației](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) are un domeniu separat: un prefix real de Whist românesc, recomandare, alegere manuală, dialog și contract restaurat.
@@ -260,7 +283,7 @@ Smoke-ul [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/and
 | Licitație și restaurare | Copie verificată a datelor, rezervare exclusivă și restaurare obligatorie | Recomandarea legală rămâne neconfirmată; alegerea manuală supraviețuiește dialogului, iar contractul confirmat și scorurile publice se păstrează după oprirea procesului. |
 | Istoric și afișaj | Profil și intrări explicite, cu aceeași identitate a binarului verificat | Coloane, marcaje și accesul la conținut conform diferenței de cod; fixture-urile Debug se disting de execuția APK-ului Release. |
 
-Preflight-ul înregistrează identitatea și controlul datelor înaintea oricărei schimbări. Lipsa transportului ADB, a rezervării sau a copiei nu este o omitere de test trecută: pasul rămâne `PENDING` până la o execuție reală. Refuzul browserului de a deschide un raport local rămâne limită de revizie interactivă; auditul static al HTML-ului nu îl înlocuiește.
+Verificați separat identitatea APK-ului și copia datelor înaintea primei schimbări a aplicației. Un E2E neexecutat rămâne `PENDING`. Auditul static verifică fișierul HTML, iar revizia interactivă verifică accesul și randarea lui.
 
 Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Maven privat:
 

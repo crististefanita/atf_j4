@@ -15,12 +15,14 @@ Colecția verifică legarea recomandării de interfața Android reală. Politica
 
 ## Precondiții și restaurare
 
-[Contextul](ReleaseBidContext.java) cere rezervarea exclusivă curentă, același serial, identitatea APK-ului și o copie verificată a datelor private înainte de pornirea unui joc nou. Runnerul pregătește `setup-release.json`, `device-lease.json` și `app-data-before.tar`; hash-ul copiei și obligația restaurării sunt explicite.
+[Contextul](ReleaseBidContext.java) cere rezervarea exclusivă curentă, același serial, identitatea APK-ului și o copie verificată a datelor private înainte de pornirea unui joc nou. Runnerul pregătește `setup-release.json`, `device-lease.json` și `app-data-before.tar`. Hash-ul copiei și obligația restaurării sunt explicite.
 
 - `setup-release.json` păstrează serialul, API-ul, calea pachetului instalat, `requestedApkSha256`, `backupSha256`, `backupScopeValidated=true` și `restoreRequired=true`. O comandă de descoperire eșuată nu înseamnă absența datelor.
 - Runnerul restaurează datele și configurația chiar după eșec și verifică identitatea APK-ului păstrat la final. Un eșec al restaurării rămâne separat de cauza inițială și blochează acceptanța.
 - Selecția neconfirmată trebuie păstrată după închiderea dialogului în aceeași sesiune. Contractul confirmat și starea publică trebuie păstrate după oprirea procesului și reluare.
 - Lipsa emulatorului ori a copiei nu devine succes sau dovadă E2E. Un preflight neexecutat rămâne `PENDING` în dosarul candidatului.
+
+Apelați preflight-ul comun cu rezervarea activă și profilul selectat, înainte de instalare sau backup. [Comanda și criteriile](../../../../../../../../docs/testing/ATF_ReleaseQualification.md#preflight-android)
 
 ## Execuție
 

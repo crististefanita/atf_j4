@@ -1,3 +1,4 @@
+#requires -Version 7.0
 param(
     [string]$Profiles = '',
     [Alias('HandsPerProfile')][ValidateRange(1,5)][int]$Hands = 1,
@@ -14,6 +15,9 @@ param(
     [switch]$ComponentsOnly,
     [ValidateSet('Display','History')][string]$ComponentSuite = 'Display',
     [ValidateSet('extent','fallback')][string]$ComponentRenderer = 'extent',
+    [ValidateRange(0,999)][int]$ExpectedApi = 0,
+    [ValidatePattern('^(?:[1-9][0-9]{0,4}x[1-9][0-9]{0,4}@[1-9][0-9]{0,3})?$')][string]$ExpectedDisplayProfile = '',
+    [string]$LeasePath = 'C:\work\whist_back\android-ui-lease.json',
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
@@ -21,14 +25,14 @@ if (-not $ComponentsOnly -and ($PSBoundParameters.ContainsKey('ComponentSuite') 
     throw 'ComponentSuite and ComponentRenderer require ComponentsOnly.'
 }
 if ($ComponentsOnly -and ($DenseLayout -or $IncludeGameFlow -or $HardAiCompatibility -or $TableViewportOnly -or
-        $PSBoundParameters.ContainsKey('Profiles') -or $PSBoundParameters.ContainsKey('Hands'))) {
+        $PSBoundParameters.ContainsKey('Profiles') -or $PSBoundParameters.ContainsKey('Hands') -or
+        $PSBoundParameters.ContainsKey('ExpectedApi') -or $PSBoundParameters.ContainsKey('ExpectedDisplayProfile'))) {
     throw 'ComponentsOnly selects the JVM matrix; do not combine it with device-flow or profile selections.'
 }
 if ($TableViewportOnly -and ($DenseLayout -or $IncludeGameFlow -or $HardAiCompatibility)) {
     throw 'TableViewportOnly cannot be combined with DenseLayout, IncludeGameFlow or HardAiCompatibility.'
 }
 $root = Split-Path -Parent $PSScriptRoot
-Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 if ([string]::IsNullOrWhiteSpace($Profiles)) {
     $Profiles = if ($DenseLayout) {
         '720x1280@360,972x1728@440,1080x2448@440,1200x1920@320'
@@ -57,41 +61,43 @@ if (-not (Test-Path -LiteralPath $MavenRepository -PathType Container)) {
 New-Item -ItemType Directory -Path $RunRoot | Out-Null
 $artifacts = Join-Path $RunRoot 'android-artifacts'
 $stage = Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_RESPONSIVE_' + [guid]::NewGuid().ToString('N'))
-New-Item -ItemType Directory -Path $stage,$artifacts | Out-Null
 
-Copy-Item -LiteralPath (Join-Path $root 'pom.xml'),(Join-Path $root 'atf.yaml') -Destination $stage
-Copy-Item -LiteralPath (Join-Path $root 'lib'),(Join-Path $root 'config') -Destination $stage -Recurse
-[xml]$rootPom = [IO.File]::ReadAllText((Join-Path $root 'pom.xml'))
-$modules = @($rootPom.project.modules.module | ForEach-Object { $_.Trim() })
-if ($modules.Count -eq 0) { throw 'The Maven reactor declares no source modules to stage.' }
-foreach ($module in $modules) {
-    $source = Join-Path $root $module
-    if (-not (Test-Path -LiteralPath (Join-Path $source 'pom.xml') -PathType Leaf)) {
-        throw "The Maven reactor declares $module but its source POM is missing."
+function Initialize-SanityStage {
+    New-Item -ItemType Directory -Path $stage,$artifacts | Out-Null
+
+    Copy-Item -LiteralPath (Join-Path $root 'pom.xml'),(Join-Path $root 'atf.yaml') -Destination $stage
+    Copy-Item -LiteralPath (Join-Path $root 'lib'),(Join-Path $root 'config') -Destination $stage -Recurse
+    [xml]$rootPom = [IO.File]::ReadAllText((Join-Path $root 'pom.xml'))
+    $modules = @($rootPom.project.modules.module | ForEach-Object { $_.Trim() })
+    if ($modules.Count -eq 0) { throw 'The Maven reactor declares no source modules to stage.' }
+    foreach ($module in $modules) {
+        $source = Join-Path $root $module
+        if (-not (Test-Path -LiteralPath (Join-Path $source 'pom.xml') -PathType Leaf)) {
+            throw "The Maven reactor declares $module but its source POM is missing."
+        }
+        if ($module -eq 'atf-tests') {
+            New-Item -ItemType Directory -Force -Path (Join-Path $stage $module) | Out-Null
+            Copy-Item -LiteralPath (Join-Path $source 'pom.xml') -Destination (Join-Path $stage $module)
+            continue
+        }
+        & robocopy $source (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
+        if ($LASTEXITCODE -ge 8) { throw "Could not stage source module declared by the reactor: $module" }
     }
-    if ($module -eq 'atf-tests') {
-        New-Item -ItemType Directory -Force -Path (Join-Path $stage $module) | Out-Null
-        Copy-Item -LiteralPath (Join-Path $source 'pom.xml') -Destination (Join-Path $stage $module)
-        continue
+    foreach ($relative in @('whist-lab-app/game-core/src/main/java', 'whist-lab-app/ai-lab/src/main/java')) {
+        & robocopy (Join-Path $root $relative) (Join-Path $stage $relative) /E /NFL /NDL /NJH /NJS /NP | Out-Null
+        if ($LASTEXITCODE -ge 8) { throw "Could not stage the independent player's source dependency: $relative" }
     }
-    & robocopy $source (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
-    if ($LASTEXITCODE -ge 8) { throw "Could not stage source module declared by the reactor: $module" }
+    $sourceSnapshot=@(Get-ChildItem -LiteralPath $stage -Recurse -File | Where-Object {
+        $_.Extension -in @('.java','.xml','.yaml','.yml','.pom','.json','.jar')
+    } | ForEach-Object {
+        @{path=[IO.Path]::GetRelativePath($stage,$_.FullName).Replace('\','/');sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
+    })
+    $sourceSnapshot|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $RunRoot 'source-snapshot.json') -Encoding utf8
+    $executionRepository = Join-Path $stage 'maven-repository'
+    New-Item -ItemType Directory -Path $executionRepository | Out-Null
+    & robocopy $MavenRepository $executionRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
+    if ($LASTEXITCODE -ge 8) { throw 'Could not prepare the private Maven dependency cache.' }
 }
-foreach ($relative in @('whist-lab-app/game-core/src/main/java', 'whist-lab-app/ai-lab/src/main/java')) {
-    & robocopy (Join-Path $root $relative) (Join-Path $stage $relative) /E /NFL /NDL /NJH /NJS /NP | Out-Null
-    if ($LASTEXITCODE -ge 8) { throw "Could not stage the independent player's source dependency: $relative" }
-}
-$sourceSnapshot=@(Get-ChildItem -LiteralPath $stage -Recurse -File | Where-Object {
-    $_.Extension -in @('.java','.xml','.yaml','.yml','.pom','.json','.jar')
-} | ForEach-Object {
-    @{path=[IO.Path]::GetRelativePath($stage,$_.FullName).Replace('\','/');sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()}
-})
-$sourceSnapshot|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $RunRoot 'source-snapshot.json') -Encoding utf8
-$executionRepository = Join-Path $stage 'maven-repository'
-New-Item -ItemType Directory -Path $executionRepository | Out-Null
-& robocopy $MavenRepository $executionRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
-if ($LASTEXITCODE -ge 8) { throw 'Could not prepare the private Maven dependency cache.' }
-$leasePath = 'C:\work\whist_back\android-ui-lease.json'
 $leaseId = ''
 $leaseAcquired = $false
 $state = [ordered]@{
@@ -105,10 +111,10 @@ $state = [ordered]@{
     componentsOnly=$ComponentsOnly.IsPresent
     componentSuite=$ComponentSuite
     componentRenderer=$ComponentRenderer
-    mavenRepository=$executionRepository
+    mavenRepository=(Join-Path $stage 'maven-repository')
     sourceSnapshot=(Join-Path $RunRoot 'source-snapshot.json')
     runnerSha256=(Get-FileHash -LiteralPath $PSCommandPath -Algorithm SHA256).Hash.ToLowerInvariant()
-    status='STAGED'
+    status='PENDING'
     startedAt=[DateTimeOffset]::UtcNow.ToString('o')
 }
 $saved = @{}
@@ -184,6 +190,21 @@ function Release-DeviceLease {
 }
 
 try {
+    if (-not $ComponentsOnly) {
+        $state.status = 'BLOCKED'
+        Acquire-DeviceLease
+        $preflightReceipt = Join-Path $RunRoot 'android-preflight.json'
+        $state.androidPreflight = $preflightReceipt
+        $preflightArguments = @{
+            AdbExecutable=$AdbExecutable; Serial=$Serial; AdbServerSocket=$AdbServerSocket
+            LeasePath=$LeasePath; LeaseId=$leaseId; Receipt=$preflightReceipt
+            ExpectedApi=$ExpectedApi; ExpectedDisplayProfile=$ExpectedDisplayProfile
+        }
+        $preflight = & (Join-Path $PSScriptRoot 'check-android-release-device.ps1') @preflightArguments
+    }
+    $state.status = 'STAGING'
+    Initialize-SanityStage
+    $executionRepository = $state.mavenRepository
     $env:JAVA_HOME = $JavaHome
     $env:Path = "$JavaHome\bin;$($saved.Path)"
     $env:MAVEN_OPTS = '-Xms32m -Xmx768m -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -XX:ActiveProcessorCount=2'
@@ -258,18 +279,15 @@ foreach ($library in @(
         return
     }
 
-    Acquire-DeviceLease
     $env:ADB_SERVER_SOCKET = $AdbServerSocket
     $env:ATF_ANDROID_ADB = $AdbExecutable
     $env:ATF_ANDROID_SERIAL = $Serial
     $env:ATF_ANDROID_TIMEOUT_SECONDS = '90'
-    Connect-AtfAndroidDevice -AdbExecutable $AdbExecutable -Serial $Serial -ServerSocket $AdbServerSocket -TimeoutSeconds 20 | Out-Null
-
     $package = & $AdbExecutable -s $Serial shell pm path ro.whistlab.app
     if ($LASTEXITCODE -ne 0 -or $package -notmatch 'package:') {
         throw 'Whist Lab must already be installed on the selected emulator.'
     }
-    $api = (& $AdbExecutable -s $Serial shell getprop ro.build.version.sdk).Trim()
+    $api = $preflight.observed.api
     $apkPath = (($package | Where-Object { $_ -like 'package:*' } | Select-Object -First 1) -replace '^package:','').Trim()
     $apkHash = ((& $AdbExecutable -s $Serial shell sha256sum $apkPath) -split '\s+')[0]
     if ([string]::IsNullOrWhiteSpace($apkHash)) { throw 'Could not fingerprint the installed APK.' }
@@ -304,7 +322,7 @@ foreach ($library in @(
     $state.report = $report
     $state.completedAt = [DateTimeOffset]::UtcNow.ToString('o')
 } catch {
-    $state.status = 'FAIL'
+    if ($state.status -ne 'BLOCKED') { $state.status = 'FAIL' }
     $state.failure = $_.ToString()
     throw
 } finally {

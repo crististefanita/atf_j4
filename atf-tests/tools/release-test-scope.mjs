@@ -26,7 +26,7 @@ const rules = [
 
 const nonProduct = /^(?:atf-validation\/|atf-tests\/|atf-test-android\/|ios\/|whist-lab-app\/(?:ai-lab|ios-bridge|test-audit|algorithm-build)\/|whist-lab-app\/[^/]+\/src\/(?:test|androidTest|rasterTest)\/|\.github\/)/;
 const testConfiguration = /^config\/(?:atf-governance-policy\.json|atf-test-suites\.json|release-platform-rag-policy\.json|gradle-(?:app|audit)-collections\.properties|test-collections\.json)$/;
-const testLaunchers = /^scripts\/(?:Get-AtfSourceInputs\.ps1|Copy-AtfSourceInputs\.ps1|AtfQualificationSnapshot\.ps1|run-(?:atf-governance|component-suites|whist-collection)\.ps1)$/;
+const testLaunchers = /^scripts\/(?:Get-AtfSourceInputs\.ps1|Copy-AtfSourceInputs\.ps1|AtfQualificationSnapshot\.ps1|check-android-release-device\.ps1|run-(?:atf-governance|component-suites|whist-collection|whist-responsive-sanity)\.ps1)$/;
 
 function classify(file, metadataOnly) {
   if (nonBuildDocumentation(file)) return {rule: 'documentation', e2eGroups: []};

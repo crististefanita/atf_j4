@@ -8,9 +8,9 @@ Suita verifică mecanismele de configurare, licitare, joc și reluare pe profile
 
 ```mermaid
 flowchart LR
-    CONFIG[Profiluri] -->|validează| PREFLIGHT[Control preliminar]
-    PREFLIGHT -->|permite| LEASE[Rezervare exclusivă]
-    LEASE -->|izolează| RUN[Scenariu Android]
+    CONFIG[Profiluri] -->|selectează| LEASE[Rezervare exclusivă]
+    LEASE -->|permite citirea| PREFLIGHT[Control preliminar]
+    PREFLIGHT -->|permite pregătirea și execuția| RUN[Scenariu Android]
     RUN -->|capturează| TRACE[Puncte de control]
     RUN -->|restaurează| DISPLAY[Afișaj inițial]
     TRACE -->|confruntă| AUDIT[Stare și pixeli]
@@ -19,7 +19,7 @@ flowchart LR
 <details>
 <summary>Legendă: pregătire și restaurare</summary>
 
-Validarea parametrilor și a contractelor componente precede controlul dispozitivului. Runnerul păstrează rezoluția și densitatea inițiale pentru restaurare, inclusiv după eșec.
+Validarea parametrilor precede rezervarea, iar preflight-ul precede pregătirea Maven. Runnerul păstrează rezoluția și densitatea inițiale pentru restaurare, inclusiv după eșec.
 
 Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe primul profil. Auditul mapează coordonatele logice la raster înainte de comparația cărții, ramelor și indicatorului de atu.
 
@@ -39,6 +39,7 @@ Fiecare profil verifică afișarea; fluxul opțional de joc rulează numai pe pr
 | HardAiCompatibility | Opțional. Verifică o singură dată fixture-ul de licitare Hard, pe primul profil. |
 | Serial | Dispozitivul Android rezervat pentru scenariu. |
 | AdbServerSocket | Serverul ADB configurat pentru stație sau VM. |
+| ExpectedApi și ExpectedDisplayProfile | API și profil inițial așteptat, în format LĂȚIMExÎNĂLȚIME@DPI. |
 | Director de rezultate | Destinație externă pentru trace-ul și rezultatele execuției. |
 | ComponentsOnly | Selectează exclusiv matricea JVM; exclude opțiunile de profil și flux, rezervarea și comenzile dispozitivului. |
 

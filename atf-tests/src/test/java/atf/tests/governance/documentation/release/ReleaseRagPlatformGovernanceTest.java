@@ -220,6 +220,15 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("check-release-artifacts.mjs"));
         assertTrue(qualificationGuide.contains("-PinnedSourceInputs"));
         assertTrue(qualificationGuide.contains("release-inputs.json"));
+        assertTrue(qualificationGuide.contains("### Preflight Android"));
+        assertTrue(qualificationGuide.contains("check-android-release-device.ps1"));
+        String nativeRunner = Files.readString(root.resolve("scripts/run-whist-responsive-sanity.ps1")).replace("\r\n", "\n");
+        int lease = nativeRunner.indexOf("        Acquire-DeviceLease\n");
+        int preflightCall = nativeRunner.indexOf("check-android-release-device.ps1");
+        int staging = nativeRunner.indexOf("    Initialize-SanityStage\n");
+        assertTrue(lease >= 0 && lease < preflightCall && preflightCall < staging,
+                "Native qualification must preflight the reserved device before preparing Maven");
+        assertTrue(qualificationGuide.contains("android-preflight.json"));
         assertTrue(qualificationGuide.contains("plan-release-tests.mjs"));
         assertTrue(qualificationGuide.contains("requiredE2eGroups"));
         assertTrue(qualificationGuide.contains("schemaVersion: 2"));
