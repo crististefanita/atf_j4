@@ -28,7 +28,7 @@
   },
   "evidenceRetention": {
     "canonicalReport": "reports/component/atf-tests/component-report.html",
-    "canonicalReportSha256": "e7f82856ba1e3b194c7e8d124df2e256a41b8e198bc67f8559b3a8f7bbc264a9"
+    "canonicalReportSha256": "5bd2098c50de7a00f19e0508944a671db592528f219d4d50b656dc62f6cd1b52"
   },
   "qualification": {
     "e2eGroups": {},
@@ -58,7 +58,7 @@
         "errors": 0,
         "skipped": 0,
         "report": "reports/component/atf-tests/component-report.html",
-        "componentEvidenceOrigin": "2f7aeb0e48f1b3063b942931c5da09299b41caf2da0748b4a5278fd583497e34"
+        "componentEvidenceOrigin": "d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97"
       },
       "whist-lab-app-achievements": {
         "protocol": "ATF_J24_COMPONENT_EXTENT",
@@ -159,7 +159,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-13T09:25:33.492Z",
+    "observedUtc": "2026-11-13T09:35:02.131Z",
     "files": [
       {
         "path": "README.md",
@@ -184,12 +184,12 @@
       {
         "path": "release-notes.md",
         "bytes": 656,
-        "sha256": "d6d0c7d9dbe41316268d3aa9672592572007ee12edbc0b01aad384eb66984072"
+        "sha256": "1fc1c99f486d134996b71945959eef9d22fa9b642a98e42acf98a76884f88b3e"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 439,
-        "sha256": "4496e928d0b8165862961bf235ad33839f995ba8be9a0b2b91c14a584ecb8afa"
+        "bytes": 449,
+        "sha256": "e59747ff711cb497674882ba4d0905143d7c87ac7ec3b6978d10b4315ce3f185"
       },
       {
         "path": "reports/README.md",
@@ -218,13 +218,13 @@
       },
       {
         "path": "reports/component/atf-tests/component-report.html",
-        "bytes": 7906065,
-        "sha256": "e7f82856ba1e3b194c7e8d124df2e256a41b8e198bc67f8559b3a8f7bbc264a9"
+        "bytes": 7905942,
+        "sha256": "5bd2098c50de7a00f19e0508944a671db592528f219d4d50b656dc62f6cd1b52"
       },
       {
         "path": "reports/component/atf-tests/execution.json",
         "bytes": 539,
-        "sha256": "b1389dde41aac26188af2df91eb9cc5edc244488704cb7e57713c37dde1f2baf"
+        "sha256": "efeadec1e469a81101803d6006a6a1e595331b5e5222f351de299781a685c89a"
       },
       {
         "path": "reports/component/atf-validation/component-report.html",
@@ -238,8 +238,8 @@
       },
       {
         "path": "reports/component/component-reuse.json",
-        "bytes": 6371,
-        "sha256": "c6f6147b311fbd46e40727005384f846c7bf32e8a1aa47dd9ec6e59bf97917c4"
+        "bytes": 6392,
+        "sha256": "cf80ca3469c4b2beffb00c0e036cf55d1c37481ef32e357d1e2b6edfed0be451"
       },
       {
         "path": "reports/component/snapshots/2f7aeb0e48f1b3063b942931c5da09299b41caf2da0748b4a5278fd583497e34/source-component-run.json",
@@ -287,9 +287,24 @@
         "sha256": "a50cb14754d83a38d970022b16a4f1c221e70c79a9b1a23fb2c84706869e018b"
       },
       {
+        "path": "reports/component/snapshots/d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97/source-component-run.json",
+        "bytes": 1385,
+        "sha256": "3c69bd83e13fc12395e920abdb3fba9ec04889c31611c73d045b36f35a37b1cb"
+      },
+      {
+        "path": "reports/component/snapshots/d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97/source-inputs.json",
+        "bytes": 174731,
+        "sha256": "c177cd95d211350c7684a8bd36f18b2e1549ffc4ff4bca8c2ebcfcf552894624"
+      },
+      {
+        "path": "reports/component/snapshots/d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97/source-provenance.json",
+        "bytes": 1215,
+        "sha256": "d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97"
+      },
+      {
         "path": "reports/component/source-component-run.json",
         "bytes": 1385,
-        "sha256": "2a0f6fe285b3736d73a9994d38d2dcb8bc52b0449c96afd832ee6bfb19165fb1"
+        "sha256": "3c69bd83e13fc12395e920abdb3fba9ec04889c31611c73d045b36f35a37b1cb"
       },
       {
         "path": "reports/component/source-inputs.json",
@@ -299,7 +314,7 @@
       {
         "path": "reports/component/source-provenance.json",
         "bytes": 1215,
-        "sha256": "2f7aeb0e48f1b3063b942931c5da09299b41caf2da0748b4a5278fd583497e34"
+        "sha256": "d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97"
       },
       {
         "path": "reports/component/whist-lab-app-achievements/component-report.html",

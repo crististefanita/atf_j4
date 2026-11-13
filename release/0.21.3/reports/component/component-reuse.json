@@ -116,13 +116,13 @@
     {
       "group": "atf-tests",
       "decision": "RUN",
-      "reason": "Rerun after publishing the release catalog and receipt; eight unaffected component selections reuse their verified reports.",
+      "reason": "Rerun after pinning the published report link to the release dossier commit; eight unaffected component selections reuse their verified reports.",
       "changedInputs": [],
       "affectedInputs": [],
-      "componentEvidenceOrigin": "2f7aeb0e48f1b3063b942931c5da09299b41caf2da0748b4a5278fd583497e34",
+      "componentEvidenceOrigin": "d7e23e234e49ce9aefa28ce4853258b1946338bc6027f30e32f317e4643a7f97",
       "tests": 361,
-      "reportSha256": "e7f82856ba1e3b194c7e8d124df2e256a41b8e198bc67f8559b3a8f7bbc264a9",
-      "executionSha256": "b1389dde41aac26188af2df91eb9cc5edc244488704cb7e57713c37dde1f2baf"
+      "reportSha256": "5bd2098c50de7a00f19e0508944a671db592528f219d4d50b656dc62f6cd1b52",
+      "executionSha256": "efeadec1e469a81101803d6006a6a1e595331b5e5222f351de299781a685c89a"
     }
   ]
 }
