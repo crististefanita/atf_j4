@@ -2,20 +2,51 @@
 
 ## Pe scurt
 
-Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, și infrastructura ATF care verifică regulile, aplicația și livrarea. Profilul principal este Whist românesc 1–8–1 la patru jucători. Jocul are două niveluri de dificultate și este disponibil în română și engleză.
+Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, și infrastructura ATF care verifică motorul, aplicațiile și livrarea. Motorul Java deservește Android și ținta iOS, iar laboratorul compară politicile de joc pe distribuiri controlate.
 
 ## Jocul
 
 - **[Whist Lab 0.21.3 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.21.3)** — ediție de test Android.
 - **[Descarcă APK 0.21.3](https://github.com/crististefanita/atf_j4/releases/download/v0.21.3/WhistLab-0.21.3.apk)** — disponibil după autentificare cu un cont GitHub care are acces la proiect.
 
-## Cum se joacă
-
-La fiecare mână licitezi câte levate vei lua și urmezi culoarea cerută când o ai. În variantele românești, dacă nu ai culoarea cerută și ai atu, trebuie să joci atu. [Regulile, variantele și scorul](docs/game/README.md) explică diferențele dintre profiluri.
-
 ## Harta modulelor
 
-Motorul Java decide dacă o comandă este legală și calculează starea următoare. Interfețele trimit comenzi, afișează starea și gestionează salvarea locală pe platforma lor.
+### De la surse la livrare
+
+Gradle construiește APK-ul și rulează verificările JVM ale jocului. Reactorul Maven adaugă infrastructura ATF, scenariile pe dispozitiv și guvernanța proiectului.
+
+```mermaid
+flowchart LR
+    gradle[Gradle]
+    produs[APK Android]
+    componente[Componente JVM]
+    maven[Maven ATF]
+    verificari[Audit și E2E]
+    librarii[Biblioteci ATF]
+    rag[Calificare RAG]
+    dosar[Dosar release]
+    gradle -->|construiește| produs
+    gradle -->|rulează| componente
+    maven -->|rulează| verificari
+    maven -->|consumă| librarii
+    verificari -->|verifică| produs
+    componente -->|furnizează| rag
+    verificari -->|furnizează| rag
+    rag -->|califică| dosar
+```
+
+<details>
+<summary>Legendă privind buildurile și dovezile</summary>
+
+- Gradle include aplicația Android, motorul și puntea Java pentru iOS. Buildul nativ iOS folosește Xcode și motorul tradus. Intrarea Gradle JVM configurează motorul, laboratorul, politica numelor și auditul testelor.
+- Maven verifică proiectul și coordonează testele Android. Consumă Core, Reporting, Console, Mock și Test Kit din perechile JAR/POM. Auditul Gradle folosește Reporting și Test Kit în configurațiile de test.
+- Calificarea confruntă selecția, APK-ul și dovezile. Dosarul versiunii păstrează identitatea binarului, rezultatele și verificarea descărcării. [Ghidul calificării](docs/testing/ATF_ReleaseQualification.md)
+
+</details>
+
+### Motorul și platformele
+
+Motorul validează comenzile, calculează scorul și furnizează starea. Aplicațiile afișează proiecțiile și păstrează salvarea locală.
 
 ```mermaid
 flowchart LR
@@ -24,32 +55,32 @@ flowchart LR
     ios[Aplicație iOS]
     ios_bridge[Punte iOS]
     game_core[Motor Java]
+    card_table_names[Politica numelor]
     app -->|folosește| atf_card_table_ui
     app -->|folosește| game_core
     ios -->|folosește| ios_bridge
     ios_bridge -->|expune| game_core
+    game_core -->|folosește| card_table_names
 ```
 
 <details>
-<summary>Legendă: motorul și cele două interfețe</summary>
+<summary>Legendă privind proprietarii stării</summary>
 
-- Motorul deține regulile, scorul și politica adversarilor. Politica primește mâna proprie și informația publică a mesei.
-- Android folosește componentele comune de masă, iar adaptorul Whist le furnizează datele și acțiunile jocului.
-- SwiftUI apelează puntea către motorul tradus cu J2ObjC. Ținta iOS are [calificare separată](docs/platform/ATF_iOSDelivery.md).
+- Motorul deține regulile, sesiunea, scorul și deciziile AI. Politica AI primește mâna proprie și informația publică a mesei.
+- Android păstrează adaptarea la ecrane, preferințele și checkpoint-ul. Biblioteca vizuală comună oferă prezentarea mesei și emite intențiile de interacțiune.
+- SwiftUI apelează puntea restrânsă către motorul tradus cu J2ObjC. Ținta iOS are o calificare proprie pe simulator. [Ghidul iOS](docs/platform/ATF_iOSDelivery.md)
 
 </details>
 
-| Zonă | Ce deține |
+| Zonă | Module și responsabilități |
 |---|---|
-| [Motorul `game-core`](whist-lab-app/game-core/README.md) | Regulile și sesiunea Whist, legalitatea comenzilor, scorul, AI și datele necesare restaurării. [`card-table-names`](whist-lab-app/card-table-names/README.md) deține politica numelor. |
-| [Aplicația Android](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md) și [`atf-card-table-ui`](whist-lab-app/atf-card-table-ui/README.md) | Aplicația deține ecranele și checkpoint-ul Whist. Modulul comun oferă componente Android de prezentare pentru masa de joc. |
-| [Aplicația iOS](ios/README.md) și [puntea către motor](whist-lab-app/ios-bridge/src/main/java/ro/whistlab/ios/WhistGameBridge.java) | Interfață SwiftUI, salvare locală și acces la motorul comun printr-un API restrâns. |
-| [`ai-lab`](whist-lab-app/ai-lab/README.md) și [`algorithm-build`](whist-lab-app/algorithm-build/README.md) | Laborator offline, jucător independent, comparații pe aceleași distribuiri și intrare Gradle pentru verificările JVM. |
-| [`test-audit`](whist-lab-app/test-audit/README.md) | Date de test și captură de comparații pentru componentele Gradle. |
-| [`atf-validation`](atf-validation/README.md), [`atf-test-android`](atf-test-android/README.md) și [`atf-tests`](atf-tests/README.md) | Reactorul Maven: evaluare semantică API, adaptor ADB și scenarii Android, respectiv integrarea bibliotecilor, guvernanță și verificarea livrării. |
-| [`lib`](lib/README.md) și [`scripts`](scripts/README.md) | Biblioteci ATF versionate cu proveniență și lansatoare care pregătesc și verifică rulările izolate. |
+| Motor și cercetare | [`game-core`](whist-lab-app/game-core/README.md) deține domeniul. [`card-table-names`](whist-lab-app/card-table-names/README.md) validează și distribuie numele. [`ai-lab`](whist-lab-app/ai-lab/README.md) evaluează politicile offline prin [buildul JVM](whist-lab-app/algorithm-build/README.md). |
+| Aplicații | [Android](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md) integrează [`atf-card-table-ui`](whist-lab-app/atf-card-table-ui/README.md). [iOS](ios/README.md) apelează [puntea Java](whist-lab-app/ios-bridge/src/main/java/ro/whistlab/ios/WhistGameBridge.java). |
+| Infrastructură ATF | [`atf-validation`](atf-validation/README.md) evaluează semantic răspunsuri API. [`atf-test-android`](atf-test-android/README.md) execută comenzi ADB și scenarii. [`atf-tests`](atf-tests/README.md) verifică integrarea, guvernanța și livrarea. |
+| Audit și execuție | [`test-audit`](whist-lab-app/test-audit/README.md) capturează comparațiile Gradle. [`lib`](lib/README.md) păstrează bibliotecile cu proveniență, iar [`scripts`](scripts/README.md) pregătește rulările izolate. |
+| Livrare | [Catalogul](release/README.md) identifică versiunea disponibilă și dosarul de calificare. |
 
-Configurațiile [Gradle](whist-lab-app/settings.gradle) și [Maven](pom.xml) declară modulele fiecărei construcții. [Ghidul aplicației](whist-lab-app/README.md) explică fluxurile de joc și relația dintre ecrane și motor.
+Declarațiile de mai jos provin din [setările Gradle](whist-lab-app/settings.gradle) și [POM-ul rădăcină](pom.xml). Verificarea confruntă inventarele, dependențele directe și configurațiile lor. [Guvernanța documentației](docs/governance/ATF_Documentation.md#readme-ul-principal)
 
 <details>
 <summary>Declarațiile verificate din Maven și Gradle</summary>
@@ -59,6 +90,8 @@ Configurațiile [Gradle](whist-lab-app/settings.gradle) și [Maven](pom.xml) dec
 | Maven | atf-validation, atf-test-android, atf-tests |
 | Gradle | app, game-core, atf-card-table-ui, card-table-names, ai-lab, test-audit, ios-bridge |
 | Gradle JVM | game-core, ai-lab, card-table-names, test-audit |
+
+Dependențele directe folosesc configurația din modulul consumator.
 
 | Build | Consumator | Configurație | Dependențe directe |
 |---|---|---|---|
@@ -78,22 +111,17 @@ Tabelul Gradle descrie modulele buildului implicit și dependențele directe în
 
 </details>
 
-## Început rapid offline
+## Verificare și ghiduri
 
-Pentru o verificare scurtă a regulilor și a contextelor publice, rulează din rădăcină cu Java 21, PowerShell 7 și Node.js.
+Din rădăcină, cu Java 21, PowerShell 7 și Node.js, colecția rapidă verifică regulile și contextele publice într-o copie temporară. [Precondiții și colecții](docs/testing/ATF_Collections.md)
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection quick
 ```
 
-Lansatorul pregătește sursele într-un director temporar. Colecția rulează fără emulator. Alege nivelul potrivit în [strategia de testare](docs/testing/README.md) și consultă [catalogul comenzilor](docs/testing/ATF_Collections.md).
-
-## Documentație
-
 | Ce cauți | Unde începi |
 |---|---|
-| Reguli, scor și progres | [Regulile jocului](docs/game/README.md) · [Istoric](docs/game/ATF_ScoreHistory.md) · [Realizări](docs/game/ATF_Achievements.md) |
-| Verificarea unei schimbări | [Guvernanța calității](docs/governance/README.md) · [Verificările Android](docs/testing/ATF_Android.md) |
-| Versiuni, calificare și publicare | [Catalogul livrărilor](release/README.md) · [Procesul RAG](docs/testing/ATF_ReleaseQualification.md) · [Livrarea Android](docs/platform/ATF_AndroidDelivery.md) |
-| Comportamentul adversarilor | [Arhitectura AI](docs/ai/README.md) · [Învățare și simulări](docs/learning/README.md) |
-| Alte ghiduri | [Indexul documentației](docs/README.md) · [Feedback activ](docs/feedback/README.md) |
+| Testare și guvernanță | [Strategia de testare](docs/testing/README.md) · [Guvernanța calității](docs/governance/README.md) · [Verificările Android](docs/testing/ATF_Android.md) |
+| Calificare și publicare | [Procesul RAG](docs/testing/ATF_ReleaseQualification.md) · [Livrarea Android](docs/platform/ATF_AndroidDelivery.md) · [Livrarea iOS](docs/platform/ATF_iOSDelivery.md) |
+| Joc și AI | [Reguli și variante](docs/game/README.md) · [Istoric](docs/game/ATF_ScoreHistory.md) · [Realizări](docs/game/ATF_Achievements.md) · [Arhitectura AI](docs/ai/README.md) |
+| Documentație și lucrări deschise | [Indexul ghidurilor](docs/README.md) · [Feedback](docs/feedback/README.md) |

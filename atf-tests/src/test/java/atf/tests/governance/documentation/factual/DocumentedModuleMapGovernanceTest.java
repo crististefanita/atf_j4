@@ -15,6 +15,16 @@ class DocumentedModuleMapGovernanceTest {
         AuditedAssertions.assertEquals(List.of(), DocumentedModuleMap.inspect(root, Files.readString(root.resolve("README.md"))));
     }
 
+    @Test void thePublishedApkIsFollowedByTheArchitectureMap() throws Exception {
+        var root = GovernanceProject.locateProjectRoot();
+        String readme = Files.readString(root.resolve("README.md"));
+        var sections = java.util.regex.Pattern.compile("(?m)^## (.+)$").matcher(readme).results()
+                .map(heading -> heading.group(1)).toList();
+        int product = sections.indexOf("Jocul");
+        AuditedAssertions.assertTrue(product >= 0 && product + 1 < sections.size(), sections.toString());
+        AuditedAssertions.assertEquals("Harta modulelor", sections.get(product + 1), sections.toString());
+    }
+
     @Test void aMissingModuleAChangedScopeAndAnInvertedEdgeAreRejected() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         String readme = Files.readString(root.resolve("README.md"));

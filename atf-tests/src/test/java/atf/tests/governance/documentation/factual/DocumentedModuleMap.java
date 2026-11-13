@@ -45,14 +45,15 @@ final class DocumentedModuleMap {
         compare(failures, "dependency scopes (POM, build.gradle, component-audit.gradle)", expected, declared);
 
         var actualArrows = new LinkedHashSet<String>();
-        var diagram = ARROW.matcher(section(map, "flowchart LR", "\n" + "\u0060".repeat(3)));
+        var product = section(map, "### Motorul și platformele", "\n### ");
+        var diagram = ARROW.matcher(section(product, "flowchart LR", "\n" + "```"));
         while (diagram.find()) {
             String arrow = diagram.group(1).replace('_', '-') + " -> " + diagram.group(2).replace('_', '-');
             if (!actualArrows.add(arrow)) failures.add("DOC-BUILD-MAP README.md: duplicate diagram edge " + arrow);
         }
         var productArrows = new LinkedHashSet<String>();
         for (var edge : gradleDependencies) {
-            if (Set.of("app", "ios-bridge").contains(edge.owner())
+            if (Set.of("app", "ios-bridge", "game-core").contains(edge.owner())
                     && Set.of("api", "implementation", "runtimeOnly").contains(edge.scope())) {
                 productArrows.add(edge.owner() + " -> " + edge.target());
             }

@@ -12,21 +12,13 @@ Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea
 
 ## RPT-ANDROID-HTML-ONLY — livrabilul de audit fără copii auxiliare
 
-**P1 · responsabil adaptor Android.** Dosarele păstrate au HTML Extent per selecție de componentă, capturi inline și metadate de proveniență. Calificarea rămâne deschisă pentru conținutul obligatoriu al fiecărui producător și pentru observațiile native dintr-o execuție efectivă. [Catalogul livrărilor](../../release/README.md)
+**P1 · responsabil adaptor Android.** Pentru fiecare producător modificat, inventariați corpurile și observațiile obligatorii. Dosarele de componente au deja HTML per selecție, imagini inline și proveniență. Criteriul rămas privește datele fiecărui producător, inclusiv observațiile native și datele unice istorice. [Contractul predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții)
 
-Captura corpurilor și proveniența sunt contracte implementate ale [predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții). Lacuna rămasă este calificarea livrabilului fiecărui producător, inclusiv migrarea rapoartelor istorice care păstrează date unice externe.
+- Confruntați inventarul, timpii și corpurile fiecărui checkpoint cu capturile originale. Injectați conținut lipsă, modificat, extern sau atribuit greșit. Verificați text lung, conținut asemănător HTML și Base64.
+- Identificați fiecare excepție externă prin fișier, scop și consumator. Păstrați datele unice până la calificarea migrării. Un crash log sau verificarea semnăturii poate avea scop separat de auditul testului.
+- Deschideți separat HTML-ul final identificat prin SHA-256, cu sursele auxiliare și rețeaua indisponibile. Verificați navigarea, ultimul rând, tabelele și revenirea de la imaginea integrală. Injectați un link XML și o imagine externă. [Contractul auditului detașat](../reporting/ATF_Audit.md#calificarea-unui-producător)
 
-- [ ] Produceți un HTML autonom per execuție/selecție/suită, cu identități distincte pentru invocări; toate datele necesare auditului rămân în raport. Eliminați copiile finale ale datelor încorporate; mutarea lor într-un ZIP sau într-un director brut extern nu închide criteriul. Temporarele servesc construirii și verificării livrabilului.
-- [ ] Prezentați întâi scopul, precondițiile, versiunea/build-ul și hash-ul APK, dispozitivul/API-ul, profilul, sursele și bibliotecile efectiv folosite; separați explicit identitatea capturată la execuție de cea stabilită ulterior. Pachetul aplicației nu este identitatea APK-ului.
-- [ ] Delimitați în prezentare intervalul publicării de intervalele execuției capturate. Datele Started/Ended ale sesiunii HTML nu trebuie interpretate ca timpul Android atunci când durata nativă provine din alt interval; data lipsă rămâne lipsă, fără reconstrucție retrospectivă.
-- [ ] Calificați asocierea corpurilor integrale cu fiecare checkpoint și migrarea istorică fără pierderea timpilor. Corpurile XML/JSON/trace sunt publicate ca text sigur și pliabil; receipt-ul central și manifestul nu substituie acceptanța tuturor producătorilor ori identitatea completă a configurației.
-- [ ] Aliniați inventarul [catalogului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactCatalog.java) cu [predarea offline](../../atf-test-android/tools/whist_ui_handoff.py): datele obligatorii ale testului sunt accesibile în HTML, iar metadatele distribuției au scop distinct. Manifestul integrității nu înlocuiește corpurile observațiilor și nu justifică o copie suplimentară a raportării componentei.
-- [ ] Unificați inventarul producătorului și al predării: fiecare informație obligatorie are proprietar și corp accesibil în HTML. Pentru o excepție externă, declarați fișierul, scopul unic, consumatorul ori diagnosticul și identitatea; extensia `.log` nu justifică păstrarea. Un log de crash, profilarea sau verificarea semnăturii pot aduce valoare separată, fără să ascundă o dependență necesară înțelegerii rezultatului.
-- [ ] Calificați consolidarea cu octeți lipsă/modificați, valori lungi, text care conține HTML, prefix base64 și asocieri greșite între checkpoint-uri. Întâi confruntați datele și navigarea în HTML-ul singur; apoi eliminați numai copiile demonstrate, fără ștergerea dovezii unice încă nepublicate.
-
-Guvernanța retenției detectează PNG-uri duplicate lângă HTML. Calificarea producătorului verifică și corpurile obligatorii, inclusiv ierarhia și starea pentru o selecție nativă rulată. [Verificarea retenției](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java)
-
-**Închidere:** comparați inventarul și octeții obligatorii înainte/după publicare, apoi verificați numai HTML-ul într-un director gol și offline. Publicarea incompletă nu autorizează eliminarea singurei dovezi și nu emite PASS; istoricul migrat își păstrează originea și limitele, fără o execuție Android inventată.
+Publicarea incompletă păstrează diagnosticul și materialul unic. Replay-ul istoric păstrează identitatea, timpii și verdictul original. [Guvernanța retenției](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java)
 
 ## RPT-ANDROID-COMPONENT-HTML — comparații capturate, nu doar JUnit XML
 
@@ -41,32 +33,12 @@ Guvernanța retenției detectează PNG-uri duplicate lângă HTML. Calificarea p
 
 [Publicarea ownerului](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) este amânată până la închiderea scope-ului și păstrează separat duratele originale. Costul memoriei la selecții mari și integrarea Jupiter paralelă cer calificare proprie înaintea extinderii; pilotul de istoric nu închide automat aceste frontiere.
 
-## RPT-ANDROID-DETACHED-ACCEPTANCE — calificarea finalului publicat
-
-**P1 · responsabil adaptor Android: acceptarea și guvernanța livrabilului.** Rapoartele istorice și cele curente au aceeași obligație de autonomie a datelor; mutarea sau arhivarea anexelor nu închide criteriul.
-
-Probele istorice ale deschiderii detașate au o populație și o identitate proprie. Pentru fiecare producător nou sau schimbat, calificați exemplarul final și înregistrați invocările inspectate. [Contractul reviziei](../reporting/ATF_Audit.md#calificarea-unui-producător)
-
-Confruntarea inventarului și a hash-urilor dovedește păstrarea identității la mutare, fără să execute accesul la probele din HTML. Calificarea portabilă trebuie să confrunte DOM-ul și corpurile efective ale exemplarului final, cu sursele auxiliare indisponibile.
-
-- [ ] Acceptați numai fișierul final identificat prin hash, copiat singur pentru probă, cu directoarele sursă/auxiliare indisponibile și resursele externe blocate. Verificați tabelele, ultimul rând, deschiderea/închiderea și revenirea de la PNG-ul integral pe câte un owner declarat; fără Expand all pe rapoarte mari.
-- [ ] Consumați invariantul neutru [REPORT-ARTIFACT-AUTONOMY-150](README.md#contractul-comun-de-autonomie), cu verificare DOM și controale pentru link XML și imagine externă; numele unui control ori lipsa resurselor numărate nu este PASS.
-- [ ] Păstrați distinct execuțiile pe sisteme Android diferite, diagnosticul FAIL și replay-ul istoric. Raportul explică separat rezultatul funcțional, ERROR-ul JUnit original și republicarea; reunirea într-un HTML nu schimbă identitatea, timpii sau verdicturile.
-
-**Închidere:** fiecare publicator și handoff refuză mutanții, iar raportul detașat permite înțelegerea scopului fără README, checkout, XML/JSON sau alte fișiere. Problemele generice ale inspectorului urmează responsabilul bibliotecilor; datele Android și guvernanța versiunii rămân aici.
-
 ## RPT-RELEASE-SUITE-COVERAGE — agregarea corectă a livrării
 
-**P1 · responsabil adaptor și pregătirea release-ului: calificarea colecțiilor și migrarea istorică.** [Agregarea pe sursa live](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) execută intrările primare Maven, iar [task-urile Gradle](../testing/ATF_GradleComponents.md) confruntă fiecare selecție cu propriul HTML. Identitățile se numără o singură dată; unitățile, componentele și cercetarea își păstrează categoria. O nouă execuție nu primește identitatea unui APK anterior.
+**P1 · responsabil adaptor și pregătirea release-ului.** Lansatoarele Maven și Gradle confruntă selecțiile rulate cu propriul HTML. Calificați predarea pentru selecțiile Gradle și E2E care încă nu au o execuție demonstrată în dosarul candidatului. [Agregarea componentelor](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live)
 
-Dosarele de release păstrează numai raportările produse și identitatea lor originală. Calificarea agregării trebuie să lege fiecare selecție executată de propriul HTML canonic, receipt și amprentă a sursei; o rulare ulterioară nu completează retrospectiv dovezile unui APK deja calificat.
-
-- [ ] Folosiți [criteriul comparațiilor](#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) pentru familiile unde o comparație lipsește sau este insuficient explicată în HTML.
-- [ ] Încorporați datele originale obligatorii înaintea eliminării XML/PNG/JSON istorice. Când comparațiile nu au fost capturate, o nouă execuție primește identitate proprie; tabelul PASS din XML nu reconstruiește expected/actual și nu recalifică APK-ul vechi.
-- [ ] Calificați popularea dosarului candidatului pentru selecțiile Gradle și E2E rămase. Fiecare selecție rulată are HTML Extent canonic, egalitate JUnit–HTML, identitate de sursă și capturile produse inline Base64. Înlocuiți rezultatul XML al aceleiași populații după verificator și revizia autonomă. Păstrați separate suita unit, smoke-ul nativ și diagnosticele cu valoare unică.
-- [ ] Confruntați dosarul publicat cu [identitatea dovezii RAG](ATF_Release_RAG.md#identitatea-surselor-și-a-dosarului) și verificați că selecțiile reutilizate păstrează hash-ul și proveniența execuției originale.
-
-**Închidere:** HTML-urile canonice permit auditul selecțiilor declarate, cu metadate justificate și proveniență distinctă. Dovezile unice nemigrate rămân identificate; eliminarea lor ori mascarea unei dependențe nu reprezintă agregare.
+- Confruntați invocările, identitatea sursei, receipt-ul și capturile inline. La reutilizare, verificați hash-ul și proveniența execuției originale. [Identitatea dovezii RAG](ATF_Release_RAG.md#identitatea-surselor-și-a-dosarului)
+- Pentru datele istorice nemigrate, inventariați conținutul unic. O execuție nouă primește propria identitate, iar [criteriul comparațiilor](#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne deschis pentru valorile care nu au fost capturate.
 
 ## Validarea timpurie a checkpoint-ului
 
