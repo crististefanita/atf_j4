@@ -6,8 +6,8 @@ Whist Lab este un joc local de levate pentru trei până la șase locuri, cu adv
 
 ## Jocul
 
-- **[Whist Lab 0.21.2 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.21.2)** — ediție Android pentru utilizatorii autentificați.
-- **[Descarcă APK 0.21.2](https://github.com/crististefanita/atf_j4/releases/download/v0.21.2/WhistLab-0.21.2.apk)** — pachet Android semnat, cu testele și documentația candidatei sincronizate.
+- **[Whist Lab 0.21.3 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.21.3)** — ediție Android pentru utilizatorii autentificați.
+- **[Descarcă APK 0.21.3](https://github.com/crististefanita/atf_j4/releases/download/v0.21.3/WhistLab-0.21.3.apk)** — pachet Android semnat pentru utilizatorii cu acces la repository.
 
 ## Cum se joacă
 

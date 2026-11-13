@@ -27,6 +27,7 @@ O regulă stabilă are un singur document responsabil. Feedback-ul păstrează d
 - Un interval orientativ de trei până la șapte documente pe arie ajută scanarea. Volumul, coeziunea și traseul de lectură decid când se consolidează sau se separă o arie.
 - Un fișier nou apare când deține un contract sau un proces propriu; un titlu ori un exemplu suplimentar poate rămâne secțiune.
 - Un ghid care unește două mecanisme indică limitele lor și trimite la proprietarul fiecărui contract.
+- Indexul priorităților din `docs/feedback/README.md` păstrează ID-uri unice, scoruri descrescătoare în intervalul 1–100 și legături locale rezolvabile către registrul proprietar; [testul de guvernanță](../../atf-tests/src/test/java/atf/tests/governance/documentation/feedback/FeedbackIndexGovernanceTest.java) validează și cazurile negative.
 
 Numele de orientare este `README.md`. Ghidurile descriptive folosesc `ATF_<PascalCase>.md`, cu nume scurt în contextul ariei; limba ori profilul se indică numai când disting contracte reale.
 

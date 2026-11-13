@@ -205,9 +205,9 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(deliveryGuide.contains("## Commit-ul surselor și commit-ul dovezilor"));
         assertTrue(deliveryGuide.contains("recitiți README-ul din GitHub"));
         assertTrue(deliveryGuide.contains("repetați descărcarea folosind exact acel link"));
-        assertTrue(ragFeedback.contains("Inventarul complet al snapshot-ului"));
+        assertTrue(ragFeedback.contains("Snapshot unitar și preflight al artefactelor"));
         assertTrue(ragFeedback.contains("Legătura independentă risc–teste"));
-        assertTrue(ragFeedback.contains("Producător și handoff unic"));
+        assertTrue(ragFeedback.contains("Costul pregătirii componentelor Maven"));
         assertTrue(ragFeedback.contains("Prospețimea receipt-urilor"));
         assertFalse(ragFeedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");
         assertTrue(evaluator.contains("READY_FOR_HUMAN_REVIEW"));

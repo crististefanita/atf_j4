@@ -27,13 +27,13 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
 |---|---:|---:|---|
 | RAG-01 | P1 | 98 | Leagă automat schimbările relevante de selecția minimă de teste; respinge planul care declară flux neschimbat când diff-ul afectează un flux. [Registru](ATF_Release_RAG.md#lacune-deschise) |
-| RAG-02 | P1 | 94 | Produce planul, inventarul și receipt-urile dintr-un snapshot fixat; verifică înaintea guvernanței costisitoare că APK-ul și sidecar-ul versionate corespund manifestului și blochează diferențele față de candidatul predat. [Registru](ATF_Release_RAG.md#lacune-deschise) |
 | RPT-01 | P1 | 95 | Livrează un HTML Extent autonom, cu PNG inline, fără copii auxiliare redundante; acceptă auditul offline după desprinderea de runner. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
+| RAG-02 | P1 | 94 | Produce planul, inventarul și receipt-urile dintr-un snapshot fixat; verifică înaintea guvernanței costisitoare că APK-ul și sidecar-ul versionate corespund manifestului și blochează diferențele față de candidatul predat. [Registru](ATF_Release_RAG.md#lacune-deschise) |
 | RPT-02 | P1 | 94 | Păstrează comparațiile input–expected–actual–verdict și paritatea exactă JUnit/Extent pentru fiecare suită primară. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |
 | AND-02 | P1 | 92 | Califică pe APK actorul, geometria stabilă și mâna vizibilă în licitație/joc/AutoGame pentru 3–6 locuri, RO/EN și text mărit. [Registru](ATF_Android.md) |
 | AI-01 | P1 | 91 | Calibrează inferența Hard pentru 2–8 cărți din licitații și cărți jucate pe loturi noi; separă exactitatea probabilităților de scorul simulat. [Registru](ATF_Ai.md) |
-| ACH-01 | P1 | 90 | Închide validarea negativă a catalogului YAML și acceptanța Android cu progres restaurat, notificări idempotente și starea ecranului păstrată. [Registru](ATF_Achievements.md) |
+| ACH-01 | P1 | 90 | Califică pe APK restaurarea stării ecranului Realizări, progresul păstrat și notificările fără credit sau afișare duplicate. [Registru](ATF_Achievements.md) |
 | AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
 | GOV-01 | P1 | 87 | Oferă validatoare cu API/CLI autonom, rădăcini explicite și inventar complet; controalele negative resping surse sau excepții neacoperite. [Registru](ATF_Governance.md#api-reutilizabil-pentru-verificatoare) |

@@ -4,17 +4,6 @@
 
 Catalogul și progresul au contracte proprii în [documentația realizărilor](../game/ATF_Achievements.md). Acest registru păstrează numai verificările încă necesare pentru compatibilitatea YAML/runtime și pentru ecranul Android; pragurile și identitățile existente nu se schimbă fără migrare versionată.
 
-## P1 · Validarea catalogului YAML înainte de generare
-
-Generatorul respinge schema și câmpurile de bază, dar verificarea unei metrici necunoscute sau a unei perechi metrică/agregare incompatibile poate ajunge până la compilarea Java generată. Refuzul trebuie să indice ID-ul și valoarea YAML, înainte să fie produsă sursa.
-
-- Definește setul de metrici admise și combinațiile legale cu agregările într-o singură regulă coerentă cu catalogul runtime.
-- Acoperă prin teste pozitive și negative: metrică necunoscută, agregare necunoscută, pereche invalidă, grup gol, ID duplicat, câmp lipsă și text RO/EN gol.
-- Verifică faptul că un fișier valid generează aceeași ordine, aceleași ID-uri și aceleași definiții tipizate folosite de aplicație.
-- Nu elimina și nu redenumi ID-uri stabile fără migrare care păstrează progresul și coada de notificări.
-
-**Surse:** [generatorul Gradle](../../whist-lab-app/app/achievement-catalog.gradle), [catalogul YAML](../../whist-lab-app/app/src/main/achievement-rules/whist-achievements.yaml), [testele de componentă](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java).
-
 ## P1 · Restaurarea stării ecranului comun pe Android
 
 Adaptorul Whist creează o stare nouă a ecranului la fiecare deschidere. Componentele catalogului și detaliului nu demonstrează, singure, că poziția listei și obiectivul selectat se păstrează la recrearea ecranului sau după revenirea dintr-o notificare.

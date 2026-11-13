@@ -10,8 +10,8 @@ android {
         applicationId "ro.whistlab.app"
         minSdk 24
         targetSdk 36
-        versionCode 33
-        versionName "0.21.2"
+        versionCode 34
+        versionName "0.21.3"
         testInstrumentationRunner "ro.whistlab.app.score.nativecomponent.HistoryMarksComponentInstrumentation"
     }
 

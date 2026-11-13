@@ -81,11 +81,12 @@ class DocumentationPolicyGovernanceTest {
         String version = archive.group(1);
         String page = repository + "/releases/tag/v" + version;
         String apk = repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk";
+        String checksum = apk + ".sha256";
         var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
         var result = new StringBuffer();
         while (links.find()) {
             String replacement = links.group(2).equals(repository)
-                    || links.group(2).equals(page) || links.group(2).equals(apk)
+                    || links.group(2).equals(page) || links.group(2).equals(apk) || links.group(2).equals(checksum)
                     ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
             links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
         }
@@ -96,14 +97,16 @@ class DocumentationPolicyGovernanceTest {
         String repository = "https://github.com/example/atf_j4";
         String page = repository + "/releases/tag/v0.17.1";
         String apk = repository + "/releases/download/v0.17.1/WhistLab-0.17.1.apk";
-        String source = "[README principal](" + repository + ") · [GitHub Release](" + page + ") · [APK](" + apk + ")";
+        String checksum = apk + ".sha256";
+        String source = "[README principal](" + repository + ") · [GitHub Release](" + page + ") · [APK](" + apk + ") · [Checksum](" + checksum + ")";
         AuditedAssertions.assertEquals(
-                "[README principal](<resursă-publică>) · [GitHub Release](<resursă-publică>) · [APK](<resursă-publică>)",
+                "[README principal](<resursă-publică>) · [GitHub Release](<resursă-publică>) · [APK](<resursă-publică>) · [Checksum](<resursă-publică>)",
                 historicalReleaseProse("release/0.17.1/README.md", source, repository));
         AuditedAssertions.assertEquals("Context J4. [APK](<resursă-publică>)",
                 historicalReleaseProse("release/0.17.1/README.md", "Context J4. [APK](" + apk + ")", repository));
         for (String unchanged : List.of(
                 "[APK](" + repository + "/releases/download/v0.17.0/WhistLab-0.17.0.apk)",
+                "[Checksum](" + repository + "/releases/download/v0.17.0/WhistLab-0.17.0.apk.sha256)",
                 "[APK](" + repository + "/releases/download/v0.17.1/Other.apk)",
                 "[README](" + repository + "/tree/main)",
                 "[README](https://github.com/foreign/atf_j4)",

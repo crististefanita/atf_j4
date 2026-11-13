@@ -8,6 +8,10 @@ Catalogul indică versiunea Android curentă și păstrează o singură ediție 
 
 [0.21.2 — APK, verificări și proveniență](0.21.2/README.md) este ediția Android publicată curentă.
 
+## Candidat
+
+[0.21.3 — candidat Android](candidate.json) este în curs de calificare. Linkul din README-ul principal indică asset-ul viitor exact, disponibil după publicare.
+
 ## Versiuni disponibile
 
 | Versiune | Stare | Dosar |

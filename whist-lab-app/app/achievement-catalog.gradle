@@ -2,9 +2,37 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 abstract class GenerateWhistAchievementCatalog extends DefaultTask {
+    static final Set<String> METRICS = [
+            'COMPLETED_MATCHES', 'EXACT_CONTRACTS', 'MATCH_WINS',
+            'EXACT_ONE_CARD', 'EXACT_ZERO_LARGE', 'EXACT_SMALL_RATE', 'EXACT_MIDDLE_RATE', 'EXACT_LARGE_RATE',
+            'EXACT_STREAK', 'EXACT_MATCH_RATE', 'EXACT_HAND_SIZE_COUNT', 'EXACT_FINAL_HAND',
+            'EXACT_FINAL_THREE', 'EXACT_FINAL_FIVE', 'SERIES_ENABLED_MATCHES', 'POSITIVE_SERIES_AWARDS',
+            'POSITIVE_SERIES_MATCHES', 'WIN_WITH_SERIES_AWARD', 'SHORT_ROMANIAN_MATCHES',
+            'LONG_ROMANIAN_MATCHES', 'SHORT_ROMANIAN_WINS', 'LONG_ROMANIAN_WINS', 'ZERO_GAME_MATCHES',
+            'PLAYER_COUNT_THREE', 'PLAYER_COUNT_SIX', 'TOP_TWO_AT_FIVE', 'TOP_TWO_AT_SIX', 'WINS_AT_SIX',
+            'HOLD_OR_IMPROVE_RANK', 'TOP_THREE_AT_FOUR', 'TOP_TWO_AT_FOUR', 'CLIMB_ONE_RANK', 'LAST_TO_TOP_TWO',
+            'EXACT_ZERO_MULTICARD', 'EXACT_ZERO_SHORT', 'EXACT_ZERO_MIDDLE', 'EXACT_ZERO_EIGHT', 'EXACT_ZERO_BANDS',
+            'EXACT_ONE_TRICK', 'EXACT_TWO_PLUS', 'EXACT_THREE_PLUS', 'EXACT_POSITIVE_LARGE', 'EXACT_POSITIVE_RATE',
+            'RECOVERY_AFTER_MISS', 'RECOVERY_AFTER_TWO_MISSES', 'RECOVERY_TWO_EXACT',
+            'RECOVERY_BOTH_MISS_TYPES', 'RECOVERY_THREE_EXACT'
+    ] as Set
+    private static final Set<String> BEST_MATCH_METRICS = [
+            'EXACT_HAND_SIZE_COUNT', 'EXACT_LARGE_RATE', 'EXACT_MATCH_RATE', 'EXACT_MIDDLE_RATE',
+            'EXACT_POSITIVE_RATE', 'EXACT_SMALL_RATE', 'EXACT_STREAK', 'EXACT_ZERO_BANDS',
+            'RECOVERY_BOTH_MISS_TYPES', 'RECOVERY_THREE_EXACT'
+    ] as Set
+    private static final Set<String> AGGREGATIONS = ['SUM', 'BEST_MATCH'] as Set
+    private static final Set<String> GROUP_FIELDS = ['number', 'titleRo', 'titleEn'] as Set
+    private static final Set<String> COPY_FIELDS = ['titleRo', 'titleEn', 'descriptionRo', 'descriptionEn'] as Set
+    private static final Set<String> GOAL_FIELDS = (['id', 'group', 'level', 'target', 'metric', 'aggregation'] + COPY_FIELDS) as Set
+
     @InputFile
     @PathSensitive(PathSensitivity.RELATIVE)
     abstract RegularFileProperty getRulesFile()
+
+    @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract RegularFileProperty getCatalogSourceFile()
 
     @OutputDirectory
     abstract DirectoryProperty getOutputDirectory()
@@ -12,40 +40,33 @@ abstract class GenerateWhistAchievementCatalog extends DefaultTask {
     @TaskAction
     void generate() {
         def catalog = new JsonSlurper().parse(rulesFile.get().asFile, 'UTF-8')
-        if (catalog.keySet() != ['schemaVersion', 'groups', 'goals'].toSet() ||
-                catalog.schemaVersion != 1 || !(catalog.groups instanceof List) ||
-                catalog.groups.isEmpty() || !(catalog.goals instanceof List)) {
-            throw new GradleException('Invalid Whist achievement catalog')
+        String rootError = catalogValidationError(catalog)
+        if (rootError != null) throw new GradleException("Invalid Whist achievement catalog: $rootError")
+        String runtimeSource = catalogSourceFile.get().asFile.getText('UTF-8')
+        if (enumValues(runtimeSource, 'Metric') != METRICS ||
+                enumValues(runtimeSource, 'Aggregation') != AGGREGATIONS) {
+            throw new GradleException('Whist achievement catalog validation must match the runtime metric and aggregation enums')
         }
         def numbers = [] as Set
         def groups = catalog.groups.collect { group ->
-            if (group.keySet() != ['number', 'titleRo', 'titleEn'].toSet() ||
-                    !(group.number instanceof Integer) || group.number != numbers.size() + 1 ||
-                    !GenerateWhistAchievementCatalog.validCopy(group, ['titleRo', 'titleEn'])) {
-                throw new GradleException("Invalid Whist achievement group: $group")
-            }
+            String error = groupValidationError(group, numbers.size() + 1)
+            if (error != null) throw new GradleException("Invalid Whist achievement group: $error ($group)")
             numbers.add(group.number)
             def titles = GenerateWhistAchievementCatalog.quoted(group, ['titleRo', 'titleEn'])
             "            new Group(${group.number}, $titles, goalsIn(goals, ${group.number}))"
         }
-        def copy = ['titleRo', 'titleEn', 'descriptionRo', 'descriptionEn']
         def ids = [] as Set
         def usedGroups = [] as Set
         def goals = catalog.goals.collect { goal ->
-            if (goal.keySet() != (['id', 'group', 'level', 'target', 'metric', 'aggregation'] + copy).toSet() ||
-                    !(goal.id ==~ /[a-z][a-z0-9_]*/) || !ids.add(goal.id) ||
-                    !numbers.contains(goal.group) || !(goal.target instanceof Integer) || goal.target < 1 ||
-                    !['EASY', 'MEDIUM', 'HARD'].contains(goal.level) ||
-                    !(goal.metric ==~ /[A-Z][A-Z0-9_]*/) || !['SUM', 'BEST_MATCH'].contains(goal.aggregation) ||
-                    !GenerateWhistAchievementCatalog.validCopy(goal, copy)) {
-                throw new GradleException("Invalid or duplicate Whist achievement: $goal")
-            }
+            String goalId = goal instanceof Map && goal.id instanceof String ? goal.id : '<missing>'
+            String error = goalValidationError(goal, numbers, ids)
+            if (error != null) throw new GradleException("Invalid Whist achievement '$goalId': $error")
             usedGroups.add(goal.group)
-            def labels = GenerateWhistAchievementCatalog.quoted(goal, copy)
+            def labels = GenerateWhistAchievementCatalog.quoted(goal, COPY_FIELDS as List)
             "            new Goal(${JsonOutput.toJson(goal.id)}, ${goal.group}, Level.${goal.level}, ${goal.target}, " +
                     "$labels, Metric.${goal.metric}, Aggregation.${goal.aggregation})"
         }
-        if (usedGroups != numbers) throw new GradleException('Empty Whist achievement group')
+        if (!allGroupsUsed(numbers, usedGroups)) throw new GradleException('Empty Whist achievement group')
         def file = outputDirectory.get().file('ro/whistlab/app/achievements/WhistAchievementCatalogData.java').asFile
         file.parentFile.mkdirs()
         file.setText("""package ro.whistlab.app.achievements;
@@ -73,6 +94,66 @@ ${groups.join(',\n')}
 """, 'UTF-8')
     }
 
+    static String catalogValidationError(Object entry) {
+        if (!(entry instanceof Map)) return 'catalog must be an object'
+        Map catalog = (Map) entry
+        if (catalog.keySet() != ['schemaVersion', 'groups', 'goals'].toSet()) return 'unexpected or missing root fields'
+        if (!(catalog.schemaVersion instanceof Integer) || catalog.schemaVersion != 1) return 'unsupported schema version'
+        if (!(catalog.groups instanceof List) || catalog.groups.isEmpty()) return 'groups must be a non-empty array'
+        if (!(catalog.goals instanceof List)) return 'goals must be an array'
+        return null
+    }
+
+    static String groupValidationError(Object entry, int expectedNumber) {
+        if (!(entry instanceof Map)) return 'group must be an object'
+        Map group = (Map) entry
+        if (group.keySet() != GROUP_FIELDS) return 'unexpected or missing group fields'
+        if (!(group.number instanceof Integer) || group.number != expectedNumber) return 'group number is missing or out of order'
+        if (!validCopy(group, ['titleRo', 'titleEn'])) return 'Romanian and English group titles must be non-empty strings'
+        return null
+    }
+
+    static String goalValidationError(Object entry, Set<Integer> groupNumbers, Set<String> ids) {
+        if (!(entry instanceof Map)) return 'entry must be an object'
+        Map goal = (Map) entry
+        if (goal.keySet() != GOAL_FIELDS) return 'unexpected or missing fields'
+        if (!(goal.id instanceof String) || !(goal.id ==~ /[a-z][a-z0-9_]*/)) return 'invalid stable ID'
+        if (!ids.add(goal.id)) return 'duplicate stable ID'
+        if (!(goal.group instanceof Integer) || !groupNumbers.contains(goal.group)) return 'unknown group'
+        if (!(goal.target instanceof Integer) || goal.target < 1) return 'target must be a positive integer'
+        if (!(goal.level instanceof String) || !['EASY', 'MEDIUM', 'HARD'].contains(goal.level)) return 'unknown difficulty level'
+        if (!(goal.metric instanceof String) || !METRICS.contains(goal.metric)) return "unknown metric '${goal.metric}'"
+        if (!(goal.aggregation instanceof String) || !AGGREGATIONS.contains(goal.aggregation))
+            return "unknown aggregation '${goal.aggregation}'"
+        String requiredAggregation = BEST_MATCH_METRICS.contains(goal.metric) ? 'BEST_MATCH' : 'SUM'
+        if (goal.aggregation != requiredAggregation)
+            return "metric '${goal.metric}' requires aggregation '${requiredAggregation}'"
+        if (!validCopy(goal, COPY_FIELDS as List)) return 'Romanian and English copy must be non-empty strings'
+        return null
+    }
+
+    static boolean allGroupsUsed(Set<Integer> groupNumbers, Set<Integer> usedGroups) {
+        return usedGroups == groupNumbers
+    }
+
+    static Set<String> enumValues(String source, String name) {
+        def matcher = (source =~ "enum\\s+${name}\\s*\\{")
+        if (!matcher.find()) throw new GradleException("Cannot read runtime $name enum")
+        int bodyStart = matcher.end()
+        int depth = 1
+        int cursor = bodyStart
+        while (cursor < source.length() && depth > 0) {
+            if (source.charAt(cursor) == '{') depth++
+            else if (source.charAt(cursor) == '}') depth--
+            cursor++
+        }
+        if (depth != 0) throw new GradleException("Runtime $name enum is not closed")
+        String body = source.substring(bodyStart, cursor - 1)
+        int terminator = body.indexOf(';')
+        if (terminator >= 0) body = body.substring(0, terminator)
+        return body.split(',').collect { it.trim() }.findAll { it ==~ /[A-Z][A-Z0-9_]*/ } as Set
+    }
+
     static boolean validCopy(Map row, List fields) {
         fields.every { row[it] instanceof String && !row[it].isBlank() }
     }
@@ -84,8 +165,83 @@ ${groups.join(',\n')}
 
 def generateWhistAchievementCatalog = tasks.register('generateWhistAchievementCatalog', GenerateWhistAchievementCatalog) {
     rulesFile.set(layout.projectDirectory.file('src/main/achievement-rules/whist-achievements.yaml'))
+    catalogSourceFile.set(layout.projectDirectory.file('src/main/java/ro/whistlab/app/achievements/WhistAchievementCatalog.java'))
     outputDirectory.set(layout.buildDirectory.dir('generated/sources/whistAchievements/java'))
 }
+
+def verifyWhistAchievementCatalogValidation = tasks.register('verifyWhistAchievementCatalogValidation') {
+    group = 'verification'
+    description = 'Verifică schema, enum-urile runtime și mesajele de eroare ale catalogului Whist.'
+    doLast {
+        File sourceFile = file('src/main/java/ro/whistlab/app/achievements/WhistAchievementCatalog.java')
+        String source = sourceFile.getText('UTF-8')
+        if (GenerateWhistAchievementCatalog.enumValues(source, 'Metric') != GenerateWhistAchievementCatalog.METRICS ||
+                GenerateWhistAchievementCatalog.enumValues(source, 'Aggregation') != GenerateWhistAchievementCatalog.AGGREGATIONS) {
+            throw new GradleException('Generated-catalog validation must match the runtime metric and aggregation enums')
+        }
+
+        def base = [group: 1, level: 'EASY', target: 1, titleRo: 'Test', titleEn: 'Test',
+                    descriptionRo: 'Test', descriptionEn: 'Test']
+        def validBestMatch = base + [id: 'valid_streak', metric: 'EXACT_STREAK', aggregation: 'BEST_MATCH']
+        def validSum = base + [id: 'valid_accumulator', metric: 'COMPLETED_MATCHES', aggregation: 'SUM']
+        [validBestMatch, validSum].each { goal ->
+            String error = GenerateWhistAchievementCatalog.goalValidationError(goal, [1] as Set, [] as Set)
+            if (error != null) throw new GradleException("Valid neighbouring catalog entry was rejected: $error")
+        }
+
+        def rejected = [
+                [goal: base + [id: 'unknown_metric', metric: 'NOT_A_METRIC', aggregation: 'SUM'], expected: 'unknown metric'],
+                [goal: base + [id: 'incompatible_pair', metric: 'EXACT_STREAK', aggregation: 'SUM'],
+                 expected: "requires aggregation 'BEST_MATCH'"],
+                [goal: base + [id: 'duplicate_id', metric: 'COMPLETED_MATCHES', aggregation: 'SUM'],
+                 existingIds: ['duplicate_id'], expected: 'duplicate stable ID'],
+                [goal: base + [id: 'unknown_group', group: 9, metric: 'COMPLETED_MATCHES', aggregation: 'SUM'], expected: 'unknown group'],
+                [goal: base + [id: 'zero_target', target: 0, metric: 'COMPLETED_MATCHES', aggregation: 'SUM'], expected: 'positive integer'],
+                [goal: base + [id: 'unknown_level', level: 'EXPERT', metric: 'COMPLETED_MATCHES', aggregation: 'SUM'], expected: 'unknown difficulty level'],
+                [goal: base + [id: 'unknown_aggregation', metric: 'COMPLETED_MATCHES', aggregation: 'AVERAGE'], expected: 'unknown aggregation'],
+                [goal: base + [id: 'blank_copy', titleRo: ' ', metric: 'COMPLETED_MATCHES', aggregation: 'SUM'], expected: 'copy must be non-empty'],
+                [goal: base.findAll { key, value -> key != 'titleEn' } +
+                        [id: 'missing_field', metric: 'COMPLETED_MATCHES', aggregation: 'SUM'], expected: 'unexpected or missing fields'],
+                [goal: base + [id: 'unexpected_field', metric: 'COMPLETED_MATCHES', aggregation: 'SUM', debug: true],
+                 expected: 'unexpected or missing fields'],
+                [goal: ['not', 'an', 'object'], expected: 'entry must be an object']
+        ]
+        rejected.each { testCase ->
+            String goalId = testCase.goal instanceof Map && testCase.goal.id instanceof String ? testCase.goal.id : '<missing>'
+            Set<String> existingIds = (testCase.existingIds ?: []) as Set
+            String error = GenerateWhistAchievementCatalog.goalValidationError(testCase.goal, [1] as Set, existingIds)
+            String message = error == null ? null : "Invalid Whist achievement '$goalId': $error"
+            if (message == null || !message.contains(goalId) || !message.contains(testCase.expected)) {
+                throw new GradleException("Catalog validation did not reject '$goalId' as expected: $message")
+            }
+        }
+
+        if (GenerateWhistAchievementCatalog.catalogValidationError(['not', 'an', 'object']) != 'catalog must be an object' ||
+                GenerateWhistAchievementCatalog.catalogValidationError([schemaVersion: 2, groups: [], goals: []]) != 'unsupported schema version' ||
+                GenerateWhistAchievementCatalog.catalogValidationError([schemaVersion: 1, groups: [], goals: []]) != 'groups must be a non-empty array' ||
+                GenerateWhistAchievementCatalog.catalogValidationError([schemaVersion: 1, groups: [[:]], goals: 'invalid']) != 'goals must be an array' ||
+                GenerateWhistAchievementCatalog.catalogValidationError([schemaVersion: 1, groups: [], goals: [], extra: true]) != 'unexpected or missing root fields') {
+            throw new GradleException('Catalog root validation did not reject malformed inputs')
+        }
+        if (GenerateWhistAchievementCatalog.groupValidationError(['not', 'a', 'group'], 1) != 'group must be an object' ||
+                GenerateWhistAchievementCatalog.groupValidationError([number: 2, titleRo: 'A', titleEn: 'A'], 1) == null ||
+                GenerateWhistAchievementCatalog.groupValidationError([number: 1, titleRo: '', titleEn: 'A'], 1) == null ||
+                GenerateWhistAchievementCatalog.groupValidationError([number: 1, titleRo: 'A', titleEn: 'A', extra: true], 1) == null) {
+            throw new GradleException('Catalog group validation did not reject malformed inputs')
+        }
+        if (GenerateWhistAchievementCatalog.allGroupsUsed([1, 2] as Set, [1] as Set) ||
+                !GenerateWhistAchievementCatalog.allGroupsUsed([1, 2] as Set, [1, 2] as Set)) {
+            throw new GradleException('Catalog validation did not reject empty groups')
+        }
+        logger.lifecycle("Whist achievement catalog validation passed: runtime enums, both valid aggregations and ${rejected.size()} negative goal cases plus malformed roots/groups.")
+    }
+}
+
+tasks.named('check') { dependsOn verifyWhistAchievementCatalogValidation }
+afterEvaluate {
+    tasks.named('testDebugAchievementsComponents') { dependsOn verifyWhistAchievementCatalogValidation }
+}
+
 androidComponents.onVariants(androidComponents.selector().all()) { variant ->
     variant.sources.java.addGeneratedSourceDirectory(generateWhistAchievementCatalog) { it.outputDirectory }
 }

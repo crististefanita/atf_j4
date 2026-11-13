@@ -42,7 +42,8 @@ Mâinile și partidele furnizează fapte distincte. Evaluarea actualizează star
 | 10. Contracte pozitive | Exact o levată; cel puțin două levate la un contract exact | Trei contracte exacte de cel puțin trei levate; cinci contracte pozitive exacte la 6–8 cărți | Cel puțin 65% exacte între licitațiile pozitive eligibile ale unei partide |
 | 11. Revenirea la precizie | Revino după o ratare; revino după cel puțin două ratări consecutive | Adună cinci reveniri de câte două contracte exacte; revino de două ori după fiecare tip de ratare într-o partidă | Patru reveniri distincte de câte trei contracte exacte într-o partidă |
 
-- Catalogul YAML declară grupurile, ordinea, textele RO/EN, metricile și pragurile. Gradle validează schema și generează definițiile tipizate. [Catalogul executabil](../../whist-lab-app/app/src/main/achievement-rules/whist-achievements.yaml)
+- Catalogul YAML declară grupurile, ordinea, textele RO/EN, metricile și pragurile. Înainte de generare, Gradle validează forma obiectelor, câmpurile, ID-urile, grupurile negoale și combinațiile metrică–agregare față de enum-urile runtime; refuzul identifică înregistrarea invalidă înaintea compilării Java. [Catalogul executabil](../../whist-lab-app/app/src/main/achievement-rules/whist-achievements.yaml) · [Validarea de contract](../../whist-lab-app/app/achievement-catalog.gradle)
+- `:app:verifyWhistAchievementCatalogValidation` verifică vectorii valizi și negativi; taskul face parte din `:app:testDebugAchievementsComponents` și `check`. Testele runtime verifică separat ordinea și identitățile generate, pragurile, reluarea și acordarea idempotentă a progresului.
 - Identificatorii stabili leagă progresul salvat de obiectivul afișat. Interfața plafonează progresul la țintă, iar modelul păstrează valoarea acumulată pentru pragurile care folosesc aceeași măsură.
 
 ## Sursa de adevăr
