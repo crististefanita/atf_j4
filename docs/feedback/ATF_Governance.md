@@ -96,9 +96,9 @@ Inventarul fișierelor `release/` citite în timpul guvernanței aparține [cont
 
 **P2 · deschis · responsabil: motorul și coordonarea deciziei.**
 
-[GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) și [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) păstrează coordonare și mai multe modele sau etape interne. Pragul pachetelor rămâne util, însă nu califică singur lizibilitatea metodelor și stabilitatea fațadelor.
+GameSession rămâne un coordonator amplu pentru mutări, scor și rehidratarea checkpoint-ului. Pragul pachetelor este util, dar nu verifică separat responsabilitățile interne sau stabilitatea fațadei.
 
-Extrageți o singură responsabilitate demonstrată pe increment, cu același contract public, aceleași alegeri și estimări pe observații fixate, conservarea scorului și verificări nominale și de refuz. Păstrați modificările de prezentare și candidații strategici în lucrări separate; o formatare amplă nu dovedește refactorizare semantică.
+Extrageți câte o responsabilitate demonstrată pe increment, păstrând mutările legale, scorul, ordinea levatelor și restaurarea checkpoint-ului. Verificați comportamentul nominal și refuzurile cu oracol fixat; mutarea codului sau formatarea amplă nu dovedesc singure reducerea responsabilității. Politica și eșantioanele MonteCarloAi au owner separat în [feedback-ul AI](ATF_Ai.md#evoluția-motorului).
 
 - O regulă nouă de stratificare sau de proprietate a stării cere o intrare sănătoasă și una defectă.
 - [Registrul adaptorului](ATF_Android.md#persistență-și-coordonare) deține probele pentru fixture-urile Android din Release.

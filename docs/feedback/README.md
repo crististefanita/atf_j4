@@ -40,7 +40,9 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
 | GOV-02 | P2 | 80 | Validează baza Git, căile schimbate și expirarea controalelor `testChanges`. [Registru](ATF_Governance.md#confruntarea-afirmațiilor-documentare) |
-| REF-01 | P2 | 78 | Reduce clasele și testele supradimensionate prin responsabilități clare, fără schimbarea contractelor observabile. [Registre tematice](ATF_Android.md) |
+| AND-04 | P2 | 78 | Izolați fabricarea fixture-urilor deterministe din MainActivity într-un seam exclus din Release; păstrați scenariile Debug și refuzați activarea fixture-urilor prin intent extras. [Owner](ATF_Android.md#persistență-și-coordonare) |
+| AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Owner](ATF_Ai.md#evoluția-motorului) |
+| GOV-03 | P2 | 74 | Reduceți responsabilitățile rămase în GameSession fără schimbarea mutărilor, scorului sau checkpoint-ului; verificați comportamentul nominal și refuzurile cu oracol fixat. [Owner](ATF_Governance.md#lizibilitatea-coordonatorilor-de-domeniu) |
 
 ## Responsabilitatea schimbării
 
