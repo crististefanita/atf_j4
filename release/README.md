@@ -6,7 +6,7 @@ Catalogul indică versiunea Android curentă și păstrează o singură ediție 
 
 ## Versiunea curentă
 
-[0.21.1 — APK, verificări și proveniență](0.21.1/README.md) este ediția Android curentă. README-ul principal oferă link direct la APK-ul GitHub.
+[0.21.1 — APK, verificări și proveniență](0.21.1/README.md) este ediția Android publicată curentă.
 
 ## Versiuni disponibile
 

@@ -41,12 +41,10 @@ class DocumentationPolicyGovernanceTest {
             }
             String prose = deploymentProse(Files.readString(file));
             String relative = GovernanceProject.relative(root, file);
-            prose = libraryMaintenanceProse(GovernanceProject.relative(root, file), prose);
             prose = publicReleaseProse(prose, publicRepository, declaredDownload);
             prose = historicalReleaseProse(relative, prose, publicRepository);
-            if (file.equals(root.resolve("docs/feedback/README.md"))) prose = prose.replace("atf_j0", "responsabil");
             AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b").matcher(prose).find(),
-                    () -> "Official documentation uses domain concepts; library-owner routing belongs in feedback/README: " + file);
+                    () -> "Project documentation must use its local contracts, not external project identifiers: " + file);
         }
     }
 
@@ -172,39 +170,36 @@ class DocumentationPolicyGovernanceTest {
             AuditedAssertions.assertEquals(unchanged, publicReleaseProse(unchanged, repository, published), unchanged);
     }
 
-    /** Only the named library guides may route maintenance to the source owner, in their footer. */
-    static String libraryMaintenanceProse(String relative, String source) {
-        if (!java.util.Set.of("lib/README.md", "lib/README.Core.md", "lib/README.Reporting.md",
-                "lib/README.Console.md", "lib/README.Mock.md", "lib/README.TestKit.md").contains(relative)) return source;
-        String text = source.replace("\r\n", "\n");
-        int footer = relative.equals("lib/README.md") ? text.indexOf("\n## Mentenanță și feedback\n") : text.lastIndexOf("\n---\n");
-        if (footer < 0) return text;
-        return text.substring(0, footer) + text.substring(footer).replaceAll("(?<![A-Za-z0-9_])(?:atf_j0|J0)(?![A-Za-z0-9_])", "responsabil");
-    }
-
-    @Test void libraryMaintenanceFooterDoesNotExemptBodyOtherOwnersOrOtherFiles() {
-        String index = "## Pe scurt\nJ0 în corp\n## Mentenanță și feedback\natf_j0 și J0; J1 rămâne vizibil";
-        String filtered = libraryMaintenanceProse("lib/README.md", index);
-        AuditedAssertions.assertTrue(filtered.contains("J0 în corp")); AuditedAssertions.assertFalse(filtered.contains("atf_j0 și J0")); AuditedAssertions.assertTrue(filtered.contains("J1 rămâne vizibil"));
-        String guide = "## Pe scurt\nJ0 în corp\n---\natf_j0 și J0; J2 rămâne vizibil";
-        for (String name : List.of("Core", "Reporting", "Console", "Mock", "TestKit")) {
-            filtered = libraryMaintenanceProse("lib/README." + name + ".md", guide);
-            AuditedAssertions.assertTrue(filtered.contains("J0 în corp")); AuditedAssertions.assertFalse(filtered.contains("atf_j0 și J0")); AuditedAssertions.assertTrue(filtered.contains("J2 rămâne vizibil"));
-        }
-        for (String name : List.of("docs/README.md", "lib/verification.md", "lib/README.Other.md")) AuditedAssertions.assertEquals(guide, libraryMaintenanceProse(name, guide));
-        AuditedAssertions.assertEquals("J0 în corp", libraryMaintenanceProse("lib/README.Core.md", "J0 în corp"));
-    }
-
-    @Test void libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter() throws Exception {
+    @Test void libraryUsageGuidesAreGovernedAsLocalConsumerContracts() throws Exception {
         Path root = GovernanceProject.locateProjectRoot(); var files = GovernanceProject.markdown(root);
         for (String name : List.of("README.md", "README.Core.md", "README.Reporting.md", "README.Console.md", "README.Mock.md", "README.TestKit.md")) {
             Path file = root.resolve("lib").resolve(name); AuditedAssertions.assertTrue(files.contains(file), name);
-            String source = Files.readString(file); AuditedAssertions.assertTrue(source.contains("atf_j0"), name);
-            String prose = libraryMaintenanceProse("lib/" + name, source);
-            AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)(?<![A-Za-z0-9_])(?:atf[_-]j[0-9]+|J[0-9]+)(?![A-Za-z0-9_])").matcher(prose).find(), name);
-            AuditedAssertions.assertFalse(prose.contains("atf_j0"), name);
+            String source = Files.readString(file);
+            AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\batf[_-]j[0-9]+\\b").matcher(source).find(), name);
             AuditedAssertions.assertFalse(hasEnglishReadmeProse(source), name);
         }
+    }
+
+    @Test void feedbackPriorityRegisterUsesUniqueScoresFromHighestToLowest() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot();
+        String source = Files.readString(root.resolve("docs/feedback/README.md"));
+        int heading = source.indexOf("## ToDo-uri prioritizate");
+        AuditedAssertions.assertTrue(heading >= 0, "The active feedback overview must expose a prioritized ToDo register");
+        int nextHeading = source.indexOf("\n## ", heading + 1);
+        String section = source.substring(heading, nextHeading < 0 ? source.length() : nextHeading);
+        var rows = java.util.regex.Pattern.compile("(?m)^\\| ([A-Z]+-[0-9]{2}) \\| P[12] \\| ([0-9]{1,3}) \\| .+ \\|$")
+                .matcher(section);
+        var ids = new java.util.HashSet<String>();
+        var scores = new ArrayList<Integer>();
+        while (rows.find()) {
+            AuditedAssertions.assertTrue(ids.add(rows.group(1)), () -> "Duplicate feedback priority ID: " + rows.group(1));
+            int score = Integer.parseInt(rows.group(2));
+            AuditedAssertions.assertTrue(score >= 1 && score <= 100, () -> "Priority score is outside 1–100: " + score);
+            scores.add(score);
+        }
+        AuditedAssertions.assertTrue(scores.size() >= 10, "The overview must prioritize the open work, not a token sample");
+        for (int index = 1; index < scores.size(); index++)
+            AuditedAssertions.assertTrue(scores.get(index - 1) >= scores.get(index), "Priority scores must be sorted highest first");
     }
 
     /** Only the identity of a well-formed change control is technical data, not editorial prose. */

@@ -126,3 +126,33 @@ test('the detached card-table suite can reuse consumer edits and invalidates its
     assert.deepEqual(scope.affected, [file]);
   }
 });
+
+test('documentation and separate test-harness changes reuse unaffected Gradle game components', () => {
+  const baseline = new Map([['whist-lab-app/app/src/main/GameScreen.java', 'unchanged']]);
+  const unrelatedChanges = [
+    'atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java',
+    'docs/testing/ATF_ReleaseQualification.md', 'release/0.21.2/README.md', 'lib/README.Reporting.md',
+    'atf-tests/tools/component-evidence-scope.mjs'
+  ];
+  for (const file of unrelatedChanges) {
+    const changed = new Map([...baseline, [file, 'updated']]);
+    for (const group of ['whist-lab-app-achievements', 'whist-lab-app-bidding', 'whist-lab-app-commands',
+      'whist-lab-app-display', 'whist-lab-app-history']) {
+      const scope = componentEvidenceScope(group, changed, baseline);
+      assert.equal(scope.decision, 'REUSE', `${group}: ${file}`);
+      assert.deepEqual(scope.affected, [], `${group}: ${file}`);
+    }
+    if (file.startsWith('atf-tests/'))
+      assert.equal(componentEvidenceScope('whist-lab-app-atf-card-table-ui', changed, baseline).decision, 'REUSE');
+  }
+  const changedTest = new Map([...baseline, [unrelatedChanges[0], 'updated']]);
+  assert.equal(componentEvidenceScope('atf-test-android', changedTest, baseline).decision, 'RUN');
+  assert.equal(componentEvidenceScope('atf-validation', changedTest, baseline).decision, 'REUSE');
+  for (const file of unrelatedChanges.slice(1)) {
+    const changed = new Map([...baseline, [file, 'updated']]);
+    assert.equal(componentEvidenceScope('atf-validation', changed, baseline).decision, 'REUSE', `atf-validation: ${file}`);
+    assert.equal(componentEvidenceScope('atf-test-android', changed, baseline).decision, 'REUSE', `atf-test-android: ${file}`);
+  }
+  const appChanged = new Map([...changedTest, ['whist-lab-app/app/src/main/GameScreen.java', 'updated']]);
+  assert.equal(componentEvidenceScope('whist-lab-app-display', appChanged, baseline).decision, 'RUN');
+});

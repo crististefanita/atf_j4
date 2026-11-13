@@ -75,4 +75,4 @@ Durata HTTP provine din `ReportResponse.duration()`; `detail(...)` păstrează t
 
 ---
 
-Pentru codul comun din `atf_j0`, consultați [responsabilul bibliotecilor](../docs/feedback/README.md#responsabilitatea-schimbării). [Mentenanță locală](README.md#mentenanță-și-feedback)
+Perechea Reporting este un binar extern fixat în POM și în registrul de proveniență. Acest ghid verifică API-ul consumat și rezultatul raportului în aplicație; o limitare observată se atașează versiunii, hash-ului și unui exemplu reproductibil. [Procedura locală](README.md#mentenanță-și-feedback)

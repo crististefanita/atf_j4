@@ -55,4 +55,4 @@ Adresa `offline.test` este contextul cererii pentru transportul mock. Reușita p
 
 ---
 
-Mentenanța codului și testelor Mock aparține proiectului separat `atf_j0/atf-mock`; [feedback-ul și sincronizarea](README.md#mentenanță-și-feedback) pornesc de la J0.
+Perechea Mock este un binar extern fixat în POM și în registrul de proveniență. Testele de aici verifică ruta și fallback-ul folosite de proiect; un defect se raportează cu versiunea, hash-ul, catalogul minim și răspunsul așteptat/observat în [registrul local](../docs/feedback/README.md).

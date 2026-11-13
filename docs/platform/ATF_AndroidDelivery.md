@@ -128,7 +128,7 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 
 1. Actualizați `versionName` și incrementați `versionCode` în Gradle; fixați commit-ul construit. Sursele relevante schimbate în paralel se confruntă înainte de publicare.
 2. Rulați selecția de mai sus în TMP; pregătiți comenzile, rezultatele JUnit și jurnalele pentru `release/<versionName>/reports/`, cu un README scurt al verificării. Rapoartele Extent provin numai din execuțiile efective ale versiunii; un reper anterior este etichetat explicit.
-3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `release/<versionName>/`; păstrați numai ultima pereche locală, după validarea înlocuitorului. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
+3. Puneți APK-ul semnat `WhistLab-<versionName>.apk` și checksum-ul în `release/<versionName>/`; păstrați ediția curentă și imediat anterioară. Arhivați edițiile mai vechi în afara catalogului activ numai după confruntarea identității și a hash-urilor. Binarul se distribuie ca asset GitHub Release, nu ca fișier Git.
 4. Actualizați manifestul și README-ul noii versiuni, `release/index.json`, catalogul și notele în bullets față de versiunea precedentă. Ghidurile generice se modifică numai dacă s-a schimbat procesul ori contractul.
 5. Confruntați guvernanța înainte de publicare, publicați tag-ul și asset-urile verificate, apoi descărcați asset-ul complet în canalul declarat. Actualizați dovada descărcării și linkul direct din README numai după confruntarea versiunii curente, mărimii, SHA-256 și CRC; portalul `releases/latest` nu fixează identitatea APK-ului.
 
@@ -144,11 +144,11 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 
 ## Dosarul unei versiuni
 
-[Catalogul livrărilor](../../release/README.md) păstrează numai ultima versiune calificată, în `release/<versionName>/`. Prezentarea versiunii și metadatele ei trimit la dovezile din `reports/`. [Politica de retenție](ATF_ReleaseRetention.md) definește arhivarea precedentului, înlocuirea și resetarea GitHub cerută explicit.
+[Catalogul livrărilor](../../release/README.md) păstrează ediția curentă și imediat anterioară, fiecare în `release/<versionName>/`. Prezentarea versiunii și metadatele ei trimit la dovezile din `reports/`. [Politica de retenție](ATF_ReleaseRetention.md) definește arhivarea edițiilor mai vechi, înlocuirea și resetarea GitHub cerută explicit.
 
 | Intrare | Responsabilitate |
 |---|---|
-| `release/index.json` | Schema 2 declară `currentVersion` și exact o versiune activă în `versions`; toate legăturile principale identifică acea versiune. |
+| `release/index.json` | Schema 2 declară `currentVersion` și cel mult două versiuni în `versions`, începând cu ediția curentă și apoi ediția imediat anterioară; toate legăturile principale identifică prima versiune. |
 | `release/README.md` | Catalogul stabil al livrării active și punctul de intrare în dosarul ei. |
 | `release/<versionName>/README.md` | Prezintă ediția, APK-ul identificat, starea predării și legăturile către metadate și rapoarte. |
 | `release/<versionName>/reports/README.md` | Prezintă selecțiile executate, rapoartele, rezultatele și limitele calificării. |
@@ -156,7 +156,7 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 | Rapoarte, capturi, rezultate și jurnale în `reports/` | Păstrează execuția identificată, inclusiv diagnosticele negative și replay-urile etichetate; legăturile lor locale pornesc din acel subdirector. |
 | [Strategia testării](../testing/README.md) | Deține selecția și principiile comune, independent de versiune. |
 
-- La o versiune nouă, calificați candidatul extern și arhivați dosarul anterior înaintea înlocuirii. Actualizați indexul și catalogul după verificarea identității; păstrați numai APK-ul local curent în dosarul versiunii din `release`.
+- La o versiune nouă, calificați candidatul extern și arhivați numai dosarele mai vechi decât ediția imediat anterioară. Actualizați indexul și catalogul după verificarea identității; păstrați în `release` ediția curentă și imediat anterioară, inclusiv APK-urile locale ale acestora.
 - La reorganizare, mutați împreună rapoartele și fișierele asociate, confruntați hash-urile și refaceți referințele active. Căile absolute capturate și URL-urile istorice fixate pe commit își păstrează sensul original.
 - `artifacts/` și `dist/` sunt directoare retrase din rădăcina proiectului. După arhivarea și confruntarea datelor unice, eliminați directoarele vechi, inclusiv cele goale; guvernanța refuză reapariția lor.
 - Notele din GitHub Release trimit la README-ul versiunii într-un commit identificat; schimbarea navigării nu mută tag-ul și nu înlocuiește asset-ul binar.

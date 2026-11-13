@@ -276,7 +276,7 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
                 "bid grid", BidGridMetrics.actionLayout(18, 353, 1f), "reservation", largest);
         assertEquals("The maximum legal three-player hand reserves its responsive bid grid",
                 BidGridMetrics.actionLayout(18, 353, 1f).centerHeightDp(), largest.biddingHeightDp());
-        org.junit.Assert.assertThrows("An eighteen-card selector is outside a 52-card deal to three players",
+        assertThrows("An eighteen-card selector is outside a 52-card deal to three players",
                 IllegalArgumentException.class,
                 () -> TableLayoutMetrics.centerReservation(3, 18, 353, 1f, viewport));
     }

@@ -20,6 +20,30 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
 | [Realizări Whist](ATF_Achievements.md) | Praguri exacte, calificarea Android, compatibilitatea progresului și calibrarea pe configurațiile eligibile. |
 
+## ToDo-uri prioritizate
+
+Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentul de finalizare. Evaluarea combină impactul asupra utilizatorului, mărimea golului de verificare, riscul pentru release și claritatea criteriului de închidere. Fiecare rând indică registrul normativ; scorul se revizuiește când se schimbă riscul ori dovada, iar criteriile rămân deschise până la închiderea lor acolo.
+
+| ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
+|---|---:|---:|---|
+| RAG-01 | P1 | 98 | Leagă automat schimbările relevante de selecția minimă de teste; respinge planul care declară flux neschimbat când diff-ul afectează un flux. [Registru](ATF_Release_RAG.md#lacune-deschise) |
+| RAG-02 | P1 | 96 | Produce planul, inventarul și receipt-urile dintr-un singur snapshot; materializează și verifică APK/checksum-urile istorice ignorate de Git înaintea guvernanței costisitoare; blochează diferențele față de candidatul predat. [Registru](ATF_Release_RAG.md#lacune-deschise) |
+| RPT-01 | P1 | 95 | Livrează un HTML Extent autonom, cu PNG inline, fără copii auxiliare redundante; acceptă auditul offline după desprinderea de runner. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
+| RPT-02 | P1 | 94 | Păstrează comparațiile input–expected–actual–verdict și paritatea exactă JUnit/Extent pentru fiecare suită primară. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
+| AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |
+| AND-02 | P1 | 92 | Califică pe APK actorul, geometria stabilă și mâna vizibilă în licitație/joc/AutoGame pentru 3–6 locuri, RO/EN și text mărit. [Registru](ATF_Android.md) |
+| AI-01 | P1 | 91 | Calibrează inferența Hard pentru 2–8 cărți din licitații și cărți jucate pe loturi noi; separă exactitatea probabilităților de scorul simulat. [Registru](ATF_Ai.md) |
+| ACH-01 | P1 | 90 | Închide validarea negativă a catalogului YAML și acceptanța Android cu progres restaurat, notificări idempotente și starea ecranului păstrată. [Registru](ATF_Achievements.md) |
+| AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
+| RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
+| GOV-01 | P1 | 87 | Oferă validatoare cu API/CLI autonom, rădăcini explicite și inventar complet; controalele negative resping surse sau excepții neacoperite. [Registru](ATF_Governance.md#api-reutilizabil-pentru-verificatoare) |
+| UI-01 | P1 | 86 | Califică adoptarea contractelor comune pentru antet, chenare și notificări fără a muta regulile specifice jocului. [Registru](ATF_CardUi_Extraction.md#adopție-între-jocuri) |
+| RAG-03 | P2 | 85 | Leagă prospețimea receipt-urilor și cronologia etapelor de politica de reutilizare și de expirarea dovezilor. [Registru](ATF_Release_RAG.md#lacune-deschise) |
+| TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
+| AI-02 | P2 | 82 | Verifică ruta la zero doar când matematica o permite și fără a abandona un top doi încă posibil; păstrează perechi noi și latența. [Registru](ATF_Ai.md) |
+| GOV-02 | P2 | 80 | Face verificarea documentației, lansatoarelor și inventarului de release completă, reproductibilă și fără excepții istorice implicite. [Registru](ATF_Governance.md) |
+| REF-01 | P2 | 78 | Reduce clasele și testele supradimensionate prin responsabilități clare, fără schimbarea contractelor observabile. [Registre tematice](ATF_Android.md) |
+
 ## Responsabilitatea schimbării
 
 ```mermaid
@@ -37,7 +61,7 @@ Un criteriu numește comportamentul, sursa și nivelul de verificare necesar. Re
 
 </details>
 
-Core, Reporting, Console și Mock au [responsabilul comun al bibliotecilor](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/README.md).
+Core, Reporting, Console și Mock sunt consumate ca perechi binare versionate JAR/POM. Acest proiect deține verificarea contractelor pe care le folosește, proveniența perechii, integrarea locală și documentarea oricărei limitări observate; hash-ul și coordonatele sunt sursa de identitate.
 [Ghidul editorial Whist](../governance/ATF_Documentation.md) deține regulile documentare și verificarea lor în checkout.
 
 ## Închiderea și promovarea
@@ -51,8 +75,8 @@ Core, Reporting, Console și Mock au [responsabilul comun al bibliotecilor](http
 
 ## Contractul comun de autonomie
 
-[Criteriul comun de autonomie a raportului](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/ATF_Reporting_Feedback.md#report-artifact-autonomy-150--calificare-f%C4%83r%C4%83-dependen%C8%9Be-externe) aparține responsabilului bibliotecilor. [Feedback-ul consumatorului Android](ATF_Reporting.md) păstrează colectarea, publicarea și calificarea livrabilului propriu.
+Rapoartele trebuie să se deschidă și să poată fi auditate fără runner, JAR adițional sau fișiere auxiliare. HTML-ul păstrează contextul, comparațiile și capturile inline; consumatorul verifică acest contract în [feedback-ul raportării](ATF_Reporting.md).
 
 ## Suportul comun al testelor
 
-[Primitivele și concurența Kitului](https://github.com/crististefanita/atf_j0/blob/master/docs/feedback/ATF_Common_Test_Support_Feedback.md#kit-concurrency-152--calificare-jupiter-paralel%C4%83) au responsabil comun. Consumatorul folosește perechea binară declarată în POM, iar acceptanța adaptorului Android rămâne locală; transferul responsabilității nu constituie calificarea paralelismului.
+Kitul este consumat după perechea JAR/POM fixată. Testele locale verifică integrarea, lifecycle-ul, concurența folosită și propagarea cauzelor; rezultatele unei biblioteci nu înlocuiesc calificarea adaptorului Android sau a suitei de produs.

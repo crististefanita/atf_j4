@@ -35,4 +35,4 @@ public static void verifyState(RecordedAssertions audit, String actual) {
 
 ---
 
-Mentenanță, cod, teste și feedback: [atf_j0](README.md#mentenanță-și-feedback).
+Testele acestui proiect fixează integrarea folosită, lifecycle-ul și cauzele de eșec observabile. Păstrați pentru orice incompatibilitate versiunea și hash-ul JAR/POM, configurația minimă și rezultatul; procesul local este descris în [ghidul bibliotecilor](README.md#mentenanță-și-feedback).

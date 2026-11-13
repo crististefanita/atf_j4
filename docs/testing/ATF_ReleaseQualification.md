@@ -140,6 +140,7 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 - Guvernanța verifică inventarul complet.
 - Componentele bibliotecii grafice au perimetru propriu. Modificările în consumatorii de joc permit reutilizarea raportului bibliotecii. Sursele, testele, resursele, configurația de compilare și puntea auditului fac parte din perimetrul acestei suite.
 - Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android dacă dependențele lor rămân identice.
+- Colecțiile Gradle ale jocului urmăresc codul și configurația lor compilată; documentația și fișierele exclusiv din alte suite nu le invalidează. Calea necunoscută păstrează decizia sigură `RUN`.
 - O cale necunoscută cere o execuție nouă.
 
 | Decizie | Acțiune |

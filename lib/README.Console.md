@@ -52,4 +52,4 @@ Compilarea fragmentului califică semnătura API pe JAR-ul ales. Verificarea str
 
 ---
 
-Mentenanța codului și testelor Console aparține proiectului separat `atf_j0/atf-console`; [feedback-ul și sincronizarea](README.md#mentenanță-și-feedback) pornesc de la J0.
+Perechea Console este un binar extern fixat în POM și în registrul de proveniență. Acest ghid verifică numai contractul de ieșire consumat de proiect; atașați versiunea, hash-ul și reproducerea la [feedback-ul local](../docs/feedback/README.md).
