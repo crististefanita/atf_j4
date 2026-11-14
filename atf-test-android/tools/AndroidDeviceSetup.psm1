@@ -132,4 +132,4 @@ function Get-AtfAndroidReadiness {
     [pscustomobject]@{bootCompleted=$true;api=[int]$api;displayProfile=$display}
 }
 
-Export-ModuleMember -Function Connect-AtfAndroidDevice,Get-AtfAndroidReadiness
+Export-ModuleMember -Function Invoke-AtfAdbCommand,Connect-AtfAndroidDevice,Get-AtfAndroidReadiness

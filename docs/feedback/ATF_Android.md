@@ -50,7 +50,13 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 |---|---|---|
 | P1 | Recuperarea stocării Android: checkpoint-ul `SharedPreferences` și clasamentul `AtomicFile` nu au acceptanță nativă după corupere sau întrerupere. | Android pe APK identificat: întrerupere controlată, recuperare sau eroare explicită, datele utilizatorului păstrate; componentele serializării și porturile de stocare rămân verificări separate. |
 | P2 | Latența checkpoint-ului sincron nu este calificată pe dispozitiv; ordinea componentelor nu certifică reactivitatea. | Mediu și stare identificate, costul scrierii separat de calculul AI și randare; păstrați ordinea și cauza erorii înaintea unei eventuale mutări a I/O între executori. |
-| P2 | [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java) rămâne un coordonator amplu pentru navigare, randare, ciclul AI și fabricile fixture-urilor de test, chiar dacă porturile principale au fost extrase. | Izolați fabricarea fixture-urilor deterministe într-un seam exclus din varianta Release și micșorați activitatea numai pe responsabilități confirmate. Păstrați scenariile Debug existente și verificați că APK-ul Release nu poate activa fixture-uri prin intent extras. |
+
+### Criteriu închis — fixture-uri deterministe de lansare
+
+- Scenariile de acceptanță sunt construite în src/debug; src/release ignoră intențiile de fixture.
+- MainActivity aplică un plan comun fără cheile de scenariu ori fabricarea stărilor.
+- Testele de componentă verifică scenariile păstrate, iar guvernanța impune separarea surselor.
+- Redeschideți criteriul numai la apariția unui scenariu nou sau a unei căi din binarul Release.
 
 ## Calificarea modificărilor vizuale
 

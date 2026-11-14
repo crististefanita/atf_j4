@@ -173,3 +173,41 @@ test('documentation and separate test-harness changes reuse unaffected Gradle ga
   const appChanged = new Map([...changedTest, ['whist-lab-app/app/src/main/GameScreen.java', 'updated']]);
   assert.equal(componentEvidenceScope('whist-lab-app-display', appChanged, baseline).decision, 'RUN');
 });
+
+test('the disposable Android profile runner reruns its harness and governance without invalidating game components', () => {
+  const baseline = new Map([['whist-lab-app/app/src/main/GameScreen.java', 'unchanged']]);
+  const file = 'scripts/Invoke-AtfAndroidDisposableUser.ps1';
+  const changed = new Map([...baseline, [file, 'updated']]);
+  for (const group of ['whist-lab-app-achievements', 'whist-lab-app-bidding', 'whist-lab-app-commands',
+    'whist-lab-app-display', 'whist-lab-app-history', 'whist-lab-app-atf-card-table-ui', 'atf-validation']) {
+    const scope = componentEvidenceScope(group, changed, baseline);
+    assert.equal(scope.decision, 'REUSE', `${group}: ${file}`);
+    assert.deepEqual(scope.affected, [], `${group}: ${file}`);
+  }
+  assert.equal(componentEvidenceScope('atf-test-android', changed, baseline).decision, 'RUN');
+  assert.equal(componentEvidenceScope('atf-tests', changed, baseline).decision, 'RUN');
+});
+
+test('the disposable Android runner imports its command module and records the original install state', async () => {
+  const root = process.cwd();
+  const runner = await fs.readFile(path.join(root, 'scripts/Invoke-AtfAndroidDisposableUser.ps1'), 'utf8');
+  const module = await fs.readFile(path.join(root, 'atf-test-android/tools/AndroidDeviceSetup.psm1'), 'utf8');
+  assert.match(runner, /Import-Module\s+\(Join-Path\s+\$PSScriptRoot\s+['"]\.\.\/atf-test-android\/tools\/AndroidDeviceSetup\.psm1['"]\)\s+-Force/);
+  assert.match(runner, /Test-PackageInstalled\s+\$originalUser/);
+  assert.match(runner, /\$value\s+-split\s+"`r\?`n"/);
+  assert.match(runner, /'wm','dismiss-keyguard'/);
+  assert.match(runner, /'input','swipe','540','1750','540','500','300'/);
+  assert.match(runner, /isStatusBarKeyguard=false/);
+  assert.match(runner, /'system','screen_off_timeout','2147483647'/);
+  assert.match(runner, /Android relocked the disposable user during APK installation/);
+  assert.match(runner, /Invoke-DeviceShell\s+-Arguments\s+@\('pm','install'.*\)\s+-TimeoutSeconds\s+120/);
+  assert.match(runner, /originalPackageWasInstalledBefore/);
+  assert.match(runner, /originalPackageStatePreserved=\$true/);
+  assert.ok(runner.includes("$sourceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))"));
+  assert.ok(runner.includes("$run.StartsWith($sourceRootPrefix,[StringComparison]::OrdinalIgnoreCase)"));
+  assert.ok(runner.includes("RunRoot must stay outside the ATF checkout"));
+  assert.ok(runner.includes("$apkFullPath.StartsWith($sourceRootPrefix,[StringComparison]::OrdinalIgnoreCase)"));
+  assert.ok(runner.includes("Candidate APK must stay outside the ATF checkout"));
+  assert.ok(runner.includes("Invoke-DeviceShell @('rm','-f',$remoteApk) | Out-Null"));
+  assert.match(module, /Export-ModuleMember\s+-Function[^\r\n]*Invoke-AtfAdbCommand/);
+});

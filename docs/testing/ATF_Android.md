@@ -47,6 +47,8 @@ Scenariul identifică aplicația și starea inițială înaintea acțiunilor. Re
 | [Joc românesc](../../scripts/run-romanian-expert.ps1) | Mâini normale, cu decizii și scor verificate independent. |
 | [Replay complet](../../scripts/run-complete-match.ps1) | Reia intrări externe în Whist Lab și verifică regulile, mutările și scorul. |
 
+Pe Windows, dați lansatorului un `RunRoot` în directorul extern de dovezi Whist. Acesta conține dosarele de lucru și fișierele temporare, APK-urile de test, chitanțele de instalare și exporturile de profil sau partidă. Fixture-urile versionate fac parte din intrările testelor.
+
 [Contractul responsive](ATF_Display.md) definește limitele profilului și configurarea execuției.
 
 E2E-urile de produs selectează semantic elementele afișate, verifică după

@@ -190,6 +190,26 @@ class ReleaseRagPlatformGovernanceTest {
                 List.of("broadUnitAndComponent", "riskSelectedE2e", "releaseArtifactAndDownload")));
     }
 
+    @Test void ragPlanSnapshotAndComponentDiagnosticsArePortable() throws Exception {
+        JsonNode planSnapshot = policy().path("ragEvaluator").path("planSnapshot");
+        assertEquals("qualification-plan.json", planSnapshot.path("fileName").asText());
+        assertEquals("qualificationPlan.contentBase64", planSnapshot.path("embeddedField").asText());
+        assertEquals("base64-utf8", planSnapshot.path("encoding").asText());
+        assertTrue(planSnapshot.path("preservesOriginalHash").asBoolean());
+        assertEquals("$report.qualificationPlan.contentBase64", planSnapshot.path("citationPath").asText());
+
+        Path root = GovernanceProject.locateProjectRoot();
+        String runner = Files.readString(root.resolve("scripts/run-component-suites.ps1"));
+        String snapshotHelper = Files.readString(root.resolve("scripts/AtfQualificationSnapshot.ps1"));
+        assertFalse(runner.contains("sourceRoot=$sourceRoot;"), "Provenance must bind by source hash, not machine path");
+        assertFalse(runner.contains("stage=$stage;inputCount="), "Receipts must not persist a temporary absolute path");
+        assertTrue(runner.contains("ConvertTo-AtfPortableDiagnostic"));
+        assertTrue(snapshotHelper.contains("<SOURCE>"));
+        assertTrue(snapshotHelper.contains("<STAGE>"));
+        assertTrue(snapshotHelper.contains("<WORK>"));
+        assertTrue(snapshotHelper.contains("<EVIDENCE>"));
+    }
+
     @Test void releaseGuideExplainsTempQualificationBeforePromotionAndCanonicalReporting() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         String ragFeedback = Files.readString(root.resolve("docs/feedback/ATF_Release_RAG.md"));

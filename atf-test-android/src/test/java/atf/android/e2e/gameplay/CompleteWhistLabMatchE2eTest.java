@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 public class CompleteWhistLabMatchE2eTest {
     @Test void sameOriginalMatchProducesIdenticalLegalMovesWinnersAndScores()throws Exception {
         assumeTrue(Boolean.getBoolean("atf.android.fullMatch"),"Explicit full-match opt-in required");
-        Path out=Path.of(System.getProperty("atf.match.evidenceDir")).toAbsolutePath();
+        Path out=atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("atf.match.evidenceDir");
         Properties recording=new Properties();
         try(var in=Files.newInputStream(out.resolve("original-match.properties"))){recording.load(in);}
         assertEquals("true",recording.getProperty("match.complete"),"Original match must be complete");

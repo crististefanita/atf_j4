@@ -33,7 +33,7 @@ class CompleteRomanianExpertE2eTest {
         String displayLevel=level.equals("HARD")?"Hard":"Normal";
         int seriesReward=Integer.getInteger("atf.android.streakBonus",10);assertTrue(List.of(0,5,10).contains(seriesReward));
         int limit=Integer.getInteger("atf.android.handLimit",24);assertTrue(limit>=1&&limit<=24);
-        Path out=Path.of(System.getProperty("atf.match.evidenceDir")).toAbsolutePath();Files.createDirectories(out);
+        Path out=atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("atf.match.evidenceDir");Files.createDirectories(out);
         AdbClient adb=AdbClient.fromSystemProperties();AndroidUiDriver ui=new AndroidUiDriver(adb,out);
         AndroidUiFlowTrace trace=new AndroidUiFlowTrace(out,"romanian-expert-complete",
                 "Whist romanesc — "+limit+" Android hands with "+displayLevel+", every move and score audited",

@@ -14,7 +14,7 @@ import java.util.HashSet;
 final class WorkspaceHygieneRules {
     record Finding(Path path, String reason) { }
     static Set<String> roots(JsonNode policy) {
-        var names = new HashSet<>(Set.of(".git", ".mvn", ".locks", ".idea", "target", "docs", "config", "lib", "scripts", "release"));
+        var names = new HashSet<>(Set.of(".git", ".atf-signing", ".mvn", ".locks", ".idea", "target", "docs", "config", "lib", "scripts", "release"));
         policy.path("mavenModules").forEach(module -> names.add(first(module.asText())));
         policy.path("additionalSourceRoots").forEach(source -> names.add(first(source.path("module").asText())));
         policy.path("projectRootOwners").forEach(owner -> names.add(rootOwner(owner.asText())));

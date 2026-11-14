@@ -8,7 +8,7 @@ Uneltele aparțin infrastructurii Android. Modulul PowerShell verifică transpor
 
 | Sursă | Contract |
 |---|---|
-| [AndroidDeviceSetup.psm1](AndroidDeviceSetup.psm1) | Conectarea ADB și observarea boot-ului, API-ului și afișajului efectiv. [Preflight Android](../../docs/testing/ATF_ReleaseQualification.md#preflight-android) |
+| [AndroidDeviceSetup.psm1](AndroidDeviceSetup.psm1) | Rularea comenzilor ADB, conectarea transportului și observarea boot-ului, API-ului și afișajului efectiv. [Preflight Android](../../docs/testing/ATF_ReleaseQualification.md#preflight-android) |
 | [whist_ui_replay.py](whist_ui_replay.py) | Proiecția observației publice și verificarea independentă a regulilor și scorului. |
 | [whist_ui_handoff.py](whist_ui_handoff.py) | Republicarea offline, integritatea descriptorului și acceptarea pe scop. |
 | [test_whist_ui_handoff.py](test_whist_ui_handoff.py) | Refuzul coruperii și păstrarea acceptanței la eșecuri ori republicări vechi. |

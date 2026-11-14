@@ -15,7 +15,7 @@ import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-/** Deterministic display states, reached only through MainActivity's debug intent gate. */
+/** Deterministic display states, reached only through the debug source-set factory. */
 public final class DisplayFixtureDeals {
     private DisplayFixtureDeals() { }
 

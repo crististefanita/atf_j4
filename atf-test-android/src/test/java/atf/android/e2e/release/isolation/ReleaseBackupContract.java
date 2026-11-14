@@ -1,4 +1,4 @@
-package atf.android.e2e.release;
+package atf.android.e2e.release.isolation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.nio.file.Files;

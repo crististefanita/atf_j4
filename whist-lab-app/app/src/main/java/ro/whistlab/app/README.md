@@ -112,7 +112,7 @@ Dintr-o copie temporară proprie a `whist-lab-app`, cu JDK, SDK Android și depe
 Componentele geometrice verifică relații calculate. Captura fizică și interacțiunea cer acceptanța separată pe dispozitiv; oracolul raster are propriul domeniu și nu certifică singur calitatea estetică.
 
 - Fixture-urile verifică separat mâna maximă de 13 cărți și o levată completă cu 12 cărți rămase. Fiecare verificare cere toate chenarele în același viewport; [matricea de ecrane](../../../../../../../../docs/testing/ATF_Display.md) deține criteriile.
-- [DisplayFixtureDeals](fixtures/DisplayFixtureDeals.java) furnizează date deterministe, activate prin căile protejate de `BuildConfig.DEBUG` din activitate. Aceste stări servesc acceptanței și se disting de distribuțiile unei partide normale.
+- [DebugFixtureFactory](../../../../../debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java) deține intent-urile și scenariile deterministe numai în src/debug; [DisplayFixtureDeals](../../../../../debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java) generează stările de afișare, iar [OriginalMatchReplay](../../../../../debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java) redă partida înregistrată. Varianta src/release ignoră intent-urile de debug, iar MainActivity primește doar planul rezultat.
 - `debug_hold_ai_bids` oprește calculul licitației după randare; `debug_hold_ai_turns` oprește avansarea cărților AI. Ambele controale sunt disponibile numai în build-ul debug și păstrează fazele distincte ale acceptanței.
 
 [Aplicația](../../../../../../../README.md) · [Testarea Android](../../../../../../../../docs/testing/ATF_Android.md) · [Regulile jocului](../../../../../../../../docs/game/README.md)

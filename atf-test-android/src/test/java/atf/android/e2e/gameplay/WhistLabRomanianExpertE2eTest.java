@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 @AndroidE2eTest
 class WhistLabRomanianExpertE2eTest {
     @Test void leavingReplayStartsANormalRomanianExpertGameWithCorrectScoring()throws Exception {
-        Path out=Path.of(System.getProperty("atf.match.evidenceDir")).toAbsolutePath();
+        Path out=atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("atf.match.evidenceDir");
         AdbClient adb=AdbClient.fromSystemProperties();AndroidUiDriver ui=new AndroidUiDriver(adb,out);
         AndroidUiFlowTrace trace=new AndroidUiFlowTrace(out,"romanian-expert-smoke",
                 "Whist Lab — leave scripted replay and play a normal Romanian hand with Expert AI",

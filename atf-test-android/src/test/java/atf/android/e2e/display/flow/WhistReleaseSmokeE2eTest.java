@@ -22,10 +22,12 @@ import org.junit.jupiter.api.Test;
 class WhistReleaseSmokeE2eTest {
     @Test void signedApkOpensItsRealHomeAndConfiguration() throws Throwable {
         var json = new ObjectMapper();
-        Path run = Path.of(System.getProperty("whist.records.runRoot"));
+        Path run = atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("whist.records.runRoot");
         var setup = json.readTree(run.resolve("setup-release.json").toFile());
         String leaseId = json.readTree(run.resolve("device-lease.json").toFile()).path("leaseId").asText();
-        Path leaseFile = Path.of(System.getProperty("whist.records.leasePath", "C:/work/whist_back/android-ui-lease.json"));
+        Path leaseFile = atf.android.e2e.support.flow.WhistLabScenario.externalPath(
+                System.getProperty("whist.records.leasePath", "C:/work/whist_back/android-ui-lease.json"),
+                "whist.records.leasePath");
         var adb = AdbClient.fromSystemProperties();
         var device = new AndroidUiDriver.Device() {
             private void requireLease() throws Exception {
@@ -45,7 +47,7 @@ class WhistReleaseSmokeE2eTest {
                 return adb.runBinary(args);
             }
         };
-        Path output = Path.of(System.getProperty("atf.android.artifacts")).resolve("signed-release-smoke");
+        Path output = atf.android.e2e.support.flow.WhistLabScenario.artifacts("signed-release-smoke");
         Files.createDirectories(output);
         var ui = new AndroidUiDriver(device, output);
         var trace = new AndroidUiFlowTrace(output, "signed-release-smoke", "Signed release — home, language and configuration",

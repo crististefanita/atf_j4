@@ -2,6 +2,8 @@
 
 ## Pe scurt
 
+- [Izolare E2E Android cu utilizator temporar](Invoke-AtfAndroidDisposableUser.ps1) creează profil secundar nou, îl deblochează și previne stingerea ecranului doar în acel profil, instalează candidatul numai acolo și îl elimină la teardown după verificarea aceleiași rezervări. Chitanțele păstrează și verifică starea inițială a instalării aplicației în profilul original; contractul și raportarea sunt documentate în [acceptanța APK-ului semnat](../atf-test-android/src/test/java/atf/android/e2e/release/README.md).
+
 - [Agregarea componentelor Maven și Gradle](run-component-suites.ps1) compilează într-un staging propriu și execută suitele Maven primare, colecțiile aplicației și selecția JVM distinctă a bibliotecii UI comune. Taskurile Gradle selectate împart o singură lansare. Fiecare selecție păstrează un HTML Extent și receipt proprii. [Contractul auditului](../docs/reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) explică inventarul, refuzurile și separarea de calificarea APK-ului.
 
 - Pentru calificare incrementală, `-SourceRoot` indică snapshot-ul fixat și `-Groups` primește identificatorii selecțiilor care trebuie rulate. Lista omisă selectează toate grupurile. Parametrul -ReuseFrom indică dosarul anterior de componente. Lansatorul rulează grupurile cu intrări afectate sau dovezi invalide. [Regula de reutilizare](../docs/testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă)

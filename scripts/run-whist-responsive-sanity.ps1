@@ -60,7 +60,8 @@ if (-not (Test-Path -LiteralPath $MavenRepository -PathType Container)) {
 }
 New-Item -ItemType Directory -Path $RunRoot | Out-Null
 $artifacts = Join-Path $RunRoot 'android-artifacts'
-$stage = Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_RESPONSIVE_' + [guid]::NewGuid().ToString('N'))
+$stage = Join-Path $RunRoot 'work'
+$scratch = Join-Path $RunRoot 'tmp'
 
 function Initialize-SanityStage {
     New-Item -ItemType Directory -Path $stage,$artifacts | Out-Null
@@ -119,7 +120,7 @@ $state = [ordered]@{
 }
 $saved = @{}
 foreach ($name in @('JAVA_HOME','Path','MAVEN_OPTS','ADB_SERVER_SOCKET','ATF_ANDROID_ADB',
-        'ATF_ANDROID_SERIAL','ATF_ANDROID_TIMEOUT_SECONDS')) {
+        'ATF_ANDROID_SERIAL','ATF_ANDROID_TIMEOUT_SECONDS','TEMP','TMP')) {
     $saved[$name] = [Environment]::GetEnvironmentVariable($name)
 }
 
@@ -203,6 +204,9 @@ try {
         $preflight = & (Join-Path $PSScriptRoot 'check-android-release-device.ps1') @preflightArguments
     }
     $state.status = 'STAGING'
+    New-Item -ItemType Directory -Path $scratch | Out-Null
+    $env:TEMP = $scratch
+    $env:TMP = $scratch
     Initialize-SanityStage
     $executionRepository = $state.mavenRepository
     $env:JAVA_HOME = $JavaHome

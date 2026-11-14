@@ -46,8 +46,9 @@ if (Test-Path -LiteralPath $RunRoot) { throw "Choose a fresh run folder; previou
 
 $evidence = Join-Path $RunRoot 'evidence'
 $components = Join-Path $RunRoot 'components'
-$stage = Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_WHIST_REPLAY_' + [guid]::NewGuid().ToString('N'))
-New-Item -ItemType Directory -Path $evidence, $components, $stage | Out-Null
+$stage = Join-Path $RunRoot 'work'
+$scratch = Join-Path $RunRoot 'tmp'
+New-Item -ItemType Directory -Path $evidence, $components, $stage, $scratch | Out-Null
 Copy-Item -LiteralPath (Join-Path $referenceEvidence 'original-match.properties') -Destination $evidence
 for ($hand = 1; $hand -le 19; $hand++) {
     $name = 'original-h{0:D2}-bidding.save2' -f $hand
@@ -77,7 +78,7 @@ Get-ChildItem -LiteralPath $stage -Recurse -File |
     Set-Content -LiteralPath (Join-Path $RunRoot 'source-inventory.json') -Encoding utf8
 
 $saved = @{}
-foreach ($name in @('ADB_SERVER_SOCKET', 'ATF_ANDROID_ADB', 'ATF_ANDROID_SERIAL', 'ATF_ANDROID_TIMEOUT_SECONDS', 'ANDROID_HOME', 'ANDROID_SDK_ROOT')) {
+foreach ($name in @('ADB_SERVER_SOCKET', 'ATF_ANDROID_ADB', 'ATF_ANDROID_SERIAL', 'ATF_ANDROID_TIMEOUT_SECONDS', 'ANDROID_HOME', 'ANDROID_SDK_ROOT', 'TEMP', 'TMP')) {
     $saved[$name] = [Environment]::GetEnvironmentVariable($name)
 }
 function Invoke-MatchStage {
@@ -97,6 +98,8 @@ function Save-MatchXml {
 }
 Push-Location $stage
 try {
+    $env:TEMP = $scratch
+    $env:TMP = $scratch
     $env:ADB_SERVER_SOCKET = $AdbServerSocket
     $env:ATF_ANDROID_ADB = $AdbExecutable
     $env:ATF_ANDROID_SERIAL = $Serial

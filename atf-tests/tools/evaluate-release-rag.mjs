@@ -382,6 +382,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   const manifest = manifestDoc.value, policy = policyDoc.value, plan = planDoc.value;
   const evidence = (pointer, doc = manifestDoc, relative = 'release-validation.json') =>
     [citation(relative, doc.sha256, pointer, doc.lines.get(pointer) ?? 1)];
+  const planCitation = pointer => ({...citation('$report.qualificationPlan.contentBase64', planDoc.sha256, pointer,
+    planDoc.lines.get(pointer) ?? 1), embedded: true, encoding: 'base64-utf8'});
 
   const policyContract = policy.schemaVersion === 1
       && policy.ragEvaluator?.entrypoint === 'atf-tests/tools/evaluate-release-rag.mjs'
@@ -390,6 +392,11 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.ragEvaluator?.preMavenSnapshot?.governanceRequiresReleaseInventoryForNewCandidates === true
       && policy.ragEvaluator?.onlyHumanReviewVerdict === 'READY_FOR_HUMAN_REVIEW'
       && policy.ragEvaluator?.doesNotPerformPromotionOrPublication === true
+      && policy.ragEvaluator?.planSnapshot?.fileName === 'qualification-plan.json'
+      && policy.ragEvaluator?.planSnapshot?.embeddedField === 'qualificationPlan.contentBase64'
+      && policy.ragEvaluator?.planSnapshot?.encoding === 'base64-utf8'
+      && policy.ragEvaluator?.planSnapshot?.preservesOriginalHash === true
+      && policy.ragEvaluator?.planSnapshot?.citationPath === '$report.qualificationPlan.contentBase64'
       && policy.ragEvaluator?.outputMustBeOutsideInputs === true
       && policy.ragEvaluator?.publicReadmeSurface?.path === 'README.md'
       && policy.ragEvaluator?.publicReadmeSurface?.forbidRawSha256Digest === true
@@ -456,7 +463,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
           && new Set(plan.e2e.groups).size === plan.e2e.groups.length
         : typeof plan.e2e.rationale === 'string' && plan.e2e.rationale.trim().length >= 12);
   addCheck(checks, 'PLAN_SCHEMA', validPlan, validPlan ? 'Planul fixează versiunea, platforma, riscul, componentele și decizia E2E.' : 'Plan absent, incomplet sau cu enum invalid.',
-      [citation(path.relative(project, planFile), planDoc.sha256, '/schemaVersion', planDoc.lines.get('/schemaVersion') ?? 1)]);
+      [planCitation('/schemaVersion')]);
 
   const versionMatches = validPlan && manifest.release?.versionName === version
       && path.basename(candidate) === version;
@@ -532,7 +539,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
 
   let testScope;
   const diffProblems = [];
-  const diffEvidence = [citation(path.relative(project, planFile), planDoc.sha256, '/scope', planDoc.lines.get('/scope') ?? 1)];
+  const diffEvidence = [planCitation('/scope')];
   if (sourceOkay) {
     try {
       testScope = await readTestScope(project, source, version, componentInputMap(inputDoc.value.files), policy);
@@ -797,6 +804,55 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   let e2eReceiptsOkay = e2e.status !== 'PASS' || Array.isArray(e2e.groups);
   const e2eProblems = [], e2eEvidence = [];
   const e2eReportPaths = new Set();
+  async function disposableUserEvidence(boundary) {
+    const problems = [], citations = [];
+    const leaseId = boundary?.leaseId;
+    const validLease = typeof leaseId === 'string' && /^[a-f0-9]{32}$/.test(leaseId);
+    const directory = validLease ? `reports/e2e/isolation/${leaseId}` : 'reports/e2e';
+    const readyPath = directory + '/data-isolation-ready.json';
+    const cleanupPath = directory + '/data-isolation-cleanup.json';
+    if (boundary?.mode !== 'DISPOSABLE_SECONDARY_USER' || boundary.readyReceipt !== readyPath
+        || (leaseId !== undefined && !validLease)
+        || boundary.cleanupReceipt !== cleanupPath || !HASH.test(boundary.readyReceiptSha256 ?? '')
+        || !HASH.test(boundary.cleanupReceiptSha256 ?? '')) {
+      return {ok: false, citations, problems: ['Chitanțele utilizatorului temporar nu au căile și hash-urile canonice.']};
+    }
+    try {
+      const [readyFile, cleanupFile] = await Promise.all([
+        regularFile(candidate, readyPath), regularFile(candidate, cleanupPath)
+      ]);
+      const [readyBytes, cleanupBytes] = await Promise.all([fs.readFile(readyFile), fs.readFile(cleanupFile)]);
+      const [readyDoc, cleanupDoc] = await Promise.all([strictJson(readyFile), strictJson(cleanupFile)]);
+      const ready = readyDoc.value, cleanup = cleanupDoc.value;
+      const readyHash = digest(readyBytes), cleanupHash = digest(cleanupBytes);
+      const userId = Number.isSafeInteger(boundary.testUserId) ? boundary.testUserId : -1;
+      const readyOkay = readyHash === boundary.readyReceiptSha256 && ready.status === 'READY'
+          && ready.scope === 'ANDROID_SECONDARY_USER' && ready.applicationId === manifest.release?.applicationId
+          && ready.createdByRun === true && ready.packageWasInstalledBefore === false
+          && typeof ready.originalPackageWasInstalledBefore === 'boolean'
+          && ready.screenOffTimeoutMs === 2147483647 && ready.screenUnlocked === true
+          && ready.cleanupRequired === true && ready.accountsAdded === false
+          && Number.isSafeInteger(ready.originalUserId) && ready.originalUserId >= 0
+          && Number.isSafeInteger(ready.testUserId) && ready.testUserId > 0
+          && ready.testUserId !== ready.originalUserId && ready.testUserId === userId
+          && ready.installedApkSha256 === manifest.release?.apkSha256;
+      const cleanupOkay = cleanupHash === boundary.cleanupReceiptSha256 && cleanup.status === 'PASS'
+          && cleanup.scope === 'ANDROID_SECONDARY_USER' && cleanup.applicationId === manifest.release?.applicationId
+          && cleanup.removedByRun === true && cleanup.originalPackageStatePreserved === true
+          && cleanup.originalPackageWasInstalledBefore === ready.originalPackageWasInstalledBefore
+          && cleanup.originalPackageRetained === ready.originalPackageWasInstalledBefore
+          && cleanup.originalUserId === ready.originalUserId && cleanup.removedUserId === userId
+          && cleanup.readyReceiptSha256 === readyHash && (!validLease || cleanup.leaseId === leaseId);
+      if (!readyOkay) problems.push('Chitanța de pregătire nu dovedește un utilizator secundar nou, deblocat, fără instalare sau cont anterior, pentru APK-ul candidat.');
+      if (!cleanupOkay) problems.push('Chitanța teardown nu dovedește eliminarea aceluiași utilizator și păstrarea stării inițiale a instalării originale.');
+      if (declared.get(readyPath)?.sha256 !== readyHash || declared.get(cleanupPath)?.sha256 !== cleanupHash)
+        problems.push('Chitanțele de izolare nu sunt incluse în inventarul hash al release-ului.');
+      citations.push(citation(readyPath, readyHash), citation(cleanupPath, cleanupHash));
+    } catch (error) {
+      problems.push(`Chitanța utilizatorului temporar lipsește sau este invalidă (${error.message}).`);
+    }
+    return {ok: problems.length === 0, citations, problems};
+  }
   if (e2eReceiptsOkay && e2e.status === 'PASS') {
     for (const name of e2e.groups) {
       const group = manifest.qualification?.e2eGroups?.[name];
@@ -822,9 +878,19 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         const html = reportBytes.toString('utf8'), reportHash = digest(reportBytes), imageCount = inlinePngCount(html);
         const reportItem = declared.get(reportPath), receiptItem = declared.get(receiptPath);
         const receiptDoc = await strictJson(await regularFile(candidate, receiptPath)), receipt = receiptDoc.value;
+        let boundaryOkay = true;
+        if (receipt.dataBoundary !== undefined) {
+          if (receipt.dataBoundary.mode === 'DISPOSABLE_SECONDARY_USER') {
+            const boundary = await disposableUserEvidence(receipt.dataBoundary);
+            boundaryOkay = boundary.ok; e2eProblems.push(...boundary.problems);
+            e2eEvidence.push(...boundary.citations);
+          } else if (receipt.dataBoundary.mode !== 'BACKUP_AND_RESTORE') {
+            boundaryOkay = false; e2eProblems.push(`${name}: limita de izolare a datelor nu este acceptată.`);
+          }
+        }
         const countsMatch = receipt.tests === group.tests && receipt.failures === group.failures
             && receipt.errors === group.errors && receipt.skipped === group.skipped;
-        const bindingMatches = receipt.status === 'PASS' && receipt.protocol === group.protocol && countsMatch && imageCount > 0
+        const bindingMatches = receipt.status === 'PASS' && receipt.protocol === group.protocol && countsMatch && imageCount > 0 && boundaryOkay
             && receipt.releaseVersion === manifest.release?.versionName
             && receipt.installedApkSha256 === manifest.release?.apkSha256
             && receipt.sourceCommit === manifest.source?.sourceCommit
@@ -856,7 +922,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   addCheck(checks, 'E2E_SCOPE', e2eOkay,
       e2eOkay ? `E2E: ${e2e.status}; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.`
         : 'Flux de utilizator schimbat fără E2E trecut, raport E2E lipsă/nepotrivit sau omitere fără justificare.',
-      [citation(path.relative(project, planFile), planDoc.sha256, '/e2e', planDoc.lines.get('/e2e') ?? 1), ...e2eEvidence], e2eProblems);
+      [planCitation('/e2e'), ...e2eEvidence], e2eProblems);
 
   const allowedVerdicts = policy.rules?.allowedAggregateStatuses;
   const allPass = checks.every(check => check.status === 'PASS') && policyContract
@@ -867,6 +933,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     channel: plan.channel ?? null, sourceCommit: manifest.source?.sourceCommit ?? null,
     workingTreeFingerprint: manifest.source?.workingTreeFingerprint ?? null,
     candidateManifestSha256: manifestDoc.sha256, planSha256: planDoc.sha256,
+    qualificationPlan: {fileName: 'qualification-plan.json', encoding: 'base64-utf8',
+      sha256: planDoc.sha256, contentBase64: planDoc.bytes.toString('base64')},
     checks, testScope: testScope ?? null, componentGroups: groupResults,
     e2e: {status: e2e.status ?? 'NOT_RUN', userFlowChanged: plan.userFlowChanged ?? null,
       rationale: e2e.rationale ?? null, note: 'NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației.'},

@@ -102,6 +102,7 @@ final class ReleaseBidScenario {
         long deadline = System.nanoTime() + Duration.ofSeconds(45).toNanos();
         do {
             String xml = c.ui.dump();
+            if (c.dismissAchievementNoticeIfPresent(xml)) continue;
             if (c.ui.hasText(xml, labels.handComplete())) {
                 c.ui.revealText(labels.next());
                 return;

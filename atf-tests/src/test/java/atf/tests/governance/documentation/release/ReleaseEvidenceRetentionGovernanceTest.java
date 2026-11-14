@@ -89,7 +89,8 @@ class ReleaseEvidenceRetentionGovernanceTest {
             git(attributeRepository, List.of("init", "--quiet"));
         }
         var arguments = new ArrayList<>(List.of("--git-dir=" + attributeRepository.resolve(".git"),
-                "--work-tree=" + root, "-c", "core.autocrlf=true", "check-attr", "-z", "text", "--"));
+                "--work-tree=" + root, "-c", "core.autocrlf=true", "-c", "core.longpaths=true",
+                "check-attr", "-z", "text", "--"));
         arguments.addAll(paths);
         String[] records = git(attributeRepository, arguments).split("\\x00");
         if (records.length != paths.size() * 3) throw new IllegalStateException("RELEASE-GIT-ATTR: incomplete Git output");

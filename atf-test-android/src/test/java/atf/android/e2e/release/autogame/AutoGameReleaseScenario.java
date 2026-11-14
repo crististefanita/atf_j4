@@ -39,7 +39,7 @@ public final class AutoGameReleaseScenario {
         c.ui.tapText(labels.autoGameToggle());
         // On a one-card hand the actor can advance before UiAutomator produces a hierarchy.
         // Assert the durable score boundary here and inspect the play marker on the next manual turn.
-        c.ui.awaitText(labels.handComplete(), Duration.ofSeconds(45));
+        c.awaitTextAndDismissAchievementNotice(labels.handComplete(), Duration.ofSeconds(45));
         c.checkpoint("AutoGame completes the current hand at its real score boundary", xml -> List.of(
                 ReleaseBidContext.equal("One-card hand reached the score screen", true,
                         c.ui.hasText(xml, labels.handComplete())),
@@ -106,7 +106,10 @@ public final class AutoGameReleaseScenario {
     }
 
     private static int privateHandHeight(ReleaseBidContext context) {
-        int densityDpi = context.setup.required("display").required("density").asInt();
+        String displayProfile = context.setup.path("displayProfile").asText();
+        int densityDpi = displayProfile.matches("[1-9]\\d*x[1-9]\\d*@[1-9]\\d*")
+                ? Integer.parseInt(displayProfile.substring(displayProfile.indexOf('@') + 1))
+                : context.setup.required("display").required("density").asInt();
         if (densityDpi <= 0) throw new IllegalStateException("Missing native display density");
         float density = densityDpi / 160f;
         return Math.round(88 * density) + Math.round(28 * density);

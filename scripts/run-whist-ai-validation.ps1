@@ -11,18 +11,23 @@ $root=Split-Path -Parent $PSScriptRoot
 Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 if(!$RunRoot){$RunRoot='C:\work\whist_back\ai-validation\'+(Get-Date -Format yyyyMMdd-HHmmss)}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
+if ($RunRoot.Equals($root, [StringComparison]::OrdinalIgnoreCase) -or
+    $RunRoot.StartsWith($root + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+    throw 'AI validation outputs must stay outside the ATF checkout.'
+}
 if(Test-Path -LiteralPath $RunRoot){throw 'Choose a fresh evidence folder; previous runs are retained.'}
-$stage=Join-Path $env:TEMP ('ATF_J4_AI_'+[guid]::NewGuid().ToString('N'))
+$stage=Join-Path $RunRoot 'work'
+$scratch=Join-Path $RunRoot 'tmp'
 $leasePath='C:\work\whist_back\android-ui-lease.json'
 $leaseId=[guid]::NewGuid().ToString('N');$leased=$false
-New-Item -ItemType Directory -Force $stage,"$RunRoot\accepted-components","$RunRoot\coverage","$RunRoot\rule-docs" | Out-Null
+New-Item -ItemType Directory -Force $stage,$scratch,"$RunRoot\accepted-components","$RunRoot\coverage","$RunRoot\rule-docs" | Out-Null
 Copy-Item -LiteralPath "$root\pom.xml","$root\lib" -Destination $stage -Recurse
 $sourceModules = @(([xml](Get-Content -LiteralPath "$root\pom.xml" -Raw)).project.modules.module)
 foreach($module in ($sourceModules + @('whist-lab-app'))){
     & robocopy "$root\$module" "$stage\$module" /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
     if($LASTEXITCODE -ge 8){throw "Staging failed: $module"}
 }
-$saved=@{};foreach($name in @('ANDROID_HOME','ANDROID_SDK_ROOT','ADB_SERVER_SOCKET','ATF_ANDROID_ADB','ATF_ANDROID_SERIAL','ATF_ANDROID_TIMEOUT_SECONDS')){$saved[$name]=[Environment]::GetEnvironmentVariable($name)}
+$saved=@{};foreach($name in @('ANDROID_HOME','ANDROID_SDK_ROOT','ADB_SERVER_SOCKET','ATF_ANDROID_ADB','ATF_ANDROID_SERIAL','ATF_ANDROID_TIMEOUT_SECONDS','TEMP','TMP')){$saved[$name]=[Environment]::GetEnvironmentVariable($name)}
 $state=[ordered]@{status='COMPONENTS_RUNNING';run=$RunRoot;stage=$stage;positiveSeriesBonus=$PositiveSeriesBonus;startedAt=(Get-Date -Format o)}
 function Invoke-Checked([string]$Label,[scriptblock]$Action){
     Write-Host "$Label -> $RunRoot\$Label.log"
@@ -36,6 +41,7 @@ function Invoke-Training([string]$Label,[int]$Bonus,[string]$Phase,[int]$Seeds,[
 }
 Push-Location $stage
 try{
+    $env:TEMP=$scratch;$env:TMP=$scratch
     $env:ANDROID_HOME=$AndroidSdk;$env:ANDROID_SDK_ROOT=$AndroidSdk
     $env:ADB_SERVER_SOCKET=$AdbServerSocket;$env:ATF_ANDROID_ADB="$AndroidSdk\platform-tools\adb.exe";$env:ATF_ANDROID_SERIAL=$Serial;$env:ATF_ANDROID_TIMEOUT_SECONDS='90'
     Get-ChildItem "$stage\lib" -File | Get-FileHash -Algorithm SHA256 | Select-Object Path,Hash | ConvertTo-Json | Set-Content "$RunRoot\library-binaries.json"

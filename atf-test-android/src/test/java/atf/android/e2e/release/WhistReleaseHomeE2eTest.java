@@ -22,6 +22,53 @@ class WhistReleaseHomeE2eTest {
         c.execute(WhistReleaseHomeE2eTest::achievements);
     }
 
+    @Test void completedHandHistoryResumesWithRomanianAndEnglishHeadings() throws Throwable {
+        var c = new ReleaseBidContext(Path.of(System.getProperty("whist.records.runRoot")),
+                "history-release-sanity", "Signed release — completed hand history in both languages", getClass().getSimpleName());
+        c.execute(WhistReleaseHomeE2eTest::completedHandHistory);
+    }
+
+    private static void completedHandHistory(ReleaseBidContext c) throws Exception {
+        String installed = c.installedHash();
+        if (!c.setup.required("requestedApkSha256").asText().equals(installed))
+            throw new IllegalStateException("Installed APK differs from the signed candidate");
+
+        c.ui.restartToActivity(ReleaseBidContext.PACKAGE, ".MainActivity");
+        c.ui.selectNamedSpinnerOption("Language", "English");
+        c.ui.awaitText("New game", Duration.ofSeconds(15));
+        c.ui.tapText("New game");
+        c.ui.selectNamedSpinnerOption("Players", "4");
+        c.ui.selectNamedSpinnerOption("Game type", "Romanian (1–8–1)");
+        c.ui.selectNamedSpinnerOption("AI level", "Hard");
+        c.ui.tapText("Start game");
+        c.awaitRecommendation("Place bid");
+        c.ui.tapText("Auto play");
+        c.awaitTextAndDismissAchievementNotice("Hand complete", Duration.ofSeconds(45));
+        c.ui.tapText("Score history");
+        c.ui.awaitText("CLOSE", Duration.ofSeconds(25));
+        c.checkpoint("Completed one-card hand exposes English score history", xml -> List.of(
+                ReleaseBidContext.equal("History dialog is visible", true, c.ui.hasText(xml, "Score history")),
+                ReleaseBidContext.equal("Card-count heading is visible", true, c.ui.hasText(xml, "Cards")),
+                ReleaseBidContext.equal("Bid heading is visible", true, c.ui.hasText(xml, "B")),
+                ReleaseBidContext.equal("Total-points heading is visible", true, c.ui.hasText(xml, "P")),
+                ReleaseBidContext.equal("A complete first-hand row is present", true, c.ui.hasText(xml, "1"))));
+        c.ui.tapText("CLOSE");
+        c.ui.tapText("Main menu");
+        c.ui.awaitText("New game", Duration.ofSeconds(15));
+        c.ui.selectNamedSpinnerOption("Language", "Română");
+        c.ui.awaitText("Joc nou", Duration.ofSeconds(15));
+        c.ui.tapText("Reia partida");
+        c.ui.awaitText("Mână încheiată", Duration.ofSeconds(15));
+        c.ui.tapText("Istoricul scorului");
+        c.ui.awaitText("ÎNCHIDE", Duration.ofSeconds(25));
+        c.checkpoint("The same completed hand resumes with Romanian score history", xml -> List.of(
+                ReleaseBidContext.equal("History dialog is localized", true, c.ui.hasText(xml, "Istoricul scorului")),
+                ReleaseBidContext.equal("Card-count heading is localized", true, c.ui.hasText(xml, "Cărți")),
+                ReleaseBidContext.equal("Romanian bid heading is visible", true, c.ui.hasText(xml, "L")),
+                ReleaseBidContext.equal("Total-points heading is visible", true, c.ui.hasText(xml, "P")),
+                ReleaseBidContext.equal("Close action is localized", true, c.ui.hasText(xml, "ÎNCHIDE"))));
+    }
+
     private static void achievements(ReleaseBidContext c) throws Exception {
         String installed = c.installedHash();
         if (!c.setup.required("requestedApkSha256").asText().equals(installed))

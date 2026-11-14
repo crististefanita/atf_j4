@@ -8,6 +8,7 @@ Contractul stabil al RAG aparține [ghidului de calificare](../testing/ATF_Relea
 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
+| P2 | Auditabilitatea verdicturilor istorice | Verdictul păstrat pentru 0.21.3 citează planul dintr-un candidat temporar care nu mai este în repository. Recuperați numai bytes care corespund hash-ului citat; dacă nu există, păstrați explicit limita de audit și nu reconstruiți dovada retroactiv. Verdicturile noi includ snapshot-ul exact al planului. |
 | P2 | Prospețimea receipt-urilor | Receipt-urile sunt legate prin hash, dar nu au un interval de valabilitate sau un criteriu temporal de expirare. Declarați originea temporală și termenul, apoi blocați automatizarea publicării pentru dovezi expirate ori fără timp verificabil. |
 | P2 | Costul pregătirii componentelor Maven | Măsurați separat copierea cache-ului, compilarea, testele și publicarea Extent. Pregătirea poate fi omisă când toate selecțiile Maven au dovezi valide. |
 | P2 | Cronologia incompletă a calificării | Înregistrați începutul, sfârșitul și durata fiecărei etape, inclusiv cea de pornire la rece. Marcați suprapunerile. Cronometrați separat evaluatorul read-only, probele, publicarea și descărcarea. |

@@ -26,7 +26,7 @@ import org.xml.sax.InputSource;
 final class RecordsContext {
     static final String PACKAGE = "ro.whistlab.app";
     final AdbClient adb = AdbClient.fromSystemProperties();
-    final Path run = Path.of(System.getProperty("whist.records.runRoot"));
+    final Path run = atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("whist.records.runRoot");
     final Path output;
     final AndroidUiDriver ui;
     final AndroidUiFlowTrace trace;
@@ -34,7 +34,8 @@ final class RecordsContext {
     final ObjectNode setup;
     final JsonNode originalManifest;
     private final String leaseId;
-    private final Path leasePath=Path.of(System.getProperty("whist.records.leasePath","C:/work/whist_back/android-ui-lease.json"));
+    private final Path leasePath=atf.android.e2e.support.flow.WhistLabScenario.externalPath(
+            System.getProperty("whist.records.leasePath","C:/work/whist_back/android-ui-lease.json"), "whist.records.leasePath");
     private final AndroidUiDriver.Device device;
     private String phase;
     private int checkpoint;
@@ -44,7 +45,7 @@ final class RecordsContext {
         this("profile-score-records","Whist Lab — nume, istoric comun, clasamente locale și serii ±5/±10","records-minimal");
     }
     RecordsContext(String id,String name,String folder) throws Exception {
-        output=Path.of(System.getProperty("atf.android.artifacts")).resolve(folder);
+        output=atf.android.e2e.support.flow.WhistLabScenario.artifacts(folder);
         Files.createDirectories(output);
         setup = (ObjectNode)RecordsFixtures.JSON.readTree(run.resolve("setup-install.json").toFile());
         RecordsRunContract.installedApk(setup);

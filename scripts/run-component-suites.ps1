@@ -135,7 +135,7 @@ $selectedGroups = @(if ($Groups.Count) { $Groups } else { $knownGroups })
 $fingerprint = Get-AtfInputFingerprint $snapshot.source
 $releaseFingerprint = Get-AtfInputFingerprint $snapshot.release
 $libraries = @($snapshot.source | ConvertFrom-Json | Where-Object {$_.path -like 'lib/*.jar'})
-$provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceRoot=$sourceRoot;sourceFingerprint=$fingerprint;inputCount=$snapshot.inputCount;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries
+$provenance = [ordered]@{schemaVersion=1;kind='live-source-components';apkQualification=$false;androidExecution=$false;observedUtc=[DateTime]::UtcNow.ToString('o');sourceFingerprint=$fingerprint;inputCount=$snapshot.inputCount;inputManifest='source-inputs.json';inputPartCharacters=$InputPartCharacters;libraries=$libraries
     releaseFingerprint=$releaseFingerprint;releaseInputManifest='release-inputs.json'}
 $provenanceReceipt = Join-Path $RunRoot 'source-provenance.json'
 $provenance | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $provenanceReceipt -Encoding utf8
@@ -200,7 +200,9 @@ if ($groupsToRun.Count) {
     }
 }
 
-$snapshotDifferences = @(Get-AtfSnapshotDifferences $snapshot $stage $sourceRoot)
+$snapshotDifferences = @(Get-AtfSnapshotDifferences $snapshot $stage $sourceRoot | ForEach-Object {
+    ConvertTo-AtfPortableDiagnostic $_ $sourceRoot $stage $work $RunRoot
+})
 $stable = $snapshotDifferences.Count -eq 0
 $passed = $stable -and ($results.Count + $reused.Count) -eq $selectedGroups.Count -and @($results | Where-Object {$_.exitCode -ne 0}).Count -eq 0
 $androidComponentsReceipt = if ($results.Count) { 'source-component-run.json' } elseif ($reused.Count) {
@@ -209,7 +211,7 @@ $androidComponentsReceipt = if ($results.Count) { 'source-component-run.json' } 
 $run = [ordered]@{
     schemaVersion=1;kind='live-source-components';apkQualification=$false
     sourceFingerprint=$fingerprint;provenanceReceiptSha256=$provenanceFingerprint;inputManifest='source-inputs.json'
-    sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage=$stage;inputCount=$snapshot.inputCount
+    sourceStable=$stable;status=if($passed){'PASS'}else{'FAIL'};stage='isolated-staging-copy';inputCount=$snapshot.inputCount
     releaseFingerprint=$releaseFingerprint;releaseInputManifest='release-inputs.json';snapshotDifferences=$snapshotDifferences
     results=$results;reusedGroups=@($reused | ForEach-Object {$_.group});gradleBatch=$gradleBatch
     androidComponentsReceipt=$androidComponentsReceipt
@@ -225,5 +227,10 @@ foreach ($group in $selectedGroups) {
 }
 $lines += @('','Manifestul surselor, proveniența și receipt-ul agregat leagă execuțiile noi de amprenta surselor. Planul de reutilizare indică decizia fiecărei suite și dosarul original. XML-ul JUnit rămâne temporar pentru verificare.')
 $lines | Set-Content -LiteralPath (Join-Path $RunRoot 'README.md') -Encoding utf8
+foreach ($logFile in Get-ChildItem -LiteralPath $RunRoot -File -Filter '*.log') {
+    $content = [IO.File]::ReadAllText($logFile.FullName)
+    $portable = ConvertTo-AtfPortableDiagnostic $content $sourceRoot $stage $work $RunRoot
+    [IO.File]::WriteAllText($logFile.FullName, $portable, [Text.UTF8Encoding]::new($false))
+}
 if (-not $passed) { throw "Execuția, acoperirea HTML sau stabilitatea surselor a eșuat. Consultați $RunRoot/source-component-run.json și $stage." }
 Write-Output "PASS: $RunRoot/README.md"

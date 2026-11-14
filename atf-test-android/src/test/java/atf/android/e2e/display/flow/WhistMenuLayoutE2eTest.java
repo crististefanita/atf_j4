@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class WhistMenuLayoutE2eTest {
     @Test void normalMenusFitAndLanguageRulesAndScoresRemainReachable() throws Exception {
         var adb = AdbClient.fromSystemProperties();
-        var output = Path.of(System.getProperty("atf.android.artifacts")).resolve("menu-layout");
+        var output = atf.android.e2e.support.flow.WhistLabScenario.artifacts("menu-layout");
         var ui = new AndroidUiDriver(adb, output);
         var trace = new AndroidUiFlowTrace(output, "menu-layout", "Whist — normal navigation, EN/RO and compact setup",
                 getClass().getSimpleName(), "atf.android.e2e", "ro.whistlab.app", List.of("android", "e2e", "menu", "EN", "RO"));

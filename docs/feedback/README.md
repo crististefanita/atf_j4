@@ -38,9 +38,9 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și reconciliază limita Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
 | RAG-03 | P2 | 85 | Leagă prospețimea receipt-urilor și cronologia etapelor de politica de reutilizare și de expirarea dovezilor. [Registru](ATF_Release_RAG.md#lacune-deschise) |
 | TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
+| RAG-04 | P2 | 83 | Păstrează auditabilitatea verdicturilor existente fără reconstruirea planurilor temporare lipsă; verdicturile noi includ bytes planului. [Registru](ATF_Release_RAG.md#lacune-deschise) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
 | GOV-02 | P2 | 80 | Validează baza Git, căile schimbate și expirarea controalelor `testChanges`. [Registru](ATF_Governance.md#confruntarea-afirmațiilor-documentare) |
-| AND-04 | P2 | 78 | Izolați fabricarea fixture-urilor deterministe din MainActivity într-un seam exclus din Release; păstrați scenariile Debug și refuzați activarea fixture-urilor prin intent extras. [Owner](ATF_Android.md#persistență-și-coordonare) |
 | AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Owner](ATF_Ai.md#evoluția-motorului) |
 | GOV-03 | P2 | 74 | Reduceți responsabilitățile rămase în GameSession fără schimbarea mutărilor, scorului sau checkpoint-ului; verificați comportamentul nominal și refuzurile cu oracol fixat. [Owner](ATF_Governance.md#lizibilitatea-coordonatorilor-de-domeniu) |
 

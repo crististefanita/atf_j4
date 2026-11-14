@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 
 /** Debug-only recorded inputs. All outcomes are calculated by the normal game engine. */
-public final class OriginalMatchReplay {
+public final class OriginalMatchReplay implements DebugReplay {
     private final Properties recorded=new Properties();
     private final File observedFile;
     private final List<Integer> actualMoves=new ArrayList<>();

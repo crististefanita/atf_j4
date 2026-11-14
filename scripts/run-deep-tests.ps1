@@ -11,12 +11,25 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
-if ([string]::IsNullOrWhiteSpace($WhistLabProject)) {
-    $WhistLabProject = Join-Path $root 'whist-lab-app'
+$defaultApp = Join-Path $root 'whist-lab-app'
+$appSource = if ($WhistLabProject) { [IO.Path]::GetFullPath($WhistLabProject) } else { $defaultApp }
+if (-not (Test-Path -LiteralPath (Join-Path $appSource 'gradlew.bat') -PathType Leaf)) {
+    throw "Whist Lab Gradle project not found: $appSource"
 }
-$evidenceRoot = $EvidenceRoot
+$evidenceRoot = [IO.Path]::GetFullPath($EvidenceRoot)
 $runId = Get-Date -Format 'yyyyMMdd-HHmmss'
 $runRoot = Join-Path $evidenceRoot (Join-Path 'runs' $runId)
+foreach ($source in @($root, $appSource)) {
+    $prefix = $source.TrimEnd([char]'\',[char]'/') + [IO.Path]::DirectorySeparatorChar
+    if ($runRoot.Equals($source, [StringComparison]::OrdinalIgnoreCase) -or
+        $runRoot.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'E2E build and evidence must stay outside the source projects.'
+    }
+}
+if (Test-Path -LiteralPath $runRoot) { throw 'Choose a fresh E2E evidence directory.' }
+$stage = Join-Path $runRoot 'work'
+$scratch = Join-Path $runRoot 'tmp'
+$buildApp = Join-Path $stage 'whist-lab-app'
 $componentResults = Join-Path $runRoot 'components'
 $evidenceDir = Join-Path $runRoot 'evidence'
 $logsDir = Join-Path $runRoot 'logs'
@@ -31,6 +44,8 @@ $oldEnvironment = @{
     ATF_ANDROID_TIMEOUT_SECONDS = $env:ATF_ANDROID_TIMEOUT_SECONDS
     ANDROID_HOME = $env:ANDROID_HOME
     ANDROID_SDK_ROOT = $env:ANDROID_SDK_ROOT
+    TEMP = $env:TEMP
+    TMP = $env:TMP
 }
 
 function Invoke-MavenAndSaveResults {
@@ -45,7 +60,7 @@ function Invoke-MavenAndSaveResults {
     Write-Host "Running $Module ..."
     & mvn @MavenArguments *> $log
     $result = $LASTEXITCODE
-    $source = Join-Path (Join-Path $root $Module) 'target\surefire-reports'
+    $source = Join-Path (Join-Path $stage $Module) 'target\surefire-reports'
     New-Item -ItemType Directory -Force -Path $Destination | Out-Null
     if (Test-Path -LiteralPath $source) {
         Get-ChildItem -LiteralPath $source -File |
@@ -60,9 +75,20 @@ function Invoke-MavenAndSaveResults {
     }
 }
 
-New-Item -ItemType Directory -Force -Path $runRoot,$componentResults,$evidenceDir,$logsDir,$componentLogsDir | Out-Null
-Push-Location $root
+New-Item -ItemType Directory -Force -Path $stage,$scratch,$componentResults,$evidenceDir,$logsDir,$componentLogsDir | Out-Null
+$inputs = Join-Path $runRoot 'source-inputs.json'
+& (Join-Path $PSScriptRoot 'Get-AtfSourceInputs.ps1') -SourceRoot $root -AsJson |
+    Set-Content -LiteralPath $inputs -Encoding utf8
+& (Join-Path $PSScriptRoot 'Copy-AtfSourceInputs.ps1') -SourceRoot $root -Destination $stage -InputManifest $inputs
+if ($appSource -ine $defaultApp) {
+    $buildApp = Join-Path $stage 'custom-whist-app'
+    & robocopy $appSource $buildApp /E /XJ /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP *> (Join-Path $logsDir 'copy-app.log')
+    if ($LASTEXITCODE -ge 8) { throw "Could not stage Whist Lab sources: $appSource" }
+}
+Push-Location $stage
 try {
+    $env:TEMP = $scratch
+    $env:TMP = $scratch
     if (-not (Test-Path -LiteralPath $AdbExecutable)) {
         throw "ADB executable not found: $AdbExecutable"
     }
@@ -79,13 +105,10 @@ try {
         throw "Maven install failed; see $(Join-Path $logsDir 'install.log')"
     }
 
-    if (-not (Test-Path -LiteralPath (Join-Path $WhistLabProject 'gradlew.bat'))) {
-        throw "Whist Lab Gradle project not found: $WhistLabProject"
-    }
     $env:ANDROID_HOME = $AndroidSdk
     $env:ANDROID_SDK_ROOT = $AndroidSdk
     $buildLog = Join-Path $logsDir 'whist-lab-android-build.log'
-    Push-Location $WhistLabProject
+    Push-Location $buildApp
     try {
         & .\gradlew.bat --no-daemon --console=plain :game-core:test :app:assembleDebug *> $buildLog
         if ($LASTEXITCODE -ne 0) {
@@ -95,7 +118,7 @@ try {
     finally {
         Pop-Location
     }
-    $whistLabApk = Join-Path $WhistLabProject 'app\build\outputs\apk\debug\app-debug.apk'
+    $whistLabApk = Join-Path $buildApp 'app\build\outputs\apk\debug\app-debug.apk'
     if (-not (Test-Path -LiteralPath $whistLabApk)) {
         throw "Whist Lab APK was not produced: $whistLabApk"
     }
@@ -143,4 +166,6 @@ finally {
     $env:ATF_ANDROID_TIMEOUT_SECONDS = $oldEnvironment.ATF_ANDROID_TIMEOUT_SECONDS
     $env:ANDROID_HOME = $oldEnvironment.ANDROID_HOME
     $env:ANDROID_SDK_ROOT = $oldEnvironment.ANDROID_SDK_ROOT
+    $env:TEMP = $oldEnvironment.TEMP
+    $env:TMP = $oldEnvironment.TMP
 }

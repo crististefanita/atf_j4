@@ -19,7 +19,7 @@ class RecordedRomanianMatchAuditTest {
     private static final ObjectMapper JSON=new ObjectMapper();
     @Test void allRetainedNormalExpertCardsAndVisibleScoreRowsRemainReconstructible()throws Exception{
         assumeTrue(Boolean.getBoolean("atf.romanian.audit"));
-        Path out=Path.of(System.getProperty("atf.match.evidenceDir"));int[] totals=new int[4],streaks=new int[4];int moves=0,snapshots=0;
+        Path out=atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("atf.match.evidenceDir");int[] totals=new int[4],streaks=new int[4];int moves=0,snapshots=0;
         JsonNode first=read(out,"ro-h01-deal");int dealer=first.path("dealerSeat").asInt();long seed=first.path("seed").asLong();
         for(int h=0;h<24;h++){
             String prefix=String.format("ro-h%02d",h+1);JsonNode start=read(out,prefix+"-deal");

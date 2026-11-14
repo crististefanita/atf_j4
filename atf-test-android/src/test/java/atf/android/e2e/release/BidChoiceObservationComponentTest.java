@@ -58,6 +58,14 @@ class BidChoiceObservationComponentTest {
         return "<hierarchy>" + button("0", enabled, zero) + button("1", enabled, one)
                 + button(label, submit, false) + "</hierarchy>";
     }
+    @Test void theObservedHandAllowsSeventeenButStillRejectsHigherBids() throws Exception {
+        String input = "<hierarchy>" + button("0", true, false) + button("17", true, true)
+                + button("Place bid", true, false) + "</hierarchy>";
+        AuditedAssertions.assertEquals(17, BidChoiceObservation.read(input, "Place bid", 17).selected().orElseThrow());
+        AuditedAssertions.assertThrows(IllegalStateException.class, () -> BidChoiceObservation.read(input, "Place bid"));
+        AuditedAssertions.assertThrows(IllegalStateException.class,
+                () -> BidChoiceObservation.read(input.replace("text=\"17\"", "text=\"18\""), "Place bid", 17));
+    }
     private static String button(String text, boolean enabled, boolean selected) {
         return "<node text=\"" + text + "\" class=\"android.widget.Button\" bounds=\"[0,0][100,50]\""
                 + " enabled=\"" + enabled + "\" selected=\"" + selected + "\"/>";

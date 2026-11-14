@@ -26,6 +26,31 @@ function ConvertTo-AtfInputJson([object[]]$Rows) {
     ConvertTo-Json -InputObject $Rows -Depth 5 -Compress
 }
 
+function ConvertTo-AtfPortableDiagnostic(
+    [string]$Text,
+    [string]$SourceRoot,
+    [string]$Stage,
+    [string]$WorkRoot,
+    [string]$RunRoot) {
+    $portable = $Text
+    $locations = @(
+        [pscustomobject]@{Path=$Stage; Token='<STAGE>'},
+        [pscustomobject]@{Path=$RunRoot; Token='<EVIDENCE>'},
+        [pscustomobject]@{Path=$WorkRoot; Token='<WORK>'},
+        [pscustomobject]@{Path=$SourceRoot; Token='<SOURCE>'}
+    )
+    foreach ($location in $locations) {
+        if ([string]::IsNullOrWhiteSpace($location.Path)) { continue }
+        $fullPath = [IO.Path]::GetFullPath($location.Path).TrimEnd([char[]]@('\', '/'))
+        foreach ($variant in @($fullPath, $fullPath.Replace('\', '/'))) {
+            if ($variant) {
+                $portable = [regex]::Replace($portable, [regex]::Escape($variant), $location.Token,
+                    [Text.RegularExpressions.RegexOptions]::IgnoreCase)
+            }
+        }
+    }
+    return $portable
+}
 function Get-AtfInputFingerprint([string]$Json) {
     [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($Json))).ToLowerInvariant()
 }

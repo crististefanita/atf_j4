@@ -101,6 +101,7 @@ Evaluatorul RAG consumă dovezile deja produse și emite un verdict read-only.
 - Nu construiește, nu rulează teste, nu apelează Git și nu mută ori publică fișiere.
 - Scrie numai verdictul JSON, în afara proiectului, candidatului și snapshot-ului.
 - Fiecare verificare citează calea, SHA-256 și JSON Pointer/linia sursei.
+- Verdictul păstrează planul exact, în Base64 UTF-8, în `qualificationPlan.contentBase64`; hash-ul lui permite revizuirea fără o copie temporară externă.
 - Lacunele nerezolvate sunt urmărite în [registrul RAG](../feedback/ATF_Release_RAG.md).
 
 Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, platformele, grupurile componente, schimbarea fluxului utilizatorului și decizia E2E cu motiv.
@@ -280,9 +281,12 @@ $device = @{
 | Boot | `sys.boot_completed` este exact `1`. |
 | Profil | API-ul este numeric și corespunde valorii așteptate dacă este specificată. Pentru rezoluție și DPI se compară valorile efective în format `LĂȚIMExÎNĂLȚIME@DPI`, cu `Override` înainte de `Physical`. |
 
-Stabiliți valorile așteptate din planul selecției. `ExpectedApi=0` și profilul de afișaj gol cer numai observarea unor valori valide. În modul responsive, profilul așteptat descrie starea inițială a dispozitivului, iar `Profiles` descrie matricea aplicată în timpul scenariului.
+- Pentru un E2E semnat care schimbă starea jocului, folosiți backup cu restaurare verificată sau un utilizator Android secundar temporar. [Scriptul de izolare](../../scripts/Invoke-AtfAndroidDisposableUser.ps1) cere pachetul absent înainte de instalare și chitanța de eliminare după test, folosind rezervarea existentă și păstrând utilizatorul original.
+- APK-ul candidat și rădăcinile `whist.records.runRoot`, `atf.android.artifacts` și `atf.match.evidenceDir` trebuie să fie în afara checkout-ului. Testele refuză directoarele din proiect; instalarea temporară, exporturile de profil și joc, capturile și chitanțele rămân în dosarul extern al rulării. Copia APK-ului trimisă temporar pe Android se șterge după instalare, iar salvările private rămân în utilizatorul temporar până la eliminarea lui.
 
-`android-preflight.json` păstrează rezultatul și observația sau cauza refuzului. Un refuz rămâne `BLOCKED` și oprește execuția. Un preflight trecut permite continuarea către verificarea APK-ului, backup și E2E.
+- Valorile așteptate vin din planul selecției; `ExpectedApi=0` și profilul gol cer observarea unor valori valide. În modul responsive, profilul descrie starea inițială, iar `Profiles` descrie matricea aplicată în scenariu.
+
+- `android-preflight.json` păstrează rezultatul și cauza refuzului. Un refuz rămâne `BLOCKED`; un preflight trecut permite verificarea APK-ului și E2E.
 
 ### Acceptanța APK-ului semnat
 

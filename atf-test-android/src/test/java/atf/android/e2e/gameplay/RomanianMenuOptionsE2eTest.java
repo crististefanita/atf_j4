@@ -24,7 +24,7 @@ class RomanianMenuOptionsE2eTest {
 
     @Test
     void originalFiveNewDefaultTenAndClassicOptionPersistFromTheNormalSetupMenu() throws Exception {
-        Path out = Path.of(System.getProperty("atf.match.evidenceDir")).toAbsolutePath();
+        Path out = atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("atf.match.evidenceDir");
         Files.createDirectories(out);
         var adb = AdbClient.fromSystemProperties();
         var ui = new AndroidUiDriver(adb, out);

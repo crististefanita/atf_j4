@@ -9,7 +9,7 @@ import static atf.android.e2e.display.flow.responsive.ResponsiveMenuChecks.inspe
 import static atf.android.e2e.display.flow.responsive.ResponsiveMenuChecks.inspectNineBidTable;
 import static atf.android.e2e.display.flow.responsive.ResponsiveMenuChecks.inspectThirteenCardFan;
 import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.APP;
-import static atf.android.e2e.display.flow.responsive.ResponsiveSettings.OUTPUT;
+import static atf.android.e2e.support.flow.WhistLabScenario.artifacts;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,16 +37,7 @@ public final class ResponsiveSanityRun {
                         System.getProperty("atf.android.sanity.hands", "1"));
         boolean includeGameFlow = Boolean.getBoolean("atf.android.sanity.includeGameFlow");
         boolean tableViewportOnly = Boolean.getBoolean("atf.android.sanity.tableViewportOnly");
-        String configured = System.getProperty(OUTPUT);
-        Path root =
-                Path.of(
-                                configured == null || configured.isBlank()
-                                        ? Path.of(
-                                                        System.getProperty("java.io.tmpdir"),
-                                                        "atf-j4-responsive-sanity")
-                                                .toString()
-                                        : configured)
-                        .resolve("responsive-ui-sanity");
+        Path root = artifacts("responsive-ui-sanity");
         AndroidUiDriver ui = new AndroidUiDriver(adb, root);
         AndroidUiFlowTrace trace =
                 new AndroidUiFlowTrace(

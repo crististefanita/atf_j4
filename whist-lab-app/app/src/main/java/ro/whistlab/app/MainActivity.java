@@ -8,9 +8,10 @@ import ro.whistlab.app.screens.ScreenViews;
 import ro.whistlab.app.navigation.AppNavigation;
 import ro.whistlab.app.presentation.PresentationRefresh;
 import ro.whistlab.app.bidding.HumanBidSelection;
+import ro.whistlab.app.fixtures.DebugFixtureFactory;
+import ro.whistlab.app.fixtures.DebugLaunch;
+import ro.whistlab.app.fixtures.DebugReplay;
 
-import ro.whistlab.app.fixtures.DisplayFixtureDeals;
-import ro.whistlab.app.fixtures.OriginalMatchReplay;
 import ro.whistlab.app.lifecycle.AutoGameHand;
 import ro.whistlab.app.lifecycle.CompletedTrickPause;
 import ro.whistlab.app.lifecycle.AiTurnCoordinator;
@@ -38,7 +39,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.widget.Toast;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import ro.whistlab.core.rules.HowToPlay;
@@ -47,12 +47,10 @@ import ro.whistlab.core.model.Card;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.session.GamePhase;
+import ro.whistlab.core.session.ScoreHistory;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.model.PlayedCard;
-import ro.whistlab.core.session.ScoreHistory;
-import ro.whistlab.core.model.Suit;
-import ro.whistlab.core.model.Trump;
 
 public final class MainActivity extends Activity {
 
@@ -65,7 +63,7 @@ public final class MainActivity extends Activity {
     private final CompletedTrickPause completedTrickPause = new CompletedTrickPause();
     private GameSession game;
     private GameConfig lastConfig;
-    private OriginalMatchReplay recordedReplay;
+    private DebugReplay recordedReplay;
     private boolean debugHoldAiTurns;
     private boolean debugHoldAiBids;
     private WhistUiText copy;
@@ -124,40 +122,27 @@ public final class MainActivity extends Activity {
         try { highScores.boards(); } catch (java.io.IOException failure) {
             Toast.makeText(this, copy.storageError(), Toast.LENGTH_LONG).show();
         }
-        rankingEligible = !BuildConfig.DEBUG || !java.util.stream.Stream.of("debug_replay", "debug_fixture",
-                "debug_trick_pause_fixture", "debug_played_card_fixture", "debug_hard_ai_bid_fixture",
-                "debug_hand_fan_fixture", "debug_nine_bids_fixture", "debug_compact_table_fixture")
-                .anyMatch(key -> getIntent().getBooleanExtra(key, false));
+        DebugLaunch debugLaunch = null;
+        if (BuildConfig.DEBUG) {
+            try {
+                debugLaunch = DebugFixtureFactory.fromIntent(getIntent(), getFilesDir());
+            } catch (java.io.IOException failure) {
+                throw new IllegalStateException(failure);
+            }
+        }
+        rankingEligible = debugLaunch == null;
         debugHoldAiTurns = BuildConfig.DEBUG
                 && getIntent().getBooleanExtra("debug_hold_ai_turns", false);
         debugHoldAiBids = BuildConfig.DEBUG
                 && getIntent().getBooleanExtra("debug_hold_ai_bids", false);
         views.applyStandardWindowChrome();
-        if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_replay", false)) {
-            try {
-                recordedReplay = new OriginalMatchReplay(getFilesDir());
-                game = recordedReplay.startHand(0, ScoreHistory.newMatch(4));
-                lastConfig = game.config();
-                persistGame();
-                driveAutomatedTurns();
-            } catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_fixture", false)) {
-            openOneTrickFixture(getIntent().getBooleanExtra("persist_fixture", false));
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_trick_pause_fixture", false)) {
-            openTrickPauseFixture();
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_played_card_fixture", false)) {
-            openPlayedCardFixture();
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hard_ai_bid_fixture", false)) {
-            openHardAiBidFixture();
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_hand_fan_fixture", false)) {
-            openDisplayFixture(13, true);
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_nine_bids_fixture", false)) {
-            openDisplayFixture(8, false);
-        } else if (BuildConfig.DEBUG && getIntent().getBooleanExtra("debug_compact_table_fixture", false)) {
-            var fixture = DisplayFixtureDeals.completedThirteenCardTrick();
-            game = fixture.game();
+        if (debugLaunch != null) {
+            game = debugLaunch.game();
             lastConfig = game.config();
-            renderPlay(fixture.cards(), true);
+            recordedReplay = debugLaunch.replay();
+            if (debugLaunch.persistBeforeDrive()) persistGame();
+            if (debugLaunch.renderImmediately()) renderPlay(debugLaunch.renderedCards(), true);
+            else driveAutomatedTurns();
         } else {
             loadSavedGame();
             renderHome();
@@ -558,74 +543,6 @@ public final class MainActivity extends Activity {
         });
     }
 
-    private void openOneTrickFixture(boolean persistFixture) {
-        GameConfig config = new GameConfig(4, GameMode.REVERSE_OH_HELL, AiDifficulty.NORMAL, 20261101L);
-        List<List<Card>> hands = Arrays.asList(
-                java.util.Collections.singletonList(new Card(Suit.HEARTS, 14)),
-                java.util.Collections.singletonList(new Card(Suit.HEARTS, 13)),
-                java.util.Collections.singletonList(new Card(Suit.HEARTS, 12)),
-                java.util.Collections.singletonList(new Card(Suit.HEARTS, 11)));
-        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
-        lastConfig = config;
-        if (persistFixture) persistGame();
-        driveAutomatedTurns();
-    }
 
-    private void openTrickPauseFixture() {
-        GameConfig config = new GameConfig(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 20261103L);
-        List<List<Card>> hands = Arrays.asList(
-                Arrays.asList(new Card(Suit.HEARTS, 14), new Card(Suit.CLUBS, 14)),
-                Arrays.asList(new Card(Suit.HEARTS, 13), new Card(Suit.CLUBS, 13)),
-                Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
-                Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
-        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
-        lastConfig = config;
-        persistGame();
-        driveAutomatedTurns();
-    }
-
-    private void openPlayedCardFixture() {
-        GameConfig config = new GameConfig(4, GameMode.OH_HELL, AiDifficulty.NORMAL, 20261104L);
-        List<List<Card>> hands = Arrays.asList(
-                Arrays.asList(new Card(Suit.HEARTS, 14), new Card(Suit.CLUBS, 14)),
-                Arrays.asList(new Card(Suit.HEARTS, 13), new Card(Suit.CLUBS, 13)),
-                Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
-                Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
-        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
-        while (game.snapshot().phase() == GamePhase.BIDDING) {
-            game.submitBid(game.snapshot().biddingSeat(), 0);
-        }
-        GameSession.Snapshot state = game.snapshot();
-        if (state.currentSeat() != 0) {
-            throw new IllegalStateException("Played-card fixture must begin with the human lead");
-        }
-        game.playCard(0, new Card(Suit.HEARTS, 14));
-        lastConfig = config;
-        driveAutomatedTurns();
-    }
-
-    private void openHardAiBidFixture() {
-        GameConfig config = new GameConfig(4, GameMode.OH_HELL, AiDifficulty.HARD, 20261104L);
-        List<List<Card>> hands = Arrays.asList(
-                Arrays.asList(new Card(Suit.HEARTS, 14), new Card(Suit.CLUBS, 14)),
-                Arrays.asList(new Card(Suit.HEARTS, 13), new Card(Suit.CLUBS, 13)),
-                Arrays.asList(new Card(Suit.HEARTS, 12), new Card(Suit.CLUBS, 12)),
-                Arrays.asList(new Card(Suit.HEARTS, 11), new Card(Suit.CLUBS, 11)));
-        game = GameSession.fromDeal(config, hands, Trump.SPADES, 3);
-        humanBids.select(game, 0);
-        lastConfig = config;
-        driveAutomatedTurns();
-    }
-
-    private void openDisplayFixture(int cards, boolean playing) {
-        GameConfig config = new GameConfig(4, GameMode.DESCENDING, AiDifficulty.NORMAL, 20261103L);
-        game = GameSession.fromDeal(config, DisplayFixtureDeals.fourPlayerHands(cards), Trump.SPADES, 3);
-        if (playing) {
-            for (int seat = 0; seat < config.playerCount(); seat++) game.submitBid(game.snapshot().biddingSeat(), 0);
-        }
-        lastConfig = config;
-        humanBids.reset();
-        driveAutomatedTurns();
-    }
 
 }

@@ -30,7 +30,7 @@ class WhistDenseLayoutE2eTest {
 
     @Test void thirteenIndicesAndNineBidChoicesRemainDistinctAcrossPortraitProfiles() throws Exception {
         var adb = AdbClient.fromSystemProperties();
-        Path output = Path.of(System.getProperty("atf.android.artifacts")).resolve("dense-layout");
+        Path output = atf.android.e2e.support.flow.WhistLabScenario.artifacts("dense-layout");
         var ui = new AndroidUiDriver(adb, output);
         var trace = new AndroidUiFlowTrace(output, "dense-layout", "Whist — exposed indices and collision-free bidding",
                 getClass().getSimpleName(), "atf.android.e2e", PACKAGE, List.of("android", "e2e", "display", "13-cards", "9-bids"));

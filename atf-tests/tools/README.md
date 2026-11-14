@@ -43,7 +43,7 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
   --output $VerdictFile
 ```
 
-Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Singura scriere este `$VerdictFile`, în afara tuturor intrărilor.
+Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Include bytes planului în Base64 UTF-8 la `qualificationPlan.contentBase64`; hash-ul păstrează identitatea planului și permite revizuirea fără o copie temporară externă. Singura scriere este `$VerdictFile`, în afara tuturor intrărilor.
 
 - Codul `0` înseamnă `READY_FOR_HUMAN_REVIEW`; `2` înseamnă `BLOCKED`; `1` indică intrare sau invocare invalidă.
 - Înaintea reviziei umane se cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.

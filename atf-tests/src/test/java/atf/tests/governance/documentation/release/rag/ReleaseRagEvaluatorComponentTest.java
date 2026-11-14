@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.HexFormat;
+import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -44,6 +45,118 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertTrue(citation.path("sha256").asText().matches("[0-9a-f]{64}"));
         AuditedAssertions.assertTrue(citation.path("line").asInt() > 0);
         AuditedAssertions.assertEquals("/source", citation.path("jsonPointer").asText());
+    }
+
+    @Test void verdictEmbedsExactPlanBytesAndCitesTheEmbeddedReceipt() throws Exception {
+        Fixture fixture = fixture();
+        byte[] originalPlan = Files.readAllBytes(fixture.plan());
+        String originalHash = hash(fixture.plan());
+
+        AuditedAssertions.assertEquals(0, evaluate(fixture, fixture.output()));
+        String serialized = Files.readString(fixture.output());
+        JsonNode verdict = JSON.readTree(serialized);
+        JsonNode embeddedPlan = verdict.path("qualificationPlan");
+        AuditedAssertions.assertEquals("qualification-plan.json", embeddedPlan.path("fileName").asText());
+        AuditedAssertions.assertEquals("base64-utf8", embeddedPlan.path("encoding").asText());
+        AuditedAssertions.assertEquals(originalHash, embeddedPlan.path("sha256").asText());
+        AuditedAssertions.assertArrayEquals(originalPlan,
+                Base64.getDecoder().decode(embeddedPlan.path("contentBase64").asText()));
+        AuditedAssertions.assertFalse(serialized.contains(fixture.plan().toString()),
+                "The verdict must not depend on the temporary plan path");
+
+        for (String checkCode : List.of("PLAN_SCHEMA", "DIFF_SCOPE", "E2E_SCOPE")) {
+            JsonNode citations = findCheck(verdict, checkCode).path("evidence");
+            AuditedAssertions.assertTrue(citations.isArray() && citations.size() > 0);
+            AuditedAssertions.assertTrue(citations.findValuesAsText("path").contains("$report.qualificationPlan.contentBase64"));
+            AuditedAssertions.assertTrue(citations.findValuesAsText("embedded").contains("true"));
+        }
+    }
+
+    @Test void disposableAndroidUserRequiresHashBoundPreparationAndCleanupReceipts() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");
+        bindDisposableUserBoundary(fixture, true);
+
+        AuditedAssertions.assertEquals(0, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertTrue(findCheck(verdict, "E2E_SCOPE").path("evidence")
+                .findValuesAsText("path").contains("reports/e2e/data-isolation-cleanup.json"));
+
+        Path biddingReceipt = fixture.candidate().resolve("reports/e2e/signed-release-bidding/execution.json");
+        ObjectNode receipt = (ObjectNode) JSON.readTree(biddingReceipt.toFile());
+        ((ObjectNode) receipt.path("dataBoundary")).put("testUserId", 11);
+        JSON.writeValue(biddingReceipt.toFile(), receipt);
+        refreshPayload(fixture.candidate());
+
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertTrue(details(verdict, "E2E_SCOPE").stream()
+                .anyMatch(value -> value.contains("eliminarea aceluiași utilizator")));
+    }
+
+    @Test void disposableAndroidUserCannotPassWithoutCleanupReceipt() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");
+        bindDisposableUserBoundary(fixture, false);
+
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertTrue(details(verdict, "E2E_SCOPE").stream()
+                .anyMatch(value -> value.contains("nu dovedește eliminarea")));
+    }
+
+    @Test void resumedE2eBindsTheCleanupToItsOwnLease() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");
+        bindDisposableUserBoundary(fixture, true);
+        Path e2e = fixture.candidate().resolve("reports/e2e");
+        String leaseId = "a".repeat(32);
+        String prefix = "reports/e2e/isolation/" + leaseId + "/";
+        Path receipts = Files.createDirectories(e2e.resolve("isolation").resolve(leaseId));
+        Path ready = Files.copy(e2e.resolve("data-isolation-ready.json"), receipts.resolve("data-isolation-ready.json"));
+        Path cleanup = receipts.resolve("data-isolation-cleanup.json");
+        ObjectNode teardown = (ObjectNode) JSON.readTree(e2e.resolve(cleanup.getFileName()).toFile());
+        teardown.put("leaseId", leaseId);
+        JSON.writeValue(cleanup.toFile(), teardown);
+
+        Path execution = e2e.resolve("signed-release-bidding/execution.json");
+        ObjectNode receipt = (ObjectNode) JSON.readTree(execution.toFile());
+        var boundary = (ObjectNode) receipt.path("dataBoundary");
+        boundary.put("leaseId", leaseId)
+                .put("readyReceipt", prefix + ready.getFileName()).put("readyReceiptSha256", hash(ready))
+                .put("cleanupReceipt", prefix + cleanup.getFileName()).put("cleanupReceiptSha256", hash(cleanup));
+        JSON.writeValue(execution.toFile(), receipt);
+        refreshPayload(fixture.candidate());
+        AuditedAssertions.assertEquals(0, evaluate(fixture, fixture.output()));
+
+        teardown.put("leaseId", "b".repeat(32));
+        JSON.writeValue(cleanup.toFile(), teardown);
+        boundary.put("cleanupReceiptSha256", hash(cleanup));
+        JSON.writeValue(execution.toFile(), receipt);
+        refreshPayload(fixture.candidate());
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        AuditedAssertions.assertEquals("BLOCKED", check(JSON.readTree(fixture.output().toFile()), "E2E_SCOPE"));
+    }
+
+    @Test void disposableAndroidUserMustPreserveTheOriginalPackageInstallationState() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");
+        bindDisposableUserBoundary(fixture, true);
+
+        Path cleanup = fixture.candidate().resolve("reports/e2e/data-isolation-cleanup.json");
+        ObjectNode receipt = (ObjectNode) JSON.readTree(cleanup.toFile());
+        receipt.put("originalPackageStatePreserved", false);
+        JSON.writeValue(cleanup.toFile(), receipt);
+        refreshPayload(fixture.candidate());
+
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertTrue(details(verdict, "E2E_SCOPE").stream()
+                .anyMatch(value -> value.contains("stării inițiale a instalării originale")));
     }
 
     @ParameterizedTest
@@ -726,6 +839,42 @@ class ReleaseRagEvaluatorComponentTest {
         return JSON.createObjectNode().put("report", directory + "report.html")
                 .put("executionReceipt", directory + "execution.json")
                 .put("protocol", "ANDROID_E2E_FIXTURE").put("tests", 1).put("failures", 0).put("errors", 0).put("skipped", 0);
+    }
+
+    private static void bindDisposableUserBoundary(Fixture fixture, boolean successfulCleanup) throws Exception {
+        Path candidate = fixture.candidate();
+        Path readyFile = candidate.resolve("reports/e2e/data-isolation-ready.json");
+        Path cleanupFile = candidate.resolve("reports/e2e/data-isolation-cleanup.json");
+        Files.createDirectories(readyFile.getParent());
+        ObjectNode manifest = (ObjectNode) JSON.readTree(candidate.resolve("release-validation.json").toFile());
+        String apkSha = manifest.path("release").path("apkSha256").asText();
+        ObjectNode ready = JSON.createObjectNode().put("schemaVersion", 1).put("status", "READY")
+                .put("scope", "ANDROID_SECONDARY_USER").put("applicationId", "ro.whistlab.app")
+                .put("originalUserId", 0).put("testUserId", 10).put("createdByRun", true)
+                .put("packageWasInstalledBefore", false).put("originalPackageWasInstalledBefore", false)
+                .put("screenOffTimeoutMs", 2147483647).put("screenUnlocked", true)
+                .put("cleanupRequired", true)
+                .put("accountsAdded", false).put("installedApkSha256", apkSha);
+        JSON.writeValue(readyFile.toFile(), ready);
+        String readySha = hash(readyFile);
+        ObjectNode cleanup = JSON.createObjectNode().put("schemaVersion", 1)
+                .put("status", successfulCleanup ? "PASS" : "FAIL")
+                .put("scope", "ANDROID_SECONDARY_USER").put("applicationId", "ro.whistlab.app")
+                .put("originalUserId", 0).put("removedUserId", 10).put("removedByRun", true)
+                .put("originalPackageWasInstalledBefore", false).put("originalPackageRetained", false)
+                .put("originalPackageStatePreserved", true).put("readyReceiptSha256", readySha);
+        JSON.writeValue(cleanupFile.toFile(), cleanup);
+        String cleanupSha = hash(cleanupFile);
+        for (String name : List.of("signed-release-bidding", "signed-release-auto-game")) {
+            Path receiptFile = candidate.resolve("reports/e2e").resolve(name).resolve("execution.json");
+            ObjectNode receipt = (ObjectNode) JSON.readTree(receiptFile.toFile());
+            receipt.putObject("dataBoundary").put("mode", "DISPOSABLE_SECONDARY_USER")
+                    .put("readyReceipt", "reports/e2e/data-isolation-ready.json").put("readyReceiptSha256", readySha)
+                    .put("cleanupReceipt", "reports/e2e/data-isolation-cleanup.json").put("cleanupReceiptSha256", cleanupSha)
+                    .put("testUserId", 10);
+            JSON.writeValue(receiptFile.toFile(), receipt);
+        }
+        refreshPayload(candidate);
     }
 
     private static void selectAuthenticatedPublication(Fixture fixture) throws Exception {

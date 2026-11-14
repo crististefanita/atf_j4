@@ -12,6 +12,10 @@ final class BidChoiceObservation {
     }
 
     static State read(String xml, String submitText) throws Exception {
+        return read(xml, submitText, 8);
+    }
+
+    static State read(String xml, String submitText, int maximumBid) throws Exception {
         var nodes = HierarchyDocument.nodes(xml);
         var submit = nodes.stream().filter(node -> node.className().equals("android.widget.Button")
                 && node.text().equals(submitText)).toList();
@@ -23,8 +27,8 @@ final class BidChoiceObservation {
         boolean human = buttons.getFirst().enabled();
         for (var button : buttons) {
             int bid = Integer.parseInt(button.text());
-            if (bid < 0 || bid > 8 || choices.contains(bid) || button.enabled() != human)
-                throw new IllegalStateException("Ambiguous or inconsistent Romanian bid choices");
+            if (bid < 0 || bid > maximumBid || choices.contains(bid) || button.enabled() != human)
+                throw new IllegalStateException("Ambiguous bid choices for a maximum of " + maximumBid);
             choices.add(bid);
             if (button.selected()) selected.add(bid);
         }

@@ -41,6 +41,13 @@
     "outputSchema": "ATF_RELEASE_RAG_VERDICT",
     "outputMustBeOutsideInputs": true,
     "citationsRequire": ["path", "sha256", "jsonPointerAndLineForJson"],
+    "planSnapshot": {
+      "fileName": "qualification-plan.json",
+      "embeddedField": "qualificationPlan.contentBase64",
+      "encoding": "base64-utf8",
+      "preservesOriginalHash": true,
+      "citationPath": "$report.qualificationPlan.contentBase64"
+    },
     "publicReadmeSurface": {
       "path": "README.md",
       "forbidRawSha256Digest": true

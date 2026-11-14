@@ -116,7 +116,7 @@ class WhistTableAndScoreSanityE2eTest {
 
     private void run(String id, String name, String scope, Scenario scenario) throws Exception {
         var adb = AdbClient.fromSystemProperties();
-        Path out = Path.of(System.getProperty("atf.android.artifacts")).resolve(id);
+        Path out = atf.android.e2e.support.flow.WhistLabScenario.artifacts(id);
         var ui = new AndroidUiDriver(adb, out);
         var trace = new AndroidUiFlowTrace(out, id, name, getClass().getSimpleName(), "atf.android.e2e",
                 APP, List.of("android", "sanity", "display"));
