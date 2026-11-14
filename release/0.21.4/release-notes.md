@@ -11,4 +11,4 @@
 
 ## Documentație
 
-- [Rapoarte Extent și proveniență](https://github.com/crististefanita/atf_j4/blob/{EVIDENCE_COMMIT}/release/0.21.4/reports/README.md)
+- [Rapoarte Extent și proveniență](https://github.com/crististefanita/atf_j4/blob/8964657b5f119ab0082634a7a659cfc6f8c931c9/release/0.21.4/reports/README.md)

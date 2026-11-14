@@ -16,7 +16,7 @@ Catalogul indică versiunea Android curentă și păstrează o singură ediție 
 
 | Versiune | Stare | Dosar |
 |---|---|---|
-| 0.21.4 | Calificată · distribuție în curs | [APK și dovezi](0.21.4/README.md) |
+| 0.21.4 | Publicată · APK verificat | [APK și dovezi](0.21.4/README.md) |
 | 0.21.3 | Ediția anterioară | [APK și dovezi](0.21.3/README.md) |
 
 ## Publicare și verificare
