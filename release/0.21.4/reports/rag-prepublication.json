@@ -1,0 +1,2527 @@
+{
+  "schemaVersion": 1,
+  "kind": "ATF_RELEASE_RAG_VERDICT",
+  "evaluatedAtUtc": "2026-11-14T20:13:33.389Z",
+  "verdict": "READY_FOR_HUMAN_REVIEW",
+  "releaseVersion": "0.21.4",
+  "channel": "TEST",
+  "sourceCommit": "264a8a21fd9cd3ca157a69bc45ae269ad95f944b",
+  "workingTreeFingerprint": "8ddddb48c0de7dae4eadf39727d8b0cacb678b81edb9dc97d3b4f5b2d39c83e2",
+  "candidateManifestSha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+  "planSha256": "ef36586cf484f1996308769949b607fd0fc2c07a3fb347aa25ca7b925d6cd64a",
+  "qualificationPlan": {
+    "fileName": "qualification-plan.json",
+    "encoding": "base64-utf8",
+    "sha256": "ef36586cf484f1996308769949b607fd0fc2c07a3fb347aa25ca7b925d6cd64a",
+    "contentBase64": "ewogICJzY2hlbWFWZXJzaW9uIjogMiwKICAicmVsZWFzZVZlcnNpb24iOiAiMC4yMS40IiwKICAic2NvcGUiOiB7CiAgICAiYmFzZWxpbmVWZXJzaW9uIjogIjAuMjEuMyIsCiAgICAiYmFzZWxpbmVDb21taXQiOiAiMjhhNGI1ZGM0MjNjNDQzYzBkYWQyODAwZjNhY2IyMjAzMzBlYzU4NSIsCiAgICAiYmFzZWxpbmVGaW5nZXJwcmludCI6ICIxNGRmYzhlMTVjNjFmZmJkMDdjNTZhODA5MTUwNmY5MjE2Njg5ZTk1ZjQzYmYyNzgyNjg5MDEwYWQ3ZjY4OWQwIiwKICAgICJjYW5kaWRhdGVGaW5nZXJwcmludCI6ICI4ZGRkZGI0OGMwZGU3ZGFlNGVhZGYzOTcyN2Q4YjBjYWNiNjc4YjgxZWRiOWRjOTdkM2I0ZjViMmQzOWM4M2UyIgogIH0sCiAgImNoYW5uZWwiOiAiVEVTVCIsCiAgImNoYW5nZVJpc2siOiAic3RydWN0dXJhbE9yUmVsZWFzZUNoYW5nZSIsCiAgImRlY2xhcmVkUGxhdGZvcm1zIjogWwogICAgImFuZHJvaWQiCiAgXSwKICAiY29tcG9uZW50R3JvdXBzIjogWwogICAgImF0Zi12YWxpZGF0aW9uIiwKICAgICJhdGYtdGVzdC1hbmRyb2lkIiwKICAgICJhdGYtdGVzdHMiLAogICAgIndoaXN0LWxhYi1hcHAtYmlkZGluZyIsCiAgICAid2hpc3QtbGFiLWFwcC1jb21tYW5kcyIsCiAgICAid2hpc3QtbGFiLWFwcC1kaXNwbGF5IiwKICAgICJ3aGlzdC1sYWItYXBwLWhpc3RvcnkiLAogICAgIndoaXN0LWxhYi1hcHAtYWNoaWV2ZW1lbnRzIiwKICAgICJ3aGlzdC1sYWItYXBwLWF0Zi1jYXJkLXRhYmxlLXVpIgogIF0sCiAgInVzZXJGbG93Q2hhbmdlZCI6IHRydWUsCiAgImUyZSI6IHsKICAgICJzdGF0dXMiOiAiUEFTUyIsCiAgICAiZ3JvdXBzIjogWwogICAgICAiaGlzdG9yeS1yZWxlYXNlLXNhbml0eSIsCiAgICAgICJyZXNwb25zaXZlLXVpLXNhbml0eSIsCiAgICAgICJzaWduZWQtcmVsZWFzZS1hY2hpZXZlbWVudHMiLAogICAgICAic2lnbmVkLXJlbGVhc2UtYXV0by1nYW1lIiwKICAgICAgInNpZ25lZC1yZWxlYXNlLWJpZGRpbmciLAogICAgICAic2lnbmVkLXJlbGVhc2UtaG9tZS1wcm9maWxlIiwKICAgICAgInNpZ25lZC1yZWxlYXNlLXNtb2tlIgogICAgXQogIH0KfQo="
+  },
+  "checks": [
+    {
+      "code": "RAG_POLICY",
+      "status": "PASS",
+      "message": "Politica activă limitează evaluatorul la citire și la revizia umană.",
+      "evidence": [
+        {
+          "path": "config/release-platform-rag-policy.json",
+          "sha256": "f7c7b338e88f9a07cdacdaa5eb869ce13082065f461348305ac78a811837fbb0",
+          "jsonPointer": "/ragEvaluator",
+          "line": 37
+        }
+      ]
+    },
+    {
+      "code": "PLAN_SCHEMA",
+      "status": "PASS",
+      "message": "Planul fixează versiunea, platforma, riscul, componentele și decizia E2E.",
+      "evidence": [
+        {
+          "path": "$report.qualificationPlan.contentBase64",
+          "sha256": "ef36586cf484f1996308769949b607fd0fc2c07a3fb347aa25ca7b925d6cd64a",
+          "jsonPointer": "/schemaVersion",
+          "line": 2,
+          "embedded": true,
+          "encoding": "base64-utf8"
+        }
+      ]
+    },
+    {
+      "code": "RELEASE_IDENTITY",
+      "status": "PASS",
+      "message": "Planul, manifestul și directorul indică aceeași versiune.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/release/versionName",
+          "line": 12
+        }
+      ]
+    },
+    {
+      "code": "PLATFORM_SCOPE",
+      "status": "PASS",
+      "message": "Platforma declarată este Android și corespunde manifestului.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/release",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "code": "QUALIFICATION_STATE",
+      "status": "PASS",
+      "message": "Manifestul declară starea PASS pentru calificarea înregistrată.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/state",
+          "line": 40
+        }
+      ]
+    },
+    {
+      "code": "PAYLOAD_INTEGRITY",
+      "status": "PASS",
+      "message": "Inventarul candidatului și SHA-256 corespund receipt-ului.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/integrity",
+          "line": 212
+        }
+      ]
+    },
+    {
+      "code": "SOURCE_SNAPSHOT",
+      "status": "PASS",
+      "message": "Commitul, manifestul de intrări, amprenta și fișierele sursă corespund.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/source",
+          "line": 29
+        },
+        {
+          "path": "reports/apk-inputs.json",
+          "sha256": "9d1775f31739b10eb8bdcfd1d3de902d22cbc2574c13ca865c79f30dc89a2c15",
+          "jsonPointer": "/fingerprint",
+          "line": 4
+        }
+      ]
+    },
+    {
+      "code": "DIFF_SCOPE",
+      "status": "PASS",
+      "message": "Selecția a fost recalculată din inventarele surselor.",
+      "evidence": [
+        {
+          "path": "$report.qualificationPlan.contentBase64",
+          "sha256": "ef36586cf484f1996308769949b607fd0fc2c07a3fb347aa25ca7b925d6cd64a",
+          "jsonPointer": "/scope",
+          "line": 4,
+          "embedded": true,
+          "encoding": "base64-utf8"
+        },
+        {
+          "path": "release/index.json",
+          "sha256": "c9178391d71e5be3355c025179fe91582bfc99ca4a2412559f1f4b975e8cf2d8",
+          "jsonPointer": "/versions",
+          "line": 4
+        },
+        {
+          "path": "release/0.21.3/release-validation.json",
+          "sha256": "8b08ea0c9ee8958a27f27c0fac187029cdcf949fe0ec2fd83ba13204d2bd071a",
+          "jsonPointer": "/source",
+          "line": 153
+        },
+        {
+          "path": "release/0.21.3/reports/apk-inputs.json",
+          "sha256": "b3210e062c87e1e9ccdfdfee3acb006af37b5a914e87c32269a11d43e510aa3b",
+          "jsonPointer": "/fingerprint",
+          "line": 2
+        },
+        {
+          "path": "reports/apk-inputs.json",
+          "sha256": "9d1775f31739b10eb8bdcfd1d3de902d22cbc2574c13ca865c79f30dc89a2c15",
+          "jsonPointer": "/fingerprint",
+          "line": 4
+        }
+      ]
+    },
+    {
+      "code": "MAIN_README_SURFACE",
+      "status": "PASS",
+      "message": "README-ul principal este în snapshot și nu expune un digest APK brut.",
+      "evidence": [
+        {
+          "path": "README.md",
+          "sha256": "833d9067a0b918ffcf6e11a39824e2459130921994fdb402bc860344de7ae5ec",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "code": "APK_IDENTITY",
+      "status": "PASS",
+      "message": "APK-ul, dimensiunea și sidecar-ul SHA-256 coincid.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/release/apkSha256",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "code": "SIGNING_CHANNEL",
+      "status": "PASS",
+      "message": "Certificatul este identificat și compatibil cu profilul canalului.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/release",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "code": "PLATFORM_GATES",
+      "status": "PASS",
+      "message": "Porțile Android necesare etapei pre-publicare au receipt-uri valide și hash-uri legate de payload.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/platforms/android/gates/androidComponents",
+          "line": 192
+        },
+        {
+          "path": "reports/component/source-component-run.json",
+          "sha256": "6fd863ac8c24e9fd936243dd429f6a5303126ab15d24204029c523cc6ba1c9cf",
+          "jsonPointer": "/",
+          "line": 1
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/platforms/android/gates/apkBuild",
+          "line": 196
+        },
+        {
+          "path": "reports/diagnostics/build.log",
+          "sha256": "4f2c1701cd99fcb1e7c5c57fe1d2b789778042cac24c7a4c9a633de4d18d373a"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/platforms/android/gates/apkIdentity",
+          "line": 200
+        },
+        {
+          "path": "reports/diagnostics/apk-identity.json",
+          "sha256": "948f19c20fc3d0e069476efbbf11737510fa02eb0ad485e09aaf897d38813c94",
+          "jsonPointer": "/",
+          "line": 1
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/platforms/android/gates/signing",
+          "line": 204
+        },
+        {
+          "path": "reports/diagnostics/signing-compatibility.json",
+          "sha256": "06e38b3fe10ea4331c0c1354e01f0a6f42ea6f20c746f71e5477ff7b8d2e8157",
+          "jsonPointer": "/",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "code": "COMPONENT_EXTENT",
+      "status": "PASS",
+      "message": "Grupurile obligatorii ale aplicației și guvernanței, plus selecțiile suplimentare, au Extent canonic și zero rezultate nepromovate.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/atf-validation",
+          "line": 42
+        },
+        {
+          "path": "reports/component/atf-validation/component-report.html",
+          "sha256": "9b8a2fed212d8e4bd428077f4c66281d53576750bb98b49542ac5e44e7f1c92b"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/atf-test-android",
+          "line": 51
+        },
+        {
+          "path": "reports/component/atf-test-android/component-report.html",
+          "sha256": "8c5eadfe6830eeb0a0957de0a98d926cb5dc80ae0b3de03a58048a49e6a6388a"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/atf-tests",
+          "line": 59
+        },
+        {
+          "path": "reports/component/atf-tests/component-report.html",
+          "sha256": "da41dff891e8622a60a4b8e6cd8637405c76f40a984fc75f18146a4fde35f165"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-bidding",
+          "line": 67
+        },
+        {
+          "path": "reports/component/whist-lab-app-bidding/component-report.html",
+          "sha256": "02d9b338995d9f19af19dc6204676d5fbe8944852e0ce6e430be83da3a261cde"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-commands",
+          "line": 76
+        },
+        {
+          "path": "reports/component/whist-lab-app-commands/component-report.html",
+          "sha256": "67584debadfff3a47f6b57f9126c74af28d1d6aed62c5b946823ef0ac2c964b9"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-display",
+          "line": 85
+        },
+        {
+          "path": "reports/component/whist-lab-app-display/component-report.html",
+          "sha256": "e7e5d1065ed86c50fb73fe1cbbdef81ba45652d52d2dfc662c1665cb119da6f1"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-history",
+          "line": 94
+        },
+        {
+          "path": "reports/component/whist-lab-app-history/component-report.html",
+          "sha256": "796987d490503290b83829524411229938b6ada78f1d56ff256b5576efc410d6"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-achievements",
+          "line": 103
+        },
+        {
+          "path": "reports/component/whist-lab-app-achievements/component-report.html",
+          "sha256": "9ee88d5da106df0ad94c22804f7bb5aa2b115a3688a669102a76387d8b8122c2"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-atf-card-table-ui",
+          "line": 112
+        },
+        {
+          "path": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html",
+          "sha256": "f625151f79203d98081663279398e41fd15c6d94b547bf8c5e38cb4a37e3d07b"
+        }
+      ]
+    },
+    {
+      "code": "COMPONENT_SOURCE_BINDING",
+      "status": "PASS",
+      "message": "Fiecare Extent este legat de execuția originală, iar intrările suitei coincid cu snapshot-ul APK.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/source",
+          "line": 29
+        },
+        {
+          "path": "reports/component/snapshots/472f9df9e2e300d0016c416f8d9d851a730b14178b4ac83f0714b09d2eacd99a/source-inputs.json",
+          "sha256": "19b5f364dcdb9211eaa2a930a613bf10e525d32bd70d382243db99be97afc7f8",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/472f9df9e2e300d0016c416f8d9d851a730b14178b4ac83f0714b09d2eacd99a/source-component-run.json",
+          "sha256": "bcadd50da88fa7fb7826a4e3149e50c596ccb75c76b4a784b544739959a7abc7",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/472f9df9e2e300d0016c416f8d9d851a730b14178b4ac83f0714b09d2eacd99a/source-provenance.json",
+          "sha256": "472f9df9e2e300d0016c416f8d9d851a730b14178b4ac83f0714b09d2eacd99a",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/472f9df9e2e300d0016c416f8d9d851a730b14178b4ac83f0714b09d2eacd99a/release-inputs.json",
+          "sha256": "9bc1cfcc750120f2d985467ad27170231ae21adcdb55aa2560015dcb6eece36e",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/atf-validation/execution.json",
+          "sha256": "9183e4d10115c82ca2cd54c15af5ae9df74206d771122d10586e0bd86d2d725a",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/source-inputs.json",
+          "sha256": "f0a906abc9bdf5d7c75aa4fbd05a155deb735331795f45dbbfab992106f71156",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/source-component-run.json",
+          "sha256": "6fd863ac8c24e9fd936243dd429f6a5303126ab15d24204029c523cc6ba1c9cf",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/source-provenance.json",
+          "sha256": "fb1ca661c275d831b7bf5b8a5c9f4871c3aa788bc46b098621e48cc8429e74f6",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/release-inputs.json",
+          "sha256": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/atf-test-android/execution.json",
+          "sha256": "db96aa96b3222bec27da992c1b828420af8dfabfd88d19c3eb032e3c5189d149",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/atf-tests/execution.json",
+          "sha256": "345b48b04fdcb89c859ee6a35e8230fe3b75d8ff604980c37aad1d899d7914f5",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/c9356db0154f602fd5c77d8eea60edf4cbd8df1530fcfba594ec9aebd6bba3a2/source-inputs.json",
+          "sha256": "5d37bf2c95985541dd1d36ae375bcc8e033bf50e5566cb501f4bef3ea00035ba",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/c9356db0154f602fd5c77d8eea60edf4cbd8df1530fcfba594ec9aebd6bba3a2/source-component-run.json",
+          "sha256": "175fa8362e01bd37abc1739c8a5f8a43dd804125c04ef1294135c6e124235705",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/c9356db0154f602fd5c77d8eea60edf4cbd8df1530fcfba594ec9aebd6bba3a2/source-provenance.json",
+          "sha256": "c9356db0154f602fd5c77d8eea60edf4cbd8df1530fcfba594ec9aebd6bba3a2",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/c9356db0154f602fd5c77d8eea60edf4cbd8df1530fcfba594ec9aebd6bba3a2/release-inputs.json",
+          "sha256": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-bidding/execution.json",
+          "sha256": "03871ba1a9289ef35f1b86cd39a53da373ad178720416e091ca9d6f971a89af3",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-commands/execution.json",
+          "sha256": "cc64e9767b290fee051be2051833c8c48672e0858fba895d514fa244a2582c3d",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-display/execution.json",
+          "sha256": "343c3e47c569325eab0925418ba3f43612071a327530228747dccfbd6311e0f2",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-history/execution.json",
+          "sha256": "d0cf0efc44ced787e94a3e2ed950315feab0b5768db484d3b5b849847791a495",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-achievements/execution.json",
+          "sha256": "8ba1968ac2512f04a8a3020fe4e2451a49ed5401fe5c597c97365dd11aba2694",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-atf-card-table-ui/execution.json",
+          "sha256": "23c4e7ed0a8e6a655bb4bb4944fde1f8bf1598ffc8e50593919e0a571fab9224",
+          "jsonPointer": "",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "code": "CANONICAL_EXTENT",
+      "status": "PASS",
+      "message": "Raportul canonic este unul dintre grupurile Extent selectate și hash-ul său corespunde.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/evidenceRetention",
+          "line": 35
+        },
+        {
+          "path": "reports/component/atf-tests/component-report.html",
+          "sha256": "da41dff891e8622a60a4b8e6cd8637405c76f40a984fc75f18146a4fde35f165"
+        }
+      ]
+    },
+    {
+      "code": "E2E_SCOPE",
+      "status": "PASS",
+      "message": "E2E: PASS; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.",
+      "evidence": [
+        {
+          "path": "$report.qualificationPlan.contentBase64",
+          "sha256": "ef36586cf484f1996308769949b607fd0fc2c07a3fb347aa25ca7b925d6cd64a",
+          "jsonPointer": "/e2e",
+          "line": 27,
+          "embedded": true,
+          "encoding": "base64-utf8"
+        },
+        {
+          "path": "reports/e2e/isolation/583b470a8449469ab008a9a62c058579/data-isolation-ready.json",
+          "sha256": "cdaab37887220dfa1fbfe78548d580d9dff49e0d90c7fdb707c54c6bd6374d97"
+        },
+        {
+          "path": "reports/e2e/isolation/583b470a8449469ab008a9a62c058579/data-isolation-cleanup.json",
+          "sha256": "8668160b34559c3ff6646aa2968123e5361b89f306973414560131b3f8f3bcbc"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/history-release-sanity",
+          "line": 123
+        },
+        {
+          "path": "reports/e2e/history-release-sanity/execution.json",
+          "sha256": "061eb082a552d32a223af76288bbc5c8967d95b85768396ac1bcb83b0dff52c6",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/history-release-sanity/report.html",
+          "sha256": "49b46b39d22604436b21e0b68c3c30f8391bf2481679dd40e5b9f8db9a015c61"
+        },
+        {
+          "path": "reports/e2e/isolation/583b470a8449469ab008a9a62c058579/data-isolation-ready.json",
+          "sha256": "cdaab37887220dfa1fbfe78548d580d9dff49e0d90c7fdb707c54c6bd6374d97"
+        },
+        {
+          "path": "reports/e2e/isolation/583b470a8449469ab008a9a62c058579/data-isolation-cleanup.json",
+          "sha256": "8668160b34559c3ff6646aa2968123e5361b89f306973414560131b3f8f3bcbc"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/responsive-ui-sanity",
+          "line": 132
+        },
+        {
+          "path": "reports/e2e/responsive-ui-sanity/execution.json",
+          "sha256": "4cde771cd1e78338150b1859b62bf727066e5f56bd9b53fe3a678143ea8b958e",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/responsive-ui-sanity/report.html",
+          "sha256": "4d15c9e5c587299d7b16cfb81d30b0418e58480bc318c7837c38cc8cbb901b61"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-ready.json",
+          "sha256": "e4497523c27d45fdb74077e40a23752b504961d9ff72a509ee502e5ae24dcedc"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-cleanup.json",
+          "sha256": "f331ef4fa1f2eeb5adeb4f54bfec0b0fcc91b2d3c85ea8bc21895efe3c87e095"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/signed-release-achievements",
+          "line": 141
+        },
+        {
+          "path": "reports/e2e/signed-release-achievements/execution.json",
+          "sha256": "4928514298a170d623a5a3e8cee543c63ed51ce3a148fa0865e466b5835a06e7",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/signed-release-achievements/report.html",
+          "sha256": "5ccd71a98ec1d3d2617030a33d2461dc06d8386e103781ecc7ebedfd8cec0e78"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-ready.json",
+          "sha256": "e4497523c27d45fdb74077e40a23752b504961d9ff72a509ee502e5ae24dcedc"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-cleanup.json",
+          "sha256": "f331ef4fa1f2eeb5adeb4f54bfec0b0fcc91b2d3c85ea8bc21895efe3c87e095"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/signed-release-auto-game",
+          "line": 150
+        },
+        {
+          "path": "reports/e2e/signed-release-auto-game/execution.json",
+          "sha256": "f11bd1025e15e6160b2eca379e36746424bd9c5d6313fcae2119dfc04df828e7",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/signed-release-auto-game/report.html",
+          "sha256": "f20b3d5437bcb01a084cbc04d7ad765d05701dd74f0e601877bb59b8ab8a055c"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-ready.json",
+          "sha256": "e4497523c27d45fdb74077e40a23752b504961d9ff72a509ee502e5ae24dcedc"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-cleanup.json",
+          "sha256": "f331ef4fa1f2eeb5adeb4f54bfec0b0fcc91b2d3c85ea8bc21895efe3c87e095"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/signed-release-bidding",
+          "line": 159
+        },
+        {
+          "path": "reports/e2e/signed-release-bidding/execution.json",
+          "sha256": "677a858b9b33b2e279d769b1c43d76b8a576eaad2206befca26d0aac7f41ae0a",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/signed-release-bidding/report.html",
+          "sha256": "f6fd0244bff23d4b6327e76a631a166ea602017a26ff60e31eeb2799e6a4d20b"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-ready.json",
+          "sha256": "e4497523c27d45fdb74077e40a23752b504961d9ff72a509ee502e5ae24dcedc"
+        },
+        {
+          "path": "reports/e2e/isolation/7117303fb92e4086ab205efe95f1e412/data-isolation-cleanup.json",
+          "sha256": "f331ef4fa1f2eeb5adeb4f54bfec0b0fcc91b2d3c85ea8bc21895efe3c87e095"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/signed-release-home-profile",
+          "line": 168
+        },
+        {
+          "path": "reports/e2e/signed-release-home-profile/execution.json",
+          "sha256": "d3f92aa7b1f3917e3c511b771153af2307c4cb2dda051cccbcbfdd133a3d81c4",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/signed-release-home-profile/report.html",
+          "sha256": "bb8c00de64798d0c8d328c3241f4f84240ceaffd2dcc96b8500afe56feffe8bb"
+        },
+        {
+          "path": "reports/e2e/isolation/00ce34f785ea4d91b6f0b5d4b18f0687/data-isolation-ready.json",
+          "sha256": "89965591185e28a863698311e433b28ed4a40ac80a2ea5380331bb37bd2a496a"
+        },
+        {
+          "path": "reports/e2e/isolation/00ce34f785ea4d91b6f0b5d4b18f0687/data-isolation-cleanup.json",
+          "sha256": "ddb676cadda99baff2aac8f76f06b524a8bd2200db79414544cbed77cf699022"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/e2eGroups/signed-release-smoke",
+          "line": 177
+        },
+        {
+          "path": "reports/e2e/signed-release-smoke/execution.json",
+          "sha256": "34ec8551075cbfc2b49df259de73adf7ac59ff24b3c7cf25deaca5cef4ff20aa",
+          "jsonPointer": "/reportSha256",
+          "line": 14
+        },
+        {
+          "path": "reports/e2e/signed-release-smoke/report.html",
+          "sha256": "a6d9f631c9e11f09e76de0a09bf84cb25938884140b9661b8846cdf638bc447b"
+        }
+      ]
+    }
+  ],
+  "testScope": {
+    "schemaVersion": 2,
+    "releaseVersion": "0.21.4",
+    "catalogued": false,
+    "scope": {
+      "baselineVersion": "0.21.3",
+      "baselineCommit": "28a4b5dc423c443c0dad2800f3acb220330ec585",
+      "baselineFingerprint": "14dfc8e15c61ffbd07c56a8091506f9216689e95f43bf2782689010ad7f689d0",
+      "candidateFingerprint": "8ddddb48c0de7dae4eadf39727d8b0cacb678b81edb9dc97d3b4f5b2d39c83e2"
+    },
+    "kind": "USER_FLOW",
+    "userFlowChanged": true,
+    "changes": [
+      {
+        "path": ".atf-signing/.gitignore",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": ".atf-signing/README.md",
+        "kind": "ADDED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": ".atf-signing/whist-android-test.fingerprint",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": ".atf-signing/whist-android-test.pem",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": ".gitattributes",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistDenseLayoutE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistMenuLayoutE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistTableAndScoreSanityE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveSanityRun.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteRomanianExpertE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteWhistLabMatchE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/RomanianMenuOptionsE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabRomanianExpertE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/RecordedRomanianMatchAuditTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/records/RecordsContext.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/BidChoiceObservation.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/BidChoiceObservationComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseAchievementNotice.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseAchievementNoticeComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBackupContract.java",
+        "kind": "DELETED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBackupContractComponentTest.java",
+        "kind": "DELETED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidContext.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidScenario.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/autogame/AutoGameReleaseScenario.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseBackupContract.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseBackupContractComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseTestDataBoundary.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenario.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenarioArtifactsComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/tools/AndroidDeviceSetup.psm1",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-test-android/tools/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationAnchorGovernanceTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/factual/BuildModuleDeclarations.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMap.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/feedback/FeedbackIndexGovernanceTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/links/DocumentationLocalLinks.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidence.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidenceComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagEvaluatorComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidencePortabilityComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/source/android/DebugFixturePackagingGovernanceTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/src/test/java/atf/tests/governance/source/workspace/WorkspaceHygieneRules.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/check-release-artifacts.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/collect-github-release-retention.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/component-evidence-scope.mjs",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/evaluate-release-rag.mjs",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/github-release-retention.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/github-release-retention.test.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/plan-release-tests.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/prepare-component-reuse.mjs",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/prepare-component-reuse.test.mjs",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/release-test-scope.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-tests/tools/release-test-scope.test.mjs",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "config/gradle-audit-collections.properties",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "config/release-platform-rag-policy.json",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "config/test-collections.json",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_Achievements.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_Ai.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_Android.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_CardUi_Extraction.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_Governance.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_Release_RAG.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/ATF_Reporting.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/feedback/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/game/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/governance/ATF_Documentation.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/governance/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/platform/ATF_AndroidDelivery.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/platform/ATF_ReleaseRetention.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/platform/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/ATF_Android.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/ATF_Architecture.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/ATF_Collections.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/ATF_Display.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/ATF_GradleComponents.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/ATF_ReleaseQualification.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "docs/testing/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/AtfQualificationSnapshot.ps1",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/Invoke-AtfAndroidDisposableUser.ps1",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "scripts/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/check-android-release-device.ps1",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/export-card-table-ui.ps1",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "scripts/run-atf-governance.ps1",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/run-complete-match.ps1",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "scripts/run-component-suites.ps1",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/run-deep-tests.ps1",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "scripts/run-whist-ai-validation.ps1",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "scripts/run-whist-collection.ps1",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "scripts/run-whist-responsive-sanity.ps1",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/algorithm-build/settings.gradle",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/app/build.gradle",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+        "kind": "DELETED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+        "kind": "DELETED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+        "kind": "ADDED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+        "kind": "ADDED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/build.gradle",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/test/README.md",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/build.gradle",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/game-core/build.gradle",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/gradle/component-audit.gradle",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/settings.gradle",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "whist-lab-app/test-audit/build.gradle",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      }
+    ],
+    "componentGroups": [
+      "atf-validation",
+      "atf-test-android",
+      "atf-tests",
+      "whist-lab-app-bidding",
+      "whist-lab-app-commands",
+      "whist-lab-app-display",
+      "whist-lab-app-history",
+      "whist-lab-app-achievements",
+      "whist-lab-app-atf-card-table-ui"
+    ],
+    "components": [
+      {
+        "group": "atf-validation",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "atf-test-android",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistDenseLayoutE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistMenuLayoutE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistTableAndScoreSanityE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveSanityRun.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteRomanianExpertE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteWhistLabMatchE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/RomanianMenuOptionsE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabRomanianExpertE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/RecordedRomanianMatchAuditTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/records/RecordsContext.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/BidChoiceObservation.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/BidChoiceObservationComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseAchievementNotice.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseAchievementNoticeComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBackupContract.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBackupContractComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidContext.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidScenario.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/autogame/AutoGameReleaseScenario.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseBackupContract.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseBackupContractComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseTestDataBoundary.java",
+          "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenario.java",
+          "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenarioArtifactsComponentTest.java",
+          "atf-test-android/tools/AndroidDeviceSetup.psm1",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/Invoke-AtfAndroidDisposableUser.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-complete-match.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-deep-tests.ps1",
+          "scripts/run-whist-ai-validation.ps1",
+          "scripts/run-whist-collection.ps1",
+          "scripts/run-whist-responsive-sanity.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "atf-tests",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".atf-signing/.gitignore",
+          ".atf-signing/README.md",
+          ".atf-signing/whist-android-test.fingerprint",
+          ".atf-signing/whist-android-test.pem",
+          ".gitattributes",
+          "README.md",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistDenseLayoutE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistMenuLayoutE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistTableAndScoreSanityE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveSanityRun.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteRomanianExpertE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/CompleteWhistLabMatchE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/RomanianMenuOptionsE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabRomanianExpertE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/oracle/recorded/RecordedRomanianMatchAuditTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/records/RecordsContext.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/BidChoiceObservation.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/BidChoiceObservationComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/README.md",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseAchievementNotice.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseAchievementNoticeComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBackupContract.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBackupContractComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidContext.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidScenario.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/autogame/AutoGameReleaseScenario.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseBackupContract.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseBackupContractComponentTest.java",
+          "atf-test-android/src/test/java/atf/android/e2e/release/isolation/ReleaseTestDataBoundary.java",
+          "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenario.java",
+          "atf-test-android/src/test/java/atf/android/e2e/support/flow/WhistLabScenarioArtifactsComponentTest.java",
+          "atf-test-android/tools/AndroidDeviceSetup.psm1",
+          "atf-test-android/tools/README.md",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationAnchorGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/factual/BuildModuleDeclarations.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMap.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/feedback/FeedbackIndexGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/links/DocumentationLocalLinks.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseRagPlatformGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidence.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidenceComponentTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagEvaluatorComponentTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidencePortabilityComponentTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/source/android/DebugFixturePackagingGovernanceTest.java",
+          "atf-tests/src/test/java/atf/tests/governance/source/workspace/WorkspaceHygieneRules.java",
+          "atf-tests/tools/README.md",
+          "atf-tests/tools/check-release-artifacts.mjs",
+          "atf-tests/tools/collect-github-release-retention.mjs",
+          "atf-tests/tools/component-evidence-scope.mjs",
+          "atf-tests/tools/evaluate-release-rag.mjs",
+          "atf-tests/tools/github-release-retention.mjs",
+          "atf-tests/tools/github-release-retention.test.mjs",
+          "atf-tests/tools/plan-release-tests.mjs",
+          "atf-tests/tools/prepare-component-reuse.mjs",
+          "atf-tests/tools/prepare-component-reuse.test.mjs",
+          "atf-tests/tools/release-test-scope.mjs",
+          "atf-tests/tools/release-test-scope.test.mjs",
+          "config/gradle-audit-collections.properties",
+          "config/release-platform-rag-policy.json",
+          "config/test-collections.json",
+          "docs/feedback/ATF_Achievements.md",
+          "docs/feedback/ATF_Ai.md",
+          "docs/feedback/ATF_Android.md",
+          "docs/feedback/ATF_CardUi_Extraction.md",
+          "docs/feedback/ATF_Governance.md",
+          "docs/feedback/ATF_Release_RAG.md",
+          "docs/feedback/ATF_Reporting.md",
+          "docs/feedback/README.md",
+          "docs/game/README.md",
+          "docs/governance/ATF_Documentation.md",
+          "docs/governance/README.md",
+          "docs/platform/ATF_AndroidDelivery.md",
+          "docs/platform/ATF_ReleaseRetention.md",
+          "docs/platform/README.md",
+          "docs/testing/ATF_Android.md",
+          "docs/testing/ATF_Architecture.md",
+          "docs/testing/ATF_Collections.md",
+          "docs/testing/ATF_Display.md",
+          "docs/testing/ATF_GradleComponents.md",
+          "docs/testing/ATF_ReleaseQualification.md",
+          "docs/testing/README.md",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/Invoke-AtfAndroidDisposableUser.ps1",
+          "scripts/README.md",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-complete-match.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-deep-tests.ps1",
+          "scripts/run-whist-ai-validation.ps1",
+          "scripts/run-whist-collection.ps1",
+          "scripts/run-whist-responsive-sanity.ps1",
+          "whist-lab-app/README.md",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/README.md",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "whist-lab-app-bidding",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/gradle-audit-collections.properties",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "whist-lab-app-commands",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/gradle-audit-collections.properties",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "whist-lab-app-display",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/gradle-audit-collections.properties",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "whist-lab-app-history",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/gradle-audit-collections.properties",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "whist-lab-app-achievements",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/gradle-audit-collections.properties",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/algorithm-build/settings.gradle",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/debug/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/README.md",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugLaunch.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DebugReplay.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/DisplayFixtureDeals.java",
+          "whist-lab-app/app/src/main/java/ro/whistlab/app/fixtures/OriginalMatchReplay.java",
+          "whist-lab-app/app/src/release/java/ro/whistlab/app/fixtures/DebugFixtureFactory.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/fixtures/DebugFixtureFactoryComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GameSessionNumbersComponentTest.java",
+          "whist-lab-app/app/src/test/java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/game-core/build.gradle",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/HowToPlayDocumentationTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedDealComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedSessionComponentTest.java",
+          "whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/HelpMarkdownComponentTest.java",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      },
+      {
+        "group": "whist-lab-app-atf-card-table-ui",
+        "decision": "RUN",
+        "affectedInputs": [
+          ".gitattributes",
+          "config/gradle-audit-collections.properties",
+          "config/test-collections.json",
+          "scripts/AtfQualificationSnapshot.ps1",
+          "scripts/check-android-release-device.ps1",
+          "scripts/export-card-table-ui.ps1",
+          "scripts/run-atf-governance.ps1",
+          "scripts/run-component-suites.ps1",
+          "scripts/run-whist-collection.ps1",
+          "whist-lab-app/atf-card-table-ui/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/achievements/AchievementNoticeView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleBar.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactLayout.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatFactRow.java",
+          "whist-lab-app/atf-card-table-ui/src/test/README.md",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/achievements/AchievementNoticeStyleComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/PlayerSeatMetricsComponentTest.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/seat/SeatFactLayoutComponentTest.java",
+          "whist-lab-app/build.gradle",
+          "whist-lab-app/gradle/component-audit.gradle",
+          "whist-lab-app/settings.gradle",
+          "whist-lab-app/test-audit/build.gradle"
+        ]
+      }
+    ],
+    "runComponentGroups": [
+      "atf-validation",
+      "atf-test-android",
+      "atf-tests",
+      "whist-lab-app-bidding",
+      "whist-lab-app-commands",
+      "whist-lab-app-display",
+      "whist-lab-app-history",
+      "whist-lab-app-achievements",
+      "whist-lab-app-atf-card-table-ui"
+    ],
+    "requiredE2eGroups": [
+      "history-release-sanity",
+      "responsive-ui-sanity",
+      "signed-release-achievements",
+      "signed-release-auto-game",
+      "signed-release-bidding",
+      "signed-release-home-profile",
+      "signed-release-smoke"
+    ],
+    "evidence": [
+      {
+        "path": "release/index.json",
+        "sha256": "c9178391d71e5be3355c025179fe91582bfc99ca4a2412559f1f4b975e8cf2d8",
+        "jsonPointer": "/versions",
+        "line": 4
+      },
+      {
+        "path": "release/0.21.3/release-validation.json",
+        "sha256": "8b08ea0c9ee8958a27f27c0fac187029cdcf949fe0ec2fd83ba13204d2bd071a",
+        "jsonPointer": "/source",
+        "line": 153
+      },
+      {
+        "path": "release/0.21.3/reports/apk-inputs.json",
+        "sha256": "b3210e062c87e1e9ccdfdfee3acb006af37b5a914e87c32269a11d43e510aa3b",
+        "jsonPointer": "/fingerprint",
+        "line": 2
+      }
+    ]
+  },
+  "componentGroups": [
+    {
+      "name": "atf-validation",
+      "status": "PASS",
+      "invocations": 19,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/atf-validation",
+          "line": 42
+        },
+        {
+          "path": "reports/component/atf-validation/component-report.html",
+          "sha256": "9b8a2fed212d8e4bd428077f4c66281d53576750bb98b49542ac5e44e7f1c92b"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "19b5f364dcdb9211eaa2a930a613bf10e525d32bd70d382243db99be97afc7f8",
+        "changedInputCount": 50,
+        "affectedInputs": [],
+        "releaseFingerprint": "9bc1cfcc750120f2d985467ad27170231ae21adcdb55aa2560015dcb6eece36e"
+      }
+    },
+    {
+      "name": "atf-test-android",
+      "status": "PASS",
+      "invocations": 270,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/atf-test-android",
+          "line": 51
+        },
+        {
+          "path": "reports/component/atf-test-android/component-report.html",
+          "sha256": "8c5eadfe6830eeb0a0957de0a98d926cb5dc80ae0b3de03a58048a49e6a6388a"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "f0a906abc9bdf5d7c75aa4fbd05a155deb735331795f45dbbfab992106f71156",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "atf-tests",
+      "status": "PASS",
+      "invocations": 405,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/atf-tests",
+          "line": 59
+        },
+        {
+          "path": "reports/component/atf-tests/component-report.html",
+          "sha256": "da41dff891e8622a60a4b8e6cd8637405c76f40a984fc75f18146a4fde35f165"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "f0a906abc9bdf5d7c75aa4fbd05a155deb735331795f45dbbfab992106f71156",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "whist-lab-app-bidding",
+      "status": "PASS",
+      "invocations": 253,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-bidding",
+          "line": 67
+        },
+        {
+          "path": "reports/component/whist-lab-app-bidding/component-report.html",
+          "sha256": "02d9b338995d9f19af19dc6204676d5fbe8944852e0ce6e430be83da3a261cde"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "5d37bf2c95985541dd1d36ae375bcc8e033bf50e5566cb501f4bef3ea00035ba",
+        "changedInputCount": 37,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "whist-lab-app-commands",
+      "status": "PASS",
+      "invocations": 116,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-commands",
+          "line": 76
+        },
+        {
+          "path": "reports/component/whist-lab-app-commands/component-report.html",
+          "sha256": "67584debadfff3a47f6b57f9126c74af28d1d6aed62c5b946823ef0ac2c964b9"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "5d37bf2c95985541dd1d36ae375bcc8e033bf50e5566cb501f4bef3ea00035ba",
+        "changedInputCount": 37,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "whist-lab-app-display",
+      "status": "PASS",
+      "invocations": 102,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-display",
+          "line": 85
+        },
+        {
+          "path": "reports/component/whist-lab-app-display/component-report.html",
+          "sha256": "e7e5d1065ed86c50fb73fe1cbbdef81ba45652d52d2dfc662c1665cb119da6f1"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "5d37bf2c95985541dd1d36ae375bcc8e033bf50e5566cb501f4bef3ea00035ba",
+        "changedInputCount": 37,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "whist-lab-app-history",
+      "status": "PASS",
+      "invocations": 61,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-history",
+          "line": 94
+        },
+        {
+          "path": "reports/component/whist-lab-app-history/component-report.html",
+          "sha256": "796987d490503290b83829524411229938b6ada78f1d56ff256b5576efc410d6"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "5d37bf2c95985541dd1d36ae375bcc8e033bf50e5566cb501f4bef3ea00035ba",
+        "changedInputCount": 37,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "whist-lab-app-achievements",
+      "status": "PASS",
+      "invocations": 27,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-achievements",
+          "line": 103
+        },
+        {
+          "path": "reports/component/whist-lab-app-achievements/component-report.html",
+          "sha256": "9ee88d5da106df0ad94c22804f7bb5aa2b115a3688a669102a76387d8b8122c2"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "5d37bf2c95985541dd1d36ae375bcc8e033bf50e5566cb501f4bef3ea00035ba",
+        "changedInputCount": 37,
+        "affectedInputs": [],
+        "releaseFingerprint": "97a7d76ae686c8f4fea9e0fea1518536e975253816d92bea2dfb9aa459ba8962"
+      }
+    },
+    {
+      "name": "whist-lab-app-atf-card-table-ui",
+      "status": "PASS",
+      "invocations": 34,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "f9df90dd9910f873b445dc91558632a31c32a8b36b817ea6fe07733b77f268c6",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-atf-card-table-ui",
+          "line": 112
+        },
+        {
+          "path": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html",
+          "sha256": "f625151f79203d98081663279398e41fd15c6d94b547bf8c5e38cb4a37e3d07b"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "REUSE",
+        "originalSourceFingerprint": "19b5f364dcdb9211eaa2a930a613bf10e525d32bd70d382243db99be97afc7f8",
+        "changedInputCount": 50,
+        "affectedInputs": [],
+        "releaseFingerprint": "9bc1cfcc750120f2d985467ad27170231ae21adcdb55aa2560015dcb6eece36e"
+      }
+    }
+  ],
+  "e2e": {
+    "status": "PASS",
+    "userFlowChanged": true,
+    "rationale": null,
+    "note": "NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației."
+  },
+  "lifecycleEffect": "NONE",
+  "writesOnly": "../whist-release-0.21.4-final-20261114/qualification-0214-final-source/rag-prepublication.json",
+  "limitations": [
+    "Verificarea leagă inventarul complet al snapshot-ului de manifest; nu execută Git și nu certifică starea indexului Git.",
+    "Verdictul este o recomandare auditabilă pentru revizie umană; nu promovează, semnează sau publică."
+  ]
+}

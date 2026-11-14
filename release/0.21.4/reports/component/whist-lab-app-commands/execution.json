@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "selection": "testDebugCommandsComponents",
+  "tests": 116,
+  "outcomes": {
+    "PASS": 116,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  },
+  "coverageErrors": [],
+  "containerFailures": [],
+  "provenanceSha256": "c9356db0154f602fd5c77d8eea60edf4cbd8df1530fcfba594ec9aebd6bba3a2",
+  "reportSha256": "67584debadfff3a47f6b57f9126c74af28d1d6aed62c5b946823ef0ac2c964b9"
+}

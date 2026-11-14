@@ -1,0 +1,10 @@
+{
+  "mode": "summary",
+  "points": [
+    "Izolează fișierele rulărilor Android de sursele proiectului.",
+    "Livrează APK-ul fără fixture-urile de afișare din build-ul debug.",
+    "Leagă calificarea APK-ului de rapoartele de componente și verificările native."
+  ],
+  "version": "0.21.4",
+  "evidenceUrlTemplate": "https://github.com/crististefanita/atf_j4/blob/{EVIDENCE_COMMIT}/release/0.21.4/reports/README.md"
+}
