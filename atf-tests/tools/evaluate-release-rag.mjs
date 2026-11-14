@@ -3,6 +3,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
+import {androidExecutionProfile, e2ePaths, scenarioFor, signedExecutionProfileSince} from './android-e2e-contract.mjs';
+import {readE2eEvidence} from './android-e2e-evidence.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
@@ -260,7 +262,7 @@ const scopePolicy = {
   changedFlowRequiresSelectedE2e: true
 };
 
-function inputFingerprint(inputs) {
+export function inputFingerprint(inputs) {
   const records = [...inputs.keys()].sort().map(file => `${file}\t${inputs.get(file)}\n`);
   return digest(records.join(''));
 }
@@ -422,6 +424,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.ragEvaluator?.e2e?.receiptMustMatchManifestReleaseAndSource === true
       && policy.ragEvaluator?.e2e?.receiptMustMatchExtentHashAndOutcomes === true
       && policy.ragEvaluator?.e2e?.inlinePngCountMustMatchExtent === true
+      && policy.ragEvaluator?.e2e?.inlinePngsMustDecode === true
+      && policy.ragEvaluator?.e2e?.signedFlowExecutionProfileSince === signedExecutionProfileSince
       && policy.ragEvaluator?.e2e?.reportPathsUniqueAcrossScopes === true
       && policy.reportingContract?.owner === 'atf-reporting'
       && policy.reportingContract?.renderer === 'Extent'
@@ -490,6 +494,8 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         if (relative === 'release-validation.json' || declared.has(relative) || !HASH.test(item.sha256 ?? '')
             || !Number.isSafeInteger(item.bytes) || item.bytes < 0) throw Error('INVALID_RECEIPT_ENTRY:' + relative);
         declared.set(relative, item);
+      }
+      for (const [relative, item] of declared) {
         const file = await regularFile(candidate, relative), bytes = await fs.readFile(file);
         if (bytes.length !== item.bytes || digest(bytes) !== item.sha256) throw Error('PAYLOAD_MISMATCH:' + relative);
       }
@@ -804,116 +810,50 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   let e2eReceiptsOkay = e2e.status !== 'PASS' || Array.isArray(e2e.groups);
   const e2eProblems = [], e2eEvidence = [];
   const e2eReportPaths = new Set();
-  async function disposableUserEvidence(boundary) {
-    const problems = [], citations = [];
-    const leaseId = boundary?.leaseId;
-    const validLease = typeof leaseId === 'string' && /^[a-f0-9]{32}$/.test(leaseId);
-    const directory = validLease ? `reports/e2e/isolation/${leaseId}` : 'reports/e2e';
-    const readyPath = directory + '/data-isolation-ready.json';
-    const cleanupPath = directory + '/data-isolation-cleanup.json';
-    if (boundary?.mode !== 'DISPOSABLE_SECONDARY_USER' || boundary.readyReceipt !== readyPath
-        || (leaseId !== undefined && !validLease)
-        || boundary.cleanupReceipt !== cleanupPath || !HASH.test(boundary.readyReceiptSha256 ?? '')
-        || !HASH.test(boundary.cleanupReceiptSha256 ?? '')) {
-      return {ok: false, citations, problems: ['Chitanțele utilizatorului temporar nu au căile și hash-urile canonice.']};
-    }
+  const e2eDecisions = [];
+  let executionProfile;
+  if (e2e.executionProfile !== undefined) {
     try {
-      const [readyFile, cleanupFile] = await Promise.all([
-        regularFile(candidate, readyPath), regularFile(candidate, cleanupPath)
-      ]);
-      const [readyBytes, cleanupBytes] = await Promise.all([fs.readFile(readyFile), fs.readFile(cleanupFile)]);
-      const [readyDoc, cleanupDoc] = await Promise.all([strictJson(readyFile), strictJson(cleanupFile)]);
-      const ready = readyDoc.value, cleanup = cleanupDoc.value;
-      const readyHash = digest(readyBytes), cleanupHash = digest(cleanupBytes);
-      const userId = Number.isSafeInteger(boundary.testUserId) ? boundary.testUserId : -1;
-      const readyOkay = readyHash === boundary.readyReceiptSha256 && ready.status === 'READY'
-          && ready.scope === 'ANDROID_SECONDARY_USER' && ready.applicationId === manifest.release?.applicationId
-          && ready.createdByRun === true && ready.packageWasInstalledBefore === false
-          && typeof ready.originalPackageWasInstalledBefore === 'boolean'
-          && ready.screenOffTimeoutMs === 2147483647 && ready.screenUnlocked === true
-          && ready.cleanupRequired === true && ready.accountsAdded === false
-          && Number.isSafeInteger(ready.originalUserId) && ready.originalUserId >= 0
-          && Number.isSafeInteger(ready.testUserId) && ready.testUserId > 0
-          && ready.testUserId !== ready.originalUserId && ready.testUserId === userId
-          && ready.installedApkSha256 === manifest.release?.apkSha256;
-      const cleanupOkay = cleanupHash === boundary.cleanupReceiptSha256 && cleanup.status === 'PASS'
-          && cleanup.scope === 'ANDROID_SECONDARY_USER' && cleanup.applicationId === manifest.release?.applicationId
-          && cleanup.removedByRun === true && cleanup.originalPackageStatePreserved === true
-          && cleanup.originalPackageWasInstalledBefore === ready.originalPackageWasInstalledBefore
-          && cleanup.originalPackageRetained === ready.originalPackageWasInstalledBefore
-          && cleanup.originalUserId === ready.originalUserId && cleanup.removedUserId === userId
-          && cleanup.readyReceiptSha256 === readyHash && (!validLease || cleanup.leaseId === leaseId);
-      if (!readyOkay) problems.push('Chitanța de pregătire nu dovedește un utilizator secundar nou, deblocat, fără instalare sau cont anterior, pentru APK-ul candidat.');
-      if (!cleanupOkay) problems.push('Chitanța teardown nu dovedește eliminarea aceluiași utilizator și păstrarea stării inițiale a instalării originale.');
-      if (declared.get(readyPath)?.sha256 !== readyHash || declared.get(cleanupPath)?.sha256 !== cleanupHash)
-        problems.push('Chitanțele de izolare nu sunt incluse în inventarul hash al release-ului.');
-      citations.push(citation(readyPath, readyHash), citation(cleanupPath, cleanupHash));
+      executionProfile = androidExecutionProfile(e2e.executionProfile.api, e2e.executionProfile.displayProfile,
+        e2e.executionProfile.responsiveProfiles);
     } catch (error) {
-      problems.push(`Chitanța utilizatorului temporar lipsește sau este invalidă (${error.message}).`);
+      e2eReceiptsOkay = false; e2eProblems.push(error.message);
     }
-    return {ok: problems.length === 0, citations, problems};
   }
-  if (e2eReceiptsOkay && e2e.status === 'PASS') {
+  const needsExecutionProfile = releaseVersionAtLeast(version, signedExecutionProfileSince);
+  if (e2e.status === 'PASS' && needsExecutionProfile && !executionProfile) {
+    e2eReceiptsOkay = false; e2eProblems.push('ANDROID_E2E_EXECUTION_PROFILE_REQUIRED');
+  }
+  if (e2e.status === 'PASS' && Array.isArray(e2e.groups)) {
     for (const name of e2e.groups) {
-      const group = manifest.qualification?.e2eGroups?.[name];
-      if (!group || !Number.isSafeInteger(group.tests) || group.tests < 1 || group.failures !== 0
-          || group.errors !== 0 || group.skipped !== 0 || !String(group.protocol ?? '').includes('E2E')) {
-        e2eReceiptsOkay = false; e2eProblems.push(`${name}: grupul E2E lipsește sau numărătoarea/protocolul nu este promovat.`); continue;
-      }
-      const reportPath = group.report, receiptPath = group.executionReceipt;
-      const reportDirectory = typeof reportPath === 'string' ? path.posix.dirname(reportPath) : '';
-      const suiteDirectory = path.posix.basename(reportDirectory);
-      const expectedReport = reporting.e2eReportPathPattern?.replace('{suite}', suiteDirectory);
-      const expectedReceipt = e2eBinding.executionReceiptPattern?.replace('{suite}', suiteDirectory);
-      if (suiteDirectory !== name || reportPath !== expectedReport || !reportPath
-          || selectedReportPaths.has(reportPath) || e2eReportPaths.has(reportPath)
-          || receiptPath !== expectedReceipt || !receiptPath || receiptPath === reportPath) {
-        e2eReceiptsOkay = false;
-        e2eProblems.push(`${name}: raport/receipt lipsă, necanonic sau cu o cale reutilizată (așteptat raport=${expectedReport}, receipt=${expectedReceipt}; observat raport=${reportPath ?? 'absent'}, receipt=${receiptPath ?? 'absent'}).`);
-        continue;
-      }
-      e2eReportPaths.add(reportPath);
       try {
-        const reportFile = await regularFile(candidate, reportPath), reportBytes = await fs.readFile(reportFile);
-        const html = reportBytes.toString('utf8'), reportHash = digest(reportBytes), imageCount = inlinePngCount(html);
-        const reportItem = declared.get(reportPath), receiptItem = declared.get(receiptPath);
-        const receiptDoc = await strictJson(await regularFile(candidate, receiptPath)), receipt = receiptDoc.value;
-        let boundaryOkay = true;
-        if (receipt.dataBoundary !== undefined) {
-          if (receipt.dataBoundary.mode === 'DISPOSABLE_SECONDARY_USER') {
-            const boundary = await disposableUserEvidence(receipt.dataBoundary);
-            boundaryOkay = boundary.ok; e2eProblems.push(...boundary.problems);
-            e2eEvidence.push(...boundary.citations);
-          } else if (receipt.dataBoundary.mode !== 'BACKUP_AND_RESTORE') {
-            boundaryOkay = false; e2eProblems.push(`${name}: limita de izolare a datelor nu este acceptată.`);
+        if (typeof name !== 'string' || !/^[a-z0-9-]+$/.test(name)) throw Error('ANDROID_E2E_INVALID_GROUP');
+        const paths = e2ePaths(name);
+        if (paths.report !== reporting.e2eReportPathPattern?.replace('{suite}', name)
+            || paths.executionReceipt !== e2eBinding.executionReceiptPattern?.replace('{suite}', name)
+            || selectedReportPaths.has(paths.report) || e2eReportPaths.has(paths.report)) throw Error('ANDROID_E2E_REPORT_PATH');
+        e2eReportPaths.add(paths.report);
+        const accepted = await readE2eEvidence({
+          manifest, name, declared, requireScenario: needsExecutionProfile || Boolean(executionProfile),
+          scenario: executionProfile ? scenarioFor(name, executionProfile) : undefined,
+          readDocument: async relative => strictJson(await regularFile(candidate, relative)),
+          readReport: async relative => {
+            const bytes = await fs.readFile(await regularFile(candidate, relative));
+            return {bytes, text: bytes.toString('utf8'), sha256: digest(bytes)};
           }
-        }
-        const countsMatch = receipt.tests === group.tests && receipt.failures === group.failures
-            && receipt.errors === group.errors && receipt.skipped === group.skipped;
-        const bindingMatches = receipt.status === 'PASS' && receipt.protocol === group.protocol && countsMatch && imageCount > 0 && boundaryOkay
-            && receipt.releaseVersion === manifest.release?.versionName
-            && receipt.installedApkSha256 === manifest.release?.apkSha256
-            && receipt.sourceCommit === manifest.source?.sourceCommit
-            && receipt.sourceFingerprint === manifest.source?.workingTreeFingerprint
-            && receipt.reportSha256 === reportHash && receipt.inlinePngCount === imageCount;
-        const reportMatches = Boolean(reportItem && digest(reportBytes) === reportItem.sha256 && /<html\b/i.test(html.slice(0, 8192)));
-        const receiptMatches = Boolean(receiptItem && receiptItem.sha256 === receiptDoc.sha256);
-        if (!reportMatches || !receiptMatches || !bindingMatches) {
-          e2eReceiptsOkay = false;
-          e2eProblems.push(`${name}: Extent-ul, receipt-ul, APK-ul, sursa, numărătoarea sau capturile inline nu se leagă între ele.`);
-        }
-        e2eEvidence.push(citation('release-validation.json', manifestDoc.sha256,
-            `/qualification/e2eGroups/${name}`, manifestDoc.lines.get(`/qualification/e2eGroups/${name}`) ?? 1));
-        if (receiptItem) e2eEvidence.push(citation(receiptPath, receiptItem.sha256, '/reportSha256', receiptDoc.lines.get('/reportSha256') ?? 1));
-        if (reportItem) e2eEvidence.push(citation(reportPath, reportItem.sha256));
+        });
+        e2eDecisions.push({group: name, decision: 'REUSE'});
+        e2eEvidence.push(...[...accepted.documents].map(([relative, doc]) => citation(relative, doc.sha256)));
       } catch (error) {
         e2eReceiptsOkay = false;
-        e2eProblems.push(`${name}: receipt sau raport E2E ilizibil/neinclus în payload (${error.message}).`);
+        e2eDecisions.push({group: name, decision: 'RUN', reason: error.message});
+        e2eProblems.push(`${name}: receipt sau raport E2E invalid (${error.message}).`);
       }
     }
   }
   const selectedE2e = e2e.status === 'PASS' && Array.isArray(e2e.groups) ? e2e.groups : [];
   const missingE2e = (testScope?.requiredE2eGroups ?? []).filter(name => !selectedE2e.includes(name));
+  e2eDecisions.push(...missingE2e.map(group => ({group, decision: 'RUN', reason: 'REQUIRED_BY_DIFF'})));
   e2eProblems.push(...missingE2e.map(name => `Grup E2E cerut de diff și neselectat: ${name}`));
   const e2eOkay = e2eReceiptsOkay && missingE2e.length === 0 && (plan.userFlowChanged || testScope?.userFlowChanged
       ? e2e.status === 'PASS'
@@ -937,7 +877,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       sha256: planDoc.sha256, contentBase64: planDoc.bytes.toString('base64')},
     checks, testScope: testScope ?? null, componentGroups: groupResults,
     e2e: {status: e2e.status ?? 'NOT_RUN', userFlowChanged: plan.userFlowChanged ?? null,
-      rationale: e2e.rationale ?? null, note: 'NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației.'},
+      rationale: e2e.rationale ?? null, decisions: e2eDecisions, note: 'NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației.'},
     lifecycleEffect: 'NONE', writesOnly: posix(path.relative(project, output)),
     limitations: ['Verificarea leagă inventarul complet al snapshot-ului de manifest; nu execută Git și nu certifică starea indexului Git.',
       'Verdictul este o recomandare auditabilă pentru revizie umană; nu promovează, semnează sau publică.']

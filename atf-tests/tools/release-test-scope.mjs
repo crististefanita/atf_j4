@@ -1,16 +1,17 @@
 import {componentEvidenceScope, changedInputs, nonBuildDocumentation} from './component-evidence-scope.mjs';
 
+import {androidFlows} from './android-e2e-contract.mjs';
+
 const android = 'whist-lab-app/';
 const app = android + 'app/';
 const appBuild = app + 'build.gradle';
-const smoke = 'signed-release-smoke';
 const bidding = 'signed-release-bidding';
 const autoGame = 'signed-release-auto-game';
 const history = 'history-release-sanity';
 const achievements = 'signed-release-achievements';
 const profile = 'signed-release-home-profile';
 const display = 'responsive-ui-sanity';
-export const allFlows = [smoke, bidding, autoGame, history, achievements, profile, display];
+export const allFlows = Object.keys(androidFlows);
 
 const rules = [
   ['bidding', /^whist-lab-app\/app\/src\/main\/java\/ro\/whistlab\/app\/bidding\//, [bidding, autoGame]],
@@ -26,7 +27,7 @@ const rules = [
 
 const nonProduct = /^(?:atf-validation\/|atf-tests\/|atf-test-android\/|ios\/|whist-lab-app\/(?:ai-lab|ios-bridge|test-audit|algorithm-build)\/|whist-lab-app\/[^/]+\/src\/(?:test|androidTest|rasterTest)\/|\.github\/|\.atf-signing\/)/;
 const testConfiguration = /^config\/(?:atf-governance-policy\.json|atf-test-suites\.json|release-platform-rag-policy\.json|gradle-(?:app|audit)-collections\.properties|test-collections\.json)$/;
-const testLaunchers = /^scripts\/(?:Get-AtfSourceInputs\.ps1|Copy-AtfSourceInputs\.ps1|AtfQualificationSnapshot\.ps1|check-android-release-device\.ps1|run-(?:atf-governance|component-suites|whist-collection|whist-responsive-sanity)\.ps1)$/;
+const testLaunchers = /^scripts\/(?:Get-AtfSourceInputs\.ps1|Copy-AtfSourceInputs\.ps1|AtfQualificationSnapshot\.ps1|AtfAndroidMaven\.ps1|AtfDeviceLease\.ps1|Invoke-AtfAndroidDisposableUser\.ps1|check-android-release-device\.ps1|run-(?:atf-governance|component-suites|whist-collection|whist-responsive-sanity|whist-signed-e2e)\.ps1)$/;
 
 function classify(file, metadataOnly) {
   if (nonBuildDocumentation(file)) return {rule: 'documentation', e2eGroups: []};

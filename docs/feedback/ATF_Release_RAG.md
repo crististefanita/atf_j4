@@ -2,23 +2,22 @@
 
 ## Pe scurt
 
-Contractul stabil al RAG aparține [ghidului de calificare](../testing/ATF_ReleaseQualification.md), [politicii pe platforme](../../config/release-platform-rag-policy.json) și [evaluatorului](../../atf-tests/tools/evaluate-release-rag.mjs). Guvernanța README-ului principal este implementată separat în [testele de structură a livrării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) și în evaluatorul RAG; acest registru păstrează doar limitele rămase.
+[Ghidul de calificare](../testing/ATF_ReleaseQualification.md) deține procesul, iar [evaluatorul](../../atf-tests/tools/evaluate-release-rag.mjs) verifică dovezile. Aici rămân lucrările deschise care afectează durata sau reluarea unei calificări.
 
-## Lacune deschise
+## Identitatea snapshot-ului și timpul
 
-| Prioritate | Lacună | Criteriu de închidere |
+| ID | Lacună | Criteriu de închidere |
 |---|---|---|
-| P2 | Auditabilitatea verdicturilor istorice | Verdictul păstrat pentru 0.21.3 citează planul dintr-un candidat temporar care nu mai este în repository. Recuperați numai bytes care corespund hash-ului citat; dacă nu există, păstrați explicit limita de audit și nu reconstruiți dovada retroactiv. Verdicturile noi includ snapshot-ul exact al planului. |
-| P2 | Prospețimea receipt-urilor | Receipt-urile sunt legate prin hash, dar nu au un interval de valabilitate sau un criteriu temporal de expirare. Declarați originea temporală și termenul, apoi blocați automatizarea publicării pentru dovezi expirate ori fără timp verificabil. |
-| P2 | Costul pregătirii componentelor Maven | Măsurați separat copierea cache-ului, compilarea, testele și publicarea Extent. Pregătirea poate fi omisă când toate selecțiile Maven au dovezi valide. |
-| P2 | Cronologia incompletă a calificării | Înregistrați începutul, sfârșitul și durata fiecărei etape, inclusiv cea de pornire la rece. Marcați suprapunerile. Cronometrați separat evaluatorul read-only, probele, publicarea și descărcarea. |
+| RAG-03 | Prospețimea receipt-urilor. Chitanțele sunt legate prin hash. Semnificația vechimii și expirarea dovezilor rămân nedefinite pentru preflight, artefacte și verificarea remote. | Definește ce expiră și în ce condiții. Separă dovezile imuabile de starea schimbătoare a dispozitivului sau a GitHub. Verifică starea expirată, timpul necunoscut și datele lipsă. |
+| RAG-06 | Costul pregătirii componentelor Maven și durata calificării se citesc din loguri separate. Modificarea sursei live a invalidat rulări după terminarea testelor. | Salvează etapele în ordinea reală cu intervale și motivul deciziei RUN/REUSE. Compară explicit snapshot-ul promovat cu cel calificat. Verifică reconstruirea integrală din commit, inclusiv fișierele cu EOL mixt. Când Git nu poate reproduce octeții, păstrează numai intrările unice și verifică hash-urile înaintea curățării. Măsoară separat pornirea la rece, staging-ul, testele, Extent, evaluatorul și distribuția. Raportează suprapunerile fără adunarea lor ca timp pe traseul critic. |
+| RAG-07 | Publicarea depinde de sincronizarea dintre commit, draft, tag, asset-uri și catalog. Un commit local încă inaccesibil GitHub poate primi 422. | Folosește un jurnal atomic cu commit, ID de draft și hash-uri. Probe controlate acoperă 422, draft creat dar nevizibil după tag, upload acceptat cu răspuns pierdut și reluare după promovare. Verifică README-ul și fișierul real înaintea rotației. |
 
-## Perimetrul reutilizării
+## Întreținerea regresiilor
 
-Pentru perimetre Gradle mai înguste, demonstrați dependențele de cod, resurse și configurație ale fiecărei colecții. Controalele trebuie să detecteze o modificare în codul partajat, o intrare citită dinamic și o dependență adăugată. [Contractul reutilizării](../testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă) · [Verificatorul perimetrelor actuale](../../atf-tests/tools/component-evidence-scope.mjs)
+[Testul evaluatorului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagEvaluatorComponentTest.java) concentrează contracte distincte într-o clasă. Separați cazurile pentru proveniența componentelor, izolarea Android și distribuție. Păstrați ID-urile și controalele negative din rapoarte prin comparația inventarului înainte și după extragere.
 
-## Proprietari și limite
+## Unde se verifică
 
-- [Calificarea livrării](../testing/ATF_ReleaseQualification.md) deține procesul, stările, comenzile și limita dintre verificarea RAG și decizia operatorului.
-- [Feedback-ul raportării](ATF_Reporting.md) deține acceptanța HTML-ului Extent, a capturilor inline și a egalității dintre raport și JUnit.
-- [Guvernanța locală](ATF_Governance.md) verifică integritatea artefactelor în dosarele de release.
+- [Calificarea livrării](../testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă) deține regulile de reutilizare.
+- [Predarea rapoartelor](../reporting/ATF_Handoff.md) deține autonomia HTML și republicarea.
+- [Livrarea Android](../platform/ATF_AndroidDelivery.md#commit-ul-surselor-și-commit-ul-dovezilor) deține ordinea publicării.

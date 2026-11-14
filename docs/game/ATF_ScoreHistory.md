@@ -1,5 +1,7 @@
 # Modelul istoricului de scor
 
+## Pe scurt
+
 Istoricul păstrează licitația, punctele mâinii și totalul fiecărui loc după o mână încheiată. Prezentarea și persistența consumă același registru, iar datele necunoscute dintr-o salvare veche rămân marcate ca necunoscute.
 
 Registrul stochează licitațiile, levatele câștigate și soldurile; punctele sunt diferențe de sold. Rezultatul contractului compară licitatul cu levatele, independent de semnul punctelor. O licitație ratată este tăiată oblic în roșu, păstrând cifra lizibilă și descrierea accesibilă explicită.

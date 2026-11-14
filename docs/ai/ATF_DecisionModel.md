@@ -1,5 +1,7 @@
 # Modelul deciziei cu informație parțială
 
+## Pe scurt
+
 Modelul transformă observația permisă într-o acțiune legală, evaluată față de obiectivul activ. Separarea observației, lumilor ipotetice, continuării și criteriului de alegere permite schimbarea unui mecanism fără confundarea lui cu celelalte.
 
 ## Contractul unei decizii

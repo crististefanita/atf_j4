@@ -21,6 +21,8 @@ param(
     [string]$RunRoot = ''
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfAndroidMaven.ps1')
+. (Join-Path $PSScriptRoot 'AtfDeviceLease.ps1')
 if (-not $ComponentsOnly -and ($PSBoundParameters.ContainsKey('ComponentSuite') -or $PSBoundParameters.ContainsKey('ComponentRenderer'))) {
     throw 'ComponentSuite and ComponentRenderer require ComponentsOnly.'
 }
@@ -95,9 +97,7 @@ function Initialize-SanityStage {
     })
     $sourceSnapshot|ConvertTo-Json -Depth 4|Set-Content -LiteralPath (Join-Path $RunRoot 'source-snapshot.json') -Encoding utf8
     $executionRepository = Join-Path $stage 'maven-repository'
-    New-Item -ItemType Directory -Path $executionRepository | Out-Null
-    & robocopy $MavenRepository $executionRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
-    if ($LASTEXITCODE -ge 8) { throw 'Could not prepare the private Maven dependency cache.' }
+    Copy-AtfMavenCache $MavenRepository $executionRepository (Join-Path $RunRoot 'copy-maven-cache.log')
 }
 $leaseId = ''
 $leaseAcquired = $false
@@ -137,63 +137,11 @@ function Invoke-SanityMaven {
     if ($exitCode -ne 0) { throw "$Label failed. See $log" }
 }
 
-function Acquire-DeviceLease {
-    $stream = [IO.File]::Open($leasePath,[IO.FileMode]::OpenOrCreate,
-            [IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
-    try {
-        $reader = [IO.StreamReader]::new($stream,[Text.Encoding]::UTF8,$true,1024,$true)
-        $content = $reader.ReadToEnd()
-        $reader.Dispose()
-        if (-not [string]::IsNullOrWhiteSpace($content) -and ($content | ConvertFrom-Json).active) {
-            throw 'The Android emulator is already leased. No UI action was sent.'
-        }
-        $leaseId = [guid]::NewGuid().ToString('N')
-        $lease = @{
-            active=$true
-            owner='J4 responsive UI sanity'
-            leaseId=$leaseId
-            run=$RunRoot
-            serial=$Serial
-            startedAt=[DateTimeOffset]::UtcNow.ToString('o')
-        }
-        $bytes = [Text.Encoding]::UTF8.GetBytes(($lease | ConvertTo-Json))
-        $stream.SetLength(0)
-        $stream.Position = 0
-        $stream.Write($bytes,0,$bytes.Length)
-        $stream.Flush($true)
-        $script:leaseId = $leaseId
-        $script:leaseAcquired = $true
-    } finally {
-        $stream.Dispose()
-    }
-}
-
-function Release-DeviceLease {
-    if (-not $leaseAcquired -or -not (Test-Path -LiteralPath $leasePath)) { return }
-    $stream = [IO.File]::Open($leasePath,[IO.FileMode]::Open,
-            [IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
-    try {
-        $reader = [IO.StreamReader]::new($stream,[Text.Encoding]::UTF8,$true,1024,$true)
-        $current = $reader.ReadToEnd() | ConvertFrom-Json
-        $reader.Dispose()
-        if ($current.leaseId -eq $leaseId) {
-            $current.active = $false
-            $current | Add-Member -NotePropertyName updatedAt -NotePropertyValue ([DateTimeOffset]::UtcNow.ToString('o')) -Force
-            $bytes = [Text.Encoding]::UTF8.GetBytes(($current | ConvertTo-Json))
-            $stream.SetLength(0)
-            $stream.Position = 0
-            $stream.Write($bytes,0,$bytes.Length)
-            $stream.Flush($true)
-        }
-    } finally {
-        $stream.Dispose()
-    }
-}
-
 try {
     if (-not $ComponentsOnly) {
         $state.status = 'BLOCKED'
-        Acquire-DeviceLease
+        $leaseId = New-AtfDeviceLease $LeasePath $Serial 'J4 responsive UI sanity' $RunRoot
+        $leaseAcquired = $true
         $preflightReceipt = Join-Path $RunRoot 'android-preflight.json'
         $state.androidPreflight = $preflightReceipt
         $preflightArguments = @{
@@ -330,7 +278,7 @@ foreach ($library in @(
     $state.failure = $_.ToString()
     throw
 } finally {
-    try { Release-DeviceLease }
+    try { if ($leaseAcquired) { Remove-AtfDeviceLease $LeasePath $leaseId } }
     catch { $state.leaseReleaseFailure = $_.ToString(); $state.status = 'FAIL' }
     $state | ConvertTo-Json -Depth 5 |
         Set-Content -LiteralPath (Join-Path $RunRoot 'WORKING_STATE.json') -Encoding utf8

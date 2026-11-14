@@ -117,6 +117,8 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(evaluator.path("e2e").path("receiptMustMatchManifestReleaseAndSource").asBoolean());
         assertTrue(evaluator.path("e2e").path("receiptMustMatchExtentHashAndOutcomes").asBoolean());
         assertTrue(evaluator.path("e2e").path("inlinePngCountMustMatchExtent").asBoolean());
+        assertTrue(evaluator.path("e2e").path("inlinePngsMustDecode").asBoolean());
+        assertEquals("0.21.5", evaluator.path("e2e").path("signedFlowExecutionProfileSince").asText());
         assertTrue(evaluator.path("e2e").path("reportPathsUniqueAcrossScopes").asBoolean());
         assertTrue(policy().path("suiteQualification").path("currentApplicationE2eMayBeFrozenWhenNoUserFlowChanges").asBoolean());
         Path root = GovernanceProject.locateProjectRoot();
@@ -248,11 +250,18 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("### Preflight Android"));
         assertTrue(qualificationGuide.contains("check-android-release-device.ps1"));
         String nativeRunner = Files.readString(root.resolve("scripts/run-whist-responsive-sanity.ps1")).replace("\r\n", "\n");
-        int lease = nativeRunner.indexOf("        Acquire-DeviceLease\n");
+        int lease = nativeRunner.indexOf("        $leaseId = New-AtfDeviceLease");
         int preflightCall = nativeRunner.indexOf("check-android-release-device.ps1");
         int staging = nativeRunner.indexOf("    Initialize-SanityStage\n");
         assertTrue(lease >= 0 && lease < preflightCall && preflightCall < staging,
-                "Native qualification must preflight the reserved device before preparing Maven");
+                "Responsive diagnostics must preflight the reserved device before preparing Maven");
+        String signedRunner = Files.readString(root.resolve("scripts/run-whist-signed-e2e.ps1"));
+        int decide = signedRunner.indexOf("& node $tool plan");
+        int compile = signedRunner.indexOf("Invoke-PrivateMaven 'compile.log'");
+        int reserve = signedRunner.indexOf("$lease = New-AtfDeviceLease");
+        int execute = signedRunner.indexOf("'surefire:test'");
+        assertTrue(decide >= 0 && decide < compile && compile < reserve && reserve < execute,
+                "Signed acceptance must decide reuse and compile before accessing the device");
         assertTrue(qualificationGuide.contains("android-preflight.json"));
         assertTrue(qualificationGuide.contains("plan-release-tests.mjs"));
         assertTrue(qualificationGuide.contains("requiredE2eGroups"));

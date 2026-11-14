@@ -1,5 +1,7 @@
 # Predarea și acceptarea rezultatelor Android
 
+## Pe scurt
+
 Predarea publică rezultatele într-un depozit extern și menține separat încercarea, republicarea și acceptanța unui scop. Identitatea execuției originale se păstrează la orice publicare ulterioară.
 
 ## Fluxul publicării

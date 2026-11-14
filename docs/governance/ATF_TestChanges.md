@@ -1,5 +1,7 @@
 # Guvernanța schimbărilor în teste
 
+## Pe scurt
+
 O modificare a testelor păstrează sensul contractului și motivul pentru care o intrare este admisă sau refuzată. Schimbarea implementării nu justifică ajustarea rezultatului așteptat doar pentru a obține succes.
 
 ## Criterii

@@ -1,5 +1,7 @@
 # Politica prezentării rezultatelor de joc
 
+## Pe scurt
+
 O politică imutabilă controlează selecția AUTO, SUMMARY și FULL și limitele prezentării. Consumatorul pregătește datele; biblioteca binară furnizează API-urile, tabelele, secțiunile pliabile și vizualizatorul capturilor.
 
 ## Configurația capturată la început

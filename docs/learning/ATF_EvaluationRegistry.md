@@ -1,6 +1,6 @@
 # Registrul comun al expunerii loturilor
 
-## Scop și proprietar
+## Pe scurt
 
 [Registrul executabil](../../whist-lab-app/ai-lab/tools/qualification/whist-evaluation-registry.mjs) păstrează expunerea distribuțiilor înaintea jocului. [Politica instalației](../../config/whist-evaluation-policy.json) identifică locația comună; corpusul, directorul rezultatului și numele lotului nu o aleg.
 

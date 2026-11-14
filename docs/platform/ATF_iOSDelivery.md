@@ -1,6 +1,6 @@
 # Compatibilitate și livrare iOS
 
-## Platforme și pachete
+## Pe scurt
 
 APK-ul Whist Lab este un pachet Android și nu se instalează pe iPhone sau iPad.
 Proiectul iOS este o aplicație separată cu interfață SwiftUI și folosește motorul

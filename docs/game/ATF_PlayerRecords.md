@@ -1,5 +1,7 @@
 # Profilul jucătorului și clasamentele locale
 
+## Pe scurt
+
 Numele afișat, rezultatele unei partide și clasamentul au responsabilități distincte. Modificarea numelui păstrează regulile și scorul; un rezultat deja înregistrat păstrează numele de la încheiere.
 
 ## Fluxul înregistrării

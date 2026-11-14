@@ -1,6 +1,6 @@
 # Cercetarea și calificarea jucătorilor
 
-## Responsabilitate
+## Pe scurt
 
 Responsabilul politicilor Whist deține aceste criterii de cercetare și calificare. Regulile deja implementate sunt descrise în [modelul deciziei](../ai/ATF_DecisionModel.md), iar promovarea urmează [protocolul offline](../learning/README.md).
 

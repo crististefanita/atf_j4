@@ -1,5 +1,7 @@
 # Măsurarea timpilor Android
 
+## Pe scurt
+
 Ceasul unei faze înregistrează intervalul monoton al activității originale. Trimiterea comenzilor, capturarea, persistența jurnalului și publicarea ulterioară au măsurători distincte.
 
 ## Axele temporale

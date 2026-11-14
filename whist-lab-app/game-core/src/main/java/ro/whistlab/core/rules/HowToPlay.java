@@ -51,6 +51,11 @@ public final class HowToPlay {
     }
     public static String markdown(Language language) {
         var text=new StringBuilder("# ").append(title(language)).append("\n\n");
+        if (language == Language.RO) {
+            text.append("## Pe scurt\n\nGhidul explică Whist românesc în Whist Lab, de la licitare la scorul final.\n\n");
+        } else {
+            text.append("## Pe scurt / Overview\n\nThis guide covers Romanian Whist in Whist Lab, from bidding to final scoring.\n\n");
+        }
         for (var section : sections(language)) {
             text.append("## ").append(section.title()).append("\n\n");
             for (String sentence : section.explanation().split("(?<=[.!?])\\s+")) {

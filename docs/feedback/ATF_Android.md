@@ -1,6 +1,6 @@
 # Istoricul partidei și calificarea interfeței
 
-## Responsabilitate
+## Pe scurt
 
 Motorul deține datele partidei, iar aplicația Android deține persistența și prezentarea lor. Modificările interfeței se califică pe binarul efectiv instalat, cu starea și scopul scenariului declarate.
 
@@ -17,13 +17,13 @@ Motorul deține datele partidei, iar aplicația Android deține persistența și
 | P1 | Extinderea calificării native dincolo de profilul compact; componentele nu substituie fonturile și interacțiunea Android. | Profil înalt și text mărit: 13 cărți, levată completă la 5 locuri și succesiunea actorilor la 3/5/6 locuri, cu nume și indici lizibili. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
 | P1 | Extinderea probei compacte de AutoGame către matricea nativă a actorului și a pozițiilor. | Pe APK-ul identificat, verificați licitarea și jocul la 3–6 locuri, în RO/EN și pe profil compact plus text mărit: numai actorul curent are badge, badge-ul rămâne vizibil când AutoGame joacă locul omului, comenzile manuale rămân blocate, iar colectarea levatei și ecranul scorului nu marchează un actor. Locurile nu se deplasează la schimbarea fazei, iar fața și ridicarea cărții rămân vizibile. Componentele verifică proiecția și geometria; numai observația Android cu APK/hash și captură poate închide criteriul. |
 
-Dosarele de livrare păstrează proba compactă cu 13 cărți și auditul indicilor, precum și proba AutoGame la patru locuri cu o carte, marcajul la joc manual și ecranul de scor. Rămân deschise vizibilitatea marcajului în timpul mutării automate rapide și profilurile suplimentare din tabel. [Catalogul livrărilor](../../release/README.md)
+Dosarele de livrare păstrează proba compactă cu 13 cărți și auditul indicilor, precum și proba AutoGame la patru locuri cu o carte, marcajul la joc manual și ecranul de scor. Acceptanța pe mâna de 17 cărți verifică derularea orizontală și stabilitatea chenarelor. Rămân deschise marcajul în timpul mutării automate rapide și matricea cu text mărit. [Catalogul livrărilor](../../release/README.md)
 
 ## Compatibilitatea istoricului
 
 ### P1 — calificarea nativă a istoricului cu două coloane
 
-Sanity-ul folosește un APK care include schimbarea; nu se atribuie unui release anterior. Componentele califică separat proiecția, persistența și geometria.
+Prefixul nativ confirmă un rând complet și reluarea în română și engleză. Matricea de mai jos urmărește restul populației și marcajele în raster. Componentele califică proiecția, persistența și geometria.
 
 | Suprafață | Criteriu de închidere |
 |---|---|
@@ -50,13 +50,6 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 |---|---|---|
 | P1 | Recuperarea stocării Android: checkpoint-ul `SharedPreferences` și clasamentul `AtomicFile` nu au acceptanță nativă după corupere sau întrerupere. | Android pe APK identificat: întrerupere controlată, recuperare sau eroare explicită, datele utilizatorului păstrate; componentele serializării și porturile de stocare rămân verificări separate. |
 | P2 | Latența checkpoint-ului sincron nu este calificată pe dispozitiv; ordinea componentelor nu certifică reactivitatea. | Mediu și stare identificate, costul scrierii separat de calculul AI și randare; păstrați ordinea și cauza erorii înaintea unei eventuale mutări a I/O între executori. |
-
-### Criteriu închis — fixture-uri deterministe de lansare
-
-- Scenariile de acceptanță sunt construite în src/debug; src/release ignoră intențiile de fixture.
-- MainActivity aplică un plan comun fără cheile de scenariu ori fabricarea stărilor.
-- Testele de componentă verifică scenariile păstrate, iar guvernanța impune separarea surselor.
-- Redeschideți criteriul numai la apariția unui scenariu nou sau a unei căi din binarul Release.
 
 ## Calificarea modificărilor vizuale
 
@@ -102,6 +95,6 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 - [Scenariile de profil, istoric, clasamente și serii](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii) dețin mecanismele automatizate și precondițiile; existența scenariului nu califică o versiune.
 - [Componentele display](../testing/ATF_DisplayComponents.md) dețin mock-urile și izolarea cache-ului; fonturile și interacțiunea nativă au verificare distinctă.
 - [Calificarea publicării](ATF_Reporting.md) păstrează lacuna validării timpurii a checkpoint-ului; [predarea rezultatelor](../reporting/ATF_Handoff.md) deține distincția dintre verdictul funcțional și publicare.
-- [Guvernanța publicării](ATF_Governance.md#reluarea-publicării-după-răspunsuri-parțiale) urmărește lansatorul și reluarea după un răspuns GitHub incomplet. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) definește identitatea dosarului și legarea auditului publicat.
+- [Guvernanța publicării](ATF_Release_RAG.md#identitatea-snapshot-ului-și-timpul) urmărește lansatorul și reluarea după un răspuns GitHub incomplet. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) definește identitatea dosarului și legarea auditului publicat.
 
 [Testarea Android](../testing/ATF_Android.md) · [Profiluri de ecran](../testing/ATF_Display.md) · [Atlasul interfeței](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

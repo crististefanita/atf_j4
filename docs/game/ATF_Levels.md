@@ -1,5 +1,7 @@
 # Normal și Hard
 
+## Pe scurt
+
 [AiDifficulty](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/AiDifficulty.java) definește nivelurile de joc, iar [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) selectează implementarea. Dificultatea schimbă decizia AI în același contract de reguli.
 
 ## Responsabilități

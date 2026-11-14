@@ -1,5 +1,7 @@
 # Integrarea bibliotecilor comune
 
+## Pe scurt
+
 Consumerul folosește API-urile livrate prin dependențele declarate, cu o identitate binară verificabilă. Codul aplicației și adaptoarele sale păstrează responsabilitatea semanticii de domeniu.
 
 ## Limita de integrare

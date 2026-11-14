@@ -1,5 +1,7 @@
 # Contractul corpusului de partide
 
+## Pe scurt
+
 Corpusul este o intrare externă pentru replay, selecție și analiză offline. Proiectul deține schema și validatoarele; fișierele partidelor, manifestele concrete și registrele loturilor rămân în depozitul extern configurat.
 
 ## Modelul datelor

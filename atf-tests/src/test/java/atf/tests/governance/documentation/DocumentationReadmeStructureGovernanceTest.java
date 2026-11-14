@@ -13,6 +13,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import atf.tests.governance.support.GovernanceProject;
+
 import static atf.tests.governance.support.GovernanceProject.locateProjectRoot;
 
 /** Checks the minimum readable shape shared by every owner README. */
@@ -29,11 +31,12 @@ public class DocumentationReadmeStructureGovernanceTest {
             Pattern.CASE_INSENSITIVE);
 
     @Test
-    void ownerReadmesKeepAReadableStableShape() throws Exception {
+    void ownerDocumentsKeepAReadableStableShape() throws Exception {
         Path root = locateProjectRoot();
         List<DocumentationGovernanceSupport.Violation> violations = new ArrayList<>();
-        try (var files = atf.tests.governance.support.GovernanceProject.markdown(root).stream()) {
-            files.filter(DocumentationGovernanceSupport::isReadme)
+        try (var files = GovernanceProject.markdown(root).stream()) {
+            files.filter(path -> GovernanceProject.isLibraryGuide(root, path)
+                            || DocumentationGovernanceSupport.isGovernedMarkdown(root, path))
                     .forEach(path -> validate(path, root, violations));
         }
         DocumentationGovernanceSupport.assertNoViolations("README structure governance", violations);

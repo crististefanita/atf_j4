@@ -1,5 +1,9 @@
 # HELP — HOW TO PLAY
 
+## Pe scurt / Overview
+
+This guide covers Romanian Whist in Whist Lab, from bidding to final scoring.
+
 ## Objective
 
 - In Romanian Whist, win exactly the number of tricks you bid.

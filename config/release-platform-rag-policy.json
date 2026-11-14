@@ -123,6 +123,8 @@
       "receiptMustMatchManifestReleaseAndSource": true,
       "receiptMustMatchExtentHashAndOutcomes": true,
       "inlinePngCountMustMatchExtent": true,
+      "inlinePngsMustDecode": true,
+      "signedFlowExecutionProfileSince": "0.21.5",
       "reportPathsUniqueAcrossScopes": true
     }
   },

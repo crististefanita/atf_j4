@@ -1,6 +1,6 @@
 # Calificarea infrastructurii locale de testare
 
-## Responsabilitate
+## Pe scurt
 
 Consumatorul deține validarea API, procesele și adopția locală; [registrul responsabilităților](README.md#suportul-comun-al-testelor) rutează primitivele Kit. Contractele implementate rămân în README-urile modulelor; biblioteca binară și acceptanța Android au verificări separate.
 

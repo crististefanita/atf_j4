@@ -1,5 +1,7 @@
 # Decizii contextuale și siguranța contractului
 
+## Pe scurt
+
 Valoarea unei cărți depinde de obiectivul rămas și de informația publică. [Manifestul contextual](../../config/whist-contextual-discard.yaml) leagă condițiile generale de implementare și de regresiile independente.
 
 ## Ordinea evaluării

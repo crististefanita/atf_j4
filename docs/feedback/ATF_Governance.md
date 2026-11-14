@@ -1,6 +1,6 @@
 # Reutilizarea guvernanței și coeziunea codului
 
-## Responsabilitate
+## Pe scurt
 
 Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul comun reutilizabil se solicită prin [responsabilitățile bibliotecilor](README.md), fără introducerea în consumator a implementărilor acestora.
 
@@ -60,6 +60,8 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 |---|---|---|
 | P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
 
+| P2 | Generatorul descrierii release-ului poate lipi toate schimbările într-un paragraf prea dens. | Generatorul trebuie să producă o sinteză scurtă și puncte separate. Verificați forma înainte de sigilarea manifestului. Păstrați intacte descrierile deja incluse în inventarul unei ediții publicate. |
+
 ## Descărcarea prin browser
 
 [Contractul distribuției](../platform/ATF_AndroidDelivery.md#verificări-automate-ale-distribuției) separă proba API, descărcarea efectivă din browser și accesul anonim. Verificarea browserului și hash-ul fișierului primit se consemnează în [dosarul versiunii active](../../release/README.md).
@@ -75,14 +77,6 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | Prioritate | Lacună delimitată | Criteriu de închidere |
 |---|---|---|
 | P2 | Proba nativă este păstrată cu sursele în Extent, dar lansarea ei este încă o operație TMP a operatorului. | Adaptor opt-in versionat: citește identitatea candidatului, folosește permisiuni Android proprii și separă accesul de transfer. Componentele injectează 404, fișier scurt, hash/CRC greșit, certificat absent ori diferit și timeout; nu salvează redirectul semnat. Raportul păstrează comparațiile, eroarea și durata originale, iar cleanup-ul elimină doar resursele deținute. Un singur transfer Android califică livrarea; nu se multiplică pe rezoluțiile UI. |
-
-## Reluarea publicării după răspunsuri parțiale
-
-[Procesul livrării](../platform/ATF_AndroidDelivery.md#commit-ul-surselor-și-commit-ul-dovezilor) separă sursele, dovezile și ID-ul draftului. Verificatoarele existente controlează rezultatul; coordonarea operațiilor GitHub rămâne o sarcină a operatorului.
-
-| Prioritate | Lacună | Criteriu de închidere |
-|---|---|---|
-| P2 | Publicarea nu are încă un lansator versionat care salvează imediat identitatea fiecărei operații remote și permite reluarea sigură. | Jurnal atomic cu ID-ul draftului înainte de upload, commit-ul surselor, asset-urile și hash-urile. API controlat demonstrează creare reușită urmată de 404 la căutarea după tag, upload acceptat cu răspuns pierdut și promovare deja efectuată. Reluarea recitește obiectele după ID și refuză diferențele; nu recreează, nu reîncarcă și nu mută tag-ul prin repetare oarbă. |
 
 ## Confruntarea afirmațiilor documentare
 

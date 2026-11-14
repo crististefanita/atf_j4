@@ -1,6 +1,6 @@
 # Calificarea publicării și a predării rezultatelor
 
-## Responsabilitate
+## Pe scurt
 
 Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea externă. Defectele generice de API sau randare urmează [rutarea către responsabilul bibliotecilor](README.md).
 
@@ -32,13 +32,6 @@ Publicarea incompletă păstrează diagnosticul și materialul unic. Replay-ul i
 **Închidere:** o comparație trecută și una negativă controlată sunt auditabile exclusiv din HTML, cu ultima valoare și ownerul corect; un caz fără comparații capturate este explicit necalificat.
 
 [Publicarea ownerului](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) este amânată până la închiderea scope-ului și păstrează separat duratele originale. Costul memoriei la selecții mari și integrarea Jupiter paralelă cer calificare proprie înaintea extinderii; pilotul de istoric nu închide automat aceste frontiere.
-
-## RPT-RELEASE-SUITE-COVERAGE — agregarea corectă a livrării
-
-**P1 · responsabil adaptor și pregătirea release-ului.** Lansatoarele Maven și Gradle confruntă selecțiile rulate cu propriul HTML. Calificați predarea pentru selecțiile Gradle și E2E care încă nu au o execuție demonstrată în dosarul candidatului. [Agregarea componentelor](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live)
-
-- Confruntați invocările, identitatea sursei, receipt-ul și capturile inline. La reutilizare, verificați hash-ul și proveniența execuției originale. [Identitatea dovezii RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven)
-- Pentru datele istorice nemigrate, inventariați conținutul unic. O execuție nouă primește propria identitate, iar [criteriul comparațiilor](#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne deschis pentru valorile care nu au fost capturate.
 
 ## Validarea timpurie a checkpoint-ului
 

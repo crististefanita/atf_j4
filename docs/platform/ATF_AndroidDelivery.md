@@ -1,5 +1,7 @@
 # Contractul livrării Android
 
+## Pe scurt
+
 Livrarea leagă configurația surselor de identitatea APK-ului și de compatibilitatea instalării. Versiunea declarată în sursă, binarul produs și aplicația instalată au identități care trebuie verificate separat.
 
 ## Responsabilități
@@ -160,6 +162,7 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 - La o versiune nouă, calificați candidatul extern și arhivați numai dosarele mai vechi decât ediția imediat anterioară. Actualizați indexul și catalogul după verificarea identității; păstrați în `release` ediția curentă și imediat anterioară, inclusiv APK-urile locale ale acestora.
 - La reorganizare, mutați împreună rapoartele și fișierele asociate, confruntați hash-urile și refaceți referințele active. Căile absolute capturate și URL-urile istorice fixate pe commit își păstrează sensul original.
 - `artifacts/` și `dist/` sunt directoare retrase din rădăcina proiectului. După arhivarea și confruntarea datelor unice, eliminați directoarele vechi, inclusiv cele goale; guvernanța refuză reapariția lor.
+- Descrierea ediției începe cu o sinteză scurtă și enumeră schimbările în puncte separate. Verificați-o înainte de sigilarea manifestului.
 - Notele din GitHub Release trimit la README-ul versiunii într-un commit identificat; schimbarea navigării nu mută tag-ul și nu înlocuiește asset-ul binar.
 
 [Guvernanța dosarelor](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) respinge populația neînregistrată, acumularea versiunilor active, metadatele lipsă și identitățile divergente. Verificarea integrității fișierelor și a linkurilor completează acest contract structural.

@@ -1,6 +1,6 @@
 # Realizările Whist
 
-## Scop și model
+## Pe scurt
 
 Catalogul cuprinde 55 de obiective stabile, în 11 grupuri tematice de câte cinci, bazate pe rezultate observabile ale jocului. Fiecare grup conține două obiective Ușoare, două Medii și unul Greu; dificultatea realizării este distinctă de nivelul AI-ului.
 

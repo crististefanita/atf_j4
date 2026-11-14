@@ -1,6 +1,6 @@
 # Calificarea costului AI
 
-## Responsabilitate și domeniu
+## Pe scurt
 
 Costul deciziei se califică separat de forța strategică și de latența aplicației Android. [Colecția `cost`](../testing/ATF_Collections.md) exercită Normal, Hard și jucătorul independent pe observații publice rezultate din joc legal generat, la 2–8 cărți și patru jucători. Pregătirea folosește sesiunea reală și comenzi legale; distribuția completă rămâne în suportul testului, iar algoritmul primește mâna proprie și faptele publice.
 

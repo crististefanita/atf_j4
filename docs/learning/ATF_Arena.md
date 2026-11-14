@@ -1,5 +1,7 @@
 # Compararea strategiilor la aceeași masă
 
+## Pe scurt
+
 Arena compară politici pe partide românești complete. Protocolul declară distribuțiile, ordinea, rolurile, strategiile de bază, rotația locurilor și regulile de scor înainte de evaluare.
 
 ## Principii de comparare

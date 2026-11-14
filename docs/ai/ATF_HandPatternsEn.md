@@ -1,5 +1,7 @@
 # Honors, covers and contract safety
 
+## Pe scurt / Overview
+
 A holding provides hints conditioned on legality, remaining need and public information. [Game rules](../game/ATF_RulesEn.md) define legal actions; the catalog describes holdings with no direct runtime influence.
 
 ## From observation to hint

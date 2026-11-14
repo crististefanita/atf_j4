@@ -1,5 +1,7 @@
 # Contractul publicării Android și al componentelor
 
+## Pe scurt
+
 Publicarea oferă o prezentare autonomă a scopului, intrărilor și rezultatelor evaluate. Consumatorul furnizează semantica domeniului și înregistrările tipizate; biblioteca comună furnizează prezentarea prin API-ul public.
 
 ## Responsabilități

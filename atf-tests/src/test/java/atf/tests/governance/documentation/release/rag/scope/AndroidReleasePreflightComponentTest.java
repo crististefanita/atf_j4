@@ -168,6 +168,53 @@ class AndroidReleasePreflightComponentTest {
         AuditedAssertions.assertEquals(List.of(CONNECT), calls());
     }
 
+    @Test void theSignedFlowRefusesStaleCompiledClassesAndUnrelatedJUnit() throws Exception {
+        Path probe = scratch.resolve("bytecode-probe.ps1");
+        Files.writeString(probe, """
+                param($Helper, $Folder, $JavaHome)
+                $ErrorActionPreference = 'Stop'
+                . $Helper
+                $test = Join-Path $Folder 'atf-test-android/target/test-classes'
+                $main = Join-Path $Folder 'atf-test-android/target/classes'
+                $null = New-Item -ItemType Directory -Path $test,$main
+                $source = Join-Path $Folder 'ReleaseFlow.java'
+                Set-Content -LiteralPath $source 'class ReleaseFlow { void signedFlow() {} }'
+                & (Join-Path $JavaHome 'bin/javac.exe') '-d' $test $source
+                if ($LASTEXITCODE) { throw 'javac failed' }
+                $compiled = Join-Path $test 'ReleaseFlow.class'
+                Copy-Item -LiteralPath $compiled -Destination $main
+                $javap = Join-Path $JavaHome 'bin/javap.exe'
+                Assert-AtfCompiledMethod $javap $compiled 'signedFlow'
+                try {
+                    Assert-AtfCompiledMethod $javap $compiled 'newScenario'
+                    throw 'Expected compiled method rejection'
+                } catch { if ($_ -notmatch 'ANDROID_COMPILED_METHOD_MISSING') {throw} }
+                $before = Get-AtfAndroidClassFingerprint $Folder
+                Set-Content -LiteralPath (Join-Path $main 'ReleaseFlow.class') 'stale content'
+                if ((Get-AtfAndroidClassFingerprint $Folder) -eq $before) { throw 'changed bytecode was accepted' }
+
+                $reports = New-Item -ItemType Directory -Path (Join-Path $Folder 'junit')
+                $xml = Join-Path $reports 'TEST-Release.xml'
+                Set-Content -LiteralPath $xml '<testsuite tests="1" failures="0" errors="0" skipped="0"><testcase classname="atf.ReleaseFlow" name="signedFlow"/></testsuite>'
+                Assert-AtfSingleJUnitPass $reports 'ReleaseFlow#signedFlow'
+                try {
+                    Assert-AtfSingleJUnitPass $reports 'ReleaseFlow#different'
+                    throw 'Expected wrong JUnit identity rejection'
+                } catch { if ($_ -notmatch 'ANDROID_JUNIT_NOT_EXACT_PASS') {throw} }
+                """);
+        Path helper = GovernanceProject.locateProjectRoot().resolve("scripts/AtfAndroidMaven.ps1");
+        Path output = scratch.resolve("bytecode.log");
+        Process process = new ProcessBuilder("pwsh", "-NoProfile", "-NonInteractive", "-File", probe.toString(),
+                helper.toString(), scratch.toString(), System.getProperty("java.home"))
+                .redirectErrorStream(true).redirectOutput(output.toFile()).start();
+        try {
+            AuditedAssertions.assertTrue(process.waitFor(30, TimeUnit.SECONDS));
+            AuditedAssertions.assertEquals(0, process.exitValue(), Files.readString(output));
+        } finally {
+            if (process.isAlive()) process.destroyForcibly();
+        }
+    }
+
     private Run check(String mode, Path lease, Path receipt, String profile, String timeout) throws Exception {
         return invoke("check-android-release-device.ps1", mode, List.of(
                 "-LeasePath", lease.toString(), "-LeaseId", "fixture-lease", "-Receipt", receipt.toString(),

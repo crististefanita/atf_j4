@@ -22,8 +22,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 @AtfComponentTest
 class ReleaseRagEvaluatorComponentTest {
     private static final ObjectMapper JSON = new ObjectMapper();
-    private static final String VERSION = "1.2.0";
-    private static final String BASELINE = "1.1.0";
+    private static final String VERSION = "0.21.4";
+    private static final String BASELINE = "0.21.3";
     private static final String BASELINE_COMMIT = "c".repeat(40);
     @TempDir Path temporary;
 
@@ -70,6 +70,29 @@ class ReleaseRagEvaluatorComponentTest {
             AuditedAssertions.assertTrue(citations.findValuesAsText("path").contains("$report.qualificationPlan.contentBase64"));
             AuditedAssertions.assertTrue(citations.findValuesAsText("embedded").contains("true"));
         }
+    }
+
+    @Test void aDamagedReportRequestsOnlyItsOwnFlow() throws Exception {
+        Fixture fixture = fixture();
+        selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");
+        bindDisposableUserBoundary(fixture, true);
+        Path report = fixture.candidate().resolve("reports/e2e/signed-release-bidding/report.html");
+        Files.writeString(report, "<html><body><img src=\"data:image/png;base64,iVBORw0KGgo=\"></body></html>");
+        Path receiptFile = report.resolveSibling("execution.json");
+        ObjectNode receipt = (ObjectNode) JSON.readTree(receiptFile.toFile());
+        receipt.put("reportSha256", hash(report));
+        JSON.writeValue(receiptFile.toFile(), receipt);
+        refreshPayload(fixture.candidate());
+
+        AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "PAYLOAD_INTEGRITY"));
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        var decisions = verdict.at("/e2e/decisions");
+        AuditedAssertions.assertEquals("RUN", decisions.get(0).path("decision").asText());
+        AuditedAssertions.assertEquals("INVALID_PNG", decisions.get(0).path("reason").asText());
+        AuditedAssertions.assertEquals("REUSE", decisions.get(1).path("decision").asText());
+        AuditedAssertions.assertEquals("signed-release-auto-game", decisions.get(1).path("group").asText());
     }
 
     @Test void disposableAndroidUserRequiresHashBoundPreparationAndCleanupReceipts() throws Exception {
@@ -150,6 +173,12 @@ class ReleaseRagEvaluatorComponentTest {
         ObjectNode receipt = (ObjectNode) JSON.readTree(cleanup.toFile());
         receipt.put("originalPackageStatePreserved", false);
         JSON.writeValue(cleanup.toFile(), receipt);
+        for (String flow : List.of("signed-release-bidding", "signed-release-auto-game")) {
+            Path execution = fixture.candidate().resolve("reports/e2e").resolve(flow).resolve("execution.json");
+            ObjectNode document = (ObjectNode) JSON.readTree(execution.toFile());
+            ((ObjectNode) document.path("dataBoundary")).put("cleanupReceiptSha256", hash(cleanup));
+            JSON.writeValue(execution.toFile(), document);
+        }
         refreshPayload(fixture.candidate());
 
         AuditedAssertions.assertEquals(2, evaluate(fixture, fixture.output()));
@@ -640,7 +669,7 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertTrue(details(verdict, "SOURCE_SNAPSHOT").stream().anyMatch(value -> value.contains("src/Unlisted.java")));
     }
 
-    private Fixture fixture() throws Exception { return fixture("# Whist Lab\n\n[Descarcă](release/1.2.0/WhistLab-1.2.0.apk)\n"); }
+    private Fixture fixture() throws Exception { return fixture("# Whist Lab\n\n[Descarcă](release/0.21.4/WhistLab-0.21.4.apk)\n"); }
 
     private Fixture fixture(String readmeText) throws Exception {
         Path project = Files.createDirectories(temporary.resolve("project"));
@@ -825,7 +854,7 @@ class ReleaseRagEvaluatorComponentTest {
         String directory = "reports/e2e/" + name + "/";
         Path report = candidate.resolve(directory + "report.html");
         Files.createDirectories(report.getParent());
-        Files.writeString(report, "<!doctype html><html><body><img src=\"data:image/png;base64,iVBORw0KGgo=\"></body></html>");
+        Files.writeString(report, "<!doctype html><html><body><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=\"></body></html>");
         ObjectNode release = (ObjectNode) manifest.path("release");
         ObjectNode source = (ObjectNode) manifest.path("source");
         ObjectNode receipt = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "android-signed-release-e2e")

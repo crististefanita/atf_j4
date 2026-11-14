@@ -1,6 +1,6 @@
 # Display verificat prin componente
 
-## Responsabilitate
+## Pe scurt
 
 Colecția offline verifică politicile de dimensionare, decodarea observației Android și oracolele geometrice sau raster. Intrările simulate sunt explicite; acceptanța versiunii instalate păstrează o verificare nativă restrânsă.
 

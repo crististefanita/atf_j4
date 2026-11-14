@@ -1,5 +1,7 @@
 # Onoruri, acoperiri și siguranța contractului
 
+## Pe scurt
+
 O combinație de cărți oferă indicii condiționate de legalitate, necesar și informația publică. [Regulile jocului](../game/ATF_RulesRo.md) stabilesc acțiunile permise; catalogul descrie mâna, fără influență runtime directă.
 
 ## De la observație la indiciu

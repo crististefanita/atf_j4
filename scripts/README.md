@@ -37,6 +37,7 @@ Un lansator alege modulele, parametrii și resursele. Motorul și laboratorul de
 | Reguli și evaluare offline | [run-whist-collection.ps1](run-whist-collection.ps1), cu [colecții și precondiții](../docs/testing/ATF_Collections.md). |
 | Partide și perspective controlate | [Laboratorul AI](../whist-lab-app/ai-lab/README.md), cu lansatoarele `run-offline-*`. |
 | Calitatea proiectului | [run-atf-governance.ps1](run-atf-governance.ps1), cu [perimetru explicit](../docs/governance/README.md). |
+| Calificare Android semnată | [run-whist-signed-e2e.ps1](run-whist-signed-e2e.ps1) verifică dovada per grup și pregătește Maven înaintea rezervării. [Reluare și import](../docs/testing/ATF_ReleaseQualification.md#rularea-și-reluarea-unui-flux-pe-apk-semnat) |
 | Scenarii pe dispozitiv | [Ghidul Android](../docs/testing/ATF_Android.md) și [matricea de ecrane](../docs/testing/ATF_Display.md). |
 
 ## Unde se află uneltele

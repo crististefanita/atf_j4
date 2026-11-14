@@ -1,5 +1,7 @@
 # Reguli, YAML-uri și ponderi dependente de context
 
+## Pe scurt
+
 O regulă definește condiția, acțiunea și limitele ei. O pondere are sens numai împreună cu caracteristica măsurată, unitatea, consumatorul din cod și criteriul după care este calificată.
 
 ## Tipuri de configurare

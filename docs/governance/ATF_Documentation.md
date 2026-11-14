@@ -1,5 +1,7 @@
 # Bune practici pentru documentație
 
+## Pe scurt
+
 Documentația explică un contract, proprietarul lui și modul de folosire sau verificare. Codul, configurația și testele live stabilesc comportamentul; propunerile și limitele încă necalificate sunt marcate explicit.
 
 ## Responsabilități
@@ -70,7 +72,7 @@ Confruntați rolurile din hartă cu [reactorul Maven](../../pom.xml), [modulele 
 - Toate README-urile sunt în română cu diacritice; ghidurile bilingve de reguli au limba declarată în nume.
 - Titlurile, tabelele, diagramele și rezumatele pliabile folosesc limba documentului.
 - Identificatorii API, comenzile și etichetele originale citate își păstrează forma exactă.
-- Folosiți un singur titlu principal, secțiuni progresive și liste cu marcatorul `-`.
+- Folosiți un singur titlu principal, o secțiune `Pe scurt` pentru orientare, secțiuni progresive și liste cu marcatorul `-`.
 - Un paragraf vizibil are cel mult trei propoziții; responsabilitățile și comparațiile se exprimă prin forma care le face ușor de parcurs.
 - Fonturile și culorile aparțin aplicației care afișează Markdown; documentele folosesc structură semantică, fără CSS local.
 - Fiecare bloc de cod are limbajul declarat, iar fiecare bloc pliabil are rezumat explicit și delimitare echilibrată.

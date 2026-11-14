@@ -288,18 +288,48 @@ $device = @{
 
 - `android-preflight.json` păstrează rezultatul și cauza refuzului. Un refuz rămâne `BLOCKED`; un preflight trecut permite verificarea APK-ului și E2E.
 
+### Reluarea unei calificări
+
+| Dovadă | Când se reutilizează | Când se repetă |
+|---|---|---|
+| Build și semnare | APK-ul și manifestul de intrări sunt identice, iar verificările de pachet și certificat corespund. | Schimbarea unei intrări de build cere un binar nou și verificarea impactului. |
+| Componente | Folosiți dosarul publicat `reports/component` cu receipt-urile și originea lor, prin `-ReuseFrom`. Verificați deciziile pe grup. | Reexecutați grupurile afectate sau invalide. Guvernanța verifică și inventarul release-ului citit. |
+| E2E semnat | Păstrați HTML-ul, verdictul, capturile, APK-ul, profilul și dovada de izolare din execuția originală. Confruntați și diferența scenariului înainte de reutilizare. | Rerulați fluxul afectat dacă s-au schimbat binarul, contractul, profilul ori scenariul relevant sau dacă lipsește o dovadă obligatorie. |
+
+Pregătiți un staging propriu și cache-ul Maven înainte să rezervați dispozitivul. Verificați proveniența claselor compilate și validați captura și raportul la închiderea fiecărui flux. Păstrați referințele la loguri în dosarul extern și chitanțele originale de teardown.
+
+### Rularea și reluarea unui flux pe APK semnat
+
+- Alegeți grupurile din selecția calculată de RAG. Pregătiți un JSON extern cu `releaseVersion`, `groups` și `executionProfile`. Profilul conține `api` (număr), `displayProfile` și `responsiveProfiles` (matricea portrait, separată prin virgule).
+- Folosiți aceeași valoare la `e2e.executionProfile` în planul RAG. Din 0.21.5, execuțiile E2E incluse în RAG cer acest profil și chitanțe v2. Dovezile v1 păstrează contractul ediției publicate.
+
+```powershell
+.\scripts\run-whist-signed-e2e.ps1 -CandidateDir $CandidateDir `
+  -SourceRoot $SourceSnapshotDir -SelectionFile $AndroidSelectionJson `
+  -RunRoot $FreshRunRoot -Group $SelectedGroup -ApkPath $ExternalApk
+
+node .\atf-tests\tools\apply-android-e2e.mjs $CandidateDir $FreshRunRoot
+```
+
+- Lansatorul scrie `e2e-reuse.json` înainte de Maven și rezervare. O dovadă compatibilă produce `REUSE` și încheie comanda.
+- Pentru `RUN`, Maven compilează în staging cu depozit privat. Launcherul confruntă perechile JAR/POM și metoda selectată din clasele compilate, apoi folosește direct Surefire pentru o singură metodă.
+- Opțiunea `-PrepareOnly` se oprește după verificarea compilării, fără Android.
+
+- Execuția verifică exact cazul JUnit, trace-ul încheiat cu PASS și fiecare captură originală, inclusiv octeții din Extent. Verifică și chitanța de restaurare.
+- Importul verifică din nou dosarul acceptat și actualizează manifestul candidatului `PREPARED`. Reluați doar grupurile cu `RUN`; importul le lasă celorlalte raportul și chitanța originale. După import rulați evaluatorul pentru dosarul întreg.
+
 ### Acceptanța APK-ului semnat
 
-Smoke-ul [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) verifică pachetul instalat, pagina inițială și configurarea fără pornirea altei partide. [Acceptanța licitației](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) are un domeniu separat: un prefix real de Whist românesc, recomandare, alegere manuală, dialog și contract restaurat.
+- Smoke-ul [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) verifică pachetul instalat, pagina inițială și configurarea fără pornirea altei partide. [Acceptanța licitației](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) are un domeniu separat: un prefix real de Whist românesc, recomandare, alegere manuală, dialog și contract restaurat.
 
 | Selecție | Precondiție suplimentară | Criteriu de închidere |
 |---|---|---|
 | Home și configurare | APK-ul semnat instalat și hash confruntat | Controale vizibile, configurare accesibilă și revenire la pagina inițială. |
-| Interfață comună | Backup verificat înaintea editării profilului și același APK identificat | Limbă RO/EN, anulare fără salvare, nume păstrat între limbi și preferințe restabilite după relansare. |
-| Licitație și restaurare | Copie verificată a datelor, rezervare exclusivă și restaurare obligatorie | Recomandarea legală rămâne neconfirmată; alegerea manuală supraviețuiește dialogului, iar contractul confirmat și scorurile publice se păstrează după oprirea procesului. |
+| Interfață comună | Utilizator secundar temporar sau backup verificat, cu același APK identificat | Limbă RO/EN, anulare fără salvare, nume păstrat între limbi și preferințe restabilite după relansare. |
+| Licitație și restaurare | Rezervare exclusivă și chitanță de izolare, cu teardown verificat | Recomandarea legală rămâne neconfirmată; alegerea manuală supraviețuiește dialogului, iar contractul confirmat și scorurile publice se păstrează după oprirea procesului. |
 | Istoric și afișaj | Profil și intrări explicite, cu aceeași identitate a binarului verificat | Coloane, marcaje și accesul la conținut conform diferenței de cod; fixture-urile Debug se disting de execuția APK-ului Release. |
 
-Verificați separat identitatea APK-ului și copia datelor înaintea primei schimbări a aplicației. Un E2E neexecutat rămâne `PENDING`. Auditul static verifică fișierul HTML, iar revizia interactivă verifică accesul și randarea lui.
+Verificați identitatea APK-ului și limita de izolare a datelor înaintea primei schimbări a aplicației. Un E2E neexecutat rămâne `PENDING`. Auditul static verifică fișierul HTML, iar revizia interactivă verifică accesul și randarea lui.
 
 Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Maven privat:
 
@@ -310,7 +340,7 @@ Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Ma
 ```
 
 - **Istoric:** raportul suitei selectate conține toate comparațiile capturate; `WORKING_STATE.json` păstrează calea HTML-ului și selecția.
-- **Display:** HTML-ul acoperă pilotul de istoric, iar celelalte componente păstrează JUnit. Un raport al subsetului nu atribuie auditul comparațiilor întregii selecții.
+- **Display:** În lansatorul responsive, HTML-ul subsetului de istoric are populație proprie. Pentru raportul complet de componente și proveniență folosiți lansatorul de agregare.
 - **Guvernanță:** folosiți [lansatorul izolat](../governance/README.md#rulare-izolată) și controalele documentelor, frontierelor și livrării afectate. O modificare concurentă invalidează certificarea acelei copii.
 - **Promovare:** un rezultat trecut aparține surselor executate. Sursele schimbate ulterior cer evaluarea diferenței și reverificarea relevantă, înaintea build-ului final.
 

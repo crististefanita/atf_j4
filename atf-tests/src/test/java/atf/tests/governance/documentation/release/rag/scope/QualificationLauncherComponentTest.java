@@ -109,7 +109,8 @@ class QualificationLauncherComponentTest {
         write(source, "pom.xml", "<project/>");
         Path real = GovernanceProject.locateProjectRoot();
         for (String file : List.of("check-release-artifacts.mjs", "evaluate-release-rag.mjs",
-                "release-test-scope.mjs", "component-evidence-scope.mjs", "github-release-retention.mjs")) {
+                "release-test-scope.mjs", "component-evidence-scope.mjs", "github-release-retention.mjs",
+                "android-e2e-contract.mjs", "android-e2e-evidence.mjs", "android-e2e-images.mjs")) {
             String relative = "atf-tests/tools/" + file;
             Path target = source.resolve(relative);
             Files.createDirectories(target.getParent());

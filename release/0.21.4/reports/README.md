@@ -31,4 +31,4 @@ Rapoartele Extent urmăresc rezultatele componentelor și acceptanța headless a
 | signed-release-home-profile | [Extent](e2e/signed-release-home-profile/report.html) |
 | signed-release-smoke | [Extent](e2e/signed-release-smoke/report.html) |
 
-[Manifestul versiunii](../release-validation.json) · [Strategia de testare](../../../docs/testing/README.md)
+[Manifestul versiunii](../release-validation.json) · [Catalogul livrărilor](../../README.md) · [Strategia de testare](../../../docs/testing/README.md)

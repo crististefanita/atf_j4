@@ -2,7 +2,11 @@
 
 ## Pe scurt
 
-Ediție Android de test. Izolează instalarea și datele E2E în dosarul extern al rulării. Separă fixture-urile de afișare debug de APK-ul livrat. Verifică profilul, realizările, istoricul și fluxurile de joc pe APK-ul semnat.
+Ediție Android de test, cu fluxurile verificate pe APK-ul semnat.
+
+- Instalarea și datele E2E folosesc dosarul extern al rulării.
+- APK-ul publicat folosește sursele de producție. Scenariile cu fixture-uri aparțin buildului Debug.
+- Acceptanța acoperă profilul, realizările, istoricul și fluxurile de joc.
 
 ## Descărcare
 

@@ -211,14 +211,16 @@
           }
         }
       }
-    }
+    },
+    "schemaVersion": 2,
+    "uniqueJunitInvocations": 1287
   },
   "integrity": {
     "files": [
       {
         "path": "README.md",
-        "bytes": 822,
-        "sha256": "393452bae94113c13d79673fb7695c7109625c26e6ec97ae346e1bab7b978543"
+        "bytes": 904,
+        "sha256": "1ae1043956d01fe779c47d1b2f6fe0b88c0284f351dab1df6bd8db805e9fae76"
       },
       {
         "path": "WhistLab-0.21.4.apk",
@@ -247,8 +249,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 1830,
-        "sha256": "fdbf82f35477aab5932a13fc84b6632a9f730d570bb065b549ce61b192f786eb"
+        "bytes": 1874,
+        "sha256": "26d76e0e50971e00ecab933658a9b03fd917c7ac72b34c354a481aaeedd4ef53"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -555,6 +557,9 @@
         "bytes": 109452,
         "sha256": "126b82851153f83b3e3b8f8d33d598fd96052d3304aebb5993f5b7a6c7e6f4ec"
       }
-    ]
+    ],
+    "schemaVersion": 1,
+    "kind": "OBSERVED_PAYLOAD_HASHES",
+    "observedUtc": "2026-11-14T20:44:35.3793878Z"
   }
 }

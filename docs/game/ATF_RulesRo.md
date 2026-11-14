@@ -1,5 +1,9 @@
 # AJUTOR — CUM SE JOACĂ
 
+## Pe scurt
+
+Ghidul explică Whist românesc în Whist Lab, de la licitare la scorul final.
+
 ## Scopul jocului
 
 - În Whist românesc trebuie să câștigi exact câte levate ai licitat.

@@ -1,6 +1,6 @@
 # Retenția rapoartelor și a release-urilor
 
-## Responsabilitate
+## Pe scurt
 
 Directorul de lucru păstrează ediția curentă și imediat anterioară, fiecare cu propriul APK calificat și dovezi. Istoricul mai vechi se arhivează în afara catalogului activ; pregătirea locală nu publică și nu șterge release-uri.
 
@@ -86,6 +86,12 @@ Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezen
 - Ambele tranziții înregistrează `source.sourceCommit`, înlocuiesc `evidenceUrlTemplate` cu `evidenceUrl` și cer note finale cu APK-ul și checksum-ul canalului publicat.
 
 `versionName` identifică ediția cerută, iar `versionCode` crește la fiecare APK livrat. După resetarea numerotării vizibile, [codul Android](https://developer.android.com/studio/publish/versioning) și certificatul de semnare păstrează calea de actualizare; promovarea GitHub se marchează explicit drept ultimul release.
+
+## Curățarea locală după livrare
+
+După verdictul RAG postpublicare și descărcarea verificată, comparați hash-urile copiilor locale cu dosarul publicat. Eliminați staging-ul de build, cache-urile private, copiile APK și rapoartele intermediare care se pot reface din intrările păstrate. Extent-ul canonic, checksum-ul și chitanțele eligibile se preiau din dosarul publicat.
+
+Verificați rezervarea Android și procesele înainte de curățare. Păstrați corpusul activ și diagnosticul unic care explică o problemă deschisă. O dovadă încă necesară pentru o reluare rămâne până când raportul acceptat și legăturile din manifest au fost confruntate. [Predarea dovezilor](../reporting/ATF_Handoff.md)
 
 ## Resetarea GitHub
 

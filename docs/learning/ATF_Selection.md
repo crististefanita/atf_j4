@@ -1,5 +1,7 @@
 # Selecția focalizată pentru învățare
 
+## Pe scurt
+
 Selecția focalizată reduce volumul de analiză la jocurile care aduc lecții distincte despre licitare și carte. Algoritmul, criteriile și validatoarele aparțin proiectului; selecția concretă și rezultatele ei sunt date externe.
 
 ## Mecanisme și stadiu
