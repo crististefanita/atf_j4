@@ -1,6 +1,6 @@
 package atf.tests.governance.source;
 
-import atf.tests.governance.support.AtfJavaSourceInventory;
+import atf.tests.jvm.AtfJavaSourceInventory;
 import com.sun.source.tree.Tree;
 import java.nio.file.*;
 import java.util.*;

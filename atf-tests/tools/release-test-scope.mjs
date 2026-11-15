@@ -1,4 +1,4 @@
-import {componentEvidenceScope, changedInputs, nonBuildDocumentation} from './component-evidence-scope.mjs';
+import {componentEvidenceScope, changedInputs, nonBuildDocumentation, isStandaloneGovernanceLauncher} from './component-evidence-scope.mjs';
 
 import {androidFlows} from './android-e2e-contract.mjs';
 
@@ -38,7 +38,7 @@ function classify(file, metadataOnly, hasRulesComponents) {
   for (const [rule, pattern, e2eGroups] of rules) {
     if (pattern.test(file)) return {rule, e2eGroups};
   }
-  if (nonProduct.test(file) || testConfiguration.test(file) || testLaunchers.test(file)) {
+  if (nonProduct.test(file) || testConfiguration.test(file) || testLaunchers.test(file) || isStandaloneGovernanceLauncher(file)) {
     return {rule: 'non-runtime', e2eGroups: []};
   }
   return {rule: 'unclassified-or-shared-runtime', e2eGroups: allFlows};

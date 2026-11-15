@@ -37,6 +37,17 @@ test('a qualification policy edit affects governance and leaves the game build e
   assert.deepEqual(selection.requiredE2eGroups, []);
 });
 
+test('standalone governance launchers rerun only the offline governance component', () => {
+  const paths = ['scripts/AtfStandaloneJava.ps1', 'scripts/run-jvm-inventory.ps1', 'scripts/run-documentation-governance.ps1'];
+  const candidate = new Map(paths.map(file => [file, 'new']));
+  const selection = deriveReleaseTestScope(new Map(), candidate, groups);
+  assert.equal(selection.kind, 'MAINTENANCE');
+  assert.deepEqual(selection.runComponentGroups, ['atf-tests']);
+  assert.deepEqual(selection.requiredE2eGroups, []);
+  assert.ok(selection.changes.every(change => change.rule === 'non-runtime'));
+});
+
+
 test('unclassified shared inputs and runtime assets named README retain conservative E2E', () => {
   for (const file of ['config/new-runtime.json', 'whist-lab-app/app/src/main/assets/README.md', 'docs/rules.json']) {
     const selection = deriveReleaseTestScope(new Map([[file, 'old']]), new Map(), groups);

@@ -4,6 +4,8 @@ import atf.testkit.assertions.AuditedAssertions;
 
 import atf.testkit.AtfComponentTest;
 import org.junit.jupiter.api.Test;
+import atf.tests.jvm.AtfJavaSourceInventory;
+import atf.tests.jvm.JvmSourceInventory;
 import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,7 +32,7 @@ class SourceInventoryContractTest {
         AuditedAssertions.assertThrows(IOException.class, () -> AtfJavaSourceInventory.allSources(root));
         Files.writeString(pom, "<project><build><sourceDirectory>${external}</sourceDirectory></build></project>");
         AuditedAssertions.assertThrows(IOException.class, () -> AtfJavaSourceInventory.allSources(root));
-        AuditedAssertions.assertThrows(IOException.class, () -> GovernanceProject.safeDirectory(root, "../outside"));
+        AuditedAssertions.assertThrows(IOException.class, () -> JvmSourceInventory.safeDirectory(root, "../outside"));
     }
 
     private static Path write(Path root, String relative, String text) throws IOException {

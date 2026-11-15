@@ -38,6 +38,26 @@ Inventarul include rădăcinile Maven declarate și rădăcinile JVM suplimentar
 
 [Contractele inventarului](../../atf-tests/src/test/java/atf/tests/governance/support/SourceInventoryContractTest.java) verifică atât sursa validă, cât și configurațiile care ar pierde identitatea sau ar schimba proprietarul.
 
+## Inventar JVM prin CLI
+
+Porniți [inventarul JVM](../../scripts/run-jvm-inventory.ps1) din checkout-ul care furnizează unealta. Parametrul `-ProjectRoot` indică proiectul inspectat. `-ScratchRoot` indică un director existent în afara ambelor checkout-uri.
+
+Sunt necesare PowerShell 7, JDK 21 și cache-ul local Jackson.
+
+```powershell
+.\scripts\run-jvm-inventory.ps1 -ProjectRoot $checkout -ScratchRoot $scratch
+```
+
+| Intrare sau verdict | Contract |
+|---|---|
+| Maven | `mavenModules` coincide cu modulele reactorului și cu POM-urile descoperite. O rădăcină implicită absentă poate fi omisă. O rădăcină configurată explicit trebuie să existe. |
+| Gradle și alte seturi | `additionalSourceRoots` declară modulul, calea relativă canonică și rolul `test`. Rădăcinile din afara modulului și suprapunerile sunt refuzate inclusiv când directoarele sunt goale. |
+| Excepții | `reviewedPackages` cere inventarul exact, motivul și acțiunea. `productionBoundaryAdapters` cere fișierul de producție exact, motivul și referințele interzise permise care încă există. |
+| Ieșire `0` sau `2` | JSON cu versiune de schemă, module, rădăcini, roluri, număr de fișiere și pachete, excepții declarate și diagnostice. `0` indică succes, iar `2` indică abateri în inventarul complet. |
+| Ieșire `1` | Intrarea sau perimetrul sunt invalide. Detaliul este scris pe stderr. |
+
+CLI-ul și suita aplică aceleași reguli de cale a pachetului, importuri, coeziune și dependențe. [Probele de componentă](../../atf-tests/src/test/java/atf/tests/governance/support/JvmInventoryCliComponentTest.java) verifică inventarul și diagnosticele pe un proiect separat. Compilarea reactorului, stratificarea testelor și guvernanța documentară au verificări proprii.
+
 ## Reguli executabile
 
 | Zonă | Contract | Limită |

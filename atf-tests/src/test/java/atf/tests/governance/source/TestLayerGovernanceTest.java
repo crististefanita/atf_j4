@@ -3,7 +3,7 @@ package atf.tests.governance.source;
 import atf.testkit.assertions.AuditedAssertions;
 
 import atf.testkit.AtfComponentTest;
-import atf.tests.governance.support.AtfJavaSourceInventory;
+import atf.tests.jvm.AtfJavaSourceInventory;
 import atf.tests.governance.support.GovernanceProject;
 import org.junit.jupiter.api.Test;
 import java.nio.file.Files;

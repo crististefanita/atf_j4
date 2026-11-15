@@ -1,4 +1,4 @@
-package atf.tests.governance.support;
+package atf.tests.jvm;
 
 import org.w3c.dom.Element;
 
@@ -38,12 +38,17 @@ public final class AtfJavaSourceInventory {
     public record SourceRoot(Path module, Path directory, boolean test) { }
 
     /** Retains the declared root and owning POM instead of inferring them from each file path. */
-    public static List<SourceRoot> roots(Path project) throws Exception {
-        Path root = project.toAbsolutePath().normalize();
+    public static List<SourceRoot> roots(Path project) throws IOException {
+        Path root = project.toRealPath();
+        return roots(root, poms(root));
+    }
+
+    static List<SourceRoot> roots(Path root, List<Path> poms) throws IOException {
         List<SourceRoot> result = new ArrayList<>();
-        for (Path pom : pomFiles(root)) {
+        for (Path pom : poms) {
+            if (!pom.toRealPath().equals(pom)) throw new IOException("GOV-SOURCE-ESCAPE: " + root.relativize(pom));
             Path module = pom.getParent();
-            Element build = configuredBuild(pom);
+            Element build = child(readPom(pom), "build");
             addRoot(result, pom, module, build, false, "sourceDirectory", "src/main/java");
             addRoot(result, pom, module, build, true, "testSourceDirectory", "src/test/java");
         }
@@ -57,11 +62,11 @@ public final class AtfJavaSourceInventory {
         Path source = module.resolve(directory).normalize();
         if (directory.isBlank() || Path.of(directory).isAbsolute() || !source.startsWith(module)
                 || source.equals(module) || directory.contains("${")) {
-            throw new IOException("Invalid " + name + " in " + pom + ": " + directory);
+            throw new IOException("GOV-SOURCE-ROOT: invalid " + name + " in " + pom + ": " + directory);
         }
-        if (!Files.exists(source)) return;
-        if (!Files.isDirectory(source) || !source.toRealPath().startsWith(module.toRealPath()))
-            throw new IOException("Unsafe " + name + " in " + pom + ": " + directory);
+        if (configured == null && !Files.exists(source)) return;
+        if (!Files.isDirectory(source) || !source.toRealPath().equals(source))
+            throw new IOException("GOV-SOURCE-ROOT: missing or unsafe " + name + " in " + pom + ": " + directory);
         roots.add(new SourceRoot(module, source, test));
     }
 
@@ -74,22 +79,42 @@ public final class AtfJavaSourceInventory {
     public static List<Path> files(Path source) throws IOException {
         Path physicalRoot = source.toRealPath();
         try (var files = Files.walk(source)) {
-            List<Path> result = files.filter(Files::isRegularFile)
+            List<Path> paths = files.sorted().toList();
+            for (Path path : paths) if (Files.isSymbolicLink(path))
+                throw new IOException("GOV-SOURCE-ESCAPE: symbolic link " + path);
+            List<Path> result = paths.stream().filter(Files::isRegularFile)
                     .filter(file -> file.toString().endsWith(".java")).sorted().toList();
-            for (Path file : result) if (!file.toRealPath().startsWith(physicalRoot))
+            for (Path file : result) if (!file.toRealPath().equals(physicalRoot.resolve(source.relativize(file))))
                 throw new IOException("GOV-SOURCE-ESCAPE: " + file);
             return result;
         }
     }
 
-    private static Element configuredBuild(Path pom) throws Exception {
-        var factory = DocumentBuilderFactory.newInstance();
-        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
-        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        Element project = factory.newDocumentBuilder().parse(pom.toFile()).getDocumentElement();
-        return child(project, "build");
+    private static Element readPom(Path pom) throws IOException {
+        try {
+            var factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            Element document = factory.newDocumentBuilder().parse(pom.toFile()).getDocumentElement();
+            if (!document.getTagName().equals("project")) throw new IOException("expected a Maven project element");
+            return document;
+        } catch (javax.xml.parsers.ParserConfigurationException | org.xml.sax.SAXException | IOException invalid) {
+            throw new IOException("GOV-SOURCE-POM: " + pom + ": " + invalid.getMessage(), invalid);
+        }
+    }
+
+    static List<String> declaredModules(Path pom) throws IOException {
+        var modules = child(readPom(pom), "modules");
+        if (modules == null) return List.of();
+        var declarations = modules.getChildNodes();
+        var result = new ArrayList<String>();
+        for (int i = 0; i < declarations.getLength(); i++) {
+            if (declarations.item(i) instanceof Element entry && entry.getTagName().equals("module"))
+                result.add(entry.getTextContent().strip());
+        }
+        return List.copyOf(result);
     }
 
     private static Element child(Element parent, String name) {
@@ -100,7 +125,7 @@ public final class AtfJavaSourceInventory {
         return null;
     }
 
-    private static List<Path> pomFiles(Path root) throws IOException {
+    static List<Path> poms(Path root) throws IOException {
         var result = new ArrayList<Path>();
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attributes) {

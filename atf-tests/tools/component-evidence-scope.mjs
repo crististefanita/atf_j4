@@ -12,6 +12,12 @@ const androidDeviceHarness = new Set([
   disposableAndroidUserRunner, 'scripts/run-complete-match.ps1', 'scripts/run-deep-tests.ps1',
   'scripts/run-whist-ai-validation.ps1', 'scripts/run-whist-responsive-sanity.ps1'
 ]);
+const standaloneGovernanceLaunchers = new Set([
+  'scripts/AtfStandaloneJava.ps1',
+  'scripts/run-documentation-governance.ps1',
+  'scripts/run-jvm-inventory.ps1'
+]);
+export const isStandaloneGovernanceLauncher = file => standaloneGovernanceLaunchers.has(file);
 const releaseTiming = /^scripts\/(?:AtfQualificationTiming|Measure-AtfReleaseCommand)\.ps1$/;
 const releaseRulesDocs = /^docs\/game\/ATF_Rules(?:Ro|En)\.md$/;
 const androidUi = file => file.startsWith('whist-lab-app/app/')
@@ -41,6 +47,6 @@ export function componentEvidenceScope(group, releaseInputs, executionInputs) {
   const changed = changedInputs(releaseInputs, executionInputs);
   const outsideSuite = independentChange.get(group) ?? (() => false);
   const affected = changed.filter(file => !(outsideSuite(file)
-    || (independentChange.has(group) && (file === ragPolicy || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
+    || (independentChange.has(group) && (file === ragPolicy || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
   return {decision: affected.length ? 'RUN' : changed.length ? 'REUSE' : 'MATCH', changed, affected};
 }
