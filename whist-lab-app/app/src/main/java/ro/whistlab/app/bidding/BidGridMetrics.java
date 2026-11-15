@@ -43,10 +43,18 @@ public final class BidGridMetrics {
 
     /** Keeps bid choices and submission inside the center band; hand automation belongs in the header. */
     public static ActionLayout actionLayout(int optionCount, int tableWidthDp, float fontScale) {
+        return actionLayout(optionCount, tableWidthDp, fontScale, false);
+    }
+
+    public static ActionLayout actionLayout(int optionCount, int tableWidthDp, float fontScale, boolean useStrip) {
         if (optionCount < 0 || tableWidthDp < 1 || !Float.isFinite(fontScale) || fontScale <= 0) {
             throw new IllegalArgumentException("Bid controls need a valid viewport and font scale");
         }
 
+        if (useStrip) {
+            int choiceHeight = optionCount == 0 ? 0 : CHOICE_ROW_DP;
+            return new ActionLayout(tableWidthDp, choiceHeight + SUBMIT_TARGET_DP);
+        }
         int columns = columnCount(optionCount, tableWidthDp);
         int gridWidth = Math.max(132, Math.min(optionCount, columns) * 52);
         int centerWidth = Math.max(gridWidth, SUBMIT_WIDTH_DP);

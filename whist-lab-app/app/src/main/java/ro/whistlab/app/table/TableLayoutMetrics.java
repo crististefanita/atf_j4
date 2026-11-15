@@ -6,7 +6,8 @@ import ro.whistlab.core.rules.GameRules;
 
 /** Seat dimensions; played-card sizing belongs to TrickCardMetrics. */
 final class TableLayoutMetrics {
-    record CenterReservation(int biddingHeightDp, int playingHeightDp, int reservedHeightDp) { }
+    record CenterReservation(int biddingHeightDp, int playingHeightDp, int reservedHeightDp,
+                             boolean useBidStrip) { }
     static final int TRUMP_WIDTH_DP = 57;
     static final int TRUMP_MIN_HEIGHT_DP = 48;
     static final int TRUMP_PADDING_DP = 4;
@@ -34,9 +35,11 @@ final class TableLayoutMetrics {
         if (players < 3 || players > 6 || handSize < 1 || handSize > 17) {
             throw new IllegalArgumentException("A table reservation needs 3–6 players and a 1–17 card hand");
         }
-        int biddingHeight = BidGridMetrics.actionLayout(handSize + 1, tableWidthDp, fontScale).centerHeightDp();
+        boolean useBidStrip = viewport.isCompact() && handSize > 13;
+        int biddingHeight = BidGridMetrics.actionLayout(handSize + 1, tableWidthDp, fontScale, useBidStrip)
+                .centerHeightDp();
         int playingHeight = TrickCardMetrics.forTable(players, tableWidthDp, fontScale, viewport).centerHeightDp();
-        return new CenterReservation(biddingHeight, playingHeight, Math.max(biddingHeight, playingHeight));
+        return new CenterReservation(biddingHeight, playingHeight, Math.max(biddingHeight, playingHeight), useBidStrip);
     }
 
     /** Reserves the same center band for every hand in the selected match schedule. */

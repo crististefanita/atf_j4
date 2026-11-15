@@ -192,14 +192,16 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
                         "mode", mode, "schedule", schedule, "widthDp", width,
                         "heightDp", height, "fontScale", fontScale,
                         "largestHand", largestHand, "reservation", reservation, "baseline", baseline);
-                assertEquals("The reservation covers the largest bid grid in the full schedule",
-                        BidGridMetrics.actionLayout(largestHand + 1, width, fontScale).centerHeightDp(),
-                        reservation.biddingHeightDp());
+                assertEquals("The reservation covers the largest bid controls in the full schedule",
+                        BidGridMetrics.actionLayout(largestHand + 1, width, fontScale, reservation.useBidStrip())
+                                .centerHeightDp(), reservation.biddingHeightDp());
                 assertEquals("The reservation covers the current table's complete trick",
                         trick.centerHeightDp(), reservation.playingHeightDp());
 
                 for (int handSize : schedule) {
-                    var bids = BidGridMetrics.actionLayout(handSize + 1, width, fontScale);
+                    var bids = BidGridMetrics.actionLayout(handSize + 1, width, fontScale, reservation.useBidStrip());
+                    assertTrue("The active choices fit the phase-independent center band",
+                            bids.centerHeightDp() <= reservation.reservedHeightDp());
                     var bidding = TableGeometry.arrangeDisplay(width, boardHeight, 3, seatWidth, seatHeight,
                             bids.centerWidthDp(), reservation.reservedHeightDp(), gap, true,
                             TableGeometry.CenterAlignment.TOWARD_HUMAN,
@@ -269,13 +271,46 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
         }
     }
 
+    @Test public void maximumHandFitsBelowTheBidControlsAt720By1280() {
+        float density = 2.25f;
+        int boardWidthDp = 280;
+        int contentBelowHeaderPx = 1167 - 288;
+        var viewport = new TableViewportPolicy(494);
+        var reservation = TableLayoutMetrics.matchCenterReservation(GameMode.DOWN_AND_UP,
+                3, boardWidthDp, 1f, viewport);
+        int seatHeightPx = 160;
+        int gapPx = Math.round(viewport.regionGapDp() * density);
+        int handPx = TableLayoutMetrics.privateHandHeightPx(density);
+        int reservedCenterPx = Math.round(reservation.reservedHeightDp() * density);
+        int minimumBoardPx = TableGeometry.minimumHeight(3, seatHeightPx, reservedCenterPx, gapPx);
+        int gridCenterPx = Math.round(BidGridMetrics.actionLayout(18, boardWidthDp, 1f)
+                .centerHeightDp() * density);
+        int oldMinimumPx = TableGeometry.minimumHeight(3, seatHeightPx, gridCenterPx, gapPx);
+
+        atf.gradle.audit.GradleInputs.fixture("720 × 1280, 360 dpi, Down & Up maximum deal",
+                "content below header in px", contentBelowHeaderPx, "seat in px", seatHeightPx,
+                "hand and lift in px", handPx, "former board minimum in px", oldMinimumPx,
+                "board minimum in px", minimumBoardPx, "reservation", reservation);
+        assertTrue("The old grid clipped the private hand at the initial scroll position",
+                oldMinimumPx + handPx > contentBelowHeaderPx);
+        assertTrue("The compact reservation leaves room for the entire hand and its lift",
+                minimumBoardPx + handPx <= contentBelowHeaderPx);
+        assertTrue("The scheduled match uses a horizontal choice strip", reservation.useBidStrip());
+        assertEquals("Each bid choice retains its touch target", 48, BidGridMetrics.CHOICE_TARGET_DP);
+    }
+
     @Test public void threePlayerScheduleAcceptsSeventeenCardsAndRejectsEighteen() {
         var viewport = new TableViewportPolicy(569);
         var largest = TableLayoutMetrics.centerReservation(3, 17, 353, 1f, viewport);
         atf.gradle.audit.GradleInputs.fixture("Three-player legal maximum hand", "cards", 17,
-                "bid grid", BidGridMetrics.actionLayout(18, 353, 1f), "reservation", largest);
-        assertEquals("The maximum legal three-player hand reserves its responsive bid grid",
-                BidGridMetrics.actionLayout(18, 353, 1f).centerHeightDp(), largest.biddingHeightDp());
+                "bid strip", BidGridMetrics.actionLayout(18, 353, 1f, true), "reservation", largest);
+        assertTrue("A compact table scrolls the choices for the maximum deal", largest.useBidStrip());
+        assertEquals("The maximum legal three-player hand reserves the measured strip",
+                BidGridMetrics.CHOICE_ROW_DP + BidGridMetrics.SUBMIT_TARGET_DP, largest.biddingHeightDp());
+        assertFalse("A tall viewport keeps the grid", TableLayoutMetrics
+                .centerReservation(3, 17, 353, 1f, new TableViewportPolicy(800)).useBidStrip());
+        assertFalse("An ordinary hand keeps the grid", TableLayoutMetrics
+                .centerReservation(4, 13, 353, 1f, viewport).useBidStrip());
         assertThrows("An eighteen-card selector is outside a 52-card deal to three players",
                 IllegalArgumentException.class,
                 () -> TableLayoutMetrics.centerReservation(3, 18, 353, 1f, viewport));

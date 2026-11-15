@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.TextView;
@@ -182,10 +183,10 @@ public final class GameTablePanel extends LinearLayout {
         float fontScale = getResources().getConfiguration().fontScale;
         TrickCardMetrics.Layout trickLayout = bidding
                 ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp, fontScale, viewport);
+        var reservation = TableLayoutMetrics.matchCenterReservation(state.mode(),
+                state.players().size(), tableWidthDp, fontScale, viewport);
         var bidLayout = bidding ? BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp,
-                fontScale) : null;
-        int reservedCenterHeightDp = TableLayoutMetrics.matchCenterReservation(state.mode(),
-                state.players().size(), tableWidthDp, fontScale, viewport).reservedHeightDp();
+                fontScale, reservation.useBidStrip()) : null;
         int centerWidthDp = bidding ? bidLayout.centerWidthDp()
                 : trickLayout.safeCenterWidthDp();
         float density = getResources().getDisplayMetrics().density;
@@ -195,7 +196,7 @@ public final class GameTablePanel extends LinearLayout {
                 PlayerSeatView.measureActionHeightPx(context, copy.seatTurnBadge(true), seatWidthPx),
                 PlayerSeatView.measureActionHeightPx(context, copy.seatTurnBadge(false), seatWidthPx));
         GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
-                viewport, !bidding, reservedCenterHeightDp, TableLayoutMetrics.humanHandClearanceDp(),
+                viewport, !bidding, reservation.reservedHeightDp(), TableLayoutMetrics.humanHandClearanceDp(),
                 bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
                         : TableGeometry.CenterAlignment.BALANCED);
         board.setBackgroundColor(Color.TRANSPARENT);
@@ -206,16 +207,17 @@ public final class GameTablePanel extends LinearLayout {
         for (GameSession.PlayerSnapshot player : state.players()) {
             board.addView(buildSeat(player, stableBadgeHeightPx));
         }
-        View center = bidding ? buildBiddingCenter(tableWidthDp) : buildCurrentTrick(trickLayout);
+        View center = bidding ? buildBiddingCenter(tableWidthDp, reservation.useBidStrip())
+                : buildCurrentTrick(trickLayout);
         board.addView(center);
         return board;
     }
 
-    private View buildBiddingCenter(int tableWidthDp) {
+    private View buildBiddingCenter(int tableWidthDp, boolean useStrip) {
         LinearLayout center = new LinearLayout(context);
         center.setOrientation(VERTICAL);
         center.setGravity(Gravity.CENTER);
-        int columns = BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp);
+        int columns = useStrip ? bidOptions.size() : BidGridMetrics.columnCount(bidOptions.size(), tableWidthDp);
 
         center.setContentDescription(copy.bidSelector());
 
@@ -232,7 +234,7 @@ public final class GameTablePanel extends LinearLayout {
                 choice.setTextSize(13);
                 choice.setPadding(0, 0, 0, 0);
                 choice.setMinimumWidth(0);
-                choice.setMinHeight(dp(48));
+                choice.setMinHeight(dp(BidGridMetrics.CHOICE_TARGET_DP));
                 choice.setStateListAnimator(null);
                 choice.setTag("bid-choice:" + bid);
                 choice.setSelected(bid == selectedBid);
@@ -243,16 +245,30 @@ public final class GameTablePanel extends LinearLayout {
                 choice.setOnClickListener(ignored -> selectBid(bid));
                 bidChoiceButtons.add(choice);
 
-                LayoutParams params = new LayoutParams(dp(48), dp(48));
+                int target = dp(BidGridMetrics.CHOICE_TARGET_DP);
+                LayoutParams params = new LayoutParams(target, target);
                 params.setMargins(dp(2), dp(1), dp(2), dp(1));
                 row.addView(choice, params);
             }
-            center.addView(row, new LayoutParams(
+            center.addView(useStrip ? scrollableBidRow(row) : row, new LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, dp(BidGridMetrics.CHOICE_ROW_DP)));
         }
         center.addView(buildBidSubmission(), new LayoutParams(dp(BidGridMetrics.SUBMIT_WIDTH_DP),
                 dp(BidGridMetrics.SUBMIT_TARGET_DP)));
         return center;
+    }
+
+    private HorizontalScrollView scrollableBidRow(LinearLayout row) {
+        HorizontalScrollView strip = new HorizontalScrollView(context);
+        strip.setFillViewport(true);
+        strip.addView(row, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        int initialIndex = bidOptions.indexOf(selectedBid);
+        if (initialIndex >= 0) {
+            View initial = row.getChildAt(initialIndex);
+            strip.post(() -> strip.scrollTo(initial.getLeft() - (strip.getWidth() - initial.getWidth()) / 2, 0));
+        }
+        return strip;
     }
 
     private View buildBidSubmission() {

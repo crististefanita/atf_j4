@@ -94,3 +94,11 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 - [Guvernanța publicării](../testing/ATF_ReleaseQualification.md#valabilitatea-dovezilor) urmărește lansatorul și reluarea după un răspuns GitHub incomplet. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) definește identitatea dosarului și legarea auditului publicat.
 
 [Testarea Android](../testing/ATF_Android.md) · [Profiluri de ecran](../testing/ATF_Display.md) · [Atlasul interfeței](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
+
+## Costul acceptanței APK pe emulatorul partajat
+
+| Etapă | Ce arată calificarea | Criteriu de închidere |
+|---|---|---|
+| Pregătirea fluxurilor | Pe VM, o pregătire a inventariat sursele în 41 s, a copiat cache-ul în 88 s și a compilat Maven în 244 s. Repetarea acestor pași pentru următorul flux consumă rezervarea disponibilă. | Pregătiți un singur staging extern și o singură compilare pe snapshot. La fiecare flux, confruntați fingerprint-ul claselor și bibliotecilor, creați un profil Android nou și păstrați capturi și chitanțe în directoare distincte. |
+| Timpul nativ | Licitația a durat aproape 11 minute. Schimbarea profilului, recuperarea după ANR și citirile ierarhiei UI au adăugat întârzieri înainte și între teste. | Măsurați separat așteptarea rezervării, pornirea profilului, comenzile ADB, generarea raportului și curățarea. Păstrați în E2E tranzițiile reale și mutați combinațiile de geometrie verificabile offline în componente. |
+| Reluarea cu dovezi | O captură identică poate apărea în mai mulți pași Extent ca referință la imaginea deja inclusă. Un binar nou schimbă identitatea cerută de chitanța nativă. | Validați fiecare referință de captură față de PNG-ul original. Refolosiți componentele cu intrări identice și selectați fluxurile native din diff; reutilizați chitanțele native numai pentru identitatea calificată de RAG. |
