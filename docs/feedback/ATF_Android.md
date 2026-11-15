@@ -107,3 +107,4 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 
 - [ ] Califică APK-ul în „Coborâre și urcare”, trei jucători, la 720×1280 și 360 dpi. La deschiderea licitației, cele 18 opțiuni ocupau patru rânduri, iar mâna lipsea din zona vizibilă. Bara compactă a expus cărțile, însă cele două rânduri ale levatei încă depășeau bugetul vertical, iar rotunjirea fracționară muta chenarul de jos cu un pixel.
 - Verifică mâna completă pe înălțime, toate cele 17 cărți prin derulare orizontală, accesul la opțiunile legale și aceleași chenare în licitație și joc. Regresia de componentă reproduce bugetul de spațiu observat. Închide criteriul cu Extent de pe APK-ul semnat, în toate profilurile de calificare.
+- Un gest ADB acceptat poate expune doar o parte din mână. Verifică identitățile acumulate pe mai multe poziții și păstrează pragul de 17 chiar dacă ai atins limita de gesturi.

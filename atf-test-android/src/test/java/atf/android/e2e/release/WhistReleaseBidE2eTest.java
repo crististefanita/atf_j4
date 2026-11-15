@@ -42,6 +42,9 @@ class WhistReleaseBidE2eTest {
 
     /** Focused signed-app geometry flow, kept beside its owning release acceptance tests. */
     private static final class ThreePlayerDownAndUpLayoutScenario {
+        private static final int MAXIMUM_HAND_SIZE = 17;
+        private static final int MAX_SWIPES_PER_DIRECTION = 3;
+
         private static void run(ReleaseBidContext c) throws Exception {
             run(c, "");
         }
@@ -92,18 +95,21 @@ class WhistReleaseBidE2eTest {
                                 bounds.right() > bounds.left() && bounds.bottom() > bounds.top()));
             });
 
-            if (seen.size() < 17) {
-                c.swipeHand(c.ui.boundsForDescription(c.ui.dump(), hand), true);
+            if (seen.size() < MAXIMUM_HAND_SIZE) {
+                collectAcrossHand(c, hand, biddingHint, true, seen);
+                if (seen.size() < MAXIMUM_HAND_SIZE) collectAcrossHand(c, hand, biddingHint, false, seen);
                 c.checkpoint(label + "Horizontal scroll exposes the complete seventeen-card hand", xml -> {
                     seen.addAll(visibleBidCards(xml, biddingHint));
-                    return List.of(ReleaseBidContext.equal("All seventeen card identities can be viewed", 17, seen.size()),
+                    return List.of(ReleaseBidContext.equal("All seventeen card identities can be viewed",
+                                    MAXIMUM_HAND_SIZE, seen.size()),
                             ReleaseBidContext.equal("Scrolling the hand keeps the seat rectangles fixed", bidBounds,
                                     seatBounds(c.ui, xml, bidLabel, scoreLabel)));
                 });
                 c.swipeHand(c.ui.boundsForDescription(c.ui.dump(), hand), false);
             } else {
                 c.checkpoint(label + "All seventeen cards are visible together", xml -> List.of(
-                        ReleaseBidContext.equal("The full hand remains exposed", 17, visibleBidCards(xml, biddingHint).size())));
+                        ReleaseBidContext.equal("The full hand remains exposed", MAXIMUM_HAND_SIZE,
+                                visibleBidCards(xml, biddingHint).size())));
             }
 
             c.ui.revealText(bid);
@@ -116,6 +122,20 @@ class WhistReleaseBidE2eTest {
                             !c.ui.legalCardDescriptions(xml).isEmpty()),
                     ReleaseBidContext.equal("The table still fits the viewport", true,
                             c.ui.allContentFitsViewport(xml))));
+        }
+
+        private static void collectAcrossHand(ReleaseBidContext c, String description, String biddingHint,
+                boolean towardEnd, java.util.Set<String> seen) throws Exception {
+            String xml = c.ui.dump();
+            List<String> visible = visibleBidCards(xml, biddingHint);
+            for (int attempt = 0; attempt < MAX_SWIPES_PER_DIRECTION && seen.size() < MAXIMUM_HAND_SIZE; attempt++) {
+                c.swipeHand(c.ui.boundsForDescription(xml, description), towardEnd);
+                xml = c.ui.dump();
+                List<String> after = visibleBidCards(xml, biddingHint);
+                seen.addAll(after);
+                if (after.equals(visible)) break;
+                visible = after;
+            }
         }
 
         private static List<String> visibleBidCards(String xml, String biddingHint) throws Exception {
