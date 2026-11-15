@@ -24,7 +24,6 @@ Legarea dovezilor de sursa calificată este verificată de [regresiile evaluator
 | Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
 |---|---|---|
 | P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. Pentru Python, detectați aliasul de instalare separat de un interpretor executabil; pentru [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verificați disponibilitatea, refuzul, timeout-ul și starea transportului cu proces controlat, separat de parsare și de clientul Java. |
-| P2 | Coordonarea RAG acceptă un `TMP` aflat într-un checkout, deși adaptorul indexului Extent refuză scrierea în acel spațiu. | Verificați rădăcina temporară înainte de copiere și Maven. Acoperiți prin componente un checkout Git părinte, o cale externă validă și un link care se rezolvă în checkout. |
 
 [Retenția copiilor inline](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) verifică separat lipsa PNG-urilor identice lângă HTML. Această gardă nu dovedește autonomia datelor, lizibilitatea imaginilor sau integritatea APK-ului; [criteriul adaptorului](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) rămâne distinct.
 

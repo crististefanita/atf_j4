@@ -154,7 +154,11 @@ Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG 
 
 [Lansatorul de componente](../../scripts/run-component-suites.ps1) și [lansatorul de guvernanță](../../scripts/run-atf-governance.ps1) folosesc [aceeași pregătire](../../scripts/AtfQualificationSnapshot.ps1). Maven compilează și verifică fișierele din aceeași copie temporară. Verificarea probelor publicate citește obiecte Git istorice din checkout-ul indicat, prin commit, fără a citi fișierele live din acesta.
 
-Alegeți `TMP` și `TEMP` în afara oricărui checkout Git. Testele pentru indexul Extent creează acolo date temporare, iar implementarea refuză scrierea unui index sub un checkout.
+[Preflight-ul directorului temporar](../../atf-tests/tools/qualification-temp-root.mjs) rulează înainte de a crea dosarul rulării, de a copia sursele sau de a porni Maven.
+
+- `TMP`, `TEMP` și directorul ales de sistem trebuie să indice directoare externe existente.
+- Controlul verifică atât calea declarată, cât și destinația fizică după rezolvarea linkurilor. Un checkout detectat la oricare dintre strămoși, inclusiv un worktree cu fișier `.git`, produce `QUALIFICATION-TEMP-IN-CHECKOUT`.
+- O cale inexistentă, relativă ori inaccesibilă produce `QUALIFICATION-TEMP-INVALID`.
 
 | Moment | Control și dovadă |
 | --- | --- |

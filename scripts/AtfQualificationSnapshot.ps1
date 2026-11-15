@@ -1,5 +1,12 @@
 #requires -Version 7.0
 
+function Get-AtfQualificationTempRoot([string]$SourceRoot) {
+    $checker = Join-Path $PSScriptRoot '../atf-tests/tools/qualification-temp-root.mjs'
+    $result = & node $checker $SourceRoot ([IO.Path]::GetTempPath()) 2>&1
+    if ($LASTEXITCODE -ne 0) { throw ($result -join [Environment]::NewLine) }
+    $result
+}
+
 function Get-AtfReleaseInputs([string]$Root) {
     $release = Join-Path $Root 'release'
     $rows = [Collections.Generic.List[object]]::new()

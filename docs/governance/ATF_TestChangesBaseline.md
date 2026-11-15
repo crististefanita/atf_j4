@@ -372,3 +372,29 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Control verificat pentru rădăcina temporară a calificării</summary>
+
+```yaml
+testChanges:
+  - id: RAG-09-TEMP-ROOT
+    status: VERIFIED
+    base: f2c1b58d50e57922bbbb9ac44c977149328d7c0c
+    expires: 2026-12-19
+    reason: Calificarea folosește un director temporar extern și blochează căile care intră într-un checkout înainte de copiere sau Maven.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=QualificationLauncherComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#governancePassesWithAnIsolatedRootAndThePinnedInputManifest
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#checkoutTmpStopsBothLaunchersBeforeStagingOrMaven
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#aJunctionInTempCannotHideAGitWorktree
+    paths:
+      - scripts/AtfQualificationSnapshot.ps1
+      - scripts/run-atf-governance.ps1
+      - scripts/run-component-suites.ps1
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java
+```
+
+</details>

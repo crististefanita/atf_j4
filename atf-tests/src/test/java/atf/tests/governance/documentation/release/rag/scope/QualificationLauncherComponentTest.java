@@ -1,5 +1,6 @@
 package atf.tests.governance.documentation.release.rag.scope;
 
+import atf.android.process.CommandProcess;
 import atf.testkit.AtfComponentTest;
 import atf.testkit.assertions.AuditedAssertions;
 import atf.tests.governance.support.GovernanceProject;
@@ -8,9 +9,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -77,17 +80,62 @@ class QualificationLauncherComponentTest {
 
     @Test void governancePassesWithAnIsolatedRootAndThePinnedInputManifest() throws Exception {
         Path source = fixture(), output = scratch.resolve("healthy");
-        var run = launch(GOVERNANCE, source, output, "", null);
+        Path sibling = Files.createDirectory(source.resolveSibling(source.getFileName() + "-tmp"));
+        var run = launch(GOVERNANCE, source, output, "", null, sibling, sibling);
         AuditedAssertions.assertEquals(0, run.exit(), run.log());
         JsonNode result = JSON.readTree(output.resolve("governance-result.json").toFile());
         Path stage = Path.of(result.required("stage").asText());
         AuditedAssertions.assertEquals(stage.toString(), Files.readString(scratch.resolve("maven.entered")));
-        AuditedAssertions.assertFalse(stage.equals(source));
+        AuditedAssertions.assertTrue(stage.startsWith(sibling.toRealPath()), "A sibling with the same prefix is external");
         AuditedAssertions.assertTrue(Files.isRegularFile(stage.resolve(RELEASE + APK)));
         AuditedAssertions.assertEquals(hash(output.resolve("release-inputs.json")), result.required("releaseFingerprint").asText());
         AuditedAssertions.assertEquals("PASS", JSON.readTree(output.resolve("release-preflight.log").toFile()).required("status").asText());
         AuditedAssertions.assertEquals(0, launch(GOVERNANCE, source, scratch.resolve("matching"), "",
                 output.resolve("source-inputs.json")).exit());
+    }
+
+    @Test void checkoutTmpStopsBothLaunchersBeforeStagingOrMaven() throws Exception {
+        Path source = fixture();
+        Path nestedSource = Files.createDirectories(source.resolve("target/tmp"));
+        Path parentCheckout = Files.createDirectory(scratch.resolve("parent checkout"));
+        Files.createDirectory(parentCheckout.resolve(".git"));
+        Path nestedCheckout = Files.createDirectories(parentCheckout.resolve("target/tmp"));
+        expectTempBlock(source, nestedSource, scratch, nestedSource, "TMP");
+        expectTempBlock(source, nestedCheckout, scratch, nestedCheckout, "TMP");
+    }
+
+    @Test void aJunctionInTempCannotHideAGitWorktree() throws Exception {
+        Path source = fixture();
+        Path worktree = Files.createDirectory(scratch.resolve("worktree"));
+        Files.writeString(worktree.resolve(".git"), "gitdir: ../checkout/.git/worktrees/fixture\n");
+        Path directory = Files.createDirectories(worktree.resolve("cache/tmp"));
+        Path link = scratch.resolve("external alias");
+        var junction = CommandProcess.execute(List.of("pwsh", "-NoProfile", "-NonInteractive", "-Command",
+                "$ErrorActionPreference='Stop'; New-Item -ItemType Junction -Path $env:ATF_FIXTURE_LINK "
+                        + "-Target $env:ATF_FIXTURE_TARGET | Out-Null"),
+                Map.of("ATF_FIXTURE_LINK", link.toString(), "ATF_FIXTURE_TARGET", directory.getParent().toString()),
+                Duration.ofSeconds(30), false);
+        AuditedAssertions.assertEquals(0, junction.exitCode(), junction.stderr());
+        try {
+            expectTempBlock(source, scratch, link.resolve("tmp"), directory, "TEMP");
+        } finally {
+            Files.delete(link);
+        }
+    }
+
+    private void expectTempBlock(Path source, Path tmp, Path temp, Path physical, String variable) throws Exception {
+        for (String runner : List.of(GOVERNANCE, COMPONENTS)) {
+            Path output = scratch.resolve(runner + "-blocked-" + variable);
+            var run = launch(runner, source, output, "", null, tmp, temp);
+            AuditedAssertions.assertEquals(1, run.exit(), run.log());
+            AuditedAssertions.assertTrue(run.log().contains("QUALIFICATION-TEMP-IN-CHECKOUT:")
+                    && run.log().contains(variable + "="), run.log());
+            AuditedAssertions.assertFalse(Files.exists(output), "Preflight must stop before creating the run directory");
+            try (var entries = Files.list(physical)) {
+                AuditedAssertions.assertTrue(entries.findAny().isEmpty(), "Preflight must stop before staging");
+            }
+            AuditedAssertions.assertFalse(Files.exists(scratch.resolve("maven.entered")), "Preflight must stop before Maven");
+        }
     }
 
     @ParameterizedTest
@@ -131,6 +179,10 @@ class QualificationLauncherComponentTest {
     }
 
     private Run launch(String runner, Path source, Path output, String mutation, Path pinned) throws Exception {
+        return launch(runner, source, output, mutation, pinned, scratch, scratch);
+    }
+
+    private Run launch(String runner, Path source, Path output, String mutation, Path pinned, Path tmp, Path temp) throws Exception {
         Path tool = scratch.resolve("maven-probe.ps1");
         Files.writeString(tool, """
                 $stage = (Get-Location).Path
@@ -151,8 +203,8 @@ class QualificationLauncherComponentTest {
         if (pinned != null) command.addAll(List.of("-PinnedSourceInputs", pinned.toString()));
         var builder = new ProcessBuilder(command);
         var environment = builder.environment();
-        environment.put("TEMP", scratch.toString());
-        environment.put("TMP", scratch.toString());
+        environment.put("TEMP", temp.toString());
+        environment.put("TMP", tmp.toString());
         environment.put("ATF_FIXTURE_SOURCE", source.toString());
         environment.put("ATF_FIXTURE_ENTERED", scratch.resolve("maven.entered").toString());
         environment.put("ATF_FIXTURE_MUTATION", mutation);

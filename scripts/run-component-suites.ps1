@@ -144,9 +144,9 @@ function Read-GradleSelection($item, $stage, $provenanceFingerprint) {
     }
 }
 
+$work = Join-Path (Get-AtfQualificationTempRoot $sourceRoot) ('whist-component-suites-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $RunRoot | Out-Null
 $timing = New-AtfQualificationTiming 'components' (Join-Path $RunRoot 'timing.json')
-$work = Join-Path ([IO.Path]::GetTempPath()) ('whist-component-suites-' + [guid]::NewGuid().ToString('N'))
 $stage = Join-Path $work 'project'
 New-Item -ItemType Directory -Path $stage | Out-Null
 $snapshot = Invoke-AtfQualificationPhase $timing 'components.snapshot-preflight' {
