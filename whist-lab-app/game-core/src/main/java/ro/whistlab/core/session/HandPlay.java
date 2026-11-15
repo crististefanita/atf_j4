@@ -93,13 +93,13 @@ final class HandPlay {
             var hand = new SeatHand(cards, null, 0);
             hand.cards.sort(Comparator.comparing(Card::suit).thenComparingInt(Card::rank));
             return hand;
-        }).toList();
+        }).collect(java.util.stream.Collectors.toList());
         return new HandPlay(mode, dealer, size, trump, turned, seats);
     }
 
     static HandPlay restored(GameSession.SaveState saved) {
         var seats = saved.players().stream()
-                .map(seat -> new SeatHand(seat.hand(), seat.bid(), seat.tricksWon())).toList();
+                .map(seat -> new SeatHand(seat.hand(), seat.bid(), seat.tricksWon())).collect(java.util.stream.Collectors.toList());
         var result = new HandPlay(saved.config().mode(), saved.dealerSeat(), saved.handSize(),
                 saved.trump(), saved.turnedCard(), seats);
         result.biddingSeat = saved.biddingSeat();

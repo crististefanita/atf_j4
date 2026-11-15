@@ -92,7 +92,7 @@ public final class GameSession {
         int dealer = (hand.dealerSeat() + 1) % config.playerCount();
         handIndex++;
         hand = HandPlay.deal(config, handIndex, handSizes.get(handIndex), dealer);
-        scores = scores.stream().map(PlayerScore::beginHand).toList();
+        scores = scores.stream().map(PlayerScore::beginHand).collect(java.util.stream.Collectors.toList());
     }
 
     private void settleHand() {
