@@ -152,6 +152,8 @@ Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG 
 
 [Lansatorul de componente](../../scripts/run-component-suites.ps1) și [lansatorul de guvernanță](../../scripts/run-atf-governance.ps1) folosesc [aceeași pregătire](../../scripts/AtfQualificationSnapshot.ps1). Maven compilează și verifică fișierele din aceeași copie temporară. Verificarea probelor publicate citește obiecte Git istorice din checkout-ul indicat, prin commit, fără a citi fișierele live din acesta.
 
+Alegeți `TMP` și `TEMP` în afara oricărui checkout Git. Testele pentru indexul Extent creează acolo date temporare, iar implementarea refuză scrierea unui index sub un checkout.
+
 | Moment | Control și dovadă |
 | --- | --- |
 | Fixarea | `source-inputs.json` descrie sursele de build. `release-inputs.json` fixează separat toate fișierele din `release/`, inclusiv catalogul și dosarele păstrate. |
