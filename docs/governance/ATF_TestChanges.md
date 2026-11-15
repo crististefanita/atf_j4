@@ -49,7 +49,7 @@ Lansatorul transmite baza prin proprietatea atf.governance.testChanges.baseRef. 
 | Etapă | Loc și criteriu |
 |---|---|
 | ACTIVE | Documentul de [feedback responsabil](../feedback/README.md) păstrează motivul, comanda probei și lista exactă a căilor. |
-| VERIFIED | [Registrul tehnic](ATF_TestChangesBaseline.md) păstrează același ID după probă. Eligibilitatea rămâne legată de baza inițială și de expirare. |
+| VERIFIED | [Registrul tehnic](ATF_TestChangesBaseline.md) păstrează același ID și selecția probei. Autorizația pentru diff-ul curent cere dovada verificată, baza și expirarea. |
 | DRAFT și CLOSED | Intrarea structurată poate consemna propunerea sau închiderea. Aceste stări au eligibilitate zero. |
 | Retragere | Confruntați controlul cu baza revizuirii. Eliminați intrarea numai când diff-ul vizat nu mai are nevoie de ea. |
 
@@ -57,6 +57,27 @@ Lansatorul transmite baza prin proprietatea atf.governance.testChanges.baseRef. 
 - Căile relative folosesc separatorul `/`. Fiecare ID este unic în documentele inspectate.
 
 Comanda proof exprimă verificarea planificată și se execută separat. [Probele de componentă](../../atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java) construiesc istorii Git locale și califică mecanismul fără dispozitiv.
+
+## Dovada controlului verificat
+
+Puneți controlul și selecția de teste în commitul evaluat. Creați dovada într-un dosar nou, extern checkout-ului. Lansatorul compilează o copie izolată și publică dovada numai după confirmarea stabilității surselor.
+
+```powershell
+.\scripts\run-component-suites.ps1 -TestChangeControl $controlId -TestChangeBaseRef $reviewBase -RunRoot $proofRoot
+$env:ATF_TEST_CHANGE_PROOF_ROOT = $proofRoot
+.\scripts\run-atf-governance.ps1 -TestChangeBaseRef $reviewBase
+```
+
+| Element | Contract |
+|---|---|
+| Selectori | Declarați listele checks.positive și checks.negative cu metode de componentă distincte, în forma pachet.Clasă#metodă. |
+| Control negativ | Metoda injectează defectul și afirmă refuzul așteptat. În dovadă, atât cazul valid, cât și cazul de refuz trebuie să aibă verdict PASS la nivel JUnit. |
+| Identitate | Chitanța fixează ID-ul, SHA-ul bazei, SHA-ul commitului verificat și SHA-256 al diff-ului Git brut. Sunt incluse bloburile și modurile fișierelor. |
+| Rulare | Lansatorul execută exact selecția declarată și confruntă invocările cu Extent. Chitanța și HTML-ul se păstrează împreună, în directorul cu ID-ul controlului. |
+| Verificare | Alt commit, alt diff, alt control, probe lipsă sau omise și HTML cu hash diferit blochează autorizația VERIFIED. Un checkout modificat cere un candidat nou. |
+| Istoric | Controalele vechi sunt păstrate în registru. Folosirea unui control VERIFIED pentru diff-ul revizuit cere selecție și dovadă exacte. |
+
+Reutilizați perechea chitanță și raport pentru același commit și același diff. Runnerul de încredere produce dovada execuției, iar autorul testului definește oracolul de refuz. Comanda proof din control rămâne reperul uman al verificării.
 
 ## Mutarea proprietății unei verificări
 

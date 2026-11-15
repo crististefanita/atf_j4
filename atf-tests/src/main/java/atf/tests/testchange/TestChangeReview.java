@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /** Associates protected Git changes with one eligible control on the selected review commit. */
@@ -41,6 +42,40 @@ public final class TestChangeReview {
 
     public static Result inspect(Path root, String explicitBase, Map<String, String> environment, LocalDate today)
             throws IOException, InterruptedException {
+        return review(root, explicitBase, environment, today).result();
+    }
+
+    public static Result verify(Path root, String explicitBase, Map<String, String> environment, LocalDate today)
+            throws IOException, InterruptedException {
+        Review review = review(root, explicitBase, environment, today);
+        if (!review.result().diagnostics().isEmpty() || review.verified().isEmpty()) return review.result();
+        String configured = environment.get(TestChangeProof.ROOT_ENV);
+        Path proofRoot = configured == null || configured.isBlank() ? null : Path.of(configured);
+        String diff = GitTestChangeSnapshot.proofDiff(review.snapshot());
+        for (Control control : review.verified().values()) {
+            TestChangeProof.verify(plan(review.snapshot(), control, diff), review.snapshot().root(), proofRoot);
+        }
+        return review.result();
+    }
+
+    public static TestChangeProof.Plan proofPlan(Path root, String base, String id, LocalDate today)
+            throws IOException, InterruptedException {
+        Review review = review(root, base, Map.of("CI", "true"), today);
+        if (!review.result().diagnostics().isEmpty())
+            throw TestChangeProof.failure("REVIEW", String.join("\n", review.result().diagnostics()));
+        Control control = review.verified().get(id);
+        if (control == null) throw TestChangeProof.failure("CONTROL", id + " must authorize this diff as VERIFIED");
+        return plan(review.snapshot(), control, GitTestChangeSnapshot.proofDiff(review.snapshot()));
+    }
+
+    private static TestChangeProof.Plan plan(Snapshot snapshot, Control control, String diff) throws IOException {
+        if (control.checks() == null) throw TestChangeProof.failure("CHECKS", control.id() + " requires positive and negative checks");
+        return new TestChangeProof.Plan(
+                new TestChangeProof.Identity(control.id(), snapshot.base(), snapshot.head(), diff), control.checks());
+    }
+
+    private static Review review(Path root, String explicitBase, Map<String, String> environment, LocalDate today)
+            throws IOException, InterruptedException {
         boolean ci = environment.containsKey("CI") && !"false".equalsIgnoreCase(environment.get("CI"));
         String ref = explicitBase == null || explicitBase.isBlank() ? environment.get(BASE_ENV) : explicitBase;
         if ((ref == null || ref.isBlank()) && ci)
@@ -49,13 +84,14 @@ public final class TestChangeReview {
         var controls = controls(snapshot);
         var diagnostics = new TreeSet<String>();
         var distinct = new HashSet<String>();
+        var verified = new TreeMap<String, Control>();
         for (Change change : snapshot.changes()) {
             if (!protectedPath(change.path())) continue;
             distinct.add(change.path());
-            String violation = violation(change, controls, snapshot.base(), today);
+            String violation = violation(change, controls, snapshot.base(), today, verified);
             if (violation != null) diagnostics.add(violation);
         }
-        return new Result(snapshot.base(), distinct.size(), List.copyOf(diagnostics));
+        return new Review(snapshot, new Result(snapshot.base(), distinct.size(), List.copyOf(diagnostics)), verified);
     }
 
     private static List<Control> controls(Snapshot snapshot) throws IOException {
@@ -73,7 +109,8 @@ public final class TestChangeReview {
         return List.copyOf(controls);
     }
 
-    private static String violation(Change change, List<Control> controls, String base, LocalDate today) {
+    private static String violation(Change change, List<Control> controls, String base, LocalDate today,
+                                    Map<String, Control> verified) {
         String key = change.kind() + " " + change.path();
         if (!TestChangeControls.exactPath(change.path())) return "TEST-CHANGE-PATH: " + key;
         if (!Set.of("A", "M", "D").contains(change.kind())) return "TEST-CHANGE-GIT-STATE: " + key;
@@ -85,6 +122,8 @@ public final class TestChangeReview {
         var eligible = change.kind().equals("D") ? current.stream().filter(Control::allowDelete).toList() : current;
         if (eligible.isEmpty()) return "TEST-CHANGE-DELETE: " + key + " needs allowDelete: true";
         if (eligible.size() > 1) return "TEST-CHANGE-AMBIGUOUS: " + key + " " + ids(eligible);
+        Control control = eligible.getFirst();
+        if (control.status().equals("VERIFIED")) verified.put(control.id(), control);
         return null;
     }
 
@@ -115,6 +154,8 @@ public final class TestChangeReview {
         for (String set : TEST_SETS) specs.add(":(glob)**/src/" + set + "/**");
         return specs;
     }
+
+    private record Review(Snapshot snapshot, Result result, Map<String, Control> verified) { }
 
     public record Result(String base, int protectedPaths, List<String> diagnostics) { }
 }

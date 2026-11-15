@@ -251,3 +251,36 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Control verificat pentru trasabilitatea probei de schimbare</summary>
+
+```yaml
+testChanges:
+  - id: GOVERNANCE-TEST-CHANGE-PROOF
+    status: VERIFIED
+    base: 7a28a0978e6b50c1f9dd85cbad40544aecaea06d
+    expires: 2026-12-19
+    reason: Leagă proba offline de control, baza revizuită, commit și conținutul diff-ului și cere un control negativ executat.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeProofComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#proofMatchesExactGitReviewAndDeclaredCases
+      negative:
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#proofFromAnotherCommitCannotBeReused
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#proofWithoutPassingNegativeControlIsRefused
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#proofRequiresTheSameIdentityAndReportBytes
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#verifiedControlNeedsProofAndCleanCommittedInputs
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/GitTestChangeSnapshot.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeControls.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeProofChecks.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeProof.java
+      - atf-tests/src/test/java/atf/tests/execution/components/TestChangeProofExecution.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeProofComponentTest.java
+      - scripts/run-component-suites.ps1
+```
+
+</details>

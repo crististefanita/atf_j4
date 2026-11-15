@@ -42,7 +42,9 @@ final class GitTestChangeSnapshot {
         }
         var ignored = new ArrayList<>(List.of("ls-files", "--others", "--ignored", "--exclude-standard", "-z", "--"));
         ignored.addAll(TestChangeReview.protectedPathspecs());
-        for (String path : fields(output(root, ignored.toArray(String[]::new)))) changes.add(new Change("A", path));
+        var ignoredPaths = fields(output(root, ignored.toArray(String[]::new)));
+        for (String path : ignoredPaths) changes.add(new Change("A", path));
+        boolean ignoredProtected = ignoredPaths.stream().anyMatch(TestChangeReview::protectedPath);
 
         var candidateDocs = fields(output(root, "ls-files", "--cached", "--others", "--exclude-standard",
                 "-z", "--", TestChangeControls.FEEDBACK, TestChangeControls.BASELINE));
@@ -51,7 +53,7 @@ final class GitTestChangeSnapshot {
             if (path.endsWith(".md") && Files.exists(root.resolve(path), LinkOption.NOFOLLOW_LINKS)) documents.add(path);
         }
         if (!commit(root, "HEAD").equals(head)) throw new IOException("TEST-CHANGE-CHECKOUT: HEAD changed during review");
-        return new Snapshot(root, base, List.copyOf(changes), List.copyOf(documents));
+        return new Snapshot(root, base, head, List.copyOf(changes), List.copyOf(documents), ignoredProtected);
     }
 
     private static String commit(Path root, String ref) throws IOException, InterruptedException {
@@ -93,6 +95,18 @@ final class GitTestChangeSnapshot {
         return CommandProcess.execute(command, ENV, Duration.ofSeconds(30), false);
     }
 
+    static String proofDiff(Snapshot snapshot) throws IOException, InterruptedException {
+        Path root = snapshot.root();
+        if (snapshot.ignoredProtected() || !output(root, "status", "--porcelain=v1", "-z", "--untracked-files=all", "--ignore-submodules=none").isEmpty()
+                || !snapshot.head().equals(commit(root, "HEAD"))) {
+            throw new IOException("TEST-CHANGE-PROOF-DIRTY: evidence requires the clean reviewed commit");
+        }
+        var diff = git(root, "diff", "--raw", "-z", "--no-abbrev", "--no-renames", "--no-ext-diff",
+                "--no-textconv", "--ignore-submodules=none", snapshot.base(), snapshot.head(), "--");
+        if (diff.exitCode() != 0) throw new IOException("TEST-CHANGE-PROOF-DIFF: " + diff.stderr().strip());
+        return TestChangeProof.digest(diff.stdout());
+    }
+
     record Change(String kind, String path) { }
-    record Snapshot(Path root, String base, List<Change> changes, List<String> documents) { }
+    record Snapshot(Path root, String base, String head, List<Change> changes, List<String> documents, boolean ignoredProtected) { }
 }

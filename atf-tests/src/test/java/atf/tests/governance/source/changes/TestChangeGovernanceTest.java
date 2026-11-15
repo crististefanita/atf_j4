@@ -16,7 +16,7 @@ class TestChangeGovernanceTest {
     @Test void protectedChangesRequireOneCurrentControlOnTheReviewedGitBase() throws Exception {
         Path checkout = Path.of(System.getProperty(ReleaseCommitEvidence.GIT_ROOT,
                 GovernanceProject.locateProjectRoot().toString()));
-        var result = TestChangeReview.inspect(checkout, System.getProperty(TestChangeReview.BASE_PROPERTY),
+        var result = TestChangeReview.verify(checkout, System.getProperty(TestChangeReview.BASE_PROPERTY),
                 System.getenv(), LocalDate.now(ZoneOffset.UTC));
         AuditedAssertions.assertEquals(java.util.List.of(), result.diagnostics(),
                 "Git review base " + result.base() + ", protected paths checked " + result.protectedPaths());

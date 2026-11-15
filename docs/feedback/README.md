@@ -38,7 +38,6 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
 | AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Owner](ATF_Ai.md#evoluția-motorului) |
 | GOV-03 | P2 | 74 | Reduceți responsabilitățile rămase în GameSession fără schimbarea mutărilor, scorului sau checkpoint-ului; verificați comportamentul nominal și refuzurile cu oracol fixat. [Owner](ATF_Governance.md#lizibilitatea-coordonatorilor-de-domeniu) |
-| GOV-05 | P2 | 72 | Leagă rezultatul probei de controlul testChanges, baza și diff-ul verificate. Refuză probe din alt commit sau fără caz negativ. [Registru](ATF_Governance.md#trasabilitatea-probei-unui-control) |
 
 ## Responsabilitatea schimbării
 

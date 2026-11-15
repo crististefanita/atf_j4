@@ -80,7 +80,7 @@ public final class TestChangeControls {
     }
 
     private static Control control(JsonNode row) {
-        if (!row.isObject() || row.size() != (row.has("allowDelete") ? 8 : 7))
+        if (!row.isObject() || row.size() != (7 + (row.has("allowDelete") ? 1 : 0) + (row.has("checks") ? 1 : 0)))
             throw new IllegalArgumentException("invalid control fields");
         String id = text(row, "id");
         String status = text(row, "status");
@@ -100,7 +100,7 @@ public final class TestChangeControls {
                 throw new IllegalArgumentException("invalid or duplicate path for " + id + ": " + path);
         }
         return new Control(id, status, base, LocalDate.parse(text(row, "expires")), Set.copyOf(paths),
-                row.path("allowDelete").booleanValue());
+                row.path("allowDelete").booleanValue(), TestChangeProofChecks.parse(row.path("checks")));
     }
 
     private static String text(JsonNode row, String field) {
@@ -122,7 +122,7 @@ public final class TestChangeControls {
         return true;
     }
 
-    record Control(String id, String status, String base, LocalDate expires, Set<String> paths, boolean allowDelete) {
+    record Control(String id, String status, String base, LocalDate expires, Set<String> paths, boolean allowDelete, TestChangeProofChecks checks) {
         boolean authorizesReview() { return status.equals("ACTIVE") || status.equals("VERIFIED"); }
     }
 }

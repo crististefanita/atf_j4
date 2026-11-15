@@ -9,12 +9,28 @@ param(
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
     [string]$Maven = 'mvn',
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk',
-    [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384
+    [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384,
+    [string]$TestChangeControl = '',
+    [string]$TestChangeBaseRef = $env:ATF_TEST_CHANGE_BASE_REF
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
 . (Join-Path $PSScriptRoot 'AtfQualificationTiming.ps1')
 $sourceRoot = [IO.Path]::GetFullPath($SourceRoot)
+$proofCommit = ''
+if ($TestChangeControl) {
+    if ($TestChangeControl -cnotmatch '^[A-Z][A-Z0-9-]{3,79}$' -or !$TestChangeBaseRef -or $ReuseFrom -or
+            @($Groups | Where-Object { $_ -cne 'atf-tests' }).Count) {
+        throw 'Proba testChanges cere ID-ul controlului, baza Git și numai selecția offline atf-tests fără reutilizare de suită.'
+    }
+    $Groups = @('atf-tests')
+    $proofCommit = & git --no-replace-objects -C $sourceRoot rev-parse --verify HEAD
+    if ($LASTEXITCODE -ne 0 -or $proofCommit -cnotmatch '^[a-f0-9]{40}(?:[a-f0-9]{24})?$') {
+        throw 'Proba testChanges cere un commit Git local.'
+    }
+    $dirty = & git -C $sourceRoot status --porcelain=v1 --untracked-files=all
+    if ($LASTEXITCODE -ne 0 -or $dirty) { throw 'Proba testChanges cere un checkout curat.' }
+}
 if (-not $RunRoot) {
     $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
     $RunRoot = Join-Path $archive ('component-suites/' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
@@ -57,11 +73,18 @@ function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
         $entries += @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/classes" })
         $classpath = ($entries + @((Get-Content -LiteralPath $classpathFile -Raw).Trim())) -join [IO.Path]::PathSeparator
         foreach ($gate in $selections) {
-            $destination = Join-Path $RunRoot $gate.module
+            $selection = if ($TestChangeControl) { $TestChangeControl } else { $gate.module }
+            $destination = Join-Path $RunRoot $selection
+            $arguments = if ($TestChangeControl) {
+                @('atf.tests.execution.components.TestChangeProofExecution', $sourceRoot, $stage, $destination,
+                    $provenanceFile, $TestChangeBaseRef, $TestChangeControl, $proofCommit)
+            } else {
+                @('atf.tests.execution.components.ComponentSuiteExecution', $gate.suite, $destination, $provenanceFile, $stage)
+            }
             Push-Location (Join-Path $stage $gate.module)
             try {
                 $exit = Invoke-AtfQualificationPhase $timing ("components.run." + $gate.module) {
-                    & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' "-Datf.component.input-part-characters=$InputPartCharacters" "-Datf.governance.gitRoot=$sourceRoot" -cp $classpath atf.tests.execution.components.ComponentSuiteExecution $gate.suite $destination $provenanceFile $stage *> (Join-Path $RunRoot ($gate.module + '.log'))
+                    & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' "-Datf.component.input-part-characters=$InputPartCharacters" "-Datf.governance.gitRoot=$sourceRoot" -cp $classpath @arguments *> (Join-Path $RunRoot ($gate.module + '.log'))
                     $LASTEXITCODE
                 } -ExitCode
             } finally { Pop-Location }
@@ -236,6 +259,13 @@ $snapshotDifferences = @(Invoke-AtfQualificationPhase $timing 'components.snapsh
 })
 $stable = $snapshotDifferences.Count -eq 0
 $passed = $stable -and ($results.Count + $reused.Count) -eq $selectedGroups.Count -and @($results | Where-Object {$_.exitCode -ne 0}).Count -eq 0
+if ($TestChangeControl) {
+    $directory = Join-Path $RunRoot $TestChangeControl
+    if (!$passed) { throw "Proba $TestChangeControl a eșuat; consultați $RunRoot/atf-tests.log și timing.json." }
+    Move-Item -LiteralPath (Join-Path $directory 'proof.pending.json') -Destination (Join-Path $directory 'proof.json')
+    Write-Output "PASS: $directory/proof.json"
+    return
+}
 $androidComponentsReceipt = if ($results.Count) { 'source-component-run.json' } elseif ($reused.Count) {
     'snapshots/' + $reused[0].componentEvidenceOrigin + '/source-component-run.json'
 }

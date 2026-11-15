@@ -2,6 +2,8 @@
 
 ## Pe scurt
 
+- [Proba unui control testChanges](run-component-suites.ps1) folosește selecția offline declarată și scrie dovada legată de commit. [Contractul probei](../docs/governance/ATF_TestChanges.md#dovada-controlului-verificat)
+
 - [Guvernanța schimbărilor de teste](run-atf-governance.ps1) primește baza Git a revizuirii. [Contractul diff-ului](../docs/governance/ATF_TestChanges.md#verificarea-diff-ului-git) explică perimetrul, expirarea și refuzurile.
 
 - [Inventarul JVM](run-jvm-inventory.ps1) verifică sursele unui checkout selectat. [Contractul CLI](../docs/governance/README.md#inventar-jvm-prin-cli) explică perimetrul, excepțiile și codurile de ieșire.
