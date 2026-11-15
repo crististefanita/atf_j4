@@ -19,6 +19,7 @@ Consumatorul deține validarea API, procesele și adopția locală; [registrul r
 | Prioritate | Limită de calificare | Criteriu de închidere |
 |---|---|---|
 | P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combină sincronizarea explicită cu praguri strânse ale timpului real. | Separați pregătirea subprocesului de intervalul transportului și proba de terminare/curățare de calificarea latenței pe mediul identificat. Păstrați termenul produsului și controalele negative; nu relaxați pragurile doar pentru a obține PASS. |
+| P2 | [Preflight-ul Android cu ADB simulat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) include pornirea PowerShell în termenul impus probei de refuz. Sub încărcare, proba poate eșua înaintea verdictului mock-ului. | Semnalizați separat pornirea fixture-ului și refuzul transportului. Validați refuzul cu ceas și proces controlate, împreună cu o probă restrânsă a lansatorului real. |
 
 [Kitul testelor](../../lib/README.TestKit.md#scope-și-integrare) · [Validarea API](../../atf-validation/README.md) · [Guvernanță](ATF_Governance.md)
 

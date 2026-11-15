@@ -3,6 +3,7 @@ param(
     [string]$RunRoot = '',
     [string]$SourceRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$PinnedSourceInputs = '',
+    [string]$TestChangeBaseRef = '',
     [string]$Maven = 'mvn',
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository')
@@ -43,7 +44,9 @@ try {
     try {
         Assert-AtfQualificationSnapshot $snapshot $stage $sourceRoot
         $testExit = Invoke-AtfQualificationPhase $timing 'governance.maven' {
-            & $Maven -B "-Dmaven.repo.local=$localRepository" -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' "-Datf.governance.root=$stage" "-Datf.governance.gitRoot=$sourceRoot" test *> (Join-Path $RunRoot 'maven.log')
+            $review = @()
+            if ($TestChangeBaseRef) { $review += "-Datf.governance.testChanges.baseRef=$TestChangeBaseRef" }
+            & $Maven @review -B "-Dmaven.repo.local=$localRepository" -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' "-Datf.governance.root=$stage" "-Datf.governance.gitRoot=$sourceRoot" test *> (Join-Path $RunRoot 'maven.log')
             $LASTEXITCODE
         } -ExitCode
     } finally { Pop-Location }

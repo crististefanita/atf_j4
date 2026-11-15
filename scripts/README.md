@@ -2,6 +2,8 @@
 
 ## Pe scurt
 
+- [Guvernanța schimbărilor de teste](run-atf-governance.ps1) primește baza Git a revizuirii. [Contractul diff-ului](../docs/governance/ATF_TestChanges.md#verificarea-diff-ului-git) explică perimetrul, expirarea și refuzurile.
+
 - [Inventarul JVM](run-jvm-inventory.ps1) verifică sursele unui checkout selectat. [Contractul CLI](../docs/governance/README.md#inventar-jvm-prin-cli) explică perimetrul, excepțiile și codurile de ieșire.
 
 - [Izolare E2E Android cu utilizator temporar](Invoke-AtfAndroidDisposableUser.ps1) creează profil secundar nou, îl deblochează și previne stingerea ecranului doar în acel profil, instalează candidatul numai acolo și îl elimină la teardown după verificarea aceleiași rezervări. Chitanțele păstrează și verifică starea inițială a instalării aplicației în profilul original; contractul și raportarea sunt documentate în [acceptanța APK-ului semnat](../atf-test-android/src/test/java/atf/android/e2e/release/README.md).

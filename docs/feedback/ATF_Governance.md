@@ -60,13 +60,12 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 |---|---|---|
 | P2 | Proba nativă este păstrată cu sursele în Extent, dar lansarea ei este încă o operație TMP a operatorului. | Adaptor opt-in versionat: citește identitatea candidatului, folosește permisiuni Android proprii și separă accesul de transfer. Componentele injectează 404, fișier scurt, hash/CRC greșit, certificat absent ori diferit și timeout; nu salvează redirectul semnat. Raportul păstrează comparațiile, eroarea și durata originale, iar cleanup-ul elimină doar resursele deținute. Un singur transfer Android califică livrarea; nu se multiplică pe rezoluțiile UI. |
 
-## Confruntarea afirmațiilor documentare
+## Trasabilitatea probei unui control
 
 | Prioritate | Lacună și sursă | Criteriu de închidere |
 |---|---|---|
-| P2 | [Politica documentară](../../atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java) recunoaște forma controalelor testChanges; această recunoaștere nu confruntă singură baza Git, căile schimbate și expirarea. | Definiți explicit partea locală și contractul comun, cu refuz pentru bază lipsă, cale neacoperită, control expirat și modificare neautorizată a unui gate. Păstrați distinct validarea formatului și validarea schimbării efective. |
+| P2 | [Regula schimbării testelor](../governance/ATF_TestChanges.md#ciclul-de-viață-al-controlului) verifică autorizația pe Git. Comanda din control nu transportă rezultatul execuției și amprenta reviziei testate. | Leagă rezultatul probei de baza, diff-ul și ID-ul controlului înainte de trecerea la VERIFIED. Adaugă refuzuri pentru raport din alt commit, invocare incompletă și lipsa controlului negativ. Refolosește dovada offline cât timp intrările și selecția coincid. |
 
-Inventarul fișierelor `release/` citite în timpul guvernanței aparține [contractului de snapshot RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven).
 
 ## Lizibilitatea coordonatorilor de domeniu
 

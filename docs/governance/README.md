@@ -110,7 +110,7 @@ Pentru o copie de lucru deja pregătită, cu bibliotecile și modulele necesare:
 mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-`atf.governance.root` selectează rădăcina verificată. Pentru o copie fără metadate Git, `atf.governance.gitRoot` identifică depozitul folosit numai pentru obiectele istorice ale dovezilor publicate.
+`atf.governance.root` selectează copia verificată. Proprietatea `atf.governance.gitRoot` indică checkout-ul folosit pentru [diff-ul testelor](ATF_TestChanges.md#verificarea-diff-ului-git) și pentru obiectele istorice ale dovezilor publicate.
 
 ## Dovezi și limite
 

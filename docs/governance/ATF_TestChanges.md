@@ -25,236 +25,46 @@ O modificare a testelor păstrează sensul contractului și motivul pentru care 
 
 [Guvernanța documentației](ATF_Documentation.md) · [Colecții](../testing/ATF_Collections.md)
 
-<details>
-<summary>Control activ: acceptanța nativă a acțiunilor și a istoricului</summary>
+## Verificarea diff-ului Git
 
-```yaml
-testChanges:
-  - id: PORTRAIT-ACTION-REGIONS-AND-HISTORY
-    status: VERIFIED
-    base: 5ae98e8cc1863c7513f0d7b8396087f19c0bc6cb
-    expires: 2026-12-05
-    reason: Distanța se măsoară față de chenar și acțiunea lui observată, păstrând refuzul suprapunerilor; adaugă dimensiuni exacte, localizare, actori pregătiți legal și accesul la toate rândurile și coloanele.
-    proof: 'gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true; mvn -Dtest=AndroidDisplayComponentSuite,RecordsRunContractComponentTest,RecordsFixturesComponentTest,AndroidUiFlowReportPublisherTest test; mvn -Dtest=WhistRecordsE2eTest#historyPresentationAcrossDeclaredPortraitProfiles -Datf.android.enabled=true test'
-    paths:
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveMenuChecks.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveEvidence.java
-      - atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixtures.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsContext.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContractComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java
+Rulați [lansatorul de guvernanță](../../scripts/run-atf-governance.ps1) din checkout-ul revizuit. Alegeți commitul comun de dinaintea schimbării. Lansatorul verifică testele pe o copie izolată și citește diferența din checkout-ul Git indicat.
+
+```powershell
+.\scripts\run-atf-governance.ps1 -TestChangeBaseRef $reviewBase
 ```
 
-Un reper simulat arată cum ignorarea acțiunii inversează comparația distanțelor pe aceleași coordonate. Controalele negative păstrează erorile de text, actor, dimensiune și identitate a rândului; rularea nativă cere metadatele instalării, rezervarea și arhiva privată definite în [contractul Android](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii).
+| Contract | Verificare |
+|---|---|
+| Bază | Un commit local anterior sau egal cu HEAD. În CI declarați baza explicit și anterioară lui HEAD. Local, fără parametru, HEAD delimitează numai schimbările necomise. |
+| Intrări Git | Diferențele comise față de bază, indexul, fișierele de lucru și fișierele noi. Sunt incluse și intrările protejate ignorate de Git. |
+| Perimetru | Seturile Maven și Gradle de teste și resurse, POM-urile, configurarea Gradle, selecțiile de suite și intrările executabile ale guvernanței și calificării. |
+| Autorizație | O singură intrare eligibilă pentru calea exactă, SHA-ul bazei și data UTC. Data expirării este inclusivă. |
+| Refuz | Bază absentă sau străină, cale neacoperită, control expirat, eligibilitate ambiguă, metadate invalide sau stare Git neacceptată. |
+| Redenumire | Ștergerea căii vechi plus adăugarea căii noi. Ștergerea cere explicit allowDelete. |
 
-</details>
+Lansatorul transmite baza prin proprietatea atf.governance.testChanges.baseRef. Pentru selecția de componente se poate seta ATF_TEST_CHANGE_BASE_REF înainte de lansare. Review-ul întregii ramuri folosește întotdeauna un commit anterior lui HEAD.
 
-<details>
-<summary>Control activ: proporțiile mesei și acțiunea deasupra numelui</summary>
+## Ciclul de viață al controlului
 
-```yaml
-testChanges:
-  - id: DISPLAY-PROPORTIONS-ACTION-AND-HISTORY
-    status: VERIFIED
-    base: 8933374e33ab6eee9cb4217ed1a6112aebacc9b3
-    expires: 2026-12-05
-    reason: Aplică cerința de reducere a înălțimii fețelor jucate și lățimii atuului, mărire a chenarelor și separare completă a acțiunii de nume; păstrează geometria fără suprapuneri și identitatea cronologică a scorului.
-    proof: 'gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true --offline --no-daemon; pwsh -NoProfile -File scripts/run-whist-responsive-sanity.ps1 -ComponentsOnly'
-    paths:
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/seat/PlayerSeatMetricsComponentTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/profile/ResponsiveDisplayProfile.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/profile/ResponsiveDisplayProfileComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveTableState.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveMenuChecks.java
-      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java
-```
+| Etapă | Loc și criteriu |
+|---|---|
+| ACTIVE | Documentul de [feedback responsabil](../feedback/README.md) păstrează motivul, comanda probei și lista exactă a căilor. |
+| VERIFIED | [Registrul tehnic](ATF_TestChangesBaseline.md) păstrează același ID după probă. Eligibilitatea rămâne legată de baza inițială și de expirare. |
+| DRAFT și CLOSED | Intrarea structurată poate consemna propunerea sau închiderea. Aceste stări au eligibilitate zero. |
+| Retragere | Confruntați controlul cu baza revizuirii. Eliminați intrarea numai când diff-ul vizat nu mai are nevoie de ea. |
 
-Oracolul dimensiunilor urmează cerința de prezentare, iar controalele negative refuză înălțimea depășită, acțiunea lipsă, textul prescurtat și suprapunerea peste nume. Verificarea nativă rămâne distinctă de observația simulată și de mecanismul JVM.
+- Blocul YAML are cheia `testChanges` și o listă nevidă. Fiecare element declară `id`, `status`, `base`, `expires`, `reason`, `proof` și `paths`. Câmpul `allowDelete` este opțional și implicit fals.
+- Căile relative folosesc separatorul `/`. Fiecare ID este unic în documentele inspectate.
 
-</details>
-
-## Înregistrări active pentru modificarea testelor
-
-<details>
-<summary>Control activ: măsurarea istoricului și invariantele registrului</summary>
-
-```yaml
-testChanges:
-  - id: HISTORY-MEASUREMENT-AND-LEDGER-INVARIANTS
-    status: VERIFIED
-    base: 180ea08cb639fd09291d191278e18fa93ae6db96
-    expires: 2026-12-05
-    reason: Extrage agregarea măsurătorilor din vederea Android și adaugă refuzuri pentru locuri invalide, pierderea levatelor și dimensiuni imposibile; păstrează sufixele necunoscute, imutabilitatea și măsurarea ultimei celule.
-    proof: 'gradlew.bat :game-core:test --tests ro.whistlab.core.session.ScoreHistoryInvariantTest --offline; gradlew.bat :app:testDebugUnitTest --tests ro.whistlab.app.score.ScoreHistory*Test --offline'
-    paths:
-      - whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/ScoreHistoryInvariantTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
-```
-
-Regresiile se confruntă cu sursa anterioară înaintea corecției. Furnizorii de font sunt injectați în componente; calificarea rasterului și a fontului Android rămâne separată. Un diagnostic de classpath nu este reclasificat ca defect al produsului.
-
-</details>
-
-<details>
-<summary>Control activ: istoric compact și rezultatul explicit al contractului</summary>
-
-```yaml
-testChanges:
-  - id: COMPACT-HISTORY-EXPLICIT-CONTRACT-OUTCOME
-    status: VERIFIED
-    base: 6e8f3f38e94f0513597b197bc8fa60ce73ee371b
-    expires: 2026-12-05
-    reason: Aplică geometria compactă agreată și schema cu levate explicite; păstrează prefixul necunoscut, comparațiile independente de scor, conservarea levatelor și verificarea celulelor complete în ambele limbi.
-    proof: 'gradlew.bat :app:testDebugUnitTest :app:assembleDebug -Pwhist.displayComponents=true --offline --no-daemon; mvn -Dtest=RecordsFixturesComponentTest,RecordsRunContractComponentTest,AndroidUiFlowReportPublisherTest test; mvn -Dtest=WhistRecordsE2eTest#compactHistoryAndSlashedContractsRemainReadable -Datf.android.enabled=true test'
-    paths:
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryTableComponentTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryOutcomeComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixtures.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java
-      - atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java
-```
-
-Zero, ratarea cu puncte pozitive, datele necunoscute și o mână neîncheiată au rezultate distincte. Controalele negative refuză levatele fracționare, negative, neconservate sau contradictorii, iar măsurătorile injectate nu înlocuiesc randarea nativă.
-
-</details>
-
-<details>
-<summary>Control activ: indicator de atu comun și depunere discretă</summary>
-
-```yaml
-testChanges:
-  - id: UNIFORM-TRUMP-AND-COMPACT-BID-SUBMISSION
-    status: VERIFIED
-    base: e183df449ad54d4281925f905ce3a65cf4b6cdf3
-    expires: 2026-12-05
-    reason: Elimină rândul redundant despre cartea neîntoarsă și folosește aceeași ramă cu două regiuni în toate modurile; păstrează valoarea vizibilă, identitatea accesibilă și ținta tactilă. Sincronizează dimensiunile mâinii și indicii locurilor cu politica de afișaj modificată în paralel.
-    proof: 'gradlew.bat :app:testDebugUnitTest :app:assembleDebug -Pwhist.displayComponents=true --offline --no-daemon; pwsh -NoProfile -File scripts/run-whist-responsive-sanity.ps1 -ComponentsOnly'
-    paths:
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java
-      - whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTableLayoutComponentTest.java
-      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardBiddingCheck.java
-      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerBiddingCheck.java
-      - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/FanSetupPhase.java
-      - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveGameFlow.java
-```
-
-Controalele păstrează cartea sau culoarea, lizibilitatea, localizarea și descrierea accesibilă; absența textului redundant nu înlocuiește prezența valorii. Măsurătorile de font injectate califică politica comună, iar verificarea nativă compară aceeași geometrie în stări cu și fără atu.
-
-</details>
+Comanda proof exprimă verificarea planificată și se execută separat. [Probele de componentă](../../atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java) construiesc istorii Git locale și califică mecanismul fără dispozitiv.
 
 ## Mutarea proprietății unei verificări
 
 Transferul unei implementări către o bibliotecă păstrează toate contractele native la producător. Consumatorul păstrează acceptanța API-ului folosit, identitatea JAR-ului încărcat și refuzurile pentru metadate ori livrări inconsistente.
 
 - Cererea de schimbare identifică sursele afectate, proprietarul nou, înlocuirea echivalentă și criteriile independente de acceptare.
-- Inventarele concrete, bazele Git, hash-urile și rezultatele transferului sunt înregistrări externe, legate de livrarea verificată.
+- Rulările și capturile transferului se leagă de livrare. Controlul tehnic păstrează baza Git și căile sale în registru.
 - Ștergerea copiei locale nu suprimă un caz negativ și nu transformă o verificare de bibliotecă într-o acceptanță Android.
 - Documentația curentă descrie limita de responsabilitate, fără liste istorice de teste șterse.
 
 [Guvernanța calității](README.md) verifică perimetrul curent și interzice sursele paralele ale bibliotecilor binare.
-
-
-<details>
-<summary><strong>Ghiduri ale bibliotecilor — index scurt și ghiduri per bibliotecă</strong></summary>
-
-```yaml
-testChanges:
-  - id: LIBRARY-USAGE-GUIDES
-    status: VERIFIED
-    base: 52270cdbff4a7234c2cc6581c910d3431105f76e
-    expires: 2026-11-30
-    reason: Keep the exact flat binary inventory and require only the index plus four named usage guides; retain independent missing, directory and extra-file negatives, physical CodeSource and source/feedback ownership.
-    proof: 'mvn -B -ntp -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest,LibraryDocumentationExampleTest,DocumentationPolicyGovernanceTest#libraryMaintenanceFooterDoesNotExemptBodyOtherOwnersOrOtherFiles+libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter test'
-    paths:
-      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
-      - atf-tests/src/test/java/atf/tests/governance/support/GovernanceProject.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
-```
-
-Exemplele sunt extrase din README-uri și verificate pe JAR-urile fizice. Schimbarea păstrează perechile publicate și oracolele existente.
-
-</details>
-
-<details>
-<summary>Control activ: adresa tehnică a descărcării publice</summary>
-
-```yaml
-testChanges:
-  - id: DOCUMENTATION-PUBLIC-RELEASE-URI
-    status: VERIFIED
-    base: cd4e62e4fd89bb5134f874aee1912aa086a5bda2
-    expires: 2026-12-05
-    reason: Distinge destinația tehnică a linkului stabil al propriului repository de proza vizibilă; păstrează refuzul identificatorilor din etichete, alte proiecte, căi de sursă și URL-uri modificate.
-    proof: 'mvn -B -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
-    paths:
-      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
-      - config/atf-governance-policy.json
-```
-
-Reproducerea este refuzul linkului public valid ca referință editorială; controalele negative păstrează etichetele, alte proiecte și variantele necanonice în perimetrul verificat. Contractul [documentației](ATF_Documentation.md#conținut-stabil-și-date-variabile) definește limita, fără excepții generale pentru URL-uri.
-
-</details>
-
-<details>
-<summary>Control verificat: pagina versiunii declarate</summary>
-
-```yaml
-testChanges:
-  - id: DOCUMENTATION-DECLARED-RELEASE-PAGE
-    status: VERIFIED
-    base: a5eebec1805b760c876f03d2439da8b73d8e3cec
-    expires: 2026-12-06
-    reason: Recunoaște strict pagina tag-ului livrării declarate, împreună cu APK-ul și checksum-ul; păstrează verificarea prozei vizibile, a altor versiuni și a adreselor modificate.
-    proof: 'mvn -B -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
-    paths:
-      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
-      - atf-tests/src/main/java/atf/tests/distribution/ApkDownloadTarget.java
-```
-
-[Identitatea livrării](../platform/ATF_AndroidDelivery.md) stabilește versiunea; [politica documentară](ATF_Documentation.md#conținut-stabil-și-date-variabile) clasifică numai destinațiile canonice. Probele refuză pagina nedeclarată, altă versiune, alt repository, imaginea și URL-urile cu modificări; eticheta vizibilă nu primește excepție.
-
-</details>
-
-<details>
-<summary>Control verificat: proprietatea și documentația bibliotecilor</summary>
-
-```yaml
-testChanges:
-  - id: LIBRARY-OWNERSHIP-README
-    status: VERIFIED
-    base: d46948264e7b35347ad812be1e67e9fba30eef05
-    expires: 2026-11-30
-    reason: Require exactly four flat JAR/POM pairs plus the dedicated README and common producer ownership of library source and feedback; preserve physical binary identity, independent negative oracles and consumer acceptance.
-    proof: 'mvn -B -ntp -pl atf-tests -am -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest -Dsurefire.failIfNoSpecifiedTests=false test'
-    paths:
-      - atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java
-      - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
-```
-
-Controalele negative resping README-ul absent, documentele suplimentare, un director în locul README-ului și atribuirea codului ori feedback-ului unui consumer. Bibliotecile distribuite își păstrează coordonatele și hash-urile.
-
-Inventarul de la baza Git declarată este cel al incrementului verificat. Perechile și ghidurile curente sunt definite în [contractul lib](../../lib/README.md).
-
-</details>

@@ -38,7 +38,8 @@ test('a qualification policy edit affects governance and leaves the game build e
 });
 
 test('standalone governance launchers rerun only the offline governance component', () => {
-  const paths = ['scripts/AtfStandaloneJava.ps1', 'scripts/run-jvm-inventory.ps1', 'scripts/run-documentation-governance.ps1'];
+  const paths = ['scripts/AtfStandaloneJava.ps1', 'scripts/run-jvm-inventory.ps1',
+    'scripts/run-documentation-governance.ps1', 'scripts/run-atf-governance.ps1'];
   const candidate = new Map(paths.map(file => [file, 'new']));
   const selection = deriveReleaseTestScope(new Map(), candidate, groups);
   assert.equal(selection.kind, 'MAINTENANCE');
