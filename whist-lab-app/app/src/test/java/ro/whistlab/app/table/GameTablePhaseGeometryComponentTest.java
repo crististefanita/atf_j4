@@ -177,7 +177,9 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
                 var viewport = new TableViewportPolicy(height, fontScale);
                 var reservation = TableLayoutMetrics.matchCenterReservation(mode, 3, width,
                         fontScale, viewport);
-                var trick = TrickCardMetrics.forTable(3, width, fontScale, viewport);
+                var trick = reservation.useBidStrip()
+                        ? TrickCardMetrics.compactThreePlayer(width, fontScale, viewport)
+                        : TrickCardMetrics.forTable(3, width, fontScale, viewport);
                 int seatWidth = ro.cardtable.ui.table.TableSizing.seatWidthDp(width, viewport.isCompact());
                 int seatHeight = Math.round(64 * Math.max(1f, fontScale));
                 int gap = viewport.regionGapDp();
@@ -278,23 +280,38 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
         var viewport = new TableViewportPolicy(494);
         var reservation = TableLayoutMetrics.matchCenterReservation(GameMode.DOWN_AND_UP,
                 3, boardWidthDp, 1f, viewport);
-        int seatHeightPx = 160;
+        int seatHeightPx = 167;
+        int seatWidthPx = 158;
+        int boardWidthPx = Math.round(boardWidthDp * density);
         int gapPx = Math.round(viewport.regionGapDp() * density);
         int handPx = TableLayoutMetrics.privateHandHeightPx(density);
-        int reservedCenterPx = Math.round(reservation.reservedHeightDp() * density);
-        int minimumBoardPx = TableGeometry.minimumHeight(3, seatHeightPx, reservedCenterPx, gapPx);
-        int gridCenterPx = Math.round(BidGridMetrics.actionLayout(18, boardWidthDp, 1f)
-                .centerHeightDp() * density);
-        int oldMinimumPx = TableGeometry.minimumHeight(3, seatHeightPx, gridCenterPx, gapPx);
+        int reservePx = Math.round(reservation.reservedHeightDp() * density);
+        int boardHeightPx = contentBelowHeaderPx - handPx;
+        var oldTrick = TrickCardMetrics.forTable(3, boardWidthDp, 1f, viewport);
+        int oldTrickPx = Math.round(oldTrick.cellHeightDp() * density)
+                + Math.round(oldTrick.rowStrideDp() * density);
+        var trick = reservation.trickLayout();
+        int minimumBoardPx = TableGeometry.minimumHeight(3, seatHeightPx, reservePx, gapPx);
+        int clearancePx = Math.round(TableLayoutMetrics.humanHandClearanceDp() * density);
+        var bid = TableGeometry.arrangeDisplay(boardWidthPx, boardHeightPx, 3, seatWidthPx, seatHeightPx,
+                boardWidthPx, reservePx, gapPx, true, TableGeometry.CenterAlignment.TOWARD_HUMAN, clearancePx);
+        var play = TableGeometry.arrangeDisplay(boardWidthPx, boardHeightPx, 3, seatWidthPx, seatHeightPx,
+                boardWidthPx, reservePx, gapPx, true, TableGeometry.CenterAlignment.BALANCED, clearancePx);
 
         atf.gradle.audit.GradleInputs.fixture("720 × 1280, 360 dpi, Down & Up maximum deal",
-                "content below header in px", contentBelowHeaderPx, "seat in px", seatHeightPx,
-                "hand and lift in px", handPx, "former board minimum in px", oldMinimumPx,
+                "content below header in px", contentBelowHeaderPx, "seat including badge in px", seatHeightPx,
+                "hand and lift in px", handPx, "two-row trick height in px", oldTrickPx,
                 "board minimum in px", minimumBoardPx, "reservation", reservation);
-        assertTrue("The old grid clipped the private hand at the initial scroll position",
-                oldMinimumPx + handPx > contentBelowHeaderPx);
-        assertTrue("The compact reservation leaves room for the entire hand and its lift",
-                minimumBoardPx + handPx <= contentBelowHeaderPx);
+        assertTrue("The two-row trick alone clipped the hand even after compacting the bid choices",
+                TableGeometry.minimumHeight(3, seatHeightPx, oldTrickPx, gapPx) > boardHeightPx);
+        assertTrue("The compact reservation leaves room for the hand and its lift",
+                minimumBoardPx <= boardHeightPx);
+        assertEquals("Seat positions are identical within the actual pixel budget", bid.seats(), play.seats());
+        assertEquals("The played cards occupy one row", 1, trick.rows());
+        assertEquals("The displayed public cards keep their original height", oldTrick.cardHeightDp(), trick.cardHeightDp());
+        assertTrue("The public cards follow left, human, right seat order with space between them",
+                trick.slotForSeat(1).leftDp() + trick.cardWidthDp() <= trick.slotForSeat(0).leftDp() &&
+                trick.slotForSeat(0).leftDp() + trick.cardWidthDp() <= trick.slotForSeat(2).leftDp());
         assertTrue("The scheduled match uses a horizontal choice strip", reservation.useBidStrip());
         assertEquals("Each bid choice retains its touch target", 48, BidGridMetrics.CHOICE_TARGET_DP);
     }

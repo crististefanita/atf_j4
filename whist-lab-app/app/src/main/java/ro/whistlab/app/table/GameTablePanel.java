@@ -181,10 +181,9 @@ public final class GameTablePanel extends LinearLayout {
     private ViewGroup buildRoundTable() {
         int tableWidthDp = Math.min(availableContentWidthDp(), 760);
         float fontScale = getResources().getConfiguration().fontScale;
-        TrickCardMetrics.Layout trickLayout = bidding
-                ? null : TrickCardMetrics.forTable(state.players().size(), tableWidthDp, fontScale, viewport);
         var reservation = TableLayoutMetrics.matchCenterReservation(state.mode(),
                 state.players().size(), tableWidthDp, fontScale, viewport);
+        var trickLayout = reservation.trickLayout();
         var bidLayout = bidding ? BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp,
                 fontScale, reservation.useBidStrip()) : null;
         int centerWidthDp = bidding ? bidLayout.centerWidthDp()

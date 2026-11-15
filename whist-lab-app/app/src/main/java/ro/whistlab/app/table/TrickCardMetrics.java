@@ -69,4 +69,21 @@ final class TrickCardMetrics {
     static Layout forTable(int players, int tableWidthDp, float fontScale, TableViewportPolicy viewport) {
         return local(ro.cardtable.ui.table.PlayedCardMetrics.forTable(players, tableWidthDp, fontScale, viewport));
     }
+
+    /** A single public row fits the compact three-player table without shortening any cards. */
+    static Layout compactThreePlayer(int tableWidthDp, float fontScale, TableViewportPolicy viewport) {
+        var standard = forTable(3, tableWidthDp, fontScale, viewport);
+        int cardWidth = standard.cardWidthDp();
+        List<Slot> slots = List.of(
+                new Slot(0, 0, centeredLeft(tableWidthDp, cardWidth, 3)),
+                new Slot(1, 0, centeredLeft(tableWidthDp, cardWidth, 1)),
+                new Slot(2, 0, centeredLeft(tableWidthDp, cardWidth, 5)));
+        return new Layout(3, 1, cardWidth, standard.cardHeightDp(), standard.playerLabelHeightDp(),
+                standard.itemVerticalPaddingDp(), standard.centerWidthDp(), standard.safeCenterWidthDp(),
+                standard.cellHeightDp(), standard.cellHeightDp(), standard.cellHeightDp(), slots);
+    }
+
+    private static int centeredLeft(int tableWidthDp, int cardWidthDp, int sixths) {
+        return (int) Math.round(tableWidthDp * sixths / 6.0 - cardWidthDp / 2.0);
+    }
 }
