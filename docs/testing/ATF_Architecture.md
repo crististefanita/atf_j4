@@ -121,6 +121,7 @@ Rezultatele se păstrează în afara surselor. Testele unitare nu sunt obligate 
 | Interpretarea ierarhiei | XML controlat: stare validă, nod lipsă, duplicat, regiune tăiată și document malformat. | Captura proaspătă după acțiune și identitatea ecranului observat. |
 | Tranziție sau reluare | Porturi mici, motorul real și evenimente livrate controlat, inclusiv după anulare. | Comanda prin controlul afișat, callback-urile și persistența platformei. |
 | Reguli localizate și opțiuni de salvare | Textul furnizat aplicației în fiecare limbă, opțiunile de configurare, codec-ul real și intrările nevalide. | Schimbarea limbii și redeschiderea ajutorului, câte o acțiune pentru selector și bifă, reluarea după oprirea procesului. |
+| Licitație sub dialoguri suprapuse | Componentele joacă închiderea istoricului și scorului cu o recomandare deja în coadă. Alegerea manuală rămâne selectată și scorul nu se schimbă înaintea confirmării. | Licitarea pe APK verifică dialogul de scor, confirmarea și restaurarea după restart. Legenda și randarea rămân în traseul dedicat istoricului. |
 | Publicare | Date capturate, comparații și eșecuri originale; Extent/fallback și mutații ale rezultatului. | Revizia interactivă a HTML-ului rămâne audit de raport, cu propriul mediu. |
 
 - **Echivalență:** mapați cazul vechi la cazurile noi prin proprietate și identitate; păstrați situația nominală, refuzul și vecinul sănătos.

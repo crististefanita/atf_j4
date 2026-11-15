@@ -10,7 +10,6 @@ Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul 
 |---|---|---|
 | P2 | Profilarea inspecției straturilor surprinde inițializarea încărcătorului de procesoare și interogarea classpath-ului în [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), deși verificarea consumă arborele de sintaxă. | Calificați o configurare parse-only cu dependențe delimitate și măsurați costul pe același inventar. Păstrați adnotările compuse, importurile ambigue, erorile de sintaxă și ciclul de viață al parserului prin controale independente. |
 
-Măsurați costul parserului pe aceeași populație de surse. Verificarea funcțională a aplicației are propriile probe.
 
 ## Coeziunea și evoluția pachetelor
 

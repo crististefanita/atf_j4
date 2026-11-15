@@ -3,6 +3,7 @@ package atf.android.process;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +21,13 @@ public final class CommandProcess {
 
     public static Output execute(List<String> command, Map<String, String> environment,
                                  Duration timeout, boolean mergeError) throws IOException, InterruptedException {
+        return execute(command, null, environment, timeout, mergeError);
+    }
+
+    public static Output execute(List<String> command, Path directory, Map<String, String> environment,
+                                 Duration timeout, boolean mergeError) throws IOException, InterruptedException {
         ProcessBuilder builder = new ProcessBuilder(command).redirectErrorStream(mergeError);
+        if (directory != null) builder.directory(directory.toFile());
         Objects.requireNonNull(timeout);
         if (timeout.isZero() || timeout.isNegative()) throw new IllegalArgumentException("timeout must be positive");
         builder.environment().putAll(environment);

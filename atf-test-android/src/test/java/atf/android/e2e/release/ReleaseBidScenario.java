@@ -59,15 +59,6 @@ final class ReleaseBidScenario {
         c.ui.awaitText(labels.close(), Duration.ofSeconds(15));
         c.checkpoint("Score dialog suspends bidding", xml -> List.of(
                 ReleaseBidContext.equal("Score dialog can be closed", true, c.ui.hasText(xml, labels.close()))));
-        c.ui.tapText(labels.history().toUpperCase(java.util.Locale.ROOT));
-        c.ui.awaitText(labels.history(), Duration.ofSeconds(15));
-        c.checkpoint("Real score history exposes the cumulative points legend", xml -> List.of(
-                ReleaseBidContext.equal("The real history dialog is open", true, c.ui.hasText(xml, labels.history())),
-                ReleaseBidContext.equal("The history legend explains cumulative points", true,
-                        c.ui.hasTextContaining(xml, ro ? "P Punctaj total" : "P Total score")),
-                ReleaseBidContext.equal("History remains dismissible", true, c.ui.hasText(xml, labels.close()))));
-        c.ui.tapText(labels.close());
-        c.ui.awaitText(labels.close(), Duration.ofSeconds(15));
         c.ui.tapText(labels.close());
         c.ui.awaitText(labels.submit(), Duration.ofSeconds(15));
         assertManual(c, labels, human, manual, "Closing the dialog preserves manual choice");
@@ -132,7 +123,6 @@ final class ReleaseBidScenario {
         String handComplete() { return ro ? "Mână încheiată" : "Hand complete"; }
         String next() { return ro ? "Mâna următoare" : "Next hand"; }
         String close() { return (ro ? "Închide" : "Close").toUpperCase(java.util.Locale.ROOT); }
-        String history() { return ro ? "Istoricul scorului" : "Score history"; }
         String resume() { return ro ? "Reia partida" : "Resume game"; }
         String bid() { return ro ? "Licitat" : "Bid"; }
     }

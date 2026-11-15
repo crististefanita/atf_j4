@@ -108,6 +108,8 @@ Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, p
 
 ### Regresiile evaluatorului
 
+Probele Node folosesc același executor cu termen limitat ca verificările Git. Citirea ieșirii începe odată cu procesul, iar diagnosticul copilului se păstrează la eșec. [Probe de componentă](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java)
+
 Suita de componente rulează evaluatorul pe dosare de test locale. Fiecare clasă deține un contract și folosește același lansator al procesului Node.
 
 | Contract | Test de componentă | Ce verifică |

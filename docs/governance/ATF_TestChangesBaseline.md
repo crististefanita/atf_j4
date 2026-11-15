@@ -347,3 +347,28 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Control verificat pentru execuția probelor și mutarea verificării dialogurilor</summary>
+
+```yaml
+testChanges:
+  - id: OFFLINE-QUALITY-BOUNDARIES
+    status: VERIFIED
+    base: f2c1b58d50e57922bbbb9ac44c977149328d7c0c
+    expires: 2026-12-19
+    reason: Verifică citirea concurentă a ieșirii Node și păstrează selecția manuală în dialoguri suprapuse fără repetarea legendei în traseul de licitare.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentEvidenceScopeComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#verboseNodeRunDrainsBothStreamsFromTheSelectedDirectory
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#nonZeroNodeExitKeepsTheChildDiagnostic
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java
+      - atf-test-android/src/test/java/atf/android/e2e/release/ReleaseBidScenario.java
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+```
+
+</details>

@@ -34,9 +34,10 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și reconciliază limita Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
-| TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
+| RAG-09 | P2 | 85 | Refuză TMP din checkout înainte de copiere și Maven, inclusiv când o cale indirectă ajunge acolo. [Registru](ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor) |
+| TEST-01 | P2 | 84 | Refolosește așteptarea controlată pentru buclele de licitare și joc. Demonstrează timeout-ul, ordinea comenzilor și cauza originală fără dispozitiv. [Registru](ATF_TestInfrastructure.md#stabilitatea-verificării-proceselor) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
-| AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Owner](ATF_Ai.md#evoluția-motorului) |
+| AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Registru](ATF_Ai.md#evoluția-motorului) |
 
 ## Responsabilitatea schimbării
 

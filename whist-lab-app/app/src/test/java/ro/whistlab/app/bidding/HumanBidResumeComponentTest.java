@@ -3,10 +3,12 @@ package ro.whistlab.app.bidding;
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ro.whistlab.app.lifecycle.AiTurnCoordinator;
+import ro.whistlab.app.navigation.AppNavigation;
 import ro.whistlab.app.persistence.GameSessionStore;
 import ro.whistlab.core.session.GameSession;
 
@@ -47,24 +49,41 @@ public final class HumanBidResumeComponentTest extends atf.gradle.audit.GradleAu
     }
 
     @Test public void suspendingTheSameSessionKeepsManualChoiceAndSuppressesQueuedAdvice() {
-        var game = fixture(); var before = game.saveState(); var selection = new HumanBidSelection();
-        var request = selection.request(game).orElseThrow();
+        var game = fixture();
+        var before = game.saveState();
+        var selection = new HumanBidSelection();
         var legal = BiddingMatrixFixtures.legalBids(game.snapshot());
         int manual = legal.get(legal.size() - 1);
-        var worker = new BidSelectionFixtures.Worker(); var owner = new ArrayDeque<Runnable>();
+        var worker = new BidSelectionFixtures.Worker();
+        var owner = new ArrayDeque<Runnable>();
+        var resumes = new AtomicInteger();
         try (var coordinator = new AiTurnCoordinator(worker, owner::add)) {
-            
-            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "before", before, "game", game, "legal", legal, "manual", manual, "owner", owner, "request", request, "selection", selection, "worker", worker);
-            assertTrue("coordinator.submit(()->legal.get(0), (bid)->selection.apply(game, request, bid), (failure)->fail(failure.toString())) must hold", coordinator.submit(() -> legal.get(0), bid -> selection.apply(game, request, bid),
-                    failure -> fail(failure.toString())));
+            var navigation = new AppNavigation(() -> {
+                coordinator.cancel();
+                selection.cancel();
+            }, resumes::incrementAndGet);
+            navigation.show(AppNavigation.Screen.GAME);
+            var request = selection.request(game).orElseThrow();
+            atf.gradle.audit.GradleInputs.fixture("Manual bid and queued advice before opening score and history",
+                    "checkpoint", before, "legal bids", legal, "manual", manual, "advice", legal.get(0));
+            assertTrue("The pending advice is accepted for evaluation", coordinator.submit(() -> legal.get(0),
+                    bid -> selection.apply(game, request, bid), failure -> fail(failure.toString())));
             worker.runNext();
             selection.select(game, manual);
-            coordinator.cancel(); selection.cancel();
+            var score = navigation.openDialog();
+            var history = navigation.openDialog();
             owner.remove().run();
-            assertFalse("selection.failed(game, request) must remain false", selection.failed(game, request));
-            assertEquals("selection.selected(game).orElseThrow() must equal manual", manual, selection.selected(game).orElseThrow());
-            assertTrue("selection.request(game).isEmpty() must hold", selection.request(game).isEmpty());
-            assertEquals("game.saveState() must equal before", before, game.saveState());
+            assertFalse("Closing history keeps the score dialog active", navigation.dismiss(history));
+            assertTrue("The remaining score dialog still blocks automation", navigation.blocksAutomation());
+            assertEquals("History dismissal cannot resume the game", 0, resumes.get());
+            assertEquals("The manual choice survives closing history", manual, selection.selected(game).orElseThrow());
+            assertTrue("Closing the last dialog resumes the game", navigation.dismiss(score));
+            assertFalse("A duplicate dismissal cannot resume twice", navigation.dismiss(history));
+            assertEquals("Exactly one resume is emitted", 1, resumes.get());
+            assertFalse("Stale advice cannot clear the manual choice", selection.failed(game, request));
+            assertEquals("The manual choice is still selected", manual, selection.selected(game).orElseThrow());
+            assertTrue("A selected manual bid suppresses new advice", selection.request(game).isEmpty());
+            assertEquals("The checkpoint is unchanged until explicit confirmation", before, game.saveState());
         }
     }
 
