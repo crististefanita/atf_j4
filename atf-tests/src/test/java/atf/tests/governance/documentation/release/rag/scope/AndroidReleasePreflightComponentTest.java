@@ -126,6 +126,9 @@ class AndroidReleasePreflightComponentTest {
         AuditedAssertions.assertEquals(0, run.exit(), run.log());
         JsonNode result = read(receipt);
         AuditedAssertions.assertEquals("PASS", result.required("status").asText());
+        AuditedAssertions.assertEquals(2, result.required("schemaVersion").asInt());
+        AuditedAssertions.assertTrue(result.required("observedAtUtc").asText().endsWith("Z"));
+        AuditedAssertions.assertEquals(SOCKET, result.required("adbServerSocket").asText());
         AuditedAssertions.assertEquals(28, result.at("/observed/api").asInt());
         AuditedAssertions.assertEquals(profile, result.at("/observed/displayProfile").asText());
         AuditedAssertions.assertTrue(result.at("/observed/bootCompleted").asBoolean());
@@ -158,6 +161,62 @@ class AndroidReleasePreflightComponentTest {
         AuditedAssertions.assertEquals(1, run.exit(), run.log());
         AuditedAssertions.assertTrue(read(receipt).required("failure").asText().contains("ANDROID_PREFLIGHT_LEASE"));
         AuditedAssertions.assertTrue(calls().isEmpty(), "ADB must stay untouched under a foreign lease");
+    }
+
+    @Test void preflightExpiryAndLeaseBindingUseTheObservationTimeAndAFixedClock() throws Exception {
+        Path helper = GovernanceProject.locateProjectRoot().resolve("scripts/AtfAndroidPreflight.ps1");
+        Path probe = scratch.resolve("preflight-clock.ps1");
+        Files.writeString(probe, """
+                param($Helper, $Lease)
+                $ErrorActionPreference='Stop'
+                . $Helper
+                $observed = @{
+                    schemaVersion=2; status='PASS'; serial='device'; leaseId='lease'
+                    adbServerSocket='tcp:fixture:5038'; expectedApi=28; expectedDisplayProfile='1080x1920@440'
+                    observed=@{bootCompleted=$true;api=28;displayProfile='1080x1920@440'}
+                    observedAtUtc='2026-11-15T10:00:00.000Z'
+                }
+                $now=[DateTimeOffset]'2026-11-15T10:05:00Z'
+                function Check($Receipt, $Moment, $Socket='tcp:fixture:5038') {
+                    Assert-AtfAndroidPreflight $Receipt $Lease 'lease' 'device' $Socket 28 '1080x1920@440' $Moment
+                }
+                function Reject($Key, [scriptblock]$Action) {
+                    try { & $Action } catch {
+                        if ($_.Exception.Message -ceq $Key) { Write-Output $Key; return }
+                        throw
+                    }
+                    throw "Expected $Key"
+                }
+                Check $observed $now.AddMilliseconds(-1)
+                Reject ANDROID_PREFLIGHT_EXPIRED { Check $observed $now }
+                Reject ANDROID_PREFLIGHT_OBSERVATION_REQUIRED { Check $null $now }
+                Reject ANDROID_PREFLIGHT_OBSERVATION_MISMATCH { Check $observed $now.AddSeconds(-1) 'tcp:other:5038' }
+                Reject ANDROID_PREFLIGHT_TIME_FUTURE { Check $observed $now.AddSeconds(-301) }
+                $observed.Remove('observedAtUtc')
+                Reject ANDROID_PREFLIGHT_TIME_REQUIRED { Check $observed $now }
+                $observed.observedAtUtc='2026-02-30T10:00:00.000Z'
+                Reject ANDROID_PREFLIGHT_TIME_INVALID { Check $observed $now }
+                $observed.observedAtUtc='2026-11-15T10:00:00.000Z'
+                '{"active":false,"serial":"device","leaseId":"lease"}' | Set-Content -LiteralPath $Lease
+                try { Check $observed $now.AddSeconds(-1); throw 'Lease should be inactive' }
+                catch { if ($_.Exception.Message -cnotlike 'ANDROID_PREFLIGHT_LEASE:*') { throw }; 'ANDROID_PREFLIGHT_LEASE' }
+                """);
+        Path lease = scratch.resolve("clock-lease.json");
+        Files.writeString(lease, """
+                {"active":true,"serial":"device","leaseId":"lease"}
+                """);
+        Path log = scratch.resolve("preflight-clock.log");
+        Process process = new ProcessBuilder("pwsh", "-NoProfile", "-File", probe.toString(),
+                helper.toString(), lease.toString()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
+        try {
+            AuditedAssertions.assertTrue(process.waitFor(20, TimeUnit.SECONDS));
+            String output = Files.readString(log);
+            AuditedAssertions.assertEquals(0, process.exitValue(), output);
+            AuditedAssertions.assertTrue(output.contains("ANDROID_PREFLIGHT_EXPIRED") && output.contains("ANDROID_PREFLIGHT_LEASE"), output);
+            AuditedAssertions.assertFalse(Files.exists(scratch.resolve("adb.calls")));
+        } finally {
+            if (process.isAlive()) process.destroyForcibly();
+        }
     }
 
     @Test void aTimedOutAdbProcessProducesABlockedReceipt() throws Exception {

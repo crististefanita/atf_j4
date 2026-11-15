@@ -11,28 +11,28 @@ param(
     [Parameter(Mandatory)][string]$Receipt
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfDeviceLease.ps1')
 $Receipt = [IO.Path]::GetFullPath($Receipt)
 Import-Module (Join-Path $PSScriptRoot '../atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 $result = [ordered]@{
-    schemaVersion=1
+    schemaVersion=2
     status='BLOCKED'
     serial=$Serial
+    adbServerSocket=$AdbServerSocket
     leaseId=$LeaseId
     expectedApi=$ExpectedApi
     expectedDisplayProfile=$ExpectedDisplayProfile
 }
 $stream = [IO.File]::Open($Receipt,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::Read)
 try {
-    try { $lease = Get-Content -LiteralPath $LeasePath -Raw | ConvertFrom-Json }
-    catch { throw "ANDROID_PREFLIGHT_LEASE: could not read the selected lease. $($_.Exception.Message)" }
-    if ($lease.active -isnot [bool] -or -not $lease.active -or $lease.leaseId -cne $LeaseId -or $lease.serial -cne $Serial) {
-        throw 'ANDROID_PREFLIGHT_LEASE: active lease must match the selected device and lease ID.'
-    }
+    Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial | Out-Null
     $arguments = @{
         AdbExecutable=$AdbExecutable; Serial=$Serial; ServerSocket=$AdbServerSocket; TimeoutSeconds=$TimeoutSeconds
         ExpectedApi=$ExpectedApi; ExpectedDisplayProfile=$ExpectedDisplayProfile
     }
     $result.observed = Get-AtfAndroidReadiness @arguments
+    Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial | Out-Null
+    $result.observedAtUtc = [DateTimeOffset]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ',[Globalization.CultureInfo]::InvariantCulture)
     $result.status = 'PASS'
 } catch {
     $result.failure = $_.Exception.Message

@@ -15,7 +15,7 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
 | [Interfață comună](ATF_CardUi_Extraction.md) | Limitele dintre prezentarea reutilizabilă și adaptorul Whist: meniu, profil, masă, istoric și animații. |
 | [Raportare](ATF_Reporting.md) | Calificarea autonomiei, comparațiilor și consumului de memorie în Extent. |
-| [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Legătura dintre riscuri și testele selectate, predarea candidatului și valabilitatea receipt-urilor. |
+| [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Separarea regresiilor evaluatorului după contract și trasabilitatea verificărilor. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
 | [Realizări Whist](ATF_Achievements.md) | Restaurarea stării ecranului Android și calibrarea cu jucători umani. |
@@ -36,9 +36,9 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
 | GOV-01 | P1 | 87 | Oferă validatoare cu API/CLI autonom, rădăcini explicite și inventar complet; controalele negative resping surse sau excepții neacoperite. [Registru](ATF_Governance.md#api-reutilizabil-pentru-verificatoare) |
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și reconciliază limita Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
-| RAG-03 | P2 | 85 | Definește când expiră dovezile dependente de dispozitiv sau GitHub și păstrează separat dovezile imuabile. [Registru](ATF_Release_RAG.md#dovezile-cu-valabilitate-limitată-și-publicarea) |
 | TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
+| RAG-08 | P2 | 81 | Extrage regresiile evaluatorului pe proprietari și compară inventarul cazurilor înainte și după. [Registru](ATF_Release_RAG.md#întreținerea-regresiilor) |
 | GOV-02 | P2 | 80 | Validează baza Git, căile schimbate și expirarea controalelor `testChanges`. [Registru](ATF_Governance.md#confruntarea-afirmațiilor-documentare) |
 | AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Owner](ATF_Ai.md#evoluția-motorului) |
 | GOV-03 | P2 | 74 | Reduceți responsabilitățile rămase în GameSession fără schimbarea mutărilor, scorului sau checkpoint-ului; verificați comportamentul nominal și refuzurile cu oracol fixat. [Owner](ATF_Governance.md#lizibilitatea-coordonatorilor-de-domeniu) |

@@ -1,3 +1,5 @@
+import {evidenceFreshness, observationDeadline} from './release-evidence-freshness.mjs';
+
 const versionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
 const sha256Pattern = /^[a-f0-9]{64}$/;
 const commitPattern = /^[a-f0-9]{40}$/;
@@ -64,8 +66,11 @@ function indexRows(rows, key, expectedKeys, label, problems) {
   return map;
 }
 
-export function githubRetentionProblems(expected, observation) {
+export function githubRetentionProblems(expected, observation, now = Date.now()) {
   const problems = [];
+  try {
+    observationDeadline(observation?.observedAtUtc, evidenceFreshness.githubRetentionMaxAgeSeconds, 'RETENTION_OBSERVATION', now);
+  } catch (error) { problems.push(error.message); }
   if (observation?.schemaVersion !== 1 || observation.kind !== 'github-release-retention'
       || observation.repository !== expected.repository || observation.catalogSha256 !== expected.catalogSha256
       || !expected.evidence.every(file => observation.mainFileSha256?.[file.path] === file.sha256)

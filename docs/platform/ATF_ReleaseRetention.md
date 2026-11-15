@@ -122,7 +122,9 @@ node .\atf-tests\tools\publish-github-release.mjs verify-rotation $ProjectRoot $
 - Pe un repository public verifică linkurile directe, fără credențiale. Pe unul privat confruntă URL-urile canonice cu asset-urile descărcate prin API autentificat.
 - Comanda recitește `main` înainte să scrie chitanța în jurnal.
 
-Folosiți o chitanță obținută imediat înainte de rotație și verificați că `main` și ultima ediție publicată corespund în continuare. Retrageți manual doar edițiile autorizate din afara perechii din chitanță, apoi verificați inventarul rezultat. Un refuz la reluarea verificării golește starea rotației din jurnal.
+Folosiți o chitanță obținută imediat înainte de rotație, până la `expiresAtUtc`. Verificați că `main` și ultima ediție publicată corespund în continuare. [Ferestrele de valabilitate](../testing/ATF_ReleaseQualification.md#valabilitatea-dovezilor)
+
+Retrageți manual doar edițiile autorizate din afara perechii din chitanță, apoi verificați inventarul rezultat. Un refuz la reluarea verificării golește starea rotației din jurnal.
 
 ## Resetarea GitHub
 

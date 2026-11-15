@@ -8,7 +8,7 @@ Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul 
 
 | Prioritate | Lacună | Criteriu de închidere |
 |---|---|---|
-| P1 | Validatoarele comune nu au încă un contract împachetat independent de reactorul producătorului. | API sau CLI cu rădăcină explicită, inventar de documente și surse, module, rădăcini JVM suplimentare și excepții motivate. |
+| P1 | Validatoarele comune nu au încă un contract împachetat independent de reactorul producătorului. | API sau CLI cu rădăcină explicită, inventar de documente și surse, module, rădăcini JVM suplimentare și excepții motivate. Verificați paritatea diagnosticelor între un document selectat explicit și suita integrală pe același fișier. |
 
 Integrarea locală păstrează verificatoarele adaptate și controalele lor negative până la demonstrarea echivalenței API-ului împachetat. Configurația Surefire nu substituie identificarea rădăcinii efectiv inspectate.
 

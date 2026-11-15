@@ -6,6 +6,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {androidExecutionProfile, e2ePaths, scenarioFor, signedExecutionProfileSince} from './android-e2e-contract.mjs';
 import {readE2eEvidence} from './android-e2e-evidence.mjs';
 import {QualificationTiming} from './release-timing.mjs';
+import {evidenceFreshness} from './release-evidence-freshness.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
@@ -397,6 +398,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.ragEvaluator?.entrypoint === 'atf-tests/tools/evaluate-release-rag.mjs'
       && isDeepStrictEqual({...policy.ragEvaluator?.testScope}, scopePolicy)
       && isDeepStrictEqual({...policy.ragEvaluator?.githubRetention}, githubRetentionPolicy)
+      && isDeepStrictEqual({...policy.ragEvaluator?.evidenceFreshness}, evidenceFreshness)
       && policy.ragEvaluator?.preMavenSnapshot?.governanceRequiresReleaseInventoryForNewCandidates === true
       && policy.ragEvaluator?.onlyHumanReviewVerdict === 'READY_FOR_HUMAN_REVIEW'
       && policy.ragEvaluator?.doesNotPerformPromotionOrPublication === true
@@ -679,25 +681,6 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         : 'Lipsește o poartă Android obligatorie ori receipt-ul ei nu dovedește statusul, identitatea, semnarea, compatibilitatea sau accesul de distribuție declarat.',
       platformGateEvidence, platformGateProblems);
 
-  if (manifest.publication?.state === 'PUBLISHED') {
-    const retentionEvidence = [], retentionProblems = [];
-    try {
-      const catalog = await loadGithubRetentionCatalog(project);
-      retentionEvidence.push(...catalog.evidence);
-      const edition = expectedEdition(version, manifest);
-      const expected = catalog.editions.find(row => row.tag === edition.tag);
-      if (!isDeepStrictEqual(edition, expected)) retentionProblems.push('RETENTION_CANDIDATE: published candidate differs from the active catalog');
-      if (!githubRetentionFile) throw Error('RETENTION_OBSERVATION_REQUIRED: provide --github-retention-file');
-      const observed = await strictJson(githubRetentionFile);
-      retentionEvidence.push(citation(posix(path.relative(project, githubRetentionFile)), observed.sha256, '/', 1));
-      if (hasCredentialField(observed.value)) throw Error('RETENTION_OBSERVATION_CONTAINS_CREDENTIAL_FIELD');
-      retentionProblems.push(...githubRetentionProblems(catalog, observed.value));
-    } catch (error) { retentionProblems.push(error.message); }
-    recordCheck('GITHUB_RETENTION', retentionProblems.length === 0,
-        retentionProblems.length ? 'Inventarul GitHub nu corespunde catalogului activ.' : 'Cele două release-uri, tagurile și asset-urile descărcate corespund catalogului activ.',
-        retentionEvidence, retentionProblems);
-  }
-
   const groups = manifest.qualification?.auditedGroups ?? {}, groupResults = [];
   const selectedGroups = validPlan ? plan.componentGroups : [];
   const requiredComponentGroups = testScope?.componentGroups ?? componentGroupsRequiredForVersion(policy, 'android', version);
@@ -869,6 +852,25 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       e2eOkay ? `E2E: ${e2e.status}; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.`
         : 'Flux de utilizator schimbat fără E2E trecut, raport E2E lipsă/nepotrivit sau omitere fără justificare.',
       [planCitation('/e2e'), ...e2eEvidence], e2eProblems);
+
+  if (manifest.publication?.state === 'PUBLISHED') {
+    const retentionEvidence = [], retentionProblems = [];
+    try {
+      const catalog = await loadGithubRetentionCatalog(project);
+      retentionEvidence.push(...catalog.evidence);
+      const edition = expectedEdition(version, manifest);
+      const expected = catalog.editions.find(row => row.tag === edition.tag);
+      if (!isDeepStrictEqual(edition, expected)) retentionProblems.push('RETENTION_CANDIDATE: published candidate differs from the active catalog');
+      if (!githubRetentionFile) throw Error('RETENTION_OBSERVATION_REQUIRED: provide --github-retention-file');
+      const observed = await strictJson(githubRetentionFile);
+      retentionEvidence.push(citation(posix(path.relative(project, githubRetentionFile)), observed.sha256, '/', 1));
+      if (hasCredentialField(observed.value)) throw Error('RETENTION_OBSERVATION_CONTAINS_CREDENTIAL_FIELD');
+      retentionProblems.push(...githubRetentionProblems(catalog, observed.value));
+    } catch (error) { retentionProblems.push(error.message); }
+    recordCheck('GITHUB_RETENTION', retentionProblems.length === 0,
+        retentionProblems.length ? 'Inventarul GitHub lipsește, a expirat sau nu corespunde catalogului activ.' : 'Cele două release-uri, tagurile și asset-urile descărcate corespund catalogului activ.',
+        retentionEvidence, retentionProblems);
+  }
 
   const allowedVerdicts = policy.rules?.allowedAggregateStatuses;
   const allPass = checks.every(check => check.status === 'PASS') && policyContract

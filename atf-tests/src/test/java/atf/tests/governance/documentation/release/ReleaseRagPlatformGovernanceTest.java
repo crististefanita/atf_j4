@@ -288,7 +288,15 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("schemaVersion: 2"));
         assertTrue(evaluator.contains("DIFF_SCOPE"));
         assertTrue(qualificationGuide.contains("assemble-release-timeline.mjs"));
-        assertTrue(ragFeedback.contains("Prospețimea receipt-urilor"));
+        var freshness = policy().path("ragEvaluator").path("evidenceFreshness");
+        assertEquals(300, freshness.path("androidPreflightMaxAgeSeconds").asInt());
+        assertEquals(900, freshness.path("githubRetentionMaxAgeSeconds").asInt());
+        assertEquals(300, freshness.path("githubRotationMaxAgeSeconds").asInt());
+        assertTrue(qualificationGuide.contains("### Valabilitatea dovezilor"));
+        assertTrue(qualificationGuide.contains("android-preflight-execution.json"));
+        int executionPreflight = nativeRunner.indexOf("    Assert-AtfAndroidPreflight");
+        assertTrue(executionPreflight > staging && executionPreflight < nativeRunner.indexOf("shell pm path"));
+        assertFalse(ragFeedback.contains("RAG-03"));
         assertFalse(ragFeedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");
         assertTrue(evaluator.contains("READY_FOR_HUMAN_REVIEW"));
     }

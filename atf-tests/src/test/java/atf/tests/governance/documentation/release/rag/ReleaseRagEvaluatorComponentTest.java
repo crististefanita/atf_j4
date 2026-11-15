@@ -464,7 +464,7 @@ class ReleaseRagEvaluatorComponentTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"missing", "extraDraft", "orphanTag", "wrongCommit", "wrongChecksum"})
+    @ValueSource(strings = {"missing", "missingTime", "expired", "extraDraft", "orphanTag", "wrongCommit", "wrongChecksum"})
     void publishedGithubReleaseRequiresMatchingRetentionEvidence(String defect) throws Exception {
         Fixture fixture = fixture();
         selectAuthenticatedPublication(fixture);
@@ -472,6 +472,8 @@ class ReleaseRagEvaluatorComponentTest {
         var observation = (ObjectNode) JSON.readTree(file.toFile());
         switch (defect) {
             case "missing" -> Files.delete(file);
+            case "missingTime" -> observation.remove("observedAtUtc");
+            case "expired" -> observation.put("observedAtUtc", "2000-01-01T00:00:00.000Z");
             case "extraDraft" -> ((com.fasterxml.jackson.databind.node.ArrayNode) observation.path("releases"))
                     .addObject().put("tag", "v1.0.0").put("draft", true);
             case "orphanTag" -> ((com.fasterxml.jackson.databind.node.ArrayNode) observation.path("tags"))
@@ -487,6 +489,8 @@ class ReleaseRagEvaluatorComponentTest {
         AuditedAssertions.assertEquals("BLOCKED", check(verdict, "GITHUB_RETENTION"));
         AuditedAssertions.assertTrue(details(verdict, "GITHUB_RETENTION").stream().anyMatch(value -> value.contains(switch (defect) {
             case "missing" -> "RETENTION_OBSERVATION_REQUIRED";
+            case "missingTime" -> "RETENTION_OBSERVATION_TIME_REQUIRED";
+            case "expired" -> "RETENTION_OBSERVATION_EXPIRED";
             case "extraDraft" -> "RELEASES: unexpected";
             case "orphanTag" -> "TAGS: unexpected";
             case "wrongCommit" -> "TAG_COMMIT";
@@ -957,6 +961,8 @@ class ReleaseRagEvaluatorComponentTest {
         JSON.writeValue(previousManifest.toFile(), previous);
 
         var observation = JSON.createObjectNode().put("schemaVersion", 1).put("kind", "github-release-retention")
+                .put("observedAtUtc", new java.time.format.DateTimeFormatterBuilder().appendInstant(3).toFormatter()
+                        .format(java.time.Instant.now()))
                 .put("repository", "example/game").put("catalogSha256", hash(catalog))
                 .put("mainCommit", "e".repeat(40)).put("releaseListAccess", "AUTHENTICATED_WRITE");
         var mainFiles = observation.putObject("mainFileSha256").put("release/index.json", hash(catalog));

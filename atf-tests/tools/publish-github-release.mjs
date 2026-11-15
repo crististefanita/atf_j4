@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {digest, strictJson} from './evaluate-release-rag.mjs';
+import {evidenceFreshness, observationDeadline} from './release-evidence-freshness.mjs';
 import {githubReleaseApi, githubId, gitCommit} from './github-release-api.mjs';
 import {catalogVersions, expectedEdition} from './github-release-retention.mjs';
 import {loadPublication, publicationJournalName, sameBytes, withPublicationJournal} from './github-release-journal.mjs';
@@ -154,7 +155,7 @@ async function publish(api, candidate, current, save) {
   return {status: 'PUBLISHED', releaseId: release.id};
 }
 
-async function verifyRotation(api, identity, current, save, publicRepository) {
+async function verifyRotation(api, identity, current, save, publicRepository, now) {
   if (!current().releaseId) throw Error('GITHUB_PUBLICATION_REQUIRED');
   const release = await knownRelease(api, identity, current().releaseId);
   const latest = await api.json('releases/latest', {missing: true});
@@ -194,8 +195,11 @@ async function verifyRotation(api, identity, current, save, publicRepository) {
   if (await mainCommit(api) !== observedMain || (await api.json('releases/latest')).id !== release.id) {
     throw Error('GITHUB_ROTATION_CHANGED');
   }
+  const checked = now();
+  const observedAtUtc = new Date(checked).toISOString();
+  const expiresAtUtc = observationDeadline(observedAtUtc, evidenceFreshness.githubRotationMaxAgeSeconds, 'GITHUB_ROTATION', checked);
   const receipt = {
-    status: 'READY_FOR_ROTATION', observedAtUtc: new Date().toISOString(), observedMain, readmeSha256: digest(readme),
+    status: 'READY_FOR_ROTATION', observedAtUtc, expiresAtUtc, observedMain, readmeSha256: digest(readme),
     catalogSha256: digest(catalog), retained: [
       {tag: active.tag, releaseId: release.id, downloads}, {tag: previous.tag, releaseId: previousRelease.id, downloads: previousDownloads}
     ]
@@ -204,7 +208,7 @@ async function verifyRotation(api, identity, current, save, publicRepository) {
   return receipt;
 }
 
-export async function runGithubPublication({mode, candidate, journalDir, token, fetchResponse}) {
+export async function runGithubPublication({mode, candidate, journalDir, token, fetchResponse, now = Date.now}) {
   if (!['publish', 'verify-rotation'].includes(mode)) throw Error('GITHUB_PUBLICATION_MODE');
   const {identity} = candidate;
   const api = githubReleaseApi(identity.repository, token, fetchResponse);
@@ -214,7 +218,7 @@ export async function runGithubPublication({mode, candidate, journalDir, token, 
     if (repo.full_name !== identity.repository || repo.default_branch !== 'main'
         || repo.permissions?.push !== true || typeof repo.private !== 'boolean') throw Error('GITHUB_REPOSITORY_ACCESS');
     if (repo.private && identity.accessMode === 'ANONYMOUS') throw Error('GITHUB_ANONYMOUS_ACCESS');
-    return mode === 'publish' ? publish(api, candidate, current, save) : verifyRotation(api, identity, current, save, !repo.private);
+    return mode === 'publish' ? publish(api, candidate, current, save) : verifyRotation(api, identity, current, save, !repo.private, now);
   });
 }
 

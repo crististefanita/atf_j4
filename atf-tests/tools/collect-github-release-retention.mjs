@@ -7,8 +7,8 @@ import {githubRetentionProblems} from './github-release-retention.mjs';
 import {QualificationTiming} from './release-timing.mjs';
 import {githubReleaseApi} from './github-release-api.mjs';
 
-export async function observeGithubRetention(expected, token, fetchResponse = fetch) {
-  const timing = new QualificationTiming();
+export async function observeGithubRetention(expected, token, fetchResponse = fetch, now = Date.now) {
+  const timing = new QualificationTiming({now});
   const {json, pages, content, asset: downloadAsset} = githubReleaseApi(expected.repository, token, fetchResponse);
 
   const editionOrder = (left, right) => left.tag.localeCompare(right.tag) || (left.id ?? 0) - (right.id ?? 0);
@@ -50,7 +50,8 @@ export async function observeGithubRetention(expected, token, fetchResponse = fe
   const [after, latestMain] = await Promise.all([inventory(), json('branches/main')]);
   if (!isDeepStrictEqual(before, after) || latestMain.commit?.sha !== mainCommit) throw Error('GITHUB_INVENTORY_CHANGED');
   timing.checkpoint('distribution.recheck');
-  return {timing: timing.receipt('github-retention'), schemaVersion: 1, kind: 'github-release-retention', repository: expected.repository, mainCommit,
+  const observationTiming = timing.receipt('github-retention');
+  return {timing: observationTiming, observedAtUtc: observationTiming.stages.at(-1).endedUtc, schemaVersion: 1, kind: 'github-release-retention', repository: expected.repository, mainCommit,
     catalogSha256: expected.catalogSha256, mainFileSha256: Object.fromEntries(remoteHashes), releaseListAccess: 'AUTHENTICATED_WRITE', releases, tags: before.tags};
 }
 

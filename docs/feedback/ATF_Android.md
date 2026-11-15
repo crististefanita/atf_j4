@@ -95,6 +95,6 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 - [Scenariile de profil, istoric, clasamente și serii](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii) dețin mecanismele automatizate și precondițiile; existența scenariului nu califică o versiune.
 - [Componentele display](../testing/ATF_DisplayComponents.md) dețin mock-urile și izolarea cache-ului; fonturile și interacțiunea nativă au verificare distinctă.
 - [Calificarea publicării](ATF_Reporting.md) păstrează lacuna validării timpurii a checkpoint-ului; [predarea rezultatelor](../reporting/ATF_Handoff.md) deține distincția dintre verdictul funcțional și publicare.
-- [Guvernanța publicării](ATF_Release_RAG.md#dovezile-cu-valabilitate-limitată-și-publicarea) urmărește lansatorul și reluarea după un răspuns GitHub incomplet. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) definește identitatea dosarului și legarea auditului publicat.
+- [Guvernanța publicării](../testing/ATF_ReleaseQualification.md#valabilitatea-dovezilor) urmărește lansatorul și reluarea după un răspuns GitHub incomplet. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) definește identitatea dosarului și legarea auditului publicat.
 
 [Testarea Android](../testing/ATF_Android.md) · [Profiluri de ecran](../testing/ATF_Display.md) · [Atlasul interfeței](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

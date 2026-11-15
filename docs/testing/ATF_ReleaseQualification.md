@@ -289,6 +289,19 @@ Evaluatorul post-publicare primește aceeași observație prin `--github-retenti
 
 Colectorul scrie inventarul într-un fișier extern nou și semnalează abaterile prin `BLOCKED`. Dacă accesul sau colectarea eșuează, diagnosticul identifică pasul, iar evaluatorul cere o observație completă. După retragerea autorizată, colectați o observație nouă și reluați evaluarea. [Procesul de retenție](../platform/ATF_ReleaseRetention.md#resetarea-github)
 
+### Valabilitatea dovezilor
+
+Politica de calificare citește ora UTC a observației, cu milisecunde și sufixul `Z`. Fereastra se închide exact la termen. Ora lipsă, invalidă sau din viitor blochează folosirea observației pentru o acțiune nouă.
+
+| Dovadă | Fereastră | Când se obține o observație nouă |
+|---|---|---|
+| Preflight Android | 5 minute de la ultima verificare reușită a ADB, bootului și profilului | Înainte de prima acțiune protejată dacă a expirat sau s-au schimbat lease-ul, serialul, ruta ADB ori profilul cerut. |
+| Inventarul GitHub post-publicare | 15 minute de la recitirea stabilă a ramurii, tagurilor și asset-urilor | La expirare sau după orice modificare a catalogului, tagurilor, release-urilor, asset-urilor ori accesului. Rulați din nou colectorul pentru un verdict actual. |
+| Preflight GitHub de rotație | 5 minute de la confirmarea descărcărilor și recitirea ramurii și a ultimei ediții | Imediat înaintea retragerii. Respectați `expiresAtUtc` și reluați verificarea dacă starea s-a schimbat. |
+| Artefacte și probe fixate prin hash | Fără termen cronologic | Când se schimbă octeții, sursa, scenariul sau identitatea cerută. APK-ul, semnătura, rapoartele, capturile și chitanța unei descărcări istorice păstrează valoarea de audit. |
+
+Verificați ferestrele în [politica executabilă](../../config/release-platform-rag-policy.json). RAG verifică din nou prospețimea inventarului GitHub la finalul evaluării curente și păstrează revalidarea istorică prin verdictul original și dovezile fixate.
+
 ### Preflight Android
 
 [Lansatorul responsive](../../scripts/run-whist-responsive-sanity.ps1) rezervă dispozitivul și rulează [preflight-ul comun](../../scripts/check-android-release-device.ps1) înainte să copieze sursele sau cache-ul Maven. Pentru o selecție pe APK semnat, apelați aceeași comandă imediat după obținerea rezervării, înainte de instalare, backup sau interacțiuni cu aplicația.
@@ -313,7 +326,8 @@ $device = @{
 
 - Valorile așteptate vin din planul selecției; `ExpectedApi=0` și profilul gol cer observarea unor valori valide. În modul responsive, profilul descrie starea inițială, iar `Profiles` descrie matricea aplicată în scenariu.
 
-- `android-preflight.json` păstrează rezultatul și cauza refuzului. Un refuz rămâne `BLOCKED`; un preflight trecut permite verificarea APK-ului și E2E.
+- `android-preflight.json` păstrează rezultatul, observația UTC și cauza refuzului. Lansatorul responsive verifică din nou dispozitivul după Maven și păstrează a doua dovadă în `android-preflight-execution.json`.
+- Pregătirea utilizatorului Android secundar colectează aceeași dovadă înainte de interacțiune și verifică valabilitatea ei înainte să creeze utilizatorul. Curățarea folosește în continuare identitatea lease-ului și a utilizatorului creat.
 
 ### Reluarea unei calificări
 

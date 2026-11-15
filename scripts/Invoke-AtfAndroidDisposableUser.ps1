@@ -13,6 +13,7 @@ param(
     [string]$ExpectedDisplayProfile = '1080x1920@440'
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfAndroidPreflight.ps1')
 Import-Module (Join-Path $PSScriptRoot '../atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 $run = [IO.Path]::GetFullPath($RunRoot)
 $sourceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -35,16 +36,8 @@ $cleanupFile = Join-Path $run 'data-isolation-cleanup.json'
 $leaseReceipt = Join-Path $run 'device-lease.json'
 $packageName = 'ro.whistlab.app'
 
-function Assert-RunLease {
-    if (-not (Test-Path -LiteralPath $LeasePath -PathType Leaf)) { throw 'The exclusive Android lease is missing.' }
-    $lease = Get-Content -LiteralPath $LeasePath -Raw | ConvertFrom-Json
-    if (-not $lease.active -or $lease.leaseId -cne $LeaseId -or $lease.serial -cne $Serial) {
-        throw 'The exclusive Android lease changed; refusing to alter device users.'
-    }
-    $lease
-}
 function Invoke-DeviceShell([string[]]$Arguments,[ValidateRange(1,120)][int]$TimeoutSeconds=30) {
-    Assert-RunLease | Out-Null
+    Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial | Out-Null
     $result = Invoke-AtfAdbCommand -AdbExecutable $AdbExecutable -Arguments (@('-s',$Serial,'shell') + $Arguments) `
         -ServerSocket $ServerSocket -TimeoutSeconds $TimeoutSeconds
     if ($result.ExitCode -ne 0) { throw "ADB shell failed ($($Arguments -join ' ')): $($result.Output)" }
@@ -96,11 +89,18 @@ if ($Phase -ceq 'Prepare') {
     }
 
     $createdUser = $null
-    $readiness = Get-AtfAndroidReadiness -AdbExecutable $AdbExecutable -Serial $Serial -ServerSocket $ServerSocket `
-        -ExpectedApi $ExpectedApi -ExpectedDisplayProfile $ExpectedDisplayProfile
+    $arguments = @{
+        AdbExecutable=$AdbExecutable; Serial=$Serial; AdbServerSocket=$ServerSocket
+        LeasePath=$LeasePath; LeaseId=$LeaseId; ExpectedApi=$ExpectedApi; ExpectedDisplayProfile=$ExpectedDisplayProfile
+        Receipt=(Join-Path $run 'android-preflight.json')
+    }
+    $observedPreflight = & (Join-Path $PSScriptRoot 'check-android-release-device.ps1') @arguments
+    $readiness = $observedPreflight.observed
+
     $originalUser = Get-CurrentUserId
     if (-not (Test-UserExists $originalUser)) { throw "Original Android user $originalUser is not present." }
     $originalPackageWasInstalled = Test-PackageInstalled $originalUser
+    Assert-AtfAndroidPreflight $observedPreflight $LeasePath $LeaseId $Serial $ServerSocket $ExpectedApi $ExpectedDisplayProfile
     try {
         $name = 'ATFJ4-' + [guid]::NewGuid().ToString('N').Substring(0,10)
         $created = Invoke-DeviceShell @('pm','create-user',$name)
@@ -145,7 +145,7 @@ if ($Phase -ceq 'Prepare') {
         } else {
             $remoteApk = '/data/local/tmp/atf-whistlab-' + $LeaseId + '.apk'
             try {
-                Assert-RunLease | Out-Null
+                Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial | Out-Null
                 $push = Invoke-AtfAdbCommand -AdbExecutable $AdbExecutable -Arguments @('-s',$Serial,'push',$ApkPath,$remoteApk) `
                     -ServerSocket $ServerSocket -TimeoutSeconds 90
                 if ($push.ExitCode -ne 0) { throw "Candidate APK transfer failed: $($push.Output)" }
@@ -175,7 +175,7 @@ if ($Phase -ceq 'Prepare') {
         }
         Write-JsonFile $readyFile $receipt
         $receiptHash = (Get-FileHash -LiteralPath $readyFile -Algorithm SHA256).Hash.ToLowerInvariant()
-        $lease = Assert-RunLease
+        $lease = Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial
         Write-JsonFile $leaseReceipt ([ordered]@{leaseId=$LeaseId;serial=$Serial;active=$true})
         Write-JsonFile $setupFile ([ordered]@{
             schemaVersion=1;serial=$Serial;api=$readiness.api;displayProfile=$readiness.displayProfile

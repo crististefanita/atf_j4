@@ -16,6 +16,15 @@ function Read-AtfDeviceLease([IO.FileStream]$Stream) {
     } finally { $reader.Dispose() }
 }
 
+function Get-AtfActiveDeviceLease([string]$Path, [string]$LeaseId, [string]$Serial) {
+    try { $lease = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json }
+    catch { throw 'ANDROID_PREFLIGHT_LEASE: could not read the selected lease.' }
+    if ($lease.active -isnot [bool] -or -not $lease.active -or $lease.leaseId -cne $LeaseId -or $lease.serial -cne $Serial) {
+        throw 'ANDROID_PREFLIGHT_LEASE: active lease must match the selected device and lease ID.'
+    }
+    return $lease
+}
+
 function New-AtfDeviceLease([string]$Path, [string]$Serial, [string]$Owner, [string]$RunRoot) {
     $stream = [IO.File]::Open($Path,[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
     try {

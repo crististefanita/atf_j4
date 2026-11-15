@@ -22,7 +22,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfAndroidMaven.ps1')
-. (Join-Path $PSScriptRoot 'AtfDeviceLease.ps1')
+. (Join-Path $PSScriptRoot 'AtfAndroidPreflight.ps1')
 if (-not $ComponentsOnly -and ($PSBoundParameters.ContainsKey('ComponentSuite') -or $PSBoundParameters.ContainsKey('ComponentRenderer'))) {
     throw 'ComponentSuite and ComponentRenderer require ComponentsOnly.'
 }
@@ -230,6 +230,14 @@ foreach ($library in @(
         Write-Output (Join-Path $RunRoot 'WORKING_STATE.json')
         return
     }
+
+    $state.androidExecutionPreflight = Join-Path $RunRoot 'android-preflight-execution.json'
+    $preflightArguments.Receipt = $state.androidExecutionPreflight
+    $preflightArguments.ExpectedApi = $preflight.observed.api
+    $preflightArguments.ExpectedDisplayProfile = $preflight.observed.displayProfile
+    $preflight = & (Join-Path $PSScriptRoot 'check-android-release-device.ps1') @preflightArguments
+    Assert-AtfAndroidPreflight $preflight $LeasePath $leaseId $Serial $AdbServerSocket `
+        $preflightArguments.ExpectedApi $preflightArguments.ExpectedDisplayProfile
 
     $env:ADB_SERVER_SOCKET = $AdbServerSocket
     $env:ATF_ANDROID_ADB = $AdbExecutable

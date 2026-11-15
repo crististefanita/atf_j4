@@ -103,6 +103,11 @@
       "gateReceiptShape": {"status": "PASS", "receipt": "payload-relative path"},
       "gateReceiptMustBeHashBound": true
     },
+    "evidenceFreshness": {
+      "androidPreflightMaxAgeSeconds": 300,
+      "githubRetentionMaxAgeSeconds": 900,
+      "githubRotationMaxAgeSeconds": 300
+    },
     "githubRetention": {
       "collector": "atf-tests/tools/collect-github-release-retention.mjs",
       "catalog": "release/index.json",

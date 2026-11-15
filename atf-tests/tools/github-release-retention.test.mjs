@@ -87,6 +87,23 @@ test('draft releases, orphan tags, extra assets and differing downloads block re
   ].sort());
 });
 
+test('retention rejects missing, invalid, future and expired observations without changing the artifact bytes', async () => {
+  const f = fixture();
+  const instant = Date.parse('2026-11-15T10:00:00.000Z');
+  const observed = await observeGithubRetention(f.expected, 'fixture', f.fetchResponse, () => instant);
+  assert.equal(observed.observedAtUtc, '2026-11-15T10:00:00.000Z');
+  assert.deepEqual(githubRetentionProblems(f.expected, observed, instant + 899999), []);
+  assert.deepEqual(githubRetentionProblems(f.expected, observed, instant + 900000),
+    ['RETENTION_OBSERVATION_EXPIRED: 2026-11-15T10:15:00.000Z']);
+  assert.match(githubRetentionProblems(f.expected, observed, instant - 1)[0], /RETENTION_OBSERVATION_TIME_FUTURE/);
+  assert.deepEqual(githubRetentionProblems(f.expected, {...observed, observedAtUtc: null}, instant),
+    ['RETENTION_OBSERVATION_TIME_REQUIRED']);
+  for (const timestamp of ['2026-02-30T10:00:00.000Z', '2026-11-15T10:00:00', '2026-11-15T10:00:00+00:00', '']) {
+    assert.deepEqual(githubRetentionProblems(f.expected, {...observed, observedAtUtc: timestamp}, instant),
+      ['RETENTION_OBSERVATION_TIME_INVALID']);
+  }
+});
+
 test('inventory from an account unable to inspect drafts is rejected', async () => {
   const f = fixture();
   await assert.rejects(observeGithubRetention(f.expected, 'fixture', async (url, options) =>

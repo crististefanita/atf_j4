@@ -210,7 +210,7 @@ async function fixture(t) {
   return {
     active, previous, root, directory, candidate, candidateDir, verdict, verdictFile, remote,
     state: async () => JSON.parse(await fs.readFile(path.join(directory, publicationJournalName), 'utf8')),
-    run: (mode = 'publish') => runGithubPublication({mode, candidate, journalDir: directory, token: 'fixture', fetchResponse: remote.fetch})
+    run: (mode = 'publish', now) => runGithubPublication({mode, candidate, journalDir: directory, token: 'fixture', fetchResponse: remote.fetch, now})
   };
 }
 
@@ -346,6 +346,7 @@ test('rotation requires the pinned README and complete downloads of both retaine
   const receipt = await x.run('verify-rotation');
   assert.equal(receipt.status, 'READY_FOR_ROTATION');
   assert.equal(receipt.observedMain, head);
+  assert.equal(Date.parse(receipt.expiresAtUtc) - Date.parse(receipt.observedAtUtc), 300000);
   assert.deepEqual(receipt.retained.map(row => row.tag), [x.active.tag, x.previous.tag]);
   assert.equal(receipt.retained[0].downloads[0].sha256, x.active.manifest.release.apkSha256);
   assert.equal(receipt.retained[0].downloads[0].url, x.active.manifest.publication.targetUrl);
