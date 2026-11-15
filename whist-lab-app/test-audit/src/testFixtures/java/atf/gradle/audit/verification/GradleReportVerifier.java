@@ -38,6 +38,18 @@ public final class GradleReportVerifier {
         System.out.println("PASS: " + actual.size() + " exact JUnit/HTML identities and outcomes; one canonical HTML");
     }
     public static Map<String, String> receipts(Path report) throws Exception {
+        var inventory = readReceipts(report);
+        var profile = new atf.reporting.artifact.ReportArtifactProfile(atf.reporting.artifact.ReportArtifactProfile.Renderer.EXTENT, inventory.intent());
+        var inspection = atf.reporting.artifact.ReportArtifactInspector.inspect(report, profile);
+        if (!inspection.violations().isEmpty()) throw new IllegalStateException("Captured publication intent differs: " + inspection.violations());
+        return inventory.outcomes();
+    }
+
+    private record ReceiptInventory(Map<String, String> outcomes,
+            java.util.List<atf.reporting.artifact.ReportArtifactProfile.Scenario> intent) { }
+
+    // Keep only compact inventory data before the reporting library parses the HTML independently.
+    private static ReceiptInventory readReceipts(Path report) throws Exception {
         var doc = Jsoup.parse(report.toFile(), "UTF-8"); var result = new LinkedHashMap<String, String>();
         doc.select("template,noscript").remove();
         var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
@@ -73,10 +85,7 @@ public final class GradleReportVerifier {
             }
         }
         if (receiptNodes(doc).size() != observed) throw new IllegalStateException("Orphan or duplicated invocation receipt outside rendered owners");
-        var profile = new atf.reporting.artifact.ReportArtifactProfile(atf.reporting.artifact.ReportArtifactProfile.Renderer.EXTENT, intent);
-        var inspection = atf.reporting.artifact.ReportArtifactInspector.inspect(report, profile);
-        if (!inspection.violations().isEmpty()) throw new IllegalStateException("Captured publication intent differs: " + inspection.violations());
-        return result;
+        return new ReceiptInventory(result, intent);
     }
     private static java.util.List<org.jsoup.nodes.Element> receiptNodes(org.jsoup.nodes.Element root) {
         return root.select("details.atf-observation-evidence").stream().filter(e -> e.children().stream()
