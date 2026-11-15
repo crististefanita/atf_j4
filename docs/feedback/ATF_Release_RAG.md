@@ -9,7 +9,6 @@
 | ID | Lacună | Criteriu de închidere |
 |---|---|---|
 | RAG-03 | Prospețimea receipt-urilor. Chitanțele sunt legate prin hash. Semnificația vechimii și expirarea dovezilor rămân nedefinite pentru preflight, artefacte și verificarea remote. | Definește ce expiră și în ce condiții. Separă dovezile imuabile de starea schimbătoare a dispozitivului sau a GitHub. Verifică starea expirată, timpul necunoscut și datele lipsă. |
-| RAG-07 | Publicarea depinde de sincronizarea dintre commit, draft, tag, asset-uri și catalog. Un commit local încă inaccesibil GitHub poate primi 422. | Folosește un jurnal atomic cu commit, ID de draft și hash-uri. Probe controlate acoperă 422, draft creat dar nevizibil după tag, upload acceptat cu răspuns pierdut și reluare după promovare. Verifică README-ul și fișierul real înaintea rotației. |
 
 ## Întreținerea regresiilor
 
@@ -21,4 +20,4 @@
 
 - [Calificarea livrării](../testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă) deține regulile de reutilizare.
 - [Predarea rapoartelor](../reporting/ATF_Handoff.md) deține autonomia HTML și republicarea.
-- [Livrarea Android](../platform/ATF_AndroidDelivery.md#commit-ul-surselor-și-commit-ul-dovezilor) deține ordinea publicării.
+- [Livrarea Android](../platform/ATF_AndroidDelivery.md#publicarea-reluabilă-pe-github) deține publicarea și condițiile de reluare.

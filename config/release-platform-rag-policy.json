@@ -34,6 +34,15 @@
     "ragMayAdvanceLifecycle": false,
     "ragOutputOutsideCheckout": true
   },
+  "githubPublication": {
+    "entrypoint": "atf-tests/tools/publish-github-release.mjs",
+    "journal": "github-publication.json",
+    "qualificationMustBindCommitManifestAndAssets": true,
+    "resumeUsesReleaseIdAndVerifiedAssetBytes": true,
+    "rotationPreflight": "verify-rotation",
+    "requiresRemoteMainReadmeAndRetainedDownloads": true,
+    "rotationExecutesNoDeletion": true
+  },
   "ragEvaluator": {
     "entrypoint": "atf-tests/tools/evaluate-release-rag.mjs",
     "runtime": "Node.js standard library",

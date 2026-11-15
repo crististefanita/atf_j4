@@ -5,30 +5,12 @@ import {isDeepStrictEqual} from 'node:util';
 import {digest, loadGithubRetentionCatalog} from './evaluate-release-rag.mjs';
 import {githubRetentionProblems} from './github-release-retention.mjs';
 import {QualificationTiming} from './release-timing.mjs';
+import {githubReleaseApi} from './github-release-api.mjs';
 
 export async function observeGithubRetention(expected, token, fetchResponse = fetch) {
-  if (!token) throw Error('GITHUB_TOKEN_REQUIRED');
   const timing = new QualificationTiming();
-  const api = 'https://api.github.com/repos/' + expected.repository;
-  const request = async (resource, accept = 'application/vnd.github+json') => {
-    const response = await fetchResponse(resource ? api + '/' + resource : api, {
-      headers: {Authorization: 'Bearer ' + token, Accept: accept, 'X-GitHub-Api-Version': '2022-11-28'},
-      signal: AbortSignal.timeout(30000)
-    });
-    if (response.status !== 200) throw Error('GITHUB_HTTP_' + response.status + ': ' + resource);
-    return response;
-  };
-  const json = async resource => (await request(resource)).json();
-  const pages = async resource => {
-    const rows = [];
-    for (let page = 1; ; page++) {
-      const response = await request(resource + '?per_page=100&page=' + page);
-      const batch = await response.json();
-      if (!Array.isArray(batch)) throw Error('GITHUB_LIST_INVALID: ' + resource);
-      rows.push(...batch);
-      if (!/<[^>]+>;\s*rel="next"/.test(response.headers.get('link') ?? '')) return rows;
-    }
-  };
+  const {json, pages, content, asset: downloadAsset} = githubReleaseApi(expected.repository, token, fetchResponse);
+
   const editionOrder = (left, right) => left.tag.localeCompare(right.tag) || (left.id ?? 0) - (right.id ?? 0);
   const inventory = async () => {
     const [githubReleases, githubTags] = await Promise.all([pages('releases'), pages('tags')]);
@@ -48,9 +30,8 @@ export async function observeGithubRetention(expected, token, fetchResponse = fe
       || !/^[a-f0-9]{40}$/.test(mainCommit ?? '')) throw Error('GITHUB_INVENTORY_ACCESS: main and access to drafts are required');
 
   const remoteHashes = await Promise.all(expected.evidence.map(async file => {
-    const content = await json('contents/' + file.path + '?ref=' + mainCommit);
-    if (content.type !== 'file' || content.path !== file.path || content.encoding !== 'base64') throw Error('GITHUB_CONTENT: ' + file.path);
-    if (digest(Buffer.from(content.content, 'base64')) !== file.sha256) throw Error('GITHUB_MAIN_DIFFERS: ' + file.path);
+    if (digest(await content(file.path, mainCommit)) !== file.sha256) throw Error('GITHUB_MAIN_DIFFERS: ' + file.path);
+
     return [file.path, file.sha256];
   }));
   timing.checkpoint('distribution.catalog-and-main');
@@ -61,9 +42,8 @@ export async function observeGithubRetention(expected, token, fetchResponse = fe
     assets: await Promise.all(release.assets.map(async asset => {
       const edition = expected.editions.find(row => row.tag === release.tag);
       if (release.draft || !edition?.assets.some(row => row.name === asset.name)) return asset;
-      const response = await request('releases/assets/' + asset.id + '?retention=' + mainCommit, 'application/octet-stream');
-      const bytes = Buffer.from(await response.arrayBuffer());
-      return {...asset, download: {httpStatus: response.status, bytes: bytes.length, sha256: digest(bytes)}};
+      const bytes = await downloadAsset(asset.id);
+      return {...asset, download: {httpStatus: 200, bytes: bytes.length, sha256: digest(bytes)}};
     }))
   })));
   timing.checkpoint('distribution.download-and-hash');

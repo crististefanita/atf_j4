@@ -250,7 +250,7 @@ Verdictul read-only nu comite, nu împinge și nu publică artefacte. După `REA
 
 1. Compară inventarul candidatului cu snapshot-ul calificat, inclusiv fișiere noi și excluderi; confirmă același fingerprint și un arbore Git curat care conține exact sursele calificate.
 2. Comite sursele, împinge commit-ul pe `main` și creează tag-ul versiunii numai pe commit-ul verificat. Build-ul și manifestul trebuie să identifice acel commit și același APK calificat.
-3. Publică APK-ul și checksum-ul pe canalul declarat. Actualizează `release/index.json`, catalogul și README-ul principal astfel încât versiunea curentă și linkul direct să indice același artefact.
+3. Publică APK-ul și checksum-ul pe canalul declarat. Pentru GitHub folosește [publicarea reluabilă](../platform/ATF_AndroidDelivery.md#publicarea-reluabilă-pe-github) și păstrează jurnalul în directorul rulării. Actualizează `release/index.json`, catalogul și README-ul principal astfel încât versiunea curentă și linkul direct să indice același artefact.
 4. După push, citește README-ul din repository, extrage linkul afișat efectiv și descarcă URL-ul în modul declarat de `publication.accessMode`. Pentru `AUTHENTICATED`, folosește contul GitHub care are acces și păstrează în receipt numai faptul autentificării, URL-ul, HTTP 200, numărul de octeți, SHA-256 și CRC; tokenul și antetele nu se salvează. Pentru `ANONYMOUS`, descarcă fără cookie-uri sau autorizare și păstrează separat confirmarea paginii și a checksum-ului.
 5. Înregistrează probele de publicare și descărcare în dosarul versiunii, comite și împinge dovezile, apoi repetă citirea README-ului și descărcarea folosind exact acel link și același mod de acces declarat.
 
@@ -276,7 +276,10 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 
 ### Retenția pe GitHub după publicare
 
-Din checkout-ul `main` sincronizat, colectorul citește catalogul și manifestele de la commitul observat pe GitHub. El inventariază toate paginile de release-uri, inclusiv ciornele, toate tagurile și toate asset-urile. Folosiți `GH_TOKEN` sau `GITHUB_TOKEN` în mediul procesului, cu acces la ciornele repository-ului.
+Înainte de retragere, verificați [descărcările și edițiile păstrate](../platform/ATF_ReleaseRetention.md#verificarea-descărcării-înaintea-rotației).
+
+- După retragerea autorizată, rulați colectorul din checkout-ul `main` sincronizat. Colectorul citește catalogul și manifestele de la commitul observat pe GitHub.
+- Folosiți `GH_TOKEN` sau `GITHUB_TOKEN` cu acces la ciorne. Colectorul inventariază toate paginile de release-uri, inclusiv ciornele, toate tagurile și toate asset-urile.
 
 ```powershell
 node .\atf-tests\tools\collect-github-release-retention.mjs $ProjectRoot $GithubRetentionFile

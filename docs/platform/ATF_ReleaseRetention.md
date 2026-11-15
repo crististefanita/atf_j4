@@ -108,6 +108,22 @@ Reluați verificarea cu `--recipe $GitProof` și o ieșire nouă dacă a fost fo
 - Curățați staging-ul, cache-urile și copiile regenerate din Git sau deja incluse cu același hash. Păstrați datele de învățare și diagnosticul unic pentru o problemă deschisă.
 - Păstrați sursele capturate cât timp o reluare mai are nevoie de ele. [Predarea dovezilor](../reporting/ATF_Handoff.md)
 
+## Verificarea descărcării înaintea rotației
+
+După publicare, împingeți catalogul, manifestele și README-ul principal. Folosiți aceleași intrări și același director ca la [publicarea reluabilă](ATF_AndroidDelivery.md#publicarea-reluabilă-pe-github).
+
+```powershell
+node .\atf-tests\tools\publish-github-release.mjs verify-rotation $ProjectRoot $CandidateDir $VerdictFile $PublicationRun
+```
+
+`READY_FOR_ROTATION` confirmă că README-ul online indică APK-ul ediției curente, iar GitHub o indică drept ultima ediție.
+
+- Comanda confruntă tagurile și descarcă APK-ul și checksum-ul ambelor ediții din catalog.
+- Pe un repository public verifică linkurile directe, fără credențiale. Pe unul privat confruntă URL-urile canonice cu asset-urile descărcate prin API autentificat.
+- Comanda recitește `main` înainte să scrie chitanța în jurnal.
+
+Folosiți o chitanță obținută imediat înainte de rotație și verificați că `main` și ultima ediție publicată corespund în continuare. Retrageți manual doar edițiile autorizate din afara perechii din chitanță, apoi verificați inventarul rezultat. Un refuz la reluarea verificării golește starea rotației din jurnal.
+
 ## Resetarea GitHub
 
 - Folosiți un inventar explicit de ID-uri, tag-uri, asset-uri și digest-uri. Nu deduceți populația doar dintr-o pagină ori listă care poate fi filtrată.

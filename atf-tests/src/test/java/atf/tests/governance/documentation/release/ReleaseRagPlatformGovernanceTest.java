@@ -65,6 +65,23 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(signing.path("allChannelsRequireCertificateFingerprintAndUpgradeCompatibility").asBoolean());
     }
 
+    @Test void githubPublicationRequiresBoundQualificationAndASeparateReadOnlyRotationPreflight() throws Exception {
+        var root = GovernanceProject.locateProjectRoot();
+        var publication = policy().path("githubPublication");
+        String entrypoint = publication.path("entrypoint").asText();
+        assertEquals("atf-tests/tools/publish-github-release.mjs", entrypoint);
+        assertTrue(Files.isRegularFile(root.resolve(entrypoint)));
+        assertEquals("github-publication.json", publication.path("journal").asText());
+        assertEquals("verify-rotation", publication.path("rotationPreflight").asText());
+        assertTrue(publication.path("qualificationMustBindCommitManifestAndAssets").asBoolean());
+        assertTrue(publication.path("resumeUsesReleaseIdAndVerifiedAssetBytes").asBoolean());
+        assertTrue(publication.path("requiresRemoteMainReadmeAndRetainedDownloads").asBoolean());
+        assertTrue(publication.path("rotationExecutesNoDeletion").asBoolean());
+        String retention = Files.readString(root.resolve("docs/platform/ATF_ReleaseRetention.md"));
+        assertTrue(retention.contains("READY_FOR_ROTATION"));
+        assertTrue(retention.contains("verify-rotation"));
+    }
+
     @Test void executableRagIsReadOnlyCitedAndKeepsUnchangedApplicationE2eFrozen() throws Exception {
         JsonNode evaluator = policy().path("ragEvaluator");
         assertEquals("atf-tests/tools/evaluate-release-rag.mjs", evaluator.path("entrypoint").asText());

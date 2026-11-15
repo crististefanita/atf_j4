@@ -143,7 +143,32 @@ Metadatele draftului se păstrează separat în `github-release-draft.json`; `gi
 - **Legare:** commit-ul dovezilor există înaintea introducerii hash-ului său în note. Un commit final înregistrează legătura și răspunsul GitHub; nu se încearcă autoreferențierea hash-ului unui commit.
 - **Identitatea auditului:** [Guvernanța predării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) citește indexul, manifestul și raportul direct din commitul indicat și compară SHA-256 cu raportul canonic declarat în dosarul predat. Dacă o reluare schimbă raportul canonic, fixați noul commit de dovezi în note.
 - **Închidere:** după ultimul push, recitiți README-ul din GitHub și confruntați URL-ul exact cu asset-ul descărcat. Verificarea locală nu dovedește singură că documentul online a fost actualizat.
-- **Reluarea draftului:** păstrați ID-ul răspunsului de creare și recitiți draftul după ID. Un 404 la căutarea după tag nu justifică repetarea creării; confruntați mai întâi inventarul drafturilor autorizate și asset-urile existente, fără upload sau înlocuire oarbă.
+
+## Publicarea reluabilă pe GitHub
+
+[Scriptul de publicare](../../atf-tests/tools/publish-github-release.mjs) primește dosarul candidatului și verdictul său `READY_FOR_HUMAN_REVIEW`.
+
+- Manifestul declară starea `PREPARED`, repository-ul, modul de acces, URL-ul canonic și hash-urile APK-ului, checksum-ului și notelor.
+- Împingeți sursa pe `main` și tag-ul versiunii pe commit-ul calificat înainte de comandă.
+- Folosiți `GH_TOKEN` sau `GITHUB_TOKEN` în mediul procesului. Directorul rulării trebuie să existe în afara proiectului și a candidatului.
+
+```powershell
+node .\atf-tests\tools\publish-github-release.mjs publish $ProjectRoot $CandidateDir $VerdictFile $PublicationRun
+```
+
+La reluare, folosiți manifestul calificat, verdictul și directorul rulării inițiale. Păstrați-le până se închid publicarea și retenția.
+
+- Jurnalul `github-publication.json` leagă commit-ul, hash-ul manifestului, hash-urile asset-urilor și ID-ul numeric al draftului. Salvează starea înaintea apelurilor care pot lăsa rezultate nedeterminate.
+- Scrierea atomică și fișierul `.lock` împiedică două rulări în același director. După oprirea forțată, verificați PID-ul din fișier înainte de a elibera blocarea.
+
+| Situație | Comportament la reluare |
+|---|---|
+| GitHub returnează 422 la creare | Recitește inventarul autentificat. Dacă draftul lipsește după refuz, corectați cauza și rulați din nou. |
+| Conexiunea se întrerupe la creare | Caută draftul pe toate paginile după tag și marcajul manifestului. Dacă rezultatul rămâne nedeterminat, verificați inventarul autentificat și reluați după ce draftul devine vizibil. După salvarea ID-ului, scriptul recitește strict după ID. |
+| Upload-ul se întrerupe sau primește 422 | Recitește asset-ul, descarcă fișierul și compară dimensiunea și SHA-256. Un fișier diferit oprește fluxul. Un asset gol în starea `starter` poate fi retras după ID în propriul draft, dacă jurnalul identifică exact upload-ul întrerupt. |
+| Răspunsul de promovare se pierde | Recitește același ID și verifică asset-urile publicate. Promovarea confirmată nu se repetă. |
+
+În notele Release păstrați marcajul HTML `atf-publication` când adăugați legătura spre auditul fixat pe commit. După promovare, publicați pe `main` catalogul, manifestele și README-ul actualizat. [Preflight-ul rotației](ATF_ReleaseRetention.md#verificarea-descărcării-înaintea-rotației) le confruntă cu descărcările reale.
 
 ## Dosarul unei versiuni
 
