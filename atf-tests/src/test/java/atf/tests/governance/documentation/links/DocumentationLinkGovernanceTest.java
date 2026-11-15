@@ -1,39 +1,27 @@
 package atf.tests.governance.documentation.links;
 
-import atf.tests.governance.documentation.DocumentationGovernanceSupport;
 import atf.testkit.AtfComponentTest;
+import atf.tests.documentation.DocumentationGovernance;
+import atf.tests.documentation.DocumentationGovernanceSupport.Violation;
+import atf.tests.governance.documentation.support.DocumentationAssertions;
 import org.junit.jupiter.api.Test;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
 import static atf.tests.governance.support.GovernanceProject.locateProjectRoot;
 
-/** Local destinations and fragments are governed for owner READMEs and every project document. */
 @AtfComponentTest
 public class DocumentationLinkGovernanceTest {
     @Test
     void governedMarkdownKeepsResolvableLocalDestinationsAndFragments() throws Exception {
-        var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
+        var violations = new ArrayList<Violation>();
         inspect(locateProjectRoot(), violations);
-        DocumentationGovernanceSupport.assertNoViolations("documentation links and fragments", violations);
+        DocumentationAssertions.assertNoViolations("documentation links and fragments", violations);
     }
 
-    public static void inspect(Path root, List<DocumentationGovernanceSupport.Violation> violations) throws Exception {
-        try (var files = atf.tests.governance.support.GovernanceProject.markdown(root).stream()) {
-            files.filter(path -> DocumentationGovernanceSupport.isGovernedMarkdown(root, path))
-                    .forEach(path -> validate(path, root, violations));
-        }
-    }
-
-    public static void validate(Path path, Path root, List<DocumentationGovernanceSupport.Violation> violations) {
-        try {
-            DocumentationLocalLinks.validate(path, root, Files.readAllLines(path), violations);
-        } catch (java.io.IOException unreadable) {
-            violations.add(DocumentationGovernanceSupport.violation("DOC-READ", root, path, 1,
-                    "documentation could not be read: " + unreadable.getMessage(),
-                    "local destinations and fragments require readable Markdown",
-                    "fix the document encoding or filesystem access"));
-        }
+    public static void inspect(Path root, List<Violation> violations) throws IOException {
+        violations.addAll(DocumentationGovernance.scanProject(root, DocumentationGovernance.Rule.LINKS).violations());
     }
 }

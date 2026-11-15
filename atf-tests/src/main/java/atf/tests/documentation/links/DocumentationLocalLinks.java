@@ -1,6 +1,6 @@
-package atf.tests.governance.documentation.links;
+package atf.tests.documentation.links;
 
-import atf.tests.governance.documentation.DocumentationGovernanceSupport;
+import atf.tests.documentation.DocumentationGovernanceSupport;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;

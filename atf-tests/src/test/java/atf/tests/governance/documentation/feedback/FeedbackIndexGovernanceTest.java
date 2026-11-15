@@ -3,13 +3,14 @@ package atf.tests.governance.documentation.feedback;
 import atf.testkit.AtfComponentTest;
 import atf.testkit.assertions.AuditedAssertions;
 import atf.tests.governance.support.GovernanceProject;
+import atf.tests.documentation.DocumentationGovernance;
+import atf.tests.documentation.DocumentationGovernanceSupport.Violation;
+import atf.tests.documentation.policy.FeedbackIndexRules;
 import atf.tests.reporting.GameReportAudit;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -17,7 +18,6 @@ import org.junit.jupiter.api.io.TempDir;
 /** Keeps the prioritized feedback index traceable, scored consistently and locally navigable. */
 @AtfComponentTest
 final class FeedbackIndexGovernanceTest {
-    private static final Pattern LOCAL_LINK = Pattern.compile("\\[[^]]+]\\(([^)]+)\\)");
 
     @RegisterExtension
     static final GameReportAudit AUDIT = new GameReportAudit();
@@ -28,11 +28,8 @@ final class FeedbackIndexGovernanceTest {
     @Test
     void projectFeedbackIndexHasUniqueOrderedScoresAndExistingOwnerLinks() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
-        Path index = root.resolve("docs/feedback/README.md");
-
-        List<String> violations = validate(Files.readString(index), root.resolve("docs/feedback"), root);
-
-        AuditedAssertions.assertTrue(violations.isEmpty(), String.join("\n", violations));
+        var result = DocumentationGovernance.scanFile(root, "docs/feedback/README.md", DocumentationGovernance.Rule.FEEDBACK_ROWS);
+        AuditedAssertions.assertTrue(result.violations().isEmpty(), result.violations().toString());
     }
 
     @Test
@@ -68,65 +65,9 @@ final class FeedbackIndexGovernanceTest {
     }
 
     private static List<String> validate(String markdown, Path feedbackFolder, Path root) {
-        String[] lines = markdown.replace("\r\n", "\n").split("\n");
-        List<String> violations = new ArrayList<>();
-        boolean foundHeader = false;
-        boolean foundRows = false;
-        Integer previousScore = null;
-        java.util.Set<String> ids = new java.util.HashSet<>();
-
-        for (String line : lines) {
-            if (!line.trim().startsWith("|")) {
-                if (foundHeader && foundRows) break;
-                continue;
-            }
-            String[] cells = line.trim().split("\\|", -1);
-            if (cells.length < 6) continue;
-            String idHeader = cells[1].trim();
-            if (!foundHeader) {
-                if (idHeader.equals("ID") && cells[3].trim().equals("Scor")) foundHeader = true;
-                continue;
-            }
-            String id = cells[1].trim();
-            if (id.matches(":?-{3,}:?")) continue;
-            foundRows = true;
-            if (!id.matches("[A-Z][A-Z0-9]*-[0-9]{2}")) {
-                violations.add("feedback row has invalid ID: " + id);
-                continue;
-            }
-            if (!ids.add(id)) violations.add("feedback row has duplicate ID " + id);
-            String scoreText = cells[3].trim();
-            int score;
-            try {
-                score = Integer.parseInt(scoreText);
-            } catch (NumberFormatException error) {
-                violations.add("feedback row " + id + " has a non-integer score");
-                continue;
-            }
-            if (score < 1 || score > 100) violations.add("feedback row " + id + " score must be between 1 and 100");
-            if (previousScore != null && score > previousScore) {
-                violations.add("feedback scores must be in descending order at " + id);
-            }
-            previousScore = score;
-
-            Matcher link = LOCAL_LINK.matcher(cells[4]);
-            if (!link.find()) {
-                violations.add("feedback row " + id + " has no owner link");
-                continue;
-            }
-            String target = link.group(1).trim();
-            if (target.matches("(?i)^(https?:|mailto:).*")) {
-                violations.add("feedback row " + id + " owner link must be a local project document");
-                continue;
-            }
-            String pathPart = target.split("#", 2)[0];
-            Path resolved = feedbackFolder.resolve(pathPart).normalize();
-            if (!resolved.startsWith(root.normalize()) || !Files.isRegularFile(resolved)) {
-                violations.add("feedback row " + id + " owner link does not resolve: " + target);
-            }
-        }
-        if (!foundHeader || !foundRows) violations.add("feedback ToDo table is missing or empty");
-        return violations;
+        var violations = new ArrayList<Violation>();
+        FeedbackIndexRules.inspectRows(markdown.lines().toList(), feedbackFolder.resolve("README.md"), root, violations);
+        return violations.stream().map(Violation::finding).toList();
     }
 
     private static String table(String... rows) {

@@ -1,4 +1,4 @@
-package atf.tests.governance.documentation.links;
+package atf.tests.documentation.links;
 
 import java.util.ArrayList;
 import java.util.HashSet;

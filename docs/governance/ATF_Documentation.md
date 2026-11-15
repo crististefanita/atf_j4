@@ -110,6 +110,23 @@ Notele din pagina Release sunt o prezentare pentru utilizator: descărcare și s
 
 Trasabilitatea unei afirmații este `afirmație → sursă live → document responsabil → test sau criteriu → nivel executat`. O cale validă nu dovedește sensul afirmației, iar un test structural nu certifică interacțiunea Android.
 
+## CLI pentru guvernanța documentației
+
+[Lansatorul](../../scripts/run-documentation-governance.ps1) acceptă rădăcina explicită a proiectului și unul sau mai multe documente. Omiterea opțiunii `-File` verifică inventarul complet. API-ul Java și suita folosesc aceeași [implementare a regulilor](../../atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java).
+
+```powershell
+.\scripts\run-documentation-governance.ps1 -ProjectRoot $ProjectRoot -File @(
+    'README.md', 'docs/governance/ATF_Documentation.md'
+) -Json
+```
+
+- Căile sunt relative la proiect. Inventarul include README-uri, ghidurile bibliotecilor din `lib` și fișierele Markdown din `docs`. Căile externe, cele necanonice și directoarele generate sunt refuzate la selecția explicită.
+- Lansatorul cere JDK 21 și dependențele Jackson și SnakeYAML disponibile în cache-ul Maven. `-MavenCache` indică depozitul local, iar `-ScratchRoot` indică un director extern existent pentru compilare. Lansarea folosește cache-ul pentru citire și compilează doar sursele necesare CLI-ului.
+- Opțiunea `-Json` păstrează codul, fișierul, linia, constatarea, regula și remedierea. Verdictul este același pe fișier indiferent de selecție. Legăturile locale se validează în contextul întregului proiect.
+- Codul de ieșire `0` indică succes, `2` indică abateri documentare și `1` indică o intrare invalidă sau o eroare de execuție. [Probele cu fixture-uri](../../atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java) acoperă paritatea și refuzurile.
+
+Verificarea documentară include structura, linkurile, fragmentele, proza, stilul, diagramele, căile și regulile editoriale locale de conținut și feedback. [Suita de guvernanță](README.md#rulare-izolată) verifică și afirmațiile care depind de surse, inventarul modulelor și livrarea.
+
 ## Verificare și evaluare editorială
 
 [Suita locală](README.md) verifică structura, proza, stilul, diagramele, linkurile și perimetrul surselor. Linkurile locale trebuie să se rezolve în checkout, inclusiv după rezolvarea unei căi simbolice. Referințele către alte proiecte folosesc URL-uri stabile.

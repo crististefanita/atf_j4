@@ -3,9 +3,11 @@ package atf.tests.governance.documentation;
 import atf.testkit.assertions.AuditedAssertions;
 
 import atf.tests.governance.documentation.links.DocumentationLinkGovernanceTest;
+import atf.tests.documentation.links.DocumentationLocalLinks;
 
-import atf.tests.governance.documentation.links.MarkdownAnchorIndex;
+import atf.tests.documentation.links.MarkdownAnchorIndex;
 import atf.testkit.AtfComponentTest;
+import atf.tests.documentation.DocumentationGovernanceSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -44,7 +46,7 @@ public class DocumentationAnchorGovernanceTest {
                 "```md", "[example](missing.md#missing)", "```", "~~~md", "[example](#missing)", "~~~");
         Files.write(source, lines);
         var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
-        DocumentationReadmeStructureGovernanceTest.inspectLocalLinks(source, root, lines, violations);
+        DocumentationLocalLinks.validate(source, root, lines, violations);
         AuditedAssertions.assertTrue(violations.isEmpty(), violations::toString);
     }
 
@@ -62,7 +64,7 @@ public class DocumentationAnchorGovernanceTest {
                 "[local](owner.md#owner)",
                 "[remote](https://example.org/docs/owner.md)");
         var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
-        DocumentationReadmeStructureGovernanceTest.inspectLocalLinks(source, root, lines, violations);
+        DocumentationLocalLinks.validate(source, root, lines, violations);
         AuditedAssertions.assertEquals(List.of(2, 3, 4),
                 violations.stream().map(DocumentationGovernanceSupport.Violation::line).toList());
         AuditedAssertions.assertTrue(violations.stream().allMatch(v -> v.code().equals("DOC-LINK-PORTABILITY")));
@@ -76,10 +78,10 @@ public class DocumentationAnchorGovernanceTest {
         Files.write(source, lines);
         Files.writeString(target, "## Stable heading\n");
         var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
-        DocumentationReadmeStructureGovernanceTest.inspectLocalLinks(source, root, lines, violations);
+        DocumentationLocalLinks.validate(source, root, lines, violations);
         AuditedAssertions.assertTrue(violations.isEmpty());
         Files.writeString(target, "```md\n## Stable heading\n```\n## Renamed heading\n");
-        DocumentationReadmeStructureGovernanceTest.inspectLocalLinks(source, root, lines, violations);
+        DocumentationLocalLinks.validate(source, root, lines, violations);
         AuditedAssertions.assertEquals(1, violations.size());
         String diagnostic = violations.getFirst().toString();
         AuditedAssertions.assertTrue(diagnostic.contains("DOC-README-ANCHOR"), diagnostic);
@@ -93,7 +95,7 @@ public class DocumentationAnchorGovernanceTest {
         var lines = List.of("# Owner", "[missing](absent.md#heading)", "[bad](#%xx)", "[case](#Owner)");
         Files.write(source, lines);
         var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
-        DocumentationReadmeStructureGovernanceTest.inspectLocalLinks(source, root, lines, violations);
+        DocumentationLocalLinks.validate(source, root, lines, violations);
         AuditedAssertions.assertEquals(3, violations.size(), violations::toString);
     }
 

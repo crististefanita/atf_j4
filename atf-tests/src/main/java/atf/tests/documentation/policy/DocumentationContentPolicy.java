@@ -1,0 +1,168 @@
+package atf.tests.documentation.policy;
+
+import atf.tests.distribution.ApkDownloadTarget;
+import atf.tests.distribution.ReleaseDownloadSelection;
+import atf.tests.distribution.ReleasePaths;
+import atf.tests.documentation.DocumentationGovernanceSupport.Violation;
+import atf.tests.documentation.DocumentationInventory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static atf.tests.documentation.DocumentationGovernanceSupport.violation;
+
+/** Content conventions that depend on the project's declared publication and stable documentation. */
+public final class DocumentationContentPolicy {
+    private static final String CONFIG = "config/atf-governance-policy.json";
+    private static final Pattern HISTORICAL_VERIFICATION = Pattern.compile("ATF_Reporting_J[0-9]+_Verification\\.md");
+    private static final Pattern PROJECT_IDENTIFIER = Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b");
+
+    public record Context(String repository, ApkDownloadTarget advertised) {
+        public static Context load(Path root) throws IOException {
+            ObjectMapper mapper = new ObjectMapper();
+            var policy = mapper.readTree(root.resolve(CONFIG).toFile());
+            if (policy == null || !policy.isObject()) throw new IOException("DOC-CONTENT-CONFIG: expected object policy");
+            String repository = policy.path("publicRepository").asText("");
+            if (repository.isEmpty()) return new Context("", null);
+            if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+"))
+                throw new IOException("DOC-CONTENT-CONFIG: repository must be a GitHub URL");
+            var index = mapper.readTree(root.resolve("release/index.json").toFile());
+            String version = ReleasePaths.relative(index.path("candidateVersion").asText(index.path("currentVersion").asText()));
+            Path manifest = index.path("candidateVersion").isTextual() ? root.resolve("release/candidate.json")
+                    : root.resolve("release").resolve(version).resolve("release-validation.json");
+            return new Context(repository, ReleaseDownloadSelection.select("advertised",
+                    repository.substring("https://github.com/".length()), index, mapper.readTree(manifest.toFile())));
+        }
+    }
+
+    public static void validate(Path file, Path root, List<String> lines, Context context, List<Violation> violations) {
+        if (HISTORICAL_VERIFICATION.matcher(file.getFileName().toString()).matches())
+            violations.add(violation("DOC-RELEASE-VERIFICATION-NAME", root, file, 1,
+                    "file name captures an individual release verification",
+                    "release chronology belongs in the external archive", "move the verification beside the release evidence"));
+        String source = String.join("\n", lines);
+        if ((DocumentationInventory.isReadme(file) || DocumentationInventory.isLibraryGuide(root, file))
+                && hasEnglishReadmeProse(source))
+            violations.add(violation("DOC-README-LANGUAGE", root, file, 1, "README has English explanatory prose",
+                    "owner READMEs use Romanian for explanatory prose", "translate the explanations and keep API names intact"));
+        String relative = root.relativize(file).toString().replace('\\', '/');
+        String prose = historicalReleaseProse(relative, publicReleaseProse(deploymentProse(source), context.repository(), context.advertised()),
+                context.repository());
+        if (PROJECT_IDENTIFIER.matcher(prose).find())
+            violations.add(violation("DOC-PROJECT-IDENTIFIER", root, file, 1, "prose contains an external project identifier",
+                    "documentation refers to local contracts", "name the owning contract and link to its stable documentation"));
+    }
+
+    /** A declared repository's stable release URI is technical data; visible link text remains prose. */
+    public static String publicReleaseProse(String source, String repository) {
+        return publicReleaseProse(source, repository, null);
+    }
+
+    public static String publicReleaseProse(String source, String repository, atf.tests.distribution.ApkDownloadTarget published) {
+        if (published != null && !repository.equals("https://github.com/" + published.repository()))
+            throw new IllegalArgumentException("Published technical data must belong to the declared repository");
+        if (repository.isEmpty()) return source;
+        if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
+                || !java.net.URI.create(repository).normalize().toString().equals(repository))
+            throw new IllegalArgumentException("Expected a canonical public GitHub repository URI");
+        var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
+        var result = new StringBuffer();
+        while (links.find()) {
+            String replacement = (links.group(2).equals(repository + "/releases/latest")
+                    || published != null && (links.group(2).equals(published.releasePageUrl())
+                            || links.group(2).equals(published.publicUrl())
+                            || links.group(2).equals(published.publicUrl() + ".sha256")))
+                    ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
+            links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
+        }
+        return links.appendTail(result).toString();
+    }
+
+    /** Historical release READMEs may link to their own tagged asset; visible labels remain governed prose. */
+    public static String historicalReleaseProse(String relative, String source, String repository) {
+        var archive = java.util.regex.Pattern.compile(
+                "^release/([0-9]+\\.[0-9]+\\.[0-9]+)/README\\.md$").matcher(relative.replace('\\', '/'));
+        if (!archive.matches() || repository.isEmpty()) return source;
+        String version = archive.group(1);
+        String page = repository + "/releases/tag/v" + version;
+        String apk = repository + "/releases/download/v" + version + "/WhistLab-" + version + ".apk";
+        String checksum = apk + ".sha256";
+        var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
+        var result = new StringBuffer();
+        while (links.find()) {
+            String replacement = links.group(2).equals(repository)
+                    || links.group(2).equals(page) || links.group(2).equals(apk) || links.group(2).equals(checksum)
+                    ? "[" + links.group(1) + "](<resursă-publică>)" : links.group();
+            links.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
+        }
+        return links.appendTail(result).toString();
+    }
+
+    /** Only the identity of a well-formed change control is technical data, not editorial prose. */
+    public static String deploymentProse(String source) {
+        var fences = java.util.regex.Pattern.compile("(?ms)^```yaml[ \\t]*\\R(.*?)^```[ \\t]*(?=\\R|\\z)").matcher(source);
+        var result = new StringBuffer();
+        while (fences.find()) {
+            String replacement = fences.group();
+            var metadata = changeControlMetadata(fences.group(1));
+            if (metadata != null) {
+                for (var row : metadata.path("testChanges"))
+                    ((com.fasterxml.jackson.databind.node.ObjectNode) row).put("id", "<identificator-tehnic>");
+                replacement = "```yaml\n" + metadata + "\n```";
+            }
+            fences.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(replacement));
+        }
+        return fences.appendTail(result).toString();
+    }
+
+    private static com.fasterxml.jackson.databind.JsonNode changeControlMetadata(String yaml) {
+        try {
+            var mapper = new com.fasterxml.jackson.databind.ObjectMapper(new com.fasterxml.jackson.dataformat.yaml.YAMLFactory()
+                    .enable(com.fasterxml.jackson.core.JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+                    .enable(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+            var root = mapper.readTree(yaml);
+            if (root == null || !root.isObject() || root.size() != 1 || !root.path("testChanges").isArray()
+                    || root.path("testChanges").isEmpty()) return null;
+            for (var row : root.path("testChanges")) {
+                if (!row.isObject() || row.size() != (row.has("allowDelete") ? 8 : 7)) return null;
+                for (String field : List.of("id", "status", "base", "expires", "reason", "proof"))
+                    if (!row.path(field).isTextual() || row.path(field).asText().isBlank()) return null;
+                if (!row.path("id").asText().matches("[A-Z][A-Z0-9-]{3,79}")
+                        || !java.util.Set.of("ACTIVE", "VERIFIED", "CLOSED", "DRAFT").contains(row.path("status").asText())
+                        || !row.path("base").asText().matches("[a-f0-9]{40}|[a-f0-9]{64}")
+                        || row.path("reason").asText().length() < 20
+                        || !row.path("proof").asText().startsWith("mvn ")
+                        || !(row.path("proof").asText().contains("test") || row.path("proof").asText().contains("verify"))) return null;
+                java.time.LocalDate.parse(row.path("expires").asText());
+                if (!row.path("paths").isArray() || row.path("paths").isEmpty()
+                        || row.has("allowDelete") && !row.path("allowDelete").isBoolean()) return null;
+                var paths = new java.util.HashSet<String>();
+                for (var value : row.path("paths")) {
+                    String file = value.isTextual() ? value.asText() : "";
+                    if (file.isBlank() || file.startsWith("/") || file.matches("^[A-Za-z]:.*")
+                            || file.contains("\\") || file.contains("..") || file.matches(".*[?*\\[\\]{}].*")
+                            || !paths.add(file)) return null;
+                }
+            }
+            return root;
+        } catch (Exception invalidMetadata) {
+            return null;
+        }
+    }
+
+    public static boolean hasEnglishReadmeProse(String source) {
+        String prose = source.replaceAll("(?s)```.*?```", "").replaceAll("`[^`]*`", "").replaceAll("\\]\\([^)]*\\)", "]");
+        if (java.util.regex.Pattern.compile("(?im)^#{1,6} (?:Overview|Quick start|Getting started|Captured UI timing|Usage|Testing|Architecture|Requirements|Shared platform)\\b")
+                .matcher(prose).find()) return true;
+        var words = java.util.regex.Pattern.compile("(?i)\\b(the|this|these|that|with|without|and|must|should|their|each|after|before|from|where|when|which|remain|remains)\\b");
+        for (String paragraph : prose.split("\\n\\s*\\n")) {
+            long signals = words.matcher(paragraph).results().map(match -> match.group().toLowerCase(java.util.Locale.ROOT)).distinct().count();
+            if (signals >= 4) return true;
+        }
+        return false;
+    }
+
+    private DocumentationContentPolicy() { }
+}

@@ -70,6 +70,8 @@ O inspecție deține și închide propriul manager de fișiere JDK, reutilizat �
 
 ## Rulare izolată
 
+Pentru un fișier sau pentru inventarul documentar complet, folosiți [CLI-ul de documentație](ATF_Documentation.md#cli-pentru-guvernanța-documentației). Acesta testează aceleași reguli editoriale ca suita.
+
 Pentru verificarea dovezilor publicate, folosiți un checkout Git cu obiectele commiturilor indicate în notele de release. Suita citește acele obiecte local, iar un obiect lipsă produce eroare.
 
 Din rădăcina proiectului:

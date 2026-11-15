@@ -4,13 +4,11 @@
 
 Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul comun reutilizabil se solicită prin [responsabilitățile bibliotecilor](README.md), fără introducerea în consumator a implementărilor acestora.
 
-## API reutilizabil pentru verificatoare
+## Reutilizarea verificatoarelor de sursă
 
-| Prioritate | Lacună | Criteriu de închidere |
+| ID | Lacună | Criteriu de închidere |
 |---|---|---|
-| P1 | Validatoarele comune nu au încă un contract împachetat independent de reactorul producătorului. | API sau CLI cu rădăcină explicită, inventar de documente și surse, module, rădăcini JVM suplimentare și excepții motivate. Verificați paritatea diagnosticelor între un document selectat explicit și suita integrală pe același fișier. |
-
-Integrarea locală păstrează verificatoarele adaptate și controalele lor negative până la demonstrarea echivalenței API-ului împachetat. Configurația Surefire nu substituie identificarea rădăcinii efectiv inspectate.
+| GOV-04 | Inventarul JVM și verificările de arhitectură sunt încă orchestrate din reactorul local. | Calificați un API sau CLI cu rădăcină, module, seturi de surse și excepții explicite. Verificați o rădăcină externă validă, suprapunerea surselor, o rădăcină lipsă și o excepție neacoperită. |
 
 ## Costul inspecției sintactice
 
@@ -19,16 +17,6 @@ Integrarea locală păstrează verificatoarele adaptate și controalele lor nega
 | P2 | Profilarea inspecției straturilor surprinde inițializarea încărcătorului de procesoare și interogarea classpath-ului în [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), deși verificarea consumă arborele de sintaxă. | Calificați o configurare parse-only cu dependențe delimitate și măsurați costul pe același inventar. Păstrați adnotările compuse, importurile ambigue, erorile de sintaxă și ciclul de viață al parserului prin controale independente. |
 
 Profilarea și timpii concreți rămân în arhiva externă. Optimizarea parserului se califică separat de verificările funcționale ale aplicației.
-
-## Criterii pentru contractul comun
-
-- Același inventar alimentează structura, linkurile, fragmentele, proza, stilul, diagramele și căile configurabile.
-- Diagnosticul conține regula, fișierul, linia și remedierea; rezultatul identifică validatorul și populația verificată.
-- Rădăcina greșită, inventarul gol, documentele lipsă și căile din afara perimetrului sunt refuzate.
-- Probele negative detectează defectul injectat și acceptă documentul sănătos vecin, inclusiv pe căi cu spații și diacritice.
-- Descoperirea surselor și adnotările compuse păstrează aceeași semantică; comentariile și exemplele nu devin clase executabile.
-- Rezolvarea adnotărilor trebuie să acopere pozițiile legale față de modificatorii declarației; [adaptorul local](../governance/README.md#declarațiile-testelor) folosește structura sintactică JDK, iar un contract comun se califică prin aceleași controale independente.
-- Validarea nu rescrie documentele și nu relaxează regulile pentru a închide o revizie.
 
 ## Coeziunea și evoluția pachetelor
 

@@ -1,47 +1,24 @@
 package atf.tests.governance.documentation;
 
-import atf.tests.governance.documentation.links.DocumentationLocalLinks;
-
 import atf.testkit.AtfComponentTest;
+import atf.tests.documentation.DocumentationGovernanceSupport;
+import atf.tests.documentation.DocumentationGovernance;
+import atf.tests.governance.documentation.support.DocumentationAssertions;
 import org.junit.jupiter.api.Test;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
-import java.util.regex.Pattern;
-
-import atf.tests.governance.support.GovernanceProject;
 
 import static atf.tests.governance.support.GovernanceProject.locateProjectRoot;
 
-/** Checks the minimum readable shape shared by every owner README. */
 @AtfComponentTest
 public class DocumentationReadmeStructureGovernanceTest {
-    private static final Pattern H1 = Pattern.compile("^#\\s+[^#].*$");
-    private static final Pattern H2_ORIENTATION = Pattern.compile("^##\\s+Pe scurt\\b.*$",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern DETAILS_OPEN = Pattern.compile("^\\s*<details(?:\\s|>)",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern DETAILS_CLOSE = Pattern.compile("^\\s*</details>\\s*$",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern SUMMARY = Pattern.compile("^\\s*<summary(?:\\s|>)",
-            Pattern.CASE_INSENSITIVE);
-
     @Test
     void ownerDocumentsKeepAReadableStableShape() throws Exception {
-        Path root = locateProjectRoot();
-        List<DocumentationGovernanceSupport.Violation> violations = new ArrayList<>();
-        try (var files = GovernanceProject.markdown(root).stream()) {
-            files.filter(path -> GovernanceProject.isLibraryGuide(root, path)
-                            || DocumentationGovernanceSupport.isGovernedMarkdown(root, path))
-                    .forEach(path -> validate(path, root, violations));
-        }
-        DocumentationGovernanceSupport.assertNoViolations("README structure governance", violations);
+        var result = DocumentationGovernance.scanProject(locateProjectRoot(), DocumentationGovernance.Rule.STRUCTURE);
+        DocumentationAssertions.assertNoViolations("README structure governance", result.violations());
     }
-
 
     @Test
     void declaredReleaseReportIndexKeepsItsOriginalShape(@org.junit.jupiter.api.io.TempDir Path root) throws Exception {
@@ -52,122 +29,20 @@ public class DocumentationReadmeStructureGovernanceTest {
                 {"integrity":{"files":[{"path":"reports/component/README.md"}]}}
                 """);
         var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
-        validate(evidence, root, violations);
-        DocumentationGovernanceSupport.assertNoViolations("Release evidence index", violations);
+        violations.addAll(DocumentationGovernance.scanFile(root, "release/1.2.3/reports/component/README.md",
+                DocumentationGovernance.Rule.STRUCTURE).violations());
+        DocumentationAssertions.assertNoViolations("Release evidence index", violations);
 
-        Path owner = Files.writeString(release.getParent().getParent().resolve("README.md"), "# Release owner\n");
-        validate(owner, root, violations);
+        Files.writeString(release.getParent().getParent().resolve("README.md"), "# Release owner\n");
+        violations.addAll(DocumentationGovernance.scanFile(root, "release/1.2.3/README.md",
+                DocumentationGovernance.Rule.STRUCTURE).violations());
         Files.writeString(manifest, """
                 {"integrity":{"files":[]}}
                 """);
-        validate(evidence, root, violations);
+        violations.addAll(DocumentationGovernance.scanFile(root, "release/1.2.3/reports/component/README.md",
+                DocumentationGovernance.Rule.STRUCTURE).violations());
         atf.testkit.assertions.AuditedAssertions.assertEquals(
                 List.of("DOC-README-OVERALL", "DOC-README-OVERALL"),
                 violations.stream().map(DocumentationGovernanceSupport.Violation::code).toList());
-    }
-
-    private static boolean isReleaseEvidence(Path root, Path file) throws java.io.IOException {
-        Path relative = root.relativize(file);
-        if (relative.getNameCount() < 4 || !relative.getName(0).toString().equals("release")
-                || !relative.getName(2).toString().equals("reports")) return false;
-        Path manifest = root.resolve(relative.subpath(0, 2)).resolve("release-validation.json");
-        if (!Files.isRegularFile(manifest)) return false;
-        String evidencePath = relative.subpath(2, relative.getNameCount()).toString().replace('\\', '/');
-        var entries = new com.fasterxml.jackson.databind.ObjectMapper().readTree(manifest.toFile()).at("/integrity/files");
-        for (var entry : entries) {
-            if (entry.path("path").asText().equals(evidencePath)) return true;
-        }
-        return false;
-    }
-
-    static void validate(Path path, Path root,
-                         List<DocumentationGovernanceSupport.Violation> violations) {
-        try {
-            List<String> lines = Files.readAllLines(path);
-            inspectTitleAndOrientation(path, root, lines, violations);
-            inspectDetails(path, root, lines, violations);
-            inspectLocalLinks(path, root, lines, violations);
-        } catch (Exception error) {
-            violations.add(DocumentationGovernanceSupport.violation(
-                    "DOC-READ", root, path, 1,
-                    "README could not be read: " + error.getMessage(),
-                    "every owner README must be readable by the governance scan",
-                    "fix the file encoding or filesystem access before changing content"));
-        }
-    }
-
-    private static void inspectTitleAndOrientation(Path path, Path root, List<String> lines,
-                                                   List<DocumentationGovernanceSupport.Violation> violations) throws java.io.IOException {
-        List<Integer> titles = matchingLines(lines, H1);
-        if (titles.size() != 1) {
-            violations.add(DocumentationGovernanceSupport.violation(
-                    "DOC-README-TITLE", root, path, titles.isEmpty() ? 1 : titles.getFirst(),
-                    "README has " + titles.size() + " level-one title(s)",
-                    "an owner README has one stable title before its sections",
-                    "keep one `# ...` title and convert additional top-level titles to `## ...`"));
-        }
-        if (!path.equals(root.resolve("README.md").toAbsolutePath().normalize())
-                && matchingLines(lines, H2_ORIENTATION).isEmpty() && !isReleaseEvidence(root, path)) {
-            violations.add(DocumentationGovernanceSupport.violation(
-                    "DOC-README-OVERALL", root, path, 1,
-                    "README-ul nu are secțiunea de orientare `## Pe scurt`",
-                    "README-urile modulelor și ale documentației prezintă scopul, proprietarul și limitele înaintea detaliilor",
-                    "adaugă o secțiune concisă `## Pe scurt` înaintea diagramelor, tabelelor sau detaliilor de implementare"));
-        }
-    }
-
-    private static List<Integer> matchingLines(List<String> lines, Pattern pattern) {
-        List<Integer> matches = new ArrayList<>();
-        for (int index = 0; index < lines.size(); index++) {
-            if (pattern.matcher(lines.get(index)).matches()) matches.add(index + 1);
-        }
-        return matches;
-    }
-
-    private static void inspectDetails(Path path, Path root, List<String> lines,
-                                       List<DocumentationGovernanceSupport.Violation> violations) {
-        Deque<Integer> openings = new ArrayDeque<>();
-        Deque<Boolean> summaries = new ArrayDeque<>();
-        for (int index = 0; index < lines.size(); index++) {
-            String line = lines.get(index);
-            if (DETAILS_OPEN.matcher(line).find()) {
-                openings.push(index + 1);
-                summaries.push(false);
-            } else if (SUMMARY.matcher(line).find() && !summaries.isEmpty()) {
-                summaries.pop();
-                summaries.push(true);
-            } else if (DETAILS_CLOSE.matcher(line).matches()) {
-                if (openings.isEmpty()) {
-                    violations.add(DocumentationGovernanceSupport.violation(
-                            "DOC-README-DETAILS", root, path, index + 1,
-                            "closing `</details>` has no matching opening tag",
-                            "collapsible sections must be structurally balanced",
-                            "remove the orphan closing tag or add the matching `<details>` owner"));
-                    continue;
-                }
-                int opening = openings.pop();
-                if (!summaries.pop()) {
-                    violations.add(DocumentationGovernanceSupport.violation(
-                            "DOC-README-SUMMARY", root, path, opening,
-                            "collapsible section has no `<summary>`",
-                            "every collapsed block needs a visible purpose before its details",
-                            "add a concise `<summary>` that names the hidden rationale, table or exception"));
-                }
-            }
-        }
-        while (!openings.isEmpty()) {
-            int opening = openings.pop();
-            summaries.pop();
-            violations.add(DocumentationGovernanceSupport.violation(
-                    "DOC-README-DETAILS", root, path, opening,
-                    "`<details>` is not closed",
-                    "collapsible sections must be structurally balanced",
-                    "close the block with `</details>` before the next Markdown section"));
-        }
-    }
-
-    static void inspectLocalLinks(Path path, Path root, List<String> lines,
-                                  List<DocumentationGovernanceSupport.Violation> violations) {
-        DocumentationLocalLinks.validate(path, root, lines, violations);
     }
 }

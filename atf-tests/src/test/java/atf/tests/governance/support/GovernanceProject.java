@@ -1,23 +1,18 @@
 package atf.tests.governance.support;
 
+import atf.tests.documentation.DocumentationInventory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Shared explicit perimeter. Discovery never treats a missing project as a successful empty scan. */
 public final class GovernanceProject {
-    private static final Set<String> GENERATED = Set.of(".git", ".locks", ".gradle", ".idea",
-            "target", "build", "artifacts", "dist", "node_modules", ".presentation-build");
     private GovernanceProject() { }
 
     public static Path locateProjectRoot() {
@@ -38,26 +33,11 @@ public final class GovernanceProject {
     }
 
     public static List<Path> markdown(Path root) throws IOException {
-        var result = new ArrayList<Path>();
-        Files.walkFileTree(root, new SimpleFileVisitor<>() {
-            @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attributes) {
-                return !directory.equals(root) && GENERATED.contains(directory.getFileName().toString())
-                        ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
-            }
-            @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
-                String relative = relative(root, file);
-                if (attributes.isRegularFile() && (file.getFileName().toString().equalsIgnoreCase("README.md")
-                        || isLibraryGuide(root, file)
-                        || relative.startsWith("docs/") && relative.endsWith(".md"))) result.add(file);
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        return result.stream().sorted().toList();
+        return DocumentationInventory.documents(root);
     }
 
     public static boolean isLibraryGuide(Path root, Path file) {
-        return file.getParent().equals(root.resolve("lib")) && Set.of("README.md", "README.Core.md",
-                "README.Reporting.md", "README.Console.md", "README.Mock.md", "README.TestKit.md").contains(file.getFileName().toString());
+        return DocumentationInventory.isLibraryGuide(root, file);
     }
 
     public static List<SourceFile> sources(Path root) throws Exception {
