@@ -232,7 +232,7 @@ class ReleaseRagPlatformGovernanceTest {
 
     @Test void releaseGuideExplainsTempQualificationBeforePromotionAndCanonicalReporting() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
-        String ragFeedback = Files.readString(root.resolve("docs/feedback/ATF_Release_RAG.md"));
+        String feedback = Files.readString(root.resolve("docs/feedback/README.md"));
         String qualificationGuide = Files.readString(root.resolve("docs/testing/ATF_ReleaseQualification.md"));
         String deliveryGuide = Files.readString(root.resolve("docs/platform/ATF_AndroidDelivery.md"));
         String evaluator = Files.readString(root.resolve("atf-tests/tools/evaluate-release-rag.mjs"));
@@ -241,7 +241,10 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("READY_FOR_HUMAN_REVIEW"));
         assertTrue(qualificationGuide.contains("Fiecare selecție Gradle are HTML Extent"));
         assertTrue(qualificationGuide.contains("Evaluatorul nu inspectează indexul Git"));
-        assertTrue(qualificationGuide.contains("ATF_Release_RAG.md"));
+        assertTrue(qualificationGuide.contains("### Regresiile evaluatorului"));
+        assertTrue(qualificationGuide.contains("ReleaseRagProvenanceComponentTest.java"));
+        assertTrue(qualificationGuide.contains("ReleaseRagAndroidComponentTest.java"));
+        assertTrue(qualificationGuide.contains("ReleaseRagGithubComponentTest.java"));
         assertTrue(qualificationGuide.contains("JUnit-ul temporar"));
         assertTrue(qualificationGuide.contains("Fiecare selecție primară executată deține un raport Extent canonic"));
         assertTrue(qualificationGuide.contains("executionReceipt"));
@@ -296,8 +299,8 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(qualificationGuide.contains("android-preflight-execution.json"));
         int executionPreflight = nativeRunner.indexOf("    Assert-AtfAndroidPreflight");
         assertTrue(executionPreflight > staging && executionPreflight < nativeRunner.indexOf("shell pm path"));
-        assertFalse(ragFeedback.contains("RAG-03"));
-        assertFalse(ragFeedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");
+        assertFalse(feedback.contains("RAG-03"));
+        assertFalse(feedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");
         assertTrue(evaluator.contains("READY_FOR_HUMAN_REVIEW"));
     }
 

@@ -44,7 +44,7 @@ Profilarea și timpii concreți rămân în arhiva externă. Optimizarea parseru
 
 ## Calificarea afirmațiilor și lansatoarelor
 
-Legarea dovezilor de sursa calificată ține de [registrul RAG](ATF_Release_RAG.md). Integritatea APK-ului și a payload-ului din dosarele înregistrate rămâne verificată de [guvernanța integrității release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
+Legarea dovezilor de sursa calificată este verificată de [regresiile evaluatorului RAG](../testing/ATF_ReleaseQualification.md#regresiile-evaluatorului). Integritatea APK-ului și a payload-ului din dosarele înregistrate rămâne verificată de [guvernanța integrității release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
 
 | Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
 |---|---|---|

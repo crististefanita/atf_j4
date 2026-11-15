@@ -15,7 +15,6 @@ Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne desc
 | [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
 | [Interfață comună](ATF_CardUi_Extraction.md) | Limitele dintre prezentarea reutilizabilă și adaptorul Whist: meniu, profil, masă, istoric și animații. |
 | [Raportare](ATF_Reporting.md) | Calificarea autonomiei, comparațiilor și consumului de memorie în Extent. |
-| [Guvernanța RAG a livrărilor](ATF_Release_RAG.md) | Separarea regresiilor evaluatorului după contract și trasabilitatea verificărilor. |
 | [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
 | [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
 | [Realizări Whist](ATF_Achievements.md) | Restaurarea stării ecranului Android și calibrarea cu jucători umani. |
@@ -38,7 +37,6 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și reconciliază limita Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
 | TEST-01 | P2 | 84 | Separă ceasul, procesele și acțiunile driverului în teste controlate, păstrând timeout-ul, ordinea comenzilor și cauza originală. [Registru](ATF_TestInfrastructure.md) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
-| RAG-08 | P2 | 81 | Extrage regresiile evaluatorului pe proprietari și compară inventarul cazurilor înainte și după. [Registru](ATF_Release_RAG.md#întreținerea-regresiilor) |
 | GOV-02 | P2 | 80 | Validează baza Git, căile schimbate și expirarea controalelor `testChanges`. [Registru](ATF_Governance.md#confruntarea-afirmațiilor-documentare) |
 | AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Owner](ATF_Ai.md#evoluția-motorului) |
 | GOV-03 | P2 | 74 | Reduceți responsabilitățile rămase în GameSession fără schimbarea mutărilor, scorului sau checkpoint-ului; verificați comportamentul nominal și refuzurile cu oracol fixat. [Owner](ATF_Governance.md#lizibilitatea-coordonatorilor-de-domeniu) |

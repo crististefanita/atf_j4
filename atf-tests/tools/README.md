@@ -51,7 +51,7 @@ Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Includ
 - [Planul per flux](prepare-android-e2e.mjs) și evaluatorul folosesc aceleași verificări pentru HTML, PNG și chitanțe. [Importul](apply-android-e2e.mjs) aduce dovada nouă în candidatul fixat. [Contractul lansatorului](../../docs/testing/ATF_ReleaseQualification.md#rularea-și-reluarea-unui-flux-pe-apk-semnat)
 - E2E neexecutat rămâne `NOT_RUN`; schimbarea unui flux utilizator cere grupuri E2E Extent trecute.
 
-Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizia operatorului verifică indexul Git, arborele de promovare și publicarea. Contractul detaliat este în [guvernanța RAG](../../docs/feedback/ATF_Release_RAG.md) și [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md).
+Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizia operatorului verifică indexul Git, arborele de promovare și publicarea. Contractul și oracolele sunt descrise în [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md) și la [regresiile evaluatorului](../../docs/testing/ATF_ReleaseQualification.md#regresiile-evaluatorului).
 
 [Modulul de integrare](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)
 

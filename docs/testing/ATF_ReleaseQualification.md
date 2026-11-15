@@ -102,9 +102,21 @@ Evaluatorul RAG consumă dovezile deja produse și emite un verdict read-only.
 - Scrie numai verdictul JSON, în afara proiectului, candidatului și snapshot-ului.
 - Fiecare verificare citează calea, SHA-256 și JSON Pointer/linia sursei.
 - Verdictul păstrează planul exact, în Base64 UTF-8, în `qualificationPlan.contentBase64`; hash-ul lui permite revizuirea fără o copie temporară externă.
-- Lacunele nerezolvate sunt urmărite în [registrul RAG](../feedback/ATF_Release_RAG.md).
+- Lacunele nerezolvate sunt urmărite în [registrul de feedback](../feedback/README.md#todo-uri-prioritizate).
 
 Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, platformele, grupurile componente, schimbarea fluxului utilizatorului și decizia E2E cu motiv.
+
+### Regresiile evaluatorului
+
+Suita de componente rulează evaluatorul pe dosare de test locale. Fiecare clasă deține un contract și folosește același lansator al procesului Node.
+
+| Contract | Test de componentă | Ce verifică |
+|---|---|---|
+| Proveniență | [ReleaseRagProvenanceComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagProvenanceComponentTest.java) | Snapshot, integritatea payload-ului, citarea planului și reutilizarea dovezilor de componentă. |
+| Android | [ReleaseRagAndroidComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagAndroidComponentTest.java) | Semnarea, legarea dovezii E2E de APK și sursă, izolarea datelor și selecția fluxului. |
+| GitHub | [ReleaseRagGithubComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagGithubComponentTest.java) | Modul de acces, identitatea descărcării și retenția GitHub pe inventare simulate. |
+
+La mutarea unui caz, confruntați chitanțele din Extent după metodă, indicele invocării parametrizate și rezultat. Verificați că diferența de identitate se explică prin clasa nouă și că numărul comparațiilor auditate corespunde pentru fiecare invocare.
 
 ## Ciclul candidatului
 
