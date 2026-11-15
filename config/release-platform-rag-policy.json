@@ -81,6 +81,10 @@
         {
           "group": "whist-lab-app-atf-card-table-ui",
           "sinceReleaseVersion": "0.20.2"
+        },
+        {
+          "group": "whist-lab-app-rules",
+          "sinceReleaseVersion": "0.21.5"
         }
       ]
     },
@@ -101,6 +105,16 @@
       "artifactPreflight": "atf-tests/tools/check-release-artifacts.mjs",
       "releaseInventory": "release-inputs.json",
       "governanceRequiresReleaseInventoryForNewCandidates": true
+    },
+    "stageTiming": {
+      "schemaVersion": 1,
+      "entrypoint": "atf-tests/tools/assemble-release-timeline.mjs",
+      "overlapCountedOnce": true
+    },
+    "cleanupSourceProof": {
+      "entrypoint": "atf-tests/tools/verify-release-git-snapshot.mjs",
+      "requiresPostpublicationVerdict": true,
+      "requiresPublishedGitPayload": true
     },
     "componentSourceBinding": {
       "inputManifest": "reports/component/source-inputs.json",

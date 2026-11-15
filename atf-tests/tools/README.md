@@ -54,3 +54,8 @@ Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Includ
 Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizia operatorului verifică indexul Git, arborele de promovare și publicarea. Contractul detaliat este în [guvernanța RAG](../../docs/feedback/ATF_Release_RAG.md) și [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md).
 
 [Modulul de integrare](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)
+
+## Măsurare și reproducere
+
+- [Cronologia](assemble-release-timeline.mjs) combină chitanțele proceselor și păstrează intervalele suprapuse. [Procedura de calificare](../../docs/testing/ATF_ReleaseQualification.md#cronologia-calificării)
+- [Verificatorul Git](verify-release-git-snapshot.mjs) confruntă inventarul și octeții, inclusiv EOL, și verifică payload-ul publicat înainte de curățare. [Contractul de retenție](../../docs/platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)

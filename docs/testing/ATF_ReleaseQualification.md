@@ -166,6 +166,7 @@ node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
 
 | Rezultat | Acțiune |
 | --- | --- |
+| Ajutorul RO/EN | Conținutul din `HowToPlay.java` și ghidurile aferente rulează în suita de reguli. Schimbările în ecran, navigare și regulile motorului își păstrează porțile de flux. |
 | Schimbare editorială | Rulează guvernanța. Refolosește dovezile compatibile pentru celelalte suite. E2E poate rămâne `NOT_RUN` cu motiv. |
 | Schimbare de licitare, masă, scor, profil sau alt flux identificat | Selectează probele native indicate în `requiredE2eGroups`. Testele de componentă rămân obligatorii pentru contractele lor. |
 | Cale de produs ori intrare partajată neclasificată | Selectează toate probele de flux prevăzute de selector și verifică perimetrele de componentă. |
@@ -219,6 +220,29 @@ Schimbările vizibile în fluxul utilizatorului cer un E2E focalizat pe acel flu
 - Flux neschimbat: E2E poate rămâne `NOT_RUN` cu justificare explicită.
 - Flux schimbat: verdictul cere rapoarte E2E trecute.
 - `NOT_RUN` nu devine rezultat pozitiv.
+
+### Cronologia calificării
+
+| Intrare | Intervale măsurate |
+|---|---|
+| `timing.json` din lansatoare | Snapshot și preflight, cache, compilare Maven, suite sau lansarea Gradle comună, verificarea rapoartelor, pregătirea și restaurarea Android. |
+| Chitanța de lângă HTML | Generarea Extent și auditul HTML în JVM și Android. Gradle măsoară finalizarea și auditul sesiunii. |
+| Verdictul RAG și observația GitHub | Durata fiecărei porți RAG, inventarul, descărcarea, hash-urile și confruntarea publicării. |
+| [Comandă măsurată](../../scripts/Measure-AtfReleaseCommand.ps1) | Build APK, semnare, push, publicare sau audit executat separat. Blocul de comandă întoarce un singur cod de ieșire numeric. |
+
+Fiecare etapă are început și sfârșit UTC observate, durată monotonă și rezultat. `REUSED` și `NOT_RUN` au motiv și zero timp de execuție. Pentru procesele care lucrează în paralel, [cronologia](../../atf-tests/tools/assemble-release-timeline.mjs) calculează reuniunea intervalelor observate și arată separat pauzele.
+
+Cronologia păstrează diferența dintre durata monotonă și intervalul UTC al aceleiași etape.
+
+```powershell
+.\scripts\Measure-AtfReleaseCommand.ps1 -Stage apk.build -TimingFile $BuildTiming -Command {
+  & $GradleLauncher --offline :app:assembleRelease | Out-Host
+  $LASTEXITCODE
+}
+node .\atf-tests\tools\assemble-release-timeline.mjs $ProjectRoot $TimelineFile @TimingReceipts
+```
+
+Alegeți receipt-urile aceleiași calificări, inclusiv verdictul RAG. Cronologia nu deduce durate pentru faze lipsă. [Verificarea înaintea curățării](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
 
 ### Promovarea, push-ul și linkul public
 

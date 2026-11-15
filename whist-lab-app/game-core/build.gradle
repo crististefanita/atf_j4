@@ -30,6 +30,20 @@ dependencies {
 
 tasks.withType(Test).configureEach { maxHeapSize = "256m" }
 
+tasks.register("releaseRulesComponents", Test) {
+    description = "Verifies bilingual help and rule examples in the production JVM model."
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    filter {
+        ["HelpMarkdownComponentTest", "HowToPlayDocumentationTest", "DocumentedScoringComponentTest"].each {
+            includeTestsMatching coreTestClass(it)
+        }
+    }
+    inputs.files(new File(rootDir.parentFile, "docs/game/ATF_RulesRo.md"),
+                 new File(rootDir.parentFile, "docs/game/ATF_RulesEn.md"))
+    jacoco.enabled = false
+}
+
 tasks.named("jacocoTestReport") {
     dependsOn tasks.named("test")
     reports { xml.required = true; html.required = true }

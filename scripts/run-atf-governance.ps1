@@ -9,6 +9,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
+. (Join-Path $PSScriptRoot 'AtfQualificationTiming.ps1')
 $sourceRoot = [IO.Path]::GetFullPath($SourceRoot)
 if ([string]::IsNullOrWhiteSpace($RunRoot)) {
     $evidenceRoot = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
@@ -23,12 +24,17 @@ if (Test-Path -LiteralPath $RunRoot) { throw 'Directorul de rezultate trebuie s�
 $work = Join-Path ([IO.Path]::GetTempPath()) ('atf-quality-' + [guid]::NewGuid().ToString('N'))
 $stage = Join-Path $work 'project'
 New-Item -ItemType Directory -Path $stage, $RunRoot | Out-Null
-$snapshot = New-AtfQualificationSnapshot $sourceRoot $stage $RunRoot $PinnedSourceInputs
+$timing = New-AtfQualificationTiming 'governance' (Join-Path $RunRoot 'timing.json')
+$snapshot = Invoke-AtfQualificationPhase $timing 'governance.snapshot-preflight' {
+    New-AtfQualificationSnapshot $sourceRoot $stage $RunRoot $PinnedSourceInputs
+}
 $localRepository = Join-Path $work 'maven-repository'
 New-Item -ItemType Directory -Path $localRepository | Out-Null
-if (Test-Path -LiteralPath $MavenCache -PathType Container) {
-    & robocopy $MavenCache $localRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
-    if ($LASTEXITCODE -gt 7) { throw 'Copierea cache-ului Maven a eșuat.' }
+Invoke-AtfQualificationPhase $timing 'governance.maven-cache' {
+    if (Test-Path -LiteralPath $MavenCache -PathType Container) {
+        & robocopy $MavenCache $localRepository /E /R:1 /W:1 /XD atf .locks /XF *.lock *.tmp *.lastUpdated /NFL /NDL /NJH /NJS /NP *> (Join-Path $RunRoot 'copy-maven-cache.log')
+        if ($LASTEXITCODE -gt 7) { throw 'Copierea cache-ului Maven a eșuat.' }
+    }
 }
 $savedJavaHome = $env:JAVA_HOME
 try {
@@ -36,13 +42,17 @@ try {
     Push-Location $stage
     try {
         Assert-AtfQualificationSnapshot $snapshot $stage $sourceRoot
-        & $Maven -B "-Dmaven.repo.local=$localRepository" -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' "-Datf.governance.root=$stage" "-Datf.governance.gitRoot=$sourceRoot" test *> (Join-Path $RunRoot 'maven.log')
-        $testExit = $LASTEXITCODE
+        $testExit = Invoke-AtfQualificationPhase $timing 'governance.maven' {
+            & $Maven -B "-Dmaven.repo.local=$localRepository" -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' "-Datf.governance.root=$stage" "-Datf.governance.gitRoot=$sourceRoot" test *> (Join-Path $RunRoot 'maven.log')
+            $LASTEXITCODE
+        } -ExitCode
     } finally { Pop-Location }
 } finally { $env:JAVA_HOME = $savedJavaHome }
 $reports = Join-Path $stage 'atf-tests/target/surefire-reports'
 if (Test-Path -LiteralPath $reports) { Copy-Item -LiteralPath $reports -Destination (Join-Path $RunRoot 'junit') -Recurse }
-$differences = @(Get-AtfSnapshotDifferences $snapshot $stage $sourceRoot)
+$differences = @(Invoke-AtfQualificationPhase $timing 'governance.snapshot-recheck' {
+    Get-AtfSnapshotDifferences $snapshot $stage $sourceRoot
+})
 $stable = $differences.Count -eq 0
 $result = [ordered]@{ root=$sourceRoot; stage=$stage; mavenRepository=$localRepository; output=$RunRoot
     sourceFiles=$snapshot.inputCount; sourceFingerprint=Get-AtfInputFingerprint $snapshot.source

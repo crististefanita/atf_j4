@@ -60,6 +60,15 @@ public final class AndroidComponentRun implements AutoCloseable {
     @Override public synchronized void close() {
         if (closed) return;
         closed = true;
+        try (var timing = new atf.android.evidence.timing.ExtentPublicationTiming(file)) {
+            publish();
+            timing.passed();
+        } catch (java.io.IOException failure) {
+            throw new java.io.UncheckedIOException(failure);
+        }
+    }
+
+    private void publish() {
         var environment = ReportEnvironmentSnapshot.builder()
                 .put(ReportEnvironmentField.ENVIRONMENT, "JVM — no Android device")
                 .put(ReportEnvironmentField.SUITE, "Whist JVM component and unit acceptance")

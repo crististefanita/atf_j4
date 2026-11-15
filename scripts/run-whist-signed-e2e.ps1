@@ -19,6 +19,7 @@ param(
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfAndroidMaven.ps1')
 . (Join-Path $PSScriptRoot 'AtfDeviceLease.ps1')
+. (Join-Path $PSScriptRoot 'AtfQualificationTiming.ps1')
 $project = Split-Path -Parent $PSScriptRoot
 $root = [IO.Path]::GetFullPath($RunRoot)
 $source = (Resolve-Path -LiteralPath $SourceRoot).ProviderPath
@@ -31,6 +32,7 @@ foreach ($boundary in @($project,$source,$candidate)) {
 }
 if ($root -ieq $project -or (Test-Path -LiteralPath $root)) { throw 'ANDROID_E2E_RUN_ROOT_MUST_BE_NEW' }
 $null = New-Item -ItemType Directory -Path $root
+$timing = New-AtfQualificationTiming 'signed-e2e' (Join-Path $root 'timing.json')
 $stage = Join-Path $root 'work'
 $scratch = Join-Path $root 'tmp'
 $repo = Join-Path $root 'maven-repository'
@@ -44,19 +46,26 @@ if ($apkHash -cnotmatch '^[0-9a-f]{64}$' -or (Get-FileHash -LiteralPath $ApkPath
 $apk = (Resolve-Path -LiteralPath $ApkPath).ProviderPath
 $inputFile = Join-Path $root 'source-inputs.json'
 $inputScript = Join-Path $PSScriptRoot 'Get-AtfSourceInputs.ps1'
-$sourceInputs = & $inputScript -SourceRoot $source -AsJson
+$sourceInputs = Invoke-AtfQualificationPhase $timing 'e2e.source-inventory' {
+    & $inputScript -SourceRoot $source -AsJson
+}
 [IO.File]::WriteAllText($inputFile,$sourceInputs)
 Copy-Item -LiteralPath $SelectionFile -Destination (Join-Path $root 'e2e-request.json')
-& node $tool plan $candidate $root $Group
-if ($LASTEXITCODE -ne 0) { throw 'ANDROID_E2E_REUSE_PLAN_FAILED' }
+Invoke-AtfQualificationPhase $timing 'e2e.reuse-check' {
+    & node $tool plan $candidate $root $Group
+    if ($LASTEXITCODE -ne 0) { throw 'ANDROID_E2E_REUSE_PLAN_FAILED' }
+}
 $plan = Get-Content -LiteralPath (Join-Path $root 'e2e-reuse.json') -Raw | ConvertFrom-Json
 $selected = $plan.decisions | Where-Object {$_.group -ceq $Group}
-if ($selected.decision -ceq 'REUSE') { return $selected }
+if ($selected.decision -ceq 'REUSE') {
+    Write-AtfQualificationDecision $timing "e2e.run.$Group" 'REUSED' 'Previously accepted evidence passed the same APK, source and scenario checks.'
+    return $selected
+}
 
 $selection = $selected.scenario.selection
 $class, $method = $selection.Split('#',2)
 $saved = @{}
-foreach ($name in @('JAVA_HOME','TEMP','TMP','MAVEN_ARGS','MAVEN_OPTS')) {
+foreach ($name in @('JAVA_HOME','TEMP','TMP','MAVEN_ARGS','MAVEN_OPTS','ATF_RELEASE_STAGE_TIMING_ROOT')) {
     $saved[$name] = [Environment]::GetEnvironmentVariable($name)
 }
 function Write-RunJson([string]$Name, $Value) {
@@ -92,17 +101,22 @@ try {
     New-Item -ItemType Directory -Path $stage,$scratch | Out-Null
     $env:TEMP = $scratch
     $env:TMP = $scratch
+    $env:ATF_RELEASE_STAGE_TIMING_ROOT = $root
     $env:MAVEN_ARGS = $null
     $env:MAVEN_OPTS = '-Djava.io.tmpdir="' + $scratch + '"'
     if ($JavaHome) { $env:JAVA_HOME = $JavaHome }
     $javap = if ($JavaHome) { Join-Path $JavaHome 'bin/javap.exe' } else { (Get-Command javap -ErrorAction Stop).Source }
     & (Join-Path $PSScriptRoot 'Copy-AtfSourceInputs.ps1') -SourceRoot $source -Destination $stage -InputManifest $inputFile
     if ($sourceInputs -cne (& $inputScript -SourceRoot $stage -AsJson)) { throw 'ANDROID_E2E_STAGING_CHANGED' }
-    Copy-AtfMavenCache $MavenCache $repo (Join-Path $root 'copy-maven-cache.log')
+    Invoke-AtfQualificationPhase $timing 'e2e.maven-cache' {
+        Copy-AtfMavenCache $MavenCache $repo (Join-Path $root 'copy-maven-cache.log')
+    }
 
     Push-Location $stage
     try {
-        Invoke-PrivateMaven 'compile.log' @('-pl','atf-test-android','-am','test-compile','-Datf.android.enabled=false')
+        Invoke-AtfQualificationPhase $timing 'e2e.maven-compile' {
+            Invoke-PrivateMaven 'compile.log' @('-pl','atf-test-android','-am','test-compile','-Datf.android.enabled=false')
+        }
         if ($sourceInputs -cne (& $inputScript -SourceRoot $stage -AsJson)) { throw 'ANDROID_E2E_STAGING_CHANGED' }
         $libraryFingerprint = Get-PrivateLibraryFingerprint
         $classes = Join-Path $stage 'atf-test-android/target/test-classes'
@@ -111,32 +125,43 @@ try {
         Assert-AtfCompiledMethod $javap $matches[0].FullName $method
         $classFingerprint = Get-AtfAndroidClassFingerprint $stage
         Write-RunJson 'compilation.json' ([ordered]@{sourceFingerprint=$plan.sourceFingerprint;selection=$selection;classFingerprint=$classFingerprint;libraryFingerprint=$libraryFingerprint})
-        if ($PrepareOnly) { return (Join-Path $root 'compilation.json') }
+        if ($PrepareOnly) {
+            Write-AtfQualificationDecision $timing "e2e.run.$Group" 'NOT_RUN' 'PrepareOnly ends before obtaining an Android lease.'
+            return (Join-Path $root 'compilation.json')
+        }
         if (Test-Path -LiteralPath (Join-Path $stage 'atf-test-android/target/surefire-reports')) { throw 'ANDROID_E2E_STALE_JUNIT' }
 
-        $lease = New-AtfDeviceLease $LeasePath $Serial 'J4 signed release E2E' $root
+        $lease = Invoke-AtfQualificationPhase $timing 'e2e.lease' {
+            New-AtfDeviceLease $LeasePath $Serial 'J4 signed release E2E' $root
+        }
         $scenario = $selected.scenario
         $arguments = @{
             RunRoot=$root;Serial=$Serial;AdbExecutable=$AdbExecutable;ServerSocket=$AdbServerSocket
             LeasePath=$LeasePath;LeaseId=$lease;ExpectedApi=$scenario.api;ExpectedDisplayProfile=$scenario.displayProfile
         }
         try {
-            & $isolation @arguments -Phase Prepare -ApkPath $apk -ApkSha256 $apkHash | Out-Host
+            Invoke-AtfQualificationPhase $timing 'e2e.prepare-device' {
+                & $isolation @arguments -Phase Prepare -ApkPath $apk -ApkSha256 $apkHash | Out-Host
+            }
             if ((Get-AtfAndroidClassFingerprint $stage) -cne $classFingerprint) { throw 'ANDROID_E2E_COMPILED_CLASSES_CHANGED' }
             if ((Get-PrivateLibraryFingerprint) -cne $libraryFingerprint) { throw 'ANDROID_E2E_MAVEN_LIBRARIES_CHANGED' }
             $junit = Join-Path $stage 'atf-test-android/target/surefire-reports'
             $artifacts = Join-Path $root 'android-artifacts'
-            Invoke-PrivateMaven 'flow.log' @('-pl','atf-test-android','surefire:test',"-Dtest=$selection",
-                '-Dsurefire.failIfNoSpecifiedTests=true',
-                '-Datf.android.enabled=true',"-Datf.android.adb=$AdbExecutable","-Datf.android.adbServerSocket=$AdbServerSocket",
-                "-Datf.android.serial=$Serial","-Datf.android.api=$($scenario.api)",
-                "-Datf.android.artifacts=$artifacts","-Dwhist.records.runRoot=$root","-Dwhist.records.leasePath=$LeasePath",
-                "-Datf.android.sanity.profiles=$($scenario.responsiveProfiles)","-Datf.android.commandTimeoutSeconds=90",
-                "-Datf.governance.gitRoot=$stage")
-            Assert-AtfSingleJUnitPass $junit $selection
+            Invoke-AtfQualificationPhase $timing "e2e.run.$Group" {
+                Invoke-PrivateMaven 'flow.log' @('-pl','atf-test-android','surefire:test',"-Dtest=$selection",
+                    '-Dsurefire.failIfNoSpecifiedTests=true',
+                    '-Datf.android.enabled=true',"-Datf.android.adb=$AdbExecutable","-Datf.android.adbServerSocket=$AdbServerSocket",
+                    "-Datf.android.serial=$Serial","-Datf.android.api=$($scenario.api)",
+                    "-Datf.android.artifacts=$artifacts","-Dwhist.records.runRoot=$root","-Dwhist.records.leasePath=$LeasePath",
+                    "-Datf.android.sanity.profiles=$($scenario.responsiveProfiles)","-Datf.android.commandTimeoutSeconds=90",
+                    "-Datf.governance.gitRoot=$stage")
+                Assert-AtfSingleJUnitPass $junit $selection
+            }
         } finally {
             if (Test-Path -LiteralPath (Join-Path $root 'setup-release.json') -PathType Leaf) {
-                & $isolation @arguments -Phase Teardown | Out-Host
+                Invoke-AtfQualificationPhase $timing 'e2e.restore-device' {
+                    & $isolation @arguments -Phase Teardown | Out-Host
+                }
             }
         }
         if ((Get-AtfAndroidClassFingerprint $stage) -cne $classFingerprint) { throw 'ANDROID_E2E_COMPILED_CLASSES_CHANGED' }
@@ -144,8 +169,10 @@ try {
         $ready = Get-Content -LiteralPath (Join-Path $root 'data-isolation-ready.json') -Raw | ConvertFrom-Json
         Write-RunJson 'attempt.json' ([ordered]@{scenario=$scenario;leaseId=$lease;serial=$Serial;testUserId=$ready.testUserId
             compilationReceiptSha256=(Get-FileHash -LiteralPath (Join-Path $root 'compilation.json')).Hash.ToLowerInvariant()})
-        & node $tool record $candidate $root $Group
-        if ($LASTEXITCODE -ne 0) { throw 'ANDROID_E2E_EVIDENCE_REJECTED' }
+        Invoke-AtfQualificationPhase $timing 'e2e.extent-evidence' {
+            & node $tool record $candidate $root $Group
+            if ($LASTEXITCODE -ne 0) { throw 'ANDROID_E2E_EVIDENCE_REJECTED' }
+        }
         Join-Path $root 'evidence/e2e-result.json'
     } finally {
         Pop-Location

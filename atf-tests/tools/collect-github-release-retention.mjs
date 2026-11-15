@@ -4,9 +4,11 @@ import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {digest, loadGithubRetentionCatalog} from './evaluate-release-rag.mjs';
 import {githubRetentionProblems} from './github-release-retention.mjs';
+import {QualificationTiming} from './release-timing.mjs';
 
 export async function observeGithubRetention(expected, token, fetchResponse = fetch) {
   if (!token) throw Error('GITHUB_TOKEN_REQUIRED');
+  const timing = new QualificationTiming();
   const api = 'https://api.github.com/repos/' + expected.repository;
   const request = async (resource, accept = 'application/vnd.github+json') => {
     const response = await fetchResponse(resource ? api + '/' + resource : api, {
@@ -51,7 +53,9 @@ export async function observeGithubRetention(expected, token, fetchResponse = fe
     if (digest(Buffer.from(content.content, 'base64')) !== file.sha256) throw Error('GITHUB_MAIN_DIFFERS: ' + file.path);
     return [file.path, file.sha256];
   }));
+  timing.checkpoint('distribution.catalog-and-main');
   const before = await inventory();
+  timing.checkpoint('distribution.inventory');
   const releases = await Promise.all(before.releases.map(async release => ({
     ...release,
     assets: await Promise.all(release.assets.map(async asset => {
@@ -62,9 +66,11 @@ export async function observeGithubRetention(expected, token, fetchResponse = fe
       return {...asset, download: {httpStatus: response.status, bytes: bytes.length, sha256: digest(bytes)}};
     }))
   })));
+  timing.checkpoint('distribution.download-and-hash');
   const [after, latestMain] = await Promise.all([inventory(), json('branches/main')]);
   if (!isDeepStrictEqual(before, after) || latestMain.commit?.sha !== mainCommit) throw Error('GITHUB_INVENTORY_CHANGED');
-  return {schemaVersion: 1, kind: 'github-release-retention', repository: expected.repository, mainCommit,
+  timing.checkpoint('distribution.recheck');
+  return {timing: timing.receipt('github-retention'), schemaVersion: 1, kind: 'github-release-retention', repository: expected.repository, mainCommit,
     catalogSha256: expected.catalogSha256, mainFileSha256: Object.fromEntries(remoteHashes), releaseListAccess: 'AUTHENTICATED_WRITE', releases, tags: before.tags};
 }
 

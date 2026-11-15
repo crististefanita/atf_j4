@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {androidExecutionProfile, e2ePaths, scenarioFor, signedExecutionProfileSince} from './android-e2e-contract.mjs';
 import {readE2eEvidence} from './android-e2e-evidence.mjs';
+import {QualificationTiming} from './release-timing.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
@@ -366,6 +367,7 @@ export async function loadGithubRetentionCatalog(project) {
 }
 
 export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, planFile, outputFile, githubRetentionFile}) {
+  const timing = new QualificationTiming();
   const project = await fs.realpath(projectRoot), candidate = await fs.realpath(candidateDir), source = await fs.realpath(sourceRoot);
   const out = path.resolve(outputFile), outParent = await fs.realpath(path.dirname(out));
   const output = path.join(outParent, path.basename(out));
@@ -376,6 +378,10 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   if ((await fs.lstat(output).catch(error => error.code === 'ENOENT' ? null : Promise.reject(error)))?.isSymbolicLink()) throw Error('OUTPUT_SYMLINK');
 
   const checks = [];
+  const recordCheck = (code, pass, message, sources, details) => {
+    timing.checkpoint('rag.' + code.toLowerCase(), pass ? 'PASS' : 'BLOCKED');
+    addCheck(checks, code, pass, message, sources, details);
+  };
   const [manifestDoc, policyDoc, planDoc] = await Promise.all([
     strictJson(await regularFile(candidate, 'release-validation.json')),
     strictJson(await regularFile(project, 'config/release-platform-rag-policy.json')),
@@ -447,7 +453,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       && policy.rules.authenticatedDownloadChannels['Browser MCP authenticated'] === 'COMPLETED_DOWNLOAD'
       && policy.rules?.ragMayExecuteCommands === false && policy.rules?.ragMayBuildOrSign === false
       && policy.rules?.ragMayPublish === false && policy.candidateLifecycle?.ragMayAdvanceLifecycle === false;
-  addCheck(checks, 'RAG_POLICY', policyContract, policyContract
+  recordCheck('RAG_POLICY', policyContract, policyContract
       ? 'Politica activă limitează evaluatorul la citire și la revizia umană.' : 'Politica RAG lipsește sau permite o acțiune în afara contractului read-only.',
       [citation('config/release-platform-rag-policy.json', policyDoc.sha256, '/ragEvaluator', policyDoc.lines.get('/ragEvaluator') ?? 1)]);
 
@@ -466,22 +472,22 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
           && plan.e2e.groups.every(name => typeof name === 'string' && name.length > 0)
           && new Set(plan.e2e.groups).size === plan.e2e.groups.length
         : typeof plan.e2e.rationale === 'string' && plan.e2e.rationale.trim().length >= 12);
-  addCheck(checks, 'PLAN_SCHEMA', validPlan, validPlan ? 'Planul fixează versiunea, platforma, riscul, componentele și decizia E2E.' : 'Plan absent, incomplet sau cu enum invalid.',
+  recordCheck('PLAN_SCHEMA', validPlan, validPlan ? 'Planul fixează versiunea, platforma, riscul, componentele și decizia E2E.' : 'Plan absent, incomplet sau cu enum invalid.',
       [planCitation('/schemaVersion')]);
 
   const versionMatches = validPlan && manifest.release?.versionName === version
       && path.basename(candidate) === version;
-  addCheck(checks, 'RELEASE_IDENTITY', versionMatches, versionMatches ? 'Planul, manifestul și directorul indică aceeași versiune.' : 'Versiunea candidatului nu coincide în plan, manifest și numele dosarului.', evidence('/release/versionName'));
+  recordCheck('RELEASE_IDENTITY', versionMatches, versionMatches ? 'Planul, manifestul și directorul indică aceeași versiune.' : 'Versiunea candidatului nu coincide în plan, manifest și numele dosarului.', evidence('/release/versionName'));
 
   const manifestPlatforms = manifest.release?.platforms ?? (manifest.release?.artifactKind === 'apk'
       || (manifest.release?.apkName && policy.rules?.legacyApkManifestPlatforms?.includes('android')) ? ['android'] : []);
   const selectedPlatforms = Array.isArray(plan.declaredPlatforms) ? plan.declaredPlatforms : [];
   const declaredPlatforms = Array.isArray(manifestPlatforms) ? manifestPlatforms : [];
   const platformMatches = validPlan && JSON.stringify([...declaredPlatforms].sort()) === JSON.stringify([...selectedPlatforms].sort());
-  addCheck(checks, 'PLATFORM_SCOPE', platformMatches, platformMatches ? 'Platforma declarată este Android și corespunde manifestului.' : 'Planul și manifestul declară platforme diferite.', evidence('/release'));
+  recordCheck('PLATFORM_SCOPE', platformMatches, platformMatches ? 'Platforma declarată este Android și corespunde manifestului.' : 'Planul și manifestul declară platforme diferite.', evidence('/release'));
 
   const qualificationPass = manifest.qualification?.state === 'PASS';
-  addCheck(checks, 'QUALIFICATION_STATE', qualificationPass,
+  recordCheck('QUALIFICATION_STATE', qualificationPass,
       qualificationPass ? 'Manifestul declară starea PASS pentru calificarea înregistrată.' : 'Calificarea manifestului nu este PASS.', evidence('/qualification/state'));
 
   const payloadEntries = manifest.integrity?.files;
@@ -506,7 +512,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     } catch (error) { payloadOkay = false; payloadProblem = [error.message]; }
   }
   if (!Array.isArray(payloadEntries) || payloadEntries.length === 0) payloadProblem = ['integrity.files lipsește sau este gol.'];
-  addCheck(checks, 'PAYLOAD_INTEGRITY', payloadOkay, payloadOkay ? 'Inventarul candidatului și SHA-256 corespund receipt-ului.' : 'Receipt-ul nu descrie exact payload-ul existent.', evidence('/integrity'), payloadProblem ?? []);
+  recordCheck('PAYLOAD_INTEGRITY', payloadOkay, payloadOkay ? 'Inventarul candidatului și SHA-256 corespund receipt-ului.' : 'Receipt-ul nu descrie exact payload-ul existent.', evidence('/integrity'), payloadProblem ?? []);
 
   let sourceOkay = false, inputDoc, inputRel = manifest.source?.inputManifest;
   const sourceProblems = [];
@@ -539,7 +545,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     sourceProblems.push(...await sourceInventoryProblems(source, componentInputMap(rows)));
     sourceOkay = sourceProblems.length === 0;
   } catch (error) { sourceOkay = false; sourceProblems.push(`Manifestul sursă nu poate fi citit: ${error.message}`); }
-  addCheck(checks, 'SOURCE_SNAPSHOT', sourceOkay,
+  recordCheck('SOURCE_SNAPSHOT', sourceOkay,
       sourceOkay ? 'Commitul, manifestul de intrări, amprenta și fișierele sursă corespund.' : 'Snapshot-ul sursă nu poate fi reprodus din manifestul fixat.',
       [...evidence('/source'), ...(inputDoc ? [citation(posix(path.relative(candidate, path.join(candidate, inputRel))), inputDoc.sha256, '/fingerprint', inputDoc.lines.get('/fingerprint') ?? 1)] : [])], sourceProblems);
 
@@ -555,7 +561,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       if (testScope.userFlowChanged && plan.changeRisk === 'maintenanceOrRefactor') diffProblems.push('Riscul declarat nu acoperă schimbarea de flux calculată.');
     } catch (error) { diffProblems.push(error.message); }
   } else diffProblems.push('Calculul cere un snapshot sursă valid.');
-  addCheck(checks, 'DIFF_SCOPE', Boolean(testScope) && diffProblems.length === 0,
+  recordCheck('DIFF_SCOPE', Boolean(testScope) && diffProblems.length === 0,
       diffProblems.length ? 'Selecția declarată nu se poate justifica prin diff.' : 'Selecția a fost recalculată din inventarele surselor.',
       diffEvidence, diffProblems);
 
@@ -578,19 +584,19 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   } catch (error) {
     readmeProblems.push(`README-ul principal nu poate fi verificat: ${error.message}`);
   }
-  addCheck(checks, 'MAIN_README_SURFACE', readmeOkay,
+  recordCheck('MAIN_README_SURFACE', readmeOkay,
       readmeOkay ? 'README-ul principal este în snapshot și nu expune un digest APK brut.' : 'README-ul principal lipsește din snapshot sau publică un digest APK brut.',
       readmeEvidence, readmeProblems);
 
   const release = manifest.release ?? {};
   let apkOkay = false;
   try { apkOkay = Boolean(await readApkArtifact(candidate, release)); } catch { apkOkay = false; }
-  addCheck(checks, 'APK_IDENTITY', apkOkay, apkOkay ? 'APK-ul, dimensiunea și sidecar-ul SHA-256 coincid.' : 'APK-ul sau sidecar-ul SHA-256 lipsește ori diferă.', evidence('/release/apkSha256'));
+  recordCheck('APK_IDENTITY', apkOkay, apkOkay ? 'APK-ul, dimensiunea și sidecar-ul SHA-256 coincid.' : 'APK-ul sau sidecar-ul SHA-256 lipsește ori diferă.', evidence('/release/apkSha256'));
 
   const certValid = HASH.test(release.certificateSha256 ?? '') && typeof release.signingCertificate === 'string'
       && release.signingCertificate.trim().length > 0;
   const channelOkay = certValid && (plan.channel !== 'PRODUCTION' || release.productionManagedKey === true);
-  addCheck(checks, 'SIGNING_CHANNEL', channelOkay, channelOkay ? 'Certificatul este identificat și compatibil cu profilul canalului.' : 'Canalul cere un certificat identificat și, pentru producție, o cheie gestionată.', evidence('/release'));
+  recordCheck('SIGNING_CHANNEL', channelOkay, channelOkay ? 'Certificatul este identificat și compatibil cu profilul canalului.' : 'Canalul cere un certificat identificat și, pentru producție, o cheie gestionată.', evidence('/release'));
 
   const platform = manifest.qualification?.platforms?.android;
   const published = /^PUBLISHED/.test(manifest.publication?.state ?? '');
@@ -668,7 +674,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     if (gate?.receipt && declared.has(gate.receipt)) platformGateEvidence.push(citation(gate.receipt, declared.get(gate.receipt).sha256,
         receiptDoc ? '/' : null, receiptDoc ? 1 : null));
   }
-  addCheck(checks, 'PLATFORM_GATES', platformGatesOkay,
+  recordCheck('PLATFORM_GATES', platformGatesOkay,
       platformGatesOkay ? `Porțile Android necesare etapei ${published ? 'publicate' : 'pre-publicare'} au receipt-uri valide și hash-uri legate de payload.`
         : 'Lipsește o poartă Android obligatorie ori receipt-ul ei nu dovedește statusul, identitatea, semnarea, compatibilitatea sau accesul de distribuție declarat.',
       platformGateEvidence, platformGateProblems);
@@ -687,7 +693,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       if (hasCredentialField(observed.value)) throw Error('RETENTION_OBSERVATION_CONTAINS_CREDENTIAL_FIELD');
       retentionProblems.push(...githubRetentionProblems(catalog, observed.value));
     } catch (error) { retentionProblems.push(error.message); }
-    addCheck(checks, 'GITHUB_RETENTION', retentionProblems.length === 0,
+    recordCheck('GITHUB_RETENTION', retentionProblems.length === 0,
         retentionProblems.length ? 'Inventarul GitHub nu corespunde catalogului activ.' : 'Cele două release-uri, tagurile și asset-urile descărcate corespund catalogului activ.',
         retentionEvidence, retentionProblems);
   }
@@ -728,7 +734,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
           `/qualification/auditedGroups/${name}`, manifestDoc.lines.get(`/qualification/auditedGroups/${name}`) ?? 1),
         ...(group?.report && declared.has(group.report) ? [citation(group.report, declared.get(group.report).sha256)] : [])]});
   }
-  addCheck(checks, 'COMPONENT_EXTENT', componentsOkay,
+  recordCheck('COMPONENT_EXTENT', componentsOkay,
       componentsOkay ? 'Grupurile obligatorii ale aplicației și guvernanței, plus selecțiile suplimentare, au Extent canonic și zero rezultate nepromovate.'
         : 'Lipsește un grup obligatoriu de componentă; sau un grup este duplicat, gol, nepromovat ori fără Extent în payload.',
       groupResults.flatMap(item => item.evidence), componentProblems);
@@ -790,7 +796,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     }
   }
   const componentSourceBound = groupResults.length > 0 && bindingProblems.length === 0;
-  addCheck(checks, 'COMPONENT_SOURCE_BINDING', componentSourceBound,
+  recordCheck('COMPONENT_SOURCE_BINDING', componentSourceBound,
       componentSourceBound ? 'Fiecare Extent este legat de execuția originală, iar intrările suitei coincid cu snapshot-ul APK.'
         : 'Cel puțin o suită cere o rulare nouă sau are dovezi care nu se pot valida.',
       [...evidence('/source'), ...bindingEvidence], bindingProblems);
@@ -800,7 +806,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   const canonicalOkay = typeof canonical === 'string' && selectedGroups.some(name => groups[name]?.report === canonical)
       && HASH.test(manifest.evidenceRetention?.canonicalReportSha256 ?? '')
       && canonicalHash === manifest.evidenceRetention.canonicalReportSha256;
-  addCheck(checks, 'CANONICAL_EXTENT', canonicalOkay,
+  recordCheck('CANONICAL_EXTENT', canonicalOkay,
       canonicalOkay ? 'Raportul canonic este unul dintre grupurile Extent selectate și hash-ul său corespunde.'
         : 'Raportul canonic lipsește, nu este selectat sau hash-ul declarat diferă.',
       [...evidence('/evidenceRetention'), ...(canonicalOkay ? [citation(canonical, canonicalHash)] : [])]);
@@ -859,7 +865,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       ? e2e.status === 'PASS'
       : (e2e.status === 'PASS' || (['NOT_RUN', 'NOT_APPLICABLE'].includes(e2e.status)
         && typeof e2e.rationale === 'string' && e2e.rationale.trim().length >= 12)));
-  addCheck(checks, 'E2E_SCOPE', e2eOkay,
+  recordCheck('E2E_SCOPE', e2eOkay,
       e2eOkay ? `E2E: ${e2e.status}; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.`
         : 'Flux de utilizator schimbat fără E2E trecut, raport E2E lipsă/nepotrivit sau omitere fără justificare.',
       [planCitation('/e2e'), ...e2eEvidence], e2eProblems);
@@ -878,6 +884,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     checks, testScope: testScope ?? null, componentGroups: groupResults,
     e2e: {status: e2e.status ?? 'NOT_RUN', userFlowChanged: plan.userFlowChanged ?? null,
       rationale: e2e.rationale ?? null, decisions: e2eDecisions, note: 'NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației.'},
+    timing: timing.receipt('rag-evaluator'),
     lifecycleEffect: 'NONE', writesOnly: posix(path.relative(project, output)),
     limitations: ['Verificarea leagă inventarul complet al snapshot-ului de manifest; nu execută Git și nu certifică starea indexului Git.',
       'Verdictul este o recomandare auditabilă pentru revizie umană; nu promovează, semnează sau publică.']

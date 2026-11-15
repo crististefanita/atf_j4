@@ -27,9 +27,12 @@ const rules = [
 
 const nonProduct = /^(?:atf-validation\/|atf-tests\/|atf-test-android\/|ios\/|whist-lab-app\/(?:ai-lab|ios-bridge|test-audit|algorithm-build)\/|whist-lab-app\/[^/]+\/src\/(?:test|androidTest|rasterTest)\/|\.github\/|\.atf-signing\/)/;
 const testConfiguration = /^config\/(?:atf-governance-policy\.json|atf-test-suites\.json|release-platform-rag-policy\.json|gradle-(?:app|audit)-collections\.properties|test-collections\.json)$/;
-const testLaunchers = /^scripts\/(?:Get-AtfSourceInputs\.ps1|Copy-AtfSourceInputs\.ps1|AtfQualificationSnapshot\.ps1|AtfAndroidMaven\.ps1|AtfDeviceLease\.ps1|Invoke-AtfAndroidDisposableUser\.ps1|check-android-release-device\.ps1|run-(?:atf-governance|component-suites|whist-collection|whist-responsive-sanity|whist-signed-e2e)\.ps1)$/;
+const testLaunchers = /^scripts\/(?:Get-AtfSourceInputs\.ps1|Copy-AtfSourceInputs\.ps1|AtfQualificationSnapshot\.ps1|AtfQualificationTiming\.ps1|Measure-AtfReleaseCommand\.ps1|AtfAndroidMaven\.ps1|AtfDeviceLease\.ps1|Invoke-AtfAndroidDisposableUser\.ps1|check-android-release-device\.ps1|run-(?:atf-governance|component-suites|whist-collection|whist-responsive-sanity|whist-signed-e2e)\.ps1)$/;
 
-function classify(file, metadataOnly) {
+function classify(file, metadataOnly, hasRulesComponents) {
+  if (hasRulesComponents && file === 'whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java') {
+    return {rule: 'help-content', e2eGroups: []};
+  }
   if (nonBuildDocumentation(file)) return {rule: 'documentation', e2eGroups: []};
   if (file === appBuild && metadataOnly) return {rule: 'android-version-metadata', e2eGroups: []};
   for (const [rule, pattern, e2eGroups] of rules) {
@@ -45,7 +48,7 @@ export function deriveReleaseTestScope(previous, candidate, componentGroups, met
   const changes = changedInputs(candidate, previous).map(file => ({
     path: file,
     kind: !previous.has(file) ? 'ADDED' : !candidate.has(file) ? 'DELETED' : 'MODIFIED',
-    ...classify(file, metadataOnly)
+    ...classify(file, metadataOnly, componentGroups.includes('whist-lab-app-rules'))
   }));
   const e2eGroups = [...new Set(changes.flatMap(row => row.e2eGroups))].sort();
   const components = componentGroups.map(group => {

@@ -115,6 +115,30 @@ public final class GradleReport {
     public static void closeCurrent() { Path selected = path(); GradlePublication.run(() -> { var run = RUNS.remove(selected); if (run != null) finish(selected, run); }); }
     public static void close() { GradlePublication.run(() -> { try { for (var entry : RUNS.entrySet()) finish(entry.getKey(), entry.getValue()); } finally { RUNS.clear(); } }); }
     private static void finish(Path file, State run) {
+        var started = java.time.Instant.now();
+        long ticks = System.nanoTime();
+        try {
+            finalizeReport(file, run);
+        } catch (RuntimeException | Error failure) {
+            try { recordTiming(file, started, ticks, "FAIL"); }
+            catch (java.io.IOException timingFailure) { failure.addSuppressed(timingFailure); }
+            throw failure;
+        }
+        try { recordTiming(file, started, ticks, "PASS"); }
+        catch (java.io.IOException failure) { throw new java.io.UncheckedIOException(failure); }
+    }
+    private static void recordTiming(Path file, java.time.Instant started, long ticks, String status) throws java.io.IOException {
+        String root = System.getenv("ATF_RELEASE_STAGE_TIMING_ROOT");
+        if (root == null || !file.toAbsolutePath().normalize().startsWith(Path.of(root))) return;
+        long millis = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - ticks);
+        var stage = Map.of("stage", "extent.finalize-and-audit", "status", status,
+                "startedUtc", started.toString(), "endedUtc", java.time.Instant.now().toString(), "elapsedMs", millis);
+        var receipt = Map.of("schemaVersion", 1, "kind", "ATF_RELEASE_TIMING",
+                "owner", "extent." + file.getFileName(), "stages", List.of(stage));
+        java.nio.file.Files.write(file.resolveSibling(file.getFileName() + ".timing.json"),
+                new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsBytes(receipt), java.nio.file.StandardOpenOption.CREATE_NEW);
+    }
+    private static void finalizeReport(Path file, State run) {
         run.session.close();
         if (!run.intent.isEmpty()) {
             var profile = new atf.reporting.artifact.ReportArtifactProfile(atf.reporting.artifact.ReportArtifactProfile.Renderer.EXTENT, run.intent);

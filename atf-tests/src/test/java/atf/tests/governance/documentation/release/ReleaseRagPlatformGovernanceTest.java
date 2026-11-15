@@ -138,6 +138,7 @@ class ReleaseRagPlatformGovernanceTest {
                 .map(value -> "whist-lab-app-" + value).toList();
         var allExpectedGroups = new java.util.TreeSet<>(expectedGroups);
         allExpectedGroups.add("whist-lab-app-atf-card-table-ui");
+        allExpectedGroups.add("whist-lab-app-rules");
         JsonNode rag = policy().path("ragEvaluator");
         var declaredGroups = new java.util.TreeSet<String>();
         strings(rag.path("requiredComponentGroupsByPlatform").path("android")).stream()
@@ -145,7 +146,7 @@ class ReleaseRagPlatformGovernanceTest {
         rag.path("introducedComponentGroupsByPlatform").path("android").forEach(rule ->
                 declaredGroups.add(rule.path("group").asText()));
         assertEquals(allExpectedGroups, declaredGroups,
-                "Each application and shared UI component collection must have its own release Extent gate");
+                "Every declared Gradle component collection needs its own release Extent gate");
 
         boolean achievementVersionIsDeclared = false;
         for (JsonNode rule : rag.path("introducedComponentGroupsByPlatform").path("android")) {
@@ -258,7 +259,7 @@ class ReleaseRagPlatformGovernanceTest {
         String signedRunner = Files.readString(root.resolve("scripts/run-whist-signed-e2e.ps1"));
         int decide = signedRunner.indexOf("& node $tool plan");
         int compile = signedRunner.indexOf("Invoke-PrivateMaven 'compile.log'");
-        int reserve = signedRunner.indexOf("$lease = New-AtfDeviceLease");
+        int reserve = signedRunner.indexOf("New-AtfDeviceLease $LeasePath");
         int execute = signedRunner.indexOf("'surefire:test'");
         assertTrue(decide >= 0 && decide < compile && compile < reserve && reserve < execute,
                 "Signed acceptance must decide reuse and compile before accessing the device");
@@ -269,10 +270,32 @@ class ReleaseRagPlatformGovernanceTest {
         assertTrue(evaluator.contains("GITHUB_RETENTION"));
         assertTrue(qualificationGuide.contains("schemaVersion: 2"));
         assertTrue(evaluator.contains("DIFF_SCOPE"));
-        assertTrue(ragFeedback.contains("Costul pregătirii componentelor Maven"));
+        assertTrue(qualificationGuide.contains("assemble-release-timeline.mjs"));
         assertTrue(ragFeedback.contains("Prospețimea receipt-urilor"));
         assertFalse(ragFeedback.contains("0.14.0"), "Feedback-ul activ nu păstrează constatările unui release istoric");
         assertTrue(evaluator.contains("READY_FOR_HUMAN_REVIEW"));
+    }
+
+    @Test void releaseTimingAndCleanupProofStayWithTheReleaseOwners() throws Exception {
+        Path root = GovernanceProject.locateProjectRoot();
+        var policy = new com.fasterxml.jackson.databind.ObjectMapper()
+                .readTree(root.resolve("config/release-platform-rag-policy.json").toFile()).required("ragEvaluator");
+        var timing = policy.required("stageTiming");
+        var proof = policy.required("cleanupSourceProof");
+        assertEquals(1, timing.required("schemaVersion").asInt());
+        assertTrue(timing.required("overlapCountedOnce").asBoolean());
+        assertTrue(proof.required("requiresPostpublicationVerdict").asBoolean());
+        assertTrue(proof.required("requiresPublishedGitPayload").asBoolean());
+
+        String guide = Files.readString(root.resolve("docs/testing/ATF_ReleaseQualification.md"));
+        String retention = Files.readString(root.resolve("docs/platform/ATF_ReleaseRetention.md"));
+        assertTrue(guide.contains(timing.required("entrypoint").asText()));
+        assertTrue(retention.contains(proof.required("entrypoint").asText()));
+        assertTrue(retention.contains("cleanupEligible"));
+        var rules = policy.path("introducedComponentGroupsByPlatform").path("android");
+        assertTrue(java.util.stream.StreamSupport.stream(rules.spliterator(), false)
+                .anyMatch(row -> row.path("group").asText().equals("whist-lab-app-rules")
+                        && row.path("sinceReleaseVersion").asText().equals("0.21.5")));
     }
 
     @Test void androidPassCannotSatisfyAnExplicitIosClaim() throws Exception {

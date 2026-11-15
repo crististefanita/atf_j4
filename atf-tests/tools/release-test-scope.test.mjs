@@ -66,3 +66,17 @@ test('the version metadata exemption must reproduce the exact baseline build byt
     assert.equal(deriveReleaseTestScope(old, forBuild(changed), groups).userFlowChanged, true);
   }
 });
+
+test('bilingual help content selects its offline gate when the candidate requires it', () => {
+  const help = 'whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java';
+  const old = new Map([[help, 'old']]), changed = new Map([[help, 'new']]);
+  const selection = deriveReleaseTestScope(old, changed, [...groups, 'whist-lab-app-rules']);
+  assert.equal(selection.kind, 'MAINTENANCE');
+  assert.deepEqual(selection.requiredE2eGroups, []);
+  assert.ok(selection.runComponentGroups.includes('whist-lab-app-rules'));
+  assert.equal(selection.changes[0].rule, 'help-content');
+  assert.equal(deriveReleaseTestScope(old, changed, groups).userFlowChanged, true);
+  const guide = 'docs/game/ATF_RulesRo.md';
+  const editorial = deriveReleaseTestScope(new Map(), new Map([[guide, 'changed']]), ['whist-lab-app-rules']);
+  assert.deepEqual(editorial.runComponentGroups, ['whist-lab-app-rules']);
+});

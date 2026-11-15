@@ -89,9 +89,24 @@ Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezen
 
 ## Curățarea locală după livrare
 
-După verdictul RAG postpublicare și descărcarea verificată, comparați hash-urile copiilor locale cu dosarul publicat. Eliminați staging-ul de build, cache-urile private, copiile APK și rapoartele intermediare care se pot reface din intrările păstrate. Extent-ul canonic, checksum-ul și chitanțele eligibile se preiau din dosarul publicat.
+După calificarea și descărcarea publicată, rulați [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Folosiți dosarul versiunii și verdictul postpublicare pentru octeții aceluiași manifest. Actualizați mai întâi referința locală `origin/main` și tagurile cu Git.
 
-Verificați rezervarea Android și procesele înainte de curățare. Păstrați corpusul activ și diagnosticul unic care explică o problemă deschisă. O dovadă încă necesară pentru o reluare rămâne până când raportul acceptat și legăturile din manifest au fost confruntate. [Predarea dovezilor](../reporting/ATF_Handoff.md)
+```powershell
+node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --candidate $PublishedEdition `
+  --published-verdict $PublishedVerdict --output $GitProof
+```
+
+| Rezultat | Efect |
+|---|---|
+| `GIT_EXACT` | Inventarul și fiecare blob Git reproduc direct SHA-256 din snapshot-ul calificat. |
+| `GIT_WITH_EOL_RECIPE` | Salvarea rețetei permite refacerea din aceleași bloburi. Pentru EOL mixt furnizați o singură dată `--qualified-root` cu octeții originali. |
+| `BLOCKED` | Păstrați fișierele unice și reconciliați diferența de inventar, conținut ori publicare. |
+
+Reluați verificarea cu `--recipe $GitProof` și o ieșire nouă dacă a fost folosită o rețetă. `cleanupEligible: true` cere și dovada postpublicare corespunzătoare, tagul GitHub și întregul payload canonic verificat în Git. Pentru un verdict istoric, `--published-commit` selectează commitul de dovezi din istoricul lui `origin/main`.
+
+- Păstrați rețeta și probele finale. Verificați că nicio rulare ori rezervare activă nu folosește directoarele inventariate.
+- Curățați staging-ul, cache-urile și copiile regenerate din Git sau deja incluse cu același hash. Păstrați datele de învățare și diagnosticul unic pentru o problemă deschisă.
+- Păstrați sursele capturate cât timp o reluare mai are nevoie de ele. [Predarea dovezilor](../reporting/ATF_Handoff.md)
 
 ## Resetarea GitHub
 

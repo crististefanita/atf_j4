@@ -49,6 +49,16 @@ public final class AndroidUiFlowReportPublisher {
         trace.phaseSnapshots().stream().flatMap(phase -> phase.checkpoints().stream())
                 .forEach(checkpoint -> evidenceFiles.addAll(checkpoint.supportingArtifacts()));
         Path output = report.toAbsolutePath().normalize();
+        try (var timing = new atf.android.evidence.timing.ExtentPublicationTiming(output)) {
+            publishEvidence(output, installedPackage, device, androidApi, summary, trace, publicationTicks, evidenceFiles);
+            timing.passed();
+            return output;
+        }
+    }
+
+    private static void publishEvidence(Path output, String installedPackage, String device, String androidApi,
+            String summary, AndroidUiFlowEvidence trace, java.util.function.LongSupplier publicationTicks,
+            java.util.Set<Path> evidenceFiles) throws Exception {
         Files.createDirectories(output.getParent());
         ReportingSettings settings = AtfReportConfigurationLoader.load().reportingSettings();
         validateCheckpointContract(trace,
@@ -107,7 +117,6 @@ public final class AndroidUiFlowReportPublisher {
             System.getLogger(AndroidUiFlowReportPublisher.class.getName()).log(System.Logger.Level.WARNING,
                     "Android report was audited but its feedback link could not be updated: " + output, indexFailure);
         }
-        return output;
     }
 
     private static void publishCheckpoint(UiExtentReportSession.UiPhase phase,

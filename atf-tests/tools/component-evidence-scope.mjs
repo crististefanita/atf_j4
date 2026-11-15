@@ -12,6 +12,8 @@ const androidDeviceHarness = new Set([
   disposableAndroidUserRunner, 'scripts/run-complete-match.ps1', 'scripts/run-deep-tests.ps1',
   'scripts/run-whist-ai-validation.ps1', 'scripts/run-whist-responsive-sanity.ps1'
 ]);
+const releaseTiming = /^scripts\/(?:AtfQualificationTiming|Measure-AtfReleaseCommand)\.ps1$/;
+const releaseRulesDocs = /^docs\/game\/ATF_Rules(?:Ro|En)\.md$/;
 const androidUi = file => file.startsWith('whist-lab-app/app/')
     || file.startsWith('whist-lab-app/atf-card-table-ui/')
     || file === 'config/gradle-audit-collections.properties';
@@ -19,6 +21,8 @@ const androidUi = file => file.startsWith('whist-lab-app/app/')
 // Each exclusion follows the build dependency boundary of the named primary suite.
 // Unknown suites and paths retain whole-snapshot comparison.
 const independentChange = new Map([
+  ['whist-lab-app-rules', file => (nonBuildDocumentation(file) && !releaseRulesDocs.test(file))
+      || androidUi(file) || androidDeviceHarness.has(file) || /^(?:atf-tests|atf-test-android|atf-validation)\//.test(file)],
   ['atf-validation', file => nonBuildDocumentation(file) || androidUi(file)
       || androidDeviceHarness.has(file) || file.startsWith('atf-test-android/') || file.startsWith('atf-tests/')],
   ['atf-test-android', file => nonBuildDocumentation(file) || androidUi(file)
@@ -37,6 +41,6 @@ export function componentEvidenceScope(group, releaseInputs, executionInputs) {
   const changed = changedInputs(releaseInputs, executionInputs);
   const outsideSuite = independentChange.get(group) ?? (() => false);
   const affected = changed.filter(file => !(outsideSuite(file)
-    || (independentChange.has(group) && (file === ragPolicy || file.startsWith('.atf-signing/')))));
+    || (independentChange.has(group) && (file === ragPolicy || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
   return {decision: affected.length ? 'RUN' : changed.length ? 'REUSE' : 'MATCH', changed, affected};
 }
