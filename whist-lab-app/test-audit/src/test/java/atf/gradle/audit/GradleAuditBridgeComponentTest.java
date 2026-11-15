@@ -40,11 +40,14 @@ public final class GradleAuditBridgeComponentTest extends GradleAuditedTest {
         assertEquals(2, GradleReportVerifier.receipts(report).size());
         assertTrue(GradleReportVerifier.receipts(report).values().stream().allMatch("FAIL"::equals));
     }
-    @Test public void failureErrorAndAssumptionRetainTheirOriginalOutcome() throws Exception {
-        var result = JUnitCore.runClasses(BridgeCases.Failure.class, BridgeCases.Error.class, BridgeCases.Abort.class); GradleReport.closeCurrent();
+    @Test public void failureErrorAndAssumptionRetainTheirOutcomeAndDoNotHideTheNextInvocation() throws Exception {
+        var result = JUnitCore.runClasses(BridgeCases.Failure.class, BridgeCases.Error.class,
+                BridgeCases.Abort.class, BridgeCases.Passing.class); GradleReport.closeCurrent();
         assertEquals(2, result.getFailureCount()); assertEquals(1, result.getAssumptionFailureCount());
-        var outcomes = new java.util.HashSet<>(GradleReportVerifier.receipts(report).values());
-        assertEquals(java.util.Set.of("FAIL", "ERROR", "SKIP"), outcomes);
+        var receipts = GradleReportVerifier.receipts(report);
+        assertEquals("All four executions reach Extent", 4, receipts.size());
+        assertEquals(java.util.Set.of("FAIL", "ERROR", "SKIP", "PASS"), new java.util.HashSet<>(receipts.values()));
+        assertTrue("The original failure remains inspectable", java.nio.file.Files.readString(report).contains("Controlled original mismatch"));
     }
     @Test public void expectedNestedAssertionFailureDoesNotPoisonTheOuterContract() throws Exception {
         var result = JUnitCore.runClasses(BridgeCases.ExpectedFailure.class); GradleReport.closeCurrent();

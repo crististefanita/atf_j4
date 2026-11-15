@@ -10,7 +10,8 @@ import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 
-import static atf.gradle.audit.assertions.GradleAssertions.*;
+import atf.gradle.audit.matrix.ExhaustiveMatrixChecks;
+import static atf.gradle.audit.assertions.GradleAssertions.assertThrows;
 import java.nio.file.*;
 import java.util.*;
 import org.junit.Test;
@@ -39,6 +40,7 @@ public class RomanianWhistModelTest extends atf.gradle.audit.GradleAuditedTest {
 
     @Test public void rw01ThroughRw07EveryMoveOfACompleteGameMatchesIndependentRules()throws Exception {
         GameSession game=GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(players,GameMode.ROMANIAN_WHIST,difficulty,seed)));
+        var checks = new ExhaustiveMatrixChecks();
         int[] totals=new int[players];int moves=0,tricks=0,negativeScores=0,forcedTrumps=0,voidDiscards=0;
         int initialDealer=game.snapshot().dealerSeat();
         List<Integer> sequence=new ArrayList<>();
@@ -50,94 +52,104 @@ public class RomanianWhistModelTest extends atf.gradle.audit.GradleAuditedTest {
         for(int h=0;h<sequence.size();h++) {
             var start=game.snapshot();int size=sequence.get(h),dealer=(initialDealer+h)%players;
 
-            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "dealer", dealer, "forcedTrumps", forcedTrumps, "game", game, "h", h, "initialDealer", initialDealer, "moves", moves, "negativeScores", negativeScores, "sequence", sequence, "size", size, "start", start, "totals", totals, "tricks", tricks, "voidDiscards", voidDiscards);
-            assertEquals("start.handIndex() must equal h", h,start.handIndex());assertEquals("start.handSize() must equal size", size,start.handSize());assertEquals("start.dealerSeat() must equal dealer", dealer,start.dealerSeat());
-            assertEquals("start.mode() must equal GameMode.ROMANIAN_WHIST", GameMode.ROMANIAN_WHIST,start.mode());
-            if(size==8){assertEquals("start.trump() must equal Trump.NO_TRUMP", Trump.NO_TRUMP,start.trump());assertNull("start.turnedCard() remains absent", start.turnedCard());}
-            else {assertNotEquals("start.trump() must differ from Trump.NO_TRUMP", Trump.NO_TRUMP,start.trump());assertNotNull("start.turnedCard() is available", start.turnedCard());
-                assertEquals("start.turnedCard().suit().ordinal() must equal start.trump().ordinal()", start.trump().ordinal(),start.turnedCard().suit().ordinal());}
+            checks.at("hand " + (h + 1) + " / distribution");
+            checks.equal("start.handIndex() must equal h", h,start.handIndex());checks.equal("start.handSize() must equal size", size,start.handSize());checks.equal("start.dealerSeat() must equal dealer", dealer,start.dealerSeat());
+            checks.equal("start.mode() must equal GameMode.ROMANIAN_WHIST", GameMode.ROMANIAN_WHIST,start.mode());
+            if(size==8){checks.equal("start.trump() must equal Trump.NO_TRUMP", Trump.NO_TRUMP,start.trump());checks.equal("turned card absent", null, start.turnedCard());}
+            else {checks.equal("trump is declared", true, start.trump() != Trump.NO_TRUMP);checks.equal("turned card is present", true, start.turnedCard() != null);
+                checks.equal("start.turnedCard().suit().ordinal() must equal start.trump().ordinal()", start.trump().ordinal(),start.turnedCard().suit().ordinal());}
             Set<Card> distinct=new HashSet<>();List<List<Card>> hands=new ArrayList<>();
             int minimum=new int[]{9,7,5,3}[players-3];
             for(var p:start.players()) {
-                assertEquals("p.hand().size() must equal size", size,p.hand().size());assertNull("p.bid() remains absent", p.bid());assertEquals("p.tricksWon() must equal 0", 0,p.tricksWon());
-                assertEquals("p.totalScore() must equal totals[p.seat()]", totals[p.seat()],p.totalScore());
-                for(Card c:p.hand()){assertTrue("c.rank() >= minimum must hold", c.rank()>=minimum);assertTrue("distinct.add(c) must hold", distinct.add(c));}
+                checks.equal("p.hand().size() must equal size", size,p.hand().size());checks.equal("bid absent before bidding", null, p.bid());checks.equal("p.tricksWon() must equal 0", 0,p.tricksWon());
+                checks.equal("p.totalScore() must equal totals[p.seat()]", totals[p.seat()],p.totalScore());
+                for(Card c:p.hand()){checks.equal("rank within declared deck", true, c.rank() >= minimum);checks.equal("dealt card is distinct", true, distinct.add(c));}
                 hands.add(new ArrayList<>(p.hand()));
             }
-            if(start.turnedCard()!=null)assertFalse("distinct.contains(start.turnedCard()) must remain false", distinct.contains(start.turnedCard()));
-            record(h==0?"SETUP":"TEST BODY","RW01/RW02","Hand "+(h+1)+" distribution",
+            if(start.turnedCard()!=null)checks.equal("turned card is outside hands", false, distinct.contains(start.turnedCard()));
+            record(checks, h==0?"SETUP":"TEST BODY","RW01/RW02","Hand "+(h+1)+" distribution",
                     "size="+size+"; dealer="+dealer+"; distinct="+(players*size),
                     "size="+start.handSize()+"; dealer="+start.dealerSeat()+"; distinct="+distinct.size(),
                     "trump="+start.trump()+"; initial hands="+hands);
             int[] bids=new int[players];int sum=0;
             for(int b=0;b<players;b++) {
-                int seat=(dealer+1+b)%players;assertEquals("game.snapshot().biddingSeat() must equal seat", seat,game.snapshot().biddingSeat());
+                checks.at("hand " + (h + 1) + " / bid " + (b + 1));
+                int seat=(dealer+1+b)%players;checks.equal("game.snapshot().biddingSeat() must equal seat", seat,game.snapshot().biddingSeat());
                 int bid=AiPolicy.chooseBid(game.snapshot(),seat,difficulty);
-                assertTrue("bid >= 0 && bid <= size must hold", bid>=0&&bid<=size);
-                if(b==players-1)assertNotEquals("sum + bid must differ from size", size,sum+bid);
+                checks.equal("bid within hand size", true, bid >= 0 && bid <= size);
+                if(b==players-1)checks.equal("last bid preserves the hook", false, sum + bid == size);
                 game.submitBid(seat,bid);bids[seat]=bid;sum+=bid;
-                assertEquals("GameSession.restore(game.saveState()).snapshot() must equal game.snapshot()", game.snapshot(),GameSession.restore(game.saveState()).snapshot());
+                checks.equal("GameSession.restore(game.saveState()).snapshot() must equal game.snapshot()", game.snapshot(),GameSession.restore(game.saveState()).snapshot());
             }
-            record("TEST BODY","RW03","Hand "+(h+1)+" bids in seat order",
+            record(checks, "TEST BODY","RW03","Hand "+(h+1)+" bids in seat order",
                     "phase=PLAYING; first="+((dealer+1)%players)+"; total differs from "+size,
                     "phase="+game.snapshot().phase()+"; first="+game.snapshot().currentSeat()+"; total differs from "+size,
                     "bids="+Arrays.toString(bids)+"; total="+sum);
             List<PlayedCard> trick=new ArrayList<>();int[] won=new int[players];int actor=(dealer+1)%players;
             for(int move=0;move<size*players;move++) {
-                var before=game.snapshot();assertEquals("before.phase() must equal GamePhase.PLAYING", GamePhase.PLAYING,before.phase());assertEquals("before.currentSeat() must equal actor", actor,before.currentSeat());
+                String moveLocation = "hand " + (h + 1) + " / move " + (move + 1) + " / seat " + actor;
+                checks.at(moveLocation);
+                var before=game.snapshot();checks.equal("before.phase() must equal GamePhase.PLAYING", GamePhase.PLAYING,before.phase());checks.equal("before.currentSeat() must equal actor", actor,before.currentSeat());
                 Suit led=trick.isEmpty()?null:trick.get(0).card().suit();
                 List<Card> legal=independentLegal(hands.get(actor),led,start.trump());
                 Card choice=AiPolicy.chooseCard(before,actor,difficulty);
-                assertTrue("held suit/trump requirement: hand="+hands.get(actor)+", led="+led+", trump="+start.trump()+", choice="+choice,
-                        legal.contains(choice));
+                if (!legal.contains(choice)) {
+                    atf.gradle.audit.GradleInputs.fixture("Illegal card context", "held", hands.get(actor),
+                            "led", led, "trump", start.trump(), "legal", legal, "choice", choice);
+                }
+                checks.equal("chosen card follows suit and mandatory trump", true, legal.contains(choice));
                 if(led!=null&&hands.get(actor).stream().noneMatch(c->c.suit()==led)) {
                     if(start.trump().suit().filter(s->s==choice.suit()).isPresent())forcedTrumps++;else voidDiscards++;
                 }
                 String context="hand before="+hands.get(actor)+"; led="+led+"; trump="+start.trump()
                         +"; legal="+legal+"; seat="+actor+"; played="+choice;
-                assertTrue("hands.get(actor).remove(choice) must hold", hands.get(actor).remove(choice));trick.add(new PlayedCard(actor,choice));
+                checks.equal("chosen card was held", true, hands.get(actor).remove(choice));trick.add(new PlayedCard(actor,choice));
                 game.playCard(actor,choice);moves++;
                 int winner=-1;
                 if(trick.size()==players) {
                     winner=independentWinner(trick,start.trump());won[winner]++;actor=winner;tricks++;
-                    assertEquals("game.snapshot().lastTrickWinnerSeat() must equal winner", winner,game.snapshot().lastTrickWinnerSeat());
-                    assertEquals("game.snapshot().lastTrick() must equal trick", trick,game.snapshot().lastTrick());trick.clear();
+                    checks.equal("game.snapshot().lastTrickWinnerSeat() must equal winner", winner,game.snapshot().lastTrickWinnerSeat());
+                    checks.equal("game.snapshot().lastTrick() must equal trick", trick,game.snapshot().lastTrick());trick.clear();
                 }else actor=(actor+1)%players;
                 boolean scored=move+1==size*players;
                 if(scored)for(int seat=0;seat<players;seat++)totals[seat]+=won[seat]==bids[seat]?5+won[seat]:-Math.abs(won[seat]-bids[seat]);
                 var actual=game.snapshot();
                 for(int seat=0;seat<players;seat++) {
-                    assertEquals("new HashSet<>(actual.players().get(seat).hand()) must equal new HashSet<>(hands.get(seat))", new HashSet<>(hands.get(seat)),new HashSet<>(actual.players().get(seat).hand()));
-                    assertEquals("actual.players().get(seat).tricksWon() must equal won[seat]", won[seat],actual.players().get(seat).tricksWon());
-                    assertEquals("actual.players().get(seat).totalScore() must equal totals[seat]", totals[seat],actual.players().get(seat).totalScore());
-                    assertEquals("actual.players().get(seat).bid().intValue() must equal bids[seat]", bids[seat],actual.players().get(seat).bid().intValue());
+                    checks.equal("new HashSet<>(actual.players().get(seat).hand()) must equal new HashSet<>(hands.get(seat))", new HashSet<>(hands.get(seat)),new HashSet<>(actual.players().get(seat).hand()));
+                    checks.equal("actual.players().get(seat).tricksWon() must equal won[seat]", won[seat],actual.players().get(seat).tricksWon());
+                    checks.equal("actual.players().get(seat).totalScore() must equal totals[seat]", totals[seat],actual.players().get(seat).totalScore());
+                    checks.equal("actual.players().get(seat).bid().intValue() must equal bids[seat]", bids[seat],actual.players().get(seat).bid().intValue());
                 }
-                assertEquals("actual.currentTrick() must equal trick", trick,actual.currentTrick());
-                if(!scored)assertEquals("actual.currentSeat() must equal actor", actor,actual.currentSeat());
+                checks.equal("actual.currentTrick() must equal trick", trick,actual.currentTrick());
+                if(!scored)checks.equal("actual.currentSeat() must equal actor", actor,actual.currentSeat());
                 String expected="phase="+(scored?"SCORE":"PLAYING")+"; won="+Arrays.toString(won)+"; totals="+Arrays.toString(totals)
                         +(scored?"":"; next="+actor);
                 String observed="phase="+actual.phase()+"; won="+actual.players().stream().map(GameSession.PlayerSnapshot::tricksWon).toList()
                         +"; totals="+actual.players().stream().map(GameSession.PlayerSnapshot::totalScore).toList()
                         +(scored?"":"; next="+actual.currentSeat());
-                record("TEST BODY",scored?"RW04/RW05/RW06":"RW04/RW05","Hand "+(h+1)+", move "+(move+1),expected,observed,
+                record(checks, "TEST BODY",scored?"RW04/RW05/RW06":"RW04/RW05","Hand "+(h+1)+", move "+(move+1),expected,observed,
                         context+"; resolved winner="+winner);
                 if(move%7==0||scored) {
-                    game=GameSession.restore(game.saveState());assertEquals("game.snapshot() must equal actual", actual,game.snapshot());
+                    game=GameSession.restore(game.saveState());checks.equal("game.snapshot() must equal actual", actual,game.snapshot());
                 }
             }
-            var score=game.snapshot();assertEquals("score.phase() must equal GamePhase.SCORE", GamePhase.SCORE,score.phase());
-            assertEquals("Arrays.stream(won).sum() must equal size", size,Arrays.stream(won).sum());
+            checks.at("hand " + (h + 1) + " / settlement");
+            var score=game.snapshot();checks.equal("score.phase() must equal GamePhase.SCORE", GamePhase.SCORE,score.phase());
+            checks.equal("Arrays.stream(won).sum() must equal size", size,Arrays.stream(won).sum());
             for(int total:totals)if(total<0)negativeScores++;
-            boolean finalHand=h+1==sequence.size();assertEquals("score.finalHand() must equal finalHand", finalHand,score.finalHand());
+            boolean finalHand=h+1==sequence.size();checks.equal("score.finalHand() must equal finalHand", finalHand,score.finalHand());
             if(finalHand) {
                 GameSession finished=game;
-                assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class,finished::startNextHand);assertEquals("game.snapshot() must equal score", score,game.snapshot());
+                assertThrows("The operation rejects its input with IllegalStateException.class", IllegalStateException.class,finished::startNextHand);checks.equal("game.snapshot() must equal score", score,game.snapshot());
             }else game.startNextHand();
         }
-        assertEquals("moves must equal players * (10 * players + 54)", players*(10*players+54),moves);assertEquals("tricks must equal 10 * players + 54", 10*players+54,tricks);
-        record("TEARDOWN","RW07","Complete game and immutable final score",
+        checks.at("complete match");
+        checks.equal("total moves", players * (10 * players + 54), moves);
+        checks.equal("total tricks", 10 * players + 54, tricks);
+        record(checks, "TEARDOWN","RW07","Complete game and immutable final score",
                 "hands="+(3*players+12)+"; moves="+(players*(10*players+54))+"; tricks="+(10*players+54),
                 "hands="+sequence.size()+"; moves="+moves+"; tricks="+tricks,"final totals="+Arrays.toString(totals));
+        checks.publish();
         String output=System.getProperty("whist.componentEvidence","");
         if(!output.isBlank()) {
             Path out=Path.of(output);Files.createDirectories(out);
@@ -154,11 +166,13 @@ public class RomanianWhistModelTest extends atf.gradle.audit.GradleAuditedTest {
         }
     }
 
-    private void record(String phase,String rules,String title,String expected,String actual,String context) {
+    private void record(ExhaustiveMatrixChecks checks, String phase, String rules, String title,
+                        String expected, String actual, String context) {
+        checks.equal("milestone " + rules, expected, actual);
+        if (players != 4 || difficulty != AiDifficulty.NORMAL || seed != 0) return;
         String key="step."+(steps++)+".";
         trace.setProperty(key+"phase",phase);trace.setProperty(key+"rules",rules);trace.setProperty(key+"title",title);
         trace.setProperty(key+"expected",expected);trace.setProperty(key+"actual",actual);trace.setProperty(key+"context",context);
-        assertEquals(title,expected,actual);
     }
     private static List<Card> independentLegal(List<Card> hand,Suit led,Trump trump) {
         if(led==null)return new ArrayList<>(hand);

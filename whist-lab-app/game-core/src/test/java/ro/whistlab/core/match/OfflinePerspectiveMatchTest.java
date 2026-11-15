@@ -44,7 +44,8 @@ public final class OfflinePerspectiveMatchTest extends atf.gradle.audit.GradleAu
             OfflineMockMatchTest.MatchRun run = OfflineMockMatchTest.playMatch(seed, roster);
             OfflineMockMatchTest.MockMatch match = run.match();
 
-            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "compared", compared, "index", index, "match", match, "referenceCommitments", referenceCommitments, "results", results, "roster", roster, "rosters", rosters, "run", run, "sameDeals", sameDeals, "seed", seed);
+            atf.gradle.audit.GradleInputs.fixture("Fixed deal comparison", "seed", seed, "perspective", index,
+                    "roster", roster, "hands completed", match.handsPlayed(), "deals compared so far", compared);
             assertTrue("match.complete() must hold", match.complete());
             assertEquals("run.privateDealCommitments().size() must equal 24", 24, run.privateDealCommitments().size());
             if (referenceCommitments == null) {

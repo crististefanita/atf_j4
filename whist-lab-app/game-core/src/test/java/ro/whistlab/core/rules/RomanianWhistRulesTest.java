@@ -140,18 +140,22 @@ public class RomanianWhistRulesTest extends atf.gradle.audit.GradleAuditedTest {
     }
 
     @Test public void rw03LastBidExhaustiveForEveryTableSizeAndPriorTotal() {
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
         for (int n = 3; n <= 6; n++) for (int size = 1; size <= 8; size++) {
             for (int prior = 0; prior <= (n-1)*size; prior++) {
                 List<Integer> last = GameRules.allowedBids(size, prior, true);
                 List<Integer> earlier = GameRules.allowedBids(size, prior, false);
 
-                atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "earlier", earlier, "last", last, "n", n, "prior", prior, "size", size);
-                assertEquals("earlier.size() must equal size + 1", size+1, earlier.size());
-                for (int bid = 0; bid <= size; bid++) assertEquals(
-                        "players="+n+", size="+size+", prior="+prior+", bid="+bid,
-                        prior+bid != size, last.contains(bid));
+                String position = "players " + n + " / size " + size + " / prior total " + prior;
+                checks.at(position);
+                checks.equal("unrestricted bid count", size + 1, earlier.size());
+                for (int bid = 0; bid <= size; bid++) {
+                    checks.at(position + " / bid " + bid);
+                    checks.equal("legal last bid", prior + bid != size, last.contains(bid));
+                }
             }
         }
+        checks.publish();
         assertEquals("GameRules.allowedBids(1, 1, true) must equal List.of(1)", List.of(1), GameRules.allowedBids(1, 1, true));
         assertEquals("GameRules.allowedBids(1, 0, true) must equal List.of(0)", List.of(0), GameRules.allowedBids(1, 0, true));
         assertEquals("GameRules.allowedBids(1, 2, true) must equal List.of(0, 1)", List.of(0,1), GameRules.allowedBids(1, 2, true));

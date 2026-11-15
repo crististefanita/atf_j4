@@ -44,18 +44,18 @@ public final class OfflineStrategyProfileMatchTest extends atf.gradle.audit.Grad
             specs.add(new ProfileSpec("seat"+seat+"_HARD_"+profile.name(),seat,List.copyOf(roster),profile));
         }
 
-        List<OfflineMockMatchTest.MatchRun> runs=new ArrayList<>();
         List<OfflineMockMatchTest.MockMatch> matches=new ArrayList<>();
         List<String> reference=null;int compared=0;boolean sameDeals=true;
         for(ProfileSpec spec:specs){
             OfflineMockMatchTest.MatchRun run=OfflineMockMatchTest.playMatch(seed,spec.roster(),spec.profile());
 
-            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "compared", compared, "matches", matches, "reference", reference, "run", run, "runs", runs, "sameDeals", sameDeals, "seed", seed, "spec", spec, "specs", specs);
+            atf.gradle.audit.GradleInputs.fixture("Fixed deal comparison", "seed", seed, "profile", spec,
+                    "hands completed", run.match().handsPlayed(), "deals compared so far", compared);
             assertTrue("run.match().complete() must hold", run.match().complete());assertEquals("run.privateDealCommitments().size() must equal 24", 24,run.privateDealCommitments().size());
             if(reference==null)reference=run.privateDealCommitments();
             else {assertEquals("run.privateDealCommitments() must equal reference", reference,run.privateDealCommitments());compared+=reference.size();}
             sameDeals&=reference.equals(run.privateDealCommitments());
-            runs.add(run);matches.add(run.match());
+            matches.add(run.match());
         }
         assertTrue("sameDeals must hold", sameDeals);assertEquals("compared must equal 24 * 24", 24*24,compared);assertEquals("matches.size() must equal 25", 25,matches.size());
         OfflineMockMatchTest.MockMatch normalBaseline=matches.get(0);
@@ -128,7 +128,11 @@ public final class OfflineStrategyProfileMatchTest extends atf.gradle.audit.Grad
     private static void writeIfRequested(ProfileMatrix matrix)throws Exception{
         String configured=System.getProperty("whist.offlineStrategy.output","").strip();if(configured.isEmpty())return;
         Path output=Path.of(configured);Files.createDirectories(output.toAbsolutePath().getParent());
-        Files.writeString(output,JSON.writerWithDefaultPrettyPrinter().writeValueAsString(matrix)+"\n",StandardOpenOption.CREATE_NEW);
+        try (var writer = Files.newBufferedWriter(output, StandardOpenOption.CREATE_NEW)) {
+            JSON.writerWithDefaultPrettyPrinter().without(com.fasterxml.jackson.core.JsonGenerator.Feature.AUTO_CLOSE_TARGET)
+                    .writeValue(writer, matrix);
+            writer.write('\n');
+        }
     }
 
     private record ProfileSpec(String name,int focalSeat,List<AiDifficulty> roster,HardStrategyProfile profile){

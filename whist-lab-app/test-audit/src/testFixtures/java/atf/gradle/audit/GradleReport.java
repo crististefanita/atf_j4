@@ -33,6 +33,7 @@ public final class GradleReport {
                 new SensitiveDataRedactor(), AtfConsoleSink.noOp(), Map.of(
                 "Scope", System.getProperty("atf.gradle.audit.scope", "controlled adapter qualification"),
                 "Runtime", "JVM component/unit; no Android device",
+                "Worker maximum heap (MiB)", Long.toString(Runtime.getRuntime().maxMemory() / (1024 * 1024)),
                 "Lifecycle", "JUnit 4 invocation statement includes before/after fixtures; publication timing is separate",
                 "Source", System.getProperty("atf.gradle.audit.source", "not supplied"))), new java.util.LinkedHashSet<>(), new java.util.ArrayList<>()));
     }

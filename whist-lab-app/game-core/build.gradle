@@ -28,8 +28,6 @@ dependencies {
     testImplementation project(":ai-lab")
 }
 
-tasks.withType(Test).configureEach { maxHeapSize = "256m" }
-
 tasks.register("releaseRulesComponents", Test) {
     description = "Verifies bilingual help and rule examples in the production JVM model."
     testClassesDirs = sourceSets.test.output.classesDirs
@@ -53,6 +51,8 @@ tasks.named("test", Test) {
     exclude "**/ZeroMatchPairedMatchTest.class"
     exclude "**/AiCostQualificationTest.class"
     exclude "**/ObservedOriginalReplayTest.class"
+    exclude "**/OfflinePerspectiveMatchTest.class"
+    exclude "**/OfflineStrategyProfileMatchTest.class"
     exclude "**/AiTournamentTest.class"
     exclude "**/AiTrainingTournamentTest.class"
     exclude "**/ComponentCorpusCollectorTest.class"
@@ -154,8 +154,36 @@ tasks.register("originalReplayTest", Test) {
     inputs.file(providers.gradleProperty("whist.originalReplay")).withPropertyName("observedOriginalMatch")
 }
 
-// Collection entrypoints: default regression stays offline; learning is opt-in.
-tasks.register("regressionTest") { dependsOn tasks.named("test") }
+// The regression entrypoint partitions the default JVM inventory into bounded Extent reports.
+def defaultCoreTest = tasks.named("test", Test)
+def regressionPackages = [
+    Ai: ["ro/whistlab/core/ai/**"],
+    Rules: ["ro/whistlab/core/rules/**"],
+    Session: ["ro/whistlab/core/session/**", "ro/whistlab/core/scoring/**", "ro/whistlab/core/model/**"],
+    Variants: ["ro/whistlab/core/testing/**"],
+    Independent: ["ro/whistlab/coach/**"]
+]
+def assignedRegressionPackages = regressionPackages.values().flatten()
+def coreRegressionTasks = (regressionPackages + [Support: []]).collect { name, patterns ->
+    tasks.register("regression${name}Test", Test) {
+        group = "verification"
+        description = "Offline regression partition: ${name}."
+        testClassesDirs = sourceSets.test.output.classesDirs
+        classpath = sourceSets.test.runtimeClasspath
+        if (patterns) include(patterns)
+        else exclude(assignedRegressionPackages)
+        def base = defaultCoreTest.get()
+        exclude(base.excludes)
+        systemProperty "whist.componentEvidence", base.systemProperties["whist.componentEvidence"]
+        inputs.files(base.inputs.files)
+        jacoco.enabled = false
+    }
+}
+tasks.register("regressionTest") {
+    group = "verification"
+    description = "Runs the full default JVM inventory with one bounded report per partition."
+    dependsOn coreRegressionTasks
+}
 tasks.register("legacyRoundFiveTest", Test) {
  testClassesDirs=sourceSets.test.output.classesDirs
  classpath=sourceSets.test.runtimeClasspath

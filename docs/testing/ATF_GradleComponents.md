@@ -80,6 +80,26 @@ XML-ul Gradle este oracol temporar de identitate și rezultat. După confruntare
 
 Schema de calificare cu grupuri auditate renumără invocările în HTML, iar metadatele distribuției păstrează hash-urile și limitele. Dovezile istorice unice nu se șterg înainte de migrarea lor reală.
 
+## Reguli, politici și memorie
+
+[Oracolul partidei românești](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistModelTest.java) compară distribuirea, licitația, legalitatea, câștigătorii, scorul și reluarea pentru fiecare mutare. Rezultatele conforme se agregă pe invariant, iar prima nepotrivire publică mâna, pasul și valorile comparate. Parametrizările rămân invocări separate.
+
+| Selecție | Contract |
+|---|---|
+| [Partida simulată](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflineMockMatchTest.java) | Numărul de mâini, mutările și finalizarea sunt oracole de joc. Contractele nerecuperabile, fallback-urile și certificatele sunt observații ale politicii pe distribuirea selectată. |
+| [Obiectivul de salvare](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | Pozițiile controlate verifică ordinea obiectivelor de decizie. |
+| offlinePerspectiveMatchTest și offlineStrategyProfileMatchTest | Compară politicile pe distribuiri identice, în loturi separate de regresia implicită. |
+
+| Proces JVM | Limită de heap și dovadă |
+|---|---|
+| Daemon, intrare exclusiv JVM | 256 MiB. |
+| Workerul [punții comune](../../whist-lab-app/gradle/component-audit.gradle) | 512 MiB pentru fiecare task, cu limita observată în raport. |
+| Verificatorul JUnit–Extent | 384 MiB pentru reconcilierea raportului cu rezultatele originale. |
+
+Colecția :game-core:regressionTest împarte inventarul implicit între AI, reguli, sesiune și scor, variante, jucătorul independent și restul componentelor. Fiecare partiție publică propriul HTML.
+
+Taskurile păstrează invocările după primul eșec. Lotul executat cu --continue păstrează și rezultatele taskurilor următoare.
+
 ## Rulare și limite
 
 [Configurarea comună](../../whist-lab-app/gradle/component-audit.gradle) se aplică atât reactorului Android, cât și [intrării exclusiv JVM](../../whist-lab-app/algorithm-build/README.md). `whist.auditOutput` identifică directorul execuției, iar `whist.auditSource` fixează amprenta sursei. Fiecare task are un singur worker și un HTML propriu; paralelismul suplimentar cere calificare distinctă.

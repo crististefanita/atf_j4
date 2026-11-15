@@ -17,13 +17,18 @@ import org.junit.Test;
 public class IndependentPlayerModelTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void hallFeasibilityMatchesExhaustiveAllocationOnTwoThousandSmallConstrainedWorlds(){
         var random=new Random(72021);
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
         for(int k=0;k<2000;k++){int n=3+random.nextInt(4);int[] need=new int[n],counts=new int[4];boolean[][] voids=new boolean[n][4];
             for(int s=0;s<n;s++){need[s]=random.nextInt(3);for(int suit=0;suit<4;suit++)voids[s][suit]=random.nextBoolean();}
             for(int suit=0;suit<4;suit++)counts[suit]=random.nextInt(3);
 
-            atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "counts", counts, "k", k, "n", n, "need", need, "random", random, "voids", voids);
-            assertEquals("case="+k,brute(need.clone(),counts.clone(),voids,0),IndependentPlayer.feasible(need,counts,voids));
+            boolean expected = brute(need.clone(), counts.clone(), voids, 0);
+            boolean actual = IndependentPlayer.feasible(need, counts, voids);
+            if (expected != actual) atf.gradle.audit.GradleInputs.fixture("Allocation witness", "counts", counts, "need", need, "voids", voids);
+            checks.at("allocation " + k + " / players " + n);
+            checks.equal("Hall feasibility matches exhaustive allocation", expected, actual);
         }
+        checks.publish();
         assertFalse("IndependentPlayer.feasible(new int[]{-1}, new int[4], new boolean[1][4]) must remain false", IndependentPlayer.feasible(new int[]{-1},new int[4],new boolean[1][4]));
         assertFalse("IndependentPlayer.feasible(new int[]{0}, new int[]{-1, 0, 0, 0}, new boolean[1][4]) must remain false", IndependentPlayer.feasible(new int[]{0},new int[]{-1,0,0,0},new boolean[1][4]));
     }

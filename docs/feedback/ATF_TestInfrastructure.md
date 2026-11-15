@@ -28,9 +28,3 @@ Consumatorul deține validarea API, procesele și adopția locală; [registrul r
 | Prioritate | Lacună și responsabil | Criteriu de închidere |
 |---|---|---|
 | P2 | Adaptorul Android: [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) păstrează împreună selecția controalelor, repetarea comenzilor și înregistrarea succesului ori eșecului acțiunii. Blocurile similare cresc costul schimbării atribuirii și al temporizării. | Separați execuția și înregistrarea comună a acțiunii într-un colaborator cu porturi explicite, păstrând fațada driverului și oracolul de domeniu. Componente cu proces și ceas controlate demonstrează aceeași ordine a comenzilor, cauză originală, intervale și atribuire setup/body, inclusiv timeout și anulare. |
-
-## Calificarea loturilor offline
-
-| Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
-|---|---|---|
-| P1 | Motor și laborator AI: partida de componentă leagă legalitatea și finalizarea jocului de numărători interne ale euristicii. Loturile mari pun presiune pe memoria JVM și pe publicarea dovezilor. | Verificați separat invarianta mâinii și rezultatul partidei, pragurile de calibrare ale politicii AI și costul lotului. O schimbare de prag cere un lot independent cu distribuiri fixate, comparații capturate și un criteriu explicit. Executați lotul extins cu heap declarat și verificați că primul eșec rămâne lizibil, fără să piardă invocările următoare. |

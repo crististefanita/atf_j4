@@ -75,6 +75,34 @@ public final class GradleAuditGovernanceTest {
         assertTrue(build.contains("component-audit.gradle"), "There is one audit configuration for both Gradle entrypoints");
         assertFalse(settings.contains("com.android"), "Offline algorithm tests do not configure the Android plugin");
     }
+
+    @Test void coreBatchesHaveOneDeclaredBudgetAndSeparatePolicyExperiments() throws Exception {
+        var root = GovernanceProject.locateProjectRoot();
+        String bridge = Files.readString(root.resolve("whist-lab-app/gradle/component-audit.gradle"));
+        String core = Files.readString(root.resolve("whist-lab-app/game-core/build.gradle"));
+        assertEquals(List.of(), coreBatchViolations(bridge, core), "Shared worker budget and isolated policy experiments");
+    }
+
+    @Test void coreBatchPolicyDetectsTheOldHeapOverrideAndEarlyExit() {
+        String shared = "maxHeapSize = '512m'\nmaxParallelForks = 1\nfailFast = true";
+        String core = "tasks.withType(Test).configureEach { maxHeapSize = \"256m\" }";
+        assertEquals(List.of("keep later invocations", "keep the shared heap", "select policy experiments separately"),
+                coreBatchViolations(shared, core), "Report every violation before running the offline batch");
+    }
+
+    private static List<String> coreBatchViolations(String bridge, String core) {
+        var violations = new java.util.ArrayList<String>();
+        if (!Pattern.compile("\\bmaxHeapSize\\s*=\\s*'512m'").matcher(bridge).find())
+            violations.add("declare the worker heap");
+        if (!Pattern.compile("\\bfailFast\\s*=\\s*false\\b").matcher(bridge).find())
+            violations.add("keep later invocations");
+        if (Pattern.compile("\\bmaxHeapSize\\b").matcher(core).find()) violations.add("keep the shared heap");
+        if (!core.contains("exclude \"**/OfflineStrategyProfileMatchTest.class\"")
+                || !core.contains("exclude \"**/OfflinePerspectiveMatchTest.class\""))
+            violations.add("select policy experiments separately");
+        return violations;
+    }
+
     @Test void everyApplicationPackageHasExactlyOneNonemptyPrimaryCollection() throws Exception {
         var root = GovernanceProject.locateProjectRoot(); var mapping = new TreeMap<String, String>();
         for (String line : Files.readAllLines(root.resolve("config/gradle-app-collections.properties"))) {

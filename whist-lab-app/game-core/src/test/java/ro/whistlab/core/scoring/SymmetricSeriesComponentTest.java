@@ -16,6 +16,7 @@ import ro.whistlab.core.model.Trump;
 
 public class SymmetricSeriesComponentTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void everyLegalOutcomePaysTheSelectedMagnitudeInBothDirections() {
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
         for (int magnitude : List.of(5, 10)) for (int size = 1; size <= 8; size++)
             for (int won = 0; won <= size; won++) for (int bid = 0; bid <= size; bid++)
                 for (int prior = -4; prior <= 4; prior++) {
@@ -26,11 +27,13 @@ public class SymmetricSeriesComponentTest extends atf.gradle.audit.GradleAudited
                     int next = award == 0 ? wins - misses : 0;
                     var actual = RomanianScoring.score(won, bid, size, prior, magnitude, magnitude);
 
-                    atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actual", actual, "award", award, "bid", bid, "magnitude", magnitude, "misses", misses, "next", next, "prior", prior, "size", size, "wins", wins, "won", won);
-                    assertEquals("actual.basePoints() must equal won == bid ? 5 + won : -Math.abs(won - bid)", won == bid ? 5 + won : -Math.abs(won - bid), actual.basePoints());
-                    assertEquals("actual.streakPoints() must equal award", award, actual.streakPoints());
-                    assertEquals("actual.nextStreak() must equal next", next, actual.nextStreak());
+                    checks.at("size " + size + " / bid " + bid + " / won " + won
+                            + " / prior " + prior + " / magnitude " + magnitude);
+                    checks.equal("base points", won == bid ? 5 + won : -Math.abs(won - bid), actual.basePoints());
+                    checks.equal("series points", award, actual.streakPoints());
+                    checks.equal("next streak", next, actual.nextStreak());
                 }
+        checks.publish();
     }
 
     @Test public void newConfigurationIsSymmetricWhileAnExplicitLegacyProfileIsRetained() {

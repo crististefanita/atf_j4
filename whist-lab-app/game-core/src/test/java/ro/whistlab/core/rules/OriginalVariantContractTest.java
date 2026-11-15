@@ -39,9 +39,20 @@ assertEquals("sizes.size() must equal 2 * max - 1", 2*max-1,sizes.size());for(in
     @Test public void oi27ReverseOhHellHasOneMaximumAndTwoOneCardHands(){for(int n=3;n<=6;n++){int max=n==6?8:10;var sizes=GameRules.handSizes(GameMode.REVERSE_OH_HELL,n);
 atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "max", max, "n", n, "sizes", sizes);
 assertEquals("sizes.size() must equal 2 * max - 1", 2*max-1,sizes.size());for(int h=0;h<sizes.size();h++)assertEquals("sizes.get(h).intValue() must equal max - Math.abs(h - max + 1)", max-Math.abs(h-max+1),sizes.get(h).intValue());assertEquals("Collections.frequency(sizes, max) must equal 1", 1,Collections.frequency(sizes,max));assertEquals("Collections.frequency(sizes, 1) must equal 2", 2,Collections.frequency(sizes,1));}}
-    @Test public void oi28EveryVariantCanDealEveryScheduledHandWithoutExceedingItsDeck(){for(GameMode mode:GameMode.values())for(int n=3;n<=6;n++){var sizes=GameRules.handSizes(mode,n);for(int size:sizes){
-atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "mode", mode, "n", n, "size", size, "sizes", sizes);
-assertTrue("size > 0 && size * n <= GameRules.deck(mode, n).size() must hold", size>0&&size*n<=GameRules.deck(mode,n).size()); }assertThrows("The operation rejects its input with UnsupportedOperationException.class", UnsupportedOperationException.class,()->sizes.clear());}}
+    @Test public void oi28EveryVariantCanDealEveryScheduledHandWithoutExceedingItsDeck() {
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
+        for (GameMode mode : GameMode.values()) for (int seats = 3; seats <= 6; seats++) {
+            var sizes = GameRules.handSizes(mode, seats);
+            int deckSize = GameRules.deck(mode, seats).size();
+            for (int hand = 0; hand < sizes.size(); hand++) {
+                int size = sizes.get(hand);
+                checks.at(mode + " / seats " + seats + " / hand " + (hand + 1) + " / size " + size);
+                checks.equal("dealt cards fit in the deck", true, size > 0 && size * seats <= deckSize);
+            }
+            assertThrows("The hand schedule is immutable", UnsupportedOperationException.class, sizes::clear);
+        }
+        checks.publish();
+    }
     @Test public void oi29LongRomanianUsesFollowBeforeMandatoryTrumpWithoutForcedOvertrumping(){
         var heart=new Card(Suit.HEARTS,9);var low=new Card(Suit.SPADES,9);var high=new Card(Suit.SPADES,14);var club=new Card(Suit.CLUBS,14);
 
@@ -50,12 +61,29 @@ assertTrue("size > 0 && size * n <= GameRules.deck(mode, n).size() must hold", s
         assertEquals("GameRules.legalCards(List.of(low, high, club), Suit.HEARTS, Trump.SPADES, GameMode.LONG_ROMANIAN) must equal List.of(low, high)", List.of(low,high),GameRules.legalCards(List.of(low,high,club),Suit.HEARTS,Trump.SPADES,GameMode.LONG_ROMANIAN));
         assertEquals("GameRules.legalCards(List.of(low, club), Suit.HEARTS, Trump.NO_TRUMP, GameMode.LONG_ROMANIAN) must equal List.of(low, club)", List.of(low,club),GameRules.legalCards(List.of(low,club),Suit.HEARTS,Trump.NO_TRUMP,GameMode.LONG_ROMANIAN));
     }
-    @Test public void oi30BothRomanianVariantsUseExactFiveAndSymmetricBidErrorBeforeOptionalBonuses(){for(GameMode mode:List.of(GameMode.ROMANIAN_WHIST,GameMode.LONG_ROMANIAN))for(int bid=0;bid<=8;bid++)for(int won=0;won<=8;won++){
-atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bid", bid, "mode", mode, "won", won);
-assertEquals("GameRules.scoreDelta(won, bid, mode) must equal won == bid ? 5 + bid : -Math.abs(won - bid)", won==bid?5+bid:-Math.abs(won-bid),GameRules.scoreDelta(won,bid,mode)); }}
-    @Test public void oi31AllNonRomanianVariantsUseTricksPlusTenForExactContracts(){for(GameMode mode:GameMode.values())if(!mode.isRomanian())for(int bid=0;bid<=17;bid++)for(int won=0;won<=17;won++){
-atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "bid", bid, "mode", mode, "won", won);
-assertEquals("GameRules.scoreDelta(won, bid, mode) must equal won + (won == bid ? 10 : 0)", won+(won==bid?10:0),GameRules.scoreDelta(won,bid,mode)); }}
+    @Test public void oi30BothRomanianVariantsUseExactFiveAndSymmetricBidErrorBeforeOptionalBonuses() {
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
+        for (GameMode mode : List.of(GameMode.ROMANIAN_WHIST, GameMode.LONG_ROMANIAN)) {
+            for (int bid = 0; bid <= 8; bid++) for (int won = 0; won <= 8; won++) {
+                checks.at(mode + " / bid " + bid + " / won " + won);
+                checks.equal("Romanian scoring", won == bid ? 5 + bid : -Math.abs(won - bid),
+                        GameRules.scoreDelta(won, bid, mode));
+            }
+        }
+        checks.publish();
+    }
+
+    @Test public void oi31AllNonRomanianVariantsUseTricksPlusTenForExactContracts() {
+        var checks = new atf.gradle.audit.matrix.ExhaustiveMatrixChecks();
+        for (GameMode mode : GameMode.values()) {
+            if (mode.isRomanian()) continue;
+            for (int bid = 0; bid <= 17; bid++) for (int won = 0; won <= 17; won++) {
+                checks.at(mode + " / bid " + bid + " / won " + won);
+                checks.equal("classic scoring", won + (won == bid ? 10 : 0), GameRules.scoreDelta(won, bid, mode));
+            }
+        }
+        checks.publish();
+    }
     @Test public void oi32InvalidTableSizesAreRejectedAcrossAllVariants(){for(GameMode mode:GameMode.values())for(int n:List.of(-1,0,1,2,7,52)){
 atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "mode", mode, "n", n);
 assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->GameRules.handSizes(mode,n));assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->new GameConfig(n,mode,AiDifficulty.NORMAL,0));}}

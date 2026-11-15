@@ -29,7 +29,7 @@
       "task": ":game-core:regressionTest",
       "targetMinutes": 5,
       "trigger": "Before promoting a policy or APK",
-      "evidence": "Full offline JUnit regression. No learning tournaments and no emulator."
+      "evidence": "Regresie JVM completă împărțită în selecții disjuncte. Fiecare păstrează un Extent reconciliat cu JUnit și rulează fără emulator."
     },
     {
       "id": "strategy",

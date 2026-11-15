@@ -7,6 +7,7 @@ subprojects { owner ->
                 maxParallelForks = 1
                 forkEvery = 0
                 maxHeapSize = '512m'
+                failFast = false
                 def auditRoot = providers.gradleProperty('whist.auditOutput').map { rootProject.file(it) }
                         .getOrElse(rootProject.layout.buildDirectory.dir('reports/component').get().asFile)
                 def report = new File(auditRoot, "${rootProject.name}-${owner.name}-${testTask.name}.html")
