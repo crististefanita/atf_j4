@@ -11,17 +11,20 @@ param(
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk',
     [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384,
     [string]$TestChangeControl = '',
+    [switch]$AllTestChangeControls,
     [string]$TestChangeBaseRef = $env:ATF_TEST_CHANGE_BASE_REF
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
 . (Join-Path $PSScriptRoot 'AtfQualificationTiming.ps1')
+. (Join-Path $PSScriptRoot 'AtfTestChangeBatch.ps1')
 $sourceRoot = [IO.Path]::GetFullPath($SourceRoot)
 $proofCommit = ''
-if ($TestChangeControl) {
-    if ($TestChangeControl -cnotmatch '^[A-Z][A-Z0-9-]{3,79}$' -or !$TestChangeBaseRef -or $ReuseFrom -or
+if ($TestChangeControl -or $AllTestChangeControls) {
+    if (($TestChangeControl -and ($AllTestChangeControls -or $TestChangeControl -cnotmatch '^[A-Z][A-Z0-9-]{3,79}$')) -or
+            !$TestChangeBaseRef -or $ReuseFrom -or
             @($Groups | Where-Object { $_ -cne 'atf-tests' }).Count) {
-        throw 'Proba testChanges cere ID-ul controlului, baza Git și numai selecția offline atf-tests fără reutilizare de suită.'
+        throw 'Proba testChanges cere fie un ID, fie toate controalele, baza Git și selecția offline atf-tests fără reutilizare.'
     }
     $Groups = @('atf-tests')
     $proofCommit = & git --no-replace-objects -C $sourceRoot rev-parse --verify HEAD
@@ -72,6 +75,27 @@ function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
         $entries = @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/test-classes" })
         $entries += @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/classes" })
         $classpath = ($entries + @((Get-Content -LiteralPath $classpathFile -Raw).Trim())) -join [IO.Path]::PathSeparator
+        if ($AllTestChangeControls) {
+            $proofRunner = 'atf.tests.execution.components.TestChangeProofExecution'
+            $proofJvm = @('-Xmx768m', '-XX:ActiveProcessorCount=2',
+                "-Datf.component.input-part-characters=$InputPartCharacters", "-Datf.governance.gitRoot=$sourceRoot",
+                '-cp', $classpath, $proofRunner)
+            Invoke-AtfTestChangeBatch -RunRoot $RunRoot -ReadPlan {
+                & $java @proofJvm --list $sourceRoot $TestChangeBaseRef $proofCommit 2>> (Join-Path $RunRoot 'test-change-plan.log')
+                if ($LASTEXITCODE -ne 0) { throw 'Selecția testChanges a eșuat. Consultați test-change-plan.log.' }
+            } -RunControl {
+                param($id, $output)
+                Invoke-AtfQualificationPhase $timing "components.test-change.$id" {
+                    & $java @proofJvm $sourceRoot $stage $output $provenanceFile $TestChangeBaseRef $id $proofCommit *> (Join-Path $RunRoot "test-change-$id.log")
+                    $LASTEXITCODE
+                } -ExitCode
+            } -CheckSnapshot {
+                Invoke-AtfQualificationPhase $timing 'components.snapshot-recheck' {
+                    Assert-AtfQualificationSnapshot $snapshot $stage $sourceRoot
+                }
+            }
+            return
+        }
         foreach ($gate in $selections) {
             $selection = if ($TestChangeControl) { $TestChangeControl } else { $gate.module }
             $destination = Join-Path $RunRoot $selection
@@ -211,6 +235,11 @@ if ($groupsToRun.Count) {
         $env:ATF_RELEASE_STAGE_TIMING_ROOT = $RunRoot
         if ($JavaHome) { $env:JAVA_HOME = $JavaHome }
         if ($mavenSelections.Count) {
+            if ($AllTestChangeControls) {
+                $proofRoot = Invoke-MavenSelections $mavenSelections $stage $provenanceFile
+                Write-Output "PASS: $proofRoot"
+                return
+            }
             $results += @(Invoke-MavenSelections $mavenSelections $stage $provenanceFile)
         }
         if ($gradleSelections.Count) {

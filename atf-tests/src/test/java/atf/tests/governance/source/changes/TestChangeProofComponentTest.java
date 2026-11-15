@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import static atf.tests.governance.source.changes.TestChangeGitFixture.BASELINE;
+import static atf.tests.governance.source.changes.TestChangeGitFixture.FEEDBACK;
 import static atf.tests.governance.source.changes.TestChangeGitFixture.RESOURCE;
+import static atf.tests.governance.source.changes.TestChangeGitFixture.TEST;
 
 @AtfComponentTest
 class TestChangeProofComponentTest {
@@ -45,6 +47,23 @@ class TestChangeProofComponentTest {
         ((ObjectNode) changed.get("identity")).put("commit", fixture.git().git("rev-parse", "HEAD"));
         fixture.write(changed);
         refused(fixture, "DIFF");
+    }
+
+    @Test void requiredProofsIncludeEveryVerifiedControlOfTheCommittedDiff(@TempDir Path root) throws Exception {
+        var git = new TestChangeGitFixture(Files.createDirectory(root.resolve("checkout")));
+        git.put(RESOURCE, "{\"revision\":1}\n");
+        git.put(TEST, "package demo;\nclass Changed {}\n");
+        git.put("pom.xml", "<project><!-- new --> </project>\n");
+        String second = "ANOTHER-TEST-PROOF";
+        git.put(BASELINE, verified(git, ID, RESOURCE) + "\n" + verified(git, second, TEST));
+        git.put(FEEDBACK, git.control("ACTIVE-ONLY", "ACTIVE", git.base, TODAY.toString(), false, "pom.xml"));
+        git.commit("two verified controls and one approved control");
+        String head = git.git("rev-parse", "HEAD");
+        AuditedAssertions.assertEquals(List.of(second, ID), TestChangeReview.requiredProofs(git.root, git.base, head, TODAY));
+        git.put("README.md", "changed during proof generation");
+        var error = AuditedAssertions.assertThrows(IOException.class,
+                () -> TestChangeReview.requiredProofs(git.root, git.base, head, TODAY));
+        AuditedAssertions.assertTrue(error.getMessage().contains("TEST-CHANGE-PROOF-DIRTY"), error.getMessage());
     }
 
     @Test void proofWithoutPassingNegativeControlIsRefused(@TempDir Path root) throws Exception {
@@ -95,10 +114,7 @@ class TestChangeProofComponentTest {
     private static Fixture fixture(Path root) throws Exception {
         var git = new TestChangeGitFixture(Files.createDirectory(root.resolve("checkout")));
         git.put(RESOURCE, "{\"revision\":1}\n");
-        String control = git.control(ID, "VERIFIED", git.base, TODAY.toString(), false, RESOURCE)
-                .replace("    paths:", "    checks:\n      positive: ['" + POSITIVE
-                        + "']\n      negative: ['" + NEGATIVE + "']\n    paths:");
-        git.put(BASELINE, control);
+        git.put(BASELINE, verified(git, ID, RESOURCE));
         git.commit("review candidate");
         Path directory = Files.createDirectories(root.resolve("proofs").resolve(ID)).toRealPath();
         var fixture = new Fixture(git, directory);
@@ -107,6 +123,12 @@ class TestChangeProofComponentTest {
                 List.of(new TestChangeProof.Outcome(NEGATIVE, "PASS")), directory);
         Files.move(directory.resolve(TestChangeProof.PENDING), directory.resolve(TestChangeProof.RECEIPT));
         return fixture;
+    }
+
+    private static String verified(TestChangeGitFixture git, String id, String path) {
+        return git.control(id, "VERIFIED", git.base, TODAY.toString(), false, path)
+                .replace("    paths:", "    checks:\n      positive: ['" + POSITIVE
+                        + "']\n      negative: ['" + NEGATIVE + "']\n    paths:");
     }
 
     private static void refused(Fixture fixture, String code) {

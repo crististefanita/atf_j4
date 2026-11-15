@@ -14,6 +14,7 @@ const androidDeviceHarness = new Set([
 ]);
 const standaloneGovernanceLaunchers = new Set([
   'scripts/AtfStandaloneJava.ps1',
+  'scripts/AtfTestChangeBatch.ps1',
   'scripts/run-atf-governance.ps1',
   'scripts/run-documentation-governance.ps1',
   'scripts/run-jvm-inventory.ps1'

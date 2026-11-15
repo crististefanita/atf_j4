@@ -32,7 +32,8 @@ public final class TestChangeReview {
             "config/atf-governance-policy.json", "config/atf-test-suites.json", "config/gradle-app-collections.properties",
             "config/gradle-audit-collections.properties", "config/test-collections.json", "config/release-platform-rag-policy.json",
             "scripts/run-atf-governance.ps1", "scripts/run-component-suites.ps1",
-            "scripts/AtfQualificationSnapshot.ps1", "scripts/Get-AtfSourceInputs.ps1", "scripts/Copy-AtfSourceInputs.ps1",
+            "scripts/AtfQualificationSnapshot.ps1", "scripts/AtfTestChangeBatch.ps1",
+            "scripts/Get-AtfSourceInputs.ps1", "scripts/Copy-AtfSourceInputs.ps1",
             "atf-tests/tools/release-test-scope.mjs", "atf-tests/tools/component-evidence-scope.mjs",
             "atf-tests/tools/evaluate-release-rag.mjs");
     private static final List<String> GATE_DIRECTORIES = List.of(
@@ -60,12 +61,30 @@ public final class TestChangeReview {
 
     public static TestChangeProof.Plan proofPlan(Path root, String base, String id, LocalDate today)
             throws IOException, InterruptedException {
-        Review review = review(root, base, Map.of("CI", "true"), today);
-        if (!review.result().diagnostics().isEmpty())
-            throw TestChangeProof.failure("REVIEW", String.join("\n", review.result().diagnostics()));
+        Review review = proofReview(root, base, today);
         Control control = review.verified().get(id);
         if (control == null) throw TestChangeProof.failure("CONTROL", id + " must authorize this diff as VERIFIED");
         return plan(review.snapshot(), control, GitTestChangeSnapshot.proofDiff(review.snapshot()));
+    }
+
+    public static List<String> requiredProofs(Path root, String base, String expectedCommit, LocalDate today)
+            throws IOException, InterruptedException {
+        Review review = proofReview(root, base, today);
+        if (!review.snapshot().head().equals(expectedCommit))
+            throw TestChangeProof.failure("COMMIT", "staged checkout moved");
+        String diff = GitTestChangeSnapshot.proofDiff(review.snapshot());
+        var required = new ArrayList<String>();
+        for (Control control : review.verified().values()) {
+            required.add(plan(review.snapshot(), control, diff).identity().id());
+        }
+        return List.copyOf(required);
+    }
+
+    private static Review proofReview(Path root, String base, LocalDate today) throws IOException, InterruptedException {
+        Review review = review(root, base, Map.of("CI", "true"), today);
+        if (!review.result().diagnostics().isEmpty())
+            throw TestChangeProof.failure("REVIEW", String.join("\n", review.result().diagnostics()));
+        return review;
     }
 
     private static TestChangeProof.Plan plan(Snapshot snapshot, Control control, String diff) throws IOException {

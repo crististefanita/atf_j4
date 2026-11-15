@@ -63,8 +63,8 @@ Comanda proof exprimă verificarea planificată și se execută separat. [Probel
 Puneți controlul și selecția de teste în commitul evaluat. Creați dovada într-un dosar nou, extern checkout-ului. Lansatorul compilează o copie izolată și publică dovada numai după confirmarea stabilității surselor.
 
 ```powershell
-.\scripts\run-component-suites.ps1 -TestChangeControl $controlId -TestChangeBaseRef $reviewBase -RunRoot $proofRoot
-$env:ATF_TEST_CHANGE_PROOF_ROOT = $proofRoot
+.\scripts\run-component-suites.ps1 -AllTestChangeControls -TestChangeBaseRef $reviewBase -RunRoot $runRoot
+$env:ATF_TEST_CHANGE_PROOF_ROOT = Join-Path $runRoot 'proofs'
 .\scripts\run-atf-governance.ps1 -TestChangeBaseRef $reviewBase
 ```
 
@@ -73,11 +73,12 @@ $env:ATF_TEST_CHANGE_PROOF_ROOT = $proofRoot
 | Selectori | Declarați listele checks.positive și checks.negative cu metode de componentă distincte, în forma pachet.Clasă#metodă. |
 | Control negativ | Metoda injectează defectul și afirmă refuzul așteptat. În dovadă, atât cazul valid, cât și cazul de refuz trebuie să aibă verdict PASS la nivel JUnit. |
 | Identitate | Chitanța fixează ID-ul, SHA-ul bazei, SHA-ul commitului verificat și SHA-256 al diff-ului Git brut. Sunt incluse bloburile și modurile fișierelor. |
+| Lotul din diff | O singură compilare alimentează toate controalele VERIFIED cerute. Fiecare control are JVM, log și HTML proprii. Publicarea directorului `proofs` se face după trecerea întregului lot și reconfirmarea selecției și a sursei. |
 | Rulare | Lansatorul execută exact selecția declarată și confruntă invocările cu Extent. Chitanța și HTML-ul se păstrează împreună, în directorul cu ID-ul controlului. |
 | Verificare | Alt commit, alt diff, alt control, probe lipsă sau omise și HTML cu hash diferit blochează autorizația VERIFIED. Un checkout modificat cere un candidat nou. |
 | Istoric | Controalele vechi sunt păstrate în registru. Folosirea unui control VERIFIED pentru diff-ul revizuit cere selecție și dovadă exacte. |
 
-Reutilizați perechea chitanță și raport pentru același commit și același diff. Runnerul de încredere produce dovada execuției, iar autorul testului definește oracolul de refuz. Comanda proof din control rămâne reperul uman al verificării.
+La eșec sau schimbarea sursei, consultați logurile per control și dosarul `proofs.pending` pentru diagnostic. Pentru o probă punctuală, `-TestChangeControl` păstrează chitanța sub `<RunRoot>/<ID>`. Reutilizați chitanța și raportul pentru același commit și același diff.
 
 ## Mutarea proprietății unei verificări
 

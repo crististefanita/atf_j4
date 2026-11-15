@@ -28,6 +28,11 @@ public final class TestChangeProofExecution {
     private TestChangeProofExecution() { }
 
     public static void main(String[] args) throws Exception {
+        if (args.length == 4 && args[0].equals("--list")) {
+            TestChangeReview.requiredProofs(Path.of(args[1]), args[2], args[3], LocalDate.now(ZoneOffset.UTC))
+                    .forEach(System.out::println);
+            return;
+        }
         if (args.length != 7) throw new IllegalArgumentException("expected checkout, stage, output, provenance, base, control and commit");
         Path checkout = Path.of(args[0]).toRealPath();
         Path stage = Path.of(args[1]).toRealPath();

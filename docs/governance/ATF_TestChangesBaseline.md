@@ -398,3 +398,46 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Controale verificate pentru selecția și publicarea lotului</summary>
+
+```yaml
+testChanges:
+  - id: GOV-06-PLAN-CONTROLS
+    status: VERIFIED
+    base: 6f36177aae63557abfeb18160b6ec1101dcf509c
+    expires: 2026-12-19
+    reason: Descoperă controalele VERIFIED ale diff-ului real și păstrează identitatea commitului.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeProofComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#requiredProofsIncludeEveryVerifiedControlOfTheCommittedDiff
+      negative:
+        - atf.tests.governance.source.changes.TestChangeProofComponentTest#proofFromAnotherCommitCannotBeReused
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/execution/components/TestChangeProofExecution.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeProofComponentTest.java
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/release-test-scope.test.mjs
+  - id: GOV-06-PUBLISH-BATCH
+    status: VERIFIED
+    base: 6f36177aae63557abfeb18160b6ec1101dcf509c
+    expires: 2026-12-19
+    reason: Publică lotul complet după verificarea sursei și păstrează rapoartele individuale la refuz.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeBatchComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.execution.components.TestChangeBatchComponentTest#publishesBothControlsAfterCheckingTheSnapshot
+      negative:
+        - atf.tests.execution.components.TestChangeBatchComponentTest#failedControlDoesNotStopTheRemainingControlsOrPublishTheirProofs
+        - atf.tests.execution.components.TestChangeBatchComponentTest#changedSourcePreventsPublicationOfPassingControls
+        - atf.tests.execution.components.TestChangeBatchComponentTest#changedReviewPreventsPublicationOfPassingControls
+    paths:
+      - scripts/AtfTestChangeBatch.ps1
+      - scripts/run-component-suites.ps1
+      - atf-tests/src/test/java/atf/tests/execution/components/TestChangeBatchComponentTest.java
+```
+
+</details>
