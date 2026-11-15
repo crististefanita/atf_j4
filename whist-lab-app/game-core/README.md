@@ -33,7 +33,10 @@ Sesiunea păstrează starea completă necesară jocului și restaurării. Fațad
 | [GameConfig](src/main/java/ro/whistlab/core/config/GameConfig.java) | Număr de jucători, variantă, nivel, inițializare și configurarea seriilor. |
 | [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Pachet, program, oferte și cărți legale, câștigător și scor de bază. |
 | [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Punctele contractului și evoluția seriilor. |
-| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Fazele, comenzile, istoricul public și validarea restaurării. |
+| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Fațada comenzilor, rotația între mâini și publicarea stării partidei. |
+| [HandPlay](src/main/java/ro/whistlab/core/session/HandPlay.java) | Distribuția, licitațiile, ordinea mutărilor și istoricul public al mâinii curente. |
+| [PlayerScore](src/main/java/ro/whistlab/core/session/scoring/PlayerScore.java) | Calculează soldul și seria unui jucător la închiderea mâinii. |
+| [SessionCheckpoint](src/main/java/ro/whistlab/core/session/SessionCheckpoint.java) | Captează contractul de salvare și reconstruiește starea după validare. |
 | [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile, levatele cunoscute și soldurile mâinilor încheiate; punctele sunt diferența dintre solduri. |
 | [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Ajutorul RO/EN pentru profilul și programul selectate. |
 
@@ -51,7 +54,7 @@ Profilul acceptă 3–6 jucători și un pachet redus de `8 × N` cărți mari. 
 
 ## Sesiune și salvare
 
-O comandă ilegală este respinsă înaintea tranziției. Închiderea mâinii aplică scorul și înregistrează soldul; `ScoreHistory` avansează câte o mână și păstrează informația cunoscută.
+Mâna respinge o comandă ilegală înaintea tranziției. După ultima levată, fațada aplică scorul calculat și înregistrează soldul. `ScoreHistory` avansează câte o mână și păstrează informația cunoscută.
 
 - `restoreComplete` cere istoricul public complet. Restaurarea de compatibilitate păstrează originea cunoscută a scorului; [contractul istoricului](../../docs/game/ATF_ScoreHistory.md) precizează datele care lipsesc din salvările vechi și limita levatelor istorice.
 - Schema JSON Android aparține [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java). Validarea domeniului și serializarea Android au responsabilități și teste distincte.

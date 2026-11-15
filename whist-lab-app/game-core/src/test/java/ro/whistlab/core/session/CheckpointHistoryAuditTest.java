@@ -59,7 +59,11 @@ assertEquals("GameSession.restoreComplete(s).saveState() must equal s", s,GameSe
         var players=new ArrayList<GameSession.PlayerState>();for(int seat=0;seat<4;seat++)players.add(new GameSession.PlayerState(seat,"P"+seat,seat==0,remaining.get(seat),0,0,0));
         var history=List.of(new PlayedCard(0,lead),new PlayedCard(1,discard));
         var corrupt=new GameSession.SaveState(new GameConfig(4,GameMode.ROMANIAN_WHIST,AiDifficulty.EXPERT,1),GamePhase.PLAYING,4,2,3,3,2,4,0,Trump.SPADES,-1,players,history,List.of(),history);
-        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->GameSession.restoreComplete(corrupt));
+        atf.gradle.audit.GradleInputs.fixture("Checkpoint with an illegal discard", "held card", stillHeld, "checkpoint", corrupt);
+        var failure = assertThrows("A full checkpoint rejects an illegal discard", IllegalArgumentException.class,
+                () -> GameSession.restoreComplete(corrupt));
+        assertEquals("Validation reaches the replay of the illegal discard",
+                "Saved public history violates turn order, suit or mandatory trump", failure.getMessage());
     }
     private static void rejects(GameSession.SaveState s,List<GameSession.PlayerState> p,List<PlayedCard> h,List<PlayedCard> last,int winner,Trump trump){
         var bad=new GameSession.SaveState(s.config(),s.phase(),s.handIndex(),s.handSize(),s.dealerSeat(),s.biddingSeat(),s.currentSeat(),s.bidsSubmitted(),s.bidTotal(),trump,winner,p,s.currentTrick(),last,h,s.turnedCard());

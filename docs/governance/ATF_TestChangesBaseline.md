@@ -284,3 +284,28 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Control verificat pentru fațada sesiunii și restaurare</summary>
+
+```yaml
+testChanges:
+  - id: GAME-SESSION-BOUNDARY
+    status: VERIFIED
+    base: 48a94740184e39bc23de975c3d133bd132620492
+    expires: 2026-12-19
+    reason: Confruntă mutările, scorul și reluarea prin fațada publică folosind un oracol JVM și verifică refuzul fără mutație.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=GameSessionBoundaryComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.source.game.GameSessionBoundaryComponentTest#resumesBiddingPlayingAndScoreAndAdvancesTheSameMatch
+      negative:
+        - atf.tests.governance.source.game.GameSessionBoundaryComponentTest#illegalCommandsAndCorruptCheckpointsAreRefused
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/source/game/GameSessionBoundaryComponentTest.java
+      - atf-tests/src/test/resources/session/GameSessionProbe.java
+      - whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/CheckpointHistoryAuditTest.java
+      - whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/MatchSummaryTest.java
+```
+
+</details>

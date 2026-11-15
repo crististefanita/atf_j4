@@ -46,7 +46,12 @@ atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declare
 assertEquals("MatchSummary.winners(newGameScore()) must equal \"Winner: You (11 points)\"", "Winner: You (11 points)",MatchSummary.winners(newGameScore()));}
     @Test public void negativeTotalsAndTiesHaveCorrectWinners(){
         var g=game();var s=g.saveState();var p=new ArrayList<>(s.players());
-        for(int seat=0;seat<4;seat++){var old=p.get(seat);p.set(seat,new GameSession.PlayerState(seat,old.name(),old.human(),old.hand(),null,0,seat<2?-1:-7));}
+        var names = List.of("You", "Ava", "Radu", "Dora");
+        for (int seat = 0; seat < p.size(); seat++) {
+            var old = p.get(seat);
+            p.set(seat, new GameSession.PlayerState(seat, names.get(seat), old.human(), old.hand(),
+                    null, 0, seat < 2 ? -1 : -7));
+        }
         var tied=GameSession.restore(new GameSession.SaveState(s.config(),s.phase(),s.handIndex(),s.handSize(),s.dealerSeat(),s.biddingSeat(),s.currentSeat(),0,0,s.trump(),-1,p,List.of(),List.of(),List.of(),s.turnedCard()));
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "g", g, "p", p, "s", s, "tied", tied);

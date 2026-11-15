@@ -16,12 +16,6 @@ Măsurați costul parserului pe aceeași populație de surse. Verificarea funcț
 
 [Politica executabilă](../../config/atf-governance-policy.json) aplică limita fără derogări pentru structura curentă. [Responsabilitățile pachetelor](../governance/ATF_Packages.md) delimitează API-urile, suportul comun și selecțiile testelor.
 
-**P2 · Restaurarea sesiunii Whist.** [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) deține mutările, scorul și rehidratarea checkpoint-ului.
-
-- Probele restaurează aceeași salvare în licitare, joc și scor și confruntă prima comandă legală după reluare.
-- O extragere a asamblării checkpoint-ului păstrează refuzul unei istorii incompatibile și compatibilitatea salvărilor existente.
-- Decizia privind o frontieră separată se bazează pe aceste probe.
-
 [Guvernanța calității](../governance/README.md) · [Bune practici documentare](../governance/ATF_Documentation.md)
 
 ## Calificarea afirmațiilor și lansatoarelor
@@ -59,15 +53,3 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | Prioritate | Lacună delimitată | Criteriu de închidere |
 |---|---|---|
 | P2 | Proba nativă este păstrată cu sursele în Extent, dar lansarea ei este încă o operație TMP a operatorului. | Adaptor opt-in versionat: citește identitatea candidatului, folosește permisiuni Android proprii și separă accesul de transfer. Componentele injectează 404, fișier scurt, hash/CRC greșit, certificat absent ori diferit și timeout; nu salvează redirectul semnat. Raportul păstrează comparațiile, eroarea și durata originale, iar cleanup-ul elimină doar resursele deținute. Un singur transfer Android califică livrarea; nu se multiplică pe rezoluțiile UI. |
-
-## Lizibilitatea coordonatorilor de domeniu
-
-**P2 · deschis · responsabil: motorul și coordonarea deciziei.**
-
-GameSession rămâne un coordonator amplu pentru mutări, scor și rehidratarea checkpoint-ului. Pragul pachetelor este util, dar nu verifică separat responsabilitățile interne sau stabilitatea fațadei.
-
-Extrageți câte o responsabilitate demonstrată pe increment, păstrând mutările legale, scorul, ordinea levatelor și restaurarea checkpoint-ului. Verificați comportamentul nominal și refuzurile cu oracol fixat; mutarea codului sau formatarea amplă nu dovedesc singure reducerea responsabilității. Politica și eșantioanele MonteCarloAi au owner separat în [feedback-ul AI](ATF_Ai.md#evoluția-motorului).
-
-- O regulă nouă de stratificare sau de proprietate a stării cere o intrare sănătoasă și una defectă.
-- [Registrul adaptorului](ATF_Android.md#persistență-și-coordonare) deține probele pentru fixture-urile Android din Release.
-- [Registrul motorului](ATF_Ai.md#evoluția-motorului) deține gestionarea mostrelor Monte Carlo.

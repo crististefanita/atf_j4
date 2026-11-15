@@ -28,7 +28,7 @@ Colecția restrânge cazurile la proprietatea schimbată. Evaluarea unei politic
 | `cost` | Cost JVM pentru Normal, Hard și independent la 2–8 cărți | Poziții generate, CPU și bugete din profil explicit |
 | `context` | Onoruri, necesar de levate, atu întors sau încă pe masă, legalitatea prefixelor | Verificări JVM restrânse |
 | `quick` | Reguli, scor, serii, checkpoint-uri și gărzi de decizie | Subset al regresiei |
-| `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Regresie JVM, fără turnee |
+| `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Regresie JVM, fără turnee. [Proba sesiunii](../../atf-tests/src/test/java/atf/tests/governance/source/game/GameSessionBoundaryComponentTest.java) verifică și continuarea după checkpoint, la limita publică a motorului. |
 | `strategy` | Invariante și contraexemple mici pentru licitare și joc | Componente JVM selectate |
 | `documentation` | Punctaj documentat și reguli RO/EN | Extent confruntat cu JUnit și ajutor bilingv generat |
 | `learning` | Comparație între un candidat și politici înghețate | Partide complete definite prin protocol |
