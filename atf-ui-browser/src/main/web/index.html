@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Card Table</title>
+  <link rel="stylesheet" href="/table.css">
+  <script type="module" src="/table.mjs"></script>
+</head>
+<body>
+  <div class="viewport"><div id="frame"><main id="table" aria-busy="true"></main></div></div>
+  <dialog id="history" aria-labelledby="history-title">
+    <h2 id="history-title">Istoric punctaj</h2>
+    <div id="history-data" class="history-data" tabindex="0"></div>
+    <form method="dialog"><button>Închide</button></form>
+  </dialog>
+</body>
+</html>

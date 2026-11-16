@@ -2,7 +2,15 @@
 
 ## Pe scurt
 
-**WEB-01** propune modulul `atf-ui-browser` în proiectul Whist Lab, lângă interfața comună, pentru joc local în Edge și Chrome. Pe telefon, zona de joc reproduce afișarea APK-ului pe același telefon. Pe Windows, aceeași compoziție se mărește proporțional după înălțimea disponibilă și rămâne centrată.
+**WEB-01** are o [implementare locală](../../atf-ui-browser/README.md) pentru joc offline în Edge și Chrome, susținută de motoarele JVM existente. Adaptoarele Whist, Rentz și Hold’em folosesc același server și același contract de geometrie pentru masă și cărți. Calificarea identității cu APK-ul rămâne deschisă până la comparația pe același telefon.
+
+## Calificare rămasă
+
+| Arie | Criteriu rămas |
+|---|---|
+| Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
+| Funcții de prezentare | Califică ecranele de profil și realizări, recuperarea la repornirea serverului și ordinea cadrelor de decontare. Prima implementare păstrează sesiunea la reîncărcarea filei cât timp serverul rulează. |
+| Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
 
 ## Profilurile de referință
 

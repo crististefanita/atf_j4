@@ -54,12 +54,14 @@ flowchart LR
     atf_card_table_ui[UI comun Android]
     ios[Aplicație iOS]
     ios_bridge[Punte iOS]
+    browser[Interfață browser]
     game_core[Motor Java]
     card_table_names[Politica numelor]
     app -->|folosește| atf_card_table_ui
     app -->|folosește| game_core
     ios -->|folosește| ios_bridge
     ios_bridge -->|expune| game_core
+    browser -->|apelează| game_core
     game_core -->|folosește| card_table_names
 ```
 
@@ -69,13 +71,14 @@ flowchart LR
 - Motorul deține regulile, sesiunea, scorul și deciziile AI. Politica AI primește mâna proprie și informația publică a mesei.
 - Android păstrează adaptarea la ecrane, preferințele și checkpoint-ul. Biblioteca vizuală comună oferă prezentarea mesei și emite intențiile de interacțiune.
 - SwiftUI apelează puntea restrânsă către motorul tradus cu J2ObjC. Ținta iOS are o calificare proprie pe simulator. [Ghidul iOS](docs/platform/ATF_iOSDelivery.md)
+- Browserul proiectează aceeași sesiune prin adaptorul JVM local. [Pornire și verificare](atf-ui-browser/README.md)
 
 </details>
 
 | Zonă | Module și responsabilități |
 |---|---|
 | Motor și cercetare | [`game-core`](whist-lab-app/game-core/README.md) deține domeniul. [`card-table-names`](whist-lab-app/card-table-names/README.md) validează și distribuie numele. [`ai-lab`](whist-lab-app/ai-lab/README.md) evaluează politicile offline prin [buildul JVM](whist-lab-app/algorithm-build/README.md). |
-| Aplicații | [Android](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md) integrează [`atf-card-table-ui`](whist-lab-app/atf-card-table-ui/README.md). [iOS](ios/README.md) apelează [puntea Java](whist-lab-app/ios-bridge/src/main/java/ro/whistlab/ios/WhistGameBridge.java). |
+| Aplicații | [Android](whist-lab-app/app/src/main/java/ro/whistlab/app/README.md) integrează [`atf-card-table-ui`](whist-lab-app/atf-card-table-ui/README.md). [iOS](ios/README.md) apelează [puntea Java](whist-lab-app/ios-bridge/src/main/java/ro/whistlab/ios/WhistGameBridge.java). [Browser](atf-ui-browser/README.md) apelează un server JVM local. |
 | Infrastructură ATF | [`atf-validation`](atf-validation/README.md) evaluează semantic răspunsuri API. [`atf-test-android`](atf-test-android/README.md) execută comenzi ADB și scenarii. [`atf-tests`](atf-tests/README.md) verifică integrarea, guvernanța și livrarea. |
 | Audit și execuție | [`test-audit`](whist-lab-app/test-audit/README.md) capturează comparațiile Gradle. [`lib`](lib/README.md) păstrează bibliotecile cu proveniență, iar [`scripts`](scripts/README.md) pregătește rulările izolate. |
 | Livrare | [Catalogul](release/README.md) identifică versiunea disponibilă și dosarul de calificare. |
