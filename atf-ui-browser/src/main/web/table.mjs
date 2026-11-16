@@ -469,7 +469,7 @@ function placePlayed(cards) {
     tile.style.top = (slot.row * playedLayout.rowStrideDp + playedLayout.verticalPaddingDp) + "px";
     face.style.width = face.style.minWidth = playedLayout.faceWidth + "px";
     face.style.height = playedLayout.faceHeight + "px";
-    face.style.setProperty("--compact-rank-fit", Math.floor((playedLayout.faceWidth - 4) * .8) + "px");
+    face.style.setProperty("--compact-rank-fit", Math.floor((playedLayout.faceWidth - 4) / 2) + "px");
     if (face.classList.contains("compact-play-face")) face.style.fontSize = playedLayout.faceTextSp / 16 + "rem";
     const player = tile.querySelector(".played-name");
     player.hidden = !playedLayout.playerLabelHeightDp;
@@ -637,9 +637,9 @@ function place(element, rectangle) {
 
 function whistHeader(match) {
   const header = element("header", "", "whist-header");
-  header.style.setProperty("--title-size", match.header.titleSize + "px");
-  header.style.setProperty("--progress-size", match.header.progressSize + "px");
-  header.style.setProperty("--bid-size", match.header.bidSize + "px");
+  header.style.setProperty("--title-size", match.header.titleSize / 16 + "rem");
+  header.style.setProperty("--progress-size", match.header.progressSize / 16 + "rem");
+  header.style.setProperty("--bid-size", match.header.bidSize / 16 + "rem");
   const top = element("div", "", "whist-title-row");
   const navigation = element("details", "", "whist-navigation");
   const trigger = element("summary");
@@ -682,8 +682,10 @@ function whistHeader(match) {
     element("p", match.header.bids, "whist-bids"));
   const trump = element("div", "", "whist-trump");
   trump.setAttribute("aria-label", match.header.trumpDescription);
-  trump.append(element("strong", copy("trump", "Atu")), match.center.length
-    ? card(match.center[0]) : element("span", match.header.trump));
+  const trumpValue = match.center.length
+    ? card(match.center[0]) : element("span", match.header.trump, "whist-trump-value");
+  trumpValue.toggleAttribute("data-long-value", !match.center.length && match.header.trump.length > 1);
+  trump.append(element("strong", copy("trump", "Atu")), trumpValue);
   details.append(status, trump);
   header.append(top, details);
   return header;

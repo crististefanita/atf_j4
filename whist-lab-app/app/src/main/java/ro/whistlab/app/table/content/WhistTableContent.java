@@ -32,10 +32,6 @@ public final class WhistTableContent {
         return new Turn(seat, seat == 0 && !collecting && !autoGame);
     }
 
-    public static boolean showsSeatTurnBadge(int seat, Turn turn, boolean bidding) {
-        return seat == turn.seat() && !(bidding && turn.manual());
-    }
-
     public static SeatContent seat(GameSession.PlayerSnapshot player, int activeSeat, int dealerSeat,
             boolean bidding, WhistUiText copy) {
         boolean active = player.seat() == activeSeat;

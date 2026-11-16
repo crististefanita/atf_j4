@@ -96,9 +96,10 @@ Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul e
 
 ## Verificare
 
-- Rangurile 2–10, J, Q, K și A folosesc aceeași țintă de mărire în APK și Web. Fiecare adaptor încadrează rangurile în fețele micșorate cu aproximativ 25%.
+- Adaptorul Web centrează rangurile 2–A în aceeași bandă, măsurată cu `10`. Dimensiunea de bază și dimensiunile fețelor urmează APK-ul de referință.
 - Lățimea indicelui vizibil stabilește suprapunerea în evantai, inclusiv pentru `10` și pentru mâinile de 17 cărți.
-- Butonul este singurul îndemn vizual al jucătorului la licitarea manuală.
+- Antetul Web aplică dimensiunile de text ale APK-ului și aceeași aliniere pentru titlu, progres și atu. Probele Android și Web citesc aceeași referință de dimensiuni din testele de componentă. Verificarea pe dispozitiv urmărește rasterizarea și suprafața rezervată de sistem.
+- În Web, butonul este singurul îndemn vizual al jucătorului la licitarea manuală.
 
 Folosiți `-BuildOnly` la cele trei lansatoare și treceți valorile de classpath returnate către suita de componente. Procesele JVM servesc adaptoarele pe loopback, iar suita trimite cereri HTTP și verifică starea publică. `$EvidenceRoot` indică un director extern, existent și dedicat rulării.
 

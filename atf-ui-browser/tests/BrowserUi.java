@@ -50,11 +50,15 @@ class BrowserUi {
                         (page, images) -> responsiveHand(page, url)));
                 results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
                         "Rangul 10 în mâna de 17 cărți, la text 200%",
-                        "Ambele cifre rămân vizibile. Rangurile 2–A au același font, iar fețele sunt cu 25% mai mici.",
+                        "Cifrele și figurile păstrează aceeași ancoră. Antetul respectă scara de text.",
                         (page, images) -> enlargedNumbers(page, url, wideCheckpoint, output, images)));
                 results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Atingere respinsă și AutoGame în Whist",
                         "Textul accesibil și marcajele duc la patru colectări și la scorul așteptat",
                         (page, images) -> autoGame(page, url, checkpoint, output, images)));
+                results.add(run(browser, new Browser.NewContextOptions().setViewportSize(535, 760), output,
+                        "WEB-UI-HEADER-DESKTOP", "Antet Oh Hell în cadrul scalat pe desktop",
+                        "Titlul și progresul au aceeași ancoră, iar atuul rămâne la marginea utilă",
+                        (page, images) -> desktopHeader(page, url)));
                 results.add(run(browser, new Browser.NewContextOptions().setViewportSize(1280, 720), output,
                         "WEB-UI-DESKTOP", "Profil local și centrare pe desktop",
                         "Anularea și salvarea se văd în meniu, iar cadrul portrait se centrează la redimensionare",
@@ -125,6 +129,7 @@ class BrowserUi {
         require(end.x >= holder.x - 1 && end.x + end.width <= holder.x + holder.width + 1,
                 "Last card cannot be shown in full");
         var biddingSeats = seats(page);
+        assertHeader(page, false);
         assertThat(page.locator(".seat.south")).hasAttribute("aria-current", "true");
         assertThat(page.locator(".seat.south .seat-turn")).isHidden();
         assertThat(button(page, "Licitează")).isVisible();
@@ -132,6 +137,7 @@ class BrowserUi {
         assertThat(page.locator("[data-bid]")).hasCount(0);
         page.locator("#table[aria-busy=false] .board[data-layout=ready]").waitFor();
         var playingSeats = seats(page);
+        assertHeader(page, false);
         require(biddingSeats.equals(playingSeats), "Player boxes moved: " + biddingSeats + " -> " + playingSeats);
         return Map.of("viewport", List.of(414, 896), "cards", cards.count(), "seats", playingSeats,
                 "lastCardRight", end.x + end.width);
@@ -153,16 +159,20 @@ class BrowserUi {
         var rank = ten.locator(".card-index:not(.inverted) .card-rank");
         var suit = ten.locator(".card-index:not(.inverted) span:last-child");
         assertThat(rank).hasText("10");
-        assertThat(rank).hasCSS("font-size", "33px");
-        for (Locator card : cards.all()) {
-            assertThat(card).hasCSS("width", "47px");
-            assertThat(card).hasCSS("height", "66px");
-            assertThat(card.locator(".card-index:not(.inverted) .card-rank")).hasCSS("font-size", "33px");
-        }
+        assertThat(rank).hasCSS("font-size", "26px");
         assertThat(suit).hasCSS("font-size", "13px");
-        var letter = cards.and(page.locator("[data-face^='J'],[data-face^='Q'],[data-face^='K'],[data-face^='A']"))
-                .first().locator(".card-index:not(.inverted) .card-rank");
-        assertThat(letter).hasCSS("font-size", "33px");
+        assertHeader(page, true);
+        var tenCard = ten.boundingBox();
+        var tenRank = rank.boundingBox();
+        for (String faceRank : List.of("A", "K", "Q", "J")) {
+            var figure = cards.and(page.locator("[data-face^='" + faceRank + "']")).first();
+            var figureRank = figure.locator(".card-index:not(.inverted) .card-rank");
+            assertThat(figureRank).hasCSS("font-size", "26px");
+            var rect = figure.boundingBox();
+            var glyph = figureRank.boundingBox();
+            near(tenRank.x + tenRank.width / 2 - tenCard.x, glyph.x + glyph.width / 2 - rect.x);
+            near(tenRank.y - tenCard.y, glyph.y - rect.y);
+        }
         rank.scrollIntoViewIfNeeded();
         var next = ten.locator("xpath=following-sibling::button[1]").boundingBox();
         var glyphs = rank.boundingBox();
@@ -178,8 +188,47 @@ class BrowserUi {
         require(last.x >= scrollport.x - 1 && last.x + last.width <= scrollport.x + scrollport.width + 1,
                 "The last card cannot be shown in full at 200%");
         return Map.of("viewport", List.of(360, 800), "textScale", 2, "cards", 17, "card", face,
-                "rankPixels", 33, "suitPixels", 13,
+                "rankPixels", 26, "suitPixels", 13,
                 "rankWidth", glyphs.width, "clearanceToNextCard", next.x - glyphs.x - glyphs.width);
+    }
+
+    private static Map<String, Object> desktopHeader(Page page, String url) {
+        page.navigate(url);
+        button(page, "Joc nou").click();
+        page.locator("select[name=mode]").selectOption("OH_HELL");
+        button(page, "Începe partida").click();
+        page.locator(".board[data-layout=ready]").waitFor();
+        assertThat(page.locator(".whist-title-row h1")).hasText("Whist · Oh Hell");
+        assertThat(page.locator(".whist-trump .card")).isVisible();
+        double scale = page.locator("#frame").boundingBox().width / 414.0;
+        assertHeader(page, false, scale);
+        return Map.of("viewport", List.of(535, 760), "scale", scale, "title", "Whist · Oh Hell");
+    }
+
+    private static void assertHeader(Page page, boolean enlarged) {
+        assertHeader(page, enlarged, 1);
+    }
+
+    private static void assertHeader(Page page, boolean enlarged, double scale) {
+        var header = page.locator(".whist-header");
+        var row = header.locator(".whist-title-row");
+        var title = row.locator("h1");
+        var menu = row.locator("summary");
+        var progress = header.locator(".whist-progress");
+        var trump = header.locator(".whist-trump");
+        assertThat(title).hasCSS("font-size", enlarged ? "28px" : "14px");
+        assertThat(progress).hasCSS("font-size", enlarged ? "22px" : "11px");
+        assertThat(trump).hasCSS("width", "57px");
+        assertThat(menu).hasCSS("width", "48px");
+        var bounds = header.boundingBox();
+        var rowBounds = row.boundingBox();
+        var trumpBounds = trump.boundingBox();
+        near(bounds.x + 56 * scale, title.boundingBox().x);
+        near(title.boundingBox().x, progress.boundingBox().x);
+        near(bounds.x + bounds.width, trumpBounds.x + trumpBounds.width);
+        var details = header.locator(".whist-header-details").boundingBox();
+        near(rowBounds.y + rowBounds.height, details.y);
+        near(details.y + details.height / 2, trumpBounds.y + trumpBounds.height / 2);
     }
 
     private static void resumeHand(Page page, String url, String checkpoint) {
@@ -197,7 +246,24 @@ class BrowserUi {
         resumeHand(page, url, checkpoint);
         var ten = page.locator(".fan [data-face^='10'] .card-index:not(.inverted) .card-rank");
         assertThat(ten).hasText("10");
-        assertThat(ten).hasCSS("font-size", "26px");
+        assertThat(ten).hasCSS("font-size", "13px");
+        assertThat(page.locator(".fan [data-face^='10'] .suit")).hasCSS("font-size", "19px");
+        assertHeader(page, false);
+        var trump = page.locator(".whist-trump .card");
+        assertThat(trump.locator(".card-index:not(.inverted) .card-rank")).hasText("Q");
+        assertThat(trump.locator(".suit")).hasText("♦");
+        assertThat(trump).hasCSS("flex-direction", "row");
+        assertThat(trump.locator(".card-rank").first()).hasCSS("font-size", "20px");
+        assertThat(trump).hasCSS("height", "26px");
+        var trumpFrame = page.locator(".whist-trump").boundingBox();
+        var trumpFace = trump.boundingBox();
+        require(trumpFace.x >= trumpFrame.x + 4 && trumpFace.x + trumpFace.width <= trumpFrame.x + trumpFrame.width - 4,
+                "The turned card must fit inside its frame padding");
+        images.add(screenshot(page, output, "WEB-UI-HEADER", "Antetul Web după referința Android"));
+        var menu = page.locator(".whist-navigation summary");
+        menu.click();
+        assertThat(page.locator(".whist-menu-items button").first()).hasCSS("font-size", "16px");
+        menu.click();
         Locator rejected = page.locator(".fan button[data-face='8♣']");
         rejected.tap();
         assertThat(rejected).hasClass(Pattern.compile("rejected-card"));
@@ -212,9 +278,9 @@ class BrowserUi {
         assertThat(eva.locator(".seat-won")).hasText("Levate: 1");
         assertThat(page.locator(".fan button")).hasCount(3);
         assertThat(collection.filter(new Locator.FilterOptions().setHasText("9♦")).locator(".card-rank"))
-                .hasCSS("font-size", "26px");
+                .hasCSS("font-size", "13px");
         assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥")).locator(".card-rank"))
-                .hasCSS("font-size", "26px");
+                .hasCSS("font-size", "13px");
         images.add(screenshot(page, output, "WEB-UI-AUTO-collection", "AutoGame după prima levată"));
         page.locator(".whist-score").waitFor(new Locator.WaitForOptions().setTimeout(45_000));
         var notice = page.locator("dialog.achievement-notice[open]");

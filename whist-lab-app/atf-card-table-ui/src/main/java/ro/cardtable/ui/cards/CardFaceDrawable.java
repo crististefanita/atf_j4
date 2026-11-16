@@ -10,17 +10,11 @@ import android.graphics.drawable.GradientDrawable;
 public class CardFaceDrawable extends GradientDrawable {
     private final CardFace card;
     private final float density;
-    private final int rankIndexHeight;
     private final Paint ink = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     public CardFaceDrawable(CardFace card, float density, int border) {
-        this(card, density, border, 0);
-    }
-
-    public CardFaceDrawable(CardFace card, float density, int border, int rankIndexHeight) {
         this.card = card;
         this.density = density;
-        this.rankIndexHeight = rankIndexHeight;
         restoreStyle(border);
         ink.setColor(card.red() ? Color.rgb(173, 57, 58) : Color.rgb(42, 53, 47));
         ink.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
@@ -36,17 +30,8 @@ public class CardFaceDrawable extends GradientDrawable {
     @Override public void draw(Canvas canvas) {
         super.draw(canvas);
         var bounds = getBounds();
-        if (rankIndexHeight == 0) {
-            ink.setTextSize(28 * density);
-            canvas.drawText(card.suitSymbol(), bounds.exactCenterX(), bounds.top + bounds.height() * .66f, ink);
-        } else {
-            float room = bounds.height() - rankIndexHeight - 8 * density;
-            if (room >= 16 * density) {
-                ink.setTextSize(Math.min(28 * density, room));
-                canvas.drawText(card.suitSymbol(), bounds.exactCenterX() - 5 * density,
-                        bounds.bottom - 8 * density, ink);
-            }
-        }
+        ink.setTextSize(28 * density);
+        canvas.drawText(card.suitSymbol(), bounds.exactCenterX(), bounds.top + bounds.height() * .66f, ink);
         canvas.save();
         canvas.rotate(180, bounds.exactCenterX(), bounds.exactCenterY());
         ink.setTextSize(9 * density);

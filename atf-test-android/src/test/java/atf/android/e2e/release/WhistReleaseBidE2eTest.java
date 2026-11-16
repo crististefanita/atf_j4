@@ -36,14 +36,7 @@ class WhistReleaseBidE2eTest {
                 "responsive-ui-sanity", "Signed release — maximum hand across portrait profiles", getClass().getSimpleName());
         context.execute(c -> {
             var profiles = ResponsiveDisplayProfile.parse(System.getProperty("atf.android.sanity.profiles"));
-            c.withPortraitProfiles(profiles, (profile, active) -> {
-                if (profile.equals(profiles.getFirst())) {
-                    active.withEnlargedText(enlarged ->
-                            ThreePlayerDownAndUpLayoutScenario.run(enlarged, profile.id() + " Font 1.5 "));
-                } else {
-                    ThreePlayerDownAndUpLayoutScenario.run(active, profile.id() + " ");
-                }
-            });
+            c.withPortraitProfiles(profiles, (profile, active) -> ThreePlayerDownAndUpLayoutScenario.run(active, profile.id() + " "));
         });
     }
 
@@ -87,10 +80,6 @@ class WhistReleaseBidE2eTest {
             c.ui.tapText(start);
             c.awaitRecommendation(bid, 17);
             List<AndroidUiDriver.Bounds> bidBounds = seatBounds(c.ui, c.ui.dump(), bidLabel, scoreLabel);
-            c.checkpoint(label + "Manual bid is the only visible bidding action", xml -> List.of(
-                    ReleaseBidContext.equal("Submit bid is visible", true, c.ui.hasText(xml, bid)),
-                    ReleaseBidContext.equal("Human bidding caption is hidden", false,
-                            c.ui.hasText(xml, ro ? "LICITEAZĂ" : "BID NOW"))));
             var seen = new java.util.LinkedHashSet<String>();
             var atStart = c.ui.dump();
             c.swipeHand(c.ui.boundsForDescription(atStart, hand), false);
@@ -107,8 +96,8 @@ class WhistReleaseBidE2eTest {
             });
 
             if (seen.size() < MAXIMUM_HAND_SIZE) {
-                collectAcrossHand(c, label, hand, biddingHint, true, seen);
-                if (seen.size() < MAXIMUM_HAND_SIZE) collectAcrossHand(c, label, hand, biddingHint, false, seen);
+                collectAcrossHand(c, hand, biddingHint, true, seen);
+                if (seen.size() < MAXIMUM_HAND_SIZE) collectAcrossHand(c, hand, biddingHint, false, seen);
                 c.checkpoint(label + "Horizontal scroll exposes the complete seventeen-card hand", xml -> {
                     seen.addAll(visibleBidCards(xml, biddingHint));
                     return List.of(ReleaseBidContext.equal("All seventeen card identities can be viewed",
@@ -135,29 +124,18 @@ class WhistReleaseBidE2eTest {
                             c.ui.allContentFitsViewport(xml))));
         }
 
-        private static void collectAcrossHand(ReleaseBidContext c, String label, String description, String biddingHint,
+        private static void collectAcrossHand(ReleaseBidContext c, String description, String biddingHint,
                 boolean towardEnd, java.util.Set<String> seen) throws Exception {
             String xml = c.ui.dump();
             List<String> visible = visibleBidCards(xml, biddingHint);
-            boolean tenCaptured = captureVisibleTen(c, label, biddingHint, visible);
             for (int attempt = 0; attempt < MAX_SWIPES_PER_DIRECTION && seen.size() < MAXIMUM_HAND_SIZE; attempt++) {
                 c.swipeHand(c.ui.boundsForDescription(xml, description), towardEnd);
                 xml = c.ui.dump();
                 List<String> after = visibleBidCards(xml, biddingHint);
                 seen.addAll(after);
-                if (!tenCaptured) tenCaptured = captureVisibleTen(c, label, biddingHint, after);
                 if (after.equals(visible)) break;
                 visible = after;
             }
-        }
-
-        private static boolean captureVisibleTen(ReleaseBidContext c, String label, String biddingHint,
-                List<String> visible) throws Exception {
-            if (!label.contains("Font 1.5") || visible.stream().noneMatch(card -> card.startsWith("10 "))) return false;
-            c.checkpoint(label + "Rank 10 exposed in the seventeen-card hand", xml -> List.of(
-                    ReleaseBidContext.equal("A ten is present in the captured viewport", true,
-                            visibleBidCards(xml, biddingHint).stream().anyMatch(card -> card.startsWith("10 ")))));
-            return true;
         }
 
         private static List<String> visibleBidCards(String xml, String biddingHint) throws Exception {

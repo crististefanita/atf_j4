@@ -49,21 +49,6 @@ public final class WhistTableContentComponentTest extends atf.gradle.audit.Gradl
                 expected, observed);
     }
 
-    @Test public void bidButtonReplacesOnlyTheManualHumanSeatBadge() {
-        var manualHuman = new WhistTableContent.Turn(0, true);
-        var automaticHuman = new WhistTableContent.Turn(0, false);
-        var opponent = new WhistTableContent.Turn(2, false);
-        atf.gradle.audit.GradleInputs.fixture("Turn and bid button combinations",
-                "manualHuman", manualHuman, "automaticHuman", automaticHuman, "opponent", opponent);
-        assertEquals("Only the redundant manual bidding label is hidden",
-                List.of(false, true, true, true, false),
-                List.of(WhistTableContent.showsSeatTurnBadge(0, manualHuman, true),
-                        WhistTableContent.showsSeatTurnBadge(0, manualHuman, false),
-                        WhistTableContent.showsSeatTurnBadge(0, automaticHuman, true),
-                        WhistTableContent.showsSeatTurnBadge(2, opponent, true),
-                        WhistTableContent.showsSeatTurnBadge(0, opponent, true)));
-    }
-
     @Test public void actorMarkerStaysWithTheCurrentPlayerDuringManualAndAutomaticPlay() {
         List<ActorObservation> expected = new ArrayList<>(), observed = new ArrayList<>();
         for (var mode : GameMode.values()) for (int count = 3; count <= 6; count++)

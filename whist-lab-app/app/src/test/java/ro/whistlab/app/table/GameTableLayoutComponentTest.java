@@ -10,23 +10,23 @@ import org.junit.Test;
 
 /** Tests occupied regions together, including the nine-option regression. */
 public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleAuditedTest {
-    @Test public void compactHandFaceKeepsOnePortraitProportionAndTableReservation() {
+    @Test public void cardHeightsApplyTheTenPercentReductionOnceWithOnePortraitProportion() {
 
-        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 98, "declared constant 2", 0.9f, "declared constant 3", 78, "declared constant 4", 47, "declared constant 5", 1f, "declared constant 6", 1.3f, "declared constant 7", 1.5f, "declared constant 8", 2f, "declared constant 9", 71, "declared constant 10", 599, "declared constant 11", 600, "declared constant 12", 94, "declared constant 13", 280, "declared constant 14", 313, "declared constant 15", 353, "declared constant 16", 560, "declared constant 17", 1, "declared constant 18", 13, "declared constant 19", "Only overlap changes with the hand size", "declared constant 20", 66, "declared constant 21", 0);
-        assertEquals("Hand has seventy-five percent of the previous 88dp face", 66, HandLayoutMetrics.cardHeightDp());
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 98, "declared constant 2", 0.9f, "declared constant 3", 78, "declared constant 4", 63, "declared constant 5", 1f, "declared constant 6", 1.3f, "declared constant 7", 1.5f, "declared constant 8", 2f, "declared constant 9", 71, "declared constant 10", 599, "declared constant 11", 600, "declared constant 12", 116, "declared constant 13", 280, "declared constant 14", 313, "declared constant 15", 353, "declared constant 16", 560, "declared constant 17", 1, "declared constant 18", 13, "declared constant 19", "Only overlap changes with the hand size", "declared constant 20", 88, "declared constant 21", 0);
+        assertEquals("HandLayoutMetrics.cardHeightDp() must equal Math.round(98 * 0.9F)", Math.round(98 * 0.9f), HandLayoutMetrics.cardHeightDp());
         assertEquals("TrickCardMetrics.CARD_HEIGHT_DP must equal Math.round(78 * 0.9F)", Math.round(78 * 0.9f), TrickCardMetrics.CARD_HEIGHT_DP);
-        assertEquals("HandLayoutMetrics.cardWidthDp(1.0F) must equal 47", 47, HandLayoutMetrics.cardWidthDp(1f));
+        assertEquals("HandLayoutMetrics.cardWidthDp(1.0F) must equal 63", 63, HandLayoutMetrics.cardWidthDp(1f));
         for (float scale : new float[]{1f, 1.3f, 1.5f, 2f}) {
             assertEquals("new TableViewportPolicy(599, scale).playedCardFaceHeightDp() must equal Math.round(71 * 0.9F)", Math.round(71 * 0.9f), new TableViewportPolicy(599, scale).playedCardFaceHeightDp());
             assertEquals("new TableViewportPolicy(600, scale).playedCardFaceHeightDp() must equal Math.round(78 * 0.9F)", Math.round(78 * 0.9f), new TableViewportPolicy(600, scale).playedCardFaceHeightDp());
         }
-        assertEquals("HandLayoutMetrics.reservedHandHeightDp() must equal 94", 94, HandLayoutMetrics.reservedHandHeightDp());
+        assertEquals("HandLayoutMetrics.reservedHandHeightDp() must equal 116", 116, HandLayoutMetrics.reservedHandHeightDp());
         for (int width : new int[]{280, 313, 353, 560}) for (int cards=1;cards<=13;cards++) {
             for (float scale : new float[]{1f,1.3f,1.5f,2f}) {
-                assertEquals("Only overlap changes with the hand size",47,HandLayoutMetrics.cardWidthDp(cards,width,scale));
+                assertEquals("Only overlap changes with the hand size",63,HandLayoutMetrics.cardWidthDp(cards,width,scale));
             }
         }
-        assertEquals("HandLayoutMetrics.cardHeightDp() must equal 66", 66, HandLayoutMetrics.cardHeightDp());
+        assertEquals("HandLayoutMetrics.cardHeightDp() must equal 88", 88, HandLayoutMetrics.cardHeightDp());
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->ro.whistlab.app.cards.CardFaceMetrics.atHeight(0));
     }
 
@@ -57,7 +57,7 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
 
             atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "density", density, "fan", fan, "glyph", glyph, "viewport", viewport, "width", width);
             assertEquals("All thirteen faces fit the first viewport",viewport,fan.width());
-            assertEquals("fan.cardWidth() must equal Math.round(47 * density)", Math.round(47*density),fan.cardWidth());
+            assertEquals("fan.cardWidth() must equal Math.round(63 * density)", Math.round(63*density),fan.cardWidth());
             assertTrue("fan.first() >= 0 must hold", fan.first()>=0);
             assertTrue("fan.left(12) + fan.cardWidth() <= viewport must hold", fan.left(12)+fan.cardWidth()<=viewport);
             for(int card=1;card<13;card++)assertTrue("fan.left(card) - fan.left(card - 1) >= glyph must hold", fan.left(card)-fan.left(card-1)>=glyph);
@@ -190,13 +190,13 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
 
     @Test public void liftedCardKeepsItsClearanceAndRemainsBehindItsNeighbours() {
 
-        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "compact card height", 66, "declared constant 2", 1, "declared constant 3", 2, "declared constant 4", 1f, "declared constant 5", 1.5f, "declared constant 6", 2.25f, "declared constant 7", 2.625f, "declared constant 8", 2.75f, "declared constant 9", 3.5f);
-        assertEquals("HandLayoutMetrics.cardHeightDp() must equal 66", 66, HandLayoutMetrics.cardHeightDp());
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 88, "declared constant 2", 1, "declared constant 3", 2, "declared constant 4", 1f, "declared constant 5", 1.5f, "declared constant 6", 2.25f, "declared constant 7", 2.625f, "declared constant 8", 2.75f, "declared constant 9", 3.5f);
+        assertEquals("HandLayoutMetrics.cardHeightDp() must equal 88", 88, HandLayoutMetrics.cardHeightDp());
         assertTrue("HandLayoutMetrics.LIFT_CLEARANCE_DP >= HandLayoutMetrics.CARD_LIFT_DP + (int)Math.ceil(HandLayoutMetrics.CARD_HEIGHT_DP * (HandLayoutMetrics.CARD_LIFT_SCALE - 1) / 2) must hold", HandLayoutMetrics.LIFT_CLEARANCE_DP >= HandLayoutMetrics.CARD_LIFT_DP
                 + (int) Math.ceil(HandLayoutMetrics.CARD_HEIGHT_DP * (HandLayoutMetrics.CARD_LIFT_SCALE - 1) / 2));
         assertTrue("HandLayoutMetrics.SELECTED_Z_DP < HandLayoutMetrics.NEIGHBOR_Z_DP must hold", HandLayoutMetrics.SELECTED_Z_DP < HandLayoutMetrics.NEIGHBOR_Z_DP);
         for (float density : new float[]{1f, 1.5f, 2.25f, 2.625f, 2.75f, 3.5f}) {
-            int scaledFace = Math.round(66 * density);
+            int scaledFace = Math.round(88 * density);
             int liftedExtra = (int) Math.ceil(scaledFace * (HandLayoutMetrics.CARD_LIFT_SCALE - 1) / 2);
             assertTrue("Math.round(HandLayoutMetrics.LIFT_CLEARANCE_DP * density) >= Math.round(HandLayoutMetrics.CARD_LIFT_DP * density) + liftedExtra must hold", Math.round(HandLayoutMetrics.LIFT_CLEARANCE_DP * density)
                     >= Math.round(HandLayoutMetrics.CARD_LIFT_DP * density) + liftedExtra);
@@ -209,7 +209,7 @@ public final class GameTableLayoutComponentTest extends atf.gradle.audit.GradleA
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "measured", measured);
         assertEquals("measured must equal 40", 40, measured);
         var fan = HandLayoutMetrics.fan(13, 630, 2.25f, 1f, measured);
-        assertEquals("The 47dp face rounds once at 2.25 density", 106, fan.cardWidth());
+        assertEquals("fan.cardWidth() must equal 142", 142, fan.cardWidth());
         assertTrue("fan.advance() >= measured must hold", fan.advance() >= measured);
         assertTrue("fan.first() >= 0 must hold", fan.first() >= 0);
         assertTrue("fan.left(12) + fan.cardWidth() <= 630 must hold", fan.left(12) + fan.cardWidth() <= 630);

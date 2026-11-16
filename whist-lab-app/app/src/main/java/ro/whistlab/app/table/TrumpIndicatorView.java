@@ -1,7 +1,5 @@
 package ro.whistlab.app.table;
 
-import ro.cardtable.ui.cards.CardFaceMetrics;
-import ro.cardtable.ui.cards.CardRankText;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.WhistUiPalette;
 
@@ -20,10 +18,6 @@ import ro.whistlab.core.model.Suit;
 public final class TrumpIndicatorView extends LinearLayout {
     private final TextView heading;
     private final TextView value;
-    private final String valueLabel;
-    private final boolean hasCardRank;
-    private int measuredRankWidth = -1;
-    private float measuredRankSize;
     private static final int IVORY = Color.rgb(255, 254, 248);
     private static final int HEART_RED = Color.rgb(255, 177, 177);
     private static final int DARK_SUIT_RED = Color.rgb(157, 45, 54);
@@ -55,17 +49,14 @@ public final class TrumpIndicatorView extends LinearLayout {
         addView(heading, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
         value = new TextView(context);
-        valueLabel = copy.trumpIndicatorValue(state);
-        hasCardRank = state.turnedCard() != null && CardFaceMetrics.rankLength(valueLabel) != 0;
-        value.setText(valueLabel);
+        value.setText(copy.trumpIndicatorValue(state));
         value.setTextSize(20);
         if (state.turnedCard() != null) {
             GradientDrawable card = new GradientDrawable();
             card.setColor(IVORY);
             card.setCornerRadius(dp(density, 5));
             value.setBackground(card);
-            int horizontalPadding = dp(density, hasCardRank ? 2 : 5);
-            value.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+            value.setPadding(dp(density, 5), 0, dp(density, 5), 0);
         }
         value.setTextColor(valueColor(state, currentPlayerHighlighted));
         value.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -81,27 +72,11 @@ public final class TrumpIndicatorView extends LinearLayout {
         var metrics = getResources().getDisplayMetrics();
         int width = resolveSize(dp(metrics.density, TableLayoutMetrics.TRUMP_WIDTH_DP), widthSpec);
         int headingHeight = fitLine(heading, 9 * metrics.scaledDensity, width);
-        int valueHeight = hasCardRank ? fitRank(width, metrics.density, 20 * metrics.scaledDensity)
-                : fitLine(value, 20 * metrics.scaledDensity, width);
+        int valueHeight = fitLine(value, 20 * metrics.scaledDensity, width);
         int height = resolveSize(TableLayoutMetrics.trumpHeightPx(metrics.density,
                 headingHeight, valueHeight), heightSpec);
         super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
-    }
-
-    private int fitRank(int width, float density, float nominalSize) {
-        int contentWidth = CardFaceMetrics.compactDimension(Math.max(1, width - getPaddingLeft() - getPaddingRight()));
-        if (measuredRankWidth != contentWidth || measuredRankSize != nominalSize) {
-            value.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, nominalSize);
-            int available = contentWidth - value.getPaddingLeft() - value.getPaddingRight();
-            CardRankText.stack(value, valueLabel, available, dp(density, CardFaceMetrics.compactDimension(72)), dp(density, 13));
-            value.getLayoutParams().width = contentWidth;
-            measuredRankWidth = contentWidth;
-            measuredRankSize = nominalSize;
-        }
-        int widthSpec = MeasureSpec.makeMeasureSpec(Math.max(1, contentWidth), MeasureSpec.AT_MOST);
-        value.measure(widthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-        return value.getMeasuredHeight();
     }
 
     private int fitLine(TextView line, float nominalSize, int width) {

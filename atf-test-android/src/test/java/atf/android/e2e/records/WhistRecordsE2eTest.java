@@ -153,17 +153,15 @@ public class WhistRecordsE2eTest {
             c.inject(fixture,"active-seat-"+seat+"-"+bidding+"-"+language);c.home(language,true);
             c.tap(romanian?"Reia partida":"Resume game");
             String action=romanian?(bidding?"LICITEAZĂ":"JOACĂ ACUM"):(bidding?"BID NOW":"PLAY NOW");
-            boolean manualBid = bidding && seat == 0;
-            String visibleAction = manualBid ? (romanian ? "Licitează" : "Place bid") : action;
-            String xml=c.ui.awaitText(visibleAction,java.time.Duration.ofSeconds(15));
-            var checks=new java.util.ArrayList<>(atf.android.e2e.display.support.TableViewportObservation.inspectActions(c.ui,xml,profile,manualBid ? 0 : 1,romanian));
+            String xml=c.ui.awaitText(action,java.time.Duration.ofSeconds(15));
+            var checks=new java.util.ArrayList<>(atf.android.e2e.display.support.TableViewportObservation.inspectActions(c.ui,xml,profile,1,romanian));
             String name=fixture.json().path("players").get(seat).path("name").asText();
             checks.add(RecordsContext.equal("Requested active player",true,c.ui.descriptions(xml).stream()
                     .anyMatch(text->text.startsWith(name+". ")&&text.contains(romanian?". La rând.":". Current turn."))));
             var faces=c.ui.handCardFaceBounds(xml);
             checks.add(RecordsContext.equal("Whole human hand remains visible",true,
                     faces.size()==fixture.game().snapshot().players().get(0).hand().size()
-                    &&faces.stream().allMatch(face->face.bottom()-face.top()>=Math.round(66*profile.density()/160f))));
+                    &&faces.stream().allMatch(face->face.bottom()-face.top()>=Math.round(98*profile.density()/160f))));
             if(bidding&&seat!=0) {
                 var nodes=RecordsContext.xml(xml).getElementsByTagName("node");boolean disabled=true;int buttons=0;
                 for(int index=0;index<nodes.getLength();index++) {

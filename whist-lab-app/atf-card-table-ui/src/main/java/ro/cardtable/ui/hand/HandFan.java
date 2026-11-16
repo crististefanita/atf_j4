@@ -15,8 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import ro.cardtable.ui.cards.CardFaceDrawable;
-import ro.cardtable.ui.cards.CardFaceMetrics;
-import ro.cardtable.ui.cards.CardRankText;
 import ro.cardtable.ui.cards.CardHighlight;
 import ro.cardtable.ui.cards.CardHighlightView;
 
@@ -58,17 +56,8 @@ public final class HandFan {
         fan.setClipChildren(false);
         fan.setClipToPadding(false);
         TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CARD_DARK, true);
-        var font = measurement.getPaint().getFontMetricsInt();
-        int line = font.descent - font.ascent;
-        float suitScale = Math.min(1, dp(13) / measurement.getTextSize());
-        int suitHeight = (int) Math.ceil(line * suitScale);
-        float rankScale = CardRankText.fit(measurement, "10", dp(HandLayoutMetrics.CARD_WIDTH_DP - 6),
-                dp(HandLayoutMetrics.CARD_HEIGHT_DP - 8) - suitHeight, dp(CardFaceMetrics.HAND_RANK_CAP_DP));
-        float widestIndex = measurement.getPaint().measureText("10") * rankScale;
-        for (String suit : List.of("♠", "♥", "♣", "♦")) {
-            widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(suit) * suitScale);
-        }
-        int indexHeight = dp(5) + (int) Math.ceil(line * rankScale) + suitHeight;
+        float widestIndex = measurement.getPaint().measureText("10");
+        for (String symbol : List.of("â™ ", "â™¥", "â™£", "â™¦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
         int indexWidthPx = HandLayoutMetrics.indexBandWidthPx(widestIndex, dp(1));
         if (cardCount == 0) return fan;
         HandLayoutMetrics.Fan layout = HandLayoutMetrics.fan(cardCount, widthPx,
@@ -99,9 +88,9 @@ public final class HandFan {
             slot.setEnabled(true);
             slot.setClickable(input.acceptsTap(card));
             slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
-            var drawable = new CardFaceDrawable(card.face(), density, playable ? GOLD : SOFT_BORDER, indexHeight);
+            var drawable = new CardFaceDrawable(card.face(), density, playable ? GOLD : SOFT_BORDER);
             faces.put(card, drawable);
-            FrameLayout face = cardFace(card, drawable, indexWidthPx, rankScale, suitScale);
+            FrameLayout face = cardFace(card, drawable, indexWidthPx);
             FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(layout.cardWidth(),
                     dp(cardHeightDp), Gravity.TOP | Gravity.START);
             faceParams.topMargin = dp(liftClearanceDp);
@@ -141,14 +130,14 @@ public final class HandFan {
         repaint.run();
         return fan;
     }
-    private FrameLayout cardFace(HandCard card, CardFaceDrawable background, int indexWidthPx, float rankScale, float suitScale) {
+    private FrameLayout cardFace(HandCard card, CardFaceDrawable background, int indexWidthPx) {
         FrameLayout face = new FrameLayout(context);
         face.setBackground(background);
         face.setFocusable(false);
         face.setClickable(false);
 
-        TextView label = text("", HandLayoutMetrics.cardLabelSizeSp(), card.face().red() ? CARD_RED : CARD_DARK, true);
-        label.setText(CardRankText.hand(card.face().rankLabel(), card.face().suitSymbol(), rankScale, suitScale));
+        TextView label = text(card.face().rankLabel() + "\n" + card.face().suitSymbol(), HandLayoutMetrics.cardLabelSizeSp(),
+                card.face().red() ? CARD_RED : CARD_DARK, true);
         label.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         label.setIncludeFontPadding(false);
         label.setPadding(dp(1), dp(5), dp(1), 0);

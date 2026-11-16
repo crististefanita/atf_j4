@@ -83,7 +83,7 @@ final class ThirteenCardBiddingCheck {
                 cardBounds.stream().mapToInt(ScreenGeometry::height).min().orElse(0);
         boolean fullCardFacesVisible =
                 cardBounds.size() == 13
-                        && minimumCardFaceHeight >= Math.round(66 * densityScale * 0.95);
+                        && minimumCardFaceHeight >= Math.round(98 * densityScale * 0.95);
         boolean handIsOneRow =
                 cardLabels.size() == 13
                         && handRows == 1

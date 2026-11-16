@@ -2,7 +2,12 @@ package ro.whistlab.app.table;
 
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 
+import java.util.Map;
+import java.util.Properties;
 import org.junit.Test;
+import ro.cardtable.ui.screens.GameTitleBar;
+import ro.cardtable.ui.hand.HandLayoutMetrics;
+import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.config.GameConfig;
@@ -14,6 +19,27 @@ import ro.whistlab.core.session.GameSession;
 
 /** Presentation projections and injected font measurements, without an Android device. */
 public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAuditedTest {
+    @Test public void nativeHeaderFollowsTheReferenceConsumedByBrowserTests() throws Exception {
+        var reference = new Properties();
+        try (var input = getClass().getResourceAsStream("/whist-header-presentation.properties")) {
+            reference.load(java.util.Objects.requireNonNull(input));
+        }
+        var nativeHeader = Map.ofEntries(Map.entry("titleSp", GameHeaderTypography.TITLE_SP),
+                Map.entry("progressSp", GameHeaderTypography.PROGRESS_SP), Map.entry("bidSp", GameHeaderTypography.BID_SUMMARY_SP),
+                Map.entry("menuTouchDp", (float) GameTitleBar.TOUCH_TARGET_DP),
+                Map.entry("trumpWidthDp", (float) TableLayoutMetrics.TRUMP_WIDTH_DP),
+                Map.entry("trumpMinHeightDp", (float) TableLayoutMetrics.TRUMP_MIN_HEIGHT_DP),
+                Map.entry("trumpPaddingDp", (float) TableLayoutMetrics.TRUMP_PADDING_DP),
+                Map.entry("trumpGapDp", (float) TableLayoutMetrics.TRUMP_VALUE_GAP_DP),
+                Map.entry("handLabelSp", (float) HandLayoutMetrics.cardLabelSizeSp()),
+                Map.entry("handWidthDp", (float) HandLayoutMetrics.CARD_WIDTH_DP),
+                Map.entry("handHeightDp", (float) HandLayoutMetrics.CARD_HEIGHT_DP));
+        atf.gradle.audit.GradleInputs.fixture("Common header reference", "reference", reference, "android", nativeHeader);
+        assertEquals("All shared roles have a native counterpart", reference.stringPropertyNames(), nativeHeader.keySet());
+        nativeHeader.forEach((role, size) -> assertEquals(role,
+                Float.parseFloat(reference.getProperty(role)), size, .001f));
+    }
+
     @Test public void everyModeUsesOneSuitOrTurnedCardValueInBothLanguages() {
         for (GameMode mode : GameMode.values()) {
             var base = GameSession.newGame(atf.gradle.audit.GradleInputs.created("Game configuration before creation", new GameConfig(4, mode, AiDifficulty.NORMAL, 417))).snapshot();

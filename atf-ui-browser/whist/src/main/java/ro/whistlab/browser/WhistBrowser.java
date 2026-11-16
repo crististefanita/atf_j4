@@ -15,7 +15,6 @@ import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.ScoreGridStyle;
 import ro.cardtable.ui.table.PlayedCardStyle;
 import ro.cardtable.ui.cards.CardHighlight;
-import ro.cardtable.ui.cards.CardFaceMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.theme.TableColors;
 import ro.cardtable.ui.turn.TurnPacing;
@@ -78,11 +77,15 @@ public final class WhistBrowser implements BrowserGame {
                 color("played-fill", PlayedCardStyle.FILL), color("played-line", PlayedCardStyle.OUTLINE),
                 color("played-red", PlayedCardStyle.RED), color("played-dark", PlayedCardStyle.DARK),
                 color("played-player", PlayedCardStyle.PLAYER)));
-        tokens.add(new Token("--whist-rank-scale", Integer.toString(CardFaceMetrics.RANK_SCALE)));
-        tokens.add(new Token("--whist-hand-rank-cap", CardFaceMetrics.HAND_RANK_CAP_DP + "px"));
-        tokens.add(new Token("--whist-played-rank-cap", CardFaceMetrics.PLAYED_RANK_CAP_DP + "px"));
-        tokens.add(new Token("--whist-played-suit-cap", CardFaceMetrics.PLAYED_SUIT_CAP_DP + "px"));
-        tokens.add(new Token("--whist-badge-rank-cap", CardFaceMetrics.BADGE_RANK_CAP_DP + "px"));
+        tokens.add(new Token("--whist-hand-label", HandLayoutMetrics.cardLabelSizeSp() / 16.0 + "rem"));
+        tokens.add(new Token("--whist-hand-rank-cap", "26px"));
+        tokens.add(new Token("--whist-played-rank-cap", "24px"));
+        tokens.add(new Token("--whist-menu-touch", "48px"));
+        tokens.add(new Token("--whist-title-gap", "8px"));
+        tokens.add(new Token("--whist-trump-width", "57px"));
+        tokens.add(new Token("--whist-trump-min-height", "48px"));
+        tokens.add(new Token("--whist-trump-padding", "4px"));
+        tokens.add(new Token("--whist-trump-gap", "2px"));
         tokens.add(new Token("--whist-played-radius", PlayedCardStyle.RADIUS_DP + "px"));
         tokens.add(new Token("--whist-played-stroke", PlayedCardStyle.STROKE_DP + "px"));
         tokens.add(new Token("--whist-hint-stroke", CardHighlight.IN_PLACE.strokeDp() + "px"));
@@ -93,8 +96,6 @@ public final class WhistBrowser implements BrowserGame {
         }
         tokens.add(new Token("--whist-hand-face-width", HandLayoutMetrics.CARD_WIDTH_DP + "px"));
         tokens.add(new Token("--whist-hand-face-height", HandLayoutMetrics.CARD_HEIGHT_DP + "px"));
-        tokens.add(new Token("--whist-trump-face-width", CardFaceMetrics.compactDimension(32) + "px"));
-        tokens.add(new Token("--whist-trump-face-height", CardFaceMetrics.compactDimension(48) + "px"));
         tokens.add(new Token("--whist-hand-slot", (HandLayoutMetrics.CARD_HEIGHT_DP + HandLayoutMetrics.LIFT_CLEARANCE_DP) + "px"));
         tokens.add(new Token("--whist-score-head", ScoreGridStyle.HEADER_DP + "px"));
         tokens.add(new Token("--whist-score-row", ScoreGridStyle.ROW_DP + "px"));

@@ -1,7 +1,6 @@
 package ro.cardtable.browser;
 
 import java.util.Map;
-import ro.cardtable.ui.cards.CardFaceMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.table.TableGeometry;
 import ro.cardtable.ui.table.TableSizing;
@@ -46,8 +45,8 @@ final class BrowserGeometry {
         }
         var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1, handIndexWidth);
         var style = played == null ? Map.<String, Integer>of() : Map.of(
-                "faceWidth", CardFaceMetrics.compactDimension(played.cardWidthDp()),
-                "faceHeight", CardFaceMetrics.compactDimension(played.cardHeightDp()),
+                "faceWidth", played.cardWidthDp(),
+                "faceHeight", played.cardHeightDp(),
                 "faceTextSp", played.cardFaceTextSizeSp(), "playerTextSp", played.playerLabelTextSizeSp(),
                 "verticalPaddingDp", played.itemVerticalPaddingDp() / 2);
         return new Layout(board, hand, height, played, bids, style);

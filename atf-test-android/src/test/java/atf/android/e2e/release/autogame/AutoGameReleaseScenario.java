@@ -64,7 +64,7 @@ public final class AutoGameReleaseScenario {
         Map<String, Bounds> bidSeats = seatFrames(bid, labels);
         c.checkpoint("The new hand exposes the active bidder and its table positions", xml -> List.of(
                 ReleaseBidContext.equal("All four seat frames are visible", 4, seatFrames(xml, labels).size()),
-                ReleaseBidContext.equal("Manual bidding uses its button without a duplicate badge", 0L, badgeCount(xml, labels.bidBadge()))));
+                ReleaseBidContext.equal("Exactly one player has the bidding indicator", 1L, badgeCount(xml, labels.bidBadge()))));
 
         c.ui.tapText(labels.submit());
         c.ui.awaitText(labels.playBadge(), Duration.ofSeconds(30));
@@ -112,7 +112,7 @@ public final class AutoGameReleaseScenario {
                 : context.setup.required("display").required("density").asInt();
         if (densityDpi <= 0) throw new IllegalStateException("Missing native display density");
         float density = densityDpi / 160f;
-        return Math.round(66 * density) + Math.round(28 * density);
+        return Math.round(88 * density) + Math.round(28 * density);
     }
 
     private static boolean headerPlacement(ReleaseBidContext c, String xml, Labels labels) throws Exception {

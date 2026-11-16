@@ -136,25 +136,43 @@ await check("AutoGame colectează fiecare levată, apoi publică doar cărțile 
     return { tricks: gathered, totals: state.view.score.table.rows.map(row => Number(row[4])) };
   });
 
+await check("Antetul browserului folosește măsurile de referință ale APK-ului",
+  "Aceleași valori pentru titlu, progres, licitații, ținta meniului și chenarul de atu", async () => {
+    const properties = new URL("../../whist-lab-app/app/src/test/resources/whist-header-presentation.properties", import.meta.url);
+    const reference = Object.fromEntries((await readFile(properties, "utf8")).trim().split(/\r?\n/u)
+      .map(line => line.split("=")).map(([key, value]) => [key, Number(value)]));
+    const header = state.view.header;
+    const px = name => Number.parseFloat(style["--whist-" + name]);
+    const observed = {titleSp: header.titleSize, progressSp: header.progressSize, bidSp: header.bidSize,
+      menuTouchDp: px("menu-touch"), trumpWidthDp: px("trump-width"), trumpMinHeightDp: px("trump-min-height"),
+      trumpPaddingDp: px("trump-padding"), trumpGapDp: px("trump-gap"),
+      handLabelSp: px("hand-label") * 16, handWidthDp: px("hand-face-width"), handHeightDp: px("hand-face-height")};
+    assert.deepEqual(Object.keys(observed).sort(), Object.keys(reference).sort());
+    for (const [role, size] of Object.entries(observed)) assert.ok(Math.abs(size - reference[role]) < .001, role);
+    return {reference, observed};
+  }, "WEB-12");
+
 await check("Ranguri de carte și bandă măsurată pentru 17 cărți",
-  "Scală 2× pentru toate rangurile, cu lățimea măsurată rezervată în evantai și refuz la geometrie invalidă", () => {
-    assert.equal(style["--whist-rank-scale"], "2");
-    assert.equal(style["--whist-hand-rank-cap"], "33px");
-    for (let seed = 31; seed < 48 && !wideCheckpoint; seed++) {
+  "Scală moderată și uniformă pentru toate rangurile, cu lățimea măsurată rezervată în evantai și refuz la geometrie invalidă", () => {
+    assert.equal(style["--whist-hand-label"], "0.8125rem");
+    assert.equal(style["--whist-hand-rank-cap"], "26px");
+    for (let seed = 31; seed < 96 && !wideCheckpoint; seed++) {
       initialize(seed, 9);
       local = { name: null, progress: null, checkpoint: null, rankings: null };
       const started = command("start", { revision: 0, players: 3, mode: "DOWN_AND_UP" });
       assert.equal(started.view.hand.length, 17);
-      if (started.view.hand.slice(0, -1).some(card => card.rank === "10")) wideCheckpoint = local.checkpoint;
+      const ranks = new Set(started.view.hand.map(card => card.rank));
+      if (started.view.hand.slice(0, -1).some(card => card.rank === "10")
+          && ["A", "K", "Q", "J"].every(rank => ranks.has(rank))) wideCheckpoint = local.checkpoint;
     }
-    assert.ok(wideCheckpoint, "Expected a 10 before the last card in a 17-card hand");
+    assert.ok(wideCheckpoint, "Expected all face ranks and a 10 before the last card in a 17-card hand");
     const layout = { mode: "DOWN_AND_UP", players: 3, width: 336, height: 360, viewport: 800,
       seatHeight: 64, bidOptions: 18, cards: 17, handWidth: 336, handIndexWidth: 43 };
     const plan = command("layout", layout);
     assert.equal(plan.hand.advance, 43);
     assert.equal(plan.hand.width, 16 * 43 + plan.hand.cardWidth);
     command("layout", { ...layout, handIndexWidth: 64 }, 400);
-    return { rankScale: style["--whist-rank-scale"], handIndexWidth: 43, hand: plan.hand };
+    return { baseRankSize: style["--whist-hand-label"], handIndexWidth: 43, hand: plan.hand };
   }, "WEB-11");
 
 await mkdir(output, { recursive: true });
