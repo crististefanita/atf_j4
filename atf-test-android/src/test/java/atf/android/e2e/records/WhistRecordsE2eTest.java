@@ -153,6 +153,7 @@ public class WhistRecordsE2eTest {
             c.inject(fixture,"active-seat-"+seat+"-"+bidding+"-"+language);c.home(language,true);
             c.tap(romanian?"Reia partida":"Resume game");
             String action=romanian?(bidding?"LICITEAZĂ":"JOACĂ ACUM"):(bidding?"BID NOW":"PLAY NOW");
+            if(bidding&&seat==0) action=romanian?"Licitează":"Place bid";
             String xml=c.ui.awaitText(action,java.time.Duration.ofSeconds(15));
             var checks=new java.util.ArrayList<>(atf.android.e2e.display.support.TableViewportObservation.inspectActions(c.ui,xml,profile,1,romanian));
             String name=fixture.json().path("players").get(seat).path("name").asText();

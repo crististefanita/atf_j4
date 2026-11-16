@@ -78,7 +78,7 @@ public final class WhistTableContentComponentTest extends atf.gradle.audit.Gradl
         atf.gradle.audit.GradleInputs.fixture("Public actor-state matrix", "modes", List.of(GameMode.values()),
                 "playerCounts", List.of(3, 4, 5, 6), "languages", List.of(HowToPlay.Language.values()),
                 "observations", observed.size());
-        assertEquals("Exactly the current actor is marked; AutoGame blocks input without hiding that actor",
+        assertEquals("The active frame and announcement stay; the human bidding button replaces its visible badge",
                 expected, observed);
     }
 
@@ -93,18 +93,20 @@ public final class WhistTableContentComponentTest extends atf.gradle.audit.Gradl
             HowToPlay.Language language, WhistUiText copy, boolean collecting) {
         for (boolean autoGame : new boolean[]{false, true}) {
             var turn = WhistTableContent.turn(state, collecting, autoGame);
-            List<Integer> expectedBadge = expectedSeat < 0 ? List.of() : List.of(expectedSeat);
+            List<Integer> expectedActor = expectedSeat < 0 ? List.of() : List.of(expectedSeat);
+            List<Integer> expectedBadge = bidding && expectedSeat == 0 ? List.of() : expectedActor;
             boolean expectedManual = expectedSeat == 0 && !collecting && !autoGame;
-            List<Integer> activeSeats = new ArrayList<>(), announcedSeats = new ArrayList<>();
+            List<Integer> activeSeats = new ArrayList<>(), announcedSeats = new ArrayList<>(), visibleBadges = new ArrayList<>();
             for (var player : state.players()) {
                 var seat = WhistTableContent.seat(player, turn.seat(), state.dealerSeat(), bidding, copy);
                 if (seat.active()) activeSeats.add(player.seat());
                 if (seat.description().contains(copy.seatTurnAction(bidding))) announcedSeats.add(player.seat());
+                if (WhistTableContent.showsTurnBadge(seat, bidding)) visibleBadges.add(player.seat());
             }
             expected.add(new ActorObservation(mode, playerCount, language, state.phase(), autoGame, collecting,
-                    expectedSeat, expectedManual, expectedBadge, expectedBadge));
+                    expectedSeat, expectedManual, expectedActor, expectedActor, expectedBadge));
             observed.add(new ActorObservation(mode, playerCount, language, state.phase(), autoGame, collecting,
-                    turn.seat(), turn.manual(), activeSeats, announcedSeats));
+                    turn.seat(), turn.manual(), activeSeats, announcedSeats, visibleBadges));
         }
     }
 
@@ -222,7 +224,7 @@ public final class WhistTableContentComponentTest extends atf.gradle.audit.Gradl
             List<SeatContent> seats) { }
     private record ActorObservation(GameMode mode, int playerCount, HowToPlay.Language language,
             GamePhase phase, boolean autoGame, boolean collecting, int actorSeat, boolean manual,
-            List<Integer> activeSeats, List<Integer> announcedSeats) { }
+            List<Integer> activeSeats, List<Integer> announcedSeats, List<Integer> visibleBadges) { }
     private record HandCase(GameMode mode, int playerCount, List<HandCard> cards,
             boolean biddingHasPlayableCard) { }
     private record PlayCase(GameMode mode, int playerCount, int playedCount,

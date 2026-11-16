@@ -18,8 +18,8 @@
 | ID | Schimbare | Criteriu de acceptare |
 |---|---|---|
 | WEB-07 | Califică aceeași partidă în Chrome și în APK pe același telefon, cu aceleași date de intrare. | Confruntă setările, Joacă din nou, istoricul cu ajustări și reluarea după închiderea aplicației. Capturează RO/EN la aceeași dimensiune utilă și scară de text pe Android. |
-| WEB-11 | Confruntă vizual banda rangurilor Web cu APK-ul de referință. | Verifică A, K, Q, J și `10` într-o mână de 17 cărți la 360 × 800 și 414 × 896, cu text mărit. [Proba Playwright](../../atf-ui-browser/README.md#verificare) |
-| WEB-12 | Confirmă pe același Android paritatea antetului și a zonei de atu. | Compară titlul Oh Hell, meniul, progresul și atuul în licitare și joc. Folosește RO/EN, text mărit, un atu întors și o mână fără atu. Componentele Android și Web verifică referința comună înainte de captura pe dispozitiv. |
+| WEB-11 | Extinde verificarea vizuală a benzii rangurilor la mâinile maxime. | Confirmă A, K, Q, J și `10` într-o mână de 17 cărți la 360 × 800 și 414 × 896, cu text mărit și derulare. Comparația Oh Hell la 414 × 896 acoperă mâna de 10 cărți. [Proba Playwright](../../atf-ui-browser/README.md#verificare) |
+| WEB-12 | Extinde comparația antetului și a zonei de atu la faza de joc și la mâinile fără atu. | Profilul de licitare Oh Hell cu atu întors este calificat la 414 × 896, în RO și EN, la text 100% și 200%. Păstrează aceleași ancore și înălțimi de rând când se schimbă faza sau forma atuului. [Contractul adaptorului](../../atf-ui-browser/README.md#verificare) |
 
 ## Profilurile de referință
 

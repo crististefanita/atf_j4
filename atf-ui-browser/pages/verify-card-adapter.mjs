@@ -9,6 +9,7 @@ if (!site || !output) throw new Error("Expected compiled site and evidence direc
 const asset = name => import(pathToFileURL(join(resolve(site), name)));
 const { initialize, commandLocal } = await asset("whist-engine.mjs");
 const { bindHandFeedback } = await asset("hand-feedback.mjs");
+const { fitTextWidth } = await asset("viewport.mjs");
 const scenarioFile = new URL("../../whist-lab-app/atf-card-table-ui/src/test/resources/hand-feedback.tsv", import.meta.url);
 const scenario = (await readFile(scenarioFile, "utf8")).split(/\r?\n/u)
   .filter(line => line && !line.startsWith("#")).map(line => line.split("|"));
@@ -174,6 +175,23 @@ await check("Ranguri de carte și bandă măsurată pentru 17 cărți",
     command("layout", { ...layout, handIndexWidth: 64 }, 400);
     return { baseRankSize: style["--whist-hand-label"], handIndexWidth: 43, hand: plan.hand };
   }, "WEB-11");
+
+await check("Atu lizibil în același chenar la font normal și mărit",
+  "Textul se micșorează numai când depășește lățimea utilă, inclusiv la două cifre și fără atu", () => {
+    const inputs = [
+      { copy: "ATU", nominal: 9, measured: 18, innerWidth: 49, expected: 9 },
+      { copy: "TRUMP", nominal: 18, measured: 66, innerWidth: 49, expected: 18 * 49 / 66 },
+      { copy: "Q♦", nominal: 20, measured: 36, innerWidth: 39, expected: 20 },
+      { copy: "10♦", nominal: 40, measured: 86, innerWidth: 39, expected: 40 * 39 / 86 },
+      { copy: "Fără atu", nominal: 40, measured: 140, innerWidth: 49, expected: 14 }
+    ];
+    return inputs.map(input => {
+      const fitted = fitTextWidth(input.nominal, input.measured, input.innerWidth);
+      assert.ok(Math.abs(fitted - input.expected) < .001, input.copy);
+      assert.ok(input.measured * fitted / input.nominal <= input.innerWidth + .001, input.copy);
+      return { ...input, fitted };
+    });
+  }, "WEB-12");
 
 await mkdir(output, { recursive: true });
 await writeFile(join(output, "browser-checks.json"), JSON.stringify(cases, null, 2));

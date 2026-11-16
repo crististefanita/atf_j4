@@ -328,7 +328,8 @@ public final class GameTablePanel extends LinearLayout {
         var content = WhistTableContent.seat(player, turn.seat(), state.dealerSeat(), bidding, copy);
         LinearLayout frame = new PlayerSeatFrame(context, viewport.isCompact())
                 .buildInlineFacts(content, viewport.seatVerticalPaddingDp());
-        return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding), content.active(),
+        return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding),
+                WhistTableContent.showsTurnBadge(content, bidding),
                 player.seat(), viewport.isCompact(), stableBadgeHeightPx);
     }
 

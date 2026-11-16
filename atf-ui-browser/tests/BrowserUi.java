@@ -160,7 +160,7 @@ class BrowserUi {
         var suit = ten.locator(".card-index:not(.inverted) span:last-child");
         assertThat(rank).hasText("10");
         assertThat(rank).hasCSS("font-size", "26px");
-        assertThat(suit).hasCSS("font-size", "13px");
+        assertThat(suit).hasCSS("font-size", "26px");
         assertHeader(page, true);
         var tenCard = ten.boundingBox();
         var tenRank = rank.boundingBox();
@@ -219,6 +219,7 @@ class BrowserUi {
         assertThat(title).hasCSS("font-size", enlarged ? "28px" : "14px");
         assertThat(progress).hasCSS("font-size", enlarged ? "22px" : "11px");
         assertThat(trump).hasCSS("width", "57px");
+        assertThat(trump).hasCSS("height", enlarged ? "89px" : "49.5px");
         assertThat(menu).hasCSS("width", "48px");
         var bounds = header.boundingBox();
         var rowBounds = row.boundingBox();
@@ -254,7 +255,7 @@ class BrowserUi {
         assertThat(trump.locator(".suit")).hasText("♦");
         assertThat(trump).hasCSS("flex-direction", "row");
         assertThat(trump.locator(".card-rank").first()).hasCSS("font-size", "20px");
-        assertThat(trump).hasCSS("height", "26px");
+        assertThat(trump).hasCSS("height", "27px");
         var trumpFrame = page.locator(".whist-trump").boundingBox();
         var trumpFace = trump.boundingBox();
         require(trumpFace.x >= trumpFrame.x + 4 && trumpFace.x + trumpFace.width <= trumpFrame.x + trumpFrame.width - 4,

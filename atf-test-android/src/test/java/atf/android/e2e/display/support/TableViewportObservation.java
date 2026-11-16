@@ -58,7 +58,9 @@ public final class TableViewportObservation {
     public static AndroidUiDriver.Bounds occupiedSeatBounds(AndroidUiDriver ui,String xml,String description) throws Exception {
         var frame=ui.boundsForDescription(xml,description);
         if(!description.contains(". Current turn."))return frame;
-        var action=ui.boundsForText(xml,description.endsWith("BID NOW")?"BID NOW":"PLAY NOW");
+        String label=description.endsWith("BID NOW")?"BID NOW":"PLAY NOW";
+        if(!ui.hasText(xml,label))return frame;
+        var action=ui.boundsForText(xml,label);
         return new AndroidUiDriver.Bounds(Math.min(frame.left(),action.left()),Math.min(frame.top(),action.top()),
                 Math.max(frame.right(),action.right()),Math.max(frame.bottom(),action.bottom()));
     }
@@ -81,17 +83,26 @@ public final class TableViewportObservation {
         String bid=romanian?". Licitat ":". Bid ", score=romanian?". Scor ":". Score ";
         String turn=romanian?". La rând.":". Current turn.";
         String bidAction=romanian?"LICITEAZĂ":"BID NOW", playAction=romanian?"JOACĂ ACUM":"PLAY NOW";
+        String submit=romanian?"Licitează":"Place bid";
         var seats = ui.descriptions(xml).stream()
                 .filter(text -> text.contains(bid) && text.contains(score)).toList();
         var active = seats.stream().filter(text -> text.contains(turn)).toList();
         int visibleActions = (ui.hasText(xml,bidAction) ? 1 : 0) + (ui.hasText(xml,playAction) ? 1 : 0);
-        boolean correct = active.size() == expectedActive && visibleActions == expectedActive;
+        boolean correct = active.size() == expectedActive;
+        int expectedBadges = expectedActive;
         String actual = "active seats=" + active.size() + "; visible actions=" + visibleActions;
         for (String description : active) {
             String label = description.endsWith(romanian?"LICITEAZĂ ACUM":"BID NOW") ? bidAction : playAction;
+            Box frame = box(ui.boundsForDescription(xml,description));
+            if (label.equals(bidAction) && isBottomSeat(ui, xml, seats, frame)) {
+                expectedBadges--;
+                boolean humanBidButton = ui.hasText(xml,submit);
+                correct &= humanBidButton;
+                actual += "; human bid button=" + humanBidButton;
+                continue;
+            }
             if (!ui.hasText(xml,label)) { correct = false; continue; }
             Box badge = box(ui.boundsForText(xml,label));
-            Box frame = box(ui.boundsForDescription(xml,description));
             correct &= complete(viewport,badge) && badge.bottom() < frame.top()
                     && badge.left() >= frame.left() && badge.right() <= frame.right()
                     && Math.abs((long)badge.left()+badge.right()-frame.left()-frame.right()) <= 2;
@@ -106,9 +117,17 @@ public final class TableViewportObservation {
             }
             actual += "; " + label + "=" + badge + "; frame=" + frame;
         }
-        return List.of(new AtfAssertion("Complete turn action stays above the player name",
-                expectedActive == 0 ? "no active action while paused" : "one full action above the active frame",
-                actual, correct));
+        return List.of(new AtfAssertion("Turn action matches the active seat and phase",
+                expectedActive == 0 ? "no active action while paused" :
+                        "human bid button or one full action above the active frame",
+                actual, correct && visibleActions == expectedBadges));
+    }
+
+    private static boolean isBottomSeat(AndroidUiDriver ui, String xml, List<String> seats, Box frame) throws Exception {
+        for (String seat : seats) {
+            if (box(ui.boundsForDescription(xml,seat)).top() > frame.top()) return false;
+        }
+        return true;
     }
 
     private static boolean overlaps(Box first, Box second) {

@@ -40,7 +40,7 @@ class TableViewportObservationComponentTest {
                     case ZERO_TITLE,ZERO_TRUMP->"Game title and trump remain visible with the hand";
                     case OVERLAP->"Seats and all trick cards stay distinct";
                     case OBSTRUCTED_WINDOW->"Board and hand remain separate inside the display";
-                    case MISSING_ACTION,ACTION_BELOW_NAME,CUT_ACTION->"Complete turn action stays above the player name";
+                    case MISSING_ACTION,ACTION_BELOW_NAME,CUT_ACTION->"Turn action matches the active seat and phase";
                     case TALL_PLAYED_FACE->"Requested played-card height: King of hearts";
                     case TALL_HAND_FACE->"Requested hand-card height: 0";
                     case THIN_HAND_FACE->"Requested trailing hand-card width";
@@ -97,7 +97,12 @@ class TableViewportObservationComponentTest {
         var profile=profiles().getFirst();
         String play=new SyntheticTableHierarchy(profile).xml(13,false,1f,Fault.NONE);
         String bid=play.replace("PLAY NOW","BID NOW");
-        assertTrue(TableViewportObservation.inspectActions(driver(),bid,profile).getFirst().passed());
+        String humanBid=bid.replace("text=\"BID NOW\"", "text=\"Place bid\"");
+        assertTrue(TableViewportObservation.inspectActions(driver(),humanBid,profile).getFirst().passed());
+        assertFalse(TableViewportObservation.inspectActions(driver(),bid,profile).getFirst().passed(),
+                "The large active human frame must use only the bid button");
+        String duplicate=humanBid.replace("</hierarchy>", "<node text=\"BID NOW\"/></hierarchy>");
+        assertFalse(TableViewportObservation.inspectActions(driver(),duplicate,profile).getFirst().passed());
         String paused=new SyntheticTableHierarchy(profile).xml(13,false,1f,Fault.MISSING_ACTION)
                 .replace(" Current turn. PLAY NOW","");
         assertTrue(TableViewportObservation.inspectActions(driver(),paused,profile,0).getFirst().passed());
@@ -132,7 +137,7 @@ class TableViewportObservationComponentTest {
                 .replace(". Current turn.",". La rând.").replace("PLAY NOW","JOACĂ ACUM");
         assertTrue(TableViewportObservation.inspectActions(driver(),xml,profile,1,true).getFirst().passed());
         assertFalse(TableViewportObservation.inspectActions(driver(),xml.replace("JOACĂ ACUM","JOACĂ"),profile,1,true).getFirst().passed());
-        String bidding=xml.replace("JOACĂ ACUM\" content-desc","LICITEAZĂ\" content-desc")
+        String bidding=xml.replace("JOACĂ ACUM\" content-desc","Licitează\" content-desc")
                 .replace("La rând. JOACĂ ACUM","La rând. LICITEAZĂ ACUM");
         assertTrue(TableViewportObservation.inspectActions(driver(),bidding,profile,1,true).getFirst().passed());
     }

@@ -40,6 +40,10 @@ public final class WhistTableContent {
                 new SeatContent.Fact(copy.seatWonLabel() + ":", Integer.toString(player.tricksWon()))),
                 active, copy.seatAccessibility(player, player.seat() == dealerSeat, active, bidding));
     }
+
+    public static boolean showsTurnBadge(SeatContent seat, boolean bidding) {
+        return seat.active() && (!bidding || seat.seat() != 0);
+    }
     public static List<HandCard> hand(GameSession.Snapshot state, Set<Card> legalCards,
             Turn turn, boolean bidding, WhistUiText copy) {
         java.util.Objects.requireNonNull(turn);

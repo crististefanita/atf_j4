@@ -1,4 +1,4 @@
-import { isPhone, viewportGeometry } from "./viewport.mjs";
+import { fitTextWidth, isPhone, viewportGeometry } from "./viewport.mjs";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
@@ -564,10 +564,29 @@ function bidding(actions, content, native) {
   select(actions.find(move => move.key === selectedBid) ?? suggested ?? { key: undefined });
 }
 
+const trumpText = document.createElement("canvas").getContext("2d");
+
+function fitTrumpText() {
+  const tile = stage.querySelector(".whist-trump");
+  if (!tile) return;
+  const tileStyle = getComputedStyle(tile);
+  const width = tile.clientWidth - parseFloat(tileStyle.paddingLeft) - parseFloat(tileStyle.paddingRight);
+  const scale = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
+  for (const line of tile.children) {
+    const style = getComputedStyle(line);
+    const nominal = (line.tagName === "STRONG" ? 9 : 20) * scale;
+    trumpText.font = `${style.fontWeight} ${nominal}px ${style.fontFamily}`;
+    const ink = trumpText.measureText(line.dataset.face ?? line.textContent).width;
+    const available = width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    line.style.fontSize = fitTextWidth(nominal, ink, available) + "px";
+  }
+}
+
 async function placeTable() {
   const board = stage.querySelector(".board");
   const hand = stage.querySelector(".hand");
   if (!board || !hand) return;
+  fitTrumpText();
   const request = ++measuring;
   const seats = [...board.querySelectorAll(".seat")];
   const fan = hand.querySelector(".fan");
@@ -684,7 +703,6 @@ function whistHeader(match) {
   trump.setAttribute("aria-label", match.header.trumpDescription);
   const trumpValue = match.center.length
     ? card(match.center[0]) : element("span", match.header.trump, "whist-trump-value");
-  trumpValue.toggleAttribute("data-long-value", !match.center.length && match.header.trump.length > 1);
   trump.append(element("strong", copy("trump", "Atu")), trumpValue);
   details.append(status, trump);
   header.append(top, details);

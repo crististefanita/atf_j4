@@ -64,7 +64,8 @@ public final class AutoGameReleaseScenario {
         Map<String, Bounds> bidSeats = seatFrames(bid, labels);
         c.checkpoint("The new hand exposes the active bidder and its table positions", xml -> List.of(
                 ReleaseBidContext.equal("All four seat frames are visible", 4, seatFrames(xml, labels).size()),
-                ReleaseBidContext.equal("Exactly one player has the bidding indicator", 1L, badgeCount(xml, labels.bidBadge()))));
+                ReleaseBidContext.equal("The human bid button is the only visible bidding prompt", 0L,
+                        badgeCount(xml, labels.bidBadge()))));
 
         c.ui.tapText(labels.submit());
         c.ui.awaitText(labels.playBadge(), Duration.ofSeconds(30));

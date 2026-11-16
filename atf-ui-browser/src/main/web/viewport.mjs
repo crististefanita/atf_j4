@@ -4,6 +4,10 @@ export function isPhone(userAgent) {
   return /Android|iPhone|iPod/.test(userAgent);
 }
 
+export function fitTextWidth(size, measured, available) {
+  return size * Math.min(1, Math.max(1, available) / Math.max(1, measured));
+}
+
 export function viewportGeometry(width, height, mobile) {
   if (![width, height].every(value => Number.isFinite(value) && value > 0)) {
     throw new RangeError("The usable viewport must have positive finite dimensions");
