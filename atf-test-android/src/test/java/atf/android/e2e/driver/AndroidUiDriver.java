@@ -35,7 +35,7 @@ public final class AndroidUiDriver {
     }
 
     @FunctionalInterface
-    interface Delay {
+    public interface Delay {
         void sleep(long millis) throws InterruptedException;
     }
 
@@ -69,7 +69,7 @@ public final class AndroidUiDriver {
         this(adb, output, System::nanoTime, Thread::sleep);
     }
 
-    AndroidUiDriver(Device adb, Path output, LongSupplier nanoTime, Delay pause) throws Exception {
+    public AndroidUiDriver(Device adb, Path output, LongSupplier nanoTime, Delay pause) throws Exception {
         this.adb = Objects.requireNonNull(adb);
         this.output = output.toAbsolutePath().normalize();
         this.nanoTime = Objects.requireNonNull(nanoTime);
@@ -419,6 +419,11 @@ public final class AndroidUiDriver {
                         && !hasClass(xml, "android.widget.CheckedTextView"),
                 latest -> "Spinner did not settle on '" + expected
                         + "' with the setup dialog still open; visible texts=" + texts(latest));
+    }
+
+    public String awaitHierarchy(Duration timeout, long pollMillis, UiStateAwaiter.ProgressCondition condition,
+            UiStateAwaiter.TimeoutMessage failure) throws Exception {
+        return waiter.awaitProgress(timeout, pollMillis, condition, failure);
     }
 
     public String awaitText(String expected, Duration timeout) throws Exception {

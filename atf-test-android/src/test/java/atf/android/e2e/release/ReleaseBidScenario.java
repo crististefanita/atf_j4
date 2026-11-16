@@ -1,6 +1,7 @@
 package atf.android.e2e.release;
 
 import atf.android.e2e.driver.hierarchy.HierarchyDocument;
+import atf.android.e2e.release.turn.BidChoiceObservation;
 import java.time.Duration;
 import java.util.List;
 
@@ -36,7 +37,7 @@ final class ReleaseBidScenario {
         // A dealer may have one legal bid. The next deal rotates the dealer and opens both choices.
         if (recommended.choices().size() == 1) {
             c.ui.tapText(labels.submit());
-            finishOneCardHand(c, labels);
+            c.finishOneCardHand(labels.handComplete(), labels.next());
             c.ui.tapText(labels.next());
             recommended = c.awaitRecommendation(labels.submit(), 1);
         }
@@ -60,7 +61,7 @@ final class ReleaseBidScenario {
         c.ui.awaitText(labels.submit(), Duration.ofSeconds(15));
         assertManual(c, labels, human, manual, "Closing the dialog preserves manual choice");
         c.ui.tapText(labels.submit());
-        awaitHumanCard(c);
+        c.awaitHumanCard(Duration.ofSeconds(30));
         c.checkpoint("Explicit confirmation commits the manual contract", xml -> List.of(
                 ReleaseBidContext.equal("The human seat shows the manually confirmed value", true,
                         c.ui.hasDescriptionContaining(xml, human + manual + ".")),
@@ -68,7 +69,7 @@ final class ReleaseBidScenario {
         var seats = seatDescriptions(c, labels);
         c.ui.restartToActivity(ReleaseBidContext.PACKAGE, ".MainActivity");
         c.ui.awaitText(labels.resume(), Duration.ofSeconds(15)); c.ui.tapText(labels.resume());
-        awaitHumanCard(c);
+        c.awaitHumanCard(Duration.ofSeconds(30));
         c.checkpoint("Process restart preserves the confirmed contract", xml -> List.of(
                 ReleaseBidContext.equal("Confirmed manual bid survives process restart", true,
                         c.ui.hasDescriptionContaining(xml, human + manual + ".")),
@@ -84,31 +85,6 @@ final class ReleaseBidScenario {
                     ReleaseBidContext.equal("Selection alone does not place a contract", true,
                             c.ui.hasDescriptionContaining(xml, human + (labels.ro() ? "nepusă" : "not placed") + ".")));
         });
-    }
-
-    private static void finishOneCardHand(ReleaseBidContext c, Labels labels) throws Exception {
-        long deadline = System.nanoTime() + Duration.ofSeconds(45).toNanos();
-        do {
-            String xml = c.ui.dump();
-            if (c.dismissAchievementNoticeIfPresent(xml)) continue;
-            if (c.ui.hasText(xml, labels.handComplete())) {
-                c.revealPostHandAction(labels.next());
-                return;
-            }
-            var legal = c.ui.legalCardDescriptions(xml);
-            if (!legal.isEmpty()) c.ui.tapDescription(legal.getFirst());
-            else Thread.sleep(120);
-        } while (System.nanoTime() < deadline);
-        throw new IllegalStateException("Real one-card hand did not reach its score screen");
-    }
-
-    private static void awaitHumanCard(ReleaseBidContext c) throws Exception {
-        long deadline = System.nanoTime() + Duration.ofSeconds(30).toNanos();
-        do {
-            if (!c.ui.legalCardDescriptions(c.ui.dump()).isEmpty()) return;
-            Thread.sleep(120);
-        } while (System.nanoTime() < deadline);
-        throw new IllegalStateException("The signed app did not reach the human's card turn");
     }
 
     private static List<String> seatDescriptions(ReleaseBidContext c, Labels labels) throws Exception {

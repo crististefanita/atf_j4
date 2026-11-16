@@ -1,4 +1,4 @@
-package atf.android.e2e.release;
+package atf.android.e2e.release.turn;
 
 import atf.testkit.AtfComponentTest;
 import atf.testkit.assertions.AuditedAssertions;

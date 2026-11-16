@@ -114,7 +114,7 @@ class WhistReleaseBidE2eTest {
 
             c.ui.revealText(bid);
             c.ui.tapText(bid);
-            awaitHumanCard(c);
+            c.awaitHumanCard(Duration.ofSeconds(45));
             c.checkpoint(label + "Seat anchors stay fixed when bidding changes to play", xml -> List.of(
                     ReleaseBidContext.equal("Three-player seat rectangles are unchanged", bidBounds,
                             seatBounds(c.ui, xml, bidLabel, scoreLabel)),
@@ -154,15 +154,6 @@ class WhistReleaseBidE2eTest {
             seats.sort(Comparator.comparingInt(AndroidUiDriver.Bounds::top)
                     .thenComparingInt(AndroidUiDriver.Bounds::left));
             return List.copyOf(seats);
-        }
-
-        private static void awaitHumanCard(ReleaseBidContext c) throws Exception {
-            long deadline = System.nanoTime() + Duration.ofSeconds(45).toNanos();
-            do {
-                if (!c.ui.legalCardDescriptions(c.ui.dump()).isEmpty()) return;
-                Thread.sleep(120);
-            } while (System.nanoTime() < deadline);
-            throw new IllegalStateException("Down & Up did not reach the human's first card turn");
         }
 
         private ThreePlayerDownAndUpLayoutScenario() { }

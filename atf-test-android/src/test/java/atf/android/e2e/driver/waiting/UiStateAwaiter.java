@@ -11,6 +11,12 @@ public final class UiStateAwaiter {
     @FunctionalInterface public interface Pause { void sleep(long millis) throws InterruptedException; }
     @FunctionalInterface public interface TimeoutMessage { String describe(String lastHierarchy) throws Exception; }
 
+    public enum Progress { MATCH, WAIT, READ_AGAIN, RENEW_TIMEOUT }
+
+    @FunctionalInterface public interface ProgressCondition {
+        Progress observe(String hierarchy) throws Exception;
+    }
+
     private final Query query;
     private final LongSupplier nanoTime;
     private final Pause pause;
@@ -23,13 +29,24 @@ public final class UiStateAwaiter {
 
     public String await(Duration timeout, long pollMillis, Condition condition, TimeoutMessage failure)
             throws Exception {
-        long deadline = nanoTime.getAsLong() + timeout.toNanos();
+        return awaitProgress(timeout, pollMillis,
+                xml -> condition.matches(xml) ? Progress.MATCH : Progress.WAIT, failure);
+    }
+
+    public String awaitProgress(Duration timeout, long pollMillis, ProgressCondition condition,
+            TimeoutMessage failure) throws Exception {
+        long budget = timeout.toNanos();
+        long started = nanoTime.getAsLong();
         String latest;
         do {
             latest = query.read();
-            if (condition.matches(latest)) return latest;
-            pause.sleep(pollMillis);
-        } while (nanoTime.getAsLong() < deadline);
+            switch (condition.observe(latest)) {
+                case MATCH -> { return latest; }
+                case WAIT -> pause.sleep(pollMillis);
+                case READ_AGAIN -> { }
+                case RENEW_TIMEOUT -> started = nanoTime.getAsLong();
+            }
+        } while (nanoTime.getAsLong() - started < budget);
         throw new IllegalStateException(failure.describe(latest));
     }
 }

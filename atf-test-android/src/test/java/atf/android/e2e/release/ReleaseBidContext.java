@@ -1,5 +1,7 @@
 package atf.android.e2e.release;
 
+import atf.android.e2e.release.turn.BidChoiceObservation;
+import atf.android.e2e.release.turn.ReleaseTurnWaits;
 import atf.android.AdbClient;
 import atf.android.e2e.display.flow.responsive.ResponsiveDisplayActions;
 import atf.android.e2e.display.profile.ResponsiveDisplayProfile;
@@ -28,6 +30,7 @@ public final class ReleaseBidContext {
     final Path output;
     final AndroidUiFlowTrace trace;
     public final AndroidUiDriver ui;
+    private final ReleaseTurnWaits turns;
     public final JsonNode setup;
     private final Path leaseFile;
     private final String leaseId;
@@ -64,6 +67,7 @@ public final class ReleaseBidContext {
             }
         };
         ui = new AndroidUiDriver(device, output);
+        turns = new ReleaseTurnWaits(ui);
         ui.recordActionsAs(trace::recordAction); ui.recordCapturesAs(trace::capture);
         Path receipt = output.resolve("signed-package-context.json");
         Files.copy(run.resolve("setup-release.json"), receipt); evidence.add(receipt);
@@ -127,32 +131,20 @@ public final class ReleaseBidContext {
     }
 
     BidChoiceObservation.State awaitRecommendation(String label, int maximumBid) throws Exception {
-        long deadline = System.nanoTime() + Duration.ofSeconds(30).toNanos();
-        do {
-            String xml = ui.dump();
-            if (ui.hasText(xml, label)) {
-                var state = BidChoiceObservation.read(xml, label, maximumBid);
-                if (state.humanTurn() && state.selected().isPresent()) return state;
-            }
-            Thread.sleep(120);
-        } while (System.nanoTime() < deadline);
-        throw new IllegalStateException("The signed app did not expose a selected human recommendation");
+        return BidChoiceObservation.read(turns.awaitRecommendation(label, maximumBid), label, maximumBid);
+    }
+
+    void awaitHumanCard(Duration timeout) throws Exception {
+        turns.awaitHumanCard(timeout);
+    }
+
+    void finishOneCardHand(String score, String next) throws Exception {
+        turns.finishOneCardHand(score, this::dismissAchievementNoticeIfPresent);
+        revealPostHandAction(next);
     }
 
     public String awaitTextAndDismissAchievementNotice(String expected, Duration timeout) throws Exception {
-        long deadline = System.nanoTime() + timeout.toNanos();
-        boolean noticeDismissed = false;
-        do {
-            String xml = ui.dump();
-            if (!noticeDismissed && dismissAchievementNoticeIfPresent(xml)) {
-                noticeDismissed = true;
-                deadline = System.nanoTime() + timeout.toNanos();
-                continue;
-            }
-            if (ui.hasText(xml, expected)) return xml;
-            Thread.sleep(120);
-        } while (System.nanoTime() < deadline);
-        throw new IllegalStateException("UI did not show text '" + expected + "' within " + timeout);
+        return turns.awaitScore(expected, timeout, this::dismissAchievementNoticeIfPresent);
     }
 
     public void revealPostHandAction(String expected) throws Exception {

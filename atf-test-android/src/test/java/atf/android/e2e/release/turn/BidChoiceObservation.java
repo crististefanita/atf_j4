@@ -1,4 +1,4 @@
-package atf.android.e2e.release;
+package atf.android.e2e.release.turn;
 
 import atf.android.e2e.driver.hierarchy.HierarchyDocument;
 import java.util.ArrayList;
@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.OptionalInt;
 
 /** Reads one captured hierarchy; never polls, dispatches actions or infers an AI decision. */
-final class BidChoiceObservation {
-    record State(List<Integer> choices, OptionalInt selected, boolean humanTurn, boolean submitEnabled) {
-        State { choices = List.copyOf(choices); }
+public final class BidChoiceObservation {
+    public record State(List<Integer> choices, OptionalInt selected, boolean humanTurn, boolean submitEnabled) {
+        public State { choices = List.copyOf(choices); }
     }
 
-    static State read(String xml, String submitText) throws Exception {
+    public static State read(String xml, String submitText) throws Exception {
         return read(xml, submitText, 8);
     }
 
-    static State read(String xml, String submitText, int maximumBid) throws Exception {
+    public static State read(String xml, String submitText, int maximumBid) throws Exception {
         var nodes = HierarchyDocument.nodes(xml);
         var submit = nodes.stream().filter(node -> node.className().equals("android.widget.Button")
                 && node.text().equals(submitText)).toList();

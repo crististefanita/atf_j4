@@ -6,7 +6,7 @@ Colecția verifică legarea recomandării de interfața Android reală. Politica
 
 | Nivel | Intrare și contract | Limită |
 |---|---|---|
-| Componentă | [Decodorul](BidChoiceObservation.java) citește o singură observație XML; [probele sale](BidChoiceObservationComponentTest.java) refuză selecții multiple, confirmări contradictorii și valori ilegale. | Nu citește un dispozitiv și nu estimează licitația. |
+| Componentă | [Decodorul](turn/BidChoiceObservation.java) citește o singură observație XML; [probele sale](turn/BidChoiceObservationComponentTest.java) refuză selecții multiple, confirmări contradictorii și valori ilegale. | Nu citește un dispozitiv și nu estimează licitația. |
 | E2E | [Scenariul](ReleaseBidScenario.java) configurează prin UI Whist românesc, patru locuri și Hard; verifică recomandarea și alegerea unei alternative pe prima mână cu două opțiuni legale. Joacă o mână pregătitoare dacă dealerul are o singură opțiune. | Nu injectează checkpoint-uri sau extras de debug și nu citește mâinile private adverse. |
 | Alegere manuală sub dialog | [Componenta de reluare](../../../../../../../../whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java) verifică dialogurile suprapuse și răspunsul AI întârziat. | Pe APK, scenariul de licitare păstrează trecerea prin dialogul de scor și confirmarea manuală. Testul dedicat istoricului deține verificarea nativă a legendei. |
 | E2E AutoGame | [Scenariul](autogame/AutoGameReleaseScenario.java) verifică poziția bifei, finalizarea automată la scor și revenirea la control manual. Pe mâna următoare compară chenarele între licitare și joc, marcajul unic al actorului și vizibilitatea cărții. | Așteaptă stări stabile ale interfeței. Verificarea marcajului în timpul turelor rapide aparține componentelor proiecției. |
@@ -14,6 +14,14 @@ Colecția verifică legarea recomandării de interfața Android reală. Politica
 | E2E responsive pe release | Aceeași trecere reală de la licitare la joc rulează pe profilurile configurate, cu restaurarea afișajului la final. | Matricea cu fixture-uri sintetice rămâne în testul responsive pe build-ul debug. |
 | Meniu, realizări, profil și istoric | [Testul interfeței comune](WhistReleaseHomeE2eTest.java) verifică RO/EN, reluarea aceleiași mâini în istoricul de scor, salvarea numelui prin dialogul Android și afișarea după relansare și deschiderea catalogului și a detaliului unei realizări. Componenta prezentării verifică ordinea, numărătoarea, progresul reîncărcat și textele RO/EN. Componenta profilului verifică anularea, persistența simulată și refuzul scrierii. | Fluxurile folosesc aceeași limită de izolare a datelor; catalogul nu pornește o partidă și nu schimbă progresul. |
 | Predare | [Testul](WhistReleaseBidE2eTest.java) păstrează cauza originală și publică observațiile, comparațiile și PNG-urile prin raportarea UI comună. | Publicarea raportului nu substituie restaurarea datelor de către runner. |
+
+## Așteptarea turei
+
+[Așteptarea licitației și jocului](turn/ReleaseTurnWaits.java) folosește [ceasul controlat al driverului](../driver/waiting/UiStateAwaiter.java). Recomandarea folosește chiar observația care satisface condiția. Tapul caută cartea în cea mai recentă ierarhie, iar după comandă driverul citește din nou.
+
+Dialogul de realizări poate reînnoi o singură dată termenul așteptării scorului.
+
+[Componenta cu ADB simulat](turn/ReleaseTurnWaitsComponentTest.java) verifică ordinea comenzilor, limita de timp, ultima observație și propagarea cauzei originale. Scenariul pe APK verifică trecerea vizibilă dintre licitare, joc și scor.
 
 ## Izolarea datelor și teardown
 
