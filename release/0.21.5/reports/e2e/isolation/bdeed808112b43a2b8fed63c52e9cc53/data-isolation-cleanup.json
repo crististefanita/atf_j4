@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "scope": "ANDROID_SECONDARY_USER",
+  "applicationId": "ro.whistlab.app",
+  "originalUserId": 0,
+  "removedUserId": 27,
+  "removedByRun": true,
+  "originalPackageWasInstalledBefore": true,
+  "originalPackageRetained": true,
+  "originalPackageStatePreserved": true,
+  "readyReceiptSha256": "5cf5b713afe34151e4811f5bb5c00a67f1f31ce3a2d15bfa567fe264229c1645",
+  "leaseId": "bdeed808112b43a2b8fed63c52e9cc53",
+  "serial": "127.0.0.1:5555",
+  "observedUtc": "2026-11-16T06:29:06.1995010Z"
+}

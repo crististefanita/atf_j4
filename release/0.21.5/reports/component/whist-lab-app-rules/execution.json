@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "selection": ":game-core:releaseRulesComponents",
+  "tests": 39,
+  "outcomes": {
+    "PASS": 39,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  },
+  "coverageErrors": [],
+  "containerFailures": [],
+  "provenanceSha256": "ee522df14196f99df0d42a4d6de90199c4004ce112083c41a0b172bcb76c36a4",
+  "reportSha256": "ee376d9554a45a66fd56b086cde7327d7c57d28d53a98ff44d91543c6d20f6e9"
+}

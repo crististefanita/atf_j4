@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "APK_IMMUTABLE_BUILD_REUSE",
+  "status": "PASS",
+  "builtFromCommit": "75c3cde3173f73ceb6c6f90a212e62568c9be16d",
+  "qualifiedSourceCommit": "5900844044bdaec544920fe3fd0adeb376f9847c",
+  "apkSha256": "dbab51424f122672a47a73ef8e9e633d10a9d3f50aeae3070eb3690574f9415b",
+  "changedNonProductInputs": [
+    "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+    "docs/feedback/ATF_Android.md"
+  ]
+}

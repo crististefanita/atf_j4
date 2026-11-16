@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "decisions": [
+    {
+      "group": "atf-validation",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TrickCardMetrics.java",
+        "whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTablePhaseGeometryComponentTest.java"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "ee522df14196f99df0d42a4d6de90199c4004ce112083c41a0b172bcb76c36a4",
+      "tests": 19,
+      "reportSha256": "641f2215b5ad9bb321b5568296b166da93a118af1a8520dddc025827c967021e",
+      "executionSha256": "286c45d252dde813747ff85f132f752f9f9d72fea77c30fb66f871ea0559c906"
+    },
+    {
+      "group": "atf-test-android",
+      "decision": "RUN",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TrickCardMetrics.java",
+        "whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTablePhaseGeometryComponentTest.java"
+      ],
+      "affectedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java"
+      ]
+    },
+    {
+      "group": "atf-tests",
+      "decision": "INVALID",
+      "reason": "Receipt-ul execuției, numărătoarea sau hash-ul Extent nu corespunde rulării rădăcină."
+    },
+    {
+      "group": "whist-lab-app-achievements",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "240a1dee046737472685cd93bcfd6cf6920a556585ce961a48b162f4fa6d26b8",
+      "tests": 27,
+      "reportSha256": "990902121a063e8f29984a27beffa05049e16af2b36fd757adf5ae940b15905c",
+      "executionSha256": "41cf98d4a66daa2fb3dad7d0ab7db9b7976e3c95e9dcd705c261349707efb6d8"
+    },
+    {
+      "group": "whist-lab-app-bidding",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "240a1dee046737472685cd93bcfd6cf6920a556585ce961a48b162f4fa6d26b8",
+      "tests": 253,
+      "reportSha256": "8017eef2d45850eb5fc4c93d5b7fbed45e9d995e62e532dccea54fb66e4e8331",
+      "executionSha256": "1d4bc1a0d24aeb218103e74411db2cd9c84808b8147dc31a9075e955157996d3"
+    },
+    {
+      "group": "whist-lab-app-commands",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "240a1dee046737472685cd93bcfd6cf6920a556585ce961a48b162f4fa6d26b8",
+      "tests": 116,
+      "reportSha256": "ef7d14b1499c0cb3ffe7c180dd7c278ed2dd1470893216d44dfbe008dbea9421",
+      "executionSha256": "95b9d5506a947f114d997e284cbaad8ef50819a2637ccd9a6d102745577da764"
+    },
+    {
+      "group": "whist-lab-app-display",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "240a1dee046737472685cd93bcfd6cf6920a556585ce961a48b162f4fa6d26b8",
+      "tests": 103,
+      "reportSha256": "ef40ae413bc37bd8a772381e9c9d9448a7d37c527fd8b5984d45f8a2a47582a7",
+      "executionSha256": "a42a835e4a0d21269fedd8d43053e2b72566682ec39be327f912aa2bedddc9e6"
+    },
+    {
+      "group": "whist-lab-app-history",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "240a1dee046737472685cd93bcfd6cf6920a556585ce961a48b162f4fa6d26b8",
+      "tests": 61,
+      "reportSha256": "e4c728cee5b113d349f8963dda5ab6b97507f8871a6469e0aaeb4e6f003049ae",
+      "executionSha256": "6959462f6d94a4dc8bfbac99eca81e922a61c3f59dec05d2eeda0f55f5aeceea"
+    },
+    {
+      "group": "whist-lab-app-atf-card-table-ui",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TrickCardMetrics.java",
+        "whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTablePhaseGeometryComponentTest.java"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "ee522df14196f99df0d42a4d6de90199c4004ce112083c41a0b172bcb76c36a4",
+      "tests": 34,
+      "reportSha256": "0373efce887b8d93323996c746e0764a5a455e06aaed5dc1898d2a598144e735",
+      "executionSha256": "57a9df0ab463197862d12cf800369a3aebf33941116a78bfa80fd442739cf4f5"
+    },
+    {
+      "group": "whist-lab-app-rules",
+      "decision": "REUSE",
+      "changedInputs": [
+        "atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseBidE2eTest.java",
+        "docs/feedback/ATF_Android.md",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java",
+        "whist-lab-app/app/src/main/java/ro/whistlab/app/table/TrickCardMetrics.java",
+        "whist-lab-app/app/src/test/java/ro/whistlab/app/table/GameTablePhaseGeometryComponentTest.java"
+      ],
+      "affectedInputs": [],
+      "componentEvidenceOrigin": "ee522df14196f99df0d42a4d6de90199c4004ce112083c41a0b172bcb76c36a4",
+      "tests": 39,
+      "reportSha256": "ee376d9554a45a66fd56b086cde7327d7c57d28d53a98ff44d91543c6d20f6e9",
+      "executionSha256": "5cb74c17a1d958590f92f8c6147c5eb0227e4b663baa8d4ce1adf2deea644e0c"
+    }
+  ]
+}

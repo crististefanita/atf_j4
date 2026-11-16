@@ -6,18 +6,18 @@ Catalogul indică versiunea Android curentă și păstrează o singură ediție 
 
 ## Versiunea curentă
 
-[0.21.4 — APK, verificări și proveniență](0.21.4/README.md) este ediția Android curentă. Linkul APK este în README-ul principal.
+[0.21.5 — APK, verificări și proveniență](0.21.5/README.md) este ediția Android curentă. Linkul APK este în README-ul principal.
 
 ## Versiunea anterioară
 
-[0.21.3 — APK și dovezi](0.21.3/README.md) rămâne în catalog pentru proveniență și comparații.
+[0.21.4 — APK și dovezi](0.21.4/README.md) rămâne în catalog pentru proveniență și comparații.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dosar |
 |---|---|---|
-| 0.21.4 | Publicată · APK verificat | [APK și dovezi](0.21.4/README.md) |
-| 0.21.3 | Ediția anterioară | [APK și dovezi](0.21.3/README.md) |
+| 0.21.5 | Publicată · APK verificat | [APK și dovezi](0.21.5/README.md) |
+| 0.21.4 | Ediția anterioară | [APK și dovezi](0.21.4/README.md) |
 
 ## Publicare și verificare
 
