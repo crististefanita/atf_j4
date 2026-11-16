@@ -1,5 +1,8 @@
 /** DOM adapter for HandInput. Game commands keep their own snapshot validation. */
 export function bindHandFeedback(fan, { timing, request, active, play, failed }) {
+  fan.style.setProperty("--hand-rest-layer", timing.restLayer);
+  fan.style.setProperty("--hand-lift-layer", timing.liftLayer);
+  fan.dataset.handFeedback = "";
   const cards = [...fan.querySelectorAll("button[data-face]")];
   const initial = { rejected: "", selected: false, revision: 0, suggestions: [] };
   let feedback = initial;
@@ -43,10 +46,11 @@ export function bindHandFeedback(fan, { timing, request, active, play, failed })
       } else if (result.action === "PLAY" && card?.dataset.command) {
         clearTimeout(expiry);
         card.classList.add("lifting-card");
-        lift = card.animate([
-          { transform: "translateY(0) scale(1)" },
-          { transform: "translateY(-" + timing.liftDp + "px) scale(" + timing.liftScale + ")" }
-        ], {
+        const frames = timing.progress.map(progress => ({
+          transform: "translateY(" + (-timing.liftDp * progress) + "px) scale(" +
+            (1 + (timing.liftScale - 1) * progress) + ")"
+        }));
+        lift = card.animate(frames, {
           duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : timing.liftMillis,
           fill: "forwards"
         });

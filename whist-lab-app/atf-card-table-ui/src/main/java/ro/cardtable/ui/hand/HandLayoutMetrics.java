@@ -95,6 +95,11 @@ public final class HandLayoutMetrics {
         return contentWidthDp(cardCount, availableWidthDp, fontScale) > availableWidthDp;
     }
 
+    /** Same acceleration and deceleration as the native Android card lift. */
+    public static float liftProgress(float elapsedFraction) {
+        return (float) ((1.0 - Math.cos(Math.PI * elapsedFraction)) / 2.0);
+    }
+
     public static int reservedHandHeightDp() {
         return CARD_HEIGHT_DP + LIFT_CLEARANCE_DP;
     }

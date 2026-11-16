@@ -507,7 +507,7 @@ public final class MainActivity extends Activity {
             if (recordedReplay != null) recordedReplay.played(choice);
             persistGame();
             driveAutomatedTurns();
-        }, 550L);
+        }, ro.cardtable.ui.turn.TurnPacing.ACTION_DELAY_MILLIS);
     }
 
     private void submitAiTurn() {

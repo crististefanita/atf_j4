@@ -30,6 +30,20 @@ public final class HandGeometryComponentTest extends atf.gradle.audit.GradleAudi
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->CardFaceMetrics.atHeight(0));
     }
 
+    @Test public void liftUsesAndroidAccelerationAndLeavesNeighboursInFront() {
+        atf.gradle.audit.GradleInputs.fixture("Samples projected to the browser",
+                "elapsed fractions", java.util.List.of(0f, .2f, .5f, .8f, 1f), "animation layers",
+                java.util.List.of(HandLayoutMetrics.SELECTED_Z_DP, HandLayoutMetrics.NEIGHBOR_Z_DP));
+        assertTrue("Lift starts and ends at the original animation endpoints",
+                HandLayoutMetrics.liftProgress(0f) == 0f && HandLayoutMetrics.liftProgress(1f) == 1f);
+        assertTrue("Midpoint is halfway through translation and scale", HandLayoutMetrics.liftProgress(.5f) == .5f);
+        assertTrue("Lift starts slowly and decelerates symmetrically",
+                Math.abs(HandLayoutMetrics.liftProgress(.2f) - .0954915f) < .000001f
+                && Math.abs(HandLayoutMetrics.liftProgress(.8f) - .9045085f) < .000001f);
+        assertTrue("The selected card remains below neighbouring cards",
+                HandLayoutMetrics.SELECTED_Z_DP < HandLayoutMetrics.NEIGHBOR_Z_DP);
+    }
+
     @Test public void completeFaceAndLiftRemainInsideEachSlotAtFractionalDensities() {
         float[] densities = {1f, 1.5f, 2f, 2.25f, 2.625f, 2.75f, 3.5f};
         int[] clearances = {16, 28};

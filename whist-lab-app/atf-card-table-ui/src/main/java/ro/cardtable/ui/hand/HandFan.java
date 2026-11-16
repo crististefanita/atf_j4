@@ -114,6 +114,7 @@ public final class HandFan {
                     face.animate().translationY(-dp(HandLayoutMetrics.CARD_LIFT_DP))
                             .scaleX(HandLayoutMetrics.CARD_LIFT_SCALE)
                             .scaleY(HandLayoutMetrics.CARD_LIFT_SCALE)
+                            .setInterpolator(HandLayoutMetrics::liftProgress)
                             .setDuration(HandInput.PLAY_LIFT_MILLIS)
                             .withEndAction(() -> onCardSelected.accept(card.id()))
                             .start();

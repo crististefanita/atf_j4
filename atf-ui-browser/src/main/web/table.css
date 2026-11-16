@@ -293,7 +293,9 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   background: var(--whist-hint-rejected-fill);
   border: var(--whist-hint-stroke) solid var(--whist-hint-rejected-line);
 }
-.whist-match .fan .lifting-card { z-index: 2; }
+.fan[data-hand-feedback] { isolation: isolate; }
+.fan[data-hand-feedback] .card { z-index: var(--hand-rest-layer); }
+.fan[data-hand-feedback] .lifting-card { z-index: var(--hand-lift-layer); }
 .card.compact-play-face {
   display: grid;
   grid-template-rows: auto;

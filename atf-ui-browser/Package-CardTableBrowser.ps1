@@ -20,7 +20,9 @@ $timestamp = '2026-01-01T00:00:00Z'
 & jar --create --file $runtime "--date=$timestamp" -C $classes .
 if ($LASTEXITCODE -ne 0) { throw 'Browser runtime packaging failed.' }
 $tests = Join-Path $PSScriptRoot 'tests'
-& jar --create --file $sanity "--date=$timestamp" -C $tests fixtures.mjs -C $tests packaged-sanity.mjs
+$handFixtures = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/test/resources'
+& jar --create --file $sanity "--date=$timestamp" -C $tests fixtures.mjs -C $tests packaged-sanity.mjs `
+    -C $tests hand-presentation.mjs -C $handFixtures hand-feedback.tsv
 if ($LASTEXITCODE -ne 0) { throw 'Browser sanity packaging failed.' }
 foreach ($file in $runtime, $sanity) {
     $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant()

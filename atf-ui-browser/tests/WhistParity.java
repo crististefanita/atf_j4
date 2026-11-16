@@ -38,11 +38,10 @@ class WhistParity {
                     publicState.seats().stream().map(BrowserGame.Seat::name).toList());
             equal(human.hand().stream().map(Card::shortLabel).toList(), publicState.hand().stream()
                     .map(card -> card.rank() + card.suit()).toList());
-            var trick = state.currentTrick().isEmpty() ? state.lastTrick() : state.currentTrick();
-            equal(trick.stream().map(play -> play.seat() + ":" + play.card().shortLabel()).toList(),
+            equal(state.currentTrick().stream().map(play -> play.seat() + ":" + play.card().shortLabel()).toList(),
                     publicState.played().stream().map(play -> play.seat() + ":" + play.card().rank() + play.card().suit()).toList());
             for (int seat = 0; seat < 4; seat++) {
-                equal("Total " + state.matchScore(seat), publicState.seats().get(seat).secondFact());
+                equal("Levate: " + state.players().get(seat).tricksWon(), publicState.seats().get(seat).secondFact());
             }
             observations++;
             switch (state.phase()) {

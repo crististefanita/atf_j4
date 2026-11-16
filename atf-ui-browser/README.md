@@ -38,9 +38,9 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 - Setările folosesc [aceleași valori implicite ca APK-ul](../whist-lab-app/app/src/main/java/ro/whistlab/app/screens/MatchSetup.java). Schimbarea limbii păstrează opțiunile de pe ecran, iar dialogul de reguli arată programul variantei pentru numărul selectat de jucători.
 - În meniul jocului, scorul curent deschide istoricul când există mâini încheiate. La ultimul scor, **Joacă din nou** păstrează configurația și înlocuiește partida locală cu o distribuire și un identificator noi.
 - Chenarele mesei preiau numele, licitația și levatele din proiecția APK. Marcajul auriu arată cărțile jucabile. Totalul apare în scor și istoric.
-- [Adaptorul mâinii](src/main/java/ro/cardtable/browser/BrowserHandAdapter.java) trimite gesturile la modelul comun folosit în APK. Refuzul evidențiază cartea apăsată și opțiunile legale timp de 1.100 ms. La alegerea unei cărți legale, depunerea urmează ridicării de 150 ms.
+- [Adaptorul mâinii](src/main/java/ro/cardtable/browser/BrowserHandAdapter.java) trimite gesturile la modelul comun folosit în APK. Refuzul evidențiază cartea apăsată și opțiunile legale timp de 1.100 ms. La alegerea unei cărți legale, depunerea urmează ridicării de 150 ms. API-ul proiectează aceeași curbă și aceleași straturi ale evantaiului ca în APK.
 - Fața compactă a cărții depuse și copia ei din colectare folosesc aceleași culori, contur și tipografie ca în adaptorul Android. Textul accesibil include jucătorul și cartea.
-- Colectarea aplică temporizarea din modulul comun. Redimensionarea poate înlătura desenul temporar, iar următoarea carte respectă intervalul deja programat.
+- Colectarea aplică temporizarea din modulul comun. Levata completă și numărătoarea actualizată a câștigătorului sunt în evenimentul de colectare. Mâna se recentrează imediat după depunere, iar masa stabilă conține cărțile din levata curentă. Redimensionarea poate înlătura desenul temporar, iar următoarea carte respectă intervalul deja programat.
 - AutoGame se activează pentru mâna curentă. Debifarea anulează următoarea decizie în locul jucătorului. Mutările acceptate se încheie, iar meniurile și dialogurile suspendă următoarea decizie cât timp sunt deschise. Scorul sau revenirea la meniul principal sting bifa.
 
 - Buildul cere PowerShell 7, JDK 21, Maven și mediul de generare a catalogului. `$WorkRoot` și `$EvidenceRoot` indică directoare externe.
@@ -86,10 +86,10 @@ Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress
 
 ## Bibliotecă pentru adaptoare
 
-`lib/atf-ui-browser-0.1.0.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează numai sursele adaptoarelor proprii față de JAR și verifică suma SHA-256 la pornire. Arhiva `atf-ui-browser-0.1.0-tests.jar` conține probele comune de HTTP, control al reviziilor și sanity Chrome sau Edge.
+`lib/atf-ui-browser-0.2.0.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează numai sursele adaptoarelor proprii față de JAR și verifică suma SHA-256 la pornire. Arhiva `atf-ui-browser-0.2.0-tests.jar` conține probele comune de HTTP și revizii, verificarea ridicării și a colectării din JAR, scenariul de atingere partajat cu APK-ul și sanity Chrome sau Edge.
 
 ```powershell
-.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.1.0
+.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.0
 ```
 
 Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul extern afișat. La o schimbare a contractelor sau a resurselor, incrementați versiunea și actualizați aceiași octeți și aceleași amprente în consumatori. Reutilizați JAR-ul existent când se schimbă numai motorul sau adaptorul unui joc.
@@ -108,6 +108,6 @@ java -cp $WhistClasses .\atf-ui-browser\tests\WhistParity.java > (Join-Path $Evi
 
 | Nivel | Responsabilitate |
 |---|---|
-| Componentă | Acoperă validarea Unicode, persistența profilului, catalogul, progresul idempotent, geometria și destinația animației. Starea așteptată vine din motor și din catalogul Android. |
+| Componentă | Acoperă validarea Unicode, persistența profilului, catalogul, progresul idempotent, geometria, ridicarea cărții și colectarea levatei. Starea așteptată vine din motor și din catalogul Android. |
 | Adaptor UI | Deschide controalele prin etichete, confirmă rezultatul observabil și atașează capturi. Pe Android, compară APK și Chrome pe același dispozitiv și păstrează profilul, densitatea și SHA-ul APK-ului. |
 | Raportare | Primește rezultatele și capturile după execuție. O observație pe telefon intră ca `paired-android.json`, o listă de cazuri cu rezultat, așteptare, observație și fișiere PNG din același dosar. |

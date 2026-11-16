@@ -3,6 +3,8 @@ package ro.cardtable.browser;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import ro.cardtable.ui.hand.HandInput;
+import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.table.TableSeatLayout;
 import ro.cardtable.ui.table.TableGeometry;
 import ro.cardtable.ui.table.TableViewportPolicy;
@@ -26,7 +28,13 @@ public interface BrowserGame {
         return Map.of("title", title(), "fields", fields(), "englishFields", fields("en"),
                 "surface", surface(), "palette", palette(), "collectionSamples", collectionSamples,
                 "copy", Map.of("ro", interfaceCopy("ro"), "en", interfaceCopy("en")),
-                "autoDelayMillis", autoDelayMillis());
+                "autoDelayMillis", autoDelayMillis(),
+                "handMotion", Map.of("hintMillis", HandInput.HINT_DURATION_MILLIS,
+                        "liftMillis", HandInput.PLAY_LIFT_MILLIS, "liftDp", HandLayoutMetrics.CARD_LIFT_DP,
+                        "liftScale", HandLayoutMetrics.CARD_LIFT_SCALE,
+                        "restLayer", HandLayoutMetrics.NEIGHBOR_Z_DP, "liftLayer", HandLayoutMetrics.SELECTED_Z_DP,
+                        "progress", java.util.stream.IntStream.rangeClosed(0, 10)
+                                .mapToObj(step -> HandLayoutMetrics.liftProgress(step / 10f)).toList()));
     }
     Match start(Map<String, String> configuration);
     default boolean hasProfile() { return false; }
@@ -81,11 +89,18 @@ public interface BrowserGame {
     record PlayStep(Played play, boolean startsTrick, long delayMillis, CollectionCue collection,
                     String bids, List<String> seatFacts) { }
 
-    record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards, long holdMillis) {
+    record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards, long holdMillis,
+                         List<String> seatFacts) {
         public CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards) {
             this(winningSeat, displayMillis, travelMillis, cards, displayMillis - travelMillis);
         }
-        public CollectionCue { cards = List.copyOf(cards); }
+        public CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards, long holdMillis) {
+            this(winningSeat, displayMillis, travelMillis, cards, holdMillis, List.of());
+        }
+        public CollectionCue {
+            cards = List.copyOf(cards);
+            seatFacts = List.copyOf(seatFacts);
+        }
     }
 
     record HistoryCell(String bid, String total, String description, boolean missed, int series) { }

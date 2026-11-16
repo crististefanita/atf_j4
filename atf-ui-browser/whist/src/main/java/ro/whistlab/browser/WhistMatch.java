@@ -128,7 +128,8 @@ final class WhistMatch implements BrowserGame.Match {
             var timeline = TrickCollectionMotion.timing(TrickCollectionMotion.DISPLAY_MILLIS, 0);
             return new BrowserGame.CollectionCue(target.winner(), TrickCollectionMotion.DISPLAY_MILLIS,
                     timeline.durationMillis(), state.lastTrick().stream()
-                    .map(played -> playedFace(state, played)).toList(), timeline.delayMillis());
+                    .map(played -> playedFace(state, played)).toList(), timeline.delayMillis(),
+                    state.players().stream().map(copy::seatFacts).toList());
         }).orElse(null);
         if (collection != null) collections.add(collection);
         playback.add(new BrowserGame.PlayStep(playedFace(before, new PlayedCard(actor, card)), before.currentTrick().isEmpty(),
@@ -160,8 +161,7 @@ final class WhistMatch implements BrowserGame.Match {
         var hand = WhistTableContent.hand(state, new java.util.HashSet<>(legalCards), turn, bidding, copy)
                 .stream().map(card -> new BrowserGame.Card(card.face().rankLabel(), card.face().suitSymbol(),
                         card.description(), card.playable() ? "card:" + card.id() : "")).toList();
-        var trick = state.currentTrick().isEmpty() ? state.lastTrick() : state.currentTrick();
-        List<Played> played = trick.stream().map(play -> playedFace(state, play)).toList();
+        List<Played> played = state.currentTrick().stream().map(play -> playedFace(state, play)).toList();
         var center = state.turnedCard() == null ? List.<BrowserGame.Card>of() : List.of(face(state.turnedCard(), ""));
         var subtitle = copy.trumpHeading() + " " + copy.trumpIndicatorValue(state) + " · " + copy.bidSummary(state);
         var header = new BrowserGame.Header(state.mode().name(), copy.gameTitle(state.mode()), copy.progress(state),

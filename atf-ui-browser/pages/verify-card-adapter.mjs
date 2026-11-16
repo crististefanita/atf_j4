@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { verifyHandPresentation } from "../tests/hand-presentation.mjs";
 
 const [site, output] = process.argv.slice(2);
 if (!site || !output) throw new Error("Expected compiled site and evidence directory");
@@ -42,7 +43,7 @@ await check("Același scenariu de reacție la atingere ca în testul Android",
   "Același fișier, aceleași revizii, refuz fără mutare și o singură alegere acceptată", () => {
     initialize(31, 9);
     const setup = command("setup");
-    timing = setup.copy.ro.handFeedback;
+    timing = setup.handMotion;
     style = Object.fromEntries(setup.palette.map(token => [token.name, token.color]));
     assert.deepEqual([timing.hintMillis, timing.liftMillis, timing.liftDp], [1100, 150, 20]);
     assert.ok(Math.abs(timing.liftScale - 1.12) < 0.000001);
@@ -74,63 +75,16 @@ await check("Același scenariu de reacție la atingere ca în testul Android",
     return { cards: Object.fromEntries(Object.entries(cards).map(([role, card]) => [role, id(card)])), seen };
   });
 
-function mockHand(realCards) {
-  let click;
-  const buttons = Object.values(realCards).map(card => {
-    const classes = new Set();
-    const button = { disabled: false, dataset: { face: id(card), command: card.action }, classes,
-      classList: { toggle: (name, enabled) => enabled ? classes.add(name) : classes.delete(name),
-        add: name => classes.add(name), remove: name => classes.delete(name) },
-      animate(frames, options) {
-        let finish;
-        const finished = new Promise(resolve => { finish = resolve; });
-        this.effect = { frames, options, finish, finished, cancel: finish };
-        return this.effect;
-      }
-    };
-    button.closest = () => button;
-    return button;
-  });
-  return { buttons, fan: { querySelectorAll: () => buttons, addEventListener: (_, callback) => { click = callback; } },
-    click(role) { click({ target: buttons.find(button => button.dataset.face === id(realCards[role])) }); } };
-}
-
 await check("Ridicarea precede singura depunere; închiderea invalidează animația",
-  "Marcaje pe loc la refuz, translație de 20 dp și selecție după intervalul APK", async () => {
+  "Marcaje pe loc la refuz, ritmul APK, ridicare sub vecini și o singură depunere", async () => {
     assert.ok(cards);
-    globalThis.matchMedia = () => ({ matches: false });
-    const mock = mockHand(cards);
-    const tick = () => new Promise(resolve => setImmediate(resolve));
-    let commands = 0, error;
-    const adapter = bindHandFeedback(mock.fan, { timing, active: () => true,
-      request: fields => command("hand-feedback", { ...fields, revision: state.revision }),
-      play: key => { commands++; state = act(key); },
-      failed: failure => { error = failure; } });
-    mock.click("wrong");
-    await tick();
-    assert.ok(mock.buttons[2].classes.has("rejected-card"));
-    assert.ok(mock.buttons[0].classes.has("suggested-card"));
-    assert.ok(mock.buttons[1].classes.has("suggested-card"));
-    assert.ok(mock.buttons.every(button => !button.effect));
-    assert.equal(commands, 0);
-    mock.click("second");
-    await tick();
-    const interrupted = mock.buttons[1].effect;
-    assert.equal(interrupted.options.duration, 150);
-    assert.match(interrupted.frames[1].transform, /^translateY\(-20px\) scale\(1\.12/u);
-    assert.equal(commands, 0);
-    adapter.cancel();
-    await tick();
-    assert.equal(commands, 0);
-    mock.click("second");
-    await tick();
-    assert.notEqual(mock.buttons[1].effect, interrupted);
-    mock.buttons[1].effect.finish();
-    await tick();
-    assert.ifError(error);
-    assert.equal(commands, 1);
+    const fixtureCards = Object.fromEntries(Object.entries(cards)
+      .map(([role, card]) => [role, { face: id(card), command: card.action }]));
+    const observed = await verifyHandPresentation(bindHandFeedback, timing, fixtureCards,
+      fields => command("hand-feedback", { ...fields, revision: state.revision }),
+      key => { state = act(key); });
     assert.ok(state.playback.some(step => step.play.seat === 0 && id(step.play.card) === id(cards.second)));
-    return { duration: interrupted.options.duration, transform: interrupted.frames[1].transform, submitted: commands };
+    return observed;
   });
 
 await check("Fața compactă și stilul păstrat în colectare",
@@ -152,6 +106,34 @@ await check("Fața compactă și stilul păstrat în colectare",
     assert.equal(layout.played.playerLabelHeightDp, 0);
     assert.equal(layout.playedStyle.faceTextSp, Math.max(13, Math.min(18, Math.floor(layout.played.cardWidthDp / 4))));
     return { compactCard: plays[0].faceLabel, faceTextSp: layout.playedStyle.faceTextSp, played: plays.length };
+  });
+
+await check("AutoGame colectează fiecare levată, apoi publică doar cărțile curente",
+  "Patru colectări în ordinea motorului, oprire la scor și fără cărți expirate în starea stabilă", () => {
+    local.checkpoint = fixture;
+    state = command("state");
+    const gathered = [];
+    const won = new Array(4).fill(0);
+    for (let decision = 0; !state.view.score && decision < 4; decision++) {
+      state = act("auto-step");
+      assert.equal(state.playback.filter(step => step.play.seat === 0).length, 1);
+      assert.deepEqual(state.playback.flatMap(step => step.collection ? [step.collection] : []), state.collections);
+      for (const cue of state.collections) {
+        assert.deepEqual([cue.displayMillis, cue.holdMillis, cue.travelMillis], [1500, 1000, 500]);
+        assert.equal(new Set(cue.cards.map(play => play.seat)).size, 4);
+        assert.ok(cue.cards.some(play => play.seat === cue.winningSeat));
+        won[cue.winningSeat]++;
+        assert.deepEqual(cue.seatFacts.map(fact => Number(fact.split("\n")[1].split(": ")[1])), won);
+        gathered.push(cue.cards.map(play => play.faceLabel));
+      }
+      assert.ok(state.view.played.length < state.view.seats.length);
+    }
+    assert.ok(state.view.score);
+    assert.deepEqual(gathered[0], ["9♦", "Q♥", "K♦", "8♦"]);
+    assert.equal(gathered.length, 4);
+    assert.equal(state.view.played.length, 0);
+    assert.ok(!state.view.actions.some(action => action.key === "auto-step"));
+    return { tricks: gathered, totals: state.view.score.table.rows.map(row => Number(row[4])) };
   });
 
 await mkdir(output, { recursive: true });

@@ -89,7 +89,8 @@ const profileDialogs = createProfileDialogs(element, button, issue, copy);
 const automation = autoGame({
   available: () => !pending && !!stage.querySelector(".whist-match") &&
     state.view?.actions.some(move => move.key === "auto-step"),
-  wait: signal => waitForDecision(setup.autoDelayMillis, signal),
+  wait: signal => waitForDecision(state.view.actions.some(move => move.key.startsWith("bid:"))
+    ? 0 : setup.autoDelayMillis, signal),
   step: async () => !await issue("/api/action", { action: "auto-step" }),
   changed: enabled => {
     stage.toggleAttribute("data-automatic", enabled);
@@ -193,9 +194,7 @@ async function playCards(steps) {
     if (step.startsTrick) center.replaceChildren();
     stage.querySelector(".whist-bids").textContent = step.bids;
     for (const [seat, node] of seats.entries()) {
-      const [bid, won] = step.seatFacts[seat].split("\n");
-      writeSeatFact(node.querySelector(".seat-bid"), bid);
-      writeSeatFact(node.querySelector(".seat-won"), won);
+      applySeatFacts(node, step.seatFacts[seat]);
       markSeat(node, seat === step.play.seat, false);
     }
     if (step.delayMillis) {
@@ -205,7 +204,10 @@ async function playCards(steps) {
     const face = step.play.card;
     if (step.play.seat === 0) {
       const source = [...stage.querySelectorAll(".fan .card")].find(node => node.dataset.face === face.rank + face.suit);
-      if (source) source.style.visibility = "hidden";
+      if (source) {
+        source.remove();
+        await placeTable();
+      }
     }
     center.append(playedCard(step.play, state.view.seats));
     placePlayed(center);
@@ -214,12 +216,21 @@ async function playCards(steps) {
       continue;
     }
     stage.dataset.collectionStep = String(++collectionNumber);
-    seats.forEach(node => markSeat(node, false, false));
+    for (const [seat, node] of seats.entries()) {
+      if (step.collection.seatFacts?.[seat]) applySeatFacts(node, step.collection.seatFacts[seat]);
+      markSeat(node, false, false);
+    }
     animation = collect(stage, step.collection, collectionFace, setup.collectionSamples);
     await animation.done;
     animation = undefined;
     center.replaceChildren();
   }
+}
+
+function applySeatFacts(node, facts) {
+  const [bid, won] = facts.split("\n");
+  writeSeatFact(node.querySelector(".seat-bid"), bid);
+  writeSeatFact(node.querySelector(".seat-won"), won);
 }
 
 function showStorageIssue() {
@@ -747,9 +758,7 @@ function render() {
   }
   const visible = element("div", "", "cards-on-table");
   if (!match.header) for (const face of match.center) visible.append(card(face));
-  if (!match.header || match.played.length < match.seats.length) {
-    for (const play of match.played) visible.append(playedCard(play, match.seats));
-  }
+  for (const play of match.played) visible.append(playedCard(play, match.seats));
   const center = element("div", "", "center");
   center.append(visible);
   board.append(center);
@@ -773,7 +782,7 @@ function render() {
   hand.setAttribute("aria-label", copy("hand", "Cărțile tale"));
   hand.tabIndex = 0;
   const fan = element("div", "", "fan");
-  const timing = copy("handFeedback", null);
+  const timing = setup.handMotion;
   const acceptsFeedback = !!match.header && !!timing && match.hand.some(face => face.action);
   for (const face of match.hand) fan.append(card(face, true, acceptsFeedback));
   if (acceptsFeedback) {

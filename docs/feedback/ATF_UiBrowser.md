@@ -9,8 +9,8 @@
 | Arie | Criteriu rămas |
 |---|---|
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
-| Funcții de prezentare | Califică zonele tactile ale mâinii suprapuse, marcajele și fața compactă la densități și scări de text diferite. Compară atingerea, focusul, ordinea și colectarea în APK și Chrome pe același telefon. |
-| Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
+| Funcții de prezentare | Califică zonele tactile ale mâinii suprapuse, marcajele și fața compactă la densități și scări de text diferite. Compară atingerea și focusul în APK și Chrome pe același telefon. Rulează de la același checkpoint o ridicare manuală, apoi AutoGame până la scor. Măsoară zona utilă și păstrează capturi din colectare. |
+| Consumatori | Folosește JAR-ul și probele comune pentru integrare. Confruntă separat fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
 | Publicare online | Pentru Whist, verifică pe un telefon redeschiderea ediției Pages cu același profil. Pentru Rentz și Hold’em, califică pachetul fiecărui joc înainte de publicarea adresei sub APK. [Fluxul Pages](../../atf-ui-browser/README.md#whist-pe-github-pages) |
 
 ## Calificarea pe același dispozitiv

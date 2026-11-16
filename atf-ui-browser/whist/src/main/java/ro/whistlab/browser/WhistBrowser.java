@@ -15,7 +15,6 @@ import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.ScoreGridStyle;
 import ro.cardtable.ui.table.PlayedCardStyle;
 import ro.cardtable.ui.cards.CardHighlight;
-import ro.cardtable.ui.hand.HandInput;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.theme.TableColors;
 import ro.cardtable.ui.turn.TurnPacing;
@@ -132,9 +131,6 @@ public final class WhistBrowser implements BrowserGame {
                 entry("rulesAndSchedule", text.rulesAndSchedule()), entry("modeRules", modeRules(text)),
                 entry("scoringDetails", text.scoringDetails()), entry("scoreSheet", text.scoreSheet()),
                 entry("stopAutoGame", text.stopAutoGameHand()),
-                entry("handFeedback", Map.of("hintMillis", HandInput.HINT_DURATION_MILLIS,
-                        "liftMillis", HandInput.PLAY_LIFT_MILLIS, "liftDp", HandLayoutMetrics.CARD_LIFT_DP,
-                        "liftScale", HandLayoutMetrics.CARD_LIFT_SCALE)),
                 entry("bidNow", text.seatTurnBadge(true)), entry("playNow", text.seatTurnBadge(false)),
                 entry("rules", HowToPlay.sections(text.language()).stream()
                         .map(section -> Map.of("title", section.title(), "body", section.explanation())).toList()),
