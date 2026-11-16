@@ -30,18 +30,11 @@ Consumatorul deține validarea API, procesele și adopția locală; [registrul r
 |---|---|---|
 | P2 | Adaptorul Android: [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) păstrează împreună selecția controalelor, repetarea comenzilor și înregistrarea succesului ori eșecului acțiunii. Blocurile similare cresc costul schimbării atribuirii și al temporizării. | Separați execuția și înregistrarea comună a acțiunii într-un colaborator cu porturi explicite, păstrând fațada driverului și oracolul de domeniu. Componente cu proces și ceas controlate demonstrează aceeași ordine a comenzilor, cauză originală, intervale și atribuire setup/body, inclusiv timeout și anulare. |
 
-## Reluarea calificării RAG
+## Calificarea costului RAG
 
-Postmortem pentru 0.21.5. Duratele însumează etapele din chitanțele execuțiilor reușite. Ele se pot suprapune cu alte activități și nu reprezintă durata totală a livrării.
+| Etapă | Criteriu rămas |
+|---|---|
+| Android | Măsurați separat așteptarea rezervării, pregătirea profilului, transportul și fluxul. Confruntați fereastra activă pentru a atribui corect întreruperile terțe. [Acceptanța Android](ATF_Android.md) |
+| Rapoarte | Calificați costul colectării și predării separat de execuție, la același inventar de invocări. [Registrul raportării](ATF_Reporting.md) |
 
-| Etapă | Cost observat | Reutilizare și criteriu rămas |
-|---|---:|---|
-| Evaluatorul înainte și după publicare | Sub un minut la fiecare trecere | Reluați fiecare trecere cu manifestul ei și cu observația GitHub proaspătă acolo unde se cere. |
-| Execuțiile Android și pregătirea | Aproximativ 50 min de execuție și 15 min de pregătire a profilurilor pentru cele șapte fluxuri acceptate | Refolosiți o singură compilare Maven verificată înaintea fluxurilor. Păstrați validarea profilului pentru fiecare rezervare. O modificare a APK-ului a cerut probe native noi. |
-| Componente Maven | Prima pregătire a avut aproximativ 2 min pentru preflight, 4 min pentru cache și compilare, apoi aproape 2 min pentru classpath | Staging-ul recuperat după repornire a păstrat clasele și classpath-ul. Opt selecții au refolosit rapoarte cu amprentă validă. Cele două rulate din nou au însumat aproape 20 min. |
-| Reluări Android | VM-ul a întrerupt procesele în mai multe etape. Un ANR de sistem, o fereastră deschisă de Google Messages și temporizarea notificării de realizări au cerut intervenții distincte. | Salvați imediat raportul și identitatea fluxului. La reluare curățați numai profilul temporar identificat de rezervarea întreruptă. Reproduceți offline deschiderea notificării între scor și butonul mâinii următoare. |
-| Predarea dosarului | Guvernanța a cerut o reluare deoarece manifestul final nu declara inventarul invocărilor Extent | Generați formatul de calificare v2 și numărați invocările din chitanțele de execuție înainte de a pregăti commitul. Verificați din nou numai controalele afectate dacă se schimbă metadatele. |
-
-[Checkpoint-urile Gradle](../testing/ATF_ReleaseQualification.md#reluarea-etapelor-validate) se publică înaintea taskului următor. Raportul incomplet și jurnalul provizoriu rămân utile pentru diagnostic; reluarea folosește chitanța publicată atomic.
-
-[Profiluri de lucru pentru reluare](../testing/ATF_ReleaseQualification.md#profiluri-de-lucru-pentru-reluare)
+Contractul de [reluare RAG](../testing/ATF_ReleaseQualification.md#reluarea-etapelor-validate) deține checkpoint-urile și reutilizarea snapshot-ului. Cronologiile concrete aparțin dosarului extern al execuției.

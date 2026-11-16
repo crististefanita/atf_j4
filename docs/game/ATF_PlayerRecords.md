@@ -27,6 +27,8 @@ Numai faza de scor a ultimei mâini poate alimenta topul. Identitatea unică a p
 | Mecanism | Contract |
 |---|---|
 | Numele omului | Disponibil din meniul inițial și meniul partidei; 1–10 caractere vizibile acceptate de [PlayerNames](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/player/PlayerNames.java). |
+| Salvarea | Profilul validează numele față de locurile active. Actualizează sesiunea și solicită salvarea partidei după confirmarea scrierii profilului. |
+| Anularea | Închiderea dialogului încheie editarea. Un callback al editării închise nu scrie profilul și nu modifică partida. |
 | Resetarea | Reface eticheta implicită localizată; scorurile, cărțile și istoricul curent rămân păstrate. |
 | Adversari AI | Nume scurte, distincte și alese aleatoriu la partidă nouă; reluarea păstrează numele salvate. |
 | Separarea aleatorului | Generarea numelor are flux propriu; nu consumă aleatorul distribuirii sau al politicilor AI. |

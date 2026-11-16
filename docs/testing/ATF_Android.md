@@ -62,7 +62,8 @@ vizuală și obiectivul partidei rămân verdicte distincte.
 
 | Precondiție declarată | Interacțiune verificată |
 |---|---|
-| Profil local izolat | Setare și resetare nume, nume AI scurte, identități păstrate la relansare. |
+| Profil local izolat | Deschiderea dialogului, salvarea prin controlul Android și numele afișat după relansare. Scenariul de înregistrări păstrează resetarea nativă și numele adversarilor. |
+| Profil de componentă | Anulare și callback întârziat, nume incompatibil cu masa, scriere refuzată, reîncercare, resetare și reîncărcare din stocare simulată. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerProfileEditComponentTest.java) |
 | Istoric complet pregătit de motorul JVM | Primul și ultimul rând, toate coloanele, licitații și punctaje, derulare în RO/EN. |
 | Tură pregătită la fiecare loc al mesei | Eticheta integrală deasupra jucătorului corect, licitare și joc, text mărit și controale umane inactive cât licitează AI. |
 | Contoare de serie la limita celor cinci mâini | Selectare ±5/±10 în meniu, închidere prin cărți jucate în Android și relansare fără plată repetată. |

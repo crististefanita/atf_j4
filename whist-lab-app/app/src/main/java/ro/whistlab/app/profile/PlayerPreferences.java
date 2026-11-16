@@ -8,7 +8,11 @@ import ro.whistlab.core.player.PlayerNames;
 public final class PlayerPreferences {
     private final SharedPreferences preferences;
     public PlayerPreferences(Context context) {
-        preferences = context.getSharedPreferences("whist_lab_profile", Context.MODE_PRIVATE);
+        this(context.getSharedPreferences("whist_lab_profile", Context.MODE_PRIVATE));
+    }
+
+    PlayerPreferences(SharedPreferences preferences) {
+        this.preferences = preferences;
     }
     public String name() { return preferences.getString("name", ""); }
     public String sessionName() { return name().isBlank() ? PlayerNames.DEFAULT_HUMAN : name(); }

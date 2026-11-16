@@ -72,10 +72,15 @@ public final class GameSession {
     }
 
     public void renameHuman(String name) {
+        names.set(0, validateHumanName(name));
+    }
+
+    /** Resolves the name against the current seats before an external profile write. */
+    public String validateHumanName(String name) {
         String normalized = PlayerNames.normalize(name);
         if (names.subList(1, names.size()).stream().anyMatch(normalized::equalsIgnoreCase))
             throw new IllegalArgumentException("That name is already used at this table");
-        names.set(0, normalized);
+        return normalized;
     }
 
     public void submitBid(int seat, int bid) {

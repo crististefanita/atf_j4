@@ -121,17 +121,7 @@ class WhistReleaseHomeE2eTest {
                         c.ui.hasText(xml, "New game") && c.ui.hasText(xml, "How to play"))));
         c.ui.tapText(original);
         c.ui.awaitText("SAVE", Duration.ofSeconds(10));
-        c.profileText("Your name", "Audit");
-        c.checkpoint("Shared profile editor retains the typed value", xml -> List.of(
-                ReleaseBidContext.equal("The name field exposes the controlled value", true, c.ui.hasText(xml, "Audit")),
-                ReleaseBidContext.equal("Save and Close remain available", true,
-                        c.ui.hasText(xml, "SAVE") && c.ui.hasText(xml, "CLOSE"))));
-        c.ui.tapText("CLOSE");
-        c.ui.awaitText(original, Duration.ofSeconds(10));
-        c.checkpoint("Cancelling profile editing preserves the saved name", xml -> List.of(
-                ReleaseBidContext.equal("The original profile was not overwritten", true, c.ui.hasText(xml, original))));
-        c.ui.tapText(original);
-        c.ui.awaitText("SAVE", Duration.ofSeconds(10));
+
         c.profileText("Your name", "Audit");
         c.ui.tapText("SAVE");
         c.ui.awaitText("Your name: Audit", Duration.ofSeconds(10));

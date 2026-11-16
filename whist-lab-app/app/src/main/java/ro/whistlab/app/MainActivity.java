@@ -25,6 +25,7 @@ import ro.whistlab.app.highscores.HighScoreRepository;
 import ro.whistlab.app.highscores.HighScores;
 import ro.whistlab.app.highscores.HighScoresDialog;
 import ro.whistlab.app.profile.PlayerPreferences;
+import ro.whistlab.app.profile.PlayerProfileEdit;
 import ro.whistlab.app.profile.PlayerSettingsDialog;
 import ro.whistlab.app.achievements.AndroidWhistAchievementStorage;
 import ro.whistlab.app.achievements.WhistAchievementDialog;
@@ -391,16 +392,20 @@ public final class MainActivity extends Activity {
 
     private void showPlayerSettings() {
         var token = openDialog();
-        AlertDialog dialog = PlayerSettingsDialog.show(this, copy, playerPreferences.name(), name -> {
-            if (game != null) game.renameHuman(name.isBlank() ? "You" : name);
-            playerPreferences.saveName(name);
-            persistGame();
-            if (!navigation.gameVisible()) {
-                if (navigation.screen() == AppNavigation.Screen.SETUP || navigation.screen() == AppNavigation.Screen.INSTRUCTIONS) renderSetup();
-                else renderHome();
-            }
+        var edit = new PlayerProfileEdit(playerPreferences, () -> game, this::afterProfileSave);
+        AlertDialog dialog = PlayerSettingsDialog.show(this, copy, edit.currentName(), edit::save);
+        dialog.setOnDismissListener(ignored -> {
+            edit.dismiss();
+            navigation.dismiss(token);
         });
-        dialog.setOnDismissListener(ignored -> navigation.dismiss(token));
+    }
+
+    private void afterProfileSave() {
+        persistGame();
+        if (!navigation.gameVisible()) {
+            if (navigation.screen() == AppNavigation.Screen.SETUP || navigation.screen() == AppNavigation.Screen.INSTRUCTIONS) renderSetup();
+            else renderHome();
+        }
     }
 
     private void showHighScores() {
