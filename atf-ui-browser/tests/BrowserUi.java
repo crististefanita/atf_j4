@@ -42,31 +42,37 @@ class BrowserUi {
         String url = "http://127.0.0.1:" + server.getAddress().getPort() + SITE_PATH;
         List<Result> results = new ArrayList<>();
         try (Playwright playwright = Playwright.create()) {
-            var launch = new BrowserType.LaunchOptions().setHeadless(true);
+            var launch = new BrowserType.LaunchOptions().setHeadless(true).setArgs(List.of("--mute-audio"));
             if (args.length == 4) launch.setExecutablePath(Path.of(args[3]));
             try (Browser browser = playwright.chromium().launch(launch)) {
-                results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-COMPONENT-TEXT",
-                        "Fonturile Whist pe un panou de probă",
-                        "Toate cele 13 ranguri sunt mărite cu 50%. Simbolurile și atuul își păstrează mărimea.",
-                        (page, images) -> rankTypography(page, url)));
-                results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
-                        "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
-                        (page, images) -> responsiveHand(page, url)));
-                results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
-                        "Rangul 10 în mâna de 17 cărți, la text 200%",
-                        "Cifrele și figurile păstrează aceeași ancoră. Antetul respectă scara de text.",
-                        (page, images) -> enlargedNumbers(page, url, wideCheckpoint, output, images)));
-                results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Atingere respinsă și AutoGame în Whist",
-                        "Textul accesibil și marcajele duc la patru colectări și la scorul așteptat",
-                        (page, images) -> autoGame(page, url, checkpoint, output, images)));
-                results.add(run(browser, new Browser.NewContextOptions().setViewportSize(535, 760), output,
-                        "WEB-UI-HEADER-DESKTOP", "Antet Oh Hell în cadrul scalat pe desktop",
-                        "Titlul și progresul au aceeași ancoră, iar atuul rămâne la marginea utilă",
-                        (page, images) -> desktopHeader(page, url)));
-                results.add(run(browser, new Browser.NewContextOptions().setViewportSize(1280, 720), output,
-                        "WEB-UI-DESKTOP", "Profil local și centrare pe desktop",
-                        "Anularea și salvarea se văd în meniu, iar cadrul portrait se centrează la redimensionare",
-                        (page, images) -> desktop(page, url)));
+                results.add(run(browser, mobile(), output, "WEB-COMPONENT-PLAYBACK-PAINT",
+                        "Tabla rămâne stabilă când adversarul redă rândul jucătorului",
+                        "După colectare și cartea adversarului, tabla rămâne așezată până devine disponibilă mutarea legală.",
+                        (page, images) -> stablePlaybackPaint(page, url, checkpoint, output, images)));
+                if (!Boolean.getBoolean("whist.refreshOnly")) {
+                    results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-COMPONENT-TEXT",
+                            "Fonturile Whist pe un panou de probă",
+                            "Toate cele 13 ranguri sunt mărite cu 50%. Simbolurile și atuul își păstrează mărimea.",
+                            (page, images) -> rankTypography(page, url)));
+                    results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
+                            "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
+                            (page, images) -> responsiveHand(page, url)));
+                    results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
+                            "Rangul 10 în mâna de 17 cărți, la text 200%",
+                            "Cifrele și figurile păstrează aceeași ancoră. Antetul respectă scara de text.",
+                            (page, images) -> enlargedNumbers(page, url, wideCheckpoint, output, images)));
+                    results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Atingere respinsă și AutoGame în Whist",
+                            "Textul accesibil și marcajele duc la patru colectări și la scorul așteptat",
+                            (page, images) -> autoGame(page, url, checkpoint, output, images)));
+                    results.add(run(browser, new Browser.NewContextOptions().setViewportSize(535, 760), output,
+                            "WEB-UI-HEADER-DESKTOP", "Antet Oh Hell în cadrul scalat pe desktop",
+                            "Titlul și progresul au aceeași ancoră, iar atuul rămâne la marginea utilă",
+                            (page, images) -> desktopHeader(page, url)));
+                    results.add(run(browser, new Browser.NewContextOptions().setViewportSize(1280, 720), output,
+                            "WEB-UI-DESKTOP", "Profil local și centrare pe desktop",
+                            "Anularea și salvarea se văd în meniu, iar cadrul portrait se centrează la redimensionare",
+                            (page, images) -> desktop(page, url)));
+                }
             }
         } finally {
             server.stop(0);
@@ -313,6 +319,62 @@ class BrowserUi {
         page.locator(".board[data-layout=ready]").waitFor();
     }
 
+    private static Map<String, Object> stablePlaybackPaint(Page page, String url, String checkpoint,
+                                                            Path output, List<Image> images) {
+        page.addInitScript("""
+                const send = Worker.prototype.postMessage;
+                let actionSent = false;
+                Worker.prototype.postMessage = function (message) {
+                  if (message.path === "/api/action") actionSent = true;
+                  if (message.path === "/api/layout" &&
+                      actionSent && document.querySelector("#table .board:not([data-layout])")) {
+                    actionSent = false;
+                    window.releaseLayout = () => send.call(this, message);
+                    document.documentElement.dataset.layoutHeld = "true";
+                    return;
+                  }
+                  send.call(this, message);
+                };
+                """);
+        resumeHand(page, url, checkpoint);
+        var trump = page.locator(".whist-trump:visible");
+        var manualTrump = trumpAppearance(trump);
+        page.locator(".fan button[data-face='8♦']").tap();
+        var collection = page.locator(".collection .compact-play-face");
+        assertThat(collection).hasText(new String[]{"9♦", "Q♥", "K♦", "8♦"});
+        var collectingTrump = trumpAppearance(trump);
+        page.locator("html[data-layout-held]").waitFor();
+        try {
+            var visibleBoard = page.locator(".board:visible");
+            assertThat(visibleBoard).hasCount(1);
+            require("ready".equals(visibleBoard.getAttribute("data-layout")),
+                    "Playback showed a board with fallback positions while the Worker layout was pending");
+            assertThat(visibleBoard.locator(".compact-play-face")).hasText("A♠");
+            images.add(screenshot(page, output, "WEB-COMPONENT-PLAYBACK-WAIT", "Tabla în timp ce geometria nouă este în așteptare"));
+        } finally {
+            page.evaluate("() => window.releaseLayout()");
+        }
+        assertThat(page.locator("#table")).hasAttribute("aria-busy", "false");
+        assertThat(page.locator(".board:visible")).hasAttribute("data-layout", "ready");
+        assertThat(page.locator(".fan .card")).hasCount(3);
+        assertThat(page.locator(".seat.south.active .seat-turn")).hasText("JOACĂ ACUM");
+        assertThat(page.locator(".fan .legal-card")).hasAttribute("data-face", "10♦");
+        require(manualTrump.equals(collectingTrump), "Collection changed the trump frame: " + collectingTrump);
+        return Map.of("collection", List.of("9♦", "Q♥", "K♦", "8♦"), "remainingCards", 3,
+                "opponentLead", "A♠", "legalCardOnReturn", "10♦",
+                "layoutReadyWhilePending", true, "trumpFrame", manualTrump);
+    }
+
+    private static Object trumpAppearance(Locator trump) {
+        return trump.evaluate("""
+                node => {
+                  const { backgroundColor, boxShadow, color } = getComputedStyle(node);
+                  const { x, y, width, height } = node.getBoundingClientRect();
+                  return { backgroundColor, boxShadow, color, x, y, width, height };
+                }
+                """);
+    }
+
     private static Map<String, Object> autoGame(Page page, String url, String checkpoint, Path output, List<Image> images) {
         resumeHand(page, url, checkpoint);
         var ten = page.locator(".fan [data-face^='10'] .card-index:not(.inverted) .card-rank");
@@ -345,10 +407,13 @@ class BrowserUi {
         assertThat(rejected).hasClass(Pattern.compile("rejected-card"));
         assertThat(page.locator(".fan .suggested-card")).hasCount(2);
         require(page.locator(".fan button").count() == 4, "A rejected card changed the hand");
+        var manualTrump = trumpAppearance(trump.locator(".."));
         page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Automat").setExact(true)).tap();
+        require(manualTrump.equals(trumpAppearance(trump.locator(".."))), "AutoGame changed the trump frame");
         var collection = page.locator(".collection .compact-play-face");
         var faces = List.of("9♦", "Q♥", "K♦", "8♦");
         assertThat(collection).hasText(faces.toArray(String[]::new));
+        require(manualTrump.equals(trumpAppearance(trump.locator(".."))), "AutoGame collection changed the trump frame");
         var eva = page.locator(".seat").filter(new Locator.FilterOptions()
                 .setHas(page.getByText("Eva", new Page.GetByTextOptions().setExact(true))));
         assertThat(eva.locator(".seat-won")).hasText("Levate: 1");

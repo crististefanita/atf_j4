@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.1";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.2";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -31,7 +31,7 @@ const resize = () => {
   document.documentElement.style.setProperty("--dialog-width", result.frameWidth + "px");
   document.documentElement.style.setProperty("--dialog-height", result.frameHeight + "px");
   document.documentElement.style.setProperty("--dialog-scale", result.scale);
-  if (stage.querySelector(".board")) placeTable();
+  if (stage.firstElementChild?.matches(".match:not([data-preparing])")) void placeTable();
 };
 resize();
 window.addEventListener("resize", resize);
@@ -81,8 +81,8 @@ function rememberLanguage(next) {
 
 let selectedBid;
 let setupDraft = {};
-let measuring = 0;
-let playedLayout;
+const layoutRequests = new WeakMap();
+const playedLayouts = new WeakMap();
 const errorBox = element("p", "", "error");
 errorBox.setAttribute("role", "alert");
 const profileDialogs = createProfileDialogs(element, button, issue, copy);
@@ -158,7 +158,7 @@ async function issue(path, fields) {
     selectedBid = undefined;
     if (path === "/api/language") rememberLanguage(fields.language);
     if (previous && ["/api/profile", "/api/language", "/api/notice"].includes(path)) previous();
-    else render();
+    else await render();
     stage.querySelector(".prompt, h1")?.focus({ preventScroll: true });
     profileDialogs.notice(state.profile?.notice);
     showStorageIssue();
@@ -167,7 +167,7 @@ async function issue(path, fields) {
     if (failure.status === 409 || failure.status === 500) {
       try {
         state = await call("/api/state");
-        render();
+        await render();
       } catch (reloadFailure) {
         errorBox.textContent = reloadFailure.message;
         return reloadFailure.message;
@@ -461,6 +461,7 @@ function playedCard(play, seats) {
 }
 
 function placePlayed(cards) {
+  const playedLayout = playedLayouts.get(cards);
   if (!playedLayout || !cards.childElementCount) return;
   cards.style.height = playedLayout.centerHeightDp + "px";
   cards.classList.add("positioned");
@@ -568,8 +569,8 @@ function bidding(actions, content, native) {
 
 const trumpText = document.createElement("canvas").getContext("2d");
 
-function fitTrumpText() {
-  const tile = stage.querySelector(".whist-trump");
+function fitTrumpText(content) {
+  const tile = content.querySelector(".whist-trump");
   if (!tile) return;
   const tileStyle = getComputedStyle(tile);
   const width = tile.clientWidth - parseFloat(tileStyle.paddingLeft) - parseFloat(tileStyle.paddingRight);
@@ -584,12 +585,13 @@ function fitTrumpText() {
   }
 }
 
-async function placeTable() {
-  const board = stage.querySelector(".board");
-  const hand = stage.querySelector(".hand");
+async function placeTable(content = stage.firstElementChild) {
+  const board = content?.querySelector(".board");
+  const hand = content?.querySelector(".hand");
   if (!board || !hand) return;
-  fitTrumpText();
-  const request = ++measuring;
+  fitTrumpText(content);
+  const request = {};
+  layoutRequests.set(board, request);
   const seats = [...board.querySelectorAll(".seat")];
   const fan = hand.querySelector(".fan");
   const width = board.clientWidth;
@@ -597,22 +599,27 @@ async function placeTable() {
     Math.floor((width - 16) / 3));
   for (const seat of seats) seat.style.width = Math.max(1, seatWidth) + "px";
   try {
+    const minHeight = board.style.minHeight;
     board.style.minHeight = "";
+    const height = board.clientHeight;
+    board.style.minHeight = minHeight;
     const layout = await call("/api/layout", {
-      width, height: board.clientHeight, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
-      bidOptions: stage.dataset.playingSteps ? 0 : board.querySelectorAll("[data-bid]").length,
+      width, height, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
+      bidOptions: stage.dataset.playingSteps && !content.hasAttribute("data-preparing")
+        ? 0 : board.querySelectorAll("[data-bid]").length,
       players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length,
       ...(state.view.header && { handIndexWidth: Math.max(1, ...[...fan.querySelectorAll(".card-index:not(.inverted)")]
         .map(index => index.offsetLeft + index.offsetWidth + 2)) })
     });
-    if (request !== measuring || !board.isConnected) return;
-    playedLayout = layout.played ? { ...layout.played, ...layout.playedStyle } : null;
+    if (layoutRequests.get(board) !== request || !board.isConnected) return;
+    const cardsOnTable = board.querySelector(".cards-on-table");
+    playedLayouts.set(cardsOnTable, layout.played ? { ...layout.played, ...layout.playedStyle } : null);
     if (layout.board) {
-      if (layout.boardHeight > board.clientHeight) board.style.minHeight = layout.boardHeight + "px";
+      board.style.minHeight = layout.boardHeight > height ? layout.boardHeight + "px" : "";
       for (const [index, seat] of seats.entries()) place(seat, layout.board.seats[index]);
       place(board.querySelector(".center"), layout.board.center);
     }
-    placePlayed(board.querySelector(".cards-on-table"));
+    placePlayed(cardsOnTable);
     if (layout.hand) {
       fan.style.width = layout.hand.width + "px";
       fan.style.paddingLeft = layout.hand.first + "px";
@@ -645,7 +652,7 @@ async function placeTable() {
     }
     board.dataset.layout = "ready";
   } catch (failure) {
-    if (request === measuring) errorBox.textContent = failure.message;
+    if (layoutRequests.get(board) === request && board.isConnected) errorBox.textContent = failure.message;
   }
 }
 
@@ -748,7 +755,8 @@ function markSeat(node, active, bidding) {
   }
 }
 
-function render() {
+async function render() {
+  stage.querySelector(":scope > [data-preparing]")?.remove();
   handFeedback?.cancel();
   handFeedback = undefined;
   if (!state.view) {
@@ -822,7 +830,7 @@ function render() {
         if (error.status === 409) {
           try {
             state = await call("/api/state");
-            render();
+            await render();
           } catch (reload) {
             errorBox.textContent = reload.message;
             return;
@@ -836,10 +844,23 @@ function render() {
 
   content.append(heading, board);
   if (toolbar.childElementCount) content.append(toolbar);
-  content.append(hand, errorBox);
+  content.append(hand);
+  // Measure the next view without painting fallback positions over the current table.
+  content.dataset.preparing = "";
+  content.inert = true;
+  stage.append(content);
+  let width, height;
+  do {
+    width = stage.clientWidth;
+    height = stage.clientHeight;
+    await placeTable(content);
+  } while (content.isConnected && (width !== stage.clientWidth || height !== stage.clientHeight));
+  if (!content.isConnected) return;
+  delete content.dataset.preparing;
+  content.inert = false;
+  content.append(errorBox);
   stage.replaceChildren(content);
   refreshAutomationGate();
-  placeTable();
 }
 
 try {
@@ -865,7 +886,7 @@ try {
   transport.remember?.(state.profile);
   document.title = setup.title;
   if (transport.resumeOnHome) menu();
-  else render();
+  else await render();
   profileDialogs.notice(state.profile?.notice);
   state.storageIssue ??= recoveryIssue;
   showStorageIssue();
