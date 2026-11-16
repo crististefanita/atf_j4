@@ -3,6 +3,11 @@ package ro.whistlab.browser;
 import java.util.ArrayList;
 import java.util.List;
 import ro.cardtable.browser.BrowserGame.History;
+import ro.cardtable.browser.BrowserGame.HistoryCell;
+import ro.cardtable.browser.BrowserGame.HistoryGrid;
+import ro.cardtable.browser.BrowserGame.HistoryRow;
+import ro.whistlab.app.score.ScoreHistoryTable;
+import ro.whistlab.core.session.ScoreHistory;
 import ro.cardtable.browser.BrowserGame.Score;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.session.GameSession;
@@ -39,6 +44,11 @@ final class WhistScores {
             }
             rows.add(row);
         }
-        return new History(labels, rows);
+        var table = ScoreHistoryTable.forMatch(state, scores, copy);
+        var details = table.rows().stream().map(row -> new HistoryRow(row.cards(), row.status().name(),
+                row.cells().stream().map(cell -> new HistoryCell(cell.bid(), cell.total(), cell.description(),
+                        cell.outcome() == ScoreHistory.Outcome.MISSED, cell.seriesPoints())).toList())).toList();
+        return new History(labels, rows, new HistoryGrid(table.players(), details, copy.cardsHeading(),
+                copy.historyBidHeading(), copy.historyPointsHeading(), copy.historyLegend()));
     }
 }

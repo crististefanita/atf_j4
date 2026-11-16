@@ -5,7 +5,9 @@ export function localTransport() {
   const pending = new Map();
   let sequence = 0;
   let workerFailure;
-  let profile = { name: null, progress: null };
+  const keys = ["name", "progress", "checkpoint", "rankings"];
+  let profile = Object.fromEntries(keys.map(key => [key, null]));
+  let storageAvailable = true;
 
   worker.addEventListener("message", ({ data }) => {
     const command = pending.get(data.id);
@@ -21,12 +23,13 @@ export function localTransport() {
   });
 
   function load() {
+    if (!storageAvailable) return profile;
     try {
       const stored = JSON.parse(localStorage.getItem(profileKey));
-      if (stored && [stored.name, stored.progress].every(value => value === null || typeof value === "string")) {
-        profile = stored;
-      }
-    } catch { /* The current tab still works with storage disabled. */ }
+      profile = Object.fromEntries(keys.map(key => [key, typeof stored?.[key] === "string" ? stored[key] : null]));
+    } catch {
+      storageAvailable = false;
+    }
     return profile;
   }
 
@@ -39,14 +42,23 @@ export function localTransport() {
       pending.set(id, { resolve, reject });
       worker.postMessage({ id, path, values: fields, profile: previous });
     });
-    if (previous.name !== reply.name || previous.progress !== reply.progress) {
-      profile = { name: reply.name, progress: reply.progress };
-      try { localStorage.setItem(profileKey, JSON.stringify(profile)); } catch { /* Tab memory remains available. */ }
+    const next = Object.fromEntries(keys.map(key => [key, reply[key] ?? null]));
+    if (keys.some(key => previous[key] !== next[key])) {
+      profile = next;
+      if (storageAvailable) {
+        try { localStorage.setItem(profileKey, JSON.stringify(next)); }
+        catch { storageAvailable = false; }
+      }
+    }
+    if (reply.result?.view !== undefined) {
+      if (reply.rejectedCheckpoint) reply.result.storageIssue = "savedGameError";
+      else if (!storageAvailable) reply.result.storageIssue = "storageError";
     }
     return reply.result;
   }
 
   return {
+    resumeOnHome: true,
     request: (path, values) => navigator.locks
       ? navigator.locks.request(profileKey, () => request(path, values)) : request(path, values)
   };

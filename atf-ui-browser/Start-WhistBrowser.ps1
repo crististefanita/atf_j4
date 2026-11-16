@@ -46,6 +46,11 @@ $sources = @(
         Join-Path $achievements "$name.java"
     }
     Join-Path $achievements 'presentation/WhistAchievementPresentation.java'
+    foreach ($part in 'persistence/GameCheckpointCodec','persistence/SavedNumbers','score/ScoreHistoryTable',
+        'score/ScoreHistoryColumn','highscores/HighScores','highscores/HighScoreCodec',
+        'highscores/HighScoreRepository','highscores/HighScorePresentation') {
+        Join-Path $app "$part.java"
+    }
     $CatalogSource
 )
 & (Join-Path $PSScriptRoot 'Start-CardTableBrowser.ps1') -WorkRoot $WorkRoot -GameRoot $checkout `

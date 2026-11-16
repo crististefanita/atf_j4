@@ -28,11 +28,14 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 | Date | Retenție în ediția statică |
 |---|---|
 | Limba | Opțiunea Română sau English se salvează în browser. Meniul, regulile, starea mesei și realizările folosesc textele din APK. |
-| Nume și realizări | Browserul scrie într-o singură înregistrare locală după o comandă acceptată. Redeschiderea adresei în același browser recuperează datele. |
-| Partidă | Workerul păstrează partida cât timp pagina este deschisă. Redeschiderea pornește o sesiune nouă. |
+| Profil, Realizări și clasamente | Browserul salvează numele, progresul și clasamentele în aceeași înregistrare locală cu partida. Clasamentele folosesc topul, filtrul după configurație și marcajele AI și Exemplu din APK. |
+| Partidă | Meniul permite reluarea după redeschidere. Browserul salvează checkpointul la fiecare comandă acceptată și folosește aceeași validare ca APK-ul. |
 | Datele site-ului | Ștergerea stocării site-ului sau schimbarea browserului pornește un profil nou. Dacă stocarea este dezactivată, sesiunea folosește memoria filei. |
 
-AutoGame se activează pentru mâna curentă. Debifarea anulează următoarea decizie în locul jucătorului. Mutările acceptate și animația lor se încheie, iar scorul sau revenirea la meniu sting bifa.
+- [Codec-ul checkpointului](../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameCheckpointCodec.java) reface distribuirea, levatele și istoricul la ultima comandă acceptată. Identitatea partidei rămâne stabilă și împiedică duplicarea rezultatelor. Un checkpoint deteriorat poate fi eliminat independent de profil și progres.
+- Web Locks serializează scrierile între filele compatibile. O filă cu o revizie depășită recitește checkpointul înainte de următoarea comandă. Dacă browserul refuză scrierea, partida poate continua în memorie și afișează eroarea de stocare.
+- Istoricul afișează toate mâinile și totalul după fiecare mână în coloana P. O diagonală roșie marchează licitația ratată. În coloana P, un chenar marchează bonusul de serie, iar un chenar roșu marchează penalizarea.
+- AutoGame se activează pentru mâna curentă. Debifarea anulează următoarea decizie în locul jucătorului. Mutările acceptate și animația lor se încheie, iar scorul sau revenirea la meniu sting bifa.
 
 - Buildul cere PowerShell 7, JDK 21, Maven și mediul de generare a catalogului. `$WorkRoot` și `$EvidenceRoot` indică directoare externe.
 - Proba Node.js verifică inventarul public și joacă prin motorul compilat. Cu executabilul Chrome, deschide pachetul în subdirectorul proiectului la 414 × 896 și verifică salvarea după redeschidere.
@@ -44,6 +47,7 @@ node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot $Chrome
 
 - Pentru modificările de licitare, AutoGame, limbă sau realizări, rulați `node .\atf-ui-browser\pages\verify-controls.mjs $Site $EvidenceRoot`. Proba folosește motorul compilat și înlocuiește temporizatoarele și stocarea browserului în cazurile controlate.
 - Adăugați `--ui-only` pentru geometrie, ritmul mutărilor și parcursul vizual, când inventarul pachetului și partida completă au dovezi valabile.
+- Pentru istoricul scorului și compatibilitatea checkpointului, generați datele legale cu [WhistRecordsFixture](pages/WhistRecordsFixture.java) și rulați [verificarea Pages](pages/verify-records.mjs) cu directorul site, dosarul de dovezi și fișierul JSON al datelor. Fixture-ul compilează cu classpath-ul lansatorului JVM și `ScoredHandFixture` din testele aplicației.
 - Folosiți `--contract-only` pentru a verifica doar geometria pe faze și mostrele curbei din artefactul compilat. Pentru această selecție, omiteți executabilul browserului.
 
 Publicați conținutul directorului `$Site` la rădăcina ramurii `gh-pages`. Configurați GitHub Pages să publice acea ramură de la rădăcină. Verificați dintr-o sesiune anonimă pagina, resursele și pornirea unei mâini înainte de actualizarea linkului din README. [Publicarea dintr-o ramură](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)

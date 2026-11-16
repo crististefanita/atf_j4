@@ -8,19 +8,19 @@ import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
 
 /** Complete chronological schedule, projected for every seat without inventing unfinished scores. */
-record ScoreHistoryTable(List<String> players, List<Row> rows) {
-    enum Status { RECORDED, EARLIER, CURRENT, FUTURE }
-    record Cell(String bid, String points, String total, String description, ScoreHistory.Outcome outcome,
+public record ScoreHistoryTable(List<String> players, List<Row> rows) {
+    public enum Status { RECORDED, EARLIER, CURRENT, FUTURE }
+    public record Cell(String bid, String points, String total, String description, ScoreHistory.Outcome outcome,
             int seriesPoints) {
         String displayPoints() { return total; }
         boolean boxPoints() { return seriesPoints != 0; }
     }
-    record Row(int hand, int cards, Status status, List<Cell> cells) {
+    public record Row(int hand, int cards, Status status, List<Cell> cells) {
         String cardLabel() { return Integer.toString(cards); }
     }
-    ScoreHistoryTable { players = List.copyOf(players); rows = List.copyOf(rows); }
+    public ScoreHistoryTable { players = List.copyOf(players); rows = List.copyOf(rows); }
 
-    static ScoreHistoryTable forMatch(GameSession.Snapshot state, ScoreHistory history, WhistUiText copy) {
+    public static ScoreHistoryTable forMatch(GameSession.Snapshot state, ScoreHistory history, WhistUiText copy) {
         if (history.openingTotals().size() != state.players().size()) throw new IllegalArgumentException("Seat mismatch");
         List<Integer> schedule = GameRules.handSizes(state.mode(), state.players().size());
         if (history.completedHands() > schedule.size()) throw new IllegalArgumentException("History exceeds schedule");

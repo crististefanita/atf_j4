@@ -138,6 +138,78 @@ header .subtitle { font-size: 14px; color: #41574b; }
 .toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
 .error { color: #8c231c; }
 .history-data { max-height: 64dvh; overflow: auto; }
+#history h2, .game-rankings h2 {
+  font-size: 1.25em;
+  font-weight: 500;
+  margin: .25em .45em .55em;
+}
+#history form button, .game-rankings > button {
+  border-color: transparent;
+  color: var(--whist-pine, #305e4e);
+  text-transform: uppercase;
+  margin-top: .55em;
+}
+.history-legend { margin: .55em 0 0; color: #52634f; font-size: .84em; white-space: pre-line; }
+.history-legend:empty { display: none; }
+.record-history {
+  width: 100%;
+  min-width: max-content;
+  table-layout: auto;
+  border-collapse: collapse;
+  color: #29362e;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.record-history th, .record-history td {
+  min-width: 1.8em;
+  padding: .37em .15em;
+  border: 0;
+  white-space: nowrap;
+  text-align: center;
+}
+.record-history tbody th { font-weight: normal; }
+.record-history thead tr { background: #dfeada; }
+.record-history thead tr + tr { background: #eef3ea; }
+.record-history thead tr + tr th { font-weight: normal; }
+.record-history .history-seat { border-left: 2px solid #71846c; }
+.record-history tbody tr:nth-child(odd) { background: #fffef8; }
+.record-history tbody tr:nth-child(even) { background: #f1f5ee; }
+.record-history tbody tr[data-status="current"] { background: #e5eedc; }
+.history-bid, .history-points { position: relative; display: inline-block; }
+.history-bid.is-missed, .history-points.is-negative { color: #97462e; }
+.history-bid.is-missed::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -.13em;
+  right: -.13em;
+  border-top: max(1.5px, .115em) solid #b3261e;
+  border-radius: 2px;
+  transform: rotate(-47deg);
+}
+.history-points[data-series] { display: block; padding: .12em .16em; outline: 1px solid #29362e; }
+.history-points[data-series="penalty"] { outline-color: #97462e; color: #97462e; }
+.game-rankings .rankings > p { font-size: .84em; }
+.ranking-options { display: grid; gap: .4em; }
+.ranking-options select { width: 100%; min-height: 2.5em; }
+.ranking-list {
+  margin: .5em 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 34dvh;
+  overflow: auto;
+  counter-reset: rank;
+}
+.ranking-list li {
+  display: grid;
+  grid-template-columns: 2em minmax(0, 1fr) auto;
+  gap: .35em;
+  padding: .45em;
+  background: #fffef8;
+}
+.ranking-list li:nth-child(odd) { background: #eef3ea; }
+.ranking-list li::before { counter-increment: rank; content: counter(rank); }
+.ranking-list strong { text-align: end; }
 dialog {
   width: min(calc(var(--dialog-width, 414px) * .94), 94vw);
   border: 0;

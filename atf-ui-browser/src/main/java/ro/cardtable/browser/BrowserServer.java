@@ -30,6 +30,7 @@ public final class BrowserServer implements AutoCloseable {
             "/viewport.mjs", new Asset("viewport.mjs", "text/javascript; charset=utf-8"),
             "/profile.mjs", new Asset("profile.mjs", "text/javascript; charset=utf-8"),
             "/auto-game.mjs", new Asset("auto-game.mjs", "text/javascript; charset=utf-8"),
+            "/records.mjs", new Asset("records.mjs", "text/javascript; charset=utf-8"),
             "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"));
     private final HttpServer server;
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
@@ -110,6 +111,12 @@ public final class BrowserServer implements AutoCloseable {
                 var session = session(client, game.hasProfile());
                 if (session == null && game.hasProfile()) error(http, 503, "Too many open profiles");
                 else json(http, 200, session == null ? new BrowserSession.State(0, null, null, List.of(), List.of()) : session.state());
+            }
+            case "/api/rankings" -> {
+                if (!requireMethod(http, method, "GET")) return;
+                var session = session(client, game.hasProfile());
+                if (session == null) error(http, 404, "Rankings unavailable");
+                else json(http, 200, session.rankings());
             }
             case "/api/layout" -> {
                 if (!requireMethod(http, method, "POST")) return;

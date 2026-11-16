@@ -83,7 +83,15 @@ public interface BrowserGame {
         public CollectionCue { cards = List.copyOf(cards); }
     }
 
-    record History(List<String> headings, List<List<String>> rows) {
+    record HistoryCell(String bid, String total, String description, boolean missed, int series) { }
+    record HistoryRow(int cards, String status, List<HistoryCell> cells) { }
+    record HistoryGrid(List<String> players, List<HistoryRow> rows, String cardsLabel,
+                       String bidLabel, String pointsLabel, String legend) { }
+
+    record History(List<String> headings, List<List<String>> rows, HistoryGrid grid) {
+        public History(List<String> headings, List<List<String>> rows) {
+            this(headings, rows, null);
+        }
         public static final History EMPTY = new History(List.of(), List.of());
 
         public History {

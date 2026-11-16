@@ -7,7 +7,7 @@ const [site, output, ...selected] = process.argv.slice(2);
 if (!site || !output) throw new Error("Expected site and external evidence directories");
 const asset = file => import(pathToFileURL(join(resolve(site), file)));
 const { autoGame } = await asset("auto-game.mjs");
-const { command, initialize } = await asset("whist-engine.mjs");
+const { command, commandLocal, initialize } = await asset("whist-engine.mjs");
 const checks = [];
 
 async function check(id, name, expected, exercise) {
@@ -153,7 +153,8 @@ await check("WEB-01-LOCALE", "Română, engleză și realizări locale după red
     constructor() { initialize(31, 9); }
     addEventListener(kind, listener) { if (kind === "message") request = listener; }
     postMessage({ id, path, values: fields, profile }) {
-      queueMicrotask(() => request({ data: { id, ...invoke(path.slice(5), fields, profile) } }));
+      queueMicrotask(() => request({ data: { id, ...JSON.parse(commandLocal(path, JSON.stringify(fields),
+        profile.name, profile.progress, profile.checkpoint, profile.rankings)) } }));
     }
   };
   const { localTransport } = await asset("local-transport.mjs");
@@ -195,11 +196,12 @@ await check("WEB-01-LOCALE", "Română, engleză și realizări locale după red
   state = await browser.request("/api/notice", { revision: state.revision, dismiss: "yes" });
   browser = localTransport();
   assert.equal(preferredLanguage(), "en");
-  const reopened = await browser.request("/api/language", { revision: 0, language: preferredLanguage() });
+  const resumed = await browser.request("/api/state");
+  const reopened = await browser.request("/api/language", { revision: resumed.revision, language: preferredLanguage() });
   assert.equal(reopened.profile.name, "Ștefan");
   assert.equal(reopened.profile.notice, null);
   assert.deepEqual(reopened.profile.catalogue, state.profile.catalogue);
-  assert.equal(reopened.view, null);
+  assert.deepEqual(reopened.view.score, state.view.score);
   return { language: preferredLanguage(), profile: reopened.profile.name,
     ruleSections: config.copy.en.rules.length, achievementIds: earned.map(goal => goal.id) };
 });

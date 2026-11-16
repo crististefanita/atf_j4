@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import ro.whistlab.app.achievements.WhistAchievementRepository;
 
-final class WhistBrowserStorage implements WhistAchievementRepository.Storage {
+final class WhistBrowserStorage implements WhistAchievementRepository.Storage, ro.whistlab.app.highscores.HighScoreRepository.Storage {
     private final Path file;
     private String memory;
 

@@ -1,3 +1,5 @@
+import { rankingPanel } from "./records.mjs";
+
 const languageKey = "whistlab:web:language:v1";
 
 export function preferredLanguage() {
@@ -123,7 +125,12 @@ export function createProfileDialogs(element, button, submit, copy = (_, text) =
     show(copy("help", "Reguli de joc"), body, copy("back", "Înapoi"), "game-rules");
   }
 
-  return { edit, catalogue, notice, rules, dialog };
+  function rankings(data) {
+    show(copy("ranking", "Clasamente"), rankingPanel(data, element, copy),
+      copy("close", "Închide"), "game-rankings");
+  }
+
+  return { edit, catalogue, notice, rules, rankings, dialog };
 }
 export function deviceProfile(tabId, storage = () => localStorage) {
   const idKey = "table-profile-id";

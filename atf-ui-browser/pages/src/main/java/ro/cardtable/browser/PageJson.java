@@ -88,7 +88,22 @@ final class PageJson {
         if (value instanceof BrowserGame.PlayStep step)
             return fields("play", step.play(), "startsTrick", step.startsTrick(), "delayMillis", step.delayMillis(),
                     "collection", step.collection(), "bids", step.bids(), "seatFacts", step.seatFacts());
-        if (value instanceof BrowserGame.History history) return fields("headings", history.headings(), "rows", history.rows());
+        if (value instanceof BrowserGame.History history)
+            return fields("headings", history.headings(), "rows", history.rows(), "grid", history.grid());
+        if (value instanceof BrowserGame.HistoryGrid grid)
+            return fields("players", grid.players(), "rows", grid.rows(), "cardsLabel", grid.cardsLabel(),
+                    "bidLabel", grid.bidLabel(), "pointsLabel", grid.pointsLabel(), "legend", grid.legend());
+        if (value instanceof BrowserGame.HistoryRow row)
+            return fields("cards", row.cards(), "status", row.status(), "cells", row.cells());
+        if (value instanceof BrowserGame.HistoryCell cell)
+            return fields("bid", cell.bid(), "total", cell.total(), "description", cell.description(),
+                    "missed", cell.missed(), "series", cell.series());
+        if (value instanceof BrowserExperience.Rankings rankings)
+            return fields("preferred", rankings.preferred(), "boards", rankings.boards());
+        if (value instanceof BrowserExperience.RankBoard board)
+            return fields("key", board.key(), "label", board.label(), "entries", board.entries());
+        if (value instanceof BrowserExperience.RankEntry entry)
+            return fields("label", entry.label(), "score", entry.score(), "ai", entry.ai(), "sample", entry.sample());
         if (value instanceof BrowserGame.CollectionCue cue)
             return fields("winningSeat", cue.winningSeat(), "displayMillis", cue.displayMillis(),
                     "travelMillis", cue.travelMillis(), "cards", cue.cards());

@@ -2,23 +2,23 @@
 
 ## Pe scurt
 
-**WEB-01** folosește [adaptorul comun](../../atf-ui-browser/README.md) pentru Whist, Rentz și Hold’em. Ediția Whist de pe GitHub Pages rulează motorul compilat în browser și salvează profilul local. Calificarea identității cu APK-ul rămâne deschisă până la comparația pe același telefon.
+**WEB-01** folosește [adaptorul comun](../../atf-ui-browser/README.md) pentru Whist, Rentz și Hold’em. Ediția Whist de pe GitHub Pages rulează motorul compilat în browser și salvează local profilul, realizările, partida și clasamentele. Calificarea identității cu APK-ul rămâne deschisă până la comparația pe același telefon.
 
 ## Calificare rămasă
 
 | Arie | Criteriu rămas |
 |---|---|
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
-| Funcții de prezentare | Compară vizual profilul, Realizările și ritmul colectării levatelor în AutoGame. Măsoară focusul, lizibilitatea la text mărit și accesul la licitațiile lungi. |
+| Funcții de prezentare | Compară profilul, Realizările, clasamentele, istoricul și colectarea levatelor în AutoGame. Măsoară fontul, aceleași ancore și lizibilitatea la text mărit. |
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
 | Publicare online | Pentru Whist, verifică pe un telefon redeschiderea ediției Pages cu același profil. Pentru Rentz și Hold’em, califică pachetul fiecărui joc înainte de publicarea adresei sub APK. [Fluxul Pages](../../atf-ui-browser/README.md#whist-pe-github-pages) |
 
-## Funcții APK de adus în web
+## Diferențe funcționale rămase
 
 | ID | Schimbare | Criteriu de acceptare |
 |---|---|---|
-| WEB-04 | Salvează partida în browser la aceeași origine, cu checkpoint versionat și identitate stabilă. | Redeschide pagina în timpul licitației, în joc și la scor. Refă distribuirea, levatele și istoricul; verifică reluarea AutoGame debifat, fișierul deteriorat și creditul unic pentru Realizări. |
-| WEB-05 | Adaugă clasamentele locale și marcajele native din istoricul de scor. | Compară clasamentul și ordinea la egalitate cu motorul, inclusiv joc la zero și partide neeligibile. Redă licitația ratată și premierea de serie în celula corespunzătoare, cu texte RO/EN. |
+| WEB-06 | Aliniază navigarea dintre setări, instrucțiuni, masă și scor. Adaugă acțiunea Joacă din nou cu aceeași configurație și distribuire nouă. | Compară aceleași intrări în meniul jocului, previzualizarea programului, regulile de scor și revenirea în ecranul anterior, în română și engleză. |
+| WEB-07 | Califică aceeași partidă în Chrome și în APK pe același telefon, cu aceleași date de intrare. | Compară istoricul cu ambele ajustări de serie la 3–6 locuri, clasamentele, revenirea din dialoguri și o reluare după închiderea completă a fiecărei aplicații. Include dimensiuni logice, font mărit și capturi pereche. |
 
 ## Profilurile de referință
 

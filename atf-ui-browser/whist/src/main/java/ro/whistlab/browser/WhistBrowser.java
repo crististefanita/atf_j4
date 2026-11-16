@@ -33,9 +33,14 @@ public final class WhistBrowser implements BrowserGame {
 
     public WhistBrowser(LongSupplier seeds) { this(seeds, null); }
 
-    public static BrowserExperience localProfile(Storage name, Storage progress) {
-        return new WhistBrowserProfile(name, progress);
+    public static BrowserExperience localProfile(Storage name, Storage progress,
+            ro.whistlab.app.highscores.HighScoreRepository.Storage rankings) {
+        return new WhistBrowserProfile(name, progress, rankings);
     }
+
+    public Match restore(String checkpoint) { return WhistMatch.restore(checkpoint); }
+
+    public String checkpoint(Match match) { return ((WhistMatch) match).checkpoint(); }
 
     private WhistBrowser(LongSupplier seeds, Path storage) {
         this.seeds = seeds;
@@ -100,7 +105,9 @@ public final class WhistBrowser implements BrowserGame {
                 entry("bid", text.placeBid()), entry("history", text.scoreHistory()),
                 entry("mainMenu", text.mainMenu()), entry("gameMenu", text.gameMenu()),
                 entry("trump", text.trumpHeading()), entry("hand", ro ? "Cărțile tale" : "Your cards"),
-                entry("busy", ro ? "O comandă este deja în curs." : "A command is already running."));
+                entry("savedGameError", text.noSavedGame()), entry("storageError", text.storageError()),
+                entry("ranking", text.highestScores()), entry("rankingHint", text.highScoreHint()),
+                entry("gameType", text.gameType()), entry("busy", ro ? "O comandă este deja în curs." : "A command is already running."));
     }
 
     @Override public List<Field> fields() { return fields("ro"); }

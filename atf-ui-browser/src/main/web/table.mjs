@@ -1,6 +1,7 @@
 import { isPhone, viewportGeometry } from "./viewport.mjs";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
+import { historyGrid } from "./records.mjs";
 import { createProfileDialogs, deviceProfile, preferredLanguage, saveLanguage } from "./profile.mjs";
 
 const stage = document.querySelector("#table");
@@ -137,6 +138,7 @@ async function issue(path, fields) {
     else render();
     stage.querySelector(".prompt, h1")?.focus({ preventScroll: true });
     profileDialogs.notice(state.profile?.notice);
+    showStorageIssue();
     return "";
   } catch (failure) {
     if (failure.status === 409 || failure.status === 500) {
@@ -198,6 +200,19 @@ async function playCards(steps) {
   }
 }
 
+function showStorageIssue() {
+  if (state.storageIssue) errorBox.textContent = copy(state.storageIssue, "Salvarea locală nu este disponibilă.");
+}
+
+async function showRankings() {
+  try {
+    const data = await call("/api/rankings");
+    if (data) profileDialogs.rankings(data);
+  } catch {
+    errorBox.textContent = copy("storageError", "Clasamentele locale nu au putut fi citite.");
+  }
+}
+
 function menu() {
   automation.set(false);
   if (setup.surface === "whist") {
@@ -210,6 +225,7 @@ function menu() {
     const resume = button(copy("resume", "Reia partida"), render);
     resume.disabled = !state.view;
     home.append(resume,
+      button(copy("ranking", "Clasamente"), showRankings, "quiet"),
       button(copy("achievements", "Realizări"), () => profileDialogs.catalogue(state.profile.catalogue), "quiet"),
       button(copy("help", "Reguli de joc"), () => profileDialogs.rules(copy("rules", [])), "quiet"));
     const label = element("label", copy("language", "Limba"), "whist-language");
@@ -387,7 +403,9 @@ function scoreGrid(data) {
 function showHistory(data) {
   history.querySelector("#history-title").textContent = copy("history", "Istoric punctaj");
   history.querySelector("button").textContent = copy("close", "Închide");
-  document.querySelector("#history-data").replaceChildren(scoreGrid(data));
+  const content = document.querySelector("#history-data");
+  content.replaceChildren(data.grid ? historyGrid(data.grid, element) : scoreGrid(data));
+  history.querySelector(".history-legend").textContent = data.grid?.legend ?? "";
   history.showModal();
 }
 
@@ -524,12 +542,16 @@ function whistHeader(match) {
   trigger.append(element("span", "", "menu-lines"));
   navigation.append(trigger);
   const items = element("div", "", "whist-menu-items");
-  if (match.history.rows.length) {
+  if (match.history.grid || match.history.rows.length) {
     items.append(button(copy("history", "Istoric punctaj"), () => {
       navigation.open = false;
       showHistory(match.history);
     }));
   }
+  items.append(button(copy("ranking", "Clasamente"), () => {
+    navigation.open = false;
+    showRankings();
+  }));
   items.append(button(copy("mainMenu", "Meniu principal"), () => { if (!pending) menu(); }));
   navigation.append(items);
   const title = element("h1", match.header.title);
@@ -638,6 +660,7 @@ try {
   transport = document.documentElement.dataset.engine === "whist"
     ? (await import("./local-transport.mjs")).localTransport() : httpTransport();
   [setup, state] = await Promise.all([call("/api/setup"), call("/api/state")]);
+  const recoveryIssue = state.storageIssue;
   if (setup.surface === "whist" && preferredLanguage() === "en") {
     state = await call("/api/language", { revision: String(state.revision), language: "en" });
     rememberLanguage("en");
@@ -655,8 +678,11 @@ try {
   }
   transport.remember?.(state.profile);
   document.title = setup.title;
-  render();
+  if (transport.resumeOnHome) menu();
+  else render();
   profileDialogs.notice(state.profile?.notice);
+  state.storageIssue ??= recoveryIssue;
+  showStorageIssue();
 } catch (failure) {
   errorBox.textContent = failure.message;
   stage.append(errorBox);

@@ -25,7 +25,7 @@ async function check(name, expected, exercise) {
 }
 
 const files = [".nojekyll", "auto-game.mjs", "collection.mjs", "engine-worker.mjs", "index.html", "local-transport.mjs",
-  "profile.mjs", "table.css", "table.mjs", "viewport.mjs", "whist-engine.mjs"];
+  "profile.mjs", "records.mjs", "table.css", "table.mjs", "viewport.mjs", "whist-engine.mjs"];
 
 if (!selection) await check("Pages · inventarul public", "Doar resurse statice și legături relative în subdirectorul proiectului", async () => {
   assert.deepEqual((await readdir(directory)).sort(), files.toSorted());

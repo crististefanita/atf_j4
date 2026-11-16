@@ -26,6 +26,19 @@ final class BrowserSession {
                 List.copyOf(collections), List.copyOf(playback));
     }
 
+    synchronized BrowserGame.Match match() { return match; }
+
+    synchronized void restore(BrowserGame.Match restored) {
+        if (restored != null) restored.setLanguage(language);
+        view = restored == null ? null : restored.view();
+        match = restored;
+        revision++;
+    }
+
+    synchronized BrowserExperience.Rankings rankings() {
+        return profile == null ? null : profile.rankings(match, language);
+    }
+
     synchronized State start(BrowserGame game, long expected, Map<String, String> supplied) {
         checkRevision(expected);
         var configuration = new HashMap<String, String>();

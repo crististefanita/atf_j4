@@ -28,7 +28,7 @@ public final class HighScoresDialog {
         content.setPadding(dp(context,16), dp(context,8), dp(context,16), 0);
         TextView hint = label(context, copy.highScoreHint(), 12, false);
         content.addView(hint);
-        Spinner profiles = selector(context, boards.stream().map(board -> profileLabel(board.profile(), copy))
+        Spinner profiles = selector(context, boards.stream().map(board -> HighScorePresentation.profile(board.profile(), copy))
                 .collect(java.util.stream.Collectors.toList()));
         profiles.setContentDescription(copy.gameType());
         profiles.setTag("high-score-profile");
@@ -57,14 +57,13 @@ public final class HighScoresDialog {
                 row.setPadding(dp(context,8), dp(context,8), dp(context,8), dp(context,8));
                 row.setBackgroundColor(rank % 2 == 0 ? 0xffeef3ea : 0xfffffef8);
                 row.addView(label(context, Integer.toString(rank + 1), 13, false), new LinearLayout.LayoutParams(dp(context,30), -2));
-                String kind = (entry.ai() ? " · AI" : "") + (entry.sample() ? " · " + copy.sampleScore() : "");
-                String displayName = copy.displayName(entry.name(), !entry.ai());
-                TextView name = label(context, displayName + kind, 13, false);
+                String displayName = HighScorePresentation.player(entry, copy);
+                TextView name = label(context, displayName, 13, false);
                 row.addView(name, new LinearLayout.LayoutParams(0, -2, 1));
                 TextView score = label(context, Integer.toString(entry.score()), 15, true);
                 score.setGravity(Gravity.END);
                 row.addView(score, new LinearLayout.LayoutParams(dp(context,60), -2));
-                row.setContentDescription((rank + 1) + ". " + displayName + kind + ", " + entry.score() + " " + copy.pointsLabel());
+                row.setContentDescription((rank + 1) + ". " + displayName + ", " + entry.score() + " " + copy.pointsLabel());
                 row.setFocusable(true);
                 rows.addView(row);
             }
@@ -87,11 +86,6 @@ public final class HighScoresDialog {
                 .setPositiveButton(copy.close(), null).show();
     }
 
-    private static String profileLabel(HighScores.Profile profile, WhistUiText copy) {
-        return copy.modeName(profile.mode()) + " · " + profile.players() + " · " + copy.difficultyName(profile.difficulty())
-                + (profile.series() ? " · +" + profile.reward() + "/−" + profile.penalty() : "")
-                + (profile.allowZeroGame() ? " · " + copy.zeroGameToggle() : "");
-    }
     private static Spinner selector(Context context, List<String> labels) {
         Spinner spinner = new Spinner(context);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, labels);

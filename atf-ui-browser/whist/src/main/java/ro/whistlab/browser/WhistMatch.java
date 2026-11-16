@@ -14,9 +14,13 @@ import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.animation.TrickCollectionRequest;
 import ro.whistlab.app.achievements.WhistAchievementRepository;
+import ro.whistlab.app.highscores.HighScoreRepository;
+import ro.whistlab.app.persistence.GameCheckpointCodec;
+import org.json.JSONObject;
 import ro.cardtable.ui.animation.TrickCollectionMotion;
 import ro.cardtable.ui.turn.TurnPacing;
 import ro.whistlab.core.ai.policy.AiPolicy;
+import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.rules.GameRules;
@@ -27,14 +31,35 @@ import ro.whistlab.core.session.GameSession.Snapshot;
 final class WhistMatch implements BrowserGame.Match {
     private WhistUiText copy = WhistBrowser.copy("ro");
     private final GameSession game;
-    private final String matchId = UUID.randomUUID().toString();
+    private final String matchId;
     private final List<BrowserGame.CollectionCue> collections = new ArrayList<>();
     private final List<BrowserGame.PlayStep> playback = new ArrayList<>();
     private final HumanBidSelection bidSelection = new HumanBidSelection();
 
     WhistMatch(GameSession game) {
-        this.game = game;
+        this(game, UUID.randomUUID().toString());
         advance(false);
+    }
+
+    private WhistMatch(GameSession game, String matchId) {
+        this.game = game;
+        this.matchId = matchId;
+    }
+
+    static WhistMatch restore(String json) {
+        String id = new JSONObject(json).getString("matchId");
+        if (id.isBlank() || id.length() > 128) throw new IllegalArgumentException("Invalid match identity");
+        return new WhistMatch(GameCheckpointCodec.fromJson(json), id);
+    }
+
+    String checkpoint() {
+        return GameCheckpointCodec.encode(game.saveState()).put("matchId", matchId).toString();
+    }
+
+    GameConfig config() { return game.config(); }
+
+    void recordRanking(HighScoreRepository repository) throws IOException {
+        if (finished()) repository.record(matchId, game, System.currentTimeMillis());
     }
 
     @Override public void setLanguage(String language) {
