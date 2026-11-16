@@ -65,10 +65,9 @@ Compatibilitatea unei versiuni Android noi se califică separat de alegerea `tar
 
 ## Distribuția prin GitHub
 
-- **Descărcare:** README-ul principal oferă APK-ul candidatului local. După publicare, indică asset-ul versiunii din GitHub Releases sau o copie publică a aceluiași APK. Canalul și accesul sunt declarate separat: asset GitHub autentificat pentru conturi cu permisiune ori copie publică verificată anonim. Directorul `release` al repository-ului păstrează documentația și copia locală.
-- README-ul principal indică numai APK-ul din `currentVersion`. Pentru `PREPARED`, linkul duce la fișierul local. Pentru `PUBLISHED`, duce la asset-ul GitHub sau la copia publică verificată a aceleiași versiuni.
-
-- **Copie locală:** [catalogul livrărilor](../../release/README.md) trimite la dosarul versiunii, care reunește APK-ul, checksum-ul și rapoartele; binarul și checksum-ul local sunt excluse din Git.
+- **Descărcare:** README-ul principal indică un singur APK. `currentVersion` selectează ediția publicată, iar `candidateVersion` selectează candidatul anunțat pentru testare.
+- **Candidat în ramură:** `release/candidate.json` declară `PREPARED`, `artifactSource: MAIN_BRANCH` și acces anonim. Dosarul candidatului conține ghidul, APK-ul și checksum-ul, iar linkul direct GitHub citește binarul din `main`.
+- **Publicare:** după calificare, README-ul indică asset-ul ediției din GitHub Releases sau copia publică verificată. [Catalogul livrărilor](../../release/README.md) păstrează edițiile publicate și leagă separat candidatul.
 - **Navigare:** GitHub afișează directorul repository-ului ca fișiere și documentație; README-ul oferă o legătură către descărcare, fără redirect HTTP automat.
 
 - **Identitate:** [registrul release-ului](../../release/README.md) deține versiunea, adresele asset-urilor și probele de integritate.

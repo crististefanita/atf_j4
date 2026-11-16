@@ -65,7 +65,9 @@ class ReleaseArtifactLayoutGovernanceTest {
                 ? root.resolve("release/candidate.json") : releaseFolder.resolve("release-validation.json");
         var manifest = json.readTree(manifestPath.toFile());
         String publicationState = manifest.required("publication").required("state").asText();
-        boolean githubPublished = publicationState.equals("PUBLISHED") || index.path("candidateVersion").asText().equals(version);
+        boolean githubPublished = publicationState.equals("PUBLISHED")
+                || index.path("candidateVersion").asText().equals(version)
+                && !atf.tests.distribution.ReleaseDownloadSelection.isMainBranchCandidate(manifest);
         var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|[^)]+\\.apk|release/[^)]+)\\)")
                 .matcher(section).results().map(result -> result.group(1)).toList();
         var expected = List.of(githubPublished ? repository + "/releases/tag/v" + version : "release/" + version + "/README.md",

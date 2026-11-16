@@ -26,6 +26,22 @@ class DownloadSelectionComponentTest {
         assertThrows(IOException.class, () -> ReleaseDownloadSelection.select("current", "example/game", index, manifest));
     }
 
+    @Test void repositoryCandidateUsesTheExactMainBranchPathAndCannotStandInForCurrent() throws Exception {
+        var json = new ObjectMapper();
+        var index = json.createObjectNode().put("currentVersion", "1.2.0").put("candidateVersion", "1.3.0");
+        var manifest = json.createObjectNode();
+        var publication = manifest.putObject("publication").put("state", "PREPARED")
+                .put("artifactSource", "MAIN_BRANCH").put("accessMode", "ANONYMOUS");
+        manifest.putObject("release").put("versionName", "1.3.0").put("apkBytes", 43).put("apkSha256", "b".repeat(64));
+
+        var target = ReleaseDownloadSelection.select("advertised", "example/game", index, manifest);
+        assertEquals("https://raw.githubusercontent.com/example/game/refs/heads/main/release/1.3.0/WhistLab-1.3.0.apk",
+                target.publicUrl());
+        assertThrows(IOException.class, () -> ReleaseDownloadSelection.select("current", "example/game", index, manifest));
+        publication.put("targetUrl", target.publicUrl());
+        assertThrows(IOException.class, () -> ReleaseDownloadSelection.select("advertised", "example/game", index, manifest));
+    }
+
     @Test void aPreparedCandidateCannotBorrowTheOlderPublishedVersionOrItsPassingDownload() throws Exception {
         var json = new ObjectMapper();var index = json.createObjectNode().put("currentVersion", "1.2.0");
         index.putObject("publishedDownload").put("version", "1.1.0").put("bytes", 42).put("sha256", "a".repeat(64))

@@ -18,23 +18,39 @@ export async function checkReleaseArtifacts(projectRoot) {
   const artifacts = [];
   for (const version of versions) {
     const file = await regularFile(root, 'release/' + version + '/release-validation.json');
-    const {value: manifest, sha256: manifestSha256} = await strictJson(file);
-    const apk = 'WhistLab-' + version + '.apk';
-    if (manifest.release?.versionName !== version || manifest.release.apkName !== apk
-        || manifest.release.apkRelativePath !== apk || manifest.release.artifactKind !== 'apk') {
-      throw Error('RELEASE-PREFLIGHT-IDENTITY:' + version);
+    artifacts.push(await verifyArtifact(version, path.dirname(file), await strictJson(file)));
+  }
+  if (catalog.candidateVersion !== undefined) {
+    const version = catalog.candidateVersion;
+    if (typeof version !== 'string' || !versionPattern.test(version) || versions.includes(version))
+      throw Error('RELEASE-PREFLIGHT-CANDIDATE');
+    const manifest = await strictJson(await regularFile(root, 'release/candidate.json'));
+    const publication = manifest.value.publication;
+    if (publication?.artifactSource === 'MAIN_BRANCH') {
+      if (publication.state !== 'PREPARED' || publication.accessMode !== 'ANONYMOUS'
+          || publication.targetUrl !== undefined) throw Error('RELEASE-PREFLIGHT-CANDIDATE');
+      const guide = await regularFile(root, 'release/' + version + '/README.md');
+      artifacts.push({ ...await verifyArtifact(version, path.dirname(guide), manifest), candidate: true });
     }
-    const artifact = await readApkArtifact(path.dirname(file), manifest.release);
-    const inventory = manifest.integrity?.files;
-    for (const observed of [artifact.apk, artifact.sidecar]) {
-      const matches = Array.isArray(inventory) ? inventory.filter(entry => entry?.path === observed.path) : [];
-      if (matches.length !== 1 || matches[0].bytes !== observed.bytes || matches[0].sha256 !== observed.sha256) {
-        throw Error('RELEASE-PREFLIGHT-INVENTORY:' + version + ':' + observed.path);
-      }
-    }
-    artifacts.push({version, manifestSha256, ...artifact});
   }
   return artifacts;
+}
+
+async function verifyArtifact(version, directory, {value: manifest, sha256: manifestSha256}) {
+  const apk = 'WhistLab-' + version + '.apk';
+  if (manifest.release?.versionName !== version || manifest.release.apkName !== apk
+      || manifest.release.apkRelativePath !== apk || manifest.release.artifactKind !== 'apk') {
+    throw Error('RELEASE-PREFLIGHT-IDENTITY:' + version);
+  }
+  const artifact = await readApkArtifact(directory, manifest.release);
+  const inventory = manifest.integrity?.files;
+  for (const observed of [artifact.apk, artifact.sidecar]) {
+    const matches = Array.isArray(inventory) ? inventory.filter(entry => entry?.path === observed.path) : [];
+    if (matches.length !== 1 || matches[0].bytes !== observed.bytes || matches[0].sha256 !== observed.sha256) {
+      throw Error('RELEASE-PREFLIGHT-INVENTORY:' + version + ':' + observed.path);
+    }
+  }
+  return {version, manifestSha256, ...artifact};
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

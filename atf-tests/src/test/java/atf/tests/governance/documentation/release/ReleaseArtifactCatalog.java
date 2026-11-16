@@ -1,5 +1,6 @@
 package atf.tests.governance.documentation.release;
 
+import atf.tests.distribution.ReleaseDownloadSelection;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -58,6 +59,22 @@ final class ReleaseArtifactCatalog {
             var candidate = JSON.readTree(receipt.toFile());
             require(version.equals(candidate.path("release").path("versionName").asText()), "CANDIDATE-IDENTITY", receipt);
             expected.add("candidate.json");
+            if (ReleaseDownloadSelection.isMainBranchCandidate(candidate)) {
+                Path folder = root.resolve(version);
+                require(Files.isDirectory(folder) && folder.toRealPath().getParent().equals(root.toRealPath()),
+                        "CANDIDATE-FOLDER", folder);
+                String apk = "WhistLab-" + version + ".apk";
+                var allowed = Set.of("README.md", apk, apk + ".sha256");
+                try (var files = Files.list(folder)) {
+                    require(files.map(path -> path.getFileName().toString()).collect(java.util.stream.Collectors.toSet())
+                            .equals(allowed), "CANDIDATE-PAYLOAD", folder);
+                }
+                for (String file : allowed) {
+                    Path entry = folder.resolve(file);
+                    require(Files.isRegularFile(entry) && !Files.isSymbolicLink(entry), "CANDIDATE-FILE", entry);
+                }
+                expected.add(version);
+            }
         }
         try (var files = Files.list(root)) {
             var actual = files.map(path -> path.getFileName().toString()).collect(java.util.stream.Collectors.toSet());

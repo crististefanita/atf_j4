@@ -12,7 +12,20 @@ public final class ReleaseDownloadSelection {
                 : index.path("candidateVersion").isTextual() && !index.path("candidateVersion").asText().isBlank()
                         ? index.path("candidateVersion").asText() : text(index, "currentVersion");
         require(version.equals(expected), "CURRENT-IDENTITY");
-        return new ApkDownloadTarget(repository, version, number(release, "apkBytes"), text(release, "apkSha256"));
+        boolean mainBranch = isMainBranchCandidate(manifest);
+        require(!mainBranch || scope.equals("advertised") && index.path("candidateVersion").asText().equals(version),
+                "MAIN-BRANCH-SCOPE");
+        return new ApkDownloadTarget(repository, version, number(release, "apkBytes"),
+                text(release, "apkSha256"), mainBranch);
+    }
+
+    public static boolean isMainBranchCandidate(JsonNode manifest) throws IOException {
+        var publication = manifest.path("publication");
+        boolean mainBranch = publication.path("artifactSource").asText().equals("MAIN_BRANCH");
+        require(!mainBranch || publication.path("state").asText().equals("PREPARED")
+                && publication.path("accessMode").asText().equals("ANONYMOUS")
+                && publication.path("targetUrl").isMissingNode(), "MAIN-BRANCH-PUBLICATION");
+        return mainBranch;
     }
     private static long number(JsonNode node, String key) throws IOException {
         JsonNode value = node.path(key);require(value.isIntegralNumber() && value.canConvertToLong() && value.longValue() > 0, "NUMBER-" + key);

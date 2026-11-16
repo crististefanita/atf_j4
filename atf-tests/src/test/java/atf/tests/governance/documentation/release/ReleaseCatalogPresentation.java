@@ -1,5 +1,7 @@
 package atf.tests.governance.documentation.release;
 
+import atf.tests.distribution.ApkDownloadTarget;
+import atf.tests.distribution.ReleaseDownloadSelection;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -17,6 +19,12 @@ final class ReleaseCatalogPresentation {
         var release = manifest.required("release");
         String version = release.required("versionName").asText();
         String publicationState = manifest.path("publication").path("state").asText();
+        if (ReleaseDownloadSelection.isMainBranchCandidate(manifest)) {
+            var target = new ApkDownloadTarget(URI.create(repository).getPath().substring(1), version,
+                    release.required("apkBytes").asLong(), release.required("apkSha256").asText(), true);
+            require(target.fileName().equals(release.path("apkName").asText()), "MAIN-BRANCH-APK", releaseFolder);
+            return target.publicUrl();
+        }
         Path receipt = releaseFolder.resolve("reports/distribution-verification.json");
         if (!Files.isRegularFile(receipt)) {
             require(!publicationState.equals("PUBLISHED_SITE"), "SITE-RECEIPT", receipt);
