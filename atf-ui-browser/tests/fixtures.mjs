@@ -40,11 +40,12 @@ export async function withServer(game, webRoot, exercise) {
   }
 }
 
-export function client(url, clientId = "a".repeat(32)) {
+export function client(url, clientId = "a".repeat(32), profileId = clientId) {
   return async (path, form, expected = 200, authenticated = true) => {
     const headers = authenticated ? {
       "X-Table-Access": url.hash.slice(1),
-      "X-Table-Client": clientId
+      "X-Table-Client": clientId,
+      "X-Table-Profile": profileId
     } : {};
     const response = await fetch(new URL(path, url), {
       headers,

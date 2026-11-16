@@ -11,7 +11,7 @@
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
 | Funcții de prezentare | Compară vizual ecranele de profil și realizări și califică ritmul cadrelor de decontare, inclusiv levatele intermediare în AutoGame. Verifică separat recuperarea partidei după repornirea serverului. Profilul și progresul se recuperează independent de partidă. |
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
-| Publicare online | Sub descărcarea APK-ului din secțiunea „Jocul” a fiecărui README principal, publică legătura HTTPS verificată către jocul respectiv. Din acea legătură, o sesiune nouă pe telefon și pe Windows trebuie să poată porni și juca fără configurarea unui server local. |
+| Publicare online | Alege o origine HTTPS stabilă pentru fiecare joc. Adaptorul existent are nevoie de un serviciu JVM care să creeze sesiuni în mod sigur pentru vizitatori și să păstreze progresul într-un volum persistent. GitHub Pages poate găzdui versiunea care execută și motorul în browser. În ambele cazuri, probează pornirea unei partide dintr-o sesiune nouă pe telefon și pe Windows, apoi publică URL-ul sub APK în README. [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) |
 
 ## Profilurile de referință
 
@@ -24,6 +24,7 @@ Recomandarea pentru primul prototip desktop este un cadru portrait de **414 × 8
 | 1200 × 1920 px la 440 dpi (aprox. 436 × 698 dp) | Reper lat, calificat în Whist cu toate cele 17 cărți vizibile simultan. La 720 × 1280/360 dpi și 1080 × 1920/440 dpi, aceeași probă a accesat toate cărțile prin derulare. [Dosarul APK](../../release/README.md) · [Strategia de afișaj](../testing/ATF_Display.md) |
 
 - Măsoară dreptunghiul util APK din captură și ierarhie după zonele rezervate sistemului. Fixează dimensiunile normalizate, limba, fontul și SHA-ul APK-ului. La 414 × 896 verifică dacă toate cele 17 cărți încap simultan sau devin accesibile prin derulare, în aceleași condiții pe ambele platforme.
+
 ## Afișare pe telefon și Windows
 
 În ambele medii, antetul, locurile, comenzile și cărțile folosesc aceleași resurse, mărimi de text, spațieri și reguli de rearanjare ca pe APK. Măsurătorile țin cont de zonele rezervate de sistem și de browser, de orientare și de mărirea textului.

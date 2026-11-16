@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isPhone, viewportGeometry } from "../src/main/web/viewport.mjs";
 import { collectionFrame } from "../src/main/web/collection.mjs";
-import { normalizedNameLength } from "../src/main/web/profile.mjs";
+import { deviceProfile, normalizedNameLength } from "../src/main/web/profile.mjs";
 import { client, until, withBrowser, withServer } from "./fixtures.mjs";
 
 const [output, whist, rentz, holdem, edge, chrome] = process.argv.slice(2);
@@ -14,10 +14,10 @@ if (!output || !whist || !rentz || !holdem) {
 await mkdir(output, { recursive: true });
 const web = fileURLToPath(new URL("../src/main/web/", import.meta.url));
 const games = [
-  { title: "Whist", classes: whist, main: "ro.whistlab.browser.WhistBrowser",
+  { title: "Whist", web, classes: whist, main: "ro.whistlab.browser.WhistBrowser",
     arguments: [join(output, "component-profile-state")] },
-  { title: "Rentz", classes: rentz, main: "ro.rentzlab.browser.RentzBrowser" },
-  { title: "Hold’em", classes: holdem, main: "ro.atf.holdem.android.HoldemBrowser" }
+  { title: "Rentz", web: rentz.endsWith(".jar") ? "-" : web, classes: rentz, main: "ro.rentzlab.browser.RentzBrowser" },
+  { title: "Hold’em", web: holdem.endsWith(".jar") ? "-" : web, classes: holdem, main: "ro.atf.holdem.android.HoldemBrowser" }
 ];
 const results = [];
 
@@ -58,6 +58,23 @@ await audit("Componente comune · profil Unicode și animația levatei", () => {
   return { expected: "Lungime NFC pe code point și convergență către câștigător", observed: { half, limit: 10 } };
 });
 
+await audit("Profil pe telefon · aceeași origine și stocare dezactivată", () => {
+  const data = new Map();
+  const storage = () => ({ getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) });
+  const first = deviceProfile("1".repeat(32), storage);
+  first.remember({ savedName: true, name: "Bianca" });
+  const reopened = deviceProfile("2".repeat(32), storage);
+  reopened.remember({ savedName: false, name: "You" });
+  assert.equal(reopened.id, first.id);
+  assert.equal(reopened.name(), "Bianca");
+  const isolated = deviceProfile("3".repeat(32), () => { throw new DOMException("Blocked", "SecurityError"); });
+  isolated.remember({ savedName: true, name: "Ana" });
+  assert.equal(isolated.id, "3".repeat(32));
+  assert.equal(isolated.name(), null);
+  return { expected: "Numele confirmat supraviețuiește filei; aplicația pornește când stocarea este refuzată",
+    observed: { restoredName: reopened.name(), isolatedName: isolated.name() } };
+});
+
 await withServer(games[0], web, async url => {
   const request = client(url);
   await audit("Whist · salvarea profilului și refuzul editării nevalide", async () => {
@@ -70,8 +87,16 @@ await withServer(games[0], web, async url => {
     assert.equal(current.profile.name, accepted);
     assert.equal(current.revision, saved.revision);
     assert.ok(current.profile.catalogue.groups.length > 0);
-    return { expected: "10 caractere non-BMP rămân salvate, al unsprezecelea este refuzat",
-      observed: { nameLength: normalizedNameLength(current.profile.name), groups: current.profile.catalogue.groups.length } };
+    const second = client(url, "e".repeat(32), "d".repeat(32));
+    assert.equal((await second("/api/state")).profile.name, accepted);
+    assert.equal((await second("/api/state")).view, null);
+    const firstMatch = await profile("/api/start", { revision: current.revision });
+    assert.equal(firstMatch.view.seats[0].name, accepted);
+    assert.equal((await second("/api/state")).view, null);
+    assert.notEqual((await client(url, "f".repeat(32))("/api/state")).profile.name, accepted);
+    return { expected: "10 code points validați; profil comun pe file, meci și profiluri independente",
+      observed: { nameLength: normalizedNameLength(current.profile.name), groups: current.profile.catalogue.groups.length,
+        secondTabMatch: (await second("/api/state")).view } };
   });
   let four;
   await audit("Whist · stare privată, recomandare, refuzuri și reluare", async () => {
@@ -102,12 +127,15 @@ await withServer(games[0], web, async url => {
     let state = await request("/api/start", { revision: 0, players: 4, mode: "ROMANIAN_WHIST", difficulty: "NORMAL" });
     for (let hand = 1; hand <= 24; hand++) {
       assert.equal(state.view.heading, "Mâna " + hand);
+      const expectedTricks = state.view.hand.length;
       state = await request("/api/action", { revision: state.revision, action: "auto" });
-      const cue = state.collection;
-      assert.equal(cue.cards.length, 4);
-      assert.equal(new Set(cue.cards.map(card => card.seat)).size, 4);
-      assert.equal(cue.displayMillis, 1500);
-      assert.equal(cue.travelMillis, 500);
+      assert.equal(state.collections.length, expectedTricks);
+      for (const cue of state.collections) {
+        assert.equal(cue.cards.length, 4);
+        assert.equal(new Set(cue.cards.map(card => card.seat)).size, 4);
+        assert.equal(cue.displayMillis, 1500);
+        assert.equal(cue.travelMillis, 500);
+      }
       assert.equal(state.view.history.rows.length, hand);
       assert.equal(state.view.history.rows.at(-1).length, 5);
       if (hand < 24) state = await request("/api/action", { revision: state.revision, action: "next" });
@@ -115,7 +143,7 @@ await withServer(games[0], web, async url => {
     assert.equal(state.view.prompt, "Clasament final");
     assert.equal(state.view.actions.length, 0);
     const settled = await request("/api/state");
-    assert.equal(settled.collection, null);
+    assert.deepEqual(settled.collections, []);
     assert.ok(settled.profile.notice?.goals.length > 0);
     const acknowledged = await request("/api/notice", { revision: settled.revision, dismiss: "yes" });
     assert.equal(acknowledged.profile.notice, null);
@@ -144,7 +172,7 @@ await withServer(games[0], web, async url => {
   });
 });
 
-await withServer(games[1], web, async url => {
+await withServer(games[1], games[1].web, async url => {
   await audit("Rentz · dezvăluire, contract, levată și totaluri", async () => {
     const request = client(url);
     let state = await request("/api/start", { revision: 0, players: 4, difficulty: "NORMAL" });
@@ -165,7 +193,7 @@ await withServer(games[1], web, async url => {
   });
 });
 
-await withServer(games[2], web, async url => {
+await withServer(games[2], games[2].web, async url => {
   await audit("Hold’em · pariere încadrată de motor, showdown și mâna următoare", async () => {
     const request = client(url);
     let state = await request("/api/start", { revision: 0, players: 4, difficulty: "NORMAL", blinds: 3 });
@@ -205,9 +233,9 @@ async function ui({ send, evaluate, version }, url, name) {
       mode: document.querySelector("#frame").dataset.viewport };
   })()`);
   const images = [];
-  async function ready(expression, label) {
+  async function ready(expression, label, limit = 20000) {
     try {
-      return await until(() => evaluate(expression), 20000);
+      return await until(() => evaluate(expression), limit);
     } catch (failure) {
       const text = await evaluate("document.body?.innerText?.slice(0, 550)").catch(() => "");
       throw new Error(label + ": " + text, { cause: failure });
@@ -227,7 +255,7 @@ async function ui({ send, evaluate, version }, url, name) {
   const page = await send("Page.navigate", { url: url.href });
   assert.ok(!page.errorText, page.errorText);
   await ready("!!document.querySelector('[name=players]')", "Meniul nu a apărut");
-  if (name === "Edge") {
+  {
     const clickText = text => evaluate(`[...document.querySelectorAll("button")].find(
       button => button.textContent.startsWith(${JSON.stringify(text)}))?.click()`);
     await clickText("Numele tău:");
@@ -244,11 +272,37 @@ async function ui({ send, evaluate, version }, url, name) {
     await ready(`!document.querySelector('.player-dialog[open]') &&
       [...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: Bianca')`,
       "Profilul salvat nu a revenit în meniu");
+    assert.equal(await evaluate("localStorage.getItem('table-profile-name')"), "Bianca");
+    const firstTab = await evaluate("sessionStorage.getItem('table-client')");
+    await evaluate("sessionStorage.removeItem('table-client')");
+    await send("Page.reload");
+    await ready(`[...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: Bianca')`,
+      "Fila reinițializată nu a refolosit profilul de pe telefon");
+    assert.notEqual(await evaluate("sessionStorage.getItem('table-client')"), firstTab);
+    const deviceId = await evaluate("localStorage.getItem('table-profile-id')");
+    assert.match(deviceId, /^[0-9a-f]{32}$/);
+    const serverName = join(output, "component-profile-state", deviceId + "-name.txt");
+    await unlink(serverName);
+    await send("Page.reload");
+    await until(async () => (await readFile(serverName, "utf-8")) === "Bianca");
+    await ready(`document.querySelector('#table')?.getAttribute('aria-busy') === 'false' &&
+      [...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: Bianca')`,
+      "Browserul nu a reconstruit numele local");
     await clickText("Numele tău: Bianca");
     await snapshot("profil salvat");
-    await clickText("Anulează");
+    await clickText("Resetează numele");
+    await ready(`!document.querySelector('.player-dialog[open]') &&
+      [...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: You')`,
+      "Resetarea profilului nu a revenit în meniu");
+    assert.equal(await evaluate("localStorage.getItem('table-profile-name')"), "You");
     await clickText("Realizări");
     await ready("!!document.querySelector('.player-dialog[open] details')", "Catalogul nu a apărut");
+    const catalogue = await evaluate(`(() => {
+      const panel = document.querySelector('.achievement-catalogue');
+      const { width, height } = panel.getBoundingClientRect();
+      return { width, height, total: panel.querySelector('progress').max, rows: panel.querySelectorAll('details').length };
+    })()`);
+    assert.deepEqual(catalogue, { width: 414, height: 896, total: 55, rows: 55 });
     await evaluate("document.querySelector('.player-dialog[open] details summary').click()");
     assert.ok(await evaluate("!!document.querySelector('.player-dialog[open] details[open] p')"));
     await snapshot("catalog și detaliu");
@@ -316,15 +370,20 @@ async function ui({ send, evaluate, version }, url, name) {
     if (height === 1080) await snapshot("1920×1080, masă centrată");
   }
   if (name === "Edge") {
+    await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 14; Mobile)" });
+    await metrics(414, 896, true);
+    await ready("document.querySelector('#frame').clientWidth === 414", "Revenirea la cadrul mobil nu s-a încheiat");
     await evaluate("[...document.querySelectorAll('.actions button')].find(button => button.textContent === 'Joacă automat').click()");
-    await ready("!!document.querySelector('#table[data-collecting] .collection .card')", "Colectarea nu a apărut");
-    await ready(`(() => {
-      const card = document.querySelector(".collection .card");
-      const elapsed = card?.getAnimations()[0]?.currentTime;
-      return elapsed >= 1080 && elapsed < 1450;
-    })()`, "Cadrele levatei nu au intrat în intervalul de deplasare");
-    await snapshot("levata în deplasare spre câștigător");
-    await ready("!document.querySelector('#table[data-collecting]')", "Colectarea nu s-a încheiat");
+    for (const step of [1, 2]) {
+      await ready(`(() => {
+        const stage = document.querySelector("#table[data-collection-step='${step}']");
+        const elapsed = stage?.querySelector(".collection .card")?.getAnimations()[0]?.currentTime;
+        return elapsed >= 1050 && elapsed < 1450;
+      })()`, "Cadrele levatei nu au intrat în intervalul de deplasare");
+      await snapshot("levata " + step + " din AutoGame în deplasare");
+    }
+    await ready("document.querySelector('#table').getAttribute('aria-busy') === 'false'",
+      "Șirul de colectări nu s-a încheiat", 37000);
   }
   return { expected: "Afișare mobilă 1:1, 17 cărți accesibile, ancore fixe și scalare uniformă după înălțime",
     observed: { version, portrait, playedSeats: play.seats, desktop }, images };

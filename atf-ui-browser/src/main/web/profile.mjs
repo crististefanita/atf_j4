@@ -7,14 +7,14 @@ export function createProfileDialogs(element, button, submit) {
   dialog.className = "player-dialog";
   document.body.append(dialog);
 
-  function show(title, content, close) {
+  function show(title, content, close, kind) {
     const heading = element("h2", title);
     heading.id = "player-dialog-title";
     dialog.setAttribute("aria-labelledby", heading.id);
-    const dismiss = button(close ?? "Închide", () => dialog.close());
-    dialog.replaceChildren(heading, content, dismiss);
+    dialog.className = "player-dialog " + kind;
+    dialog.replaceChildren(heading, content);
+    if (close) dialog.append(button(close, () => dialog.close()));
     if (!dialog.open) dialog.showModal();
-    return dismiss;
   }
 
   function edit(name) {
@@ -31,43 +31,61 @@ export function createProfileDialogs(element, button, submit) {
     error.setAttribute("role", "alert");
     const save = element("button", "Salvează", "primary");
     save.type = "submit";
+    async function applyName(value) {
+      save.disabled = true;
+      reset.disabled = true;
+      const failure = await submit("/api/profile", { name: value });
+      if (failure) {
+        error.textContent = failure;
+        save.disabled = normalizedNameLength(input.value) > 10;
+        reset.disabled = false;
+      } else {
+        dialog.close();
+      }
+    }
+    const reset = button("Resetează numele", () => applyName(""));
     input.addEventListener("input", () => {
       save.disabled = normalizedNameLength(input.value) > 10;
       error.textContent = save.disabled ? "Numele are mai mult de 10 caractere." : "";
     });
-    form.append(label, hint, error, save);
-    form.addEventListener("submit", async event => {
+    const actions = element("div", "", "profile-actions");
+    actions.append(reset, button("Anulează", () => dialog.close()), save);
+    form.append(label, hint, error, actions);
+    form.addEventListener("submit", event => {
       event.preventDefault();
-      save.disabled = true;
-      const failure = await submit("/api/profile", { name: input.value });
-      if (failure) {
-        error.textContent = failure;
-        save.disabled = false;
-      } else {
-        dialog.close();
-      }
+      applyName(input.value);
     });
-    show("Numele tău", form, "Anulează");
+    show("Numele tău", form, null, "profile-editor");
     input.focus();
     input.select();
   }
 
   function catalogue(data) {
     const body = element("div", "", "goals");
-    body.append(element("p", data.summary));
+    const summary = element("p", data.summary, "achievement-summary");
+    const goals = data.groups.flatMap(group => group.goals);
+    const progress = element("progress");
+    progress.max = goals.length || 1;
+    progress.value = goals.filter(goal => goal.complete).length;
+    progress.setAttribute("aria-label", "Progresul realizărilor");
     for (const group of data.groups) {
       const heading = element("h3", group.heading);
       body.append(heading);
       for (const goal of group.goals) body.append(goalRow(goal, true));
     }
-    show("Realizări", body);
+    const content = element("div", "", "achievement-content");
+    content.append(summary, progress, body);
+    show("Realizări", content, "Înapoi", "achievement-catalogue");
   }
 
   function goalRow(goal, collapsible) {
     const title = [goal.marker, goal.title, goal.progress].join(" ");
     if (collapsible) {
       const row = element("details");
-      row.append(element("summary", title), element("p", goal.level + " · " + goal.description));
+      const summary = element("summary");
+      summary.append(element("strong", (goal.complete ? goal.marker + " " : "") + goal.title),
+        element("span", goal.level + " · " + goal.progress));
+      row.append(summary, element("p", goal.description));
       return row;
     }
     const row = element("div", "", "goal-notice");
@@ -80,9 +98,29 @@ export function createProfileDialogs(element, button, submit) {
     const body = element("div", "", "goals");
     body.append(element("p", data.summary));
     for (const goal of data.goals) body.append(goalRow(goal, false));
-    show(data.title, body);
+    show(data.title, body, "Închide", "achievement-notice");
     dialog.addEventListener("close", () => submit("/api/notice", { dismiss: "yes" }), { once: true });
   }
 
   return { edit, catalogue, notice, dialog };
+}
+export function deviceProfile(tabId, storage = () => localStorage) {
+  const idKey = "table-profile-id";
+  const nameKey = "table-profile-name";
+  function get(key) {
+    try { return storage().getItem(key); } catch { return null; }
+  }
+  function put(key, value) {
+    try { storage().setItem(key, value); } catch { /* Storage can be disabled. */ }
+  }
+  const savedId = get(idKey);
+  const id = /^[0-9a-f]{32}$/.test(savedId) ? savedId : tabId;
+  if (id !== savedId) put(idKey, id);
+  return {
+    id,
+    name: () => get(nameKey),
+    remember(profile) {
+      if (profile?.savedName) put(nameKey, profile.name);
+    }
+  };
 }

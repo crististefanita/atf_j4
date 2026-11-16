@@ -1,12 +1,13 @@
 package ro.cardtable.browser;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** One in-memory match per browser tab. Refreshes can read the latest accepted revision. */
 final class BrowserSession {
     record State(long revision, BrowserGame.View view, BrowserExperience.Details profile,
-                 BrowserGame.CollectionCue collection) { }
+                 List<BrowserGame.CollectionCue> collections) { }
 
     private final BrowserExperience profile;
     private long revision;
@@ -16,11 +17,11 @@ final class BrowserSession {
     BrowserSession(BrowserExperience profile) { this.profile = profile; }
 
     synchronized State state() {
-        return response(null);
+        return response(List.of());
     }
 
-    private State response(BrowserGame.CollectionCue collection) {
-        return new State(revision, view, profile == null ? null : profile.details(match), collection);
+    private State response(List<BrowserGame.CollectionCue> collections) {
+        return new State(revision, view, profile == null ? null : profile.details(match), List.copyOf(collections));
     }
 
     synchronized State start(BrowserGame game, long expected, Map<String, String> supplied) {
@@ -59,7 +60,7 @@ final class BrowserSession {
             revision++;
         }
         if (profile != null) profile.completedAction(match);
-        return response(match.collection());
+        return response(match.collections());
     }
 
     synchronized State rename(long expected, String name) {

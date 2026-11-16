@@ -16,7 +16,7 @@ public interface BrowserGame {
     interface Match {
         View view();
         void act(String action);
-        default CollectionCue collection() { return null; }
+        default List<CollectionCue> collections() { return List.of(); }
     }
 
     record Option(String value, String label) { }

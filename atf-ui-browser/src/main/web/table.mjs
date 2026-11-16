@@ -1,6 +1,6 @@
 import { isPhone, viewportGeometry } from "./viewport.mjs";
 import { collect } from "./collection.mjs";
-import { createProfileDialogs } from "./profile.mjs";
+import { createProfileDialogs, deviceProfile } from "./profile.mjs";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -26,6 +26,7 @@ const resize = () => {
   history.style.setProperty("--dialog-width", result.frameWidth + "px");
   history.style.setProperty("--dialog-scale", result.scale);
   document.documentElement.style.setProperty("--dialog-width", result.frameWidth + "px");
+  document.documentElement.style.setProperty("--dialog-height", result.frameHeight + "px");
   document.documentElement.style.setProperty("--dialog-scale", result.scale);
   if (stage.querySelector(".board")) placeTable();
 };
@@ -45,7 +46,8 @@ if (!client) {
   client = randomClient();
   sessionStorage.setItem("table-client", client);
 }
-const headers = { "X-Table-Access": access, "X-Table-Client": client };
+const profile = deviceProfile(client);
+const headers = { "X-Table-Access": access, "X-Table-Client": client, "X-Table-Profile": profile.id };
 let setup;
 let state;
 let pending = false;
@@ -83,16 +85,21 @@ async function issue(path, fields) {
   errorBox.textContent = "";
   try {
     const onMenu = !!stage.querySelector(".setup");
-    state = await call(path, { ...fields, revision: String(state.revision) });
+    const result = await call(path, { ...fields, revision: String(state.revision) });
+    if (result.collections.length && stage.querySelector(".board")) {
+      await placeTable();
+      for (const [index, cue] of result.collections.entries()) {
+        stage.dataset.collectionStep = String(index + 1);
+        animation = collect(stage, cue, card);
+        await animation.done;
+        animation = undefined;
+      }
+    }
+    state = result;
+    profile.remember(state.profile);
     selectedBid = undefined;
     if (onMenu && path === "/api/profile") menu();
     else render();
-    if (state.collection) {
-      await placeTable();
-      animation = collect(stage, state.collection, card);
-      await animation.done;
-      animation = undefined;
-    }
     stage.querySelector(".prompt, h1")?.focus({ preventScroll: true });
     profileDialogs.notice(state.profile?.notice);
     return "";
@@ -109,6 +116,9 @@ async function issue(path, fields) {
     errorBox.textContent = failure.message;
     return failure.message;
   } finally {
+    animation?.cancel();
+    animation = undefined;
+    delete stage.dataset.collectionStep;
     pending = false;
     stage.setAttribute("aria-busy", "false");
   }
@@ -343,6 +353,16 @@ function render() {
 
 try {
   [setup, state] = await Promise.all([call("/api/setup"), call("/api/state")]);
+  const savedName = profile.name();
+  if (state.profile && !state.profile.savedName && savedName) {
+    try {
+      state = await call("/api/profile", { revision: String(state.revision), name: savedName });
+    } catch (failure) {
+      if (failure.status !== 400 && failure.status !== 409) throw failure;
+      state = await call("/api/state");
+    }
+  }
+  profile.remember(state.profile);
   document.title = setup.title;
   render();
   profileDialogs.notice(state.profile?.notice);

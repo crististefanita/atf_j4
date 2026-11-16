@@ -24,7 +24,7 @@ import ro.whistlab.core.session.GameSession.Snapshot;
 final class WhistMatch implements BrowserGame.Match {
     private final GameSession game;
     private final String matchId = UUID.randomUUID().toString();
-    private BrowserGame.CollectionCue collection;
+    private final List<BrowserGame.CollectionCue> collections = new ArrayList<>();
     private final HumanBidSelection bidSelection = new HumanBidSelection();
 
     WhistMatch(GameSession game) {
@@ -33,7 +33,7 @@ final class WhistMatch implements BrowserGame.Match {
     }
 
     @Override public void act(String action) {
-        collection = null;
+        collections.clear();
         if (action.equals("auto")) {
             advance(true);
             return;
@@ -69,13 +69,13 @@ final class WhistMatch implements BrowserGame.Match {
     private void play(int actor, Card card) {
         game.playCard(actor, card);
         var state = game.snapshot();
-        TrickCollectionRequest.from(state, state.lastTrick()).ifPresent(target -> collection =
+        TrickCollectionRequest.from(state, state.lastTrick()).ifPresent(target -> collections.add(
                 new BrowserGame.CollectionCue(state.lastTrickWinnerSeat(), TrickCollectionMotion.DISPLAY_MILLIS,
                         TrickCollectionMotion.COLLECT_MILLIS, state.lastTrick().stream()
-                        .map(played -> new Played(played.seat(), face(played.card(), ""))).toList()));
+                        .map(played -> new Played(played.seat(), face(played.card(), ""))).toList())));
     }
 
-    @Override public BrowserGame.CollectionCue collection() { return collection; }
+    @Override public List<BrowserGame.CollectionCue> collections() { return List.copyOf(collections); }
     int handNumber() { return game.snapshot().handNumber(); }
     boolean finished() { return game.snapshot().phase() == GamePhase.SCORE && game.snapshot().finalHand(); }
     void validateName(String value) { game.validateHumanName(value); }

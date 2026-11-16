@@ -13,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -31,14 +32,14 @@ public final class BrowserServer implements AutoCloseable {
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
     private final String access;
     private final BrowserGame game;
-    private final Path assets;
-    private final Map<String, BrowserSession> sessions = new HashMap<>();
+    private final Map<String, byte[]> assets = new HashMap<>();
+    private final Map<Client, BrowserSession> sessions = new HashMap<>();
+    private final Map<String, BrowserExperience> profiles = new HashMap<>();
 
     public BrowserServer(BrowserGame game, Path assets, InetSocketAddress address) throws IOException {
         this.game = game;
-        this.assets = assets.toAbsolutePath();
         for (var asset : ASSETS.values()) {
-            if (!Files.isRegularFile(this.assets.resolve(asset.file()))) throw new IOException("Browser assets are incomplete");
+            this.assets.put(asset.file(), readAsset(assets, asset.file()));
         }
         var bytes = new byte[24];
         new SecureRandom().nextBytes(bytes);
@@ -51,7 +52,8 @@ public final class BrowserServer implements AutoCloseable {
 
     public static void launch(BrowserGame game, String[] args) throws IOException {
         if (args.length != 3) throw new IllegalArgumentException("Expected assets directory, listen address and port");
-        var host = new BrowserServer(game, Path.of(args[0]), new InetSocketAddress(args[1], Integer.parseInt(args[2])));
+        Path assets = args[0].equals("-") ? null : Path.of(args[0]);
+        var host = new BrowserServer(game, assets, new InetSocketAddress(args[1], Integer.parseInt(args[2])));
         Runtime.getRuntime().addShutdownHook(new Thread(host::close));
         System.out.println(host.url());
     }
@@ -74,7 +76,7 @@ public final class BrowserServer implements AutoCloseable {
             String method = http.getRequestMethod();
             var asset = ASSETS.get(path);
             if (asset != null && method.equals("GET")) {
-                send(http, 200, asset.mime(), Files.readAllBytes(assets.resolve(asset.file())));
+                send(http, 200, asset.mime(), assets.get(asset.file()));
             } else if (path.startsWith("/api/")) {
                 api(http, path, method);
             } else {
@@ -86,12 +88,15 @@ public final class BrowserServer implements AutoCloseable {
     private void api(HttpExchange http, String path, String method) throws IOException {
         var headers = http.getRequestHeaders();
         String token = headers.getFirst("X-Table-Access");
-        String client = headers.getFirst("X-Table-Client");
+        String tab = headers.getFirst("X-Table-Client");
+        String profile = headers.getFirst("X-Table-Profile");
+        if (profile == null) profile = tab;
         if (token == null || !MessageDigest.isEqual(access.getBytes(StandardCharsets.UTF_8),
-                token.getBytes(StandardCharsets.UTF_8)) || client == null || !client.matches("[0-9a-f]{32}")) {
+                token.getBytes(StandardCharsets.UTF_8)) || !validId(tab) || !validId(profile)) {
             error(http, 403, "Open the link printed by the launcher");
             return;
         }
+        var client = new Client(tab, profile);
         switch (path) {
             case "/api/setup" -> {
                 if (!requireMethod(http, method, "GET")) return;
@@ -101,7 +106,7 @@ public final class BrowserServer implements AutoCloseable {
                 if (!requireMethod(http, method, "GET")) return;
                 var session = session(client, game.hasProfile());
                 if (session == null && game.hasProfile()) error(http, 503, "Too many open profiles");
-                else json(http, 200, session == null ? new BrowserSession.State(0, null, null, null) : session.state());
+                else json(http, 200, session == null ? new BrowserSession.State(0, null, null, List.of()) : session.state());
             }
             case "/api/layout" -> {
                 if (!requireMethod(http, method, "POST")) return;
@@ -119,7 +124,7 @@ public final class BrowserServer implements AutoCloseable {
         }
     }
 
-    private void mutate(HttpExchange http, String path, String client) throws IOException {
+    private void mutate(HttpExchange http, String path, Client client) throws IOException {
         try {
             var form = decode(http.getRequestBody().readNBytes(MAX_FORM + 1));
             long revision = Long.parseLong(form.getOrDefault("revision", ""));
@@ -146,11 +151,24 @@ public final class BrowserServer implements AutoCloseable {
         }
     }
 
-    private synchronized BrowserSession session(String client, boolean create) {
+    private synchronized BrowserSession session(Client client, boolean create) {
         if (!create || sessions.containsKey(client) || sessions.size() >= MAX_TABS) return sessions.get(client);
-        var session = new BrowserSession(game.openProfile(client));
+        var profile = game.hasProfile() ? profiles.computeIfAbsent(client.profile(), game::openProfile) : null;
+        var session = new BrowserSession(profile);
         sessions.put(client, session);
         return session;
+    }
+
+    private static boolean validId(String value) {
+        return value != null && value.matches("[0-9a-f]{32}");
+    }
+
+    private static byte[] readAsset(Path directory, String file) throws IOException {
+        if (directory != null) return Files.readAllBytes(directory.resolve(file));
+        try (var resource = BrowserServer.class.getResourceAsStream("web/" + file)) {
+            if (resource == null) throw new IOException("Missing browser asset: " + file);
+            return resource.readAllBytes();
+        }
     }
 
     private static Map<String, String> decode(byte[] body) {
@@ -195,4 +213,5 @@ public final class BrowserServer implements AutoCloseable {
     record Setup(String title, java.util.List<BrowserGame.Field> fields) { }
     record ErrorMessage(String error) { }
     record Asset(String file, String mime) { }
+    private record Client(String tab, String profile) { }
 }

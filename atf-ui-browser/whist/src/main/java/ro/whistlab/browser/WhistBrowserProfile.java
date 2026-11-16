@@ -22,7 +22,7 @@ final class WhistBrowserProfile implements BrowserExperience {
                 new WhistBrowserStorage(storage == null ? null : storage.resolve(client + "-achievements.json")));
     }
 
-    @Override public Details details(BrowserGame.Match match) {
+    @Override public synchronized Details details(BrowserGame.Match match) {
         try {
             var progress = achievements.state();
             var catalogue = WhistAchievementPresentation.catalogue(progress, copy);
@@ -32,13 +32,13 @@ final class WhistBrowserProfile implements BrowserExperience {
             var table = (WhistMatch) match;
             var notice = table == null || goals.isEmpty() ? null : WhistAchievementPresentation.notice(
                     goals, progress, table.handNumber(), table.finished(), copy);
-            return new Details(display, catalogue, notice);
+            return new Details(display, saved != null, catalogue, notice);
         } catch (IOException failure) {
             throw new UncheckedIOException("Whist profile could not be read", failure);
         }
     }
 
-    @Override public void rename(BrowserGame.Match match, String value) {
+    @Override public synchronized void rename(BrowserGame.Match match, String value) {
         String normalized = value.isBlank() ? "" : PlayerNames.normalize(value);
         String display = normalized.isEmpty() ? PlayerNames.DEFAULT_HUMAN : normalized;
         var table = (WhistMatch) match;
@@ -51,7 +51,7 @@ final class WhistBrowserProfile implements BrowserExperience {
         if (table != null) table.rename(display);
     }
 
-    @Override public void completedAction(BrowserGame.Match match) {
+    @Override public synchronized void completedAction(BrowserGame.Match match) {
         try {
             ((WhistMatch) match).recordAchievements(achievements);
         } catch (IOException failure) {
@@ -59,7 +59,7 @@ final class WhistBrowserProfile implements BrowserExperience {
         }
     }
 
-    @Override public void dismissNotice() {
+    @Override public synchronized void dismissNotice() {
         try {
             achievements.acknowledgeNotifications(achievements.pendingNotifications().stream()
                     .map(goal -> goal.id()).toList());

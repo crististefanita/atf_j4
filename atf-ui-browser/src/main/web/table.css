@@ -152,6 +152,37 @@ dialog form { margin-top: 8px; display: flex; justify-content: flex-end; }
 .player-dialog .profile-form { display: grid; justify-content: stretch; gap: 8px; }
 .profile-form label { display: grid; gap: 4px; }
 .profile-form input { padding: 5px 8px; }
+.player-dialog .profile-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+.profile-actions button:first-child { margin-inline-end: auto; }
+.player-dialog.achievement-catalogue {
+  width: var(--dialog-width, 100vw);
+  height: var(--dialog-height, 100vh);
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  background: #174f3c;
+  color: white;
+  gap: calc(4px * var(--dialog-scale, 1));
+}
+.achievement-catalogue[open], .achievement-content { display: flex; flex-direction: column; }
+.achievement-catalogue h2 { font-size: 1.375em; }
+.achievement-content { flex: 1; min-height: 0; }
+.achievement-summary { color: #f1e6c8; font-size: .9375em; font-weight: bold; margin-block: .45em .15em; }
+.achievement-content progress { width: 100%; height: .375em; accent-color: #dcb569; }
+.achievement-catalogue .goals { flex: 1; max-height: none; }
+.achievement-catalogue h3 { color: #f1e6c8; font-size: .9375em; margin: .85em 1em; }
+.achievement-catalogue details, .achievement-catalogue > button {
+  background: #1f5743;
+  color: white;
+  border: 1px solid #4c7660;
+  border-radius: .75em;
+}
+.achievement-catalogue details { padding: .5em 1em; }
+.achievement-catalogue details summary { display: grid; gap: .15em; cursor: pointer; }
+.achievement-catalogue details summary span { color: #d3efe2; font-size: .875em; }
+.achievement-catalogue > button { float: none; margin-top: 0; min-height: 3em; }
+.player-dialog.achievement-notice { background: #315e4d; color: white; }
+.achievement-notice .goal-notice { background: #315e4d; border: 1px solid #629478; }
 .collection { pointer-events: none; position: absolute; inset: 0; z-index: 3; }
 .collection .card { position: absolute; transform: translate(-50%, -50%); }
 #table[data-collecting] .cards-on-table { visibility: hidden; }

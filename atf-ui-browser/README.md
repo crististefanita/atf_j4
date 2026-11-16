@@ -19,9 +19,28 @@ Rulați comanda din proiect cu PowerShell 7, JDK 21 și mediul Gradle Android co
 .\atf-ui-browser\Start-WhistBrowser.ps1 -WorkRoot $WorkRoot
 ```
 
-Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress` selectează adresa locală accesibilă. O filă își poate relua partida cât timp rulează serverul. La repornirea pe aceeași adresă, fila păstrează identitatea cu care recuperează profilul și progresul.
+Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress` selectează adresa locală accesibilă. Deschideți adresa completă în browserul telefonului.
 
-Whist folosește sarcina Android de generare a catalogului și dependența JVM `org.json:json:20240205`. Dacă biblioteca se află în alt cache, `-JsonLibrary` primește calea JAR-ului. `-CatalogSource` poate refolosi ieșirea generată din același checkout.
+## Datele de pe telefon
+
+| Date | Unde se păstrează |
+|---|---|
+| Nume și identificator | Pe dispozitiv, pentru aceeași origine web, definită prin protocol, gazdă și port. Într-o filă nouă, Whist recuperează profilul. Copia browserului poate reface numele dacă fișierul său lipsește de pe server. |
+| Realizări | În `$WorkRoot/whist-profile-data`, asociate identificatorului și creditate din rezultatele confirmate de motor. |
+| Partidă | Independentă pe filă. Aceeași filă poate relua partida prin reîncărcare cât timp rulează procesul serverului. |
+
+- Ștergerea datelor site-ului, schimbarea browserului sau schimbarea originii creează un profil nou. În modul privat, retenția urmează politica browserului.
+- Whist folosește sarcina Android de generare a catalogului și dependența `org.json:json:20240205`. `-JsonLibrary` selectează JAR-ul din alt director, iar `-CatalogSource` refolosește ieșirea generată din același checkout.
+
+## Bibliotecă pentru adaptoare
+
+`lib/atf-ui-browser-0.1.0.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează numai sursele adaptoarelor proprii față de JAR și verifică suma SHA-256 la pornire. Arhiva `atf-ui-browser-0.1.0-tests.jar` conține probele comune de HTTP, control al reviziilor și sanity Chrome sau Edge.
+
+```powershell
+.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.1.0
+```
+
+Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul extern afișat. La o schimbare a contractelor sau a resurselor, incrementați versiunea și actualizați aceiași octeți și aceleași amprente în consumatori. Reutilizați JAR-ul existent când se schimbă numai motorul sau adaptorul unui joc.
 
 ## Verificare
 
