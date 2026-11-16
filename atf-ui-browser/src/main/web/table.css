@@ -138,6 +138,8 @@ header .subtitle { font-size: 14px; color: #41574b; }
 .amount input { color: #1a3027; width: 6ch; }
 .toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
 .error { color: #8c231c; }
+/* Keep the empty live region out of the measured table gaps. */
+.match > .error:empty { position: absolute; }
 .history-data { max-height: 64dvh; overflow: auto; }
 #history h2, .game-rankings h2 {
   font-size: 1.25em;

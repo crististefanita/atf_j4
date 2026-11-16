@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,15 +42,27 @@ class BrowserUi {
         HttpServer server = serve(site);
         String url = "http://127.0.0.1:" + server.getAddress().getPort() + SITE_PATH;
         List<Result> results = new ArrayList<>();
+        String check = System.getProperty("whist.browserCheck", "all");
         try (Playwright playwright = Playwright.create()) {
             var launch = new BrowserType.LaunchOptions().setHeadless(true).setArgs(List.of("--mute-audio"));
             if (args.length == 4) launch.setExecutablePath(Path.of(args[3]));
             try (Browser browser = playwright.chromium().launch(launch)) {
-                results.add(run(browser, mobile(), output, "WEB-COMPONENT-PLAYBACK-PAINT",
-                        "Tabla rămâne stabilă când adversarul redă rândul jucătorului",
-                        "După colectare și cartea adversarului, tabla rămâne așezată până devine disponibilă mutarea legală.",
-                        (page, images) -> stablePlaybackPaint(page, url, checkpoint, output, images)));
-                if (!Boolean.getBoolean("whist.refreshOnly")) {
+                if (check.equals("all") || check.equals("playback")) {
+                    results.add(run(browser, mobile(), output, "WEB-COMPONENT-PLAYBACK-PAINT",
+                            "Tabla rămâne stabilă când adversarul redă rândul jucătorului",
+                            "După colectare și cartea adversarului, tabla rămâne așezată până devine disponibilă mutarea legală.",
+                            (page, images) -> stablePlaybackPaint(page, url, checkpoint, output, images)));
+                }
+                if (check.equals("all") || check.equals("seats")) {
+                    for (int players : List.of(5, 6)) {
+                        var viewport = players == 5 ? mobile() : mobile().setViewportSize(360, 800);
+                        results.add(run(browser, viewport, output, "WEB-COMPONENT-SEATS-" + players,
+                                "Chenare stabile la " + players + " jucători",
+                                "Coordonate egale la licitare, joc și colectare, în două mâini de o carte.",
+                                (page, images) -> stableSeats(page, url, players, output, images)));
+                    }
+                }
+                if (check.equals("all")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-COMPONENT-TEXT",
                             "Fonturile Whist pe un panou de probă",
                             "Toate cele 13 ranguri sunt mărite cu 50%. Simbolurile și atuul își păstrează mărimea.",
@@ -77,6 +90,7 @@ class BrowserUi {
         } finally {
             server.stop(0);
         }
+        require(!results.isEmpty(), "Unknown browser check: " + check);
         Files.writeString(resultsFile, JSON.toJson(results));
         if (results.stream().anyMatch(result -> !result.status().equals("PASS"))) System.exit(1);
     }
@@ -375,6 +389,51 @@ class BrowserUi {
                 """);
     }
 
+    private static Map<String, Object> stableSeats(Page page, String url, int players,
+                                                   Path output, List<Image> images) {
+        page.navigate(url);
+        button(page, "Joc nou").click();
+        page.locator("select[name=players]").selectOption(String.valueOf(players));
+        page.locator("select[name=mode]").selectOption("ROMANIAN_WHIST");
+        button(page, "Începe partida").click();
+        var observations = new LinkedHashMap<String, Object>();
+        var board = page.locator("#table[aria-busy=false] .board[data-layout=ready]");
+        for (boolean automatic : List.of(false, true)) {
+            board.waitFor();
+            assertThat(board.locator(".seat")).hasCount(players);
+            assertThat(page.locator(".fan .card")).hasCount(1);
+            var bid = button(page, "Licitează");
+            assertThat(bid).isVisible();
+            var initial = seats(page);
+            if (automatic) {
+                page.getByRole(AriaRole.CHECKBOX,
+                        new Page.GetByRoleOptions().setName("Automat").setExact(true)).tap();
+            } else {
+                bid.tap();
+                var legal = page.locator("#table[aria-busy=false] .fan .legal-card");
+                legal.waitFor();
+                var playing = seats(page);
+                require(initial.equals(playing), "Seat frames moved after bidding: " + initial + " -> " + playing);
+                legal.tap();
+            }
+            assertThat(page.locator(".collection .compact-play-face")).hasCount(players);
+            var collecting = seats(page);
+            require(initial.equals(collecting), "Seat frames moved at collection: " + initial + " -> " + collecting);
+            String mode = automatic ? "AutoGame" : "manual";
+            images.add(screenshot(page, output, "WEB-COMPONENT-SEATS-" + players + "-" + mode,
+                    "Colectare " + mode + " la " + players + " jucători"));
+            assertThat(page.locator(".whist-score tbody tr")).hasCount(players);
+            observations.put(mode, Map.of("seatFrames", collecting, "collectedCards", players));
+            if (!automatic) {
+                var notice = page.locator("dialog.achievement-notice[open]");
+                if (notice.isVisible()) notice.getByRole(AriaRole.BUTTON,
+                        new Locator.GetByRoleOptions().setName("Închide").setExact(true)).click();
+                button(page, "Mâna următoare").click();
+            }
+        }
+        return observations;
+    }
+
     private static Map<String, Object> autoGame(Page page, String url, String checkpoint, Path output, List<Image> images) {
         resumeHand(page, url, checkpoint);
         var ten = page.locator(".fan [data-face^='10'] .card-index:not(.inverted) .card-rank");
@@ -467,8 +526,9 @@ class BrowserUi {
         return dimensions(box);
     }
 
-    private static List<List<Long>> seats(Page page) {
-        return page.locator(".board .seat").all().stream().map(Locator::boundingBox).map(BrowserUi::dimensions).toList();
+    private static List<List<Double>> seats(Page page) {
+        return page.locator(".board:visible .seat").all().stream().map(Locator::boundingBox)
+                .map(box -> List.of(box.x, box.y, box.width, box.height)).toList();
     }
 
     private static List<Long> dimensions(BoundingBox box) {
