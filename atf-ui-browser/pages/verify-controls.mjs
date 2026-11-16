@@ -125,7 +125,7 @@ await check("WEB-03", "Rebifare în timpul cererii și resetare la scor", "Nicio
 
 await check("WEB-03-ENGINE", "O singură decizie umană per comandă în motor", "Licitație automată, apoi mutare manuală legală și refuz la scor", () => {
   initialize(31, 9);
-  let state = invoke("start", { revision: 0 }).result;
+  let state = invoke("start", { revision: 0, mode: "ROMANIAN_WHIST" }).result;
   const suggested = state.view.actions.find(move => move.emphasized);
   assert.ok(suggested.key.startsWith("bid:"));
   const step = () => invoke("action", { revision: state.revision, action: "auto-step" });
@@ -170,7 +170,7 @@ await check("WEB-01-LOCALE", "Română, engleză și realizări locale după red
   assert.ok(config.autoDelayMillis > 0);
   assert.equal((await browser.request("/api/state")).profile.name, "Tu");
   let state = await browser.request("/api/profile", { revision: 0, name: "Ștefan" });
-  state = await browser.request("/api/start", { revision: state.revision });
+  state = await browser.request("/api/start", { revision: state.revision, mode: "ROMANIAN_WHIST" });
   const romanian = state;
   await assert.rejects(browser.request("/api/language", { revision: state.revision, language: "other" }),
     { status: 400 });

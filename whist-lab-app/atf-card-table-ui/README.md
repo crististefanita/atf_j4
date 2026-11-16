@@ -22,6 +22,8 @@
 | [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; etichetele se măsoară la lățimea locului, iar cadrul primește aceeași rezervare între faze. |
 | [table](src/main/java/ro/cardtable/ui/table/BoardLayout.java) | Regiuni ocupate, ordine vizuală, viewport și bandă centrală măsurată între locuri. Consumatorul compune conținutul benzii. |
 | [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Așteaptă primul cadru vizibil, aplică intervalul comun și invalidează acțiunea dacă scena s-a schimbat. |
+| [animation](src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Validează setul locurilor și expune pauza, durata și curba colectării. Android desenează fețele native, iar web-ul redă aceeași curbă pe elementele din pagină. |
+| [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Păstrează proporțiile, înălțimea și culorile tabelului de scor pentru adaptorul Android și browser. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
 
 Aplicația deține compoziția mesei, regulile, istoricul, câștigătorul și momentul afișării levatei. Biblioteca măsoară fețele și chenarul câștigător, apoi aplică mișcarea. Contractul comun folosește numai locuri și date vizibile.
@@ -86,6 +88,8 @@ Componentele existente de masă și mână rămân verificări de integrare, cu 
 - `SeatContent.Fact` păstrează textul și ordinea; biblioteca nu adună puncte, nu interpretează valori negative și nu decide câștigătorul.
 - `HandCard` nu conține mâini adverse sau comenzi. Adaptorul proiectează numai informația vizibilă și rezolvă identitatea selectată în snapshot-ul afișat.
 - `PlayedCardsView` este prezentarea depunerilor pe locuri. Compoziția regiunii centrale aparține adaptorului activ.
+
+Contractele portabile sunt compilate și de adaptorul web. Guvernanța verifică importurile în sursele comune, iar efectele cu o stare de joc reală se verifică în proiectul consumator.
 
 [Testele Android ale modulului](src/androidTest/README.md) și [catalogul componentelor display](../../docs/testing/ATF_DisplayComponents.md) descriu selecțiile și limitele de acceptanță.
 

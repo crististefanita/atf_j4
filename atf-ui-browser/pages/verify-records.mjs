@@ -49,7 +49,7 @@ async function check(id, name, expected, exercise) {
 
 function stored() { return JSON.parse(values.get(key)); }
 const stateOf = browser => browser.request("/api/state");
-const start = (browser, state, options = {}) => browser.request("/api/start", { revision: state.revision, ...options });
+const start = (browser, state, options = {}) => browser.request("/api/start", { revision: state.revision, mode: "ROMANIAN_WHIST", ...options });
 const step = (browser, state, action) => browser.request("/api/action", { revision: state.revision, action });
 
 await check("WEB-04", "Checkpoint după licitare, în joc și la scor",

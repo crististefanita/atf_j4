@@ -1,5 +1,5 @@
 :root {
-  font: 16px Roboto, "Segoe UI", sans-serif;
+  font: 100% Roboto, "Segoe UI", sans-serif;
   color: #1a3027;
   background: #26332c;
   color-scheme: light;
@@ -215,7 +215,7 @@ dialog {
   border: 0;
   border-radius: 6px;
   padding: calc(14px * var(--dialog-scale, 1));
-  font-size: calc(16px * var(--dialog-scale, 1));
+  font-size: calc(1rem * var(--dialog-scale, 1));
   color: inherit;
 }
 dialog::backdrop { background: #151b18b3; }
@@ -274,9 +274,21 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-match { background: var(--whist-felt); color: var(--whist-seat-text); }
 .whist-match .seat { background: var(--whist-seat-fill); border-color: var(--whist-seat-line); }
 .whist-match .seat.active { background: var(--whist-turn-fill); border-color: var(--whist-turn-line); color: var(--whist-turn-text); }
-.whist-home, .whist-score, [data-surface="whist"] .setup { padding: 16px 22px 14px; }
+.whist-match .seat-turn {
+  position: absolute;
+  inset: auto 0 calc(100% + 3px);
+  color: #f3d599;
+  font-size: .66rem;
+  font-weight: 750;
+  line-height: 1.05;
+}
+.whist-match .seat-turn[hidden] { display: none; }
+.whist-match .fan .card { border: 1.5px solid #c7d3c8; }
+#table:not([data-automatic]) .whist-match .fan .legal-card { border: 2px solid #dcb569; }
+#table[data-automatic] .whist-match .fan .card { pointer-events: none; }
+.whist-home, .whist-score, .whist-help, [data-surface="whist"] .setup { padding: 16px 22px 14px; }
 .whist-home { display: grid; gap: 10px; }
-.whist-home h1, [data-surface="whist"] .setup h1 { font-size: 25px; margin: 0 0 8px; }
+.whist-home h1, .whist-help h1, [data-surface="whist"] .setup h1 { font-size: 1.56rem; margin: 0 0 8px; }
 .whist-home button, .whist-score button, [data-surface="whist"] .setup button {
   min-height: 48px;
   border: 1px solid var(--whist-outline);
@@ -314,7 +326,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 [data-surface="whist"] .setup .mode-field select { width: 100%; }
 .series-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 [data-surface="whist"] .series-row select { width: min(138px, 35vw); }
-[data-surface="whist"] .setup .setup-toggle { justify-content: flex-start; font-size: 13px; font-weight: 400; }
+[data-surface="whist"] .setup .setup-toggle { justify-content: flex-start; font-size: .8125rem; font-weight: 400; }
 [data-surface="whist"] .setup input[type="checkbox"] { min-height: 0; width: 18px; height: 18px; accent-color: var(--whist-accent); }
 [data-surface="whist"] .setup [hidden] { display: none; }
 .whist-match { padding: 2px 12px; gap: 4px; }
@@ -393,8 +405,28 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   border-width: 0 0 2px 2px;
   transform: translateY(-1px) rotate(-45deg);
 }
-.whist-language { display: grid; gap: 4px; }
-.whist-language select { min-height: 44px; }
+.whist-language {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7em, 10em);
+  align-items: center;
+  gap: .5em;
+  font-weight: 700;
+  min-height: 3rem;
+}
+.whist-language select { min-height: 3rem; min-width: 0; font-weight: normal; }
+.whist-language + form { margin-top: .5rem; }
+.whist-help .whist-rule { margin-block: 1rem; padding-block-end: .5rem; border-bottom: 1px solid #dbe5d7; }
+.whist-rule h2 { font-size: 1.05rem; margin: 0 0 .25rem; }
+.whist-rule p { white-space: pre-line; margin: 0; }
+.whist-dialog-copy, .live-score-table { max-height: 60dvh; overflow: auto; }
+.whist-dialog-copy p { white-space: pre-line; margin: .45em 0 .85em; }
+.whist-score-winner, .whist-score-awards { color: var(--whist-pine); font-weight: 700; }
+.whist-score .whist-score-winner, .whist-score .whist-score-awards { margin-block: 0 .45rem; }
+.whist-live-score .pending-bid { font-weight: 700; margin: .4em 0; }
+.live-score-actions { display: flex; flex-wrap: wrap; gap: .4em; margin-top: .55em; }
+.live-score-actions button { border-color: transparent; color: var(--whist-pine); text-transform: uppercase; }
+.live-score-close { margin-inline-start: auto; }
+.stop-auto[hidden] { display: none; }
 .whist-bidding {
   --bid-choice-target: 48px;
   --bid-row: 50px;
@@ -470,7 +502,19 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 }
 .whist-progress { font-size: var(--progress-size, 11px); font-weight: 700; color: #e5efe6; }
 .whist-bids { font-size: var(--bid-size, 12px); color: #c2d8c7; white-space: pre-line; }
-.whist-trump { display: grid; place-items: center; color: #f5f8f0; font-size: 12px; }
+.whist-trump {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  min-width: 57px;
+  min-height: 48px;
+  padding: 4px;
+  border: 1px solid var(--whist-turn-line);
+  border-radius: 12px;
+  background: var(--whist-turn-fill);
+  color: var(--whist-turn-text);
+  font-size: .75rem;
+}
 .whist-trump .card { min-width: 32px; width: 32px; height: 44px; padding: 2px 3px; }
 .whist-trump .suit { font-size: 19px; }
 .whist-trump .card-index { font-size: 9px; line-height: 9px; }
@@ -481,7 +525,26 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-score-hand { color: var(--whist-accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
 .whist-score-status { white-space: pre-line; font-size: 13px; color: #69756a; }
 .whist-score .prompt { color: #69756a; }
-.whist-score table { background: var(--whist-surface); border: 1px solid var(--whist-outline); font-size: 13px; }
+.whist-score-grid {
+  table-layout: fixed;
+  background: var(--whist-score-paper);
+  color: var(--whist-score-ink);
+  border: 1px solid var(--whist-score-rule);
+  font-size: .8125rem;
+}
+.whist-score-grid thead tr { height: var(--whist-score-head); background: var(--whist-score-header); }
+.whist-score-grid thead th { color: var(--whist-score-muted); font-size: .6875rem; }
+.whist-score-grid tbody tr { height: var(--whist-score-row); }
+.whist-score-grid tbody tr:nth-child(even) { background: var(--whist-score-stripe); }
+.whist-score-grid tbody tr:first-child { background: var(--whist-score-human); }
+.whist-score-grid tr > :first-child { text-align: start; overflow: hidden; text-overflow: ellipsis; }
+.whist-score-grid tr > * {
+  border-color: var(--whist-score-rule);
+  text-align: center;
+  white-space: nowrap;
+  padding-inline: .2em;
+}
+.whist-score-grid tbody tr:first-child > :is(:first-child, :last-child) { font-weight: 700; }
 .whist-score thead { color: #69756a; font-size: 11px; background: #ebf1e9; }
 .whist-score th, .whist-score td { border-right: 0; border-bottom: 1px solid #dae2d8; height: 43px; }
 .whist-score th { height: 38px; }

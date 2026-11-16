@@ -79,7 +79,10 @@ public interface BrowserGame {
     record PlayStep(Played play, boolean startsTrick, long delayMillis, CollectionCue collection,
                     String bids, List<String> seatFacts) { }
 
-    record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards) {
+    record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards, long holdMillis) {
+        public CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards) {
+            this(winningSeat, displayMillis, travelMillis, cards, displayMillis - travelMillis);
+        }
         public CollectionCue { cards = List.copyOf(cards); }
     }
 
@@ -115,8 +118,16 @@ public interface BrowserGame {
 
     record Score(String title, History table) { }
 
+    record ScoreDetails(String liveTitle, String summary, String pendingBid, String winner, String awards,
+                        List<String> rules, History liveTable) { }
+
     record View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
+                List<Played> played, List<Card> center, List<Action> actions, History history, Header header, Score score, ScoreDetails scoreDetails) {
+        public View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
                 List<Played> played, List<Card> center, List<Action> actions, History history, Header header, Score score) {
+            this(heading, subtitle, prompt, seats, hand, played, center, actions, history, header, score, null);
+        }
+
         public View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
                 List<Played> played, List<Card> center, List<Action> actions, History history) {
             this(heading, subtitle, prompt, seats, hand, played, center, actions, history, null, null);

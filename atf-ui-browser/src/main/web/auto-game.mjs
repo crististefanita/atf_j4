@@ -1,6 +1,7 @@
 /** Schedules one human decision at a time. A submitted decision stays committed. */
 export function autoGame({ available, wait, step, changed }) {
   let selected = false;
+  let paused = false;
   let current;
 
   function set(value) {
@@ -12,7 +13,7 @@ export function autoGame({ available, wait, step, changed }) {
   }
 
   async function run() {
-    if (current || !selected) return;
+    if (current || !selected || paused) return;
     const turn = new AbortController();
     current = turn;
     try {
@@ -28,7 +29,14 @@ export function autoGame({ available, wait, step, changed }) {
     }
   }
 
-  return { set, selected: () => selected };
+  function pause(value) {
+    if (paused === value) return;
+    paused = value;
+    if (paused) current?.abort();
+    else if (selected) void run();
+  }
+
+  return { set, pause, selected: () => selected };
 }
 
 export function waitForDecision(delay, signal) {

@@ -9,16 +9,15 @@
 | Arie | Criteriu rămas |
 |---|---|
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
-| Funcții de prezentare | Compară profilul, Realizările, clasamentele, istoricul și colectarea levatelor în AutoGame. Măsoară fontul, aceleași ancore și lizibilitatea la text mărit. |
+| Funcții de prezentare | Compară marcajul cărții respinse, ridicarea recomandării, colectarea levatei și chenarele active în APK și Chrome. Verifică fața compactă a cărții de pe masă, fontul și lizibilitatea la text mărit. |
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
 | Publicare online | Pentru Whist, verifică pe un telefon redeschiderea ediției Pages cu același profil. Pentru Rentz și Hold’em, califică pachetul fiecărui joc înainte de publicarea adresei sub APK. [Fluxul Pages](../../atf-ui-browser/README.md#whist-pe-github-pages) |
 
-## Diferențe funcționale rămase
+## Calificarea pe același dispozitiv
 
 | ID | Schimbare | Criteriu de acceptare |
 |---|---|---|
-| WEB-06 | Aliniază navigarea dintre setări, instrucțiuni, masă și scor. Adaugă acțiunea Joacă din nou cu aceeași configurație și distribuire nouă. | Compară aceleași intrări în meniul jocului, previzualizarea programului, regulile de scor și revenirea în ecranul anterior, în română și engleză. |
-| WEB-07 | Califică aceeași partidă în Chrome și în APK pe același telefon, cu aceleași date de intrare. | Compară istoricul cu ambele ajustări de serie la 3–6 locuri, clasamentele, revenirea din dialoguri și o reluare după închiderea completă a fiecărei aplicații. Include dimensiuni logice, font mărit și capturi pereche. |
+| WEB-07 | Califică aceeași partidă în Chrome și în APK pe același telefon, cu aceleași date de intrare. | Confruntă setările, Joacă din nou, istoricul cu ajustări și reluarea după închiderea aplicației. Capturează RO/EN la aceeași dimensiune utilă și scară de text pe Android. |
 
 ## Profilurile de referință
 

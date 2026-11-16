@@ -11,9 +11,7 @@ import ro.whistlab.core.player.PlayerNames;
 import ro.whistlab.app.highscores.HighScores;
 import ro.whistlab.app.highscores.HighScoreRepository;
 import ro.whistlab.app.highscores.HighScorePresentation;
-import ro.whistlab.core.config.AiDifficulty;
-import ro.whistlab.core.config.GameConfig;
-import ro.whistlab.core.rules.GameMode;
+import ro.whistlab.app.screens.MatchSetup;
 
 final class WhistBrowserProfile implements BrowserExperience {
     private final WhistAchievementRepository.Storage name;
@@ -54,8 +52,7 @@ final class WhistBrowserProfile implements BrowserExperience {
 
     @Override public synchronized Rankings rankings(BrowserGame.Match match, String language) {
         var copy = WhistBrowser.copy(language);
-        var config = match == null ? GameConfig.newMatch(4, GameMode.ROMANIAN_WHIST, AiDifficulty.NORMAL,
-                0, true, 10, true) : ((WhistMatch) match).config();
+        var config = match == null ? new MatchSetup().config(0) : ((WhistMatch) match).config();
         var preferred = HighScores.Profile.from(config);
         try {
             rankings.board(preferred);

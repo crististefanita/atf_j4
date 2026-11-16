@@ -115,14 +115,24 @@ export function createProfileDialogs(element, button, submit, copy = (_, text) =
     dialog.addEventListener("close", () => submit("/api/notice", { dismiss: "yes" }), { once: true });
   }
 
-  function rules(sections) {
-    const body = element("div", "", "goals");
-    for (const section of sections) {
-      const entry = element("details");
-      entry.append(element("summary", section.title), element("p", section.body));
-      body.append(entry);
-    }
-    show(copy("help", "Reguli de joc"), body, copy("back", "Înapoi"), "game-rules");
+  function message(title, paragraphs) {
+    const body = element("div", "", "whist-dialog-copy");
+    for (const paragraph of paragraphs) body.append(element("p", paragraph));
+    show(title, body, copy("close", "Închide"), "game-rules");
+  }
+
+  function liveScore(data, table, showHistory) {
+    const body = element("div", "", "whist-live-score");
+    body.append(element("p", data.summary, "whist-score-status"));
+    if (data.pendingBid) body.append(element("p", data.pendingBid, "pending-bid"));
+    const scroll = element("div", "", "live-score-table");
+    scroll.append(table);
+    body.append(scroll);
+    const actions = element("div", "", "live-score-actions");
+    if (showHistory) actions.append(button(copy("history", "Istoricul scorului"), showHistory, "quiet"));
+    actions.append(button(copy("close", "Închide"), () => dialog.close(), "live-score-close"));
+    body.append(actions);
+    show(data.liveTitle, body, null, "game-live-score");
   }
 
   function rankings(data) {
@@ -130,7 +140,7 @@ export function createProfileDialogs(element, button, submit, copy = (_, text) =
       copy("close", "Închide"), "game-rankings");
   }
 
-  return { edit, catalogue, notice, rules, rankings, dialog };
+  return { edit, catalogue, notice, message, liveScore, rankings, dialog };
 }
 export function deviceProfile(tabId, storage = () => localStorage) {
   const idKey = "table-profile-id";

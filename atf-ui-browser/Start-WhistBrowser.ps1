@@ -51,6 +51,14 @@ $sources = @(
         'highscores/HighScoreRepository','highscores/HighScorePresentation') {
         Join-Path $app "$part.java"
     }
+    Join-Path $app 'screens/MatchSetup.java'
+    Join-Path $app 'score/ScoreRows.java'
+    Join-Path $app 'table/content/WhistTableContent.java'
+    Join-Path $app 'cards/WhistCardFace.java'
+    $ui = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui'
+    foreach ($contract in 'seat/SeatContent','hand/HandCard','cards/CardFace','table/PlayedCardContent') {
+        Join-Path $ui "$contract.java"
+    }
     $CatalogSource
 )
 & (Join-Path $PSScriptRoot 'Start-CardTableBrowser.ps1') -WorkRoot $WorkRoot -GameRoot $checkout `

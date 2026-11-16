@@ -10,7 +10,7 @@ const viewport = document.querySelector(".viewport");
 const history = document.querySelector("#history");
 let animation;
 const resize = () => {
-  animation?.cancel();
+  animation?.hideOverlay();
   const visual = window.visualViewport;
   const inset = getComputedStyle(viewport);
   const width = Math.min(document.documentElement.clientWidth, visual?.width ?? innerWidth)
@@ -66,6 +66,7 @@ let transport;
 let setup;
 let state;
 let pending = false;
+let rankingsOpening = false;
 let language = "ro";
 
 function copy(key, fallback) { return setup?.copy?.[language]?.[key] ?? fallback; }
@@ -89,10 +90,19 @@ const automation = autoGame({
   wait: signal => waitForDecision(setup.autoDelayMillis, signal),
   step: async () => !await issue("/api/action", { action: "auto-step" }),
   changed: enabled => {
+    stage.toggleAttribute("data-automatic", enabled);
     const input = stage.querySelector(".whist-auto input");
     if (input) input.checked = enabled;
+    const stop = stage.querySelector(".stop-auto");
+    if (stop) stop.hidden = !enabled;
   }
 });
+
+function refreshAutomationGate() {
+  automation.pause(rankingsOpening || history.open || profileDialogs.dialog.open || !!stage.querySelector(".whist-navigation[open]"));
+}
+history.addEventListener("close", refreshAutomationGate);
+profileDialogs.dialog.addEventListener("close", refreshAutomationGate);
 
 function element(tag, text, style) {
   const result = document.createElement(tag);
@@ -116,7 +126,9 @@ async function issue(path, fields) {
   stage.setAttribute("aria-busy", "true");
   errorBox.textContent = "";
   try {
-    const onMenu = !!stage.querySelector(".setup, .whist-home");
+    const previous = stage.querySelector(".setup") ? menuSetup
+      : stage.querySelector(".whist-help") ? helpPage
+      : stage.querySelector(".whist-home") ? menu : null;
     const result = await call(path, { ...fields, revision: String(state.revision) });
     if (result.playback?.length && stage.querySelector(".board")) {
       stage.dataset.playingSteps = "true";
@@ -134,7 +146,7 @@ async function issue(path, fields) {
     transport.remember?.(state.profile);
     selectedBid = undefined;
     if (path === "/api/language") rememberLanguage(fields.language);
-    if (onMenu && ["/api/profile", "/api/language"].includes(path)) menu();
+    if (previous && ["/api/profile", "/api/language", "/api/notice"].includes(path)) previous();
     else render();
     stage.querySelector(".prompt, h1")?.focus({ preventScroll: true });
     profileDialogs.notice(state.profile?.notice);
@@ -172,18 +184,18 @@ async function playCards(steps) {
     if (step.startsTrick) center.replaceChildren();
     stage.querySelector(".whist-bids").textContent = step.bids;
     for (const [seat, node] of seats.entries()) {
-      node.querySelector("span").textContent = step.seatFacts[seat];
-      node.classList.toggle("active", seat === step.play.seat);
-      if (seat === step.play.seat) node.setAttribute("aria-current", "true");
-      else node.removeAttribute("aria-current");
+      const [bid, won] = step.seatFacts[seat].split("\n");
+      writeSeatFact(node.querySelector(".seat-bid"), bid);
+      writeSeatFact(node.querySelector(".seat-won"), won);
+      markSeat(node, seat === step.play.seat, false);
     }
-    if (step.delayMillis && !reducedMotion) {
+    if (step.delayMillis) {
       await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, step.delayMillis)));
     }
     if (!center.isConnected) return;
     const face = step.play.card;
     if (step.play.seat === 0) {
-      const source = [...stage.querySelectorAll(".fan .card")].find(node => node.getAttribute("aria-label") === face.label);
+      const source = [...stage.querySelectorAll(".fan .card")].find(node => node.dataset.face === face.rank + face.suit);
       if (source) source.style.visibility = "hidden";
     }
     center.append(playedCard(step.play, state.view.seats));
@@ -193,6 +205,7 @@ async function playCards(steps) {
       continue;
     }
     stage.dataset.collectionStep = String(++collectionNumber);
+    seats.forEach(node => markSeat(node, false, false));
     animation = collect(stage, step.collection, card, setup.collectionSamples);
     await animation.done;
     animation = undefined;
@@ -205,11 +218,16 @@ function showStorageIssue() {
 }
 
 async function showRankings() {
+  rankingsOpening = true;
+  refreshAutomationGate();
   try {
     const data = await call("/api/rankings");
     if (data) profileDialogs.rankings(data);
   } catch {
     errorBox.textContent = copy("storageError", "Clasamentele locale nu au putut fi citite.");
+  } finally {
+    rankingsOpening = false;
+    refreshAutomationGate();
   }
 }
 
@@ -219,7 +237,7 @@ function menu() {
     const home = element("section", "", "whist-home");
     const title = element("h1", copy("home", "Whist"));
     title.tabIndex = -1;
-    home.append(title,
+    home.append(title, languagePicker(),
       button(copy("name", "Numele tău") + ": " + state.profile.name, () => profileDialogs.edit(state.profile.name), "quiet"),
       button(copy("newGame", "Joc nou"), menuSetup, "primary"));
     const resume = button(copy("resume", "Reia partida"), render);
@@ -227,29 +245,52 @@ function menu() {
     home.append(resume,
       button(copy("ranking", "Clasamente"), showRankings, "quiet"),
       button(copy("achievements", "Realizări"), () => profileDialogs.catalogue(state.profile.catalogue), "quiet"),
-      button(copy("help", "Reguli de joc"), () => profileDialogs.rules(copy("rules", [])), "quiet"));
-    const label = element("label", copy("language", "Limba"), "whist-language");
-    const select = element("select");
-    for (const [value, text] of [["ro", "Română"], ["en", "English"]]) {
-      const option = element("option", text);
-      option.value = value;
-      select.append(option);
-    }
-    select.value = language;
-    select.addEventListener("change", async () => {
-      select.disabled = true;
-      const failure = await issue("/api/language", { language: select.value });
-      if (failure) {
-        select.disabled = false;
-        select.value = language;
-      }
-    });
-    label.append(select);
-    home.append(label);
+      button(copy("help", "Reguli de joc"), helpPage, "quiet"));
     stage.replaceChildren(home, errorBox);
     return;
   }
   menuSetup();
+}
+
+function languagePicker() {
+  const label = element("label", copy("language", "Limba"), "whist-language");
+  const select = element("select");
+  for (const [value, text] of [["en", "English"], ["ro", "Română"]]) {
+    const option = element("option", text);
+    option.value = value;
+    select.append(option);
+  }
+  select.value = language;
+  select.addEventListener("change", async () => {
+    select.disabled = true;
+    const failure = await issue("/api/language", { language: select.value });
+    if (failure) {
+      select.disabled = false;
+      select.value = language;
+    }
+  });
+  label.append(select);
+  return label;
+}
+
+function helpPage() {
+  const page = element("section", "", "whist-help");
+  const title = element("h1", copy("instructionsSubtitle", "Reguli de joc"));
+  title.tabIndex = -1;
+  page.append(element("p", copy("instructions", ""), "whist-score-hand"), title, languagePicker());
+  for (const section of copy("rules", [])) {
+    const rule = element("section", "", "whist-rule");
+    rule.append(element("h2", section.title), element("p", section.body));
+    page.append(rule);
+  }
+  page.append(button(copy("back", "Înapoi"), () => { menu(); focusStart(); }, "primary"));
+  stage.replaceChildren(page, errorBox);
+  focusStart();
+}
+
+function focusStart() {
+  stage.querySelector("h1")?.focus({ preventScroll: true });
+  stage.scrollTop = 0;
 }
 
 function menuSetup() {
@@ -259,8 +300,9 @@ function menuSetup() {
   title.tabIndex = -1;
   const form = element("form");
   const fields = (language === "en" ? setup.englishFields : setup.fields).filter(field => field.key !== "name" || !state.profile);
+  let readSetup;
   if (native) {
-    whistSettings(form, Object.fromEntries(fields.map(field => [field.key, field])));
+    readSetup = whistSettings(form, Object.fromEntries(fields.map(field => [field.key, field])));
   } else {
     for (const field of fields) form.append(settingsField(field));
   }
@@ -269,21 +311,20 @@ function menuSetup() {
   form.append(start);
   form.addEventListener("submit", event => {
     event.preventDefault();
-    const configuration = Object.fromEntries(new FormData(form));
-    if (native) {
-      configuration.series = configuration.streaks ? configuration.series : "0";
-      configuration.zero = configuration.zero ? "yes" : "no";
-    }
+    const configuration = native ? readSetup() : Object.fromEntries(new FormData(form));
     issue("/api/start", configuration);
   });
-  content.append(title, form);
-  if (native) content.append(button(copy("back", "Înapoi"), menu, "quiet"));
+  content.append(title);
+  if (native) content.append(languagePicker());
+  content.append(form);
+  if (native) content.append(button(copy("back", "Înapoi"), () => { menu(); focusStart(); }, "quiet"));
   if (!native && state.view) content.append(button("Continuă", render));
   if (!native && state.profile) {
     content.append(button(copy("name", "Numele tău") + ": " + state.profile.name, () => profileDialogs.edit(state.profile.name)),
       button("Realizări", () => profileDialogs.catalogue(state.profile.catalogue)));
   }
   stage.replaceChildren(content, errorBox);
+  if (native) focusStart();
 }
 
 function settingsField(field, options = field.options, visibleLabel = true) {
@@ -307,40 +348,46 @@ function whistSettings(form, fields) {
   const modes = settingsField(fields.mode, fields.mode.options, false);
   const level = settingsField(fields.difficulty);
   modes.className = "mode-field";
-  const toggle = (text, key, checked) => {
+  const toggle = (text, key) => {
     const field = element("label", "", "setup-toggle");
     const input = element("input");
     input.type = "checkbox";
     input.name = key;
-    input.checked = checked;
+    input.checked = (setupDraft[key] ?? fields[key].initial) === "yes";
     field.append(input, document.createTextNode(text));
     return field;
   };
-  const series = toggle(copy("streaks", "Serii de cinci mâini"), "streaks", setupDraft.streaks ?? fields.series.initial !== "0");
+  const series = toggle(copy("streaks", "Serii de cinci mâini"), "streaks");
   const seriesValue = settingsField(fields.series, fields.series.options.filter(option => option.value !== "0"), false);
   seriesValue.className = "series-value";
   const streaks = element("div", "", "series-row");
   streaks.append(series, seriesValue);
-  const zero = toggle(fields.zero.label, "zero", setupDraft.zero ?? fields.zero.initial === "yes");
+  const zero = toggle(fields.zero.label, "zero");
   const mode = modes.querySelector("select");
+  const seats = players.querySelector("select");
   const enabled = series.querySelector("input");
   const points = seriesValue.querySelector("select");
-  const update = () => {
-    streaks.hidden = zero.hidden = !["ROMANIAN_WHIST", "LONG_ROMANIAN"].includes(mode.value);
-    points.disabled = !enabled.checked;
-  };
-  mode.addEventListener("change", update);
-  enabled.addEventListener("change", update);
-  form.addEventListener("change", () => {
-    setupDraft = {
-      ...Object.fromEntries(new FormData(form)),
-      series: points.value,
-      streaks: enabled.checked,
-      zero: zero.querySelector("input").checked
-    };
+  const metadata = () => copy("modeRules", {})[mode.value];
+  const rules = button(copy("rulesAndSchedule", "Reguli și program"), () => {
+    const details = metadata();
+    if (details) profileDialogs.message(details.title,
+      [details.description, details.schedule[seats.value], ...details.extras]);
+  }, "quiet");
+  const read = () => ({
+    ...Object.fromEntries(new FormData(form)),
+    series: points.value,
+    streaks: enabled.checked ? "yes" : "no",
+    zero: zero.querySelector("input").checked ? "yes" : "no"
   });
-  form.append(players, modes, streaks, zero, level);
+  const update = () => {
+    streaks.hidden = zero.hidden = !metadata()?.romanian;
+    points.disabled = !enabled.checked;
+    setupDraft = read();
+  };
+  form.addEventListener("change", update);
+  form.append(players, modes, rules, streaks, zero, level);
   update();
+  return read;
 }
 
 function card(face, interactive = false) {
@@ -352,6 +399,8 @@ function card(face, interactive = false) {
   }
   node.classList.toggle("red", face.suit === "♥" || face.suit === "♦");
   node.setAttribute("aria-label", face.label);
+  node.dataset.face = face.rank + face.suit;
+  if (interactive && face.action) node.classList.add("legal-card");
   const index = () => {
     const corner = element("span", "", "card-index");
     corner.append(element("span", face.rank), element("span", face.suit));
@@ -385,8 +434,17 @@ function placePlayed(cards) {
   }
 }
 
-function scoreGrid(data) {
-  const grid = element("table");
+function scoreGrid(data, native = false) {
+  const grid = element("table", "", native ? "whist-score-grid" : "");
+  if (native) {
+    const widths = element("colgroup");
+    for (const index of data.headings.keys()) {
+      const column = element("col");
+      column.style.width = "var(--whist-score-col-" + index + ")";
+      widths.append(column);
+    }
+    grid.append(widths);
+  }
   function row(cells, tag) {
     const line = element("tr");
     for (const value of cells) line.append(element(tag, value));
@@ -407,6 +465,7 @@ function showHistory(data) {
   content.replaceChildren(data.grid ? historyGrid(data.grid, element) : scoreGrid(data));
   history.querySelector(".history-legend").textContent = data.grid?.legend ?? "";
   history.showModal();
+  refreshAutomationGate();
 }
 
 function action(key) {
@@ -542,17 +601,22 @@ function whistHeader(match) {
   trigger.append(element("span", "", "menu-lines"));
   navigation.append(trigger);
   const items = element("div", "", "whist-menu-items");
-  if (match.history.grid || match.history.rows.length) {
-    items.append(button(copy("history", "Istoric punctaj"), () => {
-      navigation.open = false;
-      showHistory(match.history);
-    }));
-  }
-  items.append(button(copy("ranking", "Clasamente"), () => {
+  const item = (label, handler, style) => button(label, () => {
+    if (pending && style !== "stop-auto") return;
     navigation.open = false;
-    showRankings();
-  }));
-  items.append(button(copy("mainMenu", "Meniu principal"), () => { if (!pending) menu(); }));
+    handler();
+    refreshAutomationGate();
+  }, style);
+  const stop = item(copy("stopAutoGame", "Oprește jocul automat"), () => automation.set(false), "stop-auto");
+  stop.hidden = !automation.selected();
+  items.append(item(copy("scoreSheet", "Scorul partidei"), () => {
+    profileDialogs.liveScore(match.scoreDetails, scoreGrid(match.scoreDetails.liveTable, true),
+      match.history.rows.length ? () => showHistory(match.history) : null);
+  }), stop,
+  item(copy("name", "Numele tău"), () => profileDialogs.edit(state.profile.name)),
+  item(copy("ranking", "Clasamente"), () => { void showRankings(); }),
+  item(copy("mainMenu", "Meniu principal"), menu));
+  navigation.addEventListener("toggle", refreshAutomationGate);
   navigation.append(items);
   const title = element("h1", match.header.title);
   top.append(navigation, title);
@@ -584,13 +648,36 @@ function whistScore(match) {
   const page = element("section", "", "whist-score");
   const prompt = element("p", match.prompt, "prompt");
   prompt.tabIndex = -1;
+  const details = match.scoreDetails;
   page.append(element("p", match.heading, "whist-score-hand"), element("h1", match.score.title),
-    element("p", match.header.progress + "\n" + match.header.bids, "whist-score-status"),
-    prompt, scoreGrid(match.score.table));
+    element("p", details.summary, "whist-score-status"), prompt);
+  if (details.winner) page.append(element("p", details.winner, "whist-score-winner"));
+  if (details.awards) page.append(element("p", details.awards, "whist-score-awards"));
+  page.append(scoreGrid(match.score.table, true),
+    button(copy("scoringDetails", "Calculul punctajului"),
+      () => profileDialogs.message(copy("scoringDetails", "Calculul punctajului"), details.rules), "quiet"));
   for (const move of match.actions) page.append(control(move));
   page.append(button(copy("history", "Istoric punctaj"), () => showHistory(match.history), "quiet"),
     button(copy("mainMenu", "Meniu principal"), menu, "quiet"));
   stage.replaceChildren(page, errorBox);
+  refreshAutomationGate();
+}
+
+function writeSeatFact(node, content) {
+  const separator = content.lastIndexOf(" ");
+  if (separator < 0) node.textContent = content;
+  else node.replaceChildren(content.slice(0, separator + 1), element("b", content.slice(separator + 1)));
+}
+
+function markSeat(node, active, bidding) {
+  node.classList.toggle("active", active);
+  if (active) node.setAttribute("aria-current", "true");
+  else node.removeAttribute("aria-current");
+  const badge = node.querySelector(".seat-turn");
+  if (badge) {
+    badge.hidden = !active;
+    badge.textContent = bidding ? copy("bidNow", "LICITEAZĂ") : copy("playNow", "JOACĂ ACUM");
+  }
 }
 
 function render() {
@@ -611,11 +698,18 @@ function render() {
     heading.append(labels, button("Meniu", menu, "menu"));
   }
 
+  const bids = match.actions.filter(move => move.key.startsWith("bid:"));
   const board = element("div", "", "board");
   for (const seat of match.seats) {
-    const position = element("div", "", "seat " + seat.anchor + (seat.active ? " active" : ""));
-    if (seat.active) position.setAttribute("aria-current", "true");
-    position.append(element("strong", seat.name), element("span", seat.firstFact), element("span", seat.secondFact));
+    const position = element("div", "", "seat " + seat.anchor);
+    position.append(element("strong", seat.name), element("span", seat.firstFact, "seat-bid"),
+      element("span", seat.secondFact, "seat-won"));
+    if (match.header) {
+      writeSeatFact(position.querySelector(".seat-bid"), seat.firstFact);
+      writeSeatFact(position.querySelector(".seat-won"), seat.secondFact);
+      position.append(element("span", "", "seat-turn"));
+    }
+    markSeat(position, seat.active, bids.length > 0);
     board.append(position);
   }
   const visible = element("div", "", "cards-on-table");
@@ -631,14 +725,14 @@ function render() {
   const prompt = element("p", match.prompt, "prompt");
   prompt.tabIndex = -1;
   const actions = element("div", "", "actions");
-  const bids = match.actions.filter(move => move.key.startsWith("bid:"));
   if (bids.length) bidding(bids, actions, !!match.header);
   for (const move of match.actions.filter(move => !move.key.startsWith("bid:") && !(match.header && ["auto", "auto-step"].includes(move.key)))) {
     actions.append(control(move));
   }
   const toolbar = element("div", "", "toolbar");
   if (!match.header && match.history.rows.length) toolbar.append(button("Istoric", () => showHistory(match.history)));
-  controls.append(prompt, actions);
+  if (!match.header) controls.append(prompt);
+  controls.append(actions);
   center.append(controls);
 
   const hand = element("div", "", "hand");
@@ -653,6 +747,7 @@ function render() {
   if (toolbar.childElementCount) content.append(toolbar);
   content.append(hand, errorBox);
   stage.replaceChildren(content);
+  refreshAutomationGate();
   placeTable();
 }
 

@@ -65,11 +65,16 @@ final class PageJson {
         if (value instanceof BrowserGame.View view)
             return fields("heading", view.heading(), "subtitle", view.subtitle(), "prompt", view.prompt(),
                     "seats", view.seats(), "hand", view.hand(), "played", view.played(), "center", view.center(),
-                    "actions", view.actions(), "history", view.history(), "header", view.header(), "score", view.score());
+                    "actions", view.actions(), "history", view.history(), "header", view.header(), "score", view.score(),
+                    "scoreDetails", view.scoreDetails());
         if (value instanceof BrowserGame.Header header)
             return fields("mode", header.mode(), "title", header.title(), "progress", header.progress(), "bids", header.bids(),
                     "trump", header.trump(), "trumpDescription", header.trumpDescription(),
                     "titleSize", header.titleSize(), "progressSize", header.progressSize(), "bidSize", header.bidSize());
+        if (value instanceof BrowserGame.ScoreDetails details)
+            return fields("liveTitle", details.liveTitle(), "summary", details.summary(), "pendingBid", details.pendingBid(),
+                    "winner", details.winner(), "awards", details.awards(), "rules", details.rules(),
+                    "liveTable", details.liveTable());
         if (value instanceof BrowserGame.Score score) return fields("title", score.title(), "table", score.table());
         if (value instanceof BrowserGame.Field field)
             return fields("key", field.key(), "label", field.label(), "initial", field.initial(), "options", field.options());
@@ -106,7 +111,7 @@ final class PageJson {
             return fields("label", entry.label(), "score", entry.score(), "ai", entry.ai(), "sample", entry.sample());
         if (value instanceof BrowserGame.CollectionCue cue)
             return fields("winningSeat", cue.winningSeat(), "displayMillis", cue.displayMillis(),
-                    "travelMillis", cue.travelMillis(), "cards", cue.cards());
+                    "travelMillis", cue.travelMillis(), "cards", cue.cards(), "holdMillis", cue.holdMillis());
         if (value instanceof BrowserGeometry.Layout layout)
             return fields("board", layout.board(), "hand", layout.hand(), "boardHeight", layout.boardHeight(),
                     "played", layout.played(), "bids", layout.bids());

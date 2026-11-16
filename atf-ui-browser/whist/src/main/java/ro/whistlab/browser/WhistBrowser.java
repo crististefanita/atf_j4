@@ -12,6 +12,7 @@ import ro.cardtable.browser.BrowserGame;
 import ro.cardtable.browser.BrowserExperience;
 import ro.cardtable.browser.BrowserServer;
 import ro.cardtable.ui.table.TableViewportPolicy;
+import ro.cardtable.ui.table.ScoreGridStyle;
 import ro.cardtable.ui.theme.TableColors;
 import ro.cardtable.ui.turn.TurnPacing;
 import ro.whistlab.app.achievements.WhistAchievementRepository.Storage;
@@ -19,7 +20,7 @@ import ro.whistlab.app.bidding.BidGridMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.table.TableLayoutMetrics;
 import ro.whistlab.core.config.AiDifficulty;
-import ro.whistlab.core.config.GameConfig;
+import ro.whistlab.app.screens.MatchSetup;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.session.GameSession;
@@ -38,7 +39,7 @@ public final class WhistBrowser implements BrowserGame {
         return new WhistBrowserProfile(name, progress, rankings);
     }
 
-    public Match restore(String checkpoint) { return WhistMatch.restore(checkpoint); }
+    public Match restore(String checkpoint) { return WhistMatch.restore(checkpoint, seeds); }
 
     public String checkpoint(Match match) { return ((WhistMatch) match).checkpoint(); }
 
@@ -56,12 +57,24 @@ public final class WhistBrowser implements BrowserGame {
     @Override public String title() { return "Whist Lab"; }
     @Override public String surface() { return "whist"; }
     @Override public List<Token> palette() {
-        return List.of(color("paper", TableColors.BACKGROUND), color("surface", TableColors.SURFACE),
+        var tokens = new ArrayList<>(List.of(color("paper", TableColors.BACKGROUND), color("surface", TableColors.SURFACE),
                 color("pine", TableColors.PINE), color("accent", TableColors.ACCENT),
                 color("felt", TableColors.TABLE_FELT), color("seat-fill", TableColors.IDLE_SEAT_FILL),
                 color("seat-line", TableColors.IDLE_SEAT_STROKE), color("seat-text", TableColors.IDLE_SEAT_TEXT),
                 color("turn-fill", TableColors.ACTIVE_SEAT_FILL), color("turn-line", TableColors.ACTIVE_SEAT_STROKE),
-                color("turn-text", TableColors.ACTIVE_SEAT_TEXT));
+                color("turn-text", TableColors.ACTIVE_SEAT_TEXT),
+                color("score-paper", ScoreGridStyle.PAPER), color("score-stripe", ScoreGridStyle.STRIPE),
+                color("score-human", ScoreGridStyle.HUMAN_ROW), color("score-header", ScoreGridStyle.HEADER),
+                color("score-rule", ScoreGridStyle.RULE), color("score-ink", ScoreGridStyle.INK),
+                color("score-muted", ScoreGridStyle.MUTED)));
+        double total = ScoreGridStyle.COLUMN_WEIGHTS.stream().mapToDouble(Float::doubleValue).sum();
+        for (int index = 0; index < ScoreGridStyle.COLUMN_WEIGHTS.size(); index++) {
+            tokens.add(new Token("--whist-score-col-" + index,
+                    (ScoreGridStyle.COLUMN_WEIGHTS.get(index) * 100 / total) + "%"));
+        }
+        tokens.add(new Token("--whist-score-head", ScoreGridStyle.HEADER_DP + "px"));
+        tokens.add(new Token("--whist-score-row", ScoreGridStyle.ROW_DP + "px"));
+        return List.copyOf(tokens);
     }
 
     private static Token color(String name, int argb) {
@@ -99,6 +112,12 @@ public final class WhistBrowser implements BrowserGame {
                 entry("nameError", text.nameError()), entry("achievements", text.achievements()),
                 entry("progress", ro ? "Progresul realizărilor" : "Achievement progress"),
                 entry("close", text.close()), entry("help", text.help()),
+                entry("instructions", HowToPlay.title(text.language())),
+                entry("instructionsSubtitle", ro ? "Whist românesc — reguli și exemple" : "Romanian Whist — rules and examples"),
+                entry("rulesAndSchedule", text.rulesAndSchedule()), entry("modeRules", modeRules(text)),
+                entry("scoringDetails", text.scoringDetails()), entry("scoreSheet", text.scoreSheet()),
+                entry("stopAutoGame", text.stopAutoGameHand()),
+                entry("bidNow", text.seatTurnBadge(true)), entry("playNow", text.seatTurnBadge(false)),
                 entry("rules", HowToPlay.sections(text.language()).stream()
                         .map(section -> Map.of("title", section.title(), "body", section.explanation())).toList()),
                 entry("streaks", ro ? "Serii de cinci mâini" : "Five-hand streaks"),
@@ -110,30 +129,50 @@ public final class WhistBrowser implements BrowserGame {
                 entry("gameType", text.gameType()), entry("busy", ro ? "O comandă este deja în curs." : "A command is already running."));
     }
 
+    private static Map<String, Object> modeRules(WhistUiText copy) {
+        var rules = new java.util.LinkedHashMap<String, Object>();
+        for (var mode : WhistUiText.MENU_MODES) {
+            var schedule = new java.util.LinkedHashMap<String, String>();
+            for (int players = 3; players <= 6; players++) {
+                schedule.put(Integer.toString(players), copy.schedulePreview(mode, players));
+            }
+            rules.put(mode.name(), Map.of("title", copy.modeName(mode), "description", copy.modeDescription(mode),
+                    "schedule", schedule, "romanian", mode.isRomanian(),
+                    "extras", mode.isRomanian() ? List.of(copy.streakToggle(), copy.zeroGameRule()) : List.of()));
+        }
+        return rules;
+    }
+
     @Override public List<Field> fields() { return fields("ro"); }
 
     @Override public List<Field> fields(String language) {
         var text = copy(language);
         boolean ro = text.romanian();
+        var defaults = new MatchSetup();
         return List.of(new Field("name", text.playerSettings(), "Tu", List.of()),
-                field("players", text.players(), "4", "3", "3", "4", "4", "5", "5", "6", "6"),
-                new Field("mode", text.gameType(), GameMode.ROMANIAN_WHIST.name(),
+                field("players", text.players(), Integer.toString(defaults.playerCount()), "3", "3", "4", "4", "5", "5", "6", "6"),
+                new Field("mode", text.gameType(), defaults.mode().name(),
                         WhistUiText.MENU_MODES.stream().map(mode -> new Option(mode.name(), text.modeName(mode))).toList()),
-                new Field("difficulty", text.aiLevel(), AiDifficulty.NORMAL.name(),
+                new Field("difficulty", text.aiLevel(), defaults.difficulty().name(),
                         java.util.Arrays.stream(AiDifficulty.values())
                                 .map(level -> new Option(level.name(), text.difficultyName(level))).toList()),
-                field("series", text.streakBonusLabel(), "10", "0", ro ? "Dezactivat" : "Off", "5", "5", "10", "10"),
-                field("zero", text.zeroGameToggle(), "yes", "yes", ro ? "Da" : "Yes", "no", ro ? "Nu" : "No"));
+                field("series", text.streakBonusLabel(), Integer.toString(defaults.streakBonus()),
+                        "0", ro ? "Dezactivat" : "Off", "5", text.fivePointsOriginal(), "10", text.tenPoints()),
+                field("streaks", text.streakToggle(), defaults.streaks() ? "yes" : "no",
+                        "yes", ro ? "Da" : "Yes", "no", ro ? "Nu" : "No"),
+                field("zero", text.zeroGameToggle(), defaults.allowZeroGame() ? "yes" : "no", "yes", ro ? "Da" : "Yes", "no", ro ? "Nu" : "No"));
     }
 
     @Override public Match start(Map<String, String> config) {
-        var mode = GameMode.valueOf(config.get("mode"));
+        var options = new MatchSetup();
+        options.playerCount(Integer.parseInt(config.get("players")));
+        options.mode(GameMode.valueOf(config.get("mode")));
+        options.difficulty(AiDifficulty.valueOf(config.get("difficulty")));
         int points = Integer.parseInt(config.get("series"));
-        var game = GameConfig.newMatch(Integer.parseInt(config.get("players")), mode,
-                AiDifficulty.valueOf(config.get("difficulty")), seeds.getAsLong(),
-                mode.isRomanian() && points > 0, points == 0 ? 10 : points,
-                mode.isRomanian() && config.get("zero").equals("yes"));
-        return new WhistMatch(GameSession.newGame(game, config.get("name")));
+        options.streaks(points > 0 && !"no".equals(config.get("streaks")));
+        if (points > 0) options.streakBonus(points);
+        options.allowZeroGame(config.get("zero").equals("yes"));
+        return new WhistMatch(GameSession.newGame(options.config(seeds.getAsLong()), config.get("name")), seeds);
     }
 
     private static Field field(String key, String label, String initial, String... pairs) {

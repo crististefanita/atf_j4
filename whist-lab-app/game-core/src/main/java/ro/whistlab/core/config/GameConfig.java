@@ -44,6 +44,11 @@ public record GameConfig(int playerCount, GameMode mode, AiDifficulty aiDifficul
         }
     }
 
+    public GameConfig withSeed(long nextSeed) {
+        return new GameConfig(playerCount, mode, aiDifficulty, nextSeed, streakBonuses,
+                streakBonusPoints, streakPenaltyPoints, allowZeroGame);
+    }
+
     public static GameConfig defaults(long seed) {
         return new GameConfig(4, GameMode.OH_HELL, AiDifficulty.NORMAL, seed);
     }

@@ -3,6 +3,7 @@ package ro.whistlab.browser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.LongSupplier;
 import java.io.IOException;
 import ro.cardtable.browser.BrowserGame;
 import ro.cardtable.browser.BrowserGame.Action;
@@ -13,6 +14,7 @@ import ro.whistlab.app.bidding.HumanBidSelection;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.animation.TrickCollectionRequest;
+import ro.whistlab.app.table.content.WhistTableContent;
 import ro.whistlab.app.achievements.WhistAchievementRepository;
 import ro.whistlab.app.highscores.HighScoreRepository;
 import ro.whistlab.app.persistence.GameCheckpointCodec;
@@ -30,26 +32,28 @@ import ro.whistlab.core.session.GameSession.Snapshot;
 
 final class WhistMatch implements BrowserGame.Match {
     private WhistUiText copy = WhistBrowser.copy("ro");
-    private final GameSession game;
-    private final String matchId;
+    private GameSession game;
+    private String matchId;
+    private final LongSupplier seeds;
     private final List<BrowserGame.CollectionCue> collections = new ArrayList<>();
     private final List<BrowserGame.PlayStep> playback = new ArrayList<>();
     private final HumanBidSelection bidSelection = new HumanBidSelection();
 
-    WhistMatch(GameSession game) {
-        this(game, UUID.randomUUID().toString());
+    WhistMatch(GameSession game, LongSupplier seeds) {
+        this(game, UUID.randomUUID().toString(), seeds);
         advance(false);
     }
 
-    private WhistMatch(GameSession game, String matchId) {
+    private WhistMatch(GameSession game, String matchId, LongSupplier seeds) {
+        this.seeds = seeds;
         this.game = game;
         this.matchId = matchId;
     }
 
-    static WhistMatch restore(String json) {
+    static WhistMatch restore(String json, LongSupplier seeds) {
         String id = new JSONObject(json).getString("matchId");
         if (id.isBlank() || id.length() > 128) throw new IllegalArgumentException("Invalid match identity");
-        return new WhistMatch(GameCheckpointCodec.fromJson(json), id);
+        return new WhistMatch(GameCheckpointCodec.fromJson(json), id, seeds);
     }
 
     String checkpoint() {
@@ -73,7 +77,15 @@ final class WhistMatch implements BrowserGame.Match {
             advance(true);
             return;
         }
-        if (action.equals("auto-step")) {
+        if (action.equals("again")) {
+            if (!finished()) throw new IllegalStateException("Replay requires a completed match");
+            var config = game.config();
+            long seed = seeds.getAsLong();
+            if (seed == config.seed()) seed = ~seed;
+            game = GameSession.newGame(config.withSeed(seed), game.snapshot().players().get(0).name());
+            matchId = UUID.randomUUID().toString();
+            bidSelection.reset();
+        } else if (action.equals("auto-step")) {
             automaticDecision(game.snapshot(), 0, false);
         } else if (action.equals("next")) {
             game.startNextHand();
@@ -111,10 +123,12 @@ final class WhistMatch implements BrowserGame.Match {
         var before = game.snapshot();
         game.playCard(actor, card);
         var state = game.snapshot();
-        var collection = TrickCollectionRequest.from(state, state.lastTrick()).map(target ->
-                new BrowserGame.CollectionCue(state.lastTrickWinnerSeat(), TrickCollectionMotion.DISPLAY_MILLIS,
-                        TrickCollectionMotion.COLLECT_MILLIS, state.lastTrick().stream()
-                        .map(played -> new Played(played.seat(), face(played.card(), ""))).toList())).orElse(null);
+        var collection = TrickCollectionRequest.from(state, state.lastTrick()).map(target -> {
+            var timeline = TrickCollectionMotion.timing(TrickCollectionMotion.DISPLAY_MILLIS, 0);
+            return new BrowserGame.CollectionCue(target.winner(), TrickCollectionMotion.DISPLAY_MILLIS,
+                    timeline.durationMillis(), state.lastTrick().stream()
+                    .map(played -> new Played(played.seat(), face(played.card(), ""))).toList(), timeline.delayMillis());
+        }).orElse(null);
         if (collection != null) collections.add(collection);
         playback.add(new BrowserGame.PlayStep(new Played(actor, face(card, "")), before.currentTrick().isEmpty(),
                 automated ? TurnPacing.ACTION_DELAY_MILLIS : 0, collection, copy.bidSummary(before),
@@ -135,11 +149,16 @@ final class WhistMatch implements BrowserGame.Match {
     @Override public View view() {
         var state = game.snapshot();
         var legalCards = legalCards(state);
-        var seats = state.players().stream().map(player -> Seat.at(player.seat(), state.players().size(), copy.seatName(player),
-                copy.seatFacts(player),
-                "Total " + state.matchScore(player.seat()), actor(state) == player.seat())).toList();
-        var hand = state.players().get(0).hand().stream()
-                .map(card -> face(card, legalCards.contains(card) ? cardKey(card) : "")).toList();
+        var turn = WhistTableContent.turn(state, false, false);
+        boolean bidding = state.phase() == GamePhase.BIDDING;
+        var seats = state.players().stream().map(player -> {
+            var content = WhistTableContent.seat(player, turn.seat(), state.dealerSeat(), bidding, copy);
+            return Seat.at(content.seat(), state.players().size(), content.name(), content.facts().get(0).inlineText(),
+                    content.facts().get(1).inlineText(), content.active());
+        }).toList();
+        var hand = WhistTableContent.hand(state, new java.util.HashSet<>(legalCards), turn, bidding, copy)
+                .stream().map(card -> new BrowserGame.Card(card.face().rankLabel(), card.face().suitSymbol(),
+                        card.description(), card.playable() ? "card:" + card.id() : "")).toList();
         var trick = state.currentTrick().isEmpty() ? state.lastTrick() : state.currentTrick();
         List<Played> played = trick.stream().map(play -> new Played(play.seat(), face(play.card(), ""))).toList();
         var center = state.turnedCard() == null ? List.<BrowserGame.Card>of() : List.of(face(state.turnedCard(), ""));
@@ -149,13 +168,14 @@ final class WhistMatch implements BrowserGame.Match {
                 GameHeaderTypography.TITLE_SP, GameHeaderTypography.PROGRESS_SP, GameHeaderTypography.BID_SUMMARY_SP);
         var score = state.phase() == GamePhase.SCORE ? WhistScores.hand(game, copy) : null;
         return new View(copy.historyHand() + " " + state.handNumber(), subtitle, prompt(state), seats, hand, played, center,
-                actions(state), WhistScores.history(game, copy), header, score);
+                actions(state), WhistScores.history(game, copy), header, score, WhistScores.details(game, copy));
     }
 
     private List<Action> actions(Snapshot state) {
         var moves = new ArrayList<Action>();
         if (state.phase() == GamePhase.SCORE) {
-            if (!state.finalHand()) moves.add(new Action("next", copy.nextHand(), true));
+            moves.add(state.finalHand() ? new Action("again", copy.playAgain(), true)
+                    : new Action("next", copy.nextHand(), true));
         } else if (actor(state) == 0) {
             if (state.phase() == GamePhase.BIDDING) {
                 int recommendation = recommend();

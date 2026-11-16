@@ -28,6 +28,23 @@ public final class UiLibraryBoundaryComponentTest extends GradleAuditedTest {
         assertFalse("The AAR declares no permissions", manifest.contains("uses-permission"));
     }
 
+    @Test public void portableTableContractsHaveNoPlatformImports() throws Exception {
+        var source = module().resolve("src/main/java/ro/cardtable/ui");
+        var contracts = List.of("animation/CollectionTarget.java", "animation/TrickCollectionMotion.java",
+                "turn/TurnPacing.java", "table/ScoreGridStyle.java", "seat/SeatContent.java");
+        var platform = new ArrayList<>(GAME_PACKAGES);
+        platform.addAll(List.of("import android.", "import androidx.", "import atf."));
+        var violations = new ArrayList<String>();
+        for (String contract : contracts) {
+            String contents = readUtf8(source.resolve(contract));
+            for (String dependency : platform) {
+                if (contents.contains(dependency)) violations.add(contract + " imports " + dependency);
+            }
+        }
+        GradleInputs.fixture("Portable Android and web contracts", "sources", contracts);
+        assertEquals("Shared presentation cannot couple Android, ATF or game engines", List.of(), violations);
+    }
+
     private static void inspectSources(String sourceSet, int minimum, List<String> forbidden) throws Exception {
         var root = module();
         List<Path> javaSources;
