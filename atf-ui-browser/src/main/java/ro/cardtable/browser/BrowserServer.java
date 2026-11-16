@@ -100,18 +100,18 @@ public final class BrowserServer implements AutoCloseable {
         switch (path) {
             case "/api/setup" -> {
                 if (!requireMethod(http, method, "GET")) return;
-                json(http, 200, new Setup(game.title(), game.fields()));
+                json(http, 200, new Setup(game.title(), game.fields(), game.surface(), game.palette()));
             }
             case "/api/state" -> {
                 if (!requireMethod(http, method, "GET")) return;
                 var session = session(client, game.hasProfile());
                 if (session == null && game.hasProfile()) error(http, 503, "Too many open profiles");
-                else json(http, 200, session == null ? new BrowserSession.State(0, null, null, List.of()) : session.state());
+                else json(http, 200, session == null ? new BrowserSession.State(0, null, null, List.of(), List.of()) : session.state());
             }
             case "/api/layout" -> {
                 if (!requireMethod(http, method, "POST")) return;
                 try {
-                    json(http, 200, BrowserGeometry.measure(decode(http.getRequestBody().readNBytes(MAX_FORM + 1))));
+                    json(http, 200, BrowserGeometry.measure(game, decode(http.getRequestBody().readNBytes(MAX_FORM + 1))));
                 } catch (IllegalArgumentException invalid) {
                     error(http, 400, "Invalid layout measurements");
                 }
@@ -210,7 +210,8 @@ public final class BrowserServer implements AutoCloseable {
         tasks.shutdownNow();
     }
 
-    record Setup(String title, java.util.List<BrowserGame.Field> fields) { }
+    record Setup(String title, java.util.List<BrowserGame.Field> fields, String surface,
+                 java.util.List<BrowserGame.Token> palette) { }
     record ErrorMessage(String error) { }
     record Asset(String file, String mime) { }
     private record Client(String tab, String profile) { }

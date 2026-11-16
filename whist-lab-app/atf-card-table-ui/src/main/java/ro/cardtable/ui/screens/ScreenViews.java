@@ -2,6 +2,7 @@ package ro.cardtable.ui.screens;
 
 import ro.cardtable.ui.widgets.DropdownBackground;
 import ro.cardtable.ui.theme.TablePalette;
+import ro.cardtable.ui.theme.TableColors;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -20,12 +21,12 @@ import java.util.List;
 
 /** Shared widget construction; screen classes own composition and the activity owns lifetime. */
 public class ScreenViews {
-    public static final int PINE = Color.rgb(29, 54, 43);
-    public static final int INK = Color.rgb(41, 54, 46);
-    public static final int MUTED = Color.rgb(105, 117, 106);
-    public static final int ACCENT = Color.rgb(48, 111, 78);
-    public static final int SURFACE = Color.rgb(255, 254, 248);
-    public static final int BACKGROUND = Color.rgb(246, 245, 237);
+    public static final int PINE = TableColors.PINE;
+    public static final int INK = TableColors.INK;
+    public static final int MUTED = TableColors.MUTED;
+    public static final int ACCENT = TableColors.ACCENT;
+    public static final int SURFACE = TableColors.SURFACE;
+    public static final int BACKGROUND = TableColors.BACKGROUND;
     private final Activity activity;
     private final java.util.function.Function<String, String> selectorLabel;
     private final java.util.function.Consumer<View> protection;

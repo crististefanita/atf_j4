@@ -2,6 +2,7 @@ package ro.cardtable.browser;
 
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.table.TableGeometry;
+import ro.cardtable.ui.table.PlayedCardMetrics;
 import ro.whistlab.app.achievements.presentation.WhistAchievementPresentation;
 
 import java.util.LinkedHashMap;
@@ -56,15 +57,21 @@ final class PageJson {
     private static Map<String, Object> projection(Object value) {
         if (value instanceof BrowserSession.State state)
             return fields("revision", state.revision(), "view", state.view(), "profile", state.profile(),
-                    "collections", state.collections());
+                    "collections", state.collections(), "playback", state.playback());
         if (value instanceof BrowserGame.View view)
             return fields("heading", view.heading(), "subtitle", view.subtitle(), "prompt", view.prompt(),
                     "seats", view.seats(), "hand", view.hand(), "played", view.played(), "center", view.center(),
-                    "actions", view.actions(), "history", view.history());
+                    "actions", view.actions(), "history", view.history(), "header", view.header(), "score", view.score());
+        if (value instanceof BrowserGame.Header header)
+            return fields("mode", header.mode(), "title", header.title(), "progress", header.progress(), "bids", header.bids(),
+                    "trump", header.trump(), "trumpDescription", header.trumpDescription(),
+                    "titleSize", header.titleSize(), "progressSize", header.progressSize(), "bidSize", header.bidSize());
+        if (value instanceof BrowserGame.Score score) return fields("title", score.title(), "table", score.table());
         if (value instanceof BrowserGame.Field field)
             return fields("key", field.key(), "label", field.label(), "initial", field.initial(), "options", field.options());
         if (value instanceof BrowserGame.Option option)
             return fields("value", option.value(), "label", option.label());
+        if (value instanceof BrowserGame.Token token) return fields("name", token.name(), "color", token.color());
         if (value instanceof BrowserGame.Action action)
             return fields("key", action.key(), "label", action.label(), "emphasized", action.emphasized(),
                     "minimum", action.minimum(), "maximum", action.maximum());
@@ -74,11 +81,22 @@ final class PageJson {
             return fields("anchor", seat.anchor(), "name", seat.name(), "firstFact", seat.firstFact(),
                     "secondFact", seat.secondFact(), "active", seat.active());
         if (value instanceof BrowserGame.Played played) return fields("seat", played.seat(), "card", played.card());
+        if (value instanceof BrowserGame.PlayStep step)
+            return fields("play", step.play(), "startsTrick", step.startsTrick(), "delayMillis", step.delayMillis(),
+                    "collection", step.collection());
         if (value instanceof BrowserGame.History history) return fields("headings", history.headings(), "rows", history.rows());
         if (value instanceof BrowserGame.CollectionCue cue)
             return fields("winningSeat", cue.winningSeat(), "displayMillis", cue.displayMillis(),
                     "travelMillis", cue.travelMillis(), "cards", cue.cards());
-        if (value instanceof BrowserGeometry.Layout layout) return fields("board", layout.board(), "hand", layout.hand());
+        if (value instanceof BrowserGeometry.Layout layout)
+            return fields("board", layout.board(), "hand", layout.hand(), "boardHeight", layout.boardHeight(),
+                    "played", layout.played());
+        if (value instanceof PlayedCardMetrics.Layout trick)
+            return fields("cardWidthDp", trick.cardWidthDp(), "cardHeightDp", trick.cardHeightDp(),
+                    "playerLabelHeightDp", trick.playerLabelHeightDp(), "rowStrideDp", trick.rowStrideDp(),
+                    "centerHeightDp", trick.centerHeightDp(), "slots", trick.slots());
+        if (value instanceof PlayedCardMetrics.Slot slot)
+            return fields("seat", slot.seat(), "row", slot.row(), "leftDp", slot.leftDp());
         if (value instanceof TableGeometry.Plan plan) return fields("seats", plan.seats(), "center", plan.center());
         if (value instanceof TableGeometry.Rect rect)
             return fields("left", rect.left(), "top", rect.top(), "right", rect.right(), "bottom", rect.bottom());

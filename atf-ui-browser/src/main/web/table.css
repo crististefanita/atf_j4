@@ -95,6 +95,9 @@ header .subtitle { font-size: 14px; color: #41574b; }
   overflow: auto;
 }
 .played-card { display: grid; gap: 2px; justify-items: center; text-align: center; font-size: 11px; }
+.cards-on-table.positioned { position: relative; display: block; flex: none; overflow: visible; }
+.positioned .played-card { position: absolute; }
+#table[data-playing-steps] .whist-match .controls { display: none; }
 .card {
   flex: 0 0 46px;
   position: relative;
@@ -189,3 +192,124 @@ dialog form { margin-top: 8px; display: flex; justify-content: flex-end; }
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 th, td { text-align: center; padding: 7px 5px; border-right: 1px solid #748a78; }
 thead, tr:nth-child(even) { background: #e8efe4; }
+
+/* Whist uses the APK's light home/setup surfaces and its game header composition. */
+[data-surface="whist"] {
+  --whist-outline: #d3dcd2;
+}
+[data-surface="whist"] #table { background: var(--whist-paper); color: var(--whist-pine); }
+.whist-match { background: var(--whist-felt); color: var(--whist-seat-text); }
+.whist-match .seat { background: var(--whist-seat-fill); border-color: var(--whist-seat-line); }
+.whist-match .seat.active { background: var(--whist-turn-fill); border-color: var(--whist-turn-line); color: var(--whist-turn-text); }
+.whist-home, .whist-score, [data-surface="whist"] .setup { padding: 16px 22px 14px; }
+.whist-home { display: grid; gap: 10px; }
+.whist-home h1, [data-surface="whist"] .setup h1 { font-size: 25px; margin: 0 0 8px; }
+.whist-home button, .whist-score button, [data-surface="whist"] .setup button {
+  min-height: 48px;
+  border: 1px solid var(--whist-outline);
+  border-radius: 14px;
+  background: var(--whist-surface);
+}
+.whist-home .primary, .whist-score .primary, [data-surface="whist"] .setup .primary {
+  color: white;
+  background: var(--whist-accent);
+  border-color: var(--whist-accent);
+}
+.whist-home .quiet, .whist-score .quiet, [data-surface="whist"] .setup .quiet {
+  background: transparent;
+  border-color: transparent;
+}
+.whist-home button:disabled { opacity: .55; cursor: default; }
+[data-surface="whist"] .setup form { gap: 8px; }
+[data-surface="whist"] .setup label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  font-size: 14px;
+  font-weight: 600;
+}
+[data-surface="whist"] .setup select {
+  min-height: 48px;
+  width: min(150px, 48%);
+  background: var(--whist-surface);
+  border-color: var(--whist-outline);
+  border-radius: 12px;
+  padding-inline: 12px;
+}
+[data-surface="whist"] .setup .mode-field select { width: 100%; }
+.series-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+[data-surface="whist"] .series-row select { width: min(138px, 35vw); }
+[data-surface="whist"] .setup .setup-toggle { justify-content: flex-start; font-size: 13px; font-weight: 400; }
+[data-surface="whist"] .setup input[type="checkbox"] { min-height: 0; width: 18px; height: 18px; accent-color: var(--whist-accent); }
+[data-surface="whist"] .setup [hidden] { display: none; }
+.whist-match { padding: 2px 12px; gap: 4px; }
+.whist-match .board, .whist-match .hand { margin-inline: 8px; }
+.match .whist-header { display: grid; gap: 2px; min-width: 0; }
+.whist-title-row { display: flex; align-items: center; min-height: 48px; gap: 8px; }
+.whist-title-row h1 { color: #f5f8f0; font-size: var(--title-size, 14px); flex: 1; overflow-wrap: anywhere; }
+.whist-navigation { position: relative; }
+.whist-navigation summary {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  list-style: none;
+  cursor: pointer;
+}
+.whist-navigation summary::-webkit-details-marker { display: none; }
+.menu-lines {
+  width: 20px;
+  height: 2px;
+  background: #e1efe4;
+  border-radius: 2px;
+  box-shadow: 0 6px #e1efe4, 0 -6px #e1efe4;
+}
+.whist-menu-items {
+  position: absolute;
+  z-index: 4;
+  min-width: max-content;
+  display: grid;
+  background: var(--whist-surface);
+  color: var(--whist-pine);
+  padding: 4px;
+  box-shadow: 0 4px 12px #0004;
+  border-radius: 6px;
+}
+.whist-menu-items button { text-align: start; border-color: transparent; background: transparent; }
+.match .whist-auto:not(.primary) {
+  background: transparent;
+  color: #f5f8f0;
+  border-color: #4c7660;
+  flex-shrink: 0;
+  max-width: 36%;
+  font-size: 13px;
+}
+.whist-header-details {
+  padding-inline-start: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.whist-progress { font-size: var(--progress-size, 11px); font-weight: 700; color: #e5efe6; }
+.whist-bids { font-size: var(--bid-size, 12px); color: #c2d8c7; white-space: pre-line; }
+.whist-trump { display: grid; place-items: center; color: #f5f8f0; font-size: 12px; }
+.whist-trump .card { min-width: 32px; width: 32px; height: 44px; padding: 2px 3px; }
+.whist-trump .suit { font-size: 19px; }
+.whist-trump .card-index { font-size: 9px; line-height: 9px; }
+.whist-trump .card-index.inverted { display: none; }
+[data-surface="whist"] .seat span:first-of-type { white-space: pre-line; }
+.whist-score { display: grid; gap: 8px; }
+.whist-score h1 { font-size: 25px; }
+.whist-score-hand { color: var(--whist-accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.whist-score-status { white-space: pre-line; font-size: 13px; color: #69756a; }
+.whist-score .prompt { color: #69756a; }
+.whist-score table { background: var(--whist-surface); border: 1px solid var(--whist-outline); font-size: 13px; }
+.whist-score thead { color: #69756a; font-size: 11px; background: #ebf1e9; }
+.whist-score th, .whist-score td { border-right: 0; border-bottom: 1px solid #dae2d8; height: 43px; }
+.whist-score th { height: 38px; }
+.whist-score :is(th, td):first-child { text-align: start; overflow-wrap: anywhere; }
+.whist-score tbody tr:first-child { background: #ebf3e8; }
+.whist-score tbody tr:first-child :is(td:first-child, td:last-child) { font-weight: 700; }

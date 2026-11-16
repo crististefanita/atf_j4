@@ -7,7 +7,7 @@ import java.util.Map;
 /** One in-memory match per browser tab. Refreshes can read the latest accepted revision. */
 final class BrowserSession {
     record State(long revision, BrowserGame.View view, BrowserExperience.Details profile,
-                 List<BrowserGame.CollectionCue> collections) { }
+                 List<BrowserGame.CollectionCue> collections, List<BrowserGame.PlayStep> playback) { }
 
     private final BrowserExperience profile;
     private long revision;
@@ -17,11 +17,12 @@ final class BrowserSession {
     BrowserSession(BrowserExperience profile) { this.profile = profile; }
 
     synchronized State state() {
-        return response(List.of());
+        return response(List.of(), List.of());
     }
 
-    private State response(List<BrowserGame.CollectionCue> collections) {
-        return new State(revision, view, profile == null ? null : profile.details(match), List.copyOf(collections));
+    private State response(List<BrowserGame.CollectionCue> collections, List<BrowserGame.PlayStep> playback) {
+        return new State(revision, view, profile == null ? null : profile.details(match),
+                List.copyOf(collections), List.copyOf(playback));
     }
 
     synchronized State start(BrowserGame game, long expected, Map<String, String> supplied) {
@@ -60,7 +61,7 @@ final class BrowserSession {
             revision++;
         }
         if (profile != null) profile.completedAction(match);
-        return response(match.collections());
+        return response(match.collections(), match.playback());
     }
 
     synchronized State rename(long expected, String name) {

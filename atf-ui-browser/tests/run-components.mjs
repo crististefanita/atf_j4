@@ -254,7 +254,7 @@ async function ui({ send, evaluate, version }, url, name) {
   await metrics(414, 896, true);
   const page = await send("Page.navigate", { url: url.href });
   assert.ok(!page.errorText, page.errorText);
-  await ready("!!document.querySelector('[name=players]')", "Meniul nu a apărut");
+  await ready("!!document.querySelector('.whist-home')", "Meniul nu a apărut");
   {
     const clickText = text => evaluate(`[...document.querySelectorAll("button")].find(
       button => button.textContent.startsWith(${JSON.stringify(text)}))?.click()`);
@@ -270,13 +270,13 @@ async function ui({ send, evaluate, version }, url, name) {
       form.requestSubmit();
     })()`);
     await ready(`!document.querySelector('.player-dialog[open]') &&
-      [...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: Bianca')`,
+      [...document.querySelectorAll('.whist-home button')].some(button => button.textContent === 'Numele tău: Bianca')`,
       "Profilul salvat nu a revenit în meniu");
     assert.equal(await evaluate("localStorage.getItem('table-profile-name')"), "Bianca");
     const firstTab = await evaluate("sessionStorage.getItem('table-client')");
     await evaluate("sessionStorage.removeItem('table-client')");
     await send("Page.reload");
-    await ready(`[...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: Bianca')`,
+    await ready(`[...document.querySelectorAll('.whist-home button')].some(button => button.textContent === 'Numele tău: Bianca')`,
       "Fila reinițializată nu a refolosit profilul de pe telefon");
     assert.notEqual(await evaluate("sessionStorage.getItem('table-client')"), firstTab);
     const deviceId = await evaluate("localStorage.getItem('table-profile-id')");
@@ -286,13 +286,13 @@ async function ui({ send, evaluate, version }, url, name) {
     await send("Page.reload");
     await until(async () => (await readFile(serverName, "utf-8")) === "Bianca");
     await ready(`document.querySelector('#table')?.getAttribute('aria-busy') === 'false' &&
-      [...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: Bianca')`,
+      [...document.querySelectorAll('.whist-home button')].some(button => button.textContent === 'Numele tău: Bianca')`,
       "Browserul nu a reconstruit numele local");
     await clickText("Numele tău: Bianca");
     await snapshot("profil salvat");
     await clickText("Resetează numele");
     await ready(`!document.querySelector('.player-dialog[open]') &&
-      [...document.querySelectorAll('.setup button')].some(button => button.textContent === 'Numele tău: You')`,
+      [...document.querySelectorAll('.whist-home button')].some(button => button.textContent === 'Numele tău: You')`,
       "Resetarea profilului nu a revenit în meniu");
     assert.equal(await evaluate("localStorage.getItem('table-profile-name')"), "You");
     await clickText("Realizări");
@@ -309,6 +309,7 @@ async function ui({ send, evaluate, version }, url, name) {
     await evaluate("document.querySelector('.player-dialog[open]').close()");
   }
   await evaluate(`(() => {
+      document.querySelector('.whist-home .primary').click();
       document.querySelector('[name=players]').value = "3";
       document.querySelector('[name=mode]').value = "DOWN_AND_UP";
       document.querySelector('.setup form').requestSubmit();
@@ -373,7 +374,7 @@ async function ui({ send, evaluate, version }, url, name) {
     await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 14; Mobile)" });
     await metrics(414, 896, true);
     await ready("document.querySelector('#frame').clientWidth === 414", "Revenirea la cadrul mobil nu s-a încheiat");
-    await evaluate("[...document.querySelectorAll('.actions button')].find(button => button.textContent === 'Joacă automat').click()");
+    await evaluate("document.querySelector('.whist-auto').click()");
     for (const step of [1, 2]) {
       await ready(`(() => {
         const stage = document.querySelector("#table[data-collection-step='${step}']");
@@ -383,7 +384,7 @@ async function ui({ send, evaluate, version }, url, name) {
       await snapshot("levata " + step + " din AutoGame în deplasare");
     }
     await ready("document.querySelector('#table').getAttribute('aria-busy') === 'false'",
-      "Șirul de colectări nu s-a încheiat", 37000);
+      "Șirul de colectări nu s-a încheiat", 65000);
   }
   return { expected: "Afișare mobilă 1:1, 17 cărți accesibile, ancore fixe și scalare uniformă după înălțime",
     observed: { version, portrait, playedSeats: play.seats, desktop }, images };

@@ -1,18 +1,17 @@
 package ro.cardtable.ui.theme;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 
 /** Shared presentation colors for the full-bleed game surface. */
 public final class TablePalette {
-    public static final int TABLE_FELT = Color.rgb(23, 79, 60);
-    public static final int ACTIVE_SEAT_FILL = Color.rgb(241, 230, 200);
-    public static final int ACTIVE_SEAT_STROKE = Color.rgb(220, 181, 105);
-    public static final int ACTIVE_SEAT_TEXT = Color.rgb(41, 54, 46);
-    public static final int IDLE_SEAT_FILL = Color.rgb(31, 87, 67);
-    public static final int IDLE_SEAT_STROKE = Color.rgb(76, 118, 96);
-    public static final int IDLE_SEAT_TEXT = Color.rgb(211, 239, 226);
+    public static final int TABLE_FELT = TableColors.TABLE_FELT;
+    public static final int ACTIVE_SEAT_FILL = TableColors.ACTIVE_SEAT_FILL;
+    public static final int ACTIVE_SEAT_STROKE = TableColors.ACTIVE_SEAT_STROKE;
+    public static final int ACTIVE_SEAT_TEXT = TableColors.ACTIVE_SEAT_TEXT;
+    public static final int IDLE_SEAT_FILL = TableColors.IDLE_SEAT_FILL;
+    public static final int IDLE_SEAT_STROKE = TableColors.IDLE_SEAT_STROKE;
+    public static final int IDLE_SEAT_TEXT = TableColors.IDLE_SEAT_TEXT;
 
     private TablePalette() { }
 

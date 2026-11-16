@@ -5,16 +5,17 @@ import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.GameRules;
 
 /** Seat dimensions; played-card sizing belongs to TrickCardMetrics. */
-final class TableLayoutMetrics {
-    record CenterReservation(int biddingHeightDp, int reservedHeightDp, boolean useBidStrip,
+public final class TableLayoutMetrics {
+    public record CenterReservation(int biddingHeightDp, int reservedHeightDp, boolean useBidStrip,
                              TrickCardMetrics.Layout trickLayout) {
         int playingHeightDp() { return trickLayout.centerHeightDp(); }
+        public ro.cardtable.ui.table.PlayedCardMetrics.Layout playedCards() { return trickLayout.shared(); }
     }
     static final int TRUMP_WIDTH_DP = 57;
     static final int TRUMP_MIN_HEIGHT_DP = 48;
     static final int TRUMP_PADDING_DP = 4;
     static final int TRUMP_VALUE_GAP_DP = 2;
-    static final int HUMAN_HAND_CLEARANCE_DP = 28;
+    public static final int HUMAN_HAND_CLEARANCE_DP = 28;
 
     /** Two measured line boxes keep every trump representation in the same frame. */
     static int trumpHeightPx(float density, int headingHeightPx, int valueHeightPx) {
@@ -33,7 +34,7 @@ final class TableLayoutMetrics {
     }
 
     static CenterReservation centerReservation(int players, int handSize, int tableWidthDp,
-            float fontScale, TableViewportPolicy viewport) {
+            float fontScale, ro.cardtable.ui.table.TableViewportPolicy viewport) {
         if (players < 3 || players > 6 || handSize < 1 || handSize > 17) {
             throw new IllegalArgumentException("A table reservation needs 3–6 players and a 1–17 card hand");
         }
@@ -46,8 +47,8 @@ final class TableLayoutMetrics {
     }
 
     /** Reserves the same center band for every hand in the selected match schedule. */
-    static CenterReservation matchCenterReservation(GameMode mode, int players, int tableWidthDp,
-            float fontScale, TableViewportPolicy viewport) {
+    public static CenterReservation matchCenterReservation(GameMode mode, int players, int tableWidthDp,
+            float fontScale, ro.cardtable.ui.table.TableViewportPolicy viewport) {
         int largestHand = GameRules.handSizes(mode, players).stream()
                 .mapToInt(Integer::intValue)
                 .max()

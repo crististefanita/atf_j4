@@ -65,7 +65,9 @@ let setup;
 let state;
 let pending = false;
 let selectedBid;
+let setupDraft = {};
 let measuring = 0;
+let playedLayout;
 const errorBox = element("p", "", "error");
 errorBox.setAttribute("role", "alert");
 const profileDialogs = createProfileDialogs(element, button, issue);
@@ -92,9 +94,12 @@ async function issue(path, fields) {
   stage.setAttribute("aria-busy", "true");
   errorBox.textContent = "";
   try {
-    const onMenu = !!stage.querySelector(".setup");
+    const onMenu = !!stage.querySelector(".setup, .whist-home");
     const result = await call(path, { ...fields, revision: String(state.revision) });
-    if (result.collections.length && stage.querySelector(".board")) {
+    if (result.playback?.length && stage.querySelector(".board")) {
+      stage.dataset.playingSteps = "true";
+      await playCards(result.playback);
+    } else if (result.collections.length && stage.querySelector(".board")) {
       await placeTable();
       for (const [index, cue] of result.collections.entries()) {
         stage.dataset.collectionStep = String(index + 1);
@@ -127,48 +132,154 @@ async function issue(path, fields) {
     animation?.cancel();
     animation = undefined;
     delete stage.dataset.collectionStep;
+    delete stage.dataset.playingSteps;
     pending = false;
     stage.setAttribute("aria-busy", "false");
   }
 }
 
+async function playCards(steps) {
+  const center = stage.querySelector(".cards-on-table");
+  const seats = [...stage.querySelectorAll(".seat")];
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let collectionNumber = 0;
+  await placeTable();
+  for (const step of steps) {
+    if (step.startsTrick) center.replaceChildren();
+    for (const [seat, node] of seats.entries()) {
+      node.classList.toggle("active", seat === step.play.seat);
+      if (seat === step.play.seat) node.setAttribute("aria-current", "true");
+      else node.removeAttribute("aria-current");
+    }
+    if (step.delayMillis && !reducedMotion) {
+      await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, step.delayMillis)));
+    }
+    if (!center.isConnected) return;
+    const face = step.play.card;
+    if (step.play.seat === 0) {
+      const source = [...stage.querySelectorAll(".fan .card")].find(node => node.getAttribute("aria-label") === face.label);
+      if (source) source.style.visibility = "hidden";
+    }
+    center.append(playedCard(step.play, state.view.seats));
+    placePlayed(center);
+    if (!step.collection) {
+      if (!reducedMotion) await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      continue;
+    }
+    stage.dataset.collectionStep = String(++collectionNumber);
+    animation = collect(stage, step.collection, card);
+    await animation.done;
+    animation = undefined;
+    center.replaceChildren();
+  }
+}
+
 function menu() {
+  if (setup.surface === "whist") {
+    const home = element("section", "", "whist-home");
+    const title = element("h1", "Whist");
+    title.tabIndex = -1;
+    home.append(title,
+      button("Numele tău: " + state.profile.name, () => profileDialogs.edit(state.profile.name), "quiet"),
+      button("Joc nou", menuSetup, "primary"));
+    const resume = button("Reia partida", render);
+    resume.disabled = !state.view;
+    home.append(resume, button("Realizări", () => profileDialogs.catalogue(state.profile.catalogue), "quiet"));
+    stage.replaceChildren(home, errorBox);
+    return;
+  }
+  menuSetup();
+}
+
+function menuSetup() {
+  const native = setup.surface === "whist";
   const content = element("section", "", "setup");
-  const title = element("h1", setup.title);
+  const title = element("h1", native ? "Setări joc" : setup.title);
   title.tabIndex = -1;
   const form = element("form");
-  for (const field of setup.fields) {
-    if (field.key === "name" && state.profile) continue;
-    const label = element("label", field.label);
-    const input = element(field.options.length ? "select" : "input");
-    input.name = field.key;
-    if (field.options.length) {
-      for (const option of field.options) {
-        const node = element("option", option.label);
-        node.value = option.value;
-        input.append(node);
-      }
-    } else {
-      input.autocomplete = "off";
-    }
-    input.value = field.initial;
-    label.append(input);
-    form.append(label);
+  const fields = setup.fields.filter(field => field.key !== "name" || !state.profile);
+  if (native) {
+    whistSettings(form, Object.fromEntries(fields.map(field => [field.key, field])));
+  } else {
+    for (const field of fields) form.append(settingsField(field));
   }
-  const start = element("button", "Joc nou", "primary");
+  const start = element("button", native ? "Începe partida" : "Joc nou", "primary");
   start.type = "submit";
   form.append(start);
   form.addEventListener("submit", event => {
     event.preventDefault();
-    issue("/api/start", Object.fromEntries(new FormData(form)));
+    const configuration = Object.fromEntries(new FormData(form));
+    if (native) {
+      configuration.series = configuration.streaks ? configuration.series : "0";
+      configuration.zero = configuration.zero ? "yes" : "no";
+    }
+    issue("/api/start", configuration);
   });
   content.append(title, form);
-  if (state.view) content.append(button("Continuă", render));
-  if (state.profile) {
+  if (native) content.append(button("Înapoi", menu, "quiet"));
+  if (!native && state.view) content.append(button("Continuă", render));
+  if (!native && state.profile) {
     content.append(button("Numele tău: " + state.profile.name, () => profileDialogs.edit(state.profile.name)),
       button("Realizări", () => profileDialogs.catalogue(state.profile.catalogue)));
   }
   stage.replaceChildren(content, errorBox);
+}
+
+function settingsField(field, options = field.options, visibleLabel = true) {
+  const label = element("label", visibleLabel ? field.label : "");
+  const input = element(options.length ? "select" : "input");
+  input.name = field.key;
+  if (!visibleLabel) input.setAttribute("aria-label", field.label);
+  for (const option of options) {
+    const choice = element("option", option.label);
+    choice.value = option.value;
+    input.append(choice);
+  }
+  if (!options.length) input.autocomplete = "off";
+  input.value = setupDraft[field.key] ?? field.initial;
+  label.append(input);
+  return label;
+}
+
+function whistSettings(form, fields) {
+  const players = settingsField(fields.players);
+  const modes = settingsField(fields.mode, fields.mode.options, false);
+  const level = settingsField(fields.difficulty);
+  modes.className = "mode-field";
+  const toggle = (text, key, checked) => {
+    const field = element("label", "", "setup-toggle");
+    const input = element("input");
+    input.type = "checkbox";
+    input.name = key;
+    input.checked = checked;
+    field.append(input, document.createTextNode(text));
+    return field;
+  };
+  const series = toggle("Serii de cinci mâini", "streaks", setupDraft.streaks ?? fields.series.initial !== "0");
+  const seriesValue = settingsField(fields.series, fields.series.options.filter(option => option.value !== "0"), false);
+  seriesValue.className = "series-value";
+  const streaks = element("div", "", "series-row");
+  streaks.append(series, seriesValue);
+  const zero = toggle(fields.zero.label, "zero", setupDraft.zero ?? fields.zero.initial === "yes");
+  const mode = modes.querySelector("select");
+  const enabled = series.querySelector("input");
+  const points = seriesValue.querySelector("select");
+  const update = () => {
+    streaks.hidden = zero.hidden = !["ROMANIAN_WHIST", "LONG_ROMANIAN"].includes(mode.value);
+    points.disabled = !enabled.checked;
+  };
+  mode.addEventListener("change", update);
+  enabled.addEventListener("change", update);
+  form.addEventListener("change", () => {
+    setupDraft = {
+      ...Object.fromEntries(new FormData(form)),
+      series: points.value,
+      streaks: enabled.checked,
+      zero: zero.querySelector("input").checked
+    };
+  });
+  form.append(players, modes, streaks, zero, level);
+  update();
 }
 
 function card(face, interactive = false) {
@@ -191,7 +302,29 @@ function card(face, interactive = false) {
   return node;
 }
 
-function showHistory(data) {
+function playedCard(play, seats) {
+  const tile = element("div", "", "played-card");
+  tile.dataset.seat = String(play.seat);
+  tile.append(card(play.card), element("span", seats[play.seat].name));
+  return tile;
+}
+
+function placePlayed(cards) {
+  if (!playedLayout || !cards.childElementCount) return;
+  cards.style.height = playedLayout.centerHeightDp + "px";
+  cards.classList.add("positioned");
+  for (const tile of cards.children) {
+    const slot = playedLayout.slots[Number(tile.dataset.seat)];
+    const face = tile.querySelector(".card");
+    tile.style.left = slot.leftDp + "px";
+    tile.style.top = slot.row * playedLayout.rowStrideDp + "px";
+    face.style.width = face.style.minWidth = playedLayout.cardWidthDp + "px";
+    face.style.height = playedLayout.cardHeightDp + "px";
+    tile.querySelector(":scope > span:last-child").hidden = !playedLayout.playerLabelHeightDp;
+  }
+}
+
+function scoreGrid(data) {
   const grid = element("table");
   function row(cells, tag) {
     const line = element("tr");
@@ -203,7 +336,11 @@ function showHistory(data) {
   header.append(row(data.headings, "th"));
   for (const cells of data.rows) body.append(row(cells, "td"));
   grid.append(header, body);
-  document.querySelector("#history-data").replaceChildren(grid);
+  return grid;
+}
+
+function showHistory(data) {
+  document.querySelector("#history-data").replaceChildren(scoreGrid(data));
   history.showModal();
 }
 
@@ -262,15 +399,19 @@ async function placeTable() {
     Math.floor((width - 16) / 3));
   for (const seat of seats) seat.style.width = Math.max(1, seatWidth) + "px";
   try {
+    board.style.minHeight = "";
     const layout = await call("/api/layout", {
-      width, height: board.clientHeight, seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
+      width, height: board.clientHeight, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
       players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length
     });
     if (request !== measuring || !board.isConnected) return;
+    playedLayout = layout.played;
     if (layout.board) {
+      if (layout.boardHeight > board.clientHeight) board.style.minHeight = layout.boardHeight + "px";
       for (const [index, seat] of seats.entries()) place(seat, layout.board.seats[index]);
       place(board.querySelector(".center"), layout.board.center);
     }
+    placePlayed(board.querySelector(".cards-on-table"));
     if (layout.hand) {
       fan.style.width = layout.hand.width + "px";
       fan.style.paddingLeft = layout.hand.first + "px";
@@ -302,17 +443,73 @@ function place(element, rectangle) {
   element.style.transform = "none";
 }
 
+function whistHeader(match) {
+  const header = element("header", "", "whist-header");
+  header.style.setProperty("--title-size", match.header.titleSize + "px");
+  header.style.setProperty("--progress-size", match.header.progressSize + "px");
+  header.style.setProperty("--bid-size", match.header.bidSize + "px");
+  const top = element("div", "", "whist-title-row");
+  const navigation = element("details", "", "whist-navigation");
+  const trigger = element("summary");
+  trigger.setAttribute("aria-label", "Meniu joc");
+  trigger.append(element("span", "", "menu-lines"));
+  navigation.append(trigger);
+  const items = element("div", "", "whist-menu-items");
+  if (match.history.rows.length) {
+    items.append(button("Istoric punctaj", () => {
+      navigation.open = false;
+      showHistory(match.history);
+    }));
+  }
+  items.append(button("Meniu principal", () => { if (!pending) menu(); }));
+  navigation.append(items);
+  const title = element("h1", match.header.title);
+  top.append(navigation, title);
+  const automatic = match.actions.find(move => move.key === "auto");
+  if (automatic) top.append(button("Joacă automat", () => action(automatic.key), "whist-auto"));
+  const details = element("div", "", "whist-header-details");
+  const status = element("div");
+  status.append(element("p", match.header.progress, "whist-progress"),
+    element("p", match.header.bids, "whist-bids"));
+  const trump = element("div", "", "whist-trump");
+  trump.setAttribute("aria-label", match.header.trumpDescription);
+  trump.append(element("strong", "Atu"), match.center.length
+    ? card(match.center[0]) : element("span", match.header.trump));
+  details.append(status, trump);
+  header.append(top, details);
+  return header;
+}
+
+function whistScore(match) {
+  const page = element("section", "", "whist-score");
+  const prompt = element("p", match.prompt, "prompt");
+  prompt.tabIndex = -1;
+  page.append(element("p", match.heading, "whist-score-hand"), element("h1", match.score.title),
+    element("p", match.header.progress + "\n" + match.header.bids, "whist-score-status"),
+    prompt, scoreGrid(match.score.table));
+  for (const move of match.actions) page.append(control(move));
+  page.append(button("Istoric punctaj", () => showHistory(match.history), "quiet"),
+    button("Meniu principal", menu, "quiet"));
+  stage.replaceChildren(page, errorBox);
+}
+
 function render() {
   if (!state.view) {
     menu();
     return;
   }
   const match = state.view;
-  const content = element("section", "", "match");
-  const heading = element("header");
-  const labels = element("div");
-  labels.append(element("h1", match.heading, "heading"), element("p", match.subtitle, "subtitle"));
-  heading.append(labels, button("Meniu", menu, "menu"));
+  if (match.score) {
+    whistScore(match);
+    return;
+  }
+  const content = element("section", "", match.header ? "match whist-match" : "match");
+  const heading = match.header ? whistHeader(match) : element("header");
+  if (!match.header) {
+    const labels = element("div");
+    labels.append(element("h1", match.heading, "heading"), element("p", match.subtitle, "subtitle"));
+    heading.append(labels, button("Meniu", menu, "menu"));
+  }
 
   const board = element("div", "", "board");
   for (const seat of match.seats) {
@@ -322,11 +519,9 @@ function render() {
     board.append(position);
   }
   const visible = element("div", "", "cards-on-table");
-  for (const face of match.center) visible.append(card(face));
-  for (const play of match.played) {
-    const tile = element("div", "", "played-card");
-    tile.append(card(play.card), element("span", match.seats[play.seat].name));
-    visible.append(tile);
+  if (!match.header) for (const face of match.center) visible.append(card(face));
+  if (!match.header || match.played.length < match.seats.length) {
+    for (const play of match.played) visible.append(playedCard(play, match.seats));
   }
   const center = element("div", "", "center");
   center.append(visible);
@@ -338,11 +533,11 @@ function render() {
   const actions = element("div", "", "actions");
   const bids = match.actions.filter(move => move.key.startsWith("bid:"));
   if (bids.length) bidding(bids, actions);
-  for (const move of match.actions.filter(move => !move.key.startsWith("bid:"))) {
+  for (const move of match.actions.filter(move => !move.key.startsWith("bid:") && !(match.header && move.key === "auto"))) {
     actions.append(control(move));
   }
   const toolbar = element("div", "", "toolbar");
-  if (match.history.rows.length) toolbar.append(button("Istoric", () => showHistory(match.history)));
+  if (!match.header && match.history.rows.length) toolbar.append(button("Istoric", () => showHistory(match.history)));
   controls.append(prompt, actions);
   center.append(controls);
 
@@ -354,7 +549,9 @@ function render() {
   for (const face of match.hand) fan.append(card(face, true));
   hand.append(fan);
 
-  content.append(heading, board, toolbar, hand, errorBox);
+  content.append(heading, board);
+  if (toolbar.childElementCount) content.append(toolbar);
+  content.append(hand, errorBox);
   stage.replaceChildren(content);
   placeTable();
 }
@@ -363,6 +560,8 @@ try {
   transport = document.documentElement.dataset.engine === "whist"
     ? (await import("./local-transport.mjs")).localTransport() : httpTransport();
   [setup, state] = await Promise.all([call("/api/setup"), call("/api/state")]);
+  document.documentElement.dataset.surface = setup.surface ?? "table";
+  for (const token of setup.palette ?? []) document.documentElement.style.setProperty(token.name, token.color);
   const savedName = transport.cachedName?.();
   if (state.profile && !state.profile.savedName && savedName) {
     try {

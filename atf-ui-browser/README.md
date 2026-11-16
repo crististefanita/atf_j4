@@ -15,6 +15,12 @@ Modulul servește o masă locală în browser, cu motorul JVM al jocului. Whist 
 
 Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. Masa trimite aceleași comenzi și citește aceeași proiecție publică prin mesaje locale. După încărcarea resurselor, licitarea, AutoGame și decontarea nu fac cereri către un API.
 
+| Contract preluat din Android | Aplicare în browser |
+|---|---|
+| [Tipografia antetului](../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) și [paleta](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/theme/TableColors.java) | Adaptorul transmite rolurile textului și culorile. DOM-ul le aplică antetului, meniului și mesei. |
+| [Rezervarea mesei](../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java) | Măsoară fereastra și păstrează același centru rezervat pentru toate mâinile variantei. |
+| [Ritmul mutărilor](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Fiecare carte automată apare după întârzierea definită de APK. Adaptorul redă actorul, cartea și colectarea în ordinea produsă de motor. |
+
 | Date | Retenție în ediția statică |
 |---|---|
 | Nume și realizări | Browserul scrie într-o singură înregistrare locală după o comandă acceptată. Redeschiderea adresei în același browser recuperează datele. |
@@ -28,6 +34,8 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 $Site = .\atf-ui-browser\Build-WhistPages.ps1 -WorkRoot $WorkRoot
 node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot $Chrome
 ```
+
+Adăugați `--ui-only` pentru geometrie, ritmul mutărilor și parcursul vizual, când inventarul pachetului și partida completă au dovezi valabile.
 
 Publicați conținutul directorului `$Site` la rădăcina ramurii `gh-pages`. Configurați GitHub Pages să publice acea ramură de la rădăcină. Verificați dintr-o sesiune anonimă pagina, resursele și pornirea unei mâini înainte de actualizarea linkului din README. [Publicarea dintr-o ramură](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 

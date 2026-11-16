@@ -4,10 +4,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import ro.cardtable.ui.table.TableSeatLayout;
+import ro.cardtable.ui.table.TableViewportPolicy;
+import ro.cardtable.ui.table.PlayedCardMetrics;
 
 /** A game exposes the human's cards and the public table. Commands are opaque to the web shell. */
 public interface BrowserGame {
     String title();
+    default String surface() { return "table"; }
+    default List<Token> palette() { return List.of(); }
+    default BoardProfile boardProfile(String mode, int players, int width, TableViewportPolicy viewport) {
+        return new BoardProfile(188, 20, null);
+    }
     List<Field> fields();
     Match start(Map<String, String> configuration);
     default boolean hasProfile() { return false; }
@@ -17,9 +24,11 @@ public interface BrowserGame {
         View view();
         void act(String action);
         default List<CollectionCue> collections() { return List.of(); }
+        default List<PlayStep> playback() { return List.of(); }
     }
 
     record Option(String value, String label) { }
+    record Token(String name, String color) { }
 
     record Field(String key, String label, String initial, List<Option> options) {
         public Field { options = List.copyOf(options); }
@@ -54,6 +63,7 @@ public interface BrowserGame {
     }
 
     record Played(int seat, Card card) { }
+    record PlayStep(Played play, boolean startsTrick, long delayMillis, CollectionCue collection) { }
 
     record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards) {
         public CollectionCue { cards = List.copyOf(cards); }
@@ -68,8 +78,20 @@ public interface BrowserGame {
         }
     }
 
+    record BoardProfile(int centerHeight, int handClearance, PlayedCardMetrics.Layout playedCards) { }
+
+    record Header(String mode, String title, String progress, String bids, String trump, String trumpDescription,
+                  float titleSize, float progressSize, float bidSize) { }
+
+    record Score(String title, History table) { }
+
     record View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
+                List<Played> played, List<Card> center, List<Action> actions, History history, Header header, Score score) {
+        public View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
                 List<Played> played, List<Card> center, List<Action> actions, History history) {
+            this(heading, subtitle, prompt, seats, hand, played, center, actions, history, null, null);
+        }
+
         public View {
             seats = List.copyOf(seats);
             hand = List.copyOf(hand);

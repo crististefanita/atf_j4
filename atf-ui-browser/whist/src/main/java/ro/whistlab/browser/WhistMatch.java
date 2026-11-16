@@ -10,21 +10,27 @@ import ro.cardtable.browser.BrowserGame.Played;
 import ro.cardtable.browser.BrowserGame.Seat;
 import ro.cardtable.browser.BrowserGame.View;
 import ro.whistlab.app.bidding.HumanBidSelection;
+import ro.whistlab.app.localization.WhistUiText;
+import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.animation.TrickCollectionRequest;
 import ro.whistlab.app.achievements.WhistAchievementRepository;
 import ro.cardtable.ui.animation.TrickCollectionMotion;
+import ro.cardtable.ui.turn.TurnPacing;
 import ro.whistlab.core.ai.policy.AiPolicy;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.rules.GameRules;
+import ro.whistlab.core.rules.HowToPlay;
 import ro.whistlab.core.session.GamePhase;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.GameSession.Snapshot;
 
 final class WhistMatch implements BrowserGame.Match {
+    private static final WhistUiText COPY = new WhistUiText(HowToPlay.Language.RO);
     private final GameSession game;
     private final String matchId = UUID.randomUUID().toString();
     private final List<BrowserGame.CollectionCue> collections = new ArrayList<>();
+    private final List<BrowserGame.PlayStep> playback = new ArrayList<>();
     private final HumanBidSelection bidSelection = new HumanBidSelection();
 
     WhistMatch(GameSession game) {
@@ -34,6 +40,7 @@ final class WhistMatch implements BrowserGame.Match {
 
     @Override public void act(String action) {
         collections.clear();
+        playback.clear();
         if (action.equals("auto")) {
             advance(true);
             return;
@@ -45,7 +52,7 @@ final class WhistMatch implements BrowserGame.Match {
         } else {
             var card = game.snapshot().players().get(0).hand().stream()
                     .filter(candidate -> cardKey(candidate).equals(action)).findFirst().orElseThrow();
-            play(0, card);
+            play(0, card, false);
         }
         advance(false);
     }
@@ -60,22 +67,27 @@ final class WhistMatch implements BrowserGame.Match {
                 int bid = actor == 0 ? recommend() : AiPolicy.chooseBid(state, actor, difficulty);
                 game.submitBid(actor, bid);
             } else {
-                play(actor, AiPolicy.chooseCard(state, actor, difficulty));
+                play(actor, AiPolicy.chooseCard(state, actor, difficulty), true);
             }
         }
         throw new IllegalStateException("Whist turn bound exceeded");
     }
 
-    private void play(int actor, Card card) {
+    private void play(int actor, Card card, boolean automated) {
+        boolean startsTrick = game.snapshot().currentTrick().isEmpty();
         game.playCard(actor, card);
         var state = game.snapshot();
-        TrickCollectionRequest.from(state, state.lastTrick()).ifPresent(target -> collections.add(
+        var collection = TrickCollectionRequest.from(state, state.lastTrick()).map(target ->
                 new BrowserGame.CollectionCue(state.lastTrickWinnerSeat(), TrickCollectionMotion.DISPLAY_MILLIS,
                         TrickCollectionMotion.COLLECT_MILLIS, state.lastTrick().stream()
-                        .map(played -> new Played(played.seat(), face(played.card(), ""))).toList())));
+                        .map(played -> new Played(played.seat(), face(played.card(), ""))).toList())).orElse(null);
+        if (collection != null) collections.add(collection);
+        playback.add(new BrowserGame.PlayStep(new Played(actor, face(card, "")), startsTrick,
+                automated ? TurnPacing.ACTION_DELAY_MILLIS : 0, collection));
     }
 
     @Override public List<BrowserGame.CollectionCue> collections() { return List.copyOf(collections); }
+    @Override public List<BrowserGame.PlayStep> playback() { return List.copyOf(playback); }
     int handNumber() { return game.snapshot().handNumber(); }
     boolean finished() { return game.snapshot().phase() == GamePhase.SCORE && game.snapshot().finalHand(); }
     void validateName(String value) { game.validateHumanName(value); }
@@ -88,8 +100,8 @@ final class WhistMatch implements BrowserGame.Match {
     @Override public View view() {
         var state = game.snapshot();
         var legalCards = legalCards(state);
-        var seats = state.players().stream().map(player -> Seat.at(player.seat(), state.players().size(), player.name(),
-                "Licitat " + (player.bid() == null ? "—" : player.bid()) + " · Luat " + player.tricksWon(),
+        var seats = state.players().stream().map(player -> Seat.at(player.seat(), state.players().size(), COPY.seatName(player),
+                COPY.seatFacts(player),
                 "Total " + state.matchScore(player.seat()), actor(state) == player.seat())).toList();
         var hand = state.players().get(0).hand().stream()
                 .map(card -> face(card, legalCards.contains(card) ? cardKey(card) : "")).toList();
@@ -98,8 +110,12 @@ final class WhistMatch implements BrowserGame.Match {
         var center = state.turnedCard() == null ? List.<BrowserGame.Card>of() : List.of(face(state.turnedCard(), ""));
         var subtitle = state.handSize() + " cărți · Atu " + state.trump().suit().map(Suit::symbol).orElse("—")
                 + " · Licitații " + state.bidTotal();
+        var header = new BrowserGame.Header(state.mode().name(), COPY.gameTitle(state.mode()), COPY.progress(state),
+                COPY.bidSummary(state), COPY.trumpIndicatorValue(state), COPY.trumpAccessibility(state),
+                GameHeaderTypography.TITLE_SP, GameHeaderTypography.PROGRESS_SP, GameHeaderTypography.BID_SUMMARY_SP);
+        var score = state.phase() == GamePhase.SCORE ? WhistScores.hand(game, COPY) : null;
         return new View("Mâna " + state.handNumber(), subtitle, prompt(state), seats, hand, played, center,
-                actions(state), WhistScores.history(game));
+                actions(state), WhistScores.history(game), header, score);
     }
 
     private List<Action> actions(Snapshot state) {

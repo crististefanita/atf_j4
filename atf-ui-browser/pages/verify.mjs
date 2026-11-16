@@ -5,7 +5,7 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { until, withBrowser } from "../tests/fixtures.mjs";
 
-const [input, output, executable] = process.argv.slice(2);
+const [input, output, executable, selection] = process.argv.slice(2);
 if (!input || !output) throw new Error("Expected site and external evidence directories");
 const directory = resolve(input);
 await mkdir(output, { recursive: true });
@@ -22,7 +22,7 @@ async function check(name, expected, exercise) {
 const files = [".nojekyll", "collection.mjs", "engine-worker.mjs", "index.html", "local-transport.mjs",
   "profile.mjs", "table.css", "table.mjs", "viewport.mjs", "whist-engine.mjs"];
 
-await check("Pages · inventarul public", "Doar resurse statice și legături relative în subdirectorul proiectului", async () => {
+if (!selection) await check("Pages · inventarul public", "Doar resurse statice și legături relative în subdirectorul proiectului", async () => {
   assert.deepEqual((await readdir(directory)).sort(), files.toSorted());
   const markup = await readFile(join(directory, "index.html"), "utf8");
   assert.match(markup, /data-engine="whist"/);
@@ -32,8 +32,7 @@ await check("Pages · inventarul public", "Doar resurse statice și legături re
   assert.ok((await readFile(join(directory, "whist-engine.mjs"))).length < 2_000_000);
   return { observed: files };
 });
-
-await check("Pages · motorul compilat și profilul", "Partidă românească integrală, mutări legale, scor și profil restaurat", async () => {
+if (!selection) await check("Pages · motorul compilat și profilul", "Partidă românească integrală, mutări legale, scor și profil restaurat", async () => {
   const { initialize, command } = await import(pathToFileURL(join(directory, "whist-engine.mjs")));
   initialize(31, 9);
   let name = null;
@@ -84,6 +83,48 @@ await check("Pages · motorul compilat și profilul", "Partidă românească int
     catalogue: reopened.profile.catalogue.summary } };
 });
 
+if (selection !== "--browser-only") await check("Pages · geometrie și ordinea cărților", "Centre rezervate, ordine reală, întârziere nativă și levată completă", async () => {
+  const { initialize, command } = await import(pathToFileURL(join(directory, "whist-engine.mjs")));
+  initialize(41, 28);
+  function invoke(path, fields) {
+    const payload = Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, String(value)]));
+    const reply = JSON.parse(command("/api/" + path, JSON.stringify(payload), null, null));
+    assert.equal(reply.status, undefined, reply.error);
+    return reply.result;
+  }
+  const reservations = [];
+  for (const players of [3, 4, 5, 6]) {
+    const width = players === 3 ? 320 : 374;
+    const mode = players === 3 ? "DOWN_AND_UP" : "ROMANIAN_WHIST";
+    const layout = invoke("layout", { width, height: 350, mode, players, seatHeight: 67, viewport: 680, cards: 8, handWidth: width });
+    assert.equal(layout.board.seats.length, players);
+    assert.equal(layout.played.slots.length, players);
+    assert.ok(layout.played.centerHeightDp <= layout.board.center.bottom - layout.board.center.top);
+    if (players === 4) assert.deepEqual(layout.played.slots.map(slot => slot.row), [2, 1, 0, 1]);
+    for (const seat of layout.board.seats) {
+      const center = layout.board.center;
+      assert.ok(seat.bottom <= center.top || seat.top >= center.bottom ||
+        seat.right <= center.left || seat.left >= center.right);
+      assert.ok(seat.top >= 0 && seat.bottom <= layout.boardHeight);
+    }
+    reservations.push(layout.board.center.bottom - layout.board.center.top);
+  }
+  const match = invoke("start", { revision: 0, players: 5, mode: "ROMANIAN_WHIST" });
+  const settled = invoke("action", { revision: match.revision, action: "auto" });
+  const steps = settled.playback;
+  assert.equal(steps.length, 5);
+  assert.equal(steps[0].startsTrick, true);
+  assert.equal(steps.filter(step => step.startsTrick).length, 1);
+  assert.deepEqual(steps.map(step => step.delayMillis), Array(5).fill(550));
+  assert.ok(steps.slice(0, -1).every(step => step.collection === null));
+  assert.deepEqual(steps.at(-1).collection.cards, steps.map(step => step.play));
+  assert.equal(steps.at(-1).collection.travelMillis, 500);
+  assert.equal(steps.at(-1).collection.displayMillis, 1500);
+  assert.equal(settled.view.score.table.rows.length, 5);
+  assert.deepEqual(invoke("state", {}).playback, []);
+  return { observed: { reservations, seatOrder: steps.map(step => step.play.seat), delay: steps[0].delayMillis } };
+});
+
 if (executable) {
   await check("Pages · browser mobil la 414×896", "Joacă local din subdirector, închide pagina și recuperează profilul",
     () => phoneViewport(executable));
@@ -113,11 +154,18 @@ async function phoneViewport(chrome) {
       const url = "http://127.0.0.1:" + server.address().port + "/atf_j4/";
       async function open() {
         assert.ok(!(await send("Page.navigate", { url })).errorText);
-        await until(() => evaluate("!!document.querySelector('.setup form')"));
+        await until(() => evaluate("!!document.querySelector('.whist-home')"));
         assert.equal(await evaluate("document.querySelector('#frame').dataset.viewport"), "phone");
       }
-      const profileButton = `[...document.querySelectorAll('.setup button')].find(button => button.textContent.startsWith('Numele tău:'))`;
+      const profileButton = `[...document.querySelectorAll('.whist-home button')].find(button => button.textContent.startsWith('Numele tău:'))`;
+      const click = text => evaluate(`[...document.querySelectorAll('#table button')].find(button => button.textContent === ${JSON.stringify(text)}).click()`);
+      const seats = () => evaluate(`[...document.querySelectorAll('.seat')].map(seat => {
+        const rect = seat.getBoundingClientRect();
+        return [rect.x, rect.y, rect.width, rect.height].map(Math.round);
+      })`);
       await open();
+      assert.equal(await evaluate("document.querySelector('.whist-home h1').textContent"), "Whist");
+      assert.equal(await evaluate("getComputedStyle(document.querySelector('#table')).backgroundColor"), "rgb(246, 245, 237)");
       await evaluate(profileButton + ".click()");
       await evaluate(`(() => {
         const form = document.querySelector('.profile-form');
@@ -125,13 +173,58 @@ async function phoneViewport(chrome) {
         form.requestSubmit();
       })()`);
       await until(() => evaluate(profileButton + "?.textContent === 'Numele tău: Bianca'"));
+      await click("Joc nou");
+      assert.equal(await evaluate("document.querySelector('.setup h1').textContent"), "Setări joc");
+      assert.equal(await evaluate("document.querySelector('[name=zero]').type"), "checkbox");
+      await evaluate(`(() => {
+        const mode = document.querySelector('[name=mode]');
+        mode.value = "OH_HELL";
+        mode.dispatchEvent(new Event("change", { bubbles: true }));
+      })()`);
+      assert.equal(await evaluate("document.querySelector('.series-row').hidden"), true);
+      await evaluate(`(() => {
+        const mode = document.querySelector('[name=mode]');
+        mode.value = "ROMANIAN_WHIST";
+        mode.dispatchEvent(new Event("change", { bubbles: true }));
+      })()`);
+      assert.equal(await evaluate("document.querySelector('.series-row').hidden"), false);
       await evaluate("document.querySelector('.setup form').requestSubmit()");
       await until(() => evaluate("!!document.querySelector('.board[data-layout=ready]')"));
-      await evaluate("[...document.querySelectorAll('.actions button')].find(button => button.textContent === 'Licitează').click()");
-      await until(() => evaluate(`document.querySelector('#table').getAttribute('aria-busy') === 'false' &&
-        !document.querySelector('[data-bid]')`));
+      assert.equal(await evaluate("document.querySelector('.whist-title-row h1').textContent"), "Whist · Românesc");
+      assert.equal(await evaluate("getComputedStyle(document.querySelector('.whist-title-row h1')).fontSize"), "14px");
+      assert.equal(await evaluate("document.querySelector('.whist-trump .card').tagName"), "SPAN");
+      const bidding = await seats();
+      await evaluate(`(() => {
+        window.cardFrames = [];
+        new MutationObserver(changes => {
+          for (const change of changes) {
+            if (!change.target.matches?.(".cards-on-table") || !change.target.isConnected) continue;
+            for (const node of change.addedNodes) {
+              if (!node.matches?.(".played-card")) continue;
+              const active = [...document.querySelectorAll(".seat")].findIndex(seat => seat.getAttribute("aria-current") === "true");
+              window.cardFrames.push({ seat: Number(node.dataset.seat), active, at: performance.now() });
+            }
+          }
+        }).observe(document.querySelector("#table"), { childList: true, subtree: true });
+      })()`);
+      await click("Licitează");
+      await until(() => evaluate("!!document.querySelector('.board[data-layout=ready]') && !document.querySelector('[data-bid]')"));
+      assert.deepEqual(await seats(), bidding);
       const board = await send("Page.captureScreenshot", { format: "png" });
       await writeFile(join(output, "pages-mobile-board.png"), Buffer.from(board.data, "base64"));
+      await click("Joacă automat");
+      await until(() => evaluate("!!document.querySelector('.whist-score tbody tr')"));
+      const frames = await evaluate("window.cardFrames");
+      assert.equal(frames.length, 4);
+      assert.equal(new Set(frames.map(frame => frame.seat)).size, 4);
+      assert.deepEqual(frames.map(frame => frame.active), frames.map(frame => frame.seat));
+      assert.ok(frames.slice(1).every((frame, index) => frame.at - frames[index].at >= 500));
+      assert.deepEqual(await evaluate(`[document.querySelector('.whist-score h1').textContent,
+        document.querySelectorAll('.whist-score tbody tr').length,
+        document.querySelectorAll('.whist-score thead th').length]`), ["Scorul partidei", 4, 5]);
+      await evaluate("document.querySelector('.player-dialog[open]')?.close()");
+      const score = await send("Page.captureScreenshot", { format: "png" });
+      await writeFile(join(output, "pages-mobile-score.png"), Buffer.from(score.data, "base64"));
       await send("Page.navigate", { url: "about:blank" });
       await until(() => evaluate("location.href === 'about:blank'"));
       await open();
@@ -139,8 +232,9 @@ async function phoneViewport(chrome) {
       assert.ok(!requests.some(path => path.startsWith("/api/")));
       const reopened = await send("Page.captureScreenshot", { format: "png" });
       await writeFile(join(output, "pages-mobile-profile.png"), Buffer.from(reopened.data, "base64"));
-      return { observed: { version, viewport: "414×896", profile: "Bianca", requests: [...new Set(requests)] },
+      return { observed: { version, viewport: "414×896", profile: "Bianca", frames, requests: [...new Set(requests)] },
         images: [{ file: "pages-mobile-board.png", title: "Partidă pornită în browser" },
+          { file: "pages-mobile-score.png", title: "Scorul mâinii" },
           { file: "pages-mobile-profile.png", title: "Profil recuperat după redeschidere" }] };
     });
   } finally {

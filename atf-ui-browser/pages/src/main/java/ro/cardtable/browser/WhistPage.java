@@ -32,9 +32,10 @@ public final class WhistPage {
             var input = new JSONObject(body);
             long revision = input.optLong("revision", -1);
             Object result = switch (path) {
-                case "/api/setup" -> PageJson.fields("title", game.title(), "fields", game.fields());
+                case "/api/setup" -> PageJson.fields("title", game.title(), "fields", game.fields(),
+                        "surface", game.surface(), "palette", game.palette());
                 case "/api/state" -> session.state();
-                case "/api/layout" -> BrowserGeometry.measure(parameters(input));
+                case "/api/layout" -> BrowserGeometry.measure(game, parameters(input));
                 case "/api/start" -> session.start(game, revision, parameters(input));
                 case "/api/action" -> session.act(revision, input.optString("action"));
                 case "/api/profile" -> session.rename(revision, input.optString("name"));

@@ -26,14 +26,23 @@ export function collect(stage, cue, drawCard) {
   overlay.setAttribute("aria-hidden", "true");
   stage.append(overlay);
   stage.dataset.collecting = "true";
-  const effects = cue.cards.map(({ card }, index) => {
+  const effects = cue.cards.map(({ seat, card }, index) => {
     const face = drawCard(card);
-    const left = start.x + (index - (cue.cards.length - 1) / 2) * 35;
+    const played = table.querySelector(`.played-card[data-seat="${seat}"] .card`);
+    const origin = played ? local(played) : {
+      x: start.x + (index - (cue.cards.length - 1) / 2) * 35,
+      y: start.y
+    };
+    if (played) {
+      face.style.width = face.style.minWidth = played.offsetWidth + "px";
+      face.style.height = played.offsetHeight + "px";
+    }
+    const left = origin.x;
     face.style.left = left + "px";
-    face.style.top = start.y + "px";
+    face.style.top = origin.y + "px";
     overlay.append(face);
     const keyframes = [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1].map(offset => {
-      const frame = collectionFrame(target.x - left, target.y - start.y, offset);
+      const frame = collectionFrame(target.x - left, target.y - origin.y, offset);
       return { offset, opacity: frame.opacity,
         transform: "translate(-50%, -50%) translate(" + frame.x + "px, " + frame.y + "px) scale(" + frame.scale + ")" };
     });
