@@ -45,6 +45,10 @@ class BrowserUi {
             var launch = new BrowserType.LaunchOptions().setHeadless(true);
             if (args.length == 4) launch.setExecutablePath(Path.of(args[3]));
             try (Browser browser = playwright.chromium().launch(launch)) {
+                results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-COMPONENT-TEXT",
+                        "Fonturile Whist pe un panou de probă",
+                        "Toate cele 13 ranguri sunt mărite cu 50%. Simbolurile și atuul își păstrează mărimea.",
+                        (page, images) -> rankTypography(page, url)));
                 results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
                         "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
                         (page, images) -> responsiveHand(page, url)));
@@ -108,9 +112,44 @@ class BrowserUi {
         }
     }
 
+    private static Map<String, Object> rankTypography(Page page, String url) {
+        var ranks = List.of("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A");
+        String cards = ranks.stream().map(rank -> """
+                <button class="card"><span class="card-index"><span class="card-rank">%s</span><span>♦</span></span></button>
+                """.formatted(rank)).collect(java.util.stream.Collectors.joining());
+        String fixture = url + "presentation-fixture.html";
+        page.route(fixture, route -> route.fulfill(new Route.FulfillOptions().setContentType("text/html; charset=utf-8")
+                .setBody("""
+                        <!doctype html><html lang="ro"><meta charset="utf-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <link rel="stylesheet" href="table.css">
+                        <body data-surface="whist" style="--whist-hand-label: .8125rem; --whist-hand-rank-cap: 26px;
+                          --whist-hand-face-width: 63px; --whist-hand-face-height: 88px">
+                        <section class="whist-match"><div class="whist-trump"><span class="card"><span class="card-rank">A</span></span></div>
+                        <div class="hand"><div class="fan">%s</div></div></section></body></html>
+                        """.formatted(cards))));
+        page.navigate(fixture);
+        var labels = page.locator(".fan .card-rank");
+        assertThat(labels).hasText(ranks.toArray(String[]::new));
+        for (int scale : List.of(100, 200)) {
+            page.evaluate("(scale) => document.documentElement.style.fontSize = scale + '%'", scale);
+            for (var label : labels.all()) assertThat(label).hasCSS("font-size", scale == 100 ? "19.5px" : "39px");
+            assertThat(page.locator(".fan .card-index span:last-child").first()).hasCSS("font-size", scale == 100 ? "13px" : "26px");
+            assertThat(page.locator(".fan .card").first()).hasCSS("width", "63px");
+        }
+        page.evaluate("() => document.documentElement.style.fontSize = '100%'");
+        assertThat(page.locator(".whist-trump .card-rank")).hasCSS("font-size", "20px");
+        return Map.of("ranks", ranks, "fontPx", List.of(19.5, 39), "suitPx", List.of(13, 26), "trumpPx", 20);
+    }
+
     private static Map<String, Object> responsiveHand(Page page, String url) {
         page.navigate(url);
+        assertThat(page.locator(".whist-home h1")).hasCSS("font-size", "37.44px");
+        assertThat(button(page, "Joc nou")).hasCSS("font-size", "24px");
         button(page, "Joc nou").click();
+        assertThat(page.locator(".setup h1")).hasCSS("font-size", "37.44px");
+        assertThat(page.locator("select[name=players]")).hasCSS("font-size", "21px");
+        assertThat(button(page, "Începe partida")).hasCSS("font-size", "24px");
         page.locator("select[name=players]").selectOption("3");
         page.locator("select[name=mode]").selectOption("DOWN_AND_UP");
         button(page, "Începe partida").click();
@@ -159,7 +198,7 @@ class BrowserUi {
         var rank = ten.locator(".card-index:not(.inverted) .card-rank");
         var suit = ten.locator(".card-index:not(.inverted) span:last-child");
         assertThat(rank).hasText("10");
-        assertThat(rank).hasCSS("font-size", "26px");
+        assertThat(rank).hasCSS("font-size", "39px");
         assertThat(suit).hasCSS("font-size", "26px");
         assertHeader(page, true);
         var tenCard = ten.boundingBox();
@@ -167,7 +206,7 @@ class BrowserUi {
         for (String faceRank : List.of("A", "K", "Q", "J")) {
             var figure = cards.and(page.locator("[data-face^='" + faceRank + "']")).first();
             var figureRank = figure.locator(".card-index:not(.inverted) .card-rank");
-            assertThat(figureRank).hasCSS("font-size", "26px");
+            assertThat(figureRank).hasCSS("font-size", "39px");
             var rect = figure.boundingBox();
             var glyph = figureRank.boundingBox();
             near(tenRank.x + tenRank.width / 2 - tenCard.x, glyph.x + glyph.width / 2 - rect.x);
@@ -188,7 +227,7 @@ class BrowserUi {
         require(last.x >= scrollport.x - 1 && last.x + last.width <= scrollport.x + scrollport.width + 1,
                 "The last card cannot be shown in full at 200%");
         return Map.of("viewport", List.of(360, 800), "textScale", 2, "cards", 17, "card", face,
-                "rankPixels", 26, "suitPixels", 13,
+                "rankPixels", 39, "suitPixels", 26,
                 "rankWidth", glyphs.width, "clearanceToNextCard", next.x - glyphs.x - glyphs.width);
     }
 
@@ -217,7 +256,8 @@ class BrowserUi {
         var progress = header.locator(".whist-progress");
         var trump = header.locator(".whist-trump");
         assertThat(title).hasCSS("font-size", enlarged ? "28px" : "14px");
-        assertThat(progress).hasCSS("font-size", enlarged ? "22px" : "11px");
+        assertThat(progress).hasCSS("font-size", enlarged ? "33px" : "16.5px");
+        assertThat(header.locator(".whist-bids")).hasCSS("font-size", enlarged ? "35.1px" : "17.55px");
         assertThat(trump).hasCSS("width", "57px");
         assertThat(trump).hasCSS("height", enlarged ? "89px" : "49.5px");
         assertThat(menu).hasCSS("width", "48px");
@@ -229,7 +269,7 @@ class BrowserUi {
         near(bounds.x + bounds.width, trumpBounds.x + trumpBounds.width);
         var details = header.locator(".whist-header-details").boundingBox();
         near(rowBounds.y + rowBounds.height, details.y);
-        near(details.y + details.height / 2, trumpBounds.y + trumpBounds.height / 2);
+        near(details.y, trumpBounds.y);
     }
 
     private static void resumeHand(Page page, String url, String checkpoint) {
@@ -247,7 +287,8 @@ class BrowserUi {
         resumeHand(page, url, checkpoint);
         var ten = page.locator(".fan [data-face^='10'] .card-index:not(.inverted) .card-rank");
         assertThat(ten).hasText("10");
-        assertThat(ten).hasCSS("font-size", "13px");
+        assertThat(ten).hasCSS("font-size", "19.5px");
+        assertThat(page.locator(".fan [data-face^='10'] .card-index.inverted .card-rank")).hasCSS("font-size", "13.5px");
         assertThat(page.locator(".fan [data-face^='10'] .suit")).hasCSS("font-size", "19px");
         assertHeader(page, false);
         var trump = page.locator(".whist-trump .card");
@@ -263,8 +304,12 @@ class BrowserUi {
         images.add(screenshot(page, output, "WEB-UI-HEADER", "Antetul Web după referința Android"));
         var menu = page.locator(".whist-navigation summary");
         menu.click();
-        assertThat(page.locator(".whist-menu-items button").first()).hasCSS("font-size", "16px");
-        menu.click();
+        var menuItems = page.locator(".whist-menu-items");
+        assertThat(menuItems).isVisible();
+        assertThat(menuItems.locator("button").first()).hasCSS("font-size", "24px");
+        var board = page.locator(".board");
+        board.tap(new Locator.TapOptions().setPosition(board.boundingBox().width - 8, 8));
+        assertThat(menuItems).isHidden();
         Locator rejected = page.locator(".fan button[data-face='8♣']");
         rejected.tap();
         assertThat(rejected).hasClass(Pattern.compile("rejected-card"));
@@ -279,8 +324,10 @@ class BrowserUi {
         assertThat(eva.locator(".seat-won")).hasText("Levate: 1");
         assertThat(page.locator(".fan button")).hasCount(3);
         assertThat(collection.filter(new Locator.FilterOptions().setHasText("9♦")).locator(".card-rank"))
-                .hasCSS("font-size", "13px");
+                .hasCSS("font-size", "19.5px");
         assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥")).locator(".card-rank"))
+                .hasCSS("font-size", "19.5px");
+        assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥")).locator(".compact-suit"))
                 .hasCSS("font-size", "13px");
         images.add(screenshot(page, output, "WEB-UI-AUTO-collection", "AutoGame după prima levată"));
         page.locator(".whist-score").waitFor(new Locator.WaitForOptions().setTimeout(45_000));

@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { createProfileDialogs, deviceProfile, preferredLanguage, saveLanguage } from "./profile.mjs";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -113,6 +113,7 @@ function refreshAutomationGate() {
 }
 history.addEventListener("close", refreshAutomationGate);
 profileDialogs.dialog.addEventListener("close", refreshAutomationGate);
+dismissGameMenuOnOutsideClick(stage);
 
 function element(tag, text, style) {
   const result = document.createElement(tag);

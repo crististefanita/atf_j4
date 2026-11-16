@@ -15,6 +15,13 @@ export function normalizedNameLength(value) {
   return Array.from(value.replace(/^[\x00-\x20]+|[\x00-\x20]+$/g, "").normalize("NFC")).length;
 }
 
+export function dismissGameMenuOnOutsideClick(stage) {
+  stage.addEventListener("click", event => {
+    const menu = stage.querySelector(".whist-navigation[open]");
+    if (menu && !menu.contains(event.target)) menu.open = false;
+  }, { capture: true });
+}
+
 export function createProfileDialogs(element, button, submit, copy = (_, text) => text) {
   const dialog = element("dialog");
   dialog.className = "player-dialog";

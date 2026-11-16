@@ -96,10 +96,11 @@ Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul e
 
 ## Verificare
 
-- Adaptorul Web centrează rangurile 2–A în aceeași bandă, măsurată cu `10`. Dimensiunea de bază și dimensiunile fețelor urmează APK-ul de referință.
+- Adaptorul Web mărește cu 50% rangurile 2–A ale cărților obișnuite. Centrează indicii în aceeași bandă, măsurată cu `10`, și limitează rangul feței compacte la spațiul disponibil. Fețele, simbolurile culorilor și atuul își păstrează dimensiunile de referință.
 - Lățimea indicelui vizibil stabilește suprapunerea în evantai, inclusiv pentru `10` și pentru mâinile de 17 cărți.
-- Antetul Web aplică dimensiunile de text ale APK-ului și aceeași aliniere pentru titlu, progres și atu. La mărirea textului, chenarul păstrează înălțimea naturală a celor două rânduri și restrânge numai textul care depășește lățimea disponibilă. Probele de componentă folosesc aceeași referință de dimensiuni, iar verificarea pe dispozitiv urmărește rasterizarea și măsoară separat spațiul rezervat de sistem.
+- Antetul Web păstrează ancorele titlului, progresului și atuului din APK. Progresul și sumarul licitațiilor, meniul de joc, meniul principal și setările folosesc text cu 50% mai mare în Web. Chenarul de atu păstrează înălțimea naturală a celor două rânduri și restrânge textul care depășește lățimea disponibilă.
 - În Web, butonul este singurul îndemn vizual al jucătorului la licitarea manuală.
+- Atingerea mesei în afara meniului de joc închide meniul. Probează separat țintele din interior și din exterior, inclusiv după redesenarea mesei.
 
 Folosiți `-BuildOnly` la cele trei lansatoare și treceți valorile de classpath returnate către suita de componente. Procesele JVM servesc adaptoarele pe loopback, iar suita trimite cereri HTTP și verifică starea publică. `$EvidenceRoot` indică un director extern, existent și dedicat rulării.
 

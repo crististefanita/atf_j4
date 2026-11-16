@@ -8,6 +8,7 @@ if (!site || !output) throw new Error("Expected compiled site and external evide
 const asset = file => import(pathToFileURL(join(resolve(site), file)));
 const { initialize, commandLocal } = await asset("whist-engine.mjs");
 const { autoGame } = await asset("auto-game.mjs");
+const { dismissGameMenuOnOutsideClick } = await asset("profile.mjs");
 const checks = [];
 let stored;
 let replayFixture;
@@ -39,6 +40,36 @@ async function check(name, expected, exercise) {
 
 const start = (fields = {}, revision = 0) => send("start", { revision, ...fields });
 const act = (state, action, error) => send("action", { revision: state.revision, action }, error);
+
+await check("Atingerea mesei închide meniul de joc",
+  "Clickul în meniu îl păstrează deschis, clickul pe masă îl închide inclusiv după redesenare", () => {
+    const item = {};
+    const felt = {};
+    const makeMenu = () => ({ open: true, contains: target => target === item });
+    let menu = makeMenu();
+    let click;
+    dismissGameMenuOnOutsideClick({
+      addEventListener(type, listener, options) {
+        assert.equal(type, "click");
+        assert.equal(options.capture, true);
+        click = listener;
+      },
+      querySelector(selector) {
+        assert.equal(selector, ".whist-navigation[open]");
+        return menu.open ? menu : null;
+      }
+    });
+    click({ target: item });
+    assert.equal(menu.open, true);
+    click({ target: felt });
+    assert.equal(menu.open, false);
+    click({ target: felt });
+    assert.equal(menu.open, false);
+    menu = makeMenu();
+    click({ target: felt });
+    assert.equal(menu.open, false);
+    return { insideKeepsOpen: true, outsideDismisses: true, afterRerenderDismisses: true };
+  });
 
 await check("Valori implicite APK și reguli RO/EN pentru 3–6 jucători",
   "Oh Hell la 4 jucători, șase variante și cele 48 de previzualizări localizate", () => {

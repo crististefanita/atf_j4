@@ -269,6 +269,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 /* Whist uses the APK's light home/setup surfaces and its game header composition. */
 [data-surface="whist"] {
   --whist-outline: #d3dcd2;
+  --whist-text-scale: 1.5;
 }
 [data-surface="whist"] #table { background: var(--whist-paper); color: var(--whist-pine); }
 .whist-match { background: var(--whist-felt); color: var(--whist-seat-text); }
@@ -301,7 +302,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-match .fan .card-index:not(.inverted)::before,
 .whist-match .fan .card-index:not(.inverted) .card-rank {
   grid-area: 1 / 1;
-  font-size: min(var(--whist-hand-label), var(--whist-hand-rank-cap));
+  font-size: calc(min(var(--whist-hand-label), var(--whist-hand-rank-cap)) * var(--whist-text-scale));
   font-variant-numeric: lining-nums tabular-nums;
   line-height: 1.15;
 }
@@ -309,6 +310,10 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   grid-area: 2 / 1;
   font-size: min(var(--whist-hand-label), var(--whist-hand-rank-cap));
   line-height: 1.15;
+}
+.whist-match .fan .card-index.inverted .card-rank {
+  font-size: calc(1em * var(--whist-text-scale));
+  line-height: 1;
 }
 .whist-match .fan .card .suit {
   left: calc(50% - 5px);
@@ -345,6 +350,9 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .compact-play-face .card-rank, .compact-play-face .compact-suit {
   font-size: min(1em, var(--whist-played-rank-cap), var(--compact-rank-fit, 24px));
 }
+[data-surface="whist"] .compact-play-face .card-rank {
+  font-size: min(calc(1em * var(--whist-text-scale)), var(--whist-played-rank-cap), var(--compact-rank-fit, 24px));
+}
 .card.compact-play-face.red { color: var(--whist-played-red); }
 .whist-match .played-name { color: var(--whist-played-player); }
 .whist-match .played-name[hidden] { display: none; }
@@ -353,6 +361,11 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-home, .whist-score, .whist-help, [data-surface="whist"] .setup { padding: 16px 22px 14px; }
 .whist-home { display: grid; gap: 10px; }
 .whist-home h1, .whist-help h1, [data-surface="whist"] .setup h1 { font-size: 1.56rem; margin: 0 0 8px; }
+.whist-home, [data-surface="whist"] .setup {
+  font-size: calc(1rem * var(--whist-text-scale));
+  overflow-wrap: anywhere;
+}
+.whist-home h1, [data-surface="whist"] .setup h1 { font-size: calc(1.56rem * var(--whist-text-scale)); }
 .whist-home button, .whist-score button, [data-surface="whist"] .setup button {
   min-height: 48px;
   border: 1px solid var(--whist-outline);
@@ -372,25 +385,30 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 [data-surface="whist"] .setup form { gap: 8px; }
 [data-surface="whist"] .setup label {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
   justify-content: space-between;
   min-height: 48px;
-  font-size: 14px;
+  font-size: calc(.875rem * var(--whist-text-scale));
   font-weight: 600;
 }
 [data-surface="whist"] .setup select {
   min-height: 48px;
-  width: min(150px, 48%);
+  width: min(100%, max(48%, 7em));
   background: var(--whist-surface);
   border-color: var(--whist-outline);
   border-radius: 12px;
   padding-inline: 12px;
 }
 [data-surface="whist"] .setup .mode-field select { width: 100%; }
-.series-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-[data-surface="whist"] .series-row select { width: min(138px, 35vw); }
-[data-surface="whist"] .setup .setup-toggle { justify-content: flex-start; font-size: .8125rem; font-weight: 400; }
+.series-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+[data-surface="whist"] .series-row select { width: min(100%, 7em); }
+[data-surface="whist"] .setup .setup-toggle {
+  justify-content: flex-start;
+  font-size: calc(.8125rem * var(--whist-text-scale));
+  font-weight: 400;
+}
 [data-surface="whist"] .setup input[type="checkbox"] { min-height: 0; width: 18px; height: 18px; accent-color: var(--whist-accent); }
 [data-surface="whist"] .setup [hidden] { display: none; }
 .whist-match { padding: 2px 12px; gap: 4px; }
@@ -443,7 +461,8 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-menu-items {
   position: absolute;
   z-index: 4;
-  min-width: max-content;
+  width: max-content;
+  max-width: calc(var(--stage-width) - 24px);
   display: grid;
   background: var(--whist-surface);
   color: var(--whist-pine);
@@ -454,7 +473,8 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-menu-items button {
   text-align: start;
   min-height: var(--whist-menu-touch);
-  font-size: 1rem;
+  font-size: calc(1rem * var(--whist-text-scale));
+  overflow-wrap: anywhere;
   border-color: transparent;
   background: transparent;
 }
@@ -504,6 +524,12 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   min-height: 3rem;
 }
 .whist-language select { min-height: 3rem; min-width: 0; font-weight: normal; }
+.whist-home .whist-language {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.whist-home .whist-language select { width: min(100%, 7em); }
 .whist-language + form { margin-top: .5rem; }
 .whist-help .whist-rule { margin-block: 1rem; padding-block-end: .5rem; border-bottom: 1px solid #dbe5d7; }
 .whist-rule h2 { font-size: 1.05rem; margin: 0 0 .25rem; }
@@ -586,12 +612,22 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-header-details {
   padding-inline-start: calc(var(--whist-menu-touch) + var(--whist-title-gap));
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--whist-title-gap);
 }
 .whist-header-details > :first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.whist-progress { font-size: var(--progress-size, .6875rem); line-height: .9375rem; font-weight: 700; color: #e5efe6; }
-.whist-bids { font-size: var(--bid-size, .73125rem); line-height: .90625rem; color: #c2d8c7; white-space: pre-line; }
+.whist-progress {
+  font-size: calc(var(--progress-size, .6875rem) * var(--whist-text-scale));
+  line-height: calc(.9375rem * var(--whist-text-scale));
+  font-weight: 700;
+  color: #e5efe6;
+}
+.whist-bids {
+  font-size: calc(var(--bid-size, .73125rem) * var(--whist-text-scale));
+  line-height: calc(.90625rem * var(--whist-text-scale));
+  color: #c2d8c7;
+  white-space: pre-line;
+}
 .whist-trump {
   display: flex;
   flex-direction: column;
