@@ -13,7 +13,7 @@ import ro.whistlab.app.window.WindowContent;
 import ro.whistlab.app.table.content.WhistTableContent;
 import ro.cardtable.ui.hand.HandFan;
 import ro.cardtable.ui.seat.PlayerSeatFrame;
-import ro.cardtable.ui.table.PlayedCardsView;
+import ro.cardtable.ui.table.android.PlayedCardsView;
 
 import android.content.Context;
 import android.graphics.Color;

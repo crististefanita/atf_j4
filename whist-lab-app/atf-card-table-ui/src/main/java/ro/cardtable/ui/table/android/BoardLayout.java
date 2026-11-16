@@ -1,8 +1,11 @@
-package ro.cardtable.ui.table;
+package ro.cardtable.ui.table.android;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import ro.cardtable.ui.table.TableGeometry;
+import ro.cardtable.ui.table.TableSizing;
+import ro.cardtable.ui.table.TableViewportPolicy;
 
 /** Owns all occupied table regions so controls cannot silently cover a player's seat. */
 public class BoardLayout extends ViewGroup {

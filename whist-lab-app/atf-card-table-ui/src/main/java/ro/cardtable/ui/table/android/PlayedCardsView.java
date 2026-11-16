@@ -1,4 +1,4 @@
-package ro.cardtable.ui.table;
+package ro.cardtable.ui.table.android;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -11,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
 import ro.cardtable.ui.cards.CardFaceInk;
+import ro.cardtable.ui.table.PlayedCardContent;
+import ro.cardtable.ui.table.PlayedCardMetrics;
+import ro.cardtable.ui.table.PlayedCardStyle;
 import android.widget.LinearLayout.LayoutParams;
 import static android.widget.LinearLayout.VERTICAL;
 

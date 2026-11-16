@@ -17,7 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import ro.cardtable.ui.hand.HandHighlightMeasurement;
 import ro.cardtable.ui.screens.GameTitleBar;
-import ro.cardtable.ui.table.BoardLayout;
+import ro.cardtable.ui.table.android.BoardLayout;
 import ro.cardtable.ui.table.TableGeometry;
 import ro.cardtable.ui.table.TableViewportPolicy;
 
