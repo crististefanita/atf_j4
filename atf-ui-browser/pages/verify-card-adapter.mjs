@@ -14,7 +14,7 @@ const scenario = (await readFile(scenarioFile, "utf8")).split(/\r?\n/u)
   .filter(line => line && !line.startsWith("#")).map(line => line.split("|"));
 const cases = [];
 let local = { name: null, progress: null, checkpoint: null, rankings: null };
-let fixture, state, cards, style, timing;
+let fixture, wideCheckpoint, state, cards, style, timing;
 
 function command(path, fields = {}, expectedStatus) {
   const inputs = Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, String(value)]));
@@ -33,9 +33,9 @@ const request = (current, operation, card, expires, revision = state.revision, s
   { revision, operation, card: card ?? "", hintRevision: current.revision, selected: current.selected,
     rejected: current.rejected, expires: expires ?? -1 }, status);
 
-async function check(name, expected, exercise) {
-  try { cases.push({ id: "WEB-09", name, expected, status: "PASS", observed: await exercise() }); }
-  catch (error) { cases.push({ id: "WEB-09", name, expected, status: "FAIL", observed: error.stack }); }
+async function check(name, expected, exercise, id = "WEB-09") {
+  try { cases.push({ id, name, expected, status: "PASS", observed: await exercise() }); }
+  catch (error) { cases.push({ id, name, expected, status: "FAIL", observed: error.stack }); }
   console.log(cases.at(-1).status + " " + name);
 }
 
@@ -136,7 +136,28 @@ await check("AutoGame colectează fiecare levată, apoi publică doar cărțile 
     return { tricks: gathered, totals: state.view.score.table.rows.map(row => Number(row[4])) };
   });
 
+await check("Rang numeric și bandă măsurată pentru 17 cărți",
+  "Scală 2× pentru cifre, cu lățimea măsurată rezervată în evantai și refuz la geometrie invalidă", () => {
+    assert.equal(style["--whist-number-scale"], "2");
+    assert.equal(style["--whist-hand-number-cap"], "40px");
+    for (let seed = 31; seed < 48 && !wideCheckpoint; seed++) {
+      initialize(seed, 9);
+      local = { name: null, progress: null, checkpoint: null, rankings: null };
+      const started = command("start", { revision: 0, players: 3, mode: "DOWN_AND_UP" });
+      assert.equal(started.view.hand.length, 17);
+      if (started.view.hand.slice(0, -1).some(card => card.rank === "10")) wideCheckpoint = local.checkpoint;
+    }
+    assert.ok(wideCheckpoint, "Expected a 10 before the last card in a 17-card hand");
+    const layout = { mode: "DOWN_AND_UP", players: 3, width: 336, height: 360, viewport: 800,
+      seatHeight: 64, bidOptions: 18, cards: 17, handWidth: 336, handIndexWidth: 52 };
+    const plan = command("layout", layout);
+    assert.equal(plan.hand.advance, 52);
+    assert.equal(plan.hand.width, 16 * 52 + plan.hand.cardWidth);
+    command("layout", { ...layout, handIndexWidth: 64 }, 400);
+    return { numberScale: style["--whist-number-scale"], handIndexWidth: 52, hand: plan.hand };
+  }, "WEB-11");
+
 await mkdir(output, { recursive: true });
 await writeFile(join(output, "browser-checks.json"), JSON.stringify(cases, null, 2));
-if (fixture) await writeFile(join(output, "hand-fixture.json"), JSON.stringify({ checkpoint: fixture }));
+if (fixture) await writeFile(join(output, "hand-fixture.json"), JSON.stringify({ checkpoint: fixture, wideCheckpoint }));
 if (cases.some(item => item.status !== "PASS")) process.exitCode = 1;

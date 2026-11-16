@@ -18,7 +18,7 @@
 | ID | Schimbare | Criteriu de acceptare |
 |---|---|---|
 | WEB-07 | Califică aceeași partidă în Chrome și în APK pe același telefon, cu aceleași date de intrare. | Confruntă setările, Joacă din nou, istoricul cu ajustări și reluarea după închiderea aplicației. Capturează RO/EN la aceeași dimensiune utilă și scară de text pe Android. |
-| WEB-11 | Mărește rangurile vizibile ale cărților în Android și Web, cu țintă de aproximativ 2× față de dimensiunea actuală. | Verifică separat rangul `10`, rangurile cu o singură literă sau cifră și simbolul culorii. În mâna suprapusă, rangurile rămân vizibile și fiecare carte rămâne accesibilă, inclusiv la 17 cărți. Verifică și fața compactă de pe masă și cartea de atu la 360×800, 414×896 și cu text mărit. Validează dimensiunile în contractul comun și vizibilitatea prin Playwright și o captură Android. |
+| WEB-11 | Califică vizual pe Android mărirea cifrelor 2–10. | Capturează APK-ul la 360 × 800 și 414 × 896 cu text mărit. Verifică dacă `10` rămâne complet vizibil în evantai, pe masă și în zona de atu. Compară cu proba Playwright din [verificarea adaptorului](../../atf-ui-browser/README.md#verificare). |
 
 ## Profilurile de referință
 

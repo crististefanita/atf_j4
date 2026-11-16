@@ -96,6 +96,8 @@ Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul e
 
 ## Verificare
 
+Whist folosește aceeași țintă de mărire pentru cifrele 2–10 în APK și Web. Fiecare adaptor încadrează cifrele în spațiul disponibil al cărții. Lățimea indicelui vizibil stabilește suprapunerea în evantai, inclusiv pentru `10` și pentru mâinile de 17 cărți.
+
 Folosiți `-BuildOnly` la cele trei lansatoare și treceți valorile de classpath returnate către suita de componente. Procesele JVM servesc adaptoarele pe loopback, iar suita trimite cereri HTTP și verifică starea publică. `$EvidenceRoot` indică un director extern, existent și dedicat rulării.
 
 ```powershell
@@ -118,6 +120,6 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 | Nivel | Responsabilitate |
 |---|---|
 | Componentă | Verifică reviziile, refuzurile, geometria, profilul și decontarea prin contractul HTTP sau motorul Pages, cu stocare și temporizare controlate. |
-| UI Web | Verifică în Chromium accesul la ultima carte din evantai, licitarea de la tastatură, atingerea respinsă, AutoGame și profilul după reîncărcare. Scrie `browser-ui-checks.json` și capturile în directorul rulării. |
+| UI Web | Verifică în Chromium indicele `10` și accesul la ultima carte într-o mână de 17 cărți, inclusiv cu text la 200%. Verifică și licitarea de la tastatură, atingerea respinsă, AutoGame și profilul după reîncărcare. Scrie `browser-ui-checks.json` și capturile în directorul rulării. |
 | Comparație pe Android | Folosește APK și Chrome pentru aspecte legate de sistem, inclusiv fonturile, gesturile native și zonele rezervate. Înregistrează viewportul, densitatea și SHA-ul APK-ului în `paired-android.json`. |
 | Raportare | Extent citește rezultatele fiecărui nivel și atașează capturile PNG inline. |

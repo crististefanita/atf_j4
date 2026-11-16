@@ -411,6 +411,10 @@ function whistSettings(form, fields) {
   return read;
 }
 
+function numericRank(rank) {
+  return /^(?:[2-9]|10)$/.test(rank);
+}
+
 function card(face, interactive = false, acceptsFeedback = false) {
   const node = element(interactive ? "button" : "span", "", "card");
   if (interactive) {
@@ -422,10 +426,11 @@ function card(face, interactive = false, acceptsFeedback = false) {
   node.classList.toggle("red", face.suit === "♥" || face.suit === "♦");
   node.setAttribute("aria-label", face.label);
   node.dataset.face = face.rank + face.suit;
+  node.toggleAttribute("data-number", numericRank(face.rank));
   if (interactive && face.action) node.classList.add("legal-card");
   const index = () => {
     const corner = element("span", "", "card-index");
-    corner.append(element("span", face.rank), element("span", face.suit));
+    corner.append(element("span", face.rank, "card-rank"), element("span", face.suit));
     return corner;
   };
   const inverted = index();
@@ -436,6 +441,11 @@ function card(face, interactive = false, acceptsFeedback = false) {
 
 function compactFace(play) {
   const face = element("span", play.faceLabel, "card compact-play-face");
+  if (numericRank(play.card.rank)) {
+    face.dataset.number = "";
+    face.replaceChildren(element("span", play.card.rank, "card-rank"),
+      element("span", play.card.suit, "compact-suit"));
+  }
   face.classList.toggle("red", play.card.suit === "♥" || play.card.suit === "♦");
   face.setAttribute("aria-hidden", "true");
   return face;
@@ -578,7 +588,9 @@ async function placeTable() {
     const layout = await call("/api/layout", {
       width, height: board.clientHeight, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
       bidOptions: stage.dataset.playingSteps ? 0 : board.querySelectorAll("[data-bid]").length,
-      players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length
+      players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length,
+      ...(state.view.header && { handIndexWidth: Math.max(1, ...[...fan.querySelectorAll(".card-index:not(.inverted)")]
+        .map(index => index.offsetLeft + index.offsetWidth + 2)) })
     });
     if (request !== measuring || !board.isConnected) return;
     playedLayout = layout.played ? { ...layout.played, ...layout.playedStyle } : null;

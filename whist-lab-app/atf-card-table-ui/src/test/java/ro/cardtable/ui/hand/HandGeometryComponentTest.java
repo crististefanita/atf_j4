@@ -30,6 +30,24 @@ public final class HandGeometryComponentTest extends atf.gradle.audit.GradleAudi
         assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class,()->CardFaceMetrics.atHeight(0));
     }
 
+    @Test public void numericRanksGrowWithinTheMeasuredBandOfASeventeenCardHand() {
+        var doubled = CardFaceMetrics.fitNumber(CardFaceMetrics.NUMBER_SCALE, 15, 16, 55, 48);
+        var enlarged = CardFaceMetrics.fitNumber(CardFaceMetrics.NUMBER_SCALE, 39, 32, 55, 48);
+        var band = HandLayoutMetrics.indexBandWidthPx(39 * enlarged, 1);
+        var fan = HandLayoutMetrics.fan(17, 336, 1f, 2f, band);
+        atf.gradle.audit.GradleInputs.fixture("Numeric ranks and measured text",
+                "doubled", doubled, "enlarged", enlarged, "band", band, "fan", fan);
+        assertEquals("The complete rank 10 is enlarged", 2, CardFaceMetrics.numberLength("10\u2666"));
+        assertEquals("Single-digit ranks are enlarged", 1, CardFaceMetrics.numberLength("8\u2663"));
+        assertEquals("Face letters use the original typographic size", 0, CardFaceMetrics.numberLength("Q\u2665"));
+        assertEquals("Non-card text is outside the numeric rule", 0, CardFaceMetrics.numberLength("100"));
+        assertTrue("Standard text reaches an exact factor of two", doubled == 2f);
+        assertTrue("Larger text is fitted to the real width and line height", enlarged > 1f && enlarged * 39 <= 55);
+        assertTrue("Each measured band remains exposed", fan.advance() >= band);
+        assertEquals("The right edge of the last card is reachable by scrolling",
+                fan.width(), fan.left(16) + fan.cardWidth());
+    }
+
     @Test public void liftUsesAndroidAccelerationAndLeavesNeighboursInFront() {
         atf.gradle.audit.GradleInputs.fixture("Samples projected to the browser",
                 "elapsed fractions", java.util.List.of(0f, .2f, .5f, .8f, 1f), "animation layers",

@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.BoundingBox;
@@ -30,6 +31,7 @@ class BrowserUi {
     public static void main(String[] args) throws IOException {
         Path site = Path.of(args[0]).toRealPath();
         String checkpoint = Files.readString(Path.of(args[1]));
+        String wideCheckpoint = JsonParser.parseString(checkpoint).getAsJsonObject().get("wideCheckpoint").getAsString();
         Path output = Path.of(args[2]).toRealPath();
         Path resultsFile = output.resolve("browser-ui-checks.json");
         if (Files.exists(resultsFile)) throw new IllegalArgumentException("Use a new Playwright evidence directory");
@@ -46,6 +48,10 @@ class BrowserUi {
                 results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
                         "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
                         (page, images) -> responsiveHand(page, url)));
+                results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
+                        "Rangul 10 în mâna de 17 cărți, la text 200%",
+                        "Ambele cifre rămân vizibile. Literele și simbolul culorii își păstrează fontul.",
+                        (page, images) -> enlargedNumbers(page, url, wideCheckpoint, output, images)));
                 results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Atingere respinsă și AutoGame în Whist",
                         "Textul accesibil și marcajele duc la patru colectări și la scorul așteptat",
                         (page, images) -> autoGame(page, url, checkpoint, output, images)));
@@ -128,7 +134,47 @@ class BrowserUi {
                 "lastCardRight", end.x + end.width);
     }
 
-    private static Map<String, Object> autoGame(Page page, String url, String checkpoint, Path output, List<Image> images) {
+    private static Map<String, Object> enlargedNumbers(Page page, String url, String checkpoint,
+                                                       Path output, List<Image> images) {
+        page.addInitScript("""
+                document.addEventListener("DOMContentLoaded", () => {
+                  document.documentElement.style.fontSize = "200%";
+                }, { once: true });
+                """);
+        resumeHand(page, url, JSON.toJson(Map.of("checkpoint", checkpoint)));
+        var hand = page.locator(".hand");
+        var cards = hand.locator(".fan .card");
+        assertThat(cards).hasCount(17);
+        var ten = cards.and(page.locator("[data-face^='10']")).first();
+        String face = ten.getAttribute("data-face");
+        var rank = ten.locator(".card-index:not(.inverted) .card-rank");
+        var suit = ten.locator(".card-index:not(.inverted) span:last-child");
+        assertThat(rank).hasText("10");
+        assertThat(rank).hasCSS("font-size", "40px");
+        assertThat(suit).hasCSS("font-size", "13px");
+        var letter = cards.and(page.locator("[data-face^='J'],[data-face^='Q'],[data-face^='K'],[data-face^='A']"))
+                .first().locator(".card-index:not(.inverted) .card-rank");
+        assertThat(letter).hasCSS("font-size", "13px");
+        rank.scrollIntoViewIfNeeded();
+        var next = ten.locator("xpath=following-sibling::button[1]").boundingBox();
+        var glyphs = rank.boundingBox();
+        var scrollport = hand.boundingBox();
+        require(glyphs.x >= scrollport.x - 1 && glyphs.x + glyphs.width <= scrollport.x + scrollport.width + 1,
+                "The scrollport clips " + face);
+        require(glyphs.x + glyphs.width <= next.x, "The next card covers " + face);
+        require(ten.boundingBox().y + ten.boundingBox().height <= scrollport.y + scrollport.height + 1,
+                "The scrollport clips the card vertically");
+        images.add(screenshot(page, output, "WEB-UI-NUMBERS-10", "Rangul 10 înaintea cărții următoare"));
+        cards.last().scrollIntoViewIfNeeded();
+        var last = cards.last().boundingBox();
+        require(last.x >= scrollport.x - 1 && last.x + last.width <= scrollport.x + scrollport.width + 1,
+                "The last card cannot be shown in full at 200%");
+        return Map.of("viewport", List.of(360, 800), "textScale", 2, "cards", 17, "card", face,
+                "rankPixels", 40, "otherRankAndSuitPixels", 13,
+                "rankWidth", glyphs.width, "clearanceToNextCard", next.x - glyphs.x - glyphs.width);
+    }
+
+    private static void resumeHand(Page page, String url, String checkpoint) {
         page.addInitScript("""
                 if (location.hostname === "127.0.0.1") {
                   localStorage.setItem("whistlab:pages:profile:v1", %s);
@@ -137,6 +183,13 @@ class BrowserUi {
         page.navigate(url);
         button(page, "Reia partida").click();
         page.locator(".board[data-layout=ready]").waitFor();
+    }
+
+    private static Map<String, Object> autoGame(Page page, String url, String checkpoint, Path output, List<Image> images) {
+        resumeHand(page, url, checkpoint);
+        var ten = page.locator(".fan [data-face^='10'] .card-index:not(.inverted) .card-rank");
+        assertThat(ten).hasText("10");
+        assertThat(ten).hasCSS("font-size", "26px");
         Locator rejected = page.locator(".fan button[data-face='8♣']");
         rejected.tap();
         assertThat(rejected).hasClass(Pattern.compile("rejected-card"));
@@ -150,6 +203,9 @@ class BrowserUi {
                 .setHas(page.getByText("Eva", new Page.GetByTextOptions().setExact(true))));
         assertThat(eva.locator(".seat-won")).hasText("Levate: 1");
         assertThat(page.locator(".fan button")).hasCount(3);
+        assertThat(collection.filter(new Locator.FilterOptions().setHasText("9♦")).locator(".card-rank"))
+                .hasCSS("font-size", "26px");
+        assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥"))).hasCSS("font-size", "13px");
         images.add(screenshot(page, output, "WEB-UI-AUTO-collection", "AutoGame după prima levată"));
         page.locator(".whist-score").waitFor(new Locator.WaitForOptions().setTimeout(45_000));
         var notice = page.locator("dialog.achievement-notice[open]");

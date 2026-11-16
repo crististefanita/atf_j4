@@ -15,6 +15,7 @@ import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.ScoreGridStyle;
 import ro.cardtable.ui.table.PlayedCardStyle;
 import ro.cardtable.ui.cards.CardHighlight;
+import ro.cardtable.ui.cards.CardFaceMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.theme.TableColors;
 import ro.cardtable.ui.turn.TurnPacing;
@@ -77,6 +78,11 @@ public final class WhistBrowser implements BrowserGame {
                 color("played-fill", PlayedCardStyle.FILL), color("played-line", PlayedCardStyle.OUTLINE),
                 color("played-red", PlayedCardStyle.RED), color("played-dark", PlayedCardStyle.DARK),
                 color("played-player", PlayedCardStyle.PLAYER)));
+        tokens.add(new Token("--whist-number-scale", Integer.toString(CardFaceMetrics.NUMBER_SCALE)));
+        tokens.add(new Token("--whist-hand-number-cap", CardFaceMetrics.HAND_NUMBER_CAP_DP + "px"));
+        tokens.add(new Token("--whist-played-number-cap", CardFaceMetrics.PLAYED_NUMBER_CAP_DP + "px"));
+        tokens.add(new Token("--whist-played-suit-cap", CardFaceMetrics.PLAYED_SUIT_CAP_DP + "px"));
+        tokens.add(new Token("--whist-badge-number-cap", CardFaceMetrics.BADGE_NUMBER_CAP_DP + "px"));
         tokens.add(new Token("--whist-played-radius", PlayedCardStyle.RADIUS_DP + "px"));
         tokens.add(new Token("--whist-played-stroke", PlayedCardStyle.STROKE_DP + "px"));
         tokens.add(new Token("--whist-hint-stroke", CardHighlight.IN_PLACE.strokeDp() + "px"));

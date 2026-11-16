@@ -285,6 +285,19 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-match .seat-turn[hidden] { display: none; }
 .whist-match .hand, .whist-match .fan { height: calc(var(--whist-hand-slot) + 12px); }
 .whist-match .fan .card { border: 1.5px solid #d3dcd2; }
+.whist-match .fan .card-index:not(.inverted) { width: max-content; }
+.whist-match .fan .card[data-number] .card-index:not(.inverted) .card-rank {
+  font-size: min(calc(.8125rem * var(--whist-number-scale)), var(--whist-hand-number-cap));
+  line-height: 1;
+}
+.whist-match .fan .card[data-number] .suit {
+  left: calc(50% - 5px);
+  top: auto;
+  bottom: 4px;
+  font-size: max(16px, min(28px, calc(66px - min(calc(.8125rem * var(--whist-number-scale)),
+    var(--whist-hand-number-cap)))));
+  transform: translateX(-50%);
+}
 #table:not([data-automatic]) .whist-match .fan .suggested-card {
   background: var(--whist-hint-legal-fill);
   border: var(--whist-hint-stroke) solid var(--whist-hint-legal-line);
@@ -309,6 +322,16 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   padding: 2px;
   white-space: nowrap;
 }
+.card.compact-play-face[data-number] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.compact-play-face[data-number] .card-rank {
+  font-size: min(calc(1em * var(--whist-number-scale)), var(--whist-played-number-cap));
+}
+.compact-play-face[data-number] .compact-suit { font-size: min(1em, var(--whist-played-suit-cap)); }
 .card.compact-play-face.red { color: var(--whist-played-red); }
 .whist-match .played-name { color: var(--whist-played-player); }
 .whist-match .played-name[hidden] { display: none; }
@@ -547,6 +570,23 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-trump .suit { font-size: 19px; }
 .whist-trump .card-index { font-size: 9px; line-height: 9px; }
 .whist-trump .card-index.inverted { display: none; }
+.whist-trump .card[data-number] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 48px;
+}
+.whist-trump .card[data-number] .card-index span:last-child { display: none; }
+.whist-trump .card[data-number] .card-rank {
+  font-size: min(calc(.5625rem * var(--whist-number-scale)), var(--whist-badge-number-cap));
+  line-height: 1;
+}
+.whist-trump .card[data-number] .suit {
+  position: static;
+  transform: none;
+  line-height: 1;
+}
 [data-surface="whist"] .seat span:first-of-type { white-space: pre-line; }
 .whist-score { display: grid; gap: 8px; }
 .whist-score h1 { font-size: 25px; }

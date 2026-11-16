@@ -22,6 +22,9 @@ final class BrowserGeometry {
         int players = number(inputs, "players", 2, 6);
         int cards = number(inputs, "cards", 0, 17);
         int handWidth = number(inputs, "handWidth", 1, 1200);
+        int handIndexWidth = inputs.containsKey("handIndexWidth")
+                ? number(inputs, "handIndexWidth", 1, HandLayoutMetrics.CARD_WIDTH_DP)
+                : HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP;
         var policy = new TableViewportPolicy(viewport);
         int bidOptions = inputs.containsKey("bidOptions") ? number(inputs, "bidOptions", 0, 18) : 0;
         TableGeometry.Plan board = null;
@@ -40,8 +43,7 @@ final class BrowserGeometry {
             int centerWidth = center.fullWidth() ? width : Math.min(width, center.width());
             board = new TableGeometry.Plan(plan.seats(), spec.content(plan, centerWidth, center.reservedHeight()));
         }
-        var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1,
-                HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP);
+        var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1, handIndexWidth);
         var style = played == null ? Map.<String, Integer>of() : Map.of(
                 "faceTextSp", played.cardFaceTextSizeSp(), "playerTextSp", played.playerLabelTextSizeSp(),
                 "verticalPaddingDp", played.itemVerticalPaddingDp() / 2);
