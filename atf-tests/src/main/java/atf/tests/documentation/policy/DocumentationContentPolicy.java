@@ -56,7 +56,7 @@ public final class DocumentationContentPolicy {
                     "documentation refers to local contracts", "name the owning contract and link to its stable documentation"));
     }
 
-    /** A declared repository's stable release URI is technical data; visible link text remains prose. */
+    /** Stable publication URIs of the declared project are technical data. Link labels remain prose. */
     public static String publicReleaseProse(String source, String repository) {
         return publicReleaseProse(source, repository, null);
     }
@@ -68,10 +68,13 @@ public final class DocumentationContentPolicy {
         if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
                 || !java.net.URI.create(repository).normalize().toString().equals(repository))
             throw new IllegalArgumentException("Expected a canonical public GitHub repository URI");
+        var path = java.net.URI.create(repository).getPath().substring(1).split("/");
+        String pages = "https://" + path[0].toLowerCase(java.util.Locale.ROOT) + ".github.io/" + path[1] + "/";
         var links = java.util.regex.Pattern.compile("(?<!!)\\[([^\\]\\r\\n]*)\\]\\(([^)\\s]+)\\)").matcher(source);
         var result = new StringBuffer();
         while (links.find()) {
             String replacement = (links.group(2).equals(repository + "/releases/latest")
+                    || links.group(2).equals(pages)
                     || published != null && (links.group(2).equals(published.releasePageUrl())
                             || links.group(2).equals(published.publicUrl())
                             || links.group(2).equals(published.publicUrl() + ".sha256")))

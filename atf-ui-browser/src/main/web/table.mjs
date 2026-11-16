@@ -38,16 +38,29 @@ function randomClient() {
   return Array.from(crypto.getRandomValues(new Uint8Array(16)), n => n.toString(16).padStart(2, "0")).join("");
 }
 
-const linkKey = location.hash.slice(1);
-if (linkKey) sessionStorage.setItem("table-access", linkKey);
-const access = sessionStorage.getItem("table-access") ?? "";
-let client = sessionStorage.getItem("table-client");
-if (!client) {
-  client = randomClient();
-  sessionStorage.setItem("table-client", client);
+function httpTransport() {
+  const linkKey = location.hash.slice(1);
+  if (linkKey) sessionStorage.setItem("table-access", linkKey);
+  const access = sessionStorage.getItem("table-access") ?? "";
+  let client = sessionStorage.getItem("table-client");
+  if (!client) {
+    client = randomClient();
+    sessionStorage.setItem("table-client", client);
+  }
+  const profile = deviceProfile(client);
+  const headers = { "X-Table-Access": access, "X-Table-Client": client, "X-Table-Profile": profile.id };
+  return {
+    cachedName: profile.name,
+    remember: profile.remember,
+    async request(path, values) {
+      const response = await fetch(path, values ? { method: "POST", headers, body: new URLSearchParams(values) } : { headers });
+      const payload = await response.json();
+      if (!response.ok) throw Object.assign(new Error(payload.error), { status: response.status });
+      return payload;
+    }
+  };
 }
-const profile = deviceProfile(client);
-const headers = { "X-Table-Access": access, "X-Table-Client": client, "X-Table-Profile": profile.id };
+let transport;
 let setup;
 let state;
 let pending = false;
@@ -71,12 +84,7 @@ function button(label, handler, style) {
   return result;
 }
 
-async function call(path, values) {
-  const response = await fetch(path, values ? { method: "POST", headers, body: new URLSearchParams(values) } : { headers });
-  const payload = await response.json();
-  if (!response.ok) throw Object.assign(new Error(payload.error), { status: response.status });
-  return payload;
-}
+function call(path, values) { return transport.request(path, values); }
 
 async function issue(path, fields) {
   if (pending) return "O comandă este deja în curs.";
@@ -96,7 +104,7 @@ async function issue(path, fields) {
       }
     }
     state = result;
-    profile.remember(state.profile);
+    transport.remember?.(state.profile);
     selectedBid = undefined;
     if (onMenu && path === "/api/profile") menu();
     else render();
@@ -352,8 +360,10 @@ function render() {
 }
 
 try {
+  transport = document.documentElement.dataset.engine === "whist"
+    ? (await import("./local-transport.mjs")).localTransport() : httpTransport();
   [setup, state] = await Promise.all([call("/api/setup"), call("/api/state")]);
-  const savedName = profile.name();
+  const savedName = transport.cachedName?.();
   if (state.profile && !state.profile.savedName && savedName) {
     try {
       state = await call("/api/profile", { revision: String(state.revision), name: savedName });
@@ -362,7 +372,7 @@ try {
       state = await call("/api/state");
     }
   }
-  profile.remember(state.profile);
+  transport.remember?.(state.profile);
   document.title = setup.title;
   render();
   profileDialogs.notice(state.profile?.notice);

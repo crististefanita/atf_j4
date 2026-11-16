@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-**WEB-01** are o [implementare locală](../../atf-ui-browser/README.md) pentru joc offline în Edge și Chrome, susținută de motoarele JVM existente. Adaptoarele Whist, Rentz și Hold’em folosesc același server și același contract de geometrie pentru masă și cărți. Calificarea identității cu APK-ul rămâne deschisă până la comparația pe același telefon.
+**WEB-01** folosește [adaptorul comun](../../atf-ui-browser/README.md) pentru Whist, Rentz și Hold’em. Ediția Whist de pe GitHub Pages rulează motorul compilat în browser și salvează profilul local. Calificarea identității cu APK-ul rămâne deschisă până la comparația pe același telefon.
 
 ## Calificare rămasă
 
@@ -11,7 +11,7 @@
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
 | Funcții de prezentare | Compară vizual ecranele de profil și realizări și califică ritmul cadrelor de decontare, inclusiv levatele intermediare în AutoGame. Verifică separat recuperarea partidei după repornirea serverului. Profilul și progresul se recuperează independent de partidă. |
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
-| Publicare online | Alege o origine HTTPS stabilă pentru fiecare joc. Adaptorul existent are nevoie de un serviciu JVM care să creeze sesiuni în mod sigur pentru vizitatori și să păstreze progresul într-un volum persistent. GitHub Pages poate găzdui versiunea care execută și motorul în browser. În ambele cazuri, probează pornirea unei partide dintr-o sesiune nouă pe telefon și pe Windows, apoi publică URL-ul sub APK în README. [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) |
+| Publicare online | Pentru Whist, verifică pe un telefon redeschiderea ediției Pages cu același profil. Pentru Rentz și Hold’em, califică pachetul fiecărui joc înainte de publicarea adresei sub APK. [Fluxul Pages](../../atf-ui-browser/README.md#whist-pe-github-pages) |
 
 ## Profilurile de referință
 

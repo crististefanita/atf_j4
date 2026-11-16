@@ -13,6 +13,21 @@
   "packageLimit": 8,
   "additionalSourceRoots": [
     {
+      "module": "atf-ui-browser",
+      "test": false,
+      "path": "atf-ui-browser/src/main/java"
+    },
+    {
+      "module": "atf-ui-browser/whist",
+      "test": false,
+      "path": "atf-ui-browser/whist/src/main/java"
+    },
+    {
+      "module": "atf-ui-browser/pages",
+      "test": false,
+      "path": "atf-ui-browser/pages/src/main/java"
+    },
+    {
       "module": "whist-lab-app/game-core",
       "test": false,
       "path": "whist-lab-app/game-core/src/main/java"
@@ -94,6 +109,9 @@
     }
   ],
   "productionForbiddenNamespaces": {
+    "atf-ui-browser": ["android", "atf", "org.junit", "ro.whistlab", "ro.rentzlab", "ro.atf.holdem"],
+    "atf-ui-browser/whist": ["android", "atf", "org.junit", "ro.rentzlab", "ro.atf.holdem"],
+    "atf-ui-browser/pages": ["android", "atf", "org.junit", "com.sun.net.httpserver", "ro.rentzlab", "ro.atf.holdem"],
     "atf-validation": [
       "atf.android",
       "atf.tests",

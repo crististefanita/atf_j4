@@ -46,12 +46,15 @@ final class BrowserJson {
         }
     }
 
-    private static void quote(StringBuilder out, String value) {
+    static void quote(StringBuilder out, String value) {
         out.append('"');
         for (int i = 0; i < value.length(); i++) {
             char ch = value.charAt(i);
             if (ch == '"' || ch == '\\') out.append('\\').append(ch);
-            else if (ch < 32 || Character.isSurrogate(ch)) out.append(String.format("\\u%04x", (int) ch));
+            else if (ch < 32 || Character.isSurrogate(ch)) {
+                out.append("\\u");
+                for (int shift = 12; shift >= 0; shift -= 4) out.append(Character.forDigit(ch >> shift & 15, 16));
+            }
             else out.append(ch);
         }
         out.append('"');

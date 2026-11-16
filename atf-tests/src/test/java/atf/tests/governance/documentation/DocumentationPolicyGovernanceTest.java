@@ -20,6 +20,20 @@ import static atf.tests.documentation.policy.DocumentationContentPolicy.publicRe
 
 @AtfComponentTest
 class DocumentationPolicyGovernanceTest {
+    @Test void theOwnPagesDestinationIsPublicationDataAndExternalPagesStillCountAsProse() {
+        String repository = "https://github.com/owner/atf_j4";
+        String pages = "https://owner.github.io/atf_j4/";
+        AuditedAssertions.assertEquals("[Joacă](<resursă-publică>)",
+                publicReleaseProse("[Joacă](" + pages + ")", repository));
+        AuditedAssertions.assertEquals("[atf_j4](<resursă-publică>)",
+                publicReleaseProse("[atf_j4](" + pages + ")", repository));
+        for (String url : List.of("https://other.github.io/atf_j4/", "https://owner.github.io/atf_j5/",
+                pages + "other", pages + "?preview=1")) {
+            String source = "[Joacă](" + url + ")";
+            AuditedAssertions.assertEquals(source, publicReleaseProse(source, repository));
+        }
+    }
+
     @Test void theInventoryContainsAllModuleReadmesAndNoPerReleaseVerificationNotes() throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var files = GovernanceProject.markdown(root);

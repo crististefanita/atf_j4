@@ -12,14 +12,18 @@ import ro.whistlab.core.player.PlayerNames;
 import ro.whistlab.core.rules.HowToPlay;
 
 final class WhistBrowserProfile implements BrowserExperience {
-    private final WhistBrowserStorage name;
+    private final WhistAchievementRepository.Storage name;
     private final WhistAchievementRepository achievements;
     private final WhistUiText copy = new WhistUiText(HowToPlay.Language.RO);
 
     WhistBrowserProfile(Path storage, String client) {
-        name = new WhistBrowserStorage(storage == null ? null : storage.resolve(client + "-name.txt"));
-        achievements = new WhistAchievementRepository(
+        this(new WhistBrowserStorage(storage == null ? null : storage.resolve(client + "-name.txt")),
                 new WhistBrowserStorage(storage == null ? null : storage.resolve(client + "-achievements.json")));
+    }
+
+    WhistBrowserProfile(WhistAchievementRepository.Storage name, WhistAchievementRepository.Storage progress) {
+        this.name = name;
+        achievements = new WhistAchievementRepository(progress);
     }
 
     @Override public synchronized Details details(BrowserGame.Match match) {

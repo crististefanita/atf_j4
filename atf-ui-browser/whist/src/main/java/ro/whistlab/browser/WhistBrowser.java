@@ -7,7 +7,9 @@ import java.util.function.LongSupplier;
 import java.util.random.RandomGenerator;
 import java.nio.file.Path;
 import ro.cardtable.browser.BrowserGame;
+import ro.cardtable.browser.BrowserExperience;
 import ro.cardtable.browser.BrowserServer;
+import ro.whistlab.app.achievements.WhistAchievementRepository.Storage;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.rules.GameMode;
@@ -18,6 +20,10 @@ public final class WhistBrowser implements BrowserGame {
     private final Path storage;
 
     public WhistBrowser(LongSupplier seeds) { this(seeds, null); }
+
+    public static BrowserExperience localProfile(Storage name, Storage progress) {
+        return new WhistBrowserProfile(name, progress);
+    }
 
     private WhistBrowser(LongSupplier seeds, Path storage) {
         this.seeds = seeds;
