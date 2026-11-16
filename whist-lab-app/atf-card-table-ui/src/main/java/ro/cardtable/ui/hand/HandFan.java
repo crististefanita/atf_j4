@@ -15,14 +15,13 @@ import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import ro.cardtable.ui.cards.CardFaceDrawable;
+import ro.cardtable.ui.cards.CardFaceInk;
 import ro.cardtable.ui.cards.CardHighlight;
 import ro.cardtable.ui.cards.CardHighlightView;
 
 /** Renders a snapshot-bound hand without owning legality or executing a game command. */
 public final class HandFan {
     private static final int GOLD = Color.rgb(220, 181, 105);
-    private static final int CARD_RED = Color.rgb(173, 57, 58);
-    private static final int CARD_DARK = Color.rgb(42, 53, 47);
     private static final int SOFT_BORDER = Color.rgb(211, 220, 210);
     private final Context context;
     private final List<HandCard> cards;
@@ -55,7 +54,7 @@ public final class HandFan {
         FrameLayout fan = new FrameLayout(context);
         fan.setClipChildren(false);
         fan.setClipToPadding(false);
-        TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CARD_DARK, true);
+        TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CardFaceInk.DARK, true);
         float widestIndex = measurement.getPaint().measureText("10");
         for (String symbol : List.of("â™ ", "â™¥", "â™£", "â™¦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
         int indexWidthPx = HandLayoutMetrics.indexBandWidthPx(widestIndex, dp(1));
@@ -136,8 +135,8 @@ public final class HandFan {
         face.setFocusable(false);
         face.setClickable(false);
 
-        TextView label = text(card.face().rankLabel() + "\n" + card.face().suitSymbol(), HandLayoutMetrics.cardLabelSizeSp(),
-                card.face().red() ? CARD_RED : CARD_DARK, true);
+        String labelText = CardFaceInk.textPresentation(card.face().rankLabel() + "\n" + card.face().suitSymbol());
+        TextView label = text(labelText, HandLayoutMetrics.cardLabelSizeSp(), CardFaceInk.color(card.face().red()), true);
         label.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         label.setIncludeFontPadding(false);
         label.setPadding(dp(1), dp(5), dp(1), 0);

@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
+import ro.cardtable.ui.cards.CardFaceInk;
 import android.widget.LinearLayout.LayoutParams;
 import static android.widget.LinearLayout.VERTICAL;
 
@@ -46,8 +47,8 @@ public final class PlayedCardsView {
             int verticalPadding = dp(layout.itemVerticalPaddingDp() / 2);
             item.setPadding(0, verticalPadding, 0, verticalPadding);
 
-            TextView card = text(play.faceLabel(), layout.cardFaceTextSizeSp(),
-                    play.red() ? PlayedCardStyle.RED : PlayedCardStyle.DARK, true);
+            TextView card = text(CardFaceInk.textPresentation(play.faceLabel()), layout.cardFaceTextSizeSp(),
+                    CardFaceInk.color(play.red()), true);
             card.setTag("trick-face:" + seat);
             card.setGravity(Gravity.CENTER);
             card.setPadding(dp(2), dp(4), dp(2), dp(4));

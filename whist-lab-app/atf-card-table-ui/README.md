@@ -24,6 +24,7 @@
 | [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Așteaptă primul cadru vizibil, aplică intervalul comun și invalidează acțiunea dacă scena s-a schimbat. |
 | [animation](src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Validează setul locurilor și expune pauza, durata și curba colectării. Android desenează fețele native, iar web-ul redă aceeași curbă pe elementele din pagină. |
 | [PlayedCardStyle](src/main/java/ro/cardtable/ui/table/PlayedCardStyle.java) | Conturul, paleta și raza feței compacte rămân comune la depunere și în colectare. |
+| [CardFaceInk](src/main/java/ro/cardtable/ui/cards/CardFaceInk.java) | Mâna și masa folosesc aceeași cerneală și aceleași simboluri în prezentare text. Colectarea mută vederile cărților de pe masă. |
 | [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Păstrează proporțiile, înălțimea și culorile tabelului de scor pentru adaptorul Android și browser. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
 

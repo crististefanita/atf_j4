@@ -63,7 +63,7 @@ export function client(url, clientId = "a".repeat(32), profileId = clientId) {
 
 export async function withBrowser(executable, profile, exercise) {
   const child = spawn(executable, ["--headless=new", "--disable-gpu", "--disable-background-networking",
-    "--no-first-run", "--no-default-browser-check", "--remote-debugging-port=0",
+    "--mute-audio", "--no-first-run", "--no-default-browser-check", "--remote-debugging-port=0",
     "--user-data-dir=" + profile, "about:blank"], { windowsHide: true, stdio: "ignore" });
   let startupFailure;
   child.on("error", failure => startupFailure = failure);

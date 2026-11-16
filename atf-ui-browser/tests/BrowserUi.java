@@ -67,6 +67,10 @@ class BrowserUi {
                             "Fonturile Whist pe un panou de probă",
                             "Toate cele 13 ranguri sunt mărite cu 50%. Simbolurile și atuul își păstrează mărimea.",
                             (page, images) -> rankTypography(page, url)));
+                    results.add(run(browser, mobile(), output, "WEB-COMPONENT-CARD-INK",
+                            "Culoarea simbolurilor rămâne aceeași în mână, pe masă și la colectare",
+                            "Fiecare dintre cele patru simboluri folosește aceeași cerneală și randare text.",
+                            (page, images) -> cardInk(page, url)));
                     results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
                             "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
                             (page, images) -> responsiveHand(page, url)));
@@ -201,6 +205,48 @@ class BrowserUi {
         require(biddingSeats.equals(playingSeats), "Player boxes moved: " + biddingSeats + " -> " + playingSeats);
         return Map.of("viewport", List.of(414, 896), "cards", cards.count(), "seats", playingSeats,
                 "lastCardRight", end.x + end.width);
+    }
+
+    private static Map<String, Object> cardInk(Page page, String url) {
+        String fixture = url + "card-ink.html";
+        page.route(fixture, route -> route.fulfill(new Route.FulfillOptions().setContentType("text/html; charset=utf-8")
+                .setBody("""
+                        <!doctype html><html lang="ro"><meta charset="utf-8">
+                        <link rel="stylesheet" href="table.css">
+                        <body data-surface="whist" style="--whist-played-red:#ad393a;--whist-played-dark:#2a352f">
+                          <main class="whist-match"><div class="hand"><div class="fan"></div></div>
+                            <div class="cards-on-table"></div><div class="collection"></div></main>
+                        </body></html>
+                        """)));
+        page.navigate(fixture);
+        var suits = List.of("♠", "♥", "♣", "♦");
+        page.evaluate("""
+                suits => {
+                  for (const container of document.querySelectorAll(".fan, .cards-on-table, .collection")) {
+                    for (const suit of suits) {
+                      const card = document.createElement("span");
+                      const hand = container.matches(".fan");
+                      card.className = hand ? "card" : "card compact-play-face";
+                      card.classList.toggle("red", suit === "♥" || suit === "♦");
+                      const symbol = document.createElement("span");
+                      symbol.className = hand ? "suit" : "compact-suit";
+                      symbol.textContent = suit;
+                      card.append(symbol);
+                      container.append(card);
+                    }
+                  }
+                }
+                """, suits);
+        var colors = List.of("rgb(42, 53, 47)", "rgb(173, 57, 58)", "rgb(42, 53, 47)", "rgb(173, 57, 58)");
+        for (String surface : List.of(".fan", ".cards-on-table", ".collection")) {
+            var symbols = page.locator(surface + " :is(.suit, .compact-suit)");
+            assertThat(symbols).hasText(suits.toArray(String[]::new));
+            for (int index = 0; index < suits.size(); index++) {
+                assertThat(symbols.nth(index)).hasCSS("color", colors.get(index));
+                assertThat(symbols.nth(index)).hasCSS("font-variant-emoji", "text");
+            }
+        }
+        return Map.of("suits", suits, "ink", colors, "surfaces", List.of("hand", "table", "collection"));
     }
 
     private static void verifySetupDropdowns(Page page) {

@@ -110,11 +110,12 @@ header .subtitle { font-size: 14px; color: #41574b; }
   padding: 3px 5px;
   border: 1px solid #68736b;
   border-radius: 5px;
-  color: #1d2320;
+  color: var(--whist-played-dark, #1d2320);
   background: #fffef8;
   font: 700 16px Roboto, "Segoe UI", sans-serif;
+  font-variant-emoji: text;
 }
-.card.red { color: #ad393a; }
+.card.red { color: var(--whist-played-red, #ad393a); }
 .card .suit { position: absolute; left: 50%; top: 54%; transform: translate(-50%, -50%); font-size: 28px; }
 .card-index { display: grid; text-align: center; font-size: 13px; line-height: 13px; }
 .card-index.inverted { position: absolute; right: 4px; bottom: 4px; transform: rotate(180deg); font-size: 9px; line-height: 10px; }
@@ -345,7 +346,6 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   background: var(--whist-played-fill);
   border: var(--whist-played-stroke) solid var(--whist-played-line);
   border-radius: var(--whist-played-radius);
-  color: var(--whist-played-dark);
   font-size: .8125rem;
   align-items: center;
   line-height: 1.2;
@@ -358,7 +358,6 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 [data-surface="whist"] .compact-play-face .card-rank {
   font-size: min(calc(1em * var(--whist-text-scale)), var(--whist-played-rank-cap), var(--compact-rank-fit, 24px));
 }
-.card.compact-play-face.red { color: var(--whist-played-red); }
 .whist-match .played-name { color: var(--whist-played-player); }
 .whist-match .played-name[hidden] { display: none; }
 #table:not([data-automatic]) .whist-match .fan .legal-card:not(.suggested-card) { border: 2px solid #dcb569; }

@@ -31,6 +31,30 @@ async function verifyMotion(url, setup) {
   return { lift, collection: { first: frames[0], end: target } };
 }
 
+async function remeasureSeatFrames() {
+  const board = document.querySelector("#table > .match:not([data-preparing]) .board[data-layout=ready]");
+  if (!board) throw new Error("The adapter has no visible measured board");
+  const seatFrames = () => [...board.querySelectorAll(".seat")].map(node => {
+    const { x, y, width, height } = node.getBoundingClientRect();
+    return { x, y, width, height };
+  });
+  const before = seatFrames();
+  await new Promise((resolve, reject) => {
+    const observer = new MutationObserver(() => {
+      clearTimeout(timeout);
+      observer.disconnect();
+      resolve();
+    });
+    const timeout = setTimeout(() => {
+      observer.disconnect();
+      reject(new Error("The adapter did not finish the layout request"));
+    }, 5000);
+    observer.observe(board, { attributes: true, attributeFilter: ["data-layout"] });
+    window.dispatchEvent(new Event("resize"));
+  });
+  return { before, after: seatFrames(), boardRetained: board.isConnected && board.dataset.layout === "ready" };
+}
+
 const [output, classes, main, title, executable] = process.argv.slice(2);
 if (!output || !classes || !main || !title) {
   throw new Error("Expected evidence directory, adapter classpath, main class, title and optional browser");
@@ -86,26 +110,34 @@ try {
         await send("Emulation.setDeviceMetricsOverride", { width: 414, height: 896, deviceScaleFactor: 1, mobile: true });
         await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 14; Mobile)" });
         assert.ok(!(await send("Page.navigate", { url: url.href })).errorText);
+        await until(() => evaluate("!!document.querySelector('.setup form, .whist-home button.primary')"));
+        await evaluate("document.querySelector('.whist-home button.primary')?.click()");
         await until(() => evaluate("!!document.querySelector('.setup form')"));
         assert.equal(await evaluate("document.title"), title);
         const menu = await evaluate(`(async () =>
           (${verifyGameMenuDismissal})((await import("./profile.mjs?v=${revision}")).dismissGameMenuOnOutsideClick))()`);
         const dropdowns = await evaluate(`[...document.querySelectorAll(".setup select")].map(select => ({
           name: select.name,
-          font: getComputedStyle(select).fontSize,
-          inheritedFont: getComputedStyle(select.parentElement).fontSize
+          font: parseFloat(getComputedStyle(select).fontSize),
+          inheritedFont: parseFloat(getComputedStyle(select.parentElement).fontSize)
         }))`);
         assert.ok(dropdowns.length > 0);
-        assert.ok(dropdowns.every(select => select.font === select.inheritedFont),
-          "Whist typography must stay scoped to Whist");
+        const selectorScale = setup.surface === "whist" ? .75 : 1;
+        assert.ok(dropdowns.every(select => Math.abs(select.font - selectorScale * select.inheritedFont) < .01),
+          "The dropdown size must follow the selected presentation surface");
         await evaluate("document.querySelector('.setup form').requestSubmit()");
-        await until(() => evaluate("!!document.querySelector('.board[data-layout=ready] .seat')"));
+        await until(() => evaluate("!!document.querySelector('#table[aria-busy=false] .board[data-layout=ready] .seat')"));
         assert.equal(await evaluate("document.querySelector('#frame').dataset.viewport"), "phone");
+        const geometry = await evaluate(`(${remeasureSeatFrames})()`);
+        assert.ok(geometry.boardRetained);
+        assert.equal(geometry.before.length, started.view.seats.length);
+        assert.ok(geometry.before.every(seat => seat.width > 0 && seat.height > 0));
+        assert.deepEqual(geometry.after, geometry.before, "Same-size remeasurement moved a player frame");
         const png = await send("Page.captureScreenshot", { format: "png" });
         const file = "sanity-" + main.split(".").at(-1) + ".png";
         await writeFile(join(output, file), Buffer.from(png.data, "base64"));
         images.push({ file, title: title + " · adaptor din JAR, 414×896" });
-        return { version, menu, dropdowns };
+        return { version, menu, dropdowns, geometry };
       });
     }
     return { status: "PASS", observed: { title, seats: started.view.seats.length, revision, browserCheck, motion, feedback }, images };

@@ -33,6 +33,7 @@ $inputs = @(
     Join-Path $ui 'hand/HandInput.java'
     Join-Path $ui 'hand/HandCard.java'
     Join-Path $ui 'cards/CardFace.java'
+    Join-Path $ui 'cards/CardFaceInk.java'
     Join-Path $ui 'cards/CardHighlight.java'
     Join-Path $ui 'cards/CardFaceMetrics.java'
     Join-Path $ui 'animation/TrickCollectionMotion.java'
