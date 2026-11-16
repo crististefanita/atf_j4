@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { client, until, withBrowser, withServer } from "./fixtures.mjs";
 import { verifyHandPresentation } from "./hand-presentation.mjs";
+import { verifyGameMenuDismissal } from "./menu-presentation.mjs";
 
 async function loadAdapter(url, name) {
   const response = await fetch(new URL(name, url));
@@ -42,7 +43,10 @@ try {
   result = await withServer({ classes, main }, "-", async url => {
     const page = await fetch(url);
     assert.equal(page.status, 200);
-    assert.match(await page.text(), /table\.mjs/);
+    const markup = await page.text();
+    const revision = markup.match(/\.\/table\.mjs\?v=([\d.]+)/)?.[1];
+    assert.ok(revision, "Versioned script URL is missing");
+    assert.ok(markup.includes(`./table.css?v=${revision}`), "Versioned stylesheet must match the script");
     for (const file of ["table.mjs", "viewport.mjs", "profile.mjs", "auto-game.mjs", "collection.mjs",
       "hand-feedback.mjs", "table.css"]) {
       const asset = await fetch(new URL(file, url));
@@ -74,9 +78,9 @@ try {
       assert.ok(feedback.error);
     }
     assert.equal((await request("/api/state")).revision, playable.revision);
-    let browserVersion = null;
+    let browserCheck = null;
     if (executable) {
-      browserVersion = await withBrowser(executable, join(output, "sanity-browser"), async browser => {
+      browserCheck = await withBrowser(executable, join(output, "sanity-browser"), async browser => {
         const { send, evaluate, version } = browser;
         await send("Page.enable");
         await send("Emulation.setDeviceMetricsOverride", { width: 414, height: 896, deviceScaleFactor: 1, mobile: true });
@@ -84,6 +88,16 @@ try {
         assert.ok(!(await send("Page.navigate", { url: url.href })).errorText);
         await until(() => evaluate("!!document.querySelector('.setup form')"));
         assert.equal(await evaluate("document.title"), title);
+        const menu = await evaluate(`(async () =>
+          (${verifyGameMenuDismissal})((await import("./profile.mjs?v=${revision}")).dismissGameMenuOnOutsideClick))()`);
+        const dropdowns = await evaluate(`[...document.querySelectorAll(".setup select")].map(select => ({
+          name: select.name,
+          font: getComputedStyle(select).fontSize,
+          inheritedFont: getComputedStyle(select.parentElement).fontSize
+        }))`);
+        assert.ok(dropdowns.length > 0);
+        assert.ok(dropdowns.every(select => select.font === select.inheritedFont),
+          "Whist typography must stay scoped to Whist");
         await evaluate("document.querySelector('.setup form').requestSubmit()");
         await until(() => evaluate("!!document.querySelector('.board[data-layout=ready] .seat')"));
         assert.equal(await evaluate("document.querySelector('#frame').dataset.viewport"), "phone");
@@ -91,10 +105,10 @@ try {
         const file = "sanity-" + main.split(".").at(-1) + ".png";
         await writeFile(join(output, file), Buffer.from(png.data, "base64"));
         images.push({ file, title: title + " · adaptor din JAR, 414×896" });
-        return version;
+        return { version, menu, dropdowns };
       });
     }
-    return { status: "PASS", observed: { title, seats: started.view.seats.length, browserVersion, motion, feedback }, images };
+    return { status: "PASS", observed: { title, seats: started.view.seats.length, revision, browserCheck, motion, feedback }, images };
   });
 } catch (error) {
   result = { status: "FAIL", observed: error.stack };

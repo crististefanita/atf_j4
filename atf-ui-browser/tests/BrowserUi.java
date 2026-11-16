@@ -146,9 +146,10 @@ class BrowserUi {
         page.navigate(url);
         assertThat(page.locator(".whist-home h1")).hasCSS("font-size", "37.44px");
         assertThat(button(page, "Joc nou")).hasCSS("font-size", "24px");
+        assertThat(page.locator(".whist-home select")).hasCSS("font-size", "18px");
         button(page, "Joc nou").click();
         assertThat(page.locator(".setup h1")).hasCSS("font-size", "37.44px");
-        assertThat(page.locator("select[name=players]")).hasCSS("font-size", "21px");
+        verifySetupDropdowns(page);
         assertThat(button(page, "Începe partida")).hasCSS("font-size", "24px");
         page.locator("select[name=players]").selectOption("3");
         page.locator("select[name=mode]").selectOption("DOWN_AND_UP");
@@ -180,6 +181,33 @@ class BrowserUi {
         require(biddingSeats.equals(playingSeats), "Player boxes moved: " + biddingSeats + " -> " + playingSeats);
         return Map.of("viewport", List.of(414, 896), "cards", cards.count(), "seats", playingSeats,
                 "lastCardRight", end.x + end.width);
+    }
+
+    private static void verifySetupDropdowns(Page page) {
+        for (var select : page.locator(".setup select").all()) {
+            boolean scaled = (Boolean) select.evaluate("""
+                    node => {
+                      const size = element => parseFloat(getComputedStyle(element).fontSize);
+                      return Math.abs(size(node) - .75 * size(node.parentElement)) < .01 &&
+                        [...node.options].every(option => Math.abs(size(option) - size(node)) < .01);
+                    }
+                    """);
+            require(scaled, "Expected a 25% smaller font for " + select.getAttribute("name"));
+        }
+        for (int width : List.of(360, 414)) {
+            page.setViewportSize(width, width == 360 ? 800 : 896);
+            assertThat(page.locator("#frame")).hasCSS("width", width + "px");
+            boolean difficultyOnOneLine = (Boolean) page.locator(".difficulty-field").evaluate("""
+                    label => {
+                      const range = document.createRange();
+                      range.selectNodeContents(label.firstChild);
+                      const text = range.getBoundingClientRect();
+                      const choice = label.querySelector("select").getBoundingClientRect();
+                      return choice.left >= text.right && choice.top <= text.top && choice.bottom >= text.bottom;
+                    }
+                    """);
+            require(difficultyOnOneLine, "The Romanian difficulty label and selector must share one row at " + width);
+        }
     }
 
     private static Map<String, Object> enlargedNumbers(Page page, String url, String checkpoint,
@@ -257,7 +285,9 @@ class BrowserUi {
         var trump = header.locator(".whist-trump");
         assertThat(title).hasCSS("font-size", enlarged ? "28px" : "14px");
         assertThat(progress).hasCSS("font-size", enlarged ? "33px" : "16.5px");
-        assertThat(header.locator(".whist-bids")).hasCSS("font-size", enlarged ? "35.1px" : "17.55px");
+        double bidsFont = ((Number) header.locator(".whist-bids")
+                .evaluate("node => parseFloat(getComputedStyle(node).fontSize)")).doubleValue();
+        require(Math.abs(bidsFont - (enlarged ? 31.59 : 15.795)) < .005, "Wrong bid summary size");
         assertThat(trump).hasCSS("width", "57px");
         assertThat(trump).hasCSS("height", enlarged ? "89px" : "49.5px");
         assertThat(menu).hasCSS("width", "48px");

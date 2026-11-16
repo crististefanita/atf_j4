@@ -104,7 +104,7 @@ export async function withBrowser(executable, profile, exercise) {
       socket.send(JSON.stringify({ id, method, params }));
     });
     const evaluate = async expression => {
-      const result = await send("Runtime.evaluate", { expression, returnByValue: true });
+      const result = await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
       if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description ?? "Page evaluation failed");
       return result.result.value;
     };

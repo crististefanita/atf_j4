@@ -272,6 +272,8 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   --whist-text-scale: 1.5;
 }
 [data-surface="whist"] #table { background: var(--whist-paper); color: var(--whist-pine); }
+[data-surface="whist"] select { font-size: .75em; }
+[data-surface="whist"] select :is(option, optgroup) { font-size: inherit; }
 .whist-match { background: var(--whist-felt); color: var(--whist-seat-text); }
 .whist-match .seat { background: var(--whist-seat-fill); border-color: var(--whist-seat-line); }
 .whist-match .seat.active { background: var(--whist-turn-fill); border-color: var(--whist-turn-line); color: var(--whist-turn-text); }
@@ -402,6 +404,10 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   padding-inline: 12px;
 }
 [data-surface="whist"] .setup .mode-field select { width: 100%; }
+[data-surface="whist"] .setup .difficulty-field select {
+  width: min(100%, 6em);
+  padding-inline: 8px;
+}
 .series-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 [data-surface="whist"] .series-row select { width: min(100%, 7em); }
 [data-surface="whist"] .setup .setup-toggle {
@@ -623,7 +629,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   color: #e5efe6;
 }
 .whist-bids {
-  font-size: calc(var(--bid-size, .73125rem) * var(--whist-text-scale));
+  font-size: calc(var(--bid-size, .73125rem) * var(--whist-text-scale) * .9);
   line-height: calc(.90625rem * var(--whist-text-scale));
   color: #c2d8c7;
   white-space: pre-line;

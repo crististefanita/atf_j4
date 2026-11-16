@@ -6,7 +6,6 @@ Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, ș
 
 ## Jocul
 
-- **[Whist Lab 0.21.5 pe GitHub](https://github.com/crististefanita/atf_j4/releases/tag/v0.21.5)** — ediție de test Android
 - **[Descarcă APK 0.21.5](https://github.com/crististefanita/atf_j4/releases/download/v0.21.5/WhistLab-0.21.5.apk)**
 - **[Joacă Whist online](https://crististefanita.github.io/atf_j4/)**
 

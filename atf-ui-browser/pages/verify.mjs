@@ -32,8 +32,8 @@ if (!selection) await check("Pages · inventarul public", "Doar resurse statice 
   const markup = await readFile(join(directory, "index.html"), "utf8");
   assert.match(markup, /data-engine="whist"/);
   assert.match(markup, /connect-src 'none'/);
-  const styleRevision = markup.match(/href="\.\/table\.css\?v=([a-f0-9]{7,40})"/)?.[1];
-  const tableRevision = markup.match(/src="\.\/table\.mjs\?v=([a-f0-9]{7,40})"/)?.[1];
+  const styleRevision = markup.match(/href="\.\/table\.css\?v=([0-9]+\.[0-9]+\.[0-9]+)"/)?.[1];
+  const tableRevision = markup.match(/src="\.\/table\.mjs\?v=([0-9]+\.[0-9]+\.[0-9]+)"/)?.[1];
   assert.ok(styleRevision, "Expected a relative stylesheet URL with a revision");
   assert.equal(tableRevision, styleRevision, "Load matching versions of the stylesheet and main script");
   const table = await readFile(join(directory, "table.mjs"), "utf8");

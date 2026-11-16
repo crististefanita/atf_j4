@@ -22,7 +22,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Browser runtime packaging failed.' }
 $tests = Join-Path $PSScriptRoot 'tests'
 $handFixtures = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/test/resources'
 & jar --create --file $sanity "--date=$timestamp" -C $tests fixtures.mjs -C $tests packaged-sanity.mjs `
-    -C $tests hand-presentation.mjs -C $handFixtures hand-feedback.tsv
+    -C $tests hand-presentation.mjs -C $tests menu-presentation.mjs -C $handFixtures hand-feedback.tsv
 if ($LASTEXITCODE -ne 0) { throw 'Browser sanity packaging failed.' }
 foreach ($file in $runtime, $sanity) {
     $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $file).Hash.ToLowerInvariant()

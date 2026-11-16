@@ -49,7 +49,7 @@ class ReleaseArtifactLayoutGovernanceTest {
         }
     }
 
-    @Test void theGameSectionHasOnlyTheCurrentReleaseAndItsDirectApk() throws Exception {
+    @Test void theGameSectionHasOnlyTheDirectApkAndTheOnlineGame() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         String guide = Files.readString(root.resolve("README.md")).replace("\r\n", "\n");
         int start = guide.indexOf("\n## Jocul\n");
@@ -64,14 +64,11 @@ class ReleaseArtifactLayoutGovernanceTest {
         Path manifestPath = index.path("candidateVersion").isTextual()
                 ? root.resolve("release/candidate.json") : releaseFolder.resolve("release-validation.json");
         var manifest = json.readTree(manifestPath.toFile());
-        String publicationState = manifest.required("publication").required("state").asText();
-        boolean githubPublished = publicationState.equals("PUBLISHED")
-                || index.path("candidateVersion").asText().equals(version)
-                && !atf.tests.distribution.ReleaseDownloadSelection.isMainBranchCandidate(manifest);
-        var links = Pattern.compile("\\]\\((https://github\\.com/[^)]+/releases/[^)]+|[^)]+\\.apk|release/[^)]+)\\)")
+        var ownerAndProject = java.net.URI.create(repository).getPath().substring(1).split("/", 2);
+        String onlineGame = "https://" + ownerAndProject[0] + ".github.io/" + ownerAndProject[1] + "/";
+        var links = Pattern.compile("\\]\\(([^)]+)\\)")
                 .matcher(section).results().map(result -> result.group(1)).toList();
-        var expected = List.of(githubPublished ? repository + "/releases/tag/v" + version : "release/" + version + "/README.md",
-                ReleaseCatalogPresentation.downloadTarget(releaseFolder, manifest, repository));
+        var expected = List.of(ReleaseCatalogPresentation.downloadTarget(releaseFolder, manifest, repository), onlineGame);
         AuditedAssertions.assertEquals(expected, links, "Two product actions; catalog and audit details belong to documentation");
     }
 
