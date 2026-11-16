@@ -9,16 +9,16 @@
 | Arie | Criteriu rămas |
 |---|---|
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
-| Funcții de prezentare | Compară vizual ecranele de profil și realizări și califică ritmul cadrelor de decontare, inclusiv levatele intermediare în AutoGame. Verifică separat recuperarea partidei după repornirea serverului. Profilul și progresul se recuperează independent de partidă. |
+| Funcții de prezentare | Compară vizual profilul, Realizările și ritmul colectării levatelor în AutoGame. Măsoară focusul, lizibilitatea la text mărit și accesul la licitațiile lungi. |
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
 | Publicare online | Pentru Whist, verifică pe un telefon redeschiderea ediției Pages cu același profil. Pentru Rentz și Hold’em, califică pachetul fiecărui joc înainte de publicarea adresei sub APK. [Fluxul Pages](../../atf-ui-browser/README.md#whist-pe-github-pages) |
 
-## Licitare și AutoGame în web
+## Funcții APK de adus în web
 
-| ID | Schimbare | Probe de componentă |
+| ID | Schimbare | Criteriu de acceptare |
 |---|---|---|
-| WEB-02 | Redă cifra și confirmarea licitației cu conturul fin și fața vizuală retrasă în ținta tactilă, ca în APK. Păstrează ținta de 48 de unități logice și distincția dintre recomandare și alegerea manuală. | Verifică dimensiunile feței și ale țintei la 360 × 800 și 414 × 896, text mărit, focus vizibil și derularea până la opțiunea selectată pentru o mână de 17 cărți. |
-| WEB-03 | Folosește o bifă selectabilă și deselectabilă pentru AutoGame. Debifarea oprește următoarea decizie automată și păstrează mutările confirmate. | Simulează debifarea înainte de mutare, în timpul unei cereri și în timpul colectării. Confirmă revenirea la control manual, reluarea fără comenzi dublate și resetarea bifei la scor sau la schimbarea mâinii. |
+| WEB-04 | Salvează partida în browser la aceeași origine, cu checkpoint versionat și identitate stabilă. | Redeschide pagina în timpul licitației, în joc și la scor. Refă distribuirea, levatele și istoricul; verifică reluarea AutoGame debifat, fișierul deteriorat și creditul unic pentru Realizări. |
+| WEB-05 | Adaugă clasamentele locale și marcajele native din istoricul de scor. | Compară clasamentul și ordinea la egalitate cu motorul, inclusiv joc la zero și partide neeligibile. Redă licitația ratată și premierea de serie în celula corespunzătoare, cu texte RO/EN. |
 
 ## Profilurile de referință
 

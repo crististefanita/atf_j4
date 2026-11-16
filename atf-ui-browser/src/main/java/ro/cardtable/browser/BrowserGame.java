@@ -19,6 +19,15 @@ public interface BrowserGame {
         return new BoardProfile(center, 20, null);
     }
     List<Field> fields();
+    default List<Field> fields(String language) { return fields(); }
+    default Map<String, Object> interfaceCopy(String language) { return Map.of(); }
+    default int autoDelayMillis() { return 0; }
+    default Map<String, Object> setup(List<?> collectionSamples) {
+        return Map.of("title", title(), "fields", fields(), "englishFields", fields("en"),
+                "surface", surface(), "palette", palette(), "collectionSamples", collectionSamples,
+                "copy", Map.of("ro", interfaceCopy("ro"), "en", interfaceCopy("en")),
+                "autoDelayMillis", autoDelayMillis());
+    }
     Match start(Map<String, String> configuration);
     default boolean hasProfile() { return false; }
     default BrowserExperience openProfile(String client) { return null; }
@@ -26,6 +35,7 @@ public interface BrowserGame {
     interface Match {
         View view();
         void act(String action);
+        default void setLanguage(String language) { }
         default List<CollectionCue> collections() { return List.of(); }
         default List<PlayStep> playback() { return List.of(); }
     }
@@ -82,7 +92,15 @@ public interface BrowserGame {
         }
     }
 
-    record BoardProfile(TableGeometry.CenterSpec center, int handClearance, PlayedCardMetrics.Layout playedCards) { }
+    record BidControls(int columns, boolean strip, int choiceTarget, int rowHeight, int choiceInset,
+                       int submitWidth, int submitTarget, int submitInsetX, int submitInsetY, int textSize) { }
+
+    record BoardProfile(TableGeometry.CenterSpec center, int handClearance, PlayedCardMetrics.Layout playedCards,
+                        BidControls bids) {
+        public BoardProfile(TableGeometry.CenterSpec center, int handClearance, PlayedCardMetrics.Layout playedCards) {
+            this(center, handClearance, playedCards, null);
+        }
+    }
 
     record Header(String mode, String title, String progress, String bids, String trump, String trumpDescription,
                   float titleSize, float progressSize, float bidSize) { }

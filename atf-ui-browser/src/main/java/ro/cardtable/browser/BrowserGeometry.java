@@ -12,7 +12,7 @@ final class BrowserGeometry {
     private BrowserGeometry() { }
 
     record Layout(TableGeometry.Plan board, HandLayoutMetrics.Fan hand, int boardHeight,
-                  PlayedCardMetrics.Layout played) { }
+                  PlayedCardMetrics.Layout played, BrowserGame.BidControls bids) { }
 
     static Layout measure(BrowserGame game, Map<String, String> inputs) {
         int width = number(inputs, "width", 1, 1200);
@@ -26,10 +26,12 @@ final class BrowserGeometry {
         int bidOptions = inputs.containsKey("bidOptions") ? number(inputs, "bidOptions", 0, 18) : 0;
         TableGeometry.Plan board = null;
         PlayedCardMetrics.Layout played = null;
+        BrowserGame.BidControls bids = null;
         if (players >= 3 && width >= 240) {
             var profile = game.boardProfile(inputs.getOrDefault("mode", "ROMANIAN_WHIST"), players, width, bidOptions, policy);
             var center = profile.center();
             played = profile.playedCards();
+            bids = profile.bids();
             var spec = new TableGeometry.BoardSpec(players, TableSizing.seatWidthDp(width, policy.isCompact()),
                     seatHeight, center, policy.regionGapDp(), policy.minimumBoardHeightDp(),
                     profile.handClearance(), true);
@@ -40,7 +42,7 @@ final class BrowserGeometry {
         }
         var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1,
                 HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP);
-        return new Layout(board, hand, height, played);
+        return new Layout(board, hand, height, played, bids);
     }
 
     private static int number(Map<String, String> fields, String key, int minimum, int maximum) {

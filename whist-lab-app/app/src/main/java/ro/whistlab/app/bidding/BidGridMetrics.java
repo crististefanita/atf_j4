@@ -7,6 +7,7 @@ public final class BidGridMetrics {
     public static final int WIDE_COLUMNS = 6;
     public static final int CHOICE_TARGET_DP = 48;
     public static final int CHOICE_ROW_DP = 50;
+    public static final int CHOICE_FACE_INSET_DP = 7;
     public static final int SUBMIT_TARGET_DP = 48;
     public static final int SUBMIT_WIDTH_DP = 119;
     public static final int SUBMIT_TEXT_SP = 13;

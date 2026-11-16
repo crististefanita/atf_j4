@@ -19,6 +19,7 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 |---|---|
 | [Tipografia antetului](../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) și [paleta](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/theme/TableColors.java) | Adaptorul transmite rolurile textului și culorile. DOM-ul le aplică antetului, meniului și mesei. |
 | [Rezervarea mesei](../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java) | Măsoară fereastra și păstrează același centru rezervat pentru toate mâinile variantei. |
+| [Controalele de licitare](../whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/BidGridMetrics.java) | Cifra și confirmarea păstrează ținta tactilă de 48 de unități logice. Conturul este retras în interior, iar numărul de coloane și rândul derulabil vin din politica APK. |
 | [Ritmul mutărilor](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Fiecare carte automată apare după întârzierea definită de APK. Adaptorul redă actorul, cartea și colectarea în ordinea produsă de motor. |
 
 [Contractul mesei](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TableGeometry.java) primește dimensiunile măsurate și rezervarea fazei. Android aplică dreptunghiurile în ViewGroup, iar web le aplică în DOM.
@@ -26,9 +27,12 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 
 | Date | Retenție în ediția statică |
 |---|---|
+| Limba | Opțiunea Română sau English se salvează în browser. Meniul, regulile, starea mesei și realizările folosesc textele din APK. |
 | Nume și realizări | Browserul scrie într-o singură înregistrare locală după o comandă acceptată. Redeschiderea adresei în același browser recuperează datele. |
 | Partidă | Workerul păstrează partida cât timp pagina este deschisă. Redeschiderea pornește o sesiune nouă. |
 | Datele site-ului | Ștergerea stocării site-ului sau schimbarea browserului pornește un profil nou. Dacă stocarea este dezactivată, sesiunea folosește memoria filei. |
+
+AutoGame se activează pentru mâna curentă. Debifarea anulează următoarea decizie în locul jucătorului. Mutările acceptate și animația lor se încheie, iar scorul sau revenirea la meniu sting bifa.
 
 - Buildul cere PowerShell 7, JDK 21, Maven și mediul de generare a catalogului. `$WorkRoot` și `$EvidenceRoot` indică directoare externe.
 - Proba Node.js verifică inventarul public și joacă prin motorul compilat. Cu executabilul Chrome, deschide pachetul în subdirectorul proiectului la 414 × 896 și verifică salvarea după redeschidere.
@@ -38,6 +42,7 @@ $Site = .\atf-ui-browser\Build-WhistPages.ps1 -WorkRoot $WorkRoot
 node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot $Chrome
 ```
 
+- Pentru modificările de licitare, AutoGame, limbă sau realizări, rulați `node .\atf-ui-browser\pages\verify-controls.mjs $Site $EvidenceRoot`. Proba folosește motorul compilat și înlocuiește temporizatoarele și stocarea browserului în cazurile controlate.
 - Adăugați `--ui-only` pentru geometrie, ritmul mutărilor și parcursul vizual, când inventarul pachetului și partida completă au dovezi valabile.
 - Folosiți `--contract-only` pentru a verifica doar geometria pe faze și mostrele curbei din artefactul compilat. Pentru această selecție, omiteți executabilul browserului.
 

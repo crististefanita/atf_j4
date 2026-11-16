@@ -29,6 +29,7 @@ public final class BrowserServer implements AutoCloseable {
             "/table.mjs", new Asset("table.mjs", "text/javascript; charset=utf-8"),
             "/viewport.mjs", new Asset("viewport.mjs", "text/javascript; charset=utf-8"),
             "/profile.mjs", new Asset("profile.mjs", "text/javascript; charset=utf-8"),
+            "/auto-game.mjs", new Asset("auto-game.mjs", "text/javascript; charset=utf-8"),
             "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"));
     private final HttpServer server;
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
@@ -102,8 +103,7 @@ public final class BrowserServer implements AutoCloseable {
         switch (path) {
             case "/api/setup" -> {
                 if (!requireMethod(http, method, "GET")) return;
-                json(http, 200, new Setup(game.title(), game.fields(), game.surface(), game.palette(),
-                        TrickCollectionMotion.keyframes()));
+                json(http, 200, game.setup(TrickCollectionMotion.keyframes()));
             }
             case "/api/state" -> {
                 if (!requireMethod(http, method, "GET")) return;
@@ -119,7 +119,7 @@ public final class BrowserServer implements AutoCloseable {
                     error(http, 400, "Invalid layout measurements");
                 }
             }
-            case "/api/start", "/api/action", "/api/profile", "/api/notice" -> {
+            case "/api/start", "/api/action", "/api/profile", "/api/notice", "/api/language" -> {
                 if (!requireMethod(http, method, "POST")) return;
                 mutate(http, path, client);
             }
@@ -140,6 +140,7 @@ public final class BrowserServer implements AutoCloseable {
             var state = switch (path) {
                 case "/api/start" -> session.start(game, revision, form);
                 case "/api/profile" -> session.rename(revision, form.getOrDefault("name", ""));
+                case "/api/language" -> session.language(revision, form.getOrDefault("language", ""));
                 case "/api/notice" -> session.dismissNotice(revision);
                 default -> session.act(revision, form.getOrDefault("action", ""));
             };
@@ -198,7 +199,7 @@ public final class BrowserServer implements AutoCloseable {
         json(http, status, new ErrorMessage(message));
     }
 
-    private static void json(HttpExchange http, int status, Record data) throws IOException {
+    private static void json(HttpExchange http, int status, Object data) throws IOException {
         send(http, status, "application/json; charset=utf-8", BrowserJson.encode(data).getBytes(StandardCharsets.UTF_8));
     }
 
@@ -213,9 +214,6 @@ public final class BrowserServer implements AutoCloseable {
         tasks.shutdownNow();
     }
 
-    record Setup(String title, java.util.List<BrowserGame.Field> fields, String surface,
-                 java.util.List<BrowserGame.Token> palette,
-                 java.util.List<TrickCollectionMotion.Sample> collectionSamples) { }
     record ErrorMessage(String error) { }
     record Asset(String file, String mime) { }
     private record Client(String tab, String profile) { }

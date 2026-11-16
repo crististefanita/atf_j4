@@ -26,7 +26,8 @@ class BrowserExtent {
         if (!cases.isArray() || cases.isEmpty()) throw new IllegalArgumentException("No browser cases");
         var checks = new ArrayList<JsonNode>();
         cases.forEach(checks::add);
-        checks.add(mapper.readTree(directory.resolve("whist-parity.json").toFile()));
+        Path parity = directory.resolve("whist-parity.json");
+        if (Files.isRegularFile(parity)) checks.add(mapper.readTree(parity.toFile()));
         Path mobile = directory.resolve("paired-android.json");
         if (Files.isRegularFile(mobile)) {
             var pairs = mapper.readTree(mobile.toFile());
@@ -38,7 +39,7 @@ class BrowserExtent {
             int number = 0;
             for (var test : checks) {
                 String title = test.required("name").asText();
-                String key = "WEB-01-" + ++number;
+                String key = test.path("id").asText("WEB-01") + "-" + ++number;
                 var status = AtfReportStatus.valueOf(test.required("status").asText());
                 var id = new AssertionAuditReport.Identity("Browser components", "Card Table", title, key,
                         List.of("component", "browser"));

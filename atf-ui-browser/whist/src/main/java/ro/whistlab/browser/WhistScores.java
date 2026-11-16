@@ -23,12 +23,12 @@ final class WhistScores {
         return new Score(copy.scoreSheet(), new History(columns, rows));
     }
 
-    static History history(GameSession game) {
+    static History history(GameSession game, WhistUiText copy) {
         var state = game.snapshot();
         var scores = game.scoreHistory();
         var labels = new ArrayList<String>();
-        labels.add("Mână");
-        state.players().forEach(player -> labels.add(player.name() + " (L / P)"));
+        labels.add(copy.historyHand());
+        state.players().forEach(player -> labels.add(copy.playerName(player) + " (" + copy.historyBidHeading() + " / " + copy.historyPointsHeading() + ")"));
         var rows = new ArrayList<List<String>>();
         for (int hand = scores.priorHands() + 1; hand <= scores.completedHands(); hand++) {
             var row = new ArrayList<String>();

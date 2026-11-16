@@ -317,7 +317,8 @@ public final class GameTablePanel extends LinearLayout {
         shape.setCornerRadius(dp(9));
         shape.setStroke(dp(selected ? 2 : 1), selected ? Color.rgb(105, 83, 45)
                 : Color.rgb(190, 207, 191));
-        choice.setBackground(new InsetDrawable(shape, dp(7), dp(7), dp(7), dp(7)));
+        int inset = dp(BidGridMetrics.CHOICE_FACE_INSET_DP);
+        choice.setBackground(new InsetDrawable(shape, inset, inset, inset, inset));
         choice.setElevation(dp(selected ? 1 : 0));
         int bid = Integer.parseInt(String.valueOf(choice.getTag()).substring("bid-choice:".length()));
         choice.setContentDescription(copy.bidChoiceDescription(bid, selected));

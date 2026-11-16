@@ -94,7 +94,12 @@ final class PageJson {
                     "travelMillis", cue.travelMillis(), "cards", cue.cards());
         if (value instanceof BrowserGeometry.Layout layout)
             return fields("board", layout.board(), "hand", layout.hand(), "boardHeight", layout.boardHeight(),
-                    "played", layout.played());
+                    "played", layout.played(), "bids", layout.bids());
+        if (value instanceof BrowserGame.BidControls bids)
+            return fields("columns", bids.columns(), "strip", bids.strip(), "choiceTarget", bids.choiceTarget(),
+                    "rowHeight", bids.rowHeight(), "choiceInset", bids.choiceInset(), "submitWidth", bids.submitWidth(),
+                    "submitTarget", bids.submitTarget(), "submitInsetX", bids.submitInsetX(),
+                    "submitInsetY", bids.submitInsetY(), "textSize", bids.textSize());
         if (value instanceof PlayedCardMetrics.Layout trick)
             return fields("cardWidthDp", trick.cardWidthDp(), "cardHeightDp", trick.cardHeightDp(),
                     "playerLabelHeightDp", trick.playerLabelHeightDp(), "rowStrideDp", trick.rowStrideDp(),

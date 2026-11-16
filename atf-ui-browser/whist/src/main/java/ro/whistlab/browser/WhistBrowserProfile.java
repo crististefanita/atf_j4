@@ -7,14 +7,11 @@ import ro.cardtable.browser.BrowserExperience;
 import ro.cardtable.browser.BrowserGame;
 import ro.whistlab.app.achievements.WhistAchievementRepository;
 import ro.whistlab.app.achievements.presentation.WhistAchievementPresentation;
-import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.player.PlayerNames;
-import ro.whistlab.core.rules.HowToPlay;
 
 final class WhistBrowserProfile implements BrowserExperience {
     private final WhistAchievementRepository.Storage name;
     private final WhistAchievementRepository achievements;
-    private final WhistUiText copy = new WhistUiText(HowToPlay.Language.RO);
 
     WhistBrowserProfile(Path storage, String client) {
         this(new WhistBrowserStorage(storage == null ? null : storage.resolve(client + "-name.txt")),
@@ -26,7 +23,10 @@ final class WhistBrowserProfile implements BrowserExperience {
         achievements = new WhistAchievementRepository(progress);
     }
 
-    @Override public synchronized Details details(BrowserGame.Match match) {
+    @Override public Details details(BrowserGame.Match match) { return details(match, "ro"); }
+
+    @Override public synchronized Details details(BrowserGame.Match match, String language) {
+        var copy = WhistBrowser.copy(language);
         try {
             var progress = achievements.state();
             var catalogue = WhistAchievementPresentation.catalogue(progress, copy);
@@ -36,7 +36,7 @@ final class WhistBrowserProfile implements BrowserExperience {
             var table = (WhistMatch) match;
             var notice = table == null || goals.isEmpty() ? null : WhistAchievementPresentation.notice(
                     goals, progress, table.handNumber(), table.finished(), copy);
-            return new Details(display, saved != null, catalogue, notice);
+            return new Details(copy.displayName(display, true), saved != null, catalogue, notice);
         } catch (IOException failure) {
             throw new UncheckedIOException("Whist profile could not be read", failure);
         }

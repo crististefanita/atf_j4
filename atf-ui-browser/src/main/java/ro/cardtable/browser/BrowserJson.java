@@ -1,6 +1,7 @@
 package ro.cardtable.browser;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 /** Encodes only the DTOs owned by the browser contract. */
 final class BrowserJson {
@@ -17,6 +18,17 @@ final class BrowserJson {
             out.append(value);
         } else if (value instanceof String text) {
             quote(out, text);
+        } else if (value instanceof Map<?, ?> map) {
+            out.append('{');
+            boolean first = true;
+            for (var entry : map.entrySet()) {
+                if (!first) out.append(',');
+                first = false;
+                quote(out, (String) entry.getKey());
+                out.append(':');
+                append(out, entry.getValue());
+            }
+            out.append('}');
         } else if (value instanceof Iterable<?> items) {
             out.append('[');
             boolean first = true;

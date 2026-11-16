@@ -35,10 +35,10 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și verifică nativ intrarea Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
-| WEB-03 | P2 | 84 | Fă AutoGame deselectabil în web și califică oprirea, reluarea și revenirea la controlul manual. [Registru](ATF_UiBrowser.md#licitare-și-autogame-în-web) |
+| WEB-04 | P2 | 84 | Salvează checkpointul partidei în browser și verifică reluarea după redeschidere, inclusiv creditul unic al Realizărilor. [Registru](ATF_UiBrowser.md#funcții-apk-de-adus-în-web) |
 | WEB-01 | P2 | 83 | Califică adaptorul Edge și Chrome deținut de Whist Lab, centrat pe profilul mobil, cu paritate Whist și integrare în Rentz și Hold’em. [Registru](ATF_UiBrowser.md#criterii-de-închidere) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
-| WEB-02 | P2 | 79 | Apropie controalele de licitare web de APK și probează contrastul, ținta tactilă și accesul la licitațiile lungi. [Registru](ATF_UiBrowser.md#licitare-și-autogame-în-web) |
+| WEB-05 | P2 | 79 | Portă clasamentele locale și marcajele din istoricul de scor. [Registru](ATF_UiBrowser.md#funcții-apk-de-adus-în-web) |
 | AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Registru](ATF_Ai.md#evoluția-motorului) |
 
 ## Responsabilitatea schimbării

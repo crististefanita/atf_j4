@@ -1,6 +1,7 @@
 import { isPhone, viewportGeometry } from "./viewport.mjs";
 import { collect } from "./collection.mjs";
-import { createProfileDialogs, deviceProfile } from "./profile.mjs";
+import { autoGame, waitForDecision } from "./auto-game.mjs";
+import { createProfileDialogs, deviceProfile, preferredLanguage, saveLanguage } from "./profile.mjs";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -64,13 +65,33 @@ let transport;
 let setup;
 let state;
 let pending = false;
+let language = "ro";
+
+function copy(key, fallback) { return setup?.copy?.[language]?.[key] ?? fallback; }
+
+function rememberLanguage(next) {
+  language = next;
+  document.documentElement.lang = next;
+  saveLanguage(next);
+}
+
 let selectedBid;
 let setupDraft = {};
 let measuring = 0;
 let playedLayout;
 const errorBox = element("p", "", "error");
 errorBox.setAttribute("role", "alert");
-const profileDialogs = createProfileDialogs(element, button, issue);
+const profileDialogs = createProfileDialogs(element, button, issue, copy);
+const automation = autoGame({
+  available: () => !pending && !!stage.querySelector(".whist-match") &&
+    state.view?.actions.some(move => move.key === "auto-step"),
+  wait: signal => waitForDecision(setup.autoDelayMillis, signal),
+  step: async () => !await issue("/api/action", { action: "auto-step" }),
+  changed: enabled => {
+    const input = stage.querySelector(".whist-auto input");
+    if (input) input.checked = enabled;
+  }
+});
 
 function element(tag, text, style) {
   const result = document.createElement(tag);
@@ -89,7 +110,7 @@ function button(label, handler, style) {
 function call(path, values) { return transport.request(path, values); }
 
 async function issue(path, fields) {
-  if (pending) return "O comandă este deja în curs.";
+  if (pending) return copy("busy", "O comandă este deja în curs.");
   pending = true;
   stage.setAttribute("aria-busy", "true");
   errorBox.textContent = "";
@@ -111,7 +132,8 @@ async function issue(path, fields) {
     state = result;
     transport.remember?.(state.profile);
     selectedBid = undefined;
-    if (onMenu && path === "/api/profile") menu();
+    if (path === "/api/language") rememberLanguage(fields.language);
+    if (onMenu && ["/api/profile", "/api/language"].includes(path)) menu();
     else render();
     stage.querySelector(".prompt, h1")?.focus({ preventScroll: true });
     profileDialogs.notice(state.profile?.notice);
@@ -177,16 +199,37 @@ async function playCards(steps) {
 }
 
 function menu() {
+  automation.set(false);
   if (setup.surface === "whist") {
     const home = element("section", "", "whist-home");
-    const title = element("h1", "Whist");
+    const title = element("h1", copy("home", "Whist"));
     title.tabIndex = -1;
     home.append(title,
-      button("Numele tău: " + state.profile.name, () => profileDialogs.edit(state.profile.name), "quiet"),
-      button("Joc nou", menuSetup, "primary"));
-    const resume = button("Reia partida", render);
+      button(copy("name", "Numele tău") + ": " + state.profile.name, () => profileDialogs.edit(state.profile.name), "quiet"),
+      button(copy("newGame", "Joc nou"), menuSetup, "primary"));
+    const resume = button(copy("resume", "Reia partida"), render);
     resume.disabled = !state.view;
-    home.append(resume, button("Realizări", () => profileDialogs.catalogue(state.profile.catalogue), "quiet"));
+    home.append(resume,
+      button(copy("achievements", "Realizări"), () => profileDialogs.catalogue(state.profile.catalogue), "quiet"),
+      button(copy("help", "Reguli de joc"), () => profileDialogs.rules(copy("rules", [])), "quiet"));
+    const label = element("label", copy("language", "Limba"), "whist-language");
+    const select = element("select");
+    for (const [value, text] of [["ro", "Română"], ["en", "English"]]) {
+      const option = element("option", text);
+      option.value = value;
+      select.append(option);
+    }
+    select.value = language;
+    select.addEventListener("change", async () => {
+      select.disabled = true;
+      const failure = await issue("/api/language", { language: select.value });
+      if (failure) {
+        select.disabled = false;
+        select.value = language;
+      }
+    });
+    label.append(select);
+    home.append(label);
     stage.replaceChildren(home, errorBox);
     return;
   }
@@ -196,16 +239,16 @@ function menu() {
 function menuSetup() {
   const native = setup.surface === "whist";
   const content = element("section", "", "setup");
-  const title = element("h1", native ? "Setări joc" : setup.title);
+  const title = element("h1", native ? copy("setup", "Setări joc") : setup.title);
   title.tabIndex = -1;
   const form = element("form");
-  const fields = setup.fields.filter(field => field.key !== "name" || !state.profile);
+  const fields = (language === "en" ? setup.englishFields : setup.fields).filter(field => field.key !== "name" || !state.profile);
   if (native) {
     whistSettings(form, Object.fromEntries(fields.map(field => [field.key, field])));
   } else {
     for (const field of fields) form.append(settingsField(field));
   }
-  const start = element("button", native ? "Începe partida" : "Joc nou", "primary");
+  const start = element("button", native ? copy("start", "Începe partida") : copy("newGame", "Joc nou"), "primary");
   start.type = "submit";
   form.append(start);
   form.addEventListener("submit", event => {
@@ -218,10 +261,10 @@ function menuSetup() {
     issue("/api/start", configuration);
   });
   content.append(title, form);
-  if (native) content.append(button("Înapoi", menu, "quiet"));
+  if (native) content.append(button(copy("back", "Înapoi"), menu, "quiet"));
   if (!native && state.view) content.append(button("Continuă", render));
   if (!native && state.profile) {
-    content.append(button("Numele tău: " + state.profile.name, () => profileDialogs.edit(state.profile.name)),
+    content.append(button(copy("name", "Numele tău") + ": " + state.profile.name, () => profileDialogs.edit(state.profile.name)),
       button("Realizări", () => profileDialogs.catalogue(state.profile.catalogue)));
   }
   stage.replaceChildren(content, errorBox);
@@ -257,7 +300,7 @@ function whistSettings(form, fields) {
     field.append(input, document.createTextNode(text));
     return field;
   };
-  const series = toggle("Serii de cinci mâini", "streaks", setupDraft.streaks ?? fields.series.initial !== "0");
+  const series = toggle(copy("streaks", "Serii de cinci mâini"), "streaks", setupDraft.streaks ?? fields.series.initial !== "0");
   const seriesValue = settingsField(fields.series, fields.series.options.filter(option => option.value !== "0"), false);
   seriesValue.className = "series-value";
   const streaks = element("div", "", "series-row");
@@ -342,11 +385,16 @@ function scoreGrid(data) {
 }
 
 function showHistory(data) {
+  history.querySelector("#history-title").textContent = copy("history", "Istoric punctaj");
+  history.querySelector("button").textContent = copy("close", "Închide");
   document.querySelector("#history-data").replaceChildren(scoreGrid(data));
   history.showModal();
 }
 
-function action(key) { issue("/api/action", { action: key }); }
+function action(key) {
+  automation.set(false);
+  issue("/api/action", { action: key });
+}
 
 function control(move) {
   if (move.minimum === null) return button(move.label, () => action(move.key), move.emphasized ? "primary" : "");
@@ -368,7 +416,7 @@ function control(move) {
   return form;
 }
 
-function bidding(actions, content) {
+function bidding(actions, content, native) {
   const suggested = actions.find(move => move.emphasized);
   const select = move => {
     selectedBid = move.key;
@@ -377,11 +425,17 @@ function bidding(actions, content) {
     }
     submit.disabled = !selectedBid;
   };
-  const submit = button("Licitează", () => action(selectedBid), "primary");
+  const submit = button(copy("bid", "Licitează"), () => action(selectedBid), native ? "bid-submit" : "primary");
+  if (native) {
+    const face = element("span", submit.textContent, "bid-face");
+    submit.replaceChildren(face);
+    content.classList.add("whist-bidding");
+  }
   const options = element("div", "", "bid-options");
   options.classList.toggle("bid-strip", actions.length > 10);
   for (const move of actions) {
-    const option = button(move.label, () => select(move));
+    const option = button(native ? "" : move.label, () => select(move));
+    if (native) option.append(element("span", move.label, "bid-face"));
     option.dataset.bid = move.key;
     options.append(option);
   }
@@ -423,6 +477,18 @@ async function placeTable() {
         face.style.left = layout.hand.first + index * layout.hand.advance + "px";
       }
     }
+    if (layout.bids) {
+      const controls = board.querySelector(".whist-bidding");
+      if (controls) {
+        controls.querySelector(".bid-options").classList.toggle("bid-strip", layout.bids.strip);
+        controls.style.setProperty("--bid-columns", layout.bids.columns);
+        for (const [key, prop] of Object.entries({
+          choiceTarget: "choice-target", rowHeight: "row", choiceInset: "choice-inset",
+          submitWidth: "submit-width", submitTarget: "submit-target", submitInsetX: "submit-inset-x",
+          submitInsetY: "submit-inset-y", textSize: "text-size"
+        })) controls.style.setProperty("--bid-" + prop, layout.bids[key] + "px");
+      }
+    }
     if (!board.dataset.layout) {
       const strip = board.querySelector(".bid-strip");
       const selected = strip?.querySelector("[aria-pressed='true']");
@@ -454,29 +520,37 @@ function whistHeader(match) {
   const top = element("div", "", "whist-title-row");
   const navigation = element("details", "", "whist-navigation");
   const trigger = element("summary");
-  trigger.setAttribute("aria-label", "Meniu joc");
+  trigger.setAttribute("aria-label", copy("gameMenu", "Meniu joc"));
   trigger.append(element("span", "", "menu-lines"));
   navigation.append(trigger);
   const items = element("div", "", "whist-menu-items");
   if (match.history.rows.length) {
-    items.append(button("Istoric punctaj", () => {
+    items.append(button(copy("history", "Istoric punctaj"), () => {
       navigation.open = false;
       showHistory(match.history);
     }));
   }
-  items.append(button("Meniu principal", () => { if (!pending) menu(); }));
+  items.append(button(copy("mainMenu", "Meniu principal"), () => { if (!pending) menu(); }));
   navigation.append(items);
   const title = element("h1", match.header.title);
   top.append(navigation, title);
-  const automatic = match.actions.find(move => move.key === "auto");
-  if (automatic) top.append(button("Joacă automat", () => action(automatic.key), "whist-auto"));
+  const automatic = match.actions.find(move => move.key === "auto-step");
+  if (automatic) {
+    const toggle = element("label", "", "whist-auto");
+    const input = element("input");
+    input.type = "checkbox";
+    input.checked = automation.selected();
+    input.addEventListener("change", () => automation.set(input.checked));
+    toggle.append(input, document.createTextNode(automatic.label));
+    top.append(toggle);
+  }
   const details = element("div", "", "whist-header-details");
   const status = element("div");
   status.append(element("p", match.header.progress, "whist-progress"),
     element("p", match.header.bids, "whist-bids"));
   const trump = element("div", "", "whist-trump");
   trump.setAttribute("aria-label", match.header.trumpDescription);
-  trump.append(element("strong", "Atu"), match.center.length
+  trump.append(element("strong", copy("trump", "Atu")), match.center.length
     ? card(match.center[0]) : element("span", match.header.trump));
   details.append(status, trump);
   header.append(top, details);
@@ -484,6 +558,7 @@ function whistHeader(match) {
 }
 
 function whistScore(match) {
+  automation.set(false);
   const page = element("section", "", "whist-score");
   const prompt = element("p", match.prompt, "prompt");
   prompt.tabIndex = -1;
@@ -491,8 +566,8 @@ function whistScore(match) {
     element("p", match.header.progress + "\n" + match.header.bids, "whist-score-status"),
     prompt, scoreGrid(match.score.table));
   for (const move of match.actions) page.append(control(move));
-  page.append(button("Istoric punctaj", () => showHistory(match.history), "quiet"),
-    button("Meniu principal", menu, "quiet"));
+  page.append(button(copy("history", "Istoric punctaj"), () => showHistory(match.history), "quiet"),
+    button(copy("mainMenu", "Meniu principal"), menu, "quiet"));
   stage.replaceChildren(page, errorBox);
 }
 
@@ -535,8 +610,8 @@ function render() {
   prompt.tabIndex = -1;
   const actions = element("div", "", "actions");
   const bids = match.actions.filter(move => move.key.startsWith("bid:"));
-  if (bids.length) bidding(bids, actions);
-  for (const move of match.actions.filter(move => !move.key.startsWith("bid:") && !(match.header && move.key === "auto"))) {
+  if (bids.length) bidding(bids, actions, !!match.header);
+  for (const move of match.actions.filter(move => !move.key.startsWith("bid:") && !(match.header && ["auto", "auto-step"].includes(move.key)))) {
     actions.append(control(move));
   }
   const toolbar = element("div", "", "toolbar");
@@ -546,7 +621,7 @@ function render() {
 
   const hand = element("div", "", "hand");
   hand.setAttribute("role", "group");
-  hand.setAttribute("aria-label", "Cărțile tale");
+  hand.setAttribute("aria-label", copy("hand", "Cărțile tale"));
   hand.tabIndex = 0;
   const fan = element("div", "", "fan");
   for (const face of match.hand) fan.append(card(face, true));
@@ -563,6 +638,10 @@ try {
   transport = document.documentElement.dataset.engine === "whist"
     ? (await import("./local-transport.mjs")).localTransport() : httpTransport();
   [setup, state] = await Promise.all([call("/api/setup"), call("/api/state")]);
+  if (setup.surface === "whist" && preferredLanguage() === "en") {
+    state = await call("/api/language", { revision: String(state.revision), language: "en" });
+    rememberLanguage("en");
+  }
   document.documentElement.dataset.surface = setup.surface ?? "table";
   for (const token of setup.palette ?? []) document.documentElement.style.setProperty(token.name, token.color);
   const savedName = transport.cachedName?.();

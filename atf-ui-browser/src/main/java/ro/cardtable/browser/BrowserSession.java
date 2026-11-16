@@ -11,6 +11,7 @@ final class BrowserSession {
 
     private final BrowserExperience profile;
     private long revision;
+    private String language = "ro";
     private BrowserGame.Match match;
     private BrowserGame.View view;
 
@@ -21,7 +22,7 @@ final class BrowserSession {
     }
 
     private State response(List<BrowserGame.CollectionCue> collections, List<BrowserGame.PlayStep> playback) {
-        return new State(revision, view, profile == null ? null : profile.details(match),
+        return new State(revision, view, profile == null ? null : profile.details(match, language),
                 List.copyOf(collections), List.copyOf(playback));
     }
 
@@ -38,6 +39,7 @@ final class BrowserSession {
             configuration.put(field.key(), value);
         }
         var next = game.start(Map.copyOf(configuration));
+        next.setLanguage(language);
         var nextView = next.view();
         match = next;
         view = nextView;
@@ -70,6 +72,20 @@ final class BrowserSession {
         profile.rename(match, name);
         if (match != null) view = match.view();
         revision++;
+        return state();
+    }
+
+    synchronized State language(long expected, String value) {
+        checkRevision(expected);
+        if (!value.equals("ro") && !value.equals("en")) throw new IllegalArgumentException("Unsupported language");
+        if (!language.equals(value)) {
+            language = value;
+            if (match != null) {
+                match.setLanguage(language);
+                view = match.view();
+            }
+            revision++;
+        }
         return state();
     }
 

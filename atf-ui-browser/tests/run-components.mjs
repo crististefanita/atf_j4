@@ -373,7 +373,7 @@ async function ui({ send, evaluate, version }, url, name) {
     await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 14; Mobile)" });
     await metrics(414, 896, true);
     await ready("document.querySelector('#frame').clientWidth === 414", "Revenirea la cadrul mobil nu s-a încheiat");
-    await evaluate("document.querySelector('.whist-auto').click()");
+    await evaluate("document.querySelector('.whist-auto input').click()");
     for (const step of [1, 2]) {
       await ready(`(() => {
         const stage = document.querySelector("#table[data-collection-step='${step}']");

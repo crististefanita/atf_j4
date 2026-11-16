@@ -24,7 +24,7 @@ async function check(name, expected, exercise) {
   console.log(checks.at(-1).status + " " + name);
 }
 
-const files = [".nojekyll", "collection.mjs", "engine-worker.mjs", "index.html", "local-transport.mjs",
+const files = [".nojekyll", "auto-game.mjs", "collection.mjs", "engine-worker.mjs", "index.html", "local-transport.mjs",
   "profile.mjs", "table.css", "table.mjs", "viewport.mjs", "whist-engine.mjs"];
 
 if (!selection) await check("Pages · inventarul public", "Doar resurse statice și legături relative în subdirectorul proiectului", async () => {
@@ -74,7 +74,7 @@ if (!selection) await check("Pages · motorul compilat și profilul", "Partidă 
     animated += state.collections.length;
     if (hand < 24) state = play("action", { revision: state.revision, action: "next" });
   }
-  assert.equal(state.view.prompt, "Clasament final");
+  assert.equal(state.view.prompt, "Partidă încheiată");
   assert.ok(animated > 80);
   assert.ok(state.profile.notice?.goals.length);
   const before = state.profile.catalogue;
@@ -268,7 +268,7 @@ async function phoneViewport(chrome) {
       assert.deepEqual(await seats(), bidding);
       const board = await send("Page.captureScreenshot", { format: "png" });
       await writeFile(join(output, "pages-mobile-board.png"), Buffer.from(board.data, "base64"));
-      await click("Joacă automat");
+      await evaluate("document.querySelector('.whist-auto input').click()");
       await until(() => evaluate("!!document.querySelector('.whist-score tbody tr')"));
       const frames = await evaluate("window.cardFrames");
       assert.equal(frames.length, 4);
