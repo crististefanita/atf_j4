@@ -74,7 +74,7 @@ Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrea
 | Lățimea tabelului | [Grila](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java) extinde proporțional coloanele până la lățimea disponibilă, cu aceleași frontiere pentru antet și rânduri. Resturile de rotunjire nu lasă o bandă goală. |
 | Conținutul minim | Măsurarea integrală a textului stabilește limita de comprimare. Când limita depășește fereastra, derularea orizontală păstrează cifrele și numele, fără reducerea scării de accesibilitate. |
 | Înălțimea | Antetele și legenda măsurate primesc întâi spațiu; rândurile derulabile ocupă restul, fără plafon fix. Când nu încape un rând complet, [containerul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryContentScroll.java) permite derularea conținutului integral; o nouă măsurare poate reveni la antete fixe. |
-| Text și marcaje | [Tipografia](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/HistoryTypography.java) păstrează dimensiuni în sp. [Diagonala](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) are roșu și grosime proprii; se desenează exclusiv peste licitația ratată, independent de culoarea textului și de conturul seriei. |
+| Text și marcaje | [Tipografia](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryTypography.java) păstrează dimensiuni în sp. [Diagonala](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) se desenează cu roșu peste licitația ratată și își păstrează grosimea când se schimbă textul sau conturul seriei. |
 
 ### Componente și probe grafice
 
