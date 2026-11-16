@@ -103,7 +103,7 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
 
     @Test public void theFullPrivateFaceAndLiftFitInTheSameBandAcrossBothPhases() {
         for (float density : new float[]{1f, 1.5f, 2.25f, 2.625f, 2.75f, 3.5f}) {
-            int expectedFace = Math.round(88 * density);
+            int expectedFace = Math.round(66 * density);
             int expectedLiftSpace = Math.round(28 * density);
             int band = TableLayoutMetrics.privateHandHeightPx(density);
             atf.gradle.audit.GradleInputs.fixture("Private card face and lift in the fixed hand region",
@@ -287,6 +287,7 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
         int handPx = TableLayoutMetrics.privateHandHeightPx(density);
         int reservePx = Math.round(reservation.reservedHeightDp() * density);
         int boardHeightPx = contentBelowHeaderPx - handPx;
+        int previousHandPx = Math.round(88 * density) + Math.round(28 * density);
         var oldTrick = TrickCardMetrics.forTable(3, boardWidthDp, 1f, viewport);
         int oldTrickPx = Math.round(oldTrick.cellHeightDp() * density)
                 + Math.round(oldTrick.rowStrideDp() * density);
@@ -300,15 +301,15 @@ public final class GameTablePhaseGeometryComponentTest extends atf.gradle.audit.
 
         atf.gradle.audit.GradleInputs.fixture("720 × 1280, 360 dpi, Down & Up maximum deal",
                 "content below header in px", contentBelowHeaderPx, "seat including badge in px", seatHeightPx,
-                "hand and lift in px", handPx, "two-row trick height in px", oldTrickPx,
+                "hand and lift in px", handPx, "previous hand in px", previousHandPx, "two-row trick height in px", oldTrickPx,
                 "board minimum in px", minimumBoardPx, "reservation", reservation);
-        assertTrue("The two-row trick alone clipped the hand even after compacting the bid choices",
-                TableGeometry.minimumHeight(3, seatHeightPx, oldTrickPx, gapPx) > boardHeightPx);
+        assertTrue("The historical two-row trick clipped the previous 88dp faces at this viewport",
+                TableGeometry.minimumHeight(3, seatHeightPx, oldTrickPx, gapPx) > contentBelowHeaderPx - previousHandPx);
         assertTrue("The compact reservation leaves room for the hand and its lift",
                 minimumBoardPx <= boardHeightPx);
         assertEquals("Seat positions are identical within the actual pixel budget", bid.seats(), play.seats());
         assertEquals("The played cards occupy one row", 1, trick.rows());
-        assertEquals("The displayed public cards keep their original height", oldTrick.cardHeightDp(), trick.cardHeightDp());
+        assertEquals("The public card slots retain their original height", oldTrick.cardHeightDp(), trick.cardHeightDp());
         assertTrue("The public cards follow left, human, right seat order with space between them",
                 trick.slotForSeat(1).leftDp() + trick.cardWidthDp() <= trick.slotForSeat(0).leftDp() &&
                 trick.slotForSeat(0).leftDp() + trick.cardWidthDp() <= trick.slotForSeat(2).leftDp());

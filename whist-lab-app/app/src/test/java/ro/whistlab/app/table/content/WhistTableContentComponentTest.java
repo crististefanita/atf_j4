@@ -53,6 +53,8 @@ public final class WhistTableContentComponentTest extends atf.gradle.audit.Gradl
         var manualHuman = new WhistTableContent.Turn(0, true);
         var automaticHuman = new WhistTableContent.Turn(0, false);
         var opponent = new WhistTableContent.Turn(2, false);
+        atf.gradle.audit.GradleInputs.fixture("Turn and bid button combinations",
+                "manualHuman", manualHuman, "automaticHuman", automaticHuman, "opponent", opponent);
         assertEquals("Only the redundant manual bidding label is hidden",
                 List.of(false, true, true, true, false),
                 List.of(WhistTableContent.showsSeatTurnBadge(0, manualHuman, true),
