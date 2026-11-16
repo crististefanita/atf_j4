@@ -33,6 +33,7 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | ACH-01 | P1 | 90 | Califică pe APK restaurarea poziției și selecției din Realizări, apoi reluarea notificărilor după recrearea activității. [Registru](ATF_Achievements.md) |
 | AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
+| RAG-10 | P1 | 87 | Reluați calificarea întreruptă din ultima etapă validă, pe aceeași amprentă, cu test pentru întrerupere și dovadă deja acceptată. [Registru](ATF_TestInfrastructure.md#reluarea-calificării-rag) |
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și reconciliază limita Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
 | TEST-01 | P2 | 84 | Refolosește așteptarea controlată pentru buclele de licitare și joc. Demonstrează timeout-ul, ordinea comenzilor și cauza originală fără dispozitiv. [Registru](ATF_TestInfrastructure.md#stabilitatea-verificării-proceselor) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |

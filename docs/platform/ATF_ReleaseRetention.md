@@ -108,6 +108,20 @@ Reluați verificarea cu `--recipe $GitProof` și o ieșire nouă dacă a fost fo
 - Curățați staging-ul, cache-urile și copiile regenerate din Git sau deja incluse cu același hash. Păstrați datele de învățare și diagnosticul unic pentru o problemă deschisă.
 - Păstrați sursele capturate cât timp o reluare mai are nevoie de ele. [Predarea dovezilor](../reporting/ATF_Handoff.md)
 
+## Sincronizarea dosarului local cu versiunea curentă
+
+După verdictul postpublicare și confirmarea surselor din Git, adăugați `--local-release` la verificatorul Git pentru dosarul `release` al unui alt checkout. În exemplu, `$ProjectRoot` este checkout-ul canonic, iar copia locală se află într-un checkout separat. Scrieți dovada într-un fișier nou din directorul extern al rulării.
+
+```powershell
+node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --candidate $PublishedEdition `
+  --published-verdict $PublishedVerdict --recipe $GitProof `
+  --local-release 'C:\work\1\atf_j4\release' --output $LocalSyncProof
+```
+
+Omiteți `--recipe` când reconstrucția este exactă direct din Git. Instrumentul copiază numai ediția curentă din `origin/main`, validează octeții și actualizează indexul local. Păstrează dosarul existent dacă eșuează pregătirea sau mutarea. Un dosar cu modificări locale ori date nerecunoscute este refuzat. Catalogul canonic și GitHub păstrează două ediții pentru audit, rotație și calculul diff-ului.
+
+Copia locală are rol de distribuție. Într-un checkout istoric, Git afișează diferențele din `release/` față de ramura activă. Păstrați această copie în afara commiturilor de sursă. [Profilurile de reluare](../testing/ATF_ReleaseQualification.md#profiluri-de-lucru-pentru-reluare)
+
 ## Verificarea descărcării înaintea rotației
 
 După publicare, împingeți catalogul, manifestele și README-ul principal. Folosiți aceleași intrări și același director ca la [publicarea reluabilă](ATF_AndroidDelivery.md#publicarea-reluabilă-pe-github).

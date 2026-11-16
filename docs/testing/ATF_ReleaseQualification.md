@@ -406,3 +406,28 @@ Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Ma
 - **Promovare:** un rezultat trecut aparține surselor executate. Sursele schimbate ulterior cer evaluarea diferenței și reverificarea relevantă, înaintea build-ului final.
 
 [Strategia comună](README.md) · [Selecțiile de display](ATF_Display.md) · [Procesul livrării](../platform/ATF_AndroidDelivery.md#procesul-unei-versiuni)
+
+## Profiluri de lucru pentru reluare
+
+Pregătiți pentru fiecare candidat un director extern, de exemplu `C:\work\whist_back\<versiune>-<commit>`. Folosiți un subdirector de lucru pentru Maven, Gradle și fișierele temporare, alături de directoare distincte pentru rapoarte, probe și încercările Android. Rulați din checkout-ul sursă calificat, cu `TMP` și `TEMP` îndreptate către zona externă de lucru.
+
+Din checkout-ul fixat, setați `$Version` la versiunea candidatului și pregătiți zona de lucru.
+
+```powershell
+$shortCommit = git rev-parse --short=12 HEAD
+$run = Join-Path 'C:\work\whist_back' "$Version-$shortCommit"
+$scratch = Join-Path $run 'workspace'
+New-Item -ItemType Directory -Path $scratch -Force | Out-Null
+$env:TMP = $scratch
+$env:TEMP = $scratch
+```
+
+Folosiți același director la reluarea aceleiași identități. Alegeți un director nou când se schimbă commitul, APK-ul sau setul de intrări. Salvați verdictul și chitanța fiecărei etape lângă raportul ei.
+
+| Profil de lucru | Pregătire | Condiție de reluare |
+|---|---|---|
+| Componente | Fixați manifestul surselor și inventarul dosarului activ. Păstrați cache-ul Maven izolat, clasele, classpath-ul și chitanțele de etapă până la finalul livrării. | Refolosiți rapoartele prin planul selecției și hash-urile acceptate. Reutilizarea compilării cere verificarea sursei, claselor și bibliotecilor. |
+| Android headless | Păstrați APK-ul semnat, profilul API și display cerut, selecția și calea de rezervare. Dați fiecărei încercări director propriu și profil Android temporar. | Reluați doar fluxurile fără dovadă validă pentru APK, snapshot, selecție și profil. Verificați boot-ul, fereastra activă și curățarea profilului. După repornirea gazdei, confruntați rezervarea și profilul înainte de orice curățare. |
+| Publicare | Păstrați verdictul, ID-ul draftului, jurnalul încărcării și hash-urile APK-ului și checksum-ului. | Reluați publicarea din același jurnal după ce reconciliați ID-ul și octeții încărcați. Verificați linkul de pe `main` și reînnoiți observația GitHub când expiră. |
+
+Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După publicare și reconstrucția verificată din Git, păstrați rapoartele finale, chitanțele, rețeta EOL aplicabilă și datele de învățare. Directoarele de build și cache-urile izolate se pot elimina. [Retenția după livrare](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)

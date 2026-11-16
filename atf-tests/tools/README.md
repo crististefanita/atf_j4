@@ -59,3 +59,5 @@ Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizi
 
 - [Cronologia](assemble-release-timeline.mjs) combină chitanțele proceselor și păstrează intervalele suprapuse. [Procedura de calificare](../../docs/testing/ATF_ReleaseQualification.md#cronologia-calificării)
 - [Verificatorul Git](verify-release-git-snapshot.mjs) confruntă inventarul și octeții, inclusiv EOL, și verifică payload-ul publicat înainte de curățare. [Contractul de retenție](../../docs/platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
+
+- Pentru un checkout separat, opțiunea `--local-release` sincronizează numai ediția curentă, după verificarea verdictului, tagului și payload-ului din Git. [Procedura de sincronizare](../../docs/platform/ATF_ReleaseRetention.md#sincronizarea-dosarului-local-cu-versiunea-curentă)

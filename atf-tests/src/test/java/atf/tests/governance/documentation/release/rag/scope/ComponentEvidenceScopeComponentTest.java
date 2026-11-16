@@ -34,6 +34,14 @@ class ComponentEvidenceScopeComponentTest {
                 "The component report covers the download gate before rotation.");
     }
 
+    @Test void localReleaseSyncKeepsOnlyQualifiedPublishedBytesAndRejectsLocalEdits() throws Exception {
+        String output = runContracts(PUBLICATION_TIMEOUT, "release-git-snapshot.test.mjs");
+        AuditedAssertions.assertTrue(output.contains("materializes only the current published release and preserves bytes"),
+                "The local release copy preserves the current manifest and payload.");
+        AuditedAssertions.assertTrue(output.contains("refuses unpublished proof, a modified candidate, and unknown local data"),
+                "The local release copy rejects unqualified inputs and unrelated files.");
+    }
+
     @Test void verboseNodeRunDrainsBothStreamsFromTheSelectedDirectory() throws Exception {
         Path directory = GovernanceProject.locateProjectRoot().resolve("atf-tests");
         String program = "process.stdout.write('x'.repeat(128 * 1024), "

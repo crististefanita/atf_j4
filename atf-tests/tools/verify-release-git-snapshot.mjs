@@ -5,6 +5,7 @@ import {parseArgs} from 'node:util';
 import {componentInputMap, digest, inputFingerprint, readApkArtifact, regularFile, strictJson} from './evaluate-release-rag.mjs';
 import {assertAncestor, commitId, gitBlob, readGitBlobs, trackedEntries} from './git-snapshot-blobs.mjs';
 import {applyEol, eolRecipe} from './git-snapshot-eol.mjs';
+import {syncLocalRelease} from './local-release-sync.mjs';
 import {within, writeTimingReceipt, QualificationTiming} from './release-timing.mjs';
 
 const kind = 'ATF_RELEASE_GIT_SNAPSHOT';
@@ -136,12 +137,12 @@ export async function verifyGitSnapshot({repository, candidate, qualifiedRoot, p
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const {values: options} = parseArgs({options: Object.fromEntries(
-      ['repo', 'candidate', 'output', 'qualified-root', 'recipe', 'published-verdict', 'published-commit']
+      ['repo', 'candidate', 'output', 'qualified-root', 'recipe', 'published-verdict', 'published-commit', 'local-release']
         .map(name => [name, {type: 'string'}]))});
     const {repo, candidate, output} = options;
-    if (!repo || !candidate || !output || (options['published-commit'] && !options['published-verdict'])) {
+    if (!repo || !candidate || !output || ((options['published-commit'] || options['local-release']) && !options['published-verdict'])) {
       throw Error('Use --repo <git> --candidate <release-dir> --output <external-json> '
-        + '[--qualified-root <original> | --recipe <json>] [--published-verdict <json> [--published-commit <git-ref>]]');
+        + '[--qualified-root <original> | --recipe <json>] [--published-verdict <json> [--published-commit <git-ref>] [--local-release <directory>]]');
     }
     const roots = await Promise.all([repo, candidate, ...(options['qualified-root'] ? [options['qualified-root']] : [])]
       .map(dir => fs.realpath(dir)));
@@ -153,6 +154,16 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       verdict: options['published-verdict'] ? await strictJson(options['published-verdict']) : undefined,
       publishedRef: options['published-commit']
     });
+    if (options['local-release']) {
+      const destination = path.resolve(options['local-release']);
+      if (within(destination, target)) throw Error('LOCAL_RELEASE_RECEIPT_MUST_BE_EXTERNAL');
+      const existing = await fs.lstat(target).catch(error => error.code === 'ENOENT' ? null : Promise.reject(error));
+      if (existing) throw Error('LOCAL_RELEASE_RECEIPT_ALREADY_EXISTS');
+      result.localRelease = await syncLocalRelease({
+        repository: roots[0], candidate: roots[1], proof: result,
+        destination, stagingParent: path.dirname(target)
+      });
+    }
     await writeTimingReceipt(target, result);
     console.log(JSON.stringify({status: result.status, files: result.inputCount, endings: result.endings.length,
       cleanupEligible: result.cleanupEligible, output: target, problems: result.problems}));
