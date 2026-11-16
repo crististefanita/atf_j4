@@ -146,7 +146,9 @@ async function playCards(steps) {
   await placeTable();
   for (const step of steps) {
     if (step.startsTrick) center.replaceChildren();
+    stage.querySelector(".whist-bids").textContent = step.bids;
     for (const [seat, node] of seats.entries()) {
+      node.querySelector("span").textContent = step.seatFacts[seat];
       node.classList.toggle("active", seat === step.play.seat);
       if (seat === step.play.seat) node.setAttribute("aria-current", "true");
       else node.removeAttribute("aria-current");

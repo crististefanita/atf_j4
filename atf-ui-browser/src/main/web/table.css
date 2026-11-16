@@ -186,6 +186,7 @@ dialog form { margin-top: 8px; display: flex; justify-content: flex-end; }
 .achievement-catalogue > button { float: none; margin-top: 0; min-height: 3em; }
 .player-dialog.achievement-notice { background: #315e4d; color: white; }
 .achievement-notice .goal-notice { background: #315e4d; border: 1px solid #629478; }
+.achievement-notice > button { color: #1d362b; }
 .collection { pointer-events: none; position: absolute; inset: 0; z-index: 3; }
 .collection .card { position: absolute; transform: translate(-50%, -50%); }
 #table[data-collecting] .cards-on-table { visibility: hidden; }
@@ -246,7 +247,14 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 [data-surface="whist"] .setup [hidden] { display: none; }
 .whist-match { padding: 2px 12px; gap: 4px; }
 .whist-match .board, .whist-match .hand { margin-inline: 8px; }
-.match .whist-header { display: grid; gap: 2px; min-width: 0; }
+.match .whist-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 0;
+}
 .whist-title-row { display: flex; align-items: center; min-height: 48px; gap: 8px; }
 .whist-title-row h1 { color: #f5f8f0; font-size: var(--title-size, 14px); flex: 1; overflow-wrap: anywhere; }
 .whist-navigation { position: relative; }

@@ -63,7 +63,8 @@ public interface BrowserGame {
     }
 
     record Played(int seat, Card card) { }
-    record PlayStep(Played play, boolean startsTrick, long delayMillis, CollectionCue collection) { }
+    record PlayStep(Played play, boolean startsTrick, long delayMillis, CollectionCue collection,
+                    String bids, List<String> seatFacts) { }
 
     record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards) {
         public CollectionCue { cards = List.copyOf(cards); }

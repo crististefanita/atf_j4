@@ -83,7 +83,7 @@ final class PageJson {
         if (value instanceof BrowserGame.Played played) return fields("seat", played.seat(), "card", played.card());
         if (value instanceof BrowserGame.PlayStep step)
             return fields("play", step.play(), "startsTrick", step.startsTrick(), "delayMillis", step.delayMillis(),
-                    "collection", step.collection());
+                    "collection", step.collection(), "bids", step.bids(), "seatFacts", step.seatFacts());
         if (value instanceof BrowserGame.History history) return fields("headings", history.headings(), "rows", history.rows());
         if (value instanceof BrowserGame.CollectionCue cue)
             return fields("winningSeat", cue.winningSeat(), "displayMillis", cue.displayMillis(),

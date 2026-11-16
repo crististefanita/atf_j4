@@ -192,6 +192,8 @@ async function phoneViewport(chrome) {
       await until(() => evaluate("!!document.querySelector('.board[data-layout=ready]')"));
       assert.equal(await evaluate("document.querySelector('.whist-title-row h1').textContent"), "Whist · Românesc");
       assert.equal(await evaluate("getComputedStyle(document.querySelector('.whist-title-row h1')).fontSize"), "14px");
+      assert.ok(await evaluate(`document.querySelector(".whist-header").clientWidth ===
+        document.querySelector(".whist-title-row").clientWidth`));
       assert.equal(await evaluate("document.querySelector('.whist-trump .card').tagName"), "SPAN");
       const bidding = await seats();
       await evaluate(`(() => {
@@ -202,7 +204,8 @@ async function phoneViewport(chrome) {
             for (const node of change.addedNodes) {
               if (!node.matches?.(".played-card")) continue;
               const active = [...document.querySelectorAll(".seat")].findIndex(seat => seat.getAttribute("aria-current") === "true");
-              window.cardFrames.push({ seat: Number(node.dataset.seat), active, at: performance.now() });
+              window.cardFrames.push({ seat: Number(node.dataset.seat), active, at: performance.now(),
+                bids: document.querySelector(".whist-bids").textContent.split("\\n")[0] });
             }
           }
         }).observe(document.querySelector("#table"), { childList: true, subtree: true });
@@ -218,10 +221,16 @@ async function phoneViewport(chrome) {
       assert.equal(frames.length, 4);
       assert.equal(new Set(frames.map(frame => frame.seat)).size, 4);
       assert.deepEqual(frames.map(frame => frame.active), frames.map(frame => frame.seat));
+      assert.ok(frames.every(frame => frame.bids === "Licitații depuse 4/4"));
       assert.ok(frames.slice(1).every((frame, index) => frame.at - frames[index].at >= 500));
       assert.deepEqual(await evaluate(`[document.querySelector('.whist-score h1').textContent,
         document.querySelectorAll('.whist-score tbody tr').length,
         document.querySelectorAll('.whist-score thead th').length]`), ["Scorul partidei", 4, 5]);
+      const noticeColor = await evaluate(`(() => {
+        const close = document.querySelector(".achievement-notice[open] > button");
+        return close && getComputedStyle(close).color;
+      })()`);
+      if (noticeColor !== null) assert.equal(noticeColor, "rgb(29, 54, 43)");
       await evaluate("document.querySelector('.player-dialog[open]')?.close()");
       const score = await send("Page.captureScreenshot", { format: "png" });
       await writeFile(join(output, "pages-mobile-score.png"), Buffer.from(score.data, "base64"));

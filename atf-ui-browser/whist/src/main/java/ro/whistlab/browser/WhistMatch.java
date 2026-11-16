@@ -74,7 +74,7 @@ final class WhistMatch implements BrowserGame.Match {
     }
 
     private void play(int actor, Card card, boolean automated) {
-        boolean startsTrick = game.snapshot().currentTrick().isEmpty();
+        var before = game.snapshot();
         game.playCard(actor, card);
         var state = game.snapshot();
         var collection = TrickCollectionRequest.from(state, state.lastTrick()).map(target ->
@@ -82,8 +82,9 @@ final class WhistMatch implements BrowserGame.Match {
                         TrickCollectionMotion.COLLECT_MILLIS, state.lastTrick().stream()
                         .map(played -> new Played(played.seat(), face(played.card(), ""))).toList())).orElse(null);
         if (collection != null) collections.add(collection);
-        playback.add(new BrowserGame.PlayStep(new Played(actor, face(card, "")), startsTrick,
-                automated ? TurnPacing.ACTION_DELAY_MILLIS : 0, collection));
+        playback.add(new BrowserGame.PlayStep(new Played(actor, face(card, "")), before.currentTrick().isEmpty(),
+                automated ? TurnPacing.ACTION_DELAY_MILLIS : 0, collection, COPY.bidSummary(before),
+                before.players().stream().map(COPY::seatFacts).toList()));
     }
 
     @Override public List<BrowserGame.CollectionCue> collections() { return List.copyOf(collections); }
