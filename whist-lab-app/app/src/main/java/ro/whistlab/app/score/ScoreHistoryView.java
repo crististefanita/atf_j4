@@ -11,6 +11,7 @@ import android.widget.TextView;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.session.ScoreHistory;
+import ro.whistlab.app.score.layout.HistoryTypography;
 import ro.whistlab.app.score.layout.HistoryViewport;
 import ro.whistlab.app.score.award.SeriesPointsView;
 import java.util.IdentityHashMap;

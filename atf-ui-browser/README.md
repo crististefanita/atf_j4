@@ -86,7 +86,9 @@ Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress
 
 ## Bibliotecă pentru adaptoare
 
-`lib/atf-ui-browser-0.2.4.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează numai sursele adaptoarelor proprii față de JAR și verifică suma SHA-256 la pornire. Arhiva `atf-ui-browser-0.2.4-tests.jar` verifică reviziile, meniul, ridicarea, colectarea și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
+`lib/atf-ui-browser-0.2.4.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează adaptoarele proprii față de JAR și verifică suma SHA-256 la pornire.
+
+Arhiva `lib/atf-ui-browser-0.2.4-tests.jar` verifică reviziile, meniul, ridicarea, colectarea și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
 
 ```powershell
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.4

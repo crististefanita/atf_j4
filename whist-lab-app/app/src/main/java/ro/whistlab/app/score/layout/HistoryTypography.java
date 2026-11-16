@@ -1,4 +1,4 @@
-package ro.whistlab.app.score;
+package ro.whistlab.app.score.layout;
 
 /** Shared text sizes in sp; the platform font scale remains authoritative. */
 public final class HistoryTypography {
