@@ -110,6 +110,26 @@ class AndroidUiDriverComponentTest {
         assertEquals(1, fixture.observations);
     }
 
+    @Test
+    void lateAchievementNoticeIsDismissedBeforeTheNextScroll(@TempDir Path output) throws Exception {
+        String score = xml("class=\"android.widget.ScrollView\" scrollable=\"true\" bounds=\"[0,0][720,1280]\"",
+                "text=\"Hand complete\"");
+        String notice = xml("text=\"Achievements unlocked\"", "text=\"CLOSE\"");
+        String next = xml("text=\"Next hand\" class=\"android.widget.Button\"");
+        var fixture = new WaitingFixture(output, score, notice, next);
+        var dismissed = new ArrayList<String>();
+
+        fixture.driver.revealText("Next hand", visible -> {
+            if (!fixture.driver.hasText(visible, "Achievements unlocked")) return false;
+            dismissed.add(visible);
+            return true;
+        });
+
+        assertEquals(List.of(notice), dismissed);
+        assertEquals(1, fixture.swipes.size());
+        assertEquals(3, fixture.observations);
+    }
+
     @Nested
     class Waiting {
         @ParameterizedTest

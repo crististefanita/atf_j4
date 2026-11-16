@@ -431,3 +431,24 @@ Folosiți același director la reluarea aceleiași identități. Alegeți un dir
 | Publicare | Păstrați verdictul, ID-ul draftului, jurnalul încărcării și hash-urile APK-ului și checksum-ului. | Reluați publicarea din același jurnal după ce reconciliați ID-ul și octeții încărcați. Verificați linkul de pe `main` și reînnoiți observația GitHub când expiră. |
 
 Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După publicare și reconstrucția verificată din Git, păstrați rapoartele finale, chitanțele, rețeta EOL aplicabilă și datele de învățare. Directoarele de build și cache-urile izolate se pot elimina. [Retenția după livrare](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
+
+### Reluarea etapelor validate
+
+După întrerupere păstrați directorul încercării și zona de lucru. Lansați din același checkout fixat, cu aceleași `TMP` și `TEMP` ca la pregătire. Folosiți un director nou pentru următoarea încercare.
+
+```powershell
+& .\scripts\run-component-suites.ps1 -SourceRoot $ProjectRoot -RunRoot $NextAttempt `
+  -ResumeFrom $InterruptedAttempt -PinnedSourceInputs $SourceInputs -Groups $RequiredGroups
+```
+
+Lansatorul reverifică amprentele sursei și ale dosarului de release în staging și în sursa fixată. Reluarea refuză o schimbare de inventar și blochează folosirea simultană a aceluiași staging. Fiecare selecție Maven are un checkpoint după execuție. Lotul Gradle poate furniza checkpoint-uri după încheierea procesului, verificarea JUnit și recitirea Extent. Selecțiile reușite cu dovezi acceptate își păstrează octeții și proveniența. Selecțiile lipsă, incomplete, corupte sau eșuate se execută în directorul nou.
+
+Pregătirea Maven păstrează separat compilarea și classpath-ul. Verificați chitanța compilării înainte de a reutiliza clasele, resursele și JAR-urile. Reluați rezolvarea classpath-ului dacă etapa a fost întreruptă. Un staging fără manifest valid cere o încercare nouă.
+
+Pentru un APK semnat, pregătiți compilarea o singură dată folosind `-PrepareOnly` și folosiți directorul acelei încercări prin `-PreparedFrom` pentru fluxurile care lipsesc. Verificați SHA‑256 al APK-ului și amprenta sursei înainte să acceptați clasele, resursele și bibliotecile pregătite. Fiecare flux are un director JUnit nou. Dacă execuția a produs deja dovada completă, importați-o prin `apply-android-e2e.mjs` înainte de a relua selecția. Rapoartele deja acceptate sunt refolosite prin planul existent de probe native, înainte de etapa de compilare sau de accesul la Android.
+
+| Nivel | Verificare a licitației |
+|---|---|
+| Componentă de joc | Primele patru mâini cu o carte, rotația dealerului, trecerea la două cărți și checkpoint-ul scorului. Alegerea alternativă, prioritatea față de recomandare și persistența contractului se verifică și cu mai multe mărimi de mână. |
+| Componentă de driver | Ierarhia XML și o notificare de realizări apărută după începerea derulării. Mock-ul ADB măsoară ordinea observațiilor și numărul de gesturi. |
+| E2E pe APK | Recomandarea vizibilă, opțiunea alternativă, dialogul de scor și contractul păstrat după repornirea procesului. Se joacă o singură mână pregătitoare dacă licitația din deschidere este forțată. |

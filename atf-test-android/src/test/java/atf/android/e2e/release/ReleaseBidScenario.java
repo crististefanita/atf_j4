@@ -32,22 +32,19 @@ final class ReleaseBidScenario {
                 ReleaseBidContext.equal("Hard opponents are selected", ro ? "Dificil" : "Hard",
                         c.ui.spinnerValue(xml, ro ? "Nivelul adversarilor" : "AI level"))));
         c.ui.tapText(ro ? "Începe partida" : "Start game");
-        for (int hand = 1; hand <= 4; hand++) {
-            c.awaitRecommendation(labels.submit());
+        var recommended = c.awaitRecommendation(labels.submit(), 1);
+        // A dealer may have one legal bid. The next deal rotates the dealer and opens both choices.
+        if (recommended.choices().size() == 1) {
             c.ui.tapText(labels.submit());
             finishOneCardHand(c, labels);
-            final int ordinal = hand;
-            c.checkpoint("Real one-card hand " + ordinal + " completed", xml -> List.of(
-                    ReleaseBidContext.equal("Hand prefix reached its real score screen", true, c.ui.hasText(xml, labels.next()))));
             c.ui.tapText(labels.next());
+            recommended = c.awaitRecommendation(labels.submit(), 1);
         }
-        var recommended = c.awaitRecommendation(labels.submit());
         int selected = recommended.selected().orElseThrow();
         int manual = recommended.choices().stream().filter(value -> value != selected).findFirst().orElseThrow();
-        c.checkpoint("Two-card recommendation waits for confirmation", xml -> {
+        c.checkpoint("Opening recommendation waits for confirmation", xml -> {
             var state = BidChoiceObservation.read(xml, labels.submit());
-            return List.of(ReleaseBidContext.equal("Two cards are visible to the human", true,
-                    c.ui.hasDescription(xml, ro ? "Cărțile tale, 2." : "Your hand, 2 cards.")),
+            return List.of(ReleaseBidContext.equal("Both opening contracts are visible and legal", List.of(0, 1), state.choices()),
                     ReleaseBidContext.equal("Recommended choice remains selected", selected, state.selected().orElseThrow()),
                     ReleaseBidContext.equal("Human contract has not been submitted automatically", true,
                             c.ui.hasDescriptionContaining(xml, human + (ro ? "nepusă" : "not placed") + ".")));
@@ -95,7 +92,7 @@ final class ReleaseBidScenario {
             String xml = c.ui.dump();
             if (c.dismissAchievementNoticeIfPresent(xml)) continue;
             if (c.ui.hasText(xml, labels.handComplete())) {
-                c.ui.revealText(labels.next());
+                c.revealPostHandAction(labels.next());
                 return;
             }
             var legal = c.ui.legalCardDescriptions(xml);

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -210,4 +211,62 @@ test('the disposable Android runner imports its command module and records the o
   assert.ok(runner.includes("Candidate APK must stay outside the ATF checkout"));
   assert.ok(runner.includes("Invoke-DeviceShell @('rm','-f',$remoteApk) | Out-Null"));
   assert.match(module, /Export-ModuleMember\s+-Function[^\r\n]*Invoke-AtfAdbCommand/);
+});
+
+test('after interruption only the completed successful suites are imported', async t => {
+  const {previous, target, provenanceSha256} = await fixture(t, {release: true, failed: groups[1]});
+  await fs.rename(path.join(previous, runReceipt), path.join(previous, 'component-checkpoint.json'));
+  const selection = [...groups, 'atf-validation'];
+  const result = await prepareComponentReuse(target, previous, selection, {resume: true});
+  assert.deepEqual(result.map(row => row.decision), ['MATCH', 'INVALID', 'INVALID']);
+  assert.deepEqual(await read(target, 'snapshots/' + provenanceSha256 + '/' + runReceipt),
+    await read(previous, 'component-checkpoint.json'));
+  await assert.rejects(fs.access(path.join(target, groups[1], 'execution.json')));
+  await assert.rejects(fs.access(path.join(target, 'atf-validation')));
+});
+
+test('the interrupted run cannot be resumed with changed source or release evidence', async t => {
+  const changedSources = [{...inputs[0], sha256: 'c'.repeat(64)}, inputs[1]];
+  for (const options of [{release: true, current: changedSources}, {release: 'changed'}]) {
+    const {previous, target} = await fixture(t, options);
+    await fs.rename(path.join(previous, runReceipt), path.join(previous, 'component-checkpoint.json'));
+    await assert.rejects(prepareComponentReuse(target, previous, groups, {resume: true}), /COMPONENT_RESUME_INPUTS_CHANGED/);
+    assert.deepEqual((await fs.readdir(target)).sort(), ['release-inputs.json', inputManifest]);
+  }
+});
+
+test('durable Maven preparation keeps compilation when classpath is interrupted and rejects changed classes', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'whist-component-preparation-'));
+  t.after(() => fs.rm(root, {recursive: true, force: true}));
+  const script = path.join(root, 'observe.ps1');
+  await fs.writeFile(script, [
+    'param($Work, $Mode)',
+    "$ErrorActionPreference='Stop'",
+    '. (Join-Path $env:ATF_TEST_SCRIPTS AtfQualificationSnapshot.ps1)',
+    '. (Join-Path $env:ATF_TEST_SCRIPTS AtfComponentResume.ps1)',
+    "$repo=Join-Path $Work 'maven-repository'",
+    "$classpath=Join-Path $Work 'component-classpath.txt'",
+    "if ($Mode -eq 'seal') {",
+    "  New-Item -ItemType Directory -Path $repo,(Join-Path $Work 'project/demo/target/classes') | Out-Null",
+    "  [IO.File]::WriteAllText((Join-Path $Work 'project/demo/target/classes/Probe.class'),'verified class')",
+    "  Write-AtfComponentJson (Join-Path $Work 'component-maven.json') @{schemaVersion=1;identity='fixture';repo='maven-repository';classpathSha256=$null;buildFingerprint=(Get-AtfComponentMavenFingerprint $Work $repo @('demo'))}",
+    "} elseif ($Mode -eq 'classpath') {",
+    "  [IO.File]::WriteAllText($classpath,'classpath fixture')",
+    "  $receipt=Get-Content (Join-Path $Work 'component-maven.json') -Raw | ConvertFrom-Json",
+    "  $receipt.classpathSha256=(Get-FileHash -LiteralPath $classpath).Hash",
+    "  Write-AtfComponentJson (Join-Path $Work 'component-maven.json') $receipt",
+    '} else {',
+    "  $previous=Read-AtfPreparedComponentMaven $Work 'fixture' @('demo')",
+    "  if (!$previous) { 'RECOMPILE' } elseif ($previous.classpathReady) { 'REUSE_ALL' } else { 'REBUILD_CLASSPATH' }",
+    '}'
+  ].join('\n'));
+  const run = mode => execFileSync('pwsh', ['-NoProfile', '-NonInteractive', '-File', script, root, mode], {
+    encoding: 'utf8', timeout: 20000, env: {...process.env, ATF_TEST_SCRIPTS: path.resolve(import.meta.dirname, '../../scripts')}
+  }).trim();
+  run('seal');
+  assert.equal(run('resume'), 'REBUILD_CLASSPATH');
+  run('classpath');
+  assert.equal(run('resume'), 'REUSE_ALL');
+  await fs.writeFile(path.join(root, 'project/demo/target/classes/Probe.class'), 'modified class');
+  assert.equal(run('resume'), 'RECOMPILE');
 });

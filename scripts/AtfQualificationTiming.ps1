@@ -42,3 +42,19 @@ function Write-AtfQualificationDecision($Timing,[string]$Stage,[ValidateSet('REU
     $now = [DateTimeOffset]::UtcNow
     Add-AtfQualificationTiming $Timing $Stage $now $now 0 $Status $Reason
 }
+
+function Open-AtfQualificationWorkspace([string]$Work) {
+    $entry = Get-Item -LiteralPath $Work -Force
+    if (!$entry.PSIsContainer -or ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw "QUALIFICATION_WORKSPACE_INDIRECT: $Work"
+    }
+    $lock = Join-Path $Work 'qualification.lock'
+    if ((Test-Path -LiteralPath $lock) -and ((Get-Item -LiteralPath $lock -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw "QUALIFICATION_WORKSPACE_INDIRECT: $lock"
+    }
+    try {
+        [IO.File]::Open($lock, 'OpenOrCreate', 'ReadWrite', 'None')
+    } catch [IO.IOException] {
+        throw "QUALIFICATION_WORKSPACE_BUSY: $Work"
+    }
+}

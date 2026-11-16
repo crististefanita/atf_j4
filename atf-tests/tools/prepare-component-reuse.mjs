@@ -15,15 +15,23 @@ const reusePlan = 'component-reuse.json';
 const groupPattern = /^[a-z0-9][a-z0-9-]{0,79}$/;
 const shaPattern = /^[0-9a-f]{64}$/;
 
-export async function prepareComponentReuse(runRoot, previousRoot, groups) {
+export async function prepareComponentReuse(runRoot, previousRoot, groups, {resume = false} = {}) {
   if (!groups.length || new Set(groups).size !== groups.length || groups.some(group => !groupPattern.test(group))) {
     throw Error('INVALID_COMPONENT_GROUPS');
   }
   const target = await fs.realpath(runRoot);
   const previous = await fs.realpath(previousRoot);
   if (target === previous) throw Error('REUSE_SOURCE_EQUALS_DESTINATION');
-  const current = componentInputMap((await strictJson(await regularFile(target, inputManifest))).value);
+  const currentInputs = await strictJson(await regularFile(target, inputManifest));
+  const current = componentInputMap(currentInputs.value);
   const currentRelease = await readReleaseInputs(target, '');
+  if (resume) {
+    const previousInputs = await strictJson(await regularFile(previous, inputManifest));
+    const previousRelease = await readReleaseInputs(previous, '');
+    if (previousInputs.sha256 !== currentInputs.sha256 || !currentRelease || previousRelease?.sha256 !== currentRelease.sha256) {
+      throw Error('COMPONENT_RESUME_INPUTS_CHANGED');
+    }
+  }
   const previousPlan = await readPreviousPlan(previous);
   const origins = new Map();
   const published = new Set();
@@ -34,7 +42,7 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups) {
       const previousOrigin = previousPlan.get(group);
       if (!origins.has(previousOrigin)) {
         // Cache the promise too so an invalid origin is read only once.
-        origins.set(previousOrigin, readOrigin(previous, previousOrigin));
+        origins.set(previousOrigin, readOrigin(previous, previousOrigin, resume));
       }
       const origin = await origins.get(previousOrigin);
       if (group === 'atf-tests' && currentRelease?.sha256 !== origin.releaseInputs?.sha256) {
@@ -74,7 +82,10 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups) {
     decisions.push({...decision, componentEvidenceOrigin: id, tests: execution.value.tests,
       reportSha256: execution.value.reportSha256, executionSha256: execution.sha256});
   }
-  await fs.writeFile(path.join(target, reusePlan), JSON.stringify({schemaVersion: 1, decisions}, null, 2) + '\n', {flag: 'wx'});
+  const planFile = path.join(target, reusePlan);
+  const pending = planFile + '.writing';
+  await fs.writeFile(pending, JSON.stringify({schemaVersion: 1, decisions}, null, 2) + '\n', {flag: 'wx'});
+  await fs.rename(pending, planFile);
   return decisions;
 }
 
@@ -97,9 +108,15 @@ async function readPreviousPlan(root) {
   return origins;
 }
 
-async function readOrigin(root, id) {
+async function readOrigin(root, id, resume) {
   const prefix = id === undefined ? '' : 'snapshots/' + id + '/';
-  const files = await Promise.all(originFiles.map(async name => strictJson(await regularFile(root, prefix + name))));
+  const files = await Promise.all(originFiles.map(async name => {
+    try { return await strictJson(await regularFile(root, prefix + name)); }
+    catch (error) {
+      if (!resume || id !== undefined || name !== runReceipt || error.code !== 'ENOENT') throw error;
+      return strictJson(await regularFile(root, 'component-checkpoint.json'));
+    }
+  }));
   const [inputs, provenance, run] = files;
   if (id !== undefined && id !== provenance.sha256) throw Error('INVALID_PREVIOUS_ORIGIN_HASH');
   const origin = verifyComponentOrigin(inputs, run.value, provenance);
@@ -118,7 +135,9 @@ async function readReleaseInputs(root, prefix) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const [runRoot, previousRoot, ...groups] = process.argv.slice(2);
-    await prepareComponentReuse(runRoot, previousRoot, groups);
+    const resume = groups[0] === '--resume';
+    if (resume) groups.shift();
+    await prepareComponentReuse(runRoot, previousRoot, groups, {resume});
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

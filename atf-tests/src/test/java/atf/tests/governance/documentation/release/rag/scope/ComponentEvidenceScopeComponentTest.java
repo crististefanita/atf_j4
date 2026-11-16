@@ -26,6 +26,16 @@ class ComponentEvidenceScopeComponentTest {
                 "The Extent component group must include the executable RAG selection contract");
     }
 
+    @Test void componentResumeImportsOnlyVerifiedEvidenceFromTheInterruptedSnapshot() throws Exception {
+        String output = runContracts(PUBLICATION_TIMEOUT, "prepare-component-reuse.test.mjs");
+        AuditedAssertions.assertTrue(output.contains("after interruption only the completed successful suites are imported"),
+                "A partial run may contribute only complete passing suites.");
+        AuditedAssertions.assertTrue(output.contains("the interrupted run cannot be resumed with changed source or release evidence"),
+                "A changed snapshot invalidates resumption.");
+        AuditedAssertions.assertTrue(output.contains("durable Maven preparation keeps compilation when classpath is interrupted and rejects changed classes"),
+                "Maven preparation resumes from the verified compilation boundary.");
+    }
+
     @Test void githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation() throws Exception {
         String output = runContracts(PUBLICATION_TIMEOUT, "publish-github-release.test.mjs");
         AuditedAssertions.assertTrue(output.contains("lost create response recovers from authenticated pages"),

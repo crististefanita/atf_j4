@@ -45,7 +45,7 @@ public final class AutoGameReleaseScenario {
                         c.ui.hasText(xml, labels.handComplete())),
                 ReleaseBidContext.equal("The score screen has no stale actor badge", 0L,
                         badgeCount(xml, labels.playBadge()) + badgeCount(xml, labels.bidBadge()))));
-        c.ui.revealText(labels.next());
+        c.revealPostHandAction(labels.next());
         c.checkpoint("The score page exposes the continuation action after scrolling when needed", xml -> List.of(
                 ReleaseBidContext.equal("The Next hand button is visible and enabled", true,
                         HierarchyDocument.nodes(xml).stream()

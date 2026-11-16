@@ -13,7 +13,7 @@ function Get-AtfAndroidClasses([string]$Stage) {
     foreach ($scope in @('classes','test-classes')) {
         $folder = Join-Path $module "target/$scope"
         if (-not (Test-Path -LiteralPath $folder -PathType Container)) { throw "ANDROID_CLASSES_MISSING: $scope" }
-        $files = @(Get-ChildItem -LiteralPath $folder -Filter '*.class' -Recurse -File)
+        $files = @(Get-ChildItem -LiteralPath $folder -Recurse -File)
         if (-not $files.Count) { throw "ANDROID_CLASSES_MISSING: $scope" }
         foreach ($file in $files) {
             $relative = [IO.Path]::GetRelativePath($module,$file.FullName).Replace('\','/')

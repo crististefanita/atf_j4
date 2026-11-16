@@ -155,6 +155,10 @@ public final class ReleaseBidContext {
         throw new IllegalStateException("UI did not show text '" + expected + "' within " + timeout);
     }
 
+    public void revealPostHandAction(String expected) throws Exception {
+        ui.revealText(expected, this::dismissAchievementNoticeIfPresent);
+    }
+
     public boolean dismissAchievementNoticeIfPresent(String xml) throws Exception {
         Set<String> visibleText = HierarchyDocument.nodes(xml).stream()
                 .map(HierarchyDocument.Node::text).collect(Collectors.toSet());

@@ -301,7 +301,16 @@ public final class AndroidUiDriver {
     }
 
     public void revealText(String expected) throws Exception {
-        reveal(node -> node.text().equals(expected), expected);
+        revealText(expected, xml -> false);
+    }
+
+    @FunctionalInterface
+    public interface ViewInterruption {
+        boolean dismiss(String xml) throws Exception;
+    }
+
+    public void revealText(String expected, ViewInterruption interruption) throws Exception {
+        reveal(node -> node.text().equals(expected), expected, interruption);
     }
 
     public void revealDescriptionWithHeight(String prefix, int minimumHeight) throws Exception {
@@ -314,8 +323,18 @@ public final class AndroidUiDriver {
     }
 
     private void reveal(java.util.function.Predicate<Node> target, String label) throws Exception {
+        reveal(target, label, xml -> false);
+    }
+
+    private void reveal(java.util.function.Predicate<Node> target, String label, ViewInterruption interruption) throws Exception {
+        boolean recovered = false;
         for (int attempt = 0; attempt <= 8; attempt++) {
-            var current = nodes(dump());
+            String xml = dump();
+            if (!recovered && interruption.dismiss(xml)) {
+                recovered = true;
+                xml = dump();
+            }
+            var current = nodes(xml);
             if (current.stream().anyMatch(target)) return;
             if (attempt == 8) break;
             Bounds viewport = verticalScrollBounds(current);

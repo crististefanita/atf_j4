@@ -111,5 +111,5 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 
 ## Stabilitatea scenariilor Android
 
-- [ ] Licitația poate primi o notificare de realizări între afișarea scorului și căutarea butonului pentru mâna următoare. Tratează notificarea și după tranziție și păstrează verificarea licitației restaurate. Reproduce ordinea ambelor evenimente într-un test de componentă al driverului.
+- [ ] Calificați pe dispozitiv notificarea de realizări care apare după trecerea la scor. La nivel de componentă, ordinea observațiilor și gesturilor este verificată cu ADB simulat.
 - [ ] Procesul de pregătire trebuie să confirme fereastra activă a profilului temporar. Un serviciu din acel profil a deschis ecranul Android cu detalii despre o aplicație în timpul istoricului. Izolează procesele terțe în profilul temporar și păstrează cauza exactă în raport.

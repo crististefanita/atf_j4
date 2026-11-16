@@ -10,7 +10,8 @@ const ragPolicy = 'config/release-platform-rag-policy.json';
 const disposableAndroidUserRunner = 'scripts/Invoke-AtfAndroidDisposableUser.ps1';
 const androidDeviceHarness = new Set([
   disposableAndroidUserRunner, 'scripts/run-complete-match.ps1', 'scripts/run-deep-tests.ps1',
-  'scripts/run-whist-ai-validation.ps1', 'scripts/run-whist-responsive-sanity.ps1'
+  'scripts/run-whist-ai-validation.ps1', 'scripts/run-whist-responsive-sanity.ps1',
+  'scripts/run-whist-signed-e2e.ps1', 'scripts/AtfAndroidMaven.ps1'
 ]);
 const standaloneGovernanceLaunchers = new Set([
   'scripts/AtfStandaloneJava.ps1',
