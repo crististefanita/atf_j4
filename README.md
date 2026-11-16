@@ -55,16 +55,12 @@ flowchart LR
     atf_card_table_ui[UI comun Android]
     ios[Aplicație iOS]
     ios_bridge[Punte iOS]
-    browser[Interfață browser]
-    worker[Web Worker]
     game_core[Motor Java]
     card_table_names[Politica numelor]
     app -->|folosește| atf_card_table_ui
     app -->|folosește| game_core
     ios -->|folosește| ios_bridge
     ios_bridge -->|expune| game_core
-    browser -->|apelează| worker
-    game_core -->|alimentează| worker
     game_core -->|folosește| card_table_names
 ```
 

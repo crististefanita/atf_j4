@@ -7,6 +7,30 @@ Acest registru păstrează controalele tehnice verificate, cu baza Git și căil
 ## Controale verificate
 
 <details>
+<summary>Guvernanța adresei de joc pe GitHub Pages</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-PAGES-DOCUMENTATION
+    status: VERIFIED
+    base: 671a35e0b205069168779a8c6901adb939eab29c
+    expires: 2026-12-16
+    reason: Adresa Pages proprie este o destinație de publicare, iar identificatorii proiectelor străine rămân sub control editorial. Sursele adaptorului intră în inventarul JVM.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.DocumentationPolicyGovernanceTest#ownPagesDestinationIsPublicationData
+      negative:
+        - atf.tests.governance.documentation.DocumentationPolicyGovernanceTest#externalAndNonCanonicalPagesDestinationsRemainSubjectToProseRules
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - config/atf-governance-policy.json
+```
+
+</details>
+
+<details>
 <summary>Control verificat: acceptanța nativă a acțiunilor și a istoricului</summary>
 
 ```yaml

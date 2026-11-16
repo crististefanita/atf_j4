@@ -20,13 +20,18 @@ import static atf.tests.documentation.policy.DocumentationContentPolicy.publicRe
 
 @AtfComponentTest
 class DocumentationPolicyGovernanceTest {
-    @Test void theOwnPagesDestinationIsPublicationDataAndExternalPagesStillCountAsProse() {
+    @Test void ownPagesDestinationIsPublicationData() {
         String repository = "https://github.com/owner/atf_j4";
         String pages = "https://owner.github.io/atf_j4/";
         AuditedAssertions.assertEquals("[Joacă](<resursă-publică>)",
                 publicReleaseProse("[Joacă](" + pages + ")", repository));
         AuditedAssertions.assertEquals("[atf_j4](<resursă-publică>)",
                 publicReleaseProse("[atf_j4](" + pages + ")", repository));
+    }
+
+    @Test void externalAndNonCanonicalPagesDestinationsRemainSubjectToProseRules() {
+        String repository = "https://github.com/owner/atf_j4";
+        String pages = "https://owner.github.io/atf_j4/";
         for (String url : List.of("https://other.github.io/atf_j4/", "https://owner.github.io/atf_j5/",
                 pages + "other", pages + "?preview=1")) {
             String source = "[Joacă](" + url + ")";
