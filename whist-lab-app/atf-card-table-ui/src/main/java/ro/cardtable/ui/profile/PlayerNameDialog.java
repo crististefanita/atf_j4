@@ -14,11 +14,15 @@ public final class PlayerNameDialog {
             String nameError, String storageError) { }
     public static AlertDialog show(Context context, Text copy, String current, int maximumLength,
             UnaryOperator<String> normalize, Consumer<String> save) {
-        NameEdit edit=new NameEdit(normalize,save);
+        return show(context, copy, current, new InputFilter.LengthFilter(maximumLength), normalize, save);
+    }
+    public static AlertDialog show(Context context, Text copy, String current, InputFilter lengthFilter,
+            UnaryOperator<String> normalize, Consumer<String> save) {
+        NameEdit edit = new NameEdit(normalize, save);
         EditText input = new EditText(context);
         input.setSingleLine(true);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maximumLength)});
+        input.setFilters(new InputFilter[]{lengthFilter});
         input.setText(current);
         input.setHint(copy.nameHint());
         input.setContentDescription(copy.playerSettings());

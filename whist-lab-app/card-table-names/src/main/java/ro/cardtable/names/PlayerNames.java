@@ -16,13 +16,26 @@ public final class PlayerNames {
     private PlayerNames() { }
 
     public static String normalize(String value) {
-        if (value == null) throw new IllegalArgumentException("Name is required");
-        String name = Normalizer.normalize(value.trim(), Normalizer.Form.NFC);
-        if (name.isEmpty() || name.codePointCount(0, name.length()) > MAX_LENGTH
+        String name = canonicalForm(value);
+        if (name.isEmpty() || codePointLength(name) > MAX_LENGTH
                 || name.codePoints().anyMatch(c -> !Character.isLetterOrDigit(c) && c != ' ' && c != '-' && c != '\'')) {
             throw new IllegalArgumentException("Use 1–10 letters, digits, spaces, apostrophes or hyphens");
         }
         return name;
+    }
+
+    /** Measures a draft using the same canonical form as a saved name. */
+    public static int normalizedLength(String value) {
+        return codePointLength(canonicalForm(value));
+    }
+
+    private static String canonicalForm(String value) {
+        if (value == null) throw new IllegalArgumentException("Name is required");
+        return Normalizer.normalize(value.trim(), Normalizer.Form.NFC);
+    }
+
+    private static int codePointLength(String name) {
+        return name.codePointCount(0, name.length());
     }
 
     public static List<String> forMatch(int seats, String humanName, long seed) {

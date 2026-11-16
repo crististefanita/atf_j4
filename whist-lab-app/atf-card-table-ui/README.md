@@ -16,7 +16,7 @@
 |---|---|
 | [screens](src/main/java/ro/cardtable/ui/screens/ScreenViews.java) | Aceiași constructori de pagini, texte, butoane și selectori; eticheta selectorului și protecția ferestrei sunt porturi furnizate de aplicație. |
 | [menu](src/main/java/ro/cardtable/ui/menu/HomeMenuContent.java) | Ordine, etichete, tag-uri, stare de reluare și callback-uri; dropdown-ul păstrează cele două limbi și înregistrarea amânată a listenerului. |
-| [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | Dialogul și ruta salvare/resetare; normalizarea, persistența și excepția originală aparțin consumatorului. |
+| [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | Dialogul acceptă filtrul de intrare al jocului. Normalizarea, persistența și excepția originală aparțin consumatorului. |
 | [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Însemne, proporții și marcaj crem-auriu. Jocul furnizează cartea vizibilă și decide când se marchează. |
 | [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometrie, centrare/derulare și rendererul `HandFan`; `HandCard` furnizează numai identitate, însemne, accesibilitate și interactivitate. |
 | [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; etichetele se măsoară la lățimea locului, iar cadrul primește aceeași rezervare între faze. |
@@ -47,7 +47,7 @@ Proiecțiile nu calculează reguli. Aplicația validează comanda, păstrează p
 
 - Aplicația consumă modulul prin `implementation project(':atf-card-table-ui')`.
 - `WhistMenuContent` proiectează textul real; `MenuScreens` păstrează navigarea, configurarea și instrucțiunile jocului.
-- `PlayerSettingsDialog` păstrează `PlayerNames` și callback-ul de salvare; dialogul comun nu mută preferințele sau partida.
+- `PlayerSettingsDialog` furnizează măsurarea Whist a lungimii după NFC și callback-ul de salvare. Dialogul comun aplică filtrul asupra câmpului.
 - Fațadele existente pentru geometrie, temă și desen delegă implementării comune, păstrând tipurile folosite de aplicație și testele sale. `WhistCardFace` proiectează cartea domeniului înaintea desenului.
 
 Fațadele sunt adaptoare de compatibilitate, cu o singură implementare a algoritmului în bibliotecă. Eliminarea lor cere migrarea explicită a apelanților și păstrarea inventarului de teste.
@@ -63,7 +63,7 @@ Din copia temporară a rădăcinii Android `whist-lab-app`, cu PowerShell 7, JDK
 | Selecție | Așteptare independentă |
 |---|---|
 | Meniul comun | Ordine și tag-uri fixe, RO/EN, nume implicit/configurat, reluare dezactivată și callback-uri distincte. |
-| Editarea numelui | Ordinea validare/salvare, identitatea erorii, refuz fără scriere și resetare fără validarea numelui gol. |
+| Editarea numelui | Intervalul propus, păstrarea selecției la refuz, ștergerea, ordinea validare/salvare și cauza eșecului. |
 | Geometria mesei și a mâinii | 3–6 locuri, profiluri între 320 și 600 dp, font 1–2×, o carte centrată și indici măsurați. |
 | Marcajul cărților | Aceeași paletă pentru evidențiere în poziție și ridicare la dezvăluire. Densitatea fracționară păstrează conturul în fâșia vizibilă a cărții. |
 | Realizări | Ordine și identități stabile, încărcarea detaliilor la cerere, stări ambigue respinse. |

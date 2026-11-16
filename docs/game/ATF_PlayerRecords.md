@@ -26,7 +26,8 @@ Numai faza de scor a ultimei mâini poate alimenta topul. Identitatea unică a p
 
 | Mecanism | Contract |
 |---|---|
-| Numele omului | Disponibil din meniul inițial și meniul partidei; 1–10 caractere vizibile acceptate de [PlayerNames](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/player/PlayerNames.java). |
+| Numele omului | Disponibil din meniul inițial și meniul partidei; 1–10 puncte de cod după eliminarea spațiilor marginale și normalizarea NFC, conform [PlayerNames](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/player/PlayerNames.java). |
+| Editarea Unicode | Tastarea și lipirea măsoară întregul nume propus după aceeași normalizare. O editare peste limită păstrează textul anterior, inclusiv selecția înlocuită. Ștergerea rămâne disponibilă. |
 | Salvarea | Profilul validează numele față de locurile active. Actualizează sesiunea și solicită salvarea partidei după confirmarea scrierii profilului. |
 | Anularea | Închiderea dialogului încheie editarea. Un callback al editării închise nu scrie profilul și nu modifică partida. |
 | Resetarea | Reface eticheta implicită localizată; scorurile, cărțile și istoricul curent rămân păstrate. |

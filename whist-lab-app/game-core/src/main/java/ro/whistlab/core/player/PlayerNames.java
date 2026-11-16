@@ -12,6 +12,10 @@ public final class PlayerNames {
         return ro.cardtable.names.PlayerNames.normalize(value);
     }
 
+    public static int normalizedLength(String value) {
+        return ro.cardtable.names.PlayerNames.normalizedLength(value);
+    }
+
     public static List<String> forMatch(int seats, String humanName, long seed) {
         return ro.cardtable.names.PlayerNames.forMatch(seats, humanName, seed);
     }

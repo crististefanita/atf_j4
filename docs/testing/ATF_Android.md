@@ -64,6 +64,7 @@ vizuală și obiectivul partidei rămân verdicte distincte.
 |---|---|
 | Profil local izolat | Deschiderea dialogului, salvarea prin controlul Android și numele afișat după relansare. Scenariul de înregistrări păstrează resetarea nativă și numele adversarilor. |
 | Profil de componentă | Anulare și callback întârziat, nume incompatibil cu masa, scriere refuzată, reîncercare, resetare și reîncărcare din stocare simulată. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerProfileEditComponentTest.java) |
+| Intrare Unicode de componentă | Tastare și lipire a 10 și 11 litere non-BMP, text selectat și formă NFC. Mock-ul reproduce intervalele Android; proba pe APK verifică focusul și selecția în tastatura sistemului. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerNameInputComponentTest.java) |
 | Istoric complet pregătit de motorul JVM | Primul și ultimul rând, toate coloanele, licitații și punctaje, derulare în RO/EN. |
 | Tură pregătită la fiecare loc al mesei | Eticheta integrală deasupra jucătorului corect, licitare și joc, text mărit și controale umane inactive cât licitează AI. |
 | Contoare de serie la limita celor cinci mâini | Selectare ±5/±10 în meniu, închidere prin cărți jucate în Android și relansare fără plată repetată. |
