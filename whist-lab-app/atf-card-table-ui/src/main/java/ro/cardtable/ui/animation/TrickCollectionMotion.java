@@ -1,5 +1,8 @@
 package ro.cardtable.ui.animation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Pure timing and pixel translation; all faces converge on the measured winning seat. */
 public final class TrickCollectionMotion {
     public static final long DISPLAY_MILLIS = 1_500;
@@ -11,6 +14,7 @@ public final class TrickCollectionMotion {
         }
     }
     public record Frame(float translationX, float translationY, float scale, float alpha) { }
+    public record Sample(float offset, float travel, float scale, float alpha) { }
     public record Timing(long delayMillis, long durationMillis, float startFraction) { }
 
     private TrickCollectionMotion() { }
@@ -32,12 +36,24 @@ public final class TrickCollectionMotion {
     }
 
     public static Frame frame(Point source, Point target, float fraction) {
+        var sample = sample(fraction);
+        if (sample.offset() == 0f) return new Frame(0, 0, 1, 1);
+        return new Frame((target.x() - source.x()) * sample.travel(),
+                (target.y() - source.y()) * sample.travel(), sample.scale(), sample.alpha());
+    }
+
+    public static List<Sample> keyframes() {
+        List<Sample> samples = new ArrayList<>(11);
+        for (int step = 0; step <= 10; step++) samples.add(sample(step / 10f));
+        return List.copyOf(samples);
+    }
+
+    private static Sample sample(float fraction) {
         if (!Float.isFinite(fraction)) throw new IllegalArgumentException("Invalid animation fraction");
         float progress = Math.max(0, Math.min(1, fraction));
-        if (progress == 0) return new Frame(0, 0, 1, 1);
+        if (progress == 0) return new Sample(0, 0, 1, 1);
         float ease = 1 - (1 - progress) * (1 - progress) * (1 - progress);
         float alpha = progress < .8f ? 1 : Math.max(0, (1 - progress) / .2f);
-        return new Frame((target.x() - source.x()) * ease, (target.y() - source.y()) * ease,
-                1 - .82f * ease, alpha);
+        return new Sample(progress, ease, 1 - .82f * ease, alpha);
     }
 }

@@ -39,7 +39,6 @@ $sources = @(
         Join-Path $app "$metric.java"
     }
     $animation = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation'
-    Join-Path $animation 'TrickCollectionMotion.java'
     Join-Path $animation 'CollectionTarget.java'
     Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/turn/TurnPacing.java'
     $achievements = Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/achievements'

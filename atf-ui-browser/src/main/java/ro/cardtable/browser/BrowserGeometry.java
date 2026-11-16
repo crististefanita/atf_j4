@@ -23,17 +23,20 @@ final class BrowserGeometry {
         int cards = number(inputs, "cards", 0, 17);
         int handWidth = number(inputs, "handWidth", 1, 1200);
         var policy = new TableViewportPolicy(viewport);
-        int gap = policy.regionGapDp();
+        int bidOptions = inputs.containsKey("bidOptions") ? number(inputs, "bidOptions", 0, 18) : 0;
         TableGeometry.Plan board = null;
         PlayedCardMetrics.Layout played = null;
         if (players >= 3 && width >= 240) {
-            var profile = game.boardProfile(inputs.getOrDefault("mode", "ROMANIAN_WHIST"), players, width, policy);
-            int center = profile.centerHeight();
+            var profile = game.boardProfile(inputs.getOrDefault("mode", "ROMANIAN_WHIST"), players, width, bidOptions, policy);
+            var center = profile.center();
             played = profile.playedCards();
-            height = Math.max(height, TableGeometry.minimumHeight(players, seatHeight, center, gap));
-            board = TableGeometry.arrangeDisplay(width, height, players,
-                    TableSizing.seatWidthDp(width, policy.isCompact()), seatHeight, width,
-                    center, gap, true, TableGeometry.CenterAlignment.BALANCED, profile.handClearance());
+            var spec = new TableGeometry.BoardSpec(players, TableSizing.seatWidthDp(width, policy.isCompact()),
+                    seatHeight, center, policy.regionGapDp(), policy.minimumBoardHeightDp(),
+                    profile.handClearance(), true);
+            height = Math.max(height, spec.requiredHeight(0));
+            var plan = spec.plan(width, height, 0);
+            int centerWidth = center.fullWidth() ? width : Math.min(width, center.width());
+            board = new TableGeometry.Plan(plan.seats(), spec.content(plan, centerWidth, center.reservedHeight()));
         }
         var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1,
                 HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP);

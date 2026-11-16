@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import ro.cardtable.ui.table.TableSeatLayout;
+import ro.cardtable.ui.table.TableGeometry;
 import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.PlayedCardMetrics;
 
@@ -12,8 +13,10 @@ public interface BrowserGame {
     String title();
     default String surface() { return "table"; }
     default List<Token> palette() { return List.of(); }
-    default BoardProfile boardProfile(String mode, int players, int width, TableViewportPolicy viewport) {
-        return new BoardProfile(188, 20, null);
+    default BoardProfile boardProfile(String mode, int players, int width, int bidOptions,
+            TableViewportPolicy viewport) {
+        var center = new TableGeometry.CenterSpec(width, 188, true, TableGeometry.CenterAlignment.BALANCED);
+        return new BoardProfile(center, 20, null);
     }
     List<Field> fields();
     Match start(Map<String, String> configuration);
@@ -79,7 +82,7 @@ public interface BrowserGame {
         }
     }
 
-    record BoardProfile(int centerHeight, int handClearance, PlayedCardMetrics.Layout playedCards) { }
+    record BoardProfile(TableGeometry.CenterSpec center, int handClearance, PlayedCardMetrics.Layout playedCards) { }
 
     record Header(String mode, String title, String progress, String bids, String trump, String trumpDescription,
                   float titleSize, float progressSize, float bidSize) { }

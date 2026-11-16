@@ -10,6 +10,15 @@ public final class TableLayoutMetrics {
                              TrickCardMetrics.Layout trickLayout) {
         int playingHeightDp() { return trickLayout.centerHeightDp(); }
         public ro.cardtable.ui.table.PlayedCardMetrics.Layout playedCards() { return trickLayout.shared(); }
+
+        public ro.cardtable.ui.table.TableGeometry.CenterSpec center(int tableWidthDp, float fontScale,
+                boolean bidding, int bidOptions) {
+            int width = bidding ? BidGridMetrics.actionLayout(bidOptions, tableWidthDp, fontScale, useBidStrip)
+                    .centerWidthDp() : trickLayout.safeCenterWidthDp();
+            var alignment = bidding ? ro.cardtable.ui.table.TableGeometry.CenterAlignment.TOWARD_HUMAN
+                    : ro.cardtable.ui.table.TableGeometry.CenterAlignment.BALANCED;
+            return new ro.cardtable.ui.table.TableGeometry.CenterSpec(width, reservedHeightDp, !bidding, alignment);
+        }
     }
     static final int TRUMP_WIDTH_DP = 57;
     static final int TRUMP_MIN_HEIGHT_DP = 48;

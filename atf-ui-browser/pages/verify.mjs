@@ -5,8 +5,13 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { until, withBrowser } from "../tests/fixtures.mjs";
 
-const [input, output, executable, selection] = process.argv.slice(2);
+const [input, output, browserOrSelection, option] = process.argv.slice(2);
+const executable = browserOrSelection?.startsWith("--") ? undefined : browserOrSelection;
+const selection = option ?? (executable ? undefined : browserOrSelection);
 if (!input || !output) throw new Error("Expected site and external evidence directories");
+if (selection && !["--ui-only", "--browser-only", "--contract-only"].includes(selection)) {
+  throw new Error("Unknown verification selection: " + selection);
+}
 const directory = resolve(input);
 await mkdir(output, { recursive: true });
 const checks = [];
@@ -83,7 +88,7 @@ if (!selection) await check("Pages · motorul compilat și profilul", "Partidă 
     catalogue: reopened.profile.catalogue.summary } };
 });
 
-if (selection !== "--browser-only") await check("Pages · geometrie și ordinea cărților", "Centre rezervate, ordine reală, întârziere nativă și levată completă", async () => {
+if (selection !== "--contract-only" && selection !== "--browser-only") await check("Pages · geometrie și ordinea cărților", "Centre rezervate, ordine reală, întârziere nativă și levată completă", async () => {
   const { initialize, command } = await import(pathToFileURL(join(directory, "whist-engine.mjs")));
   initialize(41, 28);
   function invoke(path, fields) {
@@ -125,7 +130,55 @@ if (selection !== "--browser-only") await check("Pages · geometrie și ordinea 
   return { observed: { reservations, seatOrder: steps.map(step => step.play.seat), delay: steps[0].delayMillis } };
 });
 
-if (executable) {
+if (!selection || selection === "--contract-only") await check(
+  "Contract comun · fazele mesei și cadrele de colectare",
+  "Aceleași ancore la licitare și joc. Browserul aplică mostrele Java pentru deplasare, scară și opacitate.",
+  async () => {
+    const { initialize, command } = await import(pathToFileURL(join(directory, "whist-engine.mjs")));
+    const { collectionFrame } = await import(pathToFileURL(join(directory, "collection.mjs")));
+    initialize(73, 11);
+    function read(path, values = {}) {
+      const fields = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, String(value)]));
+      const reply = JSON.parse(command("/api/" + path, JSON.stringify(fields), null, null));
+      assert.equal(reply.status, undefined, reply.error);
+      return reply.result;
+    }
+    const profiles = [];
+    for (const players of [3, 4, 5, 6]) {
+      const width = players === 3 ? 320 : 374;
+      const input = { width, height: 280, players, seatHeight: 65, viewport: players === 3 ? 680 : 896,
+        cards: players === 3 ? 17 : 8, handWidth: width, mode: players === 3 ? "DOWN_AND_UP" : "ROMANIAN_WHIST" };
+      const bidding = read("layout", { ...input, bidOptions: players === 3 ? 18 : 9 });
+      const playing = read("layout", { ...input, bidOptions: 0 });
+      assert.deepEqual(bidding.board.seats, playing.board.seats);
+      assert.deepEqual(bidding.played.slots, playing.played.slots);
+      assert.equal(bidding.boardHeight, playing.boardHeight);
+      assert.equal(playing.board.center.right, width);
+      assert.ok(bidding.board.center.right <= width);
+      assert.ok(bidding.board.center.left >= 0);
+      profiles.push({ players, board: playing.boardHeight,
+        bidWidth: bidding.board.center.right - bidding.board.center.left, playWidth: width });
+    }
+    assert.ok(profiles.some(profile => profile.bidWidth < profile.playWidth));
+    const { collectionSamples: samples } = read("setup");
+    assert.equal(samples.length, 11);
+    for (const [index, sample] of samples.entries()) {
+      assert.ok(Math.abs(sample.offset - index / 10) < 0.000001);
+      assert.ok(sample.travel >= (samples[index - 1]?.travel ?? 0));
+    }
+    const frames = samples.map(sample => collectionFrame(100, -60, sample));
+    assert.deepEqual(frames[0], { x: 0, y: -0, scale: 1, opacity: 1 });
+    assert.equal(frames[5].x, 87.5);
+    assert.equal(frames[5].y, -52.5);
+    assert.ok(Math.abs(frames[5].scale - 0.2825) < 0.000001);
+    assert.ok(Math.abs(frames[9].opacity - 0.5) < 0.000001);
+    assert.equal(frames[10].opacity, 0);
+    assert.equal(frames[10].x, 100);
+    assert.equal(frames[10].y, -60);
+    return { observed: { profiles, first: frames[0], middle: frames[5], last: frames[10] } };
+  });
+
+if (executable && selection !== "--contract-only") {
   await check("Pages · browser mobil la 414×896", "Joacă local din subdirector, închide pagina și recuperează profilul",
     () => phoneViewport(executable));
 }

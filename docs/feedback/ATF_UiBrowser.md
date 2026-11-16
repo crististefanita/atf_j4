@@ -13,6 +13,13 @@
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
 | Publicare online | Pentru Whist, verifică pe un telefon redeschiderea ediției Pages cu același profil. Pentru Rentz și Hold’em, califică pachetul fiecărui joc înainte de publicarea adresei sub APK. [Fluxul Pages](../../atf-ui-browser/README.md#whist-pe-github-pages) |
 
+## Licitare și AutoGame în web
+
+| ID | Schimbare | Probe de componentă |
+|---|---|---|
+| WEB-02 | Redă cifra și confirmarea licitației cu conturul fin și fața vizuală retrasă în ținta tactilă, ca în APK. Păstrează ținta de 48 de unități logice și distincția dintre recomandare și alegerea manuală. | Verifică dimensiunile feței și ale țintei la 360 × 800 și 414 × 896, text mărit, focus vizibil și derularea până la opțiunea selectată pentru o mână de 17 cărți. |
+| WEB-03 | Folosește o bifă selectabilă și deselectabilă pentru AutoGame. Debifarea oprește următoarea decizie automată și păstrează mutările confirmate. | Simulează debifarea înainte de mutare, în timpul unei cereri și în timpul colectării. Confirmă revenirea la control manual, reluarea fără comenzi dublate și resetarea bifei la scor sau la schimbarea mâinii. |
+
 ## Profilurile de referință
 
 Recomandarea pentru primul prototip desktop este un cadru portrait de **414 × 896 în unități logice**. Această dimensiune conduce eșantionul Statcounter de navigare mobilă din octombrie 2026, cu 12,67% la nivel global și 17,89% în Europa. Eșantionul măsoară afișări de pagini web, iar spațiul util al aplicației depinde de zonele sistemului. [Date globale](https://gs.statcounter.com/screen-resolution-stats/mobile/worldwide/#monthly-202610-202610-bar) · [Date europene](https://gs.statcounter.com/screen-resolution-stats/mobile/europe/#monthly-202610-202610-bar) · [Metodologie](https://gs.statcounter.com/faq)

@@ -1,5 +1,7 @@
 package ro.cardtable.browser;
 
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+
 import org.json.JSONObject;
 import org.teavm.jso.JSExport;
 import ro.whistlab.app.achievements.WhistAchievementRepository.Storage;
@@ -33,7 +35,8 @@ public final class WhistPage {
             long revision = input.optLong("revision", -1);
             Object result = switch (path) {
                 case "/api/setup" -> PageJson.fields("title", game.title(), "fields", game.fields(),
-                        "surface", game.surface(), "palette", game.palette());
+                        "surface", game.surface(), "palette", game.palette(),
+                        "collectionSamples", TrickCollectionMotion.keyframes());
                 case "/api/state" -> session.state();
                 case "/api/layout" -> BrowserGeometry.measure(game, parameters(input));
                 case "/api/start" -> session.start(game, revision, parameters(input));

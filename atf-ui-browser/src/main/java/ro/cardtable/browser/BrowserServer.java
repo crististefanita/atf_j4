@@ -1,5 +1,7 @@
 package ro.cardtable.browser;
 
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -100,7 +102,8 @@ public final class BrowserServer implements AutoCloseable {
         switch (path) {
             case "/api/setup" -> {
                 if (!requireMethod(http, method, "GET")) return;
-                json(http, 200, new Setup(game.title(), game.fields(), game.surface(), game.palette()));
+                json(http, 200, new Setup(game.title(), game.fields(), game.surface(), game.palette(),
+                        TrickCollectionMotion.keyframes()));
             }
             case "/api/state" -> {
                 if (!requireMethod(http, method, "GET")) return;
@@ -211,7 +214,8 @@ public final class BrowserServer implements AutoCloseable {
     }
 
     record Setup(String title, java.util.List<BrowserGame.Field> fields, String surface,
-                 java.util.List<BrowserGame.Token> palette) { }
+                 java.util.List<BrowserGame.Token> palette,
+                 java.util.List<TrickCollectionMotion.Sample> collectionSamples) { }
     record ErrorMessage(String error) { }
     record Asset(String file, String mime) { }
     private record Client(String tab, String profile) { }

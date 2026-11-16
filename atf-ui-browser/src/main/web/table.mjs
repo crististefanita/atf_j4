@@ -103,7 +103,7 @@ async function issue(path, fields) {
       await placeTable();
       for (const [index, cue] of result.collections.entries()) {
         stage.dataset.collectionStep = String(index + 1);
-        animation = collect(stage, cue, card);
+        animation = collect(stage, cue, card, setup.collectionSamples);
         await animation.done;
         animation = undefined;
       }
@@ -169,7 +169,7 @@ async function playCards(steps) {
       continue;
     }
     stage.dataset.collectionStep = String(++collectionNumber);
-    animation = collect(stage, step.collection, card);
+    animation = collect(stage, step.collection, card, setup.collectionSamples);
     await animation.done;
     animation = undefined;
     center.replaceChildren();
@@ -404,6 +404,7 @@ async function placeTable() {
     board.style.minHeight = "";
     const layout = await call("/api/layout", {
       width, height: board.clientHeight, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
+      bidOptions: stage.dataset.playingSteps ? 0 : board.querySelectorAll("[data-bid]").length,
       players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length
     });
     if (request !== measuring || !board.isConnected) return;

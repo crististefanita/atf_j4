@@ -15,6 +15,34 @@ public final class TableGeometry {
 
     public record Plan(List<Rect> seats, Rect center) { }
 
+    /** Phase dimensions before a renderer converts dp to its measured units. */
+    public record CenterSpec(int width, int reservedHeight, boolean fullWidth, CenterAlignment alignment) { }
+
+    /** A measured board shared by renderers. Every dimension uses the renderer's layout units. */
+    public record BoardSpec(int players, int seatWidth, int seatHeight, CenterSpec center,
+            int gap, int minimumHeight, int handClearance, boolean stableSeatAnchors) {
+        private int centerHeight(int measuredHeight) {
+            return Math.max(center.reservedHeight(), measuredHeight);
+        }
+
+        public int requiredHeight(int measuredCenterHeight) {
+            return Math.max(minimumHeight, TableGeometry.minimumHeight(players, seatHeight,
+                    centerHeight(measuredCenterHeight), gap));
+        }
+
+        public Plan plan(int width, int height, int measuredCenterHeight) {
+            return arrangeDisplay(width, height, players, seatWidth, seatHeight,
+                    center.width(), centerHeight(measuredCenterHeight), gap,
+                    stableSeatAnchors || center.fullWidth(), center.alignment(), handClearance);
+        }
+
+        public Rect content(Plan plan, int width, int height) {
+            int left = center.fullWidth() ? 0 : plan.center().left();
+            int top = plan.center().top() + (centerHeight(height) - height) / 2;
+            return new Rect(left, top, left + width, top + height);
+        }
+    }
+
     public record VerticalBand(int top, int bottom) {
         public int height() { return bottom - top; }
         public int centeredTop(int contentHeight) { return top + (height() - contentHeight) / 2; }

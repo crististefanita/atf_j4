@@ -184,20 +184,15 @@ public final class GameTablePanel extends LinearLayout {
         var reservation = TableLayoutMetrics.matchCenterReservation(state.mode(),
                 state.players().size(), tableWidthDp, fontScale, viewport);
         var trickLayout = reservation.trickLayout();
-        var bidLayout = bidding ? BidGridMetrics.actionLayout(bidOptions.size(), tableWidthDp,
-                fontScale, reservation.useBidStrip()) : null;
-        int centerWidthDp = bidding ? bidLayout.centerWidthDp()
-                : trickLayout.safeCenterWidthDp();
+        var centerSpec = reservation.center(tableWidthDp, fontScale, bidding, bidOptions.size());
         float density = getResources().getDisplayMetrics().density;
         int boardWidthDp = Math.round(dp(tableWidthDp) / density);
         int seatWidthPx = dp(TableLayoutMetrics.seatWidthDp(boardWidthDp, viewport.isCompact()));
         int stableBadgeHeightPx = PlayerSeatMetrics.stableBadgeHeightPx(
                 PlayerSeatView.measureActionHeightPx(context, copy.seatTurnBadge(true), seatWidthPx),
                 PlayerSeatView.measureActionHeightPx(context, copy.seatTurnBadge(false), seatWidthPx));
-        GameBoardLayout board = new GameBoardLayout(context, state.players().size(), centerWidthDp,
-                viewport, !bidding, reservation.reservedHeightDp(), TableLayoutMetrics.humanHandClearanceDp(),
-                bidding ? TableGeometry.CenterAlignment.TOWARD_HUMAN
-                        : TableGeometry.CenterAlignment.BALANCED);
+        GameBoardLayout board = new GameBoardLayout(context, state.players().size(), viewport, centerSpec,
+                TableLayoutMetrics.humanHandClearanceDp());
         board.setBackgroundColor(Color.TRANSPARENT);
         board.setContentDescription(copy.boardSurface());
         board.setTag("game-board");

@@ -31,6 +31,7 @@ $inputs = @(
     }
     Join-Path $ui 'hand/HandLayoutMetrics.java'
     Join-Path $ui 'cards/CardFaceMetrics.java'
+    Join-Path $ui 'animation/TrickCollectionMotion.java'
     Join-Path $checkout 'whist-lab-app/card-table-names/src/main/java'
 ) + $JavaInputs
 $sources = foreach ($inputPath in $inputs) {

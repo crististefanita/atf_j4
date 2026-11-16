@@ -1,5 +1,7 @@
 package ro.cardtable.browser;
 
+import ro.cardtable.ui.animation.TrickCollectionMotion;
+
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.table.TableGeometry;
 import ro.cardtable.ui.table.PlayedCardMetrics;
@@ -55,6 +57,8 @@ final class PageJson {
     }
 
     private static Map<String, Object> projection(Object value) {
+        if (value instanceof TrickCollectionMotion.Sample sample)
+            return fields("offset", sample.offset(), "travel", sample.travel(), "scale", sample.scale(), "alpha", sample.alpha());
         if (value instanceof BrowserSession.State state)
             return fields("revision", state.revision(), "view", state.view(), "profile", state.profile(),
                     "collections", state.collections(), "playback", state.playback());

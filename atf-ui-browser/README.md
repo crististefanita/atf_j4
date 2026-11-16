@@ -21,6 +21,9 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 | [Rezervarea mesei](../whist-lab-app/app/src/main/java/ro/whistlab/app/table/TableLayoutMetrics.java) | Măsoară fereastra și păstrează același centru rezervat pentru toate mâinile variantei. |
 | [Ritmul mutărilor](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Fiecare carte automată apare după întârzierea definită de APK. Adaptorul redă actorul, cartea și colectarea în ordinea produsă de motor. |
 
+[Contractul mesei](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TableGeometry.java) primește dimensiunile măsurate și rezervarea fazei. Android aplică dreptunghiurile în ViewGroup, iar web le aplică în DOM.
+[Curba de colectare](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) evaluează progresul pe Android și furnizează în web cadrele pe care browserul le interpolează.
+
 | Date | Retenție în ediția statică |
 |---|---|
 | Nume și realizări | Browserul scrie într-o singură înregistrare locală după o comandă acceptată. Redeschiderea adresei în același browser recuperează datele. |
@@ -35,7 +38,8 @@ $Site = .\atf-ui-browser\Build-WhistPages.ps1 -WorkRoot $WorkRoot
 node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot $Chrome
 ```
 
-Adăugați `--ui-only` pentru geometrie, ritmul mutărilor și parcursul vizual, când inventarul pachetului și partida completă au dovezi valabile.
+- Adăugați `--ui-only` pentru geometrie, ritmul mutărilor și parcursul vizual, când inventarul pachetului și partida completă au dovezi valabile.
+- Folosiți `--contract-only` pentru a verifica doar geometria pe faze și mostrele curbei din artefactul compilat. Pentru această selecție, omiteți executabilul browserului.
 
 Publicați conținutul directorului `$Site` la rădăcina ramurii `gh-pages`. Configurați GitHub Pages să publice acea ramură de la rădăcină. Verificați dintr-o sesiune anonimă pagina, resursele și pornirea unei mâini înainte de actualizarea linkului din README. [Publicarea dintr-o ramură](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 

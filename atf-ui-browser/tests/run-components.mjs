@@ -49,12 +49,11 @@ await audit("Componente comune · profil Unicode și animația levatei", () => {
   assert.equal(normalizedNameLength("S\u0326"), 1);
   assert.equal(normalizedNameLength("𐐀".repeat(10)), 10);
   assert.equal(normalizedNameLength("𐐀".repeat(11)), 11);
-  const half = collectionFrame(100, -60, .5);
+  const half = collectionFrame(100, -60, { travel: .875, scale: .2825, alpha: 1 });
   assert.equal(half.x, 87.5);
   assert.equal(half.y, -52.5);
   assert.ok(Math.abs(half.scale - .2825) < 1e-12);
-  assert.ok(Math.abs(collectionFrame(100, -60, .9).opacity - .5) < 1e-12);
-  assert.equal(collectionFrame(100, -60, 1).opacity, 0);
+  assert.equal(collectionFrame(100, -60, { travel: 1, scale: .18, alpha: 0 }).opacity, 0);
   return { expected: "Lungime NFC pe code point și convergență către câștigător", observed: { half, limit: 10 } };
 });
 

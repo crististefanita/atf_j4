@@ -1,15 +1,11 @@
-// Mirrors TrickCollectionMotion.frame. Coordinates are in the stage's unscaled logical pixels.
-export function collectionFrame(dx, dy, fraction) {
-  const value = Math.max(0, Math.min(1, fraction));
-  const ease = 1 - (1 - value) ** 3;
-  return { x: dx * ease, y: dy * ease, scale: 1 - .82 * ease,
-    opacity: value < .8 ? 1 : Math.max(0, (1 - value) / .2) };
+export function collectionFrame(dx, dy, sample) {
+  return { x: dx * sample.travel, y: dy * sample.travel, scale: sample.scale, opacity: sample.alpha };
 }
 
-export function collect(stage, cue, drawCard) {
+export function collect(stage, cue, drawCard, samples) {
   const seat = stage.querySelectorAll(".seat")[cue.winningSeat];
   const table = stage.querySelector(".cards-on-table");
-  if (!seat || !table || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (!seat || !table || !samples?.length || matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return { done: Promise.resolve(), cancel() {} };
   }
   const range = stage.getBoundingClientRect();
@@ -41,9 +37,9 @@ export function collect(stage, cue, drawCard) {
     face.style.left = left + "px";
     face.style.top = origin.y + "px";
     overlay.append(face);
-    const keyframes = [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1].map(offset => {
-      const frame = collectionFrame(target.x - left, target.y - origin.y, offset);
-      return { offset, opacity: frame.opacity,
+    const keyframes = samples.map(sample => {
+      const frame = collectionFrame(target.x - left, target.y - origin.y, sample);
+      return { offset: sample.offset, opacity: frame.opacity,
         transform: "translate(-50%, -50%) translate(" + frame.x + "px, " + frame.y + "px) scale(" + frame.scale + ")" };
     });
     return face.animate(keyframes, { delay: cue.displayMillis - cue.travelMillis, duration: cue.travelMillis, fill: "both" });

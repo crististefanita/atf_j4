@@ -56,9 +56,10 @@ public final class WhistBrowser implements BrowserGame {
     private static Token color(String name, int argb) {
         return new Token("--whist-" + name, "#" + Integer.toHexString(argb).substring(2));
     }
-    @Override public BoardProfile boardProfile(String mode, int players, int width, TableViewportPolicy viewport) {
+    @Override public BoardProfile boardProfile(String mode, int players, int width, int bidOptions,
+            TableViewportPolicy viewport) {
         var reservation = TableLayoutMetrics.matchCenterReservation(GameMode.valueOf(mode), players, width, 1f, viewport);
-        return new BoardProfile(reservation.reservedHeightDp(), TableLayoutMetrics.HUMAN_HAND_CLEARANCE_DP,
+        return new BoardProfile(reservation.center(width, 1f, bidOptions > 0, bidOptions), TableLayoutMetrics.HUMAN_HAND_CLEARANCE_DP,
                 reservation.playedCards());
     }
     @Override public boolean hasProfile() { return true; }
