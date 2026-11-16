@@ -50,7 +50,7 @@ class BrowserUi {
                         (page, images) -> responsiveHand(page, url)));
                 results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
                         "Rangul 10 în mâna de 17 cărți, la text 200%",
-                        "Ambele cifre rămân vizibile. Literele și simbolul culorii își păstrează fontul.",
+                        "Ambele cifre rămân vizibile. Rangurile 2–A au același font, iar fețele sunt cu 25% mai mici.",
                         (page, images) -> enlargedNumbers(page, url, wideCheckpoint, output, images)));
                 results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Atingere respinsă și AutoGame în Whist",
                         "Textul accesibil și marcajele duc la patru colectări și la scorul așteptat",
@@ -125,6 +125,9 @@ class BrowserUi {
         require(end.x >= holder.x - 1 && end.x + end.width <= holder.x + holder.width + 1,
                 "Last card cannot be shown in full");
         var biddingSeats = seats(page);
+        assertThat(page.locator(".seat.south")).hasAttribute("aria-current", "true");
+        assertThat(page.locator(".seat.south .seat-turn")).isHidden();
+        assertThat(button(page, "Licitează")).isVisible();
         button(page, "Licitează").press("Space");
         assertThat(page.locator("[data-bid]")).hasCount(0);
         page.locator("#table[aria-busy=false] .board[data-layout=ready]").waitFor();
@@ -150,11 +153,16 @@ class BrowserUi {
         var rank = ten.locator(".card-index:not(.inverted) .card-rank");
         var suit = ten.locator(".card-index:not(.inverted) span:last-child");
         assertThat(rank).hasText("10");
-        assertThat(rank).hasCSS("font-size", "40px");
+        assertThat(rank).hasCSS("font-size", "33px");
+        for (Locator card : cards.all()) {
+            assertThat(card).hasCSS("width", "47px");
+            assertThat(card).hasCSS("height", "66px");
+            assertThat(card.locator(".card-index:not(.inverted) .card-rank")).hasCSS("font-size", "33px");
+        }
         assertThat(suit).hasCSS("font-size", "13px");
         var letter = cards.and(page.locator("[data-face^='J'],[data-face^='Q'],[data-face^='K'],[data-face^='A']"))
                 .first().locator(".card-index:not(.inverted) .card-rank");
-        assertThat(letter).hasCSS("font-size", "13px");
+        assertThat(letter).hasCSS("font-size", "33px");
         rank.scrollIntoViewIfNeeded();
         var next = ten.locator("xpath=following-sibling::button[1]").boundingBox();
         var glyphs = rank.boundingBox();
@@ -170,7 +178,7 @@ class BrowserUi {
         require(last.x >= scrollport.x - 1 && last.x + last.width <= scrollport.x + scrollport.width + 1,
                 "The last card cannot be shown in full at 200%");
         return Map.of("viewport", List.of(360, 800), "textScale", 2, "cards", 17, "card", face,
-                "rankPixels", 40, "otherRankAndSuitPixels", 13,
+                "rankPixels", 33, "suitPixels", 13,
                 "rankWidth", glyphs.width, "clearanceToNextCard", next.x - glyphs.x - glyphs.width);
     }
 
@@ -205,7 +213,8 @@ class BrowserUi {
         assertThat(page.locator(".fan button")).hasCount(3);
         assertThat(collection.filter(new Locator.FilterOptions().setHasText("9♦")).locator(".card-rank"))
                 .hasCSS("font-size", "26px");
-        assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥"))).hasCSS("font-size", "13px");
+        assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥")).locator(".card-rank"))
+                .hasCSS("font-size", "26px");
         images.add(screenshot(page, output, "WEB-UI-AUTO-collection", "AutoGame după prima levată"));
         page.locator(".whist-score").waitFor(new Locator.WaitForOptions().setTimeout(45_000));
         var notice = page.locator("dialog.achievement-notice[open]");

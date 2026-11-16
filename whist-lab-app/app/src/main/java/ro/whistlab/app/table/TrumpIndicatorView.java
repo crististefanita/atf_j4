@@ -1,7 +1,7 @@
 package ro.whistlab.app.table;
 
 import ro.cardtable.ui.cards.CardFaceMetrics;
-import ro.cardtable.ui.cards.CardNumberText;
+import ro.cardtable.ui.cards.CardRankText;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.WhistUiPalette;
 
@@ -21,9 +21,9 @@ public final class TrumpIndicatorView extends LinearLayout {
     private final TextView heading;
     private final TextView value;
     private final String valueLabel;
-    private final boolean numbered;
-    private int measuredNumberWidth = -1;
-    private float measuredNumberSize;
+    private final boolean hasCardRank;
+    private int measuredRankWidth = -1;
+    private float measuredRankSize;
     private static final int IVORY = Color.rgb(255, 254, 248);
     private static final int HEART_RED = Color.rgb(255, 177, 177);
     private static final int DARK_SUIT_RED = Color.rgb(157, 45, 54);
@@ -56,7 +56,7 @@ public final class TrumpIndicatorView extends LinearLayout {
 
         value = new TextView(context);
         valueLabel = copy.trumpIndicatorValue(state);
-        numbered = state.turnedCard() != null && CardFaceMetrics.numberLength(valueLabel) != 0;
+        hasCardRank = state.turnedCard() != null && CardFaceMetrics.rankLength(valueLabel) != 0;
         value.setText(valueLabel);
         value.setTextSize(20);
         if (state.turnedCard() != null) {
@@ -64,7 +64,7 @@ public final class TrumpIndicatorView extends LinearLayout {
             card.setColor(IVORY);
             card.setCornerRadius(dp(density, 5));
             value.setBackground(card);
-            int horizontalPadding = dp(density, numbered ? 2 : 5);
+            int horizontalPadding = dp(density, hasCardRank ? 2 : 5);
             value.setPadding(horizontalPadding, 0, horizontalPadding, 0);
         }
         value.setTextColor(valueColor(state, currentPlayerHighlighted));
@@ -81,7 +81,7 @@ public final class TrumpIndicatorView extends LinearLayout {
         var metrics = getResources().getDisplayMetrics();
         int width = resolveSize(dp(metrics.density, TableLayoutMetrics.TRUMP_WIDTH_DP), widthSpec);
         int headingHeight = fitLine(heading, 9 * metrics.scaledDensity, width);
-        int valueHeight = numbered ? fitNumber(width, metrics.density, 20 * metrics.scaledDensity)
+        int valueHeight = hasCardRank ? fitRank(width, metrics.density, 20 * metrics.scaledDensity)
                 : fitLine(value, 20 * metrics.scaledDensity, width);
         int height = resolveSize(TableLayoutMetrics.trumpHeightPx(metrics.density,
                 headingHeight, valueHeight), heightSpec);
@@ -89,14 +89,15 @@ public final class TrumpIndicatorView extends LinearLayout {
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
     }
 
-    private int fitNumber(int width, float density, float nominalSize) {
-        int contentWidth = width - getPaddingLeft() - getPaddingRight();
-        if (measuredNumberWidth != contentWidth || measuredNumberSize != nominalSize) {
+    private int fitRank(int width, float density, float nominalSize) {
+        int contentWidth = CardFaceMetrics.compactDimension(Math.max(1, width - getPaddingLeft() - getPaddingRight()));
+        if (measuredRankWidth != contentWidth || measuredRankSize != nominalSize) {
             value.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, nominalSize);
             int available = contentWidth - value.getPaddingLeft() - value.getPaddingRight();
-            CardNumberText.stack(value, valueLabel, available, dp(density, 72), dp(density, 20));
-            measuredNumberWidth = contentWidth;
-            measuredNumberSize = nominalSize;
+            CardRankText.stack(value, valueLabel, available, dp(density, CardFaceMetrics.compactDimension(72)), dp(density, 13));
+            value.getLayoutParams().width = contentWidth;
+            measuredRankWidth = contentWidth;
+            measuredRankSize = nominalSize;
         }
         int widthSpec = MeasureSpec.makeMeasureSpec(Math.max(1, contentWidth), MeasureSpec.AT_MOST);
         value.measure(widthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));

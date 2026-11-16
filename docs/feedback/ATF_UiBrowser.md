@@ -18,7 +18,7 @@
 | ID | Schimbare | Criteriu de acceptare |
 |---|---|---|
 | WEB-07 | Califică aceeași partidă în Chrome și în APK pe același telefon, cu aceleași date de intrare. | Confruntă setările, Joacă din nou, istoricul cu ajustări și reluarea după închiderea aplicației. Capturează RO/EN la aceeași dimensiune utilă și scară de text pe Android. |
-| WEB-11 | Califică vizual pe Android mărirea cifrelor 2–10. | Capturează APK-ul la 360 × 800 și 414 × 896 cu text mărit. Verifică dacă `10` rămâne complet vizibil în evantai, pe masă și în zona de atu. Compară cu proba Playwright din [verificarea adaptorului](../../atf-ui-browser/README.md#verificare). |
+| WEB-11 | Califică vizual pe Android dimensiunea comună 2–A a rangurilor și a fețelor micșorate cu 25%. | Capturează APK-ul la 360 × 800 și 414 × 896 cu text mărit. Verifică dacă `10` rămâne complet vizibil și dacă licitarea manuală are un singur îndemn vizual. Compară cu proba Playwright din [verificarea adaptorului](../../atf-ui-browser/README.md#verificare). |
 
 ## Profilurile de referință
 

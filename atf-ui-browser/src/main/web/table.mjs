@@ -411,10 +411,6 @@ function whistSettings(form, fields) {
   return read;
 }
 
-function numericRank(rank) {
-  return /^(?:[2-9]|10)$/.test(rank);
-}
-
 function card(face, interactive = false, acceptsFeedback = false) {
   const node = element(interactive ? "button" : "span", "", "card");
   if (interactive) {
@@ -426,7 +422,6 @@ function card(face, interactive = false, acceptsFeedback = false) {
   node.classList.toggle("red", face.suit === "♥" || face.suit === "♦");
   node.setAttribute("aria-label", face.label);
   node.dataset.face = face.rank + face.suit;
-  node.toggleAttribute("data-number", numericRank(face.rank));
   if (interactive && face.action) node.classList.add("legal-card");
   const index = () => {
     const corner = element("span", "", "card-index");
@@ -440,12 +435,8 @@ function card(face, interactive = false, acceptsFeedback = false) {
 }
 
 function compactFace(play) {
-  const face = element("span", play.faceLabel, "card compact-play-face");
-  if (numericRank(play.card.rank)) {
-    face.dataset.number = "";
-    face.replaceChildren(element("span", play.card.rank, "card-rank"),
-      element("span", play.card.suit, "compact-suit"));
-  }
+  const face = element("span", "", "card compact-play-face");
+  face.append(element("span", play.card.rank, "card-rank"), element("span", play.card.suit, "compact-suit"));
   face.classList.toggle("red", play.card.suit === "♥" || play.card.suit === "♦");
   face.setAttribute("aria-hidden", "true");
   return face;
@@ -476,8 +467,9 @@ function placePlayed(cards) {
     const face = tile.querySelector(".card");
     tile.style.left = slot.leftDp + "px";
     tile.style.top = (slot.row * playedLayout.rowStrideDp + playedLayout.verticalPaddingDp) + "px";
-    face.style.width = face.style.minWidth = playedLayout.cardWidthDp + "px";
-    face.style.height = playedLayout.cardHeightDp + "px";
+    face.style.width = face.style.minWidth = playedLayout.faceWidth + "px";
+    face.style.height = playedLayout.faceHeight + "px";
+    face.style.setProperty("--compact-rank-fit", Math.floor((playedLayout.faceWidth - 4) * .8) + "px");
     if (face.classList.contains("compact-play-face")) face.style.fontSize = playedLayout.faceTextSp / 16 + "rem";
     const player = tile.querySelector(".played-name");
     player.hidden = !playedLayout.playerLabelHeightDp;
@@ -729,7 +721,7 @@ function markSeat(node, active, bidding) {
   else node.removeAttribute("aria-current");
   const badge = node.querySelector(".seat-turn");
   if (badge) {
-    badge.hidden = !active;
+    badge.hidden = !active || (bidding && node.classList.contains("south"));
     badge.textContent = bidding ? copy("bidNow", "LICITEAZĂ") : copy("playNow", "JOACĂ ACUM");
   }
 }

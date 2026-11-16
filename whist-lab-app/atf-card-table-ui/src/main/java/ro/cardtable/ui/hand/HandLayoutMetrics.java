@@ -4,7 +4,7 @@ import ro.cardtable.ui.cards.CardFaceMetrics;
 
 /** Pure geometry for the one-row, overlapping hand fan. */
 public final class HandLayoutMetrics {
-    public static final int CARD_HEIGHT_DP = 88;
+    public static final int CARD_HEIGHT_DP = CardFaceMetrics.compactDimension(88);
     public static final int CARD_WIDTH_DP = CardFaceMetrics.atHeight(CARD_HEIGHT_DP).widthDp();
     public static final int MIN_VISIBLE_ADVANCE_DP = 22;
     public static final int LIFT_CLEARANCE_DP = 28;

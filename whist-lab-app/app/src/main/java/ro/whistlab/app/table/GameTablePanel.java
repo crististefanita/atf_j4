@@ -328,8 +328,8 @@ public final class GameTablePanel extends LinearLayout {
         var content = WhistTableContent.seat(player, turn.seat(), state.dealerSeat(), bidding, copy);
         LinearLayout frame = new PlayerSeatFrame(context, viewport.isCompact())
                 .buildInlineFacts(content, viewport.seatVerticalPaddingDp());
-        return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding), content.active(),
-                player.seat(), viewport.isCompact(), stableBadgeHeightPx);
+        return new PlayerSeatView(context, frame, copy.seatTurnBadge(bidding),
+                WhistTableContent.showsSeatTurnBadge(player.seat(), turn, bidding), player.seat(), viewport.isCompact(), stableBadgeHeightPx);
     }
 
     private View buildCurrentTrick(TrickCardMetrics.Layout layout) {

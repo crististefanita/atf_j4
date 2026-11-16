@@ -99,6 +99,24 @@ public final class ReleaseBidContext {
         result.requireSuccess(); return result.output().trim().split("\\s+")[0];
     }
 
+    void withEnlargedText(EnlargedTextFlow flow) throws Exception {
+        verifyLease();
+        var scale = adb.run("shell", "settings", "get", "system", "font_scale");
+        scale.requireSuccess();
+        String[] restore = atf.android.evidence.FontScaleRestoration.command(scale.output().trim());
+        adb.run("shell", "settings", "put", "system", "font_scale", "1.5").requireSuccess();
+        try {
+            flow.run(this);
+        } finally {
+            verifyLease();
+            adb.run(restore).requireSuccess();
+        }
+    }
+
+    @FunctionalInterface interface EnlargedTextFlow {
+        void run(ReleaseBidContext context) throws Exception;
+    }
+
     void withPortraitProfiles(List<ResponsiveDisplayProfile> profiles, PortraitFlow flow) throws Exception {
         verifyLease();
         var size = adb.run("shell", "wm", "size");

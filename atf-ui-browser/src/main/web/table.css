@@ -284,18 +284,23 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 }
 .whist-match .seat-turn[hidden] { display: none; }
 .whist-match .hand, .whist-match .fan { height: calc(var(--whist-hand-slot) + 12px); }
-.whist-match .fan .card { border: 1.5px solid #d3dcd2; }
+.whist-match .fan .card {
+  width: var(--whist-hand-face-width);
+  min-width: var(--whist-hand-face-width);
+  height: var(--whist-hand-face-height);
+  border: 1.5px solid #d3dcd2;
+}
 .whist-match .fan .card-index:not(.inverted) { width: max-content; }
-.whist-match .fan .card[data-number] .card-index:not(.inverted) .card-rank {
-  font-size: min(calc(.8125rem * var(--whist-number-scale)), var(--whist-hand-number-cap));
+.whist-match .fan .card .card-index:not(.inverted) .card-rank {
+  font-size: min(calc(.8125rem * var(--whist-rank-scale)), var(--whist-hand-rank-cap));
   line-height: 1;
 }
-.whist-match .fan .card[data-number] .suit {
+.whist-match .fan .card .suit {
   left: calc(50% - 5px);
   top: auto;
   bottom: 4px;
-  font-size: max(16px, min(28px, calc(66px - min(calc(.8125rem * var(--whist-number-scale)),
-    var(--whist-hand-number-cap)))));
+  font-size: max(11px, min(19px, calc(49px - min(calc(.8125rem * var(--whist-rank-scale)),
+    var(--whist-hand-rank-cap)))));
   transform: translateX(-50%);
 }
 #table:not([data-automatic]) .whist-match .fan .suggested-card {
@@ -310,9 +315,10 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .fan[data-hand-feedback] .card { z-index: var(--hand-rest-layer); }
 .fan[data-hand-feedback] .lifting-card { z-index: var(--hand-lift-layer); }
 .card.compact-play-face {
-  display: grid;
-  grid-template-rows: auto;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: var(--whist-played-fill);
   border: var(--whist-played-stroke) solid var(--whist-played-line);
   border-radius: var(--whist-played-radius);
@@ -322,16 +328,10 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   padding: 2px;
   white-space: nowrap;
 }
-.card.compact-play-face[data-number] {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.compact-play-face .card-rank {
+  font-size: min(calc(1em * var(--whist-rank-scale)), var(--whist-played-rank-cap), var(--compact-rank-fit, 26px));
 }
-.compact-play-face[data-number] .card-rank {
-  font-size: min(calc(1em * var(--whist-number-scale)), var(--whist-played-number-cap));
-}
-.compact-play-face[data-number] .compact-suit { font-size: min(1em, var(--whist-played-suit-cap)); }
+.compact-play-face .compact-suit { font-size: min(1em, var(--whist-played-suit-cap)); }
 .card.compact-play-face.red { color: var(--whist-played-red); }
 .whist-match .played-name { color: var(--whist-played-player); }
 .whist-match .played-name[hidden] { display: none; }
@@ -566,23 +566,22 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   color: var(--whist-turn-text);
   font-size: .75rem;
 }
-.whist-trump .card { min-width: 32px; width: 32px; height: 44px; padding: 2px 3px; }
-.whist-trump .suit { font-size: 19px; }
+.whist-trump .card { min-width: var(--whist-trump-face-width); width: var(--whist-trump-face-width); height: var(--whist-trump-face-height); padding: 1px; }
+.whist-trump .suit { font-size: 13px; }
 .whist-trump .card-index { font-size: 9px; line-height: 9px; }
 .whist-trump .card-index.inverted { display: none; }
-.whist-trump .card[data-number] {
+.whist-trump .card {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 48px;
 }
-.whist-trump .card[data-number] .card-index span:last-child { display: none; }
-.whist-trump .card[data-number] .card-rank {
-  font-size: min(calc(.5625rem * var(--whist-number-scale)), var(--whist-badge-number-cap));
+.whist-trump .card .card-index span:last-child { display: none; }
+.whist-trump .card .card-rank {
+  font-size: min(calc(.5625rem * var(--whist-rank-scale)), var(--whist-badge-rank-cap));
   line-height: 1;
 }
-.whist-trump .card[data-number] .suit {
+.whist-trump .card .suit {
   position: static;
   transform: none;
   line-height: 1;

@@ -96,7 +96,9 @@ Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul e
 
 ## Verificare
 
-Whist folosește aceeași țintă de mărire pentru cifrele 2–10 în APK și Web. Fiecare adaptor încadrează cifrele în spațiul disponibil al cărții. Lățimea indicelui vizibil stabilește suprapunerea în evantai, inclusiv pentru `10` și pentru mâinile de 17 cărți.
+- Rangurile 2–10, J, Q, K și A folosesc aceeași țintă de mărire în APK și Web. Fiecare adaptor încadrează rangurile în fețele micșorate cu aproximativ 25%.
+- Lățimea indicelui vizibil stabilește suprapunerea în evantai, inclusiv pentru `10` și pentru mâinile de 17 cărți.
+- Butonul este singurul îndemn vizual al jucătorului la licitarea manuală.
 
 Folosiți `-BuildOnly` la cele trei lansatoare și treceți valorile de classpath returnate către suita de componente. Procesele JVM servesc adaptoarele pe loopback, iar suita trimite cereri HTTP și verifică starea publică. `$EvidenceRoot` indică un director extern, existent și dedicat rulării.
 

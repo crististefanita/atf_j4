@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
 import ro.cardtable.ui.cards.CardFaceMetrics;
-import ro.cardtable.ui.cards.CardNumberText;
+import ro.cardtable.ui.cards.CardRankText;
 import android.widget.LinearLayout.LayoutParams;
 import static android.widget.LinearLayout.VERTICAL;
 
@@ -52,11 +52,13 @@ public final class PlayedCardsView {
             card.setTag("trick-face:" + seat);
             card.setGravity(Gravity.CENTER);
             card.setPadding(dp(2), dp(4), dp(2), dp(4));
-            CardNumberText.stack(card, play.faceLabel(), dp(layout.cardWidthDp() - 4),
-                    dp(layout.cardHeightDp() - 8), dp(CardFaceMetrics.PLAYED_SUIT_CAP_DP));
+            int faceWidth = CardFaceMetrics.compactDimension(layout.cardWidthDp());
+            int faceHeight = CardFaceMetrics.compactDimension(layout.cardHeightDp());
+            CardRankText.stack(card, play.faceLabel(), dp(faceWidth - 4),
+                    dp(faceHeight - 8), dp(CardFaceMetrics.PLAYED_SUIT_CAP_DP));
             card.setBackground(rounded(PlayedCardStyle.FILL, PlayedCardStyle.OUTLINE, PlayedCardStyle.RADIUS_DP));
             card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            item.addView(card, new LayoutParams(dp(layout.cardWidthDp()), dp(layout.cardHeightDp())));
+            item.addView(card, new LayoutParams(dp(faceWidth), dp(faceHeight)));
 
             TextView who = text(play.playerLabel(), layout.playerLabelTextSizeSp(),
                     PlayedCardStyle.PLAYER, false);

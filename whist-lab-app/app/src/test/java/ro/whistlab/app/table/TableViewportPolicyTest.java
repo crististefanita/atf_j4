@@ -106,7 +106,7 @@ public class TableViewportPolicyTest extends atf.gradle.audit.GradleAuditedTest 
         assertEquals("compact.outerVerticalPaddingDp() must equal 0", 0, compact.outerVerticalPaddingDp());
         assertEquals("compact.playedCardFaceHeightDp() must equal 64", 64, compact.playedCardFaceHeightDp());
         assertEquals("compact.playedCardItemVerticalPaddingDp() must equal 2", 2, compact.playedCardItemVerticalPaddingDp());
-        assertEquals("HandLayoutMetrics.cardHeightDp() must equal 88", 88, HandLayoutMetrics.cardHeightDp());
+        assertEquals("HandLayoutMetrics.cardHeightDp() must equal 66", 66, HandLayoutMetrics.cardHeightDp());
         assertEquals("BidGridMetrics.CHOICE_TARGET_DP must equal 48", 48, BidGridMetrics.CHOICE_TARGET_DP);
         var intermediate = new TableViewportPolicy(626);
         assertTrue("intermediate.isCompact() must hold", intermediate.isCompact());

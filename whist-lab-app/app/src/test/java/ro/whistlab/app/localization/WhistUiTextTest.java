@@ -69,7 +69,7 @@ public final class WhistUiTextTest extends atf.gradle.audit.GradleAuditedTest {
 
             atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "count", count);
             assertTrue("hand of " + count, HandLayoutMetrics.usesSingleRow(count));
-            assertEquals("HandLayoutMetrics.cardHeightDp() must equal 88", 88, HandLayoutMetrics.cardHeightDp());
+            assertEquals("HandLayoutMetrics.cardHeightDp() must equal 66", 66, HandLayoutMetrics.cardHeightDp());
             assertEquals("HandLayoutMetrics.cardLabelSizeSp() must equal 13", 13, HandLayoutMetrics.cardLabelSizeSp());
         }
         assertFalse("HandLayoutMetrics.usesSingleRow(0) must remain false", HandLayoutMetrics.usesSingleRow(0));
@@ -78,12 +78,12 @@ public final class WhistUiTextTest extends atf.gradle.audit.GradleAuditedTest {
 
     @Test public void cardFanStaysSingleRowAndScrollsOnlyWhenItsVisibleAdvanceCannotFit() {
 
-        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 8, "declared constant 2", 13, "declared constant 3", 353, "declared constant 4", 1f, "declared constant 5", 17, "declared constant 6", 1.5f, "declared constant 7", 116, "declared constant 8", 760);
+        atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 8, "declared constant 2", 13, "declared constant 3", 353, "declared constant 4", 1f, "declared constant 5", 17, "declared constant 6", 1.5f, "declared constant 7", 94, "declared constant 8", 760);
         assertTrue("HandLayoutMetrics.usesSingleRow(8) must hold", HandLayoutMetrics.usesSingleRow(8));
         assertFalse("HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1.0F) must remain false", HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1f));
         assertTrue("HandLayoutMetrics.requiresHorizontalScroll(17, 353, 1.0F) must hold", HandLayoutMetrics.requiresHorizontalScroll(17, 353, 1f));
         assertTrue("HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1.5F) must hold", HandLayoutMetrics.requiresHorizontalScroll(13, 353, 1.5f));
-        assertEquals("HandLayoutMetrics.reservedHandHeightDp() must equal 116", 116, HandLayoutMetrics.reservedHandHeightDp());
+        assertEquals("HandLayoutMetrics.reservedHandHeightDp() must equal 94", 94, HandLayoutMetrics.reservedHandHeightDp());
         assertEquals("HandLayoutMetrics.maxViewportWidthDp() must equal 760", 760, HandLayoutMetrics.maxViewportWidthDp());
     }
 

@@ -136,10 +136,10 @@ await check("AutoGame colectează fiecare levată, apoi publică doar cărțile 
     return { tricks: gathered, totals: state.view.score.table.rows.map(row => Number(row[4])) };
   });
 
-await check("Rang numeric și bandă măsurată pentru 17 cărți",
-  "Scală 2× pentru cifre, cu lățimea măsurată rezervată în evantai și refuz la geometrie invalidă", () => {
-    assert.equal(style["--whist-number-scale"], "2");
-    assert.equal(style["--whist-hand-number-cap"], "40px");
+await check("Ranguri de carte și bandă măsurată pentru 17 cărți",
+  "Scală 2× pentru toate rangurile, cu lățimea măsurată rezervată în evantai și refuz la geometrie invalidă", () => {
+    assert.equal(style["--whist-rank-scale"], "2");
+    assert.equal(style["--whist-hand-rank-cap"], "33px");
     for (let seed = 31; seed < 48 && !wideCheckpoint; seed++) {
       initialize(seed, 9);
       local = { name: null, progress: null, checkpoint: null, rankings: null };
@@ -149,12 +149,12 @@ await check("Rang numeric și bandă măsurată pentru 17 cărți",
     }
     assert.ok(wideCheckpoint, "Expected a 10 before the last card in a 17-card hand");
     const layout = { mode: "DOWN_AND_UP", players: 3, width: 336, height: 360, viewport: 800,
-      seatHeight: 64, bidOptions: 18, cards: 17, handWidth: 336, handIndexWidth: 52 };
+      seatHeight: 64, bidOptions: 18, cards: 17, handWidth: 336, handIndexWidth: 43 };
     const plan = command("layout", layout);
-    assert.equal(plan.hand.advance, 52);
-    assert.equal(plan.hand.width, 16 * 52 + plan.hand.cardWidth);
+    assert.equal(plan.hand.advance, 43);
+    assert.equal(plan.hand.width, 16 * 43 + plan.hand.cardWidth);
     command("layout", { ...layout, handIndexWidth: 64 }, 400);
-    return { numberScale: style["--whist-number-scale"], handIndexWidth: 52, hand: plan.hand };
+    return { rankScale: style["--whist-rank-scale"], handIndexWidth: 43, hand: plan.hand };
   }, "WEB-11");
 
 await mkdir(output, { recursive: true });
