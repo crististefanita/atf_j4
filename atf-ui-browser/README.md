@@ -44,11 +44,11 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 - AutoGame se activează pentru mâna curentă. Debifarea anulează următoarea decizie în locul jucătorului. Mutările acceptate se încheie, iar meniurile și dialogurile suspendă următoarea decizie cât timp sunt deschise. Scorul sau revenirea la meniul principal sting bifa.
 
 - Buildul cere PowerShell 7, JDK 21, Maven și mediul de generare a catalogului. `$WorkRoot` și `$EvidenceRoot` indică directoare externe.
-- Proba Node.js verifică inventarul public și joacă prin motorul compilat. Cu executabilul Chrome, deschide pachetul în subdirectorul proiectului la 414 × 896 și verifică salvarea după redeschidere.
+- Proba Node.js verifică inventarul public și joacă prin motorul compilat. Pentru gesturi și redeschiderea profilului, rulați [scenariile Playwright](#verificare).
 
 ```powershell
 $Site = .\atf-ui-browser\Build-WhistPages.ps1 -WorkRoot $WorkRoot
-node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot $Chrome
+node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot
 ```
 
 - Pentru modificările de licitare, AutoGame, limbă sau realizări, rulați `node .\atf-ui-browser\pages\verify-controls.mjs $Site $EvidenceRoot`. Proba folosește motorul compilat și înlocuiește temporizatoarele și stocarea browserului în cazurile controlate.
@@ -96,11 +96,20 @@ Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul e
 
 ## Verificare
 
-Folosiți `-BuildOnly` la cele trei lansatoare și treceți valorile de classpath returnate către scriptul de componente. Rularea folosește procese Java și browsere headless cu profiluri separate. `$EvidenceRoot` indică un director extern al rulării.
+Folosiți `-BuildOnly` la cele trei lansatoare și treceți valorile de classpath returnate către suita de componente. Procesele JVM servesc adaptoarele pe loopback, iar suita trimite cereri HTTP și verifică starea publică. `$EvidenceRoot` indică un director extern, existent și dedicat rulării.
 
 ```powershell
-node .\atf-ui-browser\tests\run-components.mjs $EvidenceRoot $WhistClasses $RentzClasses $HoldemClasses $Edge $Chrome
+node .\atf-ui-browser\tests\run-components.mjs $EvidenceRoot $WhistClasses $RentzClasses $HoldemClasses
 java -cp $WhistClasses .\atf-ui-browser\tests\WhistParity.java > (Join-Path $EvidenceRoot 'whist-parity.json')
+```
+
+Pentru UI, pregătiți ediția Pages în `$Site` și generați `hand-fixture.json` cu proba `verify-card-adapter.mjs`. Rularea folosește Playwright Java cu Chromium headless, locatori după rol și câte un context izolat pentru fiecare scenariu. [Locatori și așteptări Playwright](https://playwright.dev/docs/locators)
+
+`-BrowserExecutable` permite alegerea unei instalări Chrome sau Edge. Chromium compatibil trebuie să fie disponibil atunci când parametrul este omis.
+
+```powershell
+node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
+.\atf-ui-browser\tests\Run-BrowserUi.ps1 -Site $Site -HandFixture (Join-Path $AdapterEvidence 'hand-fixture.json') -EvidenceRoot $EvidenceRoot
 .\atf-ui-browser\tests\Publish-BrowserExtent.ps1 -EvidenceRoot $EvidenceRoot -MavenClasspathFile $MavenClasspath
 ```
 
@@ -108,6 +117,7 @@ java -cp $WhistClasses .\atf-ui-browser\tests\WhistParity.java > (Join-Path $Evi
 
 | Nivel | Responsabilitate |
 |---|---|
-| Componentă | Acoperă validarea Unicode, persistența profilului, catalogul, progresul idempotent, geometria, ridicarea cărții și colectarea levatei. Starea așteptată vine din motor și din catalogul Android. |
-| Adaptor UI | Deschide controalele prin etichete, confirmă rezultatul observabil și atașează capturi. Pe Android, compară APK și Chrome pe același dispozitiv și păstrează profilul, densitatea și SHA-ul APK-ului. |
-| Raportare | Primește rezultatele și capturile după execuție. O observație pe telefon intră ca `paired-android.json`, o listă de cazuri cu rezultat, așteptare, observație și fișiere PNG din același dosar. |
+| Componentă | Verifică reviziile, refuzurile, geometria, profilul și decontarea prin contractul HTTP sau motorul Pages, cu stocare și temporizare controlate. |
+| UI Web | Verifică în Chromium accesul la ultima carte din evantai, licitarea de la tastatură, atingerea respinsă, AutoGame și profilul după reîncărcare. Scrie `browser-ui-checks.json` și capturile în directorul rulării. |
+| Comparație pe Android | Folosește APK și Chrome pentru aspecte legate de sistem, inclusiv fonturile, gesturile native și zonele rezervate. Înregistrează viewportul, densitatea și SHA-ul APK-ului în `paired-android.json`. |
+| Raportare | Extent citește rezultatele fiecărui nivel și atașează capturile PNG inline. |
