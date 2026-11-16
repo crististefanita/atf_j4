@@ -67,6 +67,8 @@ Profilul publicării provine din contextul și comparațiile capturate înaintea
 
 ## Acceptanță și retenție
 
+În calificarea RAG, verificatorul scrie chitanța fiecărei selecții direct lângă raportul ei. Publicarea atomică a checkpoint-ului închide selecția înaintea următorului task din aceeași lansare. [Reluarea după întrerupere](ATF_ReleaseQualification.md#reluarea-etapelor-validate)
+
 Matricile exhaustive compară fiecare pereche prin oracolul domeniului. [Verificatorul matricilor](../../whist-lab-app/test-audit/src/testFixtures/java/atf/gradle/audit/matrix/ExhaustiveMatrixChecks.java) oprește prima nepotrivire cu poziție, expected și actual; la succes publică numărul perechilor evaluate pe invariant și absența nepotrivirilor. Istoricul și geometria păstrează grilele complete de intrări, fără milioane de rânduri PASS individuale ori numărarea lor ca invocări JUnit.
 
 | Control | Refuz obligatoriu |

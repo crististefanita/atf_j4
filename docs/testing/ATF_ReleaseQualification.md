@@ -441,7 +441,7 @@ După întrerupere păstrați directorul încercării și zona de lucru. Lansaț
   -ResumeFrom $InterruptedAttempt -PinnedSourceInputs $SourceInputs -Groups $RequiredGroups
 ```
 
-Lansatorul reverifică amprentele sursei și ale dosarului de release în staging și în sursa fixată. Reluarea refuză o schimbare de inventar și blochează folosirea simultană a aceluiași staging. Fiecare selecție Maven are un checkpoint după execuție. Lotul Gradle poate furniza checkpoint-uri după încheierea procesului, verificarea JUnit și recitirea Extent. Selecțiile reușite cu dovezi acceptate își păstrează octeții și proveniența. Selecțiile lipsă, incomplete, corupte sau eșuate se execută în directorul nou.
+Lansatorul reverifică amprentele sursei și ale dosarului de release în staging și în sursa fixată. Reluarea refuză o schimbare de inventar și blochează folosirea simultană a aceluiași staging. Fiecare selecție Maven are un checkpoint după execuție. În lotul Gradle, fiecare task publică raportul canonic și actualizează atomic checkpoint-ul după verificarea JUnit și Extent, înaintea taskului următor. Un task întrerupt înaintea publicării se reia, chiar dacă HTML-ul provizoriu a fost generat. Selecțiile reușite cu dovezi acceptate își păstrează octeții și proveniența. Selecțiile lipsă, incomplete, corupte sau eșuate se execută în directorul nou.
 
 Pregătirea Maven păstrează separat compilarea și classpath-ul. Verificați chitanța compilării înainte de a reutiliza clasele, resursele și JAR-urile. Reluați rezolvarea classpath-ului dacă etapa a fost întreruptă. Un staging fără manifest valid cere o încercare nouă.
 

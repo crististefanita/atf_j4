@@ -37,6 +37,17 @@ test('a qualification policy edit affects governance and leaves the game build e
   assert.deepEqual(selection.requiredE2eGroups, []);
 });
 
+test('Gradle component checkpoint and audit changes keep qualification offline', () => {
+  const changes = ['whist-lab-app/gradle/component-audit.gradle',
+    'whist-lab-app/test-audit/src/testFixtures/java/atf/gradle/audit/verification/GradleTaskCheckpoint.java'];
+  const selection = deriveReleaseTestScope(new Map(), new Map(changes.map(file => [file, 'new'])), groups);
+  assert.equal(selection.kind, 'MAINTENANCE');
+  assert.deepEqual(selection.requiredE2eGroups, []);
+  assert.ok(selection.changes.every(row => row.rule === 'non-runtime'));
+  assert.ok(selection.runComponentGroups.includes('whist-lab-app-bidding'));
+  assert.ok(selection.runComponentGroups.includes('whist-lab-app-atf-card-table-ui'));
+});
+
 test('standalone governance launchers rerun only the offline governance component', () => {
   const paths = ['scripts/AtfStandaloneJava.ps1', 'scripts/run-jvm-inventory.ps1',
     'scripts/run-documentation-governance.ps1', 'scripts/run-atf-governance.ps1', 'scripts/AtfTestChangeBatch.ps1'];

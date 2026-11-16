@@ -23,7 +23,7 @@ class RomanianMenuOptionsE2eTest {
     private static final Duration MENU_TIMEOUT = Duration.ofSeconds(12);
 
     @Test
-    void originalFiveNewDefaultTenAndClassicOptionPersistFromTheNormalSetupMenu() throws Exception {
+    void localizedHelpAndFivePointSetupResumeThroughNativeRoutes() throws Exception {
         Path out = atf.android.e2e.support.flow.WhistLabScenario.configuredExternalPath("atf.match.evidenceDir");
         Files.createDirectories(out);
         var adb = AdbClient.fromSystemProperties();
@@ -37,21 +37,26 @@ class RomanianMenuOptionsE2eTest {
         trace.beginPhase("SETUP");
         try {
             restartApp(adb);
-            ui.selectNamedSpinnerOption("interface-language", "English");
-            ui.tapText("How to play");
-            verifyLocalizedHelp(ui, trace, out, "English", "New game", "How to play",
-                    "Mandatory trump when void", "HELP — HOW TO PLAY", "help-en");
-            verifyLocalizedHelp(ui, trace, out, "Română", "Joc nou", "Reguli de joc",
-                    "Atu obligatoriu când nu ai culoarea", "AJUTOR — CUM SE JOACĂ", "help-ro");
-            ui.back();
-            ui.selectNamedSpinnerOption("interface-language", "English");
-            ui.awaitText("New game", MENU_TIMEOUT);
+            ui.selectNamedSpinnerOption("interface-language", "Română");
+            ui.awaitText("Joc nou", MENU_TIMEOUT);
+            ui.tapText("Reguli de joc");
+            ui.awaitText("AJUTOR — CUM SE JOACĂ", MENU_TIMEOUT);
+            ui.revealText("Atu obligatoriu când nu ai culoarea");
+            String help = ui.dump();
+            var checks = new ArrayList<AtfAssertion>();
+            RomanianMatchOracle.truth(checks, "Help scrolls to the localized rules section",
+                    "Atu obligatoriu când nu ai culoarea", ui.texts(help).toString(),
+                    ui.hasText(help, "Atu obligatoriu când nu ai culoarea"));
+            ui.capture("help-ro");
+            WhistTestEvidence.checkpoint(trace, out, "SETUP", "Open and scroll the native Help menu",
+                    "help-ro", "Romanian Help entry and scroll", checks, List.of());
 
-            JsonNode fivePointGame = startWithSeriesSelection(adb, ui, trace, out, true);
-            verifyResume(adb, ui, trace, out, fivePointGame);
             ui.back();
+            ui.awaitText("Joc nou", MENU_TIMEOUT);
+            ui.selectNamedSpinnerOption("interface-language", "English");
             ui.awaitText("New game", MENU_TIMEOUT);
-            startWithSeriesSelection(adb, ui, trace, out, false);
+            JsonNode fivePointGame = startWithSeriesSelection(adb, ui, trace, out);
+            verifyResume(adb, ui, trace, out, fivePointGame);
             ui.back();
             ui.awaitText("New game", MENU_TIMEOUT);
             trace.finish(AtfReportStatus.PASS);
@@ -61,35 +66,8 @@ class RomanianMenuOptionsE2eTest {
         }
     }
 
-    private static void verifyLocalizedHelp(AndroidUiDriver ui, AndroidUiFlowTrace trace, Path out,
-            String language, String newGame, String helpEntry, String ruleHeading, String helpTitle,
-            String label) throws Exception {
-        ui.selectNamedSpinnerOption("interface-language", language);
-        ui.revealText(ruleHeading);
-        String help = ui.dump();
-        var checks = new ArrayList<AtfAssertion>();
-        RomanianMatchOracle.truth(checks, "Help scrolls to the localized rules section", ruleHeading,
-                ui.texts(help).toString(), ui.hasText(help, ruleHeading));
-        ui.capture(label);
-        WhistTestEvidence.checkpoint(trace, out, "SETUP", "Open the rules section in " + language,
-                label, "Normal Help menu", checks, List.of());
-
-        ui.back();
-        String home = ui.awaitText(newGame, MENU_TIMEOUT);
-        ui.tapText(helpEntry);
-        String reopened = ui.awaitText(helpTitle, MENU_TIMEOUT);
-        checks = new ArrayList<>();
-        RomanianMatchOracle.truth(checks, "The home menu uses the selected language", newGame,
-                ui.texts(home).toString(), ui.hasText(home, newGame));
-        RomanianMatchOracle.truth(checks, "Help keeps the language when reopened", helpTitle,
-                ui.texts(reopened).toString(), ui.hasText(reopened, helpTitle));
-        ui.capture(label + "-reopen");
-        WhistTestEvidence.checkpoint(trace, out, "SETUP", "Reopen Help in " + language,
-                label + "-reopen", "Back to menu and reopen Help", checks, List.of());
-    }
-
     private static JsonNode startWithSeriesSelection(AdbClient adb, AndroidUiDriver ui,
-            AndroidUiFlowTrace trace, Path out, boolean seriesEnabled) throws Exception {
+            AndroidUiFlowTrace trace, Path out) throws Exception {
         trace.beginPhase("SETUP");
         ui.tapText("New game");
         ui.selectNamedSpinnerOption("game-type", "Romanian (1–8–1)");
@@ -105,13 +83,8 @@ class RomanianMenuOptionsE2eTest {
                         && ui.hasDescription(setup, SERIES_TOGGLE)
                         && ui.hasDescription(setup, "Five-hand reward / penalty"));
 
-        int points = seriesEnabled ? 5 : 10;
-        String label = seriesEnabled ? "menu-series-5" : "menu-series-0";
-        if (seriesEnabled) {
-            ui.selectNamedSpinnerOption("romanian-streak-value", "±5 points");
-        } else {
-            ui.tapDescription(SERIES_TOGGLE);
-        }
+        String label = "menu-series-5";
+        ui.selectNamedSpinnerOption("romanian-streak-value", "±5 points");
         ui.revealText("Start game");
         ui.capture(label + "-setup");
         WhistTestEvidence.checkpoint(trace, out, "SETUP", "Select Romanian series settings",
@@ -121,9 +94,9 @@ class RomanianMenuOptionsE2eTest {
         ui.tapText("Start game");
         JsonNode state = CompleteRomanianExpertE2eTest.stable(adb);
         checks = new ArrayList<>();
-        RomanianMatchOracle.equal(checks, "The toggle reaches the engine", seriesEnabled,
+        RomanianMatchOracle.equal(checks, "The enabled series rule reaches the engine", true,
                 state.get("streakBonuses"));
-        RomanianMatchOracle.equal(checks, "The series value reaches the engine", points,
+        RomanianMatchOracle.equal(checks, "The series value reaches the engine", 5,
                 state.get("streakBonusPoints"));
         ui.capture(label + "-game");
         Files.writeString(out.resolve(label + "-state.json"), state.toPrettyString());

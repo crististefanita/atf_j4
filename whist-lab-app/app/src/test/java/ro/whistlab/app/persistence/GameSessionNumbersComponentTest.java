@@ -42,16 +42,18 @@ public class GameSessionNumbersComponentTest extends atf.gradle.audit.GradleAudi
             verifySeriesCheckpoint(mode, true, 5);
             verifySeriesCheckpoint(mode, true, 10);
             verifySeriesCheckpoint(mode, false, 10);
+            verifySeriesCheckpoint(mode, false, 5);
         }
     }
 
     private static void verifySeriesCheckpoint(GameMode mode, boolean enabled, int points) throws Exception {
         var setup = new MatchSetup();
         setup.mode(mode);
-        setup.streaks(enabled);
+
         if (points == 5) {
             setup.streakBonus(5);
         }
+        setup.streaks(enabled);
         var game = GameSession.newGame(setup.config(31));
         game.submitBid(game.snapshot().biddingSeat(), 0);
         var saved = game.saveState();

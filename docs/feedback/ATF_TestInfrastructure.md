@@ -42,6 +42,6 @@ Postmortem pentru 0.21.5. Duratele însumează etapele din chitanțele execuții
 | Reluări Android | VM-ul a întrerupt procesele în mai multe etape. Un ANR de sistem, o fereastră deschisă de Google Messages și temporizarea notificării de realizări au cerut intervenții distincte. | Salvați imediat raportul și identitatea fluxului. La reluare curățați numai profilul temporar identificat de rezervarea întreruptă. Reproduceți offline deschiderea notificării între scor și butonul mâinii următoare. |
 | Predarea dosarului | Guvernanța a cerut o reluare deoarece manifestul final nu declara inventarul invocărilor Extent | Generați formatul de calificare v2 și numărați invocările din chitanțele de execuție înainte de a pregăti commitul. Verificați din nou numai controalele afectate dacă se schimbă metadatele. |
 
-- [ ] Extindeți checkpoint-ul Gradle la rezultate verificate înainte de ieșirea procesului. Demonstrați întreruperea între două taskuri și refuzul unei chitanțe Gradle parțiale.
+[Checkpoint-urile Gradle](../testing/ATF_ReleaseQualification.md#reluarea-etapelor-validate) se publică înaintea taskului următor. Raportul incomplet și jurnalul provizoriu rămân utile pentru diagnostic; reluarea folosește chitanța publicată atomic.
 
 [Profiluri de lucru pentru reluare](../testing/ATF_ReleaseQualification.md#profiluri-de-lucru-pentru-reluare)

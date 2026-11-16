@@ -38,7 +38,8 @@ function classify(file, metadataOnly, hasRulesComponents) {
   for (const [rule, pattern, e2eGroups] of rules) {
     if (pattern.test(file)) return {rule, e2eGroups};
   }
-  if (nonProduct.test(file) || testConfiguration.test(file) || testLaunchers.test(file) || isStandaloneGovernanceLauncher(file)) {
+  if (nonProduct.test(file) || testConfiguration.test(file) || testLaunchers.test(file)
+      || file === android + 'gradle/component-audit.gradle' || isStandaloneGovernanceLauncher(file)) {
     return {rule: 'non-runtime', e2eGroups: []};
   }
   return {rule: 'unclassified-or-shared-runtime', e2eGroups: allFlows};

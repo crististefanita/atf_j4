@@ -9,8 +9,13 @@ import org.jsoup.Jsoup;
 /** Recounts original JUnit and the actual HTML independently; omission and duplicate receipts are fatal. */
 public final class GradleReportVerifier {
     private GradleReportVerifier() { }
-    public static void main(String[] args) throws Exception { verify(Path.of(args[0]), Path.of(args[1])); }
-    public static void verify(Path report, Path junit) throws Exception {
+    public static void main(String[] args) throws Exception {
+        Path report = Path.of(args[0]);
+        var outcomes = verify(report, Path.of(args[1]));
+        if (args.length == 4) GradleTaskCheckpoint.publish(Path.of(args[2]), args[3], report, outcomes);
+    }
+
+    public static Map<String, String> verify(Path report, Path junit) throws Exception {
         var expected = new LinkedHashMap<String, String>();
         var factory = javax.xml.parsers.DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -36,6 +41,7 @@ public final class GradleReportVerifier {
         var actual = receipts(report);
         if (!expected.equals(actual)) throw new IllegalStateException("JUnit/HTML inventory differs. JUnit=" + expected + "; HTML=" + actual);
         System.out.println("PASS: " + actual.size() + " exact JUnit/HTML identities and outcomes; one canonical HTML");
+        return actual;
     }
     public static Map<String, String> receipts(Path report) throws Exception {
         var inventory = readReceipts(report);

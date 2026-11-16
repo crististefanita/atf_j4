@@ -1,4 +1,6 @@
 // Test-only bridge: the APK and AAR never depend on the audit fixture variant.
+def checkpointPlan = providers.gradleProperty('whist.auditCheckpoint').map { rootProject.file(it) }.orNull
+def checkpointTasks = checkpointPlan ? new groovy.json.JsonSlurper().parse(checkpointPlan).tasks : [:]
 subprojects { owner ->
     ['com.android.application', 'com.android.library', 'java-library'].each { pluginName ->
         owner.plugins.withId(pluginName) {
@@ -10,7 +12,9 @@ subprojects { owner ->
                 failFast = false
                 def auditRoot = providers.gradleProperty('whist.auditOutput').map { rootProject.file(it) }
                         .getOrElse(rootProject.layout.buildDirectory.dir('reports/component').get().asFile)
-                def report = new File(auditRoot, "${rootProject.name}-${owner.name}-${testTask.name}.html")
+                def checkpoint = checkpointTasks[testTask.path]
+                def report = checkpoint ? new File(auditRoot, "${checkpoint.group}/component-report.html")
+                        : new File(auditRoot, "${rootProject.name}-${owner.name}-${testTask.name}.html")
                 systemProperty 'atf.gradle.audit.report', report.absolutePath
                 systemProperty 'atf.gradle.audit.scope', "${rootProject.name}/${owner.name}:${testTask.name}"
                 systemProperty 'atf.gradle.audit.catalog', new File(rootProject.project(':test-audit').projectDir.parentFile.parentFile, 'config/gradle-audit-collections.properties').absolutePath
@@ -20,14 +24,19 @@ subprojects { owner ->
                 outputs.file(report)
                 def verification = owner.layout.buildDirectory.file("component-verification/${testTask.name}.ok")
                 outputs.file(verification)
-                doFirst { verification.get().asFile.delete() }
+                doFirst {
+                    verification.get().asFile.delete()
+                    if (checkpoint) report.parentFile.mkdirs()
+                }
                 doLast {
                     def execution = owner.providers.exec {
                         ignoreExitValue = true
-                        commandLine new File(System.getProperty('java.home'), 'bin/java').absolutePath,
+                        def verifier = [new File(System.getProperty('java.home'), 'bin/java').absolutePath,
                                 '-Xmx384m', '-cp', testTask.classpath.asPath,
                                 'atf.gradle.audit.verification.GradleReportVerifier', report.absolutePath,
-                                testTask.reports.junitXml.outputLocation.get().asFile.absolutePath
+                                testTask.reports.junitXml.outputLocation.get().asFile.absolutePath]
+                        if (checkpoint) verifier.addAll([checkpointPlan.absolutePath, testTask.path])
+                        commandLine verifier
                     }
                     def result = execution.result.get()
                     logger.lifecycle(execution.standardOutput.asText.get())

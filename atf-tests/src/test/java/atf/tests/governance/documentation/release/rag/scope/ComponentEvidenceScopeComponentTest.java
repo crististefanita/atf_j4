@@ -18,18 +18,21 @@ class ComponentEvidenceScopeComponentTest {
     private static final Duration PUBLICATION_TIMEOUT = Duration.ofMinutes(2);
 
     @Test void nodeContractTestsKeepReuseClassificationInsideTheRealBuildBoundary() throws Exception {
-        String output = runContracts(PROCESS_TIMEOUT, "prepare-component-reuse.test.mjs", "release-test-scope.test.mjs",
-                "github-release-retention.test.mjs");
-        AuditedAssertions.assertTrue(output.contains("documentation and separate test-harness changes reuse unaffected Gradle game components"),
-                "The Extent component group must include the precise dependency-scope regression");
+        String output = runContracts(PROCESS_TIMEOUT, "release-test-scope.test.mjs", "github-release-retention.test.mjs");
+        AuditedAssertions.assertTrue(output.contains("Gradle component checkpoint and audit changes keep qualification offline"),
+                "A change limited to Gradle reporting must select offline qualification.");
         AuditedAssertions.assertTrue(output.contains("a bidding change requires the native bidding and AutoGame selections"),
                 "The Extent component group must include the executable RAG selection contract");
     }
 
     @Test void componentResumeImportsOnlyVerifiedEvidenceFromTheInterruptedSnapshot() throws Exception {
         String output = runContracts(PUBLICATION_TIMEOUT, "prepare-component-reuse.test.mjs");
+        AuditedAssertions.assertTrue(output.contains("documentation and separate test-harness changes reuse unaffected Gradle game components"),
+                "The Extent component group must include the precise dependency-scope regression");
         AuditedAssertions.assertTrue(output.contains("after interruption only the completed successful suites are imported"),
                 "A partial run may contribute only complete passing suites.");
+        AuditedAssertions.assertTrue(output.contains("a Gradle checkpoint skips the validated task and reruns failed or interrupted siblings"),
+                "Gradle can resume from the last verified task without replaying its passing receipt.");
         AuditedAssertions.assertTrue(output.contains("the interrupted run cannot be resumed with changed source or release evidence"),
                 "A changed snapshot invalidates resumption.");
         AuditedAssertions.assertTrue(output.contains("durable Maven preparation keeps compilation when classpath is interrupted and rejects changed classes"),

@@ -41,7 +41,7 @@ async function fixture(t, options = {}) {
   await writeJson(previous, provenanceReceipt, original);
   const provenanceSha256 = digest(await read(previous, provenanceReceipt));
   const results = [];
-  for (const module of groups) {
+  for (const module of options.groups ?? groups) {
     await fs.mkdir(path.join(previous, module));
     const receipt = {...componentRun, tests: 1, outcomes: {PASS: 1}, coverageErrors: [], containerFailures: [],
       provenanceSha256, reportSha256: digest(extent)};
@@ -223,6 +223,22 @@ test('after interruption only the completed successful suites are imported', asy
     await read(previous, 'component-checkpoint.json'));
   await assert.rejects(fs.access(path.join(target, groups[1], 'execution.json')));
   await assert.rejects(fs.access(path.join(target, 'atf-validation')));
+});
+
+test('a Gradle checkpoint skips the validated task and reruns failed or interrupted siblings', async t => {
+  const tasks = ['whist-lab-app-achievements', 'whist-lab-app-commands', 'whist-lab-app-rules'];
+  const {previous, target} = await fixture(t, {release: true, groups: tasks, failed: tasks[1]});
+  const checkpoint = JSON.parse(await read(previous, runReceipt));
+  checkpoint.results = [checkpoint.results[0]];
+  checkpoint.status = 'PASS';
+  await writeJson(previous, 'component-checkpoint.json', checkpoint);
+  await writeJson(previous, 'component-checkpoint.json.writing', {results: null});
+  await fs.unlink(path.join(previous, runReceipt));
+  const decisions = await prepareComponentReuse(target, previous, tasks, {resume: true});
+  assert.deepEqual(decisions.map(row => row.decision), ['MATCH', 'INVALID', 'INVALID']);
+  assert.deepEqual(decisions.filter(row => row.decision === 'INVALID').map(row => row.group), tasks.slice(1));
+  assert.deepEqual(await read(target, tasks[0] + '/component-report.html'),
+    await read(previous, tasks[0] + '/component-report.html'));
 });
 
 test('the interrupted run cannot be resumed with changed source or release evidence', async t => {

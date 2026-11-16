@@ -158,53 +158,17 @@ function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
     } finally { Pop-Location }
 }
 
-function Read-GradleSelection($item, $stage, $provenanceFingerprint) {
-    $projectName = Split-Path -Leaf $item.project
-    $generated = Join-Path $RunRoot ("whist-lab-app-$projectName-" + $item.task + '.html')
-    $destination = Join-Path $RunRoot $item.group
-    New-Item -ItemType Directory -Path $destination | Out-Null
-    $report = Join-Path $destination 'component-report.html'
-    if (Test-Path -LiteralPath $generated -PathType Leaf) {
-        Move-Item -LiteralPath $generated -Destination $report
-    }
-    $xmlDirectory = Join-Path $stage (Join-Path $item.project ('build/test-results/' + $item.task))
-    $xmlFiles = if (Test-Path -LiteralPath $xmlDirectory -PathType Container) {
-        @(Get-ChildItem -LiteralPath $xmlDirectory -Filter 'TEST-*.xml' -File)
-    } else { @() }
-    $totals = [ordered]@{PASS=0;FAIL=0;ERROR=0;SKIP=0}
-    foreach ($xmlFile in $xmlFiles) {
-        [xml]$junit = Get-Content -LiteralPath $xmlFile.FullName -Raw
-        $suites = @($junit.SelectNodes('/testsuite | /testsuites/testsuite'))
-        if (-not $suites.Count) { throw "JUnit XML fără testsuite: $($xmlFile.Name)" }
-        foreach ($suite in $suites) {
-            $testCount = [int]$suite.GetAttribute('tests')
-            $failCount = [int]$suite.GetAttribute('failures')
-            $errorCount = [int]$suite.GetAttribute('errors')
-            $skipCount = [int]$suite.GetAttribute('skipped')
-            $totals.PASS += $testCount - $failCount - $errorCount - $skipCount
-            $totals.FAIL += $failCount; $totals.ERROR += $errorCount; $totals.SKIP += $skipCount
+function Read-AtfGradleResults($Selections, [string]$Journal) {
+    $checkpoint = Get-Content -LiteralPath $Journal -Raw | ConvertFrom-Json
+    foreach ($item in $Selections) {
+        $row = $checkpoint.results | Where-Object module -ceq $item.group
+        $report = Join-Path $RunRoot "$($item.group)/component-report.html"
+        if ($row -and (Test-Path -LiteralPath $report -PathType Leaf) -and
+            (Get-FileHash -LiteralPath $report).Hash.ToLowerInvariant() -ceq $row.receipt.reportSha256) {
+            $row
+        } else {
+            [pscustomobject]@{module=$item.group;suite=$item.selection;exitCode=1;receipt=$null}
         }
-    }
-    $testCount = $totals.PASS + $totals.FAIL + $totals.ERROR + $totals.SKIP
-    $reportHash = if (Test-Path -LiteralPath $report -PathType Leaf) {
-        (Get-FileHash -LiteralPath $report -Algorithm SHA256).Hash.ToLowerInvariant()
-    } else { $null }
-    $verification = Join-Path $stage (Join-Path $item.project ("build/component-verification/" + $item.task + ".ok"))
-    $verified = (Test-Path -LiteralPath $verification -PathType Leaf) -and (Get-Content -LiteralPath $verification -Raw) -ceq 'PASS'
-    $accepted = $verified -and $testCount -gt 0 -and $totals.PASS -eq $testCount -and [bool]$reportHash
-    $coverageErrors = @()
-    if (-not $verified) { $coverageErrors += 'Lipsește verificarea JUnit/Extent pentru task.' }
-    $execution = [ordered]@{
-        schemaVersion=1;kind='live-source-components';apkQualification=$false;selection=$item.selection
-        tests=$testCount;outcomes=$totals;coverageErrors=$coverageErrors;containerFailures=@()
-        provenanceSha256=$provenanceFingerprint;reportSha256=$reportHash
-    }
-    if ($reportHash) {
-        $execution | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $destination 'execution.json') -Encoding utf8
-    }
-    [pscustomobject]@{
-        module=$item.group;suite=$item.selection;exitCode=if($accepted){0}else{1}
-        receipt=if($reportHash){$execution}else{$null}
     }
 }
 
@@ -261,9 +225,10 @@ try {
         schemaVersion=1;path=$work;sourceFingerprint=$fingerprint;releaseFingerprint=$releaseFingerprint
     })
     $completedComponents = [Collections.Generic.List[object]]::new()
+    $checkpointFile = Join-Path $RunRoot 'component-checkpoint.json'
     function Save-AtfComponentCheckpoint([object[]]$Rows) {
         foreach ($row in $Rows) { $completedComponents.Add($row) }
-        if (!$completedComponents.Count) { return }
+
         # Accepted only by ResumeFrom after revalidating both inventories and every reused report.
         $checkpoint = [ordered]@{
             schemaVersion=1;kind='live-source-components';apkQualification=$false
@@ -272,7 +237,7 @@ try {
             status=if (@($completedComponents | Where-Object exitCode -ne 0).Count) {'FAIL'} else {'PASS'}
             results=$completedComponents.ToArray()
         }
-        Write-AtfComponentJson (Join-Path $RunRoot 'component-checkpoint.json') $checkpoint
+        Write-AtfComponentJson $checkpointFile $checkpoint
     }
     $reused = @()
     if ($ReuseFrom) {
@@ -322,8 +287,15 @@ try {
                 }
                 $gradle = Join-Path $stage 'whist-lab-app/gradlew.bat'
                 $tasks = @($gradleSelections.path)
-                $arguments = @('--no-daemon', '--offline', '--console=plain', '--continue') + $tasks +
-                    @("-Pwhist.auditOutput=$RunRoot", "-Pwhist.auditSource=$fingerprint")
+                $checkpointPlan = Join-Path $RunRoot 'gradle-checkpoint-plan.json'
+                $taskBindings = [ordered]@{}
+                foreach ($item in $gradleSelections) {
+                    $taskBindings[$item.path] = @{group=$item.group;selection=$item.selection}
+                }
+                Write-AtfComponentJson $checkpointPlan @{tasks=$taskBindings}
+                Save-AtfComponentCheckpoint @()
+                $arguments = @('--no-daemon', '--offline', '--console=plain', '--continue', '--no-parallel') + $tasks +
+                    @("-Pwhist.auditOutput=$RunRoot", "-Pwhist.auditSource=$fingerprint", "-Pwhist.auditCheckpoint=$checkpointPlan")
                 if ($tasks.Count -eq 1 -and $tasks[0] -ceq $uiTask) { $arguments += '-Pcardui.only=component' }
                 $log = Join-Path $RunRoot 'gradle-components.log'
                 Push-Location (Join-Path $stage 'whist-lab-app')
@@ -337,13 +309,11 @@ try {
                 } finally { Pop-Location }
                 $gradleBatch = [ordered]@{tasks=$tasks;exitCode=$exit;elapsedSeconds=[Math]::Round($clock.Elapsed.TotalSeconds,3);log='gradle-components.log'}
                 $batchResults = @(Invoke-AtfQualificationPhase $timing 'components.gradle-extent-evidence' {
-                    $gradleSelections | ForEach-Object { Read-GradleSelection $_ $stage $provenanceFingerprint }
+                    Read-AtfGradleResults $gradleSelections $checkpointFile
                 })
-                # A failure outside all selected tasks must not turn into a successful batch.
-                if ($exit -ne 0 -and @($batchResults | Where-Object {$_.exitCode -ne 0}).Count -eq 0) {
-                    foreach ($result in $batchResults) { $result.exitCode = $exit }
+                if ($exit -ne 0 -and @($batchResults | Where-Object exitCode -ne 0).Count -eq 0) {
+                    throw "Gradle a eșuat în afara selecțiilor validate. Reluați din checkpoint și consultați $log."
                 }
-                Save-AtfComponentCheckpoint $batchResults
                 $results += $batchResults
             }
         } finally {
