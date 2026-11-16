@@ -21,6 +21,7 @@ public enum CardHighlight {
     public float radiusPx(float density) {
         return this == RAISED ? Math.round(radiusDp * density) : radiusDp * density;
     }
+    public float strokeDp() { return strokeDp; }
     public int elevationDp() { return elevationDp; }
     public int strokeWidthPx(float density) { return Math.max(1, Math.round(strokeDp * density)); }
 

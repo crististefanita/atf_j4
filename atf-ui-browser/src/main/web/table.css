@@ -283,8 +283,34 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   line-height: 1.05;
 }
 .whist-match .seat-turn[hidden] { display: none; }
-.whist-match .fan .card { border: 1.5px solid #c7d3c8; }
-#table:not([data-automatic]) .whist-match .fan .legal-card { border: 2px solid #dcb569; }
+.whist-match .hand, .whist-match .fan { height: calc(var(--whist-hand-slot) + 12px); }
+.whist-match .fan .card { border: 1.5px solid #d3dcd2; }
+#table:not([data-automatic]) .whist-match .fan .suggested-card {
+  background: var(--whist-hint-legal-fill);
+  border: var(--whist-hint-stroke) solid var(--whist-hint-legal-line);
+}
+#table:not([data-automatic]) .whist-match .fan .rejected-card {
+  background: var(--whist-hint-rejected-fill);
+  border: var(--whist-hint-stroke) solid var(--whist-hint-rejected-line);
+}
+.whist-match .fan .lifting-card { z-index: 2; }
+.card.compact-play-face {
+  display: grid;
+  grid-template-rows: auto;
+  place-items: center;
+  background: var(--whist-played-fill);
+  border: var(--whist-played-stroke) solid var(--whist-played-line);
+  border-radius: var(--whist-played-radius);
+  color: var(--whist-played-dark);
+  font-size: .8125rem;
+  line-height: 1;
+  padding: 2px;
+  white-space: nowrap;
+}
+.card.compact-play-face.red { color: var(--whist-played-red); }
+.whist-match .played-name { color: var(--whist-played-player); }
+.whist-match .played-name[hidden] { display: none; }
+#table:not([data-automatic]) .whist-match .fan .legal-card:not(.suggested-card) { border: 2px solid #dcb569; }
 #table[data-automatic] .whist-match .fan .card { pointer-events: none; }
 .whist-home, .whist-score, .whist-help, [data-surface="whist"] .setup { padding: 16px 22px 14px; }
 .whist-home { display: grid; gap: 10px; }

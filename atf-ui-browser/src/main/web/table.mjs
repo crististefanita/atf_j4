@@ -1,6 +1,7 @@
 import { isPhone, viewportGeometry } from "./viewport.mjs";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
+import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
 import { createProfileDialogs, deviceProfile, preferredLanguage, saveLanguage } from "./profile.mjs";
 
@@ -66,6 +67,7 @@ let transport;
 let setup;
 let state;
 let pending = false;
+let handFeedback;
 let rankingsOpening = false;
 let language = "ro";
 
@@ -91,6 +93,7 @@ const automation = autoGame({
   step: async () => !await issue("/api/action", { action: "auto-step" }),
   changed: enabled => {
     stage.toggleAttribute("data-automatic", enabled);
+    if (enabled) handFeedback?.cancel();
     const input = stage.querySelector(".whist-auto input");
     if (input) input.checked = enabled;
     const stop = stage.querySelector(".stop-auto");
@@ -98,8 +101,14 @@ const automation = autoGame({
   }
 });
 
+function dialogBlocksPlay() {
+  return rankingsOpening || history.open || profileDialogs.dialog.open || !!stage.querySelector(".whist-navigation[open]");
+}
+
 function refreshAutomationGate() {
-  automation.pause(rankingsOpening || history.open || profileDialogs.dialog.open || !!stage.querySelector(".whist-navigation[open]"));
+  const blocked = dialogBlocksPlay();
+  automation.pause(blocked);
+  if (blocked) handFeedback?.cancel();
 }
 history.addEventListener("close", refreshAutomationGate);
 profileDialogs.dialog.addEventListener("close", refreshAutomationGate);
@@ -137,7 +146,7 @@ async function issue(path, fields) {
       await placeTable();
       for (const [index, cue] of result.collections.entries()) {
         stage.dataset.collectionStep = String(index + 1);
-        animation = collect(stage, cue, card, setup.collectionSamples);
+        animation = collect(stage, cue, collectionFace, setup.collectionSamples);
         await animation.done;
         animation = undefined;
       }
@@ -206,7 +215,7 @@ async function playCards(steps) {
     }
     stage.dataset.collectionStep = String(++collectionNumber);
     seats.forEach(node => markSeat(node, false, false));
-    animation = collect(stage, step.collection, card, setup.collectionSamples);
+    animation = collect(stage, step.collection, collectionFace, setup.collectionSamples);
     await animation.done;
     animation = undefined;
     center.replaceChildren();
@@ -232,6 +241,7 @@ async function showRankings() {
 }
 
 function menu() {
+  handFeedback?.cancel();
   automation.set(false);
   if (setup.surface === "whist") {
     const home = element("section", "", "whist-home");
@@ -390,12 +400,13 @@ function whistSettings(form, fields) {
   return read;
 }
 
-function card(face, interactive = false) {
+function card(face, interactive = false, acceptsFeedback = false) {
   const node = element(interactive ? "button" : "span", "", "card");
   if (interactive) {
     node.type = "button";
-    node.disabled = !face.action;
-    if (face.action) node.addEventListener("click", () => action(face.action));
+    node.disabled = !face.action && !acceptsFeedback;
+    if (acceptsFeedback) node.dataset.command = face.action;
+    else if (face.action) node.addEventListener("click", () => action(face.action));
   }
   node.classList.toggle("red", face.suit === "♥" || face.suit === "♦");
   node.setAttribute("aria-label", face.label);
@@ -412,10 +423,26 @@ function card(face, interactive = false) {
   return node;
 }
 
+function compactFace(play) {
+  const face = element("span", play.faceLabel, "card compact-play-face");
+  face.classList.toggle("red", play.card.suit === "♥" || play.card.suit === "♦");
+  face.setAttribute("aria-hidden", "true");
+  return face;
+}
+
+function collectionFace(face, play) {
+  return play.faceLabel ? compactFace(play) : card(face);
+}
+
 function playedCard(play, seats) {
   const tile = element("div", "", "played-card");
   tile.dataset.seat = String(play.seat);
-  tile.append(card(play.card), element("span", seats[play.seat].name));
+  tile.append(collectionFace(play.card, play), element("span", seats[play.seat].name, "played-name"));
+  if (play.description) {
+    tile.setAttribute("role", "group");
+    tile.setAttribute("aria-label", play.description);
+    tile.tabIndex = 0;
+  }
   return tile;
 }
 
@@ -427,10 +454,14 @@ function placePlayed(cards) {
     const slot = playedLayout.slots[Number(tile.dataset.seat)];
     const face = tile.querySelector(".card");
     tile.style.left = slot.leftDp + "px";
-    tile.style.top = slot.row * playedLayout.rowStrideDp + "px";
+    tile.style.top = (slot.row * playedLayout.rowStrideDp + playedLayout.verticalPaddingDp) + "px";
     face.style.width = face.style.minWidth = playedLayout.cardWidthDp + "px";
     face.style.height = playedLayout.cardHeightDp + "px";
-    tile.querySelector(":scope > span:last-child").hidden = !playedLayout.playerLabelHeightDp;
+    if (face.classList.contains("compact-play-face")) face.style.fontSize = playedLayout.faceTextSp / 16 + "rem";
+    const player = tile.querySelector(".played-name");
+    player.hidden = !playedLayout.playerLabelHeightDp;
+    player.style.height = playedLayout.playerLabelHeightDp + "px";
+    player.style.fontSize = playedLayout.playerTextSp / 16 + "rem";
   }
 }
 
@@ -470,7 +501,7 @@ function showHistory(data) {
 
 function action(key) {
   automation.set(false);
-  issue("/api/action", { action: key });
+  return issue("/api/action", { action: key });
 }
 
 function control(move) {
@@ -539,7 +570,7 @@ async function placeTable() {
       players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length
     });
     if (request !== measuring || !board.isConnected) return;
-    playedLayout = layout.played;
+    playedLayout = layout.played ? { ...layout.played, ...layout.playedStyle } : null;
     if (layout.board) {
       if (layout.boardHeight > board.clientHeight) board.style.minHeight = layout.boardHeight + "px";
       for (const [index, seat] of seats.entries()) place(seat, layout.board.seats[index]);
@@ -681,6 +712,8 @@ function markSeat(node, active, bidding) {
 }
 
 function render() {
+  handFeedback?.cancel();
+  handFeedback = undefined;
   if (!state.view) {
     menu();
     return;
@@ -740,7 +773,30 @@ function render() {
   hand.setAttribute("aria-label", copy("hand", "Cărțile tale"));
   hand.tabIndex = 0;
   const fan = element("div", "", "fan");
-  for (const face of match.hand) fan.append(card(face, true));
+  const timing = copy("handFeedback", null);
+  const acceptsFeedback = !!match.header && !!timing && match.hand.some(face => face.action);
+  for (const face of match.hand) fan.append(card(face, true, acceptsFeedback));
+  if (acceptsFeedback) {
+    const revision = state.revision;
+    handFeedback = bindHandFeedback(fan, {
+      timing,
+      request: fields => call("/api/hand-feedback", { ...fields, revision }),
+      active: () => fan.isConnected && revision === state.revision && !pending && !automation.selected() && !dialogBlocksPlay(),
+      play: action,
+      failed: async error => {
+        if (error.status === 409) {
+          try {
+            state = await call("/api/state");
+            render();
+          } catch (reload) {
+            errorBox.textContent = reload.message;
+            return;
+          }
+        }
+        errorBox.textContent = error.message;
+      }
+    });
+  }
   hand.append(fan);
 
   content.append(heading, board);

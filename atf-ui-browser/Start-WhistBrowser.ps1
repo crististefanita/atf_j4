@@ -56,7 +56,7 @@ $sources = @(
     Join-Path $app 'table/content/WhistTableContent.java'
     Join-Path $app 'cards/WhistCardFace.java'
     $ui = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui'
-    foreach ($contract in 'seat/SeatContent','hand/HandCard','cards/CardFace','table/PlayedCardContent') {
+    foreach ($contract in 'seat/SeatContent','table/PlayedCardContent') {
         Join-Path $ui "$contract.java"
     }
     $CatalogSource

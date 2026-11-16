@@ -31,7 +31,6 @@ public final class HandFan {
     private final Consumer<String> onCardSelected;
     private final Predicate<HandCard> highlight;
     private final boolean rejectedTapHint;
-    private static final long HINT_DURATION_MS = 1100L;
 
     public HandFan(Context context, List<HandCard> cards, int clearanceDp, boolean compact, Consumer<String> onCardSelected) {
         this(context, cards, clearanceDp, compact, onCardSelected, card -> false);
@@ -105,7 +104,7 @@ public final class HandFan {
                             long revision = input.revision();
                             fan.postDelayed(() -> {
                                 if (input.clearHint(revision)) repaint.run();
-                            }, HINT_DURATION_MS);
+                            }, HandInput.HINT_DURATION_MILLIS);
                             return;
                         }
                         case PLAY -> repaint.run();
@@ -115,7 +114,7 @@ public final class HandFan {
                     face.animate().translationY(-dp(HandLayoutMetrics.CARD_LIFT_DP))
                             .scaleX(HandLayoutMetrics.CARD_LIFT_SCALE)
                             .scaleY(HandLayoutMetrics.CARD_LIFT_SCALE)
-                            .setDuration(150L)
+                            .setDuration(HandInput.PLAY_LIFT_MILLIS)
                             .withEndAction(() -> onCardSelected.accept(card.id()))
                             .start();
                 });

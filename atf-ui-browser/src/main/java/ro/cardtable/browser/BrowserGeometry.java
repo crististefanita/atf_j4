@@ -12,7 +12,7 @@ final class BrowserGeometry {
     private BrowserGeometry() { }
 
     record Layout(TableGeometry.Plan board, HandLayoutMetrics.Fan hand, int boardHeight,
-                  PlayedCardMetrics.Layout played, BrowserGame.BidControls bids) { }
+                  PlayedCardMetrics.Layout played, BrowserGame.BidControls bids, Map<String, Integer> playedStyle) { }
 
     static Layout measure(BrowserGame game, Map<String, String> inputs) {
         int width = number(inputs, "width", 1, 1200);
@@ -42,7 +42,10 @@ final class BrowserGeometry {
         }
         var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1,
                 HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP);
-        return new Layout(board, hand, height, played, bids);
+        var style = played == null ? Map.<String, Integer>of() : Map.of(
+                "faceTextSp", played.cardFaceTextSizeSp(), "playerTextSp", played.playerLabelTextSizeSp(),
+                "verticalPaddingDp", played.itemVerticalPaddingDp() / 2);
+        return new Layout(board, hand, height, played, bids, style);
     }
 
     private static int number(Map<String, String> fields, String key, int minimum, int maximum) {

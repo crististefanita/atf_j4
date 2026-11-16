@@ -24,6 +24,7 @@ import ro.cardtable.ui.turn.TurnPacing;
 import ro.whistlab.core.ai.policy.AiPolicy;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.model.Card;
+import ro.whistlab.core.model.PlayedCard;
 import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.rules.GameRules;
 import ro.whistlab.core.session.GamePhase;
@@ -127,10 +128,10 @@ final class WhistMatch implements BrowserGame.Match {
             var timeline = TrickCollectionMotion.timing(TrickCollectionMotion.DISPLAY_MILLIS, 0);
             return new BrowserGame.CollectionCue(target.winner(), TrickCollectionMotion.DISPLAY_MILLIS,
                     timeline.durationMillis(), state.lastTrick().stream()
-                    .map(played -> new Played(played.seat(), face(played.card(), ""))).toList(), timeline.delayMillis());
+                    .map(played -> playedFace(state, played)).toList(), timeline.delayMillis());
         }).orElse(null);
         if (collection != null) collections.add(collection);
-        playback.add(new BrowserGame.PlayStep(new Played(actor, face(card, "")), before.currentTrick().isEmpty(),
+        playback.add(new BrowserGame.PlayStep(playedFace(before, new PlayedCard(actor, card)), before.currentTrick().isEmpty(),
                 automated ? TurnPacing.ACTION_DELAY_MILLIS : 0, collection, copy.bidSummary(before),
                 before.players().stream().map(copy::seatFacts).toList()));
     }
@@ -160,7 +161,7 @@ final class WhistMatch implements BrowserGame.Match {
                 .stream().map(card -> new BrowserGame.Card(card.face().rankLabel(), card.face().suitSymbol(),
                         card.description(), card.playable() ? "card:" + card.id() : "")).toList();
         var trick = state.currentTrick().isEmpty() ? state.lastTrick() : state.currentTrick();
-        List<Played> played = trick.stream().map(play -> new Played(play.seat(), face(play.card(), ""))).toList();
+        List<Played> played = trick.stream().map(play -> playedFace(state, play)).toList();
         var center = state.turnedCard() == null ? List.<BrowserGame.Card>of() : List.of(face(state.turnedCard(), ""));
         var subtitle = copy.trumpHeading() + " " + copy.trumpIndicatorValue(state) + " · " + copy.bidSummary(state);
         var header = new BrowserGame.Header(state.mode().name(), copy.gameTitle(state.mode()), copy.progress(state),
@@ -222,6 +223,11 @@ final class WhistMatch implements BrowserGame.Match {
     }
 
     private static String cardKey(Card card) { return "card:" + card.suit().name() + ":" + card.rank(); }
+
+    private Played playedFace(Snapshot state, PlayedCard played) {
+        var projected = WhistTableContent.plays(state, List.of(played), copy).get(0);
+        return new Played(projected.seat(), face(played.card(), ""), projected.faceLabel(), projected.description());
+    }
 
     private BrowserGame.Card face(Card card, String action) {
         return new BrowserGame.Card(card.rankLabel(), card.suit().symbol(), copy.cardLabel(card), action);

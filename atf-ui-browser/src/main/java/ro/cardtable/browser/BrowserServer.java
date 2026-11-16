@@ -31,6 +31,7 @@ public final class BrowserServer implements AutoCloseable {
             "/profile.mjs", new Asset("profile.mjs", "text/javascript; charset=utf-8"),
             "/auto-game.mjs", new Asset("auto-game.mjs", "text/javascript; charset=utf-8"),
             "/records.mjs", new Asset("records.mjs", "text/javascript; charset=utf-8"),
+            "/hand-feedback.mjs", new Asset("hand-feedback.mjs", "text/javascript; charset=utf-8"),
             "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"));
     private final HttpServer server;
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
@@ -126,7 +127,7 @@ public final class BrowserServer implements AutoCloseable {
                     error(http, 400, "Invalid layout measurements");
                 }
             }
-            case "/api/start", "/api/action", "/api/profile", "/api/notice", "/api/language" -> {
+            case "/api/start", "/api/action", "/api/profile", "/api/notice", "/api/language", "/api/hand-feedback" -> {
                 if (!requireMethod(http, method, "POST")) return;
                 mutate(http, path, client);
             }
@@ -146,6 +147,7 @@ public final class BrowserServer implements AutoCloseable {
             }
             var state = switch (path) {
                 case "/api/start" -> session.start(game, revision, form);
+                case "/api/hand-feedback" -> session.handFeedback(revision, form);
                 case "/api/profile" -> session.rename(revision, form.getOrDefault("name", ""));
                 case "/api/language" -> session.language(revision, form.getOrDefault("language", ""));
                 case "/api/notice" -> session.dismissNotice(revision);

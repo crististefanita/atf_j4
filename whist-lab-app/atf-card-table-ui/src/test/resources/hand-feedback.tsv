@@ -1,0 +1,9 @@
+# operation|card or expiry revision|outcome|rejected|selected|revision|suggestions
+tap|wrong|HINT|wrong|false|1|first,second
+tap|other|HINT|other|false|2|first,second
+clear|1|IGNORE|other|false|2|first,second
+clear|2|IGNORE||false|2|
+tap|wrong|HINT|wrong|false|3|first,second
+tap|second|PLAY||true|4|
+tap|first|IGNORE||true|4|
+clear|3|IGNORE||true|4|

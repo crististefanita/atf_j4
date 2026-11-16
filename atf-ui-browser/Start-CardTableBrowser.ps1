@@ -26,10 +26,14 @@ $null = New-Item -ItemType Directory -Path $classes -Force
 $inputs = @(
     Join-Path $PSScriptRoot 'src/main/java'
     $ui = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui'
-    foreach ($contract in 'TableSeatLayout','TableSizing','TableGeometry','TableViewportPolicy','PlayedCardMetrics','ScoreGridStyle') {
+    foreach ($contract in 'TableSeatLayout','TableSizing','TableGeometry','TableViewportPolicy','PlayedCardMetrics','PlayedCardStyle','ScoreGridStyle') {
         Join-Path $ui "table/$contract.java"
     }
     Join-Path $ui 'hand/HandLayoutMetrics.java'
+    Join-Path $ui 'hand/HandInput.java'
+    Join-Path $ui 'hand/HandCard.java'
+    Join-Path $ui 'cards/CardFace.java'
+    Join-Path $ui 'cards/CardHighlight.java'
     Join-Path $ui 'cards/CardFaceMetrics.java'
     Join-Path $ui 'animation/TrickCollectionMotion.java'
     Join-Path $checkout 'whist-lab-app/card-table-names/src/main/java'

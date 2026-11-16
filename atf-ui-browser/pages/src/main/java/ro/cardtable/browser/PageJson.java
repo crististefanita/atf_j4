@@ -89,7 +89,12 @@ final class PageJson {
         if (value instanceof BrowserGame.Seat seat)
             return fields("anchor", seat.anchor(), "name", seat.name(), "firstFact", seat.firstFact(),
                     "secondFact", seat.secondFact(), "active", seat.active());
-        if (value instanceof BrowserGame.Played played) return fields("seat", played.seat(), "card", played.card());
+        if (value instanceof BrowserHandAdapter.Feedback feedback)
+            return fields("action", feedback.action(), "rejected", feedback.rejected(), "selected", feedback.selected(),
+                    "revision", feedback.revision(), "suggestions", feedback.suggestions());
+        if (value instanceof BrowserGame.Played played)
+            return fields("seat", played.seat(), "card", played.card(), "faceLabel", played.faceLabel(),
+                    "description", played.description());
         if (value instanceof BrowserGame.PlayStep step)
             return fields("play", step.play(), "startsTrick", step.startsTrick(), "delayMillis", step.delayMillis(),
                     "collection", step.collection(), "bids", step.bids(), "seatFacts", step.seatFacts());
@@ -114,7 +119,7 @@ final class PageJson {
                     "travelMillis", cue.travelMillis(), "cards", cue.cards(), "holdMillis", cue.holdMillis());
         if (value instanceof BrowserGeometry.Layout layout)
             return fields("board", layout.board(), "hand", layout.hand(), "boardHeight", layout.boardHeight(),
-                    "played", layout.played(), "bids", layout.bids());
+                    "played", layout.played(), "bids", layout.bids(), "playedStyle", layout.playedStyle());
         if (value instanceof BrowserGame.BidControls bids)
             return fields("columns", bids.columns(), "strip", bids.strip(), "choiceTarget", bids.choiceTarget(),
                     "rowHeight", bids.rowHeight(), "choiceInset", bids.choiceInset(), "submitWidth", bids.submitWidth(),

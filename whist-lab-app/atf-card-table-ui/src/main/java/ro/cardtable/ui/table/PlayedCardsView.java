@@ -1,6 +1,5 @@
 package ro.cardtable.ui.table;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
@@ -16,9 +15,6 @@ import static android.widget.LinearLayout.VERTICAL;
 
 /** Seat-aligned public cards; the consumer owns reveal, scoring and collection timing. */
 public final class PlayedCardsView {
-    private static final int WHITE = Color.rgb(255, 254, 248);
-    private static final int CARD_RED = Color.rgb(173, 57, 58);
-    private static final int CARD_DARK = Color.rgb(42, 53, 47);
     private final Context context;
     private final boolean compact;
     public PlayedCardsView(Context context, boolean compact) { this.context = context; this.compact = compact; }
@@ -51,16 +47,16 @@ public final class PlayedCardsView {
             item.setPadding(0, verticalPadding, 0, verticalPadding);
 
             TextView card = text(play.faceLabel(), layout.cardFaceTextSizeSp(),
-                    play.red() ? CARD_RED : CARD_DARK, true);
+                    play.red() ? PlayedCardStyle.RED : PlayedCardStyle.DARK, true);
             card.setTag("trick-face:" + seat);
             card.setGravity(Gravity.CENTER);
             card.setPadding(dp(2), dp(4), dp(2), dp(4));
-            card.setBackground(rounded(WHITE, Color.rgb(220, 227, 238), 9));
+            card.setBackground(rounded(PlayedCardStyle.FILL, PlayedCardStyle.OUTLINE, PlayedCardStyle.RADIUS_DP));
             card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             item.addView(card, new LayoutParams(dp(layout.cardWidthDp()), dp(layout.cardHeightDp())));
 
             TextView who = text(play.playerLabel(), layout.playerLabelTextSizeSp(),
-                    Color.rgb(212, 223, 209), false);
+                    PlayedCardStyle.PLAYER, false);
             who.setGravity(Gravity.CENTER);
             who.setSingleLine(true);
             who.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -98,7 +94,7 @@ public final class PlayedCardsView {
         GradientDrawable shape = new GradientDrawable();
         shape.setColor(fill);
         shape.setCornerRadius(dp(radius));
-        shape.setStroke(dp(1), stroke);
+        shape.setStroke(dp(PlayedCardStyle.STROKE_DP), stroke);
         return shape;
     }
     private int dp(int value) {

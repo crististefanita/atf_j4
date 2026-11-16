@@ -75,7 +75,9 @@ public interface BrowserGame {
         public Card(String rank, String suit, String label) { this(rank, suit, label, ""); }
     }
 
-    record Played(int seat, Card card) { }
+    record Played(int seat, Card card, String faceLabel, String description) {
+        public Played(int seat, Card card) { this(seat, card, null, null); }
+    }
     record PlayStep(Played play, boolean startsTrick, long delayMillis, CollectionCue collection,
                     String bids, List<String> seatFacts) { }
 

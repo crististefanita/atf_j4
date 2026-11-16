@@ -1,6 +1,8 @@
 package ro.cardtable.ui.hand;
 
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.Test;
 import ro.cardtable.ui.cards.CardFace;
 
@@ -53,6 +55,35 @@ public final class HandInputTest extends GradleAuditedTest {
         assertFalse("input.rejects(other)", input.rejects(other));
         assertFalse("input.suggests(legal)", input.suggests(legal));
         assertFalse("new HandInput(cards, true).rejects(other)", new HandInput(cards, true).rejects(other));
+    }
+
+    @Test public void androidAndSerializedFeedbackFollowTheSharedBrowserScenario() throws Exception {
+        var cards = List.of(card("first", true), card("second", true), card("wrong", false), card("other", false));
+        var nativeHand = new HandInput(cards, true);
+        var state = nativeHand.state();
+        Path scenario = Path.of(System.getProperty("cardui.sourceRoot"), "src/test/resources/hand-feedback.tsv");
+        for (String line : Files.readAllLines(scenario)) {
+            if (line.isBlank() || line.startsWith("#")) continue;
+            String[] step = line.split("\\|", -1);
+            var payloadHand = new HandInput(cards, true, state);
+            var action = apply(nativeHand, step[0], step[1]);
+            var serialized = apply(payloadHand, step[0], step[1]);
+            var expected = new HandInput.State(step[3], Boolean.parseBoolean(step[4]), Long.parseLong(step[5]));
+            var clues = step[6].isEmpty() ? List.<String>of() : List.of(step[6].split(","));
+            GradleInputs.fixture("Shared Android and browser hand scenario", "step", line);
+            assertEquals("Expected native action", HandInput.Action.valueOf(step[2]), action);
+            assertEquals("Action after restoring adapter state", action, serialized);
+            assertEquals("Expected input state", expected, nativeHand.state());
+            assertEquals("Snapshot-bound state after transport", nativeHand.state(), payloadHand.state());
+            assertEquals("Legal suggestions in render order", clues, payloadHand.suggestions());
+            state = payloadHand.state();
+        }
+    }
+
+    private static HandInput.Action apply(HandInput hand, String operation, String payload) {
+        if (operation.equals("tap")) return hand.tap(payload);
+        hand.clearHint(Long.parseLong(payload));
+        return HandInput.Action.IGNORE;
     }
 
     @Test public void disabledHintAndForcedPassIgnoreUnavailableCards() {

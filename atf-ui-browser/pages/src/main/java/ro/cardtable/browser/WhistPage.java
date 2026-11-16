@@ -60,6 +60,7 @@ public final class WhistPage {
                 case "/api/layout" -> BrowserGeometry.measure(game, parameters(input));
                 case "/api/start" -> session.start(game, revision, parameters(input));
                 case "/api/action" -> session.act(revision, input.optString("action"));
+                case "/api/hand-feedback" -> session.handFeedback(revision, parameters(input));
                 case "/api/profile" -> session.rename(revision, input.optString("name"));
                 case "/api/language" -> session.language(revision, input.optString("language"));
                 case "/api/notice" -> session.dismissNotice(revision);

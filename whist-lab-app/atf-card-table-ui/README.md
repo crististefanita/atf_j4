@@ -18,11 +18,12 @@
 | [menu](src/main/java/ro/cardtable/ui/menu/HomeMenuContent.java) | Ordine, etichete, tag-uri, stare de reluare și callback-uri; dropdown-ul păstrează cele două limbi și înregistrarea amânată a listenerului. |
 | [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | Dialogul acceptă filtrul de intrare al jocului. Normalizarea, persistența și excepția originală aparțin consumatorului. |
 | [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Însemne, proporții și marcaj crem-auriu. Jocul furnizează cartea vizibilă și decide când se marchează. |
-| [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometrie, centrare/derulare și rendererul `HandFan`; `HandCard` furnizează numai identitate, însemne, accesibilitate și interactivitate. |
+| [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometrie, derulare și interacțiune pentru o mână afișată. Adaptoarele păstrează durata marcajelor, ridicarea și revizia gestului prin [HandInput](src/main/java/ro/cardtable/ui/hand/HandInput.java). |
 | [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; etichetele se măsoară la lățimea locului, iar cadrul primește aceeași rezervare între faze. |
 | [table](src/main/java/ro/cardtable/ui/table/BoardLayout.java) | Regiuni ocupate, ordine vizuală, viewport și bandă centrală măsurată între locuri. Consumatorul compune conținutul benzii. |
 | [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Așteaptă primul cadru vizibil, aplică intervalul comun și invalidează acțiunea dacă scena s-a schimbat. |
 | [animation](src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Validează setul locurilor și expune pauza, durata și curba colectării. Android desenează fețele native, iar web-ul redă aceeași curbă pe elementele din pagină. |
+| [PlayedCardStyle](src/main/java/ro/cardtable/ui/table/PlayedCardStyle.java) | Conturul, paleta și raza feței compacte rămân comune la depunere și în colectare. |
 | [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Păstrează proporțiile, înălțimea și culorile tabelului de scor pentru adaptorul Android și browser. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
 
@@ -67,7 +68,7 @@ Din copia temporară a rădăcinii Android `whist-lab-app`, cu PowerShell 7, JDK
 | Meniul comun | Ordine și tag-uri fixe, RO/EN, nume implicit/configurat, reluare dezactivată și callback-uri distincte. |
 | Editarea numelui | Intervalul propus, păstrarea selecției la refuz, ștergerea, ordinea validare/salvare și cauza eșecului. |
 | Geometria mesei și a mâinii | 3–6 locuri, profiluri între 320 și 600 dp, font 1–2×, o carte centrată și indici măsurați. |
-| Marcajul cărților | Aceeași paletă pentru evidențiere în poziție și ridicare la dezvăluire. Densitatea fracționară păstrează conturul în fâșia vizibilă a cărții. |
+| Marcajul cărților | Aceeași paletă pentru refuz și recomandare. Același [scenariu de gesturi](src/test/resources/hand-feedback.tsv) verifică în JVM și web atingerea repetată, expirarea după revizie și selecția acceptată o singură dată. |
 | Realizări | Ordine și identități stabile, încărcarea detaliilor la cerere, stări ambigue respinse. |
 | Frontiera bibliotecii | Inventare Java distincte pentru producție, JVM și Android instrumentat. Manifest de bibliotecă fără aplicație ori permisiuni proprii. |
 | Modele de masă | Identități stabile, fapte ordonate și imuabile, regiuni măsurate și dimensiuni identice indiferent de numărul locurilor. |

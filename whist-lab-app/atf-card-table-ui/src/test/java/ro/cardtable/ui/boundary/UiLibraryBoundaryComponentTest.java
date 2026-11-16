@@ -31,7 +31,8 @@ public final class UiLibraryBoundaryComponentTest extends GradleAuditedTest {
     @Test public void portableTableContractsHaveNoPlatformImports() throws Exception {
         var source = module().resolve("src/main/java/ro/cardtable/ui");
         var contracts = List.of("animation/CollectionTarget.java", "animation/TrickCollectionMotion.java",
-                "turn/TurnPacing.java", "table/ScoreGridStyle.java", "seat/SeatContent.java");
+                "turn/TurnPacing.java", "table/ScoreGridStyle.java", "seat/SeatContent.java",
+                "hand/HandInput.java", "cards/CardHighlight.java", "table/PlayedCardStyle.java");
         var platform = new ArrayList<>(GAME_PACKAGES);
         platform.addAll(List.of("import android.", "import androidx.", "import atf."));
         var violations = new ArrayList<String>();

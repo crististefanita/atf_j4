@@ -13,6 +13,10 @@ import ro.cardtable.browser.BrowserExperience;
 import ro.cardtable.browser.BrowserServer;
 import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.ScoreGridStyle;
+import ro.cardtable.ui.table.PlayedCardStyle;
+import ro.cardtable.ui.cards.CardHighlight;
+import ro.cardtable.ui.hand.HandInput;
+import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.theme.TableColors;
 import ro.cardtable.ui.turn.TurnPacing;
 import ro.whistlab.app.achievements.WhistAchievementRepository.Storage;
@@ -66,12 +70,23 @@ public final class WhistBrowser implements BrowserGame {
                 color("score-paper", ScoreGridStyle.PAPER), color("score-stripe", ScoreGridStyle.STRIPE),
                 color("score-human", ScoreGridStyle.HUMAN_ROW), color("score-header", ScoreGridStyle.HEADER),
                 color("score-rule", ScoreGridStyle.RULE), color("score-ink", ScoreGridStyle.INK),
-                color("score-muted", ScoreGridStyle.MUTED)));
+                color("score-muted", ScoreGridStyle.MUTED),
+                color("hint-rejected-fill", CardHighlight.REJECTED.fill()),
+                color("hint-rejected-line", CardHighlight.REJECTED.outline()),
+                color("hint-legal-fill", CardHighlight.IN_PLACE.fill()),
+                color("hint-legal-line", CardHighlight.IN_PLACE.outline()),
+                color("played-fill", PlayedCardStyle.FILL), color("played-line", PlayedCardStyle.OUTLINE),
+                color("played-red", PlayedCardStyle.RED), color("played-dark", PlayedCardStyle.DARK),
+                color("played-player", PlayedCardStyle.PLAYER)));
+        tokens.add(new Token("--whist-played-radius", PlayedCardStyle.RADIUS_DP + "px"));
+        tokens.add(new Token("--whist-played-stroke", PlayedCardStyle.STROKE_DP + "px"));
+        tokens.add(new Token("--whist-hint-stroke", CardHighlight.IN_PLACE.strokeDp() + "px"));
         double total = ScoreGridStyle.COLUMN_WEIGHTS.stream().mapToDouble(Float::doubleValue).sum();
         for (int index = 0; index < ScoreGridStyle.COLUMN_WEIGHTS.size(); index++) {
             tokens.add(new Token("--whist-score-col-" + index,
                     (ScoreGridStyle.COLUMN_WEIGHTS.get(index) * 100 / total) + "%"));
         }
+        tokens.add(new Token("--whist-hand-slot", (HandLayoutMetrics.CARD_HEIGHT_DP + HandLayoutMetrics.LIFT_CLEARANCE_DP) + "px"));
         tokens.add(new Token("--whist-score-head", ScoreGridStyle.HEADER_DP + "px"));
         tokens.add(new Token("--whist-score-row", ScoreGridStyle.ROW_DP + "px"));
         return List.copyOf(tokens);
@@ -117,6 +132,9 @@ public final class WhistBrowser implements BrowserGame {
                 entry("rulesAndSchedule", text.rulesAndSchedule()), entry("modeRules", modeRules(text)),
                 entry("scoringDetails", text.scoringDetails()), entry("scoreSheet", text.scoreSheet()),
                 entry("stopAutoGame", text.stopAutoGameHand()),
+                entry("handFeedback", Map.of("hintMillis", HandInput.HINT_DURATION_MILLIS,
+                        "liftMillis", HandInput.PLAY_LIFT_MILLIS, "liftDp", HandLayoutMetrics.CARD_LIFT_DP,
+                        "liftScale", HandLayoutMetrics.CARD_LIFT_SCALE)),
                 entry("bidNow", text.seatTurnBadge(true)), entry("playNow", text.seatTurnBadge(false)),
                 entry("rules", HowToPlay.sections(text.language()).stream()
                         .map(section -> Map.of("title", section.title(), "body", section.explanation())).toList()),

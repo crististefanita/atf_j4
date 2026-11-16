@@ -24,7 +24,7 @@ async function check(name, expected, exercise) {
   console.log(checks.at(-1).status + " " + name);
 }
 
-const files = [".nojekyll", "auto-game.mjs", "collection.mjs", "engine-worker.mjs", "index.html", "local-transport.mjs",
+const files = [".nojekyll", "auto-game.mjs", "collection.mjs", "engine-worker.mjs", "hand-feedback.mjs", "index.html", "local-transport.mjs",
   "profile.mjs", "records.mjs", "table.css", "table.mjs", "viewport.mjs", "whist-engine.mjs"];
 
 if (!selection) await check("Pages · inventarul public", "Doar resurse statice și legături relative în subdirectorul proiectului", async () => {

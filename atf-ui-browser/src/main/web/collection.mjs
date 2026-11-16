@@ -42,9 +42,9 @@ export function collect(stage, cue, drawCard, samples, clock = globalThis) {
   overlay.setAttribute("aria-hidden", "true");
   stage.append(overlay);
   stage.dataset.collecting = "true";
-  effects = cue.cards.map(({ seat, card }, index) => {
-    const face = drawCard(card);
-    const played = table.querySelector(`.played-card[data-seat="${seat}"] .card`);
+  effects = cue.cards.map((play, index) => {
+    const played = table.querySelector(`.played-card[data-seat="${play.seat}"] .card`);
+    const face = played ? played.cloneNode(true) : drawCard(play.card, play);
     const origin = played ? local(played) : {
       x: start.x + (index - (cue.cards.length - 1) / 2) * 35,
       y: start.y

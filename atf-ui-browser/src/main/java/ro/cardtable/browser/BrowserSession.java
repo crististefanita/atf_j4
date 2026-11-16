@@ -35,6 +35,11 @@ final class BrowserSession {
         revision++;
     }
 
+    synchronized BrowserHandAdapter.Feedback handFeedback(long expected, Map<String, String> fields) {
+        checkRevision(expected);
+        return BrowserHandAdapter.apply(view, fields);
+    }
+
     synchronized BrowserExperience.Rankings rankings() {
         return profile == null ? null : profile.rankings(match, language);
     }
