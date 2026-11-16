@@ -27,6 +27,12 @@ class BrowserExtent {
         var checks = new ArrayList<JsonNode>();
         cases.forEach(checks::add);
         checks.add(mapper.readTree(directory.resolve("whist-parity.json").toFile()));
+        Path mobile = directory.resolve("paired-android.json");
+        if (Files.isRegularFile(mobile)) {
+            var pairs = mapper.readTree(mobile.toFile());
+            if (!pairs.isArray() || pairs.isEmpty()) throw new IllegalArgumentException("No paired Android cases");
+            pairs.forEach(checks::add);
+        }
         var captures = new ArrayList<ExtentReportUiEvidence.Capture>();
         try (var run = new AssertionAuditRun(new ExtentReportSession(report), new SensitiveDataRedactor())) {
             int number = 0;

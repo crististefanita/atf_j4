@@ -2,12 +2,17 @@ package ro.whistlab.browser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.io.IOException;
 import ro.cardtable.browser.BrowserGame;
 import ro.cardtable.browser.BrowserGame.Action;
 import ro.cardtable.browser.BrowserGame.Played;
 import ro.cardtable.browser.BrowserGame.Seat;
 import ro.cardtable.browser.BrowserGame.View;
 import ro.whistlab.app.bidding.HumanBidSelection;
+import ro.whistlab.app.animation.TrickCollectionRequest;
+import ro.whistlab.app.achievements.WhistAchievementRepository;
+import ro.cardtable.ui.animation.TrickCollectionMotion;
 import ro.whistlab.core.ai.policy.AiPolicy;
 import ro.whistlab.core.model.Card;
 import ro.whistlab.core.model.Suit;
@@ -18,6 +23,8 @@ import ro.whistlab.core.session.GameSession.Snapshot;
 
 final class WhistMatch implements BrowserGame.Match {
     private final GameSession game;
+    private final String matchId = UUID.randomUUID().toString();
+    private BrowserGame.CollectionCue collection;
     private final HumanBidSelection bidSelection = new HumanBidSelection();
 
     WhistMatch(GameSession game) {
@@ -26,6 +33,7 @@ final class WhistMatch implements BrowserGame.Match {
     }
 
     @Override public void act(String action) {
+        collection = null;
         if (action.equals("auto")) {
             advance(true);
             return;
@@ -37,7 +45,7 @@ final class WhistMatch implements BrowserGame.Match {
         } else {
             var card = game.snapshot().players().get(0).hand().stream()
                     .filter(candidate -> cardKey(candidate).equals(action)).findFirst().orElseThrow();
-            game.playCard(0, card);
+            play(0, card);
         }
         advance(false);
     }
@@ -52,10 +60,29 @@ final class WhistMatch implements BrowserGame.Match {
                 int bid = actor == 0 ? recommend() : AiPolicy.chooseBid(state, actor, difficulty);
                 game.submitBid(actor, bid);
             } else {
-                game.playCard(actor, AiPolicy.chooseCard(state, actor, difficulty));
+                play(actor, AiPolicy.chooseCard(state, actor, difficulty));
             }
         }
         throw new IllegalStateException("Whist turn bound exceeded");
+    }
+
+    private void play(int actor, Card card) {
+        game.playCard(actor, card);
+        var state = game.snapshot();
+        TrickCollectionRequest.from(state, state.lastTrick()).ifPresent(target -> collection =
+                new BrowserGame.CollectionCue(state.lastTrickWinnerSeat(), TrickCollectionMotion.DISPLAY_MILLIS,
+                        TrickCollectionMotion.COLLECT_MILLIS, state.lastTrick().stream()
+                        .map(played -> new Played(played.seat(), face(played.card(), ""))).toList()));
+    }
+
+    @Override public BrowserGame.CollectionCue collection() { return collection; }
+    int handNumber() { return game.snapshot().handNumber(); }
+    boolean finished() { return game.snapshot().phase() == GamePhase.SCORE && game.snapshot().finalHand(); }
+    void validateName(String value) { game.validateHumanName(value); }
+    void rename(String value) { game.renameHuman(value); }
+
+    void recordAchievements(WhistAchievementRepository repository) throws IOException {
+        if (game.snapshot().phase() == GamePhase.SCORE) repository.record(matchId, game);
     }
 
     @Override public View view() {

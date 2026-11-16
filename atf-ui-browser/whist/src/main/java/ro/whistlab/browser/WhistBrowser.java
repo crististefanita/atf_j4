@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.LongSupplier;
 import java.util.random.RandomGenerator;
+import java.nio.file.Path;
 import ro.cardtable.browser.BrowserGame;
 import ro.cardtable.browser.BrowserServer;
 import ro.whistlab.core.config.AiDifficulty;
@@ -14,14 +15,26 @@ import ro.whistlab.core.session.GameSession;
 
 public final class WhistBrowser implements BrowserGame {
     private final LongSupplier seeds;
+    private final Path storage;
 
-    public WhistBrowser(LongSupplier seeds) { this.seeds = seeds; }
+    public WhistBrowser(LongSupplier seeds) { this(seeds, null); }
+
+    private WhistBrowser(LongSupplier seeds, Path storage) {
+        this.seeds = seeds;
+        this.storage = storage;
+    }
 
     public static void main(String[] args) throws Exception {
-        BrowserServer.launch(new WhistBrowser(RandomGenerator.getDefault()::nextLong), args);
+        var storage = args.length == 4 ? Path.of(args[3]) : null;
+        BrowserServer.launch(new WhistBrowser(RandomGenerator.getDefault()::nextLong, storage),
+                args.length == 4 ? java.util.Arrays.copyOf(args, 3) : args);
     }
 
     @Override public String title() { return "Whist Lab"; }
+    @Override public boolean hasProfile() { return true; }
+    @Override public ro.cardtable.browser.BrowserExperience openProfile(String client) {
+        return new WhistBrowserProfile(storage, client);
+    }
 
     @Override public List<Field> fields() {
         return List.of(new Field("name", "Numele tău", "Tu", List.of()),

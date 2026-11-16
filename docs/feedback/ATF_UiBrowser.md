@@ -9,8 +9,9 @@
 | Arie | Criteriu rămas |
 |---|---|
 | Telefon Android | Compară același profil util, aceleași sesiuni și capturi APK/browser. Verifică fonturile, etichetele, rândurile, dialogurile și comenzile în ambele limbi. |
-| Funcții de prezentare | Califică ecranele de profil și realizări, recuperarea la repornirea serverului și ordinea cadrelor de decontare. Prima implementare păstrează sesiunea la reîncărcarea filei cât timp serverul rulează. |
+| Funcții de prezentare | Compară vizual ecranele de profil și realizări și califică ritmul cadrelor de decontare, inclusiv levatele intermediare în AutoGame. Verifică separat recuperarea partidei după repornirea serverului. Profilul și progresul se recuperează independent de partidă. |
 | Consumatori | Confruntă fluxurile Rentz și Hold’em cu APK-urile proprii, inclusiv variantele de joc și documentele de calificare ale fiecărui consumator. |
+| Publicare online | Sub descărcarea APK-ului din secțiunea „Jocul” a fiecărui README principal, publică legătura HTTPS verificată către jocul respectiv. Din acea legătură, o sesiune nouă pe telefon și pe Windows trebuie să poată porni și juca fără configurarea unui server local. |
 
 ## Profilurile de referință
 

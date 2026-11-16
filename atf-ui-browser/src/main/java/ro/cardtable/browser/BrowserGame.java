@@ -10,10 +10,13 @@ public interface BrowserGame {
     String title();
     List<Field> fields();
     Match start(Map<String, String> configuration);
+    default boolean hasProfile() { return false; }
+    default BrowserExperience openProfile(String client) { return null; }
 
     interface Match {
         View view();
         void act(String action);
+        default CollectionCue collection() { return null; }
     }
 
     record Option(String value, String label) { }
@@ -51,6 +54,10 @@ public interface BrowserGame {
     }
 
     record Played(int seat, Card card) { }
+
+    record CollectionCue(int winningSeat, long displayMillis, long travelMillis, List<Played> cards) {
+        public CollectionCue { cards = List.copyOf(cards); }
+    }
 
     record History(List<String> headings, List<List<String>> rows) {
         public static final History EMPTY = new History(List.of(), List.of());

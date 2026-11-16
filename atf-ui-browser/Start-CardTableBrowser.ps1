@@ -3,6 +3,8 @@ param(
     [Parameter(Mandatory)][string]$WorkRoot,
     [Parameter(Mandatory)][string]$GameRoot,
     [Parameter(Mandatory)][string[]]$JavaInputs,
+    [string[]]$Libraries = @(),
+    [string[]]$MainArguments = @(),
     [Parameter(Mandatory)][string]$MainClass,
     [ValidateRange(0,65535)][int]$Port,
     [string]$ListenAddress = '127.0.0.1',
@@ -44,13 +46,16 @@ function Format-JavacPath([string]$Path) {
 }
 $argFile = Join-Path $build 'javac.args'
 $arguments = @('--release', '17', '-encoding', 'UTF-8', '-d', (Format-JavacPath $classes))
+$libraryPaths = foreach ($library in $Libraries) { (Resolve-Path -LiteralPath $library).ProviderPath }
+if ($libraryPaths) { $arguments += @('-cp', (Format-JavacPath ($libraryPaths -join [IO.Path]::PathSeparator))) }
 $arguments += @($sources | Sort-Object -Unique | ForEach-Object { Format-JavacPath $_ })
 [IO.File]::WriteAllLines($argFile, [string[]]$arguments, [Text.UTF8Encoding]::new($false))
 & javac "@$argFile"
 if ($LASTEXITCODE -ne 0) { throw 'Browser adapter compilation failed.' }
+$runtime = (@($classes) + @($libraryPaths)) -join [IO.Path]::PathSeparator
 if ($BuildOnly) {
-    $classes
+    $runtime
     return
 }
-& java '-cp' $classes $MainClass (Join-Path $PSScriptRoot 'src/main/web') $ListenAddress $Port
+& java '-cp' $runtime $MainClass (Join-Path $PSScriptRoot 'src/main/web') $ListenAddress $Port @MainArguments
 if ($LASTEXITCODE -ne 0) { throw 'Browser server stopped with an error.' }

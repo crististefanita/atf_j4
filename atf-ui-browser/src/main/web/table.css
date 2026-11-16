@@ -7,6 +7,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; }
 .viewport {
+  min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   align-items: safe center;
@@ -144,6 +145,16 @@ dialog {
 }
 dialog::backdrop { background: #151b18b3; }
 dialog form { margin-top: 8px; display: flex; justify-content: flex-end; }
+.player-dialog > button { float: right; margin-top: 12px; }
+.player-dialog .goals { max-height: 65vh; overflow: auto; }
+.player-dialog .goals p { margin-block: 8px; }
+.player-dialog details, .goal-notice { margin: 6px 0; padding: 8px; background: #edf3e9; border-radius: 5px; }
+.player-dialog .profile-form { display: grid; justify-content: stretch; gap: 8px; }
+.profile-form label { display: grid; gap: 4px; }
+.profile-form input { padding: 5px 8px; }
+.collection { pointer-events: none; position: absolute; inset: 0; z-index: 3; }
+.collection .card { position: absolute; transform: translate(-50%, -50%); }
+#table[data-collecting] .cards-on-table { visibility: hidden; }
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 th, td { text-align: center; padding: 7px 5px; border-right: 1px solid #748a78; }
 thead, tr:nth-child(even) { background: #e8efe4; }

@@ -1,10 +1,14 @@
 import { isPhone, viewportGeometry } from "./viewport.mjs";
+import { collect } from "./collection.mjs";
+import { createProfileDialogs } from "./profile.mjs";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
 const viewport = document.querySelector(".viewport");
 const history = document.querySelector("#history");
+let animation;
 const resize = () => {
+  animation?.cancel();
   const visual = window.visualViewport;
   const inset = getComputedStyle(viewport);
   const width = Math.min(document.documentElement.clientWidth, visual?.width ?? innerWidth)
@@ -21,6 +25,8 @@ const resize = () => {
   stage.style.setProperty("--stage-scale", result.scale);
   history.style.setProperty("--dialog-width", result.frameWidth + "px");
   history.style.setProperty("--dialog-scale", result.scale);
+  document.documentElement.style.setProperty("--dialog-width", result.frameWidth + "px");
+  document.documentElement.style.setProperty("--dialog-scale", result.scale);
   if (stage.querySelector(".board")) placeTable();
 };
 resize();
@@ -47,6 +53,7 @@ let selectedBid;
 let measuring = 0;
 const errorBox = element("p", "", "error");
 errorBox.setAttribute("role", "alert");
+const profileDialogs = createProfileDialogs(element, button, issue);
 
 function element(tag, text, style) {
   const result = document.createElement(tag);
@@ -70,15 +77,25 @@ async function call(path, values) {
 }
 
 async function issue(path, fields) {
-  if (pending) return;
+  if (pending) return "O comandă este deja în curs.";
   pending = true;
   stage.setAttribute("aria-busy", "true");
   errorBox.textContent = "";
   try {
+    const onMenu = !!stage.querySelector(".setup");
     state = await call(path, { ...fields, revision: String(state.revision) });
     selectedBid = undefined;
-    render();
+    if (onMenu && path === "/api/profile") menu();
+    else render();
+    if (state.collection) {
+      await placeTable();
+      animation = collect(stage, state.collection, card);
+      await animation.done;
+      animation = undefined;
+    }
     stage.querySelector(".prompt, h1")?.focus({ preventScroll: true });
+    profileDialogs.notice(state.profile?.notice);
+    return "";
   } catch (failure) {
     if (failure.status === 409 || failure.status === 500) {
       try {
@@ -86,10 +103,11 @@ async function issue(path, fields) {
         render();
       } catch (reloadFailure) {
         errorBox.textContent = reloadFailure.message;
-        return;
+        return reloadFailure.message;
       }
     }
     errorBox.textContent = failure.message;
+    return failure.message;
   } finally {
     pending = false;
     stage.setAttribute("aria-busy", "false");
@@ -102,6 +120,7 @@ function menu() {
   title.tabIndex = -1;
   const form = element("form");
   for (const field of setup.fields) {
+    if (field.key === "name" && state.profile) continue;
     const label = element("label", field.label);
     const input = element(field.options.length ? "select" : "input");
     input.name = field.key;
@@ -127,6 +146,10 @@ function menu() {
   });
   content.append(title, form);
   if (state.view) content.append(button("Continuă", render));
+  if (state.profile) {
+    content.append(button("Numele tău: " + state.profile.name, () => profileDialogs.edit(state.profile.name)),
+      button("Realizări", () => profileDialogs.catalogue(state.profile.catalogue)));
+  }
   stage.replaceChildren(content, errorBox);
 }
 
@@ -322,6 +345,7 @@ try {
   [setup, state] = await Promise.all([call("/api/setup"), call("/api/state")]);
   document.title = setup.title;
   render();
+  profileDialogs.notice(state.profile?.notice);
 } catch (failure) {
   errorBox.textContent = failure.message;
   stage.append(errorBox);

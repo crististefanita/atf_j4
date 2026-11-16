@@ -20,7 +20,7 @@ export async function until(probe, limit = 10000) {
 
 export async function withServer(game, webRoot, exercise) {
   const child = spawn("java", ["-XX:ActiveProcessorCount=2", "-cp", game.classes, game.main, webRoot,
-    "127.0.0.1", "0"], { windowsHide: true });
+    "127.0.0.1", "0", ...(game.arguments ?? [])], { windowsHide: true });
   let output = "";
   let error = "";
   let startupFailure;

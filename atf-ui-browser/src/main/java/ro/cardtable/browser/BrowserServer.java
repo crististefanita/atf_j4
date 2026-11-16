@@ -24,7 +24,9 @@ public final class BrowserServer implements AutoCloseable {
             "/", new Asset("index.html", "text/html; charset=utf-8"),
             "/table.css", new Asset("table.css", "text/css; charset=utf-8"),
             "/table.mjs", new Asset("table.mjs", "text/javascript; charset=utf-8"),
-            "/viewport.mjs", new Asset("viewport.mjs", "text/javascript; charset=utf-8"));
+            "/viewport.mjs", new Asset("viewport.mjs", "text/javascript; charset=utf-8"),
+            "/profile.mjs", new Asset("profile.mjs", "text/javascript; charset=utf-8"),
+            "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"));
     private final HttpServer server;
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
     private final String access;
@@ -97,8 +99,9 @@ public final class BrowserServer implements AutoCloseable {
             }
             case "/api/state" -> {
                 if (!requireMethod(http, method, "GET")) return;
-                var session = session(client, false);
-                json(http, 200, session == null ? new BrowserSession.State(0, null) : session.state());
+                var session = session(client, game.hasProfile());
+                if (session == null && game.hasProfile()) error(http, 503, "Too many open profiles");
+                else json(http, 200, session == null ? new BrowserSession.State(0, null, null, null) : session.state());
             }
             case "/api/layout" -> {
                 if (!requireMethod(http, method, "POST")) return;
@@ -108,7 +111,7 @@ public final class BrowserServer implements AutoCloseable {
                     error(http, 400, "Invalid layout measurements");
                 }
             }
-            case "/api/start", "/api/action" -> {
+            case "/api/start", "/api/action", "/api/profile", "/api/notice" -> {
                 if (!requireMethod(http, method, "POST")) return;
                 mutate(http, path, client);
             }
@@ -121,13 +124,18 @@ public final class BrowserServer implements AutoCloseable {
             var form = decode(http.getRequestBody().readNBytes(MAX_FORM + 1));
             long revision = Long.parseLong(form.getOrDefault("revision", ""));
             boolean start = path.equals("/api/start");
-            var session = session(client, start);
+            var session = session(client, start || game.hasProfile());
             if (session == null) {
                 error(http, start ? 503 : 409, start ? "Too many open matches" : "Match unavailable");
                 return;
             }
-            json(http, 200, start ? session.start(game, revision, form)
-                    : session.act(revision, form.getOrDefault("action", "")));
+            var state = switch (path) {
+                case "/api/start" -> session.start(game, revision, form);
+                case "/api/profile" -> session.rename(revision, form.getOrDefault("name", ""));
+                case "/api/notice" -> session.dismissNotice(revision);
+                default -> session.act(revision, form.getOrDefault("action", ""));
+            };
+            json(http, 200, state);
         } catch (BrowserSession.StaleRevision stale) {
             error(http, 409, "The table has advanced. Reload its state.");
         } catch (IllegalArgumentException bad) {
@@ -140,7 +148,7 @@ public final class BrowserServer implements AutoCloseable {
 
     private synchronized BrowserSession session(String client, boolean create) {
         if (!create || sessions.containsKey(client) || sessions.size() >= MAX_TABS) return sessions.get(client);
-        var session = new BrowserSession();
+        var session = new BrowserSession(game.openProfile(client));
         sessions.put(client, session);
         return session;
     }
