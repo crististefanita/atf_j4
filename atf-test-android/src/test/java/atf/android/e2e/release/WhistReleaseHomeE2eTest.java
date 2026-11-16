@@ -80,23 +80,16 @@ class WhistReleaseHomeE2eTest {
         String close = ro ? "ÎNCHIDE" : "CLOSE";
         String back = ro ? "Înapoi" : "Back";
         String newGame = ro ? "Joc nou" : "New game";
-        String progress = ro ? "din 55 de realizări" : "of 55 achievements earned";
-        String firstChapter = ro ? "1. Primii pași" : "1. Getting started";
+
         String firstGoal = ro ? "Prima partidă" : "First match";
-        c.checkpoint("Signed APK home offers achievements", xml -> List.of(
-                ReleaseBidContext.equal("Installed APK matches the candidate SHA-256",
-                        c.setup.required("requestedApkSha256").asText(), installed),
-                ReleaseBidContext.equal("Achievement catalogue is available from the home screen", true,
-                        c.ui.hasText(xml, achievements))));
 
         c.ui.tapText(achievements);
         c.ui.awaitText(back, Duration.ofSeconds(15));
-        c.checkpoint("Achievement catalogue exposes ordered, localized progress", xml -> List.of(
+        c.checkpoint("Achievement catalogue opens on the installed APK", xml -> List.of(
+                ReleaseBidContext.equal("Installed APK matches the candidate SHA-256",
+                        c.setup.required("requestedApkSha256").asText(), installed),
                 ReleaseBidContext.equal("Catalogue title is visible", true, c.ui.hasText(xml, achievements)),
-                ReleaseBidContext.equal("Local progress is reported against the 55-goal catalogue", true,
-                        hasVisibleTextContaining(xml, progress)),
-                ReleaseBidContext.equal("The first chapter starts the ordered path", true, hasVisibleTextContaining(xml, firstChapter)),
-                ReleaseBidContext.equal("The first easy goal is visible", true, hasVisibleTextContaining(xml, firstGoal)),
+                ReleaseBidContext.equal("The first goal opens from the visible list", true, c.ui.hasText(xml, firstGoal)),
                 ReleaseBidContext.equal("The catalogue has a visible return action", true, c.ui.hasText(xml, back))));
 
         c.ui.tapText(firstGoal);

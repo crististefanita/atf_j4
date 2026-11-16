@@ -91,6 +91,44 @@ public final class WhistAchievementPresentationComponentTest extends atf.gradle.
         }
     }
 
+    @Test public void restoredCareerKeepsTheOpeningChapterAndFirstGoalInBothLanguages() throws Exception {
+        String saved = WhistAchievementCodec.encode(stateWithEarned("first_match"));
+        var reads = new java.util.ArrayList<String>();
+        var storage = new WhistAchievementRepository.Storage() {
+            @Override public String read() {
+                reads.add(saved);
+                return saved;
+            }
+
+            @Override public void write(String json) {
+                throw new AssertionError("Opening the catalogue is read-only");
+            }
+        };
+        for (var language : HowToPlay.Language.values()) {
+            boolean romanian = language == HowToPlay.Language.RO;
+            var restored = new WhistAchievementRepository(storage).state();
+            var catalogue = WhistAchievementPresentation.catalogue(restored, new WhistUiText(language));
+            var chapter = catalogue.groups().get(0);
+            var detail = chapter.goals().get(0);
+            atf.gradle.audit.GradleInputs.fixture("Saved career shown on reopening the catalogue",
+                    "checkpoint", saved, "language", language, "summary", catalogue.summary(),
+                    "chapter", chapter, "detail", detail);
+            assertTrue("the localized summary binds the saved completion to all 55 goals",
+                    catalogue.summary().contains(romanian ? "1 din 55 de realizări" : "1 of 55 achievements earned"));
+            assertTrue("chapter one keeps its localized opening title", chapter.heading().startsWith(
+                    romanian ? "1. Primii pași" : "1. Getting started"));
+            assertEquals("the first goal remains attached to the same saved identity", "first_match", detail.id());
+            assertEquals("the first goal keeps its localized title",
+                    romanian ? "Prima partidă" : "First match", detail.title());
+            assertEquals("the selected detail keeps its exact localized eligibility",
+                    romanian ? "Încheie o partidă validă." : "Finish one valid match.", detail.description());
+            assertEquals("detail progress reflects the saved completion",
+                    romanian ? "Progres 1/1" : "Progress 1/1", detail.progress());
+            assertTrue("decoded progress is marked earned in either language", detail.complete());
+        }
+        assertEquals("each opening reads the same saved progress exactly once", List.of(saved, saved), reads);
+    }
+
     @Test public void unlockNoticeUsesCatalogOrderAndNamesTheCompletedHandInRomanian() {
         var state = stateWithEarned("first_exact", "exact_one_card");
         Goal firstExact = WhistAchievementCatalog.goal("first_exact");

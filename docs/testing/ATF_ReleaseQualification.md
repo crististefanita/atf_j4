@@ -409,13 +409,11 @@ Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Ma
 
 ## Profiluri de lucru pentru reluare
 
-Pregătiți pentru fiecare candidat un director extern, de exemplu `C:\work\whist_back\<versiune>-<commit>`. Folosiți un subdirector de lucru pentru Maven, Gradle și fișierele temporare, alături de directoare distincte pentru rapoarte, probe și încercările Android. Rulați din checkout-ul sursă calificat, cu `TMP` și `TEMP` îndreptate către zona externă de lucru.
-
-Din checkout-ul fixat, setați `$Version` la versiunea candidatului și pregătiți zona de lucru.
+Setați `$EvidenceRoot` la un director extern existent și `$Version` la versiunea candidatului. Din checkout-ul calificat, rezervați un subdirector pentru fișiere de lucru și directoare distincte pentru rapoarte, probe și încercările Android.
 
 ```powershell
 $shortCommit = git rev-parse --short=12 HEAD
-$run = Join-Path 'C:\work\whist_back' "$Version-$shortCommit"
+$run = Join-Path $EvidenceRoot "$Version-$shortCommit"
 $scratch = Join-Path $run 'workspace'
 New-Item -ItemType Directory -Path $scratch -Force | Out-Null
 $env:TMP = $scratch
@@ -432,6 +430,10 @@ Folosiți același director la reluarea aceleiași identități. Alegeți un dir
 
 Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După publicare și reconstrucția verificată din Git, păstrați rapoartele finale, chitanțele, rețeta EOL aplicabilă și datele de învățare. Directoarele de build și cache-urile izolate se pot elimina. [Retenția după livrare](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
 
+### Snapshot Git și proiecția locală
+
+Controlul Maven rulează separat probele de reconstrucție a surselor și probele de proiecție a ediției publicate. Fiecare proces Node păstrează același termen. Fixture-urile folosesc Git real și directoare izolate, inclusiv pentru octeți cu EOL mixt, payload modificat, editări locale și rotația ediției. [Reconstrucție](../../atf-tests/tools/release-git-snapshot.test.mjs) · [Proiecție](../../atf-tests/tools/local-release-sync.test.mjs)
+
 ### Reluarea etapelor validate
 
 După întrerupere păstrați directorul încercării și zona de lucru. Lansați din același checkout fixat, cu aceleași `TMP` și `TEMP` ca la pregătire. Folosiți un director nou pentru următoarea încercare.
@@ -441,11 +443,14 @@ După întrerupere păstrați directorul încercării și zona de lucru. Lansaț
   -ResumeFrom $InterruptedAttempt -PinnedSourceInputs $SourceInputs -Groups $RequiredGroups
 ```
 
-Lansatorul reverifică amprentele sursei și ale dosarului de release în staging și în sursa fixată. Reluarea refuză o schimbare de inventar și blochează folosirea simultană a aceluiași staging. Fiecare selecție Maven are un checkpoint după execuție. În lotul Gradle, fiecare task publică raportul canonic și actualizează atomic checkpoint-ul după verificarea JUnit și Extent, înaintea taskului următor. Un task întrerupt înaintea publicării se reia, chiar dacă HTML-ul provizoriu a fost generat. Selecțiile reușite cu dovezi acceptate își păstrează octeții și proveniența. Selecțiile lipsă, incomplete, corupte sau eșuate se execută în directorul nou.
-
-Pregătirea Maven păstrează separat compilarea și classpath-ul. Verificați chitanța compilării înainte de a reutiliza clasele, resursele și JAR-urile. Reluați rezolvarea classpath-ului dacă etapa a fost întreruptă. Un staging fără manifest valid cere o încercare nouă.
-
-Pentru un APK semnat, pregătiți compilarea o singură dată folosind `-PrepareOnly` și folosiți directorul acelei încercări prin `-PreparedFrom` pentru fluxurile care lipsesc. Verificați SHA‑256 al APK-ului și amprenta sursei înainte să acceptați clasele, resursele și bibliotecile pregătite. Fiecare flux are un director JUnit nou. Dacă execuția a produs deja dovada completă, importați-o prin `apply-android-e2e.mjs` înainte de a relua selecția. Rapoartele deja acceptate sunt refolosite prin planul existent de probe native, înainte de etapa de compilare sau de accesul la Android.
+| Etapă | Ce se validează și ce se reia |
+|---|---|
+| Identitatea reluării | Lansatorul confruntă amprentele sursei și ale dosarului de release, în copia de lucru și în checkout. Refuză schimbările de inventar și folosirea simultană a aceleiași copii. |
+| Maven | Fiecare selecție are o chitanță după execuție. Verificați chitanța compilării pentru clase, resurse și JAR-uri și reluați classpath-ul dacă rezolvarea a fost întreruptă. O copie fără manifest valid cere o nouă încercare. |
+| Gradle | Fiecare task publică atomic checkpoint-ul după paritatea JUnit și Extent. Un HTML fără checkpoint valid poate explica o întrerupere. Taskul respectiv se rulează din nou. |
+| Rapoarte | Rapoartele acceptate își păstrează octeții și proveniența. Selecțiile lipsă, incomplete, corupte sau eșuate rulează în directorul nou. |
+| Pregătirea APK-ului semnat | Pregătiți clasele cu `-PrepareOnly` și transmiteți directorul prin `-PreparedFrom`. Verificați SHA‑256 al APK-ului și amprenta sursei înainte să refolosiți clasele și bibliotecile. Fiecare execuție folosește un director JUnit nou. |
+| Fluxuri native | Dacă proba a fost produsă integral, importați-o cu `apply-android-e2e.mjs`. Planul refolosește rapoartele acceptate înaintea pregătirii Maven sau a accesului la dispozitiv. |
 
 | Nivel | Verificare a licitației |
 |---|---|

@@ -42,6 +42,8 @@ Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lips
 
 [Componentele regulilor](../testing/ATF_GradleComponents.md) leagă ajutorul RO/EN de motor. Componentele checkpoint-ului verifică setările de serie active și dezactivate pentru ambele variante românești și ambele valori. Scenariul Android păstrează deschiderea și derularea ajutorului, selectarea bonusului și reluarea aceleiași partide după repornire.
 
+Pentru Realizări, componenta prezentării redeschide progresul din stocare simulată și verifică primul capitol și condiția localizată a obiectivului. Sesiunea nativă demonstrează traseul meniu, catalog, detaliu și revenire.
+
 ## Persistență și coordonare
 
 [Comenzile și salvarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#comenzi-salvare-și-erori) au porturi de componentă pentru refuz, checkpoint, clasament și continuare. Randarea nu înregistrează rezultate; recuperarea stocării native și costul pe dispozitiv păstrează calificare distinctă.

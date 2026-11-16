@@ -48,7 +48,11 @@ class ComponentEvidenceScopeComponentTest {
     }
 
     @Test void localReleaseSyncKeepsOnlyQualifiedPublishedBytesAndRejectsLocalEdits() throws Exception {
-        String output = runContracts(PUBLICATION_TIMEOUT, "release-git-snapshot.test.mjs");
+        String snapshot = runContracts(PUBLICATION_TIMEOUT, "release-git-snapshot.test.mjs");
+        AuditedAssertions.assertTrue(snapshot.contains("binds a mixed EOL recipe to the exact commit")
+                        && snapshot.contains("cleanup refuses a stale verdict or changed published report"),
+                "The original snapshot proof binds both reconstructed bytes and published payload.");
+        String output = runContracts(PUBLICATION_TIMEOUT, "local-release-sync.test.mjs");
         AuditedAssertions.assertTrue(output.contains("materializes only the current published release and preserves bytes"),
                 "The local release copy preserves the current manifest and payload.");
         AuditedAssertions.assertTrue(output.contains("refuses unpublished proof, a modified candidate, and unknown local data"),
@@ -86,7 +90,7 @@ class ComponentEvidenceScopeComponentTest {
         var result = CommandProcess.execute(args, directory, Map.of(), timeout, true);
         String output = new String(result.stdout(), StandardCharsets.UTF_8);
         AuditedAssertions.assertEquals(0, result.exitCode(),
-                result.exitCode() == 0 ? "The Node child completed successfully" : output);
+                result.exitCode() == 0 ? "The Node child completed successfully" : String.join(" ", args) + "\n" + output);
         return output;
     }
 }
