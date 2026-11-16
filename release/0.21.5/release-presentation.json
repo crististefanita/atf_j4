@@ -1,0 +1,10 @@
+{
+  "evidenceUrl": "https://github.com/crististefanita/atf_j4/blob/ca43c1a898ebe5d6c2fd754a23dcdae8222ef2b1/release/0.21.5/reports/README.md",
+  "mode": "summary",
+  "version": "0.21.5",
+  "points": [
+    "Lasă vizibilă mâna de 17 cărți pe ecranele compacte din Coborâre și urcare.",
+    "Izolează datele și fișierele verificărilor Android în dosarul de rulare.",
+    "Reutilizează probele de componentă valide și selectează verificările de release din diferența Git."
+  ]
+}
