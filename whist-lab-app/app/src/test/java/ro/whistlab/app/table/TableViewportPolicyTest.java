@@ -5,6 +5,7 @@ import ro.whistlab.app.hand.HandLayoutMetrics;
 
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import org.junit.Test;
+import ro.cardtable.ui.table.TrumpTileMetrics;
 
 public class TableViewportPolicyTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void tallPortraitsReclaimDecorationWhenLargerTextExhaustsTheRoomyBudget() {
@@ -74,7 +75,7 @@ public class TableViewportPolicyTest extends atf.gradle.audit.GradleAuditedTest 
     @Test public void narrowerTrumpTileFitsLongValuesWithoutEnlargingTheFrame() {
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 57, "declared constant 2", 1, "declared constant 3", 1.5f, "declared constant 4", 2.625f, "declared constant 5", 2.75f, "declared constant 6", 3.5f, "declared constant 7", 2, "declared constant 8", 4, "declared constant 9", 5, "declared constant 10", 1.3f, "declared constant 11", 20, "declared constant 12", 35, "declared constant 13", 48, "declared constant 14", 0.01f, "declared constant 15", "Repeated layout must start from the nominal size", "declared constant 16", 0);
-        assertEquals("TableLayoutMetrics.TRUMP_WIDTH_DP must equal 57", 57, TableLayoutMetrics.TRUMP_WIDTH_DP);
+        assertEquals("TrumpTileMetrics.WIDTH_DP must equal 57", 57, TrumpTileMetrics.WIDTH_DP);
         for (float density : new float[]{1, 1.5f, 2.625f, 2.75f, 3.5f}) {
             int available = Math.round(57 * density) - 2 * Math.round(4 * density)
                     - 2 * Math.round(5 * density);
@@ -82,11 +83,11 @@ public class TableViewportPolicyTest extends atf.gradle.audit.GradleAuditedTest 
                 float nominal = 20 * fontScale * density;
                 for (float measuredGlyphWidth : new float[]{20, 35, 48}) {
                     float measured = measuredGlyphWidth * fontScale * density;
-                    float fitted = TableLayoutMetrics.fitTextSizePx(nominal, measured, available);
+                    float fitted = TrumpTileMetrics.fitTextSizePx(nominal, measured, available);
                     assertTrue("fitted <= nominal must hold", fitted <= nominal);
                     assertTrue("measured * fitted / nominal <= available + 0.01F must hold", measured * fitted / nominal <= available + 0.01f);
                     assertEquals("Repeated layout must start from the nominal size", fitted,
-                            TableLayoutMetrics.fitTextSizePx(nominal, measured, available), 0);
+                            TrumpTileMetrics.fitTextSizePx(nominal, measured, available), 0);
                 }
             }
         }

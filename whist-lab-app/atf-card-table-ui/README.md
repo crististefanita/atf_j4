@@ -129,6 +129,8 @@ Din rădăcina ATF. Exportul folosește directorul libraries/card-table-ui din d
 - Sub antet, Whist așază progresul și licitațiile în stânga, iar atuul în dreapta. Rentz și Hold’em pot așeza în același loc detaliile specifice mâinii sau etapei.
 - Verificările JVM acoperă decizia de dispunere, inclusiv la limita unui pixel. Proba instrumentată măsoară textele în RO și EN și ținta tactilă de minimum 48 × 48 dp. [Testele native](src/androidTest/README.md)
 
+Chenarul de atu folosește `TrumpTileMetrics` pentru dimensiunile și mărimile nominale partajate. Android măsoară glifele native, iar browserul folosește fontul calculat al elementului. Aceeași probă verifică încadrarea rangurilor, a simbolului și a textului fără atu.
+
 ## Atingerea unei cărți indisponibile
 
 Jocul transmite cărțile legale și activează indiciul când jucătorul poate muta.

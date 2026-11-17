@@ -1,3 +1,4 @@
+import { verifyTrumpTextFit } from "../tests/trump-text-fit.mjs";
 import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -149,6 +150,8 @@ await check("Antetul browserului folosește măsurile de referință ale APK-ulu
     const observed = {titleSp: header.titleSize, progressSp: header.progressSize, bidSp: header.bidSize,
       menuTouchDp: px("menu-touch"), trumpWidthDp: px("trump-width"), trumpMinHeightDp: px("trump-min-height"),
       trumpPaddingDp: px("trump-padding"), trumpGapDp: px("trump-gap"),
+      trumpHeadingSp: px("trump-heading-size") * 16, trumpValueSp: px("trump-value-size") * 16,
+      trumpCardInsetDp: px("trump-card-inset"), trumpCardRadiusDp: px("trump-card-radius"),
       handLabelSp: px("hand-label") * 16, handWidthDp: px("hand-face-width"), handHeightDp: px("hand-face-height")};
     assert.deepEqual(Object.keys(observed).sort(), Object.keys(reference).sort());
     for (const [role, size] of Object.entries(observed)) assert.ok(Math.abs(size - reference[role]) < .001, role);
@@ -179,20 +182,9 @@ await check("Ranguri de carte și bandă măsurată pentru 17 cărți",
   }, "WEB-11");
 
 await check("Atu lizibil în același chenar la font normal și mărit",
-  "Textul se micșorează numai când depășește lățimea utilă, inclusiv la două cifre și fără atu", () => {
-    const inputs = [
-      { copy: "ATU", nominal: 9, measured: 18, innerWidth: 49, expected: 9 },
-      { copy: "TRUMP", nominal: 18, measured: 66, innerWidth: 49, expected: 18 * 49 / 66 },
-      { copy: "Q♦", nominal: 20, measured: 36, innerWidth: 39, expected: 20 },
-      { copy: "10♦", nominal: 40, measured: 86, innerWidth: 39, expected: 40 * 39 / 86 },
-      { copy: "Fără atu", nominal: 40, measured: 140, innerWidth: 49, expected: 14 }
-    ];
-    return inputs.map(input => {
-      const fitted = fitTextWidth(input.nominal, input.measured, input.innerWidth);
-      assert.ok(Math.abs(fitted - input.expected) < .001, input.copy);
-      assert.ok(input.measured * fitted / input.nominal <= input.innerWidth + .001, input.copy);
-      return { ...input, fitted };
-    });
+  "Aceleași cazuri ca în componenta Android, inclusiv la două cifre și fără atu", async () => {
+    const file = new URL("../../whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv", import.meta.url);
+    return verifyTrumpTextFit(fitTextWidth, file);
   }, "WEB-12");
 
 await mkdir(output, { recursive: true });

@@ -49,6 +49,7 @@ Nu rescrieți capturile, HTML-ul sau trace-ul brut pentru a modifica provenienț
 
 După fixarea dosarului, [înregistrați integritatea](ATF_AndroidDelivery.md#integritatea-fișierelor-și-rezultatelor) și rulați guvernanța. Registrul identifică exact fișierele păstrate, fără manifestul autoreferențial; înlocuirea unui fișier cere o observație nouă, cu moment propriu. Capturarea hash-urilor nu rescrie rezultatele istorice și nu acordă calificare surselor modificate ulterior.
 
+- **Redenumirea repository-ului:** actualizați referința din politica proiectului și linkurile active de produs. Verificați separat adresa Pages. Pentru fiecare ediție păstrată, confruntați ID-urile asset-urilor, commitul tagului, octeții și SHA-256 de la noile adrese. Înregistrați noua observație de distribuție și integritatea dosarului. Dovezile de execuție păstrează commiturile originale.
 - **Dezvoltare paralelă:** poate continua după fixarea candidatului. Inventariați fișierele ulterioare în `source-freeze.json` și păstrați arhiva surselor calificate cu hash și CRC; publicarea trebuie legată de acel snapshot. Un commit care include cod nou nu preia automat calificarea APK-ului anterior.
 - **Comparație live:** identificați momentul observației și confruntați întreaga populație: fișiere modificate, adăugate și șterse. Manifestul snapshot-ului rămâne neschimbat; actualizarea comparației nu reconstruiește retrospectiv un alt APK sau alte rezultate.
 

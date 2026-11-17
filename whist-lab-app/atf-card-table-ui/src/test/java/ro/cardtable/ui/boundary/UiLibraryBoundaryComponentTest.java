@@ -32,7 +32,8 @@ public final class UiLibraryBoundaryComponentTest extends GradleAuditedTest {
         var source = module().resolve("src/main/java/ro/cardtable/ui");
         var contracts = List.of("animation/CollectionTarget.java", "animation/TrickCollectionMotion.java",
                 "turn/TurnPacing.java", "table/ScoreGridStyle.java", "seat/SeatContent.java",
-                "hand/HandInput.java", "cards/CardHighlight.java", "table/PlayedCardStyle.java");
+                "hand/HandInput.java", "cards/CardHighlight.java", "table/PlayedCardStyle.java",
+                "table/TrumpTileMetrics.java");
         var platform = new ArrayList<>(GAME_PACKAGES);
         platform.addAll(List.of("import android.", "import androidx.", "import atf."));
         var violations = new ArrayList<String>();

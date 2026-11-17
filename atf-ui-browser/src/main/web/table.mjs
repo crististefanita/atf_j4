@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.4";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.5";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -586,10 +586,10 @@ function fitTrumpText(content) {
   if (!tile) return;
   const tileStyle = getComputedStyle(tile);
   const width = tile.clientWidth - parseFloat(tileStyle.paddingLeft) - parseFloat(tileStyle.paddingRight);
-  const scale = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
   for (const line of tile.children) {
+    line.style.removeProperty("font-size");
     const style = getComputedStyle(line);
-    const nominal = (line.tagName === "STRONG" ? 9 : 20) * scale;
+    const nominal = parseFloat(style.fontSize);
     trumpText.font = `${style.fontWeight} ${nominal}px ${style.fontFamily}`;
     const ink = trumpText.measureText(line.dataset.face ?? line.textContent).width;
     const available = width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);

@@ -1,5 +1,6 @@
 package ro.whistlab.app.table;
 
+import ro.cardtable.ui.table.TrumpTileMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.WhistUiPalette;
 
@@ -27,10 +28,10 @@ public final class TrumpIndicatorView extends LinearLayout {
         super(context);
         float density = getResources().getDisplayMetrics().density;
         setOrientation(VERTICAL);
-        setMinimumWidth(dp(density, TableLayoutMetrics.TRUMP_WIDTH_DP));
-        setMinimumHeight(dp(density, TableLayoutMetrics.TRUMP_MIN_HEIGHT_DP));
+        setMinimumWidth(dp(density, TrumpTileMetrics.WIDTH_DP));
+        setMinimumHeight(dp(density, TrumpTileMetrics.MIN_HEIGHT_DP));
         setGravity(Gravity.CENTER);
-        int padding = dp(density, TableLayoutMetrics.TRUMP_PADDING_DP);
+        int padding = dp(density, TrumpTileMetrics.PADDING_DP);
         setPadding(padding, padding, padding, padding);
         setBackground(WhistUiPalette.seatFrame(context, currentPlayerHighlighted));
         setTag("trump-indicator");
@@ -40,7 +41,7 @@ public final class TrumpIndicatorView extends LinearLayout {
 
         heading = new TextView(context);
         heading.setText(copy.trumpHeading());
-        heading.setTextSize(9);
+        heading.setTextSize(TrumpTileMetrics.HEADING_SP);
         heading.setTextColor(frameText(currentPlayerHighlighted));
         heading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         heading.setGravity(Gravity.CENTER);
@@ -50,13 +51,14 @@ public final class TrumpIndicatorView extends LinearLayout {
 
         value = new TextView(context);
         value.setText(copy.trumpIndicatorValue(state));
-        value.setTextSize(20);
+        value.setTextSize(TrumpTileMetrics.VALUE_SP);
         if (state.turnedCard() != null) {
             GradientDrawable card = new GradientDrawable();
             card.setColor(IVORY);
-            card.setCornerRadius(dp(density, 5));
+            card.setCornerRadius(dp(density, TrumpTileMetrics.CARD_RADIUS_DP));
             value.setBackground(card);
-            value.setPadding(dp(density, 5), 0, dp(density, 5), 0);
+            int inset = dp(density, TrumpTileMetrics.CARD_INSET_DP);
+            value.setPadding(inset, 0, inset, 0);
         }
         value.setTextColor(valueColor(state, currentPlayerHighlighted));
         value.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -64,16 +66,16 @@ public final class TrumpIndicatorView extends LinearLayout {
         value.setSingleLine(true);
         value.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         LayoutParams valueParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        valueParams.topMargin = dp(density, TableLayoutMetrics.TRUMP_VALUE_GAP_DP);
+        valueParams.topMargin = dp(density, TrumpTileMetrics.VALUE_GAP_DP);
         addView(value, valueParams);
     }
 
     @Override protected void onMeasure(int widthSpec, int heightSpec) {
         var metrics = getResources().getDisplayMetrics();
-        int width = resolveSize(dp(metrics.density, TableLayoutMetrics.TRUMP_WIDTH_DP), widthSpec);
-        int headingHeight = fitLine(heading, 9 * metrics.scaledDensity, width);
-        int valueHeight = fitLine(value, 20 * metrics.scaledDensity, width);
-        int height = resolveSize(TableLayoutMetrics.trumpHeightPx(metrics.density,
+        int width = resolveSize(dp(metrics.density, TrumpTileMetrics.WIDTH_DP), widthSpec);
+        int headingHeight = fitLine(heading, TrumpTileMetrics.HEADING_SP * metrics.scaledDensity, width);
+        int valueHeight = fitLine(value, TrumpTileMetrics.VALUE_SP * metrics.scaledDensity, width);
+        int height = resolveSize(TrumpTileMetrics.heightPx(metrics.density,
                 headingHeight, valueHeight), heightSpec);
         super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
@@ -87,7 +89,7 @@ public final class TrumpIndicatorView extends LinearLayout {
         int available = width - getPaddingLeft() - getPaddingRight()
                 - line.getPaddingLeft() - line.getPaddingRight();
         line.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,
-                TableLayoutMetrics.fitTextSizePx(nominalSize,
+                TrumpTileMetrics.fitTextSizePx(nominalSize,
                         paint.measureText(line.getText().toString()), available));
         line.getLayoutParams().height = height;
         return height;

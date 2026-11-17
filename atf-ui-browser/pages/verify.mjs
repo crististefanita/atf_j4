@@ -194,8 +194,8 @@ async function phoneViewport(chrome) {
   const server = createServer(async (request, response) => {
     const path = request.url;
     requests.push(path);
-    const file = path === "/atf_j4/" ? "index.html" : path.slice("/atf_j4/".length);
-    if (!path.startsWith("/atf_j4/") || !files.includes(file)) {
+    const file = path === "/whist/" ? "index.html" : path.slice("/whist/".length);
+    if (!path.startsWith("/whist/") || !files.includes(file)) {
       response.writeHead(404).end();
       return;
     }
@@ -208,7 +208,7 @@ async function phoneViewport(chrome) {
       await send("Page.enable");
       await send("Emulation.setDeviceMetricsOverride", { width: 414, height: 896, mobile: true, deviceScaleFactor: 1 });
       await send("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 14; Mobile)" });
-      const url = "http://127.0.0.1:" + server.address().port + "/atf_j4/";
+      const url = "http://127.0.0.1:" + server.address().port + "/whist/";
       async function open() {
         assert.ok(!(await send("Page.navigate", { url })).errorText);
         await until(() => evaluate("!!document.querySelector('.whist-home')"));

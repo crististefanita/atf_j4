@@ -4,8 +4,12 @@ import static atf.gradle.audit.assertions.GradleAssertions.*;
 
 import java.util.Map;
 import java.util.Properties;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import ro.cardtable.ui.screens.GameTitleBar;
+import ro.cardtable.ui.table.TrumpTileMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.localization.WhistUiText;
@@ -27,10 +31,14 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
         var nativeHeader = Map.ofEntries(Map.entry("titleSp", GameHeaderTypography.TITLE_SP),
                 Map.entry("progressSp", GameHeaderTypography.PROGRESS_SP), Map.entry("bidSp", GameHeaderTypography.BID_SUMMARY_SP),
                 Map.entry("menuTouchDp", (float) GameTitleBar.TOUCH_TARGET_DP),
-                Map.entry("trumpWidthDp", (float) TableLayoutMetrics.TRUMP_WIDTH_DP),
-                Map.entry("trumpMinHeightDp", (float) TableLayoutMetrics.TRUMP_MIN_HEIGHT_DP),
-                Map.entry("trumpPaddingDp", (float) TableLayoutMetrics.TRUMP_PADDING_DP),
-                Map.entry("trumpGapDp", (float) TableLayoutMetrics.TRUMP_VALUE_GAP_DP),
+                Map.entry("trumpWidthDp", (float) TrumpTileMetrics.WIDTH_DP),
+                Map.entry("trumpMinHeightDp", (float) TrumpTileMetrics.MIN_HEIGHT_DP),
+                Map.entry("trumpPaddingDp", (float) TrumpTileMetrics.PADDING_DP),
+                Map.entry("trumpGapDp", (float) TrumpTileMetrics.VALUE_GAP_DP),
+                Map.entry("trumpHeadingSp", (float) TrumpTileMetrics.HEADING_SP),
+                Map.entry("trumpValueSp", (float) TrumpTileMetrics.VALUE_SP),
+                Map.entry("trumpCardInsetDp", (float) TrumpTileMetrics.CARD_INSET_DP),
+                Map.entry("trumpCardRadiusDp", (float) TrumpTileMetrics.CARD_RADIUS_DP),
                 Map.entry("handLabelSp", (float) HandLayoutMetrics.cardLabelSizeSp()),
                 Map.entry("handWidthDp", (float) HandLayoutMetrics.CARD_WIDTH_DP),
                 Map.entry("handHeightDp", (float) HandLayoutMetrics.CARD_HEIGHT_DP));
@@ -38,6 +46,23 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
         assertEquals("All shared roles have a native counterpart", reference.stringPropertyNames(), nativeHeader.keySet());
         nativeHeader.forEach((role, size) -> assertEquals(role,
                 Float.parseFloat(reference.getProperty(role)), size, .001f));
+    }
+
+    @Test public void nativeAndBrowserUseTheSameTextFitCases() throws Exception {
+        var fixture = java.util.Objects.requireNonNull(getClass().getResourceAsStream("/whist-trump-text-fit.tsv"));
+        try (var reader = new BufferedReader(new InputStreamReader(fixture, StandardCharsets.UTF_8))) {
+            var rows = reader.lines().skip(1).toList();
+            atf.gradle.audit.GradleInputs.fixture("Shared Android and Web glyph measurements", "rows", rows);
+            assertFalse("The shared oracle contains cases", rows.isEmpty());
+            for (String row : rows) {
+                var fields = row.split("\t");
+                float nominal = Float.parseFloat(fields[1]);
+                float measured = Float.parseFloat(fields[2]);
+                int width = Integer.parseInt(fields[3]);
+                float expected = Float.parseFloat(fields[4]);
+                assertEquals(fields[0], expected, TrumpTileMetrics.fitTextSizePx(nominal, measured, width), .001f);
+            }
+        }
     }
 
     @Test public void everyModeUsesOneSuitOrTurnedCardValueInBothLanguages() {
@@ -83,20 +108,20 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
     @Test public void aCommonFrameReservesTwoCompleteLinesAtEachDensityAndTextScale() {
 
         atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "declared constant 1", 57, "declared constant 2", 1f, "declared constant 3", 1.5f, "declared constant 4", 2.25f, "declared constant 5", 2.625f, "declared constant 6", 2.75f, "declared constant 7", 3f, "declared constant 8", 3.5f, "declared constant 9", 4f, "declared constant 10", 1.15f, "declared constant 11", 1.3f, "declared constant 12", 2f, "declared constant 13", 11, "declared constant 14", 24, "declared constant 15", 4, "declared constant 16", 2, "declared constant 17", 48, "declared constant 18", 80, "declared constant 19", 22);
-        assertEquals("TableLayoutMetrics.TRUMP_WIDTH_DP must equal 57", 57, TableLayoutMetrics.TRUMP_WIDTH_DP);
+        assertEquals("TrumpTileMetrics.WIDTH_DP must equal 57", 57, TrumpTileMetrics.WIDTH_DP);
         for (float density : new float[]{1f, 1.5f, 2.25f, 2.625f, 2.75f, 3f, 3.5f, 4f}) {
             for (float scale : new float[]{1f, 1.15f, 1.3f, 1.5f, 2f}) {
                 int heading = (int) Math.ceil(11 * density * scale);
                 int value = (int) Math.ceil(24 * density * scale);
-                int height = TableLayoutMetrics.trumpHeightPx(density, heading, value);
+                int height = TrumpTileMetrics.heightPx(density, heading, value);
                 int padding = Math.round(4 * density);
                 int gap = Math.round(2 * density);
                 assertTrue("height >= Math.round(48 * density) must hold", height >= Math.round(48 * density));
                 assertTrue("height - 2 * padding - gap >= heading + value must hold", height - 2 * padding - gap >= heading + value);
             }
         }
-        assertEquals("TableLayoutMetrics.trumpHeightPx(1.0F, 11, 24) must equal 48", 48, TableLayoutMetrics.trumpHeightPx(1f, 11, 24));
-        assertEquals("TableLayoutMetrics.trumpHeightPx(1.0F, 22, 48) must equal 80", 80, TableLayoutMetrics.trumpHeightPx(1f, 22, 48));
+        assertEquals("TrumpTileMetrics.heightPx(1.0F, 11, 24) must equal 48", 48, TrumpTileMetrics.heightPx(1f, 11, 24));
+        assertEquals("TrumpTileMetrics.heightPx(1.0F, 22, 48) must equal 80", 80, TrumpTileMetrics.heightPx(1f, 22, 48));
     }
 
     @Test public void longValuesFitTheFrameWithoutChangingItsWidthOrGrowingSmallText() {
@@ -106,7 +131,7 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
                 float size = nominal * density;
                 for (float measured : new float[]{8f, 35f, 68f, 140f}) {
                     float width = measured * density;
-                    float fitted = TableLayoutMetrics.fitTextSizePx(size, width, available);
+                    float fitted = TrumpTileMetrics.fitTextSizePx(size, width, available);
 
                     atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "available", available, "density", density, "fitted", fitted, "measured", measured, "nominal", nominal, "size", size, "width", width);
                     assertTrue("fitted > 0 && fitted <= size must hold", fitted > 0 && fitted <= size);
@@ -121,10 +146,10 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
         for (float density : new float[]{0f, -1f, Float.NaN, Float.POSITIVE_INFINITY}) {
 
             atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "density", density);
-            assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TableLayoutMetrics.trumpHeightPx(density, 11, 24));
+            assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TrumpTileMetrics.heightPx(density, 11, 24));
         }
-        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TableLayoutMetrics.trumpHeightPx(1f, 0, 24));
-        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TableLayoutMetrics.trumpHeightPx(1f, 11, -1));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TrumpTileMetrics.heightPx(1f, 0, 24));
+        assertThrows("The operation rejects its input with IllegalArgumentException.class", IllegalArgumentException.class, () -> TrumpTileMetrics.heightPx(1f, 11, -1));
     }
 
     private static GameSession.Snapshot withTrump(GameSession.Snapshot base, Trump trump, Card turned) {

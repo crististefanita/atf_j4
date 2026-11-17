@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { client, until, withBrowser, withServer } from "./fixtures.mjs";
+import { verifyTrumpTextFit } from "./trump-text-fit.mjs";
 import { verifyHandPresentation } from "./hand-presentation.mjs";
 import { verifyGameMenuDismissal } from "./menu-presentation.mjs";
 
@@ -82,6 +83,8 @@ try {
     const setup = await request("/api/setup");
     assert.equal(setup.title, title);
     const motion = await verifyMotion(url, setup);
+    const { fitTextWidth } = await loadAdapter(url, "viewport.mjs");
+    const trumpText = await verifyTrumpTextFit(fitTextWidth);
     const before = await request("/api/state");
     const started = await request("/api/start", { revision: before.revision });
     assert.ok(started.view.seats.length >= 2);
@@ -140,7 +143,7 @@ try {
         return { version, menu, dropdowns, geometry };
       });
     }
-    return { status: "PASS", observed: { title, seats: started.view.seats.length, revision, browserCheck, motion, feedback }, images };
+    return { status: "PASS", observed: { title, seats: started.view.seats.length, revision, browserCheck, motion, trumpText, feedback }, images };
   });
 } catch (error) {
   result = { status: "FAIL", observed: error.stack };

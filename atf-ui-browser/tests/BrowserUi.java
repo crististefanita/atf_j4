@@ -18,7 +18,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 /** Browser acceptance of the compiled adapter, served from an owned loopback origin. */
 class BrowserUi {
-    private static final String SITE_PATH = "/atf_j4/";
+    private static final String SITE_PATH = "/whist/";
     private static final Set<String> ASSETS = Set.of("index.html", "table.css", "table.mjs", "viewport.mjs",
             "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs",
             "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs");
@@ -152,7 +152,7 @@ class BrowserUi {
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <link rel="stylesheet" href="table.css">
                         <body data-surface="whist" style="--whist-hand-label: .8125rem; --whist-hand-rank-cap: 26px;
-                          --whist-hand-face-width: 63px; --whist-hand-face-height: 88px">
+                          --whist-hand-face-width: 63px; --whist-hand-face-height: 88px; --whist-trump-value-size: 1.25rem">
                         <section class="whist-match"><div class="whist-trump"><span class="card"><span class="card-rank">A</span></span></div>
                         <div class="hand"><div class="fan">%s</div></div></section></body></html>
                         """.formatted(cards))));

@@ -20,27 +20,9 @@ public final class TableLayoutMetrics {
             return new ro.cardtable.ui.table.TableGeometry.CenterSpec(width, reservedHeightDp, !bidding, alignment);
         }
     }
-    static final int TRUMP_WIDTH_DP = 57;
-    static final int TRUMP_MIN_HEIGHT_DP = 48;
-    static final int TRUMP_PADDING_DP = 4;
-    static final int TRUMP_VALUE_GAP_DP = 2;
     public static final int HUMAN_HAND_CLEARANCE_DP = 28;
 
-    /** Two measured line boxes keep every trump representation in the same frame. */
-    static int trumpHeightPx(float density, int headingHeightPx, int valueHeightPx) {
-        if (!Float.isFinite(density) || density <= 0 || headingHeightPx <= 0 || valueHeightPx <= 0) {
-            throw new IllegalArgumentException("Trump dimensions must be positive and finite");
-        }
-        return Math.max(Math.round(TRUMP_MIN_HEIGHT_DP * density),
-                2 * Math.round(TRUMP_PADDING_DP * density)
-                        + headingHeightPx + Math.round(TRUMP_VALUE_GAP_DP * density) + valueHeightPx);
-    }
-
     static int topInsetPx(int boardHeightPx) { return ro.cardtable.ui.table.TableSizing.topInsetPx(boardHeightPx); }
-
-    static float fitTextSizePx(float sizePx, float textWidthPx, int availableWidthPx) {
-        return sizePx * Math.min(1f, Math.max(1, availableWidthPx) / Math.max(1f, textWidthPx));
-    }
 
     static CenterReservation centerReservation(int players, int handSize, int tableWidthDp,
             float fontScale, ro.cardtable.ui.table.TableViewportPolicy viewport) {

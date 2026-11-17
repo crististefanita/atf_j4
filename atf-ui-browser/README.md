@@ -40,6 +40,7 @@ Ediția statică distribuie motorul Java compilat cu TeaVM într-un Web Worker. 
 - Chenarele mesei preiau numele, licitația și levatele din proiecția APK. Marcajul auriu arată cărțile jucabile. Totalul apare în scor și istoric.
 - [Adaptorul mâinii](src/main/java/ro/cardtable/browser/BrowserHandAdapter.java) trimite gesturile la modelul comun folosit în APK. Refuzul evidențiază cartea apăsată și opțiunile legale timp de 1.100 ms. La alegerea unei cărți legale, depunerea urmează ridicării de 150 ms. API-ul proiectează aceeași curbă și aceleași straturi ale evantaiului ca în APK.
 - Fața Whist preia reperul din mâna Android. Rangul și simbolul din colț, simbolul central și colțul inversat se scalează proporțional în levată. Colectarea copiază fața de pe masă. Textul accesibil include jucătorul și cartea.
+- [Contractul chenarului de atu](../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TrumpTileMetrics.java) furnizează dimensiunile și tipografia de bază. Android măsoară cu fontul nativ, iar Web cu Canvas. [Aceleași cazuri de încadrare](../whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv) verifică ambele adaptoare.
 - Colectarea aplică temporizarea din modulul comun. Levata completă și numărătoarea actualizată a câștigătorului sunt în evenimentul de colectare. Mâna se recentrează imediat după depunere, iar masa stabilă conține cărțile din levata curentă. Redimensionarea poate înlătura desenul temporar, iar următoarea carte respectă intervalul deja programat.
 - AutoGame se activează pentru mâna curentă. Debifarea anulează următoarea decizie în locul jucătorului. Mutările acceptate se încheie, iar meniurile și dialogurile suspendă următoarea decizie cât timp sunt deschise. Scorul sau revenirea la meniul principal sting bifa.
 
@@ -86,12 +87,12 @@ Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress
 
 ## Bibliotecă pentru adaptoare
 
-`lib/atf-ui-browser-0.2.4.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează adaptoarele proprii față de JAR și verifică suma SHA-256 la pornire.
+`lib/atf-ui-browser-0.2.5.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează adaptoarele proprii față de JAR și verifică suma SHA-256 la pornire.
 
-Arhiva `lib/atf-ui-browser-0.2.4-tests.jar` verifică reviziile, meniul, ridicarea, colectarea și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
+Arhiva `lib/atf-ui-browser-0.2.5-tests.jar` verifică reviziile, meniul, ridicarea, colectarea, încadrarea textului atuului și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
 
 ```powershell
-.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.4
+.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.5
 ```
 
 Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul extern afișat. La o schimbare a contractelor sau a resurselor, incrementați versiunea și actualizați aceiași octeți și aceleași amprente în consumatori. Reutilizați JAR-ul existent când se schimbă numai motorul sau adaptorul unui joc.

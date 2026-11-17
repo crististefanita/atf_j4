@@ -660,9 +660,9 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   box-shadow: inset 0 0 0 1px var(--whist-turn-line);
   color: var(--whist-turn-text);
 }
-.whist-trump strong { font-size: .5625rem; line-height: .78125rem; }
+.whist-trump strong { font-size: var(--whist-trump-heading-size, .5625rem); line-height: .78125rem; }
 .whist-trump-value, .whist-trump .card {
-  font-size: 1.25rem;
+  font-size: var(--whist-trump-value-size, 1.25rem);
   font-weight: 700;
   line-height: 1.6875rem;
   white-space: nowrap;
@@ -675,8 +675,9 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   min-width: 0;
   max-width: 100%;
   height: auto;
-  padding: 0 5px;
+  padding: 0 var(--whist-trump-card-inset, 5px);
   border: 0;
+  border-radius: var(--whist-trump-card-radius, 5px);
   color: var(--whist-turn-text);
 }
 .whist-trump .card.red { color: #9d2d36; }
