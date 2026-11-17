@@ -62,7 +62,7 @@ class BrowserUi {
                                 (page, images) -> stableSeats(page, url, players, output, images)));
                     }
                 }
-                if (check.equals("all")) {
+                if (check.equals("all") || check.equals("card-face")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-COMPONENT-TEXT",
                             "Fonturile Whist pe un panou de probă",
                             "Toate cele 13 ranguri sunt mărite cu 50%. Simbolurile și atuul își păstrează mărimea.",
@@ -71,16 +71,20 @@ class BrowserUi {
                             "Culoarea simbolurilor rămâne aceeași în mână, pe masă și la colectare",
                             "Fiecare dintre cele patru simboluri folosește aceeași cerneală și randare text.",
                             (page, images) -> cardInk(page, url)));
-                    results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
-                            "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
-                            (page, images) -> responsiveHand(page, url)));
+                    results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Fața cărții în mână, la depunere și colectare",
+                            "Rangul, simbolurile și pozițiile lor rămân proporționale când cartea trece între suprafețe.",
+                            (page, images) -> autoGame(page, url, checkpoint, output, images)));
+                }
+                if (check.equals("all") || check.equals("numbers")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
                             "Rangul 10 în mâna de 17 cărți, la text 200%",
                             "Cifrele și figurile păstrează aceeași ancoră. Antetul respectă scara de text.",
                             (page, images) -> enlargedNumbers(page, url, wideCheckpoint, output, images)));
-                    results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Atingere respinsă și AutoGame în Whist",
-                            "Textul accesibil și marcajele duc la patru colectări și la scorul așteptat",
-                            (page, images) -> autoGame(page, url, checkpoint, output, images)));
+                }
+                if (check.equals("all")) {
+                    results.add(run(browser, mobile(), output, "WEB-UI-17", "Evantaiul și licitarea la 414×896",
+                            "17 cărți accesibile și aceleași locuri după licitarea de la tastatură",
+                            (page, images) -> responsiveHand(page, url)));
                     results.add(run(browser, new Browser.NewContextOptions().setViewportSize(535, 760), output,
                             "WEB-UI-HEADER-DESKTOP", "Antet Oh Hell în cadrul scalat pe desktop",
                             "Titlul și progresul au aceeași ancoră, iar atuul rămâne la marginea utilă",
@@ -226,10 +230,10 @@ class BrowserUi {
                     for (const suit of suits) {
                       const card = document.createElement("span");
                       const hand = container.matches(".fan");
-                      card.className = hand ? "card" : "card compact-play-face";
+                      card.className = hand ? "card" : "card whist-play-face";
                       card.classList.toggle("red", suit === "♥" || suit === "♦");
                       const symbol = document.createElement("span");
-                      symbol.className = hand ? "suit" : "compact-suit";
+                      symbol.className = "suit";
                       symbol.textContent = suit;
                       card.append(symbol);
                       container.append(card);
@@ -239,7 +243,7 @@ class BrowserUi {
                 """, suits);
         var colors = List.of("rgb(42, 53, 47)", "rgb(173, 57, 58)", "rgb(42, 53, 47)", "rgb(173, 57, 58)");
         for (String surface : List.of(".fan", ".cards-on-table", ".collection")) {
-            var symbols = page.locator(surface + " :is(.suit, .compact-suit)");
+            var symbols = page.locator(surface + " .suit");
             assertThat(symbols).hasText(suits.toArray(String[]::new));
             for (int index = 0; index < suits.size(); index++) {
                 assertThat(symbols.nth(index)).hasCSS("color", colors.get(index));
@@ -400,8 +404,12 @@ class BrowserUi {
         var trump = page.locator(".whist-trump:visible");
         var manualTrump = trumpAppearance(trump);
         page.locator(".fan button[data-face='8♦']").tap();
-        var collection = page.locator(".collection .compact-play-face");
-        assertThat(collection).hasText(new String[]{"9♦", "Q♥", "K♦", "8♦"});
+        var collection = page.locator(".collection .whist-play-face");
+        assertThat(collection).hasCount(4);
+        var collected = List.of("9♦", "Q♥", "K♦", "8♦");
+        for (int index = 0; index < collected.size(); index++) {
+            assertThat(collection.nth(index)).hasAttribute("data-face", collected.get(index));
+        }
         var collectingTrump = trumpAppearance(trump);
         page.locator("html[data-layout-held]").waitFor();
         try {
@@ -409,7 +417,7 @@ class BrowserUi {
             assertThat(visibleBoard).hasCount(1);
             require("ready".equals(visibleBoard.getAttribute("data-layout")),
                     "Playback showed a board with fallback positions while the Worker layout was pending");
-            assertThat(visibleBoard.locator(".compact-play-face")).hasText("A♠");
+            assertThat(visibleBoard.locator(".whist-play-face")).hasAttribute("data-face", "A♠");
             images.add(screenshot(page, output, "WEB-COMPONENT-PLAYBACK-WAIT", "Tabla în timp ce geometria nouă este în așteptare"));
         } finally {
             page.evaluate("() => window.releaseLayout()");
@@ -462,7 +470,7 @@ class BrowserUi {
                 require(initial.equals(playing), "Seat frames moved after bidding: " + initial + " -> " + playing);
                 legal.tap();
             }
-            assertThat(page.locator(".collection .compact-play-face")).hasCount(players);
+            assertThat(page.locator(".collection .whist-play-face")).hasCount(players);
             var collecting = seats(page);
             require(initial.equals(collecting), "Seat frames moved at collection: " + initial + " -> " + collecting);
             String mode = automatic ? "AutoGame" : "manual";
@@ -486,7 +494,9 @@ class BrowserUi {
         assertThat(ten).hasText("10");
         assertThat(ten).hasCSS("font-size", "19.5px");
         assertThat(page.locator(".fan [data-face^='10'] .card-index.inverted .card-rank")).hasCSS("font-size", "13.5px");
-        assertThat(page.locator(".fan [data-face^='10'] .suit")).hasCSS("font-size", "19px");
+        assertThat(page.locator(".fan [data-face^='10'] .suit")).hasCSS("font-size", "28px");
+        var held = page.locator(".fan [data-face='8♦']");
+        var heldFace = faceGeometry(held);
         assertHeader(page, false);
         var trump = page.locator(".whist-trump .card");
         assertThat(trump.locator(".card-index:not(.inverted) .card-rank")).hasText("Q");
@@ -515,20 +525,31 @@ class BrowserUi {
         var manualTrump = trumpAppearance(trump.locator(".."));
         page.getByRole(AriaRole.CHECKBOX, new Page.GetByRoleOptions().setName("Automat").setExact(true)).tap();
         require(manualTrump.equals(trumpAppearance(trump.locator(".."))), "AutoGame changed the trump frame");
-        var collection = page.locator(".collection .compact-play-face");
+        var collection = page.locator(".collection .whist-play-face");
         var faces = List.of("9♦", "Q♥", "K♦", "8♦");
-        assertThat(collection).hasText(faces.toArray(String[]::new));
+        assertThat(collection).hasCount(faces.size());
+        var tableFaces = page.locator(".cards-on-table .whist-play-face");
+        for (int index = 0; index < faces.size(); index++) {
+            String id = faces.get(index);
+            var copy = collection.nth(index);
+            assertThat(copy).hasAttribute("data-face", id);
+            var played = tableFaces.and(page.locator("[data-face='" + id + "']"));
+            require(faceGeometry(played).equals(faceGeometry(copy)), "Collection changed the face of " + id);
+        }
+        var deposited = tableFaces.and(page.locator("[data-face='8♦']"));
+        var depositedFace = faceGeometry(deposited);
+        require(heldFace.get("marks").equals(depositedFace.get("marks")), "The deposited face lost a mark");
+        require(heldFace.get("ink").equals(depositedFace.get("ink")), "The deposited face changed ink");
+        for (String property : List.of("rankSize", "indexTop", "suitX", "suitBaseline", "suitSize", "invertedRight")) {
+            double fromHand = ((Number) heldFace.get(property)).doubleValue();
+            double fromTable = ((Number) depositedFace.get(property)).doubleValue();
+            require(Math.abs(fromHand - fromTable) < .026, "The deposited face moved " + property);
+        }
         require(manualTrump.equals(trumpAppearance(trump.locator(".."))), "AutoGame collection changed the trump frame");
         var eva = page.locator(".seat").filter(new Locator.FilterOptions()
                 .setHas(page.getByText("Eva", new Page.GetByTextOptions().setExact(true))));
         assertThat(eva.locator(".seat-won")).hasText("Levate: 1");
         assertThat(page.locator(".fan button")).hasCount(3);
-        assertThat(collection.filter(new Locator.FilterOptions().setHasText("9♦")).locator(".card-rank"))
-                .hasCSS("font-size", "19.5px");
-        assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥")).locator(".card-rank"))
-                .hasCSS("font-size", "19.5px");
-        assertThat(collection.filter(new Locator.FilterOptions().setHasText("Q♥")).locator(".compact-suit"))
-                .hasCSS("font-size", "13px");
         images.add(screenshot(page, output, "WEB-UI-AUTO-collection", "AutoGame după prima levată"));
         page.locator(".whist-score").waitFor(new Locator.WaitForOptions().setTimeout(45_000));
         var notice = page.locator("dialog.achievement-notice[open]");
@@ -537,7 +558,35 @@ class BrowserUi {
         var totals = page.locator(".whist-score tbody tr td:last-child").allTextContents();
         require(totals.equals(List.of("20", "6", "24", "10")), "Unexpected score: " + totals);
         require(page.locator(".whist-auto").count() == 0, "AutoGame remains available at score");
-        return Map.of("firstCollection", faces, "winner", "Eva", "totals", totals, "rejectedCard", "8♣");
+        return Map.of("firstCollection", faces, "winner", "Eva", "totals", totals, "rejectedCard", "8♣",
+                "heldFace", heldFace, "depositedFace", depositedFace);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> faceGeometry(Locator card) {
+        return (Map<String, Object>) card.evaluate("""
+                node => {
+                  const index = node.querySelector('.card-index:not(.inverted)');
+                  const rank = index.querySelector('.card-rank');
+                  const suit = node.querySelector('.suit');
+                  const inverted = node.querySelector('.card-index.inverted');
+                  const height = node.offsetHeight;
+                  const width = node.offsetWidth;
+                  const ratio = (mark, property, size = height) =>
+                    parseFloat(getComputedStyle(mark)[property]) / size;
+                  return {
+                    marks: [rank.textContent, index.lastElementChild.textContent, suit.textContent,
+                      inverted.querySelector('.card-rank').textContent, inverted.lastElementChild.textContent],
+                    ink: getComputedStyle(suit).color,
+                    rankSize: ratio(rank, 'fontSize'),
+                    indexTop: ratio(index, 'top'),
+                    suitX: ratio(suit, 'left', width),
+                    suitBaseline: ratio(suit, 'top'),
+                    suitSize: ratio(suit, 'fontSize'),
+                    invertedRight: ratio(inverted, 'right', width)
+                  };
+                }
+                """);
     }
 
     private static Map<String, Object> desktop(Page page, String url) {

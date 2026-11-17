@@ -291,43 +291,55 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 }
 .whist-match .seat-turn[hidden] { display: none; }
 .whist-match .hand, .whist-match .fan { height: calc(var(--whist-hand-slot) + 12px); }
-.whist-match .fan .card {
+.whist-match .fan .card, .whist-play-face {
   width: var(--whist-hand-face-width);
   min-width: var(--whist-hand-face-width);
   height: var(--whist-hand-face-height);
-  border: 1.5px solid #d3dcd2;
+  border: var(--whist-played-stroke, 1px) solid var(--whist-outline);
+  border-radius: var(--whist-played-radius, 9px);
+  padding: 0;
 }
-.whist-match .fan .card-index:not(.inverted) {
+.whist-play-face { border-color: var(--whist-played-line); }
+:is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted) {
+  position: absolute;
+  top: calc(var(--whist-face-index-top, 5px) * var(--card-face-scale, 1));
+  left: calc(var(--whist-face-index-side, 1px) * var(--card-face-scale, 1));
   width: max-content;
   justify-items: center;
 }
-.whist-match .fan .card-index:not(.inverted)::before {
+:is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted)::before {
   content: "10";
   visibility: hidden;
 }
-.whist-match .fan .card-index:not(.inverted)::before,
-.whist-match .fan .card-index:not(.inverted) .card-rank {
+:is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted)::before,
+:is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted) .card-rank {
   grid-area: 1 / 1;
-  font-size: calc(min(var(--whist-hand-label), var(--whist-hand-rank-cap)) * var(--whist-text-scale));
+  font-size: calc(min(var(--whist-hand-label), var(--whist-hand-rank-cap)) * var(--whist-text-scale)
+    * var(--card-face-scale, 1));
   font-variant-numeric: lining-nums tabular-nums;
   line-height: 1.15;
 }
-.whist-match .fan .card-index:not(.inverted) span:last-child {
+:is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted) span:last-child {
   grid-area: 2 / 1;
-  font-size: min(var(--whist-hand-label), var(--whist-hand-rank-cap));
+  font-size: calc(min(var(--whist-hand-label), var(--whist-hand-rank-cap)) * var(--card-face-scale, 1));
   line-height: 1.15;
 }
-.whist-match .fan .card-index.inverted .card-rank {
+:is(.whist-match .fan, .whist-play-face) .card-index.inverted {
+  right: calc(4px * var(--card-face-scale, 1));
+  bottom: calc(4px * var(--card-face-scale, 1));
+  font-size: calc(var(--whist-face-inverted-size, 9px) * var(--card-face-scale, 1));
+  line-height: 1.1;
+}
+:is(.whist-match .fan, .whist-play-face) .card-index.inverted .card-rank {
   font-size: calc(1em * var(--whist-text-scale));
   line-height: 1;
 }
-.whist-match .fan .card .suit {
-  left: calc(50% - 5px);
-  top: auto;
-  bottom: 4px;
-  font-size: max(11px, min(19px, calc(49px - min(var(--whist-hand-label),
-    var(--whist-hand-rank-cap)))));
-  transform: translateX(-50%);
+:is(.whist-match .fan .card, .whist-play-face) .suit {
+  left: 50%;
+  top: var(--whist-face-suit-baseline, 66%);
+  font-size: calc(var(--whist-face-suit-size, 28px) * var(--card-face-scale, 1));
+  line-height: 1;
+  transform: translate(-50%, -83%);
 }
 #table:not([data-automatic]) .whist-match .fan .suggested-card {
   background: var(--whist-hint-legal-fill);
@@ -354,9 +366,6 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 }
 .compact-play-face .card-rank, .compact-play-face .compact-suit {
   font-size: min(1em, var(--whist-played-rank-cap), var(--compact-rank-fit, 24px));
-}
-[data-surface="whist"] .compact-play-face .card-rank {
-  font-size: min(calc(1em * var(--whist-text-scale)), var(--whist-played-rank-cap), var(--compact-rank-fit, 24px));
 }
 .whist-match .played-name { color: var(--whist-played-player); }
 .whist-match .played-name[hidden] { display: none; }

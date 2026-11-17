@@ -88,13 +88,15 @@ await check("Ridicarea precede singura depunere; închiderea invalidează anima�
     return observed;
   });
 
-await check("Fața compactă și stilul păstrat în colectare",
+await check("Fața din mână și stilul păstrat în colectare",
   "Rang și simbol, text accesibil, culori și dimensiuni din modulul comun", () => {
     assert.ok(fixture);
     assert.equal(style["--whist-hint-rejected-fill"], "#ffeee8");
     assert.equal(style["--whist-hint-rejected-line"], "#b7544d");
     assert.equal(style["--whist-hint-legal-fill"], "#fff6d7");
     assert.equal(style["--whist-played-line"], "#dce3ee");
+    assert.deepEqual([style["--whist-face-index-top"], style["--whist-face-suit-baseline"],
+      style["--whist-face-suit-size"], style["--whist-face-inverted-size"]], ["5px", "66%", "28px", "9px"]);
     const plays = [...state.playback.map(step => step.play),
       ...state.collections.flatMap(cue => cue.cards), ...state.view.played];
     assert.ok(plays.length > 0);
@@ -105,8 +107,8 @@ await check("Fața compactă și stilul păstrat în colectare",
     const layout = command("layout", { mode: "ROMANIAN_WHIST", width: 393, height: 400,
       players: 4, cards: 4, viewport: 660, seatHeight: 50, handWidth: 393 });
     assert.equal(layout.played.playerLabelHeightDp, 0);
-    assert.equal(layout.playedStyle.faceTextSp, Math.max(13, Math.min(18, Math.floor(layout.played.cardWidthDp / 4))));
-    return { compactCard: plays[0].faceLabel, faceTextSp: layout.playedStyle.faceTextSp, played: plays.length };
+    assert.equal(layout.played.cardWidthDp, Math.round(layout.played.cardHeightDp * 5 / 7));
+    return { card: plays[0].faceLabel, faceHeight: layout.played.cardHeightDp, played: plays.length };
   });
 
 await check("AutoGame colectează fiecare levată, apoi publică doar cărțile curente",

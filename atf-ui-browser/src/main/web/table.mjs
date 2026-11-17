@@ -445,6 +445,12 @@ function compactFace(play) {
 }
 
 function collectionFace(face, play) {
+  if (setup.surface === "whist") {
+    const node = card(face);
+    node.classList.add("whist-play-face");
+    node.setAttribute("aria-hidden", "true");
+    return node;
+  }
   return play.faceLabel ? compactFace(play) : card(face);
 }
 
@@ -465,6 +471,8 @@ function placePlayed(cards) {
   if (!playedLayout || !cards.childElementCount) return;
   cards.style.height = playedLayout.centerHeightDp + "px";
   cards.classList.add("positioned");
+  const handHeight = setup.surface === "whist"
+    ? Number.parseFloat(getComputedStyle(cards).getPropertyValue("--whist-hand-face-height")) : null;
   for (const tile of cards.children) {
     const slot = playedLayout.slots[Number(tile.dataset.seat)];
     const face = tile.querySelector(".card");
@@ -472,8 +480,12 @@ function placePlayed(cards) {
     tile.style.top = (slot.row * playedLayout.rowStrideDp + playedLayout.verticalPaddingDp) + "px";
     face.style.width = face.style.minWidth = playedLayout.faceWidth + "px";
     face.style.height = playedLayout.faceHeight + "px";
-    face.style.setProperty("--compact-rank-fit", Math.floor((playedLayout.faceWidth - 4) / 2) + "px");
-    if (face.classList.contains("compact-play-face")) face.style.fontSize = playedLayout.faceTextSp / 16 + "rem";
+    if (face.classList.contains("whist-play-face")) {
+      face.style.setProperty("--card-face-scale", playedLayout.faceHeight / handHeight);
+    } else if (face.classList.contains("compact-play-face")) {
+      face.style.setProperty("--compact-rank-fit", Math.floor((playedLayout.faceWidth - 4) / 2) + "px");
+      face.style.fontSize = playedLayout.faceTextSp / 16 + "rem";
+    }
     const player = tile.querySelector(".played-name");
     player.hidden = !playedLayout.playerLabelHeightDp;
     player.style.height = playedLayout.playerLabelHeightDp + "px";

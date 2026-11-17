@@ -32,13 +32,15 @@ public class CardFaceDrawable extends GradientDrawable {
     @Override public void draw(Canvas canvas) {
         super.draw(canvas);
         var bounds = getBounds();
-        ink.setTextSize(28 * density);
-        canvas.drawText(suitText, bounds.exactCenterX(), bounds.top + bounds.height() * .66f, ink);
+        float unit = bounds.height() / (float) CardFaceMetrics.HAND_HEIGHT_DP;
+        ink.setTextSize(CardFaceMetrics.CENTER_SUIT_SIZE_DP * unit);
+        canvas.drawText(suitText, bounds.exactCenterX(),
+                bounds.top + bounds.height() * CardFaceMetrics.CENTER_SUIT_BASELINE, ink);
         canvas.save();
         canvas.rotate(180, bounds.exactCenterX(), bounds.exactCenterY());
-        ink.setTextSize(9 * density);
-        canvas.drawText(card.rankLabel(), bounds.left + 9 * density, bounds.top + 12 * density, ink);
-        canvas.drawText(suitText, bounds.left + 9 * density, bounds.top + 22 * density, ink);
+        ink.setTextSize(CardFaceMetrics.INVERTED_SIZE_DP * unit);
+        canvas.drawText(card.rankLabel(), bounds.left + 9 * unit, bounds.top + 12 * unit, ink);
+        canvas.drawText(suitText, bounds.left + 9 * unit, bounds.top + 22 * unit, ink);
         canvas.restore();
     }
 }

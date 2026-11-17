@@ -1,8 +1,5 @@
 package ro.cardtable.ui.table.android;
 import android.content.Context;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.InsetDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +7,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
-import ro.cardtable.ui.cards.CardFaceInk;
+import ro.cardtable.ui.cards.CardFaceDrawable;
+import ro.cardtable.ui.cards.CardFaceMetrics;
+import ro.cardtable.ui.cards.CardFaceView;
 import ro.cardtable.ui.table.PlayedCardContent;
 import ro.cardtable.ui.table.PlayedCardMetrics;
 import ro.cardtable.ui.table.PlayedCardStyle;
@@ -40,6 +39,8 @@ public final class PlayedCardsView {
             rowParams.topMargin = dp(rowIndex * layout.rowStrideDp());
             cards.addView(row, rowParams);
         }
+        var metrics = CardFaceMetrics.atHeight(layout.cardHeightDp());
+        int indexWidthPx = CardFaceView.indexBandWidthPx(context, metrics);
         for (int seat = 0; seat < bySeat.length; seat++) {
             PlayedCardContent play = bySeat[seat];
             if (play == null) continue;
@@ -50,17 +51,15 @@ public final class PlayedCardsView {
             int verticalPadding = dp(layout.itemVerticalPaddingDp() / 2);
             item.setPadding(0, verticalPadding, 0, verticalPadding);
 
-            TextView card = text(CardFaceInk.textPresentation(play.faceLabel()), layout.cardFaceTextSizeSp(),
-                    CardFaceInk.color(play.red()), true);
+            var face = play.face();
+            var background = new CardFaceDrawable(face, context.getResources().getDisplayMetrics().density,
+                    PlayedCardStyle.OUTLINE);
+            FrameLayout card = CardFaceView.build(context, face, background, metrics, indexWidthPx);
             card.setTag("trick-face:" + seat);
-            card.setGravity(Gravity.CENTER);
-            card.setPadding(dp(2), dp(4), dp(2), dp(4));
-            card.setBackground(rounded(PlayedCardStyle.FILL, PlayedCardStyle.OUTLINE, PlayedCardStyle.RADIUS_DP));
-            card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            card.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
             item.addView(card, new LayoutParams(dp(layout.cardWidthDp()), dp(layout.cardHeightDp())));
 
-            TextView who = text(play.playerLabel(), layout.playerLabelTextSizeSp(),
-                    PlayedCardStyle.PLAYER, false);
+            TextView who = playerLabel(play.playerLabel(), layout.playerLabelTextSizeSp());
             who.setGravity(Gravity.CENTER);
             who.setSingleLine(true);
             who.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -85,21 +84,13 @@ public final class PlayedCardsView {
         return (FrameLayout) cards.getChildAt(index);
     }
 
-    private TextView text(String value, int size, int color, boolean bold) {
+    private TextView playerLabel(String value, int size) {
         TextView view = new TextView(context);
         view.setText(value);
         view.setTextSize(size);
         view.setIncludeFontPadding(!compact);
-        view.setTextColor(color);
-        if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        view.setTextColor(PlayedCardStyle.PLAYER);
         return view;
-    }
-    private GradientDrawable rounded(int fill, int stroke, int radius) {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setColor(fill);
-        shape.setCornerRadius(dp(radius));
-        shape.setStroke(dp(PlayedCardStyle.STROKE_DP), stroke);
-        return shape;
     }
     private int dp(int value) {
         return Math.round(value * context.getResources().getDisplayMetrics().density);

@@ -1,21 +1,16 @@
 package ro.cardtable.ui.hand;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import ro.cardtable.ui.cards.CardFaceDrawable;
-import ro.cardtable.ui.cards.CardFaceInk;
+import ro.cardtable.ui.cards.CardFaceMetrics;
+import ro.cardtable.ui.cards.CardFaceView;
 import ro.cardtable.ui.cards.CardHighlight;
 import ro.cardtable.ui.cards.CardHighlightView;
 
@@ -26,7 +21,6 @@ public final class HandFan {
     private final Context context;
     private final List<HandCard> cards;
     private final int clearanceDp;
-    private final boolean compact;
     private final Consumer<String> onCardSelected;
     private final Predicate<HandCard> highlight;
     private final boolean rejectedTapHint;
@@ -43,7 +37,7 @@ public final class HandFan {
     public HandFan(Context context, List<HandCard> cards, int clearanceDp, boolean compact,
             Consumer<String> onCardSelected, Predicate<HandCard> highlight, boolean rejectedTapHint) {
         this.context = context; this.cards = List.copyOf(cards); this.clearanceDp = clearanceDp;
-        this.compact = compact; this.onCardSelected = java.util.Objects.requireNonNull(onCardSelected);
+        this.onCardSelected = java.util.Objects.requireNonNull(onCardSelected);
         this.highlight = java.util.Objects.requireNonNull(highlight);
         this.rejectedTapHint = rejectedTapHint;
         if (cards.stream().map(HandCard::id).distinct().count() != cards.size()) throw new IllegalArgumentException("Duplicate visible card identity");
@@ -54,11 +48,9 @@ public final class HandFan {
         FrameLayout fan = new FrameLayout(context);
         fan.setClipChildren(false);
         fan.setClipToPadding(false);
-        TextView measurement = text("10", HandLayoutMetrics.cardLabelSizeSp(), CardFaceInk.DARK, true);
-        float widestIndex = measurement.getPaint().measureText("10");
-        for (String symbol : List.of("â™ ", "â™¥", "â™£", "â™¦")) widestIndex = Math.max(widestIndex, measurement.getPaint().measureText(symbol));
-        int indexWidthPx = HandLayoutMetrics.indexBandWidthPx(widestIndex, dp(1));
         if (cardCount == 0) return fan;
+        var metrics = CardFaceMetrics.atHeight(HandLayoutMetrics.cardHeightDp());
+        int indexWidthPx = CardFaceView.indexBandWidthPx(context, metrics);
         HandLayoutMetrics.Fan layout = HandLayoutMetrics.fan(cardCount, widthPx,
                 context.getResources().getDisplayMetrics().density, fontScale, indexWidthPx);
         fan.setMinimumWidth(layout.width());
@@ -89,7 +81,7 @@ public final class HandFan {
             slot.setTranslationZ(dp(HandLayoutMetrics.NEIGHBOR_Z_DP));
             var drawable = new CardFaceDrawable(card.face(), density, playable ? GOLD : SOFT_BORDER);
             faces.put(card, drawable);
-            FrameLayout face = cardFace(card, drawable, indexWidthPx);
+            FrameLayout face = CardFaceView.build(context, card.face(), drawable, metrics, indexWidthPx);
             FrameLayout.LayoutParams faceParams = new FrameLayout.LayoutParams(layout.cardWidth(),
                     dp(cardHeightDp), Gravity.TOP | Gravity.START);
             faceParams.topMargin = dp(liftClearanceDp);
@@ -128,31 +120,6 @@ public final class HandFan {
         }
         repaint.run();
         return fan;
-    }
-    private FrameLayout cardFace(HandCard card, CardFaceDrawable background, int indexWidthPx) {
-        FrameLayout face = new FrameLayout(context);
-        face.setBackground(background);
-        face.setFocusable(false);
-        face.setClickable(false);
-
-        String labelText = CardFaceInk.textPresentation(card.face().rankLabel() + "\n" + card.face().suitSymbol());
-        TextView label = text(labelText, HandLayoutMetrics.cardLabelSizeSp(), CardFaceInk.color(card.face().red()), true);
-        label.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
-        label.setIncludeFontPadding(false);
-        label.setPadding(dp(1), dp(5), dp(1), 0);
-        label.setTag("card-index");
-        face.addView(label, new FrameLayout.LayoutParams(
-                indexWidthPx, ViewGroup.LayoutParams.WRAP_CONTENT));
-        return face;
-    }
-    private TextView text(String value, int size, int color, boolean bold) {
-        TextView view = new TextView(context);
-        view.setText(value);
-        view.setTextSize(size);
-        view.setIncludeFontPadding(!compact);
-        view.setTextColor(color);
-        if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        return view;
     }
     private int dp(int value) {
         return Math.round(value * context.getResources().getDisplayMetrics().density);
