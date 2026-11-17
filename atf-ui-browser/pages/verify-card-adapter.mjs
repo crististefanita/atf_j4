@@ -149,13 +149,18 @@ await check("Antetul browserului folosește măsurile de referință ale APK-ulu
     const px = name => Number.parseFloat(style["--whist-" + name]);
     const observed = {titleSp: header.titleSize, progressSp: header.progressSize, bidSp: header.bidSize,
       menuTouchDp: px("menu-touch"), trumpWidthDp: px("trump-width"), trumpMinHeightDp: px("trump-min-height"),
-      trumpPaddingDp: px("trump-padding"), trumpGapDp: px("trump-gap"),
+      trumpPaddingDp: px("trump-padding"), trumpGapDp: px("trump-gap"), trumpFrameRadiusDp: px("trump-frame-radius"),
+      trumpFrameStrokeDp: px("trump-frame-stroke"),
       trumpHeadingSp: px("trump-heading-size") * 16, trumpValueSp: px("trump-value-size") * 16,
       trumpCardInsetDp: px("trump-card-inset"), trumpCardRadiusDp: px("trump-card-radius"),
       handLabelSp: px("hand-label") * 16, handWidthDp: px("hand-face-width"), handHeightDp: px("hand-face-height")};
     assert.deepEqual(Object.keys(observed).sort(), Object.keys(reference).sort());
     for (const [role, size] of Object.entries(observed)) assert.ok(Math.abs(size - reference[role]) < .001, role);
-    return {reference, observed};
+    const paletteFile = new URL("../../whist-lab-app/app/src/test/resources/whist-trump-palette.properties", import.meta.url);
+    const palette = Object.fromEntries((await readFile(paletteFile, "utf8")).trim().split(/\r?\n/u).map(line => line.split("=")));
+    const mapped = Object.fromEntries(Object.keys(palette).map(role => [role, style["--whist-" + role]]));
+    assert.deepEqual(mapped, palette);
+    return {reference, observed, palette, mapped};
   }, "WEB-12");
 
 await check("Ranguri de carte și bandă măsurată pentru 17 cărți",

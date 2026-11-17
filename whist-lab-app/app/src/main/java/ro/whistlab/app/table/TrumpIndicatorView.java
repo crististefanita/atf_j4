@@ -2,16 +2,14 @@ package ro.whistlab.app.table;
 
 import ro.cardtable.ui.table.TrumpTileMetrics;
 import ro.whistlab.app.localization.WhistUiText;
-import ro.whistlab.app.theme.WhistUiPalette;
+import ro.whistlab.app.theme.TrumpTileStyle;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import ro.whistlab.core.model.Card;
 import ro.whistlab.core.session.GameSession;
 import ro.whistlab.core.model.Suit;
 
@@ -19,12 +17,8 @@ import ro.whistlab.core.model.Suit;
 public final class TrumpIndicatorView extends LinearLayout {
     private final TextView heading;
     private final TextView value;
-    private static final int IVORY = Color.rgb(255, 254, 248);
-    private static final int HEART_RED = Color.rgb(255, 177, 177);
-    private static final int DARK_SUIT_RED = Color.rgb(157, 45, 54);
 
-    public TrumpIndicatorView(Context context, GameSession.Snapshot state, WhistUiText copy,
-            boolean currentPlayerHighlighted) {
+    public TrumpIndicatorView(Context context, GameSession.Snapshot state, WhistUiText copy) {
         super(context);
         float density = getResources().getDisplayMetrics().density;
         setOrientation(VERTICAL);
@@ -33,7 +27,11 @@ public final class TrumpIndicatorView extends LinearLayout {
         setGravity(Gravity.CENTER);
         int padding = dp(density, TrumpTileMetrics.PADDING_DP);
         setPadding(padding, padding, padding, padding);
-        setBackground(WhistUiPalette.seatFrame(context, currentPlayerHighlighted));
+        var frame = new GradientDrawable();
+        frame.setColor(TrumpTileStyle.FILL);
+        frame.setStroke(dp(density, TrumpTileStyle.FRAME_STROKE_DP), TrumpTileStyle.LINE);
+        frame.setCornerRadius(dp(density, TrumpTileStyle.FRAME_RADIUS_DP));
+        setBackground(frame);
         setTag("trump-indicator");
         setContentDescription(copy.trumpAccessibility(state));
         setFocusable(true);
@@ -42,7 +40,7 @@ public final class TrumpIndicatorView extends LinearLayout {
         heading = new TextView(context);
         heading.setText(copy.trumpHeading());
         heading.setTextSize(TrumpTileMetrics.HEADING_SP);
-        heading.setTextColor(frameText(currentPlayerHighlighted));
+        heading.setTextColor(TrumpTileStyle.INK);
         heading.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         heading.setGravity(Gravity.CENTER);
         heading.setSingleLine(true);
@@ -54,13 +52,14 @@ public final class TrumpIndicatorView extends LinearLayout {
         value.setTextSize(TrumpTileMetrics.VALUE_SP);
         if (state.turnedCard() != null) {
             GradientDrawable card = new GradientDrawable();
-            card.setColor(IVORY);
+            card.setColor(TrumpTileStyle.CARD_FILL);
             card.setCornerRadius(dp(density, TrumpTileMetrics.CARD_RADIUS_DP));
             value.setBackground(card);
             int inset = dp(density, TrumpTileMetrics.CARD_INSET_DP);
             value.setPadding(inset, 0, inset, 0);
         }
-        value.setTextColor(valueColor(state, currentPlayerHighlighted));
+        Suit suit = state.turnedCard() == null ? state.trump().suit().orElse(null) : state.turnedCard().suit();
+        value.setTextColor(TrumpTileStyle.valueInk(suit));
         value.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         value.setGravity(Gravity.CENTER);
         value.setSingleLine(true);
@@ -93,24 +92,6 @@ public final class TrumpIndicatorView extends LinearLayout {
                         paint.measureText(line.getText().toString()), available));
         line.getLayoutParams().height = height;
         return height;
-    }
-
-    private static boolean isRed(GameSession.Snapshot state) {
-        Card turned = state.turnedCard();
-        return turned != null ? turned.suit().red()
-                : state.trump().suit().map(Suit::red).orElse(false);
-    }
-
-    private static int frameText(boolean active) {
-        return active ? WhistUiPalette.ACTIVE_SEAT_TEXT : WhistUiPalette.IDLE_SEAT_TEXT;
-    }
-
-    private static int valueColor(GameSession.Snapshot state, boolean active) {
-        if (state.turnedCard() != null) {
-            return isRed(state) ? DARK_SUIT_RED : WhistUiPalette.ACTIVE_SEAT_TEXT;
-        }
-        if (!active) return isRed(state) ? HEART_RED : IVORY;
-        return isRed(state) ? DARK_SUIT_RED : WhistUiPalette.ACTIVE_SEAT_TEXT;
     }
 
     private static int dp(float density, int value) {

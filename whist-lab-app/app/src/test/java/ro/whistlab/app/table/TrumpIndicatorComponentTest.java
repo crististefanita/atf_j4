@@ -12,10 +12,12 @@ import ro.cardtable.ui.screens.GameTitleBar;
 import ro.cardtable.ui.table.TrumpTileMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.whistlab.app.theme.GameHeaderTypography;
+import ro.whistlab.app.theme.TrumpTileStyle;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.core.config.GameConfig;
 import ro.whistlab.core.model.Card;
+import ro.whistlab.core.model.Suit;
 import ro.whistlab.core.model.Trump;
 import ro.whistlab.core.rules.GameMode;
 import ro.whistlab.core.rules.HowToPlay;
@@ -32,6 +34,8 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
                 Map.entry("progressSp", GameHeaderTypography.PROGRESS_SP), Map.entry("bidSp", GameHeaderTypography.BID_SUMMARY_SP),
                 Map.entry("menuTouchDp", (float) GameTitleBar.TOUCH_TARGET_DP),
                 Map.entry("trumpWidthDp", (float) TrumpTileMetrics.WIDTH_DP),
+                Map.entry("trumpFrameRadiusDp", (float) TrumpTileStyle.FRAME_RADIUS_DP),
+                Map.entry("trumpFrameStrokeDp", (float) TrumpTileStyle.FRAME_STROKE_DP),
                 Map.entry("trumpMinHeightDp", (float) TrumpTileMetrics.MIN_HEIGHT_DP),
                 Map.entry("trumpPaddingDp", (float) TrumpTileMetrics.PADDING_DP),
                 Map.entry("trumpGapDp", (float) TrumpTileMetrics.VALUE_GAP_DP),
@@ -46,6 +50,29 @@ public final class TrumpIndicatorComponentTest extends atf.gradle.audit.GradleAu
         assertEquals("All shared roles have a native counterpart", reference.stringPropertyNames(), nativeHeader.keySet());
         nativeHeader.forEach((role, size) -> assertEquals(role,
                 Float.parseFloat(reference.getProperty(role)), size, .001f));
+    }
+
+    @Test public void trumpPaletteAndContrastMatchTheSharedReference() throws Exception {
+        var palette = new Properties();
+        try (var input = getClass().getResourceAsStream("/whist-trump-palette.properties")) {
+            palette.load(java.util.Objects.requireNonNull(input));
+        }
+        var observed = Map.of("trump-fill", TrumpTileStyle.FILL, "trump-line", TrumpTileStyle.LINE,
+                "trump-ink", TrumpTileStyle.INK, "trump-card-fill", TrumpTileStyle.CARD_FILL,
+                "trump-red-ink", TrumpTileStyle.RED_INK);
+        atf.gradle.audit.GradleInputs.fixture("Shared reference palette", "fixture", palette, "native", observed);
+        assertEquals("Same color roles", palette.stringPropertyNames(), observed.keySet());
+        observed.forEach((role, color) -> assertEquals(role, palette.getProperty(role),
+                String.format("#%06x", color & 0xffffff)));
+        var expected = Map.of(Suit.HEARTS, 0xff9d2d36, Suit.DIAMONDS, 0xff9d2d36,
+                Suit.SPADES, 0xff29362e, Suit.CLUBS, 0xff29362e);
+        atf.gradle.audit.GradleInputs.fixture("Contrast reference for the fixed trump tile", "suitInk", expected,
+                "turnedCardFill", 0xfffffef8);
+        for (var entry : expected.entrySet()) {
+            assertEquals(entry.getKey().name(), entry.getValue().intValue(), TrumpTileStyle.valueInk(entry.getKey()));
+        }
+        assertEquals("No trump uses the dark text", 0xff29362e, TrumpTileStyle.valueInk(null));
+        assertEquals("Turned cards use the ivory background", 0xfffffef8, TrumpTileStyle.CARD_FILL);
     }
 
     @Test public void nativeAndBrowserUseTheSameTextFitCases() throws Exception {

@@ -24,6 +24,7 @@ import ro.whistlab.app.achievements.WhistAchievementRepository.Storage;
 import ro.whistlab.app.bidding.BidGridMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.table.TableLayoutMetrics;
+import ro.whistlab.app.theme.TrumpTileStyle;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.app.screens.MatchSetup;
 import ro.whistlab.core.rules.GameMode;
@@ -68,6 +69,9 @@ public final class WhistBrowser implements BrowserGame {
                 color("seat-line", TableColors.IDLE_SEAT_STROKE), color("seat-text", TableColors.IDLE_SEAT_TEXT),
                 color("turn-fill", TableColors.ACTIVE_SEAT_FILL), color("turn-line", TableColors.ACTIVE_SEAT_STROKE),
                 color("turn-text", TableColors.ACTIVE_SEAT_TEXT),
+                color("trump-fill", TrumpTileStyle.FILL), color("trump-line", TrumpTileStyle.LINE),
+                color("trump-ink", TrumpTileStyle.INK), color("trump-card-fill", TrumpTileStyle.CARD_FILL),
+                color("trump-red-ink", TrumpTileStyle.RED_INK),
                 color("score-paper", ScoreGridStyle.PAPER), color("score-stripe", ScoreGridStyle.STRIPE),
                 color("score-human", ScoreGridStyle.HUMAN_ROW), color("score-header", ScoreGridStyle.HEADER),
                 color("score-rule", ScoreGridStyle.RULE), color("score-ink", ScoreGridStyle.INK),
@@ -91,6 +95,8 @@ public final class WhistBrowser implements BrowserGame {
         tokens.add(new Token("--whist-summary-inset", "1px"));
         tokens.add(new Token("--whist-summary-leading", ".9375rem"));
         tokens.add(new Token("--whist-summary-whitespace", "pre"));
+        tokens.add(new Token("--whist-trump-frame-stroke", TrumpTileStyle.FRAME_STROKE_DP + "px"));
+        tokens.add(new Token("--whist-trump-frame-radius", TrumpTileStyle.FRAME_RADIUS_DP + "px"));
         tokens.add(new Token("--whist-trump-width", TrumpTileMetrics.WIDTH_DP + "px"));
         tokens.add(new Token("--whist-trump-min-height", TrumpTileMetrics.MIN_HEIGHT_DP + "px"));
         tokens.add(new Token("--whist-trump-padding", TrumpTileMetrics.PADDING_DP + "px"));

@@ -33,6 +33,7 @@ $sources = @(
     Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/localization/WhistUiText.java'
     Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRequest.java'
     Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java'
+    Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/theme/TrumpTileStyle.java'
     Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/theme/TableColors.java'
     $app = Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app'
     foreach ($metric in 'table/TableLayoutMetrics','table/TrickCardMetrics','bidding/BidGridMetrics','cards/CardFaceMetrics','hand/HandLayoutMetrics') {

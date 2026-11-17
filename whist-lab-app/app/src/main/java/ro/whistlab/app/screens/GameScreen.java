@@ -65,7 +65,7 @@ public final class GameScreen {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = tablePage(state.handNumber());
-        addGameHeader(page, state, !autoGame, copy, actions);
+        addGameHeader(page, state, copy, actions);
         var turn = WhistTableContent.turn(state, false, autoGame);
         GameTablePanel table = GameTablePanel.bidding(activity, state, choices, selectedBid, selected, submitted,
                 turn, copy);
@@ -78,7 +78,7 @@ public final class GameScreen {
         cancelCollection();
         views.applyTableWindowChrome();
         LinearLayout page = tablePage(state.handNumber());
-        addGameHeader(page, state, !pauseActive && !autoGame, copy, actions);
+        addGameHeader(page, state, copy, actions);
         var turn = WhistTableContent.turn(state, pauseActive, autoGame);
         boolean humanTurn = turn.manual();
         Suit ledSuit = state.currentTrick().isEmpty() ? null : state.currentTrick().get(0).card().suit();
@@ -139,7 +139,7 @@ public final class GameScreen {
         observer.addOnPreDrawListener(firstDraw);
     }
     private void addGameHeader(LinearLayout page, GameSession.Snapshot state,
-            boolean currentPlayerHighlighted, WhistUiText copy, MenuActions actions) {
+            WhistUiText copy, MenuActions actions) {
         LinearLayout header = new LinearLayout(activity);
         header.setOrientation(LinearLayout.VERTICAL);
         header.setTag("game-header");
@@ -188,7 +188,7 @@ public final class GameScreen {
         LinearLayout.LayoutParams trumpParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         trumpParams.leftMargin = views.dp(8);
-        details.addView(new TrumpIndicatorView(activity, state, copy, currentPlayerHighlighted), trumpParams);
+        details.addView(new TrumpIndicatorView(activity, state, copy), trumpParams);
         header.addView(details, views.matchWrap());
 
         LinearLayout.LayoutParams params = views.matchWrap();

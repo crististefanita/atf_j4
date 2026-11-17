@@ -83,6 +83,12 @@ class BrowserUi {
                                 (page, images) -> enlargedHeader(page, url, wideCheckpoint)));
                     }
                 }
+                if (check.equals("all") || check.equals("trump")) {
+                    results.add(run(browser, mobile(), output, "WEB-COMPONENT-TRUMP",
+                            "Chenarul de atu în Whist Descrescător",
+                            "Culoarea, conturul, dimensiunile și textul rămân identice la activarea și oprirea AutoPlay.",
+                            (page, images) -> descendingTrump(page, url)));
+                }
                 if (check.equals("all") || check.equals("numbers")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
                             "Rangul 10 în mâna de 17 cărți, la text 200%",
@@ -286,6 +292,46 @@ class BrowserUi {
                     """);
             require(difficultyOnOneLine, "The Romanian difficulty label and selector must share one row at " + width);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> descendingTrump(Page page, String url) {
+        page.navigate(url);
+        button(page, "Joc nou").click();
+        page.locator("select[name=mode]").selectOption("DESCENDING");
+        button(page, "Începe partida").click();
+        var table = page.locator("#table");
+        var trump = table.locator(".whist-trump");
+        table.locator(".whist-auto input").waitFor();
+        assertThat(trump.locator(".whist-trump-value")).hasText("♠");
+        assertThat(trump).hasCSS("border-radius", "11px");
+        assertThat(trump).hasCSS("background-color", "rgb(241, 230, 200)");
+        assertThat(trump.locator(".whist-trump-value")).hasCSS("color", "rgb(41, 54, 46)");
+        var states = (Map<String, Object>) table.evaluate("""
+                table => {
+                   const tile = table.querySelector(".whist-trump");
+                   const control = table.querySelector(".whist-auto input");
+                   const appearance = () => {
+                     const style = getComputedStyle(tile);
+                     const value = getComputedStyle(tile.querySelector(".whist-trump-value"));
+                     const { x, y, width, height } = tile.getBoundingClientRect();
+                     return { x, y, width, height, background: style.backgroundColor,
+                              border: style.boxShadow, ink: value.color, text: tile.textContent };
+                   };
+                   const off = appearance();
+                   control.click();
+                   const toggledOn = control.checked && table.hasAttribute("data-automatic");
+                   const on = appearance();
+                   control.click();
+                   const toggledOff = !control.checked && !table.hasAttribute("data-automatic");
+                   return { off, on, restored: appearance(), toggledOn, toggledOff };
+                }
+                """);
+        require(Boolean.TRUE.equals(states.get("toggledOn")) && Boolean.TRUE.equals(states.get("toggledOff")),
+                "AutoPlay did not toggle");
+        require(states.get("off").equals(states.get("on")) && states.get("off").equals(states.get("restored")),
+                "AutoPlay changed the trump tile");
+        return states;
     }
 
     private static Map<String, Object> enlargedHeader(Page page, String url, String checkpoint) {

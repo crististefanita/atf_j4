@@ -415,6 +415,10 @@ function whistSettings(form, fields) {
   return read;
 }
 
+function isRedSuit(suit) {
+  return suit === "♥" || suit === "♦";
+}
+
 function card(face, interactive = false, acceptsFeedback = false) {
   const node = element(interactive ? "button" : "span", "", "card");
   if (interactive) {
@@ -423,7 +427,7 @@ function card(face, interactive = false, acceptsFeedback = false) {
     if (acceptsFeedback) node.dataset.command = face.action;
     else if (face.action) node.addEventListener("click", () => action(face.action));
   }
-  node.classList.toggle("red", face.suit === "♥" || face.suit === "♦");
+  node.classList.toggle("red", isRedSuit(face.suit));
   node.setAttribute("aria-label", face.label);
   node.dataset.face = face.rank + face.suit;
   if (interactive && face.action) node.classList.add("legal-card");
@@ -441,7 +445,7 @@ function card(face, interactive = false, acceptsFeedback = false) {
 function compactFace(play) {
   const face = element("span", "", "card compact-play-face");
   face.append(element("span", play.card.rank, "card-rank"), element("span", play.card.suit, "compact-suit"));
-  face.classList.toggle("red", play.card.suit === "♥" || play.card.suit === "♦");
+  face.classList.toggle("red", isRedSuit(play.card.suit));
   face.setAttribute("aria-hidden", "true");
   return face;
 }
@@ -737,8 +741,9 @@ function whistHeader(match) {
     element("p", match.header.bids, "whist-bids"));
   const trump = element("div", "", "whist-trump");
   trump.setAttribute("aria-label", match.header.trumpDescription);
-  const trumpValue = match.center.length
-    ? card(match.center[0]) : element("span", match.header.trump, "whist-trump-value");
+  const trumpValue = match.center.length ? card(match.center[0])
+    : element("span", match.header.trump, "whist-trump-value");
+  if (isRedSuit(match.header.trump)) trumpValue.classList.add("red");
   trump.append(element("strong", copy("trump", "Atu")), trumpValue);
   details.append(status, trump);
   header.append(top, details);
