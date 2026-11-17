@@ -40,19 +40,23 @@ class ReleaseArtifactLayoutGovernanceTest {
         AuditedAssertions.assertDoesNotThrow(() -> ReleaseCatalogPresentation.projectLinks(root.resolve("README.md"), projectGuide,
                 releaseIndex, repository, download));
         String currentSection = ReleaseCatalogPresentation.currentSection(root.resolve("release/README.md"), catalog);
-        AuditedAssertions.assertTrue(currentSection.contains("(" + current + "/README.md)"), "The current entry follows the structured index");
+        AuditedAssertions.assertTrue(hasReleaseOverview(currentSection, current), "The current entry follows the structured index");
         for (Path folder : ReleaseArtifactCatalog.folders(root)) {
-            AuditedAssertions.assertTrue(catalog.contains("(" + folder.getFileName() + "/README.md)"), folder.toString());
+            AuditedAssertions.assertTrue(hasReleaseOverview(catalog, folder.getFileName().toString()), folder.toString());
             String guide = Files.readString(folder.resolve("reports/README.md"));
             AuditedAssertions.assertTrue(guide.contains("(../../README.md)"), "Each release links back to the catalog");
             AuditedAssertions.assertTrue(guide.contains("(../../../docs/testing/README.md)"), "Results point to the shared strategy");
         }
     }
 
+    private static boolean hasReleaseOverview(String markdown, String version) {
+        return markdown.contains("(" + version + "/README.md)") || markdown.contains("(" + version + "/README.en.md)");
+    }
+
     @Test void theGameSectionHasOnlyTheDirectApkAndTheOnlineGame() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         String guide = Files.readString(root.resolve("README.md")).replace("\r\n", "\n");
-        int start = guide.indexOf("\n## Jocul\n");
+        int start = guide.indexOf("\n## Game\n");
         AuditedAssertions.assertTrue(start >= 0, "The product entry has its own section");
         int end = guide.indexOf("\n## ", start + 1);
         String section = guide.substring(start, end < 0 ? guide.length() : end);

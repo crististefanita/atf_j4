@@ -69,10 +69,10 @@ Confruntați rolurile din hartă cu [reactorul Maven](../../pom.xml), [modulele 
 
 ## Limbă, stil și proză
 
-- Toate README-urile sunt în română cu diacritice; ghidurile bilingve de reguli au limba declarată în nume.
+- Documentația este în engleză pe `main` și în română cu diacritice pe `main_RO`, la aceleași căi. Ghidurile de reguli își păstrează sufixele de limbă. Cele două ediții se mențin sincronizate.
 - Titlurile, tabelele, diagramele și rezumatele pliabile folosesc limba documentului.
 - Identificatorii API, comenzile și etichetele originale citate își păstrează forma exactă.
-- Folosiți un singur titlu principal, o secțiune `Pe scurt` pentru orientare, secțiuni progresive și liste cu marcatorul `-`.
+- Folosiți un singur titlu principal, o secțiune `Overview` în engleză sau `Pe scurt` în română, titluri progresive și liste cu marcatorul `-`.
 - Un paragraf vizibil are cel mult trei propoziții; responsabilitățile și comparațiile se exprimă prin forma care le face ușor de parcurs.
 - Fonturile și culorile aparțin aplicației care afișează Markdown; documentele folosesc structură semantică, fără CSS local.
 - Fiecare bloc de cod are limbajul declarat, iar fiecare bloc pliabil are rezumat explicit și delimitare echilibrată.

@@ -105,7 +105,7 @@ final class ReleaseCatalogPresentation {
         require(!guide.contains("](" + repository + "/releases/latest)"), "UNPINNED", file);
         require(advertised.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?"), "VERSION", file);
 
-        var download = Pattern.compile("\\[Descarcă APK ([^]]+)\\]\\(([^)]+)\\)").matcher(guide);
+        var download = Pattern.compile("\\[(?:Download|Descarcă) APK ([^]]+)\\]\\(([^)]+)\\)").matcher(guide);
         require(download.find() && advertised.equals(download.group(1)) && expected.equals(download.group(2)), "DOWNLOAD", file);
         require(!download.find(), "AMBIGUOUS", file);
         var binaries = Pattern.compile("\\[[^]]*\\]\\(([^)]*\\.apk)\\)").matcher(guide);int count = 0;
@@ -118,11 +118,13 @@ final class ReleaseCatalogPresentation {
     }
 
     static String currentSection(Path file, String catalog) throws IOException {
-        int start = catalog.indexOf("## Versiunea curentă");
-        int end = catalog.indexOf("## Versiuni disponibile");
+        var current = Pattern.compile("(?m)^## (?:Current version|Versiunea curentă)$").matcher(catalog);
+        var available = Pattern.compile("(?m)^## (?:Available versions|Versiuni disponibile)$").matcher(catalog);
+        int start = current.find() ? current.start() : -1;
+        int end = available.find() ? available.start() : -1;
         if (start < 0 || end < start) {
             throw new IOException("RELEASE-CATALOG-SECTIONS: " + file
-                    + "; expected '## Versiunea curentă' before '## Versiuni disponibile'");
+                    + "; expected a Current version section before Available versions");
         }
         return catalog.substring(start, end);
     }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static atf.tests.documentation.policy.DocumentationContentPolicy.deploymentProse;
 import static atf.tests.documentation.policy.DocumentationContentPolicy.hasEnglishReadmeProse;
+import static atf.tests.documentation.policy.DocumentationContentPolicy.hasRomanianReadmeProse;
 import static atf.tests.documentation.policy.DocumentationContentPolicy.historicalReleaseProse;
 import static atf.tests.documentation.policy.DocumentationContentPolicy.publicReleaseProse;
 
@@ -136,7 +137,7 @@ class DocumentationPolicyGovernanceTest {
             Path file = root.resolve("lib").resolve(name); AuditedAssertions.assertTrue(files.contains(file), name);
             String source = Files.readString(file);
             AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\batf[_-]j[0-9]+\\b").matcher(source).find(), name);
-            AuditedAssertions.assertFalse(hasEnglishReadmeProse(source), name);
+            AuditedAssertions.assertFalse(hasRomanianReadmeProse(source), name);
         }
     }
 
@@ -160,7 +161,9 @@ class DocumentationPolicyGovernanceTest {
                 "Other metadata fields remain subject to the editorial identifier rule");
     }
 
-    @Test void languageGuardRejectsEnglishProseButKeepsQuotedApiAndCommands() {
+    @Test void languageGuardDetectsProseInEitherLanguageAndKeepsQuotedApiAndCommands() {
+        AuditedAssertions.assertTrue(hasRomanianReadmeProse("# Guide\n\nÎnainte de publicare, fiecare modul păstrează contractele și dovezile sale."));
+        AuditedAssertions.assertFalse(hasRomanianReadmeProse("# Guide\n\nUse the `Pe scurt` heading in a Romanian guide.\n\n```text\nÎnainte și după, fiecare modul păstrează dovezile.\n```"));
         AuditedAssertions.assertTrue(hasEnglishReadmeProse("# Overview\n\nThis module must preserve the source and their contracts before publication."));
         AuditedAssertions.assertTrue(hasEnglishReadmeProse("# Mecanism\n\nThis component must preserve the source and their contracts before publication."));
         AuditedAssertions.assertFalse(hasEnglishReadmeProse("# Mecanism\n\nRegulile păstrează contractul. API-ul `with and before after must` își păstrează numele.\n\n```text\nThis and that must remain before the source.\n```"));

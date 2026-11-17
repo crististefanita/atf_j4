@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /** Checks the minimum readable shape shared by every owner README. */
 final class DocumentationReadmeStructureRules {
     private static final Pattern H1 = Pattern.compile("^#\\s+[^#].*$");
-    private static final Pattern H2_ORIENTATION = Pattern.compile("^##\\s+Pe scurt\\b.*$",
+    private static final Pattern H2_ORIENTATION = Pattern.compile("^##\\s+(?:Overview|Pe scurt)\\b.*$",
             Pattern.CASE_INSENSITIVE);
     private static final Pattern DETAILS_OPEN = Pattern.compile("^\\s*<details(?:\\s|>)",
             Pattern.CASE_INSENSITIVE);
@@ -19,20 +19,6 @@ final class DocumentationReadmeStructureRules {
             Pattern.CASE_INSENSITIVE);
     private static final Pattern SUMMARY = Pattern.compile("^\\s*<summary(?:\\s|>)",
             Pattern.CASE_INSENSITIVE);
-
-    private static boolean isReleaseEvidence(Path root, Path file) throws java.io.IOException {
-        Path relative = root.relativize(file);
-        if (relative.getNameCount() < 4 || !relative.getName(0).toString().equals("release")
-                || !relative.getName(2).toString().equals("reports")) return false;
-        Path manifest = root.resolve(relative.subpath(0, 2)).resolve("release-validation.json");
-        if (!Files.isRegularFile(manifest)) return false;
-        String evidencePath = relative.subpath(2, relative.getNameCount()).toString().replace('\\', '/');
-        var entries = new com.fasterxml.jackson.databind.ObjectMapper().readTree(manifest.toFile()).at("/integrity/files");
-        for (var entry : entries) {
-            if (entry.path("path").asText().equals(evidencePath)) return true;
-        }
-        return false;
-    }
 
     static void validate(Path path, Path root,
                          List<String> lines, List<DocumentationGovernanceSupport.Violation> violations) {
@@ -59,12 +45,12 @@ final class DocumentationReadmeStructureRules {
                     "keep one `# ...` title and convert additional top-level titles to `## ...`"));
         }
         if (!path.equals(root.resolve("README.md").toAbsolutePath().normalize())
-                && matchingLines(lines, H2_ORIENTATION).isEmpty() && !isReleaseEvidence(root, path)) {
+                && matchingLines(lines, H2_ORIENTATION).isEmpty() && !DocumentationInventory.isReleaseEvidence(root, path)) {
             violations.add(DocumentationGovernanceSupport.violation(
                     "DOC-README-OVERALL", root, path, 1,
-                    "README-ul nu are secțiunea de orientare `## Pe scurt`",
-                    "README-urile modulelor și ale documentației prezintă scopul, proprietarul și limitele înaintea detaliilor",
-                    "adaugă o secțiune concisă `## Pe scurt` înaintea diagramelor, tabelelor sau detaliilor de implementare"));
+                    "README has no Overview section",
+                    "owner READMEs introduce scope, ownership and boundaries before the details",
+                    "add a short `## Overview` before diagrams, tables or implementation details"));
         }
     }
 

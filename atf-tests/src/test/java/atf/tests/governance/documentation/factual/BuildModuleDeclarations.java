@@ -71,7 +71,7 @@ final class BuildModuleDeclarations {
         }
         var fixtures = FIXTURES.matcher(Files.readString(gradle.resolve("gradle/component-audit.gradle")));
         if (!fixtures.find()) throw new IllegalArgumentException("DOC-BUILD-MAP: missing Gradle audit fixture declaration");
-        result.add(new Edge("Gradle", "fixture-uri comune", fixtures.group(1), fixtures.group(2)));
+        result.add(new Edge("Gradle", "shared fixtures", fixtures.group(1), fixtures.group(2)));
         return result;
     }
 

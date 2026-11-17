@@ -20,13 +20,15 @@ public final class DocumentationContentPolicy {
     private static final Pattern HISTORICAL_VERIFICATION = Pattern.compile("ATF_Reporting_J[0-9]+_Verification\\.md");
     private static final Pattern PROJECT_IDENTIFIER = Pattern.compile("(?i)\\b(?:atf[_-]j[0-9]+|J[0-9]+)\\b");
 
-    public record Context(String repository, ApkDownloadTarget advertised) {
+    public record Context(String repository, ApkDownloadTarget advertised, String language) {
         public static Context load(Path root) throws IOException {
             ObjectMapper mapper = new ObjectMapper();
             var policy = mapper.readTree(root.resolve(CONFIG).toFile());
             if (policy == null || !policy.isObject()) throw new IOException("DOC-CONTENT-CONFIG: expected object policy");
             String repository = policy.path("publicRepository").asText("");
-            if (repository.isEmpty()) return new Context("", null);
+            String language = policy.path("documentationLanguage").asText("ro");
+            if (!List.of("en", "ro").contains(language)) throw new IOException("DOC-CONTENT-CONFIG: invalid documentation language");
+            if (repository.isEmpty()) return new Context("", null, language);
             if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+"))
                 throw new IOException("DOC-CONTENT-CONFIG: repository must be a GitHub URL");
             var index = mapper.readTree(root.resolve("release/index.json").toFile());
@@ -34,20 +36,25 @@ public final class DocumentationContentPolicy {
             Path manifest = index.path("candidateVersion").isTextual() ? root.resolve("release/candidate.json")
                     : root.resolve("release").resolve(version).resolve("release-validation.json");
             return new Context(repository, ReleaseDownloadSelection.select("advertised",
-                    repository.substring("https://github.com/".length()), index, mapper.readTree(manifest.toFile())));
+                    repository.substring("https://github.com/".length()), index, mapper.readTree(manifest.toFile())), language);
         }
     }
 
-    public static void validate(Path file, Path root, List<String> lines, Context context, List<Violation> violations) {
+    public static void validate(Path file, Path root, List<String> lines, Context context, List<Violation> violations) throws IOException {
         if (HISTORICAL_VERIFICATION.matcher(file.getFileName().toString()).matches())
             violations.add(violation("DOC-RELEASE-VERIFICATION-NAME", root, file, 1,
                     "file name captures an individual release verification",
                     "release chronology belongs in the external archive", "move the verification beside the release evidence"));
         String source = String.join("\n", lines);
-        if ((DocumentationInventory.isReadme(file) || DocumentationInventory.isLibraryGuide(root, file))
-                && hasEnglishReadmeProse(source))
-            violations.add(violation("DOC-README-LANGUAGE", root, file, 1, "README has English explanatory prose",
-                    "owner READMEs use Romanian for explanatory prose", "translate the explanations and keep API names intact"));
+        boolean english = context.language().equals("en");
+        boolean ownerGuide = DocumentationInventory.isReadme(file) || DocumentationInventory.isLibraryGuide(root, file);
+        if (ownerGuide && !DocumentationInventory.isReleaseEvidence(root, file)
+                && (english ? hasRomanianReadmeProse(source) : hasEnglishReadmeProse(source))) {
+            String required = english ? "English" : "Romanian";
+            violations.add(violation("DOC-README-LANGUAGE", root, file, 1, "README contains prose outside " + required,
+                    "owner READMEs follow the configured documentation language",
+                    "translate the explanations and keep API names intact"));
+        }
         String relative = root.relativize(file).toString().replace('\\', '/');
         String prose = historicalReleaseProse(relative, publicReleaseProse(deploymentProse(source), context.repository(), context.advertised()),
                 context.repository());
@@ -115,6 +122,18 @@ public final class DocumentationContentPolicy {
         if (java.util.regex.Pattern.compile("(?im)^#{1,6} (?:Overview|Quick start|Getting started|Captured UI timing|Usage|Testing|Architecture|Requirements|Shared platform)\\b")
                 .matcher(prose).find()) return true;
         var words = java.util.regex.Pattern.compile("(?i)\\b(the|this|these|that|with|without|and|must|should|their|each|after|before|from|where|when|which|remain|remains)\\b");
+        for (String paragraph : prose.split("\\n\\s*\\n")) {
+            long signals = words.matcher(paragraph).results().map(match -> match.group().toLowerCase(java.util.Locale.ROOT)).distinct().count();
+            if (signals >= 4) return true;
+        }
+        return false;
+    }
+
+    public static boolean hasRomanianReadmeProse(String source) {
+        String prose = source.replaceAll("(?s)```.*?```", "").replaceAll("`[^`]*`", "")
+                .replaceAll("\\]\\([^)]*\\)", "]");
+        if (Pattern.compile("(?im)^#{1,6} (?:Pe scurt|Harta modulelor|Verificare și ghiduri)\\b").matcher(prose).find()) return true;
+        var words = Pattern.compile("(?iU)\\b(și|sau|este|sunt|pentru|fără|din|dacă|fiecare|înainte|după|aceste|păstrează|acest)\\b");
         for (String paragraph : prose.split("\\n\\s*\\n")) {
             long signals = words.matcher(paragraph).results().map(match -> match.group().toLowerCase(java.util.Locale.ROOT)).distinct().count();
             if (signals >= 4) return true;

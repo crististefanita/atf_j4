@@ -44,6 +44,12 @@
     "rotationExecutesNoDeletion": true
   },
   "ragEvaluator": {
+    "documentationEditions": {
+      "englishBranch": "main",
+      "romanianBranch": "main_RO",
+      "reviewPath": "config/documentation-editions.json",
+      "requiredFromVersion": "0.21.10"
+    },
     "entrypoint": "atf-tests/tools/evaluate-release-rag.mjs",
     "runtime": "Node.js standard library",
     "readOnlyInputs": ["release-validation.json", "release payload", "source input manifest", "pinned source files", "candidate plan", "policy", "GitHub retention observation after GitHub publication"],
