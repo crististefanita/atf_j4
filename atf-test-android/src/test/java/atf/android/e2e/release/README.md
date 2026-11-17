@@ -15,7 +15,7 @@ The collection checks the binding of the recommendation to the actual Android in
 | Menu, achievements, profile and history | [Common interface test](WhistReleaseHomeE2eTest.java) checks RO/EN, resuming the same hand in the score history, saving the name through Android dialogue and displaying after the recovery and opening the catalogue and details of a achievement. The component of the presentation checks order, counting, recharged progress and the texts RO/EN. The component of the profile checks cancellation, simulated persistence and refusal of writing. | Flows use the same data isolation limit; the catalogue does not start a game or change progress. |
 | Predare | [Testul](WhistReleaseBidE2eTest.java) keeps the original cause and publishes observations, comparisons and NGPs by reporting the joint UI. | The publication of the report does not substitute the restoration of data by the runner. |
 
-## Waiting for the shift
+## Waiting for the turn
 
 [Awaiting the bid and game](turn/ReleaseTurnWaits.java) Use [Controlled driver clock](../driver/waiting/UiStateAwaiter.java). The recommendation even uses the observation that satisfies the condition. The wallpaper searches the card in the latest hierarchy, and after ordering the driver reads again.
 

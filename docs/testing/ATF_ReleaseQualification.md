@@ -45,7 +45,7 @@ The component report validates JVM inputs and comparisons. The sanity check vali
 | `e2e/` | The identified Android execution HTML; historical republication remains its origin. |
 | `diagnostics/` | Only separate justified evidence: Unmigrated JUnit result, signature, crash or rendering control. |
 
-Do not copy PNG/XML/JSON already fully included in HTML after confrontation of bytes and offline access. Keep still the unique evidence required and declare the exception; [compact surrender](../reporting/ATF_Handoff.md#compact-liquefied-and-exceptions) be fully qualified.
+Do not copy PNG/XML/JSON already fully included in HTML after confrontation of bytes and offline access. Keep still the unique evidence required and declare the exception; [compact surrender](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions) be fully qualified.
 
 ## Contract of reports by suite
 
@@ -60,7 +60,7 @@ Each executed primary selection owns a canonical Extent report and an execution 
 | Maven or Gradle component | `execution.json` per group and common source receipts | The HTML hash, test counts and results, source provenance and inventory match the qualified manifest. |
 | Android E2E | `execution.json` next to the suite HTML | The installed APK, version, commit and source fingerprint, protocol, results, Extent hash and inline PNG image count match the manifest and report. |
 
-- The release manifesto hashs separately HTML and Receipt.
+- The release manifest hashs separately HTML and Receipt.
 - The evaluator shall block missing, duplicate or non-anonymous pathways, missing receipts and mismatches of results, hash or provenance.
 - Field `executionReceipt` links the E2E group to the next Receipt report.
 - JUnit XML remains temporarily independent; the final dossier does not keep a second report.
@@ -93,7 +93,7 @@ The first part provides the main report and the status of the qualification. Det
 
 ## Commands and boundaries
 
-### Verdictul RAG read-only
+### Read-only RAG verdict
 
 The RAG evaluator consumes the evidence already produced and issues a readonly verdict.
 
@@ -270,7 +270,7 @@ The read-only verdict does not commit, does not push and does not publish artifa
 
 1. Compare candidate inventory with qualified snapshots, including new files and exclusions; confirm same fingerprint and a clean Git tree containing exactly qualified sources.
 2. Commit the sources and push the commit to `main`. Create the version tag on the verified commit. The build and the manifest must identify that commit and the same qualified APK.
-3. Publish APK and checksumes on the declared channel. For GitHub uses [Reluable publication](../platform/ATF_AndroidDelivery.md#reluctable-publication-on-github) and keeps the log in the running directory. Update `release/index.json`, the catalogue and the main README so that the current version and direct link indicate the same artifact.
+3. Publish APK and checksumes on the declared channel. For GitHub uses [Reluable publication](../platform/ATF_AndroidDelivery.md#resumable-publishing-on-github) and keeps the log in the running directory. Update `release/index.json`, the catalogue and the main README so that the current version and direct link indicate the same artifact.
 4. After the push, read the README from the repository, extract the link shown there and download the URL in the mode declared by `publication.accessMode`. For `AUTHENTICATED`, use a GitHub account with access and record only the fact that the download was authenticated, the URL, HTTP 200, byte count, SHA-256 and CRC. Do not retain the token or headers. For `ANONYMOUS`, download without cookies or authorization and record verification of the page and checksum separately.
 5. Record publication and download evidence in the release dossier, commit and push the evidence, then read the README again and download from that exact link using the same declared access mode.
 
@@ -296,7 +296,7 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 
 ### Retention on GitHub after publication
 
-Before withdrawal, check [kept downloads and editions](../platform/ATF_ReleaseRetention.md#verification-of-the-discharge-before-rotation).
+Before withdrawal, check [kept downloads and editions](../platform/ATF_ReleaseRetention.md#download-verification-before-rotation).
 
 - After the authorized withdrawal, run the collector in the synchronized checkout `main`. The collector reads the catalogue and manifests from the repository state observed on GitHub.
 - Use `GH_TOKEN` or `GITHUB_TOKEN` with access to the drafts. The collector inventories all pages of relays, including the drafts, all tags and all assetses.
@@ -307,7 +307,7 @@ node .\atf-tests\tools\collect-github-release-retention.mjs $ProjectRoot $Github
 
 The post-publication evaluator receives the same observation through `--github-retention-file $GithubRetentionFile`. Gate `GITHUB_RETENTION` requires precisely the two versions of `release/index.json`, with the tags to the declared source commits. Each release must have the exact APK and checksum, with the name, URL, size and SHA- 256 faced even after unloading.
 
-The collector writes the inventory in a new external file and reports deviations as `BLOCKED`. If access or collection fails, the diagnosis identifies the step, and the evaluator asks for a full observation. After the authorized withdrawal, collect a new observation and resume the evaluation. [Retention process](../platform/ATF_ReleaseRetention.md#resetarea-github)
+The collector writes the inventory in a new external file and reports deviations as `BLOCKED`. If access or collection fails, the diagnosis identifies the step, and the evaluator asks for a full observation. After the authorized withdrawal, collect a new observation and resume the evaluation. [Retention process](../platform/ATF_ReleaseRetention.md#github-reset)
 
 ### Documentation editions
 
@@ -374,7 +374,7 @@ $device = @{
 
 Prepare your own staging and Maven cachet before booking the device. Check the origin of the compiled classes and validate the catch and the ratio on each flow closure. Keep references to logbooks in the external folder and original teardown receipts.
 
-### Running and restarting a feed on APK signed
+### Starting and resuming a game on the signed APK
 
 - Choose groups from the selection calculated by RAG. Prepare an external JSON with `releaseVersion`, `groups` and `executionProfile`. The profile contains `api` (number), `displayProfile` and `responsiveProfiles` (matrix portrait, separated by comma).
 - Use the same value at `e2e.executionProfile` in RAG plan. Since 0.21.5, E2E executions included in RAG require this profile and receipts v2. Evidence v1 keeps the contract of the published edition.
@@ -392,11 +392,11 @@ node .\atf-tests\tools\apply-android-e2e.mjs $CandidateDir $FreshRunRoot
 - Option `-PrepareOnly` stops after compiling check without Android.
 
 - The execution checks the exact case of JUnit, the PASS track and each original catch, including the bytes of Extent. Check the restoration receipt.
-- The import shall re-check the accepted dossier and update the manifesto of candidate `PREPARED`. Only resume the groups with `RUN`; import leaves the other original report and receipt. After import run the evaluator for the entire folder.
+- The import shall re-check the accepted dossier and update the manifest of candidate `PREPARED`. Only resume the groups with `RUN`; import leaves the other original report and receipt. After import run the evaluator for the entire folder.
 
 ### Acceptance of signed APK
 
-- The [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) Smokey checks the installed package, initial page and configuration without starting another party. [Acceptance of the tender](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) has a separate field: a real prefix of Romanian Whist, recommendation, manual choice, dialogue and restored contract.
+- The [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) Smokey checks the installed package, initial page and configuration without starting another game. [Acceptance of the tender](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) has a separate field: a real prefix of Romanian Whist, recommendation, manual choice, dialogue and restored contract.
 
 | Selection | Additional precondition | Closure criterion |
 |---|---|---|
@@ -417,7 +417,7 @@ From the project root, the existing launcher prepares TMP and a private Maven ca
 
 - **History: ** the ratio of the selected suite contains all the captured comparisons; `WORKING_STATE.json` keeps the HTML path and selection.
 - **Display: ** In the responsive launcher, the HTML of the historical subset has its own population. For the full component and provenance ratio use the aggregation launcher.
-- **Governance:** use [lansatorul izolat](../governance/README.md#isolated-rolling) A competitive change invalidates the certification of that copy.
+- **Governance:** use [lansatorul izolat](../governance/README.md#isolated-execution) A competitive change invalidates the certification of that copy.
 - **Promotion: ** a past result belongs to the executed sources. The sources subsequently changed require the assessment of the difference and the relevant reverification before the final building.
 
 [Common strategy](README.md) · [Display selections](ATF_Display.md) · [Delivery process](../platform/ATF_AndroidDelivery.md#process-of-a-version)

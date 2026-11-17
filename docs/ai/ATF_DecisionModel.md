@@ -1,4 +1,4 @@
-# Model decision with partial information
+# Decision model with partial information
 
 ## Overview
 
@@ -24,7 +24,7 @@ Politics sees its own hand and public prefix. The simulator can build hypothetic
 
 </details>
 
-## The status changing the decision
+## State that influences the decision
 
 | Variable | Definition | Rol |
 |---|---|---|
@@ -38,7 +38,7 @@ Politics sees its own hand and public prefix. The simulator can build hypothetic
 
 The same value of the product can coexist with very different individual requirements. As the game progresses, R, uncertainty and legal possibilities change, even if it remains fixed.
 
-## When the Aion plays at 0
+## When the AI plays for zero
 
 With the active option in Romanian Whist 1–8–1 or 8–1–8, Normal and Hard check the target at each bid and card choice.
 

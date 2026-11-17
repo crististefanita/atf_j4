@@ -18,8 +18,8 @@ Unknown or duplicate keys, multiple documents, invalid types, numerical overruns
 
 ```mermaid
 flowchart LR
-    CONFIG[Captured configuration] -->|control| SELECT[Selection of invoicing]
-    INPUT[Original records] -->|fuel| SELECT
+    CONFIG[Captured configuration] -->|control| SELECT[Invocation selection]
+    INPUT[Original records] -->|feeds| SELECT
     SELECT -->|keep complete comparisons| GROUP[Groups and fragments]
     GROUP -->|transmit by API| HTML[Autonomous presentation]
 ```
@@ -54,7 +54,7 @@ Collections explicitly marked for full storage shall be kept in accordance with 
 | Capturi Android | The original whole PNG associated with the control point; the selection does not replace or cut the image. |
 | Observation without comparison | The explicit API for attached materials without invented domain assertions. |
 
-Every JSON fragment is a complete document. The original numerical forms shall be maintained by formatting and fragmentation; the lack or reordering of a party invalidates completeness.
+Every JSON fragment is a complete document. The original numerical forms shall be maintained by formatting and fragmentation; the lack or reordering of a game invalidates completeness.
 
 ## Optional data and refusal of publication
 
@@ -95,7 +95,7 @@ The selection shall retain full claims and explicit omissions. The change of own
 
 </details>
 
-### Mecanisme
+### Mechanisms
 
 - Limit the optional diagnosis by the policy captured and keep mandatory comparisons of selected invokes.
 - Measure separately the generation, opening and navigation operations on an identified input.

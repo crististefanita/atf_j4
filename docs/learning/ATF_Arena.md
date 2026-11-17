@@ -2,7 +2,7 @@
 
 ## Overview
 
-The arena compares politics on complete Romanian parties. The protocol declares distributions, order, roles, basic strategies, seat rotation and pre-evaluation score rules.
+The arena compares politics on complete Romanian games. The protocol declares distributions, order, roles, basic strategies, seat rotation and pre-evaluation score rules.
 
 ## Comparison principles
 
@@ -25,7 +25,7 @@ Each policy receives only the observation allowed to the actor. Distribution and
 | Principiu | Interpretare |
 |---|---|
 | Same original world | The candidate and the basis shall start from the same distributions and orders. |
-| Same observation limit | Each decision uses the hand and prefix of that party; prefixes may diverge after the first different choice. |
+| Same observation limit | Each decision uses the hand and prefix of that game; prefixes may diverge after the first different choice. |
 | Rotation of seats | The assessment from different places measures sensitivity to position and reduces confusion of the advantage of the place with the effect of policy. |
 | Full match | The final score includes the consequences of all the bids, cards and the declared score rules. |
 | Lot rezervat | The promotion assessment shall use distributions not used in the candidate's choice. |

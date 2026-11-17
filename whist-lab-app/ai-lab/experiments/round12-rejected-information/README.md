@@ -4,7 +4,7 @@
 
 Research checks whether a choice uses only the information available to the actor. The implementation and components are in the engine test sources; this directory directs them without adding a policy to the application.
 
-## Invariation of observation
+## Observation invariance
 
 ```mermaid
 flowchart LR

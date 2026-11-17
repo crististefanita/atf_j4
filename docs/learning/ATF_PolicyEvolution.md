@@ -2,7 +2,7 @@
 
 ## Overview
 
-We build a game policy from verifiable rules, an allowed observation and an explicit choice criterion. We improve it offline: we analyze parties, we isolate property, we change a candidate and we compare it before promotion.
+We build a game policy from verifiable rules, an allowed observation and an explicit choice criterion. We improve it offline: we analyze games, we isolate property, we change a candidate and we compare it before promotion.
 
 This guide holds the evolution procedure. [Modelul deciziei](../ai/ATF_DecisionModel.md) explains the choice during the game, and [rules and weights](../ai/ATF_RulesConfiguration.md) explains the effect of each type of parameter.
 
@@ -33,8 +33,8 @@ The influence of a rule may vary with the situation, even if its parameter is fi
 ```mermaid
 flowchart LR
     GAME[Partide validate] -->|locate| QUESTION[Hypothesis]
-    QUESTION -->|narrow| TEST[Low regression]
-    TEST -->|qualifies| CAND[Candidat]
+    QUESTION -->|narrow| TEST[Small regression]
+    TEST -->|qualifies| CAND[Candidate]
     CAND -->|Freeze| FRESH[New evaluation]
     FRESH -->|Inform| REVIEW[Promovare]
 ```
@@ -42,11 +42,11 @@ flowchart LR
 <details>
 <summary>Legend: each crossing has a criterion</summary>
 
-The party provides the context and regression requires a justifiable independent expectation. The candidate is identified prior to the reserved evaluation; the revision may accept, reject or request a new experiment without retrospective change of thresholds.
+The game provides the context and regression requires a justifiable independent expectation. The candidate is identified prior to the reserved evaluation; the revision may accept, reject or request a new experiment without retrospective change of thresholds.
 
 </details>
 
-### From game to question specific
+### From a game to a focused question
 
 1. Check distribution, bids, cards, tricks and score by [corpus validator](ATF_Corpus.md).
 2. Locate the first different choice or the first suspicious condition; separate the effect of the bidding from the card effect.
@@ -95,7 +95,7 @@ Points, exacts and victories are interpreted separately, in the role and the siz
 
 ```mermaid
 flowchart LR
-    DEV[Dezvoltare] -->|fix| FREEZE[Sources and criteria]
+    DEV[Development] -->|fix| FREEZE[Sources and criteria]
     FREEZE -->|reserve| LOT[Lot nefolosit]
     LOT -->|execute| CHECK[Verification]
     CHECK -->|apply thresholds| DECISION[Explicit decision]
@@ -124,7 +124,7 @@ The review shall update the accepted code, manifest and guide holding the behavi
 
 [Ports of domain](ATF_GameTransfer.md#adapter-contracts) separates observation, transition, policy, simulator and evaluation. [Lesson sheet](ATF_GameTransfer.md#rules-and-weightings-in-another-game) maintains ownership, border, negative control and data identity; it is a drafting structure, not a scheme interpreted by launchers.
 
-## Preparation of re-use in cod
+## Preparing code for reuse
 
 [Transfer inventory](ATF_GameTransfer.md#what-can-we-transfer-now) identifies independent mechanisms and the Whist adapters. Additional extraction requires a real consumer and parity evidence; source inventory includes imported dependencies, so that a move does not hide the change of candidate.
 
@@ -140,7 +140,7 @@ From the root of the project, for small checking of the rules and context:
 [Catalogue of collections](../testing/ATF_Collections.md) has effective parameters for regression, arena and candidate evaluation. The analysis and adjustment shall read only the declared development inputs; the reserved assessment shall have its own admission.
 
 - In the project: code, rules, schemes, components and reusable protocols.
-- In the configured archive: JSON parties, selections, calibrations, frozen sources and promotion decisions.
+- In the configured archive: JSON games, selections, calibrations, frozen sources and promotion decisions.
 - In [feedback-ul AI](../feedback/ATF_Ai.md): only open gaps with responsible and verifiable criteria.
 
 [Offline Orientation](README.md) · [Rules and weightings](../ai/ATF_RulesConfiguration.md) · [Modelul deciziei](../ai/ATF_DecisionModel.md)

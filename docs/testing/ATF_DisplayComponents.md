@@ -8,10 +8,10 @@ The offline collection checks the dimensioning policies, the decoding of the And
 
 ```mermaid
 flowchart LR
-    MOCK[XML controlat] -->|supplies| DECODE[Observed Decodor]
+    MOCK[Controlled XML] -->|supplies| DECODE[Observation decoder]
     DEVICE[XML natively captured] -->|supplies| DECODE
-    DECODE -->|design| SNAPSHOT[Snapshot geometric]
-    SNAPSHOT -->|face| ORACLE[Oracol independent]
+    DECODE -->|design| SNAPSHOT[Geometric snapshot]
+    SNAPSHOT -->|face| ORACLE[Independent oracle]
     ORACLE -->|explain| RESULT[Comparison assessed]
 ```
 
@@ -37,12 +37,12 @@ The fixture describes measured regions without calling the application layout al
 | Oracol geometric | Snapshot cu defecte injectate | Number, completeness, capping, framing and absence of overlaps | [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) |
 | Oracol raster | Synthetic and logical coordinates | Change of scale, dominant colour, contrast and tolerances | [Componente display](../../atf-test-android/src/test/java/atf/android/e2e/display/component/) |
 
-## Mocket contract
+## Mock contract
 
 - [Synthetic hierarchy](../../atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java) maintains a valid base and explicitly changes the region to be rejected.
 - [Parametrized matrix](../../atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java) combines profiles and heights measured for different text scales; does not render Android fonts.
 - The simulated transport is misfiring on any command or catch. An accidental call to the device fails in the component.
-- JVM execution uses real Java addictions before SDK stubs when the names of the classes coincide. The generation of the classpathus is preserved; a failure of the infrastructure does not substitute the verdict of the product.
+- JVM execution uses real Java dependencies before SDK stubs when the names of the classes coincide. The generation of the classpathus is preserved; a failure of the infrastructure does not substitute the verdict of the product.
 - The presence of a node does not prove its visibility; the areas without surface and the elements outside the window are rejected.
 - The window uses `android:id/content` when available; catches without this region have explicit fallback to the declared profile.
 - Full decaying of fixtures uses the EN signals and the action check has explicit contracts RO/EN. Change of language does not allow shortening of the label or loss of association with the active player.

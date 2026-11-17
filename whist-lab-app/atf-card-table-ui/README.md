@@ -10,7 +10,7 @@
 | Geometry, high-light card and achievements | [JVM components](src/test/README.md) and [probe instrumentate](src/androidTest/README.md) |
 | Packaging and inventory | [Publication of the AAR](#packaging-and-consumption) and [governance policy](../../config/atf-governance-policy.json) |
 
-## Liabilities and limits
+## Responsibilities and limits
 
 | Pachet | Contract implementat |
 |---|---|
@@ -30,12 +30,12 @@
 
 The app has the composition of the table, the rules, the history, the winner and the moment of display of the trick. The library measures the winning faces and box, then applies the movement. The joint contract uses only visible places and data.
 
-`CardTableTheme` keeps the six Android attributes of the site; `AppTheme` Whist is the ally of this resource. The consumer explicitly adopts it in the manifesto; the admission of the ARA and the building does not declare comparison of pixels or Android focus.
+`CardTableTheme` keeps the six Android attributes of the site; `AppTheme` Whist is the ally of this resource. The consumer explicitly adopts it in the manifest; the admission of the ARA and the building does not declare comparison of pixels or Android focus.
 
 ```mermaid
 flowchart LR
     GAME[Game Adapter] -->|design visible data| MODEL[UI content]
-    MODEL -->|fuel| VIEW[Common widgets]
+    MODEL -->|feeds| VIEW[Common widgets]
     VIEW -->|issues intentions| GAME
     POLICY[Local texts and policies] -->|configure| VIEW
 ```
@@ -71,7 +71,7 @@ From the temporary copy of the Android root `whist-lab-app`, with PowerShell 7, 
 | Table and hand geometry | 3–6 places, profiles between 320 and 600 dp, font 1–2 ×, a centred card and measured indices. |
 | Bookmark | Same pallet for refusal and recommendation. The same [gestures scenario](src/test/resources/hand-feedback.tsv) checks the repeated touch in JVM and the web, the expiry after revision and the selection accepted once. |
 | Achievements | Stable orders and identities, loading of details on request, ambiguous states rejected. |
-| Frontiera bibliotecii | Java separate invention for production, JVM and Android instrumented. Library manifesto without application or permissions. |
+| Frontiera bibliotecii | Java separate invention for production, JVM and Android instrumented. Library manifest without application or permissions. |
 | Table models | Stable identities, orderly and immutable facts, measured regions and identical dimensions regardless of the number of seats. |
 | Time-frame | `TurnPacingComponentTest` checks the rendering prior to the delay of 550 ms, single action and cancellation for human actor, block or replaced scene. |
 | Adaptoarele Whist | Real texts, language, callbacks and all card markings. |
@@ -95,7 +95,7 @@ Portable contracts are compiled by the web adapter as well. Governance verifies 
 
 [Android module tests](src/androidTest/README.md) and [catalogue of display components](../../docs/testing/ATF_DisplayComponents.md) describe the selections and acceptance limits.
 
-## Bending rows
+## Adaptive seat rows
 
 A row of label and value reserves the space measured for figures. When the available space drops, the value passes under the label. The game sets text style and accessible box description.
 
@@ -110,7 +110,7 @@ ATF root. The export uses the libraries/card-table-ui directory from the externa
 - `:atf-card-table-ui` is the name of the Gradle project. The distribution coordinate is `ro.cardtable:card-table-ui`, with the declared version in the building. The export contains AAR, POM, Gradle metadata and source JAR.
 - [Exportul](../../scripts/export-card-table-ui.ps1) keeps the production input manifest and SHA-256 for each coordinate file. Repeated export with the same entries checks the artifacts and reuses them. The change of entries under an existing coordination requires a new version.
 - Whist is consuming the project from the source. Rentz and Hold'em shall each accept the fixed version after the content and provenance have been confronted. The source version and each co-ordinated allowed to the consumer have their own evidence.
-- The aARM includes Android classes, manifesto and resources, including CardTableTheme. Addiction is fixed by the Maven coordinate, with provenance and hashes. [Web Distribution](../../atf-ui-browser/README.md#adapter-library) compiles directly a selection of portable sources from the module and publishes a separate JAR.
+- The aARM includes Android classes, manifest and resources, including CardTableTheme. Addiction is fixed by the Maven coordinate, with provenance and hashes. [Web Distribution](../../atf-ui-browser/README.md#adapter-library) compiles directly a selection of portable sources from the module and publishes a separate JAR.
 - [Name policy](../card-table-names/README.md) shall be published separately as JAR Java for JVM engines and samples. A geometry component can have its own JAR coordinated if it is independent android and has at least two real JVM consumers.
 
 ## Achievements
@@ -120,7 +120,7 @@ ATF root. The export uses the libraries/card-table-ui directory from the externa
 
 [Projection of Whist and its catalogue](../../docs/game/ATF_Achievements.md)
 
-## Antetul mesei
+## Table header
 
 [`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) measures the title and the native tick before choosing the line. The title may take up to two rows and shall keep the full description for accessibility. The check shall be first as long as the title is at least 1,5 times the width of the action on the left; the check shall be carried out in the next row when the space would make the title illegible.
 
@@ -139,7 +139,7 @@ The game transmits the legal cards and activates the clue when the player can mo
 - The clue expires, disappears to an accepted move and resets when the hand is restored.
 - Markings keep fan geometry on compact screens.
 
-## Relapse and information in box
+## Trick and seat information
 
 - `CollectionTarget` receives the seats of the public cards and the winning place calculated in the game. `TrickCollectionMotion` keeps the 1500 ms window and uses the last 500 ms for collection.
 - `TrickCollectionRun` holds geometry, life cycle and cleaning. Android Adapter searches the cards faces and box through the location identity. Whist keeps the Snapshots validation and the moment when it publishes the trick.

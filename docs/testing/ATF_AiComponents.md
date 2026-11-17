@@ -9,7 +9,7 @@ The test checks a general property in her declared field. Observed match locates
 ```mermaid
 flowchart LR
     RULE[Property] -->|builds| WITNESS[Martor legal]
-    WITNESS -->|Play back| PREFIX[Prefix public]
+    WITNESS -->|Play back| PREFIX[Public prefix]
     PREFIX -->|design| OBS[Observed observation]
     OBS -->|checks| CHECK[Policy and result]
     WITNESS -->|stay in the oracle| ORACLE[Independent waiting]

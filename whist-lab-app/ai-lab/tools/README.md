@@ -10,8 +10,8 @@ The implementation and tests of each mechanism shall be together, grouped in res
 
 ```mermaid
 flowchart LR
-    GAMES[Partide declarate] -->|validate by| CORPUS[Corpus]
-    CORPUS -->|fuel| ANALYSIS[Diagnostic]
+    GAMES[Declared games] -->|validate by| CORPUS[Corpus]
+    CORPUS -->|feeds| ANALYSIS[Diagnostic]
     ANALYSIS -->|propune| MODEL[Model candidat]
     MODEL -->|qualifies as| GATE[Protocol offline]
 ```
@@ -23,7 +23,7 @@ The validator shall verify the rules and the score before interpreting the resul
 
 </details>
 
-## Organizare
+## Organization
 
 | Director | Responsibility |
 |---|---|
@@ -33,9 +33,9 @@ The validator shall verify the rules and the score before interpreting the resul
 | [learning](learning/) | Composition of the lots and evaluation of protocols or arena. |
 | [diagnostics](diagnostics/) | Divergence, contextual pressure and finite responses. |
 | [qualification](qualification/) | Explicit criteria for local corrections and candidate characteristics. |
-| [testing](testing/) | A determinist builder of legal parties for components, without reading the archive. |
+| [testing](testing/) | A determinist builder of legal games for components, without reading the archive. |
 
-[Validator of candidate base](qualification/WhistCandidateSource.psm1) retains the complete inventory of sources and the final copy verification. [The contract of the manifesto](../../../docs/testing/ATF_Collections.md#full-identity-of-candidate-base) holds migration, canonical hash and the boundary between base and candidate; its components use temporary directories built without archived parties.
+[Validator of candidate base](qualification/WhistCandidateSource.psm1) retains the complete inventory of sources and the final copy verification. [The contract of the manifest](../../../docs/testing/ATF_Collections.md#full-identity-of-candidate-base) holds migration, canonical hash and the boundary between base and candidate; its components use temporary directories built without archived games.
 
 [Registrul expunerii](qualification/whist-evaluation-registry.mjs) coordinates the batches between the corpuss and restores the resumption as known exposure. [Register contract](../../../docs/learning/ATF_EvaluationRegistry.md) defines identity, import of history, blocking and recovery after interruption.
 
@@ -58,7 +58,7 @@ From the `whist-lab-app` directory of a full temporary copy of the project, with
 
 ## Limits and qualification
 
-The built data qualify his mechanism and refusals; there are no new parties to demonstrate strategic progress. The archive's playbook uses separate entry from the [contract of the body](../../../docs/learning/ATF_Corpus.md#usage), with file and SHA-256 declared. No archive shall be selected by default in the components.
+The built data qualify his mechanism and refusals; there are no new games to demonstrate strategic progress. The archive's playbook uses separate entry from the [contract of the body](../../../docs/learning/ATF_Corpus.md#usage), with file and SHA-256 declared. No archive shall be selected by default in the components.
 
 Qualification of gear by volume and interruption remains monitored in [Laboratory feedback](../../../docs/feedback/ATF_Ai.md#autonomous-laboratory-verification).
 

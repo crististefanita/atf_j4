@@ -8,7 +8,7 @@ The laboratory qualifies the independent player and the offline evaluation mecha
 
 | Border | Responsible verification |
 |---|---|
-| Contractul local Java | Types, states and inputs legally generated, without dependence on party archives. |
+| Contractul local Java | Types, states and inputs legally generated, without dependence on game archives. |
 | Unelte Node.js | Corpus, reservation, selection and composition, with controlled fixtures near the responsible tool. |
 | Engine integration | The engine tests compare observation and legal actions through the adapter. |
 | Strategic evaluation | Separate protocol, frozen sources and reserved lots; the concrete result remains external. |

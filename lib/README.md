@@ -12,7 +12,7 @@ Java 21 and Maven; five JARs thin with transitives from POM. The guidelines shal
 | [Mock](README.Mock.md) | `atf-mock` | HTTP offline components and contracts. |
 | [Test Kit](README.TestKit.md) | `atf-test-kit` · audit and lifecycle JUnneuter | Classification, comparisons and test support. |
 
-## Integrare
+## Integration
 
 1. In a TMP copy of an ATF consumer, `mvn -B -ntp -N validate` installs the pairs of lib in the selected Maven repositoryul.
 2. Declare the dependency in the caller module; the coordinates and the version are in the next tree of the JARI.
@@ -44,11 +44,11 @@ You declare, for example, `atf.api:atf-reporting:<versiunea din POM>` in depende
 
 | Library | Start point | Contractul observabil |
 |---|---|---|
-| Core | [Exemplul minim](README.Core.md#exemplu-minim) | Construction of the URL and maintenance of JSON accuracy. |
-| Reporting | [Exemplul minim](README.Reporting.md#exemplu-minim) | Publication completed, followed by the spread of the failed comparison. |
-| Console | [Exemplul minim](README.Console.md#exemplu-minim) | Visible message or console disabled, according to explicit policy. |
-| Mock | [Exemplul minim](README.Mock.md#exemplu-minim) | The configuration and application produce the answer or the declared fallback. |
-| Test Kit | [Exemplul minim](README.TestKit.md#exemplu-minim) | Comparison assessed once, PASS/FAIL and the JUnit case kept. |
+| Core | [Exemplul minim](README.Core.md#minimal-example) | Construction of the URL and maintenance of JSON accuracy. |
+| Reporting | [Exemplul minim](README.Reporting.md#minimal-example) | Publication completed, followed by the spread of the failed comparison. |
+| Console | [Exemplul minim](README.Console.md#minimal-example) | Visible message or console disabled, according to explicit policy. |
+| Mock | [Exemplul minim](README.Mock.md#minimal-example) | The configuration and application produce the answer or the declared fallback. |
+| Test Kit | [Exemplul minim](README.TestKit.md#minimal-example) | Comparison assessed once, PASS/FAIL and the JUnit case kept. |
 
 Check first the compilation on physical pairs JAR/POM, then the behavior of the fragment. Application contracts, real transport and interactive presentation shall qualify separately in the consumer.
 

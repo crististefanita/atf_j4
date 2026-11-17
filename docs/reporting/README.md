@@ -8,9 +8,9 @@ The consumer has the selection of tests, game semantics and entry dates for publ
 
 ```mermaid
 flowchart LR
-TEST[Test executat] -->|capture| RECEIPT[Execution records]
-SELECT[Selection policy] -->|choose invoicing| RECEIPT
-RECEIPT -->|compune| CONSUMER[Publicator Whist]
+TEST[Executed test] -->|capture| RECEIPT[Execution records]
+SELECT[Selection policy] -->|selects invocations| RECEIPT
+RECEIPT -->|composes| CONSUMER[Whist publisher]
 CONSUMER -->|call API| LIB[Reporting library]
 LIB -->|produce| HTML[HTML autonom]
 ```
@@ -22,12 +22,12 @@ The choice and comparisons of the application belong to the consumer. The librar
 
 </details>
 
-## Contracte permanente
+## Stable contracts
 
 - The selection shall retain whole invoicing, all failures and the inventory of omissions.
 - The waiting, the observed value and the original case remain associated with the same claim.
 - The original Android catches are incorporated PNG Base64 and belong to the control point that produced them.
-- Components, simulated parties, resumption and actions of Android have distinct types and limits.
+- Components, simulated games, resumption and actions of Android have distinct types and limits.
 - The republican shall retain the identity of the original execution; the lack of a time interval shall be explicit.
 - Their results and references are published in the configured external repository.
 

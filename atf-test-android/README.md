@@ -13,8 +13,8 @@ flowchart LR
     SCENARIO[Scenariu] -->|trimite| DRIVER[Adaptor UI]
     DRIVER -->|run through| ADB[AdbClient]
     DRIVER -->|capture| TRACE[Observation and time]
-    ORACLE[Oracol independent] -->|compare| TRACE
-    TRACE -->|fuel| PUBLISH[Consumer publication]
+    ORACLE[Independent oracle] -->|compare| TRACE
+    TRACE -->|feeds| PUBLISH[Consumer publication]
 ```
 
 <details>
@@ -38,7 +38,7 @@ ADB adaptor retains the result of the demarcated command. The UI adapter interpr
 
 [POM-ul](pom.xml) adds the engine and independent player sources only to the test source set. The `responsive-sanity` profile uses the narrow selection declared in the POM; normal configuration remains the input for the complete set of components.
 
-## Performing contracts
+## Running contract checks
 
 - Each command has identified device and maximum duration; the success of the transport and semantic transition have distinct verdicts.
 - The XML interpretation receives one observation and does not order the device. The Decodator refuses statements `DOCTYPE`; generic and card selectors use the same node model and normalization.
@@ -64,7 +64,7 @@ mvn -B -pl atf-test-android -am '-Dtest=AndroidUnitSuite,AndroidComponentSuite' 
 
 Option `-ComponentsOnly` The launcher selects the display collection without the device. [Display Component Guide](../docs/testing/ATF_DisplayComponents.md) define simulated inputs, controlled defects and verification limits.
 
-## Fluxuri Android
+## Android flows
 
 [Ghidul Android](../docs/testing/ATF_Android.md) defines the device, exclusive booking, activation and initial status. [Screen matrix](../docs/testing/ATF_Display.md) holds the profiles, controlled distributions and optional game flow; [game verification](../docs/testing/ATF_Gameplay.md) holds the rules and score.
 
@@ -90,7 +90,7 @@ Geometric oracle and nodes have different limits to visibility in the NGP and ob
 
 [Test architecture](../docs/testing/ATF_Architecture.md) separates the level, collection, environment and publication. The resumption of a journal retains its original execution; the acceptance of new interactions requires a new scenario on the device.
 
-## Components with a report on the audit
+## Auditable component reports
 
 [The suite of history](src/test/java/atf/android/suites/AndroidHistoryComponentSuite.java) is a JVM entry without SDK or device. [Component Guide](../docs/testing/ATF_DisplayComponents.md#reporting-of-historical-components) holds the selection, output in TMP and modes Extent/fallback.
 
@@ -99,7 +99,7 @@ Geometric oracle and nodes have different limits to visibility in the NGP and ob
 - Kit is a compilation dependency for captured models used in the main; the Android adapter does not introduce JUnit types directly into its main sources.
 - The `history-components` profile compiles only this frontier. Profiles `display-components` and `responsive-sanity` select execution; do not remove from compilation the classes indirectly required by the suite.
 
-## The mechanisms of interaction
+## Interaction mechanisms
 
 | Mechanism | Question verified | Owner |
 |---|---|---|
@@ -120,7 +120,7 @@ Transport, intervals and catch data may support another application. The card se
 <details>
 <summary>Contract of passive waiting and diagnosis of expiry</summary>
 
-## Expecting a status
+## Waiting for state
 
 [UiStateAwaiter](src/test/java/atf/android/e2e/driver/waiting/UiStateAwaiter.java)
 shares a common loop in passive expectations. The driver shall provide the condition,
@@ -142,7 +142,7 @@ delimit the mechanism for interaction and capture of evidence.
 <details>
 <summary>Contract of transport, capture and process cleaning</summary>
 
-## Distinguished transport execution
+## Isolated transport execution
 
 [Driverul UI](src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) keep
 interactions and stock log. [Captura](src/test/java/atf/android/e2e/driver/UiDeviceCapture.java)

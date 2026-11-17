@@ -22,7 +22,7 @@ flowchart LR
     PRE -->|permite| LEASE[Exclusive booking]
     LEASE -->|isolate| APP[Actions in the application]
     APP -->|capture| OBS[Status and image]
-    OBS -->|face through| CHECK[Oracol independent]
+    OBS -->|face through| CHECK[Independent oracle]
     APP -->|close with| RESTORE[Restoration and release]
 ```
 
@@ -39,7 +39,7 @@ The scenario identifies the application and initial status prior to the actions.
 
 [run-whist-ai-validation.ps1](../../scripts/run-whist-ai-validation.ps1) is a separate orchestrator of construction, components and integration, with its own device options. His use shall be decided after the actual selection in the script; the acceptance of the IU and the strategic promotion shall retain separate criteria.
 
-## E2Eul Whist Lab
+## Whist Lab E2E
 
 | Runner | Mechanism |
 |---|---|
@@ -89,7 +89,7 @@ The `historyPresentationAcrossDeclaredPortraitProfiles` selection brings togethe
 - **Captures: ** phases use explicit names for profile and text scale. Repeats of the same profile have separate directories, keeping the original images of each checkpoint.
 - **Diagnosis: ** calculation of AI bids and advance of AI cards stop separately, only in a debug APK. The frozen state checks the display and the actor; quality and speed of the decision have separate acceptance.
 
-## Sanityul of the legend of history
+## History legend sanity check
 
 The `WhistRecordsE2eTest#historyLegendWrapsWithinTheDialogAndStaysFixedWhileColumnsScroll` selection checks the fixed legend in RO/EN at the 1,0 and 1,5 stairs on the compact profile, plus reproduction of EN at 1,3 on the high profile. Use the same precondition of 24 hands played by the JVM engine on an identified APK.
 

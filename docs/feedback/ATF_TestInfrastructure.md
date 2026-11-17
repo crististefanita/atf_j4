@@ -4,7 +4,7 @@
 
 The consumer holds the validation of API, processes and local adoption; [Liability register](README.md#common-test-support) routs the primitive Kit. The contracts implemented remain in the module READMES; the binary library and Android acceptance have separate checks.
 
-## Competition of the kit
+## Test kit concurrency
 
 [Suportul comun](README.md#common-test-support) holds the primitives and generic samples. The consumer keeps the acceptance of the Android adapter; the transfer does not qualify for parallelism or close the criterion.
 
@@ -23,7 +23,7 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 
 [Test kit](../../lib/README.TestKit.md#purpose-and-integration) · [Validarea API](../../atf-validation/README.md) · [Governance](ATF_Governance.md)
 
-## The driver's share composition
+## Launcher composition
 
 | Priority | Lackeys and responsible | Closure criterion |
 |---|---|---|
@@ -33,7 +33,7 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 
 | Step | Remaining criterion |
 |---|---|
-| Android | Measure the booking waiting, profile preparation, transport and flow separately. Face the active window to correctly assign third-party interruptions. [Acceptance of Android](ATF_Android.md) |
+| Android | Measure the booking waiting, profile preparation, transport and flow separately. Face the active window to correctly assign third-game interruptions. [Acceptance of Android](ATF_Android.md) |
 | Rapoarte | Qualify the cost of collecting and handing over separately from execution, at the same inventory of invoicing. [Reporting register](ATF_Reporting.md) |
 
 The [reluare RAG](../testing/ATF_ReleaseQualification.md#resume-validated-steps) contract holds checkpoints and the re-use of snapshots. The concrete chronologies shall be the external file of the execution.

@@ -10,7 +10,7 @@ The alternatives here modify a declared mechanism of bidding or interpreting off
 |---|---|---|
 | Plausibility of an observed offer | The initial hypothetical hand and prefix available then; can weighting the estimated worlds. | The distribution or helper test does not qualify the entire API for the bidding. |
 | Offers still unknown | The orderly estimation of future actors in the prefix of the simulated continuation. | Prediction remains a hypothesis, without becoming a public fact observed. |
-| Bidding or own card | Selection of an alternative after the utility and filters of policy. | Ask for full API checks and separate comparison on new parties. |
+| Bidding or own card | Selection of an alternative after the utility and filters of policy. | Ask for full API checks and separate comparison on new games. |
 
 [YAML contract and models](../../../../docs/ai/ATF_RulesConfiguration.md) has definitions and states. Declare weighting, continuation and objective separately to be able to attribute the effect of the change.
 
@@ -20,7 +20,7 @@ The alternatives here modify a declared mechanism of bidding or interpreting off
 flowchart LR
     CATALOG[Manifest candidat] -->|identify| BASE[Base and files]
     BASE -->|validates| COPY[Isolated copy]
-    COPY -->|receive and face| SOURCE[Surse alternative]
+    COPY -->|receive and face| SOURCE[Alternative sources]
     SOURCE -->|qualifies as| CHECK[Components and protocol]
     CHECK -->|Inform| REVIEW[Promotion review]
 ```
@@ -63,7 +63,7 @@ Collection `learning` ask also candidate, external corpus, compatible protocol a
 - **Identity: ** The comparison uses the sources and configuration of the copy executed; live modification does not recalibrate it retrospectively.
 - **Legality: ** lack of a legally deduced colour limits the certain worlds; voluntary bid is a clue by the stated model.
 - **Probe domain:** [tests of the tender model](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) checks also plausible helpers; controlling the future offers of that helper does not prove the behaviour alone `chooseBid`.
-- **Progress: ** regression, cost and comparison on new parties have distinct criteria; the research status of the manifesto remains explicit until promotion.
+- **Progress: ** regression, cost and comparison on new games have distinct criteria; the research status of the manifest remains explicit until promotion.
 - **Retention: ** games, product calibrations and results remain external. Versified parameters identify implementation without becoming historical scores in the guide.
 
 [Promotion protocol](../../../../docs/learning/README.md) · [Parts and oracles](../../../../docs/testing/ATF_AiComponents.md) · [Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md)

@@ -10,8 +10,8 @@ The common library holds HTML presentation and is consumed through API configure
 
 ```mermaid
 flowchart LR
-    INPUT[Voting] -->|fuel| POLICY[Selection policy]
-    POLICY -->|transmite integral| DATA[Data for publication]
+    INPUT[Inputs] -->|feeds| POLICY[Selection policy]
+    POLICY -->|passes complete data| DATA[Data for publication]
     DATA -->|publish by API| HTML[Raport HTML]
     AUDIT[Audit independent] -->|face entry| HTML
 ```
@@ -23,7 +23,7 @@ A record describes a statement of origin: identity, parameters, intervals, compa
 
 </details>
 
-## Organizare
+## Organization
 
 | Mechanism | Responsibility |
 |---|---|
@@ -35,7 +35,7 @@ A record describes a statement of origin: identity, parameters, intervals, compa
 
 [Presentation policy](../docs/reporting/ATF_Presentation.md) holds the rules of volume and navigation. The reusable code is in `src/main/java`; JUnit entries and negative samples are in `src/test/java`.
 
-## Contracte importante
+## Key contracts
 
 - Each selected claim shall retain the binding verdict, cause and comparison.
 - The inventory of omissions shows what was executed and what is not individually presented in HTML.

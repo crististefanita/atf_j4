@@ -12,7 +12,7 @@
 | Releasing resources in reverse order | `CleanupRegistry` |
 | Selective timing with baseline verification | `AtfPromotionManifest`, `AtfPromotionGuard` |
 
-## Exemplu minim
+## Minimal example
 
 Fragment in a method that can propagate `IOException`; build data without sending a request:
 

@@ -1,10 +1,10 @@
-# Mock — transport HTTP determinist
+# Mock — deterministic HTTP transport
 
 ## Overview
 
 `atf-mock` replaces Core `ApiTransport` port with a local catalogue of responses. Use it for offline components and contracts with controlled inputs and an explicit fallback.
 
-## Exemplu minim
+## Minimal example
 
 `mock.yaml` in the working directory:
 

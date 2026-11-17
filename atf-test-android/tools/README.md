@@ -1,10 +1,10 @@
-# Uneltele infrastructurii Android
+# Android infrastructure tools
 
 ## Overview
 
 Tools belong to Android infrastructure. PowerShell module checks ADB transport, and Python tools consume explicitly captured data. The player checks the rules; the teaching links the results descriptor and keeps external pointeres on purpose.
 
-## Liabilities
+## Responsibilities
 
 | Source | Contract |
 |---|---|

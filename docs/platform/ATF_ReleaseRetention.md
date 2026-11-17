@@ -30,8 +30,8 @@ release/
 - The main READMEM and index identify only the current version. An earlier benchmark can document the audit, but does not replace the APK, link or sample of the active candidate's download.
 - The APK and checksumes belong to the same file as the version manifest; no second active copy shall be kept in a distribution directory. The main readme is sending to catalogue `release`.
 - `release` contains the catalogue, index and not more than two version files. The name of each folder and the manifest shall coincide; `currentVersion` shall be in the first position.
-- The readme of the version presents the delivery and sends to `reports/README.md`, which explains the selections, results and limits. The manifesto and metadata of the presentation belong to the version; the canonical ratio and diagnoses belong to sub-director `reports`.
-- The file keeps the canon report and only the supporting evidence or diagnoses justified for APK. [The contract of surrender](../reporting/ATF_Handoff.md#compact-liquefied-and-exceptions) requires the removal of already incorporated copies and the preservation of unique evidence until full publication. An omitted or blocked result remains explicit; no verdict of any other version shall be taken over automatically.
+- The readme of the version presents the delivery and sends to `reports/README.md`, which explains the selections, results and limits. The manifest and metadata of the presentation belong to the version; the canonical ratio and diagnoses belong to sub-director `reports`.
+- The file keeps the canon report and only the supporting evidence or diagnoses justified for APK. [The contract of surrender](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions) requires the removal of already incorporated copies and the preservation of unique evidence until full publication. An omitted or blocked result remains explicit; no verdict of any other version shall be taken over automatically.
 - Buildings, intermediate candidates and historical diagnostics remain in TMP or external archive. [Common strategy](../testing/README.md) remains independent of the version.
 
 ## Replacement and recovery
@@ -60,7 +60,7 @@ flowchart LR
     SOURCE[Snapshot identificat] -->|build in TMP| APK[APK and checks]
     APK -->|current evidence| LOCAL[PREPARED local]
     LOCAL -->|subsequent step of operator| BOUND[Commit identificat]
-    BOUND -->|publication and unloading| LIVE[Release verificat]
+    BOUND -->|publishes and downloads| LIVE[Verified release]
     LIVE -->|archiving and explicit plan| RETIRE[Withdrawal of old editions]
 ```
 
@@ -90,7 +90,7 @@ An uncommitted candidate is marked `PREPARED` and identified by its snapshot has
 
 ## Local cleaning after delivery
 
-After the published qualification and download, run [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Use the version file and post-publication verdict for the same manifesto bytes. Update the local reference first `origin/main` and the tags with Git.
+After the published qualification and download, run [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Use the version file and post-publication verdict for the same manifest bytes. Update the local reference first `origin/main` and the tags with Git.
 
 ```powershell
 node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --candidate $PublishedEdition `
@@ -125,9 +125,9 @@ node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --can
 
 Local copy plays a distribution role. In a historical checkout, Git displays the differences in the `release/` keep this copy out of the source commits. [Resumption profiles](../testing/ATF_ReleaseQualification.md#work-profiles-for-resumption)
 
-## Verification of the discharge before rotation
+## Download verification before rotation
 
-After publication, push the catalogue, manifests and main README. Use the same entries and directory as in [Reluable publication](ATF_AndroidDelivery.md#reluctable-publication-on-github).
+After publication, push the catalogue, manifests and main README. Use the same entries and directory as in [Reluable publication](ATF_AndroidDelivery.md#resumable-publishing-on-github).
 
 ```powershell
 node .\atf-tests\tools\publish-github-release.mjs verify-rotation $ProjectRoot $CandidateDir $VerdictFile $PublicationRun
@@ -143,7 +143,7 @@ Use a receipt obtained immediately before rotation, up to `expiresAtUtc`Check th
 
 Withdraw only the authorized editions outside the check pair, then check the resulting inventory. A refusal to resume the verification shall empty the state of rotation in the log.
 
-## Resetarea GitHub
+## GitHub reset
 
 - Use an explicit inventory of IDs, tags, assets and digests. Do not infer the population from just a page or list that can be filtered.
 - Archive the metadata and old assetates prior to deletion. The new APK must be published as the last release and fully downloaded via the declared channel.

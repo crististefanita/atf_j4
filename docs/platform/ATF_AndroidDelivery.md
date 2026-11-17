@@ -4,17 +4,17 @@
 
 The delivery links the configuration of the sources to the identity of the APK and the compatibility of the installation. The version declared in the source, the produced binary and the installed application have identities that need to be checked separately.
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR
-    SOURCE[Surse identificate] -->|build in staging| BUILD[Gradle Android]
+    SOURCE[Identified sources] -->|build in staging| BUILD[Gradle Android]
     BUILD -->|produce| APK[APK semnat]
     APK -->|checks| STATIC[Package and integrity]
     STATIC -->|allows installation| DEVICE[Installed application]
     STATIC -->|publish the checked binary| ASSET[Asset GitHub Release]
-    ASSET -->|download and face hash| DEVICE
-    DEVICE -->|check separately| UI[Contracte Android]
+    ASSET -->|downloads and verifies hash| DEVICE
+    DEVICE -->|check separately| UI[Android contracts]
 ```
 
 <details>
@@ -59,7 +59,7 @@ The compatibility of a new Android version qualifies separately from the `target
 
 | Level | What's he checking? | Limit |
 |---|---|---|
-| Construction and package | Sources, dependencies, manifesto, SDKs, signature and full APK. | Do not execute the application on every accepted system. |
+| Construction and package | Sources, dependencies, manifest, SDKs, signature and full APK. | Do not execute the application on every accepted system. |
 | JVM components | Window models, geometry, rescue and rules, with controlled inputs. | Do not execute system callbacks or actual gestures. |
 | Android identificat | Installation, restoration, window, interaction and stability on actual binary. | Qualify the declared profile and system with the limits recorded. |
 
@@ -110,7 +110,7 @@ A HTTP error response does not constitute an APK, regardless of the file extensi
 
 [GitHub recommends the draft before attaching the assets and publishing](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) for the immutable relays. The project process uses this order and keeps the difference between the policy established and the activation of the native option of imutability.
 
-## Maintenance relays
+## Maintenance releases
 
 A patch close to the previous version uses targeted checks according to the real difference in code. The number of versions does not justify reducing checks alone; changing rules, saves, SDKs or dependencies may require further qualification. Governance uses the release snapshots and candidate metadata, keeping parallel work separate.
 
@@ -130,8 +130,8 @@ The selected execution must pass; a relevant failure blocks publication. A misse
 1. Update `versionName` and increment `versionCode` in Gradle; fix the built commit. Relevant sources exchanged in parallel shall be confronted prior to publication.
 2. Run the above selection in TMP; prepare the commands, JUnit results and logs for `release/<versionName>/reports/`, with a short read-through. Extent reports are only derived from actual version executions; an earlier benchmark is explicitly labelled.
 3. Place the audit copy of the signed APK `WhistLab-<versionName>.apk` and checksum in `release/<versionName>/`; keep the current and immediately preceding edition. Archive older editions outside the active catalogue only after verifying their identities and hashes. The README links to the GitHub release asset. Use the retained copy to verify integrity.
-4. Update the manifesto and readme of the new version, `release/index.json`, catalogue and notes in the bulllets compared to the previous version. Generic guidelines change only if the process or contract has changed.
-5. Run governance checks before publishing the tag and verified assets. Download the full APK from the advertised channel. Update the README links after verifying the version, size, SHA-256 and CRC. A versioned link identifies the qualified APK.
+4. Update the manifest and readme of the new version, `release/index.json`, catalogue and notes in the bulllets compared to the previous version. Generic guidelines change only if the process or contract has changed.
+5. Run governance checks before publishing the tag and verified assets. Download the full APK from the advertised channel. Update the README links after verifying the version, size, SHA-256 and CRC. A versioned link identifies the qualified APK, while `releases/latest` does not pin its identity.
 
 The draft metadata shall be kept separately in `github-release-draft.json`; `github-release.json` describes the actual publication. GitHub may use temporary addresses `untagged` in the draft, so the test of the notes related to published assetses is performed again after publication on the observed canonical addresses. When published, explicitly send the tag and the source communiqué and confront the answer with the identity of the APK.
 
@@ -143,11 +143,11 @@ The draft metadata shall be kept separately in `github-release-draft.json`; `git
 - **Audit identity:** [Release presentation governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) reads the index, manifest and direct report at the indicated commit. It compares the SHA-256 with the canonical report declared in the delivered dossier. If a rerun changes the canonical report, pin the new evidence commit in the release notes.
 - **Closure:** After the final push, read the README on GitHub again and compare the exact URL with the downloaded asset. A local check alone cannot establish that the online document has been updated.
 
-## Reluctable publication on GitHub
+## Resumable publishing on GitHub
 
 [Publication script](../../atf-tests/tools/publish-github-release.mjs) receives the candidate's file and his verdict `READY_FOR_HUMAN_REVIEW`.
 
-- The manifesto declares status `PREPARED`, the repositoryul, the access mode, the canonical URL and the apk hashes, the checksums and notes.
+- The manifest declares status `PREPARED`, the repositoryul, the access mode, the canonical URL and the apk hashes, the checksums and notes.
 - Push the source to `main` and the tag of the version on the qualified commit prior to command.
 - Use `GH_TOKEN` or `GITHUB_TOKEN` in the process environment. The running director shall be outside the project and the candidate.
 
@@ -157,17 +157,17 @@ node .\atf-tests\tools\publish-github-release.mjs publish $ProjectRoot $Candidat
 
 When resumed, use the qualified manifest, the verdict and the director of the initial running. Keep them until publication and retention are closed.
 
-- The `github-publication.json` log links the commit, the manifesto hashir, the asset hashs and the fingerprint's numeric IDs. Save status before calls that can leave undetermined results.
+- The `github-publication.json` log links the commit, the manifest hashir, the asset hashs and the fingerprint's numeric IDs. Save status before calls that can leave undetermined results.
 - The atomic writing and file `.lock` prevent two runs in the same directory. After forced shutdown, check the PID in the file before releasing the lock.
 
 | Situation | Repetition behaviour |
 |---|---|
 | GitHub returns 422 to creation | Recite the authenticated inventory. If the draft is missing after refusal, correct the cause and run again. |
-| Connection cut off when creating | Search the drawing on all pages after the tag and the symbol of the manifesto. If the result remains undetermined, check the authenticated inventory and resume after the draft becomes visible. After saving the IDs, the script reads strictly after ID. |
+| Connection cut off when creating | Search the drawing on all pages after the tag and the symbol of the manifest. If the result remains undetermined, check the authenticated inventory and resume after the draft becomes visible. After saving the IDs, the script reads strictly after ID. |
 | Upload interrupted or received 422 | Recite the asset, download the file and compare size and SHA- 256. A different file stops the flow. An empty set in condition `starter` can be withdrawn by ID in its own draft if the log identifies the exact upload interrupted. |
 | Promotional response lost | Recite the same ID and check the published assets' The confirmed promotion is not repeated. |
 
-In Release Notes keep HTML marking `atf-publication` when adding the link to the audit fixed on the commit. After the promotion, publish on the `main` catalogue, manifests and updated readmate. [Rotation Preflag](ATF_ReleaseRetention.md#verification-of-the-discharge-before-rotation) face them with real downloads.
+In Release Notes keep HTML marking `atf-publication` when adding the link to the audit fixed on the commit. After the promotion, publish on the `main` catalogue, manifests and updated readmate. [Rotation Preflag](ATF_ReleaseRetention.md#download-verification-before-rotation) face them with real downloads.
 
 ## Folder of a version
 
@@ -186,7 +186,7 @@ In Release Notes keep HTML marking `atf-publication` when adding the link to the
 - In a new version, qualify the external candidate and only file files older than the immediate previous edition. Update index and catalogue after identity verification; keep in the current and immediately preceding `release` edition, including their local APKs.
 - When reorganizing, move the associated reports and files together, confront the hashes and redo the active references. The absolute captured paths and historical URLs attached to the commit shall retain their original meaning.
 - `artifacts/` and `dist/` are the director who is withdrawn from the project's root. After archiving and confronting unique data, remove old directories, including empty ones; governance refuses to reoccur.
-- The description of the edition starts with a short summary and lists changes at separate points. Check her before the manifesto is sealed.
+- The description of the edition starts with a short summary and lists changes at separate points. Check her before the manifest is sealed.
 - The notes from GitHub Release send to the READMEL version in an identified comma; the change of navigation does not move the tag or replace the binary asset.
 
 [Governance of dossiers](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) rejects unregistered population, accumulation of active versions, missing metadata and divergent identities. The verification of the integrity of files and links shall complete this structural contract.
@@ -201,7 +201,7 @@ In Release Notes keep HTML marking `atf-publication` when adding the link to the
 | Public copy verified | `PUBLISHED_SITE` with `accessMode=ANONYMOUS`; the `publicDownload` Receipt confirms the page, APK and checksumes via HTTPS without any credit. |
 | Copy complete | Successful response, size and HA- 256 identical to the stated asset and binar; ZIP with valid CRC, Android manifest and code. An error response shall not be renamed `.apk`. |
 | Canal verificat | Each Receipt only qualifies the way it declares access. An authenticated result does not assert anonymous access and a public copy does not state the permissions of the GitHub accounts. |
-| Unique identity | `currentVersion`, manifesto, label, APK name and URL identify the same edition. Evidence of any previous version remains only audit references. |
+| Unique identity | `currentVersion`, manifest, label, APK name and URL identify the same edition. Evidence of any previous version remains only audit references. |
 
 The file shall be downloaded in a temporary name and shall be given the final extension after the checks. When you pass through `PUBLISHED`, replace the local link with the distribution address of the same version.
 
@@ -256,7 +256,7 @@ mvn -B -o -pl atf-tests -am '-Dtest=PublishedApkDownloadAcceptanceTest' '-Dsuref
 ```
 
 - **Channel: ** tokens read from `GH_TOKEN` or `GITHUB_TOKEN`; not submitted by argument, YAML or reports. The test does not publish or install the application.
-- **Scoops: ** only `atf.release.download.scope=current` is accepted. The expected identity and size come from the current manifesto, including when it is still `PREPARED`; the test is facing real publication.
+- **Scoops: ** only `atf.release.download.scope=current` is accepted. The expected identity and size come from the current manifest, including when it is still `PREPARED`; the test is facing real publication.
 - **Report: ** `atf.release.download.report-directory` requires an absolute path; by default uses TMP. The errors and refusal of publication remain FAIL, without PASS from an older subset.
 - **Offline Suite: ** Normal governance excludes the `release-download-live` tag; network acceptance is explicitly selected without transforming its omission into a positive result.
 
@@ -284,7 +284,7 @@ node atf-tests/tools/record-release-integrity.mjs
 - **Registration: ** the tool selects the version from the index, verifies the inventory stability and updates section `integrity`. Moment `observedUtc` identifies the observation of bytes, without changing the verdict, the date of execution or the state of publication.
 - **Git:** [Atributul `text`](https://git-scm.com/docs/gitattributes) is deactivated by `.gitattributes` for the entire folder `release`Governance faces the actual attribute of each payload, including local overwrite; prior to push, bytes of Git objects must correspond to the registry.
 - **Verification: ** after registration is performed the governance; recalculating hashes does not make valid an XML with failures or a corrupt APK.
-- **Limits: ** CRCl and SHA-256 qualify local integrity, separate from APK signature, binary Android manifesto, building reproduction and the identity of the published commit. The entry list does not yet face the full external archive or the population of live sources.
+- **Limits: ** CRCl and SHA-256 qualify local integrity, separate from APK signature, binary Android manifest, building reproduction and the identity of the published commit. The entry list does not yet face the full external archive or the population of live sources.
 - **Catalogue: ** section delimitation shall be validated prior to current entry, with a diagnosis for missing or reversed titles. The presence of a version in the general table does not substitute the link in the current section.
 
 ## Presentation of a version
@@ -312,7 +312,7 @@ Release page is intended for the user. Keep three sections of the Bullets and se
 | `widthDp` / `heightDp`, API 30+ | Use the current window and exclude bars and clippings, irrespective of their visibility. The EMI is not low in this measurement; the protection of the root has its own path. |
 | Previous systems | Measurement uses platform configuration; the protection listener is not installed by this class before API 35. |
 
-[Componentele ferestrei](../../whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) checks the arithmetic and model budgets. [Native acceptance](../feedback/ATF_Android.md#native-acceptance-android-17) confronts the actual viewporter, gestures, navigation with three buttons, clipping and keyboard; it does not result from the JVM model.
+[Componentele ferestrei](../../whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) checks the arithmetic and model budgets. [Native acceptance](../feedback/ATF_Android.md#native-acceptance-on-android-17) confronts the actual viewporter, gestures, navigation with three buttons, clipping and keyboard; it does not result from the JVM model.
 
 ## Memory and Diagnosis on Android 17
 

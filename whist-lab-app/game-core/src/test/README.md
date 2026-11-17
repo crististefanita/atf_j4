@@ -23,11 +23,11 @@ A small regression fixes the rule and the distinct defect without running the en
 
 ## Outcome interpretation
 
-The fairness of a rule, the cost of a decision and the superiority of policy are different qualifications. [Learning protocol](../../../../docs/learning/README.md) maintains the provenance, selection and promotion criteria; a rollout or a finite certificate does not guarantee each party's winning.
+The fairness of a rule, the cost of a decision and the superiority of policy are different qualifications. [Learning protocol](../../../../docs/learning/README.md) maintains the provenance, selection and promotion criteria; a rollout or a finite certificate does not guarantee each game's winning.
 
 ## Game evaluation at 0
 
-Pregnancy `:game-core:zeroMatchPairedTest` explicitly runs full parties on JVM. The pair shall retain the seats, series, distribution, order of hands and the trunks, with the rule disabled and activated.
+Pregnancy `:game-core:zeroMatchPairedTest` explicitly runs full games on JVM. The pair shall retain the seats, series, distribution, order of hands and the trunks, with the rule disabled and activated.
 
 | Parametru Gradle | Rol |
 |---|---|

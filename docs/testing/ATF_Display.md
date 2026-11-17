@@ -8,7 +8,7 @@ The suite checks the configuration, bidding, game and restart mechanisms on the 
 
 ```mermaid
 flowchart LR
-    CONFIG[Profiluri] -->|select| LEASE[Exclusive booking]
+    CONFIG[Profiles] -->|select| LEASE[Exclusive booking]
     LEASE -->|permite citirea| PREFLIGHT[Control preliminar]
     PREFLIGHT -->|permit preparation and execution| RUN[Scenariu Android]
     RUN -->|capture| TRACE[Control points]
@@ -75,7 +75,7 @@ Full action, hand and all places face in the same state. [Istoricul](../game/ATF
 
 ## Minimum matrix by risk
 
-The selection shall cover differences that may produce another geometry or interaction. The combinations respect the game variant; impossible states receive negative samples in components without being presented as valid Android parties.
+The selection shall cover differences that may produce another geometry or interaction. The combinations respect the game variant; impossible states receive negative samples in components without being presented as valid Android games.
 
 | Risc | Component and Variation | Sanity nativ selectat |
 |---|---|---|
@@ -116,7 +116,7 @@ The selection shall cover differences that may produce another geometry or inter
 - The value of the asset shall be 57 dp and two measured regions: title and value. The height common to all modes is at least 48 dp and increases after the same font measurements; the card, color and lack of the card does not change the dimensions at the same configuration.
 - The value of the card shows the card turned, the colour symbol or the text located for lack of the card. There is no additional line about the absence of the card turned; the text is adapted to the useful width.
 - The deposit button shall keep the text of 13 sp and the tactile target of 119 × 48 dp. On the standard scale, the contour is 15% lower on both axes, rounded in pixels. With the text enlarged, the outline gives way to the measured label.
-- `Automat` The title may be divided into two rows at most; the tick remains with it as long as it remains a useful width for text and passes to the next row at narrow screens or with increased text. The accessible description retains the full title. The attul and progress remain below. The summary separates the bids submitted by the total by a new row. [Antetul comun](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
+- `Automat` The title may be divided into two rows at most; the tick remains with it as long as it remains a useful width for text and passes to the next row at narrow screens or with increased text. The accessible description retains the full title. The attul and progress remain below. The summary separates the bids submitted by the total by a new row. [Antetul comun](../../whist-lab-app/atf-card-table-ui/README.md#table-header)
 - In normal game, the indicator of the shift and a legal card must be visible before action. The compact sanitarium does not accept the development as a cure for a missing region.
 - Simulation of a logical resolution does not prove the properties of a physical panel of the same size.
 - The historian uses short headers and legend. His favorite compact widths are 29,7 dp for cards; and 18,9/23,4 dp for bidding and the total displayed; separators are 2,1 dp, with 30% less than the thickness of 3 dp, rounded once in pixels. The measured text may extend the two columns before running without ellipse per digit; [model of history](../game/ATF_ScoreHistory.md) holds semantics and the difference from points of hand.

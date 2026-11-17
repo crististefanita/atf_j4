@@ -29,7 +29,7 @@ The level expresses the limit checked and the collection selects cases and the c
 flowchart LR
     CONTRACT[Property] -->|delimited| LEVEL[Minimum level]
     LEVEL -->|select| SUITE[Cases and resources]
-    SUITE -->|face through| ORACLE[Oracol independent]
+    SUITE -->|face through| ORACLE[Independent oracle]
     ORACLE -->|justifies| RESULT[Result and limits]
 ```
 
@@ -50,7 +50,7 @@ This is the single regulatory document of the test strategy. Thematic guidelines
 
 | Schimbare | Main verification | Required completion |
 |---|---|---|
-| Rule, score or rescue | Uniting and components with controlled inputs, including negative cases. | Replay of a registered party if the historical interpretation changes. |
+| Rule, score or rescue | Uniting and components with controlled inputs, including negative cases. | Replay of a registered game if the historical interpretation changes. |
 | Geometry and display | Components for boundaries, intersections, centreyards and extreme population. | NATURAL SANITY ON RISK-DISTINCT PROPROLIES: Minimum / Maximum Hand, Table Places and Bidding. |
 | Navigation or interaction | A representative path through the displayed items. | The additional matrix checks the display; repeating the full game requires a new risk. |
 | Serial and publication | Format contracts, negative evidence and offline replica. | The result identity, the Extent rendering and the availability of fallback shall be qualified separately. |

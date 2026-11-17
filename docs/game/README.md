@@ -14,7 +14,7 @@ Each variant has its own contract for package, program, trump, bidding and score
 | How do players set their name and retain rankings? | [Player profile and local leaderboards](ATF_PlayerRecords.md). |
 | How are progression objectives organized and awarded? | [Whist achievements](ATF_Achievements.md). |
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR

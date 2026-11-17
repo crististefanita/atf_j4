@@ -17,7 +17,7 @@ The module faces the observed response with a contract, keeping the differences 
 
 [Catalogul](../../../config/atf-test-suites.json) separate `ValidationUnitSuite` ed `ValidationComponentSuite`. [Lansatorul comun](../../../scripts/run-component-suites.ps1) publish only the selection of the component; the units shall retain their separate input and result.
 
-- Use [input module](../../README.md) in a temporary copy of the addictions identified.
+- Use [input module](../../README.md) in a temporary copy of the dependencies identified.
 - The negative samples alter a single relevant condition and keep the witness valid; a defect in the fixture does not demonstrate the requested refusal.
 
 Reporting tests check the data transmitted, separate from the renderer's acceptance. [Budget of evaluation](../../../docs/feedback/ATF_TestInfrastructure.md#cost-of-validating-api) remains a separate qualification from functional correctness.

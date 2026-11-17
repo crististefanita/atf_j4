@@ -26,7 +26,7 @@ The archive shall maintain the provenance, partition and integrity of the data. 
 - The content of a closed execution is immutable and verifiable by hash.
 - The set for the reserved development, reference and evaluation has explicit roles.
 - Rehearsals without new lessons can be removed from active selection without losing the origin register.
-- References to active selection shall be updated separately from the parties' data.
-- Stable documents contain rules and limits; rolling scores, examples of parties and editorial evaluations appear in the external archive.
+- References to active selection shall be updated separately from the games' data.
+- Stable documents contain rules and limits; rolling scores, examples of games and editorial evaluations appear in the external archive.
 
 [Learning architecture](../ai/README.md) · [Governance of documentation](../governance/ATF_Documentation.md)

@@ -34,7 +34,7 @@ flowchart LR
 
 ## Compatibility of sources
 
-The artifact verification is available separately, without engine, Android or party archive. From the root of the project, with Node.js:
+The artifact verification is available separately, without engine, Android or game archive. From the root of the project, with Node.js:
 
 ```powershell
 node --test whist-lab-app/ai-lab/tools/bidding/whist-prototype-contract.test.mjs

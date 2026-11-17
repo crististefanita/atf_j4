@@ -8,10 +8,10 @@ The value of a card depends on the remaining objective and public information. [
 
 ```mermaid
 flowchart LR
-    OBS[Private and public observation] -->|filter| LEGAL[Legal books]
+    OBS[Private and public observation] -->|filter| LEGAL[Legal cards]
     LEGAL -->|evaluate with the need| QUOTA[Feasibility of contract]
     QUOTA -->|contract recuperabil| EXACT[Accurate chance]
-    QUOTA -->|contract not publicly available| POINTS[Protection of points]
+    QUOTA -->|contract is publicly infeasible| POINTS[Protection of points]
     POINTS -->|tilt| RIVALS[Estimated adverse reactions]
 ```
 
@@ -34,9 +34,9 @@ Legality precedes any intention. Feasibility uses public and certified limits in
 | The upper atum is returned or in a completed trick | He can't win his current trick anymore. |
 | Total imbalance suggests avoidance | Further assess the needs of each place; the total does not replace the individual target. |
 
-## Status sizes
+## State dimensions
 
-[Modelul deciziei](ATF_DecisionModel.md#the-status-changing-the-decision) has the definitions of the need to be signed, opportunities, imbalance and progress. The conditions in this guide use the same units and include the unfinished trick once.
+[Modelul deciziei](ATF_DecisionModel.md#state-that-influences-the-decision) has the definitions of the need to be signed, opportunities, imbalance and progress. The conditions in this guide use the same units and include the unfinished trick once.
 
 The positive demand amounts to `max(0, necesar)` per place: a contract already exceeded does not cancel the need of another player. The aggregate imbalance describes mass without replacing individual target or the legality of a card.
 

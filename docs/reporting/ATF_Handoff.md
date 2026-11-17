@@ -8,7 +8,7 @@ The surrender shall publish the results in an external repository and maintain t
 
 ```mermaid
 flowchart LR
-    TRACE[Trace original] -->|link to the descriptor| DESC[Descriptor explicit]
+    TRACE[Original trace] -->|link to the descriptor| DESC[Explicit descriptor]
     DESC -->|validates| CHECK[Integrity and purpose]
     CHECK -->|records imhumbly| ARCH[External registration]
     ARCH -->|update atomic| POINTER[Pointer pe scop]
@@ -28,7 +28,7 @@ A record may describe success, failure or refusal of execution. Acceptance requi
 | Identitate | Run ID, source of republication, package, scenario and purpose declarat/efectiv. |
 | Implementation | Native verdict, captured beginning / end, temporal basis and limits. |
 | Application and sources | Identity of the installed binary, sources and libraries used. |
-| Content | HTML, manifesto, checkpoints and associations of actions, observations and comparisons. |
+| Content | HTML, manifest, checkpoints and associations of actions, observations and comparisons. |
 | Review | The checks required for the purpose, related to the hash of the inspected content. |
 
 Missing data remains explicitly marked. An estimated time, later reading identity or a interrupted distribution shall not become full original catches.
@@ -51,7 +51,7 @@ The descriptor separates the data captured on execution from those checked on of
 | public-trace | The comments allowed for the reply, distinct from the ex post data of the oracle. |
 | indexes | Indices of convenience, without authority to declare acceptance. |
 
-## Operational Invarities
+## Operational invariants
 
 - The identification of a registration is immutable; identical re-importation is idempotent.
 - Pointerele are ordered after execution, with one lock and atomic replacement.
@@ -61,7 +61,7 @@ The descriptor separates the data captured on execution from those checked on of
 - The external root shall be transmitted explicitly, independently of the traineeship director.
 - Automatic indexation refuses checkout destinations and does not rewrite editorial READMEs.
 
-## Compact Liquefied and Exceptions
+## Compact handoff and exceptions
 
 The target of surrender is an auditable HTML that includes mandatory information, full values and catches associated with each checkpoint. The files already incorporated are not only given final copies for navigation; a director or ZIP with the report's annexes is not autonomous.
 
@@ -71,7 +71,7 @@ The target of surrender is an auditable HTML that includes mandatory information
 | Identical copy incorporated | Delete only after the octet confrontation and the check of the seconded report. |
 | Diagnosis or auxiliary result for separate purposes | Preserved for specific reasons, consumer or diagnostic question and identity; cannot hide any information necessary for HTML audit. |
 | Distribution metadata | The index and integrity manifest remain compact, with verifiable role for navigation or governance; do not substitute the input, comparison or comments accessible in HTML. |
-| Unitary proof still external | Preserved until full publication; addiction remains explicit in feedback. |
+| Unitary proof still external | Preserved until full publication; dependency remains explicit in feedback. |
 
 [Publicatorul Android](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) includes NGPs, manifests and text bodies provided or declared by checkpoints. [Migrated component suites](../testing/ATF_DisplayComponents.md#families-using-the-same-audit) includes inputs and comparisons captured; selections without adaptor keep the audit qualification distinct.
 

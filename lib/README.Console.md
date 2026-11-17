@@ -4,7 +4,7 @@
 
 `atf-console` design ATF events in stdout/stderr: lifecycle, durates and configurable details. It is useful for tracking a Maven or IntelliJ run; HTML artifact is produced by [Reporting](README.Reporting.md).
 
-## Exemplu minim
+## Minimal example
 
 Fragment in a method; policy is explicit and the stream remains in the adaptor:
 

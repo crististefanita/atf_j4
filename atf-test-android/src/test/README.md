@@ -20,10 +20,10 @@ This catalogue explains the JUnit inputs of the Android adapter. [Common strateg
 
 ```mermaid
 flowchart LR
-    SELECT[Declared selection] -->|control| INPUT[Process or status]
+    SELECT[Declared selection] -->|control| INPUT[Process or state]
     INPUT -->|produce| OBS[Observation]
     EXPECT[Independent waiting] -->|face| OBS
-    OBS -->|fuel| REPORT[Selection ratio]
+    OBS -->|feeds| REPORT[Selection report]
 ```
 
 <details>

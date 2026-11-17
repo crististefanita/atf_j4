@@ -4,14 +4,14 @@
 
 JVM module exclusively for test fixtures. JUnit Bridge 4 captures the actual context and comparisons through the joint and public kit through the physical reporting library. The application and the graphical AARs do not depend on this variant.
 
-## The number of the selected sample shall be determined by the manufacturer.
+## Selection flow
 
 ```mermaid
 flowchart LR
     CASE[Case and fixture] -->|capture before comparison| INPUT[Context efectiv]
-    INPUT -->|evaluate through Kit| CHECK[Expected and current]
+    INPUT -->|evaluate through Kit| CHECK[Expected and actual]
     CHECK -->|publishing by Reporting| HTML[HTML canonic]
-    XML[JUnit temporar] -->|face identities and verdicts| VERIFY[Acceptance of selection]
+    XML[Temporary JUnit output] -->|checks identities and verdicts| VERIFY[Acceptance of selection]
     HTML -->|Recite bodies| VERIFY
 ```
 
@@ -31,7 +31,7 @@ A JUnit rule holds the claim, including fixtures before/after. The duration of t
 - The catalogue classifies units, components, governance and learning; learning selections remain eighty-in.
 - One worker and one HTML per task avoid unqualified competition; the closureur and final check belong to the selection.
 
-## Rulare
+## Running tests
 
 Gradle test task automatically applies the deck. `whist.auditOutput` chooses the report director and `whist.auditSource` fixes the identity of the source inventory for qualification. The final check confronts HTML with the original JUNIT and the library inspector; the mere existence of the file is not acceptable.
 

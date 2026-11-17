@@ -6,7 +6,7 @@ The native target iOS is separated from the Android APK and requires qualificati
 
 ## Status
 
-The native target iOS is in skill. The project uses SwiftIU for interface
+The native target iOS is in skill. The project uses SwiftUI for interface
 and J2ObjC to sweat out the existing Java engine, so that the rules,
 bids, score, opponents and validation of actions to remain implemented a
 only once. The adapter only displays the status required for the screen to Swift, and

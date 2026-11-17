@@ -12,7 +12,7 @@ Reporting publishes the data, comparisons and verdict of the caller in Extent/fa
 | HTTP observat | `request.execution(ReportExecutionEvidence)`, cu `ReportResponse` |
 | Capturi | `UiExtentReportSession`; PNG integral |
 
-## Exemplu minim
+## Minimal example
 
 Individual: `try (var run = open(output)) { publish(run, actual); }`. The suite keeps the run and opens a scenario per invoicing:
 

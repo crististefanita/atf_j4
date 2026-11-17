@@ -35,7 +35,7 @@ The editorial grid of [contract documentation](../governance/ATF_Documentation.m
 |---|---|---|
 | P2 | Libraries guides distributed: re-use of the sample in the manufacturer | [Local acceptance of fragments](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic contract of these evidence in the register of joint officers and synchronise the clarification of the guidelines to consumers. The manufacturer's regression and acceptance of each consumer remain distinct. |
 
-| P2 | The relay description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifesto. Keep intact the descriptions already included in the inventory of a published edition. |
+| P2 | The relay description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifest. Keep intact the descriptions already included in the inventory of a published edition. |
 
 ## Download via browser
 

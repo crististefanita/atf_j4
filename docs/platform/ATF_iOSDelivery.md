@@ -3,7 +3,7 @@
 ## Overview
 
 The apk of the Whist Lab is an Android package and does not install on iPhone or iPad.
-Project iOS is a separate SwiftIU interface application and uses the engine
+Project iOS is a separate SwiftUI interface application and uses the engine
 Joint Java by J2ObjC translation. The original engine continues to be the source of the rules
 game, AI, bidding, score and save; adapter iOS does not implement a second
 variant of these rules.
@@ -36,7 +36,7 @@ The [iOS](../../.github/workflows/ios.yml) workshop checks on the same commit:
 
 J2ObjC 3.1 is fixed in workflow and built from source because distribution
 pre-compiled is no longer published by the project. J2ObjC is beta and translates logic,
-not the interface; SwiftIU remains the native layer of IU. The runner cylinder qualifies
+not the interface; SwiftUI remains the native layer of IU. The runner cylinder qualifies
 compatibility of the compilation and automatic test for iOS 27.2, not each
 intermediate version and no experience on physical devices.
 [J2ObjC - project and limits](https://github.com/google/j2objc) ·

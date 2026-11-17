@@ -18,7 +18,7 @@ Whist policy manager holds these research and qualification criteria. The rules 
 | Priority | Source demonstrable gap | Closure criterion |
 |---|---|---|
 | P2 | [Manifesto of objectives](../../config/whist-play-objectives.yaml) distinguishes the model from a card, but its consistency with the runtime domain has no self-control. | Component detecting the omission or reversal of the domain, with the source and test of the model identified; the coefficients and qualified behaviour shall be maintained. |
-| P2 | Generic choice of focus by category does not have a qualified consumer in current sources. | Selector with parent manifesto, subset and checked hashes, coverage criteria and refusal of reserved lots; until then, the proposal remains. |
+| P2 | Generic choice of focus by category does not have a qualified consumer in current sources. | Selector with parent manifest, subset and checked hashes, coverage criteria and refusal of reserved lots; until then, the proposal remains. |
 
 The contracts implemented are explained in [modelul deciziei](../ai/ATF_DecisionModel.md), [collections](../testing/ATF_Collections.md) and [selection for learning](../learning/ATF_Selection.md). These criteria remain open until the mechanism required is verified.
 
@@ -46,10 +46,10 @@ The AI module's manager shall have his own inputs and verification. The engine i
 
 | Priority | Risc | Closure criterion |
 |---|---|---|
-| P2 | Abstract weights can favour an arithmetic path hard to play. An example of a component does not determine the frequency of conversion to 500 times the cost of searching. | Compare new pair parties with both programs, 3–6 seats and series pornite/oprite. Measure conversions to 500, target changes, ranking positions and latency before declaring strategic progress. |
+| P2 | Abstract weights can favour an arithmetic path hard to play. An example of a component does not determine the frequency of conversion to 500 times the cost of searching. | Compare new pair games with both programs, 3–6 seats and series pornite/oprite. Measure conversions to 500, target changes, ranking positions and latency before declaring strategic progress. |
 | P2 | Rates in a controlled adverse prefix overestimate how frequently the opportunity occurs in the free game. Sampling may leave without support a possible arithmetic pathway. | Report the natural lot separately from the controlled lot, denominator, first election phase and conversions for each level. Keep larger lots with difficulty rotations and measure the cost for the hands where multiple targets are assessed. |
 
-The conditional activation of two adversaries guaranteed forward, the possible equality for second place, the restriction of the last tender and the series penalty have component evidence. The rating of frequency and cost remains in the above lots. [Activarea](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchPolicyComponentTest.java) · [Limits and series](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchBoundsComponentTest.java) · [Contractul deciziei](../ai/ATF_DecisionModel.md#when-the-aion-plays-at-0)
+The conditional activation of two adversaries guaranteed forward, the possible equality for second place, the restriction of the last tender and the series penalty have component evidence. The rating of frequency and cost remains in the above lots. [Activarea](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchPolicyComponentTest.java) · [Limits and series](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/zero/ZeroMatchBoundsComponentTest.java) · [Contractul deciziei](../ai/ATF_DecisionModel.md#when-the-ai-plays-for-zero)
 
 ## Engine evolution
 

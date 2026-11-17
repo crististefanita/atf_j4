@@ -19,9 +19,9 @@ A rule defines its condition, action and limits. A weighting shall only make sen
 
 ```mermaid
 flowchart LR
-    RULES[Manifesto of rules] -->|tying conditions| CODE[Code and tests]
-    PATTERN[Print catalogue] -->|descrie| RESEARCH[Cercetare]
-    MODEL[Model declarat] -->|generate controlled| GENERATED[Experimental implementation]
+    RULES[Rule manifest] -->|tying conditions| CODE[Code and tests]
+    PATTERN[Hand pattern catalog] -->|describes| RESEARCH[Research]
+    MODEL[Declared model] -->|generate controlled| GENERATED[Experimental implementation]
     GENERATED -->|requires qualification| PROMOTION[Promovare]
 ```
 
@@ -74,7 +74,7 @@ flowchart LR
     PUBLIC[New public fact] -->|update| OBS[Observation]
     OBS -->|recalculate| FEATURES[Context]
     FEATURES -->|influence| ORDER[Evaluation and order]
-    PARAM[Ice cream policy] -->|define| ORDER
+    PARAM[Frozen policy] -->|define| ORDER
     ORDER -->|propune| ACTION[Legal action]
 ```
 
@@ -98,7 +98,7 @@ scor_contextual(acțiune, stare) =
 
 This form describes an additive model only where the code implements it. Lexicographic priorities and legal filters have other semantics, and overlapping clues do not automatically add up.
 
-The definitions of necessity, opportunities and imbalance are in [modelul deciziei](ATF_DecisionModel.md#the-status-changing-the-decision). Experimental model [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) It has distinct branches for zero need, sufficient reserve and the need for all levatates, with fixed weights on evolving features.
+The definitions of necessity, opportunities and imbalance are in [modelul deciziei](ATF_DecisionModel.md#state-that-influences-the-decision). Experimental model [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) It has distinct branches for zero need, sufficient reserve and the need for all levatates, with fixed weights on evolving features.
 
 ```text
 ρ = clamp(necesar / oportunități, 0, 1)
@@ -112,13 +112,13 @@ The contextual correction shall apply only in the eligible branch of the experim
 
 ### How to adjust an offline model
 
-[The manufacturer of the tender model](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) draws the actor's hand and the existing prefix at bidding from validated development parties. It groups the post-seed observations for weighting and separation of the adjustment from predictive validation; the label is the offer observed without claiming that it would have been optimal.
+[The manufacturer of the tender model](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) draws the actor's hand and the existing prefix at bidding from validated development games. It groups the post-seed observations for weighting and separation of the adjustment from predictive validation; the label is the offer observed without claiming that it would have been optimal.
 
 [Source generator](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence-codegen.mjs) checks vocabulary, numerical forms and predictive criteria, then keeps the model hash in the generated implementation. This control qualifies generation; [procedure for evolution](../learning/ATF_PolicyEvolution.md#when-we-promote) requires separately components and strategic progress on the new batch prior to activation.
 
 ## Behavior inference
 
-This section describes the general research model for 2–8 The runtime model specialized in a card and its fallback are documented in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives); automatic control of the consistency of the manifesto with that domain remains [criteriu deschis](../feedback/ATF_Ai.md#coordination-of-evaluation-and-delimitation-of-mechanisms).
+This section describes the general research model for 2–8 The runtime model specialized in a card and its fallback are documented in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives); automatic control of the consistency of the manifest with that domain remains [criteriu deschis](../feedback/ATF_Ai.md#coordination-of-evaluation-and-delimitation-of-mechanisms).
 
 [Experimental tender model](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) uses fixed coefficients and features of the original hypothetical hand and prefix available then. The remaining and the cards played by the same place meet without doubling the current table.
 
@@ -145,7 +145,7 @@ eșantion_efectiv = suma_ponderilor² / suma_pătratelor_ponderilor
 
 </details>
 
-## Future tenders in simulation
+## Future bids in simulation
 
 Bidding already submitted remains public facts and the contract itself assessed is the hypothetical target of that alternative. The estimation of the following actors shall use the order of bidding and the prefix available in the simulated continuation.
 

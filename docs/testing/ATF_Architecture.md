@@ -86,7 +86,7 @@ Engine uses JUnit JVM via [configuration](../../whist-lab-app/game-core/build.gr
 | Android geometry and text | Unit or JVM component | Dimensions, regions, localization and presentation models | [App tests](../../whist-lab-app/app/src/test/java/ro/whistlab/app/). |
 | Interaction in the installed app | E2E | The relationship between command, state, capture and score | [Android infrastructure](ATF_Android.md). |
 
-A tournament is a policy assessment with its own population and criteria. The number of parties or victory does not replace the independent expectation of a regression of the component.
+A tournament is a policy assessment with its own population and criteria. The number of games or victory does not replace the independent expectation of a regression of the component.
 
 ## Independent dimensions
 

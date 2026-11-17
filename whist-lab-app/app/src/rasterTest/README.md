@@ -1,14 +1,14 @@
-# Controlled yield of historical components
+# Controlled rendering of score history components
 
 ## Overview
 
 The collection produces JVM images from the application projection and geometry, with controlled fonts. [Common strategy](../../../../docs/testing/README.md) holds the level and acceptance; Android pixels have a separate native qualification.
 
-## Fluxul probei
+## Test flow
 
 ```mermaid
 flowchart LR
-    STATE[Legal party] -->|design| TABLE[Table of history]
+    STATE[Legal game] -->|design| TABLE[Score history table]
     TABLE -->|randate| PNG[PNG controlat]
     PNG -->|face| ORACLE[Values and pixels]
     STORE[Checkpoint JSON] -->|restore| STATE

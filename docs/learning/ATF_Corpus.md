@@ -2,7 +2,7 @@
 
 ## Overview
 
-The corpus is an external entry for the replicay, selection and offline analysis. The project has the schematics and validators; party files, concrete manifests and lot registers remain in the external warehouse configured.
+The corpus is an external entry for the replicay, selection and offline analysis. The project has the schematics and validators; game files, concrete manifests and lot registers remain in the external warehouse configured.
 
 ## Data model
 
@@ -16,8 +16,8 @@ The corpus is an external entry for the replicay, selection and offline analysis
 
 ```mermaid
 flowchart LR
-    FILE[External Party] -->|fuel| ORACLE[Validator independent]
-    ORACLE -->|admissions to partition| MANIFEST[Manifest verificat]
+    FILE[External Party] -->|feeds| ORACLE[Validator independent]
+    ORACLE -->|admissions to partition| MANIFEST[Verified manifest]
     MANIFEST -->|explicitly select| REPLAY[Replay and analysis]
     REPLAY -->|design| OBS[Diagnostic observations]
 ```
@@ -29,7 +29,7 @@ The validator can check the property of all cards after the game is finished. Th
 
 </details>
 
-## PARTIES AND INFIDENCE
+## Partitions and integrity
 
 - Development allows analysis and adjustment; active selection reads only the declared manifest.
 - Heldout is reserved for the assessment of the frozen candidate and is registered as exposed to the opening.

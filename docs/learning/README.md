@@ -7,7 +7,7 @@ Each candidate represents an identified change in the bid or choice of the card.
 - **Start:** [Construction and improvement of the IA](ATF_PolicyEvolution.md) policy changes explicitly; recalculation of the context of the hand does not rewrite the accepted parameters.
 - **Liabilities:** [Laboratorul AI](../../whist-lab-app/ai-lab/README.md) be responsible for the implementation of the Union's policy on the implementation of the Union's macro-financial assistance; [lansatoarele comune](../../scripts/README.md) select the configuration and resources of the isolated execution.
 
-- [Corpusul](ATF_Corpus.md) defines parties and integrity of entries.
+- [Corpusul](ATF_Corpus.md) defines games and integrity of entries.
 - [Selection](ATF_Selection.md) restricts analysis to distinct lessons.
 - [Arena](ATF_Arena.md) compares policies on distribution and controlled places.
 - [Retention](ATF_Retention.md) maintains the role and provenance of external data.
@@ -23,14 +23,14 @@ Each candidate represents an identified change in the bid or choice of the card.
 | Reserved assessment | Sources are frozen before the range is opened. The external register shall keep the ranges used. |
 | Decision | The declared thresholds and the requirement for strict progress shall apply. Neutral and negative results remain available. |
 
-## Interpretare
+## Interpretation
 
-- A seed with rotated seats gives several correlated parties.
+- A seed with rotated seats gives several correlated games.
 - Accurate contracts, points and victories divided by equality shall be read separately.
 - The number of feasible worlds listed is a measure of the field of demonstration. A probability also requires a model of their distribution.
 - A different choice can change the bids and scores of subsequent hands. The first divergence shall be identified prior to the award of the gain.
 
-## Reproducere
+## Reproduction
 
 [Collections Launcher](../../scripts/run-whist-collection.ps1) selects the tournament according to protocol schematics and verifies the frozen sources. [Ghidul comenzilor](../testing/ATF_Collections.md#frozen-experiments-and-sources) holds the parameters, overlapping modes and actual preconditions.
 
@@ -40,7 +40,7 @@ Each candidate represents an identified change in the bid or choice of the card.
 
 ## Stable rules and experimental data
 
-[Rules and configuration of AI](../ai/ATF_RulesConfiguration.md) holds the inventory of the manifests and their executable effect. The code, scheme and parameters are identified; parties, concrete selections and results belong to the external repository.
+[Rules and configuration of AI](../ai/ATF_RulesConfiguration.md) holds the inventory of the manifests and their executable effect. The code, scheme and parameters are identified; games, concrete selections and results belong to the external repository.
 
 [The contract of the body](ATF_Corpus.md) defines the format and partitions, and [retention](ATF_Retention.md) defines the preservation of origin. The change in the name or location of a selection shall not make a batch exposed again untouched.
 
@@ -64,7 +64,7 @@ The roles, opponents, score, distributions, budgets and criteria are declared be
 
 </details>
 
-For first improvement, follow [low diagnosis and regression](ATF_PolicyEvolution.md#from-game-to-question-specific), then [comparison of games](ATF_PolicyEvolution.md#how-do-we-compare-games) and [promovarea](ATF_PolicyEvolution.md#when-we-promote). The protocol shall be established prior to the reserved assessment.
+For first improvement, follow [low diagnosis and regression](ATF_PolicyEvolution.md#from-a-game-to-a-focused-question), then [comparison of games](ATF_PolicyEvolution.md#how-do-we-compare-games) and [promovarea](ATF_PolicyEvolution.md#when-we-promote). The protocol shall be established prior to the reserved assessment.
 
 A defeat locates analysis without demonstrating a mistake on its own. Full hands are admitted to post-game audit, while policy remains limited to [Obligation allowed](../ai/ATF_DecisionModel.md#contract-of-a-decision).
 

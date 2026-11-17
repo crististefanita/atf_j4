@@ -1,10 +1,10 @@
-# The contract of publication of Android and components
+# Android and component reporting contract
 
 ## Overview
 
 Publication provides an autonomous presentation of the purpose, inputs and results evaluated. The consumer provides the semantics of the domain and typed records; the common library provides presentation through the Public API.
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR
@@ -29,7 +29,7 @@ The action, observation, comparison and capture are distinct facts associated wi
 | Library | Neutral types, tables, disclosure, timing and image viewer. |
 | Acceptor | Integrity, property, completeness and interactive verification of the stated purpose. |
 
-## Invoicing and phases
+## Invocations and phases
 
 | Level | Required content |
 |---|---|
@@ -37,7 +37,7 @@ The action, observation, comparison and capture are distinct facts associated wi
 | Setup | Input and preconditions assessed; training does not replace body verification. |
 | Corp | Previous status, input, resulting status, expected independent, current and verdict. |
 | Teardown | Actual cleaning and secondary cause without replacement of initial error. |
-| Population | Cases, parties, pairs, moves and comparisons delimited as distinct units. |
+| Population | Cases, games, pairs, moves and comparisons delimited as distinct units. |
 
 - Each actual claim shall be identifiable, including parametritions of the same name.
 - The set, context or aggregated statistics shall not generate fictitious PASS invokes.
@@ -64,14 +64,14 @@ Preview of the assertions and the body ceiling are independent settings. [Eviden
 - The division does not increase the ceiling or reassess the comparisons. A character that does not fit into the budget produces explicit refusal without hidden trunks.
 - The same mechanism publishes component inputs, whole expected/actual and Android text annexes; tests include the tail of a hierarchy larger than the ceiling.
 
-### Republican without Android interactions
+### Republishing without Android interaction
 
-[CapturedAndroidFlow](../../atf-test-android/src/test/java/atf/android/e2e/support/replay/CapturedAndroidFlow.java) reads the existing manifesto through the readonly publication contract. It keeps comparisons, verdicts, checkpoints and original intervals; it refuses unknown verdicts, artifacts leaving the host and times attributed to another stream.
+[CapturedAndroidFlow](../../atf-test-android/src/test/java/atf/android/e2e/support/replay/CapturedAndroidFlow.java) reads the existing manifest through the readonly publication contract. It keeps comparisons, verdicts, checkpoints and original intervals; it refuses unknown verdicts, artifacts leaving the host and times attributed to another stream.
 
-The publication shall be labelled `offline-republication` and shall be made explicit. The new HTML does not become new Android execution; the original manifesto remains unchanged and the browser checks the new presentation separately.
+The publication shall be labelled `offline-republication` and shall be made explicit. The new HTML does not become new Android execution; the original manifest remains unchanged and the browser checks the new presentation separately.
 - A false allocation of the driver is refused even when the other values coincide.
 
-## Catch and ownership
+## Capture and ownership
 
 - Each published checkpoint may contain the original PNG of the entire physical screen, with the guidance and the preserved edges.
 - The analysis of a region may derive a separate image without replacing the original catch.
@@ -90,7 +90,7 @@ HTML shall allow understanding of the verification without access to checkout: r
 
 A hash proves the identity of the bytes without replacing the oracle of the domain. An external link or summary of the reply shall not replace the comparisons necessary for the purpose published.
 
-### Catch of Annexes
+### Attachment capture
 
 - [Captura text](../../atf-test-android/src/main/java/atf/android/evidence/text/CapturedTextEvidence.java) reads the bytes once and decodes strictly UTF-8; the fingerprint identifies the original, and the published body passes through the drawing up of the library.
 - The publisher shall incorporate the manifest, the annexes declared by checkpoints and additional entries, deducting the same bodies; the non-identifiable data shall be refused prior to the session.

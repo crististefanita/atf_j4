@@ -6,16 +6,16 @@ Java engine holds configuration, rules, transitions, score history and game poli
 
 The tests check the field through independent properties and oracles. [Intrarea JVM](../algorithm-build/README.md) allows offline work, and [Variant Guide](../../docs/game/README.md) has the full explanation of the rules.
 
-- [Laboratorul AI](../ai-lab/README.md) is Gradle's addiction only for tests. Independent policy shall be compiled in its module; the distribution of the engine shall only retain its own production sources.
+- [Laboratorul AI](../ai-lab/README.md) is Gradle's dependency only for tests. Independent policy shall be compiled in its module; the distribution of the engine shall only retain its own production sources.
 
-## Field flow
+## Domain flow
 
 ```mermaid
 flowchart LR
     CMD[Command] -->|validates| SESSION[GameSession]
     SESSION -->|apply| RULES[GameRules]
     SESSION -->|b.| OBS[Observed observation]
-    OBS -->|fuel| POLICY[A.I. policy]
+    OBS -->|feeds| POLICY[A.I. policy]
     POLICY -->|propune| CMD
 ```
 
@@ -52,14 +52,14 @@ Profile accepted 3–6 players and a reduced pack of `8 × N` Big cards. [GameMo
 
 [Regulile RO/EN](../../docs/game/README.md) explains the distribution, the trump, the schedule and the series. The configuration is explicit: the four-argument compatibility manufacturer keeps the series disabled and the other forms validate their options.
 
-## Session and rescue
+## Session and persistence
 
 The Hand rejects an illegal command prior to the transition. After the last levitate, the facade applies the calculated score and records the balance. `ScoreHistory` advances one hand each and keeps the information known.
 
 - `restoreComplete` ask for the full public history. The restoration of compatibility keeps the known origin of the score; [history contract](../../docs/game/ATF_ScoreHistory.md) specify the data missing from the old saves and the limit of historical levatas.
 - JSON Android scheme belongs to [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java). Validation of the domain and serialization of Android have distinct responsibilities and tests.
 
-## Normal policy and Hard
+## Normal and Hard policies
 
 [AiDifficulty](src/main/java/ro/whistlab/core/config/AiDifficulty.java) displays the two levels and the compatibility alias for old saves. The `AiPolicy` facade selects policy and isolates the observation before calculation.
 
@@ -74,9 +74,9 @@ The Hand rejects an illegal command prior to the transition. After the last levi
 | [SearchWork](src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java) | Accounting and optional global limit on the wire without changing the random generator or utility; exhaustion throws a distinct exception without partial decision. |
 | [JVM cost rating](../../docs/ai/ATF_CostQualification.md) | Separate measurement, overall limit and certificate budget; incomplete proof retains its legal proposal. |
 
-[Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) and [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimit active behaviour by research assumptions. Probable estimation and local certificate do not guarantee each party's gain with hidden information.
+[Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) and [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimit active behaviour by research assumptions. Probable estimation and local certificate do not guarantee each game's gain with hidden information.
 
-## Overflow
+## Offline execution
 
 From the project root, [lansatorul](../../scripts/run-whist-collection.ps1) prepares temporary copy and retains external results:
 
@@ -93,7 +93,7 @@ In a temporary copy of `whist-lab-app`, the direct entry shall be:
 .\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
 ```
 
-[Test architecture](../../docs/testing/ATF_Architecture.md) delimits components, integration and Android. [Learning offline](../../docs/learning/README.md) explains the extraction of small regressions, comparisons on the same distributions and qualification on new parties.
+[Test architecture](../../docs/testing/ATF_Architecture.md) delimits components, integration and Android. [Learning offline](../../docs/learning/README.md) explains the extraction of small regressions, comparisons on the same distributions and qualification on new games.
 
 ## Limits and qualification
 

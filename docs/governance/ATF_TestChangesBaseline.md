@@ -4,7 +4,7 @@
 
 This register keeps the technical checks checked, with the basis of Git and their exact paths. [Guide to test changes](ATF_TestChanges.md) sets out common rules and separates the active application for the registration checked.
 
-## Controale verificate
+## Verified controls
 
 <details>
 <summary>Governance of the game address on GitHub Pages</summary>

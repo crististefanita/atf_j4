@@ -17,7 +17,7 @@ The complete mass and `GameTablePanel` keep Whist, while `WindowContent` remains
 ```mermaid
 flowchart LR
     SESSION[Sesiune] -->|exposes| STATE[State captured]
-    STATE -->|fuel| UI[Prezentare Android]
+    STATE -->|feeds| UI[Prezentare Android]
     UI -->|collect| INTENT[Player's intention]
     INTENT -->|is validated by| SESSION
     WINDOW[Window] -->|exclude bars and clippings| SPACE[Viewport util]
@@ -33,7 +33,7 @@ The window excludes system bars and cutting before setting. This protection and 
 
 </details>
 
-## Rearward path
+## Back navigation
 
 | Area | Liability and source |
 |---|---|
@@ -74,7 +74,7 @@ Geometry keeps separate places, tactile targets, cards and text. The detailed cr
 
 </details>
 
-## Length history
+## Score history
 
 The table contains all scheduled hands and each place has two visible columns: the known bid and the total score after the hand. Points earned or lost in that hand shall remain in the register and in the accessible description. An unknown bid has explicit marking and an old rescue only displays the known opening balance.
 
@@ -123,11 +123,11 @@ Screen builders receive explicit observations and actions without the ownership 
 
 ```mermaid
 flowchart LR
-    INTENT[Intent] -->|pick destination| NAV[Navigare]
+    INTENT[Intent] -->|pick destination| NAV[Navigation]
     NAV -->|select| SCREEN[Screen Builder]
-    SCREEN -->|compose with| VIEWS[Controale comune]
+    SCREEN -->|compose with| VIEWS[Shared controls]
     SCREEN -->|send the action| OWNER[Proprietarul sesiunii]
-    DIALOG[Dialog curent] -->|suspend| AI[Automatizare]
+    DIALOG[Current dialog] -->|suspend| AI[Automation]
     NAV -->|invalidate when changing route| DIALOG
 ```
 
@@ -164,15 +164,15 @@ Upon resumption after the trial has been terminated, a checkpoint at the end of 
 
 - [Motion components](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionMotionComponentTest.java) confronts the track ends for all seats at 3–6 players, progress and time remaining.
 - [Components of the trick owner](../../../../../test/java/ro/whistlab/app/lifecycle/CompletedTrickOwnershipComponentTest.java) uses the calculated engine winner and checks for no mutations, final window and a new session of equal status.
-- [Resumption components](../../../../../test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseResumeComponentTest.java) checks the budget for visible time, repeated suspensions and the last trick of legal parties concluded.
+- [Resumption components](../../../../../test/java/ro/whistlab/app/lifecycle/CompletedTrickPauseResumeComponentTest.java) checks the budget for visible time, repeated suspensions and the last trick of legal games concluded.
 - [Coordinator components](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionRunComponentTest.java) uses controlled events for delayed layout, synchronous completion and callbacks delivered after cancellation. [Flow composition](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionFlowComponentTest.java) connects navigation, time, stage and actual engine without interface.
 - The suspended time of `onPause`, navigation or dialogues does not consume the visible budget. At the restart, the scene is rebuilt from the remaining time; a closed dialogue in the background does not start animation before returning to the first plan.
 - The shift in geometry cancels the measured scene before recovery. [PresentationRefresh](presentation/PresentationRefresh.java) groups consecutive notifications, preserves the suspended budget and allows rendering only on the game route, in the first plan and without open dialogues. Navigation or an explicit resume invalidates old tail requests.
 - [Resize components](../../../../../test/java/ro/whistlab/app/animation/TrickCollectionResizeComponentTest.java) combines the engine, time and real navigation with controlled views and events: 3–6 places, each winner, delayed measurement, overlapping dialogues and last trick. [Componentele refacerii](../../../../../test/java/ro/whistlab/app/presentation/PresentationRefreshComponentTest.java) check the grouping, re-entrances and causes of errors without watch or Android queue.
-- The activity deals with notifications `orientation` and `screenSize`, preserving the portrait policy in the manifesto. Geometry of the landscape in components qualifies the restoration and order of events; does not declare native acceptance for a new way of guidance.
+- The activity deals with notifications `orientation` and `screenSize`, preserving the portrait policy in the manifest. Geometry of the landscape in components qualifies the restoration and order of events; does not declare native acceptance for a new way of guidance.
 - If animations are deactivated on API 26 +, the cards keep the static display on pause. The component model does not qualify the rendering, clipping or system preferences on the device.
 
-## Orders, rescue and error
+## Commands, persistence and errors
 
 The command only changes the field once. Salvation and continuation consume accepted mutation; a later failure does not turn it into an bid or invalid card.
 
@@ -180,7 +180,7 @@ The command only changes the field once. Salvation and continuation consume acce
 flowchart LR
     INTENT[Intent] -->|execute| COMMAND[Engine control]
     COMMAND -->|refuse| REJECT[Mesaj existent]
-    COMMAND -->|accept| LOCAL[Selection or reformay]
+    COMMAND -->|accept| LOCAL[Selection or reshuffle]
     LOCAL -->|saves| CHECKPOINT[Checkpoint]
     CHECKPOINT -->|permite| RANK[Clasament eligibil]
     RANK -->|Next| EXPORT[Export replay]
@@ -212,7 +212,7 @@ flowchart LR
 - [Rating components](../../../../../test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) faces the retrial with the actual repositoryul and a restored session, without duplicate points or places.
 - Recovery of Android storage and latency I/O keep on device [qualification](../../../../../../../../docs/feedback/ATF_Android.md#persistence-and-coordination).
 
-## Coordination of automatic shifts
+## Automatic turn coordination
 
 The calculation of policy runs in a separate executor and the application of the move returns to the main thread. [AiTurnRequest](lifecycle/AiTurnRequest.java) captures the immutable status prior to the calculation and verifies the identity of the match and the equality of status prior to application.
 
@@ -247,7 +247,7 @@ Stopping, returning to the menu and opening of dialogues suspend automation. The
 
 ### AutoGame for active hand
 
-- The right header tick starts automation for the current hand. The common Header keeps the title and the tick above the row with progress, bids and trump. The table menu displays the stop while the automation is active. [Antetul comun](../../../../../../../atf-card-table-ui/README.md#antetul-mesei)
+- The right header tick starts automation for the current hand. The common Header keeps the title and the tick above the row with progress, bids and trump. The table menu displays the stop while the automation is active. [Antetul comun](../../../../../../../atf-card-table-ui/README.md#table-header)
 - The leasehold allows `AiTurnRequest` to calculate for the human place only while it is active; coordination, checking the snapshots and single application remain on the existing AI path.
 - The score, the hand change, the starting of a game or the return to the main menu closes the leastcase. Automation shall not be transferred to the next hand.
 
@@ -255,7 +255,7 @@ Stopping, returning to the menu and opening of dialogues suspend automation. The
 - Accessible texts keep the full action for screen readers. Components check 3–6 players, widths, increased text, delimitation of the leases and both languages; the signed script checks the check, the game up to the score and returning to manual control.
 
 - [Coordinator components](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnCoordinatorComponentTest.java) checks the thread of the calculation, surrender, cancellation, doubles and cause of failure.
-- [Componentele cererii](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java) checks both levels, the unchanged status in the calculation and the refusal of outdated results or intended for another party.
+- [Componentele cererii](../../../../../test/java/ro/whistlab/app/lifecycle/AiTurnRequestComponentTest.java) checks both levels, the unchanged status in the calculation and the refusal of outdated results or intended for another game.
 
 ## Limits and qualification
 
@@ -267,7 +267,7 @@ The remaining qualifications are centralised in [feedback-ul Android](../../../.
 
 [Inputs and responsibilities of tests](../../../../../test/README.md) explains the selection, preconditions and interpretation of the result, through the same common strategy for all deliveries.
 
-## Projection of mass to the common library
+## Table projection into the common library
 
 [WhistTableContent](table/content/WhistTableContent.java) translate only the visible data of snapshots into `SeatContent`, `HandCard` and `PlayedCardContent`. [GameTablePanel](table/GameTablePanel.java) keep the bid, the legality transmitted, the visible trick and the collection; the library draws and measures without the Whist engine.
 

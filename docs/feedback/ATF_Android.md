@@ -10,7 +10,7 @@ The display profiles guide holds geometry and text. The common interface registr
 
 | Priority | Rated rating | Closure criterion |
 |---|---|---|
-| P1 | Extension of native qualification beyond the compact profile; components do not substitute the fonts and Android interaction. | High profile and increased text: 13 cards, fully levitated to 5 seats and the actors' succession to 3/5/6 places, with legible names and indices. Keep the catches, XMLs and APK hashs without repeating a full party on each profile. |
+| P1 | Extension of native qualification beyond the compact profile; components do not substitute the fonts and Android interaction. | High profile and increased text: 13 cards, fully levitated to 5 seats and the actors' succession to 3/5/6 places, with legible names and indices. Keep the catches, XMLs and APK hashs without repeating a full game on each profile. |
 | P1 | Extend AutoGame's compact sample to the native matrix of the actor and positions. | On the identified APK, check the bidding and the game at 3–6 places, in RO/EN and on compact profile plus increased text: only the current actor has badge, the badgeul remains visible when AutoGame plays the human player's seat, the manual controls remain locked, and the collection of the trick and the score screen does not mark an actor. The places do not move when the phase changes, and the face and the lifting of the card remain visible. Components check projection and geometry; only Android observation with APK/hash and catch can close the criterion. |
 
 Delivery files keep the sample compact with 13 cards and audit of the indices, as well as the AutoGame test at four places with a card, the hand-game marking and the score screen. Acceptance on hand 17 cards check horizontal roll and box stability. The marking remains open during the fast automatic move and the matrix with increased text. [Release catalog](../../release/README.md)
@@ -40,13 +40,13 @@ A balance or a difference of points does not justify rebuilding some missing lev
 
 ## Menu, Help and Configuration
 
-[Componentele regulilor](../testing/ATF_GradleComponents.md) connects the aid RO/EN to the engine. The components of the checkpoint check active and disabled series settings for both Romanian variants and both values. The Android scenario keeps the opening and running of aid, the selection of the bonus and the resumption of the same party after restart.
+[Componentele regulilor](../testing/ATF_GradleComponents.md) connects the aid RO/EN to the engine. The components of the checkpoint check active and disabled series settings for both Romanian variants and both values. The Android scenario keeps the opening and running of aid, the selection of the bonus and the resumption of the same game after restart.
 
 For Achievements, the presentation component reopens the progress in simulated storage and verifies the first chapter and the localized condition of the target. The native session demonstrates the menu route, catalogue, detail and return.
 
 ## Persistence and coordination
 
-[Orders and rescue](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#orders-rescue-and-error) have port components for refusal, checkpoint, rankings and continuation. The yield is not performing; the recovery of native storage and the cost per device shall be kept separate.
+[Orders and rescue](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#commands-persistence-and-errors) have port components for refusal, checkpoint, rankings and continuation. The yield is not performing; the recovery of native storage and the cost per device shall be kept separate.
 
 | Priority | Lacquer and source | Level and criterion of closure |
 |---|---|---|
@@ -57,7 +57,7 @@ For Achievements, the presentation component reopens the progress in simulated s
 
 | Priority | Surface | Required check prior to acceptance |
 |---|---|---|
-| P2 | trick collection: native binding of qualified ports through components | APK identified at 3–6 places: measurement and clipping match the scene, transformations return to cancellation, and the last trick precedes the score. Confront `onPause` / restart, menu and overlapping dialogues, consecutive redimensioning, configuration notifications, detachment and disabled animations. Only the last geometry can receive the new scene; a delayed callback does not resume the abandoned route and does not consume the suspended time. The portrait policy remains the one in the manifesto; the watch and event tests do not qualify pixels or fluidity. |
+| P2 | trick collection: native binding of qualified ports through components | APK identified at 3–6 places: measurement and clipping match the scene, transformations return to cancellation, and the last trick precedes the score. Confront `onPause` / restart, menu and overlapping dialogues, consecutive redimensioning, configuration notifications, detachment and disabled animations. Only the last geometry can receive the new scene; a delayed callback does not resume the abandoned route and does not consume the suspended time. The portrait policy remains the one in the manifest; the watch and event tests do not qualify pixels or fluidity. |
 | P1 | Table, card and trump | Profiles declared, text enlarged, real intersections, logically coordinated mapped at raster and revision of original catch. |
 | P1 | History and Resume | All hands closed and all accessible places without repeated points or advance the match. |
 | P1 | Accessibility and location | Ordnance assisted, labels of unknown or negative values, first and last removable in both languages. In the enlarged text, face the full title of dialogue and the names of prima/ultima column separately before and after the course; the qualification of the region of legend does not demonstrate the legibility of these regions. |
@@ -74,7 +74,7 @@ A change of geometry or style is linked to the sources and APK inspected. The de
 - **Common: ** Sanityul compares the size of the frame at the same density and scale of text in all ways with a turned card, a color and lack of the edge. Check the two complete regions and the accessible identity without any additional line about the absence of the card.
 - **Deposit:** check the text button RO/EN complete, at normal font and enlarged; the withdrawn outline remains separate from the tactile target. [Contractul display](../testing/ATF_Display.md) be of common size and criteria.
 
-## Native Acceptance Android 17
+## Native acceptance on Android 17
 
 Window protection and calculation of useful space are implemented; the acceptance on API 37 remains distinct from the components and verification on another Android system. The comparison between versions requires the identity of both APKs and the device.
 
@@ -92,7 +92,7 @@ The memory limit of the adapter remains distinct from the geometry of the interf
 |---|---|---|
 | P2 | [CommandProcess](../../atf-test-android/src/main/java/atf/android/process/CommandProcess.java) reads the flows in full, without separate budgets for text and binary. | Components with controlled output: explicit outflow of each budget, demarcated memory and incomplete PNG refused prior to publication; the term and initial cause shall be maintained. |
 
-## Contractele responsabile
+## Owning contracts
 
 - [Profiling, history, leaderboards and series scenarios](../testing/ATF_Android.md#profile-history-leaderboards-and-series) has automated mechanisms and preconditions; the existence of the scenario does not qualify for a version.
 - [Componentele display](../testing/ATF_DisplayComponents.md) holds mockery and cachet insulation; fonts and native interaction have separate verification.
@@ -110,7 +110,7 @@ The memory limit of the adapter remains distinct from the geometry of the interf
 
 - Extend [APK's responsive evidence](../../release/README.md) at the remaining combinations of the matrix 3–6 places, RO/EN, text enlarged and AutoGame. Watch for access to the cards in the removable area, the actor's signaling and fixed positions between bid, game and collection. [Display strategy](../testing/ATF_Display.md)
 
-## Stabilitatea scenariilor Android
+## Android scenario stability
 
 - [ ] Qualify on the device the notification of achievements that occurs after the score. At component level, the order of observations and gestures shall be checked with simulated DBD.
-- [ ] The process of preparation shall confirm the active window of the temporary profile. A service in that profile opened the Android screen with details of an application during history. Isolate third-party processes in the temporary profile and keep the exact cause in the report.
+- [ ] The process of preparation shall confirm the active window of the temporary profile. A service in that profile opened the Android screen with details of an application during history. Isolate third-game processes in the temporary profile and keep the exact cause in the report.

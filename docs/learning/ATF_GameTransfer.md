@@ -25,7 +25,7 @@ The method preparation allows the first adapter to be built. The compatibility s
 
 ```mermaid
 flowchart LR
-    SPEC[Confirmed rules] -->|definesc| ORACLE[Oracol independent]
+    SPEC[Confirmed rules] -->|defines| ORACLE[Independent oracle]
     ORACLE -->|checks| ADAPTER[Field Adapter]
     ADAPTER -->|exercise| CASES[Componente mici]
     CASES -->|permit| LOOP[Joc offline complet]
@@ -71,7 +71,7 @@ In a fully observable game, the observation may contain the entire permitted sta
 |---|---|---|
 | The comment does not establish the intention of the product | Separate requirement **confirmed **, behaviour **observat** and hypothesis **assumed **. | A known defect is detected without copying the current pending response. |
 | Mock has declared limits | Modulate states, transitions and refusals, then face a selection with the actual product. | The pattern difference and the violation of a requirement receive distinct diagnoses. |
-| Defeat locates analysis | Reduce the first divergence to a property and its border. | The valid neighbor rules out too wide a rule; a party's victory does not become an optimal label. |
+| Defeat locates analysis | Reduce the first divergence to a property and its border. | The valid neighbor rules out too wide a rule; a game's victory does not become an optimal label. |
 | Prediction differs from decision | The model estimates behaviour; policy follows the stated objective. | The predictive error, legality and strategic progress have separate criteria. |
 | The parameter and context have different rhythms | Recalculate the features of events; change parameters only by identified candidate. | The same source and configuration shall retain the definition of characteristics, units and fallback. |
 | Comparison controls context | Use comparable inputs and resources, rotated roles and families of opponents. | The environment is separated from the exploration of policy; the routes may diverge after the first choice. |

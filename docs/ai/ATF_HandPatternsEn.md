@@ -40,7 +40,7 @@ The [YAML catalog](../../config/whist-hand-patterns.yaml) remains `RESEARCH_CATA
 - **Sequences and length:** assess honors jointly; rank, card count and attainable suit tricks are different quantities.
 - **Legal exit:** a side honor can be discarded when both the led suit and trump are absent; mandatory trump can force an unwanted trick.
 - **Public memory:** turned cards, completed-trick cards and cards still on the table have different effects.
-- **Objective:** individual remaining need and opportunities follow the [decision model](ATF_DecisionModel.md#the-status-changing-the-decision); aggregate auction imbalance does not replace them.
+- **Objective:** individual remaining need and opportunities follow the [decision model](ATF_DecisionModel.md#state-that-influences-the-decision); aggregate auction imbalance does not replace them.
 
 ## Extractor input
 
@@ -88,4 +88,4 @@ node --test whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.test.mjs whi
 
 The [configuration contract](ATF_RulesConfiguration.md) owns the consumer and activation domain; the [offline protocol](../learning/README.md) owns promotion. Hints, simulation estimates and finite certificates provide different levels of guarantee.
 
-[Ghid în română](ATF_HandPatternsRo.md) · [Contextual play](ATF_ContextualPlay.md) · [Corpus integrity](../learning/ATF_Corpus.md)
+[Romanian guide](ATF_HandPatternsRo.md) · [Contextual play](ATF_ContextualPlay.md) · [Corpus integrity](../learning/ATF_Corpus.md)

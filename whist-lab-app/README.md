@@ -2,29 +2,29 @@
 
 ## Overview
 
-Android Whist Lab is running locally with Java joint engine and AI opponents.
-The native project iOS is in qualification; SwiftIU interface and integration of the same
-The engine is in the `../ios` directory.
+The Android Whist Lab app runs locally with the shared Java engine and AI opponents.
+The native iOS project is being qualified. Its SwiftUI interface and integration with the same
+engine are in the `../ios` directory.
 
-## Folosire
+## Usage
 
 The configuration allows the choice of variant, a table of 3–6 players and Normal level or Hard.
 
-In the Romanian configuration, Hard is labeled `Dificil` in Romanian. The language EN/RO is changed from the interface selector and is kept between the starting points. The rules and the hands schedule are available from `Rules & schedule` / `Reguli și program`.
+In Romanian, Hard is labeled “Dificil”. Select EN or RO through the interface. The selection persists across launches, and the rules and hand schedule are available from `Rules & schedule` / `Reguli și program`.
 
 The available variants are defined in the catalogue of rules.
 
-A rescue with a withdrawn variant remains on the device until the user starts a new game. The types of rules are defined in [GameMode](game-core/src/main/java/ro/whistlab/core/rules/GameMode.java), and actual texts and labels in [WhistUiText](app/src/main/java/ro/whistlab/app/localization/WhistUiText.java). The displayed rules are built in [HowToPlay](game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) for the variant, language and number of players selected.
+A saved game using a retired variant remains on the device until the user starts a new game. The types of rules are defined in [GameMode](game-core/src/main/java/ro/whistlab/core/rules/GameMode.java), and actual texts and labels in [WhistUiText](app/src/main/java/ro/whistlab/app/localization/WhistUiText.java). The displayed rules are built in [HowToPlay](game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) for the variant, language and number of players selected.
 
-- [Rules of the game](../docs/game/README.md) has the hands, the touch, the score and the series for each profile.
+- [Rules of the game](../docs/game/README.md) defines the hand schedule, trump, scoring and series for each profile.
 - The history opens up from `Meniu joc → Scorul partidei → Istoricul scorului`. [History contract](../docs/game/ATF_ScoreHistory.md) explains the bid, the total of each player, the markings and the adaptation to the window.
 
 ## Aided bidding
 
 At the player's turn, the Hard engine estimates and pre-selects a legal bid from visible information. The choice may be changed and must be confirmed by `Licitează` / `Place bid`; the recommendation does not submit the contract. Normal level or Difficult selected for the match continues to control the opponents.
 
-- The calculation runs in the background and uses his own hand, the known card and the known card, the public bids and the engine score context.
-- Hand choice takes priority; a delayed result does not replace selection and does not apply to any other hand or party.
+- The background calculation uses the player’s hand, the known trump and turned-up card, public bids and the engine’s scoring context.
+- Manual selection has priority. A delayed result cannot replace it or apply to a different hand or game.
 - If the estimate is not available, any legal value can be chosen manually. [Contextual selection](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) keeps this condition separate from the contracts submitted.
 
 ## Play the current hand automatically
@@ -42,7 +42,7 @@ Automation only affects the bidding shift and active hand game shifts. It doesn'
 flowchart LR
 UI[Android or SwiftIU] -->|trimite comenzi| SESSION[GameSession]
 SESSION -->|produce| VIEW[State captured]
-VIEW -->|fuel| UI
+VIEW -->|feeds| UI
 SESSION -->|calls for decisions| AI[AiPolicy]
 STORE[Local Salvation] -->|restore| SESSION
 IOS[J2ObjC] -->|translate the common engine| SESSION
@@ -55,7 +55,7 @@ GameSession validates the controls prior to the change of status; UIU returns th
 
 </details>
 
-## Organizare
+## Organization
 
 | Component | Responsibility |
 |---|---|
@@ -66,7 +66,7 @@ GameSession validates the controls prior to the change of status; UIU returns th
 | [ai-lab](ai-lab/README.md) | JVM module of independent player, tools and experiments offline; consumed only on testing. |
 | [test-audit](test-audit/README.md) | JVM fixtures for component capture and verification; excluded from application runtimeter. |
 | [algorithm-build](algorithm-build/README.md) | JVM exclusive Gradle input without configuration of Android application. |
-| [iOS](../ios/README.md) | SwiftIU project, joint engine translation and Apple simulator qualification. |
+| [iOS](../ios/README.md) | SwiftUI project, joint engine translation and Apple simulator qualification. |
 | [atf-test-android](../atf-test-android/README.md) | Android verification components and scenarios explicitly activated. |
 
 The application version, the SDKs and package identifier have as source
@@ -92,7 +92,7 @@ Director `whist-lab-app`:
 
 The first command requires JDK and locally available JVM dependencies. The second asks and
 Android SDK declared in configuration; APK is produced in `app/build/outputs/apk`
-`--offline` refuses addictions that are not already in cache.
+`--offline` refuses dependencies that are not already in cache.
 
 From the root of the project, [Collections launcher](../scripts/run-whist-collection.ps1)
 create his own temporary copy and accept explicit selections such as `quick`,
@@ -111,7 +111,7 @@ Current contracts and mechanisms are in [Documentation](../docs/).
 
 ## Integration contracts
 
-[Coordonarea Android](app/src/main/java/ro/whistlab/app/README.md#coordination-of-automatic-shifts) separates the calculation of AI from the main thread and makes it conditional on the application of the identity of the game and the captured status. The components shall verify the cancellation and single application; persistence, reactivity and interaction shall qualify separately for the identified binary.
+[Coordonarea Android](app/src/main/java/ro/whistlab/app/README.md#automatic-turn-coordination) separates the calculation of AI from the main thread and makes it conditional on the application of the identity of the game and the captured status. The components shall verify the cancellation and single application; persistence, reactivity and interaction shall qualify separately for the identified binary.
 
 | Surface | Input |
 |---|---|

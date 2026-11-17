@@ -21,7 +21,7 @@ For the full route, start with [how we build and improve the Ail](../learning/AT
 ```mermaid
 flowchart LR
     STATE[Game status] -->|design| OBS[Private and public observation]
-    OBS -->|fuel| POLICY[Policy accepted]
+    OBS -->|feeds| POLICY[Policy accepted]
     POLICY -->|propune| ACTION[Action]
     ACTION -->|validate and apply| STATE
 ```
@@ -45,9 +45,9 @@ The observation contains the actor's hand, known contracts, public cards, needs 
 | Experiment | Isolated copy, identified candidate and paired comparisons | [collection runner](../../scripts/run-whist-collection.ps1), [arena](../learning/ATF_Arena.md) |
 | Promovare | Criteria fixed, batch not reached and keeping the guards of the domain | [evaluation protocol](../learning/README.md) |
 
-## Rolul YAML-urilor
+## The role of YAML
 
-The manifests link conditions and sources of verification, and the enforceable effect depends on the consumer in the code. [Rules and configuration](ATF_RulesConfiguration.md) is the guide responsible for the status of each manifesto, fixed parameters and contextual activation.
+The manifests link conditions and sources of verification, and the enforceable effect depends on the consumer in the code. [Rules and configuration](ATF_RulesConfiguration.md) is the guide responsible for the status of each manifest, fixed parameters and contextual activation.
 
 The pattern catalogue remains a research tool. [Ghidul onorurilor](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) explains his interpretation, separate from runtime policy.
 
@@ -55,7 +55,7 @@ The pattern catalogue remains a research tool. [Ghidul onorurilor](https://githu
 
 - The scheme, validators, selection and criteria belong to the project's sources.
 - Parties, calibrations, concrete selections, lots registers and results are external data.
-- [Body configuration](../../config/learning-corpus.json) indicates the archive and active pointerus; the analysis of the active body reads the selected and verified manifesto. [Calibration of the fees](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) has separate input: all development files in the archive provided explicitly.
+- [Body configuration](../../config/learning-corpus.json) indicates the archive and active pointerus; the analysis of the active body reads the selected and verified manifest. [Calibration of the fees](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) has separate input: all development files in the archive provided explicitly.
 - The selection eliminates duplicate traces, keeps the origins protected and follows new categories within the budget limit.
 - An observed category measures the variety of the set without demonstrating the coverage of the code or the optimal of an action.
 - Default regression keeps small cases generated or built for general property with independent waiting.
@@ -64,11 +64,11 @@ The pattern catalogue remains a research tool. [Ghidul onorurilor](https://githu
 
 ```mermaid
 flowchart LR
-    PUBLIC[Istoric public] -->|deduce legal| VOID[Certain restrictions]
+    PUBLIC[Public history] -->|deduce legal| VOID[Certain restrictions]
     PUBLIC -->|suggests| MODEL[Behavior assumptions]
     VOID -->|eliminate worlds| WORLDS[Lumi compatibile]
     MODEL -->|maybe weight| WORLDS
-    WORLDS -->|fuel| PLAN[Estimate of the continuation]
+    WORLDS -->|feeds| PLAN[Estimate of the continuation]
 ```
 
 <details>
@@ -80,7 +80,7 @@ The color obligation or the trump allows inference about the lack of a colour. T
 
 La 2–8 cards, Hard uses contracts known as targets and constrains worlds through public information; general weighting after adverse behavior remains research. At the bid of a card there is already a specialized model conditioned by observed offers, with its own domain and fallback, described in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives).
 
-## conditions for progress
+## Conditions for progress
 
 [Protocolul offline](../learning/README.md) holds the diagnostic-component-candidate-registered evaluation-promotion cycle. [Arena](../learning/ATF_Arena.md) holds comparisons on the same distributions and places, and [design of components](../testing/ATF_AiComponents.md) holds the independent justification of the small case.
 

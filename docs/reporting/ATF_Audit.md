@@ -8,9 +8,9 @@ Publication must retain the assessed result and the relationship between invoici
 
 ```mermaid
 flowchart LR
-    RECEIPT[Original records] -->|compune| INPUT[Consumer data]
+    RECEIPT[Original records] -->|composes| INPUT[Consumer data]
     INPUT -->|publish by API| HTML[HTML autonom]
-    RECEIPT -->|define identity| DATA[Audit de date]
+    RECEIPT -->|define identity| DATA[Data audit]
     DATA -->|face| HTML
     BROWSER[Interactive revision] -->|check navigation| HTML
 ```
@@ -22,7 +22,7 @@ The data audit shall verify the property and published values. The interactive r
 
 </details>
 
-## Invariante
+## Invariants
 
 The verified contracts have explicit owners; the audit shall confront them with the data captured:
 
@@ -107,7 +107,7 @@ The results remain external. Selective copying in the delivery file explicitly r
 
 [Inventarul comun](../../scripts/Get-AtfSourceInputs.ps1) feeds component launchers and governance. The generated directories shall be excluded at the borders of the project and the modules declared; the delivery dossier shall be excluded only at the root of the project. The name of a package does not justify the omission of the source: segments such as `release`, `target` and `build` remain inventoried in source trees, including the configured and additional roots of the Maven policy.
 
-The manifesto also includes files without extension, such as extension records. Indirect uninventoried routes are denied. [Inventory controls](../../atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java) confronts the declared Java population and detects additions, erasure and changes.
+The manifest also includes files without extension, such as extension records. Indirect uninventoried routes are denied. [Inventory controls](../../atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java) confronts the declared Java population and detects additions, erasure and changes.
 
 A subsequent correction of the inventory produces a new identity; does not rewrite the footprint of a historical execution.
 

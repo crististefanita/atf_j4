@@ -9,9 +9,9 @@ The consumer uses APIs delivered through declared dependencies with a verifiable
 ```mermaid
 flowchart LR
     POM[Declared dependencies] -->|select| BINARY[JAR and metadata]
-    BINARY -->|exposes| API[API public]
+    BINARY -->|exposes| API[Public API]
     ADAPTER[Adaptor consumer] -->|calls| API
-    TEST[The term "Financial Account" means any Financial Account that is a Financial Institution that is a Financial Institution.] -->|checks| ADAPTER
+    TEST[Contract tests] -->|checks| ADAPTER
 ```
 
 <details>
@@ -21,7 +21,7 @@ The coordinates select delivery and the physical identity of the binary shall be
 
 </details>
 
-## Principii
+## Principles
 
 [Consumption of common libraries](README.md) holds the binary inventory, physical identity and consumer-producer boundaries. The integration of an API follows a distinct route:
 
@@ -45,7 +45,7 @@ mvn -B -pl atf-tests -am '-Dtest=LibraryReadmeExamplesIntegrationTest' '-Dsurefi
 
 The sample verifies consumer integration and documented fragments; does not change the JARI and does not replace the manufacturer's regression. [Responsabilul comun](../feedback/README.md) keeps packing and synchronizing the guides in the following deliveries.
 
-## Competitive changes
+## Concurrent changes
 
 An execution uses a copy of the build with sources and libraries identified at first. Their change in checkout does not retrospectively qualify the copy already executed.
 

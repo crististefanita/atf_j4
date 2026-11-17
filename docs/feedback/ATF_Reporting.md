@@ -12,7 +12,7 @@ The consumer holds the game records, selection, oracle and external indexation. 
 
 ## RPT-ANDROID-HTML-ONLY - Audit delivery without auxiliary copies
 
-**P1 · responsible Android adapter.** For each modified manufacturer, inventory the bodies and mandatory observations. The component files already have HTML per selection, inline images and provenance. The remaining criterion concerns the data of each manufacturer, including native observations and unique historical data. [The contract of surrender](../reporting/ATF_Handoff.md#compact-liquefied-and-exceptions)
+**P1 · responsible Android adapter.** For each modified manufacturer, inventory the bodies and mandatory observations. The component files already have HTML per selection, inline images and provenance. The remaining criterion concerns the data of each manufacturer, including native observations and unique historical data. [The contract of surrender](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions)
 
 - Confront the inventory, times and bodies of each checkpoint with the original catches. Inject missing, modified, external or misassigned content. Check long text, HTML and Base64-like content.
 - Identify each external exception by file, purpose and consumer. Keep the unique data up to the migration qualification. A crash log or signature check may be aimed separately from the test audit.
@@ -70,7 +70,7 @@ Qualification is common to the manufacturer and verifier: the increase in the he
 
 Measurement justifies investigating the reduction of redundancy; it does not prove that all similar bodies make the same sense. References can be unified only for identical payloads, and the verdict cannot depend on compact mode.
 
-## Contractele responsabile
+## Owning contracts
 
 - [Teaching results](../reporting/ATF_Handoff.md) has the provenance of republication, the idempotence of registration and distinct pointeres for testing and acceptance.
 - [Publication audit](../reporting/ATF_Audit.md#qualification-of-a-manufacturer) holds the qualification of each producer, the original comparisons, the last value, catches and negative controls.

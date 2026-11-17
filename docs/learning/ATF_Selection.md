@@ -11,12 +11,12 @@ The selection of data for analysis has distinct mechanisms with explicit status:
 | Mechanism | Implementation and limit |
 |---|---|
 | Corpus activ | [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs): reshoring of traces, protected origins, rarity-weighted coverage and exchanges with strict progress in the declared budget. |
-| Diagnostic examples | [whist-casebook](../../whist-lab-app/ai-lab/tools/corpus/whist-casebook.mjs): selects family gains and regressions, plus contract errors in the size of the hand; the chosen parties extract the first eligible observations of the actor by size and type of decision. |
-| Sub-set by category | Extension contract without generic selection qualified in the project; ask parent manifesto, explicit criteria and [self-acceptance](../feedback/ATF_Ai.md). |
+| Diagnostic examples | [whist-casebook](../../whist-lab-app/ai-lab/tools/corpus/whist-casebook.mjs): selects family gains and regressions, plus contract errors in the size of the hand; the chosen games extract the first eligible observations of the actor by size and type of decision. |
+| Sub-set by category | Extension contract without generic selection qualified in the project; ask parent manifest, explicit criteria and [self-acceptance](../feedback/ATF_Ai.md). |
 
 ```mermaid
 flowchart LR
-    ARCH[Partide development] -->|clean| ACTIVE[Manifest activ]
+    ARCH[Development games] -->|clean| ACTIVE[Active manifest]
     RUN[Development calls] -->|select reasons| CASE[Casebook]
     ARCH -->|provide parties| CASE
     CASE -->|design| OBS[Public comments]
@@ -25,7 +25,7 @@ flowchart LR
 <details>
 <summary>Legend: data variety and fairness of decision</summary>
 
-The curator produces the active corpus, and the casebook consumes separately declared claims and development parties. Both preserve provenance; the categories and examples extracted are not code coating and do not label an action as optimal.
+The curator produces the active corpus, and the casebook consumes separately declared claims and development games. Both preserve provenance; the categories and examples extracted are not code coating and do not label an action as optimal.
 
 </details>
 

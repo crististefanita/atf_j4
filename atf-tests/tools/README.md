@@ -18,7 +18,7 @@ The selected data remains the same objects evaluated in the declared order. [Pre
 
 ## Registration of delivery integrity
 
-[record-release-integrity.mjs](record-release-integrity.mjs) reads the active version of the index and records the size and the HA- 256 for all its files without the self-referential manifesto. Refuse symbolic pathways and change of inventory or manifesto during preparation; writing uses a temporary file and atomic replacement.
+[record-release-integrity.mjs](record-release-integrity.mjs) reads the active version of the index and records the size and the HA- 256 for all its files without the self-referential manifest. Refuse symbolic pathways and change of inventory or manifest during preparation; writing uses a temporary file and atomic replacement.
 
 ```powershell
 node atf-tests/tools/record-release-integrity.mjs
@@ -26,11 +26,11 @@ node atf-tests/tools/record-release-integrity.mjs
 
 `--project <root>` and `--version <version>` allow an explicit root and edition. The tool does not perform tests and does not promote qualification; [verificatorul Java](../src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseIntegrity.java) face the bytes and results of JUnit separately. [Manifesto components](../src/test/java/atf/tests/governance/documentation/release/integrity/ManifestIntegrityComponentTest.java) exercise the actual launcher on temporary files, including paths with spaces and diacritics.
 
-## Assessment of the candidate's GAR
+## Candidate RAG evaluation
 
-[Selectorul](plan-release-tests.mjs) compare the inventory fixed with the last relevant published source in the catalogue. Generate the plane fields v2 and the E2E groups required before the build. [Evaluatorul](evaluate-release-rag.mjs) recalculate the selection and confront the plan, the manifesto, payload and the APK snapshots. [Selection command](../../docs/testing/ATF_ReleaseQualification.md#selection-of-diff-tests)
+[Selectorul](plan-release-tests.mjs) compare the inventory fixed with the last relevant published source in the catalogue. Generate the plane fields v2 and the E2E groups required before the build. [Evaluatorul](evaluate-release-rag.mjs) recalculate the selection and confront the plan, the manifest, payload and the APK snapshots. [Selection command](../../docs/testing/ATF_ReleaseQualification.md#selection-of-diff-tests)
 
-- [Perimetrul suitei](component-evidence-scope.mjs) determines when an execution can be reused. For Gradle collections, the documentation and entries exclusively of Maven or Android E2E do not invalidate the proof of the application; sources, compilation configuration, addictions and unknown pathways require new selection. [Preparation of evidence](prepare-component-reuse.mjs) and the evaluator use the same checks for receipts and hashes. The component launcher shall use this training on request.
+- [Perimetrul suitei](component-evidence-scope.mjs) determines when an execution can be reused. For Gradle collections, the documentation and entries exclusively of Maven or Android E2E do not invalidate the proof of the application; sources, compilation configuration, dependencies and unknown pathways require new selection. [Preparation of evidence](prepare-component-reuse.mjs) and the evaluator use the same checks for receipts and hashes. The component launcher shall use this training on request.
 - The version policy sets out Maven and Gradle mandatory groups. Each group has its own Extent and Recipt.
 
 ```powershell
@@ -48,10 +48,10 @@ The verdict is JSON with citations by way, SHA- 256 and JSON Pointer/linie. Incl
 - Code `0` means `READY_FOR_HUMAN_REVIEW`; `2` means `BLOCKED`; `1` indicates invalid entry or invocation.
 - Before the human revision are asked for hashrelated receipts for components, build APK, identity and signature.
 - The published status also requires a receipt for discharge into the declared access mode. For GitHub, the retention of the two editions, including tags and assets.[Collection command](../../docs/testing/ATF_ReleaseQualification.md#retention-on-github-after-publication)
-- [Length of the track](prepare-android-e2e.mjs) and the evaluator use the same checks for HTML, PNG and receipts. [Importul](apply-android-e2e.mjs) brings new proof in the fixed candidate. [The contract of the launcher](../../docs/testing/ATF_ReleaseQualification.md#running-and-restarting-a-feed-on-apk-signed)
+- [Length of the track](prepare-android-e2e.mjs) and the evaluator use the same checks for HTML, PNG and receipts. [Importul](apply-android-e2e.mjs) brings new proof in the fixed candidate. [The contract of the launcher](../../docs/testing/ATF_ReleaseQualification.md#starting-and-resuming-a-game-on-the-signed-apk)
 - E2E not executed remains `NOT_RUN`; changing a user stream requires E2E Extent groups past.
 
-The evaluator confronts the complete inventory of snapshots with the manifesto. The operator review checks the Git index, the promotion tree and publication. The contract and the oracles are described in the [the transmission qualification](../../docs/testing/ATF_ReleaseQualification.md) and [evaluator's regression](../../docs/testing/ATF_ReleaseQualification.md#evaluator-regression-tests).
+The evaluator confronts the complete inventory of snapshots with the manifest. The operator review checks the Git index, the promotion tree and publication. The contract and the oracles are described in the [the transmission qualification](../../docs/testing/ATF_ReleaseQualification.md) and [evaluator's regression](../../docs/testing/ATF_ReleaseQualification.md#evaluator-regression-tests).
 
 [Integration module](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)
 

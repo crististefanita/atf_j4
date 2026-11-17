@@ -45,15 +45,15 @@ The identity is calculated from the canonical JSON with sorted keys and the SHA-
 
 ## Initialization and history
 
-Initialization requires a revised manifesto: `reviewedBy` and list `exposures`. Each historical range declares `firstSeed`, `seeds` and `evidenceSha256`; the import sources and inventory remain in the external archive. An empty list is only allowed for a revised environment as new.
+Initialization requires a revised manifest: `reviewedBy` and list `exposures`. Each historical range declares `firstSeed`, `seeds` and `evidenceSha256`; the import sources and inventory remain in the external archive. An empty list is only allowed for a revised environment as new.
 
 ```powershell
 node .\whist-lab-app\ai-lab\tools\qualification\whist-evaluation-registry.mjs initialize '<registru-comun>' '<istoric-revizuit.json>' '<chitanță-nouă.json>'
 ```
 
-Repeated initialization is denied. Old manifests, reservations under the corpus and parties already seen are imported conservatively; the lack of a file does not demonstrate that the data has not been exposed. The import of history does not change the qualification of experiments retrospectively.
+Repeated initialization is denied. Old manifests, reservations under the corpus and games already seen are imported conservatively; the lack of a file does not demonstrate that the data has not been exposed. The import of history does not change the qualification of experiments retrospectively.
 
-## Competition and recovery
+## Concurrency and recovery
 
 | Mechanism | Input |
 |---|---|
@@ -66,7 +66,7 @@ Repeated initialization is denied. Old manifests, reservations under the corpus 
 
 [Collections Launcher](../../scripts/run-whist-collection.ps1) reserves the development, evaluation and arena after identification of the executable copy. The protocol and the freezing are kept from the same bytes interpreted; reservation precedes the starting of Gradle.
 
-[Diagnostic recording](../../scripts/Register-WhistDevelopmentExposure.ps1) is also used by the party launchers, perspectives and profiles. Local files `holdout-use` remain only compatibility projections for readers of historical tournaments; authority is the common register.
+[Diagnostic recording](../../scripts/Register-WhistDevelopmentExposure.ps1) is also used by the game launchers, perspectives and profiles. Local files `holdout-use` remain only compatibility projections for readers of historical tournaments; authority is the common register.
 
 | Level | Checked properties |
 |---|---|

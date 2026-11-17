@@ -20,11 +20,11 @@ This director coordinates operations that cross modules: checks, application bui
 
 Launchers read the project root from their own position and prepare temporary copies. The results shall be kept in the external warehouse configured.
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR
-    RUN[Lansator] -->|select| MODULE[Modul responsabil]
+    RUN[Launcher] -->|select| MODULE[Owning module]
     MODULE -->|execute| CHECK[Verification]
     CHECK -->|keep| OUT[Rezultat extern]
 ```
@@ -41,9 +41,9 @@ A launcher chooses modules, parameters and resources. The engine and the laborat
 | Operation | Entry and contract |
 |---|---|
 | Rules and offline evaluation | [run-whist-collection.ps1](run-whist-collection.ps1), with [collections and prerequisites](../docs/testing/ATF_Collections.md). |
-| Controlled parties and perspectives | [Laboratorul AI](../whist-lab-app/ai-lab/README.md), with launchers `run-offline-*`. |
+| Controlled games and perspectives | [Laboratorul AI](../whist-lab-app/ai-lab/README.md), with launchers `run-offline-*`. |
 | Project quality | [run-atf-governance.ps1](run-atf-governance.ps1), with an [explicit scope](../docs/governance/README.md). |
-| Signed Android Qualification | [run-whist-signed-e2e.ps1](run-whist-signed-e2e.ps1) checks the proof per group and prepares Maven prior to booking. [Relocation and import](../docs/testing/ATF_ReleaseQualification.md#running-and-restarting-a-feed-on-apk-signed) |
+| Signed Android Qualification | [run-whist-signed-e2e.ps1](run-whist-signed-e2e.ps1) checks the proof per group and prepares Maven prior to booking. [Relocation and import](../docs/testing/ATF_ReleaseQualification.md#starting-and-resuming-a-game-on-the-signed-apk) |
 | Screenplay on device | [Ghidul Android](../docs/testing/ATF_Android.md) and [Screen matrix](../docs/testing/ATF_Display.md). |
 
 ## Where the tools are

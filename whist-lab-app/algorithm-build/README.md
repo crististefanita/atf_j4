@@ -54,7 +54,7 @@ The chosen task shall determine the limit of verification:
 
 [game-core/build.gradle](../game-core/build.gradle) is the source of actual selections. Tournaments, error mining and research components have distinct tasks and explicit activation.
 
-## Outflows and competition
+## Outputs and concurrency
 
 - The native XMLs and construction files appear in `game-core/build` of the temporary copy.
 - [Component audit](../../docs/testing/ATF_GradleComponents.md) produces a canonical HTML per selection and temporarily confronts the claims with XMLs without counting them twice.

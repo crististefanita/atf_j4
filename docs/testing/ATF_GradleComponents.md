@@ -40,10 +40,10 @@ sequenceDiagram
     participant K as Kit
     participant R as Reporting
     F->>T: actual configuration and inputs
-    T->>K: independently and currently expected
+    T->>K: Expected and actual, independently evaluated
     K-->>T: verdictul original
     T->>R: context, comparisons and time measured
-    R-->>T: HTML verificabil
+    R-->>T: Verifiable HTML
 ```
 
 <details>
@@ -59,7 +59,7 @@ Capture constructor or save arguments before the call without evaluating them tw
 - The assertions keep the verdict and the invariant expected, present. Values longer than the preview appear in full order bodies.
 - The raster is explicitly declared as a JVM component image and remains PNG inline. Doesn't prove the native android rendering.
 
-## Profit of publication
+## Reporting profile
 
 A JUnit citation keeps the identity of the parametric and the original verdict. The measured statementis includes fixtures before/after JUnit 4The Reporting Session is created, used and closed on the same publishing wire; tests are not moved on that wire.
 
@@ -88,7 +88,7 @@ The qualification scheme with audited groups renounces the invocation in HTML, a
 
 | Selection | Contract |
 |---|---|
-| [The simulated party](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflineMockMatchTest.java) | The number of hands, moves and completion are game oracles. Unrecoverable contracts, fallbacks and certificates are policy observations on the selected distribution. |
+| [The simulated game](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflineMockMatchTest.java) | The number of hands, moves and completion are game oracles. Unrecoverable contracts, fallbacks and certificates are policy observations on the selected distribution. |
 | [Rescue objective](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | Controlled positions shall verify the order of decision-making objectives. |
 | offlinePerspectiveMatchTest and offlineStrategyProfileMatchTest | Compare policies on identical distributions in lots separate from default regression. |
 
@@ -102,7 +102,7 @@ Collection: gamecore: regressionTest shares the default inventory between AI, ru
 
 Task keeps the claims after the first failure. The lot executed with --continue also keeps the results of the following taskpoints.
 
-## Rolling and limits
+## Execution and limits
 
 [Common configuration](../../whist-lab-app/gradle/component-audit.gradle) apply to both the Android reactor and [JVM exclusive input](../../whist-lab-app/algorithm-build/README.md). `whist.auditOutput` identify the director of the execution, and `whist.auditSource` Each task has one worker and one HTML of its own; additional parallelism requires distinct qualification.
 

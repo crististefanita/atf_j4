@@ -6,7 +6,7 @@ A package groups types that change for the same contract. [Project policy](../..
 
 [Header printing](../../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) belongs to the common style of `theme`; geometry and composition of the table remain in `table`. The selection of display components shall include both responsibilities.
 
-## Choice of the responsible
+## Choosing an owner
 
 ```mermaid
 flowchart LR
@@ -63,7 +63,7 @@ JUnit method keeps the case identity and the scenario explicitly receives the fl
 - **Android screenplays: ** navigation, configuration, persistence and levatates have their own responsibilities; the helper receives status and does not invent a new invocation.
 - **Display notes:** [decodorul comun](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) consummate the same hierarchy in components and E2E; native capture and acceptance have other limits.
 - **Publication:** reading the replica and native results does not depend on the coordinator of the presentation; [reporting contracts](../reporting/README.md) be associated with and accepted.
-- **Data: ** parties, selections and concrete results remain in the external archive; the scheme and validators belong to the code.
+- **Data: ** games, selections and concrete results remain in the external archive; the scheme and validators belong to the code.
 
 ## Procedure for a reorganisation
 

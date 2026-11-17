@@ -8,7 +8,7 @@ The documentation shall explain a contract, its owner and the use or verificatio
 
 ```mermaid
 flowchart LR
-    SOURCE[Code, POM and tests] -->|definesc| CONTRACT[Contract stabil]
+    SOURCE[Code, POM and tests] -->|defines| CONTRACT[Stable contract]
     CONTRACT -->|explain| DOC[Document responsabil]
     CHECK[Governance and revision] -->|face| DOC
     GAP[Active lacuna] -->|follow up in| FEEDBACK[Feedback]
@@ -59,20 +59,20 @@ The purpose, responsibility and the main limit remain visible. The secondary det
 
 ## Main README
 
-The main READMETER directs the reader to the product, sources and verification:
+The main README guides the reader to the product, source code and verification.
 
 - Presents the game and provides the Android edition page and direct download, according to [contract of delivery](../testing/ATF_ReleaseQualification.md#public-readme-contract).
 - Just below the download, show the route between the building, checks and delivery. The engine map explains the platforms and the condition owners separately. The table complements the responsibilities and leads to the documents of the modules.
 - According to the map, it provides a short local check and sends out strategy, governance and qualification. The rules of the game, the publication steps and the results have their own guides and folders.
 
-Face the roles in the map with [reactorul Maven](../../pom.xml), [modulele Gradle](../../whist-lab-app/settings.gradle) And the configuration of the module that consumes addiction. For a test addiction, the source of truth is her statement in the build. [Map governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java) face modules, direct dependencies and application edges and check omissions, mispursues and reverse direction.
+Verify the map against the [Maven reactor](../../pom.xml), [Gradle modules](../../whist-lab-app/settings.gradle) and the configuration of each consuming module. Build declarations define the scope of test dependencies. [Map governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java) checks modules, direct dependencies and application edges for omissions, incorrect scopes and reversed relationships.
 
 ## Language, style and prose
 
-- The documentation on `main` uses English. `main_RO` preserves the Romanian edition at the same paths. Rule-guide filenames retain the locale they originally identify.
+- Documentation uses English on `main` and Romanian with diacritics on `main_RO`, at matching paths. The rule guides retain their locale suffixes. Keep both editions synchronized.
 - The titles, tables, diagrams and foldable summaries shall use the language of the document.
 - API identifiers, the original quoted orders and labels shall be kept in accurate form.
-- Use one main title, a `Pe scurt` section for guidance, progressive sections and lists with the `-` marker.
+- Use one main title, an `Overview` section in English or `Pe scurt` in Romanian, progressive headings and lists marked with `-`.
 - A visible paragraph has not more than three sentences; responsibilities and comparisons shall be expressed in the form that makes them easy to go.
 - Fonts and colors belong to the application that displays Markdown; documents use semantic structure without local CSS.
 - Each block of code has its declared language, and each block of folding has its explicit summary and balanced delimitation.
@@ -82,9 +82,9 @@ Face the roles in the map with [reactorul Maven](../../pom.xml), [modulele Gradl
 - A diagram answers a question and uses short concepts with verbs on the edges.
 - New flows and dependencies prefer left-right reading; states and time order use the appropriate form of relationship.
 - A single foldable legend immediately follows the diagram and explains the meaning and limit of relationships.
-- Classes, long lists and addiction details remain in the legend or the responsible guide.
+- Classes, long lists and dependency details remain in the legend or the responsible guide.
 - Tables compare parallel information; two main tables have an explanation or a section of another role.
-- A map of addictions faces the POMS, diverging the execution, testing and optional propagation.
+- A map of dependencies faces the POMS, diverging the execution, testing and optional propagation.
 
 ## Stable content and variable data
 
@@ -125,7 +125,7 @@ The traceability of an allegation is `afirmație → sursă live → document re
 - Option `-Json` maintains the code, file, line, finding, rule and remedy. The verdict is the same on the file regardless of the selection. Local links shall be validated in the context of the entire project.
 - Output code `0` indicates success, `2` indicate documentary deviations; and `1` indicate an invalid entry or an execution error. [Probele cu fixture-uri](../../atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java) covers parity and refusals.
 
-Documentary verification includes structure, links, fragments, prose, style, diagrams, local editorial content and feedback rules. [Governance Suite](README.md#isolated-rolling) also verifies allegations that depend on sources, inventory of modules and delivery.
+Documentary verification includes structure, links, fragments, prose, style, diagrams, local editorial content and feedback rules. [Governance Suite](README.md#isolated-execution) also verifies allegations that depend on sources, inventory of modules and delivery.
 
 ## Editorial verification and evaluation
 

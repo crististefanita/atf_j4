@@ -13,7 +13,7 @@ Kit offers annotations, evaluated comparisons and neutral lifecycle. JARI does n
 | Phases and cleanup | ComponentAuditExtension / ComponentAuditAdapter, TestRunInitialization, FailureAwareCleanup. |
 | Policies and resources | Atf Resolvers * Policy; readResourceUtf8 for classpath/JAR, requiredPath for actual file. |
 
-## Exemplu minim
+## Minimal example
 
 The adapter holds the recorder and publishes the result; a mismatch retains the original JUnit exception:
 

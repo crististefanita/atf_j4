@@ -11,13 +11,13 @@ The project consumes Core, Reporting, Console, Mock and Test Kit as JAR/POM pair
 - [Livrarea Android](ATF_AndroidDelivery.md) explains the building, publication and installation of APK, including saving. [Anonymous access verification](ATF_AndroidDelivery.md#anonymous-access-and-public-route) covers the public route and diagnosis of HTTP 404.
 - [Retention and preparation of the relay](ATF_ReleaseRetention.md) separates local candidate, publication and withdrawal of previous versions.
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR
     PRODUCER[Manufacturer] -->|pack| PAIR[JAR and POM]
     PAIR -->|identify| LIB[Local Library]
-    LIB -->|exposes| API[Contract public]
+    LIB -->|exposes| API[Public contract]
     ADAPTER[Adaptor Android] -->|consumes| API
     CHECK[Local acceptance] -->|checks| LIB
 ```
@@ -64,7 +64,7 @@ Negative evidence builds identifiable synthetic artifacts. Physical acceptance u
 
 | Activitate | Contract |
 |---|---|
-| Isolated construction | [Governance Launcher](../../scripts/run-atf-governance.ps1) prepares its copy and warehouse; `validate` installs the pairs of `lib` before the addiction is resolved. |
+| Isolated construction | [Governance Launcher](../../scripts/run-atf-governance.ps1) prepares its copy and warehouse; `validate` installs the pairs of `lib` before the dependency is resolved. |
 | Development environment | The root POM and the Maven settings define the same dependencies; Kit is explicitly declared for the JUnit adapter that requires it. |
 | Actualizare | Identified candidate, API verification and independent local acceptance; Android scenarios require separate device and initial status declared. |
 

@@ -1,4 +1,4 @@
-# Model score history
+# Score history model
 
 ## Overview
 
@@ -28,7 +28,7 @@ The score is calculated once upon closing the hand. The register shall keep the 
 
 </details>
 
-## Invariante
+## Invariants
 
 | Contract | All right |
 |---|---|
@@ -44,7 +44,7 @@ The score is calculated once upon closing the hand. The register shall keep the 
 | Date vechi | The known balance shall be maintained; cards, bids and unregistered hands shall not be reconstructed by assumption. |
 | New game | Own register and initial validated balance. |
 
-## Compatibility and IU
+## Compatibility and UI
 
 [GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) defines the migration of each scheme and the validation of the checkpoint. [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) defines the integrity of the register.
 
@@ -82,7 +82,7 @@ The components check the closure of the hand, migration, corruption of the check
 
 [Components of the totals displayed](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) face each historical balance and limit of the prefix known to 3–6 places, in RO/EN. [Measurement of columns](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java) uses the same visible value, including for the last row and last player.
 
-- [Componentele seriilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java) plays legal parties with controlled contracts and calculates separately the balances and meters without calling the engine formula into the oracle; the JSON recharge covers the bidding, playing and closing of the hand.
+- [Componentele seriilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java) plays legal games with controlled contracts and calculates separately the balances and meters without calling the engine formula into the oracle; the JSON recharge covers the bidding, playing and closing of the hand.
 - [Geometry of marking](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/award/SeriesPointsFrameComponentTest.java) confronts the rectangle and the entire contour with cell boundaries at fractional density, long numbers and enlarged font; the pixels and Android font retain distinct native qualification.
 - [Test component raster](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) designs legal states through production geometry in a JVM image with controlled fonts. The difference between images with and without markings shall be only of the awarded `P` cells and contain the four sides; the red shall be checked after a penalty leaving the total positive.
 - [Recovery of history in images](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryRecoveryRasterComponentTest.java) writes the JSON checkpoint in a file, reads it through the application code and compares PNG pixels before and after restoration, to 3–6 places, in RO/EN and with increased text. Check the historical markings in the bid, game and after closing another hand; do not deduct them from the current meter of the series.

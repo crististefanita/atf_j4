@@ -4,7 +4,7 @@
 
 The clock of a phase shall record the monotonous range of the original activity. The sending of orders, the capture, the persistence of the log and subsequent publication have distinct measurements.
 
-## Axele temporale
+## Time axes
 
 | Axis | Source | Meaning |
 |---|---|---|
@@ -12,7 +12,7 @@ The clock of a phase shall record the monotonous range of the original activity.
 | Original execution | The original interval minus capture and measured persistence. | Orders, expectations, readings and domain checks from that phase. |
 | Trimitere ADB | THE ORIGINAL ACTION RECORDS. | Duration of the order as part of the execution. |
 | Catch | Interactions adaptor controlled range. | Obtaining PNG and hierarchy, including failed attempts. |
-| Persistence | Writing the manifesto in the phase range. | Operations of intrare/ieShire kept separate from execution. |
+| Persistence | Writing the manifest in the phase range. | Operations of intrare/ieShire kept separate from execution. |
 | Publication | Start a new clock when projecting the checkpoint. | The current publication activity, separate from the final HTML save. |
 
 ```mermaid
@@ -29,7 +29,7 @@ A range belongs to a flow, phase and position. Returning to a phase creates a se
 
 </details>
 
-## Catch and association
+## Capture and association
 
 [AndroidPhaseClock](../../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseClock.java) measures monotonous time. [AndroidPhaseTiming](../../atf-test-android/src/main/java/atf/android/evidence/timing/AndroidPhaseTiming.java) validates ranges and axes; these components do not perform ADB commands or game checks.
 

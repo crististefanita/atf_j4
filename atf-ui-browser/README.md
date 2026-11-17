@@ -59,7 +59,7 @@ flowchart LR
 | Strat | Responsibility |
 |---|---|
 | [The game contract](src/main/java/ro/cardtable/browser/BrowserGame.java) | Publish the places, the cards allowed, the legal orders and scores. Validation remains in the engine of each game. |
-| [Serverul](src/main/java/ro/cardtable/browser/BrowserServer.java) | Serves the resources of the same origin. Isolate the parties on the tab, validate the revisions and reject repeated commands. |
+| [Serverul](src/main/java/ro/cardtable/browser/BrowserServer.java) | Serves the resources of the same origin. Isolate the games on the tab, validate the revisions and reject repeated commands. |
 | [Geometria](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Apply Java plan used in Android for seats and fans. On the phone, it measures the useful view port. On the desktop it sets the logical frame at 414 × 896, calculates the scale by the useful height and centreates. |
 | [Adaptorul Whist](whist/src/main/java/ro/whistlab/browser/WhistBrowser.java) | Use distribution, AI policies and engine settlement. The recommendation comes from the same human selection as on Android. |
 
@@ -170,7 +170,7 @@ flowchart LR
 ```
 
 - Choose `$BrowserLibraryVersion` and start out from a clean checkout Git. The exhibition writes the two JARs, fingerprints and `browser-build.json` in the external directory of the version. The registry links the files to the source comma and the input inventory.
-- Check the commit and SHA- 256 at adoption. The manifesto installed near the two JARs shows which version each adapter uses.
+- Check the commit and SHA- 256 at adoption. The manifest installed near the two JARs shows which version each adapter uses.
 - Export shall re-use the Director of the same version after confrontation with entries and bytes. Changing entries requires a new version. The integration challenge starts the first match through the physical JARs, adaptor and game dependencies.
 - Promote the same bytes and same fingerprints in qualified consumers. The version of the HTML cache aims at updating the site's resources. [Consumer verification](#verification)
 

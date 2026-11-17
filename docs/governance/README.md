@@ -15,8 +15,8 @@ Governance converts the principles of structure into local executable checks. Th
 ```mermaid
 flowchart LR
     POLICY[Explicit policy] -->|delimited| INVENTORY[Source inventory]
-    INVENTORY -->|fuel| GUARDS[Checks]
-    DOCS[Documente curente] -->|fuel| GUARDS
+    INVENTORY -->|feeds| GUARDS[Checks]
+    DOCS[Current documentation] -->|feeds| GUARDS
     GUARDS -->|locate| FINDING[Explanatory deviation]
     FINDING -->|cere| REVIEW[Correction and revision]
 ```
@@ -88,7 +88,7 @@ An inspection shall hold and close its own JDK file manager, reused between the 
 
 [Componentele sintaxei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerSyntaxTest.java) verifies valid refusals and neighbours, including Java examples in strings that should not be treated as declarations.
 
-## Isolated rolling
+## Isolated execution
 
 For a file or full documentary inventory, use [Documentation Client](ATF_Documentation.md#documentation-governance-cli). It tests the same editorial rules as the suite.
 

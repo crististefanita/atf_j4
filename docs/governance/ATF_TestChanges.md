@@ -4,7 +4,7 @@
 
 A change in the tests shall preserve the meaning of the contract and the reason for which an entry is admitted or refused. The change in implementation does not justify adjusting the expected result only to achieve success.
 
-## Criterii
+## Criteria
 
 | Surface | Contract |
 |---|---|
@@ -80,7 +80,7 @@ $env:ATF_TEST_CHANGE_PROOF_ROOT = Join-Path $runRoot 'proofs'
 
 When failing or changing source, see the logs per control and the `proofs.pending` diagnostic folder. For a spot test, `-TestChangeControl` keeps the receipt under `<RunRoot>/<ID>`. Reuse the receipt and report for the same commit and diff.
 
-## Moving the property of a check
+## Transferring ownership of a check
 
 The transfer of an implementation to a library shall keep all native contracts to the manufacturer. The consumer shall retain the acceptance of the API used, the identity of the loaded JARs and the refusal of metadata or inconsistent deliveries.
 

@@ -39,7 +39,7 @@ The catalogue also describes the acceptance of `e2e` separately. This uses Andro
 
 The `targetMinutes` estimates in the catalogue help plan. They shall not replace the measured time and shall not convert an incomplete execution into a successful result.
 
-## Offline rolling from the project root
+## Offline execution from the project root
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection context
@@ -77,7 +77,7 @@ Each execution shall keep the inventory of the SHA-256 of copied sources, the lo
 | Intrare | Actual precondition |
 |---|---|
 | `learning` | `-Candidate`, `-CorpusRoot` and `-ProtocolFile`; the scheme declares roles, opponents, basic policies and phase interval. |
-| `-CandidateOverlay` | Exterior frozen candidate manifesto with identity, role, paths and hashes; allowed in `regression` or in dedicated protocol of `learning`. |
+| `-CandidateOverlay` | Exterior frozen candidate manifest with identity, role, paths and hashes; allowed in `regression` or in dedicated protocol of `learning`. |
 | `-ResearchCandidate` | Unique entry into the research catalogue, allowed collection and compatible basis. |
 | `-CasesFile` | Explicit selection for accepted protocol with identical sources between the composite lots. |
 | `-Phase heldout` | Ask for `-CandidateFreeze`, with identity and hashes checked prior to booking. |
@@ -104,7 +104,7 @@ Import-Module .\whist-lab-app\ai-lab\tools\qualification\WhistCandidateSource.ps
 New-WhistCandidateBaseline -AppRoot '<copie-acceptată>\whist-lab-app' | ConvertTo-Json -Depth 12
 ```
 
-The result only provides `baselineGuards` and `baselineInventory`; the author of the manifesto holds the identity of the candidate, the role, protocol and the proposed files. The building of the inventory does not promote a candidate or alter existing frozen manifests.
+The result only provides `baselineGuards` and `baselineInventory`; the author of the manifest holds the identity of the candidate, the role, protocol and the proposed files. The building of the inventory does not promote a candidate or alter existing frozen manifests.
 
 The launcher shall check the base prior to copying and in the temporary copy. After application, check all final hashes, including new files declared; unknown sources, duplicates and changes without declaration are refused and the evidence keeps the basis and candidate separately.
 
@@ -124,7 +124,7 @@ The quality of the sources and documentation shall be checked separately from th
 
 [Governance contract](../governance/README.md) defines inventory, exceptions and negative controls. This check does not play games or command the emulator.
 
-## Rules, aid and Android
+## Rules, help and Android
 
 Collection `documentation` face bilingual aid and score table with engine. [Aid from the application](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) · [RO rules](../game/ATF_RulesRo.md) · [EN rules](../game/ATF_RulesEn.md)
 

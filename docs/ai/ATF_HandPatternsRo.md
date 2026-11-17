@@ -8,9 +8,9 @@ A combination of cards provides conditional clues of legality, necessary and pub
 
 ```mermaid
 flowchart LR
-    OBS[Hand and public books] -->|described by| EXTRACT[Extractor]
+    OBS[Own and public cards] -->|described by| EXTRACT[Extractor]
     EXTRACT -->|Classification| PATTERN[Type and unit]
-    GAMES[Partide development] -->|calibrates descriptively| PATTERN
+    GAMES[Development games] -->|calibrates descriptively| PATTERN
     PATTERN -->|require consumer; and| GATE[Separate qualification]
 ```
 
@@ -40,7 +40,7 @@ flowchart LR
 - **Sequences and length: ** honors are valued together; rank, number of cards and number of possible levatas are distinct sizes.
 - **Legal exit: ** a side honor may be discarded when the required color and the asset are missing; the existence of the asset may require an unwanted trick.
 - **Public memory: ** the card turned, a card from a finished trick and the card still on the table have different roles.
-- **Objective:** individual needs and remaining opportunities are read from [modelul deciziei](ATF_DecisionModel.md#the-status-changing-the-decision); table imbalance does not replace them.
+- **Objective:** individual needs and remaining opportunities are read from [modelul deciziei](ATF_DecisionModel.md#state-that-influences-the-decision); table imbalance does not replace them.
 
 ## Extractor input
 

@@ -1,4 +1,4 @@
-# Signature of Android Test Edition
+# Android test edition signing
 
 ## Overview
 

@@ -6,11 +6,11 @@ The module shall assess response contracts and produce comparisons and independe
 
 Full values decide the verdict. The projection for publication and limitation of preview shall take place after evaluation, with the maintenance of the cause and the comparative values.
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR
-    BODY[API reply] -->|fuel| CONTEXT[Background assessment]
+    BODY[API reply] -->|feeds| CONTEXT[Background assessment]
     RULES[Contract] -->|declares rules| EVAL[Evaluator]
     CONTEXT -->|provide values| EVAL
     EVAL -->|produce| RESULT[Comparison and verdict]
@@ -23,7 +23,7 @@ flowchart LR
 
 </details>
 
-## Contractele JSON
+## JSON contracts
 
 - The invalid path, absence and present value are distinct; `null` explicitly present.
 - Simple paths and JSON Pointer have an explicit subset; general selections, filters and recursive search are denied.

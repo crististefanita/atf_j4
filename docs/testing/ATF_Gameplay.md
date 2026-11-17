@@ -11,14 +11,14 @@ flowchart LR
     RULES[Rules and invariants] -->|checks| CORE[Moulds]
     CORE -->|supports| MATCH[Offline side]
     POLICY[Policy identified] -->|participating in| MATCH
-    MATCH -->|fuels separately| EVAL[Strategic evaluation]
+    MATCH -->|feedss separately| EVAL[Strategic evaluation]
     UI[Comenzi Android] -->|face through oracle| FLOW[Integration flow]
 ```
 
 <details>
 <summary>Legend: Different properties</summary>
 
-Components check local rule, simulation checks the transitions of a party, and evaluation compares policies. The Android flow checks integration between action and status; the result of one level does not replace the contract of another.
+Components check local rule, simulation checks the transitions of a game, and evaluation compares policies. The Android flow checks integration between action and status; the result of one level does not replace the contract of another.
 
 </details>
 
@@ -32,7 +32,7 @@ Components check local rule, simulation checks the transitions of a party, and e
 
 Unit, component, integration and E2E levels are defined in [the architecture of testing](ATF_Architecture.md). The complete model, statistical evaluation and resumption of a journal are distinct mechanisms; they do not form additional levels.
 
-## A full-party contract
+## Complete game contract
 
 1. The configuration identifies the variant, the number of seats, the policy of each actor and the serial rules.
 2. The hand program is derived from the rules of the variant.
