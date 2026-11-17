@@ -3,9 +3,9 @@
   "publication": {
     "channel": "TEST",
     "state": "PUBLISHED",
-    "repository": "crististefanita/atf_j4",
+    "repository": "crististefanita/whist",
     "accessMode": "AUTHENTICATED",
-    "targetUrl": "https://github.com/crististefanita/atf_j4/releases/download/v0.21.7/WhistLab-0.21.7.apk"
+    "targetUrl": "https://github.com/crististefanita/whist/releases/download/v0.21.7/WhistLab-0.21.7.apk"
   },
   "release": {
     "applicationId": "ro.whistlab.app",
@@ -229,12 +229,12 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-17T07:53:12.298Z",
+    "observedUtc": "2026-11-17T08:03:52.531Z",
     "files": [
       {
         "path": "README.md",
-        "bytes": 889,
-        "sha256": "3605a0bfec43ad675d680d95016956feb13b3d8450f1a670713eaa3db5c2802a"
+        "bytes": 886,
+        "sha256": "fd01f895349d37ae367ef3d4b900ebc625624c8de8bd59eee5b6a9d77fe25b6a"
       },
       {
         "path": "WhistLab-0.21.7.apk",
@@ -248,18 +248,18 @@
       },
       {
         "path": "github-release.json",
-        "bytes": 815,
-        "sha256": "1bd844e82c5730050874618ed078fd0c33024476b28567463ec98c01fb25bbc0"
+        "bytes": 812,
+        "sha256": "2c6b85c2fe5b7a07697805ef17769dbac88ad9ff832c3933ad4c94024f5a0b7a"
       },
       {
         "path": "release-notes.md",
-        "bytes": 713,
-        "sha256": "23c40a83eb239b04a7d540f03cfc2f5c4ab1dc5cccf2042ee815410cede3c84b"
+        "bytes": 710,
+        "sha256": "421997eb55ddaa13531ef7c1a5919f24e29d2208d1058d0bb92c6fbdf8419642"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 496,
-        "sha256": "2f0b4f2b674f7ba7f49212f38d6e609e8e7c50bc4627dcfce6bae10aa7f9756d"
+        "bytes": 495,
+        "sha256": "6af05c4163a60e38a104cebf40664976c293ceef4d4eac86525b1134a831b64d"
       },
       {
         "path": "reports/README.md",
@@ -443,8 +443,8 @@
       },
       {
         "path": "reports/distribution-verification.json",
-        "bytes": 437,
-        "sha256": "513487ad321b673b96ba7de87981ac9f439841da8bad95171f7428dd667dd8e3"
+        "bytes": 711,
+        "sha256": "dd26ca7c6c267d9a40e62c1726fa0b1066860351afcdd4d48e0da2fbfcdda6b3"
       },
       {
         "path": "reports/e2e/history-release-sanity/execution.json",

@@ -10,9 +10,9 @@ Ediție Android de test.
 
 ## Descărcare
 
-- [Pagina release-ului v0.21.6](https://github.com/crististefanita/atf_j4/releases/tag/v0.21.6)
-- [Descarcă APK-ul 0.21.6](https://github.com/crististefanita/atf_j4/releases/download/v0.21.6/WhistLab-0.21.6.apk)
-- [Checksum SHA-256](https://github.com/crististefanita/atf_j4/releases/download/v0.21.6/WhistLab-0.21.6.apk.sha256)
+- [Pagina release-ului v0.21.6](https://github.com/crististefanita/whist/releases/tag/v0.21.6)
+- [Descarcă APK-ul 0.21.6](https://github.com/crististefanita/whist/releases/download/v0.21.6/WhistLab-0.21.6.apk)
+- [Checksum SHA-256](https://github.com/crististefanita/whist/releases/download/v0.21.6/WhistLab-0.21.6.apk.sha256)
 
 ## Dovezi și instalare
 

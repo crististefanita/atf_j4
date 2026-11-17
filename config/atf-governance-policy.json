@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "publicRepository": "https://github.com/crististefanita/atf_j4",
+  "publicRepository": "https://github.com/crististefanita/whist",
   "mavenModules": [
     "atf-validation",
     "atf-test-android",
