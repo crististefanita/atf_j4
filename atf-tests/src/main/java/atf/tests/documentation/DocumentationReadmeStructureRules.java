@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 /** Checks the minimum readable shape shared by every owner README. */
 final class DocumentationReadmeStructureRules {
     private static final Pattern H1 = Pattern.compile("^#\\s+[^#].*$");
-    private static final Pattern H2_ORIENTATION = Pattern.compile("^##\\s+(?:Overview|Pe scurt)\\b.*$",
-            Pattern.CASE_INSENSITIVE);
     private static final Pattern DETAILS_OPEN = Pattern.compile("^\\s*<details(?:\\s|>)",
             Pattern.CASE_INSENSITIVE);
     private static final Pattern DETAILS_CLOSE = Pattern.compile("^\\s*</details>\\s*$",
@@ -21,9 +19,9 @@ final class DocumentationReadmeStructureRules {
             Pattern.CASE_INSENSITIVE);
 
     static void validate(Path path, Path root,
-                         List<String> lines, List<DocumentationGovernanceSupport.Violation> violations) {
+                         List<String> lines, String language, List<DocumentationGovernanceSupport.Violation> violations) {
         try {
-            inspectTitleAndOrientation(path, root, lines, violations);
+            inspectTitleAndOrientation(path, root, lines, language, violations);
             inspectDetails(path, root, lines, violations);
         } catch (Exception error) {
             violations.add(DocumentationGovernanceSupport.violation(
@@ -34,7 +32,7 @@ final class DocumentationReadmeStructureRules {
         }
     }
 
-    private static void inspectTitleAndOrientation(Path path, Path root, List<String> lines,
+    private static void inspectTitleAndOrientation(Path path, Path root, List<String> lines, String language,
                                                    List<DocumentationGovernanceSupport.Violation> violations) throws java.io.IOException {
         List<Integer> titles = matchingLines(lines, H1);
         if (titles.size() != 1) {
@@ -44,13 +42,14 @@ final class DocumentationReadmeStructureRules {
                     "an owner README has one stable title before its sections",
                     "keep one `# ...` title and convert additional top-level titles to `## ...`"));
         }
-        if (!path.equals(root.resolve("README.md").toAbsolutePath().normalize())
-                && matchingLines(lines, H2_ORIENTATION).isEmpty() && !DocumentationInventory.isReleaseEvidence(root, path)) {
+        String heading = language.equals("en") ? "Overview" : "Pe scurt";
+        Pattern orientation = Pattern.compile("^##\\s+" + Pattern.quote(heading) + "\\b.*$", Pattern.CASE_INSENSITIVE);
+        if (matchingLines(lines, orientation).isEmpty() && !DocumentationInventory.isReleaseEvidence(root, path)) {
             violations.add(DocumentationGovernanceSupport.violation(
                     "DOC-README-OVERALL", root, path, 1,
-                    "README has no Overview section",
+                    "README has no " + heading + " section for documentation language " + language,
                     "owner READMEs introduce scope, ownership and boundaries before the details",
-                    "add a short `## Overview` before diagrams, tables or implementation details"));
+                    "add a short `## " + heading + "` before diagrams, tables or implementation details"));
         }
     }
 

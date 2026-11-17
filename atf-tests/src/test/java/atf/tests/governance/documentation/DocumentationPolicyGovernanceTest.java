@@ -133,11 +133,12 @@ class DocumentationPolicyGovernanceTest {
 
     @Test void libraryUsageGuidesAreGovernedAsLocalConsumerContracts() throws Exception {
         Path root = GovernanceProject.locateProjectRoot(); var files = GovernanceProject.markdown(root);
+        boolean english = atf.tests.documentation.policy.DocumentationContentPolicy.documentationLanguage(root).equals("en");
         for (String name : List.of("README.md", "README.Core.md", "README.Reporting.md", "README.Console.md", "README.Mock.md", "README.TestKit.md")) {
             Path file = root.resolve("lib").resolve(name); AuditedAssertions.assertTrue(files.contains(file), name);
             String source = Files.readString(file);
             AuditedAssertions.assertFalse(java.util.regex.Pattern.compile("(?i)\\batf[_-]j[0-9]+\\b").matcher(source).find(), name);
-            AuditedAssertions.assertFalse(hasRomanianReadmeProse(source), name);
+            AuditedAssertions.assertFalse(english ? hasRomanianReadmeProse(source) : hasEnglishReadmeProse(source), name);
         }
     }
 

@@ -43,6 +43,8 @@ public final class DocumentationGovernance {
         if (documents.isEmpty()) throw new IOException("DOC-INVENTORY-EMPTY: " + root);
 
         var context = rules.contains(Rule.CONTENT) ? DocumentationContentPolicy.Context.load(root) : null;
+        String language = rules.contains(Rule.STRUCTURE)
+                ? (context == null ? DocumentationContentPolicy.documentationLanguage(root) : context.language()) : null;
         List<Violation> violations = new ArrayList<>();
         for (Path file : documents) {
             List<String> lines;
@@ -53,7 +55,7 @@ public final class DocumentationGovernance {
                 continue;
             }
             for (Rule rule : rules) switch (rule) {
-                case STRUCTURE -> DocumentationReadmeStructureRules.validate(file, root, lines, violations);
+                case STRUCTURE -> DocumentationReadmeStructureRules.validate(file, root, lines, language, violations);
                 case LINKS -> DocumentationLocalLinks.validate(file, root, lines, violations);
                 case DIAGRAM -> DocumentationDiagramRules.validate(file, root, lines, violations);
                 case STYLE -> DocumentationStyleRules.validate(file, root, lines, violations);

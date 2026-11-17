@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static atf.testkit.assertions.AuditedAssertions.*;
 
@@ -23,6 +25,27 @@ class DocumentationGovernanceCliComponentTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final String BROKEN = "docs/Reguli și dovezi.md";
     @TempDir Path temporary;
+
+    @ParameterizedTest
+    @CsvSource({"en,Overview,Pe scurt", "ro,Pe scurt,Overview"})
+    void localizedHeadingFailuresHaveTheSameFullAndSelectedDiagnostics(
+            String language, String expected, String wrong) throws Exception {
+        Path root = project();
+        write(root, "config/atf-governance-policy.json", "{\"documentationLanguage\":\"" + language + "\"}");
+        write(root, "README.md", "# Contract\n\n## " + expected + "\n\nContract.\n");
+        String file = "module/README.md";
+        write(root, file, "# Module\n\n## " + wrong + "\n\nContract.\n");
+        Command full = run(root);
+        Command selected = run(root, "--file", file);
+        assertEquals(2, full.code());
+        assertEquals(2, selected.code());
+        var findings = values(selected.json().path("diagnostics"));
+        assertEquals(values(full.json().path("diagnostics")).stream()
+                .filter(row -> file.equals(row.path("file").asText())).toList(), findings);
+        JsonNode structure = findings.stream().filter(row -> row.path("code").asText()
+                .equals("DOC-README-OVERALL")).findFirst().orElseThrow();
+        assertTrue(structure.path("fix").asText().contains("## " + expected));
+    }
 
     @Test void aSelectedDocumentHasExactlyTheFullScanDiagnosticsForThatFile() throws Exception {
         Path root = project();
