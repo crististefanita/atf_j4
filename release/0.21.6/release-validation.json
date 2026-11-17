@@ -209,7 +209,9 @@
         "report": "reports/e2e/history-release-sanity/report.html",
         "executionReceipt": "reports/e2e/history-release-sanity/execution.json"
       }
-    }
+    },
+    "schemaVersion": 2,
+    "uniqueJunitInvocations": 1398
   },
   "evidenceRetention": {
     "canonicalReport": "reports/component/atf-tests/component-report.html",
@@ -218,7 +220,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-17T06:02:27.210Z",
+    "observedUtc": "2026-11-17T06:05:04.845Z",
     "files": [
       {
         "path": "README.md",
