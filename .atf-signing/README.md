@@ -1,7 +1,7 @@
-# Semnarea ediției Android de test
+# Signature of Android Test Edition
 
-## Pe scurt
+## Overview
 
-Certificatul public Whist și amprenta SHA-256 identifică semnatarul ediției de test. Comparați amprenta cu rezultatul `apksigner verify --print-certs` înainte de a califica un upgrade.
+The public certificate Whist and the HA- 256 print identify the signatory of the test edition. Compare the print with the result `apksigner verify --print-certs` before qualifying an upgrade.
 
-Keystore-ul utilizat la semnare se păstrează local. Folderul permite în Git doar documentația, certificatul și amprenta, pentru ca un keystore copiat aici să nu intre accidental în index. [Ghidul de livrare Android](../docs/platform/ATF_AndroidDelivery.md)
+The keystoreul used for signing is kept locally. Folder only allows in Git documentation, certificate and fingerprint, so that a copied keystore here does not accidentally enter the index. [Android delivery guide](../docs/platform/ATF_AndroidDelivery.md)

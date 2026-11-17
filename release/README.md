@@ -1,32 +1,32 @@
-# Catalogul livrărilor
+# Release catalog
 
-## Pe scurt
+## Overview
 
-Catalogul indică versiunea Android curentă și păstrează o singură ediție anterioară în proiect pentru proveniență.
+The catalog identifies the current Android release and retains one earlier release for provenance.
 
-## Versiunea curentă
+## Current version
 
-[0.21.9 — APK, verificări și proveniență](0.21.9/README.md) este ediția Android curentă. Linkul APK este în README-ul principal.
+[0.21.9 — APK, checks and provenance](0.21.9/README.en.md) is the current Android release. The main README links directly to the APK.
 
-## Versiunea anterioară
+## Previous version
 
-[0.21.8 — APK și dovezi](0.21.8/README.md) rămâne în catalog pentru proveniență și comparații.
+[0.21.8 — APK and evidence](0.21.8/README.en.md) remains in the catalog for provenance and comparison.
 
-## Versiuni disponibile
+## Available versions
 
-| Versiune | Stare | Dosar |
+| Version | Status | Dossier |
 |---|---|---|
-| 0.21.9 | Publicată · APK verificat | [APK și dovezi](0.21.9/README.md) |
-| 0.21.8 | Ediția anterioară | [APK și dovezi](0.21.8/README.md) |
+| 0.21.9 | Published · APK verified | [APK and evidence](0.21.9/README.en.md) |
+| 0.21.8 | Previous version | [APK and evidence](0.21.8/README.en.md) |
 
-## Publicare și verificare
+## Publication and verification
 
-Pregătirea, calificarea și publicarea urmează [procesul de release](../docs/testing/ATF_ReleaseQualification.md) și [ghidul de livrare Android](../docs/platform/ATF_AndroidDelivery.md). README-ul principal rămâne o pagină de produs; detaliile și hash-urile sunt în manifestul versiunii.
+Preparation, qualification and publication follow the [release process](../docs/testing/ATF_ReleaseQualification.md) and the [Android delivery guide](../docs/platform/ATF_AndroidDelivery.md). The main README introduces the product. The version manifest records the hashes and release details.
 
-## Citire rapidă
+## Quick navigation
 
-1. Deschideți README-ul versiunii curente pentru scop și descărcare.
-2. Urmați raportul Extent canonic; indexul lui explică selecțiile și proveniența.
-3. Consultați manifestul pentru identitatea APK-ului, semnarea, calificarea și inventarul payload-ului.
+1. Open the current release README for its scope and download link.
+2. Open the canonical Extent report. Its index explains the selected checks and their provenance.
+3. Read the manifest for APK identity, signing, qualification and the payload inventory.
 
-Strategia de testare este descrisă generic în [documentația testării](../docs/testing/README.md); rezultatele sunt dovezi specifice versiunii.
+The [test documentation](../docs/testing/README.md) describes the strategy shared by releases. Each set of results belongs to its release.

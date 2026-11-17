@@ -1,39 +1,39 @@
-# Calificarea infrastructurii locale de testare
+# Qualification of local testing infrastructure
 
-## Pe scurt
+## Overview
 
-Consumatorul deține validarea API, procesele și adopția locală; [registrul responsabilităților](README.md#suportul-comun-al-testelor) rutează primitivele Kit. Contractele implementate rămân în README-urile modulelor; biblioteca binară și acceptanța Android au verificări separate.
+The consumer holds the validation of API, processes and local adoption; [Liability register](README.md#common-test-support) routs the primitive Kit. The contracts implemented remain in the module READMES; the binary library and Android acceptance have separate checks.
 
-## Concurența Kitului
+## Competition of the kit
 
-[Suportul comun](README.md#suportul-comun-al-testelor) deține primitivele și probele generice. Consumatorul păstrează acceptanța adaptorului Android; transferul nu califică paralelismul și nu închide criteriul.
+[Suportul comun](README.md#common-test-support) holds the primitives and generic samples. The consumer keeps the acceptance of the Android adapter; the transfer does not qualify for parallelism or close the criterion.
 
-## Costul validării API
+## Cost of validating API
 
-| Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
+| Priority | Lacquer and source | Level and criterion of closure |
 |---|---|---|
-| P2 | [JsonSchemaCapabilities](../../atf-validation/src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) și [JsonSchemaValidator](../../atf-validation/src/main/java/atf/validation/contract/JsonSchemaValidator.java) nu declară un buget al adâncimii și volumului evaluării. | Probe controlate pentru adâncime, cardinalitate și repetarea regulilor; mediu și intrare identificate, refuz explicit și limite documentate în contract. |
+| P2 | [JsonSchemaCapabilities](../../atf-validation/src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) and [JsonSchemaValidator](../../atf-validation/src/main/java/atf/validation/contract/JsonSchemaValidator.java) shall not declare a budget for the depth and volume of the evaluation. | Controlled evidence for depth, cardinality and repetition of rules; identified environment and entry, explicit refusal and documented limits in contract. |
 
-## Stabilitatea verificării proceselor
+## Stability of process verification
 
-| Prioritate | Limită de calificare | Criteriu de închidere |
+| Priority | Qualification limit | Closure criterion |
 |---|---|---|
-| P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combină sincronizarea explicită cu praguri strânse ale timpului real. | Separați pregătirea subprocesului de intervalul transportului și proba de terminare/curățare de calificarea latenței pe mediul identificat. Păstrați termenul produsului și controalele negative; nu relaxați pragurile doar pentru a obține PASS. |
-| P2 | [Preflight-ul Android cu ADB simulat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) include pornirea PowerShell în termenul impus probei de refuz. Sub încărcare, proba poate eșua înaintea verdictului mock-ului. | Semnalizați separat pornirea fixture-ului și refuzul transportului. Validați refuzul cu ceas și proces controlate, împreună cu o probă restrânsă a lansatorului real. |
+| P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combines explicit synchronization with tight thresholds of real time. | Separate the preparation of the sub-process from the transport range and the terminare/curtation sample from the latency qualification on the identified environment. Keep product term and negative controls; do not relax thresholds just to get PASS. |
+| P2 | [Preflight-ul Android cu ADB simulat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) includes the start of PowerShell within the time limit imposed on the refusal test. Under loading, the evidence may fail before the mock verdict. | Signal the start of the fixture and the refusal of transport separately. Validate the clock and process-controlled refusal, along with a restricted sample of the actual launcher. |
 
-[Kitul testelor](../../lib/README.TestKit.md#scope-și-integrare) · [Validarea API](../../atf-validation/README.md) · [Guvernanță](ATF_Governance.md)
+[Test kit](../../lib/README.TestKit.md#purpose-and-integration) · [Validarea API](../../atf-validation/README.md) · [Governance](ATF_Governance.md)
 
-## Compoziția acțiunilor driverului
+## The driver's share composition
 
-| Prioritate | Lacună și responsabil | Criteriu de închidere |
+| Priority | Lackeys and responsible | Closure criterion |
 |---|---|---|
-| P2 | Adaptorul Android: [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) păstrează împreună selecția controalelor, repetarea comenzilor și înregistrarea succesului ori eșecului acțiunii. Blocurile similare cresc costul schimbării atribuirii și al temporizării. | Separați execuția și înregistrarea comună a acțiunii într-un colaborator cu porturi explicite, păstrând fațada driverului și oracolul de domeniu. Componente cu proces și ceas controlate demonstrează aceeași ordine a comenzilor, cauză originală, intervale și atribuire setup/body, inclusiv timeout și anulare. |
+| P2 | Android Adapter: [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) keeps together the selection of controls, the repetition of orders and the recording of success or failure of action. Similar blocks increase the cost of changing assignment and timing. | Separate the execution and joint registration of the action in a collaborator with explicit ports, keeping the driver facade and the field oracle. Components with process and watch controlled demonstrate the same order of orders, original cause, range and award setup/body, including timeout and cancellation. |
 
-## Calificarea costului RAG
+## RAG cost rating
 
-| Etapă | Criteriu rămas |
+| Step | Remaining criterion |
 |---|---|
-| Android | Măsurați separat așteptarea rezervării, pregătirea profilului, transportul și fluxul. Confruntați fereastra activă pentru a atribui corect întreruperile terțe. [Acceptanța Android](ATF_Android.md) |
-| Rapoarte | Calificați costul colectării și predării separat de execuție, la același inventar de invocări. [Registrul raportării](ATF_Reporting.md) |
+| Android | Measure the booking waiting, profile preparation, transport and flow separately. Face the active window to correctly assign third-party interruptions. [Acceptance of Android](ATF_Android.md) |
+| Rapoarte | Qualify the cost of collecting and handing over separately from execution, at the same inventory of invoicing. [Reporting register](ATF_Reporting.md) |
 
-Contractul de [reluare RAG](../testing/ATF_ReleaseQualification.md#reluarea-etapelor-validate) deține checkpoint-urile și reutilizarea snapshot-ului. Cronologiile concrete aparțin dosarului extern al execuției.
+The [reluare RAG](../testing/ATF_ReleaseQualification.md#resume-validated-steps) contract holds checkpoints and the re-use of snapshots. The concrete chronologies shall be the external file of the execution.

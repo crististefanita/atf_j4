@@ -1,170 +1,170 @@
-# Infrastructura și testele Android Whist Lab
+# Android Whist Lab infrastructure and tests
 
-## Pe scurt
+## Overview
 
-Modulul reunește adaptorul ADB, captura și temporizarea Android, audituri reutilizabile și scenariile Whist Lab. Componentele locale și fluxurile pe dispozitiv au selecții explicite; fiecare verificare distinge comanda, observația și comparația independentă.
+The module brings together the ADB adapter, the capture and timing of Android, reusable audits and the Whist Lab scenarios. Local components and flows on the device have explicit selections; each check distinguishes command, observation and independent comparison.
 
-Infrastructura deține execuția și captura, iar scenariul deține sensul acțiunii și rezultatul așteptat. Construirea APK-ului, instalarea și acceptanța interacțiunii au contracte separate.
+The infrastructure has the execution and the capture and the scenario has the meaning of the action and the expected outcome. The construction of the APK, installation and acceptance of the interaction have separate contracts.
 
-## Flux și responsabilități
+## Flow and responsibilities
 
 ```mermaid
 flowchart LR
     SCENARIO[Scenariu] -->|trimite| DRIVER[Adaptor UI]
-    DRIVER -->|execută prin| ADB[AdbClient]
-    DRIVER -->|capturează| TRACE[Observație și timp]
-    ORACLE[Oracol independent] -->|compară| TRACE
-    TRACE -->|alimentează| PUBLISH[Publicare consumator]
+    DRIVER -->|run through| ADB[AdbClient]
+    DRIVER -->|capture| TRACE[Observation and time]
+    ORACLE[Oracol independent] -->|compare| TRACE
+    TRACE -->|fuel| PUBLISH[Consumer publication]
 ```
 
 <details>
-<summary>Legendă: infrastructură și domeniu</summary>
+<summary>Legend: infrastructure and domain</summary>
 
-Adaptorul ADB păstrează rezultatul comenzii delimitate. Adaptorul UI interpretează starea observată, iar oracolul verifică proprietatea scenariului; biblioteca comună primește datele tipizate ale publicării.
+ADB adaptor retains the result of the demarcated command. The UI adapter interprets the observed state and the oracle checks the ownership of the scenario; the common library receives the printed publication data.
 
 </details>
 
-## Organizarea surselor
+## Organisation of sources
 
-| Zonă | Contract |
+| Area | Contract |
 |---|---|
-| [AdbClient](src/main/java/atf/android/AdbClient.java) | Dispozitiv explicit, durată maximă, ieșiri text sau binare. |
-| [TableViewportAudit](src/main/java/atf/android/whist/evidence/TableViewportAudit.java) | Compară o singură observație a mesei; E2E și componentele folosesc același oracol, cu date reale ori simulate. |
-| [Captură](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) și [temporizare](src/main/java/atf/android/evidence/timing/) | PNG original, ceas monoton, intervale și serializare. |
-| [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Verificări pure și publicarea indexului extern. |
-| [Scenarii și oracole](src/test/java/atf/android/e2e/) | Navigare, extragerea stării, actori și comparații ale jocului. |
-| [Interpretarea ierarhiei](src/test/java/atf/android/e2e/driver/hierarchy/) | `HierarchyDocument` decodează XML și coordonate; `CardLabelText` păstrează notația cărților, iar `CardHierarchy` interpretează mâna, atuul și legalitatea accesibilă. |
-| [Suportul de flux](src/test/java/atf/android/e2e/support/) | Puncte de control, jurnal parțial și publicare individuală sau agregată. |
+| [AdbClient](src/main/java/atf/android/AdbClient.java) | Explicit device, maximum duration, text or binary outputs. |
+| [TableViewportAudit](src/main/java/atf/android/whist/evidence/TableViewportAudit.java) | Compare one observation of the table; E2E and components use the same oracle, with real or simulated data. |
+| [Catch](src/main/java/atf/android/evidence/AndroidScreenshotEvidence.java) and [temporizare](src/main/java/atf/android/evidence/timing/) | Original PNG, monotonous clock, intervals and serialization. |
+| [Audituri Whist](src/main/java/atf/android/whist/evidence/) | Pure checks and publication of the external index. |
+| [Screenplays and oracles](src/test/java/atf/android/e2e/) | Navigation, state extraction, actors and game comparisons. |
+| [Interpretation of the hierarchy](src/test/java/atf/android/e2e/driver/hierarchy/) | `HierarchyDocument` decodes XML and coordinates; `CardLabelText` keeps the card notation, and `CardHierarchy` interprets the accessible hand, edge and legality. |
+| [Flow support](src/test/java/atf/android/e2e/support/) | Control points, partial log and individual or aggregated publication. |
 
-[POM-ul](pom.xml) adaugă sursele motorului și ale jucătorului independent numai în setul de surse de test. Profilul `responsive-sanity` folosește selecția restrânsă declarată în POM; configurația normală rămâne intrarea pentru setul complet de componente.
+[POM-ul](pom.xml) adds the engine and independent player sources only to the test source set. The `responsive-sanity` profile uses the narrow selection declared in the POM; normal configuration remains the input for the complete set of components.
 
-## Contracte de execuție
+## Performing contracts
 
-- Fiecare comandă are dispozitiv identificat și durată maximă; succesul transportului și tranziția semantică au verdicte distincte.
-- Interpretarea XML primește o singură observație și nu comandă dispozitivul. Decodorul refuză declarațiile `DOCTYPE`; selectorii generici și cei de cărți folosesc același model de nod și aceeași normalizare.
-- PNG-ul integral și ierarhia aparțin aceluiași punct de control verificat.
-- Dreptunghiurile logice UIAutomator sunt mapate la rasterul PNG observat înaintea comparațiilor de pixeli. [DisplayRaster](src/main/java/atf/android/evidence/DisplayRaster.java) cere dimensiuni fizice sau logice active exacte, fără toleranță pentru tăiere ori scalare arbitrară.
-- Ceasul fazei pornește înaintea primei acțiuni și păstrează intervalele parțiale la eșec.
-- Execuția, captura, jurnalul și publicarea păstrează axe temporale distincte.
-- Indexurile și rezultatele se scriu extern; [contractul publicării](../docs/reporting/ATF_Handoff.md) definește identitatea și acceptarea lor.
+- Each command has identified device and maximum duration; the success of the transport and semantic transition have distinct verdicts.
+- The XML interpretation receives one observation and does not order the device. The Decodator refuses statements `DOCTYPE`; generic and card selectors use the same node model and normalization.
+- The full NGP and the hierarchy belong to the same checkpoint checked.
+- UIAutomator logic points are mapped at the PNG raster observed prior to pixel comparisons. [DisplayRaster](src/main/java/atf/android/evidence/DisplayRaster.java) requires exact active physical or logical dimensions, without tolerance for cutting or arbitrary scaling.
+- The phase clock starts before the first action and keeps the partial intervals at failure.
+- The execution, capture, log and publication shall keep separate time axes.
+- The index and results shall be written externally; [contract of publication](../docs/reporting/ATF_Handoff.md) defines their identity and acceptance.
 
-## Verificare fără dispozitiv
+## Verification without device
 
-Dintr-o copie temporară proprie, cu POM-ul părinte, bibliotecile și un depozit Maven propriu:
+With his own temporary copy, with his own Pome, libraries and a Maven warehouse:
 
 ```powershell
 mvn -B -pl atf-test-android -am '-Dtest=AndroidUnitSuite,AndroidComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.android.enabled=false' test
 ```
 
-| Colecție | Contract verificat |
+| Collection | Contract verificat |
 |---|---|
-| [AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) | Toate componentele Maven ale adaptorului, cu observații controlate și fără dispozitiv. |
-| [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Temporizarea fluxului prin componente. |
-| [AndroidDisplayComponentSuite](src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profile, parsare, geometrie și raster sintetic; profilul Maven `display-components` exclude compilarea algoritmilor AI. |
+| [AndroidComponentSuite](src/test/java/atf/android/suites/AndroidComponentSuite.java) | All Maven components of the adapter with controlled observations and without device. |
+| [AndroidUiFlowTimingComponentSuite](src/test/java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Temporisation of flow through components. |
+| [AndroidDisplayComponentSuite](src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profiles, parsing, geometry and synthetic raster; Maven profile `display-components` excludes the compilation of AI algorithms. |
 
-Opțiunea `-ComponentsOnly` a lansatorului selectează colecția display fără dispozitiv. [Ghidul componentelor display](../docs/testing/ATF_DisplayComponents.md) definește intrările simulate, defectele controlate și limitele verificării.
+Option `-ComponentsOnly` The launcher selects the display collection without the device. [Display Component Guide](../docs/testing/ATF_DisplayComponents.md) define simulated inputs, controlled defects and verification limits.
 
 ## Fluxuri Android
 
-[Ghidul Android](../docs/testing/ATF_Android.md) definește dispozitivul, rezervarea exclusivă, activarea și starea inițială. [Matricea de ecrane](../docs/testing/ATF_Display.md) deține profilurile, distribuțiile controlate și fluxul de joc opțional; [verificarea jocului](../docs/testing/ATF_Gameplay.md) deține regulile și scorul.
+[Ghidul Android](../docs/testing/ATF_Android.md) defines the device, exclusive booking, activation and initial status. [Screen matrix](../docs/testing/ATF_Display.md) holds the profiles, controlled distributions and optional game flow; [game verification](../docs/testing/ATF_Gameplay.md) holds the rules and score.
 
-Pentru o verificare vizuală scurtă, `-TableViewportOnly` selectează mâna maximă,
-levata completă și licitarea cu selecție. `-Profiles` limitează matricea;
-imaginile și ierarhiile sunt păstrate în Extent, fără o partidă completă.
+For a short visual check, `-TableViewportOnly` selects the maximum hand,
+complete trick and bidding with selection. `-Profiles` limits the matrix;
+images and hierarchies are kept in Extent without a full match.
 
 ```powershell
 pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -TableViewportOnly -Profiles '720x1280@360'
 ```
 
-Runnerul necesită PowerShell 7 (`pwsh`), fiindcă adaptorul de proces ADB folosește
-`ProcessStartInfo.ArgumentList`. Build-ul și raportul rămân în locațiile temporară
-și externă documentate.
+Runner requires PowerShell 7 (`pwsh`), because the ADB process adapter uses
+`ProcessStartInfo.ArgumentList`. The building and report remain in temporary locations
+and documented external.
 
-Oracolul geometric și existența nodurilor au limite diferite de vizibilitatea în PNG și interacțiunea observată. Masa compactă cere mâna, levata și toate chenarele simultan, fără scroll vertical; verificarea pixelilor și acceptanța nativă rămân distincte de observațiile simulate.
+Geometric oracle and nodes have different limits to visibility in the NGP and observed interaction. The compact mass requires the hand, trick and all boxes simultaneously without vertical scroll; the check of pixels and native acceptance remain distinct from the simulated observations.
 
-## Niveluri de testare
+## Test levels
 
-- **Unitar:** ceasul monoton și serializarea intervalelor.
-- **Componentă:** ADB controlat, capturi, oracole, geometrie și publicare.
-- **E2E:** acțiuni noi în aplicația identificată și instalată, sub rezervarea dispozitivului.
+- **Unitar: ** monotonous clock and serialization of the intervals.
+- **Component: ** ADB controlled, catches, oracles, geometry and publication.
+- **E2E: ** new actions in the identified and installed application under the device reservation.
 
-[Arhitectura testării](../docs/testing/ATF_Architecture.md) separă nivelul, colecția, mediul și publicarea. Reluarea unui jurnal păstrează execuția sa originală; acceptanța unor interacțiuni noi cere un scenariu nou pe dispozitiv.
+[Test architecture](../docs/testing/ATF_Architecture.md) separates the level, collection, environment and publication. The resumption of a journal retains its original execution; the acceptance of new interactions requires a new scenario on the device.
 
-## Componente cu raport auditabil
+## Components with a report on the audit
 
-[Suita istoricului](src/test/java/atf/android/suites/AndroidHistoryComponentSuite.java) este o intrare JVM fără SDK sau dispozitiv. [Ghidul componentelor](../docs/testing/ATF_DisplayComponents.md#raportarea-componentelor-istoricului) deține selecția, output-ul în TMP și modurile Extent/fallback.
+[The suite of history](src/test/java/atf/android/suites/AndroidHistoryComponentSuite.java) is a JVM entry without SDK or device. [Component Guide](../docs/testing/ATF_DisplayComponents.md#reporting-of-historical-components) holds the selection, output in TMP and modes Extent/fallback.
 
-- Suportul reutilizabil al capturii și publicării este în [evidence.component](src/main/java/atf/android/evidence/component/); Kit deține protocolul JUnit și comparațiile, iar Reporting deține randarea.
-- Legătura cu metadatele JUnit rămâne în [AndroidComponentAudit](src/test/java/atf/android/component/AndroidComponentAudit.java), fără parsare de XML JUnit pentru reconstruirea aserțiunilor.
-- Kit este dependență de compilare pentru modelele capturate folosite în main; adaptorul Android nu introduce tipuri JUnit direct în sursele sale main.
-- Profilul `history-components` compilează numai această frontieră. Profilele `display-components` și `responsive-sanity` selectează execuția; nu elimină din compilare clase cerute indirect de suite.
+- The reusable catch and publication support is in [evidence.component](src/main/java/atf/android/evidence/component/); Kit holds JUnit protocol and comparisons and Reporting holds rendering.
+- Liaison with JUnit metadata remains in [AndroidComponentAudit](src/test/java/atf/android/component/AndroidComponentAudit.java), without XML JUnit parsing for rebuilding assertions.
+- Kit is a compilation dependency for captured models used in the main; the Android adapter does not introduce JUnit types directly into its main sources.
+- The `history-components` profile compiles only this frontier. Profiles `display-components` and `responsive-sanity` select execution; do not remove from compilation the classes indirectly required by the suite.
 
-## Mecanismele interacțiunii
+## The mechanisms of interaction
 
-| Mecanism | Întrebarea verificată | Responsabil |
+| Mechanism | Question verified | Owner |
 |---|---|---|
-| Așteptare pasivă | A apărut starea cerută înaintea termenului? | `UiStateAwaiter`, cu citire proaspătă și ceas monoton. |
-| Captură | Ierarhia și PNG-ul aparțin observației curente? | `UiDeviceCapture`, cu transfer și interval măsurat. |
-| Transport | S-a încheiat comanda, inclusiv drenarea ieșirilor? | `AdbClient` și `CommandProcess`, cu un singur termen. |
+| Passive expectation | Has the required status arisen before the deadline? | `UiStateAwaiter`, fresh-readable and monotonous watch. |
+| Catch | Hierarchy and NGP belong to the current observation? | `UiDeviceCapture`, with transfer and measured range. |
+| Transport | Has the command ended, including draining the exits? | `AdbClient` and `CommandProcess`, with one term. |
 
-Driverul compune aceste mecanisme și înregistrează acțiunile. Componentele controlează procesele, ceasul și observațiile; scenariul nativ califică separat dispozitivul și interacțiunea.
+The driver composes these mechanisms and records the actions. Components control processes, clocks and observations; the native scenario qualifies the device and interaction separately.
 
-| Contract schimbat | Verificare fără dispozitiv |
+| Contract schimbat | Verification without device |
 |---|---|
-| Prima observație și expirarea așteptării | [AndroidUiDriverComponentTest](src/test/java/atf/android/e2e/driver/AndroidUiDriverComponentTest.java), cu ceas și citiri controlate. |
-| Captură, transfer și interval | [AndroidUiDriverCaptureTimingTest](src/test/java/atf/android/e2e/driver/AndroidUiDriverCaptureTimingTest.java), cu procese și fișiere controlate. |
-| Pornire, terminare, drenare și curățare | [CommandProcessComponentTest](src/test/java/atf/android/process/CommandProcessComponentTest.java), cu procese locale controlate. |
+| First observation and expiry of the wait | [AndroidUiDriverComponentTest](src/test/java/atf/android/e2e/driver/AndroidUiDriverComponentTest.java), with watch and controlled readings. |
+| Catch, transfer and interval | [AndroidUiDriverCaptureTimingTest](src/test/java/atf/android/e2e/driver/AndroidUiDriverCaptureTimingTest.java), with processes and files controlled. |
+| Start, finish, drain and clean | [CommandProcessComponentTest](src/test/java/atf/android/process/CommandProcessComponentTest.java), with controlled local processes. |
 
-Transportul, intervalele și datele capturii pot susține altă aplicație. Selectorii cărților, interpretarea mesei și verificarea scorului păstrează semantica Whist; [transferul către alt joc](../docs/learning/ATF_GameTransfer.md) cere adaptor și oracol proprii.
+Transport, intervals and catch data may support another application. The card selectors, table interpretation and score check keep the Whist semantics; [Transfer to another game](../docs/learning/ATF_GameTransfer.md) requires adaptor and own oracle.
 
 <details>
-<summary>Contractul așteptării pasive și diagnosticul expirării</summary>
+<summary>Contract of passive waiting and diagnosis of expiry</summary>
 
-## Așteptarea unei stări
+## Expecting a status
 
 [UiStateAwaiter](src/test/java/atf/android/e2e/driver/waiting/UiStateAwaiter.java)
-deține bucla comună a așteptărilor pasive. Driverul furnizează condiția,
-intervalul de interogare și diagnosticul; citirea produce o ierarhie proaspătă.
+shares a common loop in passive expectations. The driver shall provide the condition,
+Interrogation interval and diagnosis; reading produces a fresh hierarchy.
 
 | Contract | Comportament |
 |---|---|
-| Prima observație | Condiția se evaluează înaintea pauzei, inclusiv când termenul este deja expirat. |
-| Reluare | Ceasul monoton verifică termenul între încercări; citirea ADB păstrează propriul contract de terminare. |
-| Diagnostic | Expirarea folosește ultima ierarhie observată; eroarea sau întreruperea nu este înlocuită printr-un succes ori o reluare. |
-| Navigare | Buclele care închid meniuri sau activează controale rămân distincte; așteptarea pasivă nu introduce acțiuni. |
+| First remark | The condition shall be assessed prior to the break, including when the deadline is already expired. |
+| Reluare | The monotonous clock checks the term between the tests; the readout of the ADB shall retain its own termination contract. |
+| Diagnostic | Expiration uses the last observed hierarchy; error or interruption is not replaced by success or resumption. |
+| Navigare | Loops closing menus or activating controls remain distinct; passive waiting does not introduce actions. |
 
-Componentele folosesc ceas și pauze controlate, fără emulator sau praguri de
-performanță ale gazdei. [Guvernanța pachetelor](../docs/governance/ATF_Packages.md)
-delimitează mecanismul de interacțiuni și de capturarea dovezilor.
+Components use watch and controlled breaks without emulator or thresholds
+Host performance. [Package governance](../docs/governance/ATF_Packages.md)
+delimit the mechanism for interaction and capture of evidence.
 
 </details>
 
 <details>
-<summary>Contractul transportului, capturii și curățării proceselor</summary>
+<summary>Contract of transport, capture and process cleaning</summary>
 
-## Execuția delimitată a transportului
+## Distinguished transport execution
 
-[Driverul UI](src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) păstrează
-interacțiunile și jurnalul acțiunilor. [Captura](src/test/java/atf/android/e2e/driver/UiDeviceCapture.java)
-deține transferul ierarhiei și al PNG-ului, reîncercările și închiderea intervalului
-măsurat. O ierarhie rămasă de la alt ecran sau un PNG anterior nu poate demonstra
-succesul capturii curente; întreruperea păstrează cauza și marcajul firului.
+[Driverul UI](src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) keep
+interactions and stock log. [Captura](src/test/java/atf/android/e2e/driver/UiDeviceCapture.java)
+holds the transfer of the hierarchy and NGP, retesting and closing the range
+measured. A hierarchy left over from another screen or prior PNG cannot demonstrate
+success of current catch; interruption retains the cause and marking of the wire.
 
-[AdbClient](src/main/java/atf/android/AdbClient.java) deleagă [execuția procesului](src/main/java/atf/android/process/CommandProcess.java) cu un singur termen monoton pentru pornire, terminare și drenarea ieșirilor. Întreruperea păstrează marcajul firului, iar erorile de citire nu sunt convertite în succes.
+[AdbClient](src/main/java/atf/android/AdbClient.java) delegates [execution of the process](src/main/java/atf/android/process/CommandProcess.java) with a single monotonous term for starting, finishing and drainage exits. The interruption shall retain the wire marking and the reading errors shall not be converted into success.
 
-- Operațiile native blocante folosesc fire daemon independente de planificatorul firelor virtuale.
-- Așteptarea observă ambele fluxuri, astfel încât o ieșire blocată să nu ascundă eroarea celeilalte; o eroare deja observată are prioritate față de diagnosticul generic de expirare.
+- Native blocking operations use daemon wires independent of virtual thread planner.
+- The wait shall observe both flows so that one locked exit does not conceal the error of the other; an error already observed takes precedence over the generic expiry diagnosis.
 
-Componentele transportului folosesc procese locale controlate. [Acceptanța Android](../docs/testing/ATF_Android.md) verifică separat comportamentul pe dispozitiv; publicarea unei capturi valide are propriul contract.
+Transport components use controlled local processes. [Acceptance of Android](../docs/testing/ATF_Android.md) checks the behaviour on the device separately; publication of a valid catch has its own contract.
 
-- La eșec se solicită oprirea procesului și a descendenților observați cât timp părintele este activ.
-- Închiderea fluxurilor nu blochează apelantul; un proces creat după expirarea pornirii este curățat când devine disponibil.
-- Erorile curățării se adaugă cauzei inițiale; un descendent desprins înainte să poată fi observat nu are identitate garantată de API-ul Java.
+- The failure requires that the process and the observed offspring be stopped while the parent is active.
+- Flow closure does not block the caller; a process created after the start-up is cleaned when it becomes available.
+- The errors in cleaning are added to the original cause; a descendant removed before it can be observed has no identity guaranteed by API Java.
 
-Bugetele de memorie pentru text și binar rămân [criteriu deschis al adaptorului](../docs/feedback/ATF_Android.md). [Responsabilitățile pachetelor](../docs/governance/ATF_Packages.md) dețin regulile extragerii mecanismelor fără schimbarea identității și ordinii scenariilor.
+Memory budgets for text and binary stay [Open adaptor criterion](../docs/feedback/ATF_Android.md). [Package responsibilities](../docs/governance/ATF_Packages.md) hold the rules for extracting mechanisms without changing the identity and order of scenarios.
 
 </details>
 
-## Catalogul testelor
+## Test catalogue
 
-[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.
+[Inputs and responsibilities of tests](src/test/README.md) explains the selection, preconditions and interpretation of the result, through the same common strategy for all deliveries.

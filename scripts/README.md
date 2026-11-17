@@ -1,75 +1,75 @@
-# Lansatoarele proiectului
+# Project launchers
 
-## Pe scurt
+## Overview
 
-- [Proba unui control testChanges](run-component-suites.ps1) folosește selecția offline declarată și scrie dovada legată de commit. [Contractul probei](../docs/governance/ATF_TestChanges.md#dovada-controlului-verificat)
+- [Test of a control testChanges](run-component-suites.ps1) uses declared offline selection and writes the proof related to commit. [Contractul probei](../docs/governance/ATF_TestChanges.md#proof-of-verified-control)
 
-- [Guvernanța schimbărilor de teste](run-atf-governance.ps1) primește baza Git a revizuirii. [Contractul diff-ului](../docs/governance/ATF_TestChanges.md#verificarea-diff-ului-git) explică perimetrul, expirarea și refuzurile.
+- [Governance of changes in tests](run-atf-governance.ps1) receives Git base of review. [The diff contract](../docs/governance/ATF_TestChanges.md#checking-the-git-diff) explains the perimeter, expiration and refusals.
 
-- [Inventarul JVM](run-jvm-inventory.ps1) verifică sursele unui checkout selectat. [Contractul CLI](../docs/governance/README.md#inventar-jvm-prin-cli) explică perimetrul, excepțiile și codurile de ieșire.
+- [Inventarul JVM](run-jvm-inventory.ps1) checks the sources of a selected checkout. [Contractul CLI](../docs/governance/README.md#jvm-inventory-via-cli) explains the perimeter, exceptions and output codes.
 
-- [Izolare E2E Android cu utilizator temporar](Invoke-AtfAndroidDisposableUser.ps1) creează profil secundar nou, îl deblochează și previne stingerea ecranului doar în acel profil, instalează candidatul numai acolo și îl elimină la teardown după verificarea aceleiași rezervări. Chitanțele păstrează și verifică starea inițială a instalării aplicației în profilul original; contractul și raportarea sunt documentate în [acceptanța APK-ului semnat](../atf-test-android/src/test/java/atf/android/e2e/release/README.md).
+- [Isolation E2E Android with temporary user](Invoke-AtfAndroidDisposableUser.ps1) create a new secondary profile, unlock it and prevent the display from being turned off only in that profile, install the candidate only there and remove it at the teardown after checking the same reservation. Quotts keep and check the initial status of the installation of the application in the original profile; contract and reporting are documented in the contract [acceptance of signed APK](../atf-test-android/src/test/java/atf/android/e2e/release/README.md).
 
-- [Agregarea componentelor Maven și Gradle](run-component-suites.ps1) compilează într-un staging propriu și execută suitele Maven primare, colecțiile aplicației și selecția JVM distinctă a bibliotecii UI comune. Taskurile Gradle selectate împart o singură lansare. Fiecare selecție păstrează un HTML Extent și receipt proprii. [Contractul auditului](../docs/reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) explică inventarul, refuzurile și separarea de calificarea APK-ului.
+- [Aggregation of Maven and Gradle components](run-component-suites.ps1) compiles in its own staging and performs the Maven primary suites, application collections and the distinct JVM selection of the common UI library. The Gradle Task selected share a single launch. Each selection keeps an Extent HTML and Receipt of its own. [Audit contract](../docs/reporting/ATF_Audit.md#aggregation-of-components-on-live-source) explains the inventory, refusals and separation from APK qualification.
 
-- Pentru calificare incrementală, `-SourceRoot` indică snapshot-ul fixat și `-Groups` primește identificatorii selecțiilor care trebuie rulate. Lista omisă selectează toate grupurile. Parametrul -ReuseFrom indică dosarul anterior de componente. Lansatorul rulează grupurile cu intrări afectate sau dovezi invalide. [Regula de reutilizare](../docs/testing/ATF_ReleaseQualification.md#reutilizarea-dovezilor-de-componentă)
+- For incremental qualification, `-SourceRoot` indicate the fixed snapshots, and `-Groups` The list omitted selects all groups. ReuseFrom parameter indicates the previous component directory. Launcher runs affected input groups or invalid evidence. [Re-use rule](../docs/testing/ATF_ReleaseQualification.md#re-use-of-component-evidence)
 
-- [Exportul AAR al bibliotecii grafice](export-card-table-ui.ps1) construiește coordonata lipsă din intrările modulului și ale uneltelor Gradle. Un export repetat verifică manifestul și hash-urile pachetului existent.
+- [Export of the Graphic Library AAR](export-card-table-ui.ps1) builds the missing coordinate from the input of the module and Gradle tools. Repeated export checks the manifest and hashes of the existing package.
 
-Acest director coordonează operații care traversează modulele: verificări, construirea aplicației și scenarii Android activate explicit. Algoritmii, validatoarele și testele uneltelor aparțin modulelor care dețin comportamentul.
+This director coordinates operations that cross modules: checks, application building and explicitly activated Android scenarios. Algorithms, validators and tool tests belong to the modules that hold the behavior.
 
-Lansatoarele citesc rădăcina proiectului din propria poziție și pregătesc copii temporare. Rezultatele se păstrează în depozitul extern configurat.
+Launchers read the project root from their own position and prepare temporary copies. The results shall be kept in the external warehouse configured.
 
-## Responsabilități
+## Liabilities
 
 ```mermaid
 flowchart LR
-    RUN[Lansator] -->|selectează| MODULE[Modul responsabil]
-    MODULE -->|execută| CHECK[Verificare]
-    CHECK -->|păstrează| OUT[Rezultat extern]
+    RUN[Lansator] -->|select| MODULE[Modul responsabil]
+    MODULE -->|execute| CHECK[Verification]
+    CHECK -->|keep| OUT[Rezultat extern]
 ```
 
 <details>
-<summary>Legendă: coordonare și implementare</summary>
+<summary>Legend: coordination and implementation</summary>
 
-Un lansator alege modulele, parametrii și resursele. Motorul și laboratorul dețin jocul și evaluarea offline, infrastructura Android deține dispozitivul, iar consumatorul raportării deține datele publicate.
+A launcher chooses modules, parameters and resources. The engine and the laboratory have the game and the offline evaluation, the Android infrastructure has the device, and the reporting consumer has the published data.
 
 </details>
 
-## Alegerea intrării
+## Choice of entry
 
-| Operație | Intrare și contract |
+| Operation | Entry and contract |
 |---|---|
-| Reguli și evaluare offline | [run-whist-collection.ps1](run-whist-collection.ps1), cu [colecții și precondiții](../docs/testing/ATF_Collections.md). |
-| Partide și perspective controlate | [Laboratorul AI](../whist-lab-app/ai-lab/README.md), cu lansatoarele `run-offline-*`. |
-| Calitatea proiectului | [run-atf-governance.ps1](run-atf-governance.ps1), cu [perimetru explicit](../docs/governance/README.md). |
-| Calificare Android semnată | [run-whist-signed-e2e.ps1](run-whist-signed-e2e.ps1) verifică dovada per grup și pregătește Maven înaintea rezervării. [Reluare și import](../docs/testing/ATF_ReleaseQualification.md#rularea-și-reluarea-unui-flux-pe-apk-semnat) |
-| Scenarii pe dispozitiv | [Ghidul Android](../docs/testing/ATF_Android.md) și [matricea de ecrane](../docs/testing/ATF_Display.md). |
+| Rules and offline evaluation | [run-whist-collection.ps1](run-whist-collection.ps1), with [collections and prerequisites](../docs/testing/ATF_Collections.md). |
+| Controlled parties and perspectives | [Laboratorul AI](../whist-lab-app/ai-lab/README.md), with launchers `run-offline-*`. |
+| Project quality | [run-atf-governance.ps1](run-atf-governance.ps1), with an [explicit scope](../docs/governance/README.md). |
+| Signed Android Qualification | [run-whist-signed-e2e.ps1](run-whist-signed-e2e.ps1) checks the proof per group and prepares Maven prior to booking. [Relocation and import](../docs/testing/ATF_ReleaseQualification.md#running-and-restarting-a-feed-on-apk-signed) |
+| Screenplay on device | [Ghidul Android](../docs/testing/ATF_Android.md) and [Screen matrix](../docs/testing/ATF_Display.md). |
 
-## Unde se află uneltele
+## Where the tools are
 
-- [Laboratorul AI](../whist-lab-app/ai-lab/tools/README.md): corpus, modele, diagnostic și calificarea politicilor.
-- [Infrastructura Android](../atf-test-android/tools/README.md): replay-ul și predarea datelor Android capturate.
-- [Consumatorul raportării](../atf-tests/tools/README.md): validarea și selecția intrărilor publicate.
+- [Laboratorul AI](../whist-lab-app/ai-lab/tools/README.md): corpus, models, diagnosis and qualification of policies.
+- [Infrastructura Android](../atf-test-android/tools/README.md): replicay and surrender of captured Android data.
+- [Reporting consumer](../atf-tests/tools/README.md): validation and selection of published entries.
 
-PowerShell se verifică sintactic separat de execuția operației. Un scenariu Android cere aplicație identificată și rezervare exclusivă; documentarea comenzii nu reprezintă o execuție pe dispozitiv.
+PowerShell shall be checked syntactically separately from the operation. An Android scenario requires identified application and exclusive booking; ordering documentation is not an execution on the device.
 
-## Precondiții după intrare
+## Preconditions after entry
 
-| Intrare | Resurse și date necesare | Ce verifică executarea |
+| Intrare | Resources and data required | What checks execution |
 |---|---|---|
-| `run-whist-collection.ps1` | JDK selectat prin `JavaHome`, wrapper Gradle și cache JVM; protocol, candidat și corpus când colecția le cere. | Validează colecția și identitățile, pregătește copia și apelează Gradle cu `--offline`; raportează separat codul de ieșire. |
-| `run-documentation-governance.ps1` | JDK 21 și cache Maven pentru dependențele Jackson. | [Verificare editorială](../docs/governance/ATF_Documentation.md#cli-pentru-guvernanța-documentației) pentru fișiere selectate sau inventarul complet. |
-| `run-atf-governance.ps1` | JDK, `mvn` disponibil, POM-uri și perechi JAR/POM; cache Maven pentru depozitul copiei. | Verifică APK-urile înainte de Maven și confruntă inventarele surselor și ale dosarului de release. [Snapshot](../docs/testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) |
-| `run-offline-*` | Uneltele și parametrii declarați de fiecare fișier; unele intrări folosesc căi locale explicite. | Execută protocolul acelei intrări; disponibilitatea uneltei nu se deduce din parsarea scriptului. |
-| Flux Android | Configurația ADB, binarul aplicației, rezervare și backup verificat. | [Contractul infrastructurii](../atf-test-android/README.md) delimitează transportul, comanda și observația. |
+| `run-whist-collection.ps1` | JDK selected by `JavaHome`, gradle wrapper and jvm cache; protocol, candidate and corpus when the collection requires them. | Validate the collection and identities, prepare the copy and call Gradle with `--offline`; report the output code separately. |
+| `run-documentation-governance.ps1` | JDK 21 and Caache Maven for Jackson's dependencies. | [Editorial check](../docs/governance/ATF_Documentation.md#cli-for-governance-of-documentation) for selected files or full inventory. |
+| `run-atf-governance.ps1` | JDK, `mvn` available, poms and pairs JAR/POM; cache Maven for copy warehouse. | Check APKs before Maven and face sources inventories and release directory. [Snapshot](../docs/testing/ATF_ReleaseQualification.md#snapshot-and-preflight-before-maven) |
+| `run-offline-*` | Tools and parameters declared by each file; some entries use explicit local pathways. | Execute the protocol of that entry; the availability of the tool is not deducted from the parting of the script. |
+| Flux Android | ADB configuration, application binar, booking and backup checked. | [Contractul infrastructurii](../atf-test-android/README.md) delimits transport, command and observation. |
 
-Colecțiile JVM nu cer conectarea emulatorului. Pregătirea Java/Maven/Gradle nu este încă un verificator unic de capabilități; [feedback-ul coordonării](../docs/feedback/ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor) deține uniformizarea.
+JVM collections do not require connection of emulator. Java/Maven/Gradle is not yet a unique capability verifier; [coordination feedback](../docs/feedback/ATF_Governance.md#qualification-of-claims-and-launchers) holds the uniformity.
 
-## Identitatea execuției
+## Identity of execution
 
-[Lansatorul colecțiilor](run-whist-collection.ps1) deține validarea bazei și rezervarea evaluării. Uniformizarea precondițiilor și diagnosticului rămâne în [feedback-ul coordonării](../docs/feedback/ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor).
+[Collections Launcher](run-whist-collection.ps1) holds the validation of the base and reservation of the evaluation. Uniforming the preconditions and diagnosis remain in [coordination feedback](../docs/feedback/ATF_Governance.md#qualification-of-claims-and-launchers).
 
-- [Contractul bazei candidatului](../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului) validează inventarul complet, hash-urile și copia finală, cu migrare explicită a identității. Criteriile și rezultatele rămân distincte, iar configurația generală nu se umple cu identitățile unor experimente încheiate.
+- [Contract of the candidate's basis](../docs/testing/ATF_Collections.md#full-identity-of-candidate-base) validates the complete inventory, the hashes and the final copy, with explicit identity migration. The criteria and results remain distinct and the overall configuration is not filled with the identities of completed experiments.
 
-- [Registrul comun](../docs/learning/ATF_EvaluationRegistry.md) serializează rezervările și refuză suprapunerile evaluării între corpusuri. Lansatoarele de diagnostic înregistrează reutilizarea pentru învățare; o rulare întreruptă nu eliberează automat distribuțiile.
+- [Registrul comun](../docs/learning/ATF_EvaluationRegistry.md) serializes reservations and refuses to duplicate the assessment between the bodies. Diagnostic launchers record re-use for learning; a run-off does not automatically release distributions.

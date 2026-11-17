@@ -1,46 +1,46 @@
-# Contractul corpusului de partide
+# The contract of the body of parties
 
-## Pe scurt
+## Overview
 
-Corpusul este o intrare externă pentru replay, selecție și analiză offline. Proiectul deține schema și validatoarele; fișierele partidelor, manifestele concrete și registrele loturilor rămân în depozitul extern configurat.
+The corpus is an external entry for the replicay, selection and offline analysis. The project has the schematics and validators; party files, concrete manifests and lot registers remain in the external warehouse configured.
 
-## Modelul datelor
+## Data model
 
 | Entitate | Contract |
 |---|---|
-| Partidă | Identitate, partiție, profil de reguli, politici și ordinea mâinilor. |
-| Mână | Dealer, distribuție, atu și carte întoarsă, licitații ordonate, levate și închiderea scorului. |
-| Observație | Mâna actorului și prefixul public disponibil la decizie. |
-| Manifest | Fișiere selectate, hash-uri, identitatea părintelui și scopul selecției. |
-| Registru de lot | Separarea dezvoltării de evaluare și evidența intervalelor deja consumate. |
+| Party | Identity, partition, rule profile, policies and order of hands. |
+| Hand | Dealer, distribution, trump card, orderly bids, tricks and closing score. |
+| Observation | The actor's hand and the public prefix available at the decision. |
+| Manifest | Selected files, hashes, parent identity and purpose of selection. |
+| Lot Register | Separate evaluation development and record of already consumed ranges. |
 
 ```mermaid
 flowchart LR
-    FILE[Partidă externă] -->|alimentează| ORACLE[Validator independent]
-    ORACLE -->|admite în partiție| MANIFEST[Manifest verificat]
-    MANIFEST -->|selectează explicit| REPLAY[Replay și analiză]
-    REPLAY -->|proiectează| OBS[Observații pentru diagnostic]
+    FILE[External Party] -->|fuel| ORACLE[Validator independent]
+    ORACLE -->|admissions to partition| MANIFEST[Manifest verificat]
+    MANIFEST -->|explicitly select| REPLAY[Replay and analysis]
+    REPLAY -->|design| OBS[Diagnostic observations]
 ```
 
 <details>
-<summary>Legendă: accesul la date</summary>
+<summary>Legend: access to data</summary>
 
-Validatorul poate verifica proprietatea tuturor cărților după încheierea jocului. Politica primește proiecția permisă la decizie, iar analiza nu transformă mâinile adverse reale în intrări ale acelei politici.
+The validator can check the property of all cards after the game is finished. The policy receives the projection allowed to the decision, and the analysis does not turn actual adverse hands into inputs of that policy.
 
 </details>
 
-## Partiții și integritate
+## PARTIES AND INFIDENCE
 
-- Development permite analiza și ajustarea; selecția activă citește numai manifestul declarat.
-- Heldout este rezervat evaluării candidatului înghețat și se înregistrează ca expus la deschidere.
-- Reference păstrează intrări de compatibilitate; ele nu justifică o afirmație despre puterea actuală a unei politici.
-- Repetările aceleiași distribuții sau urme nu se numără drept observații independente.
-- În schema partidei, seed-ul este șir zecimal exact; parserul nu îl convertește printr-un număr JavaScript care ar pierde precizia tipului Java long.
-- Identitatea, partiția, căile și SHA-256 se verifică înainte de utilizare.
+- Development allows analysis and adjustment; active selection reads only the declared manifest.
+- Heldout is reserved for the assessment of the frozen candidate and is registered as exposed to the opening.
+- Reference keeps compatibility inputs; they do not justify a statement about the current power of a policy.
+- Repeats of the same distribution or trace shall not be counted as independent observations.
+- In the match scheme, the seedum is exactly decimal; the parser does not convert it by a JavaScript number that would lose the accuracy of the type Java long.
+- The identity, partition, paths and SHA-256 shall be checked prior to use.
 
-## Utilizare
+## Usage
 
-[Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ. [Validatorul](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs) verifică regulile și scorul, iar [selectorul activ](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) controlează selecția.
+[Body configuration](../../config/learning-corpus.json) indicates the archive and active pointer.[Validatorul](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs) checks the rules and the score, and [selectorul activ](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) controls the selection.
 
 ```powershell
 $gamePath = Read-Host 'Fișierul JSON extern pentru replay'
@@ -49,8 +49,8 @@ node whist-lab-app/ai-lab/tools/corpus/whist-corpus-cli.mjs replay $gamePath $ex
 node whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs verify-current
 ```
 
-[Replay-ul](../../whist-lab-app/ai-lab/tools/corpus/whist-archive-replay.mjs) cere hash-ul așteptat înaintea citirii, compară octeții și apoi verifică regulile; o intrare lipsă, schimbată sau ilegală este refuzată. Hash-ul identifică fișierul, fără să demonstreze proveniența ori corectitudinea jocului. Sarcina Gradle `:ai-lab:replayArchive` acceptă aceleași intrări prin `-Pwhist.archive.file` și `-Pwhist.archive.sha256` și nu face parte din `check`.
+[Replay-ul](../../whist-lab-app/ai-lab/tools/corpus/whist-archive-replay.mjs) requires the hash expected prior to reading, compares bytes and then checks the rules; a missing, changed or illegal entry is denied. The hash identifies the file without demonstrating the provenance or correctness of the game. The Gradle `:ai-lab:replayArchive` task accepts the same entries by `-Pwhist.archive.file` and `-Pwhist.archive.sha256` and is not part of `check`.
 
-Componentele implicite folosesc [date legale construite](../../whist-lab-app/ai-lab/tools/testing/legal-game-fixture.mjs), cu reguli de pregătire independente de validator. Arhiva externă este necesară numai pentru operațiile selectate asupra datelor păstrate.
+Default components use [legal data built](../../whist-lab-app/ai-lab/tools/testing/legal-game-fixture.mjs), with rules of training independent of validator. External archive is required only for selected operations on kept data.
 
-[Criteriile selecției](ATF_Selection.md) și [protocolul evaluării](README.md) explică folosirea corpusului pentru îmbunătățirea politicilor.
+[Selection criteria](ATF_Selection.md) and [evaluation protocol](README.md) explain the use of the body to improve policies.

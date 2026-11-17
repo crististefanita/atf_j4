@@ -1,12 +1,12 @@
-# Reporting — dovezi și rapoarte auditabile
+# Reporting - evidence and auditable reports
 
-## Pe scurt
+## Overview
 
-Reporting publică datele, comparațiile și verdictul callerului în Extent/fallback, fără Core ori Kit.
+Reporting publishes the data, comparisons and verdict of the caller in Extent/fallback, without Core or Kit.
 
 | Nevoie | API |
 |---|---|
-| Rulare individuală/clasă/suită | `AssertionAuditRun` |
+| Individual rolling / class / suite | `AssertionAuditRun` |
 | Invocare | `run.open(Identity)` → `AssertionAuditReport` |
 | Ports / fallback | `AtfReportPorts` / `HtmlReportSession` |
 | HTTP observat | `request.execution(ReportExecutionEvidence)`, cu `ReportResponse` |
@@ -14,7 +14,7 @@ Reporting publică datele, comparațiile și verdictul callerului în Extent/fal
 
 ## Exemplu minim
 
-Individual: `try (var run = open(output)) { publish(run, actual); }`. Suita păstrează run-ul și deschide un scenariu per invocare:
+Individual: `try (var run = open(output)) { publish(run, actual); }`. The suite keeps the run and opens a scenario per invoicing:
 
 ```java
 import atf.reporting.audit.AssertionAuditRun;
@@ -45,34 +45,34 @@ public static void publish(AssertionAuditRun run, String actual) {
 }
 ```
 
-## Scope și integrare
+## Purpose and integration
 
-| Owner | Închidere și limită |
+| Owner | Closure and limit |
 |---|---|
-| AssertionAuditRun | Deține sesiunea; close publică HTML-ul final. |
-| run.open(identity) | Împrumută sesiunea; close închide scenariul invocării. |
-| Constructorul AssertionAuditReport(session, ...) | Deține și închide sesiunea proprie. |
+| AssertionAuditRun | He holds the session; close publishes his final HTML. |
+| run.open(identity) | Borrowed session; close close close closing the invoicing scenario. |
+| Constructorul AssertionAuditReport(session, ...) | Owns and closes his own session. |
 
-- Aceleași settings/redactor în run și renderer; preview implicit **240**, citit prin assertionMaxDisplayCharacters(). Valorile complete preced preview-ul.
-- Exemplul urmează thread-ul sesiunii; AssertionAuditRun.extent(...) serializează publicarea pentru apelanți concurenți.
-- Kit colectează comparația JUnit evaluată o dată; Reporting publică. Callerul păstrează verdictul, cauza și timing-ul prin phase(..., timing).
-- Fails indexează cauza terminală la rândul ACTION sau OBSERVE care a eșuat. Tests păstrează și diagnosticul colapsabil, iar comparațiile independente rămân distincte.
-- PNG-ul păstrează întregul viewport/display; captura și zoom-ul aparțin adaptorului. Capturile identice din același pas păstrează o singură dovadă și primul caption.
-- După close, ReportArtifactInspector.inspect(path, profile) califică inventarul și resursele embedded; diagnosticul localizează dependențele externe. Căile text rămân valide. Inspectorul este static; randarea și interacțiunile se verifică separat în browser.
-- Browserul aparține callerului: separați diagnosticul de discovery JUnit de execuție, închideți contextul înaintea browserului și păstrați cauza inițială la cleanup.
+- Use the same settings and redactor in the run and renderer. The default preview is **240**, as returned by assertionMaxDisplayCharacters(). Full values come before the preview.
+- The example follows the thrall of the session; the AssertionAuditRun.extent (...) serializes the publication for competing callers.
+- Kit collects the JUnit comparison evaluated once; Reporting publicly. The callier keeps the verdict, cause and timeout through phase (..., timing).
+- Fails indexes the terminal cause in the line ACTION or OBSERVES that failed. Tests also retain the collapsible diagnosis, and independent comparisons remain distinct.
+- The NGP keeps the entire viewport/display; the capture and the zoome belong to the adapter. The same catch at the same step shall retain one single proof and the first caption.
+- After close, the ReportArtifactInspector.inspect (path, profiles) qualifies inventory and Emended resources; diagnosis localalexternal dependencies. The text paths remain valid. The inspector shall be static; the rendering and interactions shall be checked separately in the browser.
+- The browser belongs to the caller: separate the diagnosis from JUnit Discovery of execution, close the context before the browser and keep the original cause to the cleanup.
 
-## Verificarea utilizării
+## Verification of use
 
-| Intrare în metoda exemplului | Rezultat observabil |
+| Example method input | Rezultat observabil |
 |---|---|
-| `actual` este `ready`. | Metoda se încheie normal, iar fișierul HTML există după închiderea sesiunii. |
-| `actual` diferă sau este `null`. | Raportul păstrează comparația eșuată, apoi metoda aruncă `AssertionError`. |
-| Sursa exemplului este compilată pe alt JAR. | Orice incompatibilitate a constructorilor ori metodelor trebuie detectată înaintea publicării. |
+| `actual` este `ready`. | The method shall be terminated normally and the HTML file shall be in place after the end of the session. |
+| `actual` differs or is `null`. | The ratio keeps the comparison failed, then the method throws `AssertionError`. |
+| The source of the example is compiled on another JAR. | Any incompatibility of manufacturers or methods shall be detected prior to publication. |
 
-Exemplul verifică folosirea API-ului și propagarea verdictului. Autonomia HTML, expandarea interactivă și capturile native au acceptanțe proprii; existența fișierului nu le demonstrează singură.
+The example verifies the use of API and the propagation of the verdict. HTML autonomy, interactive expansion and native catches have their own acceptances; the existence of the file does not demonstrate them itself.
 
-Durata HTTP provine din `ReportResponse.duration()`; `detail(...)` păstrează textul callerului, fără să îl transforme într-o măsurătoare de transport.
+The duration of HTTP comes from `ReportResponse.duration()`; `detail(...)` retains the text of the calleric without converting it into a transport measurement.
 
 ---
 
-Perechea Reporting este un binar extern fixat în POM și în registrul de proveniență. Acest ghid verifică API-ul consumat și rezultatul raportului în aplicație; o limitare observată se atașează versiunii, hash-ului și unui exemplu reproductibil. [Procedura locală](README.md#mentenanță-și-feedback)
+The reporting pair is an external binary fixed in the POM and the register of provenance. This guide checks the API consumed and the result of the report in the application; an observed limitation is attached to the version, hash and a reproducible example. [Local procedure](README.md#maintenance-and-feedback)

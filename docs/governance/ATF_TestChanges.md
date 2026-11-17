@@ -1,66 +1,66 @@
-# Guvernanța schimbărilor în teste
+# Governance of changes in tests
 
-## Pe scurt
+## Overview
 
-O modificare a testelor păstrează sensul contractului și motivul pentru care o intrare este admisă sau refuzată. Schimbarea implementării nu justifică ajustarea rezultatului așteptat doar pentru a obține succes.
+A change in the tests shall preserve the meaning of the contract and the reason for which an entry is admitted or refused. The change in implementation does not justify adjusting the expected result only to achieve success.
 
 ## Criterii
 
-| Suprafață | Contract |
+| Surface | Contract |
 |---|---|
-| Expected | Derivat din cerință, invariant sau oracol independent. |
-| Control negativ | Eșecul intenționat demonstrează că testul detectează defectul vizat. |
-| Identitate | Cazul, sursele, configurația și domeniul sunt explicite. |
-| Verdict | Cauza originală se păstrează prin captură și publicare. |
-| Populație | Selecția și omisiunile sunt declarate fără numărători istorice fixate în ghid. |
-| Rezultate | Rulările concrete și comparațiile de versiuni se păstrează în arhiva externă. |
+| Expected | Derived from requirement, invariant or independent oracle. |
+| Control negativ | The intended failure demonstrates that the test detects the defect concerned. |
+| Identitate | The case, sources, configuration and domain are explicit. |
+| Verdict | The original cause shall be retained by catch and publication. |
+| Population | The selection and omissions shall be declared without historical counting fixed in the guide. |
+| Rezultate | Concrete runs and version comparisons shall be kept in the external archive. |
 
-## Revizia unei schimbări
+## Revision of a change
 
-1. Formulați proprietatea generală și frontierele ei.
-2. Reproduceți defectul într-un caz mic cu date controlate.
-3. Verificați eșecul controlului negativ și succesul cazului valid.
-4. Reconciliați sursele concurente înaintea calificării.
-5. Actualizați colecția, contractul și documentația mecanismului în aceeași revizie.
+1. Form general ownership and its borders.
+2. Reproduce the defect in a small case with controlled data.
+3. Check negative control failure and successful valid case.
+4. Reconcile competing sources prior to qualification.
+5. Update the collection, contract and documentation of the mechanism in the same revision.
 
-[Guvernanța documentației](ATF_Documentation.md) · [Colecții](../testing/ATF_Collections.md)
+[Governance of documentation](ATF_Documentation.md) · [Collections](../testing/ATF_Collections.md)
 
-## Verificarea diff-ului Git
+## Checking the Git diff
 
-Rulați [lansatorul de guvernanță](../../scripts/run-atf-governance.ps1) din checkout-ul revizuit. Alegeți commitul comun de dinaintea schimbării. Lansatorul verifică testele pe o copie izolată și citește diferența din checkout-ul Git indicat.
+Run [Governance launcher](../../scripts/run-atf-governance.ps1) from the revised checkout. Choose the joint communique before change. The launcher checks the tests on an isolated copy and reads the difference in the Git checkout indicated.
 
 ```powershell
 .\scripts\run-atf-governance.ps1 -TestChangeBaseRef $reviewBase
 ```
 
-| Contract | Verificare |
+| Contract | Verification |
 |---|---|
-| Bază | Un commit local anterior sau egal cu HEAD. În CI declarați baza explicit și anterioară lui HEAD. Local, fără parametru, HEAD delimitează numai schimbările necomise. |
-| Intrări Git | Diferențele comise față de bază, indexul, fișierele de lucru și fișierele noi. Sunt incluse și intrările protejate ignorate de Git. |
-| Perimetru | Seturile Maven și Gradle de teste și resurse, POM-urile, configurarea Gradle, selecțiile de suite și intrările executabile ale guvernanței și calificării. |
-| Autorizație | O singură intrare eligibilă pentru calea exactă, SHA-ul bazei și data UTC. Data expirării este inclusivă. |
-| Refuz | Bază absentă sau străină, cale neacoperită, control expirat, eligibilitate ambiguă, metadate invalide sau stare Git neacceptată. |
-| Redenumire | Ștergerea căii vechi plus adăugarea căii noi. Ștergerea cere explicit allowDelete. |
+| Base | A local commit prior to or equal to head. In CI, you declare the explicit and prior basis of head. Locally, without a parameter, HEAD only delimits uncommitted changes. |
+| Git inputs | Differences from base, index, work files and new files. Includes protected entries ignored by Git. |
+| Perimetru | Maven and Gradle sets of tests and resources, POMS, Gradle configuration, suite selections and executable inputs of governance and qualification. |
+| Authorisation | Only one entry eligible for exact route, base SHAUS and UTC date. The expiry date is inclusive. |
+| Refuz | Absence or foreign base, uncovered path, expired control, ambiguous eligibility, invalid metadata or unaccepted Git status. |
+| Redenumire | Erase the old path plus add the new path. The deletion explicitly requires allowDelete. |
 
-Lansatorul transmite baza prin proprietatea atf.governance.testChanges.baseRef. Pentru selecția de componente se poate seta ATF_TEST_CHANGE_BASE_REF înainte de lansare. Review-ul întregii ramuri folosește întotdeauna un commit anterior lui HEAD.
+The launcher shall transmit the base by property atf.government ance.testChanges.baseRef. For the selection of components, set ATF_TEST_CHANGE_BASE_REF prior to launch. The entire branch's review always uses a commit prior to head.
 
-## Ciclul de viață al controlului
+## Life cycle of control
 
-| Etapă | Loc și criteriu |
+| Step | Place and criterion |
 |---|---|
-| ACTIVE | Documentul de [feedback responsabil](../feedback/README.md) păstrează motivul, comanda probei și lista exactă a căilor. |
-| VERIFIED | [Registrul tehnic](ATF_TestChangesBaseline.md) păstrează același ID și selecția probei. Autorizația pentru diff-ul curent cere dovada verificată, baza și expirarea. |
-| DRAFT și CLOSED | Intrarea structurată poate consemna propunerea sau închiderea. Aceste stări au eligibilitate zero. |
-| Retragere | Confruntați controlul cu baza revizuirii. Eliminați intrarea numai când diff-ul vizat nu mai are nevoie de ea. |
+| ACTIVE | The [feedback responsabil](../feedback/README.md) document keeps the reason, the order of the sample and the exact list of pathways. |
+| VERIFIED | [Registrul tehnic](ATF_TestChangesBaseline.md) keeps the same ID and sample selection. The current diff authorization requires verified proof, basis and expiration. |
+| DRAFT AND CLOSED | The structured entry may record the proposal or closure. These states have zero eligibility. |
+| Retragere | Face control with the basis of the review. Remove the entrance only when the diff targeted no longer needs it. |
 
-- Blocul YAML are cheia `testChanges` și o listă nevidă. Fiecare element declară `id`, `status`, `base`, `expires`, `reason`, `proof` și `paths`. Câmpul `allowDelete` este opțional și implicit fals.
-- Căile relative folosesc separatorul `/`. Fiecare ID este unic în documentele inspectate.
+- The YAML block has the `testChanges` key and a blank list. Each item declares `id`, `status`, `base`, `expires`, `reason`, `proof` and `paths`. Field `allowDelete` is optional and implicitly false.
+- Relative pathways use the `/` separator. Each ID shall be unique in the documents inspected.
 
-Comanda proof exprimă verificarea planificată și se execută separat. [Probele de componentă](../../atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java) construiesc istorii Git locale și califică mecanismul fără dispozitiv.
+The proof command expresses the planned verification and runs separately. [Component samples](../../atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java) builds local Git histories and qualifies the mechanism without device.
 
-## Dovada controlului verificat
+## Proof of verified control
 
-Puneți controlul și selecția de teste în commitul evaluat. Creați dovada într-un dosar nou, extern checkout-ului. Lansatorul compilează o copie izolată și publică dovada numai după confirmarea stabilității surselor.
+Place control and selection of tests in the assessed commissary. Create proof in a new, external checkout file. The launcher shall compile an isolated copy and publish the evidence only after confirmation of the source stability.
 
 ```powershell
 .\scripts\run-component-suites.ps1 -AllTestChangeControls -TestChangeBaseRef $reviewBase -RunRoot $runRoot
@@ -70,23 +70,23 @@ $env:ATF_TEST_CHANGE_PROOF_ROOT = Join-Path $runRoot 'proofs'
 
 | Element | Contract |
 |---|---|
-| Selectori | Declarați listele checks.positive și checks.negative cu metode de componentă distincte, în forma pachet.Clasă#metodă. |
-| Control negativ | Metoda injectează defectul și afirmă refuzul așteptat. În dovadă, atât cazul valid, cât și cazul de refuz trebuie să aibă verdict PASS la nivel JUnit. |
-| Identitate | Chitanța fixează ID-ul, SHA-ul bazei, SHA-ul commitului verificat și SHA-256 al diff-ului Git brut. Sunt incluse bloburile și modurile fișierelor. |
-| Lotul din diff | O singură compilare alimentează toate controalele VERIFIED cerute. Fiecare control are JVM, log și HTML proprii. Publicarea directorului `proofs` se face după trecerea întregului lot și reconfirmarea selecției și a sursei. |
-| Rulare | Lansatorul execută exact selecția declarată și confruntă invocările cu Extent. Chitanța și HTML-ul se păstrează împreună, în directorul cu ID-ul controlului. |
-| Verificare | Alt commit, alt diff, alt control, probe lipsă sau omise și HTML cu hash diferit blochează autorizația VERIFIED. Un checkout modificat cere un candidat nou. |
-| Istoric | Controalele vechi sunt păstrate în registru. Folosirea unui control VERIFIED pentru diff-ul revizuit cere selecție și dovadă exacte. |
+| Selectori | Declare checks.positive and negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative check.positive checks.negative check.positive check.positive |
+| Control negativ | The method injects the defect and affirms the expected refusal. In evidence, both the valid case and the case of refusal must have a PASS verdict at JUnit level. |
+| Identitate | The receipt fixes the IDA, base SHAA, verified commit SHAA and the SHA-256 of the gross Git diff. Includes blobs and file modes. |
+| Lot of diff | A single compilation feeds all required VERIFIED controls. Each control has its own JVM, log and HTML. The publication of the Director of `proofs` shall be made after the whole lot has passed and the selection and source has been reconfirmed. |
+| Rulare | The launcher shall perform the exact selection declared and shall face the summons with Extent. The receipt and HTML are stored together in the directory with the control IDE. |
+| Verification | Other commit, other diff, other control, missing or missed samples and HTML with different hash blocks the VERIFIED authorisation. A modified checkout requires a new candidate. |
+| Istoric | Old controls are kept in the register. Using a VERIFIED control for the revised diff requires accurate selection and proof. |
 
-La eșec sau schimbarea sursei, consultați logurile per control și dosarul `proofs.pending` pentru diagnostic. Pentru o probă punctuală, `-TestChangeControl` păstrează chitanța sub `<RunRoot>/<ID>`. Reutilizați chitanța și raportul pentru același commit și același diff.
+When failing or changing source, see the logs per control and the `proofs.pending` diagnostic folder. For a spot test, `-TestChangeControl` keeps the receipt under `<RunRoot>/<ID>`. Reuse the receipt and report for the same commit and diff.
 
-## Mutarea proprietății unei verificări
+## Moving the property of a check
 
-Transferul unei implementări către o bibliotecă păstrează toate contractele native la producător. Consumatorul păstrează acceptanța API-ului folosit, identitatea JAR-ului încărcat și refuzurile pentru metadate ori livrări inconsistente.
+The transfer of an implementation to a library shall keep all native contracts to the manufacturer. The consumer shall retain the acceptance of the API used, the identity of the loaded JARs and the refusal of metadata or inconsistent deliveries.
 
-- Cererea de schimbare identifică sursele afectate, proprietarul nou, înlocuirea echivalentă și criteriile independente de acceptare.
-- Rulările și capturile transferului se leagă de livrare. Controlul tehnic păstrează baza Git și căile sale în registru.
-- Ștergerea copiei locale nu suprimă un caz negativ și nu transformă o verificare de bibliotecă într-o acceptanță Android.
-- Documentația curentă descrie limita de responsabilitate, fără liste istorice de teste șterse.
+- The request for change shall identify the affected sources, the new owner, the equivalent replacement and the independent acceptance criteria.
+- The transfers and catches shall be linked to delivery. The technical check shall keep the base of Git and its paths in the register.
+- Wiping the local copy does not suppress a negative case and does not transform a library check into an Android acceptance.
+- The current documentation describes the liability limit without historical lists of deleted tests.
 
-[Guvernanța calității](README.md) verifică perimetrul curent și interzice sursele paralele ale bibliotecilor binare.
+[Quality governance](README.md) checks the current perimeter and prohibits parallel sources of binary libraries.

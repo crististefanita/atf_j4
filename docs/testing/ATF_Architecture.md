@@ -1,134 +1,134 @@
-# Arhitectura testării
+# Test architecture
 
-## Pe scurt
+## Overview
 
-Nivelul unui test rezultă din limita pe care o verifică. Colecția stabilește scopul și costul selecției, iar mediul stabilește dacă execuția folosește numai JVM sau și un dispozitiv Android.
+The level of a test results from the limit they check. The collection sets out the purpose and cost of selection, and the environment determines whether execution uses only JVM or an Android device.
 
-## Alegerea nivelului minim
+## Choice of minimum level
 
 ```mermaid
 flowchart LR
-    CONTRACT[Contract] -->|delimitează| LIMIT[Limită observabilă]
-    LIMIT -->|alege| LAYER[Nivel minim]
-    LAYER -->|controlează| FIXTURE[Pregătire izolată]
-    FIXTURE -->|exercită| CHECK[Verificare independentă]
-    CHECK -->|justifică| RESULT[Rezultat]
+    CONTRACT[Contract] -->|delimited| LIMIT[Observed limit]
+    LIMIT -->|alege| LAYER[Minimum level]
+    LAYER -->|control| FIXTURE[Isolated preparation]
+    FIXTURE -->|exercise| CHECK[Independent verification]
+    CHECK -->|justifies| RESULT[Result]
 ```
 
 <details>
-<summary>Legendă: contractul precede instrumentul</summary>
+<summary>Legend: contract precedes instrument</summary>
 
-Nivelul depinde de colaborarea reală necesară verificării. Un fișier arhivat, un raport sau numele pachetului nu transformă un test într-o execuție E2E.
+The level depends on the actual collaboration required for verification. An archived file, report or package name does not convert a test into an E2E execution.
 
 </details>
 
-| Nivel | Contract verificat | Pregătire potrivită | Limită |
+| Level | Contract verificat | Suitable preparation | Limit |
 |---|---|---|---|
-| Unitar — `unit` | Politică pură, model, calcul, parsare sau formatare | Intrări tipizate, ceas controlat, fără servicii | Nu certifică integrarea dintre module. |
-| Componentă — `component` | API-ul public al unui modul ori adaptor | Dubluri controlate, date locale, fișiere temporare | Nu certifică o călătorie nouă în aplicația instalată. |
-| Integrare — `integration` | Colaborarea reală dintre componente sau module | Bibliotecile fizice, configurație și resurse controlate | Nu repetă toate variantele deja acoperite la nivel inferior. |
-| Cap la cap — `e2e` | Parcurs observabil în aplicația Android | Dispozitiv rezervat, aplicație identificată, stare inițială explicită | Cere acțiuni și observații noi; se activează separat. |
+| Unitar — `unit` | Pure policy, model, calculation, parsing or formatting | Typed inputs, watch controlled, no service | It does not certify integration between modules. |
+| Component - `component` | Public API of an adaptor or module | Controlled doubles, local data, temporary files | It does not certify a new journey into the installed app. |
+| Integrare — `integration` | Real collaboration between components or modules | Physical libraries, configuration and controlled resources | Don't repeat all the variants already covered at the lower level. |
+| Head to head - `e2e` | Observed course in Android app | Reserved device, identified application, explicit initial status | Ask for new actions and observations; it shall be activated separately. |
 
-O funcție auxiliară, un constructor de date, un încărcător sau un oracol este suport. O clasă executabilă dintr-un pachet de suport își declară propriul nivel.
+An auxiliary function, a data manufacturer, a charger or an oracle is a support. A class executable from a support package declares its own level.
 
-## Matricea executabilă Maven
+## Maven Executable Matrix
 
-Tabelul reflectă adnotările claselor executabile, inclusiv adnotările compuse. „—” înseamnă absența unei clase declarate la acel nivel; nu impune crearea unei suite artificiale.
+The table reflects the annotations of executable classes, including compound annotations. "- 'means the absence of a class declared at that level; it does not require the creation of an artificial suite.
 
-| Modul | Unitar | Componentă | Integrare | E2E | Responsabilitate |
+| Module | Unitar | Component | Integrare | E2E | Responsibility |
 |---|---|---|---|---|---|
-| `atf-validation` | Da | Da | — | — | Reguli de validare și evaluarea contractelor publice. |
-| `atf-test-android` | Da | Da | Da | Da | Timp, ADB simulat, oracole, integrarea raportării și parcursuri Android reale. |
-| `atf-tests` | Da | Da | Da | — | Contractele adaptoarelor, binarele comune și guvernanța proiectului. |
+| `atf-validation` | Da | Da | — | — | Validation rules and evaluation of public contracts. |
+| `atf-test-android` | Da | Da | Da | Da | Time, simulated ADB, oracles, integration of reporting and real Android trails. |
+| `atf-tests` | Da | Da | Da | — | Adapter contracts, joint binaries and project governance. |
 
-[Verificarea matricei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java) confruntă acest tabel cu sursele curente. Fiecare clasă executabilă Maven are exact una dintre `@AtfUnitTest`, `@AtfComponentTest`, `@AtfIntegrationTest` și `@AtfE2eTest`, direct sau printr-o adnotare compusă.
+[Math verification](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java) faces this table with current sources. Each Maven executable class has one of the exact `@AtfUnitTest`, `@AtfComponentTest`, `@AtfIntegrationTest` and `@AtfE2eTest`, directly or through compound annotation.
 
-Declarațiile sunt extrase prin parserul JDK, independent de indentare și de poziția adnotării față de modificatori. Metodele aparțin tipului care le declară, containerele `@Nested` au rol explicit, iar modulele păstrează identitatea rădăcinilor Maven; [contractul sintactic](../governance/README.md#declarațiile-testelor) delimitează această inspecție de execuția JUnit.
+Statements are extracted through JDK parser, independent of indentation and annotation position towards modifiers. Methods belong to the type declaring them, containers `@Nested` be explicit and modules retain the identity of the Maven roots; [contractul sintactic](../governance/README.md#test-declarations) delimited this inspection by the execution of JUnit.
 
-- **Biblioteci comune:** Core, Reporting, Console, Mock și [Test Kit](../../lib/README.TestKit.md) sunt [biblioteci binare](../platform/README.md). Testele lor native rămân la responsabilul comun; proiectul verifică separat integrarea binarelor și adaptoarele sale.
+- **Common libraries:** Core, Reporting, Console, Mock and [Test Kit](../../lib/README.TestKit.md) are [binary libraries](../platform/README.md). Their native tests remain with the joint responsible; the project verifies separately the integration of the binaries and its adapters.
 
-| Contract reprezentativ | Sursă |
+| Contract reprezentativ | Source |
 |---|---|
-| Ceas și intervale | [AndroidPhaseClockTest](../../atf-test-android/src/test/java/atf/android/evidence/timing/AndroidPhaseClockTest.java) |
-| Adaptor fără dispozitiv | [AdbClientContractTest](../../atf-test-android/src/test/java/atf/android/AdbClientContractTest.java) |
-| Binar și integrarea consumatorului | [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) |
+| Clock and intervals | [AndroidPhaseClockTest](../../atf-test-android/src/test/java/atf/android/evidence/timing/AndroidPhaseClockTest.java) |
+| Adapter without device | [AdbClientContractTest](../../atf-test-android/src/test/java/atf/android/AdbClientContractTest.java) |
+| Binar and consumer integration | [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) |
 | Parcurs Android | [WhistLabGameplayE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabGameplayE2eTest.java) |
-| Calitatea surselor și documentelor | [AtfQualityGovernanceSuite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) |
+| Quality of sources and documents | [AtfQualityGovernanceSuite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) |
 
-## Suite primare și selecții focalizate
+## Primary suites and focused selections
 
-[Catalogul executabil](../../config/atf-test-suites.json) atribuie fiecărei clase Maven exact o suită primară din modulul și nivelul ei. Selectorii primari folosesc pachetele și eticheta nivelului, cu motorul Jupiter; o clasă nouă intră în selecție fără completarea manuală a unei liste.
+[Catalogul executabil](../../config/atf-test-suites.json) assigns each Maven class exactly one primary suite from its module and level. Primary selects use the Jupiter engine packages and level label; a new class goes into the selection without manual completion of a list.
 
-| Rol | Responsabilitate | Regula de agregare |
+| Rol | Responsibility | Regula de agregare |
 |---|---|---|
-| Primar | Populația completă a unui nivel dintr-un modul | Fiecare clasă executabilă are exact un proprietar primar. |
-| Focalizat | Submulțime explicită a unuia sau mai multor părinți primari | Se execută pentru diagnostic ori un scop restrâns; nu adaugă din nou cazurile în totalul primar. |
+| Primar | Full population of a level of one module | Every executive class has exactly one primary owner. |
+| Focalizat | Explicit subset of one or more primary parents | Perform for diagnosis or a narrow purpose; do not add cases back to the primary total. |
 
-- **Acoperire:** părinții includ întreaga populație a selecției focalizate înaintea filtrelor de canal. Suita primară nu permite excluderi; filtrarea unei selecții offline păstrează proprietarul primar al canalului.
+- **Coverage: ** parents include the entire population of the targeted selection before channel filters. The primary suite does not allow exclusions; the filtration of an offline selection keeps the primary owner of the channel.
 
-- **Guvernanță:** [controlul selecțiilor](../../atf-tests/src/test/java/atf/tests/governance/suites/SuiteOwnershipGovernanceTest.java) confruntă declarațiile, rolurile și selecțiile. Refuză clase omise, proprietari multipli, nivel greșit și selecții neînregistrate ori fără părinte; corecția modifică intrarea, fără eliminarea testului.
+- **Governance:** [selection control](../../atf-tests/src/test/java/atf/tests/governance/suites/SuiteOwnershipGovernanceTest.java) face statements, roles and selections. Refuse missed classes, multiple owners, wrong level and unregistered or without parent selections; correction changes entry without removing the test.
 
-- **Nivel:** guvernanța este o selecție focalizată care traversează mai multe niveluri. Verificările și publicatoarele care consumă jurnale externe au nivel de integrare și precondiții proprii; recitirea ori republicarea nu devine componentă autonomă sau execuție Android.
+- **Level: ** Governance is a focused selection that crosses several levels. Checks and publishers that consume external journals have their own level of integration and preconditions; rereading or republishing does not become an autonomous component or Android execution.
 
-## Motorul și interfața în Gradle
+## Engine and interface in Gradle
 
-Motorul folosește JUnit JVM prin [configurația proprie](../../whist-lab-app/game-core/build.gradle). Nu depinde de Test Kit și nu pretinde adnotările Maven.
+Engine uses JUnit JVM via [configuration](../../whist-lab-app/game-core/build.gradle). It's not up to Test Kit and it's not claiming Maven annotations.
 
-[ai-lab](../../whist-lab-app/ai-lab/README.md) este modul JVM consumat numai la testarea motorului. `:ai-lab:check` execută contractele Java locale și uneltele Node.js, cu date legale construite fără arhivă. Classpath-ul Java local exclude motorul, Android și ATF; experimentele păstrate sub `experiments` sunt excluse din sursele principale.
+[ai-lab](../../whist-lab-app/ai-lab/README.md) is JVM mode consumed only when testing the engine. `:ai-lab:check` performs local Java contracts and Node.js tools, with legal data built without archive. The local Java classpath excludes the engine, Android and ATF; experiments kept below `experiments` are excluded from the main sources.
 
-| Zonă | Nivel semantic | Ce verifică | Execuție |
+| Area | Test layer | What does it verify? | Implementation |
 |---|---|---|---|
-| Reguli și scor | Unitar sau componentă, după API-ul exercitat | Legalitate, levate, puncte, serii și limite | JVM, fără Android. |
-| Sesiune și restaurare | Componentă | Comenzi, tranziții și respingerea unei stări inconsistente | Situații legale controlate. |
-| Politici AI | Componentă | Observația permisă, decizia și proprietățile justificate independent | [Proiectarea testelor AI](ATF_AiComponents.md). |
-| Costul deciziei | Componentă și integrare între observație și cele două API-uri AI | Lucru, CPU, legalitate și determinism pe poziții generate | [Profil JVM explicit](../ai/ATF_CostQualification.md); fără latență Android sau verdict strategic. |
-| Partidă simulată | Integrare de domeniu | Colaborarea politicilor cu motorul și oracolul până la scorul final | Distribuții și locuri declarate. |
-| Geometrie și texte Android | Unitar sau componentă JVM | Dimensiuni, regiuni, localizare și modele de prezentare | [Testele aplicației](../../whist-lab-app/app/src/test/java/ro/whistlab/app/). |
-| Interacțiune în aplicația instalată | E2E | Legătura dintre comandă, stare, captură și scor | [Infrastructura Android](ATF_Android.md). |
+| Rules and score | Unitary or component, after API exercised | Legality, tricks, points, series and limits | JVM, no Android. |
+| Session and restoration | Component | Orders, transitions and rejection of an inconsistent state | Legal situations controlled. |
+| AI policies | Component | Allowed observations, decisions and independently justified properties | [AI test design](ATF_AiComponents.md). |
+| Decision cost | Component and integration between observation and the two decision APIs | Work, CPU time, legality and determinism on generated positions | [Explicit JVM profile](../ai/ATF_CostQualification.md). Android latency and strategic quality are evaluated separately. |
+| Simulated match | Domain integration | Policy collaboration with engine and oracle up to final score | Distributions and places declared. |
+| Android geometry and text | Unit or JVM component | Dimensions, regions, localization and presentation models | [App tests](../../whist-lab-app/app/src/test/java/ro/whistlab/app/). |
+| Interaction in the installed app | E2E | The relationship between command, state, capture and score | [Android infrastructure](ATF_Android.md). |
 
-Un turneu este o evaluare de politică, cu populație și criterii proprii. Numărul partidelor sau victoria nu înlocuiesc așteptarea independentă a unei regresii de componentă.
+A tournament is a policy assessment with its own population and criteria. The number of parties or victory does not replace the independent expectation of a regression of the component.
 
-## Axe independente
+## Independent dimensions
 
-| Axă | Întrebarea la care răspunde | Sursa contractului |
+| Axis | Question to which he answers | Source of contract |
 |---|---|---|
-| Nivel | Ce limită este verificată? | Acest ghid și declarațiile executabile. |
-| Colecție | De ce și când rulăm selecția? | [Catalogul colecțiilor](ATF_Collections.md). |
-| Mediu | Ce resurse reale sunt necesare? | JVM, copie temporară sau dispozitiv rezervat explicit. |
-| Canal | Ce observație verificăm? | Interfață, API ori combinația declarată. |
-| Publicare | Ce invocări și date prezentăm? | [Contractul datelor publicate](../reporting/ATF_Audit.md). |
+| Test layer | Which boundary is checked? | This guide and the executable assertions. |
+| Collection | Why and when do we run this selection? | [Collection catalog](ATF_Collections.md). |
+| Environment | What real resources are needed? | JVM, temporary copy or explicitly reserved device. |
+| Channel | What observation is checked? | The user interface, the API or the declared combination. |
+| Publication | Which invocations and data do we present? | [Published data contract](../reporting/ATF_Audit.md). |
 
-`quick`, `regression`, `strategy` și `learning` sunt scopuri de selecție. Republicarea unui jurnal Android este o verificare a adaptorului de publicare; nu execută din nou interacțiunile istorice.
+`quick`, `regression`, `strategy` and `learning` are selection purposes. The publication adapter is a check of the Android journal; it does not execute historical interactions again.
 
-## Construcția și întreținerea unei verificări
+## Construction and maintenance of a verification
 
-Mutarea unei verificări la un nivel mai mic păstrează invariantul și oracolul. Se extrage o responsabilitate observabilă; numărul mai mic de teste Android nu justifică pierderea unui refuz ori a unei tranziții.
+Moving a check to a lower level keeps the invariant and the oracle. Observed responsibility is extracted; the smaller number of Android tests does not justify losing a refusal or transition.
 
-1. Formulați proprietatea și limita ei înaintea alegerii instrumentului.
-2. Alegeți nivelul minim care observă defectul fără a împrumuta verdictul implementării.
-3. Pregătiți o stare validă și un rezultat așteptat independent.
-4. Verificați cazul nominal, refuzul relevant și vecinul sănătos.
-5. Declarați separat resursele, bugetul, selecția și condițiile de activare.
-6. Actualizați documentul contractului și eliminați suprapunerile fără proprietăți distincte.
+1. Formula the ownership and limit before the instrument is chosen.
+2. Choose the minimum level that notices the defect without borrowing the implementation verdict.
+3. Prepare a valid state and an independently expected result.
+4. Check the nominal case, relevant refusal and healthy neighbor.
+5. Declare resources, budget, selection and activation conditions separately.
+6. Update the contract document and remove overlaps without distinct properties.
 
-Rezultatele se păstrează în afara surselor. Testele unitare nu sunt obligate să producă prezentarea unui parcurs E2E; volumul publicării urmează scopul verificării.
+The results shall be kept out of the source. Unit tests shall not be required to produce the presentation of an E2E path; the volume of publication shall be the purpose of the verification.
 
-## Mutarea verificărilor din E2E în componente
+## Moving the checks from E2E to components
 
-| Proprietate extrasă | Componenta potrivită | Ce rămâne pe Android |
+| Extract property | The appropriate component | What remains on Android |
 |---|---|---|
-| Geometrie, intersecții și centrare | Măsurători tipizate, extreme legale, text mărit și vecini care încalcă o singură limită. | Fontul efectiv, insets, ținta tactilă și aceeași compoziție în raster. |
-| Interpretarea ierarhiei | XML controlat: stare validă, nod lipsă, duplicat, regiune tăiată și document malformat. | Captura proaspătă după acțiune și identitatea ecranului observat. |
-| Tranziție sau reluare | Porturi mici, motorul real și evenimente livrate controlat, inclusiv după anulare. | Comanda prin controlul afișat, callback-urile și persistența platformei. |
-| Reguli localizate și opțiuni de salvare | Textul furnizat aplicației în fiecare limbă, opțiunile de configurare, codec-ul real și intrările nevalide. | Schimbarea limbii și redeschiderea ajutorului, câte o acțiune pentru selector și bifă, reluarea după oprirea procesului. |
-| Licitație sub dialoguri suprapuse | Componentele joacă închiderea istoricului și scorului cu o recomandare deja în coadă. Alegerea manuală rămâne selectată și scorul nu se schimbă înaintea confirmării. | Licitarea pe APK verifică dialogul de scor, confirmarea și restaurarea după restart. Legenda și randarea rămân în traseul dedicat istoricului. |
-| Publicare | Date capturate, comparații și eșecuri originale; Extent/fallback și mutații ale rezultatului. | Revizia interactivă a HTML-ului rămâne audit de raport, cu propriul mediu. |
+| Geometry, crossings and centering | Typed, extreme legal measurements, increased text and neighbors who violate a single limit. | The actual font, the thirst, the tactile target and the same composition in raster. |
+| Interpretation of the hierarchy | XML controlled: valid status, missing node, duplicate, cut region and malformed document. | Fresh catch after action and the identity of the screen observed. |
+| Transition or resumption | Small ports, actual engine and controlled delivered events, including after cancellation. | Command through displayed control, callbacks and platform persistence. |
+| Localised rules and rescue options | Text provided to the application in each language, configuration options, actual codecul and invalid inputs. | Change of language and reopening of aid, a action for the selector and the check, resumption after the process has stopped. |
+| Bidding under overlapping dialogues | The components play the closure of history and score with a recommendation already in the queue. The manual choice remains selected and the score does not change prior to confirmation. | Bidding on APK checks the score dialogue, confirmation and restoration after restart. Legend and rendering remain in the historic route. |
+| Publication | Data captured, original comparisons and failures; Extent/fallback and output mutations. | The interactive review of HTMLs remains report audit with its own environment. |
 
-- **Echivalență:** mapați cazul vechi la cazurile noi prin proprietate și identitate; păstrați situația nominală, refuzul și vecinul sănătos.
-- **Izolare:** fixture-ul schimbă intrarea ori observația controlată, iar așteptarea provine din regulă sau oracol independent. Nu folosiți rezultatul implementării ca expected.
-- **Ordine:** temporizarea injectată verifică succesiunea evenimentelor; un somn real sau un retry nu înlocuiește dovada opririi la eșec.
-- **Selecție:** rulați entry point-ul real al suitei și confruntați [inventarul execuției](ATF_Collections.md#inventarul-unei-selecții); fișierul mutat trebuie compilat și selectat efectiv.
+- **equivalence: ** mapped the old case to new cases by property and identity; keep the nominal situation, refusal and healthy neighbor.
+- **Isolation: ** the fixture changes the entrance or controlled observation, and the waiting comes from the rule or independent oracle. Do not use the result of implementation as expected.
+- **Order: ** the injected timer checks the sequence of events; actual sleep or a retry does not replace proof of failure.
+- **Selection:** Play the real point of the suite and face [the inventory of the execution](ATF_Collections.md#summary-of-selection); the file moved must be compiled and effectively selected.
 
-Componentele oracolului și sanity-ul nativ califică frontiere diferite. [Ghidul afișajului](ATF_Display.md) deține selecția nativă rămasă, iar [guvernanța schimbării testelor](../governance/ATF_TestChanges.md) deține retragerea cazurilor fără pierderea contractului.
+The components of the oracle and the native sanityul qualify for different borders. [Display Guide](ATF_Display.md) holds the remaining native selection and [governance of test change](../governance/ATF_TestChanges.md) holds the withdrawal of cases without losing the contract.
 
-[Colecții și comenzi](ATF_Collections.md) · [Verificarea partidei](ATF_Gameplay.md) · [Guvernanța calității](../governance/README.md)
+[Collections and commands](ATF_Collections.md) · [Verification of the match](ATF_Gameplay.md) · [Quality governance](../governance/README.md)

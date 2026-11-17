@@ -1,12 +1,12 @@
-# Componentele adaptorului de audit Gradle
+# Gradle audit adaptor components
 
-## Pe scurt
+## Overview
 
-Testele verifică legarea fiecărei invocări de intrările și comparațiile ei, contractul matricilor exhaustive și refuzul dovezilor inconsistente. [Strategia comună](../../../../docs/testing/README.md)
+The tests shall verify the binding of each claim to its inputs and comparisons, the contract of exhaustive matrices and the refusal of inconsistent evidence. [Common strategy](../../../../docs/testing/README.md)
 
 | Familie | Oracol |
 |---|---|
-| Punte Gradle | Identitățile invocărilor, intrările și rezultatele capturate pot fi confruntate cu așteptări independente. |
-| Matrice | Agregarea păstrează aria evaluată și face vizibilă prima nepotrivire. |
+| Punte Gradle | Identities of the appeals, entries and results caught may be confronted with independent expectations. |
+| Matrice | Aggregation keeps the area evaluated and makes the first non-match visible. |
 
-Sarcina `:test-audit:test` verifică adaptorul pe JVM. [Fixture-urile consumate de module](../testFixtures/README.md)
+Pregnancy `:test-audit:test` Check the adapter on JVM. [Plugins](../testFixtures/README.md)

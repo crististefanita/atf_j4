@@ -1,12 +1,12 @@
-# Console — diagnostic pentru execuție
+# Console - diagnostic for execution
 
-## Pe scurt
+## Overview
 
-`atf-console` proiectează evenimentele ATF în stdout/stderr: lifecycle, durate și detalii configurabile. Este util pentru urmărirea unei rulări Maven sau IntelliJ; artifactul HTML este produs de [Reporting](README.Reporting.md).
+`atf-console` design ATF events in stdout/stderr: lifecycle, durates and configurable details. It is useful for tracking a Maven or IntelliJ run; HTML artifact is produced by [Reporting](README.Reporting.md).
 
 ## Exemplu minim
 
-Fragment într-o metodă; politica este explicită, iar stream-ul rămâne în adaptor:
+Fragment in a method; policy is explicit and the stream remains in the adaptor:
 
 ```java
 import atf.console.AtfConsoleReporter;
@@ -17,7 +17,7 @@ var console = AtfConsoleReporter.configuredStdout(
 console.info("Catalogul de scenarii a fost încărcat");
 ```
 
-`configuredStdout()` citește `atf.report.config` → `ATF_REPORT_CONFIG` → `atf.yaml/yml`; opțiunile sunt:
+`configuredStdout()` read `atf.report.config` → `ATF_REPORT_CONFIG` → `atf.yaml/yml`; options are:
 
 ```yaml
 reporting:
@@ -26,30 +26,30 @@ reporting:
     detailsEnabled: false
 ```
 
-## Integrare și opțiuni
+## Integration and options
 
-| Intenție | Alegere |
+| Intent | Alegere |
 |---|---|
-| Mesaj independent de detalii | `info(...)` |
-| Evenimente typed, cu lifecycle și durată | `publish(AtfConsoleEvent)` prin portul Core `AtfConsoleSink` |
-| Consolă complet oprită | `enabled: false` sau `ConsoleSettings.disabled()` |
-| Calea raportului final în consolă | Constructorul cu `reportPathEnabled: true` și evenimentul `REPORT_PUBLISHED` |
-| Politică JUnit per clasă | Adaptorul JUnit Console și adnotările Test Kit; declarați Kit explicit |
+| Independent message of details | `info(...)` |
+| Typed events with lifecycle and duration | `publish(AtfConsoleEvent)` by port of Core `AtfConsoleSink` |
+| Full console off | `enabled: false` sau `ConsoleSettings.disabled()` |
+| End of Console Report Path | Builder with `reportPathEnabled: true` and event `REPORT_PUBLISHED` |
+| JUnit policy per class | JUnit Console Adapter and Test Kit annotations; declare Kit explicit |
 
-Calea cere opt-in, consolă activă și eveniment cu artifact confirmat; `detailsEnabled` controlează doar detaliile.
+The path requires eighty-in, active console and event with confirmed artifact; `detailsEnabled` controls only details.
 
-Console depinde de Core; Kit este opțional pentru legătura JUnit. Proiecția rămâne diagnostică: comparația și verdictul aparțin testului.
+Console depends on Core; Kit is optional for JUnit link. The projection remains diagnostic: the comparison and the verdict belong to the test.
 
-## Verificarea utilizării
+## Verification of use
 
-| Acțiune | Rezultat observabil |
+| Action | Rezultat observabil |
 |---|---|
-| Executați exemplul cu politica explicită. | Mesajul furnizat apare în stdout, inclusiv cu detaliile dezactivate. |
-| Dezactivați consola prin `ConsoleSettings.disabled()`. | Un nou apel `info(...)` nu produce mesaj în stream. |
-| Activați numai afișarea căii. | Calea apare numai după evenimentul de publicare confirmată; opțiunea nu creează raportul. |
+| Perform the example with explicit policy. | The message provided appears in stdout, including with the details disabled. |
+| Disable console via `ConsoleSettings.disabled()`. | A new `info(...)` call does not produce a message in the stream. |
+| Activate only the path display. | The path occurs only after the confirmed publication event; the option does not create the report. |
 
-Compilarea fragmentului califică semnătura API pe JAR-ul ales. Verificarea stream-ului califică proiecția mesajului; consola nu schimbă rezultatul testului sau regulile aplicației.
+The compilation of the fragment qualifies API signature on the selected JAR. The control of the stream qualifies the message projection; the console does not change the test result or application rules.
 
 ---
 
-Perechea Console este un binar extern fixat în POM și în registrul de proveniență. Acest ghid verifică numai contractul de ieșire consumat de proiect; atașați versiunea, hash-ul și reproducerea la [feedback-ul local](../docs/feedback/README.md).
+The Console pair is an external binary fixed in the POM and the home registry. This guide verifies only the output contract consumed by the project; attach the version, hash and reproduction to [feedback-ul local](../docs/feedback/README.md).

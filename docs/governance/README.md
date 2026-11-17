@@ -1,136 +1,136 @@
-# Guvernanța calității ATF
+# quality governance ATF
 
-## Pe scurt
+## Overview
 
-Guvernanța transformă principiile de structură în verificări executabile locale. Suita inspectează sursele, documentele și contractele bibliotecilor consumate, fără dispozitiv, turneu sau acces la servicii externe.
+Governance converts the principles of structure into local executable checks. The suite inspects the sources, documents and contracts of the libraries consumed without device, tournament or access to external services.
 
-## Ghiduri complementare
+## Complementary guides
 
-- [Bune practici documentare](ATF_Documentation.md): organizare, redactare, legende, navigare și revizie live.
-- [Schimbarea testelor](ATF_TestChanges.md): așteptări independente, control negativ și transferul responsabilității.
-- [Responsabilitățile pachetelor](ATF_Packages.md): structura motorului, aplicației și testelor, coeziune și limite de dependență.
+- [Good documentation practices](ATF_Documentation.md): organization, drafting, legends, navigation and live revision.
+- [Change of tests](ATF_TestChanges.md): independent expectations, negative control and responsibility transfer.
+- [Package responsibilities](ATF_Packages.md): engine structure, application and tests, cohesion and dependency limits.
 
-## Perimetru și responsabilități
+## Perimeter and responsibilities
 
 ```mermaid
 flowchart LR
-    POLICY[Politică explicită] -->|delimitează| INVENTORY[Inventar de surse]
-    INVENTORY -->|alimentează| GUARDS[Verificări]
-    DOCS[Documente curente] -->|alimentează| GUARDS
-    GUARDS -->|localizează| FINDING[Abatere explicabilă]
-    FINDING -->|cere| REVIEW[Corecție și revizie]
+    POLICY[Explicit policy] -->|delimited| INVENTORY[Source inventory]
+    INVENTORY -->|fuel| GUARDS[Checks]
+    DOCS[Documente curente] -->|fuel| GUARDS
+    GUARDS -->|locate| FINDING[Explanatory deviation]
+    FINDING -->|cere| REVIEW[Correction and revision]
 ```
 
 <details>
-<summary>Legendă: un rezultat are un perimetru</summary>
+<summary>Legend: a result has a perimeter</summary>
 
-Inventarul include rădăcinile Maven declarate și rădăcinile JVM suplimentare din politică. Validatoarele documentare inspectează toate README-urile și fișierele Markdown din docs, excluzând directoarele generate.
+The inventory includes the declared Maven roots and additional JVM roots in politics. Documentary validators inspect all the Readmees and Markdown files in docs, excluding the directories generated.
 
 </details>
 
-[Suita locală](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) și [politica](../../config/atf-governance-policy.json) definesc contractul executabil. Adaptarea păstrează regulile reutilizabile ale verificatoarelor comune; ipotezele despre modulele altor aplicații nu sunt importate.
+[Local Suite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) and [politica](../../config/atf-governance-policy.json) define the enforceable contract. Adaptation keeps the reusable rules of common verifiers; assumptions about other applications modules are not imported.
 
-| Inventar | Invariantă |
+| Inventar | Input |
 |---|---|
-| Maven | Rădăcina declarată și POM-ul responsabil sunt păstrate împreună, inclusiv pentru module imbricate; metadatele nu sunt reconstruite din primele segmente ale căii. |
-| Rădăcini suplimentare | Modulul și calea sunt explicite, iar `test` este boolean; rădăcina rămâne în modulul său. |
-| Proprietate | Un fișier are un singur responsabil și un singur set de surse; suprapunerile sunt refuzate, fără deduplicare care ar ascunde ambiguitatea. |
+| Maven | The declared root and the responsible POM are kept together, including for nested modules; the metadata are not rebuilt from the first segments of the path. |
+| Other roots | The module and path are explicit and `test` is Boolean; the root remains in its module. |
+| Property | A file has one person and one set of sources; overlaps are denied without any deduction that would conceal ambiguity. |
 
-[Contractele inventarului](../../atf-tests/src/test/java/atf/tests/governance/support/SourceInventoryContractTest.java) verifică atât sursa validă, cât și configurațiile care ar pierde identitatea sau ar schimba proprietarul.
+[Inventory contracts](../../atf-tests/src/test/java/atf/tests/governance/support/SourceInventoryContractTest.java) checks both the valid source and the configurations that would lose the identity or change the owner.
 
-## Inventar JVM prin CLI
+## JVM Inventory via CLI
 
-Porniți [inventarul JVM](../../scripts/run-jvm-inventory.ps1) din checkout-ul care furnizează unealta. Parametrul `-ProjectRoot` indică proiectul inspectat. `-ScratchRoot` indică un director existent în afara ambelor checkout-uri.
+Start [inventarul JVM](../../scripts/run-jvm-inventory.ps1) from the checkout that provides the tool. Parameter `-ProjectRoot` indicates the project inspected. `-ScratchRoot` indicates an existing directory outside both checkouts.
 
-Sunt necesare PowerShell 7, JDK 21 și cache-ul local Jackson.
+PowerShell 7, JDK 21 and local cachet Jackson are required.
 
 ```powershell
 .\scripts\run-jvm-inventory.ps1 -ProjectRoot $checkout -ScratchRoot $scratch
 ```
 
-| Intrare sau verdict | Contract |
+| Entry or verdict | Contract |
 |---|---|
-| Maven | `mavenModules` coincide cu modulele reactorului și cu POM-urile descoperite. O rădăcină implicită absentă poate fi omisă. O rădăcină configurată explicit trebuie să existe. |
-| Gradle și alte seturi | `additionalSourceRoots` declară modulul, calea relativă canonică și rolul `test`. Rădăcinile din afara modulului și suprapunerile sunt refuzate inclusiv când directoarele sunt goale. |
-| Excepții | `reviewedPackages` cere inventarul exact, motivul și acțiunea. `productionBoundaryAdapters` cere fișierul de producție exact, motivul și referințele interzise permise care încă există. |
-| Ieșire `0` sau `2` | JSON cu versiune de schemă, module, rădăcini, roluri, număr de fișiere și pachete, excepții declarate și diagnostice. `0` indică succes, iar `2` indică abateri în inventarul complet. |
-| Ieșire `1` | Intrarea sau perimetrul sunt invalide. Detaliul este scris pe stderr. |
+| Maven | `mavenModules` coincides with reactor modules and discovered POMS. An implicit missing root can be omitted. An explicitly configured root must exist. |
+| Grades and other sets | `additionalSourceRoots` declares the module, the canonical relative path and role `test`. Roots outside the module and overlaps are refused even when the directories are empty. |
+| Exceptions | `reviewedPackages` requires the exact inventory, motive and action. `productionBoundaryAdapters` requires the exact production file, the prohibited reason and the permitted references that still exist. |
+| Output `0` or `2` | JSON with scheme version, modules, roots, roles, number of files and packages, declared and diagnosed exceptions. `0` indicates success and `2` indicates deviations in the complete inventory. |
+| Exit `1` | The entrance or the perimeter is invalid. The detail is written on the stadr. |
 
-CLI-ul și suita aplică aceleași reguli de cale a pachetului, importuri, coeziune și dependențe. [Probele de componentă](../../atf-tests/src/test/java/atf/tests/governance/support/JvmInventoryCliComponentTest.java) verifică inventarul și diagnosticele pe un proiect separat. Compilarea reactorului, stratificarea testelor și guvernanța documentară au verificări proprii.
+The Client and the Suite apply the same rules of route of the package, imports, cohesion and dependencies. [Component samples](../../atf-tests/src/test/java/atf/tests/governance/support/JvmInventoryCliComponentTest.java) checks inventory and diagnostics on a separate project. Reactor compiling, test stratification and documentary governance have their own checks.
 
-## Reguli executabile
+## Executable rules
 
-| Zonă | Contract | Limită |
+| Area | Contract | Limit |
 |---|---|---|
-| Reactor | Modulele sursă coincid cu politica; bibliotecile comune rămân binare | Nu copiem implementarea sau infrastructura de regresie a producătorului. |
-| Pachete | Declarația corespunde căii; coeziunea se verifică separat pe modul și set de surse | Numărul de fișiere nu măsoară singur calitatea semantică. |
-| Coeziune | Maximum opt fișiere Java pe pachet; inventarul curent nu folosește derogări | O acumulare de responsabilități cere separare, fără mărirea pragului. |
-| Importuri | Fără importuri duplicate; comentariile și șirurile nu devin cod | Verificarea lexicală folosește parserul comun. |
-| Dependențe | Motorul nu cunoaște Android, ATF sau JUnit; infrastructura respectă direcțiile declarate | Test Kit deține integrarea JUnit locală; implementarea consolei și probele sale native sunt consumate prin livrarea binară. |
-| Niveluri | O clasă executabilă Maven are un singur nivel; tabelul ghidului corespunde codului | Clasele ajutătoare și modulele Gradle au politici explicite. |
-| Documentație | Structură, proză, stil, diagrame, legende, linkuri, fragmente și căi relocabile | Formularea în română și corectitudinea conceptuală cer și revizie editorială. |
+| Reactor | Source modules coincide with policy; common libraries remain binary | We are not copying the manufacturer's implementation or regression infrastructure. |
+| Packages | Declaration corresponds to path; cohesion is checked separately on module and set of sources | The number of files does not measure semantic quality alone. |
+| Coeziune | Maximum eight Java files per package; current inventory does not use derogations | A build up of responsibilities requires separation without increasing the threshold. |
+| Importuri | No duplicate imports; comments and strings do not become code | Lexical verification uses the common parser. |
+| Dependencies | Engine does not know Android, ATF or JUnit; infrastructure follows declared directions | Test Kit holds local JUnit integration; the implementation of the console and its native samples are consumed by binary delivery. |
+| Niveluri | A Maven executable class has one level; the guide table corresponds to the code | The helping classes and Gradle modules have explicit policies. |
+| Documentation | Structure, prose, style, diagrams, legends, links, fragments and relocatable paths | English wording and conceptual accuracy also require editorial review. |
 
-Politica nu permite mărirea automată a pragului sau generarea derogărilor pentru a obține succes. Probele negative verifică și mecanismul generic al excepțiilor: identitate exactă a fișierelor, motiv și acțiune de separare; o excepție devenită inutilă este respinsă. Aceste probe sintetice nu introduc derogări în proiect.
+The policy does not allow automatic threshold increase or the generation of derogations to achieve success. Negative evidence also checks the generic mechanism of exceptions: accurate identity of files, motive and separation action; an exception which is made unnecessary is rejected. These synthetic samples shall not enter derogations in the project.
 
-## Declarațiile testelor
+## Test declarations
 
-[Parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java) folosește JDK-ul activ, în memorie, fără generare de clase sau procesarea adnotărilor. [Regulile nivelurilor](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerRules.java) consumă această structură și păstrează separat rezolvarea adnotărilor compuse.
+[Parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java) uses active JDK in memory without class generation or annotation processing. [Regulile nivelurilor](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerRules.java) consumes this structure and keeps separate the solution of compound annotations.
 
-O inspecție deține și închide propriul manager de fișiere JDK, reutilizat între sursele aceleiași inspecții. Fiecare sursă are o sarcină și diagnostice noi; o eroare de sintaxă nu contaminează următoarea sursă, iar contextul închis nu mai poate fi folosit.
+An inspection shall hold and close its own JDK file manager, reused between the sources of the same inspection. Each source has a new pregnancy and diagnosis; a syntax error does not contaminate the following source, and the closed context cannot be used any longer.
 
-| Frontieră | Contract |
+| Border | Contract |
 |---|---|
-| Declarație | Poziția adnotării față de modificatori, forma calificată și spațierea nu schimbă proprietarul. |
-| Execuție declarată | Metodele tipului și containerele `@Nested` identifică execuția; o clasă interioară folosită ca fixture nu etichetează automat exteriorul. |
-| Graf de adnotări | Importuri explicite sau cu wildcard, declarații reale și cicluri delimitate; ambiguitățile sunt refuzate. |
-| Surse invalide | O eroare de sintaxă produce diagnostic cu linie și coloană, fără inventar gol acceptat. |
-| Limită | Inspecția nu încarcă tipurile aplicației, nu execută JUnit și nu substituie compilarea sau rezolvarea completă a moștenirii. |
+| Declaration | The annotation position to modifiers, qualified form and spacing shall not change the owner. |
+| Declared execution | Type methods and containers `@Nested` identify execution; an inner class used as fixture does not automatically label the outside. |
+| Graf annotations | Explicit or wildcard imports, actual declarations and bounded cycles; ambiguities are denied. |
+| Surse invalide | A syntax error produces a diagnostic with line and column without accepted empty inventory. |
+| Limit | The inspection shall not load the types of the application, shall not execute JUnit or substitute for complete compilation or resolution of the legacy. |
 
-[Componentele sintaxei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerSyntaxTest.java) verifică refuzurile și vecinii valizi, inclusiv exemple Java în șiruri care nu trebuie tratate ca declarații.
+[Componentele sintaxei](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerSyntaxTest.java) verifies valid refusals and neighbours, including Java examples in strings that should not be treated as declarations.
 
-## Rulare izolată
+## Isolated rolling
 
-Pentru un fișier sau pentru inventarul documentar complet, folosiți [CLI-ul de documentație](ATF_Documentation.md#cli-pentru-guvernanța-documentației). Acesta testează aceleași reguli editoriale ca suita.
+For a file or full documentary inventory, use [Documentation Client](ATF_Documentation.md#cli-for-governance-of-documentation). It tests the same editorial rules as the suite.
 
-Pentru verificarea dovezilor publicate, folosiți un checkout Git cu obiectele commiturilor indicate în notele de release. Suita citește acele obiecte local, iar un obiect lipsă produce eroare.
+To verify the published evidence, use a checkout Git with the commits items indicated in the release notes. The suite reads those local objects, and a missing object causes error.
 
-Din rădăcina proiectului:
+From the root of the project:
 
 ```powershell
 .\scripts\run-atf-governance.ps1
 ```
 
-Lansatorul compilează și verifică aceeași copie temporară. [Preflight-ul de calificare](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) confruntă artefactele și fixează separat sursele și dosarul de release. Schimbările din checkout sau copie invalidează rezultatul.
+The launcher compiles and checks the same temporary copy. [Preflight-ul de calificare](../testing/ATF_ReleaseQualification.md#snapshot-and-preflight-before-maven) confronts the artifacts and locks the sources and release folder separately. The changes in checkout or copy invalidate the result.
 
-Depozitul Maven al rulării este propriu copiei temporare. Cache-ul existent poate inițializa dependențele prin `-MavenCache`; instalarea bibliotecilor din `lib` nu înlocuiește fișierele folosite de alte procese.
+The Maven running warehouse is the same as the temporary copy. The existing cachet can initialize dependencies through `-MavenCache`; installing libraries in `lib` does not replace files used by other processes.
 
-Pentru o copie de lucru deja pregătită, cu bibliotecile și modulele necesare:
+For a working copy already prepared, with the required libraries and modules:
 
 ```powershell
 mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=AtfQualityGovernanceSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-`atf.governance.root` selectează copia verificată. Proprietatea `atf.governance.gitRoot` indică checkout-ul folosit pentru [diff-ul testelor](ATF_TestChanges.md#verificarea-diff-ului-git) și pentru obiectele istorice ale dovezilor publicate.
+`atf.governance.root` select the copy checked. `atf.governance.gitRoot` indicate the checkout used for [test diff. of test](ATF_TestChanges.md#checking-the-git-diff) and for historical objects of published evidence.
 
-## Dovezi și limite
+## Evidence and limits
 
-- Rezultatul nativ păstrează clasa, regula și abaterea localizată.
-- Probele negative verifică detectarea unui defect injectat și acceptarea documentului sănătos vecin.
-- Inventarul surselor nu ignoră un pachet valid numit `target` din interiorul unei rădăcini compilate.
-- [Igiena rădăcinii](../../atf-tests/src/test/java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) refuză directoare nerecunoscute, căi temporare locale aplatizate și fișiere compilate rătăcite. Verificarea este numai cititoare; curățarea cere inventar și ținte rezolvate în perimetrul numit.
-- [Strategia unică](../../atf-tests/src/test/java/atf/tests/governance/documentation/strategy/TestingStrategyGovernanceTest.java) păstrează un proprietar normativ, ghiduri generice fără rezultate și un catalog explicativ pentru fiecare rădăcină de teste declarată.
-- Verificarea documentară nu certifică algoritmul jocului, randarea Android sau compatibilitatea tuturor bibliotecilor.
-- Calificarea binarelor rămâne contractul distinct al [integrării bibliotecilor](../platform/ATF_Integration.md).
-- Deficiențele semantice și datoria de separare rămân vizibile în [feedback](../feedback/ATF_Governance.md).
-- [Retenția dovezilor release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) refuză PNG-uri identice deja încorporate. Prezența octeților nu certifică viewerul, autonomia corpurilor Android sau integritatea APK-ului; acestea au controale distincte.
-- [Integritatea livrării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) confruntă APK-ul, checksum-ul, CRC-ul, inventarul hash-urilor și cazurile JUnit reale. Probele negative alterează și fișiere ale căror hash-uri au fost recalculate, pentru a califica separat oracolul semantic. [Contractul și limitele](../platform/ATF_AndroidDelivery.md#integritatea-fișierelor-și-rezultatelor) disting observarea octeților de execuție, semnătură și proveniență.
+- The native result keeps the class, rule and localised deviation.
+- Negative evidence checks for an injection defect and acceptance of the healthy document next door.
+- The inventory of sources does not ignore a valid package called `target` inside a compiled root.
+- [Root hygiene](../../atf-tests/src/test/java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) refuses unrecognized directories, flattened local temporary paths and lost compiled files. Checking is only readers; cleaning requires inventory and resolved targets in the designated perimeter.
+- [Single Strategy](../../atf-tests/src/test/java/atf/tests/governance/documentation/strategy/TestingStrategyGovernanceTest.java) keeps a regulatory owner, generic guides without results and an explanatory catalogue for each of the declared test roots.
+- Documentary verification does not certify the game algorithm, Android rendering or compatibility of all libraries.
+- Binary qualification remains the distinct contract of [integration of libraries](../platform/ATF_Integration.md).
+- Semantic deficiencies and separation debt remain visible in [feedback](../feedback/ATF_Governance.md).
+- [Retention of the evidence of the release](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) refuses identical PNGs already incorporated. The presence of bytes does not certify the viewer, the autonomy of Android bodies or the integrity of APK; they have separate controls.
+- [Delivery integrity](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) confronts APK, checksumé, CRC, inventory of hashes and actual JUnit cases. Negative samples also alter files whose hashes have been recalculated to qualify semantic oracle separately. [Contract and limits](../platform/ATF_AndroidDelivery.md#integrity-of-files-and-results) distinguish the observation of the octets of execution, signature and provenance.
 
-[Arhitectura testării](../testing/ATF_Architecture.md) · [Documentație](ATF_Documentation.md) · [Schimbarea testelor](ATF_TestChanges.md)
+[Test architecture](../testing/ATF_Architecture.md) · [Documentation](ATF_Documentation.md) · [Change of tests](ATF_TestChanges.md)
 
-## Revizia semantică
+## Semantic revision
 
-Verificările structurale trebuie completate prin controale ale afirmațiilor factuale care au proprietar executabil. Revizia semantică rămâne obligatorie pentru reguli, compatibilitate și limitele descrise în mai multe rezumate.
+Structural checks must be completed by checks on factual claims that have been enforceable. Semantic revision remains mandatory for rules, compatibility and limits described in several summaries.
 
-- [Responsabilitățile pachetelor](ATF_Packages.md) cer starea, dependențele și invarianta fiecărui mecanism; mutarea unui fișier nu demonstrează singură coeziunea.
-- [Bunele practici documentare](ATF_Documentation.md) dețin grila editorială și separarea rezultatului extern de contract.
-- [Feedback-ul de guvernanță](../feedback/ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor) păstrează controlul factual încă necesar și nivelul cerut înaintea închiderii.
+- [Package responsibilities](ATF_Packages.md) calls for the status, dependencies and invariance of each mechanism; moving a file alone does not demonstrate cohesion.
+- [Good documentation practices](ATF_Documentation.md) holds the editorial grid and the separation of the external result from the contract.
+- [Governance feedback](../feedback/ATF_Governance.md#qualification-of-claims-and-launchers) keeps the still necessary factual control and required level prior to closure.

@@ -1,107 +1,107 @@
-# Laboratorul AI și jucătorul independent
+# AI Laboratory and independent player
 
-## Pe scurt
+## Overview
 
-Acest modul JVM reunește jucătorul independent, uneltele offline și experimentele AI. Sursele principale ale jucătorului rămân fără importuri din motor, Android sau ATF; experimentele au activare explicită și nu intră în artefactul principal.
+This JVM module brings together the independent player, offline tools and AI experiments. The main sources of the player are left without imports from the engine, Android or ATF; the experiments have explicit activation and do not enter the main artifact.
 
-[game-core/build.gradle](../game-core/build.gradle) consumă modulul prin `testImplementation project(":ai-lab")`. [POM-ul Android](../../atf-test-android/pom.xml) compilează aceleași surse numai pentru acceptanța Maven; aplicația nu depinde de laborator în APK.
+[game-core/build.gradle](../game-core/build.gradle) consummate the module by `testImplementation project(":ai-lab")`. [POM-ul Android](../../atf-test-android/pom.xml) compile the same sources only for Maven acceptance; the application is not dependent on the laboratory in the APK.
 
-## Organizarea modulului
+## Module organisation
 
-| Zonă | Responsabilitate |
+| Area | Responsibility |
 |---|---|
-| [src/main/java](src/main/java/) | Modelul independent și observația permisă actorului. |
-| [src/test/java](src/test/java/) | Contractele Java locale, cu poziții legale construite fără motor sau arhivă. |
-| [tools](tools/README.md) | Corpus, modele, diagnostic și calificare, cu teste Node.js alăturate. |
-| [experiments](experiments/) | Prototipuri și [surse alternative de licitare](experiments/bid-models/README.md), excluse din compilarea implicită. |
-| [build.gradle](build.gradle) | `check` combină testele Java și Node; replay-ul extern are activare separată. |
+| [src/main/java](src/main/java/) | The independent model and observation allowed to the actor. |
+| [src/test/java](src/test/java/) | Local Java contracts with legal positions built without engine or archive. |
+| [tools](tools/README.md) | Corpus, models, diagnosis and qualification, with Node.js tests joined. |
+| [experiments](experiments/) | Prototypes and [alternative sources of bidding](experiments/bid-models/README.md), excluded from the default compilation. |
+| [build.gradle](build.gradle) | `check` combines Java and Node tests; the external replicayul has separate activation. |
 
-## Intrare și informație disponibilă
+## Input and information available
 
-[IndependentPlayer.Position](src/main/java/ro/whistlab/coach/IndependentPlayer.java) conține mâna proprie și fapte publice: numărul de cărți rămase, contractele, levatele, totalurile, seriile, cărțile jucate, levata curentă și cartea întoarsă.
+[IndependentPlayer.Position](src/main/java/ro/whistlab/coach/IndependentPlayer.java) contains own hand and public works: the number of cards left, contracts, tricks, totals, series, cards played, current trick and the card turned.
 
-Nu există câmp pentru mâinile reale ale adversarilor sau valoarea de inițializare a împărțirii. Adaptoarele trebuie să construiască această proiecție înainte de a apela AI-ul. În testele Android, această limită este aplicată de [WhistChallenger](../../atf-test-android/src/test/java/atf/android/e2e/player/WhistChallenger.java).
+There is no field for the actual hands of the opponents or the initialization value of the division. Adaptors must build this projection before calling the AIO. In Android tests, this limit is applied by [WhistChallenger](../../atf-test-android/src/test/java/atf/android/e2e/player/WhistChallenger.java).
 
-Cărțile numerice folosesc `13 × suit + rank - 2`, cu ordinea culorilor pică,
-cupă, treflă, caro. Regula de urmărire a culorii, atuul obligatoriu, câștigătorul
-și scorul sunt implementate separat de `game-core`.
+Numerical cards use `13 × suit + rank - 2`, with the order of colors failing,
+Cup, clubs, diamonds. Color tracking rule, mandatory trump, winner
+and the score is implemented separately from `game-core`.
 
-## Flux și responsabilități
+## Flow and responsibilities
 
 ```mermaid
 flowchart LR
-OBS[Observație proprie/publică] -->|constrânge| WORLDS[Lumi fezabile]
-WORLDS -->|alimentează| PLAN[RolloutPlanner]
-PLAN -->|propune| MOVE[Acțiune legală]
-WORLDS -->|permite verificare| CERT[ContractGuarantee]
-CERT -->|poate înlocui| MOVE
+OBS[Private and public observation] -->|compress| WORLDS[Lumi fezabile]
+WORLDS -->|fuel| PLAN[RolloutPlanner]
+PLAN -->|propune| MOVE[Legal action]
+WORLDS -->|allows verification| CERT[ContractGuarantee]
+CERT -->|can replace| MOVE
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legend and limits</summary>
 
-Lumile sunt ipoteze compatibile cu informația publică. Certificarea poate înlocui propunerea numai în domeniul complet enumerat; epuizarea bugetului păstrează varianta de rezervă. Jucătorul independent rămâne suport de test separat de politica aplicației.
+Worlds are assumptions compatible with public information. Certification may replace the proposal only in the area completely listed; budget exhaustion shall be kept as a reserve. The independent player remains a test medium separate from the application policy.
 
 </details>
 
-## Politica din sursele active
+## Active source policy
 
-Licitarea compară punctele contractelor pe aceleași lumi ipotetice; jocul
-compară punctele cărților legale, cu punctele celui mai puternic adversar drept
-criteriu de departajare. Bugetele și excepția pentru posteriorul de o carte se
-citesc din metodele `bid` și `card` ale sursei active. Aceasta este utilitate în
-puncte, nu un certificat că licitația aleasă va fi realizată.
+Bidding compares the points of contracts on the same hypothetical worlds; the game
+compare points of legal cards with points of the strongest right opponent
+criteria for departmental. Budgets and the exception for the rear of a card shall be
+read from the methods `bid` and `card` of the active source. That's utility in
+points, not a certificate that the chosen bid will be conducted.
 
-| Mecanism | Contract și limită |
+| Mechanism | Contract and limit |
 |---|---|
-| [IndependentDeals](src/main/java/ro/whistlab/coach/IndependentDeals.java) | Distribuțiile respectă cărțile publice, cartea întoarsă, necesarul și culorile demonstrate ca epuizate; varianta fezabilă de rezervă păstrează aceleași restricții. |
-| [IndependentContinuations](src/main/java/ro/whistlab/coach/IndependentContinuations.java) | Avansează lumea ipotetică, levatele și scorurile. Simularea deciziei și rezolvarea exhaustivă de diagnostic sunt intrări distincte; diagnosticul nu înlocuiește politica activă. |
-| [RolloutPlanner](src/main/java/ro/whistlab/coach/RolloutPlanner.java) | Modelează continuarea unei ipoteze; mâinile reale adverse nu intră în API-ul deciziei. [Referințele înghețate](../game-core/src/test/java/ro/whistlab/coach/baseline) rămân separate în testele motorului. |
-| [ContractGuarantee](src/main/java/ro/whistlab/coach/ContractGuarantee.java) | Poate înlocui propunerea numai pentru universul complet și continuările legale din domeniul finit permis; enumerarea incompletă sau bugetul epuizat păstrează propunerea inițială. |
+| [IndependentDeals](src/main/java/ro/whistlab/coach/IndependentDeals.java) | Distributions respect public cards, the return card, the need and the colors shown as depleted; the feasible reserve option retains the same restrictions. |
+| [IndependentContinuations](src/main/java/ro/whistlab/coach/IndependentContinuations.java) | It advances the hypothetical world, tricks and scores. Simulation of decision and exhaustive diagnosis are distinct entries; diagnosis does not replace active policy. |
+| [RolloutPlanner](src/main/java/ro/whistlab/coach/RolloutPlanner.java) | Models the continuation of a hypothesis; actual adverse hands do not enter the API of the decision. [Frozen references](../game-core/src/test/java/ro/whistlab/coach/baseline) remain separate in the engine tests. |
+| [ContractGuarantee](src/main/java/ro/whistlab/coach/ContractGuarantee.java) | It can replace the proposal only for the complete universe and legal continuity in the allowed finite domain; incomplete listing or depleted budget retains the initial proposal. |
 
-Reproductibilitatea privește aceeași intrare completă; invarianta față de schimbarea
-comună a scorurilor nu este presupusă. Mecanismele nu certifică un jucător perfect.
+Reproducibility concerns the same full input; invariance to change
+The common scores are not assumed. Mechanisms don't certify a perfect player.
 
-## Verificare și experimente
+## Verification and experiments
 
-Din directorul `whist-lab-app` al unei copii temporare complete a proiectului:
+From the `whist-lab-app` directory of a full temporary copy of the project:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:test --tests ro.whistlab.coach.IndependentPlayerModelTest --tests ro.whistlab.core.ai.engine.CertifiedContractRegressionTest --offline --no-daemon
 ```
 
 [IndependentPlayerModelTest](../game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java)
-verifică generatorul de distribuții, proprietatea cărților și modelele finite.
+check the distribution generator, card ownership and finished models.
 [CertifiedContractRegressionTest](../game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java)
-separă un certificat valid de lipsa garanției și de varianta de rezervă.
+separate a valid certificate from the lack of guarantee and the reserve option.
 
-Turneele se rulează numai prin colecțiile și protocoalele explicite din [lansator](../../scripts/run-whist-collection.ps1).
+The tournaments are run only through the explicit collections and protocols in the [lansator](../../scripts/run-whist-collection.ps1).
 
-Uneltele au verificare proprie, din aceeași copie temporară:
+The tools have their own verification from the same temporary copy:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :ai-lab:check --offline --no-daemon
 ```
 
-Păstrați separat cazurile de învățare, regresiile mici, sursa candidatului și partidele noi de evaluare. Corectitudinea unei componente sau un câștig într-o lume ipotetică nu reprezintă singure un progres al forței de joc. Alternativele externe nu schimbă sursele active și nu se promovează prin simpla trecere a unui test local.
+Keep learning cases, small regressions, candidate's source and new evaluation parties separately. The correctness of a component or gain in a hypothetical world is not a play force progression alone. External alternatives do not change active sources and do not promote them by simply passing a local test.
 
-## Verificare proprie și calificare
+## Own verification and qualification
 
-| Suprafață | Contract și limită |
+| Surface | Contract and limit |
 |---|---|
-| Java | [Contractele locale](src/test/java/ro/whistlab/coach/IndependentPlayerContractTest.java) verifică observația, legalitatea, determinismul, anularea și bugetele. Motorul, Android și ATF lipsesc din classpath-ul acestor teste; comparațiile din `game-core` rămân integrare. |
-| Unelte Node | `check` include `testTools`; [constructorul de partide legale](tools/testing/legal-game-fixture.mjs) înlocuiește intrările implicite din arhivă. Mutațiile de carte, licitație, levată și scor verifică refuzurile validatorului. |
-| Arhivă | `replayArchive` cere fișier și SHA-256 explicite; verifică octeții înaintea parsării și regulilor. Nu este dependență a `check`. |
-| Expunerea datelor | [Registrul comun](../../docs/learning/ATF_EvaluationRegistry.md) coordonează rezervările între corpusuri și păstrează reutilizarea ca expunere cunoscută. |
+| Java | [Contractele locale](src/test/java/ro/whistlab/coach/IndependentPlayerContractTest.java) checks the observation, legality, determinism, cancellation and budgets. The engine, Android and ATF are missing from the test leaderboard; comparisons in `game-core` remain integration. |
+| Unelte Node | `check` include `testTools`; [the legal party builder](tools/testing/legal-game-fixture.mjs) replace the default entries in the archive. The card, bid, levitated and score mutations check the validator's refusals. |
+| Archive | `replayArchive` requires file and SHA- 256 explicit; check bytes prior to parting and rules. It's not the addiction of `check`. |
+| Data exposure | [Registrul comun](../../docs/learning/ATF_EvaluationRegistry.md) coordinates reservations between the corpuss and keeps reuse as known exposure. |
 
-Promovarea rămâne condiționată de progres pe partide noi și de identitatea tuturor surselor; o verificare locală reușită închide numai contractul ei. [Protocolul de învățare](../../docs/learning/README.md) deține procedura, iar [feedback-ul AI](../../docs/feedback/ATF_Ai.md) centralizează lucrările încă deschise.
+The promotion remains conditional on progress on new parties and the identity of all sources; a successful local verification closes only her contract. [Learning protocol](../../docs/learning/README.md) holds the procedure and [feedback-ul AI](../../docs/feedback/ATF_Ai.md) centralises the work still open.
 
-[PlannerControl](src/main/java/ro/whistlab/coach/PlannerControl.java) oferă măsurare și limită de lucru opționale, izolate pe fir.
+[PlannerControl](src/main/java/ro/whistlab/coach/PlannerControl.java) provides optional measurement and working limit, isolated on the wire.
 
-- Întreruperea păstrează marcajul și aruncă `CancellationException`; `WORK_LIMIT` abandonează decizia printr-o excepție distinctă.
-- Închiderea contextului elimină limita pentru apelurile următoare.
-- [Calificarea costului](../../docs/ai/ATF_CostQualification.md) separă acest control de bugetul dovezii și de forța strategică.
+- The interruption shall retain the marking and discard `CancellationException`; `WORK_LIMIT` shall abandon the decision by a separate exception.
+- Closure of context eliminates the limit for subsequent calls.
+- [Cost qualification](../../docs/ai/ATF_CostQualification.md) separates this control from the evidence budget and strategic force.
 
-## Catalogul testelor
+## Test catalogue
 
-[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.
+[Inputs and responsibilities of tests](src/test/README.md) explains the selection, preconditions and interpretation of the result, through the same common strategy for all deliveries.

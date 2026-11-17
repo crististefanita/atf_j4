@@ -1,97 +1,97 @@
-# Pregătirea testării unui alt joc
+# Preparing another game to test
 
-## Pe scurt
+## Overview
 
-Transferăm metoda: reguli confirmate, observație permisă, oracol independent, regresii mici și evaluare pe date rezervate. Motorul, politicile și formatele Whist au adaptoare specifice; începerea unui alt joc cere identificarea și verificarea acestor frontiere.
+We transfer the method: confirmed rules, allowed observation, independent oracle, small regression and evaluation on reserved data. The engine, policies and formats of the Whist have specific adapters; the start of another game requires identification and verification of these borders.
 
-Acest ghid deține admiterea unui domeniu nou. [Evoluția AI-ului](ATF_PolicyEvolution.md) deține îmbunătățirea unei politici, iar [arhitectura testării](../testing/ATF_Architecture.md) deține alegerea nivelului verificării.
+This guide holds the admission of a new domain. [Development of AIU](ATF_PolicyEvolution.md) holds the improvement of a policy and [the architecture of testing](../testing/ATF_Architecture.md) holds the choice of level of verification.
 
-## Ce putem transfera acum
+## What can we transfer now?
 
-| Suprafață | Stare în cod | Ce cere alt joc |
+| Surface | Code status | What does another game require? |
 |---|---|---|
-| Clasificare și audit JUnit | [Kit](../../lib/README.TestKit.md#scope-și-integrare) independent de motorul Whist. | Așteptări proprii și adaptorul publicării rezultatelor. |
-| Biblioteci comune | [API-uri binare](../platform/README.md), cu acceptanță locală. | Configurație, proveniență și verificări pe profilul noului consumator. |
-| Guvernanță | [Verificatoare adaptate](../governance/README.md), cu politică și populație locale; folosiți [CLI-ul documentar](../governance/ATF_Documentation.md#cli-pentru-guvernanța-documentației) pentru regulile editoriale și [CLI-ul de inventar JVM](../governance/README.md#inventar-jvm-prin-cli) pentru surse. | Rădăcină, module și inventar explicite, plus controale negative pe noul perimetru. |
-| Intersecția intervalelor | [Componentă pură](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs), consumată de registru. | Intrări întregi valide și adaptarea identității datelor. |
-| Expunerea datelor | [Registrul actual](ATF_EvaluationRegistry.md) fixează namespace-ul distribuirilor Whist. | Contract de identitate, spațiu de date și migrare; schimbarea unui nume nu califică un registru generic. |
-| Politică și observație | [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) proiectează starea către modelele Whist. | Tipuri, acțiuni, observație și obiectiv ale jocului nou. |
-| Corpus și comparație | [Corpusul](ATF_Corpus.md) și [arena](ATF_Arena.md) verifică distribuiri, contracte și scor Whist. | Schemă și validator de traseu proprii, cu comparații potrivite domeniului. |
-| Publicarea domeniului | [Consumatorul](../../atf-tests/README.md) interpretează înregistrări și rezultate Whist. | Maparea evenimentelor și comparațiilor; rendererul comun rămâne la responsabilul bibliotecii. |
+| Classification and audit JUnit | [Kit](../../lib/README.TestKit.md#purpose-and-integration) independent of the Whist engine. | Own expectations and the adaptor to the publication of results. |
+| Biblioteci comune | [Binary APIs](../platform/README.md), with local acceptance. | Configuration, provenance and verification on the profile of the new consumer. |
+| Governance | [Adapted verifiers](../governance/README.md), with local policy and population; use [Documentary clipboard](../governance/ATF_Documentation.md#cli-for-governance-of-documentation) for editorial rules, and [JVM inventory clipper](../governance/README.md#jvm-inventory-via-cli) for sources. | Root, modules and explicit inventory plus negative controls on the new perimeter. |
+| Intersection of the intervals | [Pure component](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs), consumed by the register. | Valid whole entries and data identity adaptation. |
+| Data exposure | [Registrul actual](ATF_EvaluationRegistry.md) sets the namespaceum of Whist distributions. | Identity contract, data space and migration; change of a name does not qualify as a generic register. |
+| Policy and Observation | [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) projects status to the Whist models. | Types, actions, observation and objective of the new game. |
+| Corpus and Comparison | [Corpusul](ATF_Corpus.md) and [arena](ATF_Arena.md) check distributions, contracts and Whist scores. | Schema and validator of own route with comparisons suitable for the domain. |
+| Publication of the domain | [Consumatorul](../../atf-tests/README.md) performs records and results of the Whist. | Mapping of events and comparisons; the common renderer remains with the library's responsible. |
 
-Pregătirea metodei permite construirea primului adaptor. Afirmația de compatibilitate între jocuri cere cel puțin două adaptoare reale care trec contractele comune; un mock suplimentar al aceluiași model nu oferă această confirmare.
+The method preparation allows the first adapter to be built. The compatibility statement between games requires at least two real adapters passing the joint contracts; an additional mock of the same model does not provide this confirmation.
 
-## Traseul de admitere
+## Entry route
 
 ```mermaid
 flowchart LR
-    SPEC[Reguli confirmate] -->|definesc| ORACLE[Oracol independent]
-    ORACLE -->|verifică| ADAPTER[Adaptor de domeniu]
-    ADAPTER -->|exercită| CASES[Componente mici]
+    SPEC[Confirmed rules] -->|definesc| ORACLE[Oracol independent]
+    ORACLE -->|checks| ADAPTER[Field Adapter]
+    ADAPTER -->|exercise| CASES[Componente mici]
     CASES -->|permit| LOOP[Joc offline complet]
-    LOOP -->|precede| REAL[Confruntare cu produsul]
+    LOOP -->|precede| REAL[Confronting product]
 ```
 
 <details>
-<summary>Legendă: fiecare etapă are o ieșire verificabilă</summary>
+<summary>Legend: each step has a verifiable output</summary>
 
-Adaptorul expune comportamentul domeniului și păstrează diferența dintre actor și oracol. Jocul offline califică modelul și colaborarea politicilor; confruntarea minimă cu produsul real verifică fidelitatea adaptorului și are scop separat de antrenare.
+The adapter exposes the behavior of the domain and preserves the difference between actor and oracle. The offline game qualifies the model and policy collaboration; minimum confrontation with the real product verifies the adaptor's fidelity and has separate training purpose.
 
 </details>
 
-| Etapă | Criteriu de ieșire |
+| Step | Output criterion |
 |---|---|
-| Contract | Varianta, rolurile, stările, acțiunile, terminarea și punctajul au definiții confirmate și versiune. |
-| Observație | Sunt declarate informația permisă, istoricul vizibil și sursa aleatorului; viitorul și secretele altor roluri sunt excluse din decizie. |
-| Tranziție | O acțiune legală schimbă starea conform regulii; refuzul nu schimbă starea. Repetarea unei comenzi are semantica declarată. |
-| Oracol | Așteptarea rezultă dintr-o regulă independentă, o invariantă ori o enumerare cu domeniu finit; acordul a două copii ale aceluiași cod nu este suficient. |
-| Componente | Cazul nominal, defectul injectat, vecinul valid și limita regulii sunt diferențiate fără interfață. |
-| Buclă offline | Toate turele conduc la terminare sau la o limită explicită; resursele, scorul și conservarea obiectelor jocului sunt verificate. |
-| Produs real | O selecție minimă de stări și tranziții confruntă modelul cu produsul identificat; diferențele rămân vizibile. |
-| Evaluare AI | Baza, candidatul, bugetul și criteriile sunt fixate înaintea datelor rezervate; adaptarea modelului redeschide calificarea afectată. |
+| Contract | The variant, roles, states, actions, termination and score have confirmed definitions and version. |
+| Observation | Permitted information, visible history and source of the random are declared; the future and secrets of other roles are excluded from the decision. |
+| Transition | A legal action changes the status as per the rule; refusal does not change the status. Repeating an order has its semantics declared. |
+| Oracol | The expectation is a rule of independence, an invariant or an enumeration with a finite domain; the agreement of two copies of the same code is not sufficient. |
+| Componente | The nominal case, the injected defect, the valid neighbor and the rule limit are differentiated without an interface. |
+| Offline loop | All shifts lead to termination or an explicit limit; resources, score and preservation of the game objects are checked. |
+| Produs real | A minimum selection of states and transitions shall be in line with the model of the product identified; differences shall be visible. |
+| Evaluare AI | The basis, candidate, budget and criteria shall be fixed before the reserved data; the model adaptation shall open the affected qualification. |
 
-## Contractele adaptorului
+## Adapter contracts
 
-Numele de mai jos descriu responsabilități de proiectare, fără a declara un API generic deja livrat. [Feedback-ul transferului](../feedback/ATF_Ai.md#reutilizarea-mecanismelor) păstrează condițiile implementării comune.
+The names below describe design responsibilities without declaring a generic API already delivered. [Transfer feedback](../feedback/ATF_Ai.md#re-use-of-mechanisms) maintains the conditions for joint implementation.
 
-| Port conceptual | Intrare și ieșire | Gardă independentă |
+| Port conceptual | Entry and exit | Independent Guard |
 |---|---|---|
-| Proiecția observației | Stare, rol și moment → informație permisă. | Schimbarea secretelor păstrează aceeași observație atunci când informația vizibilă rămâne identică. |
-| Legalitate și pas | Stare, rol și acțiune → refuz ori tranziție. | Acțiunea refuzată păstrează starea; tranziția conservă resursele definite de joc. |
-| Politică | Observație, configurație și buget → alegere legală. | Nu primește oracolul, seed-ul distribuirii sau generatorul evenimentelor viitoare. |
-| Simulator | Stare și politici → jurnal până la terminare. | Actorii au observații separate; durata și numărul pașilor au limite explicite. |
-| Evaluator | Jurnal și reguli → comparații și metrici. | Recalculează rezultatul fără a folosi verdictul politicii drept așteptare. |
-| Identitatea datelor | Domeniu, generator, versiune și caz → identitate stabilă. | Același seed în generatoare diferite nu implică aceeași distribuție; copierea datelor păstrează expunerea. |
+| Projection of the observation | Status, role and moment → information allowed. | The change of secrets shall keep the same observation when the visible information remains identical. |
+| Legality and step | Status, role and action → refusal or transition. | The action refused shall preserve the status; the transition shall preserve the defined resources of the game. |
+| Policy | Observation, configuration and budget → legal choice. | He doesn't get the oracle, the distribution seed- or the generator of future events. |
+| Simulator | Status and policies → log until completion. | Actors have separate observations; the duration and number of steps have explicit limits. |
+| Evaluator | Log and rules → comparisons and metrics. | Recalculate the result without using the policy verdict as a waiting. |
+| Identity of data | Domain, generator, version and case → Stable identity. | The same set in different generators does not involve the same distribution; copying of data retains exposure. |
 
-Într-un joc complet observabil, observația poate conține întreaga stare permisă. Într-un joc simultan sau cu informație ascunsă, izolarea rolurilor și ordinea dezvăluirii sunt contracte proprii, verificate înaintea comparației strategiilor.
+In a fully observable game, the observation may contain the entire permitted state. In a simultaneous game or with hidden information, the isolation of roles and the order of disclosure are own contracts, verified before comparison of strategies.
 
-## Lecții care se transferă
+## Lessons to be transferred
 
-| Lecție | Aplicare în domeniul nou | Verificare |
+| Lesson | New application | Verification |
 |---|---|---|
-| Observația nu stabilește intenția produsului | Separați cerința **confirmată**, comportamentul **observat** și ipoteza **presupusă**. | Un defect cunoscut este detectat fără copierea răspunsului curent în așteptare. |
-| Mock-ul are limite declarate | Modelați stări, tranziții și refuzuri, apoi confruntați o selecție cu produsul real. | Diferența de model și încălcarea unei cerințe primesc diagnostice distincte. |
-| Înfrângerea localizează analiza | Reduceți prima divergență la o proprietate și la frontiera ei. | Vecinul valid exclude o regulă prea largă; victoria unei partide nu devine etichetă de optimalitate. |
-| Predicția diferă de decizie | Modelul estimează comportament; politica urmărește obiectivul declarat. | Eroarea predictivă, legalitatea și progresul strategic au criterii separate. |
-| Parametrul și contextul au ritmuri diferite | Recalculați caracteristicile din evenimente; modificați parametrii numai prin candidat identificat. | Aceeași sursă și configurație păstrează definiția caracteristicilor, unitățile și fallback-ul. |
-| Compararea controlează contextul | Folosiți intrări și resurse comparabile, roluri rotite și familii de adversari. | Aleatorul mediului este separat de explorarea politicii; traseele pot diverge după prima alegere. |
-| Datele rezervate păstrează expunerea | Identificați generatorul, versiunile și partițiile independent de director. | Mutarea ori redenumirea nu redeschide datele văzute; observațiile corelate nu devin eșantioane independente. |
-| Extragerea cere consumatori | Mutați un mecanism comun numai cu domeniu explicit și probe de paritate. | Inventarul sursei include dependențele importate; o modificare a lor schimbă identitatea candidatului. |
-| Identitatea numerică are contract | Distingeți valoarea matematică, toleranța admisă și reprezentarea structurală. | Zero semnat, precizia și valorile nefinite au reguli explicite; serializarea și egalitatea nu aleg implicit semnificația domeniului. |
+| The comment does not establish the intention of the product | Separate requirement **confirmed **, behaviour **observat** and hypothesis **assumed **. | A known defect is detected without copying the current pending response. |
+| Mock has declared limits | Modulate states, transitions and refusals, then face a selection with the actual product. | The pattern difference and the violation of a requirement receive distinct diagnoses. |
+| Defeat locates analysis | Reduce the first divergence to a property and its border. | The valid neighbor rules out too wide a rule; a party's victory does not become an optimal label. |
+| Prediction differs from decision | The model estimates behaviour; policy follows the stated objective. | The predictive error, legality and strategic progress have separate criteria. |
+| The parameter and context have different rhythms | Recalculate the features of events; change parameters only by identified candidate. | The same source and configuration shall retain the definition of characteristics, units and fallback. |
+| Comparison controls context | Use comparable inputs and resources, rotated roles and families of opponents. | The environment is separated from the exploration of policy; the routes may diverge after the first choice. |
+| Reserved data shall maintain exposure | Identify the generator, versions and partitions independently of the director. | Motion or renaming does not reopen the data seen; related observations do not become independent samples. |
+| Extraction requires consumers | Move a common mechanism only with explicit field and parity evidence. | The source inventory includes imported dependencies; a change in them changes the identity of the candidate. |
+| The numerical identity has a contract | Distance the mathematical value, the allowed tolerance and structural representation. | Zero signed, precision and unfinished values have explicit rules; serialisation and equality do not by default choose the meaning of the domain. |
 
-## Reguli și ponderi în alt joc
+## Rules and weightings in another game
 
-Transferați semantica unei caracteristici, nu valoarea numerică. Fiecare regulă declară condiția, unitatea, normalizarea, prioritatea, consumatorul, limitele și verificarea; [ghidul YAML](../ai/ATF_RulesConfiguration.md) distinge filtrul legal, ordinea obiectivelor, amestecul estimărilor și coeficientul învățat.
+Transfer semantics of a feature, not numerical value. Each rule declares the condition, unity, normalisation, priority, consumer, limits and verification; [ghidul YAML](../ai/ATF_RulesConfiguration.md) distinguishes the legal filter, the order of objectives, the mixture of estimates and the coefficient learned.
 
-- Redefiniți obiectivul și criteriul terminal înaintea unei ponderi: punctele, riscul și durata pot avea unități diferite.
-- Recalculați contextul din informația disponibilă rolului; accesul la viitor nu devine acceptabil prin normalizare.
-- Calificați separat activarea, lipsa datelor, anularea și bugetul epuizat; o nouă caracteristică modifică identitatea modelului.
-- Păstrați datele de ajustare distincte de evaluarea rezervată și includeți o bază simplă, explicabilă.
+- Redefine the objective and the terminal criterion before a weighting: points, risk and duration may have different units.
+- Recalculate the context from the information available to the role; access to the future does not become acceptable through normalisation.
+- Qualify separately the activation, data lack, cancellation and budget depleted; a new feature changes the identity of the model.
+- Keep the adjustment data distinct from the reserved valuation and include a simple, explainable basis.
 
 <details>
-<summary>Fișa unei lecții pentru alt joc sau produs</summary>
+<summary>Lecture sheet for any game or product</summary>
 
-Aceasta este o structură de redactare; lansatoarele curente nu interpretează schema:
+This is a drafting structure; current launchers do not interpret the scheme:
 
 ```yaml
 lesson:
@@ -110,20 +110,20 @@ lesson:
   promotion: "<criteriu fixat înaintea evaluării noi>"
 ```
 
-Pentru testarea unui produs nou, înlocuiți tura cu operația, scorul cu invariantă sau criteriu de acceptare și rolul cu permisiunile utilizatorului. O ipoteză încă neconfirmată rămâne investigație; responsabilul contractului clarifică așteptarea înaintea verdictului automat.
+For testing a new product, replace the shift with the operation, score with invariant or acceptance criterion and role with user permissions. An unconfirmed hypothesis remains an investigation; the contract's manager clarifies the wait before the automatic verdict.
 
 </details>
 
-## Verificarea pregătirii
+## Verification of preparation
 
-Pentru mecanismul pur de intervale, din rădăcina proiectului, cu Node.js disponibil:
+For pure range mechanism, from the project root, with Node.js available:
 
 ```powershell
 node --test whist-lab-app/ai-lab/tools/qualification/half-open-interval.test.mjs
 ```
 
-[Contractele Kitului](../../lib/README.TestKit.md#scope-și-integrare) și [acceptanța ghidurilor de bibliotecă](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) verifică alte părți reutilizabile. Registrul, arena și corpusul au propriile teste Whist; trecerea lor nu califică un domeniu nou.
+[Kite contracts](../../lib/README.TestKit.md#purpose-and-integration) and [acceptance of library guides](../platform/ATF_Integration.md#verification-of-examples-in-guides) check other reusable parts. The register, arena and corpus have their own Whist tests; their passage does not qualify for a new field.
 
-Începerea componentelor pentru alt joc cere contractul, proiecția observației și oracolul definite. Începerea antrenării cere suplimentar bucla offline validată și date separate; conectarea la interfață cere produs identificat și controlul resursei, conform [strategiei de testare](../testing/README.md).
+Starting components for another game requires contract, observation projection and defined oracle. Starting training requires additional validated offline loop and separate data; connecting to the interface requires identified product and resource control, according to the [test strategy](../testing/README.md).
 
-[Protocol offline](README.md) · [Evoluția politicii](ATF_PolicyEvolution.md) · [Lacunele transferului](../feedback/ATF_Ai.md#reutilizarea-mecanismelor)
+[Protocol offline](README.md) · [Policy developments](ATF_PolicyEvolution.md) · [Transfer gaps](../feedback/ATF_Ai.md#re-use-of-mechanisms)

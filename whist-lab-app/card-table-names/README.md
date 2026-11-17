@@ -1,18 +1,18 @@
-# Numele jucătorilor de la masă
+# Name of the players at the table
 
-## Pe scurt
+## Overview
 
-`ro.cardtable:card-table-names:0.1.0` este un JAR Java 17. El furnizează politica neutră de nume, inclusiv validarea NFC și repartizarea adversarilor pe locuri.
+`ro.cardtable:card-table-names:0.1.0` is a JAR Java 17., which provides neutral name policy, including the validation of NFC and the distribution of opponents in place.
 
 ## Contract
 
-- La mesele de 3–6 jucători, omul ocupă locul 0. Numele său este exclus din lista adversarilor fără diferențiere de majuscule.
-- Aceeași intrare produce aceeași listă imutabilă, în ordinea locurilor. Generatorul folosește un flux separat de distribuire și de AI.
-- Consumatorul își gestionează preferințele, identitatea locurilor și salvarea. Biblioteca rămâne independentă de Android și de regulile jocului.
+- At the tables of 3–6 players, man occupies 0. place his name is excluded from the list of opponents without distinction from the capitals.
+- The same entry produces the same immutable list in order of seats. The generator shall use a separate distribution and AI flow.
+- The consumer manages his preferences, identity of his places and salvation. The library remains independent of Android and the rules of the game.
 
-## Verificare și publicare
+## Verification and publication
 
-Testele de componentă verifică politica și recuperarea partidei prin `game-core`. Consumatorii verifică separat numele randate și restaurarea.
+Component tests check the policy and recovery of the game by `game-core`. Consumers shall verify separately the names of the names and the restoration.
 
 ```powershell
 .\gradlew.bat --offline --no-daemon :card-table-names:publishReleasePublicationToIsolatedRepository -Pcardui.repository=<repository-extern>

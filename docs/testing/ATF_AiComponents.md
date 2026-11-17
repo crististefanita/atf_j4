@@ -1,76 +1,76 @@
-# Proiectarea testelor pentru politici cu informație parțială
+# Design of partial information policy tests
 
-## Pe scurt
+## Overview
 
-Testul verifică o proprietate generală în domeniul ei declarat. O partidă observată localizează analiza; rezultatul așteptat al unei decizii trebuie justificat prin reguli, invariant sau oracol independent.
+The test checks a general property in her declared field. Observed match locates analysis; the expected outcome of a decision must be justified by rules, invariant or independent oracle.
 
-## Construcția unei situații valide
+## Construction of a valid situation
 
 ```mermaid
 flowchart LR
-    RULE[Proprietate] -->|construiește| WITNESS[Martor legal]
-    WITNESS -->|rejoacă| PREFIX[Prefix public]
-    PREFIX -->|proiectează| OBS[Observație permisă]
-    OBS -->|verifică| CHECK[Politică și rezultat]
-    WITNESS -->|rămâne în oracol| ORACLE[Așteptare independentă]
+    RULE[Property] -->|builds| WITNESS[Martor legal]
+    WITNESS -->|Play back| PREFIX[Prefix public]
+    PREFIX -->|design| OBS[Observed observation]
+    OBS -->|checks| CHECK[Policy and result]
+    WITNESS -->|stay in the oracle| ORACLE[Independent waiting]
 ```
 
 <details>
-<summary>Legendă: martorul și actorul testat</summary>
+<summary>Legend: Witness and actor tested</summary>
 
-Martorul poate conține distribuția completă pentru a demonstra că situația este posibilă. Politica primește numai proiecția observabilă a actorului, iar comparația păstrează separat rezultatul ulterior.
+The witness may contain the full distribution to demonstrate that the situation is possible. The policy only receives the observable projection of the actor and the comparison keeps the result separately.
 
 </details>
 
-## Familii de proprietăți
+## Family of properties
 
 | Familie | Contract |
 |---|---|
-| Legalitate | Pachet fără duplicate, carte întoarsă neîmpărțită, licitare și fiecare carte jucată legale. |
-| Informație | Modificarea mâinilor adverse reale nu poate schimba aceeași observație transmisă politicii. |
-| Context | Schimbarea controlată a necesarului sau oportunităților poate schimba alegerea, cu celelalte intrări fixate. |
-| Memorie | Cărțile publice și lipsurile demonstrate restrâng corect lumile fezabile. |
-| Scor | Punctele, seriile și totalurile se calculează independent de selectorul acțiunii. |
-| Estimare incertă | Se compară observații care diferă printr-un singur factor: atu, carte întoarsă, licitație publică ori serie. Pentru Hard, translația comună a scorurilor păstrează întregul vector al estimării, inclusiv bugetul consumat. |
-| Certificat | Enumerarea este completă, toate continuările relevante sunt acoperite, iar bugetul epuizat păstrează fallback-ul. |
-| Comparație | Acțiunile candidate folosesc aceleași lumi și bugete; politicile sunt comparate pe distribuții și locuri controlate. |
+| Legalitate | Pack without duplicates, undivided card turned, bidding and every card played legally. |
+| Information | Modification of actual adverse hands cannot change the same observation transmitted to policy. |
+| Context | Controlled change of needs or opportunities may change choice with other fixed inputs. |
+| Memorie | Public cards and proven shortcomings properly restrict the feasible worlds. |
+| Score | Points, series and totals shall be calculated independently of the action selector. |
+| Uncertain estimate | Comparing observations that differ by one factor: trump card, return card, public tender or series. For Hard, the common translation of scores shall keep the entire vector of the estimate, including the budget consumed. |
+| Certificat | The numbers are complete, all relevant sequels are covered, and the exhausted budget keeps the fallback. |
+| Comparison | Candidate actions use the same worlds and budgets; policies are compared on distributions and controlled places. |
 
-## Nivelul verificării
+## Verification level
 
-[Arhitectura testării](ATF_Architecture.md) definește clasificarea comună. Calculul pur se verifică unitar, API-ul politicii ca o componentă, iar colaborarea motor–politici–oracol prin integrare de domeniu.
+[Test architecture](ATF_Architecture.md) defines the common classification. Pure calculus is checked unitary, policy API as a component, and policy-policy-oracle collaboration through domain integration.
 
-Un parcurs Android rămâne E2E numai când execută interacțiuni noi în aplicația instalată. Comparația statistică are protocol propriu și nu înlocuiește aceste contracte.
+An Android path remains E2E only when performing new interactions in the installed application. The statistical comparison has its own protocol and does not replace these contracts.
 
-## Nivelul afirmației
+## Scope of the claim
 
-- Testul unei funcții auxiliare verifică acea limită; nu certifică automat întregul API de decizie.
-- O medie mai bună într-o lume nu este dominanță în toate lumile.
-- Alegerile optimizate separat după cunoașterea lumii pot fi incompatibile cu o singură acțiune publică.
-- O căutare completă per lume și un certificat universal au cuantificatori diferiți.
-- Reproductibilitatea pe aceeași observație nu implică automat invarianță la schimbarea scorurilor sau simetrie între locuri.
-- Un rezultat statistic de politică și corectitudinea unei componente au criterii de calificare distincte.
+- The test of an ancillary function shall verify that limit; it shall not automatically certify the entire API for decision.
+- A better average in a world is not domination in all worlds.
+- The elections optimized separately after knowledge of the world can be incompatible with a single public action.
+- A complete search per world and a universal certificate have different quantifiers.
+- Reproducibility on the same observation does not automatically imply invariance when changing scores or symmetry between places.
+- A statistical policy result and the correctness of a component have separate qualification criteria.
 
-## Surse de verificare
+## Verification sources
 
-| Sursă | Responsabilitate |
+| Source | Responsibility |
 |---|---|
-| [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) | Martori legali, necesar și efectul cărților publice. |
-| [BlindPolicyObservationTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/BlindPolicyObservationTest.java) | Separarea mâinii proprii și a informației publice înaintea apelului politicii. |
-| [CertifiedContractRegressionTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java) | Certificat, lipsa garanției și fallback. |
-| [HardSalvageObjectiveTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | Ordinea obiectivelor când exactul este imposibil public. |
-| [IndependentPlayerModelTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java) | Fezabilitate și model independent. |
-| [HumanUncertainBidComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java) | Recomandarea Hard pe observație publică, atu, licitații adverse, translația scorului și formule independente pentru seriile configurabile. |
+| [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) | Legal witnesses, necessary and the effect of public cards. |
+| [BlindPolicyObservationTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/BlindPolicyObservationTest.java) | Separating his own hand and public information before the call for policy. |
+| [CertifiedContractRegressionTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java) | Certificate, lack of guarantee and fallback. |
+| [HardSalvageObjectiveTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | The order of objectives when the exact is publicly impossible. |
+| [IndependentPlayerModelTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java) | Fesibility and independent model. |
+| [HumanUncertainBidComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java) | Hard recommendation on public observation, atu, adverse bids, translation of score and independent formulas for configurable series. |
 
-## Citirea observațiilor arhivate
+## Reading of archived observations
 
-[ObservedPositionJson](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJson.java) adaptează capturile publice la modelul curent fără să rescrie documentul original. Absența câmpului penalizării păstrează profilul istoric de cinci puncte; o valoare explicită rămâne explicită, iar una invalidă este refuzată.
+[ObservedPositionJson](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJson.java) adapts public catches to the current model without rewriting the original document. The absence of the penalty field retains the historical profile of five points; an explicit value remains explicit and an invalid one is refused.
 
-[Componentele adaptorului](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJsonComponentTest.java) disting absența, valoarea curentă și coruperea datelor. Compatibilitatea capturii aparține cititorului de arhivă, iar motorul rămâne independent de parserul JSON al testelor.
+[Adapter components](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJsonComponentTest.java) distinguish the absence, current value and data corruption. The compatibility of the catch is the responsibility of the archive reader and the engine remains independent of the JSON test parser.
 
-## Organizarea colecțiilor
+## Organisation of collections
 
-Regresia implicită păstrează cazuri mici, stabile și cu așteptare independentă. Cercetarea, turneele și diagnosticele care explorează limite nerezolvate sunt colecții explicite, cu buget și scop declarate.
+Default regression keeps small, stable and independent cases. Research, tournaments and diagnostics exploring unresolved boundaries are explicit collections with a stated budget and purpose.
 
-Un caz nou trebuie să aducă o proprietate sau frontieră distinctă. Seturile mari de jocuri și rezultatele lor rămân în corpusul extern, iar [selecția focalizată](../learning/ATF_Selection.md) controlează costul analizei.
+A new case must bring a distinct property or border. The large sets of games and their results remain in the external corpus, and [Focused selection](../learning/ATF_Selection.md) controls the cost of analysis.
 
-[Colecții](ATF_Collections.md) · [Guvernanța schimbărilor](../governance/ATF_TestChanges.md) · [Modelul deciziei](../ai/ATF_DecisionModel.md)
+[Collections](ATF_Collections.md) · [Governance of changes](../governance/ATF_TestChanges.md) · [Modelul deciziei](../ai/ATF_DecisionModel.md)

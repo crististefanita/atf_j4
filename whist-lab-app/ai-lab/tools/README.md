@@ -1,65 +1,65 @@
-# Uneltele laboratorului AI
+# AI laboratory tools
 
-## Pe scurt
+## Overview
 
-Uneltele Node.js aparțin modulului JVM `ai-lab` și verifică datele sau mecanismele de învățare offline. Ele păstrează separat observația actorului, datele complete ale oracolului și rezultatele evaluării.
+The Node.js tools belong to JVM `ai-lab` module and check offline learning data or mechanisms. They keep the actor's observation, complete data of the oracle and evaluation results separately.
 
-Implementarea și testele fiecărui mecanism stau împreună, grupate pe responsabilitate. Sarcina Gradle `:ai-lab:testTools` rulează testele locale; experimentele pe corpusuri externe se activează separat.
+The implementation and tests of each mechanism shall be together, grouped in responsibility. Gradle `:ai-lab:testTools`'s pregnancy runs local tests; experiments on external corpus are activated separately.
 
-## Fluxul datelor
+## Data flow
 
 ```mermaid
 flowchart LR
-    GAMES[Partide declarate] -->|validează prin| CORPUS[Corpus]
-    CORPUS -->|alimentează| ANALYSIS[Diagnostic]
+    GAMES[Partide declarate] -->|validate by| CORPUS[Corpus]
+    CORPUS -->|fuel| ANALYSIS[Diagnostic]
     ANALYSIS -->|propune| MODEL[Model candidat]
-    MODEL -->|se califică prin| GATE[Protocol offline]
+    MODEL -->|qualifies as| GATE[Protocol offline]
 ```
 
 <details>
-<summary>Legendă: analiză și promovare</summary>
+<summary>Legend: Analysis and promotion</summary>
 
-Validatorul verifică regulile și scorul înaintea interpretării rezultatelor. Diagnosticul motivează o regulă sau un candidat; promovarea cere componente independente și evaluarea rezervată din protocol.
+The validator shall verify the rules and the score before interpreting the results. The diagnosis motivates a rule or candidate; promotion requires independent components and reserved evaluation from protocol.
 
 </details>
 
 ## Organizare
 
-| Director | Responsabilitate |
+| Director | Responsibility |
 |---|---|
-| [corpus](corpus/) | Schema partidelor, curatorul, analiza corpusului activ și extragerea exemplelor. |
-| [patterns](patterns/) | Descrierea onorurilor și calibrări descriptive pe date de dezvoltare. |
-| [bidding](bidding/) | Caracteristici, modele de licitare, generare controlată și șablonul Java identificat. |
-| [learning](learning/) | Compoziția loturilor și evaluarea protocoalelor ori arenei. |
-| [diagnostics](diagnostics/) | Divergențe, presiune contextuală și răspunsuri finite. |
-| [qualification](qualification/) | Criterii explicite pentru corecții locale și caracteristici candidate. |
-| [testing](testing/) | Constructor determinist de partide legale pentru componente, fără citirea arhivei. |
+| [corpus](corpus/) | Party scheme, curator, active body analysis and examples extraction. |
+| [patterns](patterns/) | Description of the fees and descriptive calibrations on development data. |
+| [bidding](bidding/) | Features, bidding models, controlled generation and Java pattern identified. |
+| [learning](learning/) | Composition of the lots and evaluation of protocols or arena. |
+| [diagnostics](diagnostics/) | Divergence, contextual pressure and finite responses. |
+| [qualification](qualification/) | Explicit criteria for local corrections and candidate characteristics. |
+| [testing](testing/) | A determinist builder of legal parties for components, without reading the archive. |
 
-[Validatorul bazei candidatului](qualification/WhistCandidateSource.psm1) păstrează inventarul complet al surselor și verificarea copiei finale. [Contractul manifestului](../../../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului) deține migrarea, hash-ul canonic și delimitarea dintre bază și candidat; componentele sale folosesc directoare temporare construite, fără partide arhivate.
+[Validator of candidate base](qualification/WhistCandidateSource.psm1) retains the complete inventory of sources and the final copy verification. [The contract of the manifesto](../../../docs/testing/ATF_Collections.md#full-identity-of-candidate-base) holds migration, canonical hash and the boundary between base and candidate; its components use temporary directories built without archived parties.
 
-[Registrul expunerii](qualification/whist-evaluation-registry.mjs) coordonează loturile între corpusuri și păstrează reluarea ca expunere cunoscută. [Contractul registrului](../../../docs/learning/ATF_EvaluationRegistry.md) definește identitatea, importul istoricului, blocarea și recuperarea după întrerupere.
+[Registrul expunerii](qualification/whist-evaluation-registry.mjs) coordinates the batches between the corpuss and restores the resumption as known exposure. [Register contract](../../../docs/learning/ATF_EvaluationRegistry.md) defines identity, import of history, blocking and recovery after interruption.
 
-- **Mecanism generic:** [intersecția intervalelor](qualification/half-open-interval.mjs) este pură și primește intervale întregi semi-deschise.
-- **Adaptor de domeniu:** Whist păstrează spațiul distribuțiilor, validarea seed-urilor și persistența; [lecțiile transferabile](../../../docs/learning/ATF_PolicyEvolution.md#lecții-transferabile-către-alte-jocuri-și-produse) explică această graniță.
+- **Generic mechanism:** [intersection of the intervals](qualification/half-open-interval.mjs) is pure and receives full semi-open intervals.
+- **Field Adapter:** Whist keeps distribution space, seedness validation and persistence; [transferable lessons](../../../docs/learning/ATF_PolicyEvolution.md#lessons-to-other-games-and-products) explain this border.
 
-## Verificare
+## Verification
 
-Din directorul `whist-lab-app` al unei copii temporare complete a proiectului, cu Java, Node.js și dependențele Gradle disponibile local:
+From the `whist-lab-app` directory of a full temporary copy of the project, with Java, Node.js and the locally available Gradle dependencies:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :ai-lab:testTools --offline --no-daemon
 ```
 
-- **Rezolvare:** Gradle execută Node din rădăcina copiei proiectului. Importurile și resursele uneltelor se rezolvă față de fișierul care le deține; intrările CLI și destinațiile externe sunt declarate de apelant.
-- **Date locale:** testele de [corpus](corpus/whist-corpus.test.mjs) și de [curator](corpus/whist-active-corpus.test.mjs) folosesc [partide construite](testing/legal-game-fixture.mjs), cu distribuire, licitații, joc legal și scor calculate separat de validator. Fișierele temporare aparțin testului. `--offline` cere separat dependențe Gradle disponibile local.
-- **Reproductibilitate:** identitățile semantice ale înregistrărilor se păstrează la mutarea fizică a sursei. Capturile vechi se reproduc din copia lor identificată, iar directoarele externe nu sunt rescrise prin această organizare.
+- **Solving: ** Gradle executes Node from the root of the project copy. The imports and resources of the tools shall be resolved against the file which holds them; the entries of the CLL and external destinations shall be declared by the caller.
+- **Local data:** tests [corpus](corpus/whist-corpus.test.mjs) and [curator](corpus/whist-active-corpus.test.mjs) use [partide construite](testing/legal-game-fixture.mjs), with distribution, bids, legal game and score calculated separately from the validator. Temporary files belong to the test. `--offline` ask for separate available Gradle dependencies.
+- **Reproduction: ** Semantic identities of the records shall be kept when physically moving the source. The old catches shall be reproduced from their identified copy and the external directories shall not be rewritten by this organization.
 
-[Modulul AI](../README.md) · [Protocolul](../../../docs/learning/README.md) · [Colecții](../../../docs/testing/ATF_Collections.md)
+[Modulul AI](../README.md) · [Protocolul](../../../docs/learning/README.md) · [Collections](../../../docs/testing/ATF_Collections.md)
 
-## Limite și calificare
+## Limits and qualification
 
-Datele construite califică mecanismul și refuzurile sale; nu sunt partide noi pentru demonstrarea progresului strategic. Replay-ul arhivei folosește intrarea separată din [contractul corpusului](../../../docs/learning/ATF_Corpus.md#utilizare), cu fișier și SHA-256 declarate. Nicio arhivă nu se selectează implicit în componente.
+The built data qualify his mechanism and refusals; there are no new parties to demonstrate strategic progress. The archive's playbook uses separate entry from the [contract of the body](../../../docs/learning/ATF_Corpus.md#usage), with file and SHA-256 declared. No archive shall be selected by default in the components.
 
-Calificarea uneltelor pe volume și întreruperi rămâne urmărită în [feedback-ul laboratorului](../../../docs/feedback/ATF_Ai.md#verificarea-autonomă-a-laboratorului).
+Qualification of gear by volume and interruption remains monitored in [Laboratory feedback](../../../docs/feedback/ATF_Ai.md#autonomous-laboratory-verification).
 
-[Protocolul](../../../docs/learning/README.md) deține expunerea loturilor și promovarea. Notele și rezultatele unei evaluări rămân externe; registrul expunerii nu certifică automat celelalte unelte.
+[Protocolul](../../../docs/learning/README.md) holds the display of lots and promotion. The notes and results of an assessment shall remain external; the exposure register shall not automatically certify the other tools.

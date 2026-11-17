@@ -1,77 +1,77 @@
-# Registrul comun al expunerii loturilor
+# Common record of batch exposure
 
-## Pe scurt
+## Overview
 
-[Registrul executabil](../../whist-lab-app/ai-lab/tools/qualification/whist-evaluation-registry.mjs) păstrează expunerea distribuțiilor înaintea jocului. [Politica instalației](../../config/whist-evaluation-policy.json) identifică locația comună; corpusul, directorul rezultatului și numele lotului nu o aleg.
+[Registrul executabil](../../whist-lab-app/ai-lab/tools/qualification/whist-evaluation-registry.mjs) keeps the distribution exposure before the game. [Installation policy](../../config/whist-evaluation-policy.json) identifies the common location; the corpus, the result directory and the batch name do not choose.
 
-Un registru coordonează procesele care folosesc aceeași instalație. Mutarea lui cere păstrarea întregii stări și actualizarea coordonată a consumatorilor; o copie goală nu reprezintă o migrare. Execuțiile directe în afara lansatoarelor trebuie importate ca expunere înaintea calificării.
+A registry shall coordinate processes using the same installation. His move requires the preservation of the entire state and coordinated updating of consumers; an empty copy is not a migration. Direct executions outside launchers shall be imported as exposure before qualification.
 
-## Fluxul unei cereri
+## Flow of an application
 
 ```mermaid
 flowchart LR
-    REQUEST[Interval și surse] -->|solicită exclusivitate| LOCK[Blocare comună]
-    LOCK -->|confruntă cu| HISTORY[Istoric și rezervări]
-    HISTORY -->|permite continuarea| RECEIPT[Chitanță identificată]
-    HISTORY -->|refuză contaminarea| STOP[Oprire înainte de joc]
-    RECEIPT -->|precede| RUN[Execuție offline]
+    REQUEST[Interval and sources] -->|request exclusive| LOCK[Common lock]
+    LOCK -->|face| HISTORY[History and reservations]
+    HISTORY -->|allow continued| RECEIPT[ID]
+    HISTORY -->|refuse contamination| STOP[Stop before game]
+    RECEIPT -->|precede| RUN[Offline execution]
 ```
 
 <details>
-<summary>Legendă: rezervare și expunere</summary>
+<summary>Legend: reservation and exposure</summary>
 
-Rezervarea precede execuția și rămâne păstrată inclusiv după eșec sau întrerupere. Chitanța identifică admiterea lotului; rezultatul testelor și progresul strategic se verifică separat.
+The reservation shall be preceded by the execution and shall be maintained even after failure or interruption. The receipt shall identify the admission of the consignment; the result of the tests and the strategic progress shall be checked separately.
 
 </details>
 
-## Identitatea și reutilizarea
+## Identity and re-use
 
-[Componenta de intervale](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs) verifică intersecția intervalelor întregi semi-deschise, independent de joc și stocare. Registrul adaptează `firstSeed` și `seeds` la capetele intervalului și păstrează validarea domeniului propriu; adiacența nu este suprapunere.
+[Variant component](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs) checks the intersection of the entire semi-open intervals, independent of play and storage. The registry adapts `firstSeed` and `seeds` at the ends of the range and retains the validation of the domain itself; the adjacent is not overlapping.
 
 | Element | Contract |
 |---|---|
-| Distribuție | Spațiul comun `romanian4-seeded-deals` și intervalul semi-deschis de semințe identifică expunerea conservator. Rolul, adversarul, locul și versiunea protocolului nu creează distribuții independente. |
-| Candidat | Identitatea, faza, intervalul, hash-ul protocolului și inventarul surselor identifică rezervarea. Evaluarea rezervată cere suplimentar hash-ul înghețării. |
-| Dezvoltare | Aceleași distribuții pot fi rejucate cu alte politici. Chitanța `DEVELOPMENT_REUSE` păstrează suprapunerile și interzice prezentarea lor ulterioară ca date neatinse. |
-| Evaluare rezervată | Orice suprapunere cu istoricul sau altă rezervare este refuzată, inclusiv la o singură semință ori la includerea unui interval în altul. |
-| Continuare | Aceeași identitate completă primește același identificator și marcajul `CONTINUATION`. Continuarea nu este un nou lot independent și nu șterge rezultatele anterioare. |
+| Distribution | Common space `romanian4-seeded-deals` and the semi-open range of seeds identify the conservative exposure. The role, opponent, location and version of the protocol do not create independent distributions. |
+| Candidat | The identity, phase, range, hashness of protocol and source inventory identify the reservation. The reserved assessment requires additional ice cream hash. |
+| Dezvoltare | The same distributions can be replayed with other policies. Receipt `DEVELOPMENT_REUSE` shall maintain overlaps and prohibit their subsequent submission as untouched data. |
+| Reserved assessment | any overlap with the history or other reservation shall be refused, including one seed or the inclusion of one interval in another. |
+| Continuare | The same full identity shall be given the same identifier and the mark `CONTINUATION`. Continuation is not a new independent batch and does not delete previous results. |
 
-Identitatea este calculată din JSON canonic cu chei sortate și SHA-256. Căile corpusului și rezultatului păstrează proveniența primei cereri, fără să poată reseta expunerea.
+The identity is calculated from the canonical JSON with sorted keys and the SHA-256. Corpus and result paths keep the origin of the first application, without being able to reset the exposure.
 
-- [Inventarul executabil](../../whist-lab-app/ai-lab/tools/qualification/WhistEvaluationInputs.psm1) include sursele și resursele motorului și laboratorului, construirea JVM și mecanismul admiterii.
-- Prezentarea Android și documentația independentă nu schimbă identitatea politicii; o modificare a sursei executabile o schimbă.
-- Inventarul include și componenta generică importată de registru.
-- Schimbarea acestei dependențe schimbă identitatea rezervării; separarea într-un fișier nou nu o scoate din sursele care trebuie înghețate.
+- [Inventarul executabil](../../whist-lab-app/ai-lab/tools/qualification/WhistEvaluationInputs.psm1) includes the sources and resources of the engine and laboratory, the construction of JVM and the admission mechanism.
+- The presentation of Android and independent documentation does not change the identity of policy; a change in the executable source changes it.
+- The inventory shall also include the generic component imported by the register.
+- Changing this dependency changes the identity of the reservation; separating it into a new file does not remove it from the sources to be frozen.
 
-## Inițializare și istoric
+## Initialization and history
 
-Inițializarea cere un manifest revizuit: `reviewedBy` și lista `exposures`. Fiecare interval istoric declară `firstSeed`, `seeds` și `evidenceSha256`; sursele și inventarul importului rămân în arhiva externă. O listă goală este admisă numai pentru un mediu revizuit ca nou.
+Initialization requires a revised manifesto: `reviewedBy` and list `exposures`. Each historical range declares `firstSeed`, `seeds` and `evidenceSha256`; the import sources and inventory remain in the external archive. An empty list is only allowed for a revised environment as new.
 
 ```powershell
 node .\whist-lab-app\ai-lab\tools\qualification\whist-evaluation-registry.mjs initialize '<registru-comun>' '<istoric-revizuit.json>' '<chitanță-nouă.json>'
 ```
 
-Inițializarea repetată este refuzată. Manifestele vechi, rezervările de sub corpus și partidele deja văzute se importă conservator; lipsa unui fișier nu demonstrează că datele nu au fost expuse. Importul istoricului nu schimbă retrospectiv calificarea experimentelor.
+Repeated initialization is denied. Old manifests, reservations under the corpus and parties already seen are imported conservatively; the lack of a file does not demonstrate that the data has not been exposed. The import of history does not change the qualification of experiments retrospectively.
 
-## Concurență și recuperare
+## Competition and recovery
 
-| Mecanism | Invariantă |
+| Mechanism | Input |
 |---|---|
-| Blocare atomică | Crearea directorului `.lock` serializează citirea, verificarea și scrierea. Expirarea așteptării refuză cererea; blocarea nu este preluată automat. |
-| Persistență | Starea include o sumă de control; scrierea folosește fișier nou, sincronizare și redenumire în interiorul blocării. |
-| Întrerupere | Un fișier `.pending.json` oprește admiterea. Recuperarea inspectează procesul proprietar, starea anterioară și scrierea parțială înainte de intervenție. |
-| Integritate | JSON trunchiat, sumă schimbată și căi redirecționate prin legături sunt refuzate. Controlul nu înlocuiește permisiunile și copia de siguranță ale depozitului. |
+| Atomic lock | The creation of the Director `.lock` serializes reading, checking and writing. Expiration of expectation refuses application; blocking is not automatically taken over. |
+| Persistence | The status includes a control amount; writing uses new file, synchronization and renaming inside the lock. |
+| Discontinuation | A `.pending.json` file stops admission. Recovery shall inspect the owner process, the previous state and the partial writing prior to intervention. |
+| Integritate | JSON truncated, changed amount and redirected pathways through links are denied. Control shall not replace the permission and safety copy of the deposit. |
 
-## Integrarea și verificarea
+## Integration and verification
 
-[Lansatorul colecțiilor](../../scripts/run-whist-collection.ps1) rezervă dezvoltarea, evaluarea și arena după identificarea copiei executabile. Protocolul și înghețarea sunt păstrate din aceiași octeți interpretați; rezervarea precede pornirea Gradle.
+[Collections Launcher](../../scripts/run-whist-collection.ps1) reserves the development, evaluation and arena after identification of the executable copy. The protocol and the freezing are kept from the same bytes interpreted; reservation precedes the starting of Gradle.
 
-[Înregistrarea diagnosticului](../../scripts/Register-WhistDevelopmentExposure.ps1) este folosită și de lansatoarele de partide, perspective și profiluri. Fișierele locale `holdout-use` rămân numai proiecții de compatibilitate pentru cititorii turneelor istorice; autoritatea este registrul comun.
+[Diagnostic recording](../../scripts/Register-WhistDevelopmentExposure.ps1) is also used by the party launchers, perspectives and profiles. Local files `holdout-use` remain only compatibility projections for readers of historical tournaments; authority is the common register.
 
-| Nivel | Proprietăți verificate |
+| Level | Checked properties |
 |---|---|
-| Componentă Node | Frontiere, suprapuneri, identitate, copierea corpusului, istoric, integritate, întrerupere și cereri din procese concurente. |
-| Componentă de integrare | Lansatorul real cu surse construite și Gradle controlat: rezervarea precede execuția, refuzul nu pornește jocul, iar chitanța locală păstrează identitatea canonică. |
-| Evaluare de domeniu | Protocolul confruntă separat regulile, scorul și progresul pe lotul admis; registrul nu emite verdict de forță de joc. |
+| Node component | Borders, overlaps, identity, body copying, history, integrity, interruption and demands from competing processes. |
+| Integration component | Real launcher with built sources and Gradle controlled: booking precedes execution, refusal does not start the game, and local receipt keeps canonical identity. |
+| Field evaluation | The protocol faces the rules, score and progress on the accepted lot separately; the registry does not issue a verdict of force playing. |
 
-[Protocolul offline](README.md) · [Colecții](../testing/ATF_Collections.md) · [Componentele registrului](../../whist-lab-app/ai-lab/tools/qualification/whist-evaluation-registry.test.mjs)
+[Protocolul offline](README.md) · [Collections](../testing/ATF_Collections.md) · [Register components](../../whist-lab-app/ai-lab/tools/qualification/whist-evaluation-registry.test.mjs)

@@ -1,88 +1,88 @@
-# Integrarea bibliotecilor și publicarea rezultatelor
+# Integration of libraries and publication of results
 
-## Pe scurt
+## Overview
 
-Modulul verifică integrarea bibliotecilor comune, guvernanța proiectului și publicarea rezultatelor Whist. Consumatorul selectează înregistrările, păstrează comparațiile originale și confruntă rezultatul publicat cu intrarea capturată.
+The module verifies the integration of joint libraries, project governance and the publication of the Whist results. The consumer selects the records, retains the original comparisons and confronts the published result with the captured entry.
 
-Biblioteca comună deține prezentarea HTML și se consumă prin API-ul configurat în [POM-ul părinte](../pom.xml). Contractele de publicare, selecțiile de date și acceptanța binară au verificări distincte.
+The common library holds HTML presentation and is consumed through API configured in [Pome parent](../pom.xml). Publication contracts, data selections and binary acceptance have separate checks.
 
-## Flux și responsabilități
+## Flow and responsibilities
 
 ```mermaid
 flowchart LR
-    INPUT[Invocări capturate] -->|alimentează| POLICY[Politică de selecție]
-    POLICY -->|transmite integral| DATA[Date pentru publicare]
-    DATA -->|publică prin API| HTML[Raport HTML]
-    AUDIT[Audit independent] -->|confruntă cu intrarea| HTML
+    INPUT[Voting] -->|fuel| POLICY[Selection policy]
+    POLICY -->|transmite integral| DATA[Data for publication]
+    DATA -->|publish by API| HTML[Raport HTML]
+    AUDIT[Audit independent] -->|face entry| HTML
 ```
 
 <details>
-<summary>Legendă: identitatea execuției precede prezentarea</summary>
+<summary>Legend: identity of execution prior to presentation</summary>
 
-O înregistrare descrie o invocare: identitate, parametri, intervale, comparații și verdict. Selecția păstrează invocări întregi și declară omisiunile; adaptorul pregătește datele, iar biblioteca comună construiește prezentarea.
+A record describes a statement of origin: identity, parameters, intervals, comparisons and verdict. The selection shall keep whole and declare omissions; the adapter shall prepare the data and the joint library shall build the presentation.
 
 </details>
 
 ## Organizare
 
-| Mecanism | Responsabilitate |
+| Mechanism | Responsibility |
 |---|---|
-| [Selecția](src/main/java/atf/tests/learning/EvidenceSelection.java) | Păstrează rezultatele diferite de PASS, colecțiile obligatorii, gărzile populației și exemplele selectate determinist. |
-| [Compoziția](src/main/java/atf/tests/learning/LearningRunReport.java) | Verifică înregistrările și transmite comparațiile originale. |
-| [Sesiunea publicării](src/main/java/atf/tests/reporting/GameReportSession.java) | Izolează configurația, contextul și fazele unei publicări. |
-| [Auditul HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confruntă identitățile, rândurile, valorile și scopul publicat cu datele sursă. |
-| [Descărcarea APK](src/main/java/atf/tests/distribution/GitHubApkDownload.java) | Verifică metadatele GitHub, fluxul complet, SHA-256 și CRC; suport în main, probe HTTP locale și acceptanță live în test. |
+| [Selection](src/main/java/atf/tests/learning/EvidenceSelection.java) | Keeps results different from PASS, mandatory collections, population guards and selected deterministic examples. |
+| [Composition](src/main/java/atf/tests/learning/LearningRunReport.java) | Check the records and transmit the original comparisons. |
+| [Publication session](src/main/java/atf/tests/reporting/GameReportSession.java) | Isolate the configuration, context and phases of a publication. |
+| [Auditul HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confront the identities, rows, values and purpose published with source data. |
+| [Download APK](src/main/java/atf/tests/distribution/GitHubApkDownload.java) | Check GitHub metadata, full flow, SHA- 256 and CRC; main support, local HTTP samples and live acceptance in the test. |
 
-[Politica prezentării](../docs/reporting/ATF_Presentation.md) deține regulile de volum și navigare. Codul reutilizabil este în `src/main/java`; intrările JUnit și probele negative sunt în `src/test/java`.
+[Presentation policy](../docs/reporting/ATF_Presentation.md) holds the rules of volume and navigation. The reusable code is in `src/main/java`; JUnit entries and negative samples are in `src/test/java`.
 
 ## Contracte importante
 
-- Fiecare invocare selectată păstrează verdictul, cauza și comparațiile obligatorii.
-- Inventarul omisiunilor arată ce a fost executat și ce nu este prezentat individual în HTML.
-- Bugetul contextului opțional păstrează valorile așteptate, observate și verdictul; [GameEvidenceBodies](src/main/java/atf/tests/reporting/GameEvidenceBodies.java) refuză intrările indivizibile prea mari.
-- Republicarea consumă date capturate și păstrează identitatea execuției originale; imaginile istorice ori sintetice au etichetă explicită.
+- Each selected claim shall retain the binding verdict, cause and comparison.
+- The inventory of omissions shows what was executed and what is not individually presented in HTML.
+- The budget of the optional context retains the expected, observed and verdict values; [GameEvidenceBodies](src/main/java/atf/tests/reporting/GameEvidenceBodies.java) refuses indivisible entries too high.
+- The republican population consumes data captured and retains the identity of the original execution; historical or synthetic images have explicit labels.
 
-## Verificare focalizată
+## Focused verification
 
-Dintr-o copie temporară proprie, cu POM-ul părinte, modulele necesare, perechile fizice JAR/POM și un depozit Maven propriu:
+With his own temporary copy, with his own Pome, the necessary modules, physical pairs JAR/POM and a Maven deposit:
 
 ```powershell
 mvn -B -pl atf-tests -am '-Dtest=GameReportComponentSuite,LearningRunReportContractTest,EvidenceSelectionContractTest' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-Alegeți verificarea după contractul schimbat:
+Choose the check after the changed contract:
 
-| Scop | Intrare JUnit |
+| Purpose | Intrare JUnit |
 |---|---|
-| Politică, corpuri JSON/TEXT, redactare și publicare | [GameReportComponentSuite](src/test/java/atf/tests/reporting/GameReportComponentSuite.java). |
-| Proprietatea valorilor și mutații deliberate ale datelor publicate | [LearningRunReportContractTest](src/test/java/atf/tests/learning/LearningRunReportContractTest.java). |
-| Populație, praguri și selecție | [EvidenceSelectionContractTest](src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java). |
-| Binare și compoziția modulelor | [CoreReportingConsumerContractTest](src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java). |
-| Capturi PNG prin API | [AndroidInlineScreenshotReportContractTest](src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java). |
-| Fragmentele ghidurilor pe JAR-urile fizice | [LibraryReadmeExamplesIntegrationTest](src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java). |
-| Linkul versiunii și refuzul unui APK incomplet | [Componentele distribuției](src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java), fără acces GitHub. |
-| Descărcarea GitHub reală | [Acceptanța explicită](src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java), separată de suita offline prin tag. |
+| Policy, JSON/TEXT payloads, redaction and publication | [GameReportComponentSuite](src/test/java/atf/tests/reporting/GameReportComponentSuite.java). |
+| Ownership of values and deliberate mutations of published data | [LearningRunReportContractTest](src/test/java/atf/tests/learning/LearningRunReportContractTest.java). |
+| Population, thresholds and selection | [EvidenceSelectionContractTest](src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java). |
+| Binaries and module composition | [CoreReportingConsumerContractTest](src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java). |
+| PNG capture through the API | [AndroidInlineScreenshotReportContractTest](src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java). |
+| Examples from the guides against the physical JARs | [LibraryReadmeExamplesIntegrationTest](src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java). |
+| Version link and refusal of an incomplete APK | [Distribution components](src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java), GitHub's not in. |
+| Download Real GitHub | [Explicit acceptance](src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java), separate from the offline suite by tag. |
 
-[LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java) publică o selecție explicită prin activarea sa dedicată. [DeepSuiteExtentReportTest](src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java) compune o publicare agregată, cu precondiții și activare separate.
+[LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java) publishes an explicit selection by its dedicated activation. [DeepSuiteExtentReportTest](src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java) composes an aggregate publication with separate preconditions and activation.
 
-## Intervalele Android la republicare
+## Android intervals at republication
 
-[Contractul măsurării timpilor](../docs/reporting/ATF_PhaseTiming.md) păstrează intervalele originale și asocierea lor cu acțiunile. Verificarea acestui contract pe jurnale capturate are un scop distinct de executarea unor interacțiuni Android noi.
+[Time measurement contract](../docs/reporting/ATF_PhaseTiming.md) keeps the original ranges and their association with the actions. The verification of this contract on captured logs has a distinct purpose of executing new Android interactions.
 
-## Niveluri și guvernanță
+## Levels and governance
 
-Componentele verifică selecția, adaptoarele și publicarea; integrarea verifică binarele fizice, configurația și compoziția modulelor. [Matricea nivelurilor](../docs/testing/ATF_Architecture.md) este confruntată cu declarațiile testelor.
+Components check selection, adapters and publication; integration checks physical binaries, configuration and composition of modules. [Matricea nivelurilor](../docs/testing/ATF_Architecture.md) is confronted with test statements.
 
-[Suita de calitate](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) verifică sursele, documentația și contractele bibliotecilor. [Lansatorul guvernanței](../scripts/run-atf-governance.ps1) pregătește copia temporară și depozitul Maven propriu, păstrează rezultatele extern și detectează schimbările sursei pe durata verificării.
+[Quality Suite](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) checks the sources, documentation and contracts of libraries. [Governance Launcher](../scripts/run-atf-governance.ps1) prepares temporary copy and warehouse of its own Maven, retains external results and detects changes in source during the verification.
 
-[Guvernanță](../docs/governance/README.md) · [Arhitectura publicării](../docs/reporting/README.md) · [Indexul documentației](../docs/README.md)
+[Governance](../docs/governance/README.md) · [Publication architecture](../docs/reporting/README.md) · [Documentation index](../docs/README.md)
 
-## Limite și calificare
+## Limits and qualification
 
-Responsabilul consumatorului păstrează auditabilitatea și la intrări mari sau predominant cu eșec. [Feedback-ul de volum](../docs/feedback/ATF_Reporting.md#costul-intrărilor-consumatorului) deține calificarea costului, iar [predarea rezultatelor](../docs/reporting/ATF_Handoff.md) deține identitatea și refuzul provenienței contradictorii.
+The consumer's responsible shall also retain the auditability at large or predominantly inflows with failure. [Feedback-ul de volum](../docs/feedback/ATF_Reporting.md#cost-of-consumer-inputs) shall be qualified for cost and [handing over results](../docs/reporting/ATF_Handoff.md) shall be held the identity and refusal of contradictory provenance.
 
-Pentru alt joc, [contractul transferului](../docs/learning/ATF_GameTransfer.md) separă semantica înregistrărilor de API-ul bibliotecii. Adaptorul nou păstrează comparațiile și proveniența; cerințele generice ale JAR-ului urmează [rutarea responsabilităților](../docs/feedback/README.md).
+For another game, [contract of transfer](../docs/learning/ATF_GameTransfer.md) separate the semantics of the records from the library API. The new adapter keeps comparisons and provenance; the generic requirements of the JAR follow [Rerouting of responsibilities](../docs/feedback/README.md).
 
-## Catalogul testelor
+## Test catalogue
 
-[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.
+[Inputs and responsibilities of tests](src/test/README.md) explains the selection, preconditions and interpretation of the result, through the same common strategy for all deliveries.

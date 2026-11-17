@@ -1,138 +1,138 @@
-# Modelul deciziei cu informație parțială
+# Model decision with partial information
 
-## Pe scurt
+## Overview
 
-Modelul transformă observația permisă într-o acțiune legală, evaluată față de obiectivul activ. Separarea observației, lumilor ipotetice, continuării și criteriului de alegere permite schimbarea unui mecanism fără confundarea lui cu celelalte.
+The model shall convert the permitted observation into legal action, assessed against the active objective. The separation of observation, hypothetical worlds, continuation and the criterion of choice allows a mechanism to be changed without confusing it with the others.
 
-## Contractul unei decizii
+## Contract of a decision
 
 ```mermaid
 flowchart LR
-    OBS[Observație permisă] -->|filtrează| ACTIONS[Acțiuni legale]
-    OBS -->|constrânge| WORLDS[Lumi compatibile]
-    WORLDS -->|simulează| OUTCOMES[Continuări]
-    ACTIONS -->|evaluează în aceleași lumi| OUTCOMES
-    OUTCOMES -->|agregă| VALUES[Vectori de utilitate]
-    VALUES -->|ordonează| CHOICE[Propunere]
-    CHOICE -->|verifică în domeniu finit| PROOF[Gărzi certificate]
+    OBS[Observed observation] -->|filter| ACTIONS[Legal actions]
+    OBS -->|compress| WORLDS[Lumi compatibile]
+    WORLDS -->|simulate| OUTCOMES[Continuation]
+    ACTIONS -->|assess in the same worlds| OUTCOMES
+    OUTCOMES -->|Aggregate| VALUES[Utility vectors]
+    VALUES -->|Order| CHOICE[Propunere]
+    CHOICE -->|check in the finished area| PROOF[Certified guards]
 ```
 
 <details>
-<summary>Legendă: separarea responsabilităților</summary>
+<summary>Legend: separation of responsibilities</summary>
 
-Politica vede mâna proprie și prefixul public. Simulatorul poate construi mâini ipotetice, iar o gardă poate enumera un domeniu finit; aceste operații nu introduc mâinile adverse reale în observație.
+Politics sees its own hand and public prefix. The simulator can build hypothetical hands and a guard can list a finite field; these operations do not introduce actual adverse hands into the observation.
 
 </details>
 
-## Starea care schimbă decizia
+## The status changing the decision
 
-| Variabilă | Definiție | Rol |
+| Variable | Definition | Rol |
 |---|---|---|
-| Necesar individual nᵢ | contractᵢ − levate câștigateᵢ | Arată dacă actorul mai caută levate, este la țintă sau a depășit contractul. |
-| Oportunități R | (cărți rămase în mâini + cărți pe masa curentă) / jucători | Numără o singură dată levata neterminată. |
-| Dezechilibru Δ | suma necesarelor − R | După licitare rămâne constant în aceeași mână. |
-| Densitate nᵢ/R, pentru R > 0 | Necesar raportat la oportunități | Exprimă urgența individuală; nu este o probabilitate și nu se aplică unei mâini încheiate. |
-| Progres | 1 − R / mărimea inițială | Măsoară consumarea mâinii, separat de numărul mâinii în partidă. |
-| Memorie publică | Cărți jucate, masă curentă și carte întoarsă | Restrânge pool-ul necunoscut și lipsele de culoare compatibile. |
-| Scor și serie | Totaluri și contoare publice | Schimbă utilitatea rezultatului prin regulile de scor configurate. |
+| Individual need null | contract-trick wins | Show if the actor is still looking for tricks, is at target or has exceeded contract. |
+| R opportunities | (cards left in hands + cards on the table) / players | Count the unfinished trick once. |
+| Dezechilibru Δ | sum of the requirements − R | After bidding, it stays constant in the same hand. |
+| Density nthe / R for R > 0 | Required for opportunities | Expose individual urgency; it is not a probability and does not apply to a completed hand. |
+| Progres | 1 − R / initial size | It measures the consumption of the hand, separated from the number of hand in the match. |
+| Public memory | Playing cards, table and card | Tear down the unknown pole and compatible color gaps. |
+| Score and series | Public totals and meters | Change the utility of the result by the set-up score rules. |
 
-Aceeași valoare Δ poate coexista cu necesare individuale foarte diferite. Pe măsură ce jocul avansează, R, incertitudinea și posibilitățile legale se schimbă, chiar dacă Δ rămâne fix.
+The same value of the product can coexist with very different individual requirements. As the game progresses, R, uncertainty and legal possibilities change, even if it remains fixed.
 
-## Când AI-ul joacă la 0
+## When the Aion plays at 0
 
-Cu opțiunea activă în Whist românesc 1–8–1 sau 8–1–8, Normal și Hard verifică obiectivul la fiecare licitație și alegere de carte.
+With the active option in Romanian Whist 1–8–1 or 8–1–8, Normal and Hard check the target at each bid and card choice.
 
-- **Activare.** Motorul caută o dovadă publică a excluderii din primele două locuri și o secvență de rezultate care poate duce la exact 0. O egalitate posibilă pentru locul al doilea păstrează strategia de contract.
-- **Clasament la Hard.** După licitare, Hard verifică dacă adversarii pe care trebuie să-i ajungă își pot împărți levatele rămase. Compară fiecare rezultat propriu cu grupul de adversari care poate fi ajuns folosind cele mai puține levate. Dacă nicio repartizare nu încape în buget, primele două locuri sunt excluse.
-- **Păstrarea unei rute la Hard.** Înaintea ultimei mâini, cu două până la patru levate rămase și mai multe cărți legale, Hard poate compara toate continuările din distribuțiile compatibile cu masa. În orice distribuție în care top 2 rămâne posibil, cele două alegeri comparate trebuie să producă același rezultat convențional la fiecare loc. În distribuțiile cu top 2 exclus, alternativa păstrează rutele existente și, la patru levate, poate transforma o rută dependentă de răspunsuri într-una garantată.
-- **Bugetul verificării.** Dovada examinează cel mult 64 de distribuții complete. La trei levate are o limită de 16.384 de poziții din continuări, iar la patru are 16.384 de poziții pentru enumerare și 32.768 pentru continuări. Hard păstrează alegerea convențională când dovada nu se poate încheia în aceste limite.
-- **Informație.** Limitele conservatoare combină fiecare rezultat posibil al mâinii curente cu maximul și minimul programului rămas. Numărul plăților de serie pornește de la contorul pe care acel rezultat îl lasă fiecărui loc.
-- **Evaluare.** Modelul parcurge înapoi programul rămas și combină deltele posibile în funcție de contorul de serie. Ponderile egale ale rezultatelor individuale descriu o euristică de scor pentru mâinile viitoare.
-- **Mâna de o carte.** Ultimul licitant e obligat să declare 0 dacă suma anterioară e 0 și 1 dacă suma e 1. De la o sumă de 2, ambele licitații sunt legale. Licitația obligatorie se aplică direct și nu spune nimic despre forța cărții. Modelul calibrat la patru jucători poate folosi licitația ultimului jucător ca indiciu doar dacă acesta a avut de ales.
-- **Ultima mână.** Simulatorul compară pe aceleași distribuții ambele sensuri ale pierderii, când sunt posibile. La licitare, la deschiderea levatei sau când mai lipsesc levate pentru țintă, o egalitate de sprijin se decide după soldul final estimat, incluzând seriile. Când jucătorul răspunde la o culoare și are deja numărul de levate care îi stinge soldul, punctele convenționale departajează cărțile cu același sprijin pentru zero.
-- **Penultima mână.** La egalitate de sprijin pentru zero, motorul compară perechile licitație–levate care pot închide soldul în ultima mână. Dacă actorul va licita ultimul, numără câte rezultate adiacente cu o levată rămân ratări legale ca număr de levate. Astfel, o pierdere maximă are puține variante, iar o ratare de un punct poate deveni contract exact la o abatere de o levată.
-- **Alegere.** Cel mai mare sprijin estimat pentru zero exact rămâne primul criteriu. Punctele convenționale departajează după criteriul specific mâinii.
-- **Limită.** Perechile pentru ultima mână măsoară libertatea aritmetică înainte de împărțire și licitare. Dacă simulările disponibile nu susțin nicio acțiune spre zero, motorul revine la strategia nivelului ales. [Regula formalizată](../../config/whist-play-objectives.yaml)
+- **Activation.** The engine seeks public proof of exclusion from the first two places and a sequence of results that can result in exactly 0. A possible equality for the second place retains the contract strategy.
+- **Ranking at Hard.** After the bidding, Hard checks whether the opponents he must reach can split the remaining tricks. Compare each of his own results with the group of opponents that can be reached using the least levitated. If no allocation is in the budget, the first two seats shall be excluded.
+- **Keeping a route to Hard.** Before the last hand, with two to four tricks remaining and several legal cards, Hard can compare all the sequels in the distributions consistent with the table. In any distribution where the top 2 remains possible, the two comparative choices must produce the same conventional result at each place. In the top 2 distributions excluded, the alternative keeps existing routes and, at four tricks, can transform a response-dependent route into a guaranteed one.
+- **The budget of the checking.** Proof examines no more than 64 complete distributions. In three tricks it has a limit of 16.384 positions in continuations, and in four it has 16.384 positions in enumeration and 32.768 for sequels. Hard maintains the conventional choice when the evidence cannot be concluded within these limits.
+- **Information.** Conservative limits combine every possible result of the current hand with the maximum and minimum remaining program. The number of serial payments shall be based on the meter that the result leaves to each place.
+- **Evaluation.** The model goes back to the remaining program and combines possible delta according to the serial counter. Equal weights of individual results describe a score heuristic for future hands.
+- **Hand of a cart.** The last bidder is obliged to declare 0 if the previous amount is 0 and 1 if the amount is 1. From an amount of 2, both bids are legal. The mandatory bid is directly applicable and says nothing about the force of the card. The model calibrated to four players can use the last player's bid as a clue only if he had a choice.
+- **Last Hand ** Simulator compares on the same distributions both ways of loss when possible. At bidding, opening trick or missing tricks for target, an equal support shall be decided on the estimated final balance, including series. When the player responds to a color and has already the number of tricks that extinguish his balance, conventional points divide the cards with the same support for zero.
+- **Penultimate hand ** At equal support for zero, the engine compares the bid-levated pairs that can close the balance in the last hand. If the actor bids last, count how many results adjacent to a trick remain legal misconduct as number of tricks. Thus, a maximum loss has few options and a one-point failure can become a contract at exactly a deviation from a trick.
+- **Election .** The highest estimated support for zero exactly remains the first criterion. Conventional points are departmental according to the hand-specific criterion.
+- **Limit.** The last hand pairs measure arithmetic freedom before splitting and bidding. If the available simulations do not support any action towards zero, the engine returns to the chosen level strategy. [Formal rule](../../config/whist-play-objectives.yaml)
 
-Observarea în laborator distinge prima alegere pentru zero de o decizie eligibilă care a revenit la politica obișnuită. O singură acțiune legală nu intră în numărul schimbărilor de strategie. [Colecția pereche](../../whist-lab-app/game-core/src/test/README.md#evaluarea-jocului-la-0)
+The laboratory observation distinguishes the first choice for zero from an eligible decision that has returned to normal policy. A single legal action does not fall into the number of strategy changes. [Pair Collection](../../whist-lab-app/game-core/src/test/README.md#game-evaluation-at-0)
 
-## Estimarea alternativelor
+## Estimate of alternatives
 
-| Responsabil | Contract |
+| Owner | Contract |
 |---|---|
-| [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | API-ul observației, generarea și agregarea comparațiilor, apoi gărzile finite. |
-| [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) | Transformă continuările ipotetice în utilitate, folosind aceleași ținte și reguli de scor; nu selectează lumi sau acțiuni. |
-| [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) | Ordonează alternativele deja evaluate după profil și toleranțele consacrate; nu consumă numere aleatoare. |
+| [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | Observing API, generating and aggregation of comparisons, then the finished guards. |
+| [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) | It turns hypothetical sequels into utility using the same targets and score rules; it does not select worlds or actions. |
+| [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) | Ordering alternatives already assessed by profile and established tolerances; not consuming random numbers. |
 
-Calea de evaluare depinde de domeniu. [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) coordonează selecția; [PossibleDeals](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java) construiește lumile, iar [RolloutPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java) continuă o lume ipotetică.
+The way of evaluation depends on the field. [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) coordinates selection; [PossibleDeals](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java) builds worlds, and [RolloutPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java) continues a hypothetical world.
 
-| Domeniu | Evaluare și limită |
+| Domeniu | Assessment and limit |
 |---|---|
-| Licitare de o carte | `OneCardBidBelief` condiționează enumerarea pe licitațiile deja observate în domeniul românesc de patru locuri cu carte întoarsă; în afara domeniului sau fără evidență eligibilă se folosește estimarea de bază. |
-| Licitare de 2–8 cărți | Alternativele legale folosesc aceleași lumi; contractele publice sunt păstrate, iar ofertele încă necunoscute sunt estimate în continuare. |
-| Jocul cărții | O singură acțiune legală sau o regulă de dominanță poate evita simularea; altfel cărțile candidate sunt comparate pe lumi comune. |
-| Finaluri mici | Enumerarea lumilor și căutarea continuărilor au domenii distincte; enumerarea completă nu transformă modelul continuării într-un certificat universal. |
+| Bidding of a card | `OneCardBidBelief` makes the enumeration conditional on the bids already observed in the Romanian domain of four places with a card turned over; outside the domain or without eligible evidence, the basic estimate is used. |
+| Bidding of 2–8 cards | Legal alternatives use the same worlds; public contracts are maintained and offers still unknown are estimated below. |
+| Play the card | A single legal action or rule of dominance can avoid simulation; otherwise the candidate cards are compared on common worlds. |
+| Small endings | The enumeration of worlds and the search for continuances have distinct areas; full listing does not make the model of continuation a universal certificate. |
 
-Modelul de o carte are [implementare în motor](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java) și [implementare independentă](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java). Enumerarea este exactă pentru modelul de plauzibilitate fixat; calibrarea lui față de orice adversar real nu rezultă automat.
+The model of a card has [implementation in engine](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/OneCardBidBelief.java) and [independent implementation](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/OneCardBidBelief.java). The enumeration is accurate for the fixed plausible model; calibration of it against any actual opponent does not result automatically.
 
-Pentru alternativele simulate, vectorul terminal conține punctele proprii, scorul rivalului principal, indicatorul contractului exact și numărul ratărilor adverse:
+For simulated alternatives, the terminal vector shall contain its own points, the main rival score, the exact contract indicator and the number of adverse failures:
 
 ```text
 estimare(acțiune) = suma ponderată a utilităților / suma ponderilor
 utilitate_mixtă = (1 − α) × utilitate_rollout + α × utilitate_MaxN
 ```
 
-- Agregarea simulărilor generale folosește ponderi egale ale lumilor generate; samplerul nu este dovedit uniform peste toate distribuirile fezabile.
-- Amestecul cu MaxN se aplică numai în domeniul mic definit de `DecisionEvaluation.evaluate`; în rest se folosește rollout-ul.
-- Căutarea pe o lume ipotetică poate folosi acea lume pentru consecințe, fără a demonstra optimalitatea strategiei cu informație ascunsă.
-- Frecvența exactului depinde de modelul lumilor și al continuării; condiționarea generală după licitații la 2–8 cărți este [cercetare separată](ATF_RulesConfiguration.md#inferența-comportamentului).
+- The aggregation of general simulations uses equal weights of the worlds generated; the sampler is not proven uniformly over all feasible distributions.
+- The mixture with MaxN is only applied in the small field defined by `DecisionEvaluation.evaluate`; otherwise the rollout is used.
+- Searching a hypothetical world can use that world for consequences without demonstrating the optimal of the hidden information strategy.
+- The exact frequency depends on the model of worlds and on the continuation; general conditioning after bids at 2–8 cards is [separate research](ATF_RulesConfiguration.md#behavior-inference).
 
-## Prioritatea obiectivelor
+## Priority objectives
 
-Ordinea de mai jos privește profilul românesc; celelalte variante folosesc utilitatea și regulile lor declarate.
+The order below concerns the Romanian profile; the other variants use their declared usefulness and rules.
 
-| Politică și fază | Ordine de alegere |
+| Policy and phase | Choice orders |
 |---|---|
-| Normal, licitare | Estimarea mâinii proprii, proiectată pe licitațiile legale. |
-| Normal, joc | Urmărirea necesarului prin rang și situația curentă; evitarea levatelor după țintă. |
-| Hard românesc, licitare | Șansa estimată a contractului exact, punctele proprii, apoi licitația mai mică la egalitate. |
-| Hard, contract recuperabil | Șansa estimată a exactului, punctele proprii, apoi reducerea scorului rivalului principal. |
-| Hard, imposibilitate dovedită public | Punctele proprii estimate, ratările adverse estimate, apoi scorul rivalului principal. |
-| Jucător independent | Punctele proprii; la carte, scorul rivalului principal departajează egalitatea. |
+| Normal, licitare | Estimating his own hand, projected on legal bids. |
+| Normal, joc | Tracking the need through rank and current situation; avoiding tricks by target. |
+| Romanian Hard, Bidding | The estimated contract opportunity, the exact points, then the smaller bid at equal. |
+| Hard, recoverable contract | Estimated chance of exact, points of the individual, then reduction of the main rival score. |
+| Hard, publicly proven impossibility | Estimated own points, estimated adverse failures, then the score of the main rival. |
+| Independent Player | His own points; by the card, the score of his main rival departs equality. |
 
-Tabelul descrie profilul runtime `CURRENT`; profilurile experimentale pot schimba ordinea și se selectează explicit. Criteriile se aplică lexicografic, cu toleranțele numerice din comparator: un criteriu ulterior departajează valori considerate egale la nivelul anterior.
+The table describes the runtime profile `CURRENT`; experimental profiles can change order and be explicitly selected. The criteria apply to lexicographic, numeric tolerances in the comparator: a subsequent criterion departs values considered equal to the previous level.
 
-## Fezabilitate și certificate
+## Feasibility and certificates
 
-În [PublicSalvage.quota](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java), necesarul se compară cu oportunitățile și cu limita publică a atuurilor inevitabile. Un atu superior încă pe masă poate permite consumarea legală a unui atu propriu fără câștig; o carte întoarsă sau dintr-o levată încheiată are alt rol.
+In [PublicSalvage.quota](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java), The need is compared with the opportunities and public limit of inevitable assets. A higher asset still on the table can allow the legal consumption of an asset without gain; a turned card or a completed trick has another role.
 
 ```mermaid
 flowchart LR
-    QUOTA[Necesar și oportunități] -->|compară limitele| FEAS[Fezabilitate publică]
-    FEAS -->|permite obiectivul exact| EXACT[Contract recuperabil]
-    FEAS -->|dovedește imposibilitatea| SALV[Obiectiv de salvare]
-    DOMAIN[Domeniu complet enumerat] -->|verifică universal| CERT[Certificat]
-    CERT -->|poate înlocui| PROPOSAL[Propunere model]
+    QUOTA[Necessary and opportunities] -->|compare boundaries| FEAS[Public feasibility]
+    FEAS -->|allows the exact objective| EXACT[Contract recuperabil]
+    FEAS -->|proves impossibility| SALV[Lifetime target]
+    DOMAIN[Full domain listed] -->|universal check| CERT[Certificat]
+    CERT -->|can replace| PROPOSAL[Propunere model]
 ```
 
 <details>
-<summary>Legendă: limitele garanției</summary>
+<summary>Legend: limits of the guarantee</summary>
 
-Lipsa unui certificat păstrează fallback-ul și nu dovedește că alternativa este greșită. O enumerare incompletă sau un buget epuizat nu poate certifica o decizie.
+The lack of a certificate keeps the fallback and does not prove that the alternative is wrong. An incomplete listing or an exhausted budget may not certify a decision.
 
 </details>
 
-[ContractGuarantee](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/ContractGuarantee.java) cere realizarea contractului pentru fiecare lume fezabilă și toate continuările legale din domeniul permis, inclusiv alegerile proprii ulterioare. Aceasta este o proprietate universală conservatoare a acțiunii inițiale.
+[ContractGuarantee](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/ContractGuarantee.java) requires the performance of the contract for each feasible world and all legal follow-up in the allowed field, including subsequent own choices. This is a conservative universal property of initial action.
 
-[PublicSalvage](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java) compară limitele candidatului cu cele ale propunerii de bază. În fiecare lume, minimul punctelor proprii și al ratărilor adverse ale candidatului trebuie să fie cel puțin maximul corespunzător al bazei; cel puțin o inegalitate este strictă într-o lume.
+[PublicSalvage](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/PublicSalvage.java) compares the candidate's limits with those of the basic proposal. In each world, the minimum of the candidate's own points and adverse failures must be at least the appropriate maximum of the base; at least one inequality is strict in any world.
 
-## Reproductibilitate și limite
+## Reproducibility and limits
 
-- Aceeași observație completă și aceeași implementare produc aceeași decizie.
-- Pentru Hard, inițializarea estimatorului folosește diferențele de scor față de actor, calculate pe 64 de biți. O translație comună a totalurilor păstrează aceleași lumi și estimări; schimbarea diferențelor de scor rămâne parte a contextului. Jucătorul independent are propriul flux aleator și nu preia automat această invariantă.
-- Bonusurile și penalizările configurate schimbă utilitatea rezultatului, fără să schimbe singure distribuirea cărților. La mâinile eligibile, diferența valorii unei serii se ponderează cu frecvența exactului sau a ratării; o mână de o carte nu plătește seria.
-- Licitațiile necunoscute din simulare sunt estimări, iar cele deja publice rămân ținte obligatorii.
-- O carte forțată de legalitate nu dovedește intenția actorului.
-- Bugetul de simulare controlează costul și incertitudinea estimatorului; mărirea lui nu demonstrează singură progres strategic.
+- The same full observation and implementation shall produce the same decision.
+- For Hard, the initialization of the estimate uses the differences in score to actor, calculated on 64 bits. A common translation of totals keeps the same worlds and estimates; changing the score differences remains part of the context. The independent player has his own random stream and does not automatically take over this invariant.
+- The set-up bonuses and penalties change the usefulness of the result without changing the distribution of the cards on their own. In eligible hands, the difference in the value of a series shall be weighted with the exact or failure frequency; a hand of a card shall not pay the series.
+- Unknown tenders in the simulation are estimates and those already public remain binding targets.
+- A card forced by legality does not prove the actor's intention.
+- The simulation budget controls the cost and uncertainty of the estimate; its increase does not demonstrate only strategic progress.
 
-[Configurarea regulilor și ponderilor](ATF_RulesConfiguration.md) · [Proiectarea testelor](../testing/ATF_AiComponents.md) · [Arhitectura învățării](README.md)
+[Configuration of rules and weights](ATF_RulesConfiguration.md) · [Projection of tests](../testing/ATF_AiComponents.md) · [Learning architecture](README.md)

@@ -1,107 +1,107 @@
-# Politica prezentării rezultatelor de joc
+# Policy of presentation of game results
 
-## Pe scurt
+## Overview
 
-O politică imutabilă controlează selecția AUTO, SUMMARY și FULL și limitele prezentării. Consumatorul pregătește datele; biblioteca binară furnizează API-urile, tabelele, secțiunile pliabile și vizualizatorul capturilor.
+An immutable policy controls AUTO, SUMMARY and FULL selection and the limits of presentation. The consumer prepares the data; the binary library provides the APIs, tables, folding sections and catch viewer.
 
-## Configurația capturată la început
+## Configuration captured at first
 
-| Configurație | Responsabilitate |
+| Configuration | Responsibility |
 |---|---|
-| `config/game-evidence.yml` | Selecția și limitele specifice consumatorului; cale explicită prin `atf.evidence.policy`. |
-| `atf.yaml` sau `atf.yml` | Previzualizarea comparațiilor și bugetul conținutului; cale explicită prin `atf.report.config`. |
-| `EvidencePolicy` și `GameReportConfiguration` | Rezolvarea configurației o singură dată pentru publicare. |
+| `config/game-evidence.yml` | Consumer specific selection and limits; explicit route through `atf.evidence.policy`. |
+| `atf.yaml` sau `atf.yml` | Preview of comparisons and content budget; explicit route through `atf.report.config`. |
+| `EvidencePolicy` and `GameReportConfiguration` | Solving configuration once for publication. |
 
-Schimbarea ulterioară a configurației nu modifică obiectul deja capturat. [GameReportConfiguration](../../atf-tests/src/main/java/atf/tests/reporting/GameReportConfiguration.java) cere previzualizarea comparațiilor de 240 de caractere și un buget pozitiv al corpurilor; o altă valoare a previzualizării este refuzată de adaptorul curent.
+The subsequent change of configuration does not alter the object already captured. [GameReportConfiguration](../../atf-tests/src/main/java/atf/tests/reporting/GameReportConfiguration.java) requires previsualization of comparisons of 240 characters and a positive body budget; another preview value is denied by the current adapter.
 
-Cheile necunoscute ori duplicate, documentele multiple, tipurile invalide, depășirile numerice și limitele nepozitive sunt refuzate la încărcare. Valorile implicite se consultă în [configurația efectivă](../../config/game-evidence.yml).
+Unknown or duplicate keys, multiple documents, invalid types, numerical overruns and negative limits are refused to load. Default values shall be consulted in the [actual configuration](../../config/game-evidence.yml).
 
 ```mermaid
 flowchart LR
-    CONFIG[Configurație capturată] -->|controlează| SELECT[Selecția invocărilor]
-    INPUT[Înregistrări originale] -->|alimentează| SELECT
-    SELECT -->|păstrează comparații complete| GROUP[Grupuri și fragmente]
-    GROUP -->|transmite prin API| HTML[Prezentare autonomă]
+    CONFIG[Captured configuration] -->|control| SELECT[Selection of invoicing]
+    INPUT[Original records] -->|fuel| SELECT
+    SELECT -->|keep complete comparisons| GROUP[Groups and fragments]
+    GROUP -->|transmit by API| HTML[Autonomous presentation]
 ```
 
 <details>
-<summary>Legendă: selecție și completitudine</summary>
+<summary>Legend: selection and completeness</summary>
 
-Selecția decide ce invocări sunt prezentate și declară omisiunile. Gruparea păstrează toate comparațiile obligatorii ale invocărilor selectate, cu identitatea și verdictul original.
+The selection shall decide which pleas are presented and declare the omissions. The grouping shall keep all mandatory comparisons of the selected invokes with the original identity and verdict.
 
 </details>
 
-## Modurile de prezentare
+## Modes of presentation
 
-| Mod | Invocări păstrate | Context și prezentare |
+| Mod | Claims held | Background and presentation |
 |---|---|---|
-| AUTO | Toată populația furnizată în limitele incluzive; altfel exemple complete deterministe, rezultate diferite de PASS și verificări obligatorii. | Context opțional în bugetul capturat și toate comparațiile selectate. |
-| SUMMARY | Exemple complete reușite, rezultate diferite de PASS și verificări obligatorii. | Omite contextul opțional și amprentele; declară inventarul original, păstrat și omis. |
-| FULL | Toate invocările și punctele de control furnizate. | Bugetele rămân active; diagnosticul preselectat și observația opțională cerută sesiunii au comportamente distincte, definite mai jos. |
+| AUTO | All population provided within inclusive limits; otherwise full deterministic examples, different results from PASS and mandatory checks. | Optional context in the captured budget and all selected comparisons. |
+| SUMMARY | Successful complete examples, different results of PASS and mandatory checks. | Observe the optional context and fingerprints; declare the original inventory, retained and omitted. |
+| FULL | All the submissions and control points provided. | The budgets remain active; the pre-selected diagnosis and the optional observation required for the session have distinct behaviors defined below. |
 
-Colecțiile marcate explicit pentru păstrare completă se păstrează conform politicii în fiecare mod. Modul de prezentare nu extinde populația furnizată de producător și nu execută jocul sau oracolul.
+Collections explicitly marked for full storage shall be kept in accordance with policy in each way. The presentation mode does not extend the population provided by the manufacturer and does not execute the game or oracle.
 
-## Grupare și conținut integral
+## Grouping and full content
 
-| Suprafață | Contract |
+| Surface | Contract |
 |---|---|
-| Comparații | Grupuri native cu cel mult `rowsPerGroup` rânduri; continuările indică intervalul original. |
-| Verdict de fragment | Derivat din rândurile păstrate; fragmentul terminal păstrează și rezultatul grupului furnizat explicit. |
-| Valori lungi | Previzualizare nativă de 240 de caractere și acces la valorile complete, asociate grupului original. |
-| Observații | Cel mult `fieldsPerGroup` rânduri; valorile lungi păstrează conținutul complet. |
-| TEXT | Părți ordonate, cu preferință pentru sfârșitul de linie și păstrarea CR/LF, Unicode și entităților literale. |
-| JSON | Documente complete la limite de obiect sau tablou; un element indivizibil peste buget este refuzat. |
-| Capturi Android | PNG integral original, asociat punctului de control; selecția nu înlocuiește ori decupează imaginea. |
-| Observație fără comparații | API-ul explicit pentru materiale atașate, fără aserțiuni de domeniu inventate. |
+| Comparison | Natives with no more than `rowsPerGroup` rows; sequels indicate the original range. |
+| Fragment Verdict | Derived from retained rows; the terminal fragment also retains the result of the explicitly provided group. |
+| Valori lungi | Native preview of 240 characters and access to complete values associated with the original group. |
+| Remarks | Not more than `fieldsPerGroup` rows; long values keep the content complete. |
+| TEXT | Ordered parts, preferably for the end of the line and keeping CR/LF, Unicode and literal entities. |
+| JSON | Full documents at object or painting limits; an indivisible element over budget is denied. |
+| Capturi Android | The original whole PNG associated with the control point; the selection does not replace or cut the image. |
+| Observation without comparison | The explicit API for attached materials without invented domain assertions. |
 
-Fiecare fragment JSON este un document complet. Formele numerice originale se păstrează prin formatare și fragmentare; lipsa ori reordonarea unei părți invalidează completitudinea.
+Every JSON fragment is a complete document. The original numerical forms shall be maintained by formatting and fragmentation; the lack or reordering of a party invalidates completeness.
 
-## Date opționale și refuzul publicării
+## Optional data and refusal of publication
 
-Caracterul opțional este declarat de apelant. Numele fișierului sau eticheta nu transformă intrările comparate, cauzele și capturile în date dispensabile.
+The optional character is declared by the caller. The file name or label shall not convert the comparative inputs, causes and catches into non-usable data.
 
-| Etapă | Comportament implementat |
+| Step | Comportament implementat |
 |---|---|
-| [EvidenceSelection](../../atf-tests/src/main/java/atf/tests/learning/EvidenceSelection.java) | Deduplică amprentele diagnostice, păstrează înregistrări întregi în buget și declară omisiunile inclusiv în FULL; SUMMARY le omite. |
-| [GameReportPresentation](../../atf-tests/src/main/java/atf/tests/reporting/GameReportPresentation.java) | Pentru observații opționale solicitate sesiunii: AUTO omite ce nu încape, SUMMARY omite contextul, iar FULL refuză depășirea bugetului. |
-| [GameReportSession](../../atf-tests/src/main/java/atf/tests/reporting/GameReportSession.java) | Rezervă contextul deja selectat înaintea scenariilor și verifică limita cumulativă; rezervarea nu reface selecția. |
-| [GameReportPhase](../../atf-tests/src/main/java/atf/tests/reporting/GameReportPhase.java) | Păstrează INCOMPLETE la refuz, inclusiv când apelantul interceptează eroarea înaintea închiderii. |
+| [EvidenceSelection](../../atf-tests/src/main/java/atf/tests/learning/EvidenceSelection.java) | It deducts diagnostic fingerprints, keeps entire records in the budget and declares omissions including in FULL; SUMMARY omits them. |
+| [GameReportPresentation](../../atf-tests/src/main/java/atf/tests/reporting/GameReportPresentation.java) | For optional comments requested for the session: AUTO omits that do not fit, SUMMARY omits the context and FULL refuses to exceed the budget. |
+| [GameReportSession](../../atf-tests/src/main/java/atf/tests/reporting/GameReportSession.java) | Book the selected context before the scenarios and check the cumulative limit; the reservation does not restore the selection. |
+| [GameReportPhase](../../atf-tests/src/main/java/atf/tests/reporting/GameReportPhase.java) | Keep INCOMPLETE at bay, including when the caller intercepts the error before closing. |
 
-Referințele diagnostice externe sunt inventariate și omise din HTML; informația obligatorie rămâne încorporată. Conținutul se măsoară în unități UTF-16, iar marcajele HTML adaugă volum: bugetul textului nu este o limită totală de fișier sau de memorie.
+External diagnostic references are inventoried and omitted from HTML; mandatory information remains incorporated. The content is measured in UTF- 16, units and HTML markings add volume: the text budget is not a total file or memory limit.
 
-[EvidenceSelectionContractTest](../../atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java) verifică selecția înaintea sesiunii. [GameReportPublicationContractTest](../../atf-tests/src/test/java/atf/tests/reporting/GameReportPublicationContractTest.java) verifică publicarea și refuzul ei; cele două contracte nu se confundă.
+[EvidenceSelectionContractTest](../../atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java) checks selection before the session. [GameReportPublicationContractTest](../../atf-tests/src/test/java/atf/tests/reporting/GameReportPublicationContractTest.java) checks its publication and refusal; the two contracts are not confused.
 
-## Implementare și verificare
+## Implementation and verification
 
-Compoziția datelor se află în sursele principale ale [modulului de integrare](../../atf-tests/README.md). Întreținerea componentei generice de randare se direcționează prin [responsabilitățile comune](../feedback/README.md).
+The composition of the data is in the main sources of [integration module](../../atf-tests/README.md). Maintenance of the generic rendering component shall be directed by [joint responsibilities](../feedback/README.md).
 
-[Verificarea publicării](ATF_Audit.md) confruntă identitatea, valorile, ordinea și accesul la conținut. [Contractele Android](ATF_Android.md) disting publicarea unui jurnal de o interacțiune nouă pe dispozitiv.
+[Article 4](ATF_Audit.md) confronts identity, values, order and access to content. [Contractele Android](ATF_Android.md) distinguish the publication of a journal from a new interaction on the device.
 
-## Navigarea și costul rapoartelor mari
+## Navigation and cost of large reports
 
-Consumatorul controlează populația și contextul, iar biblioteca deține pregătirea și randarea HTML-ului. Acest ghid stabilește contractul observabil al consumatorului, fără a promite un algoritm intern de optimizare a bibliotecii.
+The consumer controls the population and context, and the library has the preparation and rendering of HTML. This guide sets out the observable consumer contract without promising an internal library optimization algorithm.
 
 ```mermaid
 flowchart LR
-    SELECT[Selecție declarată] -->|publică| HTML[Conținut pe scop]
-    HTML -->|expune prin navigare| VISIBLE[Valori și capturi]
-    VISIBLE -->|permite| AUDIT[Revizie interactivă]
+    SELECT[Declared selection] -->|publishes| HTML[Purpose content]
+    HTML -->|display by navigation| VISIBLE[Values and catches]
+    VISIBLE -->|permite| AUDIT[Interactive revision]
 ```
 
 <details>
-<summary>Legendă: inputul și randarea au proprietari diferiți</summary>
+<summary>Legend: Input and rendering have different owners</summary>
 
-Selecția păstrează invocări întregi și omisiuni explicite. Schimbarea proprietarului afișat, deschiderea unui grup sau a unei capturi trebuie să păstreze accesul la conținutul complet; implementarea generică și optimizarea ei se califică la responsabilul bibliotecii.
+The selection shall retain full claims and explicit omissions. The change of owner displayed, the opening of a group or catch shall keep access to the full content; generic implementation and optimisation shall qualify as the library's manager.
 
 </details>
 
 ### Mecanisme
 
-- Limitați diagnosticul opțional prin politica capturată și păstrați comparațiile obligatorii ale invocărilor selectate.
-- Măsurați separat generarea, deschiderea și operațiile de navigare pe un input identificat.
-- Confruntați valorile, ordinea și proprietarul capturilor după interacțiune.
-- Verificați revenirea din vizualizator fără pierderea contextului cititorului.
+- Limit the optional diagnosis by the policy captured and keep mandatory comparisons of selected invokes.
+- Measure separately the generation, opening and navigation operations on an identified input.
+- Confront values, order and owner of catches after interaction.
+- Check the return from the viewer without losing the reader's context.
 
-### Guvernanța performanței
+### Performance governance
 
-[Auditul publicării](ATF_Audit.md) deține controalele de date și revizia interactivă. Un audit structural reușit nu certifică timpul sau lizibilitatea în browser; problema generică de randare se direcționează prin [feedback](../feedback/README.md).
+[Publication audit](ATF_Audit.md) has data checks and interactive review. a successful structural audit does not certify time or legibility in the browser; the generic rendering problem is directed by [feedback](../feedback/README.md).

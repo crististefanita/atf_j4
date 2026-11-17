@@ -1,92 +1,92 @@
-# Realizările Whist
+# Whist Achievements
 
-## Pe scurt
+## Overview
 
-Catalogul cuprinde 55 de obiective stabile, în 11 grupuri tematice de câte cinci, bazate pe rezultate observabile ale jocului. Fiecare grup conține două obiective Ușoare, două Medii și unul Greu; dificultatea realizării este distinctă de nivelul AI-ului.
+The catalogue comprises 55 stable targets, in 11 thematic groups of five, based on observable game results. Each group contains two Light, Two Medium and One Hard objectives; the difficulty of achieving is distinct from the level of the AIU.
 
-Toate cele cinci obiective sunt vizibile și acumulează progres de la prima mână eligibilă. Grupul recomandat este primul în care jucătorul nu a obținut încă un obiectiv. Recomandarea este orientativă; obiectivele din toate grupurile rămân disponibile în orice ordine.
+All five objectives are visible and gain progress from the first eligible hand. The recommended group is the first where the player has not yet achieved a goal. The Recommendation is indicative; objectives across all groups remain available in any order.
 
 ```mermaid
 flowchart LR
-    MATCH[Partidă completă și eligibilă] -->|furnizează rezultatul| FACTS[WhistMatchFacts]
-    LEDGER[ScoreHistory complet] -->|furnizează scorurile și mâinile| FACTS
-    RULES[GameConfig și GameRules] -->|determină eligibilitatea| FACTS
-    FACTS -->|alimentează evaluarea| CATALOG[Catalog: grupuri de câte cinci]
-    CATALOG -->|SUM pe mână/meci sau cel mai bun meci| STATE[Stare locală versionată]
+    MATCH[Full and eligible share] -->|provide the result| FACTS[WhistMatchFacts]
+    LEDGER[ScoreHistory complet] -->|provide scores and hands| FACTS
+    RULES[GameConfig and GameRules] -->|determines eligibility| FACTS
+    FACTS -->|alimentează evaluarea| CATALOG[Catalog: groups of five]
+    CATALOG -->|SUM per hand / match or best match| STATE[Local State Versified]
     ID[matchId stabil] -->|deduplicare| STATE
-    STATE -->|realizare nouă în așteptare| POPUP[Popup după scorul mâinii/meciului]
-    STATE -->|afișează| VIEW[Ecran Realizări RO/EN]
-    STATE -->|recomandă fără să blocheze| PATH[Grup recomandat; fără blocarea celorlalte]
+    STATE -->|New achievement pending| POPUP[Popup by hand / match score]
+    STATE -->|display| VIEW[Screen Achievements RO/EN]
+    STATE -->|recommended without blocking| PATH[Recommended group; no blocking of others]
 ```
 
 <details>
-<summary>Legendă: fapte, stare și notificări</summary>
+<summary>Legend: facts, status and notifications</summary>
 
-Mâinile și partidele furnizează fapte distincte. Evaluarea actualizează starea locală cu identificatori idempotenti, iar notificarea rămâne în așteptare până la confirmarea utilizatorului.
+Hands and parties provide distinct facts. The assessment shall update the local status with Iempotenti identifiers and the notification shall be pending until the user has confirmed it.
 
 </details>
 
-## Grupele și obiectivele
+## Groups and objectives
 
-| Grup | Ușor | Mediu | Greu |
+| Group | Easy | Medium | Hard |
 |---|---|---|---|
-| 1. Primii pași | Încheie o partidă; obține un contract exact | Încheie cinci partide; obține 20 de contracte exacte | Câștigă trei partide |
-| 2. Contracte pe mărimea mâinii | Contract exact la o carte; zero levate la o mână de cel puțin șase cărți | Cel puțin 50% exacte la mâinile de 2–3 cărți; cel puțin 50% exacte la mâinile de 4–5 cărți | Cel puțin 75% exacte la mâinile de 6–8 cărți |
-| 3. Precizie în serie | Trei contracte exacte consecutive; cel puțin 50% exacte într-o partidă | Cel puțin 60% exacte; cel puțin 65% exacte într-o partidă | Cel puțin 75% exacte într-o partidă |
-| 4. Serii pozitive | Încheie meci cu serii activate; obține primul bonus pozitiv | Obține trei bonusuri pozitive; câștigă cu bonus pozitiv | Obține bonusuri pozitive în cinci partide distincte |
-| 5. Variante românești | Încheie 1–8–1; încheie 8–1–8 | Câștigă în 1–8–1; câștigă în 8–1–8 | Obține 500 de puncte prin regula Joc la 0 |
-| 6. Mese și clasamente | Încheie o partidă la 3; încheie una la 6 jucători | Top doi la 5; top doi la 6 jucători | Câștigă trei partide la 6 jucători |
-| 7. Închidere și versatilitate | Contract exact în ultima mână; exactitate la șapte mărimi de mână | Final cu trei contracte exacte; exactitate la toate mărimile 1–8 | Cinci contracte exacte în ultimele cinci mâini |
-| 8. Clasament și reveniri | Păstrează/îmbunătățește locul de la jumătatea jocului; top trei la patru jucători | Top doi la patru jucători; urcă cel puțin un loc după jumătatea jocului | De pe ultimul loc la jumătate, termină în primii doi |
-| 9. Contracte de zero | Primul zero la 2–8 cărți; trei zerouri la 2–3 cărți | Trei zerouri la 4–5 cărți; trei zerouri la opt cărți | Zero exact în fiecare dintre cele trei intervale, într-o partidă |
-| 10. Contracte pozitive | Exact o levată; cel puțin două levate la un contract exact | Trei contracte exacte de cel puțin trei levate; cinci contracte pozitive exacte la 6–8 cărți | Cel puțin 65% exacte între licitațiile pozitive eligibile ale unei partide |
-| 11. Revenirea la precizie | Revino după o ratare; revino după cel puțin două ratări consecutive | Adună cinci reveniri de câte două contracte exacte; revino de două ori după fiecare tip de ratare într-o partidă | Patru reveniri distincte de câte trei contracte exacte într-o partidă |
+| 1. First steps | Close a game; get an exact contract | He concludes five parties; he gets 20 accurate contracts | Win three games |
+| 2. Contract in hand size | Accurate contract to one card; zero levelled to a hand of at least six cards | At least 50% exact to the hands of 2–3 cards; at least 50% exact to the hands of 4–5 cards | At least 75% exact to the hands of 6–8 cards |
+| 3. Serial precision | Three consecutive exact contracts; at least 50% exact in a match | At least 60% accurate; at least 65% accurate in a match | At least 75% accurate in a match |
+| 4. Serii pozitive | End match with activated series; get first positive bonus | Get three positive bonuses; win with positive bonus | Get positive bonuses in five distinct parties |
+| 5. Romanian Variants | End 1–8–1; end 8–1–8 | Win in 1–8–1; win in 8–1–8 | Get 500 points by playing rule at 0 |
+| 6. Tables and rankings | Ends a game at 3; ends one at 6 players | Top two at 5; top two at 6 players | Win three games at 6 players |
+| 7. Closure and versatility | Contract exact in the last hand; accurate at seven hand sizes | Final with three exact contracts; accurate at all sizes 1–8 | Five exact contracts in the last five hands |
+| 8. Rankings and returns | Keep / improve the place half game; top three to four players | Top two to four players; climb at least one place after half the game | From last place to half, finish in the top two |
+| 9. Zero contracts | First zero at 2–8 cards; three zeros at 2–3 cards | Three zeroes at 4–5 cards; three zeroes at eight cards | Zero exactly in each of the three intervals in a match |
+| 10. Contracte pozitive | Exactly one trick; at least two tricks on an exact contract | Three exact contracts of at least three tricks; five positive contracts of 6–8 cards | At least 65% accurate between eligible positive bids of a party |
+| 11. Return to precision | Come back after one fail; come back after at least two consecutive misses | Pick up five returns of two exact contracts; return twice after each type of failure in a match | Four separate returns of three exact contracts in a match |
 
-- Catalogul YAML declară grupurile, ordinea, textele RO/EN, metricile și pragurile. Înainte de generare, Gradle validează forma obiectelor, câmpurile, ID-urile, grupurile negoale și combinațiile metrică–agregare față de enum-urile runtime; refuzul identifică înregistrarea invalidă înaintea compilării Java. [Catalogul executabil](../../whist-lab-app/app/src/main/achievement-rules/whist-achievements.yaml) · [Validarea de contract](../../whist-lab-app/app/achievement-catalog.gradle)
-- `:app:verifyWhistAchievementCatalogValidation` verifică vectorii valizi și negativi; taskul face parte din `:app:testDebugAchievementsComponents` și `check`. Testele runtime verifică separat ordinea și identitățile generate, pragurile, reluarea și acordarea idempotentă a progresului.
-- Identificatorii stabili leagă progresul salvat de obiectivul afișat. Interfața plafonează progresul la țintă, iar modelul păstrează valoarea acumulată pentru pragurile care folosesc aceeași măsură.
+- YAML Catalogue declares the groups, order, texts RO/ENGradle, the metrics and thresholds. Before generation, validates the shape of objects, fields, IDs, trade groups and metrics-aggregation combinations compared to runtime lists; refusal identifies invalid registration prior to Java compilation. [Catalogul executabil](../../whist-lab-app/app/src/main/achievement-rules/whist-achievements.yaml) · [Contract validation](../../whist-lab-app/app/achievement-catalog.gradle)
+- `:app:verifyWhistAchievementCatalogValidation` checks the vectors valid and negative; the tasku is part of `:app:testDebugAchievementsComponents` and `check`. Runtime tests shall verify separately the order and the identity generated, thresholds, resumption and the impotence of progress.
+- Established identifiers link the saved progress to the displayed target. The interface caps progress to the target and the model retains the accumulated value for thresholds using the same measure.
 
-## Sursa de adevăr
+## Source of truth
 
-- Progresul de mână se acordă numai după ce levatele, licitațiile și scorul acelei mâini au fost înregistrate. Obiectivele care depind de întreaga partidă se acordă numai după `SCORE` și `finalHand`, pentru locul uman de la scaunul 0.
-- O partidă este utilizabilă dacă registrul include întregul program de mâini, ofertele și levatele înregistrate pentru fiecare mână. Un checkpoint vechi cu istoric incomplet nu inventează evenimente și nu acordă realizări.
-- Contractul exact este decis de perechea salvată `bid == tricks`, nu de o deducție din scorul final. Mărimea mâinii provine din `GameRules.handSizes` pentru varianta și masa configurate.
-- Pragurile procentuale folosesc numărul real de mâini din partidă și din categoria respectivă. Progresul întreg este partea întreagă a raportului, deci un rezultat sub prag nu este rotunjit în sus la deblocare. Raportează dificultatea separat pe configurații, fiindcă numărul de ocazii și distribuția rezultatelor diferă.
-- Clasamentul folosește `matchScore`, deci egalitatea pe primul loc este victorie comună, iar primii doi sunt determinați ținând cont de egalități. Bonusul de 500 pentru Joc la 0 este inclus în această valoare.
-- Un bonus de serie este recunoscut numai dacă diferența dintre schimbarea înregistrată și punctajul de bază este pozitivă. Penalizarea de serie nu este o realizare și nu este recompensată.
-- Realizările sunt locale instalării și nu sunt legate de numele editabil al jucătorului. Partidele de fixture sau replay rămân excluse prin eligibilitatea existentă a partidei. Auto-play-ul mâinii este inclus: rezultatul jocului este măsurat, iar proveniența manuală/automată nu este persistată de modelul actual.
+- Hand progress is granted only after the tricks, bids and score of that hand have been recorded. The objectives that depend on the entire game shall be granted only after `SCORE` and `finalHand` for the human seat of 0.
+- A game is usable if the register includes the entire hand program, the bids and tricks recorded for each hand. An old checkpoint with incomplete history does not invent events and does not grant achievements.
+- The exact contract is decided by the saved pair `bid == tricks`, not by a deduction from the final score. The size of the hand comes from `GameRules.handSizes` for the configured variant and mass.
+- The percentage thresholds shall use the actual number of hands in the game and in the category concerned. Full progress is the whole part of the report, so a result below the threshold is not rounded up when unlocking. Report the difficulty separately on configurations, as the number of opportunities and the distribution of results differ.
+- Rankings use `matchScore`. A tie for first is a shared win, and the top two places account for ties. The 500-point award for playing for zero is included in that value.
+- A series bonus is only recognised if the difference between the change recorded and the baseline score is positive. Serial penalty is not an achievement and is not rewarded.
+- The achievements are local to the installation and are not related to the editable name of the player. The fixture or replicay parties remain excluded by the existing eligibility of the match. Auto-play-ul hand is included: the result of the game is measured and the manual / automatic provenance is not persisted by the current model.
 
-## Măsurarea contractelor și revenirilor
+## Measurement of contracts and returns
 
-- Zero cere atât o licitație de zero, cât și zero levate câștigate. Obiectivele după mărimea mâinii folosesc 2–3, 4–5 și 6–8 cărți. O mână de o carte rămâne în grupa dedicată acelei mărimi.
-- Precizia licitațiilor pozitive folosește doar mâini de 2–8 cărți la care jucătorul a licitat mai mult de zero. Partida trebuie să conțină cel puțin opt astfel de licitații, iar proporția se calculează din toate aceste contracte, inclusiv cele ratate.
-- O revenire începe la primul contract exact imediat după o ratare. Pentru revenirea în ambele direcții, ultima ratare dinaintea contractului exact stabilește direcția. Secvențele continuă până la următoarea ratare și contribuie o singură dată la fiecare prag aplicabil.
-- Ordinea recomandată trece de la contracte individuale la repetare, acoperire și precizie într-o partidă. Dificultatea ține cont de frecvența ocaziilor eligibile, de efortul cumulativ și de cerința de a le confirma în aceeași partidă.
+- Zero requires both a zero and zero trick bid won. The objectives by hand size are 2–3, 4–5 and 6–8 cards. A handful of a card remains in the group dedicated to that size.
+- The accuracy of positive bids uses only 2–8 hands, which the player has bid more than zero. The party shall contain at least eight such tenders and the proportion shall be calculated from all such contracts, including those missed.
+- A comeback starts at the first contract right after a failure. For return in both directions, the last failure before the contract exactly sets the direction. The sequences continue until the next failure and contribute once to each applicable threshold.
+- The recommended order goes from individual contracts to repetition, coverage and precision in a game. The difficulty shall take into account the frequency of the eligible opportunities, the cumulative effort and the requirement to confirm them in the same game.
 
-## Acumulare și reluare
+## Accumulation and Resumulation
 
-- `SUM` adună evenimentele eligibile, iar `BEST_MATCH` păstrează cel mai bun rezultat dintr-o partidă; seriile nu se unesc între partide. ID-urile persistente, derivate din `matchId`, fac salvarea, reluarea și reconcilierea idempotente.
-- La atingerea pragului, ID-ul realizării intră în coada locală. Ecranul de scor grupează notificările după mână sau partidă; elementele rămân în coadă până la închidere și reapar după o oprire prematură.
-- Proiecția Whist pregătește textul și ordinea pentru lista și panoul comune. Coordonatorul păstrează fereastra unică și confirmarea durabilă. [Proiecția](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementPresentation.java) · [Coordonatorul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/notice/WhistAchievementNoticeCoordinator.java) · [Interfața comună](../../whist-lab-app/atf-card-table-ui/README.md#realizări)
-- Starea JSON versionată este separată de clasamente și profil. Extinderea catalogului păstrează ID-urile, pragurile și deblocările existente. Obiectivele adăugate primesc credit la evenimente noi, iar o partidă reluată păstrează istoricul de deduplicare.
+- `SUM` gathers the eligible events, and `BEST_MATCH` keeps the best outcome of the match; the series do not unite between parties. Persistent IDs derived from `matchId` make saving, resuming and reconciling idempotents.
+- At the threshold, the output IDA enters the local tail. The score screen groups notifications by hand or by match; the items remain in line until closure and reappear after premature shutdown.
+- The Whist projection prepares text and order for the common list and panel. The coordinator shall keep the unique window and durable confirmation. [Projection](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementPresentation.java) · [Coordonatorul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/notice/WhistAchievementNoticeCoordinator.java) · [Common interface](../../whist-lab-app/atf-card-table-ui/README.md#achievements)
+- The state of the JSON is separated from the leaderboards and profile. The extension of the catalogue shall retain existing IDs, thresholds and unlocks. The added objectives receive credit for new events and a resumption of game keeps the history of the deduction.
 
-## Verificare
+## Verification
 
-- [WhistAchievementComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java) verifică regulile, pragurile, variantele, faptele de joc, migrarea și idempotenta.
-- [WhistContractAchievementsComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java) verifică mărimile eligibile, numitorul preciziei, direcția revenirii și progresul simultan al catalogului extins.
-- [WhistAchievementPresentationComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) compară toate rândurile RO/EN și verifică ordinea și progresul afișat.
-- [WhistAchievementNoticeCoordinatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java) verifică dialogul unic, confirmarea, închiderea, erorile de stocare și revenirea după restart.
-- [GamePersistenceRankingComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) verifică ordinea checkpoint–realizări–clasament–replay și izolarea erorilor de stocare.
-- [WhistAchievementOfflineCalibrationTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) joacă partide complete Normal/Greu pe aceleași seed-uri, măsoară separat țintele `SUM` și `BEST_MATCH`, verifică reluarea fără credit dublu și scrie un raport Extent compact plus CSV-uri în afara depozitului. Sarcina opt-in `:app:testDebugAchievementCalibration` acceptă o fază de calibrare sau holdout; intervalele de seed trebuie să fie disjuncte.
+- [WhistAchievementComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java) checks the rules, thresholds, variants, game facts, migration and idempotence.
+- [WhistContractAchievementsComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistContractAchievementsComponentTest.java) checks the eligible sizes, denominator of the accuracy, direction of return and simultaneous progress of the extended catalogue.
+- [WhistAchievementPresentationComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) compares all rows RO/EN and checks the order and progress displayed.
+- [WhistAchievementNoticeCoordinatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java) checks the unique dialogue, confirmation, closure, storage errors and return after restart.
+- [GamePersistenceRankingComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/persistence/GamePersistenceRankingComponentTest.java) checks the checkpoint-achievement-ranking-replicay order and isolation of storage errors.
+- [WhistAchievementOfflineCalibrationTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) plays full parties Normal/Greu on the same seedings, measures targets `SUM` and `BEST_MATCH` separately, checks the resumption without double credit and writes an Extent compact report plus CSVs outside the warehouse. The load eighty-in `:app:testDebugAchievementCalibration` supports a calibration phase or holdout; the seed intervals must be disjuncted.
 
-- Începe cu 1–8–1 la patru locuri; extinde apoi la mesele românești de 3–6 locuri și la 8–1–8.
-- Rulează Normal și Greu pe aceeași distribuire și păstrează progresul separat pe nivel.
-- Compară eligibilitatea, ocaziile cu progres, reușitele pe partidă și deblocarea cumulativă.
-- Compară valorile 5 și 10 ale bonusului/penalizării pe aceleași seed-uri; raportează Joc la 0 separat.
-- Folosește intervale de seed disjuncte între calibrare și holdout, păstrând împerecherea configurațiilor în fiecare fază. Amprenta distribuției include ordinea tuturor mâinilor, împărțitorii, cărțile și atuul.
-- Pentru pragurile noi, CSV-ul pe partidă păstrează măsura brută. Valoarea `NA` marchează o partidă fără numărul minim de ocazii eligibile.
-- Frecvența mică în auto-joc nu dovedește imposibilitatea umană; orice prag schimbat trebuie confirmat și să păstreze progresul salvat.
+- Begins with 1–8–1 to four places; then extends to the Romanian tables of 3–6 places and to 8–1–8.
+- Run Normal and Hard on the same distribution and keep progress separate on level.
+- Compare eligibility, opportunities with progress, success per game and cumulative unlocking.
+- Compare 5 and 10 values of bonusului/penalizars on the same seedings; report Game to 0 separately.
+- It uses disjuncte seed intervals between calibration and holdout, keeping the simulation of the configurations in each phase. The distribution print includes the order of all hands, the divisionaries, the cards and the trump.
+- For new thresholds, the CSV per game keeps the gross measure. The value of `NA` marks a match without the minimum number of eligible opportunities.
+- Low frequency in self-game does not prove human impossibility; any changed threshold must be confirmed and keep the progress saved.
 
-Simularea de calibrare este un experiment separat de corpusul activ de învățare AI. Ea poate depista obiective fără ocazii, progresii redundante și praguri care nu se potrivesc politicilor simulate; rezultatele sale descriu auto-jocul Normal/Greu și nu sunt prezentate ca probabilități pentru oameni. Selecția de calibrare și holdout, seed-urile, configurația și hash-urile surselor trebuie păstrate împreună, în artefacte externe.
+Calibration simulation is an experiment separate from the active AI learning corpus. It can detect objectives without occasion, redundant advances and thresholds that do not fit the simulated policies; its results describe self-game Normal/Greu and are not presented as probabilities for people. The calibration and holdout selection, seedants, configuration and source hashes shall be kept together in external artifacts.
 
-[Contractele variantelor](README.md) · [Componente JVM ale aplicației](../../whist-lab-app/app/src/test/README.md) · [Strategia de testare](../testing/README.md)
+[Variant contracts](README.md) · [JVM application components](../../whist-lab-app/app/src/test/README.md) · [Test strategy](../testing/README.md)

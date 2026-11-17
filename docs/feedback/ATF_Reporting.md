@@ -1,79 +1,79 @@
-# Calificarea publicării și a predării rezultatelor
+# Qualification of publication and delivery of results
 
-## Pe scurt
+## Overview
 
-Consumatorul deține înregistrările jocului, selecția, oracolul și indexarea externă. Defectele generice de API sau randare urmează [rutarea către responsabilul bibliotecilor](README.md).
+The consumer holds the game records, selection, oracle and external indexation. Generic API or rendering defects follow [routing to the library manager](README.md).
 
-## RPT-OBSERVATION-CONTRACT — validare după capabilitățile declarate
+## RPT-OBSERVATION-CONTRACT - validation by declared capabilities
 
-**P2 · integrarea adaptorului.** Profilurile explicite acoperă deja rapoarte neutre fără HTTP. Asocierea unei capturi OBSERVE cu acțiunea și ownerul declarați urmează contractul comun; feedback-ul local păstrează calificarea adaptorului și a datelor consumate.
+**P2 · adaptor integration.** The explicit profiles already cover neutral reports without HTTP. The combination of an OBSERVE catch with the action and the reported owner shall follow the joint contract; the local feedback shall retain the qualification of the adapter and the data consumed.
 
-- [ ] După livrarea capabilității comune, calificați adaptorul real și raportul produs cu biblioteca efectiv consumată. Verificați proprietarul capturii, inventarul expected/actual și refuzul la eliminarea capturii declarate.
+- [ ] After delivery of the common capability, qualify the actual adapter and the ratio produced with the actual consumed library. Check the owner of the catch, inventory expected/actual and refusal to remove the declared catch.
 
-## RPT-ANDROID-HTML-ONLY — livrabilul de audit fără copii auxiliare
+## RPT-ANDROID-HTML-ONLY - Audit delivery without auxiliary copies
 
-**P1 · responsabil adaptor Android.** Pentru fiecare producător modificat, inventariați corpurile și observațiile obligatorii. Dosarele de componente au deja HTML per selecție, imagini inline și proveniență. Criteriul rămas privește datele fiecărui producător, inclusiv observațiile native și datele unice istorice. [Contractul predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții)
+**P1 · responsible Android adapter.** For each modified manufacturer, inventory the bodies and mandatory observations. The component files already have HTML per selection, inline images and provenance. The remaining criterion concerns the data of each manufacturer, including native observations and unique historical data. [The contract of surrender](../reporting/ATF_Handoff.md#compact-liquefied-and-exceptions)
 
-- Confruntați inventarul, timpii și corpurile fiecărui checkpoint cu capturile originale. Injectați conținut lipsă, modificat, extern sau atribuit greșit. Verificați text lung, conținut asemănător HTML și Base64.
-- Identificați fiecare excepție externă prin fișier, scop și consumator. Păstrați datele unice până la calificarea migrării. Un crash log sau verificarea semnăturii poate avea scop separat de auditul testului.
-- Deschideți separat HTML-ul final identificat prin SHA-256, cu sursele auxiliare și rețeaua indisponibile. Verificați navigarea, ultimul rând, tabelele și revenirea de la imaginea integrală. Injectați un link XML și o imagine externă. [Contractul auditului detașat](../reporting/ATF_Audit.md#calificarea-unui-producător)
+- Confront the inventory, times and bodies of each checkpoint with the original catches. Inject missing, modified, external or misassigned content. Check long text, HTML and Base64-like content.
+- Identify each external exception by file, purpose and consumer. Keep the unique data up to the migration qualification. A crash log or signature check may be aimed separately from the test audit.
+- Open the final HTML identified by SHA-256, with auxiliary sources and network not available. Check navigation, last row, tables and return from the full image. Inject an XML link and an external image. [The audit contract posted](../reporting/ATF_Audit.md#qualification-of-a-manufacturer)
 
-Publicarea incompletă păstrează diagnosticul și materialul unic. Replay-ul istoric păstrează identitatea, timpii și verdictul original. [Guvernanța retenției](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java)
+Incomplete publication keeps diagnosis and unique material. The historical play keeps the original identity, times and verdict. [Lifetime retention governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java)
 
-## RPT-ANDROID-COMPONENT-HTML — comparații capturate, nu doar JUnit XML
+## RPT-ANDROID-COMPONENT-HTML - captured comparisons, not just JUnit XML
 
-**P1 · responsabil adaptor Android: calificarea fiecărui producător și a predării.** [Familiile Maven](../testing/ATF_DisplayComponents.md#familii-care-folosesc-același-audit) și [puntea Gradle](../testing/ATF_GradleComponents.md) folosesc auditul Kit și publică inputuri și comparații evaluate. Gradle păstrează intrări distincte pentru aplicație, motor, bibliotecă grafică și raster; catalogul impune clasificarea și participarea claselor la audit. Migrarea mecanismului nu recalifică execuțiile istorice și nici selecțiile neexecutate.
+**P1 · Android adaptor responsible: qualification of each manufacturer and surrender.** [Familiile Maven](../testing/ATF_DisplayComponents.md#families-using-the-same-audit) and [puntea Gradle](../testing/ATF_GradleComponents.md) Gradle keeps separate entries for application, engine, graphic library and raster; catalogue requires classification and participation of classes in the audit. Migrating of the mechanism does not recalibrate historical executions and unexecuted selections.
 
-[Suita display](../../atf-test-android/src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java), inclusiv [FrameFillAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/display/component/FrameFillAuditComponentTest.java), capturează comparațiile la evaluare. Familiile fără adaptor păstrează populația și verdictul JUnit; valorile necapturate ale unei execuții trecute nu se reconstruiesc retrospectiv.
+[Suita display](../../atf-test-android/src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java), inclusive [FrameFillAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/display/component/FrameFillAuditComponentTest.java), The families without adaptor keep the population and JUnit verdict; the unfathomable values of a past execution are not reconstructed retrospectively.
 
-- [ ] Identificați prin inventar producătorii care mai pot pierde o invocare sau o comparație la publicare. Proba injectează o componentă fără adaptor, o invocare parametrizată pierdută și câte un rezultat FAIL, ERROR și SKIP. Diagnosticul indică invocarea exactă și diferența dintre JUnit și HTML. [Verificatorul Gradle](../testing/ATF_GradleComponents.md)
-- [ ] Revizuiți sensul rândurilor migrate: comparațiile booleene sau de excepție au mesaje declarative când valorile nu explică invariantul. Numele metodei ori linia Java nu substituie sensul fiecărei comparații în HTML; [contractul citirii](../reporting/ATF_Audit.md#citirea-unui-raport) deține regula.
+- [ ] Identify by inventory producers who may still lose a claim or comparison to publication. The sample injects a component without an adapter, a lost parametric reclection and a FAIL, ERROR and SKIP result. Diagnosis indicates exact invoicing and difference between JUnit and HTML. [Verificatorul Gradle](../testing/ATF_GradleComponents.md)
+- [ ] Review the meaning of the migration rows: Boolean or exceptional comparisons have declarative messages when values do not explain the invariant. The method name or Java line does not substitute the meaning of each comparison in HTML; [contractul citirii](../reporting/ATF_Audit.md#reading-a-report) holds the rule.
 
-**Închidere:** o comparație trecută și una negativă controlată sunt auditabile exclusiv din HTML, cu ultima valoare și ownerul corect; un caz fără comparații capturate este explicit necalificat.
+**Closure: ** a past and a controlled negative comparison are exclusively audible from HTML, with the last value and the right owner; a case without captured comparisons is explicitly unqualified.
 
-[Publicarea ownerului](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) este amânată până la închiderea scope-ului și păstrează separat duratele originale. Costul memoriei la selecții mari și integrarea Jupiter paralelă cer calificare proprie înaintea extinderii; pilotul de istoric nu închide automat aceste frontiere.
+[Publication of the host](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) is postponed until the aim is closed and keeps the original durations separately. The cost of memory at large selections and the integration of parallel Jupiter require their own qualification prior to enlargement; the historic pilot does not automatically close these borders.
 
-## Validarea timpurie a checkpoint-ului
+## Early validation of checkpoint
 
-| Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
+| Priority | Lacquer and source | Level and criterion of closure |
 |---|---|---|
-| P2 | [AndroidUiFlowTrace.checkpoint](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) păstrează aserțiuni pe care [publicatorul](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) le confruntă ulterior cu politica bibliotecii; sumarul prea lung poate fi refuzat abia la publicare. | Componentă: validați prin aceeași politică efectivă înaintea următoarei capturi, cu refuz localizat și fără trunchierea valorilor integrale din observații și XML. |
+| P2 | [AndroidUiFlowTrace.checkpoint](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) keeps assertions that [publicatorul](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) then faces library policy; too long a summary can be refused only when published. | Component: validated by the same effective policy before the next catch, with localized refusal and without truncating the full values in the observations and XML. |
 
-Consumatorul deține momentul validării și datele transmise. Dacă API-ul public nu expune politica necesară, contractul reutilizabil se solicită responsabilului bibliotecii; limita nu se recopiază ca o regulă locală independentă.
+The consumer shall have the time of validation and the data transmitted. If the public API does not expose the necessary policy, the reusable contract is required by the library's manager; the limit is not recopied as an independent local rule.
 
-## Costul intrărilor consumatorului
+## Cost of consumer inputs
 
-| Prioritate | Responsabil și calificare rămasă | Nivel și criteriu de închidere |
+| Priority | Liability and remaining qualification | Level and criterion of closure |
 |---|---|---|
-| P2 | Consumatorul raportării: costul selecției și compoziției la populații mari ori predominant cu eșec. | Componente cu populații controlate și mediu identificat: cost, număr de comparații și corp opțional, cu toate eșecurile, valorile obligatorii și inventarul omisiunilor păstrate. |
+| P2 | The consumer of reporting: cost of selection and composition in large or predominantly failed populations. | Components with controlled populations and identified environment: cost, number of comparisons and optional body, with all failures, mandatory values and inventory of retained omissions. |
 
-## RPT-BOUNDED-REPORT-HEAP — finalizare sigură pentru suite mari
+## RPT-BOUNDED-REPORT-HEAP - Safe completion for large suites
 
-**P1 · responsabil biblioteci: publicarea și verificarea HTML; consumatorul: dimensiunea intrărilor.** O suită poate avea teste JUnit verzi și totuși să nu producă raportul canonic dacă injecția navigării ori verificarea DOM epuizează heap-ul. Eroarea de publicare nu trebuie să ascundă rezultatul testelor sau să lase un raport parțial prezentat ca acceptat.
+**P1 · responsible libraries: HTML publication and verification; consumer: input dimension.** A suite may have JUnit Green tests and still not produce canonical ratio if the injection of navigation or DOM check deplete the head. The publication error shall not hide the results of the tests or leave a partial report submitted as accepted.
 
-- [ ] Măsurați separat memoria de vârf pentru randarea inițială, injectarea navigării și verificarea raportului, în funcție de numărul comparațiilor, corpurilor și capturilor inline.
-- [ ] Evitați copiile integrale repetate ale documentului în etapele de publicare și verificare; fiecare etapă trebuie să poată procesa un raport mare valid sub limita de heap declarată.
-- [ ] Calificați limitele cu rapoarte sintetice mici, medii și mari, inclusiv payload-uri repetate și imagini inline. Verificați identitățile JUnit–HTML, toate capturile și octeții obligatorii după publicare.
-- [ ] La depășirea unei limite explicite, emiteți un diagnostic localizat care identifică etapa și păstrează rezultatul JUnit și dovezile disponibile; nu lăsați o excepție de heap să se transforme într-o lipsă ambiguă de fișier.
+- [ ] Measure the peak memory separately for initial rendering, injection of navigation and report verification, depending on the number of comparisons, bodies and inline catches.
+- [ ] Avoid repeated full copies of the document at the publication and verification stages; each step shall be capable of processing a large valid report below the declared limit of the heap.
+- [ ] Qualify the limits with small, medium and large synthetic reports, including repeated payloads and inline images. Check the identities of Junit-HTML, all mandatory catches and bytes after publication.
+- [ ] Upon crossing an explicit limit, issue a localized diagnosis identifying the stage and keeping JUnit's result and available evidence; do not let an exception of heap turn into an ambiguous lack of file.
 
-Calificarea este comună producătorului și verificatorului: mărirea heap-ului unui singur proces nu închide criteriul și nu demonstrează că raportul rămâne publicabil în mediul standard.
+Qualification is common to the manufacturer and verifier: the increase in the head of a single process does not close the criterion and does not demonstrate that the report remains publishable in the standard environment.
 
-## RPT-EXTENT-REPEATED-PAYLOAD — compactare fără pierderea auditului
+## RPT-EXTENT-REPEATED-PAYLOAD - Compaction without audit loss
 
-**P2 · compactarea HTML-ului de componentă fără reducerea dovezilor.** Payload-urile identice pot crește dimensiunea și timpul de navigare al raportului. Profilarea exactă aparține dosarului extern al execuției; criteriul urmărește mecanismul de compactare și păstrarea auditabilității. Capabilitățile reutilizabile urmează [rutarea comună](README.md#responsabilitatea-schimbării).
+**P2 · component HTML compaction without reducing evidence.** Identical Payload can increase the size and navigation time of the report. Accurate profiling belongs to the external file of execution; the criterion follows the compaction mechanism and the audit maintenance. Reusable capabilities follow [common routing](README.md#change-ownership).
 
-- [ ] Profilul compact trebuie să păstreze fiecare owner, comparație, verdict și corp integral accesibil offline în același HTML. Nu eliminați valori și nu mutați conținutul în ZIP, JSON ori fișiere externe.
-- [ ] Evaluați referințe interne content-addressed pentru corpuri byte-identice repetate. Fiecare invocare trebuie să afișeze conținutul integral corect; conținutul poate fi stocat o singură dată în HTML autonom.
-- [ ] Păstrați capturile PNG inline Base64 și navigarea către checkpoint-ul original; optimizarea textului nu trebuie să altereze identitatea capturii sau asocierea ownerului.
-- [ ] Expuneți un sumar de dimensiune pe categorie și o opțiune de prezentare configurabilă. Preview-ul se poate scurta, dar corpul integral și criteriul PASS/FAIL rămân verificabile.
-- [ ] Calificați HTML-ul singur într-un director gol, cu payload-uri repetate, lungi, diferite și Base64. Confruntați byte-for-byte fiecare valoare vizibilă și verificați hash-ul raportului final.
+- [ ] The compact profile must keep each owner, comparison, verdict and fully accessible offline body in the same HTML. Do not remove values or move content to ZIP, JSON or external files.
+- [ ] Evaluate internal content-adjusted references for repeated byte-identical bodies. Each invoicing shall display the content in full correct; the content may be stored once in the autonomous HTML.
+- [ ] Keep the PNG inline Base64 and navigation to the original checkpoint; the text optimisation shall not alter the identity of the catch or the association of the owner.
+- [ ] Expose a size summary by category and a configurable presentation option. The preview may shorten, but the whole body and criterion PASS/FAIL remain verifiable.
+- [ ] Qualify HTML alone in an empty directory with repeated, long, different payloads and Base64. Confront byte-for-byte each visible value and check the final report hash.
 
-Măsurarea justifică investigarea reducerii redundanței; nu dovedește că toate corpuri similare au același sens. Referințele se pot unifica numai pentru payload-uri identice, iar verdictul nu poate depinde de modul compact.
+Measurement justifies investigating the reduction of redundancy; it does not prove that all similar bodies make the same sense. References can be unified only for identical payloads, and the verdict cannot depend on compact mode.
 
 ## Contractele responsabile
 
-- [Predarea rezultatelor](../reporting/ATF_Handoff.md) deține proveniența republicării, idempotența înregistrării și pointerele distincte pentru încercare și acceptanță.
-- [Auditul publicării](../reporting/ATF_Audit.md#calificarea-unui-producător) deține calificarea fiecărui producător, comparațiile originale, ultima valoare, capturile și controalele negative.
-- [Contractul Android](../reporting/ATF_Android.md) deține asocierea acțiune–observație–comparație și distincția dintre rezultatul funcțional și publicare.
+- [Teaching results](../reporting/ATF_Handoff.md) has the provenance of republication, the idempotence of registration and distinct pointeres for testing and acceptance.
+- [Publication audit](../reporting/ATF_Audit.md#qualification-of-a-manufacturer) holds the qualification of each producer, the original comparisons, the last value, catches and negative controls.
+- [Contractul Android](../reporting/ATF_Android.md) holds the association of action-observation-comparison and the distinction between the functional result and publication.
 
-[Contractul Android](../reporting/ATF_Android.md) · [Auditul publicării](../reporting/ATF_Audit.md) · [Retenție](../learning/ATF_Retention.md)
+[Contractul Android](../reporting/ATF_Android.md) · [Publication audit](../reporting/ATF_Audit.md) · [Retention](../learning/ATF_Retention.md)

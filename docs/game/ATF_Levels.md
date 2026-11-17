@@ -1,53 +1,53 @@
-# Normal și Hard
+# Normal and Hard
 
-## Pe scurt
+## Overview
 
-[AiDifficulty](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/AiDifficulty.java) definește nivelurile de joc, iar [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) selectează implementarea. Dificultatea schimbă decizia AI în același contract de reguli.
+[AiDifficulty](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/AiDifficulty.java) defines game levels and [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) selects implementation. Difficulty changes the decision of the AI in the same rule contract.
 
-## Responsabilități
+## Liabilities
 
 ```mermaid
 flowchart LR
-    OBS[Observație proprie/publică] -->|selectează prin AiPolicy| LEVEL[Nivel]
-    LEVEL -->|NORMAL| NORMAL[Politică locală]
-    LEVEL -->|HARD| HARD[Simulare și certificate]
-    NORMAL -->|propune| LEGAL[Acțiune validată de motor]
+    OBS[Private and public observation] -->|select through AiPolicy| LEVEL[Level]
+    LEVEL -->|Normal| NORMAL[Local policy]
+    LEVEL -->|HARD| HARD[Simulation and certificates]
+    NORMAL -->|propune| LEGAL[Engine validated action]
     HARD -->|propune| LEGAL
 ```
 
 <details>
-<summary>Legendă: dificultatea nu modifică legalitatea</summary>
+<summary>Legend: difficulty does not alter legality</summary>
 
-Ambele politici folosesc aceeași variantă și observație permisă. Motorul verifică acțiunea înainte de a schimba starea; nicio dificultate nu primește mâinile reale ale adversarilor.
+Both policies use the same variant and the permitted observation. The engine checks the action before changing the condition; no difficulty receives the actual hands of the opponents.
 
 </details>
 
 ## Obiective
 
-| Politică | Comportament |
+| Policy | Comportament |
 |---|---|
-| Normal la licitare | Estimează puterea mâinii proprii și alege o licitație permisă. |
-| Normal înaintea contractului | Caută levatele încă necesare și păstrează șanse viitoare când levata curentă nu poate fi luată. |
-| Normal după contract | Evită levatele suplimentare și descarcă riscul viitor în limitele legale. |
-| Hard cu contract recuperabil | Prioritizează șansa estimată a exactului, punctele proprii și scorul rivalului principal. |
-| Hard cu imposibilitate publică | Protejează mai întâi punctele proprii estimate, apoi urmărește ratările adverse estimate. |
-| Normal și Hard cu „Joc la 0” | Trec la ținta de zero exact când limitele publice exclud primele două locuri prin scor convențional, iar zero rămâne posibil în programul rămas. |
+| Normal at bidding | Estimate the power of your own hand and choose an allowed bid. |
+| Normal before contract | Search for the tricks still needed and keep future chances when the current trick cannot be taken. |
+| Normal after contract | Avoid additional levatas and download future risk within legal limits. |
+| Hard with recoverable contract | Prioritize the estimated chance of exact, own points and the score of the main rival. |
+| Hard drive with public impossibility | Protect first the estimated own points, then track the estimated adverse failures. |
+| Normal and Hard with playing for zero | They switch to targeting exactly zero once public score bounds rule out a top-two finish through conventional scoring and zero is still reachable in the remaining schedule. |
 
-[Modelul deciziei](../ai/ATF_DecisionModel.md#prioritatea-obiectivelor) deține ordinea criteriilor, domeniile și certificatele runtime. [Manifestul obiectivelor](../../config/whist-play-objectives.yaml) leagă intenția de implementare și componente; parametrii și condițiile exacte se citesc din cod.
+[Modelul deciziei](../ai/ATF_DecisionModel.md#priority-objectives) holds the order of criteria, domains and runtime certificates. [Manifesto of objectives](../../config/whist-play-objectives.yaml) links the intention of implementation and components; exact parameters and conditions are read from the code.
 
-## Informație și adaptare
+## Information and adaptation
 
-- Necesarul fiecărui loc se recalculează după levatele încheiate.
-- Cărțile proprii, cele jucate, masa și cartea întoarsă sunt excluse din pool-ul ipotetic necorespunzător.
-- Lipsurile de culoare demonstrate restrâng mâinile fezabile.
-- Licitațiile cunoscute sunt ținte de contract în continuările simulate.
-- La 2–8 cărți, ponderarea generală după comportamentul advers rămâne cercetare; licitarea de o carte are deja modelul condiționat specializat și fallback-ul descrise în [modelul deciziei](../ai/ATF_DecisionModel.md#estimarea-alternativelor).
-- O estimare Monte Carlo și un certificat finit au niveluri diferite de certitudine.
+- The requirements of each place shall be recalculated after the levatates have been completed.
+- The cards, the cards played, the table and the card turned are excluded from the hypothetical poor polo.
+- Demonstrated color gaps narrow down the feasible hands.
+- Known bids are contract targets in simulated continuances.
+- La 2–8 cards, general weighting after adverse behaviour remains research; the bid of a card already has the specialized conditioning model and the fallback described in the [modelul deciziei](../ai/ATF_DecisionModel.md#estimate-of-alternatives).
+- A Monte Carlo estimate and a finished certificate have different levels of certainty.
 
 ## Compatibilitate
 
-Parserul de dificultate convertește numele vechi EXPERT în HARD fără o a treia opțiune de meniu. Numele necunoscute și checkpoint-urile invalide sunt tratate prin validările explicite ale persistenței.
+The difficulty parser converts the old name EXPERT into HARD without a third menu option. Unknown names and invalid checkpoints are treated by explicit validations of persistence.
 
-[Testele de contract](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/DifficultyContractTest.java) verifică enum-ul, dispatch-ul și migrarea. [Colecțiile](../testing/ATF_Collections.md) disting regresiile de domeniu de compararea politicilor și integrarea Android.
+[Contract tests](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/policy/DifficultyContractTest.java) checks the enumeration, the display and migration. [Collections](../testing/ATF_Collections.md) distinguish the domain regressions from the comparison of policies and the integration of Android.
 
-[Modelul deciziei](../ai/ATF_DecisionModel.md) formalizează observația, estimarea și ordinea obiectivelor.
+[Modelul deciziei](../ai/ATF_DecisionModel.md) formalises the observation, estimation and order of objectives.

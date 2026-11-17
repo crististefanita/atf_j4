@@ -1,46 +1,46 @@
-# Componentele JVM ale aplicației Android
+# JVM components of the Android app
 
-## Pe scurt
+## Overview
 
-Aceste teste verifică politicile și modelele aplicației fără instalare sau emulator. [Strategia comună](../../../../docs/testing/README.md) deține acceptarea rezultatului; [arhitectura aplicației](../main/java/ro/whistlab/app/README.md) delimitează integrarea Android rămasă.
+These tests check the application policies and models without installation or emulator. [Common strategy](../../../../docs/testing/README.md) holds acceptance of the result; [application architecture](../main/java/ro/whistlab/app/README.md) delimits the remaining Android integration.
 
-## Familii de verificare
+## Verification families
 
-| Familie | Intrare controlată și oracol |
+| Familie | Controlled entry and oracle |
 |---|---|
-| Layout și text | Dimensiuni, densitate, font și număr de locuri; rezervarea maximului programului complet, inclusiv 17 cărți la trei locuri, ancore stabile între faze și titlul accesibil pe cel mult două rânduri. |
-| Adaptoare UI comune | [Textele și callback-urile](java/ro/whistlab/app/screens/WhistMenuContentComponentTest.java) și [toate fețele de carte](java/ro/whistlab/app/cards/WhistCardFaceComponentTest.java) păstrează semantica Whist la frontiera bibliotecii. |
-| Selecția licitației | [Matricea contextuală](java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java): 1–8 cărți, 3–6 locuri și fiecare poziție de licitare; observație publică, evaluare Hard și oracol aritmetic independent pentru legalitate. |
-| Acțiunile la licitare | [Componentele de layout](java/ro/whistlab/app/bidding/AutoGameBidActionComponentTest.java) verifică rândurile centrate, conturul redus separat de zona tactilă, densitățile și spațiul recuperat pentru textul mărit. [Componenta meniului](java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) verifică opțiunea de oprire în RO și EN, numai în timpul automatizării. |
-| Continuitatea licitației | [Salvare și reluare](java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java): codec JSON real, recomandare recalculată, alegere manuală prioritară și contract confirmat păstrat; livrările întârziate nu schimbă sesiunea. |
-| Licitație incertă | [Factori de context](java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java): atu și carte întoarsă, ținte adverse publice, scor relativ și plata seriilor. Oracolele disting schimbarea legitimă a utilității de schimbarea accidentală a lumilor simulate. |
-| Realizări | [Faptele, regulile și persistența](java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java), [proiecția textului](java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) și [coordonarea notificărilor](java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java): catalog complet, ID-uri persistente, eligibilitate după variantă/masă/reguli, praguri exacte, progres simultan, reluare fără credit dublu, format RO/EN și notificări restaurabile. Validatorul Gradle al YAML-ului este atașat colecției, cu vectori pozitivi și negativi înaintea generării Java. |
-| Calibrarea realizărilor | [Jocurile offline pereche](java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) folosesc politicile AI reale pe seed-uri repetabile, compară măsurile pe partidă cu progresul cumulativ și verifică persistența după replay. Sunt excluse din colecția rapidă; `:app:testDebugAchievementCalibration` rulează separat, pe intervale externe și disjuncte, pentru 3–6 locuri și variante românești 1–8–1/8–1–8. Rezultatele măsoară auto-jocul, eligibilitatea și realizările pe meci și nu estimează reușita umană. |
-| Persistență și istoric | Comenzi legale, checkpoint JSON, solduri și migrare; refuzul datelor corupte. |
-| Ciclu de viață | Ceas, executor, navigare și callback-uri controlate; anulare și reluare fără efect repetat. |
-| Actorul mesei | [Proiecția Whist](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică actorul la licitare și joc pentru 3–6 locuri, marcajul în AutoGame, lipsa marcajului la colectarea levatei și dezactivarea coerentă a comenzilor umane. |
-| Colectarea levatei | Geometrie, jucători, ultima levată și evenimente întârziate; starea partidei se păstrează. |
+| Layout and text | Dimensions, density, font and number of seats; reservation of maximum full schedule, including 17 cards in three places, stable anchors between phases and the title accessible on no more than two rows. |
+| Common IU adapters | [Texts and callbacks](java/ro/whistlab/app/screens/WhistMenuContentComponentTest.java) and [all card faces](java/ro/whistlab/app/cards/WhistCardFaceComponentTest.java) keep the Whist semantics at the library border. |
+| Bidding | [Contextual matrix](java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java): 1–8 cards, 3–6 places and each bidding position; public observation, Hard assessment and independent arithmetic oracle for legality. |
+| Bidding actions | [Layout components](java/ro/whistlab/app/bidding/AutoGameBidActionComponentTest.java) checks the centred rows, the reduced contour separately from the tactile area, the densities and the recovered space for the increased text. [Minium component](java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) checks the stop option in EN and EN only during automation. |
+| Continuity of the tender | [Rescue and Resettlement](java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java): actual JSON codec, recalculated recommendation, priority manual choice and contract confirmed retained; delayed deliveries do not change the session. |
+| Uncertainty tender | [Context factors](java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java): return card and trump card, public adverse targets, relative score and payment of series. Oracles distinguish the legitimate change of the usefulness of accidental change of simulated worlds. |
+| Achievements | [Facts, rules and persistence](java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java), [text projection](java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) and [coordination of notifications](java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java): complete catalogue, persistent IDs, eligibility by variant / table / rules, exact thresholds, simultaneous progress, double credit-free resumption, format RO/EN The Gradle YAML Validator is attached to the collection, with positive and negative vectors prior to Java generation. |
+| Calibration of outputs | [Offline pair games](java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) uses real AI policies on repetitive seedals, compares the measures per game with cumulative progress and verifies persistence after the reply. The results are excluded from the quick collection; `:app:testDebugAchievementCalibration` runs separately, on external and disjunct intervals, for 3–6 places and Romanian variants 1–8–1/8–1–8. The results measure self-play, eligibility and achievements per match and do not estimate human success. |
+| Persistence and history | Legal orders, checkpoint JSON, balances and migration; refusal of corrupt data. |
+| Life Cycle | Clock, executor, navigation and controlled callbacks; cancellation and resumption without repeated effect. |
+| Actorul mesei | [Projection of Whist](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) checks the actor at bidding and playing for 3–6 seats, the AutoGame marking, the lack of marking at tricks collection and coherent disabling of human commands. |
+| Collection of levatates | Geometry, players, last levitate and delayed events; the game status is maintained. |
 
-## Execuție și limite
+## Implementation and limits
 
-[Componentele bibliotecii UI](../../../atf-card-table-ui/README.md#verificare) au sarcina Gradle proprie. Filtrul de afișaj al aplicației include adaptoarele din `screens` și `cards`; testele existente de geometrie rămân la integrarea Whist și nu sunt numărate din nou ca teste noi ale bibliotecii.
+[Componentele bibliotecii UI](../../../atf-card-table-ui/README.md#verification) have their own Gradle task. The application display filter includes the adapters of `screens` and `cards`; existing geometry tests remain at the integration of Whist and are not counted again as new tests of the library.
 
-- **Selecție focalizată:** `:app:testDebugUnitTest --tests 'ro.whistlab.app.bidding.*'` include matricea, reluarea și cazurile mici ale estimării. Fixture-urile avansează motorul prin comenzi legale, cu scor și carte întoarsă reale, fără arhivă externă sau emulator.
+- **Focused selection: ** `:app:testDebugUnitTest --tests 'ro.whistlab.app.bidding.*'` includes matrix, resumption and small cases of estimation. The fixtures advance the engine through legal commands, with actual score and card turned, without external archive or emulator.
 
-- **Realizări:** `:app:testDebugAchievementsComponents` este colecția primară pentru catalog, măsurători și stare. `:app:testDebugCommandsComponents` acoperă ordinea în care partida completă persistă rezultatele derivate.
+- **Achievements: ** `:app:testDebugAchievementsComponents` is the primary collection for catalogue, measurements and status. `:app:testDebugCommandsComponents` covers the order in which the complete match persists the derived results.
 
-- **Calibrare opțională:** `:app:testDebugAchievementCalibration` primește `whist.achievementCalibrationPhase`, `whist.achievementCalibrationFirstSeed`, `whist.achievementCalibrationMatches` și `whist.achievementCalibrationOutput`. `whist.achievementCalibrationPlayers` acceptă 3–6, `whist.achievementCalibrationMode` acceptă `ROMANIAN_WHIST` sau `LONG_ROMANIAN`, iar `whist.achievementCalibrationSeriesBonus` acceptă 5 sau 10; valoarea configurată controlează bonusul și penalizarea de serie. Seriile și Joc la 0 pot fi comutate prin `whist.achievementCalibrationStreaks` și `whist.achievementCalibrationZero`. `whist.auditOutput` și `whist.auditSource` aleg raportul Extent și identitatea sursei. Ieșirea rămâne în afara depozitului; comparația 5/10 folosește aceleași seed-uri în fiecare fază, iar holdout-ul folosește seed-uri noi. Sarcina nu este inclusă în colecția primară și nu rulează E2E.
+- **Optional Calibration: ** `:app:testDebugAchievementCalibration` receives `whist.achievementCalibrationPhase`, `whist.achievementCalibrationFirstSeed`, `whist.achievementCalibrationMatches` and `whist.achievementCalibrationOutput`. `whist.achievementCalibrationPlayers` accepts 3–6, `whist.achievementCalibrationMode` accepts `ROMANIAN_WHIST` or `LONG_ROMANIAN` and `whist.achievementCalibrationSeriesBonus` accepts 5 or 10; the configured value controls the bonus and the series penalty. Series and Game to 0 can be switched through `whist.achievementCalibrationStreaks` and `whist.achievementCalibrationZero`. `whist.auditOutput` and `whist.auditSource` choose the Extent ratio and source identity. The output remains outside the warehouse; comparison 5/10 uses the same seedings in each phase, and the holdout uses new seedings. The load is not included in the primary collection and does not run E2E.
 
-- **Execuție:** dintr-o copie temporară a aplicației, [configurația Gradle](../../build.gradle) selectează componentele prin `whist.displayComponents=true`. SDK-ul este necesar compilării; testele rulează pe JVM, fără comenzi ADB.
+- **Execution:** of a temporary copy of the application, [Gradle configuration](../../build.gradle) select the components by `whist.displayComponents=true`.SDK is required to compile; tests run on JVM without ADB commands.
 
-- **Raster:** [colecția dedicată](../rasterTest/README.md) folosește JDK-ul grafic complet și o sarcină distinctă. Imaginile sale sunt probe de componentă, separate de fontul, pixelii și interacțiunea Android reale.
+- **RASTER:** [dedicated collection](../rasterTest/README.md) uses the complete graphics JDK and a distinct task. His images are component samples, separated from the font, pixels and actual Android interaction.
 
-- **Dovezi:** artefactele și rezultatele aparțin execuției externe. [Calificarea unui release](../../../../docs/testing/ATF_ReleaseQualification.md) decide selecția nativă necesară după verificările locale.
+- **Evidence:** The artifacts and results belong to the external execution. [Qualification of a relay](../../../../docs/testing/ATF_ReleaseQualification.md) decide on the necessary native selection after local checks.
 
-[Aplicația](../main/java/ro/whistlab/app/README.md) · [Strategia comună](../../../../docs/testing/README.md) · [Componente display](../../../../docs/testing/ATF_DisplayComponents.md)
+[Application](../main/java/ro/whistlab/app/README.md) · [Common strategy](../../../../docs/testing/README.md) · [Componente display](../../../../docs/testing/ATF_DisplayComponents.md)
 
-## Proiecția Whist a mesei comune
+## Whist projection of the common table
 
-[WhistTableContentComponentTest](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) verifică toate modurile Whist și mesele de 3–6 locuri: faptele și accesibilitatea, actorul la licitare/joc/AutoGame/colectare, ordinea și identitatea cărților, controlul uman dezactivat și levata publică completată. Testul folosește motorul Whist real și rămâne în aplicație.
+[WhistTableContentComponentTest](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) checks all Whist modes and 3–6 seats: facts and accessibility, actor at bidding, play, AutoGame and collection, order and identity of cards, disabled human control and completed public trick. The test uses the actual Whist engine and stays in the application.
 
-Componentele din bibliotecă nu importă această sesiune. Ele verifică prezentarea neutră; fiecare adaptor păstrează oracolele propriilor reguli, alegeri, secvențe și punctaj.
+The components in the library do not import this session. They check the neutral presentation; each adapter keeps the oracles of its own rules, choices, sequences and scores.

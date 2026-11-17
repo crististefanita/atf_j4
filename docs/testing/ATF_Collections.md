@@ -1,45 +1,45 @@
-# Colecții de teste
+# Test collections
 
-## Pe scurt
+## Overview
 
-[Catalogul colecțiilor](../../config/test-collections.json), [runnerul](../../scripts/run-whist-collection.ps1) și [task-urile Gradle](../../whist-lab-app/game-core/build.gradle) definesc execuția curentă. Numărul de cazuri se citește din rezultatele native ale fiecărei rulări, nu dintr-un inventar fixat în documentație.
+[Catalogue of collections](../../config/test-collections.json), [runnerul](../../scripts/run-whist-collection.ps1) and [task-urile Gradle](../../whist-lab-app/game-core/build.gradle) The number of cases is read from the native results of each run, not from an inventory fixed in the documentation.
 
-[Arhitectura testării](ATF_Architecture.md) definește nivelurile și matricea executabilă. Colecția alege scopul și costul; numele ei nu schimbă nivelul verificării.
+[Test architecture](ATF_Architecture.md) defines the levels and executable matrix. The collection chooses the purpose and cost; its name does not change the level of verification.
 
-## Alegerea colecției
+## Collection choice
 
 ```mermaid
 flowchart LR
-    CHANGE[Contract schimbat] -->|alege proprietăți locale| COMPONENT[Componente și regresie]
-    CHANGE -->|evaluează strategia| POLICY[Protocol și lot rezervat]
-    CHANGE -->|verifică interacțiunea| ANDROID[Scenariu Android]
-    COMPONENT -->|permite calificarea| POLICY
+    CHANGE[Contract schimbat] -->|pick local properties| COMPONENT[Components and regression]
+    CHANGE -->|evaluate the strategy| POLICY[Protocol and batch reserved]
+    CHANGE -->|check interaction| ANDROID[Scenariu Android]
+    COMPONENT -->|allows qualification| POLICY
 ```
 
 <details>
-<summary>Legendă: selecții cu scop diferit</summary>
+<summary>Legend: Selections for different purposes</summary>
 
-Colecția restrânge cazurile la proprietatea schimbată. Evaluarea unei politici adaugă un protocol și date rezervate, iar verificarea Android adaugă un dispozitiv; fiecare păstrează propriile limite și rezultat.
+The collection restricts cases to the changed property. The evaluation of a policy adds a protocol and reserved data, and the verification of Android adds a device; each keeps its own limits and result.
 
 </details>
 
-| Colecție | Scop | Execuție |
+| Collection | Purpose | Implementation |
 |---|---|---|
-| `cost` | Cost JVM pentru Normal, Hard și independent la 2–8 cărți | Poziții generate, CPU și bugete din profil explicit |
-| `context` | Onoruri, necesar de levate, atu întors sau încă pe masă, legalitatea prefixelor | Verificări JVM restrânse |
-| `quick` | Reguli, scor, serii, checkpoint-uri și gărzi de decizie | Subset al regresiei |
-| `regression` | Regresia completă de domeniu, inclusiv restaurarea stării | Regresie JVM, fără turnee. [Proba sesiunii](../../atf-tests/src/test/java/atf/tests/governance/source/game/GameSessionBoundaryComponentTest.java) verifică și continuarea după checkpoint, la limita publică a motorului. |
-| `strategy` | Invariante și contraexemple mici pentru licitare și joc | Componente JVM selectate |
-| `documentation` | Punctaj documentat și reguli RO/EN | Extent confruntat cu JUnit și ajutor bilingv generat |
-| `learning` | Comparație între un candidat și politici înghețate | Partide complete definite prin protocol |
-| `arena` | Strategii distincte la aceeași masă și locuri rotite | Ligă virtuală definită prin protocol |
-| `research` | Modele experimentale izolate de regresia implicită | Cercetare JVM activată explicit |
+| `cost` | Cost JVM for Normal, Hard and Independent at 2–8 cards | Proposed positions, CPU and explicit budgets |
+| `context` | Honours, necessary levatates, returned attire or still on the table, legality of prefixes | Restricted JVM checks |
+| `quick` | Rules, score, series, checkpoints and decision guards | Regression subset |
+| `regression` | Full regression of domain, including restoration of status | JVM regression, no tournaments. [Proba sesiunii](../../atf-tests/src/test/java/atf/tests/governance/source/game/GameSessionBoundaryComponentTest.java) also checks the continuation after checkpoint, at the public limit of the engine. |
+| `strategy` | Small options and counterexamples for bidding and playing | Componente JVM selectate |
+| `documentation` | Documented score and rules RO/EN | Excessive face-to-face with JUnit and bilingual aid generated |
+| `learning` | Comparison between candidate and frozen policies | Full parts defined by protocol |
+| `arena` | Distinguishing strategies at the same table and rotated places | Virtual League defined by protocol |
+| `research` | Experimental models isolated from implicit regression | JVM explicitly activated research |
 
-Catalogul descrie separat și acceptanța `e2e`. Aceasta folosește runner-ele Android; `e2e` nu este o valoare acceptată de parametrul `-Collection`.
+The catalogue also describes the acceptance of `e2e` separately. This uses Android runners; `e2e` is not an accepted value of parameter `-Collection`.
 
-Estimările `targetMinutes` din catalog ajută planificarea. Ele nu înlocuiesc timpul măsurat și nu transformă o execuție incompletă într-un rezultat reușit.
+The `targetMinutes` estimates in the catalogue help plan. They shall not replace the measured time and shall not convert an incomplete execution into a successful result.
 
-## Rulare offline din rădăcina proiectului
+## Offline rolling from the project root
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection context
@@ -48,89 +48,89 @@ Estimările `targetMinutes` din catalog ajută planificarea. Ele nu înlocuiesc 
 .\scripts\run-whist-collection.ps1 -Collection cost
 ```
 
-Runnerul creează o copie temporară proprie și un director nou de rezultate în arhiva externă implicită din script. `-RunRoot` selectează o altă destinație externă proiectului, iar o destinație existentă este refuzată; `-JavaHome` selectează JDK-ul.
+Runner creates his own temporary copy and a new directory of results in the default external archive of the script. `-RunRoot` selects another external destination for the project and an existing destination is refused; `-JavaHome` selects JDK.
 
-Build-ul [algorithm-build](../../whist-lab-app/algorithm-build/settings.gradle) include motorul și laboratorul JVM; dependența motorului către laborator este numai pentru teste. Construirea aplicației Android și accesul ADB au intrări separate, iar dependențele Gradle trebuie să fie în cache pentru `--offline`.
+The [algorithm-build](../../whist-lab-app/algorithm-build/settings.gradle) cylinder includes the engine and JVM laboratory; the dependence of the engine to the laboratory is for tests only. The construction of the Android app and the ADB access have separate entries, and Gradle's dependencies must be in cache for `--offline`.
 
-Fiecare execuție păstrează inventarul SHA-256 al surselor copiate, logul, rezultatele JUnit XML și `collection-result.json`.
+Each execution shall keep the inventory of the SHA-256 of copied sources, the log, JUnit XML results and `collection-result.json`.
 
-`cost` copiază înaintea execuției [profilul de cost](../../config/whist-ai-cost-profile.json), apoi măsoară poziții legale generate. `-CostProfile` poate selecta un alt profil explicit; copia exactă, mediul și fiecare măsurare rămân în rezultatul extern. [Contractul costului](../ai/ATF_CostQualification.md) deține interpretarea și limitele acestei calificări.
+`cost` Copy prior to execution [cost profile](../../config/whist-ai-cost-profile.json), then measure the legal positions generated. `-CostProfile` be able to select another explicit profile; exact copy, environment and each measurement remains in the external result. [Cost contract](../ai/ATF_CostQualification.md) be in possession of the interpretation and limits of this qualification.
 
-`-CaptureComponents` solicită și capturile JSON ale cazurilor instrumentate. Numărul capturilor nu este automat numărul tuturor testelor executate. Un subset `quick` nu se adună cu regresia completă ca și cum ar reprezenta alte cazuri.
+`-CaptureComponents` also calls for JSON catches of the case. The number of catches shall not be automatically the number of all tests carried out. A `quick` sub-set does not add up with full regression as if it were other cases.
 
-## Inventarul unei selecții
+## Summary of selection
 
-[Nivelul testului](ATF_Architecture.md) și numele colecției nu garantează singure că un caz este descoperit. Inventarul se confruntă cu rezultatele execuției selectate, inclusiv după mutarea pachetului sau schimbarea profilului de compilare.
+[Test level](ATF_Architecture.md) and the name of the collection do not guarantee themselves that a case is discovered. The inventory shall be confronted with the results of the selected execution, including after the package has been moved or the compilation profile has changed.
 
-- Păstrați selectorul efectiv, configurația și identitatea `clasă + metodă + invocare`; includeți clasele interioare și parametrizările. Containerele suitei nu sunt cazuri suplimentare.
-- Rulați entry point-ul suitei fără a selecta simultan încă o dată clasele incluse. La comparația cu o lansare individuală, păstrați explicit suprapunerea.
-- Asociați XML-urile native cu selecția și logul acelei execuții. Un fișier rămas în Surefire de la rularea anterioară nu dovedește participarea la selecția curentă.
-- Pentru o mutare, păstrați maparea vechi–nou și comparațiile relevante; un total neschimbat poate ascunde un caz pierdut și altul adăugat fără legătură.
-- Pentru o suită auditată, confruntați invocările JUnit cu cele publicate. Existența unui HTML nu demonstrează că o clasă nouă a înregistrat adaptorul de audit; [calificarea rămasă](../feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) păstrează acest control.
+- Keep the actual selector, configuration and identity `clasă + metodă + invocare`; include the inner classes and parametrizations. The suite containers are not additional cases.
+- Run the entry point of the suite without selecting the included classes simultaneously. When compared to an individual launch, explicitly keep the overlap.
+- Associate native XMLs with the selection and log of that execution. A file remaining in Surefire since its previous run does not prove participation in the current selection.
+- For a move, keep the old-new mapping and relevant comparisons; a total unchanged can hide one lost case and another added unrelated.
+- For an audited suite, face JUnit's and published claims. The existence of an HTML does not demonstrate that a new class has registered the audit adapter; [the remaining qualification](../feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) maintains this control.
 
-[Dosarul de calificare](ATF_ReleaseQualification.md#readme-ul-dosarului) explică selecția cerută, cea executată și limitele. Comenzile unei execuții și totalurile ei rămân în dosarul rezultatului, separat de acest catalog generic.
+[Qualification folder](ATF_ReleaseQualification.md#readmeter-of-the-factor) explains the selection required, the one executed and the limits. The orders of an execution and its totals remain in the result file, separately from this generic catalogue.
 
-## Experimente și surse înghețate
+## Frozen experiments and sources
 
-[Protocolul offline](../learning/README.md#ciclul-de-îmbunătățire) deține calificarea și criteriile; aici sunt precondițiile operaționale ale [runnerului](../../scripts/run-whist-collection.ps1).
+[Protocolul offline](../learning/README.md#the-improvement-cycle) be qualified and criteria; here are the operational preconditions of the [runnerului](../../scripts/run-whist-collection.ps1).
 
-| Intrare | Precondiție efectivă |
+| Intrare | Actual precondition |
 |---|---|
-| `learning` | `-Candidate`, `-CorpusRoot` și `-ProtocolFile`; schema declară roluri, adversari, politici de bază și intervalul fazei. |
-| `-CandidateOverlay` | Manifest extern de candidat înghețat, cu identitate, rol, căi și hash-uri; permis în `regression` sau în protocolul dedicat din `learning`. |
-| `-ResearchCandidate` | Intrare unică în catalogul cercetării, colecție permisă și bază compatibilă. |
-| `-CasesFile` | Selecție explicită pentru protocolul acceptat, cu surse identice între loturile compuse. |
-| `-Phase heldout` | Cere și `-CandidateFreeze`, cu identitate și hash-uri verificate înaintea rezervării. |
+| `learning` | `-Candidate`, `-CorpusRoot` and `-ProtocolFile`; the scheme declares roles, opponents, basic policies and phase interval. |
+| `-CandidateOverlay` | Exterior frozen candidate manifesto with identity, role, paths and hashes; allowed in `regression` or in dedicated protocol of `learning`. |
+| `-ResearchCandidate` | Unique entry into the research catalogue, allowed collection and compatible basis. |
+| `-CasesFile` | Explicit selection for accepted protocol with identical sources between the composite lots. |
+| `-Phase heldout` | Ask for `-CandidateFreeze`, with identity and hashes checked prior to booking. |
 
-- **Surse:** modurile `CandidateOverlay` și `ResearchCandidate` sunt mutual exclusive. Suprapunerea se aplică numai copiei temporare, iar baza schimbată este refuzată; migrarea cere calificare explicită, fără simpla înlocuire a hash-urilor.
-- **Rezervare:** [registrul comun](../learning/ATF_EvaluationRegistry.md) verifică suprapunerile independent de corpus și de numele lotului. Dezvoltarea poate reutiliza distribuțiile cu expunere declarată; evaluarea rezervată refuză contaminarea, iar o continuare identică păstrează identitatea inițială.
-- **Compoziție:** [verificatorul loturilor](../../whist-lab-app/ai-lab/tools/learning/whist-learning-batches.mjs) confruntă perechile și sursele, păstrând eșecurile închise. [Evaluatorul](../../whist-lab-app/ai-lab/tools/learning/whist-learning-evaluate.mjs) aplică criteriile protocolului, separat de rezervarea datelor.
+- **Sources: ** modes `CandidateOverlay` and `ResearchCandidate` are mutually exclusive. The overlay applies only to temporary copy and the changed base is refused; migration requires explicit qualification without simply replacing hashs.
+- **Reservation:** [registrul comun](../learning/ATF_EvaluationRegistry.md) check the overlaps independently of the corpus and the name of the lot. Development may reuse the distributions with declared exposure; the reserved assessment refuses contamination and an identical continuation retains the original identity.
+- **Composition:** [verificatorul loturilor](../../whist-lab-app/ai-lab/tools/learning/whist-learning-batches.mjs) face the pairs and sources, keeping the failures closed. [Evaluatorul](../../whist-lab-app/ai-lab/tools/learning/whist-learning-evaluate.mjs) apply the criteria of the protocol separately from the reservation of data.
 
-### Identitatea completă a bazei candidatului
+### Full identity of candidate base
 
-[Validatorul surselor](../../whist-lab-app/ai-lab/tools/qualification/WhistCandidateSource.psm1) confruntă toate fișierele Java principale din motor și laborator. Fiecare cale și fiecare hash trebuie să coincidă; cardinalitatea rezultă din inventar, fără număr istoric fixat în lansator.
+[Source Validator](../../whist-lab-app/ai-lab/tools/qualification/WhistCandidateSource.psm1) confronts all the main Java files in the engine and laboratory. Each path and hash must coincide; the cardinality results from the inventory, without historical number fixed in the launcher.
 
 | Manifest | Contract |
 |---|---|
-| `schemaVersion: 1` | Compatibilitate: `baselineGuards` acoperă în continuare mulțimea completă și hash-urile surselor curente. |
-| `schemaVersion: 2` | Cere suplimentar `baselineInventory`, cu versiunea internă, cele două rădăcini și hash-ul canonic al inventarului. |
+| `schemaVersion: 1` | Compatibility: `baselineGuards` still covers the full crowd and hashes of current sources. |
+| `schemaVersion: 2` | Ask additional `baselineInventory`, with the internal version, the two roots and the canonical hash of the inventory. |
 
-Rădăcinile declarate sunt `game-core/src/main/java` și `ai-lab/src/main/java`. Hash-ul canonic SHA-256 folosește UTF-8, căile sortate ordinal și câte un rând `cale`, TAB, hash-ul SHA-256 în litere mici, LF; directoarele și fișierele legate simbolic sunt refuzate.
+The declared roots are `game-core/src/main/java` and `ai-lab/src/main/java`. The canonical hashir SHA-256 uses the UTF-8, ordinary sorted and row `cale`, TAB, the hashir SHA-256 in small letters, LF; the directories and files symbolically linked are refused.
 
-Fragmentul unei baze noi se poate construi dintr-o copie acceptată și identificată:
+The fragment of a new base can be constructed from an accepted and identified copy:
 
 ```powershell
 Import-Module .\whist-lab-app\ai-lab\tools\qualification\WhistCandidateSource.psm1
 New-WhistCandidateBaseline -AppRoot '<copie-acceptată>\whist-lab-app' | ConvertTo-Json -Depth 12
 ```
 
-Rezultatul furnizează numai `baselineGuards` și `baselineInventory`; autorul manifestului deține identitatea candidatului, rolul, protocolul și fișierele propuse. Construirea inventarului nu promovează un candidat și nu modifică manifestele înghețate existente.
+The result only provides `baselineGuards` and `baselineInventory`; the author of the manifesto holds the identity of the candidate, the role, protocol and the proposed files. The building of the inventory does not promote a candidate or alter existing frozen manifests.
 
-Lansatorul verifică baza înaintea copierii și în copia temporară. După aplicare, verifică toate hash-urile finale, inclusiv fișierele noi declarate; sursele necunoscute, duplicatele și schimbările fără declarație sunt refuzate, iar dovada păstrează separat baza și candidatul.
+The launcher shall check the base prior to copying and in the temporary copy. After application, check all final hashes, including new files declared; unknown sources, duplicates and changes without declaration are refused and the evidence keeps the basis and candidate separately.
 
-## Din observație în regresie
+## From observation to regression
 
-[Selecția pentru învățare](../learning/ATF_Selection.md) identifică mecanismele implementate și extinderile propuse. [Proiectarea componentelor](ATF_AiComponents.md) deține reducerea la o situație legală mică, cu observație permisă și așteptare independentă.
+[Selection for learning](../learning/ATF_Selection.md) identifies the mechanisms implemented and the proposed extensions. [Design of components](ATF_AiComponents.md) has the reduction to a small legal situation with an independent observation and waiting.
 
-Regresia implicită primește proprietăți justificate, iar jocurile și rezultatele complete rămân în corpusul extern. [Protocolul offline](../learning/README.md) deține trecerea de la diagnostic la candidat și promovare.
+Default regression receives justified properties and complete games and results remain in the external corpus. [Protocolul offline](../learning/README.md) holds the transition from diagnosis to promotion.
 
-## Guvernanța proiectului
+## Project governance
 
-Calitatea surselor și documentației se verifică separat de colecțiile jocului:
+The quality of the sources and documentation shall be checked separately from the game collections:
 
 ```powershell
 .\scripts\run-atf-governance.ps1
 ```
 
-[Contractul guvernanței](../governance/README.md) definește inventarul, excepțiile și controalele negative. Această verificare nu joacă partide și nu comandă emulatorul.
+[Governance contract](../governance/README.md) defines inventory, exceptions and negative controls. This check does not play games or command the emulator.
 
-## Reguli, ajutor și Android
+## Rules, aid and Android
 
-Colecția `documentation` confruntă ajutorul bilingv și tabelul de scor cu motorul. [Ajutorul din aplicație](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) · [Reguli RO](../game/ATF_RulesRo.md) · [Reguli EN](../game/ATF_RulesEn.md)
+Collection `documentation` face bilingual aid and score table with engine. [Aid from the application](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) · [RO rules](../game/ATF_RulesRo.md) · [EN rules](../game/ATF_RulesEn.md)
 
-- Testele de componentă confruntă distribuirea la 3–6 jucători, ambele programe românești, atuul, licitarea, levatele, scorul și jocul la 0 cu motorul.
-- Ghidurile publicate se compară integral cu ajutorul generat în aceeași limbă. Cazurile negative identifică punctual o regulă alterată.
-- Raportul Extent păstrează intrările, comparațiile și refuzul modificărilor controlate.
-- Raportul identifică inventarul sursei și se confruntă cu invocările JUnit în aceeași execuție.
+- Component tests face distribution to 3–6 players, both Romanian programs, the trump, bid, levatates, score and game to 0 with the engine.
+- Published guides shall be compared in full with the aid generated in the same language. Negative cases identify a modified rule on a point.
+- The Extent report shall retain the entries, comparisons and refusal of the controlled changes.
+- The report identifies the source inventory and faces JUnit's claims in the same execution.
 
-Pentru infrastructura dispozitivului și activarea explicită a fluxurilor UI, folosește [testarea Android](ATF_Android.md). Compilarea JVM, construirea unui APK și executarea pe dispozitiv sunt verificări distincte.
+For device infrastructure and explicit activation of UI flows, use [testarea Android](ATF_Android.md). JVM compiling, construction of an APK and execution on the device are separate checks.

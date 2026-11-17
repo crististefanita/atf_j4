@@ -1,32 +1,32 @@
-# Guvernanța arhivării
+# Governance of archiving
 
-## Pe scurt
+## Overview
 
-Arhivarea păstrează datele variabile ale execuțiilor în afara codului sursă. Documentația proiectului descrie contractele, mecanismele și condițiile de interpretare, fără inventare de rulări sau verdicte istorice.
+The archiving shall keep variable execution data outside source code. The project documentation describes contracts, mechanisms and conditions of interpretation, without inventing historical runs or verdicts.
 
-## Ciclul de viață
+## Lifetime
 
 ```mermaid
 flowchart LR
-RUN[Execuție] -->|închide| RECORD[Înregistrare imuabilă]
-RECORD -->|indexează| MANIFEST[Manifest extern]
-MANIFEST -->|selectează explicit| ANALYSIS[Analiză]
-ANALYSIS -->|generalizează| RULE[Regulă verificabilă]
+RUN[Implementation] -->|Close| RECORD[Unexplained recording]
+RECORD -->|indexes| MANIFEST[Manifest extern]
+MANIFEST -->|explicitly select| ANALYSIS[Analysis]
+ANALYSIS -->|generalize| RULE[Verifiable rule]
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legend and limits</summary>
 
-Arhiva păstrează proveniența, partiția și integritatea datelor. O selecție pentru analiză nu schimbă sursele acceptate și nu resetează statutul unui lot rezervat deja consumat.
+The archive shall maintain the provenance, partition and integrity of the data. A selection for analysis shall not change the sources accepted or reset the status of a lot already reserved consumed.
 
 </details>
 
-## Principii de retenție
+## Principles of retention
 
-- Conținutul unei execuții închise este imuabil și verificabil prin hash.
-- Seturile pentru dezvoltare, referință și evaluare rezervată au roluri explicite.
-- Repetițiile fără lecții noi pot fi scoase din selecția activă fără a pierde registrul originii.
-- Referințele către selecția activă se actualizează separat de datele partidelor.
-- Documentele stabile conțin reguli și limite; scorurile de rulare, exemplele extrase din partide și evaluările editoriale apar în arhiva externă.
+- The content of a closed execution is immutable and verifiable by hash.
+- The set for the reserved development, reference and evaluation has explicit roles.
+- Rehearsals without new lessons can be removed from active selection without losing the origin register.
+- References to active selection shall be updated separately from the parties' data.
+- Stable documents contain rules and limits; rolling scores, examples of parties and editorial evaluations appear in the external archive.
 
-[Arhitectura învățării](../ai/README.md) · [Guvernanța documentației](../governance/ATF_Documentation.md)
+[Learning architecture](../ai/README.md) · [Governance of documentation](../governance/ATF_Documentation.md)

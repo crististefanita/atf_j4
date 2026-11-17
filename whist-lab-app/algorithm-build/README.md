@@ -1,65 +1,65 @@
-# Construire JVM pentru reguli și algoritmi
+# JVM building for rules and algorithms
 
-## Pe scurt
+## Overview
 
-Această intrare Gradle construiește modulele JVM fără configurarea aplicației Android. [settings.gradle](settings.gradle) include `game-core`, `ai-lab` și fixture-urile `test-audit`; fiecare modul deține sursele, dependențele și verificările sale.
+This Gradle input builds JVM modules without configuration of Android application. [settings.gradle](settings.gradle) includes `game-core`, `ai-lab` and fixtures `test-audit`; each module has its sources, dependencies and checks.
 
-Testarea auditată cere JDK 21, lansatorul Gradle al proiectului și dependențele JVM în cache. Motorul păstrează ținta Java declarată în modul; bibliotecile de testare nu intră în runtime-ul Android. Opțiunea `--offline` refuză dependențele lipsă; SDK-ul Android nu este necesar acestei intrări.
+The audited testing requires JDK 21, the Gradle project launcher and the JVM dependencies in cache. The engine keeps Java target declared in mode; test libraries do not enter the Android runtime. Option `--offline` refuses missing dependencies; Android SDK is not required for this entry.
 
-## Flux și responsabilități
+## Flow and responsibilities
 
 ```mermaid
 flowchart LR
-    RUN[Lansator colecții] -->|izolează| COPY[Copie temporară]
-    COPY -->|configurează| BUILD[Intrare JVM]
+    RUN[Collections Launcher] -->|isolate| COPY[Temporary Copy]
+    COPY -->|configure| BUILD[Intrare JVM]
     BUILD -->|include| CORE[game-core]
     BUILD -->|include| LAB[ai-lab]
-    CORE -->|produce| RESULT[Comparații auditate]
+    CORE -->|produce| RESULT[Audited comparisons]
 ```
 
 <details>
-<summary>Legendă: o singură sursă a motorului</summary>
+<summary>Legend: one engine source</summary>
 
-Intrarea JVM folosește proiectele vecine. `game-core` consumă `ai-lab` numai prin dependența de test; sursele independente se compilează în modulul lor, iar lansatorul colecțiilor pregătește izolarea și arhivarea rezultatelor.
+JVM input uses neighbouring projects. `game-core` consumes `ai-lab` only through test dependence; independent sources compile in their module, and the collector of collections prepares isolation and archiving results.
 
 </details>
 
-## Verificarea uzuală
+## Normal verification
 
-Din rădăcina proiectului, [lansatorul colecțiilor](../../scripts/run-whist-collection.ps1) creează propria copie temporară:
+From the project root, [Collections launcher](../../scripts/run-whist-collection.ps1) creates its own temporary copy:
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection quick
 ```
 
-[Catalogul colecțiilor](../../config/test-collections.json) leagă intenția de sarcina Gradle. [Ghidul selecțiilor](../../docs/testing/ATF_Collections.md) explică precondițiile cercetării, turneelor și evaluării rezervate.
+[Catalogue of collections](../../config/test-collections.json) links the intention to task Gradle [Select guide](../../docs/testing/ATF_Collections.md) explains the preconditions of the research, tournaments and evaluation reserved.
 
-## Folosirea directă a Gradle
+## Direct use of Gradle
 
-Din directorul `whist-lab-app` al unei copii temporare complete a proiectului:
+From the `whist-lab-app` directory of a full temporary copy of the project:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
 ```
 
-Sarcina aleasă determină limita verificării:
+The chosen task shall determine the limit of verification:
 
-| Sarcină din game-core | Contract |
+| Gum-core load | Contract |
 |---|---|
-| `quickRegressionTest` | Selecție focalizată de reguli și contexte, definită în Gradle. |
-| `regressionTest` | Deleagă sarcina `test`, cu excluderile sale explicite. |
-| `contextRegressionTest` | Regresii contextuale cu martori legali independenți. |
-| `documentationTest` | Contractul ajutorului de joc și al textelor regulilor. |
-| `tasks --all` | Inventarul sarcinilor configurate; nu execută verificările jocului. |
+| `quickRegressionTest` | Focused selection of rules and contexts, defined in Gradle. |
+| `regressionTest` | Delegation task `test`, with its explicit exclusions. |
+| `contextRegressionTest` | Contextual regressions with independent legal witnesses. |
+| `documentationTest` | The contract of game aid and the texts of the rules. |
+| `tasks --all` | Facts inventory configured; does not perform game checks. |
 
-[game-core/build.gradle](../game-core/build.gradle) este sursa selecțiilor efective. Turneele, mineritul erorilor și componentele de cercetare au sarcini distincte și activare explicită.
+[game-core/build.gradle](../game-core/build.gradle) is the source of actual selections. Tournaments, error mining and research components have distinct tasks and explicit activation.
 
-## Ieșiri și concurență
+## Outflows and competition
 
-- XML-ul nativ și fișierele de construire apar în `game-core/build` al copiei temporare.
-- [Auditul componentelor](../../docs/testing/ATF_GradleComponents.md) produce un HTML canonic per selecție și confruntă temporar invocările cu XML-ul, fără a le număra de două ori.
-- `whist.componentEvidence` poate selecta un director extern pentru capturi de componentă; identitățile capturilor se păstrează fără suprascriere.
-- Cele două intrări Gradle ale aplicației folosesc aceleași directoare ale proiectului inclus; execuțiile concurente au nevoie de copii distincte.
-- Rezultatul identifică sursele și selecția executată; acceptanța Android și calificarea forței de joc au criterii separate.
+- The native XMLs and construction files appear in `game-core/build` of the temporary copy.
+- [Component audit](../../docs/testing/ATF_GradleComponents.md) produces a canonical HTML per selection and temporarily confronts the claims with XMLs without counting them twice.
+- `whist.componentEvidence` may select an external directory for catches of component; the identity of the catches shall be kept without overwriting.
+- The two Gradle entries of the application use the same project directories included; competing executions require separate copies.
+- The result identifies the sources and the execution selection; Android acceptance and skill of the game force have separate criteria.
 
-[Motorul](../game-core/README.md) · [Testarea](../../docs/testing/README.md) · [Învățarea offline](../../docs/learning/README.md)
+[Motorul](../game-core/README.md) · [Testarea](../../docs/testing/README.md) · [Learning offline](../../docs/learning/README.md)

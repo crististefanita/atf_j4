@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
 import static atf.tests.governance.documentation.factual.BuildModuleDeclarations.*;
 
 final class DocumentedModuleMap {
-    private static final String MODULES = "| Build | Module declarate |";
-    private static final String DEPENDENCIES = "| Build | Consumator | Configurație | Dependențe directe |";
+    private static final String MODULES = "| Build | Declared modules |";
+    private static final String DEPENDENCIES = "| Build | Consumer | Configuration | Direct dependencies |";
     private static final Pattern ARROW = Pattern.compile("(?m)^\\h*([\\w-]+)\\h*-->\\|[^|]+\\|\\h*([\\w-]+)\\h*$");
 
     private DocumentedModuleMap() { }
@@ -23,7 +23,7 @@ final class DocumentedModuleMap {
         var android = gradleModules(gradle.resolve("settings.gradle"));
         var jvm = gradleModules(gradle.resolve("algorithm-build/settings.gradle"));
         var failures = new ArrayList<String>();
-        String map = section(readme.replace("\r\n", "\n"), "## Harta modulelor", "\n## ");
+        String map = section(readme.replace("\r\n", "\n"), "## Module map", "\n## ");
         var inventories = Map.of("Maven", maven, "Gradle", android, "Gradle JVM", jvm);
         var declaredBuilds = new LinkedHashSet<String>();
         for (var row : rows(map, MODULES, 2)) {
@@ -45,7 +45,7 @@ final class DocumentedModuleMap {
         compare(failures, "dependency scopes (POM, build.gradle, component-audit.gradle)", expected, declared);
 
         var actualArrows = new LinkedHashSet<String>();
-        var product = section(map, "### Motorul și platformele", "\n### ");
+        var product = section(map, "### Engine and platforms", "\n### ");
         var diagram = ARROW.matcher(section(product, "flowchart LR", "\n" + "```"));
         while (diagram.find()) {
             String arrow = diagram.group(1).replace('_', '-') + " -> " + diagram.group(2).replace('_', '-');
@@ -104,7 +104,7 @@ final class DocumentedModuleMap {
         missing.removeAll(declared);
         var unexpected = new LinkedHashSet<>(declared);
         unexpected.removeAll(expected);
-        failures.add("DOC-BUILD-MAP README.md / Harta modulelor: " + claim
+        failures.add("DOC-BUILD-MAP README.md / Module map: " + claim
                 + " | missing=" + missing + " | unexpected=" + unexpected);
     }
 }

@@ -1,37 +1,37 @@
-# Uneltele intrărilor pentru publicare
+# Entry tools for publication
 
-## Pe scurt
+## Overview
 
-Aceste unelte Node.js aparțin consumatorului raportării și guvernanței livrării. Ele validează identitatea înregistrărilor capturate, selectează invocări întregi și înregistrează integritatea dosarului fixat, fără a recalcula rezultatul jocului.
+These Node.js tools belong to the reporting consumer and to the delivery governance. They validate the identity of the captured records, select full claims and record the integrity of the fixed file without recalculating the outcome of the game.
 
-## Contract și verificare
+## Contract and verification
 
-[whist-report-input.mjs](whist-report-input.mjs) deține selecția și inventarul populației native. [Testele sale](whist-report-input.test.mjs) verifică identități duplicate, surse contradictorii, omisiuni și păstrarea eșecurilor declarate.
+[whist-report-input.mjs](whist-report-input.mjs) has the selection and inventory of the native population. [Testele sale](whist-report-input.test.mjs) checks duplicate identities, contradictory sources, omissions and the preservation of declared failures.
 
-Din rădăcina proiectului:
+From the root of the project:
 
 ```powershell
 node --test atf-tests/tools/whist-report-input.test.mjs
 ```
 
-Datele selectate rămân aceleași obiecte evaluate, în ordinea declarată. [Politica prezentării](../../docs/reporting/ATF_Presentation.md) și [auditul publicării](../../docs/reporting/ATF_Audit.md) definesc etapele ulterioare.
+The selected data remains the same objects evaluated in the declared order. [Presentation policy](../../docs/reporting/ATF_Presentation.md) and [publication audit](../../docs/reporting/ATF_Audit.md) define the subsequent stages.
 
-## Înregistrarea integrității livrării
+## Registration of delivery integrity
 
-[record-release-integrity.mjs](record-release-integrity.mjs) citește versiunea activă din index și înregistrează mărimea și SHA-256 pentru toate fișierele ei, fără manifestul autoreferențial. Refuză căile simbolice și schimbarea inventarului ori a manifestului în timpul pregătirii; scrierea folosește un fișier temporar și înlocuire atomică.
+[record-release-integrity.mjs](record-release-integrity.mjs) reads the active version of the index and records the size and the HA- 256 for all its files without the self-referential manifesto. Refuse symbolic pathways and change of inventory or manifesto during preparation; writing uses a temporary file and atomic replacement.
 
 ```powershell
 node atf-tests/tools/record-release-integrity.mjs
 ```
 
-`--project <root>` și `--version <version>` permit o rădăcină și o ediție explicite. Unealta nu execută teste și nu promovează calificarea; [verificatorul Java](../src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseIntegrity.java) confruntă separat octeții și rezultatele JUnit. [Componentele manifestului](../src/test/java/atf/tests/governance/documentation/release/integrity/ManifestIntegrityComponentTest.java) exercită și lansatorul real pe fișiere temporare, inclusiv pe căi cu spații și diacritice.
+`--project <root>` and `--version <version>` allow an explicit root and edition. The tool does not perform tests and does not promote qualification; [verificatorul Java](../src/test/java/atf/tests/governance/documentation/release/integrity/ReleaseIntegrity.java) face the bytes and results of JUnit separately. [Manifesto components](../src/test/java/atf/tests/governance/documentation/release/integrity/ManifestIntegrityComponentTest.java) exercise the actual launcher on temporary files, including paths with spaces and diacritics.
 
-## Evaluarea RAG a candidatului
+## Assessment of the candidate's GAR
 
-[Selectorul](plan-release-tests.mjs) compară inventarul fixat cu ultima sursă publicată relevantă din catalog. Generează câmpurile planului v2 și grupurile E2E cerute înainte de build. [Evaluatorul](evaluate-release-rag.mjs) recalculează selecția și confruntă planul, manifestul, payload-ul și snapshot-ul APK. [Comanda de selecție](../../docs/testing/ATF_ReleaseQualification.md#selecția-testelor-din-diff)
+[Selectorul](plan-release-tests.mjs) compare the inventory fixed with the last relevant published source in the catalogue. Generate the plane fields v2 and the E2E groups required before the build. [Evaluatorul](evaluate-release-rag.mjs) recalculate the selection and confront the plan, the manifesto, payload and the APK snapshots. [Selection command](../../docs/testing/ATF_ReleaseQualification.md#selection-of-diff-tests)
 
-- [Perimetrul suitei](component-evidence-scope.mjs) stabilește când se poate reutiliza o execuție. Pentru colecțiile Gradle, documentația și intrările exclusiv Maven ori Android E2E nu invalidează dovada aplicației; sursele, configurația de compilare, dependențele și căile necunoscute cer selecție nouă. [Pregătirea dovezilor](prepare-component-reuse.mjs) și evaluatorul folosesc aceleași verificări pentru receipt-uri și hash-uri. Lansatorul componentelor folosește această pregătire la cerere.
-- Politica pe versiuni stabilește grupurile Maven și Gradle obligatorii. Fiecare grup are propriul Extent și receipt.
+- [Perimetrul suitei](component-evidence-scope.mjs) determines when an execution can be reused. For Gradle collections, the documentation and entries exclusively of Maven or Android E2E do not invalidate the proof of the application; sources, compilation configuration, addictions and unknown pathways require new selection. [Preparation of evidence](prepare-component-reuse.mjs) and the evaluator use the same checks for receipts and hashes. The component launcher shall use this training on request.
+- The version policy sets out Maven and Gradle mandatory groups. Each group has its own Extent and Recipt.
 
 ```powershell
 $ProjectRoot = (Get-Location).Path
@@ -43,21 +43,21 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
   --output $VerdictFile
 ```
 
-Verdictul este JSON cu citări prin cale, SHA-256 și JSON Pointer/linie. Include bytes planului în Base64 UTF-8 la `qualificationPlan.contentBase64`; hash-ul păstrează identitatea planului și permite revizuirea fără o copie temporară externă. Singura scriere este `$VerdictFile`, în afara tuturor intrărilor.
+The verdict is JSON with citations by way, SHA- 256 and JSON Pointer/linie. Include bytes plan in Base64 UTF- 8 to `qualificationPlan.contentBase64`; hash retains the identity of the plan and allows revision without an external temporary copy. The only writing is `$VerdictFile`, except for all entries.
 
-- Codul `0` înseamnă `READY_FOR_HUMAN_REVIEW`; `2` înseamnă `BLOCKED`; `1` indică intrare sau invocare invalidă.
-- Înaintea reviziei umane se cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.
-- Starea publicată cere și receipt pentru descărcarea în modul de acces declarat. Pentru GitHub se verifică și retenția celor două ediții, inclusiv tagurile și asset-urile. [Comanda de colectare](../../docs/testing/ATF_ReleaseQualification.md#retenția-pe-github-după-publicare)
-- [Planul per flux](prepare-android-e2e.mjs) și evaluatorul folosesc aceleași verificări pentru HTML, PNG și chitanțe. [Importul](apply-android-e2e.mjs) aduce dovada nouă în candidatul fixat. [Contractul lansatorului](../../docs/testing/ATF_ReleaseQualification.md#rularea-și-reluarea-unui-flux-pe-apk-semnat)
-- E2E neexecutat rămâne `NOT_RUN`; schimbarea unui flux utilizator cere grupuri E2E Extent trecute.
+- Code `0` means `READY_FOR_HUMAN_REVIEW`; `2` means `BLOCKED`; `1` indicates invalid entry or invocation.
+- Before the human revision are asked for hashrelated receipts for components, build APK, identity and signature.
+- The published status also requires a receipt for discharge into the declared access mode. For GitHub, the retention of the two editions, including tags and assets.[Collection command](../../docs/testing/ATF_ReleaseQualification.md#retention-on-github-after-publication)
+- [Length of the track](prepare-android-e2e.mjs) and the evaluator use the same checks for HTML, PNG and receipts. [Importul](apply-android-e2e.mjs) brings new proof in the fixed candidate. [The contract of the launcher](../../docs/testing/ATF_ReleaseQualification.md#running-and-restarting-a-feed-on-apk-signed)
+- E2E not executed remains `NOT_RUN`; changing a user stream requires E2E Extent groups past.
 
-Evaluatorul confruntă inventarul complet al snapshot-ului cu manifestul. Revizia operatorului verifică indexul Git, arborele de promovare și publicarea. Contractul și oracolele sunt descrise în [calificarea release-ului](../../docs/testing/ATF_ReleaseQualification.md) și la [regresiile evaluatorului](../../docs/testing/ATF_ReleaseQualification.md#regresiile-evaluatorului).
+The evaluator confronts the complete inventory of snapshots with the manifesto. The operator review checks the Git index, the promotion tree and publication. The contract and the oracles are described in the [the transmission qualification](../../docs/testing/ATF_ReleaseQualification.md) and [evaluator's regression](../../docs/testing/ATF_ReleaseQualification.md#evaluator-regression-tests).
 
-[Modulul de integrare](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)
+[Integration module](../README.md) · [Laboratorul AI](../../whist-lab-app/ai-lab/README.md)
 
-## Măsurare și reproducere
+## Measurement and reproduction
 
-- [Cronologia](assemble-release-timeline.mjs) combină chitanțele proceselor și păstrează intervalele suprapuse. [Procedura de calificare](../../docs/testing/ATF_ReleaseQualification.md#cronologia-calificării)
-- [Verificatorul Git](verify-release-git-snapshot.mjs) confruntă inventarul și octeții, inclusiv EOL, și verifică payload-ul publicat înainte de curățare. [Contractul de retenție](../../docs/platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
+- [Cronologia](assemble-release-timeline.mjs) combines process receipts and keeps the overlapping intervals. [Qualification procedure](../../docs/testing/ATF_ReleaseQualification.md#qualification-timeline)
+- [Verificatorul Git](verify-release-git-snapshot.mjs) confronts inventory and bytes, including EOL, and checks the payload published prior to cleaning. [Withdrawal contract](../../docs/platform/ATF_ReleaseRetention.md#local-cleaning-after-delivery)
 
-- Pentru un checkout separat, opțiunea `--local-release` sincronizează numai ediția curentă, după verificarea verdictului, tagului și payload-ului din Git. [Procedura de sincronizare](../../docs/platform/ATF_ReleaseRetention.md#sincronizarea-dosarului-local-cu-versiunea-curentă)
+- For a separate checkout, option `--local-release` synchronise only the current edition after the check of the verdict, tag and payload in Git. [Synchronisation procedure](../../docs/platform/ATF_ReleaseRetention.md#synchronisation-of-local-file-with-current-version)

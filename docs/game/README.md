@@ -1,79 +1,79 @@
-# Contractele variantelor Whist
+# The contracts of the Whist variants
 
-## Pe scurt
+## Overview
 
-Fiecare variantă are propriul contract pentru pachet, program, atu, licitare și scor. Similaritatea numelui jocului nu autorizează transferul implicit al unei reguli între profiluri.
+Each variant has its own contract for package, program, trump, bidding and score. The similarity of the game name does not allow the implicit transfer of a rule between profiles.
 
-## Ghiduri complementare
+## Complementary guides
 
-| Întrebare | Ghid |
+| Question | Ghid |
 |---|---|
-| Cum se joacă Whist românesc? | [Reguli în română](ATF_RulesRo.md) și [engleză](ATF_RulesEn.md). |
-| Ce schimbă nivelul jucătorului? | [Normal și Hard](ATF_Levels.md). |
-| Ce date păstrează fiecare mână încheiată? | [Istoricul scorului](ATF_ScoreHistory.md). |
-| Cum se configurează numele și se păstrează topurile? | [Profilul jucătorului și clasamentele locale](ATF_PlayerRecords.md). |
-| Cum se organizează și se acordă obiectivele progresului? | [Realizările Whist](ATF_Achievements.md). |
+| How to play Romanian Whist? | [Rules in Romanian](https://github.com/crististefanita/whist/blob/main_RO/docs/game/ATF_RulesRo.md) and [English](ATF_RulesEn.md). |
+| What changes with player difficulty? | [Normal and Hard](ATF_Levels.md). |
+| What data is recorded for each completed hand? | [Score history](ATF_ScoreHistory.md). |
+| How do players set their name and retain rankings? | [Player profile and local leaderboards](ATF_PlayerRecords.md). |
+| How are progression objectives organized and awarded? | [Whist achievements](ATF_Achievements.md). |
 
-## Responsabilități
+## Liabilities
 
 ```mermaid
 flowchart LR
-    MODE[GameMode] -->|selectează| RULES[GameRules]
-    CONFIG[GameConfig] -->|configurează| RULES
-    RULES -->|validează| SESSION[GameSession]
-    RULES -->|furnizează reguli| HELP[HowToPlay RO/EN]
-    ORACLE[Oracol separat] -->|verifică| SESSION
+    MODE[GameMode] -->|select| RULES[GameRules]
+    CONFIG[GameConfig] -->|configure| RULES
+    RULES -->|validates| SESSION[GameSession]
+    RULES -->|provide rules| HELP[HowToPlay RO/EN]
+    ORACLE[Oracol separat] -->|checks| SESSION
 ```
 
 <details>
-<summary>Legendă: aceeași variantă în joc și verificare</summary>
+<summary>Legend: same variant in the game and verification</summary>
 
-Configurația stabilește regulile aplicabile înainte de distribuire. Ajutorul și testele folosesc identitatea variantei, iar oracolul verifică regulile și scorul prin implementare independentă.
+The configuration shall determine the rules applicable prior to distribution. The aid and tests use the identity of the variant, and the oracle checks the rules and scores by independent implementation.
 
 </details>
 
-## Contractul profilului românesc
+## Romanian Profile Contract
 
-| Aspect | Regulă |
+| Aspect | All right |
 |---|---|
-| Pachet | Pachet redus după numărul de jucători, cu rangurile mari definite de GameRules. |
-| Program | Secvență determinată de variantă și numărul de locuri; blocurile extreme urmează programul profilului. |
-| Licitare | Contract în intervalul legal; ultima ofertă nu poate egaliza suma cu mărimea mâinii. |
-| Culoare | Urmarea culorii este obligatorie când există în mână. |
-| Atu | În lipsa culorii, tăierea este obligatorie dacă există atu; supratăierea nu este obligatorie. |
-| Levata | Câștigă cel mai mare atu sau cel mai mare rang din culoarea cerută; câștigătorul conduce. |
-| Scor și serii | Punctele pentru contract, abatere și serii sunt definite în tabelul de mai jos. |
-| Joc la 0 | Opțiune bifată implicit în ambele variante românești. După ultima mână, fiecare total exact 0 se afișează și se clasează ca 500. Istoricul mâinilor păstrează totalul calculat. |
+| Pachet | Low-level package by number of players, with high ranks defined by GameRules. |
+| Program | Sequence determined by variant and number of seats; extreme blocks follow profile program. |
+| Licitare | Contract in the legal range; the last offer cannot equalize the amount with the size of the hand. |
+| Culoare | The colour follow-up is mandatory when it exists in the hand. |
+| Trump | In the absence of colour, cutting is mandatory if there is an asset; overcoating is not mandatory. |
+| trick | Win the highest asset or rank of the required color; the winner leads. |
+| Score and series | The points for the contract, misconduct and series are defined in the table below. |
+| Playing for zero | Default check option in both Romanian variants. After the last hand, each total exactly 0 is displayed and ranked as 500. The history of hands retains the calculated total. |
 
-## Scor și serii
+## Score and series
 
-| Regulă | 1–8–1 | 8–1–8 |
+| All right | 1–8–1 | 8–1–8 |
 |---|---:|---:|
-| Puncte adăugate la levatele unui contract exact | 5 | 5 |
-| Puncte pe levată de abatere | -1 | -1 |
-| Mâini eligibile pentru plata seriei | 5 | 5 |
-| Bonus și penalizare la opțiunea 5 | 5, -5 | 5, -5 |
-| Bonus și penalizare la opțiunea 10 | 10, -10 | 10, -10 |
-| Penalizare de serie în profilul istoric asimetric | -5 | -5 |
+| Points added to the tricks of an exact contract | 5 | 5 |
+| Distress trick points | -1 | -1 |
+| Hand eligible for payment of series | 5 | 5 |
+| Bonus and penalty under option 5 | 5, -5 | 5, -5 |
+| Bonus and penalty under option 10 | 10, -10 | 10, -10 |
+| Serial penalty in asymmetrical historical profile | -5 | -5 |
 
-La o carte, un rezultat de același tip păstrează seria. Rezultatul opus întrerupe seria. Plata unei serii resetează contorul.
+On a card, a result of the same type keeps the series. The opposite result interrupts the series. The payment of a series resets the meter.
 
-[Testul factual](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java) confruntă tabelul cu formulele motorului și verifică refuzul declarațiilor greșite.
+[Testul factual](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java) confronts the table with the engine formulae and checks the refusal of the wrong statements.
 
-## Principii de implementare
+## Principles of implementation
 
-- [GameMode](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/GameMode.java) identifică profilul.
-- [GameConfig](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/GameConfig.java) validează configurația și migrarea valorilor compatibile.
-- [GameRules](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/GameRules.java) deține pachetul, programul, acțiunile legale și câștigătorul.
-- [RomanianScoring](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/RomanianScoring.java) deține scorul și seriile.
-- [HowToPlay](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) produce ajutorul în română și engleză.
+- [GameMode](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/GameMode.java) identifies the profile.
+- [GameConfig](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/config/GameConfig.java) validates the configuration and migration of compatible values.
+- [GameRules](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/GameRules.java) holds the package, program, legal actions and winner.
+- [RomanianScoring](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/RomanianScoring.java) holds the score and series.
+- [HowToPlay](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) produces aid in Romanian and English.
 
-## Guvernanța schimbărilor de reguli
+## Governance of changes in rules
 
-1. Identificați varianta și condiția exactă înaintea modificării.
-2. Formulați regula și frontierele ei prin componente independente.
-3. Verificați tranzițiile, scorul și restaurarea sesiunii.
-4. Actualizați ajutorul RO/EN și manifestele afectate.
-5. Verificați separat integrarea Android prin scenarii activate explicit.
+1. Identify the exact variant and condition prior to the change.
+2. Formula her rule and borders through independent components.
+3. Check the transitions, score and restoration of the session.
+4. Update aid RO/EN and affected manifestations.
+5. Check Android integration separately through explicitly activated scenarios.
 
-[Motorul de reguli](../../whist-lab-app/game-core/README.md) · [Reguli RO](ATF_RulesRo.md) · [Rules EN](ATF_RulesEn.md) · [Colecții](../testing/ATF_Collections.md)
+[Rule engine](../../whist-lab-app/game-core/README.md) · [RO rules](https://github.com/crististefanita/whist/blob/main_RO/docs/game/ATF_RulesRo.md) · [Rules EN](ATF_RulesEn.md) · [Collections](../testing/ATF_Collections.md)

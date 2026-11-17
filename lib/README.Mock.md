@@ -1,12 +1,12 @@
 # Mock — transport HTTP determinist
 
-## Pe scurt
+## Overview
 
-`atf-mock` înlocuiește portul Core `ApiTransport` cu un catalog local de răspunsuri. Folosiți-l pentru componente și contracte offline, cu intrări controlate și un fallback explicit.
+`atf-mock` replaces Core `ApiTransport` port with a local catalogue of responses. Use it for offline components and contracts with controlled inputs and an explicit fallback.
 
 ## Exemplu minim
 
-`mock.yaml` în directorul de lucru:
+`mock.yaml` in the working directory:
 
 ```yaml
 mock:
@@ -15,7 +15,7 @@ mock:
   fallback: {status: 500, body: '{}'}
 ```
 
-Fragment într-o metodă; transportul rămâne offline:
+Fragment in a method; the transport remains offline:
 
 ```java
 import atf.core.http.request.ApiRequest;
@@ -27,32 +27,32 @@ var response = mock.send(ApiRequest.of("GET", "/health"),
         "https://offline.test/health", "none").join();
 ```
 
-`response.status()` este `200`; o cerere fără rută potrivită primește fallback-ul `500`. Testul compară independent răspunsul cu rezultatul așteptat.
+`response.status()` is `200`; an unrouted application receives the `500` fallback. The test independently compares the response with the expected result.
 
-## Catalog și potrivire
+## Catalogue and Matching
 
-| Necesitate | API sau contract |
+| Necesitate | API or contract |
 |---|---|
 | Catalog YAML explicit | `AtfMockTransport.fromConfiguration(Path)` |
-| Configurația proiectului | `fromProjectConfiguration()`: `atf.mock.config` > `ATF_MOCK_CONFIG` > `atf-mock.yaml/yml` |
-| Condiții de request | Metodă, cale, profil auth, query, headere cerute și corp așteptat în `MockRoute` |
-| Corp de request | Mod implicit `json`, probă MIME negativă `wrong-content-type`; potrivire numerică fără conversie prin `double` |
-| Query repetat | `ApiQueryParameters`; include valorile cerute, cu multiplicitate |
+| Project configuration | `fromProjectConfiguration()`: `atf.mock.config` > `ATF_MOCK_CONFIG` > `atf-mock.yaml/yml` |
+| Requiest conditions | Method, path, auth profile, query, requested heads and body expected in `MockRoute` |
+| Corp de request | Input mode `json`, negative sample MIME `wrong-content-type`; numerical fit without conversion by `double` |
+| Query repetat | `ApiQueryParameters`; includes the required values, multiplication |
 
-- Fără configurație, `fromProjectConfiguration()` folosește fixture-ul `defaults()`; catalogul aplicației rămâne local.
-- Durata din rută este metadată a răspunsului, nu o întârziere reală simulată.
-- O probă mock verifică integrarea; acceptanța serviciului, brokerului sau dispozitivului real rămâne separată.
+- Without configuration, `fromProjectConfiguration()` uses the `defaults()` fixture; the application catalogue remains local.
+- The en route duration is metadata of the response, not a simulated real delay.
+- A mock sample shall verify integration; the acceptance of the service, broker or actual device shall remain separate.
 
-## Verificarea utilizării
+## Verification of use
 
-| Acțiune | Rezultat observabil |
+| Action | Rezultat observabil |
 |---|---|
-| Salvați YAML-ul ca `mock.yaml`, în directorul procesului. | Exemplul citește exact acel catalog local. |
-| Trimiteți cererea `GET /health`. | Răspunsul are status `200`; corpul corespunde rutei configurate. |
-| Trimiteți o cale fără rută în același catalog. | Răspunsul are statusul fallback `500`. |
+| Save YAML as `mock.yaml`, in the trial director. | The example reads exactly that local catalogue. |
+| Send application `GET /health`. | The response has status `200`; the body corresponds to the configured route. |
+| Send a route without route to the same catalogue. | The response has the fallback status `500`. |
 
-Adresa `offline.test` este contextul cererii pentru transportul mock. Reușita probei califică potrivirea catalogului și contractul consumat, fără să confirme disponibilitatea unui serviciu extern.
+Address `offline.test` is the context of the application for mock transport. The successful sample qualifies the matching of the catalogue and the contract consumed without confirming the availability of an external service.
 
 ---
 
-Perechea Mock este un binar extern fixat în POM și în registrul de proveniență. Testele de aici verifică ruta și fallback-ul folosite de proiect; un defect se raportează cu versiunea, hash-ul, catalogul minim și răspunsul așteptat/observat în [registrul local](../docs/feedback/README.md).
+Mock is an external binary fixed in the POM and the home register. The tests here check the route and the fallback used by the project; a defect is reported with the version, hashness, minimum catalogue and the expected / observed response in [registrul local](../docs/feedback/README.md).

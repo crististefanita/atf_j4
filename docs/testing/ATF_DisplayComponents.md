@@ -1,183 +1,183 @@
 # Display verificat prin componente
 
-## Pe scurt
+## Overview
 
-Colecția offline verifică politicile de dimensionare, decodarea observației Android și oracolele geometrice sau raster. Intrările simulate sunt explicite; acceptanța versiunii instalate păstrează o verificare nativă restrânsă.
+The offline collection checks the dimensioning policies, the decoding of the Android observation and the geometric oracles or raster. The simulated entries are explicit; the acceptance of the installed version shall keep a restricted native verification.
 
-## Arhitectură
+## Architecture
 
 ```mermaid
 flowchart LR
-    MOCK[XML controlat] -->|furnizează| DECODE[Decodor de observații]
-    DEVICE[XML capturat nativ] -->|furnizează| DECODE
-    DECODE -->|proiectează| SNAPSHOT[Snapshot geometric]
-    SNAPSHOT -->|confruntă| ORACLE[Oracol independent]
-    ORACLE -->|explică| RESULT[Comparații evaluate]
+    MOCK[XML controlat] -->|supplies| DECODE[Observed Decodor]
+    DEVICE[XML natively captured] -->|supplies| DECODE
+    DECODE -->|design| SNAPSHOT[Snapshot geometric]
+    SNAPSHOT -->|face| ORACLE[Oracol independent]
+    ORACLE -->|explain| RESULT[Comparison assessed]
 ```
 
 <details>
-<summary>Legendă: aceeași cale de verificare pentru date simulate și capturate</summary>
+<summary>Legend: same verification path for simulated and captured data</summary>
 
-Fixture-ul descrie regiuni măsurate, fără să apeleze algoritmul de layout al aplicației. Decodorul consumă un singur XML; E2E deține capturarea, iar componenta deține interpretarea acelei observații.
+The fixture describes measured regions without calling the application layout algorithm. The Decodator shall consume only one XML; E2E shall hold the catch and the component shall hold the interpretation of that observation.
 
 </details>
 
-## Ce se mută în componente
+## What moves into the components
 
-[Nucleul UI comun](../../whist-lab-app/atf-card-table-ui/README.md) are teste JVM proprii pentru meniu, editarea numelui, geometrie și frontiera de dependențe. Aplicația păstrează testele adaptoarelor și ale mesei, iar mutarea implementării nu schimbă oracolele existente; widgeturile și pixelii Android au acceptanță separată.
+[Nucleul UI comun](../../whist-lab-app/atf-card-table-ui/README.md) has its own JVM tests for menu, name editing, geometry and border of dependence. The app retains adaptor and table tests, and the move of implementation does not change existing oracles; Android widgets and pixels have separate acceptances.
 
-| Nivel | Intrare controlată | Proprietate verificată | Proprietar |
+| Level | Controlled entry | Proprietary checks | Proprietar |
 |---|---|---|---|
-| Politici ale aplicației | Lățime, înălțime, densitate, font, număr de jucători și cărți | Distribuirea regiunilor, dimensiuni minime, spațiu disponibil, rotunjire și insets calculate | `app.table`, `app.hand`, `app.window` |
-| Nume și acțiune | Înălțimi de text măsurate sau simulate, conținutul chenarului și locul egalizat | Acțiune completă deasupra numelui, spațiu rezervat între ture, chenar mărit fără scalare repetată | `app.seat` |
-| Atu | Lățimile de glifuri din [fixture-ul Android și Web](../../whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv) | Încadrare în același chenar pentru carte, simbol și textul fără atu, inclusiv cu font mărit. [Paleta de referință](../../whist-lab-app/app/src/test/resources/whist-trump-palette.properties) și geometria se păstrează la activarea și oprirea AutoPlay și în timpul colectării levatei | [TrumpTileMetrics](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/trump/TrumpTileMetrics.java) |
-| Istoric | Fereastră utilă, număr de locuri, densitate și font | Lățime distribuită integral, minime lizibile, antete aliniate, buget vertical pentru legendă și diagonale roșii limitate la licitațiile ratate | `app.score` |
-| Colectarea levatei | Centre, actor, istoric public, ceas, viewport și evenimente controlate ale scenei | Levata completă, convergență, suspendare/reluare și curățare unică; refacerea grupează redimensionările, așteaptă închiderea dialogurilor și respinge callback-urile scenei vechi, fără mutații ale partidei | `app.animation`, `app.lifecycle`, `app.navigation`, `app.presentation` |
-| Decodare | XML și profil de afișaj | Asociere semantică, fețe de carte, cadre, titlu, atu și fereastră de conținut | [TableViewportObservation](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) |
-| Oracol geometric | Snapshot cu defecte injectate | Număr, completitudine, centrare, încadrare și absența suprapunerilor | [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) |
-| Oracol raster | Imagine sintetică și coordonate logice | Schimbare de scară, culoare dominantă, contrast și toleranțe | [Componente display](../../atf-test-android/src/test/java/atf/android/e2e/display/component/) |
+| Application policies | Width, height, density, font, number of players and cards | Distribution of regions, minimum dimensions, available space, rounding and settings calculated | `app.table`, `app.hand`, `app.window` |
+| Name and action | Measured or simulated text heights, box contents and equalized place | Full action above the name, reserved space between shifts, increased censor without repeated scaling | `app.seat` |
+| Trump | Slide width of [Android and Web fixture](../../whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv) | Framing in the same box for card, symbol and text without trump, including enhanced font. [Reference palette](../../whist-lab-app/app/src/test/resources/whist-trump-palette.properties) and geometry is kept when AutoPlay is activated and stopped and during trick collection | [TrumpTileMetrics](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/trump/TrumpTileMetrics.java) |
+| Istoric | Useful window, number of seats, density and font | Full spread width, minimum legible, headers aligned, vertical budget for legend and red diagonal limited to failed bids | `app.score` |
+| Collection of levatates | Centers, actor, public history, watch, view port and controlled events of the scene | Full-cut, convergence, suspendare/reluare and unique cleaning; rebuilding groups redimensioning, waiting for the closing of dialogues and rejects old stage callbacks, without the mutation of the match | `app.animation`, `app.lifecycle`, `app.navigation`, `app.presentation` |
+| Decodare | XML and display profile | Semantic association, card faces, frames, title, trump and content window | [TableViewportObservation](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) |
+| Oracol geometric | Snapshot cu defecte injectate | Number, completeness, capping, framing and absence of overlaps | [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) |
+| Oracol raster | Synthetic and logical coordinates | Change of scale, dominant colour, contrast and tolerances | [Componente display](../../atf-test-android/src/test/java/atf/android/e2e/display/component/) |
 
-## Contractul mock-ului
+## Mocket contract
 
-- [Ierarhia sintetică](../../atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java) păstrează o bază validă și modifică explicit regiunea care trebuie respinsă.
-- [Matricea parametrizată](../../atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java) combină profile și înălțimi măsurate pentru scale de text diferite; nu randează fonturi Android.
-- Transportul simulat aruncă eroare la orice comandă sau captură. Un apel accidental la dispozitiv eșuează în componentă.
-- Execuția JVM folosește dependențele Java reale înaintea stub-urilor SDK atunci când numele claselor coincid. Proveniența classpath-ului se păstrează; un eșec al infrastructurii nu substituie verdictul produsului.
-- Prezența unui nod nu dovedește vizibilitatea lui; regiunile fără suprafață și elementele din afara ferestrei sunt respinse.
-- Fereastra folosește `android:id/content` când este disponibil; capturile fără această regiune au fallback explicit la profilul declarat.
-- Decodarea completă a fixture-urilor folosește semnalele EN, iar verificarea acțiunii are contracte explicite RO/EN. Schimbarea limbii nu permite prescurtarea etichetei sau pierderea asocierii cu jucătorul activ.
-- [PlayerSeatMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/seat/PlayerSeatMetrics.java) primește înălțimea completă a acțiunii; Android o măsoară cu textul real, iar componenta injectează extinderi pentru text mărit și mai multe rânduri. Modelul nu limitează numărul rândurilor și nu deduce lizibilitatea din prezența textului în XML.
-- Verificarea acțiunii din [decodor](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) este comună observațiilor simulate și checkpoint-urilor E2E de joc și licitare. Controalele negative elimină acțiunea, îi schimbă textul sau o mută peste nume; pauza are explicit zero acțiuni active.
-- Distanța până la jucător se măsoară față de reuniunea chenarului și a acțiunii lui. Un spațiu liber până la chenar nu permite unui control să acopere eticheta aflată deasupra.
-- Dimensiunile declarate ale atuului și fețelor jucate au comparații în pixeli și toleranță de rotunjire. O față mai înaltă decât cea cerută nu trece doar pentru că depășește un prag minim.
-- [ScoreHistoryMeasure](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryMeasure.java) primește separat măsurătorile fontului numeric și ale antetului. Componentele verifică întregul tabel, inclusiv ultima celulă, semnele, valori necunoscute, nume lungi și text mărit; Android furnizează implementarea măsurării glifurilor.
-- [HistoryViewportComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/layout/HistoryViewportComponentTest.java) verifică bugetul vertical, revenirea la o fereastră mai mare, densitățile fracționare și măsurile invalide. Politica nu substituie randarea fontului Android.
-- [HistoryLegendAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/HistoryLegendAuditComponentTest.java) reproduce proprietatea greșită din containerul orizontal, regiuni goale ori intersectate și dovezi lipsă. Textul complet din XML nu este suficient pentru PASS.
-- [LegendProfilesComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfilesComponentTest.java) califică offline planul implicit, selecția focalizată, identitățile canonice și refuzul configurațiilor invalide. E2E consumă cazurile tipizate și execută numai proba nativă selectată.
-- [RecordsRunContractComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContractComponentTest.java) verifică selectarea textului vizibil cu o singură observație, recitirea după dezvăluire și identitatea erorii. Dispatch-ul păstrează citirea proaspătă a driverului și un singur tap; recitirile redundante nu sunt folosite ca mecanism de sincronizare.
-- Istoricul măsoară licitația și punctajul total al fiecărui rând; diferența de puncte a mâinii rămâne în registru și în citirea asistată. Componentele confruntă soldurile tuturor locurilor, inclusiv zero, totaluri negative și limita prefixului vechi; marcajele seriilor se compară cu un oracol aritmetic independent după reîncărcare, iar randarea nativă a dreptunghiului rămâne distinctă de proiecție.
-- Familia `score.award` păstrează dreptunghiul exclusiv în celula `P`; numărul, fontul și conturul participă la măsurare. Componentele acoperă bonusurile și penalizările configurate, plata pe ultima mână eligibilă, seriile dezactivate, schimbarea sensului seriei și istoricul complet după reluare, la 3–6 locuri.
-- Familia de test `score.raster` randează proiecția și geometria reale cu fonturi JVM, fără dispozitiv. Oracolul compară pixelii cu o imagine identică fără contururi: licitațiile, antetele și vecinii trebuie să rămână identici, iar fiecare marcaj trebuie să aibă patru laturi și culoarea ajustării de serie.
-- Recuperarea raster scrie și citește checkpoint-uri JSON prin codec-ul aplicației, apoi compară integral pixelii PNG decodați înainte și după restaurare. La 3–6 locuri, RO/EN și text mărit, verifică păstrarea marcajelor istorice în licitare, joc, închiderea mâinii și finalul partidei. Ultimul rând și ultima plată eligibilă se verifică separat când mâna finală are o singură carte; salvarea de fișier nu califică portul Android `SharedPreferences`.
-- Grosimea separatoarelor are ținta de 2,1 dp, cu 30% sub 3 dp; conversia în pixeli întregi poate modifica procentul observat pe un profil. Componentele verifică grosimea rasterului pentru fiecare densitate, separat de lizibilitatea și randarea Android.
-- Coloanele de zero pixeli, depășirile numerice și măsurătorile negative sunt refuzate înaintea construirii vederii. Un eșec al furnizorului de font păstrează cauza inițială și nu devine o măsurătoare de zero.
+- [Synthetic hierarchy](../../atf-test-android/src/test/java/atf/android/e2e/display/component/SyntheticTableHierarchy.java) maintains a valid base and explicitly changes the region to be rejected.
+- [Parametrized matrix](../../atf-test-android/src/test/java/atf/android/e2e/display/component/TableViewportObservationComponentTest.java) combines profiles and heights measured for different text scales; does not render Android fonts.
+- The simulated transport is misfiring on any command or catch. An accidental call to the device fails in the component.
+- JVM execution uses real Java addictions before SDK stubs when the names of the classes coincide. The generation of the classpathus is preserved; a failure of the infrastructure does not substitute the verdict of the product.
+- The presence of a node does not prove its visibility; the areas without surface and the elements outside the window are rejected.
+- The window uses `android:id/content` when available; catches without this region have explicit fallback to the declared profile.
+- Full decaying of fixtures uses the EN signals and the action check has explicit contracts RO/EN. Change of language does not allow shortening of the label or loss of association with the active player.
+- [PlayerSeatMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/seat/PlayerSeatMetrics.java) receives the full action height; Android measures it with the actual text and the component injects extensions for the larger text and more. The model does not limit the number of rows and does not deduce legibility from the text's presence in XML.
+- The check of the action of [decodor](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) is common to simulated observations and E2E game and bidding checkpoints. Negative controls remove the action, change the text or move it over the name; the break has clearly zero active actions.
+- The distance to the player shall be measured from the box meeting and its action. A free space up to the box does not allow a control to cover the label above.
+- The declared dimensions of the played edge and faces have comparisons in pixels and rounding tolerance. A face higher than the one required does not pass simply because it exceeds a minimum threshold.
+- [ScoreHistoryMeasure](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryMeasure.java) receives separately the measurements of the font and header. Components check the entire table, including the last cell, signs, unknown values, long names and increased text; Android provides implementation of glider measurement.
+- [HistoryViewportComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/layout/HistoryViewportComponentTest.java) checks the vertical budget, the return to a larger window, fractional densities and invalid measures. Politics does not substitute the rendering of Android font.
+- [HistoryLegendAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/HistoryLegendAuditComponentTest.java) reproduces the wrong property in the horizontal container, empty or intersected regions and missing evidence. The full text of XML is not enough for PASS.
+- [LegendProfilesComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfilesComponentTest.java) qualifies offline default plan, focused selection, canonical identities and refusal of invalid configurations. E2E consumes typed cases and performs only the selected native sample.
+- [RecordsRunContractComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContractComponentTest.java) checks the selection of visible text with one observation, the re-reading after disclosure and the identity of the error. The display keeps the driver's fresh reading and a single tap; redundant reefs are not used as a synchronization mechanism.
+- The historian measures the total bid and score of each line; the difference in points of hand remains in the register and in the assisted reading. The components shall be weighed against the balances of all places, including zero, negative totals and the limit of the old prefix; series markings shall be compared to an independent arithmetic oracle after reloading, and the native rendering of the rectangle shall be distinct from the projection.
+- The `score.award` family keeps the exclusive rectangle in cell `P`; the number, font and contour participate in the measurement. The components cover the set-up bonuses and penalties, payment on the last eligible hand, disabled series, change of meaning of the series and complete history after resumption, at 3–6 places.
+- The `score.raster` test family is providing real projection and geometry with JVM fonts without a device. The oracle compares pixels with an identical image without contours: bids, letterheads and neighbours must remain identical and each marking must have four sides and the colour of the series adjustment.
+- Raster recovery writes and reads JSON checkpoints through the application codex, then fully compares PNG pixels decoded before and after restoration. At 3–6 seats, RO/EN and enlarged text, check the keeping of historical markings in the bidding, game, closing of hand and end of match. The last row and last eligible payment shall be checked separately when the final hand has a single card; the file saving does not qualify the port of Android `SharedPreferences`.
+- The thickness of the separators has a target of 2,1 dp, with 30% below 3 dp; conversion to whole pixels can change the percentage observed on a profile. Components check raster thickness for each density, separate from Android readability and rendering.
+- The columns of zero pixels, numerical overruns and negative measurements are rejected prior to the construction of the vision. A Font Supplier Fail retains the original cause and does not become a zero measurement.
 
-- [TrumpIndicatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java) verifică aceeași proiecție a atuului în toate modurile și limbile, lipsa rândului redundant, două regiuni de font complete și separarea conturului butonului de ținta tactilă. Măsurătorile injectate nu înlocuiesc randarea fontului Android.
-- [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java) deține proporția 5:7: 63×88 dp în mână, respectiv 46×64 sau 50×70 dp pe masă. Componentele verifică reducerea înălțimii cu 10%, rotunjirea, ridicarea și dimensiunile identice la 1–13 cărți și 3–6 locuri.
-- [Ordinea locurilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java) confruntă numele și cărțile cu aceeași parcurgere circulară; un test folosește licitația și prima levată efectivă din motor, pentru fiecare variantă și număr de jucători. La patru locuri, arcul adversarilor eliberează lățimea completă a levatei.
-- [Guvernanța API-urilor Java](../../atf-tests/src/test/java/atf/tests/governance/source/android/AndroidJavaApiGovernanceTest.java) respinge terminalul `Stream.toList()` în sursele Android; permite colectorii compatibili și ignoră comentariile și textele. JDK-ul testelor nu dovedește disponibilitatea metodei pe dispozitiv.
-- Oracolul păstrează așteptări independente: înălțimea fiecărei cărți și lățimea ultimei fețe neacoperite au toleranță de un pixel. Pentru cărțile suprapuse, XML-ul Android descrie banda expusă, care trebuie să fie pozitivă și cel mult cât fața standard; nu dovedește lățimea ascunsă sub vecin. Componentele verifică separat lățimea completă a tuturor fețelor. Probele negative acoperă fața finală subțiată, banda nulă ori prea lată și fețele jucate deformate.
-- Măsurarea indicilor adaugă padding-ul direct în pixeli, fără traseul pixeli–dp–pixeli. Cazul cu densitate 2,25 și 13 cărți verifică ambele margini ale evantaiului, inclusiv rotunjirea benzii măsurate.
+- [TrumpIndicatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java) checks the same projection of the asset in all ways and languages, the lack of redundant row, two regions of complete font and the separation of the contour of the button from the tactile target. Injected measurements shall not replace the rendering of the Android font.
+- [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java) holds the proportion 5: 7: 63×88 dp in hand, respectively 46×64 or 50×70 dp per table. The components check the height reduction by 10%, rounding up, lifting and identical sizes to 1–13 cards and 3–6 seats.
+- [Ordinea locurilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java) confronts names and cards with the same circular scroll; a test uses the bid and the first effective trick from the engine for each variant and number of players. At four places, the bow of the opponents releases the full width of the trick.
+- [Java API Governance](../../atf-tests/src/test/java/atf/tests/governance/source/android/AndroidJavaApiGovernanceTest.java) rejects terminal `Stream.toList()` in Android sources; allows compatible collectors and ignores comments and texts. The JDK of tests does not prove the method's availability on the device.
+- Oracle keeps independent expectations: the height of each card and the width of the last uncovered face have a pixel tolerance. For overlapping cards, the Android XMLs describe the exposed tape, which must be positive and at most the standard face; it does not prove the width hidden under the neighbor. The components shall verify separately the full width of all faces. The negative samples cover the thin final face, the null or too wide tape and the deformed faces.
+- The rank measurement adds padding directly in pixels, without converting from pixels to dp and back. The case with density 2.25 and 13 cards checks both edges of the fan, including rounding of the measured strip.
 
-## Colecții și comenzi
+## Collections and commands
 
-Pentru o modificare limitată la istoric, selecția JVM se poate restrânge la `:app:testDebugUnitTest --tests 'ro.whistlab.app.score.ScoreHistory*Test' --tests 'ro.whistlab.app.score.layout.*'`. Colecția display extinsă califică ulterior compoziția comună; testele de antrenare și emulatorul nu sunt precondiții pentru politica de măsurare.
+For a change limited to historical, JVM selection may be restricted to `:app:testDebugUnitTest --tests 'ro.whistlab.app.score.ScoreHistory*Test' --tests 'ro.whistlab.app.score.layout.*'`. The extended display collection subsequently qualifies for the common composition; the training tests and the emulator are not preconditions for the measurement policy.
 
-| Colecție | Precondiții | Rezultat |
+| Collection | Preconditions | Result |
 |---|---|---|
-| `AndroidDisplayComponentSuite` | Java 21, Maven și dependențe deja disponibile | JUnit XML și Extent cu auditul invocărilor selectate. Fără ADB sau SDK Android; include planul nativ. |
-| `whist.displayComponents=true` | Java, Gradle și SDK Android pentru compilare | Componentele JVM ale aplicației; fără instalare sau emulator. |
-| `:app:historyRasterTest` | JDK complet, Gradle și clasele aplicației compilate cu SDK | Proiecția totalurilor și imaginile de componentă, fără biblioteci grafice în compilarea Android. |
+| `AndroidDisplayComponentSuite` | Java 21, Maven and already available dependencies | JUnit XML and Extent with audit of selected invokes. Without ADB or SDK Android; includes the native plan. |
+| `whist.displayComponents=true` | Java, Gradle and SDK Android for compilation | JVM components of the application; without installation or emulator. |
+| `:app:historyRasterTest` | Full JDK, Gradle and SDK compiled application classes | Projection of totals and component images without graphics libraries in Android compilation. |
 
-Selecția aplicației include modelul colectării levatei, coada refacerii din `presentation` și fereastra temporală `CompletedTrick*`, alături de geometria statică. Navigarea și configurarea au componente proprii în selecția locală completă; modelele nu califică animatorul Android ori pixelii randării.
+The application selection includes the levatee collection model, the `presentation` recovery line and the `CompletedTrick*` time window, alongside static geometry. Navigation and configuration have their own components in the complete local selection; models do not qualify the Android animator or the rendering pixels.
 
-Portul scenei permite livrarea explicită a evenimentelor de layout, cadrelor și finalizării, inclusiv după anulare sau în timpul înregistrării. Compoziția folosește navigarea și motorul reale; un timp suspendat nu este latență a animatorului, iar un subproces sau un somn real nu înlocuiește ordinea controlată a evenimentelor.
+The stage port allows explicit delivery of layout, frames and completion events, including after cancellation or during registration. The composition uses the actual navigation and engine; a suspended time is not the animator's latency and a real subprocess or sleep does not replace the controlled order of events.
 
-- **Refacere:** coada citește ultima geometrie după eliberarea scenei anterioare; componentele variază lățimea și înălțimea pentru fiecare câștigător la 3–6 locuri.
-- **Ordine:** bugetul se păstrează inclusiv înaintea scorului, iar evenimentele vechi se livrează după înlocuire; numai ultima închidere validă a dialogurilor permite reluarea în prim-plan.
-- **Limită:** probele păstrează politica portret și nu califică tranziția sau fluiditatea nativă.
+- **Recovery: ** the tail reads the last geometry after the release of the previous scene; the components vary the width and height for each winner at 3–6 places.
+- **Order: ** budget is kept even before the score, and the old events are delivered after the replacement; only the last valid closing of the dialogues allows resumption in the first-plan.
+- **Limit: ** evidence retains portrait policy and does not qualify for transition or native fluidity.
 
-Din rădăcina proiectului:
+From the root of the project:
 
 ```powershell
 pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -ComponentsOnly
 ```
 
-Lansatorul pregătește o copie temporară și un repository Maven privat. `-MavenRepository` indică sursa cache-ului; JAR-urile ATF sunt instalate și confruntate în copia execuției, fără înlocuirea celor citite de alt proces.
+The launcher prepares a temporary copy and a repository Maven private. `-MavenRepository` indicates the source of the cache; ATF JARs are installed and confronted in the copy of the execution without replacing those read by another process.
 
-Regresia concurentă păstrează un JAR deschis pentru citire în cache-ul sursă și cere bootstrap reușit în copia privată, cu sursa intactă. Hash-urile bibliotecilor rezolvate trebuie să coincidă cu cele din copia surselor; un eșec de bootstrap rămâne distinct de verdictul interfeței.
+The competing regression keeps an JAR open for reading in the source cachet and requires successful bootstrap in private copy with the source intact. The hashes of the resolved libraries must coincide with those of the source copy; a botstrap failure remains distinct from the interface verdict.
 
-Dintr-o copie temporară a aplicației, cu dependențele pregătite:
+A temporary copy of the application with prepared dependencies:
 
 ```powershell
 .\gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true --offline --no-daemon
 ```
 
-Pentru imaginile de componentă ale istoricului, proprietatea opțională indică un director extern; testele funcționează și fără export, în directoare temporare proprii:
+For historical component images, optional property shall indicate an external directory; tests shall also be carried out without export in their own temporary guidelines:
 
 ```powershell
 $historyRasterOutput = Join-Path ([IO.Path]::GetTempPath()) 'whist-history-raster'
 .\gradlew.bat :app:historyRasterTest "-Pwhist.historyRasterOutput=$historyRasterOutput" --offline --no-daemon
 ```
 
-PNG-ul exportat este o randare controlată de componentă, nu o captură Android. Etichetele și valorile provin din proiecția aplicației, iar fonturile și adaptorul grafic aparțin JVM-ului de test.
+The exported NGP is a component-controlled rendering, not an Android catch. Labels and values come from the application projection and fonts and graphical adapter belong to the test JVM.
 
-Sursele din `src/rasterTest/java` folosesc JDK-ul complet printr-o sarcină de compilare separată; compilarea unităților Android păstrează suprafața SDK. `historyRasterTest` consumă aceleași clase ale aplicației și fixture-uri legale deja compilate; verificarea `check` include ambele colecții.
+The sources in `src/rasterTest/java` use the JDK completely through a separate compilation task; the compilation of Android units keeps the SDK surface. `historyRasterTest` consumes the same application classes and legal fixtures already compiled; the check `check` includes both collections.
 
-## Raportarea componentelor istoricului
+## Reporting of historical components
 
-[AndroidHistoryComponentSuite](../../atf-test-android/src/test/java/atf/android/suites/AndroidHistoryComponentSuite.java) selectează oracolele legendei și planul profilelor. Intrările reale ale componentei și comparațiile evaluate sunt capturate în timpul invocării; publicarea ulterioară nu reexecută testele și nu reconstruiește valori din JUnit XML.
+[AndroidHistoryComponentSuite](../../atf-test-android/src/test/java/atf/android/suites/AndroidHistoryComponentSuite.java) selects the oracles of legend and the profiling plan. Actual component inputs and comparisons assessed shall be captured during the declaration; subsequent publication shall not reperform the tests and shall not reconstruct values in JUnit XML.
 
-| Responsabil | Contract |
+| Owner | Contract |
 |---|---|
-| Test Kit | `ComponentAuditExtension` păstrează fazele, durata și cauza originală; `TEST_BODY` cere o aserțiune auditată. |
-| Testul | Folosește `AuditedAssertions` și declară inputurile prin `ComponentInputs`; fixture-ul nu este prezentat ca o captură Android. |
-| Adaptorul Android | [Compoziția](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentReports.java) capturează setările o singură dată; [ownerul](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) publică inputurile integrale și comparațiile în HTML. |
-| Reporting | API-ul binar `AssertionAuditReport.publishStep` furnizează grupul standard pliabil; Extent și fallback au aceleași comparații capturate. |
+| Test Kit | `ComponentAuditExtension` keeps the phases, duration and original cause; `TEST_BODY` requires an audited assertion. |
+| Testul | Use `AuditedAssertions` and declare inputs via `ComponentInputs`; the fixture is not presented as an Android catch. |
+| Adaptorul Android | [Composition](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentReports.java) captures settings once; [ownerul](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) publishes full inputs and comparison in HTML. |
+| Reporting | The `AssertionAuditReport.publishStep` binary API provides the standard folding group; Extent and fallback have the same comparisons captured. |
 
-Dintr-o copie TMP, cu repository-ul Maven propriu deja pregătit:
+With a copy of TMP, with his own Maven repositoryul already prepared:
 
 ```powershell
 mvn -B -o -pl atf-test-android -am -Phistory-components '-Dtest=AndroidHistoryComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
 ```
 
-- **Individual:** selectorul `HistoryLegendAuditComponentTest` produce raportul clasei; suita folosește `atf.test.run.scope=suite` și un singur owner.
-- **Output:** implicit `%TEMP%/whist-component-reports`; `atf.android.component.report-directory` acceptă o cale absolută. Numele unic păstrează invocările distincte, fără suprascrierea unui raport deschis.
-- **Renderer:** `atf.android.component.renderer=extent` este implicit; `fallback` permite verificarea aceluiași contract fără Extent.
-- **Context:** XML-urile și selecțiile de profil sunt corpuri text integrale, pliabile; copiile externe nu sunt necesare acestei selecții. Preview-ul aserțiunilor folosește setarea Reporting capturată, după redactare.
-- **Valori lungi:** expected și actual care depășesc preview-ul sunt publicate integral în observații, după redactare, fără reevaluarea comparației. Identitatea unică JUnit permite confruntarea fiecărei invocări parametrizate sau imbricate cu rezultatul XML.
-- **Bugetul corpurilor:** părțile numerotate păstrează textul integral chiar peste plafonul de afișare; concatenarea și ultimul caracter au controale de componentă, separat de preview-ul aserțiunilor.
-- **Timp:** fazele păstrează durata măsurată de Kit; începutul sesiunii HTML identifică publicarea ulterioară, fără inventarea unui timp Android.
+- **Individual: ** the `HistoryLegendAuditComponentTest` selector produces class ratio; the suite uses `atf.test.run.scope=suite` and only one owner.
+- **Output: ** default `%TEMP%/whist-component-reports`; `atf.android.component.report-directory` accepts an absolute path. The sole name shall keep separate claims without overwriting an open report.
+- **Renderer: ** `atf.android.component.renderer=extent` is default; `fallback` allows checking the same contract without Extent.
+- **Context: ** XMLs and profile selections are integral text bodies, folding; external copies are not required for this selection. The preview of the assertions uses the captured reporting setting after the drafting.
+- **Long values: ** expected and current above the preview are published in full in the comments after drafting, without reassessing the comparison. The unique identity JUnit allows each parametric or intoxicated call to be confronted with the XML result.
+- **Budget of bodies: ** numbered parts keep the text entirely right above the display ceiling; concatenation and last character have component controls, separate from the forecast of assertions.
+- **Time: ** phases keep the duration measured by Kit; the start of the HTML session identifies subsequent publication without inventing an Android time.
 
-### Familii care folosesc același audit
+### Families using the same audit
 
-| Suită | Responsabilitate |
+| Suite | Responsibility |
 |---|---|
-| `AndroidDisplayComponentSuite` | Geometrie, ierarhie, planuri de ecran, driver și fixture-uri ale istoricului. |
-| `AndroidComponentSuite` | Intrare primară pentru toate componentele Maven ale adaptorului, inclusiv selecțiile focalizate de mai jos. |
-| `AndroidUiFlowTimingComponentSuite` | Trace, publicare, republicare read-only și separarea timpului execuției de publicare. |
-| `GameReportComponentSuite` | Contractele consumatorului pentru corpuri, politici și predarea rapoartelor. |
+| `AndroidDisplayComponentSuite` | Geometry, hierarchy, screen plans, driver and fixtures of history. |
+| `AndroidComponentSuite` | Primary input for all Maven components of the adapter, including the focused selections below. |
+| `AndroidUiFlowTimingComponentSuite` | Trace, publication, republics read-only and separation of the time of publication execution. |
+| `GameReportComponentSuite` | Consumer contracts for bodies, policies and reporting. |
 
-Clasele folosesc aserțiunile auditate, iar [lansatorul agregării](../reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) completează adaptorul numai când nu există unul explicit. Suitele display, istoric și timing sunt selecții focalizate; nu se adună peste populația intrării primare.
+The classes use audited assertions and [Aggregate launcher](../reporting/ATF_Audit.md#aggregation-of-components-on-live-source) only complete the adapter when there is no explicit one. Display, historical and timekeeping suites are focused selections; they do not gather over the primary entry population.
 
-Selecțiile Gradle ale aplicației, motorului și bibliotecii grafice folosesc [puntea de audit Gradle](ATF_GradleComponents.md) și nu sunt incluse implicit în agregatul Maven. Fiecare task publică propriul HTML canonic și confruntă invocările cu JUnit-ul temporar; prezența raportului altei selecții nu îi califică auditul.
+Gradle selection of the application, engine and graphic library uses [Gradle audit deck](ATF_GradleComponents.md) and are not implicitly included in the Maven aggregate. Each task publishes its own canonical HTML and confronts the calls with the Temporary Junite; the presence of another selection report does not qualify for audit.
 
-- **Contract:** [probele adaptorului](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) și [probele punții Gradle](../../whist-lab-app/test-audit/src/test/java/atf/gradle/audit/GradleAuditBridgeComponentTest.java) verifică sesiunea comună, eșecul original, abort-ul, lipsa aserțiunilor și textul mai lung decât plafoanele. [Criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) separă calificarea producătorilor de migrarea execuțiilor istorice.
+- **Contract:** [Adapter samples](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) and [Gradle Deck Samples](../../whist-lab-app/test-audit/src/test/java/atf/gradle/audit/GradleAuditBridgeComponentTest.java) checks the joint session, the original failure, the abort, the lack of assertions and the text longer than the ceilings. [Criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) separate the qualification of producers from the migration of historical executions.
 
-- **Lansator:** `-ComponentsOnly -ComponentSuite History` și `-ComponentRenderer fallback` restrâng selecția; `Display` este implicit. Raportul apare în `component-reports` al rulării externe, iar `WORKING_STATE.json` identifică exemplarul și domeniul.
-- **Compilare:** profilele Maven selectează testele la execuție; profilul larg nu omite sursele de istoric din compilare.
+- **Launcher: ** `-ComponentsOnly -ComponentSuite History` and `-ComponentRenderer fallback` restrict selection; `Display` is implicit. The report appears in `component-reports` of the external running, and `WORKING_STATE.json` identifies the specimen and the field.
+- **Compilation: ** Maven profiles select tests on execution; the broad profile does not omit the historical sources in compilation.
 
-## Ce păstrează verificarea nativă
+## What keeps the native check
 
-[Componentele grafice native](../../whist-lab-app/app/src/androidTest/README.md) verifică desenul claselor Android într-un părinte real, fără activitate ori partidă. Sunt distincte de rasterul JVM și de fluxurile E2E; derularea internă a textului se aplică înaintea evaluării pixelilor marcajelor.
+[Native graphical components](../../whist-lab-app/app/src/androidTest/README.md) checks the Android class drawing in a real parent, no activity or match. Distinguishing between JVM and E2E flows; the internal text shall be applied prior to the evaluation of the pixels of the markings.
 
-| Proprietate | Verificare rămasă pe Android |
+| Property | Remaining check on Android |
 |---|---|
-| Font și glyph | Măsurare reală, fallback, text mărit, trunchiere și lizibilitatea capturii. |
-| Fereastră | Consumul efectiv al insets, tastatură, decupaj și navigarea sistemului pe API-ul țintă. |
-| Interacțiune | Tap acceptat, focus, hit testing, animație și tranziția observată. |
-| Compoziție | Aceeași stare conține toate regiunile necesare în rasterul real. |
+| Font and glyph | Actual measurement, fallback, increased text, trunks and legible catch. |
+| Window | Effective consumption of the insets, keyboard, clipping and navigation of the system on the target API. |
+| Interaction | Tap accepted, focus, hit testing, animation and transition observed. |
+| Composition | The same state contains all the necessary regions in the real raster. |
 
-O modificare de formulă rulează întâi componentele; o schimbare de randare sau de integrare cu sistemul adaugă [sanity-ul nativ selectat](ATF_Display.md). Rezultatele sunt externe și identifică sursele verificate.
+A formula change first runs the components; a change of rendering or integration with the system adds [sanity-ul nativ selectat](ATF_Display.md). The results are external and identify the sources verified.
 
-## Frontiera componentelor UI reutilizabile
+## Frontier of reusable UI components
 
-[atf-card-table-ui](../../whist-lab-app/atf-card-table-ui/README.md) are propriile componente pentru geometrie, meniu, editare și modelele vizibile ale mesei. Gardele de sursă refuză importurile de motoare sau sesiuni în producția și testele comune.
+[atf-card-table-ui](../../whist-lab-app/atf-card-table-ui/README.md) has its own components for geometry, menu, editing and visible table models. Source Guards shall refuse to import engines or sessions into joint production and tests.
 
-| Comun | Integrare Whist, păstrată în aplicația Whist |
+| Comun | Whist integration, maintained in the Whist app |
 |---|---|
-| Proporții, centrare, regiuni și chenare | Ordinea actorilor motorului și legalitatea cărții. |
-| Fapte ordonate și imuabile, însemne și identități | Licitație, atu, levate, punctaj și restaurare. |
-| Widgeturi și porturi de selecție | Snapshot → proiecție, comanda originală și lifecycle. |
+| Proportion, centering, regions and quarrying | The order of the engine actors and the legality of the card. |
+| Ordered and immutable acts, markings and identities | Bidding, trump, trick, score and restoration. |
+| Wigets and selection ports | Snapshot → projection, original command and lifecycle. |
 
-Aceleași teste Whist rulează înainte/după extragere cu surse și identități păstrate. Regulile și proiecțiile aparțin adaptorului fiecărui joc; clasele de licitație sau punctaj Whist nu se mută în suita comună doar pentru a reutiliza desenul.
+Same Whist tests run before / after extraction with preserved sources and identities. The rules and projections belong to the adapter of each game; the Whist bid or score classes do not move into the common suite just to reuse the drawing.

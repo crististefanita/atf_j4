@@ -1,13 +1,13 @@
-# Registrul controalelor verificate ale testelor
+# Register of verified test controls
 
-## Pe scurt
+## Overview
 
-Acest registru păstrează controalele tehnice verificate, cu baza Git și căile lor exacte. [Ghidul schimbărilor de teste](ATF_TestChanges.md) stabilește regulile comune și separă cererea activă de înregistrarea verificată.
+This register keeps the technical checks checked, with the basis of Git and their exact paths. [Guide to test changes](ATF_TestChanges.md) sets out common rules and separates the active application for the registration checked.
 
 ## Controale verificate
 
 <details>
-<summary>Guvernanța adresei de joc pe GitHub Pages</summary>
+<summary>Governance of the game address on GitHub Pages</summary>
 
 ```yaml
 testChanges:
@@ -31,7 +31,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Control verificat: acceptanța nativă a acțiunilor și a istoricului</summary>
+<summary>Check: Native acceptance of actions and history</summary>
 
 ```yaml
 testChanges:
@@ -58,12 +58,12 @@ testChanges:
       - atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java
 ```
 
-Un reper simulat arată cum ignorarea acțiunii inversează comparația distanțelor pe aceleași coordonate. Controalele negative păstrează erorile de text, actor, dimensiune și identitate a rândului; rularea nativă cere metadatele instalării, rezervarea și arhiva privată definite în [contractul Android](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii).
+A simulated landmark shows how the action ignore the comparison of distances on the same coordinates. Negative controls keep text, actor, size and identity errors of the row; native running requires installation metadata, reservation and private archive defined in the [contractul Android](../testing/ATF_Android.md#profile-history-leaderboards-and-series).
 
 </details>
 
 <details>
-<summary>Control verificat: proporțiile mesei și acțiunea deasupra numelui</summary>
+<summary>Check: mass proportions and action above the name</summary>
 
 ```yaml
 testChanges:
@@ -89,12 +89,12 @@ testChanges:
       - atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java
 ```
 
-Oracolul dimensiunilor urmează cerința de prezentare, iar controalele negative refuză înălțimea depășită, acțiunea lipsă, textul prescurtat și suprapunerea peste nume. Verificarea nativă rămâne distinctă de observația simulată și de mecanismul JVM.
+The oracle of dimensions follows the requirement for presentation and negative controls refuse the exceeded height, the missing action, the abbreviated text and the overlap over the name. The native verification remains distinct from the simulated observation and JVM mechanism.
 
 </details>
 
 <details>
-<summary>Control verificat: măsurarea istoricului și invariantele registrului</summary>
+<summary>Check control: historical measurement and log invariants</summary>
 
 ```yaml
 testChanges:
@@ -110,12 +110,12 @@ testChanges:
       - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
 ```
 
-Regresiile se confruntă cu sursa anterioară înaintea corecției. Furnizorii de font sunt injectați în componente; calificarea rasterului și a fontului Android rămâne separată. Un diagnostic de classpath nu este reclasificat ca defect al produsului.
+Regression is faced with the previous source prior to the correction. Font providers are injected into components; the qualification of the raster and Android font remains separate. A diagnosis of the classSPath is not reclassified as a defect of the product.
 
 </details>
 
 <details>
-<summary>Control verificat: istoric compact și rezultatul explicit al contractului</summary>
+<summary>Checked control: compact history and explicit outcome of contract</summary>
 
 ```yaml
 testChanges:
@@ -135,12 +135,12 @@ testChanges:
       - atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java
 ```
 
-Zero, ratarea cu puncte pozitive, datele necunoscute și o mână neîncheiată au rezultate distincte. Controalele negative refuză levatele fracționare, negative, neconservate sau contradictorii, iar măsurătorile injectate nu înlocuiesc randarea nativă.
+Zero, failure with positive points, unknown data and an unfinished hand have distinct results. Negative controls refuse fractional, negative, unserviced or contradictory levatates, and injected measurements do not replace native rendering.
 
 </details>
 
 <details>
-<summary>Control verificat: indicator de atu comun și depunere discretă</summary>
+<summary>Check control: common asset indicator and discrete deposit</summary>
 
 ```yaml
 testChanges:
@@ -160,12 +160,12 @@ testChanges:
       - atf-test-android/src/test/java/atf/android/e2e/display/flow/responsive/ResponsiveGameFlow.java
 ```
 
-Controalele păstrează cartea sau culoarea, lizibilitatea, localizarea și descrierea accesibilă; absența textului redundant nu înlocuiește prezența valorii. Măsurătorile de font injectate califică politica comună, iar verificarea nativă compară aceeași geometrie în stări cu și fără atu.
+The controls shall keep the card or colour, legibility, location and accessible description; the absence of redundant text shall not replace the presence of value. Injected font measurements qualify for the common policy, and native verification compares the same geometry in states with and without trump.
 
 </details>
 
 <details>
-<summary><strong>Ghiduri ale bibliotecilor — index scurt și ghiduri per bibliotecă</strong></summary>
+<summary><strong>Library guides - short index and guides per librarian </strong></summary>
 
 ```yaml
 testChanges:
@@ -183,12 +183,12 @@ testChanges:
       - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
 ```
 
-Exemplele sunt extrase din README-uri și verificate pe JAR-urile fizice. Schimbarea păstrează perechile publicate și oracolele existente.
+Examples are extracted from RADMES and checked on physical JARs. Change keeps published pairs and existing oracles.
 
 </details>
 
 <details>
-<summary>Control verificat: adresa tehnică a descărcării publice</summary>
+<summary>Check: technical address of public discharge</summary>
 
 ```yaml
 testChanges:
@@ -203,12 +203,12 @@ testChanges:
       - config/atf-governance-policy.json
 ```
 
-Reproducerea este refuzul linkului public valid ca referință editorială; controalele negative păstrează etichetele, alte proiecte și variantele necanonice în perimetrul verificat. Contractul [documentației](ATF_Documentation.md#conținut-stabil-și-date-variabile) definește limita, fără excepții generale pentru URL-uri.
+Reproduction is refusal of the public link valid as editorial reference; negative controls keep labels, other projects and non-anonymous variants within the checked perimeter. The contract [documentation](ATF_Documentation.md#stable-content-and-variable-data) defines the limit without general exceptions for URLs.
 
 </details>
 
 <details>
-<summary>Control verificat: pagina versiunii declarate</summary>
+<summary>Check: page of the declared version</summary>
 
 ```yaml
 testChanges:
@@ -223,12 +223,12 @@ testChanges:
       - atf-tests/src/main/java/atf/tests/distribution/ApkDownloadTarget.java
 ```
 
-[Identitatea livrării](../platform/ATF_AndroidDelivery.md) stabilește versiunea; [politica documentară](ATF_Documentation.md#conținut-stabil-și-date-variabile) clasifică numai destinațiile canonice. Probele refuză pagina nedeclarată, altă versiune, alt repository, imaginea și URL-urile cu modificări; eticheta vizibilă nu primește excepție.
+[Delivery identity](../platform/ATF_AndroidDelivery.md) sets out the version; [Documentary policy](ATF_Documentation.md#stable-content-and-variable-data) classifies only canonical destinations. The samples shall refuse the undeclared page, another version, another repository, image and URLs with changes; the visible label shall be exempt.
 
 </details>
 
 <details>
-<summary>Control verificat: proprietatea și documentația bibliotecilor</summary>
+<summary>Check: library ownership and documentation</summary>
 
 ```yaml
 testChanges:
@@ -244,14 +244,14 @@ testChanges:
       - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
 ```
 
-Controalele negative resping README-ul absent, documentele suplimentare, un director în locul README-ului și atribuirea codului ori feedback-ului unui consumer. Bibliotecile distribuite își păstrează coordonatele și hash-urile.
+Negative controls reject the missing READMEM, additional documents, a director instead of README- and the assignment of the code or feedback to a consumer. The distributed libraries keep their coordinates and hashes.
 
-Inventarul de la baza Git declarată este cel al incrementului verificat. Perechile și ghidurile curente sunt definite în [contractul lib](../../lib/README.md).
+The inventory at Git base declared is that of the checked increment. The current pairs and guides are defined in [contractul lib](../../lib/README.md).
 
 </details>
 
 <details>
-<summary>Control verificat: autorizarea testelor pe diff-ul Git</summary>
+<summary>Control check: test authorization on the Git diff</summary>
 
 ```yaml
 testChanges:
@@ -277,7 +277,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Control verificat pentru trasabilitatea probei de schimbare</summary>
+<summary>Checked for traceability of the change sample</summary>
 
 ```yaml
 testChanges:
@@ -310,7 +310,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Control verificat pentru fațada sesiunii și restaurare</summary>
+<summary>Checked control for session facade and restoration</summary>
 
 ```yaml
 testChanges:
@@ -335,7 +335,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Control verificat pentru bugetul loturilor Gradle</summary>
+<summary>Checked control for Gradle lots budget</summary>
 
 ```yaml
 testChanges:
@@ -373,7 +373,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Control verificat pentru execuția probelor și mutarea verificării dialogurilor</summary>
+<summary>Checked control for the execution of the evidence and movement of the verification of the dialogues</summary>
 
 ```yaml
 testChanges:
@@ -398,7 +398,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Control verificat pentru rădăcina temporară a calificării</summary>
+<summary>Checked control for temporary root of qualification</summary>
 
 ```yaml
 testChanges:
@@ -424,7 +424,7 @@ testChanges:
 </details>
 
 <details>
-<summary>Controale verificate pentru selecția și publicarea lotului</summary>
+<summary>Checks verified for selection and publication of the consignment</summary>
 
 ```yaml
 testChanges:

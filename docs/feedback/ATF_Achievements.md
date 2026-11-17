@@ -1,26 +1,26 @@
-# Realizări Whist — criterii rămase
+# Whist Achievements - criteria remaining
 
-## Pe scurt
+## Overview
 
-Validarea YAML la build și compatibilitatea progresului sunt documentate în [contractul realizărilor](../game/ATF_Achievements.md). Lucrările de mai jos urmăresc restaurarea ecranului Android și calibrarea cu jucători umani.
+YAML validation at the building and compatibility of progress are documented in [contract of achievements](../game/ATF_Achievements.md). The works below aim at restoring the Android screen and calibration with human players.
 
-## P1 · Restaurarea stării ecranului comun pe Android
+## P1 · Restoration of the status of the common screen on Android
 
-Adaptorul Whist creează o stare nouă a ecranului la fiecare deschidere. Componentele catalogului și detaliului nu demonstrează, singure, că poziția listei și obiectivul selectat se păstrează la recrearea ecranului sau după revenirea dintr-o notificare.
+The Whist Adapter creates a new state of the screen at each opening. The components of the catalogue and detail alone do not demonstrate that the position of the list and the selected objective are retained when recreating the screen or after returning from the notification.
 
-- Păstrează starea de navigare și selecția în proprietarul Android potrivit ciclului de viață, fără să schimbi ordinea sau conținutul catalogului.
-- Verifică RO/EN, selectarea unui obiectiv, derularea până la un rând, recrearea ecranului și revenirea la aceeași poziție și selecție.
-- Componentele acoperă păstrarea cozii la închidere, reapariția notificării neconfirmate și refuzul unei confirmări depășite. Pe APK, recreează activitatea înainte și după confirmare și confruntă fiecare apariție cu starea cozii și progresul salvat. [Componentele notificării](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java)
-- Folosește checkpoint-urile existente pentru catalog și detaliu. Extinde proba cu recrearea activității în ambele limbi și verifică revenirea la același obiectiv, la aceeași poziție și cu etichetele vizibile corecte.
+- Keep navigation status and selection in the owner of Android according to life cycle without changing order or content of the catalogue.
+- Check RO/EN, select a target, run up to a row, recreate the screen and return to the same position and selection.
+- The components shall cover the retention of the tail upon closure, the reappearance of unconfirmed notification and the refusal of an outdated confirmation. On APK, recreate activity before and after confirmation and face each appearance with tail status and saved progress. [Components of notification](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java)
+- Use existing checkpoints for catalogue and detail. Extend the sample with the recreation of activity in both languages and check for the return to the same objective, the same position and with the correct visible labels.
 
-[Adaptorul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementsScreen.java) · [Ecranul comun](../../whist-lab-app/atf-card-table-ui/README.md#realizări) · [Acceptanța Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java)
+[Adaptorul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementsScreen.java) · [Ecranul comun](../../whist-lab-app/atf-card-table-ui/README.md#achievements) · [Acceptance of Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java)
 
-## P2 · Calibrarea ordinii cu jucători umani
+## P2 · Calibration of Order with Human Players
 
-Simularea offline măsoară ocaziile și ratele pentru politicile declarate, nu cât de naturală este ordinea pentru jucătorii umani. Păstrează separat observarea umană de calibrarea AI și schimbă pragurile numai după un semnal repetat.
+Overflow simulation measures opportunities and rates for declared policies, not how natural order is for human players. It keeps human observation separate from AI calibration and changes thresholds only after a repeated signal.
 
-- Folosește protocoale RO/EN și criterii uniforme pentru înțelegerea descrierilor, dificultate și progres.
-- Nu amesteca rezultate umane, date de dezvoltare și holdout-ul simulării.
-- Orice schimbare de prag sau eligibilitate păstrează ID-urile și trece printr-o probă de compatibilitate a progresului salvat.
+- Uses RO/EN protocols and uniform criteria for understanding descriptions, difficulty and progress.
+- Do not mix human results, development data and simulation holdout.
+- Any change of threshold or eligibility keeps the IDs and passes through a proof of compatibility of the saved progress.
 
-**Surse:** [modelul și protocolul de calibrare](../game/ATF_Achievements.md#verificare), [suita offline](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java).
+**Sources** · [Calibration model and protocol](../game/ATF_Achievements.md#verification) · [Offline suite](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java).

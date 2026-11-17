@@ -1,71 +1,71 @@
-# Model experimental pentru estimarea licitațiilor
+# Experimental model for the estimation of bids
 
-## Pe scurt
+## Overview
 
-Prototipul estimează oferta unui adversar dintr-o mână ipotetică și prefixul licitației. Cele două implementări păstrează aceeași schemă numerică; integrarea în motorul curent este o lucrare explicită, separată de existența acestor surse.
+Prototype estimates the offer of an opponent from a hypothetical hand and the prefix of the bid. The two implementations keep the same numerical scheme; integration into the current engine is an explicit work separate from the existence of these sources.
 
-- Pentru inspectarea artefactului: [verificarea numerică](#compatibilitatea-surselor), fără motor sau arhivă.
-- Pentru o integrare: [adaptarea surselor și calificarea](#reutilizare-controlată), într-o copie identificată.
+- For the inspection of the artifact: [numerical verification](#compatibility-of-sources), without engine or archive.
+- For integration: [Adaptation of sources and qualification](#controlled-reuse), in an identified copy.
 
-## Contractul modelului
+## Model contract
 
 ```mermaid
 flowchart LR
-    HAND[Mână și prefix] -->|extrage| FEATURES[Vector ordonat]
-    FEATURES -->|ponderează| MEAN[Estimare liniară]
-    MEAN -->|rotunjește și limitează| BID[Ofertă numerică]
-    BID -->|este filtrată de| LEGAL[Politica licitației legale]
+    HAND[Hand and prefix] -->|extrage| FEATURES[Vector ordonat]
+    FEATURES -->|weight| MEAN[Linear estimate]
+    MEAN -->|Round and limit| BID[Numerical offer]
+    BID -->|is filtered by| LEGAL[The legal tender policy]
 ```
 
 <details>
-<summary>Legendă: predicția precede decizia legală</summary>
+<summary>Legend: prediction precedes legal decision</summary>
 
-`predict` calculează produsul scalar, aplică `Math.round` și limitează rezultatul între zero și numărul cărților. Filtrul ultimei licitații aparține viitorului consumator; prototipul nu îl aplică și nu furnizează o probabilitate a contractului exact.
+`predict` calculates the scalar product, applies `Math.round` and limits the result between zero and the number of cards. The filter of the last bid belongs to the future consumer; the prototype does not apply it and does not provide an exact contract probability.
 
 </details>
 
-| Intrare sau ieșire | Semnificație |
+| Entry or exit | Meaning |
 |---|---|
-| Mâna ipotetică | Cărți compatibile cu observația actorului, fără consultarea mâinii reale adverse. |
-| Atu și poziție | Culoare sau fără atu, plus poziția în ordinea licitării. |
-| Prefix | Suma ofertelor deja depuse; ofertele viitoare nu sunt intrări observate. |
-| Caracteristici | Ordinea și normalizarea din `features` al [metadatelor](calibration.json), păstrate împreună cu coeficienții. |
-| Rezultat | Un întreg din intervalul mâinii; legalitatea completă se verifică în politica ce îl consumă. |
+| Hypothetical Hand | Books compatible with actor's observation without consulting the actual side-hand. |
+| Acetum and position | Color or no trump, plus position in bidding order. |
+| Prefix | The amount of tenders already submitted; future tenders are not observed entries. |
+| Caracteristici | Order and normalisation of `features` ed [metadatelor](calibration.json), kept together with the coefficients. |
+| Result | A whole of the range of his hand; complete legality checks out in the policy that consumes him. |
 
-## Compatibilitatea surselor
+## Compatibility of sources
 
-Verificarea artefactului este disponibilă separat, fără motor, Android sau arhiva partidelor. Din rădăcina proiectului, cu Node.js:
+The artifact verification is available separately, without engine, Android or party archive. From the root of the project, with Node.js:
 
 ```powershell
 node --test whist-lab-app/ai-lab/tools/bidding/whist-prototype-contract.test.mjs
 ```
 
-[Contractul executabil](../../tools/bidding/whist-prototype-contract.test.mjs) verifică ordinea caracteristicilor, coeficienții finiți, identitatea numerică a celor două surse și refuzul metadatelor modificate. Este o probă a artefactului păstrat; execuția predictorului Java și integrarea în politica actuală au calificări distincte.
+[Contractul executabil](../../tools/bidding/whist-prototype-contract.test.mjs) checks the order of characteristics, finite coefficients, the numerical identity of the two sources and the refusal of modified metadata. It is a sample of the preserved artifact; the execution of Preacher Java and integration into current politics have distinct qualifications.
 
-Sursele din `experiments` sunt excluse din compilarea implicită a [laboratorului](../../build.gradle). Copierea lor într-un alt pachet schimbă identitatea candidatului și cere calificarea acelei copii.
+Sources of `experiments` are excluded from the default compilation of [laboratorului](../../build.gradle). Copying them into another package changes the identity of the candidate and requires the qualification of that child.
 
 <details>
-<summary>Tipuri, acces și scalări care trebuie confruntate la integrare</summary>
+<summary>Types, access and scalings to be confronted with integration</summary>
 
-| Sursă | Formă păstrată | Ce trebuie rezolvat înaintea integrării |
+| Source | Preserved form | What needs to be resolved before integration |
 |---|---|---|
-| [Varianta motorului](engine/EstimatedBidPrior.java) | Clasă și metodă cu acces de pachet în `ro.whistlab.core`; referințe simple la `Card` și `Trump`. | Tipurile curente sunt în [core.model](../../../game-core/src/main/java/ro/whistlab/core/model/). Stabiliți pachetul, importurile și accesul din consumator; forma păstrată nu este gata de copiat în politica activă. |
-| [Varianta independentă](independent/EstimatedBidPrior.java) | `ro.whistlab.coach`, cărți `13 × suit + rank − 2`, fără importuri din motor. | Păstrați ordinea pică–cupă–treflă–caro și codul fără atu; verificați echivalența extragerii fără a uni cele două modele. |
+| [Engine variant](engine/EstimatedBidPrior.java) | Class and method with package access in `ro.whistlab.core`; simple references to `Card` and `Trump`. | The current types are in [core.model](../../../game-core/src/main/java/ro/whistlab/core/model/). Set package, imports and access from the consumer; the form retained is not ready to copy in active policy. |
+| [Independent variant](independent/EstimatedBidPrior.java) | `ro.whistlab.coach`, cards `13 × suit + rank − 2`, no imports from the engine. | Keep the order drop-cup-treflam-caro and code without the trump; check the equivalence of the extraction without joining the two models. |
 
-Metadatele identifică vocabularul, coeficienții și proveniența modelului. Metricile calibrării sunt date ale acelui artefact; nu certifică integrarea ori forța politicii curente și nu se copiază în ghid.
+Metadata shall identify the vocabulary, coefficients and provenance of the model. Calibration metrics are given to that artifact; they do not certify integration or the strength of current policy and do not copy into the guide.
 
-Scalările sunt fixe în prototip, inclusiv `size/8` și `position/3`. Extinderea la alt domeniu cere validarea intrărilor și calificare; semnătura metodei nu declară singură compatibilitatea cu orice masă.
+The scaling is fixed in the prototype, including `size/8` and `position/3`. Expansion to another domain requires validation of inputs and qualification; the signature of the method does not declare compatibility with any mass on its own.
 
 </details>
 
-## Reutilizare controlată
+## Controlled reuse
 
-1. Definiți consumatorul: predicția ofertei observate, estimarea ofertelor încă necunoscute sau alegerea contractului propriu au obiective diferite.
-2. Pregătiți o copie izolată și adaptați tipurile și accesul; păstrați inventarul bazei și sursele alternative identificate.
-3. Construiți componente pentru interval, lipsa atuului, codificarea cărților și paritatea vectorilor și predicțiilor între implementări.
-4. Verificați separat oferta interzisă a ultimului jucător și observația permisă a API-ului complet; testul predictorului nu califică singur decizia publică.
-5. Introduceți integrarea în manifestul candidatului și aplicați [protocolul offline](../../../../docs/learning/README.md) înaintea promovării.
+1. Define the consumer: the prediction of the offer observed, the estimation of the still unknown offers or the choice of the contract has different objectives.
+2. Prepare an isolated copy and adapt the types and access; keep base inventory and identified alternative sources.
+3. Build components for range, lack of edge, coding of cards and parity of vectors and predictions between implementation.
+4. Check separately the last player's bid and the full API's permitted observation; the preacher's test does not qualify the public decision alone.
+5. Enter integration into the candidate manifest and apply [protocolul offline](../../../../docs/learning/README.md) prior to promotion.
 
-Acest director nu declară o suită proprie de integrare. [Colecția research](../../../../docs/testing/ATF_Collections.md) execută numai cazurile declarate în catalog și Gradle; ea nu adaptează sau include automat acest prototip.
+This director does not declare his own integration suite. [Research Collection](../../../../docs/testing/ATF_Collections.md) performs only the cases declared in the catalogue and Gradle; it does not automatically adapt or include this prototype.
 
-[Alternative izolate de sursă](../bid-models/README.md) · [Semantica modelelor și YAML-urilor](../../../../docs/ai/ATF_RulesConfiguration.md)
+[Source-isolated alternatives](../bid-models/README.md) · [Model semantics and YAMLs](../../../../docs/ai/ATF_RulesConfiguration.md)

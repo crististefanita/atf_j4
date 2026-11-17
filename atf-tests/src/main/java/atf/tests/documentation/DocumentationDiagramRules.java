@@ -92,7 +92,7 @@ final class DocumentationDiagramRules {
         if (!path.normalize().equals(root.resolve("README.md").normalize())) return false;
         for (int index = opening - 1; index >= 0; index--) {
             String line = lines.get(index).trim();
-            if (line.startsWith("## ")) return line.equals("## Harta modulelor");
+            if (line.startsWith("## ")) return line.equals("## Module map") || line.equals("## Harta modulelor");
         }
         return false;
     }

@@ -1,59 +1,59 @@
-# Compatibilitate și livrare iOS
+# Compatibility and delivery iOS
 
-## Pe scurt
+## Overview
 
-APK-ul Whist Lab este un pachet Android și nu se instalează pe iPhone sau iPad.
-Proiectul iOS este o aplicație separată cu interfață SwiftUI și folosește motorul
-Java comun prin traducerea J2ObjC. Motorul original continuă să fie sursa regulilor
-de joc, AI, licitare, scor și salvări; adaptorul iOS nu implementează o a doua
-variantă a acestor reguli.
+The apk of the Whist Lab is an Android package and does not install on iPhone or iPad.
+Project iOS is a separate SwiftIU interface application and uses the engine
+Joint Java by J2ObjC translation. The original engine continues to be the source of the rules
+game, AI, bidding, score and save; adapter iOS does not implement a second
+variant of these rules.
 
-Deployment target-ul este iOS 17.0. Calificarea curentă folosește iOS 27.2 și
-Xcode 27.2, cele mai noi versiuni stabile găsite la 7 noiembrie 2026; iOS 27.3
-este încă beta. Versiunile Apple se schimbă; actualizați simultan runner-ul,
-runtime-ul simulatorului și această pagină după verificarea documentației oficiale.
+The Depletion Targetul is iOS 17.0. Current Qualification uses iOS 27.2 and
+Xcode 27.2, latest stable versions found on 7 November 2026; iOS 27.3
+It's still beta. Apple versions change; simultaneously update the runner,
+The simulator runtime and this page after checking official documentation.
 [Versiunile Apple](https://developer.apple.com/news/releases/) ·
-[Matricea Xcode și SDK](https://developer.apple.com/xcode/system-requirements/)
+[Xcode Matrix and SDK](https://developer.apple.com/xcode/system-requirements/)
 
-## Calificarea pe GitHub Actions
+## Qualification on GitHub Actions
 
-Un runner macOS găzduit permite build și teste fără Mac local.
+A macOS hosted runner allows build and tests without local Mac.
 
-- Pentru repository-uri publice, runner-ele standard sunt gratuite și nelimitate.
-- Pentru repository-uri private, consumul folosește minutele incluse, apoi se taxează la tariful planului. Verificați vizibilitatea și facturarea înainte de a estima costul.
-- Imaginea `xcode-27` este public preview și nu are garanțiile unui runner stabil.
-- La 7 noiembrie 2026, imaginea include Xcode 27.2 și simulatorul iOS 27.2. Workflow-ul fixează versiunea în loc să aleagă `latest`.
-[Runner-e și condiții GitHub](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) ·
-[Imaginea curentă macOS Xcode 27](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md) ·
+- For public repositoryes, standard runners are free and unlimited.
+- For private repositorys, consumption uses the minutes included, then is charged at the plan rate. Check visibility and billing before estimating cost.
+- The image `xcode-27` is public preview and has no guarantees of a stable runner.
+- On 7 November 2026, the image includes Xcode 27.2 and the simulator iOS 27.2. the workflower fixes the version instead of choosing `latest`.
+[Runners and conditions GitHub](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) ·
+[Current image macOS Xcode 27](https://github.com/actions/runner-images/blob/main/images/macos/xcode-27-arm64-Readme.md) ·
 [Preview Xcode 27](https://github.blog/changelog/2026-09-10-xcode-27-runner-image-now-runs-on-macos-27/)
 
-Workflow-ul [iOS](../../.github/workflows/ios.yml) verifică pe același commit:
+The [iOS](../../.github/workflows/ios.yml) workshop checks on the same commit:
 
-1. testele JVM ale motorului și adaptorului nativ;
-2. traducerea surselor Java cu J2ObjC;
-3. build-ul aplicației pentru simulator;
-4. smoke test-ul Swift în simulatorul iOS 27.2.
+1. JVM tests of the native engine and adapter;
+2. translation of Java sources with J2ObjC;
+3. The application building for the simulator;
+4. Swift test smoke in simulator iOS 27.2.
 
-J2ObjC 3.1 este fixat în workflow și construit din sursă, deoarece distribuția
-precompilată nu mai este publicată de proiect. J2ObjC este beta și traduce logica,
-nu interfața; SwiftUI rămâne stratul UI nativ. Build-ul din runner califică
-compatibilitatea compilării și a testului automat pentru iOS 27.2, nu fiecare
-versiune intermediară și nici experiența pe dispozitive fizice.
-[J2ObjC — proiect și limite](https://github.com/google/j2objc) ·
-[Construirea J2ObjC](https://developers.google.com/j2objc/guides/building-j2objc)
+J2ObjC 3.1 is fixed in workflow and built from source because distribution
+pre-compiled is no longer published by the project. J2ObjC is beta and translates logic,
+not the interface; SwiftIU remains the native layer of IU. The runner cylinder qualifies
+compatibility of the compilation and automatic test for iOS 27.2, not each
+intermediate version and no experience on physical devices.
+[J2ObjC - project and limits](https://github.com/google/j2objc) ·
+[J2ObjC building](https://developers.google.com/j2objc/guides/building-j2objc)
 
-## Pașii de livrare
+## Delivery steps
 
-1. Rulați workflow-ul `iOS simulator qualification` pe commitul sursă al release-ului.
-2. Verificați rezultatul testului și păstrați `xcresult`-ul atașat run-ului.
-3. Pentru TestFlight sau App Store, arhivați cu Xcode, semnați cu identitatea
-   organizației și validați instalarea pe dispozitive iPhone și iPad.
-4. Publicați separat aplicația iOS prin fluxul Apple. APK-ul și hash-ul Android nu
-   servesc drept asset ori dovadă de instalare iOS.
+1. Run the `iOS simulator qualification` workflow on the source compost of the relay.
+2. Check the test results and keep the `xcresult`the attached to the run.
+3. For TestFlight or App Store, archive with Xcode, sign with identity
+   be able to use the system and validate installation on devices iPhone and iPad.
+4. Publish the iOS app separately through Apple's distribution flow. The Android APK and hash
+   serve only as Android artifacts and evidence.
 
-Runner-ul simulator construiește aplicația fără semnare Apple. Crearea unui IPA
-distribuibil și încărcarea lui în TestFlight/App Store cer un Apple Developer
-Team, certificate, profil de provisioning și pași de release Apple; aceste
-acreditări nu sunt stocate în repository sau în workflow-ul public.
+The simulator runner builds the app without Apple signing. Creation of IPA
+Distribuible and upload it in TestFlight/App Store asking for an Apple Developer
+Team, certificates, profiling profile and Apple release steps; these
+Accreditation is not stored in the reposition or in the public workshop.
 
 [Livrarea Android](ATF_AndroidDelivery.md) · [Proiectul iOS](../../ios/README.md)

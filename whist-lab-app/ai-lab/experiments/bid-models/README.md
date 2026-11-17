@@ -1,69 +1,69 @@
-# Experimente izolate pentru modelarea licitațiilor
+# Isolated experiments for bid modelling
 
-## Pe scurt
+## Overview
 
-Alternativele de aici modifică un mecanism declarat al licitării sau al interpretării ofertelor. [Catalogul cercetării](../../../../config/whist-research-candidates.json) identifică fișierele, baza și colecțiile permise; prezența sursei nu o activează în aplicație.
+The alternatives here modify a declared mechanism of bidding or interpreting offers. [Research catalogue](../../../../config/whist-research-candidates.json) identifies the files, base and allowed collections; the presence of the source does not activate it in the application.
 
-## Ce mecanism se schimbă?
+## What mechanism changes?
 
-| Mecanism | Intrare și efect | Limită de verificare |
+| Mechanism | Entry and effect | Verification limit |
 |---|---|---|
-| Plauzibilitatea unei oferte observate | Mână ipotetică inițială și prefixul disponibil atunci; poate pondera lumile estimate. | Testul distribuției sau al helperului nu califică întregul API al licitării. |
-| Oferte încă necunoscute | Estimarea ordonată a actorilor viitori din prefixul continuării simulate. | Predicția rămâne ipoteză, fără a deveni fapt public observat. |
-| Licitarea ori cartea proprie | Selectarea unei alternative după utilitatea și filtrele politicii. | Cere controale ale API-ului complet și comparație separată pe partide noi. |
+| Plausibility of an observed offer | The initial hypothetical hand and prefix available then; can weighting the estimated worlds. | The distribution or helper test does not qualify the entire API for the bidding. |
+| Offers still unknown | The orderly estimation of future actors in the prefix of the simulated continuation. | Prediction remains a hypothesis, without becoming a public fact observed. |
+| Bidding or own card | Selection of an alternative after the utility and filters of policy. | Ask for full API checks and separate comparison on new parties. |
 
-[Contractul YAML și al modelelor](../../../../docs/ai/ATF_RulesConfiguration.md) deține definițiile și stările. Declarați separat ponderarea, continuarea și obiectivul pentru a putea atribui efectul schimbării.
+[YAML contract and models](../../../../docs/ai/ATF_RulesConfiguration.md) has definitions and states. Declare weighting, continuation and objective separately to be able to attribute the effect of the change.
 
-## Aplicarea unei alternative
+## Application of an alternative
 
 ```mermaid
 flowchart LR
-    CATALOG[Manifest candidat] -->|identifică| BASE[Bază și fișiere]
-    BASE -->|validează| COPY[Copie izolată]
-    COPY -->|primește și confruntă| SOURCE[Surse alternative]
-    SOURCE -->|se califică prin| CHECK[Componente și protocol]
-    CHECK -->|informează| REVIEW[Revizie de promovare]
+    CATALOG[Manifest candidat] -->|identify| BASE[Base and files]
+    BASE -->|validates| COPY[Isolated copy]
+    COPY -->|receive and face| SOURCE[Surse alternative]
+    SOURCE -->|qualifies as| CHECK[Components and protocol]
+    CHECK -->|Inform| REVIEW[Promotion review]
 ```
 
 <details>
-<summary>Legendă: identitatea precede execuția</summary>
+<summary>Legend: identity precedes execution</summary>
 
-[Lansatorul](../../../../scripts/run-whist-collection.ps1) verifică baza, aplică sursele numai în copia temporară și confruntă fișierele copiate cu manifestul. O bază incompatibilă produce refuz; schimbarea hash-urilor pentru a trece controlul nu constituie migrare calificată.
+[Lansatorul](../../../../scripts/run-whist-collection.ps1) checks the base, applies the sources only in temporary copy and confronts the files copied with the manifest. An incompatible basis produces refusal; changing hashes to pass control does not constitute qualified migration.
 
 </details>
 
-## Alegerea intrării
+## Choice of entry
 
-Verificați mai întâi mecanismul schimbat, apoi integrarea candidatului. Probele de mai jos aparțin surselor alternative; execuția lor cere suprapunerea declarată în catalog, cu o bază compatibilă.
+Check the changed mechanism first, then integration of the candidate. The samples below belong to alternative sources; their execution requires the overlap declared in the catalogue, with a compatible basis.
 
-| Întrebarea experimentului | Probă din sursă | Ce rămâne separat |
+| Question of the experiment | Source sample | What remains separate |
 |---|---|---|
-| Cum se interpretează oferta observată? | [LearnedBidEvidenceTest](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) | Decizia completă de licitare și progresul strategic. |
-| Cum se estimează prefixul viitor? | [ConditionedBidForecastTest](r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java) | Observațiile reale și efectul asupra partidei complete. |
-| Cum se schimbă alegerea politicii? | [LargeHandStrategyTest](r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java) și [regresia certificată](r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java) | Evaluarea rezervată și calificarea costului. |
+| How do you interpret the offer you've observed? | [LearnedBidEvidenceTest](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) | Full bidding decision and strategic progress. |
+| How do you estimate the future prefix? | [ConditionedBidForecastTest](r16-bid-forecast/game-core/src/test/java/ro/whistlab/core/ConditionedBidForecastTest.java) | Real observations and effect on the full match. |
+| How does policy choice change? | [LargeHandStrategyTest](r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/LargeHandStrategyTest.java) and [certified regression](r15-bid-and-card/game-core/src/test/java/ro/whistlab/core/CertifiedContractRegressionTest.java) | The reserved assessment and cost qualification. |
 
-Lansatorul aplică numai fișierele candidatului ales. O selecție Gradle care nu conține acea probă sau o bază refuzată nu reprezintă executarea testului prin simpla prezență a sursei.
+The launcher shall apply only the files of the candidate-elect. A Gradle selection which does not contain that sample or a basis refused is not the execution of the test by simple presence of the source.
 
-| Intrare | Utilizare |
+| Intrare | Usage |
 |---|---|
-| `-ResearchCandidate` | Identitate unică din catalog, în colecția permisă acelui candidat. |
-| `-CandidateOverlay` | Manifest extern înghețat, cu contractul [inventarului complet al bazei](../../../../docs/testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului). |
-| `-Collection research` | Componentele de cercetare declarate în Gradle; nu aplică automat sursele din acest director. |
+| `-ResearchCandidate` | Unique identity in the catalogue, in the collection allowed for that candidate. |
+| `-CandidateOverlay` | Frozen external manifest with contract [full base inventory](../../../../docs/testing/ATF_Collections.md#full-identity-of-candidate-base). |
+| `-Collection research` | Research components declared in Gradle; do not automatically apply the sources in this directory. |
 
-Cele două moduri de suprapunere sunt mutual exclusive. Din rădăcina proiectului, pentru un identificator ales din catalog:
+The two ways of overlapping are mutually exclusive. From the project root, for an identifier chosen from the catalogue:
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection regression -ResearchCandidate '<identificator-din-catalog>'
 ```
 
-Colecția `learning` cere și candidatul, corpusul extern, protocolul compatibil și faza din [ghidul colecțiilor](../../../../docs/testing/ATF_Collections.md). Sursele se îngheață înaintea evaluării rezervate; o verificare de dezvoltare nu reface statutul unui lot deja expus.
+Collection `learning` ask also candidate, external corpus, compatible protocol and phase of [Collections Guide](../../../../docs/testing/ATF_Collections.md). Sources shall be frozen prior to the reserved assessment; a development check shall not restore the status of an already exposed batch.
 
-## Cum se citește rezultatul
+## How to read the result
 
-- **Identitate:** comparația folosește sursele și configurația copiei executate; modificarea live nu o recalifică retrospectiv.
-- **Legalitate:** lipsa unei culori dedusă legal restrânge lumile certe; licitația voluntară este indiciu prin modelul declarat.
-- **Domeniul probei:** [testele modelului de ofertă](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) verifică și helperi de plauzibilitate; controlul ofertelor viitoare al acelui helper nu dovedește singur comportamentul `chooseBid`.
-- **Progres:** regresia, costul și comparația pe partide noi au criterii distincte; statutul de cercetare al manifestului rămâne explicit până la promovare.
-- **Retenție:** jocurile, calibrările produse și rezultatele rămân externe. Parametrii versionați identifică implementarea, fără a deveni scoruri istorice în ghid.
+- **Identity: ** The comparison uses the sources and configuration of the copy executed; live modification does not recalibrate it retrospectively.
+- **Legality: ** lack of a legally deduced colour limits the certain worlds; voluntary bid is a clue by the stated model.
+- **Probe domain:** [tests of the tender model](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) checks also plausible helpers; controlling the future offers of that helper does not prove the behaviour alone `chooseBid`.
+- **Progress: ** regression, cost and comparison on new parties have distinct criteria; the research status of the manifesto remains explicit until promotion.
+- **Retention: ** games, product calibrations and results remain external. Versified parameters identify implementation without becoming historical scores in the guide.
 
-[Protocolul promovării](../../../../docs/learning/README.md) · [Componente și oracole](../../../../docs/testing/ATF_AiComponents.md) · [Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md)
+[Promotion protocol](../../../../docs/learning/README.md) · [Parts and oracles](../../../../docs/testing/ATF_AiComponents.md) · [Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md)

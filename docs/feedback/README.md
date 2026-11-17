@@ -1,78 +1,78 @@
 # Feedback Whist Lab
 
-## Pe scurt
+## Overview
 
-Acest registru grupează lacunele, limitele de cercetare și calificările încă necesare.
-Contractele stabile aparțin ghidurilor tematice; fiecare criteriu rămâne deschis până la verificarea nivelului cerut.
+This register groups the gaps, research limits and qualifications still required.
+Stable contracts belong to thematic guidelines; each criterion remains open until the required level is verified.
 
-## Registre active
+## Active registers
 
-[Dosarul activ](../../release/README.md) reunește APK-ul și dovezile versiunii calificate. Candidații intermediari rămân în staging extern; [calificarea livrării](../testing/ATF_ReleaseQualification.md) condiționează înlocuirea dosarului activ.
+[Dosarul activ](../../release/README.md) brings together the APK and evidence of the qualified version. Intermediate candidates remain in external staging; [qualification of delivery](../testing/ATF_ReleaseQualification.md) makes the replacement of the active dossier conditional.
 
-| Arie | Responsabilitate și criterii |
+| Area | Liability and criteria |
 |---|---|
-| [Jucători AI](ATF_Ai.md) | Inferență, estimări, cost și calificarea politicilor pe date noi. |
-| [Android](ATF_Android.md) | Istoric complet, persistență, geometrie, localizare și accesibilitate. |
-| [Interfață comună](ATF_CardUi_Extraction.md) | Limitele dintre prezentarea reutilizabilă și adaptorul Whist: meniu, profil, masă, istoric și animații. |
-| [Browser](ATF_UiBrowser.md) | Geometria de referință și paritatea cu APK-urile pentru adaptorul comun Edge și Chrome. |
-| [Raportare](ATF_Reporting.md) | Calificarea autonomiei, comparațiilor și consumului de memorie în Extent. |
-| [Guvernanță](ATF_Governance.md) | API reutilizabil, perimetru explicit și coeziunea codului. |
-| [Infrastructură locală](ATF_TestInfrastructure.md) | Concurența Kitului, izolarea configurației și costul validării API. |
-| [Realizări Whist](ATF_Achievements.md) | Restaurarea stării ecranului Android și calibrarea cu jucători umani. |
+| [AI players](ATF_Ai.md) | Inference, estimates, cost and policy qualification on new data. |
+| [Android](ATF_Android.md) | Full history, persistence, geometry, location and accessibility. |
+| [Common interface](ATF_CardUi_Extraction.md) | The limits between reusable presentation and the Whist adapter: menu, profile, mass, historical and animation. |
+| [Browser](ATF_UiBrowser.md) | Reference geometry and parity with APKs for the common Edge and Chrome adapter. |
+| [Reporting](ATF_Reporting.md) | Qualification of autonomy, comparisons and memory consumption in Extent. |
+| [Governance](ATF_Governance.md) | Reusable API, explicit perimeter and code cohesion. |
+| [Local infrastructure](ATF_TestInfrastructure.md) | The competition of the kit, the isolation of the configuration and the cost of validating API. |
+| [Whist Achievements](ATF_Achievements.md) | Restoring the status of the Android screen and calibration with human players. |
 
-## ToDo-uri prioritizate
+## Prioritized ToDos
 
-Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentul de finalizare. Evaluarea combină impactul asupra utilizatorului, mărimea golului de verificare, riscul pentru release și claritatea criteriului de închidere. Fiecare rând indică registrul normativ; scorul se revizuiește când se schimbă riscul ori dovada, iar criteriile rămân deschise până la închiderea lor acolo.
+The 1–100 score expresses the recommended order of work, not the quality or percentage of completion. The assessment combines the impact on the user, the size of the verification gap, the risk for release and the clarity of the closure criterion. Each row shall indicate the normative register; the score shall be revised when the risk or proof changes and criteria shall remain open until they are closed there.
 
-| ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
+| ID | Priority | Score | ToDo remaining and short closing criterion |
 |---|---:|---:|---|
-| RPT-01 | P1 | 95 | Verifică fiecare producător prin HTML detașat și controale negative pentru conținut lipsă, extern ori atribuit greșit. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
-| RPT-02 | P1 | 94 | Probează pe producătorii rămași respingerea invocărilor pierdute și utilitatea comparațiilor originale, inclusiv la FAIL, ERROR și SKIP. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
-| AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |
-| AND-02 | P1 | 92 | Califică pe APK actorul, geometria stabilă și mâna vizibilă în licitație/joc/AutoGame pentru 3–6 locuri, RO/EN și text mărit. [Registru](ATF_Android.md) |
-| AI-01 | P1 | 91 | Calibrează inferența Hard pentru 2–8 cărți din licitații și cărți jucate pe loturi noi; separă exactitatea probabilităților de scorul simulat. [Registru](ATF_Ai.md) |
-| ACH-01 | P1 | 90 | Califică pe APK restaurarea poziției și selecției din Realizări, apoi reluarea notificărilor după recrearea activității. [Registru](ATF_Achievements.md) |
-| AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
-| RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
-| UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și verifică nativ intrarea Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
-| AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
-| WEB-07 | P2 | 79 | Califică setările, reluarea, Joacă din nou și istoricul în APK și Chrome pe același Android, în RO/EN și cu text mărit. [Registru](ATF_UiBrowser.md#calificarea-pe-același-dispozitiv) |
-| WEB-11 | P2 | 78 | Califică rangurile și glifele într-o mână de 17 cărți, la text mărit pe Chrome Android. [Registru](ATF_UiBrowser.md#calificarea-pe-același-dispozitiv) |
-| AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Registru](ATF_Ai.md#evoluția-motorului) |
+| RPT-01 | P1 | 95 | Check each manufacturer via detached HTML and negative controls for missing, external or misassigned content. [Register](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) |
+| RPT-02 | P1 | 94 | Probe on remaining producers to reject lost claims and the usefulness of original comparisons, including Fail, ERROR and SKIP. [Register](ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) |
+| AND-01 | P1 | 93 | Demonstrates the recovery of checkpoint after corruption or interruption, keeping user data or reporting explicit error. [Register](ATF_Android.md) |
+| AND-02 | P1 | 92 | Qualify on APK actor, stable geometry and visible hand in bidding, play and AutoGame for 3–6 places, RO/EN and increased text. [Register](ATF_Android.md) |
+| AI-01 | P1 | 91 | Calibrate Hard inference for 2–8 Bidding cards and cards played on new lots; separate the accuracy of probabilities from the simulated score. [Register](ATF_Ai.md) |
+| ACH-01 | P1 | 90 | Qualify on APK restoration of position and selection from Achievements, then resume notifications after recreation of activity. [Register](ATF_Achievements.md) |
+| AND-03 | P1 | 89 | Qualify API 37, navigation of the system, resumption, enlarged fonts and memory on an identified device. [Register](ATF_Android.md) |
+| RPT-03 | P1 | 88 | Publish large suites within the declared limit of the heap, without repeated copies of HTML and without losing JUnit or comparisons to failure. [Register](ATF_Reporting.md#rpt-bounded-report-heap---safe-completion-for-large-suites) |
+| UI-01 | P1 | 86 | Qualify header, boxes and notifications on consumer APKs and check the name's entry of Unicode. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
+| AI-02 | P2 | 82 | Measure the opportunities, the conversions to 500, effect on the ranking and latency on new lots, with natural game separate from the controlled prefix. [Register](ATF_Ai.md#playing-for-zero) |
+| WEB-07 | P2 | 79 | Qualify settings, resume, Play again and history in APK and Chrome on the same Android in RO/EN and with increased text. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
+| WEB-11 | P2 | 78 | Qualify rank and glyphs in a handful of 17 Books, to the text enlarged on Chrome Android. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
+| AI-03 | P2 | 76 | Withdraw the management and reuse of samples from MonteCarloai without changing the facade; fix random order, reply, cancellation and budget by components. [Register](ATF_Ai.md#engine-evolution) |
 
-## Responsabilitatea schimbării
+## Change ownership
 
 ```mermaid
 flowchart LR
-    ISSUE[Lacună identificată] -->|atribuie| OWNER[Responsabil]
-    OWNER -->|definește| CRITERION[Criteriu și nivel]
-    CRITERION -->|verifică| CHECK[Rezultat reproductibil]
-    CHECK -->|promovează regula în| CONTRACT[Documentul responsabil]
+    ISSUE[Locked gap] -->|atribuie| OWNER[Owner]
+    OWNER -->|define| CRITERION[Criterion and level]
+    CRITERION -->|checks| CHECK[Rezultat reproductibil]
+    CHECK -->|promote the rule in| CONTRACT[Documentul responsabil]
 ```
 
 <details>
-<summary>Legendă: închiderea unui criteriu</summary>
+<summary>Legend: Closure of criteria</summary>
 
-Un criteriu numește comportamentul, sursa și nivelul de verificare necesar. Regula stabilă se documentează la responsabil, iar rezultatele concrete și materialele de investigație rămân externe.
+A criterion shall be called the necessary behaviour, source and level of verification. The stable rule shall be documented with the responsible and the concrete results and investigative material shall remain external.
 
 </details>
 
-Core, Reporting, Console și Mock sunt consumate ca perechi binare versionate JAR/POM. Acest proiect deține verificarea contractelor pe care le folosește, proveniența perechii, integrarea locală și documentarea oricărei limitări observate; hash-ul și coordonatele sunt sursa de identitate.
-[Ghidul editorial Whist](../governance/ATF_Documentation.md) deține regulile documentare și verificarea lor în checkout.
+Core, Reporting, Console and Mock are consumed as binary pairs in JAR/POM. This project holds the verification of the contracts it uses, the provenance of the pair, local integration and documentation of any observed limitations; hash and coordinates are the source of identity.
+[Ghidul editorial Whist](../governance/ATF_Documentation.md) has the rules of documentation and their verification in checkout.
 
-## Închiderea și promovarea
+## Closure and promotion
 
-- Păstrați distincte defectul demonstrat, calificarea lipsă și ipoteza de cercetare.
-- Verificați cazul nominal, refuzul relevant și identitatea surselor înainte de închidere.
-- Promovați regula stabilă în ghidul său și eliminați numai criteriul demonstrat.
-- Fiecare lucrare deschisă are un singur registru responsabil; README-urile explică mecanismul și trimit la acel criteriu.
-- Păstrați controalele tehnice active până la reconcilierea lor explicită.
-- Actualizați toate referințele la consolidare; o schimbare de director nu dovedește rezolvarea comportamentului.
+- Keep the proven defect distinct, missing qualification and research hypothesis.
+- Check the nominal case, relevant refusal and identity of sources prior to closure.
+- Promote the stable rule in his guide and remove only the criterion shown.
+- Each open work has one responsible register; the READMEs explain the mechanism and send to that criterion.
+- Keep the technical checks active until their explicit reconciliation.
+- Update all references to consolidation; a change of directory does not prove to resolve behavior.
 
-## Contractul comun de autonomie
+## Joint contract of autonomy
 
-Rapoartele trebuie să se deschidă și să poată fi auditate fără runner, JAR adițional sau fișiere auxiliare. HTML-ul păstrează contextul, comparațiile și capturile inline; consumatorul verifică acest contract în [feedback-ul raportării](ATF_Reporting.md).
+The reports must be opened and audited without runner, additional JAR or ancillary files. HTML keeps the context, comparisons and inline catches; the consumer verifies this contract in [reporting feedback](ATF_Reporting.md).
 
-## Suportul comun al testelor
+## Common test support
 
-Kitul este consumat după perechea JAR/POM fixată. Testele locale verifică integrarea, lifecycle-ul, concurența folosită și propagarea cauzelor; rezultatele unei biblioteci nu înlocuiesc calificarea adaptorului Android sau a suitei de produs.
+The kit is consumed by the set JAR/POM pair. Local tests check integration, lifecycle, competition and case propagation; the results of a library do not replace the qualification of the Android adapter or product suite.

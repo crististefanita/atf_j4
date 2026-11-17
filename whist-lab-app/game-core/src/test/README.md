@@ -1,42 +1,42 @@
-# Testele motorului Whist
+# WHIST engine tests
 
-## Pe scurt
+## Overview
 
-Testele verifică regulile, sesiunile și politicile din observația permisă actorului. [Strategia comună](../../../../docs/testing/README.md) deține nivelurile și criteriile; acest catalog delimitează colecțiile motorului și costul lor.
+The tests check the rules, sessions and policies of the observation allowed to the actor. [Common strategy](../../../../docs/testing/README.md) has the levels and criteria; this catalogue delimits the engine collections and their cost.
 
-## Colecții și oracole
+## Collections and oracles
 
-| Familie | Proprietate și limită |
+| Familie | Property and limit |
 |---|---|
-| Reguli și scor | Cărți legale, câștigător, contracte, serii și vecinii invalizi, cu așteptări independente. |
-| Sesiune și restaurare | Comenzi, avansarea unică a mâinii, istoric și refuzul stărilor inconsistente. |
-| Politică AI | Observația actorului, legalitatea, necesarul și alegeri justificate în domenii controlate. |
-| Joc la 0 | Scorul final în ambele variante românești, tranziția AI către zero exact și păstrarea strategiei obișnuite când locul al doilea rămâne posibil. |
-| Cercetare | Inferență și continuări experimentale, separate de regresia implicită. |
-| Evaluare offline | Roluri, surse și loturi identificate; progresul strategic are protocol și date rezervate proprii. |
+| Rules and score | Legal cards, winners, contracts, series and invalid neighbours, with independent expectations. |
+| Session and restoration | Orders, unique hand advancement, historical and refusal of inconsistent states. |
+| A.I. policy | The actor's observation, legality, necessity and justified choices in controlled areas. |
+| Playing for zero | The final score in both Romanian variants, the transition of AI to exact zero and the maintenance of the usual strategy when second place remains possible. |
+| Cercetare | Experimental interference and sequelae, separated from the implicit regression. |
+| Offline evaluation | Rolls, sources and lots identified; strategic progress has its own protocol and reserved data. |
 
-## Alegerea execuției
+## Choice of execution
 
-[Colecțiile proiectului](../../../../docs/testing/ATF_Collections.md) aleg sarcinile din [Gradle](../../build.gradle). [Intrarea JVM](../../../algorithm-build/README.md) permite verificări fără SDK Android; folosiți copii temporare și output extern.
+[Project collections](../../../../docs/testing/ATF_Collections.md) choose the tasks of [Gradle](../../build.gradle). [Intrarea JVM](../../../algorithm-build/README.md) allows checks without Android SDK; use temporary copies and external output.
 
-O regresie mică fixează regula și defectul distinct, fără a rula din nou întregul corpus de antrenare. Cercetarea, arena și evaluarea rezervată se selectează explicit și nu se adună la regresie ca teste unice noi.
+A small regression fixes the rule and the distinct defect without running the entire training corpus again. Research, arena and reserved evaluation shall be explicitly selected and shall not be gathered at regression as unique new tests.
 
-## Interpretarea rezultatului
+## Outcome interpretation
 
-Corectitudinea unei reguli, costul unei decizii și superioritatea politicii sunt calificări diferite. [Protocolul de învățare](../../../../docs/learning/README.md) păstrează proveniența, selecția și criteriile de promovare; un rollout ori un certificat finit nu garantează câștigarea fiecărei partide.
+The fairness of a rule, the cost of a decision and the superiority of policy are different qualifications. [Learning protocol](../../../../docs/learning/README.md) maintains the provenance, selection and promotion criteria; a rollout or a finite certificate does not guarantee each party's winning.
 
-## Evaluarea jocului la 0
+## Game evaluation at 0
 
-Sarcina `:game-core:zeroMatchPairedTest` rulează explicit partide complete pe JVM. Perechea păstrează locurile, seria, distribuția, ordinea mâinilor și atuurile, cu regula dezactivată și activată.
+Pregnancy `:game-core:zeroMatchPairedTest` explicitly runs full parties on JVM. The pair shall retain the seats, series, distribution, order of hands and the trunks, with the rule disabled and activated.
 
 | Parametru Gradle | Rol |
 |---|---|
-| `whist.zero.firstSeed`, `whist.zero.repeats` | Intervalul determinist de distribuții pentru fiecare combinație de variantă și număr de locuri. |
-| `whist.zero.pressure` | Alege lotul cu prefix controlat, în care un loc primește licitații adverse legale înainte de ultimele cinci mâini. Loturile naturale și controlate se interpretează separat. |
-| `whist.zero.allHard` | Alege un lot natural cu Hard la toate locurile. Opțiunea se folosește separat de prefixul controlat. |
-| `whist.zero.output`, `whist.zero.reference` | Scrie perechile JSON într-un dosar nou și confruntă controlul cu referința înghețată, când este disponibilă. |
-| `whist.auditOutput`, `whist.auditSource` | Destinația Extent și identificarea sursei de execuție. |
+| `whist.zero.firstSeed`, `whist.zero.repeats` | The deterministic range of distributions for each combination of variant and number of places. |
+| `whist.zero.pressure` | Choose the controlled prefix lot, where a place receives legal adverse bids before the last five hands. Natural and controlled lots shall be interpreted separately. |
+| `whist.zero.allHard` | Pick a natural lot with Hard at all places. The option is used separately from the controlled prefix. |
+| `whist.zero.output`, `whist.zero.reference` | Write the JSON pairs into a new folder and face control with the frozen reference when available. |
+| `whist.auditOutput`, `whist.auditSource` | Extent destination and identification of the execution source. |
 
-JSON-ul reține mutările publice, scorurile, alegerile către zero și amprentele distribuțiilor. Compararea finală separă intervalele de dezvoltare de cele rezervate.
+The JSON retains public moves, scores, zero choices and distribution prints. The final comparison separates the development and reserved intervals.
 
-[Motorul](../../README.md) · [Strategia comună](../../../../docs/testing/README.md) · [Proiectarea componentelor AI](../../../../docs/testing/ATF_AiComponents.md)
+[Motorul](../../README.md) · [Common strategy](../../../../docs/testing/README.md) · [Design of AI components](../../../../docs/testing/ATF_AiComponents.md)

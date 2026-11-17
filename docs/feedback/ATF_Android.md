@@ -1,116 +1,116 @@
-# Istoricul partidei și calificarea interfeței
+# Match history and interface qualification
 
-## Pe scurt
+## Overview
 
-Motorul deține datele partidei, iar aplicația Android deține persistența și prezentarea lor. Modificările interfeței se califică pe binarul efectiv instalat, cu starea și scopul scenariului declarate.
+The engine holds the game data, and the Android app holds their persistence and presentation. The changes in the interface shall qualify for the actual installed binary with the status and purpose of the declared scenario.
 
-## Acceptanța nativă a proporțiilor și ordinii
+## Native acceptance of proportions and order
 
-Ghidul profilurilor de afișaj deține geometria și textul. Registrul interfeței comune deține extragerea componentelor reutilizabile. [Profiluri](../testing/ATF_Display.md#profil-și-domeniu-de-calificare) · [Interfață comună](ATF_CardUi_Extraction.md)
+The display profiles guide holds geometry and text. The common interface registry holds the extraction of reusable components. [Profiluri](../testing/ATF_Display.md#profiles-and-field-of-qualification) · [Common interface](ATF_CardUi_Extraction.md)
 
-| Prioritate | Calificare rămasă | Criteriu de închidere |
+| Priority | Rated rating | Closure criterion |
 |---|---|---|
-| P1 | Extinderea calificării native dincolo de profilul compact; componentele nu substituie fonturile și interacțiunea Android. | Profil înalt și text mărit: 13 cărți, levată completă la 5 locuri și succesiunea actorilor la 3/5/6 locuri, cu nume și indici lizibili. Păstrați capturile, XML-ul și hash-ul APK-ului, fără repetarea unei partide complete pe fiecare profil. |
-| P1 | Extinderea probei compacte de AutoGame către matricea nativă a actorului și a pozițiilor. | Pe APK-ul identificat, verificați licitarea și jocul la 3–6 locuri, în RO/EN și pe profil compact plus text mărit: numai actorul curent are badge, badge-ul rămâne vizibil când AutoGame joacă locul omului, comenzile manuale rămân blocate, iar colectarea levatei și ecranul scorului nu marchează un actor. Locurile nu se deplasează la schimbarea fazei, iar fața și ridicarea cărții rămân vizibile. Componentele verifică proiecția și geometria; numai observația Android cu APK/hash și captură poate închide criteriul. |
+| P1 | Extension of native qualification beyond the compact profile; components do not substitute the fonts and Android interaction. | High profile and increased text: 13 cards, fully levitated to 5 seats and the actors' succession to 3/5/6 places, with legible names and indices. Keep the catches, XMLs and APK hashs without repeating a full party on each profile. |
+| P1 | Extend AutoGame's compact sample to the native matrix of the actor and positions. | On the identified APK, check the bidding and the game at 3–6 places, in RO/EN and on compact profile plus increased text: only the current actor has badge, the badgeul remains visible when AutoGame plays the human player's seat, the manual controls remain locked, and the collection of the trick and the score screen does not mark an actor. The places do not move when the phase changes, and the face and the lifting of the card remain visible. Components check projection and geometry; only Android observation with APK/hash and catch can close the criterion. |
 
-Dosarele de livrare păstrează proba compactă cu 13 cărți și auditul indicilor, precum și proba AutoGame la patru locuri cu o carte, marcajul la joc manual și ecranul de scor. Acceptanța pe mâna de 17 cărți verifică derularea orizontală și stabilitatea chenarelor. Rămân deschise marcajul în timpul mutării automate rapide și matricea cu text mărit. [Catalogul livrărilor](../../release/README.md)
+Delivery files keep the sample compact with 13 cards and audit of the indices, as well as the AutoGame test at four places with a card, the hand-game marking and the score screen. Acceptance on hand 17 cards check horizontal roll and box stability. The marking remains open during the fast automatic move and the matrix with increased text. [Release catalog](../../release/README.md)
 
-## Compatibilitatea istoricului
+## The compatibility of history
 
-### P1 — calificarea nativă a istoricului cu două coloane
+### P1 - Native qualification of the two-column history
 
-Prefixul nativ confirmă un rând complet și reluarea în română și engleză. Matricea de mai jos urmărește restul populației și marcajele în raster. Componentele califică proiecția, persistența și geometria.
+The native prefix confirms a complete row and the resumption in Romanian and English. The matrix below follows the rest of the population and the raster markings. The components qualify for projection, persistence and geometry.
 
-| Suprafață | Criteriu de închidere |
+| Surface | Closure criterion |
 |---|---|
-| Două coloane | Exact licitat și punctajul total după fiecare mână per jucător; coloana `P` afișează soldul rândului, inclusiv zero și valori negative, fără o a treia coloană. RO/EN, text normal și mărit, prima și ultima mână și toate locurile, pe un APK care include acest contract. |
-| Dreptunghi de serie | Contur normal numai după cinci realizări eligibile consecutive; contur roșu după cinci ratări eligibile consecutive, inclusiv când totalul rămâne pozitiv. Bonusurile și penalizările ±5/±10 încadrează totalul numai pe rândul plății, exclusiv în celula `P`; licitația, antetul, vecinii și rezultatele fără plată nu primesc dreptunghi. |
-| Randare | Captura originală confirmă cele patru laturi, lizibilitatea numărului și semnului, spațiul până la contur și lipsa intersecțiilor, inclusiv la text mărit. Prezența nodului în XML nu demonstrează dreptunghiul, iar un raport al unui APK anterior nu califică noul marcaj. |
-| Tăietură oblică | O licitație ratată are marcaj vizibil în rasterul Android, inclusiv la zero și text mărit; numai culoarea roșie sau descrierea accesibilă nu certifică tăietura. Comparați cu un contract reușit și păstrați lizibilitatea cifrei. |
-| Integritate | Explorarea și reluarea păstrează totalurile și toate rândurile; marcajul rămâne asociat mâinii și locului corect. |
-| Separatoare | Țintă de 2,1 dp, rotunjită în pixeli o singură dată; toate granițele jucătorilor rămân aliniate între antete și corp. PNG-ul de componentă califică geometria și culoarea în randarea JVM; fontul și pixelii Android cer APK identificat. |
+| Two columns | The exact bid and the total score after each hand per player; column `P` displays the balance of the row, including zero and negative values, without a third column. RO/EN, text normal and enlarged, first and last hand and all places, on an APK that includes this contract. |
+| Serial Rectangle | Normal contour only after five consecutive eligible outputs; red contours after five consecutive eligible failures, including when the total remains positive. Bonuses and penalties ± 5 / ± 10 shall be set in total only by payment row, exclusively in cell `P`; the bid, header, neighbor and unpaid results shall not be rectangle. |
+| Randare | The original catch confirms the four sides, the legibility of the number and the sign, the space to the contour and the lack of intersections, including the increased text. The presence of the node in XML does not demonstrate the rectangle and a report of an earlier APK does not qualify for the new marking. |
+| Blunt-cut | A failed bid has a visible mark in the Android raster, including zero and increased text; only the red colour or accessible description does not certify the cut. Compare with a successful contract and keep the cipher readable. |
+| Integritate | Exploration and resumption shall retain the totals and all rows; the marking shall remain in the right hand and place. |
+| Separatoare | Target of 2,1 dp, rounded in pixels once only; all player boundaries remain aligned between headers and body. The component NGL qualifies geometry and color in JVM rendering; Android font and pixels require APK identified. |
 
-[ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) păstrează sufixele cunoscute ale licitațiilor și levatelor. Punctele se derivă din solduri, iar ratarea compară licitatul cu levatele; nu se deduce din culoare sau semnul punctajului.
+[ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) keeps known suffixes of bids and tricks. The points derive from the hips and the failure compares the bid with the tricks; they do not deduce from the color or mark of the score.
 
-| Prioritate | Cerință rămasă | Criteriu de închidere |
+| Priority | Remaining requirement | Closure criterion |
 |---|---|---|
-| P2 | Acceptanța nativă a importului unui registru vechi rămâne distinctă de componentele migrării. | Reluarea păstrează soldurile și prefixul necunoscut; numai rezultatul demonstrabil primește marcaj. Verificați asocierea loc–mână–licitat–levate–puncte–total. |
+| P2 | The native acceptance of the import of an old register remains distinct from the components of migration. | The resumption shall retain the outstanding and the unfamiliar prefix; only the demonstrable result shall be marked. Check the hand-auctioned-point-total combination. |
 
-Un sold sau o diferență de puncte nu justifică reconstruirea unor levate lipsă. Contractul implementat și limita migrării rămân în [modelul istoricului](../game/ATF_ScoreHistory.md).
+A balance or a difference of points does not justify rebuilding some missing levatates. The contract implemented and the migration limit remain in [model of history](../game/ATF_ScoreHistory.md).
 
-## Meniu, ajutor și configurare
+## Menu, Help and Configuration
 
-[Componentele regulilor](../testing/ATF_GradleComponents.md) leagă ajutorul RO/EN de motor. Componentele checkpoint-ului verifică setările de serie active și dezactivate pentru ambele variante românești și ambele valori. Scenariul Android păstrează deschiderea și derularea ajutorului, selectarea bonusului și reluarea aceleiași partide după repornire.
+[Componentele regulilor](../testing/ATF_GradleComponents.md) connects the aid RO/EN to the engine. The components of the checkpoint check active and disabled series settings for both Romanian variants and both values. The Android scenario keeps the opening and running of aid, the selection of the bonus and the resumption of the same party after restart.
 
-Pentru Realizări, componenta prezentării redeschide progresul din stocare simulată și verifică primul capitol și condiția localizată a obiectivului. Sesiunea nativă demonstrează traseul meniu, catalog, detaliu și revenire.
+For Achievements, the presentation component reopens the progress in simulated storage and verifies the first chapter and the localized condition of the target. The native session demonstrates the menu route, catalogue, detail and return.
 
-## Persistență și coordonare
+## Persistence and coordination
 
-[Comenzile și salvarea](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#comenzi-salvare-și-erori) au porturi de componentă pentru refuz, checkpoint, clasament și continuare. Randarea nu înregistrează rezultate; recuperarea stocării native și costul pe dispozitiv păstrează calificare distinctă.
+[Orders and rescue](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md#orders-rescue-and-error) have port components for refusal, checkpoint, rankings and continuation. The yield is not performing; the recovery of native storage and the cost per device shall be kept separate.
 
-| Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
+| Priority | Lacquer and source | Level and criterion of closure |
 |---|---|---|
-| P1 | Recuperarea stocării Android: checkpoint-ul `SharedPreferences` și clasamentul `AtomicFile` nu au acceptanță nativă după corupere sau întrerupere. | Android pe APK identificat: întrerupere controlată, recuperare sau eroare explicită, datele utilizatorului păstrate; componentele serializării și porturile de stocare rămân verificări separate. |
-| P2 | Latența checkpoint-ului sincron nu este calificată pe dispozitiv; ordinea componentelor nu certifică reactivitatea. | Mediu și stare identificate, costul scrierii separat de calculul AI și randare; păstrați ordinea și cauza erorii înaintea unei eventuale mutări a I/O între executori. |
+| P1 | Recovery of Android storage: checkpoint `SharedPreferences` and ranking `AtomicFile` do not have native acceptance after corruption or interruption. | Android on APK identified: controlled interruption, recovery or explicit error, user data stored; serialisation components and storage ports remain separate checks. |
+| P2 | The latency of the syncron checkpoint is not qualified on the device; the order of components does not certify reactivity. | Environment and status identified, cost of writing separately from the calculation of AI and rendering; keep order and cause of error before any movement of I/O between executors. |
 
-## Calificarea modificărilor vizuale
+## Qualification of visual changes
 
-| Prioritate | Suprafață | Verificare necesară înainte de acceptare |
+| Priority | Surface | Required check prior to acceptance |
 |---|---|---|
-| P2 | Colectarea levatei: legarea nativă a porturilor calificate prin componente | APK identificat la 3–6 locuri: măsurarea și clipping-ul corespund scenei, transformările se restaurează la anulare, iar ultima levată precedă scorul. Confruntați `onPause`/reluarea, meniul și dialogurile suprapuse, redimensionări consecutive, notificări de configurație, detașarea și animațiile dezactivate. Numai ultima geometrie poate primi scena nouă; un callback întârziat nu reia ruta abandonată și nu consumă timpul suspendat. Politica portret rămâne cea din manifest; probele cu ceas și evenimente controlate nu califică pixelii sau fluiditatea. |
-| P1 | Masă, carte și atu | Profiluri declarate, text mărit, intersecții reale, coordonate logice mapate la raster și revizie a capturii originale. |
-| P1 | Istoric și reluare | Toate mâinile încheiate și toate locurile accesibile, fără acordarea repetată a punctelor ori avansarea partidei. |
-| P1 | Accesibilitate și localizare | Ordine asistată, etichete ale valorilor necunoscute ori negative, primul și ultimul element derulabil în ambele limbi. La text mărit, confruntați separat titlul integral al dialogului și numele din prima/ultima coloană, înainte și după derulare; calificarea regiunii legendei nu demonstrează lizibilitatea acestor regiuni. |
-| P2 | Nume configurat și insignă de tură | Verificați numele la lungimea maximă acceptată, în toate pozițiile și cu insigna activă; identitatea vizibilă trebuie să fie lizibilă, iar prescurtarea să aibă o regulă explicită și acces la numele complet. |
+| P2 | trick collection: native binding of qualified ports through components | APK identified at 3–6 places: measurement and clipping match the scene, transformations return to cancellation, and the last trick precedes the score. Confront `onPause` / restart, menu and overlapping dialogues, consecutive redimensioning, configuration notifications, detachment and disabled animations. Only the last geometry can receive the new scene; a delayed callback does not resume the abandoned route and does not consume the suspended time. The portrait policy remains the one in the manifesto; the watch and event tests do not qualify pixels or fluidity. |
+| P1 | Table, card and trump | Profiles declared, text enlarged, real intersections, logically coordinated mapped at raster and revision of original catch. |
+| P1 | History and Resume | All hands closed and all accessible places without repeated points or advance the match. |
+| P1 | Accessibility and location | Ordnance assisted, labels of unknown or negative values, first and last removable in both languages. In the enlarged text, face the full title of dialogue and the names of prima/ultima column separately before and after the course; the qualification of the region of legend does not demonstrate the legibility of these regions. |
+| P2 | Configured name and shift badge | Check the name at the maximum accepted length in all positions and with the active badge; the visible identity must be legible and the abbreviation must have an explicit rule and access to the full name. |
 
-- **Regiune:** acțiunea turei are o regiune măsurată deasupra chenarului; componentele verifică dimensiunile și separarea pentru text mărit.
-- **Observație:** E2E folosește același decodor pentru joc și licitare; acceptanța nativă rămâne necesară pentru glyph-uri, împărțirea reală pe rânduri și capturi în RO/EN.
+- **Region: ** the action of the shift has a region measured above the box; the components check the dimensions and separation for the increased text.
+- **Observation: ** E2E uses the same decoder for playing and bidding; native acceptance remains necessary for glyphs, actual division by rows and catches in RO/EN.
 
-- **Sanity:** observați acțiunea integrală deasupra numelui la toate locurile active, inclusiv după schimbarea turei și la revenirea din pauză.
-- **Istoric:** verificați prima și ultima coloană după derulare, etichetele numerice ale cărților și continuitatea separatoarelor dintre jucători.
+- **Sanity: ** notice the full action above the name at all active places, including after changing shift and returning from break.
+- **History: ** check the first and last column after running, the numerical tags of the cards and continuity of the separators between the players.
 
-O schimbare de geometrie sau stil se leagă de sursele și APK-ul inspectate. Calificarea pe dispozitiv și auditul componentelor sunt înregistrări distincte, păstrate extern.
+A change of geometry or style is linked to the sources and APK inspected. The device qualification and component audit are separate records, kept externally.
 
-- **Atu comun:** sanity-ul compară dimensiunile ramei la aceeași densitate și scară de text, în toate modurile, cu o carte întoarsă, o culoare și lipsa atuului. Verifică cele două regiuni complete și identitatea accesibilă, fără un rând suplimentar despre absența cărții.
-- **Depunere:** verificați butonul cu textul RO/EN complet, la font normal și mărit; conturul retras rămâne separat de ținta tactilă. [Contractul display](../testing/ATF_Display.md) deține dimensiunile și criteriile comune.
+- **Common: ** Sanityul compares the size of the frame at the same density and scale of text in all ways with a turned card, a color and lack of the edge. Check the two complete regions and the accessible identity without any additional line about the absence of the card.
+- **Deposit:** check the text button RO/EN complete, at normal font and enlarged; the withdrawn outline remains separate from the tactile target. [Contractul display](../testing/ATF_Display.md) be of common size and criteria.
 
-## Acceptanță nativă Android 17
+## Native Acceptance Android 17
 
-Protecția ferestrei și calculul spațiului util sunt implementate; acceptanța pe API 37 rămâne distinctă de componente și de verificarea pe un alt sistem Android. Comparația între versiuni cere identitatea ambelor APK-uri și a dispozitivului.
+Window protection and calculation of useful space are implemented; the acceptance on API 37 remains distinct from the components and verification on another Android system. The comparison between versions requires the identity of both APKs and the device.
 
-| Prioritate | Cerință rămasă | Criteriu de închidere |
+| Priority | Remaining requirement | Closure criterion |
 |---|---|---|
-| P1 | API 37: fereastră, reluare și memorie | Pe un dispozitiv identificat: navigare prin gesturi și trei butoane, decupaj, tastatură, reluare și câteva mâini; înregistrați memoria, motivul ieșirii și hash-ul APK-ului, fără modificarea limitelor sistemului. |
+| P1 | API 37: window, rerun and memory | On an identified device: navigation through gestures and three buttons, decoupage, keyboard, restart and some hands; record memory, reason of output and APK hash without changing system boundaries. |
 
-[Contractul livrării](../platform/ATF_AndroidDelivery.md) distinge padding-ul cu IME de măsurarea ferestrei fără IME și definește restaurarea și diagnosticul de memorie. Componentele verifică modelul, iar criteriul nativ rămâne deschis până la execuția callback-urilor și a scenariului pe sistemul țintă.
+[Delivery contract](../platform/ATF_AndroidDelivery.md) distinguishes the Padding with the IME from the measurement of the window without the IME and defines the restoration and diagnosis of memory. Components shall verify the model and the native criterion shall remain open until the callbacks and scenario are executed on the target system.
 
-## Memoria adaptorului
+## Adapter memory
 
-Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
+The memory limit of the adapter remains distinct from the geometry of the interface.
 
-| Prioritate | Lacună și sursă | Nivel și criteriu de închidere |
+| Priority | Lacquer and source | Level and criterion of closure |
 |---|---|---|
-| P2 | [CommandProcess](../../atf-test-android/src/main/java/atf/android/process/CommandProcess.java) citește fluxurile integral, fără bugete separate pentru text și binar. | Componente cu ieșire controlată: depășire explicită a fiecărui buget, memorie delimitată și PNG incomplet refuzat înaintea publicării; termenul și cauza inițială se păstrează. |
+| P2 | [CommandProcess](../../atf-test-android/src/main/java/atf/android/process/CommandProcess.java) reads the flows in full, without separate budgets for text and binary. | Components with controlled output: explicit outflow of each budget, demarcated memory and incomplete PNG refused prior to publication; the term and initial cause shall be maintained. |
 
 ## Contractele responsabile
 
-- [Scenariile de profil, istoric, clasamente și serii](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii) dețin mecanismele automatizate și precondițiile; existența scenariului nu califică o versiune.
-- [Componentele display](../testing/ATF_DisplayComponents.md) dețin mock-urile și izolarea cache-ului; fonturile și interacțiunea nativă au verificare distinctă.
-- [Calificarea publicării](ATF_Reporting.md) păstrează lacuna validării timpurii a checkpoint-ului; [predarea rezultatelor](../reporting/ATF_Handoff.md) deține distincția dintre verdictul funcțional și publicare.
-- [Guvernanța publicării](../testing/ATF_ReleaseQualification.md#valabilitatea-dovezilor) urmărește lansatorul și reluarea după un răspuns GitHub incomplet. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-și-preflight-înainte-de-maven) definește identitatea dosarului și legarea auditului publicat.
+- [Profiling, history, leaderboards and series scenarios](../testing/ATF_Android.md#profile-history-leaderboards-and-series) has automated mechanisms and preconditions; the existence of the scenario does not qualify for a version.
+- [Componentele display](../testing/ATF_DisplayComponents.md) holds mockery and cachet insulation; fonts and native interaction have separate verification.
+- [Qualification of publication](ATF_Reporting.md) keeps the gap in the early validation of checkpoint; [handing over results](../reporting/ATF_Handoff.md) holds the distinction between functional verdict and publication.
+- [Governance of publication](../testing/ATF_ReleaseQualification.md#evidence-freshness) follows the launcher and resumes after an incomplete GitHub response. [Ghidul RAG](../testing/ATF_ReleaseQualification.md#snapshot-and-preflight-before-maven) defines the identity of the file and the connection of the published audit.
 
-[Testarea Android](../testing/ATF_Android.md) · [Profiluri de ecran](../testing/ATF_Display.md) · [Atlasul interfeței](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
+[Testarea Android](../testing/ATF_Android.md) · [Screen profiles](../testing/ATF_Display.md) · [Interface Atlas](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
 
-## Costul acceptanței pe dispozitiv
+## Cost of acceptance on device
 
-- Măsurați separat rezervarea, pregătirea profilului, comenzile ADB, execuția și restaurarea. Confruntați fereastra activă pentru a atribui corect o întrerupere.
-- Validați fiecare referință Extent la captura originală. Reluați fluxurile fără dovadă acceptată pentru același APK, snapshot și profil. [Calificarea livrării](../testing/ATF_ReleaseQualification.md#profiluri-de-lucru-pentru-reluare)
+- Measure the reservation, profile preparation, ADB commands, execution and restoration separately. Face the active window to correctly assign a interruption.
+- Validate each Extent reference to the original catch. Resume the flows without accepted proof for the same APK, snapshot and profile. [Qualification of delivery](../testing/ATF_ReleaseQualification.md#work-profiles-for-resumption)
 
-## AND-02 · Mâna de 17 cărți pe ecran compact
+## ANI-02 · Hand of 17 cards on compact screen
 
-- Extinde [probele responsive ale APK-ului](../../release/README.md) la combinațiile rămase din matricea 3–6 locuri, RO/EN, text mărit și AutoGame. Urmărește accesul la cărțile din zona derulabilă, semnalizarea actorului și pozițiile fixe între licitație, joc și colectare. [Strategia de afișaj](../testing/ATF_Display.md)
+- Extend [APK's responsive evidence](../../release/README.md) at the remaining combinations of the matrix 3–6 places, RO/EN, text enlarged and AutoGame. Watch for access to the cards in the removable area, the actor's signaling and fixed positions between bid, game and collection. [Display strategy](../testing/ATF_Display.md)
 
 ## Stabilitatea scenariilor Android
 
-- [ ] Calificați pe dispozitiv notificarea de realizări care apare după trecerea la scor. La nivel de componentă, ordinea observațiilor și gesturilor este verificată cu ADB simulat.
-- [ ] Procesul de pregătire trebuie să confirme fereastra activă a profilului temporar. Un serviciu din acel profil a deschis ecranul Android cu detalii despre o aplicație în timpul istoricului. Izolează procesele terțe în profilul temporar și păstrează cauza exactă în raport.
+- [ ] Qualify on the device the notification of achievements that occurs after the score. At component level, the order of observations and gestures shall be checked with simulated DBD.
+- [ ] The process of preparation shall confirm the active window of the temporary profile. A service in that profile opened the Android screen with details of an application during history. Isolate third-party processes in the temporary profile and keep the exact cause in the report.

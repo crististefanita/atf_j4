@@ -1,66 +1,66 @@
-# Compararea strategiilor la aceeași masă
+# Comparison of strategies at the same table
 
-## Pe scurt
+## Overview
 
-Arena compară politici pe partide românești complete. Protocolul declară distribuțiile, ordinea, rolurile, strategiile de bază, rotația locurilor și regulile de scor înainte de evaluare.
+The arena compares politics on complete Romanian parties. The protocol declares distributions, order, roles, basic strategies, seat rotation and pre-evaluation score rules.
 
-## Principii de comparare
+## Comparison principles
 
 ```mermaid
 flowchart LR
-    DEAL[Distribuție și loc] -->|rejoacă prin| BASE[Politică de bază]
-    DEAL -->|rejoacă prin| CAND[Candidat înghețat]
+    DEAL[Distribution and place] -->|re-play by| BASE[Basic policy]
+    DEAL -->|re-play by| CAND[Frozen candidate]
     BASE -->|produce| PAIR[Rezultate pereche]
     CAND -->|produce| PAIR
-    PAIR -->|analizează separat| REVIEW[Rol, loc și obiectiv]
+    PAIR -->|consider separately| REVIEW[Role, place and objective]
 ```
 
 <details>
-<summary>Legendă: aceeași distribuție, decizii independente</summary>
+<summary>Legend: same distribution, independent decisions</summary>
 
-Fiecare politică primește numai observația permisă actorului. Distribuția și locul se păstrează între perechi, iar stările publice pot diverge după prima alegere diferită.
+Each policy receives only the observation allowed to the actor. Distribution and place are kept between pairs, and public states may diverge after the first different choice.
 
 </details>
 
 | Principiu | Interpretare |
 |---|---|
-| Aceeași lume inițială | Candidatul și baza pornesc de la aceleași distribuții și aceeași ordine. |
-| Aceeași limită de observație | Fiecare decizie folosește mâna proprie și prefixul acelei partide; prefixele pot diverge după prima alegere diferită. |
-| Rotația locurilor | Evaluarea din locuri diferite măsoară sensibilitatea la poziție și reduce confundarea avantajului locului cu efectul politicii. |
-| Partidă completă | Scorul final include consecințele tuturor licitațiilor, cărților și regulilor de scor declarate. |
-| Lot rezervat | Evaluarea de promovare folosește distribuții care nu au fost folosite la alegerea candidatului. |
+| Same original world | The candidate and the basis shall start from the same distributions and orders. |
+| Same observation limit | Each decision uses the hand and prefix of that party; prefixes may diverge after the first different choice. |
+| Rotation of seats | The assessment from different places measures sensitivity to position and reduces confusion of the advantage of the place with the effect of policy. |
+| Full match | The final score includes the consequences of all the bids, cards and the declared score rules. |
+| Lot rezervat | The promotion assessment shall use distributions not used in the candidate's choice. |
 
-## Limitele interpretării
+## Interpretation limits
 
-După prima divergență, partida compară trasee complete și nu izolează efectul unei singure mutări, deoarece acțiunile schimbă starea publică ulterioară.
+After the first divergence, the match compares complete routes and does not isolate the effect of a single move, as actions change the subsequent public status.
 
-Raportați separat rolul, locul, familia adversă, mărimea mâinii, punctele, contractele exacte și componentele scorului, inclusiv bonusurile de serie.
+Report the role, place, adverse family, size of the hand, points, exact contracts and components of the score, including the serial bonuses.
 
-O partidă câștigată sau o rată agregată nu dovedește singură superioritatea unei reguli; evaluarea folosește criteriile stabilite înaintea lotului rezervat.
+A winning game or an aggregate rate does not alone prove the superiority of a rule; the evaluation uses the criteria set before the reserved lot.
 
-## Din observație într-o regulă verificabilă
+## From observation to verifiable rule
 
-[Protocolul offline](README.md#ciclul-de-îmbunătățire) deține etapele diagnosticării și promovării. Arena furnizează perechea comparabilă și prima divergență; [componenta AI](../testing/ATF_AiComponents.md) justifică proprietatea locală prin observație permisă și oracol independent.
+[Protocolul offline](README.md#the-improvement-cycle) has the stages of diagnosis and promotion. The arena provides the comparable pair and the first divergence; [componenta AI](../testing/ATF_AiComponents.md) justifies local ownership through permitted observation and independent oracle.
 
-Efectul unei singure decizii se investighează separat de efectul întregii politici. După prima licitație sau carte diferită, comparația partidei măsoară și reacțiile ulterioare ale celorlalți actori.
+The effect of a single decision shall be investigated separately from the effect of the whole policy. After the first different bid or card, the comparison of the match also measures the subsequent reactions of the other actors.
 
-## Informație și artefacte
+## Information and artifacts
 
-Rularea păstrează sursele și configurația identificate, rolurile, distribuțiile și rezultatele în depozitul extern. [Contractul corpusului](ATF_Corpus.md) deține proiecția observației și separarea datelor complete de intrarea politicii.
+The running keeps the sources and configuration identified, roles, distributions and results in the external repository. [The contract of the body](ATF_Corpus.md) has the observation projection and the separation of complete data from policy input.
 
-| Intrare de execuție | Scop |
+| Performing input | Purpose |
 |---|---|
-| [run-offline-strategy-profiles.ps1](../../scripts/run-offline-strategy-profiles.ps1) | Compară profilurile declarate pe aceeași distribuție, la fiecare loc, pentru diagnosticul de dezvoltare. |
-| Colecția `arena` | Folosește protocolul [strategy-arena](../../config/strategy-arena.json), validarea proprie și sarcina Gradle declarată în catalog. |
-| Colecția `learning` | Califică un candidat identificat conform protocolului de promovare și fazei declarate. |
+| [run-offline-strategy-profiles.ps1](../../scripts/run-offline-strategy-profiles.ps1) | Compare the declared profiles on the same distribution at each place for the development diagnosis. |
+| Collection `arena` | Use protocol [strategy-arena](../../config/strategy-arena.json), validation of the Gradle's own and the Gradle load declared in the catalogue. |
+| Collection `learning` | Qualify a candidate identified under the promotion protocol and the declared phase. |
 
-Din rădăcina proiectului, pentru un seed de dezvoltare ales explicit:
+From the root of the project, for an explicitly selected development seed:
 
 ```powershell
 $seed = [long](Read-Host 'Seed-ul declarat pentru diagnosticul de dezvoltare')
 .\scripts\run-offline-strategy-profiles.ps1 -Seed $seed
 ```
 
-Alegerea unui seed din ceas nu dovedește că distribuția este nefolosită. Comparația de dezvoltare și evaluarea rezervată au registre și criterii distincte.
+The choice of a seed from the clock does not prove that the distribution is unused. The development comparison and the reserved assessment have separate registers and criteria.
 
-[Comenzi și precondiții](../testing/ATF_Collections.md) · [Protocolul offline](README.md)
+[Orders and preconditions](../testing/ATF_Collections.md) · [Protocolul offline](README.md)

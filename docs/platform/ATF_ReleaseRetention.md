@@ -1,10 +1,10 @@
-# Retenția rapoartelor și a release-urilor
+# Retention of reports and relays
 
-## Pe scurt
+## Overview
 
-Directorul de lucru păstrează ediția curentă și imediat anterioară, fiecare cu propriul APK calificat și dovezi. Istoricul mai vechi se arhivează în afara catalogului activ; pregătirea locală nu publică și nu șterge release-uri.
+The working director shall keep the current and immediately preceding edition, each with his or her own qualified APK and evidence. Older history is archived outside the active catalogue; local training does not publish or delete relays.
 
-## Structură activă
+## Active structure
 
 ```text
 release/
@@ -26,92 +26,92 @@ release/
       download-extent.html
 ```
 
-- Indexul folosește `schemaVersion: 2`, `currentVersion` și cel mult două intrări în `versions`, începând cu ediția curentă și apoi ediția imediat anterioară.
-- README-ul principal și indexul identifică exclusiv versiunea curentă. Un reper anterior poate documenta auditul, dar nu înlocuiește APK-ul, linkul sau proba descărcării candidatului activ.
-- APK-ul și checksum-ul aparțin aceluiași dosar cu manifestul versiunii; nu se păstrează o a doua copie activă într-un director de distribuție. README-ul principal trimite la catalogul `release`.
-- `release` conține catalogul, indexul și cel mult două dosare de versiune. Numele fiecărui dosar și manifestul trebuie să coincidă; `currentVersion` trebuie să existe în prima poziție.
-- README-ul versiunii prezintă livrarea și trimite la `reports/README.md`, care explică selecțiile, rezultatele și limitele. Manifestul și metadatele prezentării aparțin versiunii; raportul canonic și diagnosticele aparțin subdirectorului `reports`.
-- Dosarul păstrează raportul canonic și numai dovezile ori diagnosticele auxiliare justificate pentru APK. [Contractul predării](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) cere eliminarea copiilor deja încorporate și păstrarea dovezii unice până la publicarea completă. Un rezultat omis sau blocat rămâne explicit; nu se preia automat verdictul altei versiuni.
-- Build-urile, candidații intermediari și diagnosticele istorice rămân în TMP sau în arhiva externă. [Strategia comună](../testing/README.md) rămâne independentă de versiune.
+- The index uses `schemaVersion: 2`, `currentVersion` and up to two entries in `versions`, starting with the current edition and then the immediate previous edition.
+- The main READMEM and index identify only the current version. An earlier benchmark can document the audit, but does not replace the APK, link or sample of the active candidate's download.
+- The APK and checksumes belong to the same file as the version manifest; no second active copy shall be kept in a distribution directory. The main readme is sending to catalogue `release`.
+- `release` contains the catalogue, index and not more than two version files. The name of each folder and the manifest shall coincide; `currentVersion` shall be in the first position.
+- The readme of the version presents the delivery and sends to `reports/README.md`, which explains the selections, results and limits. The manifesto and metadata of the presentation belong to the version; the canonical ratio and diagnoses belong to sub-director `reports`.
+- The file keeps the canon report and only the supporting evidence or diagnoses justified for APK. [The contract of surrender](../reporting/ATF_Handoff.md#compact-liquefied-and-exceptions) requires the removal of already incorporated copies and the preservation of unique evidence until full publication. An omitted or blocked result remains explicit; no verdict of any other version shall be taken over automatically.
+- Buildings, intermediate candidates and historical diagnostics remain in TMP or external archive. [Common strategy](../testing/README.md) remains independent of the version.
 
-## Înlocuire și recuperare
+## Replacement and recovery
 
-1. Pregătiți noul dosar în afara directorului activ; fixați sursele și dependențele executate.
-2. Arhivați dosarul precedent, manifestul și indexul. Confruntați fișierele prin SHA-256 și verificați arhiva înaintea mutării surselor vechi.
-3. Calificați noul APK și toate selecțiile cerute de diferența de cod. Păstrați explicit tipul de binar: E2E cu fixture Debug și smoke Release au identități separate.
-4. Adăugați ediția calificată, păstrați versiunea curentă precedentă drept reper și arhivați numai edițiile mai vechi după verificarea arhivei. Actualizați catalogul, indexul, prezentarea versiunii și indexul rapoartelor. Refuzați o populație goală, mai mult de două versiuni, dosare nerecunoscute sau redenumirea unui raport vechi drept versiune nouă.
-5. Păstrați jurnalul de retenție, identitatea arhivei externe și hash-urile originale. La eșec, restaurați întregul dosar și indexul anterior.
+1. Prepare the new folder outside the active directory; fix the sources and dependencies executed.
+2. Archive the previous folder, manifest and index. Confront files via SHAA-256 and check the archive before moving old sources.
+3. Qualify the new APK and all the selections required by the code difference. Keep explicit type of binary: E2E with Debug fixture and Smoke Release have separate identities.
+4. Add the qualified edition, keep the previous current version as a landmark and only file older editions after the archive check. Update catalogue, index, version presentation and report index. Refuse an empty population, more than two versions, unrecognised files or renaming an old report as a new version.
+5. Keep the retention log, the identity of the external archive and the original hashes. Upon failure, restore the entire folder and previous index.
 
-- **Directoare retrase:** `artifacts/` și `dist/` nu mai apar în rădăcina activă. Înaintea eliminării, inventariați și arhivați datele unice; confruntați hash-urile și referințele mutate în `release`.
-- **Identitate:** mutarea rapoartelor nu publică un GitHub Release și nu transformă un link către un fișier Git într-un asset descărcabil. [Procesul descărcării](ATF_AndroidDelivery.md#linkul-principal-și-proba-descărcării) deține această verificare.
+- **Withdrawn directories: ** `artifacts/` and `dist/` no longer appear in the active root. Before disposal, inventory and archive unique data; face hashes and references moved in `release`.
+- **Identity:** moving reports does not publish a GitHub Release and does not convert a link to a Git file into a downloadable asset. [Download process](ATF_AndroidDelivery.md#main-link-and-download-test) be in possession of this verification.
 
-Nu rescrieți capturile, HTML-ul sau trace-ul brut pentru a modifica proveniența. Legăturile active și metadatele de navigare pot fi adaptate la noua structură; copia originală rămâne în arhivă și în istoricul Git.
+Do not rewrite the catches, HTML or gross tracer to modify the provenance. Active links and navigation metadata can be adapted to the new structure; the original copy remains in the archive and in the history of Git.
 
-După fixarea dosarului, [înregistrați integritatea](ATF_AndroidDelivery.md#integritatea-fișierelor-și-rezultatelor) și rulați guvernanța. Registrul identifică exact fișierele păstrate, fără manifestul autoreferențial; înlocuirea unui fișier cere o observație nouă, cu moment propriu. Capturarea hash-urilor nu rescrie rezultatele istorice și nu acordă calificare surselor modificate ulterior.
+Once the folder is fixed, [record integrity](ATF_AndroidDelivery.md#integrity-of-files-and-results) and run the governance. The registry shall identify exactly the files kept without the self-referential manifest; the replacement of a file shall require a new observation at its own time. Capturing hashs does not rewrite historical results and does not qualify for later modified sources.
 
-- **Redenumirea repository-ului:** actualizați referința din politica proiectului și linkurile active de produs. Verificați separat adresa Pages. Pentru fiecare ediție păstrată, confruntați ID-urile asset-urilor, commitul tagului, octeții și SHA-256 de la noile adrese. Înregistrați noua observație de distribuție și integritatea dosarului. Dovezile de execuție păstrează commiturile originale.
-- **Dezvoltare paralelă:** poate continua după fixarea candidatului. Inventariați fișierele ulterioare în `source-freeze.json` și păstrați arhiva surselor calificate cu hash și CRC; publicarea trebuie legată de acel snapshot. Un commit care include cod nou nu preia automat calificarea APK-ului anterior.
-- **Comparație live:** identificați momentul observației și confruntați întreaga populație: fișiere modificate, adăugate și șterse. Manifestul snapshot-ului rămâne neschimbat; actualizarea comparației nu reconstruiește retrospectiv un alt APK sau alte rezultate.
+- **Rename of the repositoryul: ** update the reference from the project policy and active product links. Check Pages address separately. For each edition, please confront the IDs of the assets, the computation of the tag, bytes and SHA-256 from the new addresses. Record the new distribution observation and file integrity. The execution evidence shall preserve the original comms.
+- **Parallel development: ** can continue after the candidate is set. Inventory subsequent files in `source-freeze.json` and keep the archive of the hash and CRC qualified sources; publication must be linked to that snapshot. A commit that includes a new code does not automatically take over the qualification of the previous APK.
+- **Live comparison: ** identify the moment of observation and confront the entire population: modified, added and deleted files. The snapshots manifest remains unchanged; the update of the comparison does not retrospectively reconstruct another APK or other results.
 
-## Pregătire și livrare
+## Preparation and delivery
 
 ```mermaid
 flowchart LR
-    SOURCE[Snapshot identificat] -->|build în TMP| APK[APK și verificări]
-    APK -->|dovezi curente| LOCAL[PREPARED local]
-    LOCAL -->|pas ulterior al operatorului| BOUND[Commit identificat]
-    BOUND -->|publicare și descărcare| LIVE[Release verificat]
-    LIVE -->|arhivare și plan explicit| RETIRE[Retragere ediții vechi]
+    SOURCE[Snapshot identificat] -->|build in TMP| APK[APK and checks]
+    APK -->|current evidence| LOCAL[PREPARED local]
+    LOCAL -->|subsequent step of operator| BOUND[Commit identificat]
+    BOUND -->|publication and unloading| LIVE[Release verificat]
+    LIVE -->|archiving and explicit plan| RETIRE[Withdrawal of old editions]
 ```
 
 <details>
-<summary>Legendă: pregătirea locală are o limită explicită</summary>
+<summary>Legend: local training has an explicit limit</summary>
 
-Snapshot-ul și APK-ul se califică înaintea predării. Operatorul fixează ulterior identitatea Git și publicarea; retragerea edițiilor vechi depinde de descărcarea verificată a înlocuitorului.
+Snapshots and APK qualify before surrender. The operator shall subsequently fix the identity of Git and the publication; the withdrawal of the old editions depends on the verified discharge of the replacement.
 
 </details>
 
-| Etapă | Rezultat | Acțiuni excluse din etapă |
+| Step | Result | Shares excluded from the stage |
 |---|---|---|
-| Pregătire locală | Surse înghețate prin hash, APK, rezultate și note pregătite. | Commit, push, publicare și ștergeri GitHub. |
-| Fixarea surselor | Operatorul identifică și împinge commit-ul construit; diferențele față de snapshot sunt confruntate. | Mutarea tag-urilor vechi sau calificarea implicită a surselor schimbate. |
-| Publicare | Draft, APK și checksum, apoi release curent și descărcare verificată. | Ștergerea versiunii funcționale înaintea validării înlocuitorului. |
-| Resetare cerută | Se arhivează release-urile, asset-urile și tagurile vechi. Se retrag obiectele din afara catalogului confirmate în plan. | Rescrierea istoricului Git sau retragerea unei ediții încă prezente în catalog. |
+| Local preparation | Sources frozen by hash, APK, results and notes prepared. | Commit, push, publish and delete GitHub. |
+| Fixing sources | The operator identifies and pushes the built commit; differences from snapshot are confronted. | Moving old tags or implicit qualification of changed sources. |
+| Publication | Draft, APK and checksum, followed by the current release and a verified download. | Deleting the working release before qualifying its replacement. |
+| Reset requested | Archives the relays, the old assetas and tags. Objects outside the cataloguing confirmed in the plan shall be withdrawn. | Rewriting the historian Git or withdrawing an edition still present in the catalogue. |
 
-Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezentat ca un commit. Publicarea cere confruntarea ulterioară cu commit-ul efectiv și completarea legăturii imuabile a documentației. Template-ul notelor nu constituie note deja publicate.
+An uncommitted candidate is marked `PREPARED` and identified by its snapshot hash. Before publication, verify the actual commit and complete the immutable documentation link. The release-note template stays a draft.
 
-- Candidatul păstrează `release-notes.template.md`, `evidenceUrlTemplate` și `sourceCommit: null`; placeholder-ul `{evidenceCommit}` rămâne explicit.
-- [Guvernanța prezentării](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) verifică aceleași secțiuni și bullets, dar refuză metadate GitHub publicate alături de starea `PREPARED`.
-- La publicare, operatorul fixează URL-ul documentației la commit-ul efectiv, generează `release-notes.md` și înregistrează canalul verificat. Nu folosiți un commit fictiv sau verdictul unei descărcări încă neefectuate.
-- Un release GitHub folosește `publication.state: PUBLISHED`, manifestul `github-release.json` și același commit sursă în `targetCommit`. Un APK publicat prin Site folosește `publication.state: PUBLISHED_SITE` și dovada descărcării anonime din `reports/distribution-verification.json`; nu se inventează un release GitHub.
-- Ambele tranziții înregistrează `source.sourceCommit`, înlocuiesc `evidenceUrlTemplate` cu `evidenceUrl` și cer note finale cu APK-ul și checksum-ul canalului publicat.
+- The candidate shall retain `release-notes.template.md`, `evidenceUrlTemplate` and `sourceCommit: null`; the placeholder `{evidenceCommit}` shall remain explicit.
+- [Governance of presentation](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) checks the same sections and bullets, but refuses GitHub metadata published alongside the state `PREPARED`.
+- When published, the operator shall set the URL of documentation to the actual committal, generate `release-notes.md` and record the channel checked. Do not use a fictional commit or verdict of a uncompleted download.
+- A GitHub release uses `publication.state: PUBLISHED`, the `github-release.json` manifest and the same source commit in `targetCommit`. An APK published through the Site uses `publication.state: PUBLISHED_SITE` and proof of anonymous download from `reports/distribution-verification.json`; no GitHub release is invented.
+- Both transitions record `source.sourceCommit`, replace `evidenceUrlTemplate` by `evidenceUrl` and request final notes with the APK and the channel checksumé published.
 
-`versionName` identifică ediția cerută, iar `versionCode` crește la fiecare APK livrat. După resetarea numerotării vizibile, [codul Android](https://developer.android.com/studio/publish/versioning) și certificatul de semnare păstrează calea de actualizare; promovarea GitHub se marchează explicit drept ultimul release.
+`versionName` identify the required edition, and `versionCode` increase at each APK delivered. After reset the visible numbering, [codul Android](https://developer.android.com/studio/publish/versioning) and the signature certificate shall keep the update path; promotion of GitHub shall be explicitly marked as the last release.
 
-## Curățarea locală după livrare
+## Local cleaning after delivery
 
-După calificarea și descărcarea publicată, rulați [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Folosiți dosarul versiunii și verdictul postpublicare pentru octeții aceluiași manifest. Actualizați mai întâi referința locală `origin/main` și tagurile cu Git.
+After the published qualification and download, run [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Use the version file and post-publication verdict for the same manifesto bytes. Update the local reference first `origin/main` and the tags with Git.
 
 ```powershell
 node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --candidate $PublishedEdition `
   --published-verdict $PublishedVerdict --output $GitProof
 ```
 
-| Rezultat | Efect |
+| Result | Efect |
 |---|---|
-| `GIT_EXACT` | Inventarul și fiecare blob Git reproduc direct SHA-256 din snapshot-ul calificat. |
-| `GIT_WITH_EOL_RECIPE` | Salvarea rețetei permite refacerea din aceleași bloburi. Pentru EOL mixt furnizați o singură dată `--qualified-root` cu octeții originali. |
-| `BLOCKED` | Păstrați fișierele unice și reconciliați diferența de inventar, conținut ori publicare. |
+| `GIT_EXACT` | The inventory and each Git blob reproduce directly SHAA-256 from the qualified snapshots. |
+| `GIT_WITH_EOL_RECIPE` | Saving the recipe allows recovery from the same blobs. For mixed EOL, provide once `--qualified-root` with original bytes. |
+| `BLOCKED` | Keep the unique files and reconcile the inventory difference, content or publication. |
 
-Reluați verificarea cu `--recipe $GitProof` și o ieșire nouă dacă a fost folosită o rețetă. `cleanupEligible: true` cere și dovada postpublicare corespunzătoare, tagul GitHub și întregul payload canonic verificat în Git. Pentru un verdict istoric, `--published-commit` selectează commitul de dovezi din istoricul lui `origin/main`.
+Resume the check with `--recipe $GitProof` and a new output if a prescription has been used. `cleanupEligible: true` also requires appropriate post-publication proof, the GitHub tag and the entire canon payload checked in the Git. For a historic verdict, `--published-commit` selects the evidence communiqué from the history of `origin/main`.
 
-- Păstrați rețeta și probele finale. Verificați că nicio rulare ori rezervare activă nu folosește directoarele inventariate.
-- Curățați staging-ul, cache-urile și copiile regenerate din Git sau deja incluse cu același hash. Păstrați datele de învățare și diagnosticul unic pentru o problemă deschisă.
-- Păstrați sursele capturate cât timp o reluare mai are nevoie de ele. [Predarea dovezilor](../reporting/ATF_Handoff.md)
+- Keep the recipe and the final samples. Check that no running or active booking uses the inventoried directories.
+- Clean the stagint, cachets and regenerated copies from Git or already included with the same hash. Keep learning data and unique diagnosis for an open problem.
+- Keep the sources captured while a resume still needs them. [Hand over evidence](../reporting/ATF_Handoff.md)
 
-## Sincronizarea dosarului local cu versiunea curentă
+## Synchronisation of local file with current version
 
-După verdictul postpublicare și confirmarea surselor din Git, adăugați `--local-release` la verificatorul Git pentru dosarul `release` al unui alt checkout. În exemplu, `$ProjectRoot` este checkout-ul canonic, iar `$LocalCheckout` este checkout-ul care primește copia. Scrieți dovada într-un fișier nou din directorul extern al rulării.
+After the post-publication verdict and confirmation of sources in Git, add `--local-release` to the Git verifier for the `release` file of another checkout. In example, `$ProjectRoot` is the canon checkout, and `$LocalCheckout` is the checkout that receives the copy. Write the proof in a new file from the external running directory.
 
 ```powershell
 node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --candidate $PublishedEdition `
@@ -119,35 +119,35 @@ node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --can
   --local-release (Join-Path $LocalCheckout 'release') --output $LocalSyncProof
 ```
 
-- Omiteți `--recipe` când reconstrucția este exactă direct din Git. Instrumentul copiază ediția curentă din `origin/main`, validează octeții și actualizează indexul local.
-- Dacă eșuează pregătirea sau mutarea, dosarul existent rămâne disponibil. Instrumentul refuză un dosar cu modificări locale ori date nerecunoscute.
-- Catalogul canonic și GitHub păstrează două ediții pentru audit, rotație și calculul diff-ului.
+- Omite`--recipe` when the reconstruction is exactly directly from Git. The instrument copies the current edition of `origin/main`, validates the bytes and updates the local index.
+- If the training or move fails, the existing file remains available. The instrument shall refuse a file with local changes or unrecognised data.
+- The canon catalogue and GitHub keep two editions for audit, rotation and diff calculation.
 
-Copia locală are rol de distribuție. Într-un checkout istoric, Git afișează diferențele din `release/` față de ramura activă. Păstrați această copie în afara commiturilor de sursă. [Profilurile de reluare](../testing/ATF_ReleaseQualification.md#profiluri-de-lucru-pentru-reluare)
+Local copy plays a distribution role. In a historical checkout, Git displays the differences in the `release/` keep this copy out of the source commits. [Resumption profiles](../testing/ATF_ReleaseQualification.md#work-profiles-for-resumption)
 
-## Verificarea descărcării înaintea rotației
+## Verification of the discharge before rotation
 
-După publicare, împingeți catalogul, manifestele și README-ul principal. Folosiți aceleași intrări și același director ca la [publicarea reluabilă](ATF_AndroidDelivery.md#publicarea-reluabilă-pe-github).
+After publication, push the catalogue, manifests and main README. Use the same entries and directory as in [Reluable publication](ATF_AndroidDelivery.md#reluctable-publication-on-github).
 
 ```powershell
 node .\atf-tests\tools\publish-github-release.mjs verify-rotation $ProjectRoot $CandidateDir $VerdictFile $PublicationRun
 ```
 
-`READY_FOR_ROTATION` confirmă că README-ul online indică APK-ul ediției curente, iar GitHub o indică drept ultima ediție.
+`READY_FOR_ROTATION` confirms that the online readme indicates the current edition's APK, and GitHub indicates it as the latest edition.
 
-- Comanda confruntă tagurile și descarcă APK-ul și checksum-ul ambelor ediții din catalog.
-- Pe un repository public verifică linkurile directe, fără credențiale. Pe unul privat confruntă URL-urile canonice cu asset-urile descărcate prin API autentificat.
-- Comanda recitește `main` înainte să scrie chitanța în jurnal.
+- Order the tags and download the APK and checksumes of both editions in the catalog.
+- On a public repository, they check direct, unprofessional links. On a private one confronts canonical URLs with the assetos downloaded by authenticated API.
+- The order rereads `main` before writing the receipt in the log.
 
-Folosiți o chitanță obținută imediat înainte de rotație, până la `expiresAtUtc`. Verificați că `main` și ultima ediție publicată corespund în continuare. [Ferestrele de valabilitate](../testing/ATF_ReleaseQualification.md#valabilitatea-dovezilor)
+Use a receipt obtained immediately before rotation, up to `expiresAtUtc`Check that. `main` and the last edition published shall continue to correspond. [Validity windows](../testing/ATF_ReleaseQualification.md#evidence-freshness)
 
-Retrageți manual doar edițiile autorizate din afara perechii din chitanță, apoi verificați inventarul rezultat. Un refuz la reluarea verificării golește starea rotației din jurnal.
+Withdraw only the authorized editions outside the check pair, then check the resulting inventory. A refusal to resume the verification shall empty the state of rotation in the log.
 
 ## Resetarea GitHub
 
-- Folosiți un inventar explicit de ID-uri, tag-uri, asset-uri și digest-uri. Nu deduceți populația doar dintr-o pagină ori listă care poate fi filtrată.
-- Arhivați metadatele și asset-urile vechi înaintea ștergerii. Noul APK trebuie să fie publicat ca ultimul release și descărcat integral prin canalul declarat.
-- [Ștergerea unui release prin GitHub](https://docs.github.com/en/rest/releases/releases#delete-a-release) este o operație separată de [ștergerea tag-ului](https://hub.github.com/hub-release.1.html). Arhivați referințele înainte de retragerea tagurilor din afara catalogului.
-- La final, colectați inventarul GitHub și verificați-l prin poarta RAG. Catalogul activ cuprinde exact două release-uri și tagurile lor, fiecare cu APK și checksum verificate. [Comanda de verificare](../testing/ATF_ReleaseQualification.md#retenția-pe-github-după-publicare)
+- Use an explicit inventory of IDs, tags, assets and digests. Do not infer the population from just a page or list that can be filtered.
+- Archive the metadata and old assetates prior to deletion. The new APK must be published as the last release and fully downloaded via the declared channel.
+- [Delete a release via GitHub](https://docs.github.com/en/rest/releases/releases#delete-a-release) is a separate operation of [deleting the tag](https://hub.github.com/hub-release.1.html). Encrypt references before withdrawal of tags from the catalogue.
+- Finally, collect the GitHub inventory and check it through the RAG gate. The active catalogue includes exactly two relays and their tags, each with APK and checksum checked. [Verification command](../testing/ATF_ReleaseQualification.md#retention-on-github-after-publication)
 
-[Contractul livrării](ATF_AndroidDelivery.md) deține build-ul și identitatea APK-ului; [guvernanța](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) verifică structura activă și refuzurile.
+[Delivery contract](ATF_AndroidDelivery.md) holds the building and identity of the APK; [governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) checks the active structure and refusals.

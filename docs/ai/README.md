@@ -1,100 +1,100 @@
-# Arhitectura jucătorilor AI
+# AI Player Architecture
 
-## Pe scurt
+## Overview
 
-Politica transformă mâna proprie și informația publică într-o decizie legală, potrivită contractului rămas. Algoritmul și parametrii unei politici sunt identificați; îmbunătățirea lor urmează separat [ciclul de calificare offline](../learning/README.md).
+Policy turns its own hand and public information into a legal decision, appropriate to the remaining contract. The algorithm and parameters of a policy are identified; their improvement follows separately [offline qualification cycle](../learning/README.md).
 
-Pentru traseul complet, începeți cu [modul în care construim și îmbunătățim AI-ul](../learning/ATF_PolicyEvolution.md). În joc se actualizează contextul și estimările; între experimente se califică modificările regulilor, ponderilor și implementării.
+For the full route, start with [how we build and improve the Ail](../learning/ATF_PolicyEvolution.md). The game is updated in context and estimates; changes in rules, weights and implementation are qualified between experiments.
 
-## Ghiduri complementare
+## Complementary guides
 
-| Mecanism | Ghid |
+| Mechanism | Ghid |
 |---|---|
-| Observație, simulare, utilitate și certificate | [Modelul deciziei](ATF_DecisionModel.md) |
-| Rolul manifestelor și influența contextului | [Reguli și configurare](ATF_RulesConfiguration.md) |
-| Necesar, oportunități și ieșiri legale | [Joc contextual](ATF_ContextualPlay.md) |
-| Bugete, anulare și măsurare pe mediul JVM | [Calificarea costului AI](ATF_CostQualification.md) |
-| Onoruri și acoperiri, cu statut de cercetare | [Română](ATF_HandPatternsRo.md) și [engleză](ATF_HandPatternsEn.md) |
+| Observation, simulation, utility and certificates | [Modelul deciziei](ATF_DecisionModel.md) |
+| Role of the manifestations and influence of the context | [Rules and configuration](ATF_RulesConfiguration.md) |
+| Necessary, opportunities and legal outflows | [Context game](ATF_ContextualPlay.md) |
+| Budget, cancellation and measurement on JVM environment | [Cost of AI qualification](ATF_CostQualification.md) |
+| Rates and coatings with research status | [Romanian](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) and [English](ATF_HandPatternsEn.md) |
 
-## Decizia din timpul jocului
+## Decision during the game
 
 ```mermaid
 flowchart LR
-    STATE[Stare de joc] -->|proiectează| OBS[Observație proprie/publică]
-    OBS -->|alimentează| POLICY[Politică acceptată]
-    POLICY -->|propune| ACTION[Acțiune]
-    ACTION -->|validează și aplică| STATE
+    STATE[Game status] -->|design| OBS[Private and public observation]
+    OBS -->|fuel| POLICY[Policy accepted]
+    POLICY -->|propune| ACTION[Action]
+    ACTION -->|validate and apply| STATE
 ```
 
 <details>
-<summary>Legendă: decizia din timpul jocului</summary>
+<summary>Legend: the decision during the game</summary>
 
-Observația conține mâna actorului, contractele cunoscute, cărțile publice, necesarul și scorurile. Motorul verifică legalitatea acțiunii înainte de schimbarea stării; mâinile reale ale adversarilor nu intră în politica de decizie.
+The observation contains the actor's hand, known contracts, public cards, needs and scores. The engine verifies the legality of the action before changing the condition; the actual hands of the opponents are not covered by the decision-making policy.
 
 </details>
 
-## Straturi și surse de adevăr
+## Layer and source of truth
 
-| Strat | Responsabilitate | Implementare |
+| Strat | Responsibility | Implementare |
 |---|---|---|
-| Domeniu | Legalitate, distribuire, tranziții și scor | [game-core](../../whist-lab-app/game-core/README.md) |
-| Politică runtime | Licitare și alegerea cărții din observația permisă | `AiPolicy`, politicile Normal și `MonteCarloAi` |
-| Politică independentă | Model separat pentru verificare și comparații | [ai-lab](../../whist-lab-app/ai-lab/README.md) |
-| Corpus | Validarea jocurilor și selecția explicită a datelor de dezvoltare | [whist-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs), [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) |
-| Tipare | Descrierea combinațiilor și calibrare descriptivă | [catalog și limite](ATF_HandPatternsRo.md) |
-| Experiment | Copie izolată, candidat identificat, comparații pereche | [runnerul colecțiilor](../../scripts/run-whist-collection.ps1), [arena](../learning/ATF_Arena.md) |
-| Promovare | Criterii fixate, lot neatins și păstrarea gărzilor de domeniu | [protocolul evaluării](../learning/README.md) |
+| Domeniu | Legality, distribution, transitions and score | [game-core](../../whist-lab-app/game-core/README.md) |
+| Runtime policy | Bidding and choosing the card in the permitted observation | `AiPolicy`, Normal and `MonteCarloAi` policies |
+| Independent policy | Distinguishing number of the country where the goods are located | [ai-lab](../../whist-lab-app/ai-lab/README.md) |
+| Corpus | Game validation and explicit selection of development data | [whist-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs), [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) |
+| Tipare | Description of combinations and descriptive calibration | [catalogue and limits](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) |
+| Experiment | Isolated copy, identified candidate and paired comparisons | [collection runner](../../scripts/run-whist-collection.ps1), [arena](../learning/ATF_Arena.md) |
+| Promovare | Criteria fixed, batch not reached and keeping the guards of the domain | [evaluation protocol](../learning/README.md) |
 
 ## Rolul YAML-urilor
 
-Manifestele leagă condiții și surse de verificare, iar efectul executabil depinde de consumatorul din cod. [Reguli și configurare](ATF_RulesConfiguration.md) este ghidul responsabil pentru statutul fiecărui manifest, parametrii fixați și activarea contextuală.
+The manifests link conditions and sources of verification, and the enforceable effect depends on the consumer in the code. [Rules and configuration](ATF_RulesConfiguration.md) is the guide responsible for the status of each manifesto, fixed parameters and contextual activation.
 
-Catalogul de tipare rămâne un instrument de cercetare. [Ghidul onorurilor](ATF_HandPatternsRo.md) explică interpretarea lui, separat de politica runtime.
+The pattern catalogue remains a research tool. [Ghidul onorurilor](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) explains his interpretation, separate from runtime policy.
 
-## Datele susțin mecanismul
+## Data support mechanism
 
-- Schema, validatoarele, selecția și criteriile aparțin surselor proiectului.
-- Partidele, calibrările, selecțiile concrete, registrele loturilor și rezultatele sunt date externe.
-- [Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ; analiza corpusului activ citește manifestul selectat și verificat. [Calibrarea onorurilor](ATF_HandPatternsRo.md#calibrare-descriptivă) are intrare separată: toate fișierele development din arhiva furnizată explicit.
-- Selecția elimină urmele duplicate, păstrează originile protejate și urmărește categorii noi în limita bugetului.
-- O categorie observată măsoară varietatea setului, fără să demonstreze acoperirea codului sau optimalitatea unei acțiuni.
-- Regresia implicită păstrează cazuri mici generate sau construite pentru o proprietate generală, cu așteptare independentă.
+- The scheme, validators, selection and criteria belong to the project's sources.
+- Parties, calibrations, concrete selections, lots registers and results are external data.
+- [Body configuration](../../config/learning-corpus.json) indicates the archive and active pointerus; the analysis of the active body reads the selected and verified manifesto. [Calibration of the fees](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) has separate input: all development files in the archive provided explicitly.
+- The selection eliminates duplicate traces, keeps the origins protected and follows new categories within the budget limit.
+- An observed category measures the variety of the set without demonstrating the coverage of the code or the optimal of an action.
+- Default regression keeps small cases generated or built for general property with independent waiting.
 
-## Interpretarea adversarilor
+## Interpretation of opponents
 
 ```mermaid
 flowchart LR
-    PUBLIC[Istoric public] -->|deduce legal| VOID[Restricții certe]
-    PUBLIC -->|sugerează| MODEL[Ipoteze de comportament]
-    VOID -->|elimină lumi| WORLDS[Lumi compatibile]
-    MODEL -->|poate pondera| WORLDS
-    WORLDS -->|alimentează| PLAN[Estimarea continuărilor]
+    PUBLIC[Istoric public] -->|deduce legal| VOID[Certain restrictions]
+    PUBLIC -->|suggests| MODEL[Behavior assumptions]
+    VOID -->|eliminate worlds| WORLDS[Lumi compatibile]
+    MODEL -->|maybe weight| WORLDS
+    WORLDS -->|fuel| PLAN[Estimate of the continuation]
 ```
 
 <details>
-<summary>Legendă: certitudine și estimare</summary>
+<summary>Legend: certainty and estimation</summary>
 
-Obligația de culoare sau atu permite deducții despre lipsa unei culori. Licitația și o alegere voluntară sugerează intenții numai printr-un model declarat; o carte jucată forțat nu dovedește intenția de a câștiga sau de a evita levata.
+The color obligation or the trump allows inference about the lack of a colour. The bid and a voluntary choice suggest intentions only by a declared model; a forced card does not prove the intention to win or avoid trick.
 
 </details>
 
-La 2–8 cărți, Hard folosește contractele cunoscute ca ținte și constrânge lumile prin informația publică; ponderarea generală după comportamentul advers rămâne cercetare. La licitarea de o carte există deja un model specializat condiționat de ofertele observate, cu domeniu și fallback proprii, descris în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor).
+La 2–8 cards, Hard uses contracts known as targets and constrains worlds through public information; general weighting after adverse behavior remains research. At the bid of a card there is already a specialized model conditioned by observed offers, with its own domain and fallback, described in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives).
 
-## Condiții pentru progres
+## conditions for progress
 
-[Protocolul offline](../learning/README.md) deține ciclul diagnostic–componentă–candidat–evaluare rezervată–promovare. [Arena](../learning/ATF_Arena.md) deține comparațiile pe aceleași distribuții și locuri, iar [proiectarea componentelor](../testing/ATF_AiComponents.md) deține justificarea independentă a cazului mic.
+[Protocolul offline](../learning/README.md) holds the diagnostic-component-candidate-registered evaluation-promotion cycle. [Arena](../learning/ATF_Arena.md) holds comparisons on the same distributions and places, and [design of components](../testing/ATF_AiComponents.md) holds the independent justification of the small case.
 
-Schimbarea arhitecturii păstrează observația permisă și identitatea politicii evaluate. O modificare concurentă cere reconcilierea sursei înaintea calificării.
+The change of architecture shall retain the permitted observation and the identity of the policy evaluated. A competing change requires reconciliation of the source prior to the qualification.
 
-## Limite de transfer către alte sisteme
+## Transfer limits to other systems
 
-| Abstracție reutilizabilă | Adaptor specific domeniului |
+| Reusable abstraction | Domain specific adapter |
 |---|---|
-| Proiecția observației | Ce informație este permisă fiecărui actor. |
-| Filtrul de acțiuni | Legalitatea definită de varianta jocului. |
-| Reducerea istoricului | Faptele și restricțiile deduse din acțiunile publice. |
-| Generatorul de lumi | Distribuțiile compatibile cu observația și ipotezele samplerului. |
-| Utilitatea și prioritățile | Contractul, scorul, seria și obiectivul politicii. |
-| Verificarea și promovarea | Proprietăți independente, comparații controlate și criterii fixate. |
+| Projection of the observation | What information is allowed to each actor. |
+| The share filter | Legality defined by the game option. |
+| Reduction of history | Facts and restrictions deducted from public actions. |
+| The Generator of Worlds | Distributions compatible with the observation and assumptions of the sampler. |
+| Utility and priorities | The contract, the score, the series and the policy objective. |
+| Verification and promotion | Independent properties, controlled comparisons and criteria. |
 
-[Modelul deciziei](ATF_DecisionModel.md), [regulile și ponderile](ATF_RulesConfiguration.md) și [proiectarea testelor](../testing/ATF_AiComponents.md) detaliază aceste limite fără a depinde de o partidă concretă.
+[Modelul deciziei](ATF_DecisionModel.md), [rules and weights](ATF_RulesConfiguration.md) and [test design](../testing/ATF_AiComponents.md) details these limits without depending on a concrete match.

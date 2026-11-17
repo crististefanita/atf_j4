@@ -1,44 +1,44 @@
-# Testele adaptorului și ale aplicației Android
+# Adapter and Android tests
 
-## Pe scurt
+## Overview
 
-Acest catalog explică intrările JUnit ale adaptorului Android. [Strategia comună](../../../docs/testing/README.md) deține alegerea nivelului și acceptarea rezultatului; testul deține comparația, iar infrastructura deține comanda și observația.
+This catalogue explains the JUnit inputs of the Android adapter. [Common strategy](../../../docs/testing/README.md) has the choice of level and acceptance of the result; the test holds the comparison and the infrastructure holds the command and observation.
 
-## Selecții și resurse
+## Selection and resources
 
-| Intrare | Scop și precondiții |
+| Intrare | Purpose and preconditions |
 |---|---|
-| [AndroidComponentSuite](java/atf/android/suites/AndroidComponentSuite.java) | Suită primară: toate componentele Maven ale adaptorului, fără emulator. |
-| [AndroidDisplayComponentSuite](java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profile, driver, istoric și oracole geometrice cu intrări controlate. |
-| [AndroidHistoryComponentSuite](java/atf/android/suites/AndroidHistoryComponentSuite.java) | Selecție focalizată a istoricului; împărtășește clase cu selecția display. |
-| [AndroidUiFlowTimingComponentSuite](java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Intervalele măsurate ale fluxului, cu ceas și procese controlate. |
-| [AndroidGameplayE2eSuite](java/atf/android/suites/AndroidGameplayE2eSuite.java) | Interacțiune pe APK-ul identificat; necesită activare, dispozitiv rezervat și restaurarea stării. |
+| [AndroidComponentSuite](java/atf/android/suites/AndroidComponentSuite.java) | Primary suite: all Maven components of the adapter without emulator. |
+| [AndroidDisplayComponentSuite](java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profiles, drivers, history and geometric oracles with controlled inputs. |
+| [AndroidHistoryComponentSuite](java/atf/android/suites/AndroidHistoryComponentSuite.java) | Focused historical selection; shares classes with display selection. |
+| [AndroidUiFlowTimingComponentSuite](java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Measured flow intervals, with watch and controlled processes. |
+| [AndroidGameplayE2eSuite](java/atf/android/suites/AndroidGameplayE2eSuite.java) | Interaction on identified APK; requires activation, reserved device and restoration of status. |
 
-[Catalogul](../../../config/atf-test-suites.json) declară suitele primare pentru fiecare nivel și părinții selecțiilor focalizate. Display, istoric și timing sunt submulțimi ale suitei primare de componentă; gameplay este submulțime a intrării E2E, care rămâne activată separat.
+[Catalogul](../../../config/atf-test-suites.json) declares the primary suites for each level and the parents of the focused selections. Display, history and timing are subsets of the primary component suite; gameplay is subset of the E2E input, which remains activated separately.
 
-## Fluxul verificării
+## Verification flow
 
 ```mermaid
 flowchart LR
-    SELECT[Selecție declarată] -->|controlează| INPUT[Proces sau stare]
-    INPUT -->|produce| OBS[Observație]
-    EXPECT[Așteptare independentă] -->|confruntă| OBS
-    OBS -->|alimentează| REPORT[Raportul selecției]
+    SELECT[Declared selection] -->|control| INPUT[Process or status]
+    INPUT -->|produce| OBS[Observation]
+    EXPECT[Independent waiting] -->|face| OBS
+    OBS -->|fuel| REPORT[Selection ratio]
 ```
 
 <details>
-<summary>Legendă: o singură execuție și două tipuri de mediu</summary>
+<summary>Legend: single execution and two types of environment</summary>
 
-Componentele controlează procesele, ceasul și observațiile. E2E capturează o interacțiune nouă pe dispozitiv; republicarea unei observații existente păstrează identitatea originală și nu execută din nou Android.
+Components control processes, clocks and observations. E2E captures a new interaction on the device; republication of an existing observation retains the original identity and does not execute Android again.
 
 </details>
 
-## Execuție și interpretare
+## Implementation and interpretation
 
-Folosiți [intrările izolate ale modulului](../../README.md#verificare-fără-dispozitiv) și [ghidul componentelor](../../../docs/testing/ATF_DisplayComponents.md). Selectați suita sau clasele sale, cu suprapunerea declarată; directoarele temporare și rapoartele aparțin rulării externe.
+Use [Isolated input of the module](../../README.md#verification-without-device) and [Component Guide](../../../docs/testing/ATF_DisplayComponents.md). Select the suite or its classes with the declared overlap; temporary directories and reports belong to external running.
 
-- **Audit:** [AndroidComponentAudit](java/atf/android/component/AndroidComponentAudit.java) leagă invocarea de Kit. [Contractele adaptorului](java/atf/android/component/AndroidComponentReportContractTest.java) verifică publicarea și refuzurile; eșecurile intenționate sunt delimitate de rezultatul produsului.
+- **Audit:** [AndroidComponentAudit](java/atf/android/component/AndroidComponentAudit.java) link the plea to Kit. [Adapter contracts](java/atf/android/component/AndroidComponentReportContractTest.java) verify the publication and refusals; the intended failures are delimited by the result of the product.
 
-- **Rezultat:** JUnit identifică execuția, iar HTML-ul auditat păstrează inputul, expected/actual și verdictul. [Criteriul agregării](../../../docs/feedback/ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) rămâne distinct de trecerea JUnit.
+- **Result:** JUnit identifies execution, and audited HTML keeps the input, expected/actual and the verdict. [Aggregate criterion](../../../docs/feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) remains distinct from JUnit passing.
 
-[Modulul Android](../../README.md) · [Strategia comună](../../../docs/testing/README.md) · [Auditul rapoartelor](../../../docs/reporting/ATF_Audit.md)
+[Modulul Android](../../README.md) · [Common strategy](../../../docs/testing/README.md) · [Audit of reports](../../../docs/reporting/ATF_Audit.md)

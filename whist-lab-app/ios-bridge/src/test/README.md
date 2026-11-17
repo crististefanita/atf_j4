@@ -1,23 +1,23 @@
-# Testele punții iOS
+# Deck tests iOS
 
-## Pe scurt
+## Overview
 
-Acest director verifică adaptarea dintre motorul comun și interfața nativă iOS. Testele rulează pe JVM; ele nu califică build-ul Xcode, simulatorul sau distribuția către dispozitive.
+This directory verifies the adaptation between the common engine and the native interface iOS. The tests run on JVM; they do not qualify the Xcode building, simulator or distribution to the devices.
 
 ## Contractul verificat
 
-- Proiecția stării publice păstrează ascunse mâinile adversarilor și expune doar acțiunile legale ale jucătorului.
-- Traducerea dintre modelele comune și reprezentarea punții păstrează regulile, licitațiile și scorurile.
-- Cazurile-limită refuză intrările invalide fără să schimbe starea jocului.
+- The public state projection keeps the hands of the opponents hidden and only exposes the legal actions of the player.
+- Translation between common models and bridge representation shall preserve rules, bids and scores.
+- The limit cases refuse invalid entries without changing the game status.
 
 ## Rulare
 
-Din directorul `whist-lab-app`, executați:
+From directory `whist-lab-app`, run:
 
 ```powershell
 ./gradlew :ios-bridge:test --no-daemon
 ```
 
-Workflow-ul iOS rulează separat testele punții și testele Xcode pe simulator. Build-ul semnat și distribuția iOS au propriile dovezi.
+The iOS workflow runs separately the deck tests and Xcode tests on the simulator. The signed building and distribution iOS have their own evidence.
 
-[Strategia comună de testare](../../../../docs/testing/README.md)
+[Common test strategy](../../../../docs/testing/README.md)

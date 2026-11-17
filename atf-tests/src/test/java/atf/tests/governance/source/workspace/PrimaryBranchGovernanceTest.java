@@ -35,8 +35,8 @@ class PrimaryBranchGovernanceTest {
     @Test void releaseGuidanceAndRepositoryDocumentsUseMainWithoutStaleBranchTargets() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         String releaseGuide = Files.readString(root.resolve("docs/testing/ATF_ReleaseQualification.md"));
-        AuditedAssertions.assertTrue(releaseGuide.contains("Ramura oficială a repository-ului este `main`"));
-        AuditedAssertions.assertTrue(releaseGuide.contains("împinge commit-ul pe `main`"));
+        AuditedAssertions.assertTrue(releaseGuide.contains("The official repository branch is `main`"));
+        AuditedAssertions.assertTrue(releaseGuide.contains("push the commit to `main`"));
         var stale = legacyReferences(root);
         AuditedAssertions.assertEquals(List.of(), stale, "Remove obsolete primary-branch references from docs, release notes and automation");
     }

@@ -1,6 +1,6 @@
 # Honors, covers and contract safety
 
-## Pe scurt / Overview
+## Overview
 
 A holding provides hints conditioned on legality, remaining need and public information. [Game rules](../game/ATF_RulesEn.md) define legal actions; the catalog describes holdings with no direct runtime influence.
 
@@ -40,7 +40,7 @@ The [YAML catalog](../../config/whist-hand-patterns.yaml) remains `RESEARCH_CATA
 - **Sequences and length:** assess honors jointly; rank, card count and attainable suit tricks are different quantities.
 - **Legal exit:** a side honor can be discarded when both the led suit and trump are absent; mandatory trump can force an unwanted trick.
 - **Public memory:** turned cards, completed-trick cards and cards still on the table have different effects.
-- **Objective:** individual remaining need and opportunities follow the [decision model](ATF_DecisionModel.md#starea-care-schimbă-decizia); aggregate auction imbalance does not replace them.
+- **Objective:** individual remaining need and opportunities follow the [decision model](ATF_DecisionModel.md#the-status-changing-the-decision); aggregate auction imbalance does not replace them.
 
 ## Extractor input
 

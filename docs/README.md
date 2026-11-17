@@ -1,33 +1,33 @@
-# Documentația Whist Lab
+# Whist Lab documentation
 
-## Pe scurt
+## Overview
 
-Documentația explică regulile jocului, arhitectura jucătorilor și mecanismele prin care îi dezvoltăm și verificăm.
-Fiecare arie are un singur README de orientare și ghiduri complementare, cu responsabilități și surse explicite.
+The documentation explains the rules, the architecture of the AI players and how we develop and verify them.
+Each area has one introductory README and supporting guides with explicit owners and sources.
 
-## Arii de documentație
+## Documentation areas
 
-| Arie | Întrebarea principală |
+| Area | Main question |
 |---|---|
-| [Joc](game/README.md) | Care sunt regulile, variantele, nivelurile și datele scorului? |
-| [Jucători AI](ai/README.md) | Cum se transformă informația permisă într-o decizie? |
-| [Învățare offline](learning/README.md) | Cum folosim corpusul, comparațiile și evaluarea rezervată? |
-| [Testare](testing/README.md) | Ce nivel, colecție și oracol verifică schimbarea? |
-| [Raportare](reporting/README.md) | Cum păstrăm rezultatele și verificăm publicarea lor? |
-| [Platformă](platform/README.md) | Cum integrăm bibliotecile binare și livrăm aplicația Android? |
-| [Guvernanță](governance/README.md) | Cum menținem calitatea codului, documentelor și schimbărilor? |
-| [Feedback](feedback/README.md) | Ce lacune sau calificări rămân deschise și cine le deține? |
+| [Game](game/README.md) | What are the rules, variants, difficulty levels and scoring data? |
+| [AI players](ai/README.md) | How do players turn the information they are allowed to see into a decision? |
+| [Offline learning](learning/README.md) | How do we use the corpus, comparisons and holdout evaluation? |
+| [Testing](testing/README.md) | Which test layer, collection and oracle verify the change? |
+| [Reporting](reporting/README.md) | How do we retain results and verify that they were published? |
+| [Platform](platform/README.md) | How do we integrate binary libraries and deliver the Android app? |
+| [Governance](governance/README.md) | How do we maintain the quality of code, documentation and changes? |
+| [Feedback](feedback/README.md) | Which gaps or qualifications remain open, and who owns them? |
 
-## Trasee uzuale
+## Common workflows
 
-- Pentru o regulă de joc: profilul variantei, motorul, componenta independentă și ajutorul bilingv.
-- Pentru o politică AI: [construirea și îmbunătățirea](learning/ATF_PolicyEvolution.md), observația permisă, modelul deciziei, regresia locală și protocolul evaluării.
-- Pentru alt joc: [inventarul transferului și admiterea domeniului](learning/ATF_GameTransfer.md), oracolul independent, adaptorul și componentele înaintea antrenării.
-- Pentru o modificare Android: aplicația identificată, componentele, scenariul pe dispozitiv și capturile aceleiași stări.
-- Pentru o reorganizare: proprietarul documentului, referințele din cod și documente, apoi guvernanța.
+- For a game rule, check the variant profile, the engine, the independent component test and the bilingual help.
+- For an AI policy, check [how it is built and improved](learning/ATF_PolicyEvolution.md), the allowed observation, the decision model, the local regression and the evaluation protocol.
+- For another game, check the [transfer inventory and domain acceptance](learning/ATF_GameTransfer.md), the independent oracle, the adapter and the components before training.
+- For an Android change, identify the app and check the components, the on-device scenario and the captures of the same state.
+- For a reorganization, check the document owner, the references in code and documentation, and then governance.
 
-## Surse și limite
+## Sources and boundaries
 
-[Proiectul](../README.md) prezintă produsul și modulele. Ghidurile trimit la codul, POM-ul sau testul care deține afirmația; datele unei rulări și evaluările editoriale se păstrează în arhiva externă.
+The [project README](../README.md) introduces the product and modules. Guides point to the code, POM or test that owns the claim. Run data and editorial assessments live in the external archive.
 
-[Bunele practici documentare](governance/ATF_Documentation.md) definesc redactarea, organizarea și revizia. O regulă stabilă are un singur document responsabil, iar feedback-ul păstrează lacuna rămasă.
+The [documentation practices](governance/ATF_Documentation.md) cover writing, organization and review. Each stable rule has one owning document. The feedback register tracks the remaining gaps.

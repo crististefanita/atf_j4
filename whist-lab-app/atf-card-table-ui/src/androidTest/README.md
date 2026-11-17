@@ -1,22 +1,22 @@
-# Componente native ale mesei și cărților
+# Native components of table and card
 
-## Pe scurt
+## Overview
 
-Testele instrumentate verifică geometria reală a rândurilor în layout-ul Android, pentru dimensiuni și scalări de font reprezentative.
+The instrumented tests check the actual geometry of the rows in the Android layout for representative font sizes and scalings.
 
-Matricea măsoară componentele Android comune la 3–6 locuri, 240, 320 și 393 dp, cu font normal, 1,5× și 2×. Numele cu diacritice, statisticile Whist, etichetele complete și simbolurile Δ/Σ intră în același chenar.
+The matrix measures the common Android components at 3–6 places, 240, 320 and 393 dp, with normal font, 1,5 × and 2 ×. The names with diacritics, the Whist statistics, the complete labels and the symbols of the "y 'are in the same box.
 
-Fiecare rând trebuie să aibă text integral, fără elipsă, în lățimea alocată. Chenarele trebuie să încapă în masă și să nu se intersecteze.
+Each row shall have a full text, without ellipse, in the allotted width. The batches shall be mass-mounted and shall not intersect.
 
-Construiți în workspace-ul extern, instalați APK-ul de test izolat și porniți runnerul nativ.
+Build in the external workspace, install the isolated test APK and start the native runner.
 
 ```powershell
 .\gradlew.bat --offline :atf-card-table-ui:assembleDebugAndroidTest
 adb shell am instrument -w ro.cardtable.ui.test/ro.cardtable.ui.seat.SeatFrameComponentInstrumentation
 ```
 
-Linia `ATF_NATIVE_SEATS` consemnează măsurătorile și rezultatul fiecărui rând. Câmpul `cardHighlights` verifică evantaiul la 280 și 393 dp cu font 1, 1,5 și 2. Proba compară aceleași limite și acțiuni cu și fără marcaj și măsoară ridicarea unei cărți dezvăluite.
+Line `ATF_NATIVE_SEATS` records the measurements and result of each row. Field `cardHighlights` verifies the fan at 280 and 393 dp with font 1, 1,5 and 2. Proba compares the same limits and actions with and without marking and measures the lifting of an revealed card.
 
-`gameTitleBars` verifică 320, 360, 393 și 600 dp cu font 1, 1,5 și 2, în română și engleză. Fiecare caz măsoară poziția bifei, ținta tactilă și o singură intenție după atingere.
+`gameTitleBars` checks 320, 360, 393 and 600 dp with font 1, 1,5 and 2, in Romanian and English. Each case measures the tick position, the tactile target and a single intention after the touch.
 
-[Strategia comună de testare](../../../../docs/testing/README.md)
+[Common test strategy](../../../../docs/testing/README.md)

@@ -1,38 +1,38 @@
-# Auditul componentelor Gradle
+# Audit of Gradle components
 
-## Pe scurt
+## Overview
 
-Modul JVM exclusiv pentru fixture-uri de testare. Puntea JUnit 4 capturează contextul efectiv și comparațiile prin Kitul comun și publică prin biblioteca Reporting fizică. Aplicația și AAR-ul grafic nu depind de această variantă.
+JVM module exclusively for test fixtures. JUnit Bridge 4 captures the actual context and comparisons through the joint and public kit through the physical reporting library. The application and the graphical AARs do not depend on this variant.
 
-## Fluxul unei selecții
+## The number of the selected sample shall be determined by the manufacturer.
 
 ```mermaid
 flowchart LR
-    CASE[Caz și fixture] -->|capturează înainte de comparații| INPUT[Context efectiv]
-    INPUT -->|evaluează prin Kit| CHECK[Expected și actual]
-    CHECK -->|publică prin Reporting| HTML[HTML canonic]
-    XML[JUnit temporar] -->|confruntă identități și verdicturi| VERIFY[Acceptanța selecției]
-    HTML -->|recitește corpurile| VERIFY
+    CASE[Case and fixture] -->|capture before comparison| INPUT[Context efectiv]
+    INPUT -->|evaluate through Kit| CHECK[Expected and current]
+    CHECK -->|publishing by Reporting| HTML[HTML canonic]
+    XML[JUnit temporar] -->|face identities and verdicts| VERIFY[Acceptance of selection]
+    HTML -->|Recite bodies| VERIFY
 ```
 
 <details>
-<summary>Legendă: execuție și publicare</summary>
+<summary>Legend: execution and publication</summary>
 
-O regulă JUnit deține invocarea, inclusiv fixture-urile before/after. Durata acestui statement se măsoară înaintea publicării. Gradle păstrează temporar XML-ul pentru numărare independentă; livrarea reține un HTML pentru fiecare selecție, după confruntarea exactă.
+A JUnit rule holds the claim, including fixtures before/after. The duration of this statement shall be measured prior to publication. Gradle temporarily retains the XMLs for independent counting; delivery retains an HTML for each selection after accurate confrontation.
 
 </details>
 
-## Contracte
+## Contracts
 
-- Contextul se capturează la execuție, înaintea primei comparații, inclusiv valorile parametrizate și fixture-urile locale. Codul sursă nu înlocuiește valorile observate.
-- JUnit 4 păstrează runner-ele și parametrizările; puntea adaptează ordinea mesajului aserțiunilor către Kit.
-- Lipsa contextului, lipsa comparațiilor, omisiunea unei invocări, duplicarea sau verdictul divergent împiedică acceptarea.
-- Rasterele declarate sunt PNG inline, etichetate drept fixture JVM. Nu reprezintă capturi Android.
-- Catalogul clasifică unități, componente, guvernanță și învățare; selecțiile de învățare rămân opt-in.
-- Câte un worker și un HTML per task evită concurența necalificată; closure-ul și verificarea finală aparțin selecției.
+- The context shall be captured at execution before the first comparison, including parametric values and local fixtures. Source code does not replace the observed values.
+- JUnit 4 keeps runners and parametrizations; the deck adapts the order of the assertions message to Kit.
+- The lack of context, lack of comparison, omission of an appeal, duplication or divergent verdict prevents acceptance.
+- The declared rasters are PNG inline, labelled as JVM fixture. No Android catches.
+- The catalogue classifies units, components, governance and learning; learning selections remain eighty-in.
+- One worker and one HTML per task avoid unqualified competition; the closureur and final check belong to the selection.
 
 ## Rulare
 
-Task-urile Gradle de testare aplică automat puntea. `whist.auditOutput` alege directorul rapoartelor, iar `whist.auditSource` fixează identitatea inventarului sursei pentru calificare. Verificarea finală confruntă HTML-ul cu JUnit-ul original și cu inspectorul bibliotecii; simpla existență a fișierului nu este acceptanță.
+Gradle test task automatically applies the deck. `whist.auditOutput` chooses the report director and `whist.auditSource` fixes the identity of the source inventory for qualification. The final check confronts HTML with the original JUNIT and the library inspector; the mere existence of the file is not acceptable.
 
-Versiunile Kitului și Reporting se citesc din `atf.testkit.version` și `atf.reporting.version` ale POM-ului rădăcină. Configurarea refuză perechile locale JAR/POM absente sau cu coordonate divergente; nu duplică versiuni și nu alege Reporting prin sortare lexicală în build-ul Gradle.
+The versions of the kit and the reporting are read from `atf.testkit.version` and `atf.reporting.version` of the root POM. The configuration refuses local pairs JAR/POM absent or with divergent coordinates; does not duplicate versions and does not choose Routing by lexical sorting in the Gradle building.

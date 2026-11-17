@@ -1,118 +1,118 @@
-# Testarea Whist Lab pe Android
+# Testing the Whist Lab on Android
 
-## Pe scurt
+## Overview
 
-Proiectul verifică offline motorul Whist Lab și acceptanța interfeței proprii.
-Testele offline nu depind de emulator; testele UI pornesc explicit aplicația
-ro.whistlab.app și acționează controalele vizibile.
+The project verifies the Whist Lab engine offline and the acceptance of its own interface.
+Offline tests do not depend on the emulator; UI tests explicitly start the application
+ro.whistle lab.app and act visible controls.
 
-## Suprafețe testate
+## Test areas
 
-| Suprafață | Sursă | Ce verifică |
+| Surface | Source | What's he checking? |
 |---|---|---|
-| Motor și AI | whist-lab-app/game-core și ai-lab | Reguli, licitații, levate, scor, persistență și evaluări repetabile. |
-| Adaptor Android | atf-test-android | Comenzi ADB delimitate, capturi și contracte pentru dispozitiv. |
-| UI și Extent | atf-test-android | Meniu, masă, licitare, cărți, scor, acțiuni, aserțiuni și capturi ale aplicației proprii. |
+| Engine and IA | whist-lab-app/game-core and ai-lab | Rules, bids, tricks, score, persistence and repeatable assessments. |
+| Adaptor Android | atf-test-android | DBD controls delimited, catches and contracts for the device. |
+| UI and Extent | atf-test-android | Menu, mass, bidding, cards, score, shares, assertions and captures of his own application. |
 
-## Pregătire și izolare
+## Preparation and containment
 
 ```mermaid
 flowchart LR
-    CONFIG[Scenariu și parametri] -->|verifică| PRE[Condiții preliminare]
-    PRE -->|permite| LEASE[Rezervare exclusivă]
-    LEASE -->|izolează| APP[Acțiuni în aplicație]
-    APP -->|capturează| OBS[Stare și imagine]
-    OBS -->|confruntă prin| CHECK[Oracol independent]
-    APP -->|închide cu| RESTORE[Restaurare și eliberare]
+    CONFIG[Scenario and parameters] -->|checks| PRE[Preliminary conditions]
+    PRE -->|permite| LEASE[Exclusive booking]
+    LEASE -->|isolate| APP[Actions in the application]
+    APP -->|capture| OBS[Status and image]
+    OBS -->|face through| CHECK[Oracol independent]
+    APP -->|close with| RESTORE[Restoration and release]
 ```
 
 <details>
-<summary>Legendă: controlul dispozitivului și rezultatul</summary>
+<summary>Legend: device control and result</summary>
 
-Scenariul identifică aplicația și starea inițială înaintea acțiunilor. Rezervarea și restaurarea protejează resursa partajată; observația de după acțiune stabilește dacă aplicația a acceptat operația.
+The scenario identifies the application and initial status prior to the actions. Reservation and restoration protect the shared resource; post-action observation determines whether the application has accepted the operation.
 
 </details>
 
-## Verificări offline
+## Offline checks
 
-[Colecțiile](ATF_Collections.md) dețin comenzile și precondițiile JVM. Verificarea adaptorului fără dispozitiv este descrisă în [modulul Android](../../atf-test-android/README.md#verificare-fără-dispozitiv).
+[Collections](ATF_Collections.md) hold the JVM controls and preconditions. The check of the adapter without device is described in [modulul Android](../../atf-test-android/README.md#verification-without-device).
 
-[run-whist-ai-validation.ps1](../../scripts/run-whist-ai-validation.ps1) este un orchestrator separat de construire, componente și integrare, cu opțiuni proprii de dispozitiv. Folosirea lui se decide după selecția efectivă din script; acceptanța UI și promovarea strategică păstrează criterii distincte.
+[run-whist-ai-validation.ps1](../../scripts/run-whist-ai-validation.ps1) is a separate orchestrator of construction, components and integration, with its own device options. His use shall be decided after the actual selection in the script; the acceptance of the IU and the strategic promotion shall retain separate criteria.
 
-## E2E-ul Whist Lab
+## E2Eul Whist Lab
 
-| Runner | Mecanism |
+| Runner | Mechanism |
 |---|---|
-| [Sanity responsive](../../scripts/run-whist-responsive-sanity.ps1) | Verifică afișarea pe fiecare profil; fluxul de joc este opțional și rulează numai pe primul profil. |
-| [Joc românesc](../../scripts/run-romanian-expert.ps1) | Mâini normale, cu decizii și scor verificate independent. |
-| [Replay complet](../../scripts/run-complete-match.ps1) | Reia intrări externe în Whist Lab și verifică regulile, mutările și scorul. |
+| [Sanity responsive](../../scripts/run-whist-responsive-sanity.ps1) | Check display on each profile; game flow is optional and only runs on the first profile. |
+| [Romanian game](../../scripts/run-romanian-expert.ps1) | Normal hands with decisions and independently checked score. |
+| [Replay complet](../../scripts/run-complete-match.ps1) | Resume external entries to the Whist Lab and check the rules, moves and score. |
 
-Pe Windows, dați lansatorului un `RunRoot` în directorul extern de dovezi Whist. Acesta conține dosarele de lucru și fișierele temporare, APK-urile de test, chitanțele de instalare și exporturile de profil sau partidă. Fixture-urile versionate fac parte din intrările testelor.
+On Windows, give the launcher a `RunRoot` in the external evidence director of Whist. It contains the work files and temporary files, test APKs, installation receipts and profile or match exports. Versified fixtures are part of the test inputs.
 
-[Contractul responsive](ATF_Display.md) definește limitele profilului și configurarea execuției.
+[Contractul responsive](ATF_Display.md) defines the profile boundaries and execution configuration.
 
-E2E-urile de produs selectează semantic elementele afișate, verifică după
-acțiune tranziția observată și păstrează captura aceleiași stări. Un tap ADB
-reușit singur nu certifică acceptarea mutării. Rezultatul testului, acceptanța
-vizuală și obiectivul partidei rămân verdicte distincte.
+Product E2Es selects the displayed items semantically, checks after
+action the transition observed and keeps the catch of the same state. A ADB tap
+successfully alone does not certify acceptance of the move. Test result, acceptance
+the visual and objective of the match remain distinct verdicts.
 
-## Profil, istoric, clasamente și serii
+## Profile, history, leaderboards and series
 
-[Scenariul dedicat](../../atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java) separă pregătirea datelor de acțiunile Android. Meniul configurează numele și seria; cărțile efectiv jucate în interfață declanșează închiderea mâinii ori a partidei. Așteptările pentru punctele de serie și ultima levată sunt calculate înaintea acțiunii.
+[Scenariul dedicat](../../atf-test-android/src/test/java/atf/android/e2e/records/WhistRecordsE2eTest.java) separates data preparation from Android actions. The menu configures the name and series; the cards actually played on the interface trigger the closure of the hand or the game. The expectations for the serial points and the last trick shall be calculated prior to the action.
 
-| Precondiție declarată | Interacțiune verificată |
+| Prohibited precondition | Controlled interaction |
 |---|---|
-| Profil local izolat | Deschiderea dialogului, salvarea prin controlul Android și numele afișat după relansare. Scenariul de înregistrări păstrează resetarea nativă și numele adversarilor. |
-| Profil de componentă | Anulare și callback întârziat, nume incompatibil cu masa, scriere refuzată, reîncercare, resetare și reîncărcare din stocare simulată. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerProfileEditComponentTest.java) |
-| Intrare Unicode de componentă | Tastare și lipire a 10 și 11 litere non-BMP, text selectat și formă NFC. Mock-ul reproduce intervalele Android; proba pe APK verifică focusul și selecția în tastatura sistemului. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerNameInputComponentTest.java) |
-| Istoric complet pregătit de motorul JVM | Primul și ultimul rând, toate coloanele, licitații și punctaje, derulare în RO/EN. |
-| Tură pregătită la fiecare loc al mesei | Eticheta integrală deasupra jucătorului corect, licitare și joc, text mărit și controale umane inactive cât licitează AI. |
-| Contoare de serie la limita celor cinci mâini | Selectare ±5/±10 în meniu, închidere prin cărți jucate în Android și relansare fără plată repetată. |
-| Partidă pregătită până la ultima carte umană | Încheiere prin interfață, recalculare Top 20 cu om și AI, Top 10/20 și izolare între configurații. |
+| Isolated local profile | Opening dialogue, saving through Android control and name displayed after re-launch. The record scenario shall maintain the native reset and the names of the opponents. |
+| Component profile | Delayed cancellation and callback, name incompatible with mass, rejected writing, retest, reset and reload from simulated storage. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerProfileEditComponentTest.java) |
+| Unicode component input | Typing and gluing of 10 and 11 non-BMP letters, text selected and NFC form. Mockul reproduces Android ranges; APK sample checks focus and selection in system keyboard. [Proba](../../whist-lab-app/app/src/test/java/ro/whistlab/app/profile/PlayerNameInputComponentTest.java) |
+| Full history prepared by JVM engine | First and last row, all columns, bids and scores, running in RO/EN. |
+| Ready lap at each table site | Full label above the correct player, bidding and game, increased text and inactive human controls as AI bid. |
+| Serial meters at the limit of the five hands | Selection ± 5 / ± 10 on the menu, closing by cards played in Android and re-launching without repeated payment. |
+| Party prepared to the last human card | Interface closure, recalculation Top 20 with man and AI, Top 10/20 and isolation between configurations. |
 
-Datele pregătite de fixture-uri sau replay-uri diagnostice sunt excluse din clasamentul utilizatorului. Verificarea controalelor, observația întregii celule și restaurarea fișierelor au criterii distincte:
+Data prepared by diagnostic fixtures or replicas are excluded from the user's ranking. Verification of controls, observation of the entire cell and restoration of files have distinct criteria:
 
-| Control | Mecanism |
+| Control | Mechanism |
 |---|---|
-| Date inițiale | Arhivare înaintea izolării; hash-ul fiecărui fișier restaurat se confruntă înaintea redeschiderii aplicației. |
-| Parametri | `whist.records.runRoot` identifică metadatele instalării și rezervării; `atf.android.artifacts` delimitează ieșirea. |
-| Precondiții | [Componentele fixture-urilor](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java) se execută fără dispozitiv. |
-| Lizibilitate | Caz JUnit distinct pentru tabele, selectabil fără repetarea numelui și a seriilor; celula completă observată devine reper pentru derulare. Un nod tăiat nu confirmă lizibilitatea. |
-| Rezervare | [Contractul sesiunii](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java) verifică proprietarul înaintea fiecărei comenzi de transport. |
-| APK | `setup-install.json` păstrează `installedPath`, hash-ul observat `installedApkSha256` și hash-ul cerut `requestedApkSha256`; lipsa sau neconcordanța oprește contextul înaintea comenzilor Android. |
-| Comparații | JSON-ul întreg are amprentă canonică compactă; fiecare poziție a clasamentului are comparație separată și date complete de diagnostic. |
+| Initial data | Archiving before isolation; the hash of each restored file is faced before reopening the application. |
+| Parametri | `whist.records.runRoot` identifies the installation and reservation metadata; `atf.android.artifacts` delimits the output. |
+| Preconditions | [Components of fixtures](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsFixturesComponentTest.java) is run without device. |
+| Lizibilitate | Distinguished JUnit case for tables, selectable without repeating names and series; the fully observed cell becomes a landmark for running. A cut knot does not confirm legibility. |
+| Rezervare | [Contractul sesiunii](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContract.java) checks the owner before each transport order. |
+| APK | `setup-install.json` keeps `installedPath`, observed `installedApkSha256` hash and requested `requestedApkSha256` hash; lack or inconsistency stops context before Android commands. |
+| Comparison | The whole JSON has a compact canon print; each position of the ranking has a separate comparison and complete diagnostic data. |
 
-Aceste scenarii nu califică o partidă întreagă jucată prin interfață și nici recuperarea fișierelor corupte.
+These scenarios do not qualify for an entire game played through the interface and neither does the recovery of corrupt files.
 
-Selecția `historyPresentationAcrossDeclaredPortraitProfiles` reunește masa, acțiunile active și istoricul într-un singur trace, pe profilele din `atf.android.sanity.profiles`. Ea cere instalarea identificată, arhiva privată și rezervarea din `whist.records.runRoot`; formatarea numerică a mâinii, separatoarele și alinierea antetului sunt confruntate cu observația nativă.
+The `historyPresentationAcrossDeclaredPortraitProfiles` selection brings together the table, active actions and history in one stage, on the profiles of `atf.android.sanity.profiles`. It requires the identified installation, private archive and reservation of `whist.records.runRoot`; numerical hand formatting, separators and header alignment are confronted with the native observation.
 
-- **Capturi:** fazele folosesc nume explicite pentru profil și scara textului. Repetările aceluiași profil au directoare distincte, păstrând imaginile originale ale fiecărui checkpoint.
-- **Diagnostic:** calculul licitațiilor AI și avansarea cărților AI se opresc separat, numai într-un APK debug. Starea înghețată verifică afișarea și actorul; calitatea și viteza deciziei au acceptanță separată.
+- **Captures: ** phases use explicit names for profile and text scale. Repeats of the same profile have separate directories, keeping the original images of each checkpoint.
+- **Diagnosis: ** calculation of AI bids and advance of AI cards stop separately, only in a debug APK. The frozen state checks the display and the actor; quality and speed of the decision have separate acceptance.
 
-## Sanity-ul legendei istoricului
+## Sanityul of the legend of history
 
-Selecția `WhistRecordsE2eTest#historyLegendWrapsWithinTheDialogAndStaysFixedWhileColumnsScroll` verifică legenda fixă în RO/EN la scările 1,0 și 1,5 pe profilul compact, plus reproducerea EN la 1,3 pe profilul înalt. Folosește aceeași precondiție de 24 de mâini jucate de motorul JVM, pe un APK identificat.
+The `WhistRecordsE2eTest#historyLegendWrapsWithinTheDialogAndStaysFixedWhileColumnsScroll` selection checks the fixed legend in RO/EN at the 1,0 and 1,5 stairs on the compact profile, plus reproduction of EN at 1,3 on the high profile. Use the same precondition of 24 hands played by the JVM engine on an identified APK.
 
-[LegendProfiles](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfiles.java) deține planul tipizat.
+[LegendProfiles](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfiles.java) holds the typed plan.
 
-- **Selecție:** proprietatea `whist.history.legend.cases` poate restrânge rularea, de exemplu `720x1280@360:1.5:RO`.
-- **Format:** `WIDTHxHEIGHT@DPI:SCALE:EN|RO`, separat prin virgulă; maximum opt cazuri unice, scale 1,0–1,5.
-- **Refuz:** configurația invalidă este respinsă înaintea construirii contextului Android.
+- **Selection: ** property `whist.history.legend.cases` may restrict running, e.g. `720x1280@360:1.5:RO`.
+- **Format: ** `WIDTHxHEIGHT@DPI:SCALE:EN|RO`, separated by comma; maximum eight unique cases, scales 1,0–1,5.
+- **Refuses: ** invalid configuration is rejected prior to the construction of Android context.
 
-- Fiecare navigare sau derulare are observație proaspătă; raportul păstrează acțiunile, comparațiile și PNG-ul original.
-- Oracolul verifică proprietatea legendei în afara coloanelor, încadrarea între rânduri și închidere și stabilitatea ramei după derulare. La text 1,5 trebuie observată și deplasarea reală a coloanelor.
-- Registrul complet rămâne neschimbat. Revizia PNG confirmă împărțirea și sfârșitul explicației; testul nu pretinde o partidă completă jucată prin UI.
-- Validarea planului, duplicatele, limitele și interpretarea XML se califică în componente. Sanity-ul restrâns păstrează fontul nativ, derularea reală și PNG-ul; acestea nu sunt înlocuite cu randare simulată.
-- Restaurarea distinge lipsa setării `font_scale` de o valoare numerică: absența cere `settings delete`, iar valoarea existentă se păstrează exact. [Modelul de restaurare](../../atf-test-android/src/main/java/atf/android/evidence/FontScaleRestoration.java) refuză valorile necunoscute; textul literal `null` nu se scrie drept scară numerică.
+- Each navigation or running has fresh observation; the report retains the original actions, comparisons and GNP.
+- The oracle checks the legend's property outside the columns, the line-to-line closure and the frame stability after running. The actual movement of columns shall be observed in text 1,5.
+- The full register remains unchanged. The PNG review confirms the division and end of the explanation; the test does not require a full match played through IU.
+- The validation of the plan, the duplicates, limits and interpretation of XML qualify for components. The restricted sanitarium keeps the native font, the actual rewind and the NGP; they are not replaced by simulated rendering.
+- Restoration distinguishes the lack of setting `font_scale` of a numerical value: absence required `settings delete`and the existing value is kept exactly. [Model restoration](../../atf-test-android/src/main/java/atf/android/evidence/FontScaleRestoration.java) refuse unknown values; literal text `null` it is not written as a numerical scale.
 
-## Păstrarea rezultatelor
+## Retention of results
 
-Pentru un test live, identifică serialul, verifică disponibilitatea exclusivă a
-emulatorului și folosește runnerul dedicat. Niciun test dezactivat sau sărit nu
-este acceptanță UI. Rulările brute și capturile se păstrează în directorul extern
-configurat; [pachetul release-ului](../../release/README.md) reține în proiect
-numai dovezile relevante, grupate după versiunea livrată.
+For a live test, identify the show, check the exclusive availability of
+Emulator and uses dedicated runner. No test deactivated or jumped
+is the acceptance of the UI. Gross runs and catches shall be kept in the external directory
+configured; [release package](../../release/README.md) retain in project
+only relevant evidence, grouped by the delivered version.
 
-Dacă rendererul sau fallback-ul nu respectă contractul comun, înregistrează
-problema prin [feedback-ul de raportare](../feedback/README.md). Aici rămân
-așteptările specifice jocului și verificarea consumerului.
+If the renderer or fallback fails to comply with the common contract, record
+problem by [Reporting feedback](../feedback/README.md). Here I stay
+the game-specific expectations and consumer verification.

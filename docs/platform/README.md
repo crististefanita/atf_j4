@@ -1,71 +1,71 @@
-# Consumul bibliotecilor comune
+# Consumption of common libraries
 
-## Pe scurt
+## Overview
 
-Proiectul consumă Core, Reporting, Console, Mock și Test Kit ca perechi JAR/POM. Reactorul conține Validation, infrastructura Android și verificările locale de integrare. Producătorul comun deține sursele și testele bibliotecilor.
+The project consumes Core, Reporting, Console, Mock and Test Kit as JAR/POM pairs. The reactor contains Validation, Android infrastructure and local integration checks. The joint manufacturer shall have the sources and tests of the libraries.
 
-## Ghiduri complementare
+## Complementary guides
 
-- [Cod, feedback și sincronizare](../../lib/README.md) explică responsabilitatea comună și acceptanța separată a consumatorilor.
-- [Integrarea API-urilor](ATF_Integration.md) definește identitatea binară, adaptoarele și sincronizarea.
-- [Livrarea Android](ATF_AndroidDelivery.md) explică build-ul, publicarea și instalarea APK-ului, inclusiv păstrarea salvărilor. [Verificarea accesului anonim](ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică) acoperă ruta publică și diagnosticul HTTP 404.
-- [Retenția și pregătirea release-ului](ATF_ReleaseRetention.md) separă candidatul local, publicarea și retragerea versiunilor precedente.
+- [Code, feedback and timing](../../lib/README.md) explains the shared responsibility and the separate acceptance of consumers.
+- [Integration of APIs](ATF_Integration.md) defines binary identity, adapters and synchronisation.
+- [Livrarea Android](ATF_AndroidDelivery.md) explains the building, publication and installation of APK, including saving. [Anonymous access verification](ATF_AndroidDelivery.md#anonymous-access-and-public-route) covers the public route and diagnosis of HTTP 404.
+- [Retention and preparation of the relay](ATF_ReleaseRetention.md) separates local candidate, publication and withdrawal of previous versions.
 
-## Responsabilități
+## Liabilities
 
 ```mermaid
 flowchart LR
-    PRODUCER[Producător] -->|împachetează| PAIR[JAR și POM]
-    PAIR -->|identifică| LIB[Bibliotecă locală]
-    LIB -->|expune| API[Contract public]
-    ADAPTER[Adaptor Android] -->|consumă| API
-    CHECK[Acceptanță locală] -->|verifică| LIB
+    PRODUCER[Manufacturer] -->|pack| PAIR[JAR and POM]
+    PAIR -->|identify| LIB[Local Library]
+    LIB -->|exposes| API[Contract public]
+    ADAPTER[Adaptor Android] -->|consumes| API
+    CHECK[Local acceptance] -->|checks| LIB
 ```
 
 <details>
-<summary>Legendă: implementare și acceptanță separate</summary>
+<summary>Legend: separate implementation and acceptance</summary>
 
-Producătorul califică implementarea și testele native. Consumatorul verifică livrarea fizică și contractele folosite de adaptoarele sale; rezultatul offline nu certifică interacțiunea pe dispozitiv.
+The manufacturer shall qualify for implementation and native tests. The consumer checks the physical delivery and contracts used by his adapters; the offline result does not certify the interaction on the device.
 
 </details>
 
-| Bibliotecă | Responsabilitate | Limită de dependență |
+| Library | Responsibility | Dependency limit |
 |---|---|---|
-| Core | Contracte și mecanisme neutre comune | Nu deține regulile sau interfața Whist. |
-| Reporting | Publicarea și randarea datelor evaluate | Consumă comparațiile și capturile originale; nu decide regulile jocului. |
-| Console | Formatarea evenimentelor și proiecția ciclului JUnit | Legătura JUnit păstrează dependența opțională de Kit; consumatorul o declară când o folosește. |
-| Mock | Înlocuirea deterministă a transportului HTTP și potrivirea exactă | Datele și catalogul de scenarii aparțin consumatorului; nu simulează motorul jocului. |
-| Test Kit | Configurarea rulărilor și extensiile JUnit | Suitele și selecțiile Whist sunt definite în proiect. |
+| Core | Common neutral contracts and mechanisms | It doesn't own the rules or the Whist interface. |
+| Reporting | Publication and rendering of data assessed | Consume original comparisons and catches; do not decide the rules of the game. |
+| Console | Event formatting and JUnit cycle projection | JUnit's link keeps the optional dependence on Kit; the consumer declares it when it uses it. |
+| Mock | Determine replacement of HTTP transport and exact match | The data and the scenario catalogue belong to the consumer; they do not simulate the engine of the game. |
+| Test Kit | Running configuration and JUnit extensions | The Suites and Whist selections are defined in the project. |
 
-Console și Mock nu depind de Reporting, Validation sau modulele aplicației. POM-ul publicat fixează dependențele bibliotecii, independent de versiunea reactorului local.
+Console and Mock do not depend on Reporting, Validation or application modules. The published POM fixes the dependence of the library, independent of the local reactor version.
 
-## Identitate și integritate
+## Identity and integrity
 
-- [POM-ul rădăcină](../../pom.xml) selectează coordonatele și versiunile efective.
-- `lib` conține o singură pereche fizică JAR/POM pentru fiecare bibliotecă, direct în director, alături de indexul README și cele cinci ghiduri de utilizare.
-- `library-provenance.json` păstrează hash-urile, intrările producătorului, catalogul testelor native și referința acceptanței curente.
-- POM-ul încorporat în JAR coincide octet cu octet cu POM-ul publicat alăturat.
-- Sursele paralele, versiunile suplimentare, perechile incomplete și depozitele imbricate sunt refuzate.
-- Istoricul livrărilor și verificările concrete se păstrează în exterior, cu integritatea originală.
+- [Pome root](../../pom.xml) selects the actual coordinates and versions.
+- `lib` contains one physical JAR/POM pair for each library, directly in the directory, along with the RADME index and the five user guides.
+- `library-provenance.json` keeps the hashes, manufacturer's inputs, the catalogue of native tests and the reference of current acceptance.
+- The JAR-embedded POM coincides with the byte with the next published POM.
+- Parallel sources, additional versions, incomplete pairs and nested deposits are denied.
+- The record of supplies and concrete checks shall be kept outdoors with original integrity.
 
-## Acceptanță și guvernanță
+## Acceptance and governance
 
-| Verificare | Contract local |
+| Verification | Contract local |
 |---|---|
-| [PlatformLibraryContractTest](../../atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java) | Identitatea fizică, POM-uri independente, izolare și utilizarea fără încărcarea infrastructurii interzise. |
-| [PlatformLibraryIntegrityTest](../../atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java) | Refuzul artefactelor ori metadatelor alterate, inclusiv când un hash exterior a fost actualizat. |
-| [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) | Configurația și binarele comune efectiv încărcate. |
-| [LibraryReadmeExamplesIntegrationTest](../../atf-tests/src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java) | Fragmentele Java din ghidurile livrate, compilate și executate pe JAR-urile fizice; comparații nominale și refuzuri explicite. |
-| [Suita de calitate](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) | Perimetru sursă, documentație, pachete și acceptanța bibliotecilor. |
+| [PlatformLibraryContractTest](../../atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java) | Physical identity, independent POMS, isolation and use without loading the prohibited infrastructure. |
+| [PlatformLibraryIntegrityTest](../../atf-tests/src/test/java/atf/libraries/PlatformLibraryIntegrityTest.java) | Refusing altered artifacts or metadata, including when an external hash has been updated. |
+| [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) | Configuration and bundles effectively loaded. |
+| [LibraryReadmeExamplesIntegrationTest](../../atf-tests/src/test/java/atf/libraries/LibraryReadmeExamplesIntegrationTest.java) | Java fragments from the guides delivered, compiled and executed on physical JARs; nominal comparisons and explicit refusals. |
+| [Quality Suite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) | Source perimeter, documentation, packages and library acceptance. |
 
-Probele negative construiesc artefacte sintetice identificabile. Acceptanța fizică folosește JAR-urile reale și nu le înlocuiește cu clasele de producție compilate local.
+Negative evidence builds identifiable synthetic artifacts. Physical acceptance uses real JARs and does not replace them with locally compiled production classes.
 
-## Construire și actualizare
+## Construction and update
 
 | Activitate | Contract |
 |---|---|
-| Construire izolată | [Lansatorul guvernanței](../../scripts/run-atf-governance.ps1) pregătește copia și depozitul Maven proprii; `validate` instalează perechile din `lib` înaintea rezolvării dependențelor. |
-| Mediu de dezvoltare | POM-ul rădăcină și setările Maven definesc aceleași dependențe; Kit se declară explicit pentru adaptorul JUnit care îl necesită. |
-| Actualizare | Candidat identificat, verificarea API-ului și acceptanță locală independentă; scenariile Android cer separat dispozitiv și stare inițială declarate. |
+| Isolated construction | [Governance Launcher](../../scripts/run-atf-governance.ps1) prepares its copy and warehouse; `validate` installs the pairs of `lib` before the addiction is resolved. |
+| Development environment | The root POM and the Maven settings define the same dependencies; Kit is explicitly declared for the JUnit adapter that requires it. |
+| Actualizare | Identified candidate, API verification and independent local acceptance; Android scenarios require separate device and initial status declared. |
 
-[Integrarea API-urilor](ATF_Integration.md) · [Arhitectura testării](../testing/ATF_Architecture.md) · [Rutarea responsabilităților](../feedback/README.md)
+[Integration of APIs](ATF_Integration.md) · [Test architecture](../testing/ATF_Architecture.md) · [Rerouting of responsibilities](../feedback/README.md)

@@ -1,89 +1,89 @@
-# Validare semantică API
+# Semantic validation API
 
-## Pe scurt
+## Overview
 
-Modulul evaluează contracte de răspuns și produce comparații și decizii independente de prezentare. Transportul furnizează răspunsul; regulile stabilesc așteptările, iar politica rezultatului interpretează comparațiile evaluate.
+The module shall assess response contracts and produce comparisons and independent disclosure decisions. Transport provides the answer; the rules set expectations and the outcome policy interprets the comparisons assessed.
 
-Valorile integrale decid verdictul. Proiecția pentru publicare și limitarea previzualizării au loc după evaluare, cu păstrarea cauzei și a valorilor comparate.
+Full values decide the verdict. The projection for publication and limitation of preview shall take place after evaluation, with the maintenance of the cause and the comparative values.
 
-## Responsabilități
+## Liabilities
 
 ```mermaid
 flowchart LR
-    BODY[Răspuns API] -->|alimentează| CONTEXT[Context evaluare]
-    RULES[Contract] -->|declară reguli| EVAL[Evaluator]
-    CONTEXT -->|furnizează valori| EVAL
-    EVAL -->|produce| RESULT[Comparații și verdict]
+    BODY[API reply] -->|fuel| CONTEXT[Background assessment]
+    RULES[Contract] -->|declares rules| EVAL[Evaluator]
+    CONTEXT -->|provide values| EVAL
+    EVAL -->|produce| RESULT[Comparison and verdict]
 ```
 
 <details>
-<summary>Legendă: context local și evaluare unică</summary>
+<summary>Legend: local context and unique evaluation</summary>
 
-[ContractEvaluation](src/main/java/atf/validation/contract/ContractEvaluation.java) parsează corpul JSON la prima regulă care îl cere și reutilizează documentul numai în evaluarea curentă. Regulile de antet pot funcționa separat; publicarea consumă rezultatul capturat, fără a repeta evaluarea după scurtarea textului.
+[ContractEvaluation](src/main/java/atf/validation/contract/ContractEvaluation.java) leaves the JSON body under the first rule that requires it and reuses the document only in the current assessment. Header rules can function separately; publication consumes the captured result without repeating the assessment after the text is shortened.
 
 </details>
 
 ## Contractele JSON
 
-- Calea invalidă, absența și valoarea prezentă sunt distincte; `null` explicit este prezent.
-- Căile simple și JSON Pointer au un subset explicit; selecțiile generale, filtrele și căutarea recursivă sunt refuzate.
-- Schema este verificată preliminar, inclusiv în ramuri neatinse de instanță; cuvintele-cheie necunoscute sunt refuzate.
-- Evaluarea unei scheme are propriile abateri și expresii regulate compilate; aceeași expresie se reutilizează pentru valorile repetitive, fără cache comun între cereri sau după modificarea fișierului.
-- Politica strictă produce eșec, iar politica de avertizare păstrează comparațiile negative și statutul `WARNING`.
+- The invalid path, absence and present value are distinct; `null` explicitly present.
+- Simple paths and JSON Pointer have an explicit subset; general selections, filters and recursive search are denied.
+- The scheme shall be checked for a preliminary period, including in branches not touched by the court; the unknown keywords shall be refused.
+- The assessment of a scheme shall have its own compiled deviations and regular expressions; the same expression shall be reused for repetitive values without common cache between applications or after file modification.
+- Strict policy is failing and warning policy retains negative comparisons and status `WARNING`.
 
 <details>
-<summary>Subsetul schemei și sursele contractului</summary>
+<summary>Subset of the scheme and sources of contract</summary>
 
-| Suprafață | Semnificație |
+| Surface | Meaning |
 |---|---|
-| Schemă | Obiect sau boolean; prevalidare independentă de instanță. |
-| Tipuri și valori | `type`, `enum`, egalitate de valori și comparații numerice exacte; `integer` acceptă o valoare numerică integrală. |
-| Obiecte | `required`, `properties` și `additionalProperties` boolean sau schemă. |
-| Tablouri | `items` boolean sau schemă, `minItems` și `maxItems`. |
-| Șiruri | Limite în puncte de cod Unicode și expresii regulate Java valide. |
-| Numere | `minimum` și `maximum` incluzive, prin `BigDecimal`. |
-| Metadate | `$schema` acceptă identificatorul draft 2020-12; celelalte metadate permise sunt adnotări. |
-| Refuzuri | Cuvinte-cheie și forme nesuportate, inclusiv `const`, `$ref` și `format`. |
+| Scheme | Object or Boolean; pre-validation independent of court. |
+| Types and values | `type`, `enum`, exact value equality and numerical comparisons; `integer` accepts a total numerical value. |
+| Obiecte | `required`, `properties` and `additionalProperties` Boolean or scheme. |
+| Tablouri | `items` Boolean or schematic, `minItems` and `maxItems`. |
+| Rings | Limits in Unicode code points and valid Java regular expressions. |
+| Numere | `minimum` and `maximum` inclusive, by `BigDecimal`. |
+| Metadate | `$schema` accepts the 2020-12 Draft Identifier; the other permitted metadata are annotations. |
+| Refuzuri | Key and unsupported forms including `const`, `$ref` and `format`. |
 
-[JsonSchemaCapabilities](src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) definește vocabularul și formele acceptate, iar [JsonSchemaValidator](src/main/java/atf/validation/contract/JsonSchemaValidator.java) evaluează instanța. URI-ul acceptat este `https://json-schema.org/draft/2020-12/schema`; modulul implementează subsetul declarat, cu refuz explicit în afara lui.
+[JsonSchemaCapabilities](src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) defines the vocabulary and accepted forms and [JsonSchemaValidator](src/main/java/atf/validation/contract/JsonSchemaValidator.java) assesses the court. The accepted URIO is `https://json-schema.org/draft/2020-12/schema`; the module implements the declared subset with explicit refusal outside it.
 
-[JsonPathSupport](src/main/java/atf/validation/contract/JsonPathSupport.java) deține rezolvarea căilor. Regulile scalare refuză obiectele și tablourile ca valori scalare, în loc să le transforme într-un șir gol.
+[JsonPathSupport](src/main/java/atf/validation/contract/JsonPathSupport.java) holds the solution of the paths. The scalar rules refuse objects and paintings as scalar values, instead of turning them into an empty string.
 
 </details>
 
-## Tipul conținutului și parserul comun
+## Type of content and common parser
 
-`contentTypeJson()` delegă clasificarea tipului concret către `MediaTypes.isJson` din Core. Clasificarea antetului și validitatea sintactică a corpului se verifică separat.
+`contentTypeJson()` delegates the classification of the concrete type to `MediaTypes.isJson` of Core. The header classification and syntactic validity of the body shall be checked separately.
 
-- Tipul și subtipul ignoră diferențele de majuscule, iar subtipurile cu sufix `+json` folosesc vocabularul comun.
-- Tipul absent, selecțiile generale și listele de tipuri sunt refuzate; parametrii nu transformă `text/plain` în JSON.
-- `contentTypeContains` păstrează comparația literală de compatibilitate.
-- [JsonDocument](src/main/java/atf/validation/contract/json/JsonDocument.java) folosește parserul complet din Core, cu refuzul cheilor duplicate și al conținutului ulterior rădăcinii.
+- The type and subtype ignore the differences in capitals, and the subtypes with suffix `+json` use the common vocabulary.
+- Absent type, general selection and type lists are refused; parameters do not convert `text/plain` into JSON.
+- `contentTypeContains` maintains the literal comparison of compatibility.
+- [JsonDocument](src/main/java/atf/validation/contract/json/JsonDocument.java) uses the full parser of Core, with the refusal of duplicate keys and the content after the root.
 
-## Niveluri și verificare
+## Levels and verification
 
-Dintr-o copie temporară proprie, cu POM-ul părinte, bibliotecile și un depozit Maven propriu:
+With his own temporary copy, with his own Pome, libraries and a Maven warehouse:
 
 ```powershell
 mvn -B -pl atf-validation -am test
 ```
 
-| Contract | Verificare |
+| Contract | Verification |
 |---|---|
-| Prezență și scalar | [JsonPresenceContractTest](src/test/java/atf/validation/JsonPresenceContractTest.java). |
-| Subsetul schemei și refuzuri | [JsonSchemaContractTest](src/test/java/atf/validation/JsonSchemaContractTest.java). |
-| Clasificarea antetului | [JsonMediaTypeContractTest](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java). |
+| Presence and scalar values | [JsonPresenceContractTest](src/test/java/atf/validation/JsonPresenceContractTest.java). |
+| Supported schema subset and rejection cases | [JsonSchemaContractTest](src/test/java/atf/validation/JsonSchemaContractTest.java). |
+| Header classification | [JsonMediaTypeContractTest](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java). |
 
-[Arhitectura testării](../docs/testing/ATF_Architecture.md) separă regulile unitare de componentele evaluării contractelor și de colaborarea prin API-ul public. [POM-ul](pom.xml) definește dependențele și limita modulului.
+[Test architecture](../docs/testing/ATF_Architecture.md) separates the rules from the components of the contract evaluation and the collaboration through the Public API. [POM-ul](pom.xml) defines the dependencies and the limit of the module.
 
-## Cost și limite
+## Cost and limits
 
-Subsetul JSON este explicit și refuză construcțiile nesuportate. Următoarea calificare trebuie să delimiteze costul prevalidării și al evaluării pe structuri mari, adânci sau repetitive.
+The JSON sub-set is explicit and refuses unsupported construction. The following qualification shall delimit the cost of prevalidation and evaluation on large, deep or repetitive structures.
 
-- [Feedback-ul validării](../docs/feedback/ATF_TestInfrastructure.md#costul-validării-api) deține calificarea bugetelor pe volum și adâncime. Reutilizarea expresiilor din aceeași evaluare păstrează prevalidarea, semantica regex Java, căile și ordinea abaterilor; componentele verifică și independența evaluărilor succesive.
+- [Validation feedback](../docs/feedback/ATF_TestInfrastructure.md#cost-of-validating-api) is qualified for volume and depth budgets. The re-use of expressions in the same assessment shall preserve prevalidation, regex Java semantics, the paths and order of deviations; the components shall also verify the independence of successive assessments.
 
-- Rezultatul performanței și identitatea intrărilor se păstrează extern. Optimizarea se acceptă după paritate semantică și măsurare, cu publicarea separată de evaluarea valorilor integrale.
+- The result of the performance and identity of the entries shall be kept externally. Optimization shall be accepted by semantic parity and measurement, with publication separate from the assessment of the full values.
 
-## Catalogul testelor
+## Test catalogue
 
-[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.
+[Inputs and responsibilities of tests](src/test/README.md) explains the selection, preconditions and interpretation of the result, through the same common strategy for all deliveries.

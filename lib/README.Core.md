@@ -1,20 +1,20 @@
-# Core — contracte și mecanisme comune
+# Core - joint contracts and mechanisms
 
-## Pe scurt
+## Overview
 
-`atf-core` oferă vocabularul și mecanismele reutilizabile ale ATF. Folosiți-l pentru a compune adaptoare și execuții, păstrând regulile aplicației în consumer.
+`atf-core` provides the ATF's vocabulary and reusable mechanisms. Use it to compose adapters and executions, keeping the application rules in the consumer.
 
-| Aveți nevoie de | API de pornire |
+| You need | Start API |
 |---|---|
-| Cereri, răspunsuri și execuție HTTP | `ApiRequest`, `ApiResponse`, `ApiTransport`, `ApiExecutor` |
-| Configurație capturată pentru o rulare | `AtfConfiguration`, `ApiSettingsSnapshot`, `AtfRuntimeSnapshot` |
-| JSON strict și redactarea datelor sensibile | `JsonDocuments`, `SensitiveDataRedactor` |
-| Eliberarea resurselor în ordine inversă | `CleanupRegistry` |
-| Sincronizare selectivă cu verificarea baseline-ului | `AtfPromotionManifest`, `AtfPromotionGuard` |
+| HTTP applications, replies and execution | `ApiRequest`, `ApiResponse`, `ApiTransport`, `ApiExecutor` |
+| Configuration captured for a rolling | `AtfConfiguration`, `ApiSettingsSnapshot`, `AtfRuntimeSnapshot` |
+| JSON strict and drafting sensitive data | `JsonDocuments`, `SensitiveDataRedactor` |
+| Releasing resources in reverse order | `CleanupRegistry` |
+| Selective timing with baseline verification | `AtfPromotionManifest`, `AtfPromotionGuard` |
 
 ## Exemplu minim
 
-Fragment într-o metodă care poate propaga `IOException`; construiește datele fără a trimite un request:
+Fragment in a method that can propagate `IOException`; build data without sending a request:
 
 ```java
 import atf.core.http.request.ApiRequest;
@@ -29,26 +29,26 @@ var body = JsonDocuments.read("{\"total\":19.90}");
 var total = body.path("total").decimalValue();
 ```
 
-`url` este `https://example.test/api/orders/42`. `JsonDocuments` respinge cheile duplicate și conținutul rămas după document; numerele zecimale nu trec prin `double`.
+`url` is `https://example.test/api/orders/42`. `JsonDocuments` rejects duplicate keys and the content left behind; decimal numbers do not pass through `double`.
 
-## Utilizare în ATF
+## Use in ATF
 
-- Injectați un `ApiTransport` în `ApiExecutor`; transportul real sau mock se alege explicit la compoziție.
-- `HttpClientTransport` și `UrlConnectionTransport` propagă anularea către operația deținută; fallback-ul include body-ul în deadline. Anularea nu dovedește rollback și nu autorizează replay.
-- Reutilizați snapshot-ul de configurație al rulării; oracolul, aserțiunile și verdictul de business aparțin consumerului.
-- Păstrați modelul original pentru comparație; redactarea și preview-ul se aplică la publicarea diagnosticului.
-- Core expune porturi neutre; [Console](README.Console.md), [Mock](README.Mock.md) și [Reporting](README.Reporting.md) au roluri distincte.
+- Inject a `ApiTransport` in `ApiExecutor`; actual transport or muck is explicitly chosen for composition.
+- `HttpClientTransport` and `UrlConnectionTransport` propagate cancellation to the operation held; the fallback includes the body in the deadline. Cancellation does not prove rollback and does not authorise rephrase.
+- Reuse the running configuration snapshots; the oracle, assertions and business verdict belong to the consumer.
+- Keep the original model for comparison; the drafting and preview apply to the publication of the diagnosis.
+- Core exposes neutral ports; [Console](README.Console.md), [Mock](README.Mock.md) and [Reporting](README.Reporting.md) they have distinct roles.
 
-## Verificarea utilizării
+## Verification of use
 
-| Acțiune | Rezultat observabil |
+| Action | Rezultat observabil |
 |---|---|
-| Compilați fragmentul cu JDK 21 și dependențele din POM. | Tipurile și metodele se rezolvă din livrarea binară aleasă. |
-| Executați fragmentul. | URL-ul are baza și calea cererii; `total` este numeric egal cu `19.90` prin `BigDecimal`. |
-| Furnizați chei JSON duplicate sau conținut după rădăcină. | Parsarea refuză documentul, fără rezultat parțial acceptat. |
+| Compile the fragment with JDK 21 and the dependencies in the POM. | The types and methods shall be resolved from the chosen binary delivery. |
+| Execute the fragment. | The URL is based on and the path of the application; `total` is numerically equal to `19.90` by `BigDecimal`. |
+| Provide duplicate or root content JSON keys. | The parting refuses the document without partially accepted result. |
 
-Exemplul construiește date locale; nu execută un apel HTTP. Verificarea transportului se face separat, prin adaptorul real ori mock selectat explicit.
+The example builds local data; does not execute a HTTP call. The transport check shall be made separately by means of the actual adapter or explicitly selected muck.
 
 ---
 
-Perechea Core este un binar extern fixat în POM și în registrul de proveniență. Acest ghid deține numai contractul consumat aici; raportați o incompatibilitate cu versiunea, hash-ul, fragmentul minim și rezultatul observat. [Procedura locală](README.md#mentenanță-și-feedback)
+The Core is an external binary fixed in the POM and the home register. This guide only holds the contract consumed here; report an incompatibility with version, hash, minimum fragment and observed result. [Local procedure](README.md#maintenance-and-feedback)

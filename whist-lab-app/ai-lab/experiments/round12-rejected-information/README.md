@@ -1,67 +1,67 @@
-# Decizii coerente cu informația disponibilă
+# Decisions consistent with the information available
 
-## Pe scurt
+## Overview
 
-Cercetarea verifică dacă o alegere folosește numai informația disponibilă actorului. Implementările și componentele sunt în sursele de test ale motorului; acest director le orientează, fără a adăuga o politică în aplicație.
+Research checks whether a choice uses only the information available to the actor. The implementation and components are in the engine test sources; this directory directs them without adding a policy to the application.
 
-## Invarianta observației
+## Invariation of observation
 
 ```mermaid
 flowchart LR
-    OBS[Observație permisă] -->|constrânge| WORLDS[Lumi compatibile]
-    OBS -->|delimitează| ACTION[Acțiune comună]
-    ACTION -->|se evaluează în| WORLDS
-    WORLDS -->|agregă prin model| VALUE[Utilitate estimată]
-    VALUE -->|informează| REVIEW[Calificare separată]
+    OBS[Observed observation] -->|compress| WORLDS[Lumi compatibile]
+    OBS -->|delimited| ACTION[Joint action]
+    ACTION -->|be evaluated in| WORLDS
+    WORLDS -->|Model aggregation| VALUE[Estimated utility]
+    VALUE -->|Inform| REVIEW[Separate qualification]
 ```
 
 <details>
-<summary>Legendă: acțiunea depinde de observație</summary>
+<summary>Legend: action depends on observation</summary>
 
-Două lumi ascunse compatibile cu aceeași observație nu pot autoriza alegeri publice diferite doar pentru că simulatorul le cunoaște. După o carte publică nouă observațiile pot deveni diferite, iar politica poate reacționa diferit; invarianta nu impune o singură carte în toate stările viitoare.
+Two hidden worlds compatible with the same observation cannot authorize different public choices just because the simulator knows them. After a new public card observations may become different and policy may react differently; the invariant does not impose a single card in all future states.
 
 </details>
 
-| Mecanism | Responsabilitate și limită |
+| Mechanism | Liability and limit |
 |---|---|
-| Observația | Mâna proprie, contracte, cărți publice și necesarul disponibil la acea decizie. |
-| Lumea ipotetică | Permite evaluarea consecințelor; cărțile ei ascunse nu devin parametri ai alegerii publice. |
-| Agregarea | Compară aceeași alternativă pe lumile și ponderile declarate. |
-| Politica rezultată | Are nevoie de calificare proprie; coerența informației nu demonstrează singură contract optim sau progres strategic. |
+| Observation | Own hand, contracts, public cards and the need available to that decision. |
+| Hypothetical world | It allows for the assessment of consequences; its hidden cards do not become parameters of public choice. |
+| Agregarea | Compare the same alternative on the worlds and weights declared. |
+| The policy resulting | It needs its own qualification; the consistency of information does not demonstrate the optimal contract alone or strategic progress. |
 
-## Ordinea optimizării
+## Order of optimization
 
 ```text
 alegere disponibilă actorului = argmax_acțiune sumă_lume p(lume) × U(acțiune, lume)
 valoare cu informație în plus = sumă_lume p(lume) × max_acțiune U(acțiune, lume)
 ```
 
-Maximizarea separată după consultarea fiecărei lumi poate produce o valoare inaccesibilă unei singure alegeri publice. Utilitatea, ponderile și continuarea sunt ipoteze distincte; formula nu afirmă că un rollout este calibrat ori o căutare este completă.
+Separate maximisation after consultation of each world can produce a value which is not accessible to a single public election. Utility, weights and continuation are distinct assumptions; the formula does not state that a rollout is calibrated or a search is complete.
 
-## Implementări și controale
+## Implementation and controls
 
-| Proprietate | Sursă și verificare |
+| Property | Source and verification |
 |---|---|
-| Continuare din informație publică | [PublicTailPlanner](../../../game-core/src/test/java/ro/whistlab/coach/research/publictail/PublicTailPlanner.java) și [PublicTailInformationTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java): observație comună, legalitate și păstrarea intrărilor. |
-| Agregarea unei deschideri | [OpeningBidEvidence](../../../game-core/src/test/java/ro/whistlab/core/research/bidding/OpeningBidEvidence.java) și [OpeningBidEvidenceTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java): aceeași deschidere înaintea mediei, obiectiv declarat și refuzul lipsei de mostre. |
+| Continuation from public information | [PublicTailPlanner](../../../game-core/src/test/java/ro/whistlab/coach/research/publictail/PublicTailPlanner.java) and [PublicTailInformationTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/PublicTailInformationTest.java): joint observation, legality and retention of entries. |
+| Aggregation of an opening | [OpeningBidEvidence](../../../game-core/src/test/java/ro/whistlab/core/research/bidding/OpeningBidEvidence.java) and [OpeningBidEvidenceTest](../../../game-core/src/test/java/ro/whistlab/core/ai/information/OpeningBidEvidenceTest.java): same opening before average, stated objective and refusal of lack of samples. |
 
-Componentele construiesc domenii finite cu așteptări independente. Ele califică mecanismul modelului cercetat; mostrele construite nu estimează automat distribuția reală a cărților adverse.
+The components build finite areas with independent expectations. They qualify the mechanism of the model under scrutiny; the built samples do not automatically estimate the actual distribution of the adverse cards.
 
-## Alegerea verificării
+## Choice of verification
 
-| Mecanism modificat | Filtru JUnit al sarcinii `informationResearchTest` |
+| Mechanism modificat | JUnit load filter `informationResearchTest` |
 |---|---|
-| Observația și continuarea publică | `ro.whistlab.core.ai.information.PublicTailInformationTest` |
-| Agregarea deschiderii înaintea mediei | `ro.whistlab.core.ai.information.OpeningBidEvidenceTest` |
+| Observation and public follow-up | `ro.whistlab.core.ai.information.PublicTailInformationTest` |
+| Aggregation of opening before average | `ro.whistlab.core.ai.information.OpeningBidEvidenceTest` |
 
-Din directorul `whist-lab-app` al unei copii temporare complete, cu Java și dependențele Gradle disponibile local:
+From the `whist-lab-app` directory of a full temporary copy, with Java and locally available Gradle dependencies:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:informationResearchTest --offline --no-daemon
 ```
 
-[Gradle](../../../game-core/build.gradle) definește selecția exactă, inclusiv componenta presiunii contractului în aceeași sarcină. Adăugați `--tests '<filtrul-din-tabel>'` pentru mecanismul vizat; cele două teste de informație sunt excluse din sarcina implicită `test`, iar colecția `research` din [catalog](../../../../config/test-collections.json) este o selecție mai largă.
+[Gradle](../../../game-core/build.gradle) define the exact selection, including the component of the contract pressure in the same task. Add `--tests '<filtrul-din-tabel>'` for the mechanism concerned; the two information tests are excluded from the default load `test`and collection `research` of [catalog](../../../../config/test-collections.json) is a wider selection.
 
-Pentru a modifica o politică, identificați separat observația, generatorul, continuarea și agregarea schimbate. [Protocolul offline](../../../../docs/learning/README.md) cere componente independente, candidat înghețat și evaluare rezervată înaintea promovării; datele și rezultatele concrete rămân externe.
+To modify a policy, identify separately the observation, generator, continuation and aggregation exchanged. [Protocolul offline](../../../../docs/learning/README.md) requires independent components, frozen candidate and reserved evaluation prior to promotion; concrete data and results remain external.
 
-[Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md) · [Proiectarea componentelor](../../../../docs/testing/ATF_AiComponents.md)
+[Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md) · [Design of components](../../../../docs/testing/ATF_AiComponents.md)

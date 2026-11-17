@@ -1,92 +1,92 @@
-# Reguli, YAML-uri și ponderi dependente de context
+# Rules, YAMLs and context-dependent weightings
 
-## Pe scurt
+## Overview
 
-O regulă definește condiția, acțiunea și limitele ei. O pondere are sens numai împreună cu caracteristica măsurată, unitatea, consumatorul din cod și criteriul după care este calificată.
+A rule defines its condition, action and limits. A weighting shall only make sense in conjunction with the measured characteristic, the unit, the consumer in the code and the criterion by which it is qualified.
 
-## Tipuri de configurare
+## Types of configuration
 
 | Tip | Contract | Efect |
 |---|---|---|
-| Reguli obligatorii | Pachet, licitații permise, culoare, atu și scor | Filtrează acțiuni și calculează rezultate în motor. |
-| Manifest legat de cod | Condiții, priorități, surse și teste | Documentează și verifică implementarea declarată. |
-| Parametru de estimator | Buget, mix de continuare sau prag de departajare | Influențează calculul numai prin consumatorul implementat. |
-| Catalog de tipare | Clase de combinații, indicii și statut | Cercetare; influența în aplicație cere consumator implementat și promovare separată. |
-| Model învățat | Caracteristici, coeficienți, dispersie și identitate | Produce estimări numai prin consumatorul implementat și domeniul calificat. |
-| Date de experiment | Partide, selecții concrete și rezultate | Intrări externe pentru dezvoltare și evaluare. |
+| Mandatory rules | Package, allowed bids, color, trump and score | Filter actions and calculate results in the engine. |
+| Code Manifesto | Conditions, priorities, sources and tests | Documenting and verifying the declared implementation. |
+| Estimator parameter | Budget, follow-on mix or cut-off threshold | It only influences the calculation through the implemented consumer. |
+| Typing catalogue | Classes of combinations, indices and status | Research; influence in the application requires implemented consumer and separate promotion. |
+| Model learned | Features, coefficients, dispersion and identity | It produces estimates only through the implemented consumer and the qualified field. |
+| Experimental data | Parties, concrete selections and results | External inputs for development and evaluation. |
 
-## Cine consumă manifestele
+## Who consumes the manifests
 
 ```mermaid
 flowchart LR
-    RULES[Manifest de reguli] -->|leagă condiții de| CODE[Cod și teste]
-    PATTERN[Catalog tipare] -->|descrie| RESEARCH[Cercetare]
-    MODEL[Model declarat] -->|generează controlat| GENERATED[Implementare experimentală]
-    GENERATED -->|necesită calificare| PROMOTION[Promovare]
+    RULES[Manifesto of rules] -->|tying conditions| CODE[Code and tests]
+    PATTERN[Print catalogue] -->|descrie| RESEARCH[Cercetare]
+    MODEL[Model declarat] -->|generate controlled| GENERATED[Experimental implementation]
+    GENERATED -->|requires qualification| PROMOTION[Promovare]
 ```
 
 <details>
-<summary>Legendă: declarație și execuție</summary>
+<summary>Legend: declaration and execution</summary>
 
-Manifestele AI curente nu formează un interpretor general de reguli YAML. Fiecare efect executabil are o cale de consum explicită și un statut de activare; editarea unui text declarativ nu modifică de la sine politica aplicației.
+Current AI manifests do not form a general YAML rule interpreter. Each executable effect has an explicit consumption path and activation status; editing a declarative text does not change the application policy on its own.
 
 </details>
 
 | Manifest | Rol |
 |---|---|
-| [Obiective Normal/Hard](../../config/whist-play-objectives.yaml) | Priorități active, condiții de schimbare a obiectivului și profiluri experimentale. |
-| [Reguli contextuale](../../config/whist-contextual-discard.yaml) | Necesare, oportunități, discard, informație publică și legături către componente. |
-| [Catalog de tipare](../../config/whist-hand-patterns.yaml) | Clase de combinații și indicii neaditive, fără influență runtime directă. |
-| [Salvare certificată](../../config/whist-contract-salvage.yaml) | Domeniu, limite universale și fallback-ul gărzii active. |
-| [Presiune contextuală](../../config/whist-contract-pressure.yaml) | Model de continuare experimental, separat de politica acceptată. |
-| [Inferență din licitații](../../config/whist-public-beliefs.yaml) | Model experimental de comportament observat și contractul generării sale. |
-| [Licitații viitoare](../../config/whist-future-bid-forecast.yaml) | Experiment de propagare a prefixului ipotetic al licitației. |
-| [Legalitatea situațiilor](../../config/whist-legal-evidence.yaml) | Contractul martorului legal și al observației disponibile testului. |
+| [Obiective Normal/Hard](../../config/whist-play-objectives.yaml) | Active priorities, objective change conditions and experimental profiles. |
+| [Background rules](../../config/whist-contextual-discard.yaml) | Necessary, opportunities, discord, public information and links to components. |
+| [Typing catalogue](../../config/whist-hand-patterns.yaml) | Classes of combinations and non-additive indices, without direct runtime influence. |
+| [Certified rescue](../../config/whist-contract-salvage.yaml) | Domain, universal limits and active guard fallback. |
+| [Contextual pressure](../../config/whist-contract-pressure.yaml) | Model experimental follow-up, separate from accepted policy. |
+| [Bidding](../../config/whist-public-beliefs.yaml) | Experimental pattern of observed behavior and the contract of its generation. |
+| [Future bids](../../config/whist-future-bid-forecast.yaml) | Experiment to propagate the hypothetical prefix of the bid. |
+| [Legal status of situations](../../config/whist-legal-evidence.yaml) | The test shall be performed on the test chemical. |
 
-## Cum se schimbă influența unei reguli
+## How does a rule change influence?
 
-Tabelul separă mecanisme posibile; nu afirmă că fiecare este activ în toate domeniile. [Modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor) precizează că modelul condiționat de o carte este activ, iar ponderarea generală a distribuirilor pentru 2–8 cărți rămâne experimentală.
+The table separates possible mechanisms; it does not say that each is active in all areas. [Modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives) states that the model conditioned by a card is active and the general weighting of distributions for 2–8 cards remains experimental.
 
-| Mecanism | Ce se schimbă în joc | Ce rămâne fix în politica înghețată |
+| Mechanism | What changes in the game | What remains fixed in the frozen policy |
 |---|---|---|
-| Activare condițională | Condiția poate deveni adevărată sau falsă după o carte. | Regula și ordinea priorităților. |
-| Caracteristică contextuală | Necesar, oportunități, ranguri public eliminate, lipsuri și prefix. | Definiția și normalizarea caracteristicii. |
-| Poartă de obiectiv | Contract recuperabil sau imposibil public. | Criteriul care dovedește schimbarea stării. |
-| Ponderare de model | Plauzibilitatea lumilor se recalculează din observație. | Coeficienții și mecanismul de regularizare. |
-| Învățare offline | Un candidat poate schimba parametri sau implementare. | Politica acceptată până la o promovare explicită. |
+| Conditional activation | The condition can be true or false by a card. | Rule and order of priorities. |
+| Contextual characteristic | Necessary, opportunities, public ranks eliminated, gaps and prefix. | Definition and normalization of the characteristic. |
+| Target gate | Contract recoverable or publicly impossible. | The criterion that proves the change of status. |
+| Model weighting | The Plausibility of the Worlds is recalculated from observation. | Coefficients and the settlement mechanism. |
+| Offline learning | A candidate may change parameters or implement. | Policy accepted until an explicit promotion. |
 
-## Modelul formal al influenței
+## Formal model of influence
 
-„Pondere” poate numi mecanisme diferite. Identificați mai întâi ce se cântărește și cine consumă valoarea; mărirea unui număr nu are aceeași semnificație în toate modelele.
+"Weight" may call different mechanisms. Identify first what is weighed and who consumes value; increasing a number does not have the same meaning in all models.
 
-| Tip de influență | Unitate și efect | Stadiu în implementare |
+| Type of influence | Unit and effect | Stage in implementation |
 |---|---|---|
-| Prioritate de obiectiv | Ordinea dintre exact, puncte și efectul asupra rivalilor. | [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) ordonează criterii, fără o sumă arbitrară de scoruri. |
-| Amestec de continuări | Proporția dintre două estimări ale aceleiași utilități. | [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) combină rollout și căutare în domeniul mic eligibil. |
-| Plauzibilitatea lumii | Influența unei distribuții ipotetice în agregare. | Domeniul specializat de o carte este activ; modelul general de 2–8 cărți rămâne experimental. |
-| Coeficient învățat | Contribuția unei caracteristici normalizate la predicție. | Ajustare offline și generare de sursă pentru candidați identificați. |
-| Indiciu despre onoruri | Descrierea potențialului unei combinații în context. | Catalog de cercetare, neaditiv și fără influență runtime directă. |
+| Priority objective | The order between exact points and effect on rivals. | [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) orders criteria without an arbitrary amount of scores. |
+| Conversion | The proportion of two estimates of the same utility. | [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) combines rollout and search in the small eligible domain. |
+| Plauzibilitatea lumii | The influence of a hypothetical distribution in aggregation. | The specialized domain of a card is active; the general model of 2–8 cards remains experimental. |
+| Liabilities to other financial institutions | Contribution of a normalized feature to prediction. | Offline adjustment and source generation for identified candidates. |
+| Hint of honors | Description of the potential of a combination in context. | Research catalogue, non-additive and without direct runtime influence. |
 
-### Parametru fix, context care evoluează
+### Fixed parameter, evolving context
 
 ```mermaid
 flowchart LR
-    PUBLIC[Fapt public nou] -->|actualizează| OBS[Observație]
-    OBS -->|recalculează| FEATURES[Context]
-    FEATURES -->|influențează| ORDER[Evaluare și ordine]
-    PARAM[Politică înghețată] -->|definește| ORDER
-    ORDER -->|propune| ACTION[Acțiune legală]
+    PUBLIC[New public fact] -->|update| OBS[Observation]
+    OBS -->|recalculate| FEATURES[Context]
+    FEATURES -->|influence| ORDER[Evaluation and order]
+    PARAM[Ice cream policy] -->|define| ORDER
+    ORDER -->|propune| ACTION[Legal action]
 ```
 
 <details>
-<summary>Legendă: adaptarea deciziei păstrează identitatea politicii</summary>
+<summary>Legend: Adaptation of the decision retains the identity of policy</summary>
 
-Necesarul, cărțile publice și oportunitățile se schimbă după acțiuni; parametrul și regula rămân cele ale implementării identificate. Poarta de fezabilitate poate schimba obiectivul prioritar, fără reantrenarea coeficienților în timpul mâinii.
+The need, public cards and opportunities change after action; the parameter and rule remain those of the identified implementation. The feasibility gate can change the priority objective without retraining coefficients during hand.
 
 </details>
 
 <details>
-<summary>Forma aditivă și corecția experimentală de presiune</summary>
+<summary>Additive form and experimental pressure correction</summary>
 
 ```text
 scor_contextual(acțiune, stare) =
@@ -96,9 +96,9 @@ scor_contextual(acțiune, stare) =
 φ_j = caracteristică definită și normalizată din informația permisă
 ```
 
-Această formă descrie un model aditiv numai acolo unde codul îl implementează. Prioritățile lexicografice și filtrele de legalitate au alte semantici, iar indiciile care se suprapun nu se însumează automat.
+This form describes an additive model only where the code implements it. Lexicographic priorities and legal filters have other semantics, and overlapping clues do not automatically add up.
 
-Definițiile necesarului, oportunităților și dezechilibrului sunt în [modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia). Modelul experimental de [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) ajustează densitatea prin dezechilibru, progres și oportunități. El are ramuri distincte pentru necesar zero, rezervă suficientă și necesitatea tuturor levatelor, cu ponderi fixe asupra unor caracteristici care evoluează.
+The definitions of necessity, opportunities and imbalance are in [modelul deciziei](ATF_DecisionModel.md#the-status-changing-the-decision). Experimental model [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) It has distinct branches for zero need, sufficient reserve and the need for all levatates, with fixed weights on evolving features.
 
 ```text
 ρ = clamp(necesar / oportunități, 0, 1)
@@ -106,24 +106,24 @@ progres = 1 − oportunități / mărimea_inițială
 ρ_contextual = clamp(ρ + β × (1 + progres) × Δ / oportunități, 0, 1)
 ```
 
-Corecția contextuală se aplică doar în ramura eligibilă a modelului experimental. Formula nu este activă implicit în rollout-ul Hard acceptat, iar dezechilibrul semnat Δ rămâne constant în timpul unei mâini.
+The contextual correction shall apply only in the eligible branch of the experimental model. The formula is not by default active in the accepted Hard Rollout, and the signed imbalance is constant during a hand.
 
 </details>
 
-### Cum ajustăm un model offline
+### How to adjust an offline model
 
-[Constructorul modelului de ofertă](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) extrage mâna actorului și prefixul existent la licitare din partide development validate. Grupează observațiile după seed pentru ponderare și separarea ajustării de validarea predictivă; eticheta este oferta observată, fără afirmația că ar fi fost optimă.
+[The manufacturer of the tender model](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) draws the actor's hand and the existing prefix at bidding from validated development parties. It groups the post-seed observations for weighting and separation of the adjustment from predictive validation; the label is the offer observed without claiming that it would have been optimal.
 
-[Generatorul de sursă](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence-codegen.mjs) verifică vocabularul, formele numerice și criteriul predictiv, apoi păstrează hash-ul modelului în implementarea generată. Acest control califică generarea; [procedura de evoluție](../learning/ATF_PolicyEvolution.md#când-promovăm) cere separat componentele și progresul strategic pe lot nou înaintea activării.
+[Source generator](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence-codegen.mjs) checks vocabulary, numerical forms and predictive criteria, then keeps the model hash in the generated implementation. This control qualifies generation; [procedure for evolution](../learning/ATF_PolicyEvolution.md#when-we-promote) requires separately components and strategic progress on the new batch prior to activation.
 
-## Inferența comportamentului
+## Behavior inference
 
-Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Modelul runtime specializat de o carte și fallback-ul său sunt documentate în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor); controlul automat al coerenței manifestului cu acel domeniu rămâne [criteriu deschis](../feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor).
+This section describes the general research model for 2–8 The runtime model specialized in a card and its fallback are documented in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives); automatic control of the consistency of the manifesto with that domain remains [criteriu deschis](../feedback/ATF_Ai.md#coordination-of-evaluation-and-delimitation-of-mechanisms).
 
-[Modelul experimental de licitații](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) folosește coeficienți fixați și caracteristici ale mâinii ipotetice originale și prefixului disponibil atunci. Cărțile rămase și cele jucate de același loc se reunesc fără dublarea mesei curente.
+[Experimental tender model](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) uses fixed coefficients and features of the original hypothetical hand and prefix available then. The remaining and the cards played by the same place meet without doubling the current table.
 
 <details>
-<summary>Plauzibilitate, regularizare și mărimea efectivă a eșantionului</summary>
+<summary>Plausibility, regularisation and actual sample size</summary>
 
 ```text
 μ = clamp(scală × θ · φ(mână_inițială, prefix), 0, mărime)
@@ -137,32 +137,32 @@ pondere_lume =
 eșantion_efectiv = suma_ponderilor² / suma_pătratelor_ponderilor
 ```
 
-- Regula ultimei licitații elimină numai valoarea interzisă legal.
-- Masa uniformă păstrează suport pentru comportamente neobișnuite, inclusiv contracte mici cu cărți mari.
-- Concentrarea excesivă sau ponderile constante păstrează estimarea de bază prin fallback.
-- O licitație proprie ipotetică este țintă de simulare și nu este folosită retrospectiv drept dovadă despre un adversar.
-- Modelul prezice comportament observat, fără etichetarea lui ca optim sau posterior comun calibrat.
+- The rule of the last bid only eliminates the legally prohibited value.
+- The uniform table keeps support for unusual behaviors, including small contracts with large cards.
+- Excessive concentration or constant weights keep the base estimate by fallback.
+- A hypothetical own bid is the target of simulation and is not used retrospectively as evidence of an opponent.
+- The pattern predicts observed behavior without its labelling as optimally or posterior-calibrated joint.
 
 </details>
 
-## Licitațiile viitoare în simulare
+## Future tenders in simulation
 
-Licitațiile deja depuse rămân fapte publice, iar contractul propriu evaluat este ținta ipotetică a acelei alternative. Estimarea următorilor actori folosește ordinea licitării și prefixul disponibil în continuarea simulată.
+Bidding already submitted remains public facts and the contract itself assessed is the hypothetical target of that alternative. The estimation of the following actors shall use the order of bidding and the prefix available in the simulated continuation.
 
-- Politica acceptată folosește estimatorul din `MonteCarloAi.biddingTargets` pentru contractele încă necunoscute.
-- [Modelul condiționat experimental](../../whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java) actualizează prefixul după fiecare predicție și respectă restricția ultimului ofertant.
-- Alegerea modului unei distribuții produce o singură continuare a licitației; integrarea tuturor licitațiilor viitoare este un mecanism diferit.
-- O predicție este context de simulare și nu devine observație reală sau dovadă despre cărțile adverse.
+- The accepted policy uses the `MonteCarloAi.biddingTargets` estimate for contracts still unknown.
+- [Experimental conditioning model](../../whist-lab-app/ai-lab/experiments/bid-models/r16-bid-forecast/game-core/src/main/java/ro/whistlab/core/BidForecast.java) updates the prefix after each prediction and complies with the restriction of the last bidder.
+- The choice of how a distribution is made produces a single continuation of the bid; the integration of all future bids is a different mechanism.
+- A prediction is a simulation context and does not become real observation or evidence of adverse cards.
 
-## Contractul unei reguli întreținute
+## Contract of a maintained rule
 
-| Câmp | Responsabilitate |
+| Field | Responsibility |
 |---|---|
-| Identitate și statut | Regulă stabilă, activă sau de cercetare. |
-| Domeniu și precondiții | Variantă, observație permisă și condiție de aplicare. |
-| Semnificație | Filtru, prioritate, scor, estimator sau certificat. |
-| Parametri | Unități, intervale, normalizare și sursa valorii. |
-| Limite și fallback | Comportament în afara domeniului, fără date sau la buget epuizat. |
-| Cod și verificare | Consumator explicit, componentă independentă și criteriu de promovare. |
+| Identity and status | Stable, active or research rule. |
+| Scope and preconditions | Variant, allowed observation and condition of application. |
+| Meaning | Filter, priority, score, estimate or certificate. |
+| Parametri | Units, intervals, normalisation and value source. |
+| Limits and fallback | Behaviour outside the domain, no data or budget exhausted. |
+| Code and verification | Explicit consumer, independent component and promotion criterion. |
 
-[Modelul deciziei](ATF_DecisionModel.md) · [Protocolul de îmbunătățire](../learning/README.md)
+[Modelul deciziei](ATF_DecisionModel.md) · [Improving protocol](../learning/README.md)

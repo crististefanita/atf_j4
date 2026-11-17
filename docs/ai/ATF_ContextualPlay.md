@@ -1,51 +1,51 @@
-# Decizii contextuale și siguranța contractului
+# Contextual decisions and contract safety
 
-## Pe scurt
+## Overview
 
-Valoarea unei cărți depinde de obiectivul rămas și de informația publică. [Manifestul contextual](../../config/whist-contextual-discard.yaml) leagă condițiile generale de implementare și de regresiile independente.
+The value of a card depends on the remaining objective and public information. [Manifestul contextual](../../config/whist-contextual-discard.yaml) links the general conditions for implementation and independent regressions.
 
-## Ordinea evaluării
+## Order of assessment
 
 ```mermaid
 flowchart LR
-    OBS[Observație proprie/publică] -->|filtrează| LEGAL[Cărți legale]
-    LEGAL -->|evaluează cu necesarul| QUOTA[Fezabilitatea contractului]
-    QUOTA -->|contract recuperabil| EXACT[Șansa exactului]
-    QUOTA -->|contract imposibil public| POINTS[Protecția punctelor]
-    POINTS -->|departajează| RIVALS[Ratări adverse estimate]
+    OBS[Private and public observation] -->|filter| LEGAL[Legal books]
+    LEGAL -->|evaluate with the need| QUOTA[Feasibility of contract]
+    QUOTA -->|contract recuperabil| EXACT[Accurate chance]
+    QUOTA -->|contract not publicly available| POINTS[Protection of points]
+    POINTS -->|tilt| RIVALS[Estimated adverse reactions]
 ```
 
 <details>
-<summary>Legendă: prioritatea obiectivelor</summary>
+<summary>Legend: priority of objectives</summary>
 
-Legalitatea precedă orice intenție. Fezabilitatea folosește limite publice și certificate în domeniul lor; o estimare de rollout nu este o demonstrație că un contract este imposibil sau o mutare este universal sigură.
+Legality precedes any intention. Feasibility uses public and certified limits in their field; an estimate of rollout is not a demonstration that a contract is impossible or a move is universally safe.
 
 </details>
 
-## Reguli condiționale
+## Conditional rules
 
-| Condiție | Implicație |
+| Condition | Implication |
 |---|---|
-| Contractul este realizat | Reduceți riscul levatelor suplimentare în limitele legalității. |
-| Mai lipsesc levate realizabile | Păstrați sau folosiți cărțile care oferă oportunitățile necesare. |
-| Lipsește culoarea cerută, dar există atu | Tăierea obligatorie prevalează asupra intenției de evitare. |
-| Lipsește culoarea și nu există atu | Un onor lateral poate deveni o ieșire legală. |
-| Există un atu superior încă pe masă | Un atu propriu jucabil poate fi consumat fără o levată proprie. |
-| Atuul superior este întors sau într-o levată încheiată | El nu mai poate câștiga levata curentă. |
-| Dezechilibrul total sugerează evitare | Evaluați în continuare necesarul fiecărui loc; totalul nu înlocuiește obiectivul individual. |
+| The contract is made | Reduce the risk of additional levatates within the limits of legality. |
+| There are still no achievable tricks | Keep or use cards that offer the necessary opportunities. |
+| Missing the required color, but there is trump | Compulsory cutting takes precedence over the intention to avoid. |
+| Missing color and no trump | A side honor can become a legal exit. |
+| There's a higher hand still on the table | A playable asset can be consumed without a trick of its own. |
+| The upper atum is returned or in a completed trick | He can't win his current trick anymore. |
+| Total imbalance suggests avoidance | Further assess the needs of each place; the total does not replace the individual target. |
 
-## Mărimi de stare
+## Status sizes
 
-[Modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia) deține definițiile necesarului semnat, oportunităților, dezechilibrului și progresului. Condițiile din acest ghid folosesc aceleași unități și includ levata neterminată o singură dată.
+[Modelul deciziei](ATF_DecisionModel.md#the-status-changing-the-decision) has the definitions of the need to be signed, opportunities, imbalance and progress. The conditions in this guide use the same units and include the unfinished trick once.
 
-Cererea pozitivă însumează `max(0, necesar)` pentru fiecare loc: un contract deja depășit nu anulează nevoia altui jucător. Dezechilibrul agregat descrie masa, fără a înlocui ținta individuală sau legalitatea unei cărți.
+The positive demand amounts to `max(0, necesar)` per place: a contract already exceeded does not cancel the need of another player. The aggregate imbalance describes mass without replacing individual target or the legality of a card.
 
-## Garanții și estimări
+## Guarantees and estimates
 
-Ordinea runtime și cuantificatorii certificatelor sunt definiți în [modelul deciziei](ATF_DecisionModel.md#prioritatea-obiectivelor). [Regulile și configurarea](ATF_RulesConfiguration.md) disting aceste ramuri active de indicii și ponderi experimentale.
+The runtime order and the certificate quantifiers are defined in [modelul deciziei](ATF_DecisionModel.md#priority-objectives). [Rules and configuration](ATF_RulesConfiguration.md) Distinguishing these active branches of experimental clues and weights.
 
-- [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) verifică frontierele regulilor prin martori legali și schimbări controlate ale necesarului.
-- [Proiectarea componentelor](../testing/ATF_AiComponents.md) delimitează observația actorului și oracolul.
-- [Jucătorul independent](../../whist-lab-app/ai-lab/README.md) are implementare și utilitate separate.
+- [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) checks the borders of the rules through legal witnesses and controlled changes of the need.
+- [Design of components](../testing/ATF_AiComponents.md) delimits the actor's observation and oracle.
+- [Independent Player](../../whist-lab-app/ai-lab/README.md) has separate implementation and utility.
 
-O recomandare contextuală devine garanție numai dacă este demonstrată în domeniul declarat. Bugetul epuizat, o enumerare incompletă sau o simplă medie favorabilă păstrează statutul de estimare.
+A contextual recommendation becomes a guarantee only if it is demonstrated in the stated field. The budget exhausted, incomplete listing or simple favourable average shall retain the estimation status.

@@ -1,54 +1,54 @@
-# Reutilizarea guvernanței și coeziunea codului
+# Re-use of governance and Code Cohesion
 
-## Pe scurt
+## Overview
 
-Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul comun reutilizabil se solicită prin [responsabilitățile bibliotecilor](README.md), fără introducerea în consumator a implementărilor acestora.
+The project owns the Android perimeter and adapters verifiers. The reusable joint contract is requested through [Liabilities of libraries](README.md), without the introduction into the consumer of their implementation.
 
-## Costul inspecției sintactice
+## Cost of syntactic inspection
 
-| Prioritate | Observație și sursă | Criteriu de închidere |
+| Priority | Observation and source | Closure criterion |
 |---|---|---|
-| P2 | Profilarea inspecției straturilor surprinde inițializarea încărcătorului de procesoare și interogarea classpath-ului în [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), deși verificarea consumă arborele de sintaxă. | Calificați o configurare parse-only cu dependențe delimitate și măsurați costul pe același inventar. Păstrați adnotările compuse, importurile ambigue, erorile de sintaxă și ciclul de viață al parserului prin controale independente. |
+| P2 | Profiling of layer inspection captures initialization of the processor charger and interrogation of the classpathin [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), although the verification consumes the syntax tree. | Qualify a parse- only configuration with delimited dependencies and measure cost on the same inventory. Keep compound annotations, ambiguous imports, syntax errors and parser life cycle through independent controls. |
 
 
-## Coeziunea și evoluția pachetelor
+## Cohesion and package development
 
-[Politica executabilă](../../config/atf-governance-policy.json) aplică limita fără derogări pentru structura curentă. [Responsabilitățile pachetelor](../governance/ATF_Packages.md) delimitează API-urile, suportul comun și selecțiile testelor.
+[Executable policy](../../config/atf-governance-policy.json) applies the limit without derogations to the current structure. [Package responsibilities](../governance/ATF_Packages.md) delimits APIs, common support and test selections.
 
-[Guvernanța calității](../governance/README.md) · [Bune practici documentare](../governance/ATF_Documentation.md)
+[Quality governance](../governance/README.md) · [Good documentation practices](../governance/ATF_Documentation.md)
 
-## Calificarea afirmațiilor și lansatoarelor
+## Qualification of claims and launchers
 
-Legarea dovezilor de sursa calificată este verificată de [regresiile evaluatorului RAG](../testing/ATF_ReleaseQualification.md#regresiile-evaluatorului). Integritatea APK-ului și a payload-ului din dosarele înregistrate rămâne verificată de [guvernanța integrității release-ului](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
+The attestation of the qualified source shall be verified by [RAG evaluator regression](../testing/ATF_ReleaseQualification.md#evaluator-regression-tests). The integrity of APK and payload in the recorded files remains verified by the [the integrity of the relay](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
 
-| Prioritate | Responsabil și lacună | Nivel și criteriu de închidere |
+| Priority | Responsible and gaps | Level and criterion of closure |
 |---|---|---|
-| P2 | Coordonarea: lansatoarele verifică precondițiile în moduri diferite. | Componente controlate pentru Java, Maven, Gradle, Node și Python: capabilitățile cerute intrării sunt verificate înaintea operației costisitoare, iar lipsa lor produce diagnostic și identitate de sursă explicite. Pentru Python, detectați aliasul de instalare separat de un interpretor executabil; pentru [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verificați disponibilitatea, refuzul, timeout-ul și starea transportului cu proces controlat, separat de parsare și de clientul Java. |
+| P2 | Coordination: launchers check preconditions in different ways. | Controlled components for Java, Maven, Gradle, Node and Python: the required entry capabilities are checked prior to the costly operation and their absence produces explicit diagnostic and source identity. For Python, detect the installation alias separately from an executable interpreter; [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), check availability, refusal, timeout and status of controlled process transport, separate from parsing and Java customer. |
 
-[Retenția copiilor inline](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) verifică separat lipsa PNG-urilor identice lângă HTML. Această gardă nu dovedește autonomia datelor, lizibilitatea imaginilor sau integritatea APK-ului; [criteriul adaptorului](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) rămâne distinct.
+[Retention of Inline Children](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) checks separately for the absence of identical NGPs near HTML. This guard does not show data autonomy, image readability or integrity of the APK; [Adapter criterion](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) remains distinct.
 
-## Îmbunătățirea ghidurilor de orientare
+## Improving guidance guides
 
-Grila editorială din [contractul documentației](../governance/ATF_Documentation.md#verificare-și-evaluare-editorială) evaluează documentul și limita lui, separat de maturitatea codului. Notele și inventarul evaluat rămân în auditul extern; aici păstrăm numai lucrările care pot îmbunătăți lectura sau reproducerea.
+The editorial grid of [contract documentation](../governance/ATF_Documentation.md#editorial-verification-and-evaluation) assesses the document and its limit, separate from the maturity of the code. The notes and the inventory evaluated remain in the external audit; here we keep only the works that can improve reading or reproduction.
 
-| Prioritate | Responsabil și suprafață | Criteriu de închidere |
+| Priority | Responsible for and area | Closure criterion |
 |---|---|---|
-| P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
+| P2 | Libraries guides distributed: re-use of the sample in the manufacturer | [Local acceptance of fragments](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic contract of these evidence in the register of joint officers and synchronise the clarification of the guidelines to consumers. The manufacturer's regression and acceptance of each consumer remain distinct. |
 
-| P2 | Generatorul descrierii release-ului poate lipi toate schimbările într-un paragraf prea dens. | Generatorul trebuie să producă o sinteză scurtă și puncte separate. Verificați forma înainte de sigilarea manifestului. Păstrați intacte descrierile deja incluse în inventarul unei ediții publicate. |
+| P2 | The relay description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifesto. Keep intact the descriptions already included in the inventory of a published edition. |
 
-## Descărcarea prin browser
+## Download via browser
 
-[Contractul distribuției](../platform/ATF_AndroidDelivery.md#verificări-automate-ale-distribuției) separă proba API, descărcarea efectivă din browser și accesul anonim. Verificarea browserului și hash-ul fișierului primit se consemnează în [dosarul versiunii active](../../release/README.md).
+[Distribution contract](../platform/ATF_AndroidDelivery.md#automatic-distribution-checks) separate API sample, actual download from browser and anonymous access. The browser verification and file hasher received shall be recorded in the [active version file](../../release/README.md).
 
-| Prioritate | Lacună delimitată | Criteriu de închidere |
+| Priority | Lacquer delimited | Closure criterion |
 |---|---|---|
-| P2 | Proba din browserul autentificat depinde de operator și de sesiunea GitHub disponibilă. | După publicare, verificați URL-ul versiunii, fișierul primit și SHA-256, apoi deschideți auditul de pe commitul din note. Înregistrați separat răspunsurile anonime și eventualele refuzuri locale ale browserului. |
+| P2 | The sample in the authenticated browser depends on the operator and the available GitHub session. | After publication, check the version URL, the received file and the SHA- 256, then open the audit on the commissary in notes. Record anonymous responses and possible local browser refusals separately. |
 
-Proba de transfer prin Android DownloadManager și verificarea certificatului aparțin dosarului versiunii efectiv testate. [Contractul transferului Android](../platform/ATF_AndroidDelivery.md#separarea-accesului-de-transferul-android) descrie datele necesare, iar [accesul anonim pe ruta publică](../platform/ATF_AndroidDelivery.md#accesul-anonim-și-ruta-publică) are propriul criteriu de închidere.
+The Android Download Manager transfer test and certificate verification are actually tested version file. [Android Transfer Contract](../platform/ATF_AndroidDelivery.md#separating-access-from-android-transfer) describes the data required and [Anonymous access to the public route](../platform/ATF_AndroidDelivery.md#anonymous-access-and-public-route) has its own closing criterion.
 
-## Acceptanța nativă a distribuției
+## Native acceptance of distribution
 
-| Prioritate | Lacună delimitată | Criteriu de închidere |
+| Priority | Lacquer delimited | Closure criterion |
 |---|---|---|
-| P2 | Proba nativă este păstrată cu sursele în Extent, dar lansarea ei este încă o operație TMP a operatorului. | Adaptor opt-in versionat: citește identitatea candidatului, folosește permisiuni Android proprii și separă accesul de transfer. Componentele injectează 404, fișier scurt, hash/CRC greșit, certificat absent ori diferit și timeout; nu salvează redirectul semnat. Raportul păstrează comparațiile, eroarea și durata originale, iar cleanup-ul elimină doar resursele deținute. Un singur transfer Android califică livrarea; nu se multiplică pe rezoluțiile UI. |
+| P2 | The native sample is maintained with sources in Extent, but its launch is still a TMP operation of the operator. | Adapter ochioin versionat: read the identity of the candidate, use your own Android permissions and separate the transfer access. Components inject 404, short file, hash/CRC wrong, certificate absent or different and timeout; do not save signed redirect. The report shall retain the original comparisons, errors and duration, and the cleanup shall only eliminate the resources held. A single Android transfer qualifies delivery; does not multiply on the UI resolutions. |

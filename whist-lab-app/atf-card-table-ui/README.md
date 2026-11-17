@@ -1,153 +1,153 @@
-# atf-card-table-ui — interfața comună a jocurilor de cărți
+# atf-card-table-ui - common interface of card games
 
-## Pe scurt
+## Overview
 
-`atf-card-table-ui` este modulul Android Library care deține componentele vizuale comune pentru Whist, Rentz și Hold’em. Are surse Java 17, resurse, teste JVM și componente Android instrumentate. Aplicațiile furnizează datele vizibile și intențiile de joc, iar biblioteca furnizează desenul și comportamentul widgeturilor.
+`atf-card-table-ui` is the Android Library module that holds the common visual components for Whist, Rentz and Hold'em. It has Java sources 17, resources, JVM tests and Android components instrumented. Applications provide visible data and game intentions, and the library provides the drawing and behaviour of the widgets.
 
-| Intrare | Unde se verifică |
+| Intrare | Where to check |
 |---|---|
-| Cod Java, resurse și contract Android | [Build-ul modulului](build.gradle) și [frontiera de sursă](src/test/java/ro/cardtable/ui/boundary/UiLibraryBoundaryComponentTest.java) |
-| Geometrie, card highlight și realizări | [Componente JVM](src/test/README.md) și [probe instrumentate](src/androidTest/README.md) |
-| Împachetare și inventar | [Publicarea AAR](#împachetare-și-consum) și [politica de guvernanță](../../config/atf-governance-policy.json) |
+| Java Code, Resources and Android Contract | [Module building](build.gradle) and [source border](src/test/java/ro/cardtable/ui/boundary/UiLibraryBoundaryComponentTest.java) |
+| Geometry, high-light card and achievements | [JVM components](src/test/README.md) and [probe instrumentate](src/androidTest/README.md) |
+| Packaging and inventory | [Publication of the AAR](#packaging-and-consumption) and [governance policy](../../config/atf-governance-policy.json) |
 
-## Responsabilități și limite
+## Liabilities and limits
 
 | Pachet | Contract implementat |
 |---|---|
-| [screens](src/main/java/ro/cardtable/ui/screens/ScreenViews.java) | Aceiași constructori de pagini, texte, butoane și selectori; eticheta selectorului și protecția ferestrei sunt porturi furnizate de aplicație. |
-| [menu](src/main/java/ro/cardtable/ui/menu/HomeMenuContent.java) | Ordine, etichete, tag-uri, stare de reluare și callback-uri; dropdown-ul păstrează cele două limbi și înregistrarea amânată a listenerului. |
-| [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | Dialogul acceptă filtrul de intrare al jocului. Normalizarea, persistența și excepția originală aparțin consumatorului. |
-| [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Însemne, proporții și marcaj crem-auriu. Jocul furnizează cartea vizibilă și decide când se marchează. |
-| [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometrie, derulare și interacțiune pentru o mână afișată. Adaptoarele păstrează durata marcajelor, ridicarea și revizia gestului prin [HandInput](src/main/java/ro/cardtable/ui/hand/HandInput.java). |
-| [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Nume, fapte ordonate și actor activ furnizate de joc; etichetele se măsoară la lățimea locului, iar cadrul primește aceeași rezervare între faze. |
-| [table](src/main/java/ro/cardtable/ui/table/android/BoardLayout.java) | Regiuni ocupate, ordine vizuală, viewport și bandă centrală măsurată între locuri. Adaptorul Android aplică geometria comună. |
-| [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Așteaptă primul cadru vizibil, aplică intervalul comun și invalidează acțiunea dacă scena s-a schimbat. |
-| [animation](src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Validează setul locurilor și expune pauza, durata și curba colectării. Android desenează fețele native, iar web-ul redă aceeași curbă pe elementele din pagină. |
-| [CardFaceView](src/main/java/ro/cardtable/ui/cards/CardFaceView.java) | Mâna și masa desenează rangul și simbolul în colț, simbolul central și colțul inversat. Dimensiunile feței se scalează pentru masa de joc, iar colectarea mută vederile cărților de pe masă. |
-| [CardFaceMetrics](src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java) | Reperul este cartea din mâna Android. Adaptorul Web preia dimensiunile și pozițiile și păstrează aceeași structură la depunere și colectare. |
-| [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Păstrează proporțiile, înălțimea și culorile tabelului de scor pentru adaptorul Android și browser. |
-| [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
+| [screens](src/main/java/ro/cardtable/ui/screens/ScreenViews.java) | Same page, text, button and selector manufacturers; the selector's label and window protection are ports provided by the application. |
+| [menu](src/main/java/ro/cardtable/ui/menu/HomeMenuContent.java) | Orders, labels, tags, restart status and callbacks; dropdowne preserves the two languages and delayed record of the listener. |
+| [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | The dialogue accepts the game input filter. Normal, persistence and original exception belong to the consumer. |
+| [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Signs, proportions and creme-gold marking. The game provides the card visible and decides when to mark. |
+| [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometry, running and interaction for a hand displayed. Adaptors keep the duration of the markings, lifting and revising the gesture by [HandInput](src/main/java/ro/cardtable/ui/hand/HandInput.java). |
+| [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Names, orderly facts and active player provided by the game; labels are measured at the width of the place and the frame receives the same reservation between the phases. |
+| [table](src/main/java/ro/cardtable/ui/table/android/BoardLayout.java) | Occupied regions, visual orders, viewport and central band measured between places. The Android Adapter applies common geometry. |
+| [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Wait for the first visible frame, apply the common range and invalidate the action if the scene has changed. |
+| [animation](src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Validate the seating set and expose the break, duration and curve of the collection. Android draws native faces, and the website plays the same curve on the page elements. |
+| [CardFaceView](src/main/java/ro/cardtable/ui/cards/CardFaceView.java) | The hand and table draw the rank and symbol in the corner, the central symbol and the inverted corner. The face dimensions are scaled for the table, and the collection moves the cards' views off the table. |
+| [CardFaceMetrics](src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java) | The landmark is the card in the Android hand. The Web Adapter takes over the dimensions and positions and keeps the same structure when depositing and collecting. |
+| [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Keep the proportions, height and colours of the score table for the Android adapter and browser. |
+| [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) and [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Colors, enquiring and drawing of the selector. |
 
-Aplicația deține compoziția mesei, regulile, istoricul, câștigătorul și momentul afișării levatei. Biblioteca măsoară fețele și chenarul câștigător, apoi aplică mișcarea. Contractul comun folosește numai locuri și date vizibile.
+The app has the composition of the table, the rules, the history, the winner and the moment of display of the trick. The library measures the winning faces and box, then applies the movement. The joint contract uses only visible places and data.
 
-`CardTableTheme` păstrează cele șase atribute Android ale reperului; `AppTheme` Whist este aliasul acestei resurse. Consumatorul o adoptă explicit în manifest; admiterea AAR-ului și build-ul nu declară comparație de pixeli sau focus Android.
+`CardTableTheme` keeps the six Android attributes of the site; `AppTheme` Whist is the ally of this resource. The consumer explicitly adopts it in the manifesto; the admission of the ARA and the building does not declare comparison of pixels or Android focus.
 
 ```mermaid
 flowchart LR
-    GAME[Adaptorul jocului] -->|proiectează date vizibile| MODEL[Conținut UI]
-    MODEL -->|alimentează| VIEW[Widgeturi comune]
-    VIEW -->|emite intenții| GAME
-    POLICY[Texte și politici locale] -->|configurează| VIEW
+    GAME[Game Adapter] -->|design visible data| MODEL[UI content]
+    MODEL -->|fuel| VIEW[Common widgets]
+    VIEW -->|issues intentions| GAME
+    POLICY[Local texts and policies] -->|configure| VIEW
 ```
 
 <details>
-<summary>Legendă: componente comune și proprietarul partidei</summary>
+<summary>Legend: Common components and owner of the match</summary>
 
-Proiecțiile nu calculează reguli. Aplicația validează comanda, păstrează preferințele și gestionează lifecycle-ul; biblioteca redă datele permise și trimite callback-ul asociat controlului.
+Projections don't calculate rules. The application validates the order, retains the preferences and manages the lifecycle; the library returns the data allowed and sends the associated callback to the control.
 
 </details>
 
-## Integrarea existentă Whist
+## Existing integration of the Whist
 
-- Aplicația consumă modulul prin `implementation project(':atf-card-table-ui')`.
-- `WhistMenuContent` proiectează textul real; `MenuScreens` păstrează navigarea, configurarea și instrucțiunile jocului.
-- `PlayerSettingsDialog` furnizează măsurarea Whist a lungimii după NFC și callback-ul de salvare. Dialogul comun aplică filtrul asupra câmpului.
-- Fațadele existente pentru geometrie, temă și desen delegă implementării comune, păstrând tipurile folosite de aplicație și testele sale. `WhistCardFace` proiectează cartea domeniului înaintea desenului.
+- The application consumes the module through `implementation project(':atf-card-table-ui')`.
+- `WhistMenuContent` designs the actual text; `MenuScreens` keeps the game navigation, configuration and instructions.
+- `PlayerSettingsDialog` provides the Whist measurement of length after NFC and rescue callback. The common dialogue applies the filter to the field.
+- The existing facades for geometry, theme and drawing delegated to joint implementation, keeping the types used by the application and its tests. `WhistCardFace` projects the domain card before the drawing.
 
-Fațadele sunt adaptoare de compatibilitate, cu o singură implementare a algoritmului în bibliotecă. Eliminarea lor cere migrarea explicită a apelanților și păstrarea inventarului de teste.
+The facades are compatibility adapters with a single implementation of the algorithm in the library. Their removal requires explicit migration of callers and the preservation of the inventory of tests.
 
-## Verificare
+## Verification
 
-Din copia temporară a rădăcinii Android `whist-lab-app`, cu PowerShell 7, JDK 21 și cache-ul Android pregătit, modulul se construiește fără sarcini ale aplicației.
+From the temporary copy of the Android root `whist-lab-app`, with PowerShell 7, JDK 21 and the Android cachet prepared, the module is built without the application's tasks.
 
 ```powershell
 .\gradlew.bat --offline --no-daemon :atf-card-table-ui:testDebugUnitTest :atf-card-table-ui:lintRelease :atf-card-table-ui:assembleDebugAndroidTest
 ```
 
-| Selecție | Așteptare independentă |
+| Selection | Independent waiting |
 |---|---|
-| Meniul comun | Ordine și tag-uri fixe, RO/EN, nume implicit/configurat, reluare dezactivată și callback-uri distincte. |
-| Editarea numelui | Intervalul propus, păstrarea selecției la refuz, ștergerea, ordinea validare/salvare și cauza eșecului. |
-| Geometria mesei și a mâinii | 3–6 locuri, profiluri între 320 și 600 dp, font 1–2×, o carte centrată și indici măsurați. |
-| Marcajul cărților | Aceeași paletă pentru refuz și recomandare. Același [scenariu de gesturi](src/test/resources/hand-feedback.tsv) verifică în JVM și web atingerea repetată, expirarea după revizie și selecția acceptată o singură dată. |
-| Realizări | Ordine și identități stabile, încărcarea detaliilor la cerere, stări ambigue respinse. |
-| Frontiera bibliotecii | Inventare Java distincte pentru producție, JVM și Android instrumentat. Manifest de bibliotecă fără aplicație ori permisiuni proprii. |
-| Modele de masă | Identități stabile, fapte ordonate și imuabile, regiuni măsurate și dimensiuni identice indiferent de numărul locurilor. |
-| Temporizarea turei automate | `TurnPacingComponentTest` verifică randarea înaintea întârzierii de 550 ms, acțiune unică și anulare pentru actor uman, blocaj sau scenă înlocuită. |
-| Adaptoarele Whist | Textele reale, limba, callback-urile și însemnele tuturor cărților. |
+| Meniul comun | Fixed orders and tags, RO/EN, implicit/configurat name, disabled restart and distinct callbacks. |
+| Edit Name | Proposed interval, retention of selection at refusal, deletion, order validare/salvare and cause of failure. |
+| Table and hand geometry | 3–6 places, profiles between 320 and 600 dp, font 1–2 ×, a centred card and measured indices. |
+| Bookmark | Same pallet for refusal and recommendation. The same [gestures scenario](src/test/resources/hand-feedback.tsv) checks the repeated touch in JVM and the web, the expiry after revision and the selection accepted once. |
+| Achievements | Stable orders and identities, loading of details on request, ambiguous states rejected. |
+| Frontiera bibliotecii | Java separate invention for production, JVM and Android instrumented. Library manifesto without application or permissions. |
+| Table models | Stable identities, orderly and immutable facts, measured regions and identical dimensions regardless of the number of seats. |
+| Time-frame | `TurnPacingComponentTest` checks the rendering prior to the delay of 550 ms, single action and cancellation for human actor, block or replaced scene. |
+| Adaptoarele Whist | Real texts, language, callbacks and all card markings. |
 
-Componentele existente de masă și mână rămân verificări de integrare, cu aserțiunile lor păstrate. Comparația cu snapshot-ul anterior și inspecția corpurilor de desen califică refactorizarea; pixelii, focusul și atingerea Android cer sanity nativ distinct.
+Existing mass and hand components remain integration checks with their retained assertions. Comparison with the previous snapshots and inspection of drawing bodies qualifies refactorization; pixels, focus and touch Android require native distinct sanity.
 
-## Separarea jocurilor și a componentelor
+## Separation of games and components
 
-| Proprietar | Responsabilitate și teste |
+| Proprietar | Liability and tests |
 |---|---|
-| Biblioteca comună | Desen, măsurare, centrare, chenare, fapte afișate și mecanica widgeturilor; fără oracole de joc. |
-| Whist | `WhistTableContent`, configurație, legalitate, licitație, atu, punctaj și lifecycle; componentele existente cu motor rămân în aplicația Whist, cu așteptările originale. |
-| Consumator extern | Adaptor Android; păstrează regulile, sesiunea, checkpoint-ul și decizia în propriul motor, apoi folosește cadrul activ, temporizarea după primul cadru și geometria comună a mișcării. |
+| Common Library | Drawing, measuring, centering, caging, displayed facts and widgework mechanics; no game oracles. |
+| Whist | `WhistTableContent`, configuration, legality, bid, trump, score and lifecycle; existing engine components remain in the Whist application, with original expectations. |
+| Consumator extern | Android Adapter; keeps the rules, session, checkpoint and decision in his own engine, then uses the active frame, the timing after the first frame and the common geometry of movement. |
 
-- Ordinea vizuală pentru 3–6 locuri păstrează omul la indicele zero; adaptorul deține maparea stabilă spre identitățile motorului și actorul real.
-- `SeatContent.Fact` păstrează textul și ordinea; biblioteca nu adună puncte, nu interpretează valori negative și nu decide câștigătorul.
-- `HandCard` nu conține mâini adverse sau comenzi. Adaptorul proiectează numai informația vizibilă și rezolvă identitatea selectată în snapshot-ul afișat.
-- `PlayedCardsView` este prezentarea depunerilor pe locuri. Compoziția regiunii centrale aparține adaptorului activ.
+- The visual order for 3–6 places keeps man at zero; the adapter holds the stable mapping to the engine identities and the actual actor.
+- `SeatContent.Fact` keeps text and order; the library does not collect points, does not interpret negative values and does not decide the winner.
+- `HandCard` does not contain any side hands or controls. The adapter only projects visible information and solves the identity selected in the displayed snapshots.
+- `PlayedCardsView` is the presentation of deposits in place. The composition of the central region belongs to the active adapter.
 
-Contractele portabile sunt compilate și de adaptorul web. Guvernanța verifică importurile în sursele comune, iar efectele cu o stare de joc reală se verifică în proiectul consumator.
+Portable contracts are compiled by the web adapter as well. Governance verifies imports into common sources and effects with a real playing field are checked in the consumer project.
 
-[Testele Android ale modulului](src/androidTest/README.md) și [catalogul componentelor display](../../docs/testing/ATF_DisplayComponents.md) descriu selecțiile și limitele de acceptanță.
+[Android module tests](src/androidTest/README.md) and [catalogue of display components](../../docs/testing/ATF_DisplayComponents.md) describe the selections and acceptance limits.
 
-## Rânduri adaptive în chenar
+## Bending rows
 
-Un rând de etichetă și valoare își rezervă spațiul măsurat pentru cifre. Când spațiul disponibil scade, valoarea trece sub etichetă. Jocul stabilește stilul textului și descrierea accesibilă a chenarului.
+A row of label and value reserves the space measured for figures. When the available space drops, the value passes under the label. The game sets text style and accessible box description.
 
-## Împachetare și consum
+## Packaging and consumption
 
-Din rădăcina ATF. Exportul folosește directorul libraries/card-table-ui din depozitul extern de dovezi. Parametrul `-Repository` permite o destinație Maven externă explicită.
+ATF root. The export uses the libraries/card-table-ui directory from the external evidence repository. The parameter `-Repository` allows an explicit external Maven destination.
 
 ```powershell
 .\scripts\export-card-table-ui.ps1
 ```
 
-- `:atf-card-table-ui` este numele proiectului Gradle. Coordonata de distribuție este `ro.cardtable:card-table-ui`, cu versiunea declarată în build. Exportul conține AAR, POM, metadate Gradle și JAR-ul de surse.
-- [Exportul](../../scripts/export-card-table-ui.ps1) păstrează manifestul intrărilor de producție și SHA-256 pentru fiecare fișier al coordonatei. Un export repetat cu aceleași intrări verifică artefactele și le reutilizează. Modificarea intrărilor sub o coordonată existentă cere o versiune nouă.
-- Whist consumă proiectul din sursă. Rentz și Hold’em admit fiecare versiunea fixată, după confruntarea conținutului și a provenienței. Versiunea din sursă și fiecare coordonată admisă la consumator au dovezi proprii.
-- AAR-ul include clasele, manifestul și resursele Android, inclusiv CardTableTheme. Dependența se fixează prin coordonata Maven, cu proveniență și hash-uri. [Distribuția Web](../../atf-ui-browser/README.md#bibliotecă-pentru-adaptoare) compilează direct o selecție de surse portabile din modul și publică un JAR separat.
-- [Politica de nume](../card-table-names/README.md) se publică separat ca JAR Java, pentru motoare și probe JVM. O componentă de geometrie poate avea propria coordonată JAR dacă este Android-independentă și are cel puțin doi consumatori JVM reali.
+- `:atf-card-table-ui` is the name of the Gradle project. The distribution coordinate is `ro.cardtable:card-table-ui`, with the declared version in the building. The export contains AAR, POM, Gradle metadata and source JAR.
+- [Exportul](../../scripts/export-card-table-ui.ps1) keeps the production input manifest and SHA-256 for each coordinate file. Repeated export with the same entries checks the artifacts and reuses them. The change of entries under an existing coordination requires a new version.
+- Whist is consuming the project from the source. Rentz and Hold'em shall each accept the fixed version after the content and provenance have been confronted. The source version and each co-ordinated allowed to the consumer have their own evidence.
+- The aARM includes Android classes, manifesto and resources, including CardTableTheme. Addiction is fixed by the Maven coordinate, with provenance and hashes. [Web Distribution](../../atf-ui-browser/README.md#adapter-library) compiles directly a selection of portable sources from the module and publishes a separate JAR.
+- [Name policy](../card-table-names/README.md) shall be published separately as JAR Java for JVM engines and samples. A geometry component can have its own JAR coordinated if it is independent android and has at least two real JVM consumers.
 
-## Realizări
+## Achievements
 
-- `AchievementScreen` afișează lista virtualizată, bara de progres și detaliul la atingerea rândului. Jocul furnizează titlurile, ordinea, progresul, acțiunile și cheile unice de rând și restaurare.
-- `AchievementNoticeView` desenează panoul de progres. Jocul stabilește momentul afișării și efectul închiderii. Catalogul YAML, metricile, deduplicarea și stocarea aparțin jocului.
+- `AchievementScreen` displays the virtualized list, the progress bar and the detail when reaching the row. The game provides titles, order, progress, actions and single common keys and restoration.
+- `AchievementNoticeView` draws the progress panel. The game sets the time of display and the effect of closure. The YAML catalog, the metrics, the replenishment and storage belong to the game.
 
-[Proiecția Whist și catalogul său](../../docs/game/ATF_Achievements.md)
+[Projection of Whist and its catalogue](../../docs/game/ATF_Achievements.md)
 
 ## Antetul mesei
 
-[`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) măsoară titlul și bifa nativă înainte de a alege rândul. Titlul poate ocupa cel mult două rânduri și păstrează descrierea completă pentru accesibilitate. Bifa rămâne pe primul rând cât timp titlul are cel puțin 1,5 ori lățimea acțiunii din stânga; controlul trece pe rândul următor când spațiul ar face titlul ilizibil.
+[`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) measures the title and the native tick before choosing the line. The title may take up to two rows and shall keep the full description for accessibility. The check shall be first as long as the title is at least 1,5 times the width of the action on the left; the check shall be carried out in the next row when the space would make the title illegible.
 
-- Rentz poate furniza două rânduri de titlu prin același antet măsurat. Jocul păstrează contractul, progresul și acțiunile din meniu.
-- Adaptorul furnizează `Automat` în română și `Auto play` în engleză, descrierea acțiunii și valoarea curentă. Încărcarea stării nu emite intenții, iar o atingere emite o schimbare booleană.
-- Sub antet, Whist așază progresul și licitațiile în stânga, iar atuul în dreapta. Rentz și Hold’em pot așeza în același loc detaliile specifice mâinii sau etapei.
-- Verificările JVM acoperă decizia de dispunere, inclusiv la limita unui pixel. Proba instrumentată măsoară textele în RO și EN și ținta tactilă de minimum 48 × 48 dp. [Testele native](src/androidTest/README.md)
+- Rentz may provide two rows of the title by the same measured header. The game keeps the contract, progress and actions on the menu.
+- The adapter provides `Automat` in Romanian and `Auto play` in English, the description of the action and the current value. The state load does not emit intentions and a touch emits a boolean change.
+- Under the header, Whist places progress and bids on the left, and the trump on the right. Rentz and Hold'em can place the hand or stage details in the same place.
+- JVM checks cover the arrangement decision, including at the limit of a pixel. The instrumented sample measures the texts in EN and EN and the tactile target of minimum 48 × 48 d. [Testele native](src/androidTest/README.md)
 
-Chenarul de atu folosește `TrumpTileMetrics` pentru dimensiunile și mărimile nominale partajate. Android măsoară glifele native, iar browserul folosește fontul calculat al elementului. Aceeași probă verifică încadrarea rangurilor, a simbolului și a textului fără atu.
+The trump scale uses `TrumpTileMetrics` for shared nominal sizes and sizes. Android measures native glyphs, and the browser uses the calculated font of the item. Same sample checks rank, symbol and text classification without the trump.
 
-## Atingerea unei cărți indisponibile
+## Touching an unavailable card
 
-Jocul transmite cărțile legale și activează indiciul când jucătorul poate muta.
+The game transmits the legal cards and activates the clue when the player can move.
 
-- O atingere invalidă marchează cartea respinsă în roșu discret și cărțile legale în auriu.
-- Indiciul expiră, dispare la o mutare acceptată și se resetează la refacerea mâinii.
-- Marcajele păstrează geometria evantaiului pe ecrane compacte.
+- A disabled touch marks the rejected card in discreet red and the legal cards in gold.
+- The clue expires, disappears to an accepted move and resets when the hand is restored.
+- Markings keep fan geometry on compact screens.
 
-## Levata și informația din chenar
+## Relapse and information in box
 
-- `CollectionTarget` primește locurile cărților publice și locul câștigător calculat în joc. `TrickCollectionMotion` păstrează fereastra de 1500 ms și folosește ultimele 500 ms pentru colectare.
-- `TrickCollectionRun` deține geometria, ciclul de viață și curățarea. Adaptorul Android caută fețele cărților și chenarul prin identitatea locului. Whist păstrează validarea snapshotului și momentul când publică levata.
-- Cadrele Android folosesc ceasul monoton. Un callback întârziat sare la poziția corespunzătoare timpului scurs, iar un callback după termen termină mișcarea.
-- `PlayerSeatFrame.buildInlineFacts` păstrează textul și înălțimea rândurilor; lățimea se adaptează după măsurarea finală a glifelor Android.
-- [Componenta nativă a chenarului](src/androidTest/README.md) verifică 36 de combinații. Include 3–6 locuri, lățimi de 240/320/393 dp, font 1/1,5/2, diacritice și valori semnate lungi, inclusiv Δ și Σ.
-- Biblioteca păstrează `minSdk 24`, compilare SDK 36 și Java 17. Consumatorul deține pachetul instalabil, versiunea și semnarea APK-ului.
-- POM-ul păstrează runtime-ul Kotlin adăugat automat de toolchain, deja prezent în aplicația reper. [Kotlin integrat în AGP](https://developer.android.com/build/migrate-to-built-in-kotlin) și [dependența standard](https://kotlinlang.org/docs/gradle-configure-project.html) explică această contribuție.
-- Admiterea confruntă SHA-256, conținutul AAR, manifestul și dependențele înaintea build-ului consumatorului. Publicarea locală nu închide acceptanța UI a consumatorului.
+- `CollectionTarget` receives the seats of the public cards and the winning place calculated in the game. `TrickCollectionMotion` keeps the 1500 ms window and uses the last 500 ms for collection.
+- `TrickCollectionRun` holds geometry, life cycle and cleaning. Android Adapter searches the cards faces and box through the location identity. Whist keeps the Snapshots validation and the moment when it publishes the trick.
+- Android frames use monotonous clock. A delayed callback jumps to the position corresponding to the time elapsed, and a callback after term finishes the movement.
+- `PlayerSeatFrame.buildInlineFacts` keeps text and height of rows; the width is adjusted after the final measurement of Android glyphs.
+- [Native component of the box](src/androidTest/README.md) checks 36 combinations. Includes 3–6 places, 240/320/393 dp widths, font 1/1,5/2, diacritics and long signed values, including the "and" "s.
+- The library keeps `minSdk 24`, compiling SDK 36 and Java 17. The consumer holds the installable package, version and signature of the APK.
+- The POM keeps the Kotlin runtime automatically added by the toolchain, already present in the application reference [Kotlin integrated into AGP](https://developer.android.com/build/migrate-to-built-in-kotlin) and [standard dependence](https://kotlinlang.org/docs/gradle-configure-project.html) explains this contribution.
+- Admission Face SHA-256, the content of the AAR, manifest and dependencies before the consumer's building. Local publication does not close the consumer's acceptance of the IU.
 
-[Aplicația Whist](../app/src/main/java/ro/whistlab/app/README.md) · [Strategia componentelor](../../docs/testing/ATF_DisplayComponents.md) · [Extragerea rămasă](../../docs/feedback/ATF_CardUi_Extraction.md)
+[Whist app](../app/src/main/java/ro/whistlab/app/README.md) · [Component strategy](../../docs/testing/ATF_DisplayComponents.md) · [Withdrawal remaining](../../docs/feedback/ATF_CardUi_Extraction.md)

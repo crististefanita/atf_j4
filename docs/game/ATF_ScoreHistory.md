@@ -1,92 +1,92 @@
-# Modelul istoricului de scor
+# Model score history
 
-## Pe scurt
+## Overview
 
-Istoricul păstrează licitația, punctele mâinii și totalul fiecărui loc după o mână încheiată. Prezentarea și persistența consumă același registru, iar datele necunoscute dintr-o salvare veche rămân marcate ca necunoscute.
+The historian shall retain the bid, the points of the hand and the total of each place after a hand has been completed. The presentation and persistence consume the same register, and the unknown data from an old rescue remains marked as unknown.
 
-Registrul stochează licitațiile, levatele câștigate și soldurile; punctele sunt diferențe de sold. Rezultatul contractului compară licitatul cu levatele, independent de semnul punctelor. O licitație ratată este tăiată oblic în roșu, păstrând cifra lizibilă și descrierea accesibilă explicită.
+The register stores the bids, the won tricks and the balances; the points are balance differences. The result of the contract compares the bid with tricks, independently of the point sign. A failed bid shall be cut obliquely in red, keeping the readable figure and the explicitly accessible description.
 
-- Fiecare jucător are exact două coloane vizibile: licitat și punctajul total după mâna respectivă; coloana `P` folosește soldul înregistrat pentru acel rând.
-- Totalul este încadrat într-un dreptunghi numai pe mâna în care se acordă bonusul sau penalizarea de serie, exclusiv în celula `P` a jucătorului respectiv; semnul pozitiv ori negativ, singur, nu justifică marcajul.
-- Diferența de puncte a mâinii rămâne în registru și în descrierea accesibilă, alături de total, fără coloană vizibilă suplimentară.
+- Each player has exactly two visible columns: auctioned and total score after the respective hand; column `P` uses the balance recorded for that line.
+- The total is placed in a rectangle only on the hand in which the bonus or series penalty is granted, exclusively in the `P` cell of the player concerned; the positive or negative sign alone does not justify the marking.
+- The difference in points of the hand remains in the register and in the accessible description, together with the total, without additional visible column.
 
-## Fluxul datelor
+## Data flow
 
 ```mermaid
 flowchart LR
-    END[Mână încheiată] -->|calculează| SCORE[Reguli de scor și serii]
-    SCORE -->|adaugă o înregistrare| HISTORY[ScoreHistory]
-    HISTORY -->|persistă| STORE[Checkpoint JSON]
-    HISTORY -->|proiectează pe toate locurile| COLUMN[ScoreHistoryTable]
-    COLUMN -->|afișează| VIEW[Istoricul UI]
+    END[Hand-held] -->|calculate| SCORE[Score rules and series]
+    SCORE -->|add a record| HISTORY[ScoreHistory]
+    HISTORY -->|persists| STORE[Checkpoint JSON]
+    HISTORY -->|design on all places| COLUMN[ScoreHistoryTable]
+    COLUMN -->|display| VIEW[Istoricul UI]
 ```
 
 <details>
-<summary>Legendă: scor și prezentare</summary>
+<summary>Legend: score and presentation</summary>
 
-Scorul este calculat o singură dată la închiderea mâinii. Registrul păstrează totalurile și contractele în ordinea locurilor; tabelul UI urmează ordinea cronologică a programului, fără schimbarea proprietății valorilor.
+The score is calculated once upon closing the hand. The register shall keep the totals and contracts in order of seats; the UI table shall follow the chronological order of the programme without changing the ownership of values.
 
 </details>
 
 ## Invariante
 
-| Contract | Regulă |
+| Contract | All right |
 |---|---|
-| Punctele mâinii | Diferența dintre totalul nou și soldul anterior, incluzând seria. |
-| Punctajul afișat | Totalul după mâna rândului, pentru fiecare loc; prima și ultima înregistrare păstrează propriul sold. |
-| Joc la 0 | La finalul partidei eligibile, rezultatul și clasamentul transformă totalul exact 0 în 500. Celula ultimei mâini păstrează soldul, iar legenda indică jucătorii care au primit transformarea. |
-| Licitația | Asociată explicit locului, chiar dacă acțiunile au fost capturate în altă ordine. |
-| Levate | Valorile sunt întregi, încadrate în mână, iar suma pe locuri este numărul cărților mâinii. Ultima mână încheiată concordă cu starea jucătorilor. |
-| Rezultatul contractului | Realizat, ratat sau necunoscut; punctele pozitive nu implică realizarea contractului. Zero este o licitație distinctă de valoarea necunoscută. |
-| Înregistrare | O singură avansare pentru fiecare mână încheiată. |
-| Limite | Un loc invalid nu este informație necunoscută; indexarea și depășirea intervalului mâinilor sunt refuzate explicit. O înregistrare nouă include levatele, fără ștergerea sufixului cunoscut. |
-| Reîncărcare | Ultimul sold trebuie să corespundă stării jucătorilor și fazei sesiunii. |
-| Date vechi | Soldul cunoscut se păstrează; cărțile, licitațiile și mâinile neînregistrate nu sunt reconstruite prin presupunere. |
-| Partidă nouă | Registru propriu și sold inițial validat. |
+| Hand points | Difference between the new total and the previous balance, including the series. |
+| Display | The total by hand of the row for each place; the first and last record shall keep its own balance. |
+| Playing for zero | At the end of the eligible match, the result and ranking convert the total exactly 0 into 500. The last hand cell keeps the balance, and the legend indicates the players who received the transformation. |
+| Bidding | Elaborated, even if the actions were captured in another order. |
+| Tricks | The values are whole, placed in the hand, and the amount per seat is the number of cards per hand. The last hand ended is consistent with the status of the players. |
+| The contract result | Accomplished, missed or unknown; positive points do not imply the performance of the contract. Zero is a tender distinct from the unknown value. |
+| Registration | One advance for each hand completed. |
+| Limits | An invalid site is not unknown information; indexation and overrun of the hand interval are explicitly refused. A new record includes tricks without deleting the known suffix. |
+| Reload | The final balance shall correspond to the status of the players and the session phase. |
+| Date vechi | The known balance shall be maintained; cards, bids and unregistered hands shall not be reconstructed by assumption. |
+| New game | Own register and initial validated balance. |
 
-## Compatibilitate și UI
+## Compatibility and IU
 
-[GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) definește migrarea fiecărei scheme și validarea checkpoint-ului. [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) definește integritatea registrului.
+[GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) defines the migration of each scheme and the validation of the checkpoint. [ScoreHistory](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/ScoreHistory.java) defines the integrity of the register.
 
-- Toți jucătorii au coloane proprii; antetele rămân deasupra rândurilor derulabile vertical și se deplasează împreună cu acestea la derularea orizontală. Dacă elementele fixe nu mai lasă un rând complet, conținutul integral se derulează vertical, păstrând accesul la tabel și legendă.
-- Prima coloană afișează numai numărul cărților mâinii. Identitatea cronologică rămâne în model și în descrierile accesibile, inclusiv când mai multe mâini au același număr de cărți.
-- Separatoarele verticale delimitează grupurile jucătorilor, fără a separa licitația de punctele aceluiași loc. Cele două subcoloane se rotunjesc o singură dată în pixeli; suma lor dimensionează și antetul, iar padding-ul intră în lățimea derulabilă. Măsurarea folosește totalurile afișate, inclusiv zero și semnul negativ; diferențele pe mâini nu dimensionează coloana `P`.
-- Programul complet include mâinile încheiate, mâna curentă și mâinile viitoare; punctele neacordate se afișează ca necunoscute, fără totaluri inventate.
-- Contractul zero se afișează ca valoare, iar contractul necunoscut are marcaj și text accesibil distinct.
-- Istoricul rămâne disponibil după terminarea partidei.
-- Proiecția furnizează aceeași ordine și aceleași valori afișării și citirii asistate.
-- Antetele scurte sunt explicate prin legendă, iar separatoarele delimitează fiecare jucător. Lățimile preferate compacte se extind după textul măsurat; cifrele și numele complete au prioritate față de compresie.
-- Legenda are lățimea utilă a dialogului și rămâne în afara derulării orizontale a coloanelor. Textul RO/EN se împarte natural pe rânduri; înălțimea lui și a antetelor este rezervată înaintea bugetului pentru rândurile derulabile.
-- [HistoryViewport](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryViewport.java) primește dimensiuni măsurate în pixeli. Fiecare măsurare reface bugetul din spațiul actual, astfel încât revenirea de la o fereastră compactă sau un font mărit să poată extinde din nou tabelul.
-- Schema curentă păstrează un sufix de levate cunoscute, separat de sufixul licitațiilor cunoscute. Migrarea unei mâini încheiate poate recupera ultima valoare din starea jucătorilor; mâinile mai vechi și cele în curs nu primesc valori inventate.
-- Salvarea și reîncărcarea păstrează prefixul necunoscut. O mână nouă adaugă informația completă fără a reinterpreta datele vechi; un contract necunoscut nu primește tăietură.
-- Marcajul de serie compară punctele înregistrate cu scorul obișnuit al contractului cunoscut, în profilul românesc cu serii activate. Numai ajustarea egală cu bonusul sau penalizarea configurată primește dreptunghi; o mână de o carte, rezultatele necunoscute și mâinile neîncheiate nu primesc marcaj. Descrierea accesibilă numește separat ajustarea, inclusiv pentru profilurile vechi asimetrice.
-- Geometria dreptunghiului rezervă numărul complet, înălțimea fontului și distanța față de contur. Măsurarea poate extinde coloana `P` și înălțimea rândului; desenarea rămâne în acea celulă, fără contur în jurul licitației sau al întregului grup al jucătorului.
-- Conturul normal marchează bonusul după cinci realizări eligibile consecutive; conturul roșu marchează penalizarea după cinci ratări eligibile consecutive. Culoarea conturului urmează ajustarea de serie, inclusiv când totalul cumulat are semnul opus; lățimea și înălțimea dreptunghiului se măsoară separat.
+- All players have their own columns; the headers remain above the rows removable vertically and move along with them at the horizontal run. If the fixed elements no longer leave a complete row, the full content shall be conducted vertically, keeping access to the table and legend.
+- The first column only shows the number of cards of the hand. The chronological identity remains in the model and in accessible descriptions, including when several hands have the same number of cards.
+- Vertical separators delimit the players' groups without separating the bid from the same place. The two subcolumns are rounded once in pixels; their sum also measures the header, and the paddingle enters the removable width. The measurement shall use the totals displayed, including zero and negative sign; the differences in the hands shall not size up column `P`.
+- The full program includes the completed hands, the current hand and the future hands; the unawarded points are displayed as unknown, without invented totals.
+- The zero contract shall be displayed as value and the unknown contract shall have a distinct marking and accessible text.
+- History remains available after the game is over.
+- The projection shall provide the same order and values of the assisted display and reading.
+- Short Headings are explained by legend, and separators delimit each player. The compact preferred widths extend after the measured text; the figures and full names have priority over compression.
+- The legend has the useful width of dialogue and remains outside the horizontal development of columns. Text RO/EN is divided naturally by row; its height and lettages are reserved before the budget for refundable rows.
+- [HistoryViewport](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryViewport.java) receives measured pixels. Each measurement restores the budget from the current space so that the return from a compact window or an enlarged font can expand the table again.
+- The current scheme keeps a known trick suffix separate from the suffix of the known bids. Migrating a hand can recover the last value from the player's condition; older and ongoing hands do not receive invented values.
+- Salvation and reloading keep the unfamiliar prefix. A new hand adds complete information without reinterpreting old data; an unknown contract does not receive a cut.
+- The serial marking compares the points recorded with the usual score of the known contract, in the Romanian profile with activated series. Only the adjustment equal to the bonus or the set-up penalty receives rectangle; a hand of a card, unknown results and uncompleted hands do not receive marking. Accessible description calls separately adjustment, including for old asymmetrical profiles.
+- The geometry of the rectangle reserves the complete number, font height and distance from the contour. The measurement may extend column `P` and the row height; drawing shall remain in that cell without contour around the bid or the entire player group.
+- Normal contour marks the bonus after five consecutive eligible achievements; red contours mark penalty after five consecutive eligible misstatements. The colour of the contour follows the series adjustment, including when the aggregate total is opposite; the width and height of the rectangle shall be measured separately.
 
-## Verificarea mecanismului
+## Verification of mechanism
 
-### Adaptarea la fereastră
+### Adaptation to the window
 
-| Responsabilitate | Mecanism |
+| Responsibility | Mechanism |
 |---|---|
-| Fereastra dialogului | [HistoryDialogWindow](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryDialogWindow.java) urmărește fereastra utilă, protejată față de barele sistemului. Marginile sunt proporționale și plafonate; observatorul este eliminat la închidere. |
-| Lățimea tabelului | [Grila](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java) extinde proporțional coloanele până la lățimea disponibilă, cu aceleași frontiere pentru antet și rânduri. Resturile de rotunjire nu lasă o bandă goală. |
-| Conținutul minim | Măsurarea integrală a textului stabilește limita de comprimare. Când limita depășește fereastra, derularea orizontală păstrează cifrele și numele, fără reducerea scării de accesibilitate. |
-| Înălțimea | Antetele și legenda măsurate primesc întâi spațiu; rândurile derulabile ocupă restul, fără plafon fix. Când nu încape un rând complet, [containerul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryContentScroll.java) permite derularea conținutului integral; o nouă măsurare poate reveni la antete fixe. |
-| Text și marcaje | [Tipografia](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryTypography.java) păstrează dimensiuni în sp. [Diagonala](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) se desenează cu roșu peste licitația ratată și își păstrează grosimea când se schimbă textul sau conturul seriei. |
+| The dialogue window | [HistoryDialogWindow](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryDialogWindow.java) follows the useful window protected from the system bars. The edges shall be proportionate and capped; the observer shall be removed at closure. |
+| Table width | [Grila](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java) extends proportionately the columns to the width available, with the same header borders and rows. Rounding debris does not leave an empty band. |
+| Minimum content | Full text measurement sets the compression limit. When the limit exceeds the window, the horizontal running shall retain the numbers and names without reducing the accessibility scale. |
+| Height | Headings and measured legend first receive space; removable rows occupy the rest without fixed ceiling. When a complete row is not in place, [containerul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryContentScroll.java) allows the full content to run; a new measurement may return to fixed headers. |
+| Text and Markings | [Tipografia](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryTypography.java) keeps dimensions in spp. [Diagonala](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) draw in red over the missed bid and retain thickness when changing the text or outline of the series. |
 
-### Componente și probe grafice
+### Graphical components and samples
 
-Componentele verifică închiderea mâinii, migrarea, coruperea checkpoint-ului și proiecția tuturor locurilor. Replay-ul unui trace extern este opt-in și verifică asocierea contract–puncte–total după reîncărcare, cu identitatea și hash-ul intrării controlate.
+The components check the closure of the hand, migration, corruption of the checkpoint and projection of all places. The external tracer replayer is eighty-in and checks the contract- point-total combination after reloading, with the identity and hash of the controlled entry.
 
-[Componentele totalurilor afișate](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) confruntă fiecare sold istoric și limita prefixului cunoscut la 3–6 locuri, în RO/EN. [Măsurarea coloanelor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java) folosește aceeași valoare vizibilă, inclusiv pentru ultimul rând și ultimul jucător.
+[Components of the totals displayed](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) face each historical balance and limit of the prefix known to 3–6 places, in RO/EN. [Measurement of columns](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java) uses the same visible value, including for the last row and last player.
 
-- [Componentele seriilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java) joacă partide legale cu contracte controlate și calculează separat soldurile și contoarele, fără apelarea formulei motorului în oracol; reîncărcarea JSON acoperă licitarea, jocul și închiderea mâinii.
-- [Geometria marcajului](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/award/SeriesPointsFrameComponentTest.java) confruntă dreptunghiul și întregul contur cu limitele celulei la densități fracționare, numere lungi și font mărit; pixelii și fontul Android păstrează calificare nativă distinctă.
-- [Proba raster de componentă](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) proiectează stări legale prin geometria de producție într-o imagine JVM cu fonturi controlate. Diferența dintre imaginile cu și fără marcaje trebuie să aparțină numai celulelor `P` premiate și să conțină cele patru laturi; roșul se verifică și după o penalizare care lasă totalul pozitiv.
-- [Recuperarea istoricului în imagini](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryRecoveryRasterComponentTest.java) scrie checkpoint-ul JSON într-un fișier, îl citește prin codec-ul aplicației și compară pixelii PNG înainte și după restaurare, la 3–6 locuri, în RO/EN și cu text mărit. Verifică marcajele istorice în licitare, joc și după închiderea unei alte mâini; nu le deduce din contorul curent al seriei.
-- [Grila adaptivă](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java) verifică utilizarea lățimii, minimele măsurate, redimensionarea și rotunjirile. [Probele grafice](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryResponsiveRasterComponentTest.java) compun politicile într-un viewport controlat și compară separat imaginile cu și fără diagonale: numai celulele licitațiilor ratate se pot schimba, cu pixeli roșii și direcție oblică.
-- Ultima mână și ultima plată eligibilă sunt repere distincte: o mână finală de o carte nu primește marcaj nou, dar păstrează plata anterioară în istoric; un program care se încheie cu o mână eligibilă poate plăti seria chiar pe ultimul rând. Fereastra raster se limitează la programul existent, fără accesarea unui rând ulterior ultimei mâini.
+- [Componentele seriilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java) plays legal parties with controlled contracts and calculates separately the balances and meters without calling the engine formula into the oracle; the JSON recharge covers the bidding, playing and closing of the hand.
+- [Geometry of marking](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/award/SeriesPointsFrameComponentTest.java) confronts the rectangle and the entire contour with cell boundaries at fractional density, long numbers and enlarged font; the pixels and Android font retain distinct native qualification.
+- [Test component raster](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) designs legal states through production geometry in a JVM image with controlled fonts. The difference between images with and without markings shall be only of the awarded `P` cells and contain the four sides; the red shall be checked after a penalty leaving the total positive.
+- [Recovery of history in images](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryRecoveryRasterComponentTest.java) writes the JSON checkpoint in a file, reads it through the application code and compares PNG pixels before and after restoration, to 3–6 places, in RO/EN and with increased text. Check the historical markings in the bid, game and after closing another hand; do not deduct them from the current meter of the series.
+- [Adaptive grid](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java) verifies the use of width, measured minima, resizing and rounding. [Probele grafice](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryResponsiveRasterComponentTest.java) composes policies in a controlled view and compares images separately with and without diagonal: only the failed bid cells can change, with red pixels and oblique direction.
+- The last hand and last eligible payment are distinct points: a final hand of a card does not receive a new mark but retains the previous payment in history; a program ending with an eligible hand may pay the series even in the last row. The raster window is limited to the existing program without accessing a row after the last hand.
 
-[Motorul](../../whist-lab-app/game-core/README.md) · [Persistența și interfața](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
+[Motorul](../../whist-lab-app/game-core/README.md) · [Persistence and interface](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

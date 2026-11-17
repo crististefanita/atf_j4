@@ -1,30 +1,30 @@
-# Testele integrării și ale guvernanței
+# Integration and governance tests
 
-## Pe scurt
+## Overview
 
-Modulul verifică integrarea binarelor comune, datele pentru publicare și contractele proiectului. [Strategia comună](../../../docs/testing/README.md) definește nivelurile; aici se aleg intrările și se interpretează limitele lor.
+The module verifies the integration of common binaries, publication data and project contracts. [Common strategy](../../../docs/testing/README.md) defines the levels; here are chosen entries and their limits.
 
-## Colecții și responsabilități
+## Collections and responsibilities
 
-[Catalogul](../../../config/atf-test-suites.json) declară intrările primare `AtfUnitSuite`, `AtfComponentSuite` și `AtfIntegrationSuite`. Selecțiile de raportare și guvernanță sunt focalizate, cu părinții expliciți; nu se adună din nou peste inventarul primar.
+[Catalogul](../../../config/atf-test-suites.json) declares the primary entries `AtfUnitSuite`, `AtfComponentSuite` and `AtfIntegrationSuite`. Reporting and governance selections are focused with explicit parents; they are not again over the primary inventory.
 
-| Familie | Intrare și limită |
+| Familie | Entry and limit |
 |---|---|
-| Publicare Whist | [GameReportComponentSuite](java/atf/tests/reporting/GameReportComponentSuite.java) este selecție focalizată pentru politica și datele capturate pe JAR-ul fizic. |
-| Guvernanță | [AtfQualityGovernanceSuite](java/atf/tests/governance/AtfQualityGovernanceSuite.java) citește codul, documentele și contractele binarelor; nu rulează Android. |
-| Integritate release | [ReleaseIntegrityGovernanceTest](java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) verifică dosarul real; [probele mici](java/atf/tests/governance/documentation/release/integrity/) injectează defecte în fixture-uri temporare. |
-| Igiena workspace-ului | [WorkspaceHygieneGovernanceTest](java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) detectează directoare temporare și fișiere generate în rădăcină, fără a șterge nimic. |
+| Publication Whist | [GameReportComponentSuite](java/atf/tests/reporting/GameReportComponentSuite.java) is a focused selection for the policy and data captured on the physical JARI. |
+| Governance | [AtfQualityGovernanceSuite](java/atf/tests/governance/AtfQualityGovernanceSuite.java) reads the code, documents and contracts of binary; Android is not running. |
+| Integritate release | [ReleaseIntegrityGovernanceTest](java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) checks the real folder; [probele mici](java/atf/tests/governance/documentation/release/integrity/) injects defects in temporary fixtures. |
+| Igiena workspace | [WorkspaceHygieneGovernanceTest](java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) detects temporary directories and files generated in the root without erasing anything. |
 
-## Cum se aleg probele
+## How to pick evidence
 
-- Politicile pure se verifică unitar, cu vecini valizi și invalizi.
-- Componentele exercită fișiere, serializare, publicare ori ciclul JUnit real pe date controlate.
-- Integrarea binară verifică suprafața fizică și exemplele ghidurilor; identitatea bibliotecii nu califică interacțiunea Android.
+- Pure policies are checked unitary, with valid and invalid neighbours.
+- Components exercise files, serialization, publication or actual JUnit cycle on controlled data.
+- Binary integration verifies the physical surface and examples of guides; the identity of the library does not qualify for Android interaction.
 
-Dintr-o copie temporară proprie, [comenzile modulului](../../README.md#verificare-focalizată) aleg suitele. Lansatorul de guvernanță păstrează inventarul și refuză atribuirea rezultatului unor surse schimbate în paralel.
+In his own temporary copy, [module controls](../../README.md#focused-verification) choose the suites. The governance launcher shall maintain the inventory and refuse to assign the result to sources exchanged in parallel.
 
-## Citirea rezultatului
+## Reading of the result
 
-Un eșec controlat califică refuzul validatorului, fără a deveni un eșec nou al aplicației. Raportul componentei publică datele evaluate; rezultatele unei execuții și notele auditului aparțin dosarului extern sau release-ului identificat, conform strategiei comune.
+A controlled failure qualifies the validator's refusal without becoming a new failure of the application. The component report shall publish the data evaluated; the results of an execution and audit notes shall be the external file or the identified relay, in accordance with the common strategy.
 
-[Modulul de integrare](../../README.md) · [Strategia comună](../../../docs/testing/README.md) · [Guvernanță](../../../docs/governance/README.md)
+[Integration module](../../README.md) · [Common strategy](../../../docs/testing/README.md) · [Governance](../../../docs/governance/README.md)

@@ -1,27 +1,27 @@
-# Biblioteci ATF
+# ATF libraries
 
-## Pe scurt
+## Overview
 
-Java 21 și Maven; cinci JAR-uri thin, cu tranzitivele din POM. Ghidurile sunt autonome față de sursele producătorului.
+Java 21 and Maven; five JARs thin with transitives from POM. The guidelines shall be autonomous from the manufacturer's sources.
 
-| Ghid | Artefact, grup `atf.api` | Utilizare |
+| Ghid | Artefact, grup `atf.api` | Usage |
 |---|---|---|
-| [Core](README.Core.md) | `atf-core` | HTTP, configurație, JSON și lifecycle. |
-| [Reporting](README.Reporting.md) | `atf-reporting` | Extent/fallback și dovezi auditabile. |
-| [Console](README.Console.md) | `atf-console` | Diagnostic Maven și IntelliJ. |
-| [Mock](README.Mock.md) | `atf-mock` | Componente și contracte HTTP offline. |
-| [Test Kit](README.TestKit.md) | `atf-test-kit` · audit și lifecycle JUnit neutru | Clasificare, comparații și suportul testelor. |
+| [Core](README.Core.md) | `atf-core` | HTTP, configuration, JSON and lifecycle. |
+| [Reporting](README.Reporting.md) | `atf-reporting` | Extent/fallback and auditorialevidence. |
+| [Console](README.Console.md) | `atf-console` | Diagnostic Maven and IntelliJ. |
+| [Mock](README.Mock.md) | `atf-mock` | HTTP offline components and contracts. |
+| [Test Kit](README.TestKit.md) | `atf-test-kit` · audit and lifecycle JUnneuter | Classification, comparisons and test support. |
 
 ## Integrare
 
-1. Într-o copie TMP a unui consumer ATF, `mvn -B -ntp -N validate` instalează perechile din lib în repository-ul Maven selectat.
-2. Declarați dependența în modulul apelant; coordonatele și versiunea sunt în POM-ul alăturat JAR-ului.
-3. IntelliJ folosește același JDK și repository Maven; reîncărcați POM-ul rădăcină.
+1. In a TMP copy of an ATF consumer, `mvn -B -ntp -N validate` installs the pairs of lib in the selected Maven repositoryul.
+2. Declare the dependency in the caller module; the coordinates and the version are in the next tree of the JARI.
+3. IntelliJ uses the same JDK and repository Maven; reload the root POM.
 
 <details>
-<summary>Consumer nou, fără reactor ATF</summary>
+<summary>New consumer without ATF reactor</summary>
 
-Copiați perechile JAR/POM în lib; din proiectul nou, în TMP:
+Copy pairs JAR/POM in lib; again, in TMP:
 
 ```powershell
 Get-ChildItem lib\*.pom | ForEach-Object {
@@ -30,28 +30,28 @@ Get-ChildItem lib\*.pom | ForEach-Object {
 }
 ```
 
-Declarați, de exemplu, `atf.api:atf-reporting:<versiunea din POM>` în dependențe. Folosiți scope `compile` pentru support în src/main și `test` doar în src/test; Maven rezolvă tranzitivele.
+You declare, for example, `atf.api:atf-reporting:<versiunea din POM>` in dependencies. Use `compile` scope for support in src/main and `test` only in src/test; Maven solves transitions.
 
 </details>
 
-## Identitate și verificare
+## Identity and verification
 
-- O singură pereche JAR/POM per bibliotecă, indexul și cele cinci ghiduri, direct în lib.
-- În ATF, pom.xml selectează versiunile; library-provenance.json păstrează hash-urile și originea.
-- Guvernanța și acceptanța rulează în TMP; fiecare consumer verifică propriul profil și classpath.
+- One pair JAR/POM per library, index and five guides, straight into the lib.
+- In ATF, pom.xml selects versions; libraryprovenance.json keeps hashes and origins.
+- Governance and acceptance run in TMP; each consumer checks his own profile and classspot.
 
-## Alegerea verificării minime
+## Choice of minimum verification
 
-| Bibliotecă | Punctul de pornire | Contractul observabil |
+| Library | Start point | Contractul observabil |
 |---|---|---|
-| Core | [Exemplul minim](README.Core.md#exemplu-minim) | Construirea URL-ului și păstrarea preciziei JSON. |
-| Reporting | [Exemplul minim](README.Reporting.md#exemplu-minim) | Publicarea încheiată, urmată de propagarea comparației eșuate. |
-| Console | [Exemplul minim](README.Console.md#exemplu-minim) | Mesaj vizibil sau consolă dezactivată, după politica explicită. |
-| Mock | [Exemplul minim](README.Mock.md#exemplu-minim) | Configurația și cererea produc răspunsul ori fallback-ul declarat. |
-| Test Kit | [Exemplul minim](README.TestKit.md#exemplu-minim) | Comparație evaluată o dată, PASS/FAIL și cauza JUnit păstrate. |
+| Core | [Exemplul minim](README.Core.md#exemplu-minim) | Construction of the URL and maintenance of JSON accuracy. |
+| Reporting | [Exemplul minim](README.Reporting.md#exemplu-minim) | Publication completed, followed by the spread of the failed comparison. |
+| Console | [Exemplul minim](README.Console.md#exemplu-minim) | Visible message or console disabled, according to explicit policy. |
+| Mock | [Exemplul minim](README.Mock.md#exemplu-minim) | The configuration and application produce the answer or the declared fallback. |
+| Test Kit | [Exemplul minim](README.TestKit.md#exemplu-minim) | Comparison assessed once, PASS/FAIL and the JUnit case kept. |
 
-Verificați întâi compilarea pe perechile fizice JAR/POM, apoi comportamentul fragmentului. Contractele aplicației, transportul real și prezentarea interactivă se califică separat în consumer.
+Check first the compilation on physical pairs JAR/POM, then the behavior of the fragment. Application contracts, real transport and interactive presentation shall qualify separately in the consumer.
 
-## Mentenanță și feedback
+## Maintenance and feedback
 
-Bibliotecile sunt consumate ca perechi versionate JAR/POM; codul lor sursă nu face parte din acest proiect. Păstrați coordonatele și hash-ul exact al perechii, apoi calificați contractul prin compilarea exemplelor și testele locale de integrare. Pentru o limitare observată, atașați perechea, hash-ul, reproducerea și valorile așteptate/observate în [feedback-ul proiectului](../docs/feedback/README.md).
+Libraries are consumed as versed pairs JAR/POM; their source code is not part of this project. Keep exact coordinates and hash of the pair, then qualify the contract by compiling examples and local integration tests. For an observed limitation, attach the pair, hash, reproduction and expected / observed values in [project feedback](../docs/feedback/README.md).

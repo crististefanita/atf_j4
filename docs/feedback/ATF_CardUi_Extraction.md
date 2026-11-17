@@ -1,23 +1,23 @@
-# Interfața comună pentru jocuri de cărți
+# Common card game interface
 
-## Pe scurt
+## Overview
 
-Whist integrează deja modulul Android comun. Registrul urmărește verificările pe APK și în ceilalți consumatori, limita Unicode a numelui și extinderile care au nevoie de un contract comun. [Contractul bibliotecii](../../whist-lab-app/atf-card-table-ui/README.md)
+Whist already integrates the common Android module. The register follows checks on APK and other consumers, the Unicode limit of names and extensions that need a joint contract. [Contractul bibliotecii](../../whist-lab-app/atf-card-table-ui/README.md)
 
-## Priorități și condiții de închidere
+## Priorities and closing conditions
 
-| ID | Ce rămâne | Criteriu de închidere |
+| ID | What remains | Closure criterion |
 |---|---|---|
-| UIX01 · UIX02 | Geometria și desenul la consumatori | Pe AAR-ul fixat pentru fiecare joc, compară ancorele, rotunjirile și lizibilitatea la același profil de ecran. Consemnează configurația, regiunea capturată și APK-ul. |
-| UIX03 | Tastatura, selecția și focusul pe APK | Confirmați în RO/EN tastarea și lipirea a zece litere non-BMP, refuzul la 11 și păstrarea selecției și a focusului. [Componentele de intrare](../testing/ATF_Android.md#profil-istoric-clasamente-și-serii) califică regula Whist și intervalele Android simulate. |
-| UIX04 | Pozițiile și proiecțiile mesei | Urmează [matricea Android](ATF_Android.md#acceptanța-nativă-a-proporțiilor-și-ordinii) pentru Whist. Pentru fiecare consumator confruntă ordinea locală a locurilor și o mutare legală aplicată o singură dată. |
-| UIX05 | Cadrul de scor și colectarea levatei | Demonstrați contractul coloanelor în doi consumatori înainte de a extrage cadrul. În Whist, verificați refacerea, anularea și ultima levată. [Criteriile Android](ATF_Android.md#calificarea-modificărilor-vizuale) |
-| UIX06 | Costul și acceptanța consumatorilor AAR | Comparați buildul din sursă cu AAR pe aceleași intrări. Rulați probele native pe versiunea admisă și păstrați identitatea ei. [Împachetare și consum](../../whist-lab-app/atf-card-table-ui/README.md#împachetare-și-consum) |
+| UIX01 · UIX02 | Geometry and drawing in consumers | On the AARs fixed for each game, compare the anchors, rounding and legibility to the same screen profile. Record configuration, region captured and APK. |
+| UIX03 | Keyboard, selection and focus on APK | Confirm in RO/EN typing and sticking to ten non-BMP letters, refusing to 11 and maintaining selection and focus. [Entry components](../testing/ATF_Android.md#profile-history-leaderboards-and-series) qualify the Whist rule and simulated Android intervals. |
+| UIX04 | Table positions and projections | [matricea Android](ATF_Android.md#native-acceptance-of-proportions-and-order) for Whist next. For each consumer, it is a local order of seats and a legal move applied only once. |
+| UIX05 | Score frame and trick collection | Prove the contract of columns in two consumers before you extract the framework. In Whist, check the restoration, cancellation and last trick. [Criteriile Android](ATF_Android.md#qualification-of-visual-changes) |
+| UIX06 | Cost and acceptance of RAA consumers | Compare the source build with the AAR on the same inputs. Run native samples on the admitted version and keep her identity. [Packaging and consumption](../../whist-lab-app/atf-card-table-ui/README.md#packaging-and-consumption) |
 
-## Controlul comun „Automat”
+## Joint control "Automated"
 
-- Verificați atingerea și spațiul controlului pe APK compact și cu text mărit în ambele limbi. Refacerea antetului păstrează valoarea furnizată de joc, iar o atingere produce o singură intenție. [Contractul antetului](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
-- Reproduceți debifarea cu o decizie AI în așteptare. Executantul controlat livrează răspunsul după debifare, iar revizia jocului confirmă că răspunsul nu produce o mutare.
-- Confruntați bifarea la licitație, oprirea la scor, pauza și reluarea în Whist. Verificați separat poziționarea antetului în consumatorul care folosește AAR-ul. [Acceptanța nativă](ATF_Android.md#acceptanța-nativă-a-proporțiilor-și-ordinii)
+- Check the touch and control space on the compact APK and with increased text in both languages. Retrieval of the header keeps the value provided by the game, and a touch produces one intention. [Header contract](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
+- Reproduce the debugging with an AI decision pending. The controlled executioner delivers the response after debugging, and the game review confirms that the response does not produce a move.
+- Confront the ticker at bid, the score stop, break and replay in Whist. Check separately the header positioning in the consumer using the AAR.[Native acceptance](ATF_Android.md#native-acceptance-of-proportions-and-order)
 
-Pentru fiecare consumator, atașați la UIX06 coordonata AAR și verdictul nativ pentru antet, chenare și notificări. Criteriul de împachetare și calificare a JAR-ului Web aparține [documentației adaptorului](../../atf-ui-browser/README.md#bibliotecă-pentru-adaptoare).
+For each consumer, attach to the UIX06 coordinated AAR and native verdict for header, enquiring and notifications. The criterion of packaging and qualification of the Web JARs belongs to [Adapter documentation](../../atf-ui-browser/README.md#adapter-library).

@@ -1,6 +1,6 @@
 # HELP — HOW TO PLAY
 
-## Pe scurt / Overview
+## Overview
 
 This guide covers Romanian Whist in Whist Lab, from bidding to final scoring.
 

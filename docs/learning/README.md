@@ -1,71 +1,71 @@
-# Învățarea și evaluarea offline
+# Overflow learning and evaluation
 
-## Pe scurt
+## Overview
 
-Fiecare candidat reprezintă o modificare identificată a licitării sau a alegerii cărții. Protocolul precizează rolul evaluat, sursele, familiile de adversari, profilul de scor și distribuțiile înaintea execuției.
+Each candidate represents an identified change in the bid or choice of the card. The protocol specifies the role assessed, sources, families of opponents, score profile and distributions prior to execution.
 
-- **Pornire:** [Construirea și îmbunătățirea AI-ului](ATF_PolicyEvolution.md) urmează regula, contextul, regresia mică, comparația și promovarea. Politica se schimbă explicit; recalcularea contextului mâinii nu rescrie parametrii acceptați.
-- **Responsabilități:** [Laboratorul AI](../../whist-lab-app/ai-lab/README.md) deține uneltele și sursele experimentale; [lansatoarele comune](../../scripts/README.md) selectează configurația și resursele execuției izolate.
+- **Start:** [Construction and improvement of the IA](ATF_PolicyEvolution.md) policy changes explicitly; recalculation of the context of the hand does not rewrite the accepted parameters.
+- **Liabilities:** [Laboratorul AI](../../whist-lab-app/ai-lab/README.md) be responsible for the implementation of the Union's policy on the implementation of the Union's macro-financial assistance; [lansatoarele comune](../../scripts/README.md) select the configuration and resources of the isolated execution.
 
-- [Corpusul](ATF_Corpus.md) definește partidele și integritatea intrărilor.
-- [Selecția](ATF_Selection.md) restrânge analiza la lecții distincte.
-- [Arena](ATF_Arena.md) compară politici pe distribuții și locuri controlate.
-- [Retenția](ATF_Retention.md) păstrează rolul și proveniența datelor externe.
-- [Transferul către alt joc](ATF_GameTransfer.md) delimitează ce reutilizăm și criteriile primului adaptor.
+- [Corpusul](ATF_Corpus.md) defines parties and integrity of entries.
+- [Selection](ATF_Selection.md) restricts analysis to distinct lessons.
+- [Arena](ATF_Arena.md) compares policies on distribution and controlled places.
+- [Retention](ATF_Retention.md) maintains the role and provenance of external data.
+- [Transfer to another game](ATF_GameTransfer.md) delimits what we re-use and criteria of the first adapter.
 
-## Etapele calificării
+## Qualification steps
 
-| Etapă | Ce se verifică |
+| Step | What to check |
 |---|---|
-| Diagnostic | Se extrage o observație publică dintr-o partidă de dezvoltare. Un contraexemplu trebuie justificat independent de rezultatul înregistrat. |
-| Componentă | Se verifică legalitatea mutării, necesarul contractului, cartea întoarsă și cazurile în care concluzia încetează să fie valabilă. |
-| Dezvoltare | Fiecare pereche folosește distribuții și locuri identice. Rezultatele se separă pe rol, familie de adversari și mărimea mâinii. |
-| Evaluare rezervată | Sursele sunt înghețate înainte de deschiderea intervalului. Registrul extern păstrează intervalele utilizate. |
-| Decizie | Se aplică pragurile declarate și cerința de progres strict. Rezultatele neutre și negative rămân disponibile. |
+| Diagnostic | A public observation is drawn from a development match. A counterexample must be justified independently of the result recorded. |
+| Component | The legality of the move, the need for the contract, the return card and cases where the conclusion ceases to be valid shall be verified. |
+| Dezvoltare | Each pair uses identical distributions and places. The results separate on the role, family from opponents and size of the hand. |
+| Reserved assessment | Sources are frozen before the range is opened. The external register shall keep the ranges used. |
+| Decision | The declared thresholds and the requirement for strict progress shall apply. Neutral and negative results remain available. |
 
 ## Interpretare
 
-- Un seed cu locurile rotite dă mai multe partide corelate.
-- Contractele exacte, punctele și victoriile împărțite la egalitate se citesc separat.
-- Numărul lumilor fezabile enumerate este o măsură a domeniului demonstrației. O probabilitate necesită și un model al distribuției lor.
-- O alegere diferită poate schimba licitațiile și scorurile mâinilor ulterioare. Prima divergență trebuie identificată înainte de atribuirea câștigului.
+- A seed with rotated seats gives several correlated parties.
+- Accurate contracts, points and victories divided by equality shall be read separately.
+- The number of feasible worlds listed is a measure of the field of demonstration. A probability also requires a model of their distribution.
+- A different choice can change the bids and scores of subsequent hands. The first divergence shall be identified prior to the award of the gain.
 
 ## Reproducere
 
-[Lansatorul colecțiilor](../../scripts/run-whist-collection.ps1) selectează turneul după schema protocolului și verifică sursele înghețate. [Ghidul comenzilor](../testing/ATF_Collections.md#experimente-și-surse-înghețate) deține parametrii, modurile de suprapunere și precondițiile efective.
+[Collections Launcher](../../scripts/run-whist-collection.ps1) selects the tournament according to protocol schematics and verifies the frozen sources. [Ghidul comenzilor](../testing/ATF_Collections.md#frozen-experiments-and-sources) holds the parameters, overlapping modes and actual preconditions.
 
-- O copie executată este identificată prin sursele și configurația capturate; o modificare live nu o recalifică retrospectiv.
-- Reproducerea unei evaluări vechi folosește sursele ei păstrate și nu deschide o nouă evaluare neatinsă.
-- [Registrul comun](ATF_EvaluationRegistry.md) confruntă intervalele și expunerea istorică independent de corpus. Dezvoltarea poate rejuca distribuții, iar continuarea păstrează identitatea; niciuna nu reprezintă un lot nou neatins.
+- A copy shall be identified by the captured sources and configuration; a live modification shall not retrospectively recalibrate it.
+- Reproduction of an old evaluation uses its retained sources and does not open up a new unmet evaluation.
+- [Registrul comun](ATF_EvaluationRegistry.md) faces the ranges and historical exposure independently of the corpus. Development can replay distributions and the continuation retains identity; none represents a new untouched batch.
 
-## Reguli stabile și date de experiment
+## Stable rules and experimental data
 
-[Regulile și configurarea AI](../ai/ATF_RulesConfiguration.md) dețin inventarul manifestelor și efectul lor executabil. Codul, schema și parametrii versionați identifică mecanismul; partidele, selecțiile concrete și rezultatele aparțin depozitului extern.
+[Rules and configuration of AI](../ai/ATF_RulesConfiguration.md) holds the inventory of the manifests and their executable effect. The code, scheme and parameters are identified; parties, concrete selections and results belong to the external repository.
 
-[Contractul corpusului](ATF_Corpus.md) definește formatul și partițiile, iar [retenția](ATF_Retention.md) definește păstrarea provenienței. Modificarea numelui sau locației unei selecții nu face un lot expus din nou neatins.
+[The contract of the body](ATF_Corpus.md) defines the format and partitions, and [retention](ATF_Retention.md) defines the preservation of origin. The change in the name or location of a selection shall not make a batch exposed again untouched.
 
-## Ciclul de îmbunătățire
+## The improvement cycle
 
-[Procedura de evoluție](ATF_PolicyEvolution.md) deține pașii și criteriile de ieșire. Această hartă orientează lectura; arena, componentele și colecțiile dețin contractele specializate.
+[The procedure for evolution](ATF_PolicyEvolution.md) holds the steps and exit criteria. This map guides the reading; the arena, components and collections have specialized contracts.
 
 ```mermaid
 flowchart LR
-    DIAG[Diagnostic de dezvoltare] -->|formulează| RULE[Regulă generală]
-    RULE -->|verifică| TEST[Componentă independentă]
-    TEST -->|califică| FREEZE[Candidat înghețat]
-    FREEZE -->|compară| HELD[Lot rezervat]
-    HELD -->|informează| REVIEW[Revizie de promovare]
+    DIAG[Development Diagnosis] -->|formulate| RULE[General rule]
+    RULE -->|checks| TEST[Independent component]
+    TEST -->|qualifies| FREEZE[Frozen candidate]
+    FREEZE -->|compare| HELD[Lot rezervat]
+    HELD -->|Inform| REVIEW[Promotion review]
 ```
 
 <details>
-<summary>Legendă: protocolul precede evaluarea</summary>
+<summary>Legend: protocol precedes evaluation</summary>
 
-Rolurile, adversarii, scorul, distribuțiile, bugetele și criteriile sunt declarate înaintea lotului rezervat. Rezultatul acestuia informează promovarea fără ajustarea retrospectivă a candidatului sau a pragurilor.
+The roles, opponents, score, distributions, budgets and criteria are declared before the reserved lot. The result shall inform the candidate without retrospective adjustment of the thresholds.
 
 </details>
 
-Pentru prima îmbunătățire, urmați [diagnosticul și regresia mică](ATF_PolicyEvolution.md#din-partidă-într-o-întrebare-precisă), apoi [compararea jocurilor](ATF_PolicyEvolution.md#cum-comparăm-jocurile) și [promovarea](ATF_PolicyEvolution.md#când-promovăm). Protocolul se stabilește înaintea evaluării rezervate.
+For first improvement, follow [low diagnosis and regression](ATF_PolicyEvolution.md#from-game-to-question-specific), then [comparison of games](ATF_PolicyEvolution.md#how-do-we-compare-games) and [promovarea](ATF_PolicyEvolution.md#when-we-promote). The protocol shall be established prior to the reserved assessment.
 
-O înfrângere localizează analiza, fără a demonstra singură o eroare. Mâinile complete sunt admise în auditul de după joc, în timp ce politica rămâne limitată la [observația permisă](../ai/ATF_DecisionModel.md#contractul-unei-decizii).
+A defeat locates analysis without demonstrating a mistake on its own. Full hands are admitted to post-game audit, while policy remains limited to [Obligation allowed](../ai/ATF_DecisionModel.md#contract-of-a-decision).
 
 [Arena](ATF_Arena.md) · [Componente AI](../testing/ATF_AiComponents.md) · [Comenzi](../testing/ATF_Collections.md)

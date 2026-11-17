@@ -1,106 +1,106 @@
-# Motorul de reguli Whist
+# Whist Rules Engine
 
-## Pe scurt
+## Overview
 
-Motorul Java deține configurarea, regulile, tranzițiile, istoricul scorului și politica de joc. Aplicația Android și mediul JVM consumă aceleași surse; producția rămâne independentă de Android, ATF și JUnit.
+Java engine holds configuration, rules, transitions, score history and game policy. The Android application and JVM environment consume the same sources; production remains independent of Android, ATF and JUnit.
 
-Testele verifică domeniul prin proprietăți și oracole independente. [Intrarea JVM](../algorithm-build/README.md) permite lucrul offline, iar [ghidul variantelor](../../docs/game/README.md) deține explicația completă a regulilor.
+The tests check the field through independent properties and oracles. [Intrarea JVM](../algorithm-build/README.md) allows offline work, and [Variant Guide](../../docs/game/README.md) has the full explanation of the rules.
 
-- [Laboratorul AI](../ai-lab/README.md) este dependență Gradle numai pentru teste. Politica independentă se compilează în modulul ei; distribuția motorului păstrează doar sursele de producție proprii.
+- [Laboratorul AI](../ai-lab/README.md) is Gradle's addiction only for tests. Independent policy shall be compiled in its module; the distribution of the engine shall only retain its own production sources.
 
-## Fluxul domeniului
+## Field flow
 
 ```mermaid
 flowchart LR
-    CMD[Comandă] -->|validează| SESSION[GameSession]
-    SESSION -->|aplică| RULES[GameRules]
-    SESSION -->|proiectează prin adaptor| OBS[Observație permisă]
-    OBS -->|alimentează| POLICY[Politică AI]
+    CMD[Command] -->|validates| SESSION[GameSession]
+    SESSION -->|apply| RULES[GameRules]
+    SESSION -->|b.| OBS[Observed observation]
+    OBS -->|fuel| POLICY[A.I. policy]
     POLICY -->|propune| CMD
 ```
 
 <details>
-<summary>Legendă: starea sesiunii și observația actorului</summary>
+<summary>Legend: status of the session and actor's observation</summary>
 
-Sesiunea păstrează starea completă necesară jocului și restaurării. Fațada [AiPolicy](src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) construiește observația politicii prin adaptoarele de observare: mâna proprie și informația publică. Distribuția completă folosită de sesiune și audit nu devine intrare în algoritmul deciziei.
+The session retains the complete status required for the game and restoration. The [AiPolicy](src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) facade builds the policy observation through the observation adapters: own hand and public information. The full distribution used by the session and audit shall not become input into the decision algorithm.
 
 </details>
 
-## Contracte în cod
+## Contracts in code
 
-| Zonă | Responsabilitate |
+| Area | Responsibility |
 |---|---|
-| [GameConfig](src/main/java/ro/whistlab/core/config/GameConfig.java) | Număr de jucători, variantă, nivel, inițializare și configurarea seriilor. |
-| [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Pachet, program, oferte și cărți legale, câștigător și scor de bază. |
-| [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Punctele contractului și evoluția seriilor. |
-| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | Fațada comenzilor, rotația între mâini și publicarea stării partidei. |
-| [HandPlay](src/main/java/ro/whistlab/core/session/HandPlay.java) | Distribuția, licitațiile, ordinea mutărilor și istoricul public al mâinii curente. |
-| [PlayerScore](src/main/java/ro/whistlab/core/session/scoring/PlayerScore.java) | Calculează soldul și seria unui jucător la închiderea mâinii. |
-| [SessionCheckpoint](src/main/java/ro/whistlab/core/session/SessionCheckpoint.java) | Captează contractul de salvare și reconstruiește starea după validare. |
-| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Licitațiile, levatele cunoscute și soldurile mâinilor încheiate; punctele sunt diferența dintre solduri. |
-| [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Ajutorul RO/EN pentru profilul și programul selectate. |
+| [GameConfig](src/main/java/ro/whistlab/core/config/GameConfig.java) | Number of players, variant, level, initialization and series configuration. |
+| [GameRules](src/main/java/ro/whistlab/core/rules/GameRules.java) | Package, program, offers and legal cards, winner and baseline score. |
+| [RomanianScoring](src/main/java/ro/whistlab/core/rules/RomanianScoring.java) | Contract points and series evolution. |
+| [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | The front of the controls, the rotation between the hands and the publication of the match status. |
+| [HandPlay](src/main/java/ro/whistlab/core/session/HandPlay.java) | Distribution, bids, order of the moves and the public history of the current hand. |
+| [PlayerScore](src/main/java/ro/whistlab/core/session/scoring/PlayerScore.java) | Calculate a player's balance and series when closing his hand. |
+| [SessionCheckpoint](src/main/java/ro/whistlab/core/session/SessionCheckpoint.java) | Capture the rescue contract and rebuild the status after validation. |
+| [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Bidding, known tricks and balances of hands are the difference between balances. |
+| [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Aid RO/EN for the selected profile and programme. |
 
-## Whist românesc
+## Romanian Whist
 
-Profilul acceptă 3–6 jucători și un pachet redus de `8 × N` cărți mari. [GameMode](src/main/java/ro/whistlab/core/rules/GameMode.java) selectează varianta, iar `GameRules.handSizes` definește programul; variantele cu nume apropiate păstrează contracte distincte.
+Profile accepted 3–6 players and a reduced pack of `8 × N` Big cards. [GameMode](src/main/java/ro/whistlab/core/rules/GameMode.java) select the option, and `GameRules.handSizes` define the programme; variants with close names retain separate contracts.
 
-- Se urmează culoarea cerută; în lipsa ei, atuul este obligatoriu dacă există în mână. Supratăierea nu este obligatorie.
-- Câștigă cel mai mare atu sau cea mai mare carte din culoarea cerută; câștigătorul conduce levata următoare.
-- Licitația este în intervalul mâinii, iar ultima ofertă nu poate egaliza suma cu numărul de levate.
-- Contractul exact acordă `5 + levate`; ratarea scade diferența absolută.
-- Seriile opționale folosesc valorile explicite din GameConfig. `newMatch` aplică simetric 5 sau 10, iar constructorul de compatibilitate care primește numai bonusul pozitiv păstrează penalizarea istorică de 5; eligibilitatea și întreruperea sunt definite de `RomanianScoring`.
+- Follow the led suit; in the absence of it, the card is required if it is in the hand. Overrun is not mandatory.
+- Win the greatest card or card in the required color; the winner leads the next trick.
+- The tender is in the range of the hand, and the last offer cannot equalize the amount with the number of tricks.
+- The exact contract grants `5 + levate`; the failure decreases the absolute difference.
+- The optional series uses the explicit values of GameConfig. `newMatch` applies symmetrically 5 or 10, and the compatibility manufacturer receiving only the positive bonus retains the historical penalty of 5; eligibility and interruption are defined by `RomanianScoring`.
 
-[Regulile RO/EN](../../docs/game/README.md) explică distribuirea, atuul, programul și seriile. Configurația este explicită: constructorul de compatibilitate cu patru argumente păstrează seriile dezactivate, iar celelalte forme își validează opțiunile.
+[Regulile RO/EN](../../docs/game/README.md) explains the distribution, the trump, the schedule and the series. The configuration is explicit: the four-argument compatibility manufacturer keeps the series disabled and the other forms validate their options.
 
-## Sesiune și salvare
+## Session and rescue
 
-Mâna respinge o comandă ilegală înaintea tranziției. După ultima levată, fațada aplică scorul calculat și înregistrează soldul. `ScoreHistory` avansează câte o mână și păstrează informația cunoscută.
+The Hand rejects an illegal command prior to the transition. After the last levitate, the facade applies the calculated score and records the balance. `ScoreHistory` advances one hand each and keeps the information known.
 
-- `restoreComplete` cere istoricul public complet. Restaurarea de compatibilitate păstrează originea cunoscută a scorului; [contractul istoricului](../../docs/game/ATF_ScoreHistory.md) precizează datele care lipsesc din salvările vechi și limita levatelor istorice.
-- Schema JSON Android aparține [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java). Validarea domeniului și serializarea Android au responsabilități și teste distincte.
+- `restoreComplete` ask for the full public history. The restoration of compatibility keeps the known origin of the score; [history contract](../../docs/game/ATF_ScoreHistory.md) specify the data missing from the old saves and the limit of historical levatas.
+- JSON Android scheme belongs to [GameSessionStore](../app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java). Validation of the domain and serialization of Android have distinct responsibilities and tests.
 
-## Politica Normal și Hard
+## Normal policy and Hard
 
-[AiDifficulty](src/main/java/ro/whistlab/core/config/AiDifficulty.java) expune cele două niveluri și aliasul de compatibilitate pentru salvări vechi. Fațada `AiPolicy` selectează politica și izolează observația înaintea calculului.
+[AiDifficulty](src/main/java/ro/whistlab/core/config/AiDifficulty.java) displays the two levels and the compatibility alias for old saves. The `AiPolicy` facade selects policy and isolates the observation before calculation.
 
-- **Normal** urmărește contractul și evită levatele suplimentare după realizarea lui, în limitele acțiunilor legale.
-- **Hard** compară continuări pe lumi compatibile cu informația publică, necesarul și contractele cunoscute; [MonteCarloAi](src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) deține compoziția deciziei.
-- **Evaluare și ordonare:** `DecisionEvaluation` calculează utilitatea continuărilor, iar `DecisionOrdering` compară alternativele deja evaluate; API-ul și fluxul aleator rămân în coordonator.
-- Certificatele finite și recuperarea contractelor imposibile au condiții și bugete explicite; epuizarea unui buget păstrează propunerea de bază.
+- **Normal** follows the contract and avoids additional levatas after its completion, within the limits of legal action.
+- **Hard** compare world-based continuations compatible with known public information, needs and contracts; [MonteCarloAi](src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) be in possession of the composition of the decision.
+- **Assessment and order: ** `DecisionEvaluation` calculates the usefulness of the continuations, and `DecisionOrdering` compares the alternatives already assessed; API and random flow remain in the coordinator.
+- The final certificates and the recovery of impossible contracts have explicit conditions and budgets; the exhaustion of a budget retains the basic proposal.
 
 | Control | Contract |
 |---|---|
-| [SearchCancellation](src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java) | Verifică întreruperea la frontierele eșantionării, simulării și căutării; abandonează calculul, păstrează marcajul și permite proprietarului turei să invalideze rezultatul. |
-| [SearchWork](src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java) | Contabilizare și limită globală opționale pe fir, fără schimbarea generatorului aleator sau a utilității; epuizarea aruncă o excepție distinctă, fără decizie parțială. |
-| [Calificarea costului JVM](../../docs/ai/ATF_CostQualification.md) | Separă măsurarea, limita globală și bugetul certificatului; dovada incompletă își păstrează propunerea legală. |
+| [SearchCancellation](src/main/java/ro/whistlab/core/ai/simulation/SearchCancellation.java) | Check the interruption at the borders of sampling, simulation and search; abandon calculation, keep the marking and allow the owner of the shift to invalidate the result. |
+| [SearchWork](src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java) | Accounting and optional global limit on the wire without changing the random generator or utility; exhaustion throws a distinct exception without partial decision. |
+| [JVM cost rating](../../docs/ai/ATF_CostQualification.md) | Separate measurement, overall limit and certificate budget; incomplete proof retains its legal proposal. |
 
-[Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) și [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimitează comportamentul activ de ipotezele de cercetare. Estimarea probabilistă și un certificat local nu garantează câștigarea fiecărei partide cu informație ascunsă.
+[Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) and [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimit active behaviour by research assumptions. Probable estimation and local certificate do not guarantee each party's gain with hidden information.
 
-## Rulare offline
+## Overflow
 
-Din rădăcina proiectului, [lansatorul](../../scripts/run-whist-collection.ps1) pregătește copia temporară și păstrează rezultatele extern:
+From the project root, [lansatorul](../../scripts/run-whist-collection.ps1) prepares temporary copy and retains external results:
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection quick
 .\scripts\run-whist-collection.ps1 -Collection context
 ```
 
-[Configurația Gradle](build.gradle) și [catalogul colecțiilor](../../config/test-collections.json) definesc selecțiile. `regression` execută sarcina de regresie cu excluderile declarate, iar `documentation` verifică ajutorul de joc; învățarea, arena și cercetarea se aleg explicit.
+[Gradle configuration](build.gradle) and [catalogue of collections](../../config/test-collections.json) define the selections. `regression` performs the regression task with the declared exclusions, and `documentation` checks the game aid; learning, arena and research are explicitly chosen.
 
-Dintr-o copie temporară proprie a `whist-lab-app`, intrarea directă este:
+In a temporary copy of `whist-lab-app`, the direct entry shall be:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
 ```
 
-[Arhitectura testării](../../docs/testing/ATF_Architecture.md) delimitează componentele, integrarea și Android. [Învățarea offline](../../docs/learning/README.md) explică extragerea regresiilor mici, comparațiile pe aceleași distribuții și calificarea pe partide noi.
+[Test architecture](../../docs/testing/ATF_Architecture.md) delimits components, integration and Android. [Learning offline](../../docs/learning/README.md) explains the extraction of small regressions, comparisons on the same distributions and qualification on new parties.
 
-## Limite și calificare
+## Limits and qualification
 
-Costul operațional, interpretarea probabilităților și progresul strategic au domenii și verificări distincte. [Criteriile AI](../../docs/feedback/ATF_Ai.md) centralizează lucrările deschise, inclusiv evoluția compoziției Hard și calificarea frontierelor prin mutanți semantici.
+The operational cost, interpretation of probabilities and strategic progress have distinct fields and checks. [Criteriile AI](../../docs/feedback/ATF_Ai.md) centralizes open works, including the evolution of Hard composition and the qualification of borders through semantic mutants.
 
-O extracție păstrează comportamentul și sursele politicilor de referință. [Regulile documentației](../../docs/governance/ATF_Documentation.md) cer aceeași descriere a profilului nou și a compatibilității în toate rezumatele.
+An extraction retains the behaviour and sources of the reference policies. [Documentation rules](../../docs/governance/ATF_Documentation.md) require the same description of the new profile and compatibility in all summaries.
 
-## Catalogul testelor
+## Test catalogue
 
-[Intrările și responsabilitățile testelor](src/test/README.md) explică selecțiile, precondițiile și interpretarea rezultatului, prin aceeași strategie comună pentru toate livrările.
+[Inputs and responsibilities of tests](src/test/README.md) explains the selection, preconditions and interpretation of the result, through the same common strategy for all deliveries.

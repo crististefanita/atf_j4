@@ -1,46 +1,46 @@
-# Selecția focalizată pentru învățare
+# Focused selection for learning
 
-## Pe scurt
+## Overview
 
-Selecția focalizată reduce volumul de analiză la jocurile care aduc lecții distincte despre licitare și carte. Algoritmul, criteriile și validatoarele aparțin proiectului; selecția concretă și rezultatele ei sunt date externe.
+Focused selection reduces the volume of analysis in games that bring distinct lessons about bidding and card. The algorithm, criteria and validators belong to the project; the concrete selection and its results are external data.
 
-## Mecanisme și stadiu
+## Mechanisms and stage
 
-Selecția datelor pentru analiză are mecanisme distincte, cu statut explicit:
+The selection of data for analysis has distinct mechanisms with explicit status:
 
-| Mecanism | Implementare și limită |
+| Mechanism | Implementation and limit |
 |---|---|
-| Corpus activ | [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs): deduplicare a urmelor, origini protejate, acoperire ponderată prin raritate și schimburi cu progres strict, în bugetul declarat. |
-| Exemple de diagnostic | [whist-casebook](../../whist-lab-app/ai-lab/tools/corpus/whist-casebook.mjs): selectează câștiguri și regresii pe familie, plus erori de contract pe mărimea mâinii; din partidele alese extrage primele observații eligibile ale actorului după mărime și tipul deciziei. |
-| Subset focalizat după categorii | Contract de extindere, fără selector generic calificat în proiect; cere manifest părinte, criterii explicite și [acceptanță proprie](../feedback/ATF_Ai.md). |
+| Corpus activ | [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs): reshoring of traces, protected origins, rarity-weighted coverage and exchanges with strict progress in the declared budget. |
+| Diagnostic examples | [whist-casebook](../../whist-lab-app/ai-lab/tools/corpus/whist-casebook.mjs): selects family gains and regressions, plus contract errors in the size of the hand; the chosen parties extract the first eligible observations of the actor by size and type of decision. |
+| Sub-set by category | Extension contract without generic selection qualified in the project; ask parent manifesto, explicit criteria and [self-acceptance](../feedback/ATF_Ai.md). |
 
 ```mermaid
 flowchart LR
-    ARCH[Partide development] -->|curatează| ACTIVE[Manifest activ]
-    RUN[Invocări development] -->|selectează motive| CASE[Casebook]
-    ARCH -->|furnizează partidele| CASE
-    CASE -->|proiectează| OBS[Observații publice]
+    ARCH[Partide development] -->|clean| ACTIVE[Manifest activ]
+    RUN[Development calls] -->|select reasons| CASE[Casebook]
+    ARCH -->|provide parties| CASE
+    CASE -->|design| OBS[Public comments]
 ```
 
 <details>
-<summary>Legendă: varietatea datelor și corectitudinea deciziei</summary>
+<summary>Legend: data variety and fairness of decision</summary>
 
-Curatorul produce corpusul activ, iar casebook-ul consumă separat invocări și partide de dezvoltare declarate. Ambele păstrează proveniența; categoriile și exemplele extrase nu sunt acoperire de cod și nu etichetează o acțiune drept optimă.
+The curator produces the active corpus, and the casebook consumes separately declared claims and development parties. Both preserve provenance; the categories and examples extracted are not code coating and do not label an action as optimal.
 
 </details>
 
-## Categorii de diagnostic
+## Diagnostic categories
 
-- Rolul politicii, mărimea mâinii și sensul diferenței dintre licitat și câștigat.
-- Poziția în licitație, dezechilibrul mesei și necesarul individual.
-- Numărul de atuuri, lipsurile de culoare, secvențele și ieșirile legale.
-- Consecințele pentru punctele de bază și seria configurată.
-- Prima diferență observabilă dintre două politici pe aceeași distribuție și același loc.
+- The role of policy, the size of the hand and the meaning of the difference between bid and win.
+- The position in bid, the table imbalance and individual needs.
+- Number of strengths, color gaps, sequences and legal outputs.
+- The consequences for the base points and the set-up series.
+- The first observable difference between two policies on the same distribution and the same place.
 
-## Invariante de proces
+## Process Invariants
 
-- [Corpusul](ATF_Corpus.md) deține partiția, identitatea, hash-urile și replay-ul independent înaintea analizei.
-- [Componentele AI](../testing/ATF_AiComponents.md) dețin martorul legal, proiecția actorului și așteptarea justificată.
-- [Protocolul offline](README.md#ciclul-de-îmbunătățire) deține înghețarea, lotul rezervat și promovarea.
+- [Corpusul](ATF_Corpus.md) holds the partition, identity, hashes and replicayes independently prior to analysis.
+- [Componentele AI](../testing/ATF_AiComponents.md) holds the legal witness, the actor's projection and the justified expectation.
+- [Protocolul offline](README.md#the-improvement-cycle) holds the freezing, reserved lot and promotion.
 
-Selecția pentru învățare și [selecția pentru prezentare](../reporting/ATF_Presentation.md) au scopuri diferite. Alegerea unor exemple într-un HTML nu modifică populația executată, corpusul activ sau statutul datelor rezervate.
+The selection for learning and [selection for presentation](../reporting/ATF_Presentation.md) have different purposes. The choice of examples in an HTML does not alter the executed population, active corpus or status of the reserved data.

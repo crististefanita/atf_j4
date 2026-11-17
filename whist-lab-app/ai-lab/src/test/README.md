@@ -1,22 +1,22 @@
-# Testele laboratorului independent
+# Tests of the independent laboratory
 
-## Pe scurt
+## Overview
 
-Laboratorul califică jucătorul independent și mecanismele de evaluare offline. [Strategia comună](../../../../docs/testing/README.md) deține nivelul verificării; integrarea cu motorul și cercetarea pe corpusuri au domenii separate.
+The laboratory qualifies the independent player and the offline evaluation mechanisms. [Common strategy](../../../../docs/testing/README.md) has the level of verification; integration with the engine and research on the corpus have separate fields.
 
-## Frontiere și intrări
+## Borders and inputs
 
-| Frontieră | Verificare responsabilă |
+| Border | Responsible verification |
 |---|---|
-| Contractul local Java | Tipuri, stări și intrări generate legal, fără dependență de arhiva partidelor. |
-| Unelte Node.js | Corpus, rezervare, selecție și compoziție, cu fixture-uri controlate lângă unealta responsabilă. |
-| Integrarea cu motorul | Testele motorului compară observația și acțiunile legale prin adaptor. |
-| Evaluare strategică | Protocol separat, surse înghețate și loturi rezervate; rezultatul concret rămâne extern. |
+| Contractul local Java | Types, states and inputs legally generated, without dependence on party archives. |
+| Unelte Node.js | Corpus, reservation, selection and composition, with controlled fixtures near the responsible tool. |
+| Engine integration | The engine tests compare observation and legal actions through the adapter. |
+| Strategic evaluation | Separate protocol, frozen sources and reserved lots; the concrete result remains external. |
 
-## Execuție și interpretare
+## Implementation and interpretation
 
-[Gradle](../../build.gradle) deține sarcina `check` și intrările locale, iar [ghidul laboratorului](../../README.md) descrie precondițiile. [Uneltele](../../tools/README.md) au contracte și teste proprii; experimentele păstrate separat nu intră implicit în politica activă.
+[Gradle](../../build.gradle) be in charge `check` and local entrances, and [Laboratory guide](../../README.md) describe the preconditions. [Uneltele](../../tools/README.md) have their own contracts and tests; experiments kept separately do not fall into active policy.
 
-O probă locală validează contractul exercitat, fără a demonstra superioritatea jucătorului. Corpusul și evaluarea rezervată se selectează explicit, cu identitatea și expunerea datelor păstrate.
+A local sample validates the contract exercised without demonstrating the superiority of the player. The reserved body and assessment shall be explicitly selected, with the identity and exposure of the data retained.
 
-[Laboratorul AI](../../README.md) · [Strategia comună](../../../../docs/testing/README.md) · [Protocolul offline](../../../../docs/learning/README.md)
+[Laboratorul AI](../../README.md) · [Common strategy](../../../../docs/testing/README.md) · [Protocolul offline](../../../../docs/learning/README.md)

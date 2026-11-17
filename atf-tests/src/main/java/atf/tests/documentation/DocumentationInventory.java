@@ -1,5 +1,7 @@
 package atf.tests.documentation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -63,9 +65,21 @@ public final class DocumentationInventory {
         return file.getParent().equals(root.resolve("lib")) && LIBRARY_GUIDES.contains(file.getFileName().toString());
     }
 
+    public static boolean isReleaseEvidence(Path root, Path file) throws IOException {
+        Path relative = root.relativize(file);
+        if (relative.getNameCount() < 3 || !relative.getName(0).toString().equals("release")) return false;
+        Path manifest = root.resolve(relative.subpath(0, 2)).resolve("release-validation.json");
+        if (!Files.isRegularFile(manifest)) return false;
+        String artifact = relative.subpath(2, relative.getNameCount()).toString().replace('\\', '/');
+        var files = new ObjectMapper().readTree(manifest.toFile()).at("/integrity/files");
+        for (var entry : files) if (entry.path("path").asText().equals(artifact)) return true;
+        return false;
+    }
+
     private static boolean governed(Path root, Path file) {
         return isReadme(file) || isLibraryGuide(root, file)
-                || file.startsWith(root.resolve("docs")) && file.getFileName().toString().endsWith(".md");
+                || file.startsWith(root.resolve("docs")) && file.getFileName().toString().endsWith(".md")
+                || file.startsWith(root.resolve("release")) && file.getFileName().toString().equals("README.en.md");
     }
 
     private static boolean excluded(String part) {

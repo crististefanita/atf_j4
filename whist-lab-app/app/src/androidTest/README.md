@@ -1,18 +1,18 @@
-# Componentele grafice Android native
+# Native Android graphics components
 
-## Pe scurt
+## Overview
 
-[Proba marcajelor](java/ro/whistlab/app/score/nativecomponent/HistoryMarksComponentInstrumentation.java) construiește clasele de producție într-un `FrameLayout` real, fără activitate, partidă ori date private. Android măsoară textul și aplică derularea internă înaintea desenării prin părinte; desenarea directă a copilului pe un Canvas gol nu reproduce acest contract.
+[Marking test](java/ro/whistlab/app/score/nativecomponent/HistoryMarksComponentInstrumentation.java) builds the production classes in a real `FrameLayout`, without activity, shoot or private data. Android measures text and applies internal running before drawing through parent; direct drawing of child on an empty Canvas does not reproduce this contract.
 
-| Nivel | Oracol și limită |
+| Level | Oracle and limit |
 |---|---|
-| Componentă nativă | Prezența cernelii distincte a tăieturii pentru contract ratat și absența ei pentru contract exact; cadrul punctelor apare exclusiv pentru ajustare, cu culori diferite la bonus și penalizare. |
-| Matrice | Valori de licitație, lățimi și scări de font; textul numeric are cerneală neutră pentru a nu putea substitui marcajul în verificarea pixelilor. |
-| Dovadă | Fiecare caz publică intrarea, derularea Android, numărul de pixeli, verdictul și PNG-ul nativ base64. Aceste cazuri nu sunt invocări JUnit și nu măresc totalul testelor JVM. |
+| NATURAL Component | The presence of distinct ink of the cut for the missed contract and its absence for the exact contract; the point frame appears exclusively for adjustment, with different colors to the bonus and penalty. |
+| Matrice | Bid values, width and font stairs; the numerical text has neutral ink to prevent substitution of the marking in pixel verification. |
+| Evidence | Each case publishes the entry, the deployment of Android, the number of pixels, the verdict and the native PNG base64. These cases are not JUnit invoicing and do not increase the total JVM tests. |
 
-## Execuție
+## Implementation
 
-Construiți într-un workspace extern identificat, cu SDK-ul și cheia de dezvoltare existente:
+Build in an identified external workshop with the existing SDK and development key:
 
 ```powershell
 gradle :app:assembleDebugAndroidTest --offline
@@ -20,10 +20,10 @@ adb install -t app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb shell am instrument -w ro.whistlab.app.test/ro.whistlab.app.score.nativecomponent.HistoryMarksComponentInstrumentation
 ```
 
-Configurația Gradle declară runnerul propriu; runnerul implicit nu execută aceste probe. Verificați identitatea și certificatul APK-ului țintă, rezervați dispozitivul și păstrați starea aplicației conform [calificării release-ului](../../../../docs/testing/ATF_ReleaseQualification.md).
+Gradle configuration declares the runner itself; the default runner does not perform these samples. Check the identity and certificate of the target APK, book the device and keep the application status as per [relay qualification](../../../../docs/testing/ATF_ReleaseQualification.md).
 
-- Testele rulează pe firul UI, păstrează configurația globală a dispozitivului și nu pornesc navigarea.
-- Accesul reflectiv la constructorul de licitație rămâne exclusiv în probă: clasa de producție are vizibilitate de pachet și nu devine API public pentru testare.
-- Runnerul returnează cod negativ la succes; verdictul se citește din `failures` și rezultatul instrumentării, nu numai din codul procesului ADB.
+- Tests run on the UI thread, keep the device's overall configuration and do not start navigation.
+- Reflective access to the bid manufacturer remains exclusively in the sample: the production class has package visibility and does not become public API for testing.
+- The runner returns the negative code to success; the verdict is read from `failures` and the result of the instrumentation, not only from the ADB trial code.
 
-[Componente JVM](../test/README.md) · [Raster alternativ](../rasterTest/README.md) · [Strategia comună](../../../../docs/testing/README.md)
+[JVM components](../test/README.md) · [Raster alternativ](../rasterTest/README.md) · [Common strategy](../../../../docs/testing/README.md)

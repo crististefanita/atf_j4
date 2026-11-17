@@ -1,51 +1,51 @@
-# Arhitectura verificării jocului
+# The architecture of the game verification
 
-## Pe scurt
+## Overview
 
-Verificarea separă corectitudinea regulilor, calitatea politicii și integrarea prin interfață. Fiecare nivel are intrări controlate și un contract propriu pentru rezultatul așteptat.
+The verification separates the correctness of the rules, the quality of policy and integration through the interface. Each level has controlled inputs and a contract of its own for the expected result.
 
-## Mecanisme și responsabilități
+## Mechanisms and responsibilities
 
 ```mermaid
 flowchart LR
-    RULES[Reguli și invariante] -->|verifică| CORE[Componente de domeniu]
-    CORE -->|susține| MATCH[Partidă offline]
-    POLICY[Politică identificată] -->|participă la| MATCH
-    MATCH -->|alimentează separat| EVAL[Evaluare strategică]
-    UI[Comenzi Android] -->|confruntă prin oracol| FLOW[Flux de integrare]
+    RULES[Rules and invariants] -->|checks| CORE[Moulds]
+    CORE -->|supports| MATCH[Offline side]
+    POLICY[Policy identified] -->|participating in| MATCH
+    MATCH -->|fuels separately| EVAL[Strategic evaluation]
+    UI[Comenzi Android] -->|face through oracle| FLOW[Integration flow]
 ```
 
 <details>
-<summary>Legendă: proprietăți diferite</summary>
+<summary>Legend: Different properties</summary>
 
-Componentele verifică regula locală, simularea verifică tranzițiile unei partide, iar evaluarea compară politici. Fluxul Android verifică integrarea dintre acțiune și stare; rezultatul unui nivel nu înlocuiește contractul altuia.
+Components check local rule, simulation checks the transitions of a party, and evaluation compares policies. The Android flow checks integration between action and status; the result of one level does not replace the contract of another.
 
 </details>
 
-| Mecanism | Intrare | Responsabilitate |
+| Mechanism | Intrare | Responsibility |
 |---|---|---|
-| Componentă | Situație legală mică sau generată | Reguli, scor, prioritate și frontieră. |
-| Model complet | Configurație, distribuție și politici | Tranziții, ordine, închiderea mâinilor și scor cumulativ. |
-| Comparație de politici | Aceleași distribuții și locuri | Efectul strategiei în domeniul și bugetul declarat. |
-| Replay | Trace extern identificat | Compatibilitatea și asocierea acțiunilor cu starea. |
-| Android | Aplicație instalată și scenariu explicit | Semantica interacțiunii, geometrie, accesibilitate și reluare. |
+| Component | Small or generated legal situation | Rules, score, priority and border. |
+| Model complet | Configuration, distribution and policies | Transitions, orders, closing hands and cumulative score. |
+| Comparison of policies | Same distributions and places | The effect of the strategy in the area and budget declared. |
+| Replay | External Trace Identified | Compatibility and association of actions with status. |
+| Android | Installed application and explicit scenario | The semantics of interaction, geometry, accessibility and resumption. |
 
-Nivelurile unitar, componentă, integrare și E2E sunt definite în [arhitectura testării](ATF_Architecture.md). Modelul complet, evaluarea statistică și reluarea unui jurnal sunt mecanisme distincte; ele nu formează niveluri suplimentare.
+Unit, component, integration and E2E levels are defined in [the architecture of testing](ATF_Architecture.md). The complete model, statistical evaluation and resumption of a journal are distinct mechanisms; they do not form additional levels.
 
-## Contractul unei partide complete
+## A full-party contract
 
-1. Configurația identifică varianta, numărul de locuri, politica fiecărui actor și regulile de serie.
-2. Programul mâinilor este derivat din regulile variantei.
-3. Fiecare distribuție, licitație și carte este verificată în ordine.
-4. Câștigătorul levatei determină actorul următor.
-5. Închiderea mâinii aplică punctele și seria o singură dată.
-6. Registrul păstrează contractul, punctele și totalul fiecărui loc.
-7. Finalul partidei corespunde consumării programului, fără mâini omise.
+1. The configuration identifies the variant, the number of seats, the policy of each actor and the serial rules.
+2. The hand program is derived from the rules of the variant.
+3. Each distribution, bid and card is checked in order.
+4. The winner of the trick determines the next actor.
+5. The closing of the hand applies the points and series only once.
+6. The register shall keep the contract, the points and the total of each place.
+7. The end of the game corresponds to the consumption of the program, without the missed hands.
 
-## Independența oracolului
+## Independence of the Oracle
 
-Motorul aplică regulile, iar oracolul calculează așteptarea printr-o implementare separată. Identitatea cărților, legalitatea, câștigătorul și scorul nu sunt validate prin simpla recitire a verdictului motorului.
+The engine applies the rules and the oracle calculates the expectation of separate implementation. The identity of the cards, the legality, the winner and the score are not validated by simply revising the engine verdict.
 
-Pentru politici, observația este proiectată înaintea apelului și exclude mâinile adverse reale. Pentru interfață, succesul dispatch-ului este confruntat cu tranziția semantică observată după acțiune.
+For policies, the observation is designed before the call and excludes real side-hands. For the interface, the success of the display is confronted with the semantic transition observed after action.
 
-[Proiectarea componentelor](ATF_AiComponents.md) · [Colecții](ATF_Collections.md) · [Android](ATF_Android.md) · [Reguli](../game/README.md)
+[Design of components](ATF_AiComponents.md) · [Collections](ATF_Collections.md) · [Android](ATF_Android.md) · [Rules](../game/README.md)

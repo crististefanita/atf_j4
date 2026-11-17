@@ -1,150 +1,150 @@
-# Contractul verificării publicării
+# Contract of publication verification
 
-## Pe scurt
+## Overview
 
-Publicarea trebuie să păstreze rezultatul evaluat și relația dintre invocare, comparație și captură. Verificarea urmărește separat inputul tipizat, transformarea către HTML și comportamentul interactiv al prezentării.
+Publication must retain the assessed result and the relationship between invoicing, comparison and catch. The verification shall follow the typed input, the transformation to HTML and the interactive behaviour of the presentation separately.
 
-## Suprafețe de control
+## Control areas
 
 ```mermaid
 flowchart LR
-    RECEIPT[Înregistrări originale] -->|compune| INPUT[Datele consumatorului]
-    INPUT -->|publică prin API| HTML[HTML autonom]
-    RECEIPT -->|definește identitatea| DATA[Audit de date]
-    DATA -->|confruntă| HTML
-    BROWSER[Revizie interactivă] -->|verifică navigarea| HTML
+    RECEIPT[Original records] -->|compune| INPUT[Consumer data]
+    INPUT -->|publish by API| HTML[HTML autonom]
+    RECEIPT -->|define identity| DATA[Audit de date]
+    DATA -->|face| HTML
+    BROWSER[Interactive revision] -->|check navigation| HTML
 ```
 
 <details>
-<summary>Legendă: același conținut, verificări distincte</summary>
+<summary>Legend: same content, separate checks</summary>
 
-Auditul datelor verifică proprietatea și valorile publicate. Revizia interactivă verifică accesul la acele valori, capturi și stări ale prezentării; ea nu execută din nou jocul.
+The data audit shall verify the property and published values. The interactive review checks access to those values, captures and status of the presentation; it does not execute the game again.
 
 </details>
 
 ## Invariante
 
-Contractele verificate au proprietari expliciți; auditul le confruntă cu datele capturate:
+The verified contracts have explicit owners; the audit shall confront them with the data captured:
 
-| Contract | Sursă responsabilă |
+| Contract | Responsible source |
 |---|---|
-| Invocare, acțiune, comparație și PNG | [Contractul Android](ATF_Android.md). |
-| Populație, valori integrale, grupare și refuz | [Politica prezentării](ATF_Presentation.md). |
-| Interval original și axele sale | [Contractul temporal](ATF_PhaseTiming.md). |
-| Proveniență, pointer și acceptanță pe scop | [Predarea rezultatelor](ATF_Handoff.md). |
+| Invocation, action, comparison and PNG | [Android contract](ATF_Android.md). |
+| Population, full values, grouping and rejection | [Presentation policy](ATF_Presentation.md). |
+| Original time interval and its dimensions | [Timing contract](ATF_PhaseTiming.md). |
+| Provenance, pointer and scoped acceptance | [Results handoff](ATF_Handoff.md). |
 
-Pentru fiecare proprietate, oracolul auditului citește sursa originală și localizează proprietarul exact în rezultat. Găsirea globală a unei valori sau a unui hash nu demonstrează asocierea corectă.
+For each property, the audit oracle reads the original source and locates the owner exactly in the result. The global finding of a value or hash does not demonstrate proper association.
 
-## Controale și mutații
+## Controls and mutations
 
-| Proprietate | Control negativ |
+| Property | Control negativ |
 |---|---|
-| Identitatea comparației | Mutarea unei valori sau a unui verdict către alt proprietar este refuzată. |
-| Completitudine | Un fragment lipsă, reordonat sau modificat nu trece auditul. |
-| Captură | Schimbarea payload-ului ori a referinței PNG este detectată. |
-| Timp | Intervalul atribuit altui flow sau faze este respins. |
-| Semantica acțiunii | Atribuirea falsă a driverului și confundarea dispatch-ului cu succesul UI sunt refuzate. |
-| Navigare | Valorile și imaginile rămân accesibile după deschidere, închidere și schimbarea proprietarului. |
-| Populație | O invocare JUnit eliminată din HTML ori reasociată altei parametrizări este detectată; egalitatea totalurilor singure este insuficientă. |
+| Comparison identity | The transfer of a value or verdict to another owner is denied. |
+| Completitudine | A missing, reordered or modified fragment does not pass the audit. |
+| Catch | The change of payload or PNG reference is detected. |
+| Timp | The range assigned to another flow or phases is rejected. |
+| Semantics of action | False assignment of the driver and confusion of the display with the success of the IU are denied. |
+| Navigare | Values and images shall be accessible after opening, closing and changing the owner. |
+| Population | A JUnit claim removed from HTML or re-associated with another parametric finding is detected; equality of single totals is insufficient. |
 
-Implementarea verificării este legată de contractul exercitat:
+The implementation of the verification shall be linked to the contract exercised:
 
-- [LearningReportHtmlAudit](../../atf-tests/src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) confruntă datele și scopul HTML-ului cu înregistrările selectate.
-- [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) verifică publicarea și mutațiile deliberate ale datelor.
-- [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) verifică încorporarea PNG prin contractul public.
+- [LearningReportHtmlAudit](../../atf-tests/src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) confronts the data and purpose of HTML with selected records.
+- [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) checks the publication and deliberate data mutations.
+- [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) verifies the incorporation of PNG through the public contract.
 
-## Calificarea unui producător
+## Qualification of a manufacturer
 
-Fiecare producător se califică pe suprafața API efectiv folosită. Trecerea unui publicator nu califică implicit alt adaptor sau revizia sa interactivă.
+Each manufacturer shall qualify for API area actually used. The passage of a publisher does not necessarily qualify any other adapter or its interactive revision.
 
-1. Identificați intrarea, invocările native, sursele, bibliotecile și proprietarul fiecărei capturi.
-2. Confruntați toate comparațiile originale, inclusiv ultimul rând și continuările grupurilor; valorile integrale și verdictele rămân asociate aceleiași invocări.
-3. Injectați lipsuri, proprietari greșiți, intervale imposibile și referințe alterate; publicarea ori auditul trebuie să refuze datele corupte.
-4. Verificați separat navigarea, secțiunile pliabile, imaginile și revenirea cu contextul păstrat pe HTML-ul identificat prin hash.
-5. Păstrați nivelurile executate și limitele în înregistrarea externă; [predarea rezultatelor](ATF_Handoff.md) decide acceptanța scopului.
+1. Identify the entry, native invoicing, sources, libraries and owner of each catch.
+2. Face all original comparisons, including the last row and group sequels; full values and verdicts remain associated with the same claim.
+3. Inject gaps, wrong owners, impossible intervals and altered references; publication or audit must refuse corrupt data.
+4. Check separately navigation, folding sections, images and return with the context kept on the HTML identified by hash.
+5. Keep the levels executed and limits in the external registration; [handing over results](ATF_Handoff.md) decides the acceptance of the purpose.
 
-## Agregarea componentelor pe sursa live
+## Aggregation of components on live source
 
-[Lansatorul componentelor](../../scripts/run-component-suites.ps1) execută intrările primare de componentă din [catalogul Maven](../../config/atf-test-suites.json), colecțiile Gradle declarate ale aplicației și selecția distinctă a bibliotecii UI comune. Compilarea și cache-ul Maven aparțin unei copii TMP; fiecare modul și selecție Gradle produce propriul HTML Extent cu invocări distincte, comparațiile evaluate și proveniența surselor. Rapoartele Gradle nu se concatenează într-un raport sintetic.
+[Component Launcher](../../scripts/run-component-suites.ps1) Perform primary component inputs from [catalogul Maven](../../config/atf-test-suites.json), The declared Gradle collections of the application and the distinct selection of the common UI library. The compilation and cachet of Maven belong to a TMP copy; each Gradle module and selection produces its own HTML Extent with distinct invokes, assessed comparisons and source provenance. Gradle reports do not concatenate in a synthetic report.
 
 ```mermaid
 flowchart LR
-    SOURCE[Surse înghețate] -->|compilează| SUITE[Suită primară]
-    SUITE -->|execută| JUNIT[Inventar JUnit]
-    SUITE -->|capturează| AUDIT[Input și comparații]
-    AUDIT -->|publică| HTML[HTML agregat]
-    JUNIT -->|confruntă identități și rezultate| HTML
+    SOURCE[Frozen sources] -->|compile| SUITE[Primary suite]
+    SUITE -->|execute| JUNIT[Inventar JUnit]
+    SUITE -->|capture| AUDIT[Input and Comparison]
+    AUDIT -->|publishes| HTML[HTML agregat]
+    JUNIT -->|face identities and results| HTML
 ```
 
 <details>
-<summary>Legendă: execuție nouă și captură originală</summary>
+<summary>Legend: New execution and original catch</summary>
 
-Receipt-ul JUnit este independent de receipt-ul publicat în HTML. [Confruntarea](../../atf-tests/src/main/java/atf/tests/reporting/aggregate/ComponentReportCoverage.java) refuză identități lipsă, suplimentare ori duplicate și verdicte diferite; totalurile egale nu sunt suficiente.
+JUnit Receipt is independent of the Receipt published in HTML. [Confruntarea](../../atf-tests/src/main/java/atf/tests/reporting/aggregate/ComponentReportCoverage.java) refuses missing, additional or duplicate identities and different verdicts; equal totals are not sufficient.
 
-Fiecare dintre cele trei suite ATF primare are un HTML canonic, propriul receipt și inventarul comun al surselor. Receipt-ul de componente pe sursă declară separat `apkQualification`; asocierea cu APK-ul cere calificarea candidatului. [Indexul versiunii active](../../release/README.md) păstrează rapoartele și identitățile concrete.
+Each of the three primary ATF suites has a canonical HTML, its own Receipt and the shared source inventory. The Receipt of components per source declares separately `apkQualification`; association with APK requires candidate qualification. [Active version index](../../release/README.md) keep the reports and the identities concrete.
 
 </details>
 
-| Frontieră | Contract |
+| Border | Contract |
 |---|---|
-| Captură | Aserțiunile auditate păstrează evaluarea JUnit; fazele și cauzele aparțin invocării originale. O componentă fără comparații auditate în corp eșuează explicit. |
-| Adaptor | Înregistrările explicite pe metodă, clasă sau clasă exterioară `@Nested` au prioritate. Lansatorul completează lipsa adaptorului, iar lansările JUnit independente își păstrează contextul și populația. |
-| Publicare | Un owner comun per suită; numele controlat combină metoda și ordinalul, iar display name-ul JUnit original rămâne input textual integral. Receipt-urile păstrează ID-ul parametrizării, rezultatul și numărul comparațiilor; corpurile lungi se reconstruiesc din părți ordonate. |
-| Calificare HTML | Profilul așteptat provine din captură, independent de fișierul publicat. Etichetele vizibile se confruntă cu spațiile normalizate conform HTML; etichetele publicate, valorile și corpurile originale rămân păstrate. |
-| Proveniență | HTML-ul indică amprenta surselor, configurația și cardinalitatea inventarului; manifestul unic de hash-uri este metadată tehnică a distribuției. Comparațiile și inputurile testului rămân în HTML, fără copii XML. |
-| Dimensiunea părților | `InputPartCharacters` configurează corpurile integrale ale agregatului, păstrând preview-ul aserțiunilor și valorile evaluate. Părțile mai mari evită multiplicarea marcajelor HTML; nu elimină text și nu schimbă bugetul semantic al componentei testate. |
-| Domeniu | Execuția califică sursa și suitele Maven și Gradle declarate. Nu califică un APK și nu execută interacțiuni Android; E2E rămâne selecție separată. |
+| Catch | The audited assertions shall keep the evaluation of JUnit; the phases and causes shall be the original declaration. A component without audited comparisons in the body fails explicitly. |
+| Adaptor | Explicit records by method, class or external class `@Nested` shall be given priority. The launcher complements the lack of adaptor, and independent JUnit launches retain their context and population. |
+| Publication | A common owner per suite; the controlled name combines method and ordinary, and the original JUnit nameplate remains a full textual input. Receipts keep the IDs of parametric, result and number of comparisons; long bodies are reconstructed from ordered parts. |
+| Calificare HTML | The expected profile comes from the catch, independent of the published file. Visible labels face the spaces normalized according to HTML; published labels, original values and bodies remain preserved. |
+| Provenance | HTML indicates the source footprint, inventory configuration and cardinality; the unique manifest hash is technical metadata of the distribution. Comparison and input of the test remains in HTML without XML copies. |
+| Dimension of the Parties | `InputPartCharacters` configures the aggregate's entire bodies, keeping the pre-view of the assertions and values evaluated. The larger parts avoid multiplying HTML markings; do not remove text or change the semantic budget of the tested component. |
+| Domeniu | The execution qualifies the source and suite of Maven and Gradle as declared. Do not qualify an APK and do not execute Android interactions; E2E remains separate selection. |
 
-Din rădăcina proiectului, cu JDK, Android SDK 36 și cache-urile Maven/Gradle pregătite:
+From the project root, with JDK, Android SDK 36 and the Maven/Gradle cachets prepared:
 
 ```powershell
 .\scripts\run-component-suites.ps1 -JavaHome '<cale-JDK>' -MavenCache '<cache-Maven>'
 ```
 
-Rezultatele rămân externe. Copierea selectivă în dosarul unei livrări păstrează explicit domeniul sursă, distinct de calificarea APK-ului; verificarea finală confruntă HTML-ul detașat înaintea eliminării oricărei dovezi originale.
+The results remain external. Selective copying in the delivery file explicitly retains the source domain, distinct from the APK qualification; the final verification confronts the detached HTML prior to the removal of any original evidence.
 
-### Integritatea inventarului
+### Inventory integrity
 
-[Inventarul comun](../../scripts/Get-AtfSourceInputs.ps1) alimentează lansatoarele de componente și guvernanță. Directoarele generate se exclud la granițele proiectului și modulelor declarate; dosarul de livrare se exclude numai la rădăcina proiectului. Numele unui pachet nu justifică omiterea sursei: segmente precum `release`, `target` și `build` rămân inventariate în arborii sursă, inclusiv rădăcinile Maven configurate și cele suplimentare din politică.
+[Inventarul comun](../../scripts/Get-AtfSourceInputs.ps1) feeds component launchers and governance. The generated directories shall be excluded at the borders of the project and the modules declared; the delivery dossier shall be excluded only at the root of the project. The name of a package does not justify the omission of the source: segments such as `release`, `target` and `build` remain inventoried in source trees, including the configured and additional roots of the Maven policy.
 
-Manifestul include și fișierele fără extensie, precum înregistrările extensiilor. Căile indirecte neinventariate sunt refuzate. [Controalele inventarului](../../atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java) confruntă populația Java declarată și detectează adăugări, ștergeri și modificări.
+The manifesto also includes files without extension, such as extension records. Indirect uninventoried routes are denied. [Inventory controls](../../atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java) confronts the declared Java population and detects additions, erasure and changes.
 
-O corecție ulterioară a inventarului produce o identitate nouă; nu rescrie amprenta unei execuții istorice.
+A subsequent correction of the inventory produces a new identity; does not rewrite the footprint of a historical execution.
 
-[Copierea în staging](../../scripts/Copy-AtfSourceInputs.ps1) folosește chiar manifestul capturat, fără o a doua listă de excluderi după numele directorului. Hash-ul fiecărei copii trebuie să coincidă cu intrarea; o modificare intervenită înaintea compilării este refuzată.
+[Staging copy](../../scripts/Copy-AtfSourceInputs.ps1) uses the captured manifest itself without a second list of exclusions after the directory name. The hash of each copy must coincide with the entry; a change before compilation shall be refused.
 
-## Citirea unui raport
+## Reading a report
 
-[Puntea Gradle](../testing/ATF_GradleComponents.md) aplică aceleași contracte pentru JUnit 4, cu identitatea originală a parametrizării și context capturat înaintea comparației. Intenția publicării este metadată provenită din execuție și se verifică separat de HTML; un profil fără HTTP nu inventează transport. XML-ul rămâne numai oracol temporar pentru selecțiile migrate.
+[Puntea Gradle](../testing/ATF_GradleComponents.md) applies the same contracts to JUnit 4, with the original identity of the parametric and context captured prior to comparison. The publication intent is metadata from execution and is checked separately from HTML; a profile without HTTP does not invent transport. The XMLs remain only temporary oracle for migrated selections.
 
-README-ul dosarului indică întâi raportul canonic, scopul și identitatea verificată. HTML-ul păstrează datele necesare verdictului; README-ul orientează cititorul și explică selecția, suprapunerile și dovezile auxiliare justificate.
+The dossier's READMEM shall first indicate the canon report, the purpose and the identity verified. HTML maintains the data required for the verdict; READMES directs the reader and explains the selection, overlaps and supporting evidence justified.
 
-| Ordine | Ce confruntăm |
+| Ordine | What are we facing? |
 |---|---|
-| Context | Tipul verificării, sursele și bibliotecile, profilul și, pentru Android, APK-ul/dispozitivul efectiv. Momentul publicării se distinge de execuție. |
-| Invocare | Clasa, metoda și parametrii aleși; setup-ul ori restaurarea apar numai dacă au avut loc și sunt delimitate de corp. |
-| Componentă | Inputul integral și `Component assertions` din faza evaluării: numele invariantului, expected independent, actual și verdict. |
-| Android | Acțiunea expediată, observația proaspătă, comparația și PNG-ul aceleiași stări. Acceptarea ADB și succesul tranziției au dovezi separate. |
-| Eșec | Cauza primară, comparațiile trecute anterior și erorile secundare de curățare; Fails păstrează accesul la proprietarul original. |
-| Închidere | Populația executată/publicată, cazurile omise și limitele reviziei; durata scenariilor nu se confundă cu timpul total al suitei. |
+| Context | Type of verification, sources and libraries, profile and, for Android, actual APK-ul/dispozitivul. The timing of the publication is distinguished from the execution. |
+| Invocare | The chosen class, method and parameters; the setup or restoration occurs only if they have occurred and are delimited by the body. |
+| Component | Full input and `Component assertions` from the evaluation phase: invariant name, independently expected, current and verdict. |
+| Android | The action dispatched, the fresh observation, the comparison and the NGP of the same state. The acceptance of the DBD and the success of the transition have separate evidence. |
+| Failed | The primary cause, past comparisons and secondary cleaning errors; Fails keeps access to the original owner. |
+| Closure | The population executed / published, the cases omitted and the limits of the revision; the duration of the scenarios is not confused with the total time of the suite. |
 
-- **Sens:** când `true/false`, un număr ori o clasă de excepție nu explică proprietatea, comparația are mesaj declarativ despre obiect și invariant. Referința la linia sursei ajută trasabilitatea, fără a înlocui explicația.
-- **Refuz așteptat:** `assertThrows` poate trece când operația refuză exact intrarea cerută; raportul arată așteptarea evaluată. Un eșec injectat intenționat al invocării rămâne FAIL, chiar dacă acceptanța publicatorului așteaptă acel eșec.
-- **Mediu:** instrumentul care inspectează HTML-ul este auditorul raportului. Folosirea Playwright pentru această revizie nu transformă interacțiunea Android în automatizare Playwright.
+- **Sens: ** when `true/false`, a number or an exceptional class does not explain the property, the comparison has declaratory message about the object and the invariant. The reference to the source line helps traceability without replacing the explanation.
+- **Refusal expected: ** `assertThrows` can pass when the operation refuses exactly the required entry; the report shows the assessed expectation. A intentionally injected failure of the plea remains FAIL, even though the publicist's acceptance awaits that failure.
+- **Environment: ** the instrument inspecting HTML is the report auditor. Using Playwright for this revision does not transform Android interaction into Playwright automation.
 
-## Revizia interactivă minimă
+## Minimum interactive revision
 
-1. Identificați hash-ul HTML-ului final și copiați-l singur într-un director gol; blocați resursele externe și declarați browserul folosit.
-2. Porniți din starea inițială a raportului și alegeți un proprietar reprezentativ; pentru un arbore mare, deschideți ramura necesară.
-3. Verificați deschiderea și închiderea grupului de aserții, accesul la ultima comparație și independența vecinului; adăugați Enter/Space și focus când schimbarea afectează aceste controale.
-4. Deschideți inputul integral, inclusiv valori peste preview și text care arată ca HTML; el rămâne text sigur, la invocarea corectă.
-5. Când există captură, deschideți PNG-ul integral și reveniți la aceeași ramură. Proba păstrează proporțiile, rezoluția originală și contextul.
-6. Înregistrați proprietarii și controalele verificate, verdictul și limitele. Calificați separat Extent și fallback când schimbarea afectează ambele suprafețe.
+1. Identify the final HTML hasher and copy it yourself into an empty directory; block external resources and declare the browser used.
+2. Start from the initial status of the report and choose a representative owner; for a large tree, open the required branch.
+3. Check the opening and closure of the group of assertions, access to the last comparison and the independence of the neighbor; add Enter/Space and focus when the change affects these controls.
+4. Open the full input, including values over preview and text that looks like HTML; it remains safe text, at correct invoicing.
+5. When there is catch, open the whole GNP and return to the same branch. The sample shall retain proportions, original resolution and context.
+6. Record the owners and checked controls, verdict and limits. Qualify Extent and fallback separately when the change affects both surfaces.
 
-Revizia acoperă ramurile declarate. Reducerea la o probă reprezentativă cere aceeași implementare de prezentare; o ramură nouă, un eșec sau o problemă de acces primește propria probă.
+The review shall cover the branches declared. The reduction to a representative sample requires the same presentation implementation; a new branch, failure or access problem receives its own sample.
 
-## Limite
+## Limits
 
-Trecerea auditului structural nu demonstrează singură lizibilitatea sau navigarea interactivă. Verificarea publicării nu certifică o nouă execuție Android sau puterea politicii jocului.
+The passage of the structural audit does not demonstrate the legibility or interactive navigation alone. Checking the publication does not certify a new Android execution or the power of game policy.
 
-[Politica de prezentare](ATF_Presentation.md) · [Contractul Android](ATF_Android.md) · [Arhitectura raportării](README.md)
+[Presentation policy](ATF_Presentation.md) · [Contractul Android](ATF_Android.md) · [Reporting architecture](README.md)

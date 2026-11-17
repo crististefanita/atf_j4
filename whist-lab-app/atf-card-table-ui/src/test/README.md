@@ -1,16 +1,16 @@
-# Componentele bibliotecii pentru masa de joc
+# Components of the library for the table
 
-## Pe scurt
+## Overview
 
-Testele JVM verifică geometria mâinii, modelele de prezentare și frontiera bibliotecii reutilizabile. Oracolele compară valori calculate și semnături de dependență. [Strategia comună](../../../../docs/testing/README.md)
+JVM tests check the geometry of the hand, presentation models and border of the reusable library. Oracles compare calculated values and addictive signatures. [Common strategy](../../../../docs/testing/README.md)
 
-| Familie | Proprietate verificată |
+| Familie | Proprietary checks |
 |---|---|
-| Masă și cărți | 3–6 locuri, bandă centrală, compactare, însemne și marcaj la densitate fracționară. |
-| Locuri și meniu | Conținutul modelului de prezentare, inclusiv editarea numelui și o înălțime comună a badge-ului pentru etichetele celor două faze. |
-| Realizări | Ordinea catalogului, cheile de restaurare și calculul detaliului la deschidere. |
-| Frontieră | Inventarele de producție, JVM și instrumentare exclud dependențele de joc. |
+| Table and cards | 3–6 places, central tape, compaction, marking and marking at fractional density. |
+| Places and menu | Content of the model presentation, including name editing and a common height of the badge for the labels of the two phases. |
+| Achievements | Catalogue order, restoration keys and calculation of the details at the opening. |
+| Border | Production inventories, JVM and instrumentation exclude game addictions. |
 
-- Sarcina `:atf-card-table-ui:testDebugUnitTest` rulează pe JVM.
-- Opțiunea `-Pcardui.only=component` configurează biblioteca și puntea auditului. Lansatorul RAG o folosește când biblioteca este singura selecție Gradle.
-- Validarea vizuală pe dispozitiv aparține fluxurilor aplicației. [Colecțiile proiectului](../../../../docs/testing/ATF_Collections.md)
+- Pregnancy `:atf-card-table-ui:testDebugUnitTest` is running on JVM.
+- Option `-Pcardui.only=component` configure the library and audit deck. The RAG launcher uses it when the library is the only Gradle selection.
+- Visual validation on device belongs to application flows. [Project collections](../../../../docs/testing/ATF_Collections.md)

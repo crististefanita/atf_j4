@@ -1,57 +1,57 @@
-# Arhitectura publicării rezultatelor
+# Architecture of publication of results
 
-## Pe scurt
+## Overview
 
-Consumatorul Whist Lab deține selecția testelor, semantica jocului și datele de intrare pentru publicare. Biblioteca de raportare transformă înregistrările de execuție într-o prezentare autonomă, păstrând verdictele evaluate și asocierea capturilor cu testele care le-au produs.
+The consumer has the selection of tests, game semantics and entry dates for publication. The reporting library converts the execution records into an autonomous presentation, keeping the assessed verdicts and the association of catches with the tests that produced them.
 
-## Fluxul publicării
+## Publication flow
 
 ```mermaid
 flowchart LR
-TEST[Test executat] -->|capturează| RECEIPT[Înregistrări de execuție]
-SELECT[Politică de selecție] -->|alege invocări| RECEIPT
+TEST[Test executat] -->|capture| RECEIPT[Execution records]
+SELECT[Selection policy] -->|choose invoicing| RECEIPT
 RECEIPT -->|compune| CONSUMER[Publicator Whist]
-CONSUMER -->|apelează API| LIB[Bibliotecă de raportare]
+CONSUMER -->|call API| LIB[Reporting library]
 LIB -->|produce| HTML[HTML autonom]
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legend and limits</summary>
 
-Selecția și comparațiile aplicației aparțin consumatorului. Biblioteca păstrează verdictul, temporizarea și atașamentele primite; componenta de randare nu deduce un rezultat nou din text sau imagini.
+The choice and comparisons of the application belong to the consumer. The library keeps the verdict, timing and attachments received; the rendering component does not deduce a new result from text or images.
 
 </details>
 
 ## Contracte permanente
 
-- Selectarea păstrează invocări întregi, toate eșecurile și inventarul omisiunilor.
-- Așteptarea, valoarea observată și cauza originală rămân asociate aceleiași invocări.
-- Capturile Android originale sunt încorporate PNG Base64 și aparțin punctului de control care le-a produs.
-- Componentele, partidele simulate, reluarea și acțiunile Android au tipuri și limite distincte.
-- Republicarea păstrează identitatea execuției originale; lipsa unui interval temporal rămâne explicită.
-- Rezultatele și referințele lor sunt publicate în depozitul extern configurat.
+- The selection shall retain whole invoicing, all failures and the inventory of omissions.
+- The waiting, the observed value and the original case remain associated with the same claim.
+- The original Android catches are incorporated PNG Base64 and belong to the control point that produced them.
+- Components, simulated parties, resumption and actions of Android have distinct types and limits.
+- The republican shall retain the identity of the original execution; the lack of a time interval shall be explicit.
+- Their results and references are published in the configured external repository.
 
-## Configurare și responsabilități
+## Configuration and responsibilities
 
-| Mecanism | Contract responsabil |
+| Mechanism | Owning contract |
 |---|---|
-| Selecție, grupare și navigare | [Politica prezentării](ATF_Presentation.md) |
-| Acțiuni, comparații și imagini | [Contractul Android](ATF_Android.md) |
-| Execuție originală și republicare | [Măsurarea timpilor](ATF_PhaseTiming.md) |
-| Înregistrare și acceptare pe scop | [Predarea rezultatelor](ATF_Handoff.md) |
-| Integritate și acces la conținut | [Auditul publicării](ATF_Audit.md) |
+| Selection, grouping and navigation | [Presentation policy](ATF_Presentation.md) |
+| Actions, comparisons and images | [Contractul Android](ATF_Android.md) |
+| Original execution and republication | [Time measurement](ATF_PhaseTiming.md) |
+| Registration and acceptance on purpose | [Teaching results](ATF_Handoff.md) |
+| Integrity and access to content | [Publication audit](ATF_Audit.md) |
 
-[Politica de prezentare](ATF_Presentation.md) definește volumul și selecția datelor de intrare. [Contractul Android](ATF_Android.md) definește relația acțiune–observație–comparație, iar [predarea rezultatelor](ATF_Handoff.md) definește publicarea atomică.
+[Presentation policy](ATF_Presentation.md) defines the volume and selection of input data. [Contractul Android](ATF_Android.md) defines the relationship between the action-observation-comparison and [handing over results](ATF_Handoff.md) defines atomic publication.
 
-Defectele de date de intrare se corectează în consumator; cerințele generice ale bibliotecii sunt direcționate prin [feedback](../feedback/README.md). Identitatea binară se citește din configurația și proveniența livrării, fără versiuni sau rezultate copiate în acest ghid.
+Entry data defects are corrected in the consumer; generic library requirements are directed by [feedback](../feedback/README.md). The binary identity shall be read from the configuration and provenance of the delivery without any versions or results copied to this guide.
 
-## Verificarea contractelor
+## Verification of contracts
 
-| Întrebare | Verificare responsabilă |
+| Question | Responsible verification |
 |---|---|
-| Sunt păstrate eșecurile și omisiunile declarate? | [EvidenceSelectionContractTest](../../atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java) verifică selecția, limitele și configurația capturată. |
-| Valorile publicate corespund intrării? | [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) confruntă valorile și mutațiile deliberate. |
-| Captura rămâne în punctul ei de control? | [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) verifică PNG-ul inline, inclusiv observația fără aserții inventate. |
-| Se poate publica pentru alt joc? | [Admiterea domeniului](../learning/ATF_GameTransfer.md) cere adaptor semantic; existența API-ului generic nu stabilește sensul unui eveniment nou. |
+| Are the failures and omissions declared? | [EvidenceSelectionContractTest](../../atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java) checks the selected, limited and configured catch. |
+| Do the published values correspond to the entry? | [LearningRunReportContractTest](../../atf-tests/src/test/java/atf/tests/learning/LearningRunReportContractTest.java) faces deliberate values and mutations. |
+| The catch stays at her checkpoint? | [AndroidInlineScreenshotReportContractTest](../../atf-tests/src/test/java/atf/tests/contracts/AndroidInlineScreenshotReportContractTest.java) checks the Inline GNP, including observation without invented assertions. |
+| Can it be published for another game? | [Admission of domain](../learning/ATF_GameTransfer.md) requires semantic adaptor; the existence of generic API does not determine the meaning of a new event. |
 
-[Verificarea focalizată](../../atf-tests/README.md#verificare-focalizată) deține comanda de pornire. Contractele de date, structura HTML și interacțiunea în browser au calificări distincte; un rezultat static nu certifică navigarea interactivă.
+[Focused verification](../../atf-tests/README.md#focused-verification) holds the starting command. Data contracts, HTML structure and browser interaction have distinct qualifications; a static result does not certify interactive navigation.

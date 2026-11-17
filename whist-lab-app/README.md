@@ -1,121 +1,121 @@
-# Whist Lab — Android și iOS
+# Whist Lab - Android and iOS
 
-## Pe scurt
+## Overview
 
-Aplicația Android Whist Lab rulează local cu motorul Java comun și adversari AI.
-Proiectul nativ iOS este în calificare; interfața SwiftUI și integrarea aceluiași
-motor se află în directorul `../ios`.
+Android Whist Lab is running locally with Java joint engine and AI opponents.
+The native project iOS is in qualification; SwiftIU interface and integration of the same
+The engine is in the `../ios` directory.
 
 ## Folosire
 
-Configurarea permite alegerea variantei, a unei mese de 3–6 jucători și a nivelului Normal sau Hard.
+The configuration allows the choice of variant, a table of 3–6 players and Normal level or Hard.
 
-În configurarea în română, Hard apare ca „Dificil”. Limba EN/RO se schimbă din selectorul interfeței și se păstrează între porniri. Regulile și programul mâinilor sunt disponibile din `Rules & schedule` / `Reguli și program`.
+In the Romanian configuration, Hard is labeled `Dificil` in Romanian. The language EN/RO is changed from the interface selector and is kept between the starting points. The rules and the hands schedule are available from `Rules & schedule` / `Reguli și program`.
 
-Variantele disponibile sunt definite în catalogul de reguli.
+The available variants are defined in the catalogue of rules.
 
-O salvare cu o variantă retrasă rămâne pe dispozitiv până când utilizatorul pornește o partidă nouă. Tipurile de reguli sunt definite în [GameMode](game-core/src/main/java/ro/whistlab/core/rules/GameMode.java), iar textele și etichetele efective în [WhistUiText](app/src/main/java/ro/whistlab/app/localization/WhistUiText.java). Regulile afișate se construiesc în [HowToPlay](game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) pentru varianta, limba și numărul de jucători selectate.
+A rescue with a withdrawn variant remains on the device until the user starts a new game. The types of rules are defined in [GameMode](game-core/src/main/java/ro/whistlab/core/rules/GameMode.java), and actual texts and labels in [WhistUiText](app/src/main/java/ro/whistlab/app/localization/WhistUiText.java). The displayed rules are built in [HowToPlay](game-core/src/main/java/ro/whistlab/core/rules/HowToPlay.java) for the variant, language and number of players selected.
 
-- [Regulile jocului](../docs/game/README.md) dețin programul mâinilor, atuul, scorul și seriile pentru fiecare profil.
-- Istoricul se deschide din `Meniu joc → Scorul partidei → Istoricul scorului`. [Contractul istoricului](../docs/game/ATF_ScoreHistory.md) explică licitația, totalul fiecărui jucător, marcajele și adaptarea la fereastră.
+- [Rules of the game](../docs/game/README.md) has the hands, the touch, the score and the series for each profile.
+- The history opens up from `Meniu joc → Scorul partidei → Istoricul scorului`. [History contract](../docs/game/ATF_ScoreHistory.md) explains the bid, the total of each player, the markings and the adaptation to the window.
 
-## Licitarea asistată
+## Aided bidding
 
-La tura jucătorului, motorul Hard estimează și preselectează o licitație legală din informația vizibilă. Alegerea se poate schimba și trebuie confirmată prin `Licitează` / `Place bid`; recomandarea nu depune contractul. Nivelul Normal sau Dificil selectat pentru partidă continuă să controleze adversarii.
+At the player's turn, the Hard engine estimates and pre-selects a legal bid from visible information. The choice may be changed and must be confirmed by `Licitează` / `Place bid`; the recommendation does not submit the contract. Normal level or Difficult selected for the match continues to control the opponents.
 
-- Calculul rulează în fundal și folosește mâna proprie, atuul și cartea întoarsă cunoscută, licitațiile publice și contextul de scor al motorului.
-- Alegerea manuală are prioritate; un rezultat întârziat nu înlocuiește selecția și nu se aplică altei mâini ori partide.
-- Dacă estimarea nu este disponibilă, se poate alege manual orice valoare legală. [Selecția contextuală](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) păstrează această stare separat de contractele depuse.
+- The calculation runs in the background and uses his own hand, the known card and the known card, the public bids and the engine score context.
+- Hand choice takes priority; a delayed result does not replace selection and does not apply to any other hand or party.
+- If the estimate is not available, any legal value can be chosen manually. [Contextual selection](app/src/main/java/ro/whistlab/app/bidding/HumanBidSelection.java) keeps this condition separate from the contracts submitted.
 
-## Joacă automat mâna curentă
+## Play the current hand automatically
 
-- Pe Android, bifa `Auto play` / `Automat` preia temporar licitarea și jocul cărților. [Documentația activității Android](app/src/main/java/ro/whistlab/app/README.md#autogame-pentru-mâna-activă) descrie coordonarea fluxului.
-- Bifa stă în dreapta titlului când încape. La text mărit, poate ocupa propriul rând în antet, deasupra atuului. Numărul mâinii și rezumatul licitațiilor apar dedesubt.
-- Cât timp automatizarea este activă, `Game menu` / `Meniu joc` oferă `Stop auto-play` / `Oprește jocul automat`.
-- Aplicația folosește nivelul Normal sau Hard ales pentru adversari și controlează temporar și locul uman. La ecranul scorului automatizarea se oprește, iar următoarea mână revine la controlul manual.
+- On Android, tick `Auto play` / `Automat` temporary take over the bid and the card game. [Documentation of Android activity](app/src/main/java/ro/whistlab/app/README.md#autogame-for-active-hand) describes the flow coordination.
+- The check is on the right side of the title when it fits. With the text enlarged, it can occupy its own row in the header, above the edge. The number of hands and the summary of bids appear below.
+- While automation is active, `Game menu` / `Meniu joc` offers `Stop auto-play` / `Oprește jocul automat`.
+- The app uses Normal level or Hard chosen for its opponents and controls the human place temporarily as well. On the screen the automation stops, and the next hand returns to manual control.
 
-Automatizarea afectează numai tura de licitare și turele de joc ale mâinii active. Nu schimbă nivelul AI, regulile, scorul sau salvarea partidei. Deschiderea unui dialog, trecerea aplicației în fundal și revenirea suspendă și reiau deciziile prin coordonatorul AI existent.
+Automation only affects the bidding shift and active hand game shifts. It doesn't change the AI level, the rules, the score or the game's salvation. Opening a dialogue, switching the application into background and returning suspended and retaking decisions through the existing AI coordinator.
 
-## Flux și responsabilități
+## Flow and responsibilities
 
 ```mermaid
 flowchart LR
-UI[Android sau SwiftUI] -->|trimite comenzi| SESSION[GameSession]
-SESSION -->|produce| VIEW[Stare capturată]
-VIEW -->|alimentează| UI
-SESSION -->|solicită decizii| AI[AiPolicy]
-STORE[Salvare locală] -->|restaurează| SESSION
-IOS[J2ObjC] -->|traduce motorul comun| SESSION
+UI[Android or SwiftIU] -->|trimite comenzi| SESSION[GameSession]
+SESSION -->|produce| VIEW[State captured]
+VIEW -->|fuel| UI
+SESSION -->|calls for decisions| AI[AiPolicy]
+STORE[Local Salvation] -->|restore| SESSION
+IOS[J2ObjC] -->|translate the common engine| SESSION
 ```
 
 <details>
-<summary>Legendă și limite</summary>
+<summary>Legend and limits</summary>
 
-GameSession validează comenzile înaintea schimbării stării; UI-ul redă starea capturată. Persistența restaurează numai informația disponibilă în schema salvării.
+GameSession validates the controls prior to the change of status; UIU returns the captured status. Persistence only restores the information available in the rescue scheme.
 
 </details>
 
 ## Organizare
 
-| Componentă | Responsabilitate |
+| Component | Responsibility |
 |---|---|
-| [game-core](game-core/README.md) | Reguli, sesiune, scor, salvare și politica AI a aplicației; teste JVM. |
-| [atf-card-table-ui](atf-card-table-ui/README.md) | Nucleu Android reutilizabil: meniu/profil, widgeturi, cărți, temă și geometria mâinii; fără motorul jocului sau biblioteci ATF. |
-| [card-table-names](card-table-names/README.md) | Politica Java comună pentru repartizarea numelor pe locuri și validarea numelui uman. |
-| [app](app/src/main/java/ro/whistlab/app/) | Activitatea Android, configurarea mesei, prezentarea jocului și persistența locală. |
-| [ai-lab](ai-lab/README.md) | Modul JVM al jucătorului independent, uneltelor și experimentelor offline; consumat numai la testare. |
-| [test-audit](test-audit/README.md) | Fixture-uri JVM pentru captura și verificarea componentelor; exclus din runtime-ul aplicației. |
-| [algorithm-build](algorithm-build/README.md) | Intrare Gradle exclusiv JVM, fără configurarea aplicației Android. |
-| [iOS](../ios/README.md) | Proiect SwiftUI, traducerea motorului comun și calificarea pe simulator Apple. |
-| [atf-test-android](../atf-test-android/README.md) | Componente de verificare și scenarii Android activate explicit. |
+| [game-core](game-core/README.md) | Rules, session, score, rescue and application AI policy; JVM tests. |
+| [atf-card-table-ui](atf-card-table-ui/README.md) | Reusable Android Core: meniu/profil, widgets, cards, theme and hand geometry; without game engine or ATF libraries. |
+| [card-table-names](card-table-names/README.md) | Java's common policy for the distribution of names in place and validation of human name. |
+| [app](app/src/main/java/ro/whistlab/app/) | Android activity, table configuration, game presentation and local persistence. |
+| [ai-lab](ai-lab/README.md) | JVM module of independent player, tools and experiments offline; consumed only on testing. |
+| [test-audit](test-audit/README.md) | JVM fixtures for component capture and verification; excluded from application runtimeter. |
+| [algorithm-build](algorithm-build/README.md) | JVM exclusive Gradle input without configuration of Android application. |
+| [iOS](../ios/README.md) | SwiftIU project, joint engine translation and Apple simulator qualification. |
+| [atf-test-android](../atf-test-android/README.md) | Android verification components and scenarios explicitly activated. |
 
-Versiunea aplicației, SDK-urile și identificatorul pachetului au ca sursă
-[configurația Gradle a aplicației](app/build.gradle). Un APK construit din sursele curente și un
-APK instalat anterior au proveniențe distincte; versiunea sursei nu dovedește
-ce binar rulează pe dispozitiv. [Contractul acceptanței Android](../docs/testing/ATF_Android.md) definește verificarea binarului identificat.
+The application version, the SDKs and package identifier have as source
+[Gradle configuration of application](app/build.gradle). An APK built from current sources and a
+APK previously installed have distinct origins; source version does not prove
+[Android Acceptance Contract](../docs/testing/ATF_Android.md) defines the check of the identified binary.
 
-## Construire și verificare
+## Construction and verification
 
-| Scop | Intrare | Resurse |
+| Purpose | Intrare | Resurse |
 |---|---|---|
-| Regresie JVM rapidă | `:game-core:quickRegressionTest` prin `algorithm-build` | JDK și cache Gradle/JVM; fără dispozitiv Android. |
-| APK de dezvoltare | `:app:assembleDebug` | JDK, SDK Android și dependențele construirii. |
-| Colecție cu identitate și rezultat extern | [run-whist-collection.ps1](../scripts/run-whist-collection.ps1) | Configurația și precondițiile [colecției](../docs/testing/ATF_Collections.md). |
+| Rapid JVM Regression | `:game-core:quickRegressionTest` prin `algorithm-build` | JDK and cache Gradle/JVM; without Android device. |
+| APK Development | `:app:assembleDebug` | JDK, SDK Android and building dependencies. |
+| Collection with identity and external result | [run-whist-collection.ps1](../scripts/run-whist-collection.ps1) | Configuration and preconditions [collection](../docs/testing/ATF_Collections.md). |
 
-Executați compilările într-o copie de lucru proprie din `%TEMP%`. Din acea copie
-a directorului `whist-lab-app`:
+Execute compilers in your own `%TEMP%` work copy. From that copy
+Director `whist-lab-app`:
 
 ```powershell
 .\gradlew.bat -p algorithm-build :game-core:quickRegressionTest --offline --no-daemon
 .\gradlew.bat :app:assembleDebug --offline --no-daemon
 ```
 
-Prima comandă necesită JDK și dependențele JVM disponibile local. A doua cere și
-SDK-ul Android declarat în configurație; APK-ul este produs în `app/build/outputs/apk`
-din copia de lucru. `--offline` refuză dependențele care nu sunt deja în cache.
+The first command requires JDK and locally available JVM dependencies. The second asks and
+Android SDK declared in configuration; APK is produced in `app/build/outputs/apk`
+`--offline` refuses addictions that are not already in cache.
 
-Din rădăcina proiectului, [lansatorul colecțiilor](../scripts/run-whist-collection.ps1)
-creează propria copie temporară și acceptă selecții explicite precum `quick`,
-`regression`, `context` și `documentation`:
+From the root of the project, [Collections launcher](../scripts/run-whist-collection.ps1)
+create his own temporary copy and accept explicit selections such as `quick`,
+`regression`, `context` and `documentation`:
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection quick
 ```
 
-Testele componente, turneele offline și scenariile Android sunt selecții
-distincte. Candidații experimentali externi nu schimbă aplicația activă prin
-simpla lor existență. Accesul la un dispozitiv și instalarea unui APK sunt pași
-separați, activați explicit.
+Component tests, offline tournaments and Android scenarios are selections
+Distinguishing number of the country which has granted authorisation. External experimental candidates do not change the active application by
+Their mere existence. Access to a device and installation of an APK are steps
+Separate, activate explicitly.
 
-Contractele și mecanismele curente sunt în [documentație](../docs/).
+Current contracts and mechanisms are in [Documentation](../docs/).
 
-## Contracte de integrare
+## Integration contracts
 
-[Coordonarea Android](app/src/main/java/ro/whistlab/app/README.md#coordonarea-turelor-automate) separă calculul AI de firul principal și condiționează aplicarea de identitatea partidei și a stării capturate. Componentele verifică anularea și aplicarea unică; persistența, reactivitatea și interacțiunea se califică separat pe binarul identificat.
+[Coordonarea Android](app/src/main/java/ro/whistlab/app/README.md#coordination-of-automatic-shifts) separates the calculation of AI from the main thread and makes it conditional on the application of the identity of the game and the captured status. The components shall verify the cancellation and single application; persistence, reactivity and interaction shall qualify separately for the identified binary.
 
-| Suprafață | Invariantă |
+| Surface | Input |
 |---|---|
-| Profil nou și salvări compatibile | Configurarea, scorul, restaurarea, proiecțiile AI și ajutorul RO/EN folosesc aceeași identitate a regulilor; profilul istoric își păstrează explicit valorile. |
-| Ghid și interfață | Etichetele și accesul la istoricul tuturor locurilor urmează textele și comenzile curente; procedurile complete aparțin ghidurilor responsabile. |
+| New profile and compatible rescue | The configuration, score, restoration, AI projections and aid RO/EN use the same rules identity; the historical profile explicitly retains its values. |
+| Guide and interface | Labels and access to the history of all places follow the current texts and commands; the complete procedures belong to the responsible guides. |
 
-[Regulile și scorul](../docs/game/README.md) dețin contractul produsului, iar [calificările Android](../docs/feedback/ATF_Android.md) păstrează criteriile încă deschise.
+[Rules and score](../docs/game/README.md) holds the contract of the product and [Android qualifications](../docs/feedback/ATF_Android.md) keeps the criteria still open.

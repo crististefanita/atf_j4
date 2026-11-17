@@ -1,76 +1,76 @@
-# Responsabilitățile pachetelor
+# Package responsibilities
 
-## Pe scurt
+## Overview
 
-Un pachet grupează tipuri care se schimbă pentru același contract. [Politica proiectului](../../config/atf-governance-policy.json) aplică limita de opt fișiere Java separat pe modul și set de surse; o extracție se justifică prin starea și invarianta mecanismului.
+A package groups types that change for the same contract. [Project policy](../../config/atf-governance-policy.json) applies the limit of eight Java files separately on the module and set of sources; an extraction is justified by the mechanism's state and invariance.
 
-[Tipografia antetului](../../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) aparține stilului comun din `theme`; geometria și compoziția mesei rămân în `table`. Selecția componentelor de afișaj include ambele responsabilități.
+[Header printing](../../whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java) belongs to the common style of `theme`; geometry and composition of the table remain in `table`. The selection of display components shall include both responsibilities.
 
-## Alegerea responsabilului
+## Choice of the responsible
 
 ```mermaid
 flowchart LR
-    CHANGE[Comportament schimbat] -->|identifică| STATE[Stare și invariantă]
-    STATE -->|atribuie| OWNER[Responsabil]
-    OWNER -->|expune| API[Contract de intrare]
-    API -->|se califică prin| CHECK[Verificare independentă]
+    CHANGE[Comportament schimbat] -->|identify| STATE[Status and invariant]
+    STATE -->|atribuie| OWNER[Owner]
+    OWNER -->|exposes| API[Entry contract]
+    API -->|qualifies as| CHECK[Independent verification]
 ```
 
 <details>
-<summary>Legendă: separarea urmează contractul</summary>
+<summary>Legend: the separation follows the contract</summary>
 
-Clasa de intrare păstrează API-ul consumat și deleagă mecanismele cu stare ori reguli proprii. Numărul de linii indică unde merită investigat; mutarea într-un fișier nou nu demonstrează singură coeziunea sau corectitudinea.
+The input class shall retain the API consumed and delegate the mechanisms with its own status or rules. The number of lines indicates where it is worth investigating; moving to a new file does not demonstrate cohesion or fairness on its own.
 
 </details>
 
-| Întrebare | Responsabil și limită |
+| Question | Responsible and limit |
 |---|---|
-| Ce acțiune este legală și ce scor rezultă? | [Motorul](../../whist-lab-app/game-core/README.md): model, configurare, reguli și sesiune, fără Android sau infrastructura testelor. |
-| Ce informație poate folosi politica? | [Modelul deciziei](../ai/ATF_DecisionModel.md): proiecția mâinii proprii și a faptelor publice precede simularea. |
-| Cum comparăm o implementare independentă? | [Laboratorul](../../whist-lab-app/ai-lab/README.md): model și algoritm separate; motorul îl consumă numai la testare. |
-| Cum se măsoară și redă ecranul? | [Atlasul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md): fereastră, geometrie, texte, persistență și ciclu de viață. |
-| Cine comandă și cine interpretează observația? | [Adaptorul Android](../../atf-test-android/README.md): transport delimitat, captură și parsare; componentele pure nu comandă dispozitivul. |
-| Cine selectează și publică rezultatele? | [Consumatorul raportării](../../atf-tests/README.md): date și audit local; randarea generică aparține bibliotecii binare. |
+| What action is legal and what score does it result in? | [Motorul](../../whist-lab-app/game-core/README.md): model, configuration, rules and session, without Android or test infrastructure. |
+| What information can politics use? | [Modelul deciziei](../ai/ATF_DecisionModel.md): projection of his own hand and public facts precedes the simulation. |
+| How do we compare independent implementation? | [Laboratorul](../../whist-lab-app/ai-lab/README.md): separate model and algorithm; the engine consumes only when tested. |
+| How do you measure and play the screen? | [Atlasul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md): window, geometry, texts, persistence and life cycle. |
+| Who commands and interprets the observation? | [Adaptorul Android](../../atf-test-android/README.md): unlimited transport, capture and parsing; pure components do not control the device. |
+| Who selects and publishes the results? | [Reporting consumer](../../atf-tests/README.md): local data and audit; generic rendering belongs to the binary library. |
 
-## Clase de intrare și delegare
+## Entry and delegation classes
 
-API-ul poate rămâne o delegare scurtă. Regula comună are o singură implementare în perimetrul său, iar algoritmii independenți și politicile de referință își păstrează identitatea.
+The API can remain a short delegation. The common rule has only one implementation within its perimeter and independent algorithms and reference policies retain their identity.
 
-| Intrare | Mecanism delimitat | Invariantă de păstrat |
+| Intrare | Mechanism delimitat | Input to be kept |
 |---|---|---|
-| [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java) | `AppNavigation`, familia `screens`, `GameCommandFlow` și `GamePersistence` | Destinația și dialogurile au identitate proprie; ecranele primesc observații și acțiuni. Refuzul privește numai comanda, iar checkpoint-ul precedă clasamentul și exportul. |
-| [PresentationRefresh](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java) | Coada refacerii prezentării, cu porturi pentru suspendare, disponibilitate și randare | O rafală are o singură cerere activă; invalidarea respinge callback-ul vechi fără să consume cererea nouă. Geometria este citită la randare, iar navigarea și dialogurile rămân responsabile pentru disponibilitate. |
-| [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) | Familia `animation`: cerere, model, `TrickCollectionRun` și adaptor Android | Cererea confruntă levata cu istoricul; coordonatorul deține resursele și evenimentele, iar adaptorul măsoară și randează. Suspendarea conservă timpul vizibil, fără mutații ale partidei. |
-| [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) | Mâna curentă, scorul și restaurarea au proprietari în [motorul de reguli](../../whist-lab-app/game-core/README.md#contracte-în-cod). | Fațada păstrează ordinea comenzilor și formatul checkpoint-ului. Proba JVM verifică avansarea după restaurare și refuzul fără mutație. |
-| [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | `PossibleDeals`, `RolloutPolicy`, `DecisionEvaluation` și `DecisionOrdering` | Generarea lumilor, evaluarea continuărilor și ordonarea rezultatelor rămân distincte; ordinea, toleranțele și fluxul aleator sunt reproductibile. |
-| [AiCostQualificationTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/AiCostQualificationTest.java) | `CostProfile`, `CostPlayer` și `CostChecks` | Profilul se validează o dată, măsurile sunt tipizate, iar regulile și limitele se verifică separat de publicare; eșecul păstrează cauza inițială. |
-| [IndependentPlayer](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) | `IndependentDeals` și `IndependentContinuations` | Distribuțiile și avansarea lumilor ipotetice rămân independente de motor; ordinea deciziilor, scorul și fluxul aleator nu expun cărțile reale adverse. |
-| [AdbClient](../../atf-test-android/src/main/java/atf/android/AdbClient.java) | `CommandProcess` | Pornirea, drenarea și terminarea folosesc același termen; curățarea păstrează cauza inițială. |
-| [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) | `UiDeviceCapture`, `waiting.UiStateAwaiter`, `UiHierarchy`, [familia `hierarchy`](../../atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/) și `ScreenshotAnalysis` | Captura deține transferul, iar așteptarea păstrează termenul și ultima ierarhie. `HierarchyDocument` decodează nodurile, `CardLabelText` păstrează notația, iar `CardHierarchy` interpretează cărțile; selectorii generici și măsurarea nu emit ADB. |
-| [ThirteenCardDisplayScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardDisplayScenario.java) | `ThirteenCardBiddingCheck` și `SingleCardCenteringCheck` | Coordonatorul păstrează profilurile și restaurarea; verificările fazelor primesc aceeași urmă și aceleași dovezi, fără invocări JUnit suplimentare. |
-| [SixPlayerTableScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java) | `SixPlayerSetupPhase`, `SixPlayerBiddingCheck` și `SixPlayerNavigationCheck` | Configurarea, masa și navigarea folosesc aceeași urmă; rezumatul inițial și domeniul imuabil al licitațiilor trec explicit între faze. Coordonatorul păstrează eșecul și oprirea din `finally`. |
-| [ThirteenCardPlayScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardPlayScenario.java) | [Familia `fan`](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/): `ThirteenCardFanFlow`, `FanSetupPhase` și `FanPlayPhase` | Intrarea familiei conectează fazele interne; ierarhia și locul inițial sunt transmise explicit. Urma, dovezile și comparațiile rămân comune, iar coordonatorul deține verdictul și oprirea. |
-| [SavedGameRecoveryScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/persistence/SavedGameRecoveryScenario.java) | `SavedGamePreparationPhase` și `SavedGameResumePhase` | Captura turei inițiale trece explicit către reluare; comparația pixelilor, scorul, urma și ordinea dovezilor se păstrează. Coordonatorul deține eșecul și revenirea acasă. |
-| [AndroidUiFlowReportPublisher](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) | `AndroidUiFlowReportAudit` | Publicarea folosește API-ul bibliotecii; auditul confruntă rezultatul cu datele capturate, fără a modifica randarea sau verdictul execuției. |
+| [MainActivity](../../whist-lab-app/app/src/main/java/ro/whistlab/app/MainActivity.java) | `AppNavigation`, family `screens`, `GameCommandFlow` and `GamePersistence` | The destination and the dialogues have their own identity; the screens receive observations and actions. The refusal concerns only command, and the checkpoint precedes the ranking and export. |
+| [PresentationRefresh](../../whist-lab-app/app/src/main/java/ro/whistlab/app/presentation/PresentationRefresh.java) | Tail of remaking presentation with ports for suspension, availability and rendering | A burst has only one active demand; invalidation rejects the old callback without consuming the new demand. Geometry is read at rendering, and navigation and dialogues remain responsible for availability. |
+| [GameTablePanel](../../whist-lab-app/app/src/main/java/ro/whistlab/app/table/GameTablePanel.java) | `animation` family: application, model, `TrickCollectionRun` and Android adapter | Demand is faced with the trick with the history; the coordinator has resources and events, and the adapter measures and increases. The suspension preserves visible time without mutations in the game. |
+| [GameSession](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/session/GameSession.java) | Current hand, score and restoration have owners in [Rules engine](../../whist-lab-app/game-core/README.md#contracts-in-code). | The facade keeps order of orders and checkpoint format. JVM test checks the advance after restoration and refusal without mutation. |
+| [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | `PossibleDeals`, `RolloutPolicy`, `DecisionEvaluation` and `DecisionOrdering` | The generation of worlds, the assessment of the sequels and the order of results remain distinct; order, tolerances and random flow are reproducible. |
+| [AiCostQualificationTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/cost/AiCostQualificationTest.java) | `CostProfile`, `CostPlayer` and `CostChecks` | The profile shall be validated once, the measures shall be typed and the rules and limits checked separately from publication; failure shall retain the original cause. |
+| [IndependentPlayer](../../whist-lab-app/ai-lab/src/main/java/ro/whistlab/coach/IndependentPlayer.java) | `IndependentDeals` and `IndependentContinuations` | The distribution and advancement of hypothetical worlds remain independent of the engine; the order of decisions, score and random flow do not expose actual adverse cards. |
+| [AdbClient](../../atf-test-android/src/main/java/atf/android/AdbClient.java) | `CommandProcess` | The start, drainage and termination use the same term; the cleaning keeps the original cause. |
+| [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) | `UiDeviceCapture`, `waiting.UiStateAwaiter`, `UiHierarchy`, [familia `hierarchy`](../../atf-test-android/src/test/java/atf/android/e2e/driver/hierarchy/) and `ScreenshotAnalysis` | The catch holds the transfer, and the wait holds the term and the last hierarchy. `HierarchyDocument` decodes the nodes, `CardLabelText` keeps the notation, and `CardHierarchy` interprets the cards; generic selectors and measurement do not emit ADB. |
+| [ThirteenCardDisplayScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardDisplayScenario.java) | `ThirteenCardBiddingCheck` and `SingleCardCenteringCheck` | The coordinator shall maintain the profiles and restoration; phase checks shall be given the same trace and the same evidence without additional JUnit invokes. |
+| [SixPlayerTableScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/SixPlayerTableScenario.java) | `SixPlayerSetupPhase`, `SixPlayerBiddingCheck` and `SixPlayerNavigationCheck` | The configuration, mass and navigation use the same trace; the initial summary and the immutable field of the bids are explicitly passed between phases. The coordinator shall retain the failure and shutdown of `finally`. |
+| [ThirteenCardPlayScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/ThirteenCardPlayScenario.java) | [Familia `fan`](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/presentation/fan/): `ThirteenCardFanFlow`, `FanSetupPhase` and `FanPlayPhase` | The family entrance connects internal phases; the hierarchy and the initial place are explicitly transmitted. The trail, evidence and comparisons remain common, and the coordinator holds the verdict and the stop. |
+| [SavedGameRecoveryScenario](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/persistence/SavedGameRecoveryScenario.java) | `SavedGamePreparationPhase` and `SavedGameResumePhase` | The initial catch of the shift shall be explicitly restarted; the pixel comparison, the score, the track and order of evidence shall be retained. The coordinator holds the failure and return home. |
+| [AndroidUiFlowReportPublisher](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) | `AndroidUiFlowReportAudit` | Publication uses the library API; the audit confronts the result with the data captured, without altering the rendering or the execution verdict. |
 
-## Teste, scenarii și date
+## Tests, scenarios and data
 
-Metoda JUnit păstrează identitatea cazului, iar scenariul primește explicit proprietarul fluxului. Oracolul calculează așteptarea independent; jurnalul și publicarea consumă comparația deja evaluată.
+JUnit method keeps the case identity and the scenario explicitly receives the flow owner. The Oracle calculates the expectation independently; the journal and publication consume the comparison already assessed.
 
-- **Componente:** situații mici lângă regula ori API-ul verificat; suportul comun păstrează martorii legali și proiecția actorului.
-- **Partide și cercetare:** `core.match`, `core.learning`, `core.research` și familiile independente de cercetare au selecții explicite, distincte de regresia implicită.
-- **Referințe:** politicile înghețate rămân surse separate; mutarea unui pachet nu autorizează rescrierea lor.
-- **Scenarii Android:** navigarea, configurarea, persistența și levatele au responsabili proprii; helperul primește starea și nu inventează o nouă invocare.
-- **Observații display:** [decodorul comun](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) consumă aceeași ierarhie în componente și E2E; captura și acceptanța nativă au alte limite.
-- **Publicare:** citirea replay-ului și a rezultatelor native nu depinde de coordonatorul prezentării; [contractele raportării](../reporting/README.md) dețin asocierea și acceptanța.
-- **Date:** partidele, selecțiile și rezultatele concrete rămân în arhiva externă; schema și validatoarele aparțin codului.
+- **Components: ** small situations near the rule times the API checked; the common support keeps the witnesses legal and the actor's projection.
+- **Parties and research: ** `core.match`, `core.learning`, `core.research` and independent research families have explicit selections distinct from the implicit regression.
+- **References: ** frozen policies remain separate sources; moving a package does not allow their rewriting.
+- **Android screenplays: ** navigation, configuration, persistence and levatates have their own responsibilities; the helper receives status and does not invent a new invocation.
+- **Display notes:** [decodorul comun](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) consummate the same hierarchy in components and E2E; native capture and acceptance have other limits.
+- **Publication:** reading the replica and native results does not depend on the coordinator of the presentation; [reporting contracts](../reporting/README.md) be associated with and accepted.
+- **Data: ** parties, selections and concrete results remain in the external archive; the scheme and validators belong to the code.
 
-## Procedura unei reorganizări
+## Procedure for a reorganisation
 
-1. Identificați starea, invarianta, consumatorii și testul care poate observa o schimbare greșită.
-2. Păstrați API-ul necesar și mutați mecanismul, actualizând declarația de pachet, importurile și accesul; vizibilitatea publică se acordă numai integrărilor justificate.
-3. Confruntați populația JUnit, ordinea acțiunilor, valorile comparate și comportamentul de rezervă; schimbarea unui expected are revizie proprie.
-4. Reconciliați sursele live și [identitatea completă a candidatului](../testing/ATF_Collections.md#identitatea-completă-a-bazei-candidatului). O mutare schimbă hash-ul chiar când algoritmul este același; baza înghețată nu se repară prin înlocuirea hash-urilor.
-5. Rulați verificarea comportamentală minimă și [guvernanța](README.md). Modificarea unei derogări cere motiv și revizie; inventarul nu se regenerează pentru a ascunde depășirea limitei.
+1. Identify status, invariance, consumers and test that can see a wrong change.
+2. Keep the necessary API and move the mechanism, updating the package declaration, imports and access; public visibility is granted only to justified integrations.
+3. Face the population of JUnit, order of actions, comparative values and backup behaviour; changing an expected has its own revision.
+4. Reconcile live sources and [Full identity of candidate](../testing/ATF_Collections.md#full-identity-of-candidate-base). A move changes the hash even when the algorithm is the same; the frozen base is not repaired by replacing the hashs.
+5. Run minimal behavioural check and [governance](README.md). The change in a derogation requires reason and revision; the inventory shall not be regenerated to hide the excess of the limit.
 
-[Arhitectura testării](../testing/ATF_Architecture.md) · [Schimbarea testelor](ATF_TestChanges.md) · [Regulile documentației](ATF_Documentation.md)
+[Test architecture](../testing/ATF_Architecture.md) · [Change of tests](ATF_TestChanges.md) · [Documentation rules](ATF_Documentation.md)

@@ -1,180 +1,180 @@
-# Calificarea unui release
+# Qualification of a relay
 
-## Pe scurt
+## Overview
 
-Un singur dosar candidat grupează planul, rezultatele și raportul fiecărei selecții. Pregătirea se face în afara proiectului; dosarul activ se înlocuiește numai după calificarea noului APK, conform [retenției](../platform/ATF_ReleaseRetention.md). [Politica de dovezi pe platforme](../../config/release-platform-rag-policy.json) fixează proveniența și porțile verdictului read-only înaintea promovării.
+A single candidate file groups the plan, results and report of each selection. The preparation is done outside the project; the active folder is replaced only after the qualification of the new APK, according to the [retention](../platform/ATF_ReleaseRetention.md). [Profit policy on platforms](../../config/release-platform-rag-policy.json) fix the provenance and gates of the readonly verdict prior to the promotion.
 
-Ramura oficială a repository-ului este `main`. Codul calificat se împinge pe `main`, iar tagul versiunii se fixează pe commitul-sursă verificat.
+The official repository branch is `main`. Push qualified code to `main` and tag the verified source commit for the version.
 
-## Ordinea verificărilor
+## Order of checks
 
 ```mermaid
 flowchart LR
-    SOURCE[Snapshot fixat] -->|compară cu ediția publicată| DIFF[Selecție din diff]
-    DIFF -->|rulează sau reutilizează în TMP| JVM[Componente și contracte]
-    JVM -->|confruntă datele| HTML[HTML detașat]
-    HTML -->|permite| APK[Build și identitate APK]
-    APK -->|verifică schimbarea| NATIVE[Sanity Android selectat]
-    NATIVE -->|confruntă live și guvernanța| HANDOFF[Dosar calificat]
+    SOURCE[Snapshot fixat] -->|compares with the published edition| DIFF[Selection from diff]
+    DIFF -->|running or re-using in TMP| JVM[Components and contracts]
+    JVM -->|face data| HTML[Retrieved HTML]
+    HTML -->|permite| APK[Building and identity APK]
+    APK -->|check the change| NATIVE[Sanity Android selectat]
+    NATIVE -->|face live and governance| HANDOFF[Dosar calificat]
 ```
 
 <details>
-<summary>Legendă: fiecare etapă păstrează propriul verdict</summary>
+<summary>Legend: each stage keeps its own verdict</summary>
 
-Un raport de componentă califică intrările și comparațiile JVM. Sanity-ul califică interacțiunea pe APK-ul identificat; browserul verifică accesul la dovezi. Publicarea GitHub este un pas ulterior al operatorului.
+A component ratio shall qualify the inputs and comparisons of JVM. The sanityqualifies the interaction on the identified APK; the browser verifies access to evidence. The publication of GitHub is a later step of the operator.
 
 </details>
 
-| Pas | Selecție și rezultat necesar |
+| Pas | Selection and required result |
 |---|---|
-| 1. Diferență | Fixați în TMP inventarul complet al surselor și bibliotecilor copiate. [Selectorul](#selecția-testelor-din-diff) identifică baza, căile schimbate și probele cerute de fluxurile afectate. |
-| 2. Componente | Executați oracolele schimbate și refuzurile relevante. [Componentele Gradle](ATF_GradleComponents.md) și [suita istoricului](ATF_DisplayComponents.md#raportarea-componentelor-istoricului) capturează contextul și comparațiile. Fiecare selecție Gradle are HTML Extent și receipt proprii, publicate prin `atf-reporting`; JUnit-ul temporar se confruntă cu HTML-ul înaintea eliminării copiilor finale. |
-| 3. Publicare | Confruntați exact identitățile și rezultatele JUnit–HTML pe fiecare selecție; inspectați fallback-ul numai dacă a fost selectat și calificat. Verificați cauza originală, abort-ul, lipsa capturii și imaginile inline Base64. XML-ul rămâne oracol temporar, nu raport duplicat în dosarul final. FAIL-urile controlate califică publicatorul și sunt delimitate de testele produsului. |
-| 4. HTML | Aplicați [revizia interactivă minimă](../reporting/ATF_Audit.md#revizia-interactivă-minimă) pe HTML-ul identificat prin hash; păstrați proprietarii, controalele și limitele probei. |
-| 5. APK | Construiți din snapshot în TMP; verificați versiunea, SDK-urile, bytes, SHA-256, CRC, semnătura și alinierea. Debug și Release au identități distincte. |
-| 6. Android | Rezervați dispozitivul; rulați scenariul scurt al schimbării și profilul care distinge riscul. Restaurați datele și configurația. O partidă completă nu se repetă pe toate rezoluțiile. |
-| 7. Predare | Confruntați sursele live, rapoartele, populația testelor, linkurile și guvernanța relevantă. Arhivați precedentul verificat înaintea înlocuirii dosarului activ și APK-ului. |
+| 1. Difference | Set the full inventory of copied sources and libraries in TMP. [Selectorul](#selection-of-diff-tests) identifies the basis, the changed paths and the evidence required by the affected flows. |
+| 2. Components | Run the affected oracles and rejection checks. [Gradle components](ATF_GradleComponents.md) and the [history suite](ATF_DisplayComponents.md#reporting-of-historical-components) capture the context and comparisons. Each Gradle selection has its own Extent HTML report and receipt, published through `atf-reporting`. Temporary JUnit results are checked against the HTML before the temporary copies are removed. |
+| 3. Publication | Face exact identities and results of JUnit-HTML on each selection; inspect the fallback only if selected and qualified. Check the original cause, the abort, lack of capture and inline images Base64. The XMLs remain temporary oracle, not duplicate report in the final folder. Controlled FAILs qualify the publicist and are delimited by the product tests. |
+| 4. HTML | Apply [minimum interactive revision](../reporting/ATF_Audit.md#minimum-interactive-revision) to the HTML identified by hash; keep owners, controls and sample limits. |
+| 5. APK | Build from snapshot in TMP; check the version, SDKs, bytes, SHA- 256, CRC, signature and alignment. Unbug and Release have distinct identities. |
+| 6. Android | Book the device; run the short change scenario and risk-distinguishing profile. Restore data and configuration. A full match is not repeated on all resolutions. |
+| 7. Predare | Confront the relevant live sources, reports, test population, links and governance. Please record the previous checked prior to the replacement of the active file and APK. |
 
-## Organizarea dosarului candidat
+## Organisation of candidate file
 
-| Intrare | Conținut canonic |
+| Intrare | Canonical content |
 |---|---|
-| `README.md` | Pașii în ordine, selecțiile efective, starea fiecăreia și legăturile către rezultate. |
-| `qualification.json` | Inventarul selecțiilor, comenzi, surse, hash-uri și limite; un pas neexecutat rămâne `PENDING`, fără total dedus. |
-| `component/` | HTML-ul auditat al suitei și fallback-ul calificat, cu inputuri și comparații capturate în timpul testului. |
-| `e2e/` | HTML-ul execuției Android identificată; republicarea istorică își păstrează proveniența. |
-| `diagnostics/` | Numai dovezi distincte justificate: rezultat JUnit nemigrat, semnătură, crash ori control al randării. |
+| `README.md` | Steps in order, actual selections, status of each and links to results. |
+| `qualification.json` | The inventory of selections, orders, sources, hashes and limits; an unexecuted step remains `PENDING`, with no total deduction. |
+| `component/` | The audited HTML of the suite and the qualified fallback, with inputs and comparisons captured during the test. |
+| `e2e/` | The identified Android execution HTML; historical republication remains its origin. |
+| `diagnostics/` | Only separate justified evidence: Unmigrated JUnit result, signature, crash or rendering control. |
 
-Nu copiați PNG/XML/JSON deja incluse integral în HTML după confruntarea octeților și a accesului offline. Păstrați încă dovezile unice necesare și declarați excepția; [predarea compactă](../reporting/ATF_Handoff.md#livrabil-compact-și-excepții) deține criteriul complet.
+Do not copy PNG/XML/JSON already fully included in HTML after confrontation of bytes and offline access. Keep still the unique evidence required and declare the exception; [compact surrender](../reporting/ATF_Handoff.md#compact-liquefied-and-exceptions) be fully qualified.
 
-## Contractul rapoartelor pe suite
+## Contract of reports by suite
 
-Fiecare selecție primară executată deține un raport Extent canonic și un receipt al execuției.
+Each executed primary selection owns a canonical Extent report and an execution receipt.
 
-- Căile sunt unice: componenta folosește `reports/component/{group}/component-report.html`; E2E folosește `reports/e2e/{suite}/report.html` și `execution.json` alături.
-- Capturile PNG sunt încorporate Base64 în raportul suitei.
-- Rapoartele de componentă și E2E au proprietari diferiți și nu se reunesc într-o populație comună.
+- The paths are unique: the component uses `reports/component/{group}/component-report.html`; E2E uses `reports/e2e/{suite}/report.html` and `execution.json` side by side.
+- PNG captures are incorporated Base64 in the suite report.
+- The component reports and E2E have different owners and do not meet in a common population.
 
-| Selecție | Receipt-ul minim | Legătura verificată |
+| Selection | Receipt-ul minim | Verified link |
 |---|---|---|
-| Componentă Maven sau Gradle | `execution.json` per grup și receipt-urile comune de sursă | Hash-ul HTML-ului, numărul și rezultatele, proveniența și inventarul sursei corespund manifestului calificat. |
-| E2E Android | `execution.json` alături de HTML-ul suitei | APK-ul instalat, versiunea, commitul și amprenta sursei, protocolul, rezultatele, hash-ul Extent și numărul imaginilor PNG inline corespund manifestului și raportului. |
+| Maven or Gradle component | `execution.json` per group and common source receipts | HTML hashtag, number and results, source provenance and inventory correspond to the qualified manifest. |
+| Android E2E | `execution.json` next to the suite HTML | The installed APK, version, commit and source fingerprint, protocol, results, Extent hash and inline PNG image count match the manifest and report. |
 
-- Manifestul de release hash-ează separat HTML-ul și receipt-ul.
-- Evaluatorul blochează căile lipsă, duplicate sau necanonice, receipt-urile absente și nepotrivirile de rezultate, hash sau proveniență.
-- Câmpul `executionReceipt` leagă grupul E2E de receipt-ul alăturat raportului.
-- JUnit XML rămâne oracol temporar independent; dosarul final nu păstrează un al doilea raport.
-- Capturile sunt inline Base64; dosarul de release nu duplică fișiere PNG deja încorporate.
+- The release manifesto hashs separately HTML and Receipt.
+- The evaluator shall block missing, duplicate or non-anonymous pathways, missing receipts and mismatches of results, hash or provenance.
+- Field `executionReceipt` links the E2E group to the next Receipt report.
+- JUnit XML remains temporarily independent; the final dossier does not keep a second report.
+- The catches are inline Base64; release folder does not duplicate PNG files already incorporated.
 
-## README-ul dosarului
+## READMETER OF THE FACTOR
 
-Prima parte oferă raportul principal și starea calificării. Detaliile rămân schematice, cu o singură sursă pentru fiecare rezultat; README-ul trimite la inventar și la [strategia comună](README.md), fără a copia regulile generale.
+The first part provides the main report and the status of the qualification. Details remain schematic, with one source for each result; the READMEM sends to inventory and to [joint strategy](README.md), without copying the general rules.
 
-| Secțiune | Informație necesară |
+| Section | Information required |
 |---|---|
-| Scop și stare | Proprietatea verificată, baza comparației și starea reală: pregătire, execuție încheiată ori calificare acceptată. |
-| Identitate | APK și hash când există, surse/biblioteci și momentul identificării; o amprentă observată ulterior nu este prezentată drept captură inițială. |
-| Deschidere | Link direct la HTML-ul canonic și ordinea scurtă de citire: context, invocare, input/acțiune, comparație și captură. |
-| Selecții | Selectorul sau comanda și rezultatul fiecărei selecții, cu unitatea numărată, erori și omiteri. |
-| Suprapuneri | Relația clasă–suită, parametrizări, checkpoint-uri și aceeași selecție în două renderere; totalurile nu se adună automat. |
-| Revizie | Hash-ul HTML-ului, verificarea statică și interactivă efectuată, browserul și proprietarii verificați. |
-| Dovezi separate | Pentru fiecare fișier: motiv concret, consumator ori întrebare diagnostică și identitate; JUnit fără comparații capturate își păstrează limita. |
-| Limite și pas următor | Cazuri neexecutate, surse schimbate după rulare și criteriul rămas înaintea build-ului sau promovării. |
+| Purpose and status | The property checked, the basis of the comparison and the actual status: preparation, completed execution or accepted qualification. |
+| Identitate | APK and hash when there is, surse/biblioteci and the time of identification; a later observed fingerprint is not presented as initial catch. |
+| Deschidere | Direct link to canon HTML and short reading order: context, invoicing, input/action, comparison and capture. |
+| Selections | The selection or command and the result of each selection, with the unit counted, errors and omissions. |
+| Suprapuneri | The class-suite relationship, parametrization, checkpoints and the same selection in two renderers; totals do not automatically add up. |
+| Review | HTML hashtag, static and interactive verification performed, browser and checked owners. |
+| Dovezi separate | For each file: specific reason, consumer or diagnostic question and identity; JUnit without captured comparisons remains within its limit. |
+| Limits and next step | Unexecuted cases, sources exchanged after rolling and the criterion left before the building or promotion. |
 
-## Suprafața README-ului public
+## Area of public readme
 
-- **README public:** pagina principală oferă versiunea curentă și descărcarea directă. SHA-256 rămâne în manifest și în dovezi; RAG verifică separat că linkul corespunde binarului.
-- **Candidat:** `release/index.json` păstrează edițiile publicate și poate declara `candidateVersion`. README-ul se confruntă cu `release/candidate.json`, în starea `PREPARED`. Folosiți [canalul de test din ramură](../platform/ATF_AndroidDelivery.md#distribuția-prin-github) când se cere acces înainte de calificare.
-- **Promovare:** după calificare, mutați manifestul și dovezile în `release/{version}/`, actualizați `currentVersion` și `versions`, apoi eliminați `candidateVersion`. README-ul face parte din amprenta surselor; orice schimbare a linkului după selecții cere reluarea calificării.
+- **README public: ** main page offers the current version and direct download. SHA-256 remains in the manifest and evidence; RAG verifies separately that the link corresponds to the binar.
+- **Candidate:** `release/index.json` keep the editions published and may declare `candidateVersion`The readmees face. `release/candidate.json`, in the condition `PREPARED`Use. [branch test channel](../platform/ATF_AndroidDelivery.md#distribution-through-github) when requiring access before qualification.
+- **Promotion: ** by qualification, move the manifest and evidence in `release/{version}/`, update `currentVersion` and `versions`, then remove `candidateVersion`. The READMEM is part of the source print; any change in link after selection requires resumption of qualification.
 
-- **Stări:** `PENDING` exprimă un pas neexecutat; `SKIP`/abort exprimă rezultatul invocării. Un rezultat `FAIL` sau o eroare de publicare se păstrează, împreună cu impactul asupra calificării.
-- **Istoric:** o probă anterioară poate fi reper explicit, cu binarul și scopul ei. Mutarea documentelor sau actualizarea README-ului nu califică un APK nou.
-- **Retratare:** la corecția documentelor, păstrați sursa rezultatelor și descrieți selecția reverificată; o compoziție de rezultate trecute nu devine o singură rulare integrală nouă.
+- **Statements: ** `PENDING` expresses an unexecuted step; `SKIP` / abort expresses the result of the statement of statement. A result of `FAIL` or a publication error shall be retained, together with the impact on the qualification.
+- **History: ** a previous sample may be explicitly highlighted, with the binary and its purpose. The movement of documents or updating of the RADME does not qualify a new APK.
+- **Retreatment: ** to document correction, keep the source of the results and describe the re-checked selection; a past composition of results does not become a single whole new run.
 
-## Comenzi și limite
+## Orders and limits
 
 ### Verdictul RAG read-only
 
-Evaluatorul RAG consumă dovezile deja produse și emite un verdict read-only.
+The RAG evaluator consumes the evidence already produced and issues a readonly verdict.
 
-- Intrări: plan JSON, manifestul candidatului, raportările Extent selectate și rădăcina snapshot-ului sursă.
-- Nu construiește, nu rulează teste, nu apelează Git și nu mută ori publică fișiere.
-- Scrie numai verdictul JSON, în afara proiectului, candidatului și snapshot-ului.
-- Fiecare verificare citează calea, SHA-256 și JSON Pointer/linia sursei.
-- Verdictul păstrează planul exact, în Base64 UTF-8, în `qualificationPlan.contentBase64`; hash-ul lui permite revizuirea fără o copie temporară externă.
-- Lacunele nerezolvate sunt urmărite în [registrul de feedback](../feedback/README.md#todo-uri-prioritizate).
+- Entry: JSON plan, candidate manifest, selected Excent reports and source snack root.
+- It doesn't build, run tests, call Git, or move or publish files.
+- Write only the JSON verdict, outside the project, to the candidate and snapshots.
+- Each check cites the path, SHA- 256 and JSON Pointer/linia to the source.
+- The verdict keeps the exact plan in Base64 UTF-8, in `qualificationPlan.contentBase64`; his hashery allows revision without an external temporary copy.
+- Unresolved gaps are tracked in [registrul de feedback](../feedback/README.md#prioritized-todos).
 
-Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, platformele, grupurile componente, schimbarea fluxului utilizatorului și decizia E2E cu motiv.
+The plan sets out the version, channel (`LOCAL`, `TEST` or `PRODUCTION`), risk, platforms, component groups, user flow change and E2E decision for reasons.
 
-### Regresiile evaluatorului
+### Evaluator regression tests
 
-Probele Node folosesc același executor cu termen limitat ca verificările Git. Citirea ieșirii începe odată cu procesul, iar diagnosticul copilului se păstrează la eșec. [Probe de componentă](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java)
+Node samples use the same limited-term executor as Git checks. Reading the output begins with the process, and the diagnosis of the child is kept at failure. [Component samples](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java)
 
-Suita de componente rulează evaluatorul pe dosare de test locale. Fiecare clasă deține un contract și folosește același lansator al procesului Node.
+The suite of components runs the evaluator on local test files. Each class holds a contract and uses the same Node trial launcher.
 
-| Contract | Test de componentă | Ce verifică |
+| Contract | Component test | What's he checking? |
 |---|---|---|
-| Proveniență | [ReleaseRagProvenanceComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagProvenanceComponentTest.java) | Snapshot, integritatea payload-ului, citarea planului și reutilizarea dovezilor de componentă. |
-| Android | [ReleaseRagAndroidComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagAndroidComponentTest.java) | Semnarea, legarea dovezii E2E de APK și sursă, izolarea datelor și selecția fluxului. |
-| GitHub | [ReleaseRagGithubComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagGithubComponentTest.java) | Modul de acces, identitatea descărcării și retenția GitHub pe inventare simulate. |
+| Provenance | [ReleaseRagProvenanceComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagProvenanceComponentTest.java) | Snapshot, the integrity of the payload, the citation of the plan and the re-use of component evidence. |
+| Android | [ReleaseRagAndroidComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagAndroidComponentTest.java) | Signature, attaching E2E proof to APK and source, data isolation and flow selection. |
+| GitHub | [ReleaseRagGithubComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagGithubComponentTest.java) | Access mode, download identity and GitHub retention on simulated invention. |
 
-La mutarea unui caz, confruntați chitanțele din Extent după metodă, indicele invocării parametrizate și rezultat. Verificați că diferența de identitate se explică prin clasa nouă și că numărul comparațiilor auditate corespunde pentru fiecare invocare.
+When moving a case, compare its Extent receipts by method, parameterized invocation index and outcome. Check that the new class accounts for the identity change and that the audited comparison count matches for each invocation.
 
-## Ciclul candidatului
+## Candidate lifecycle
 
 ```mermaid
 flowchart LR
-    SNAP[Snapshot TMP] -->|selectează| TEST[Teste alese]
-    TEST -->|raportează| EXT[Extent și receipt]
-    EXT -->|leagă| APK[APK și identitate]
-    APK -->|califică| RAG[RAG read-only]
-    RAG -->|blochează| FIX[Corecție în TMP]
+    SNAP[Snapshot TMP] -->|select| TEST[Teste alese]
+    TEST -->|report| EXT[Extent and Receipt]
+    EXT -->|tie| APK[APK and identity]
+    APK -->|qualifies| RAG[RAG read-only]
+    RAG -->|block| FIX[TMP correction]
     FIX -->|reia| TEST
-    RAG -->|acceptă| REVIEW[Revizie umană]
-    REVIEW -->|promovează| MAIN[Arbore identic]
-    MAIN -->|publică| PUB[Descărcare verificată]
+    RAG -->|accept| REVIEW[Human Revision]
+    REVIEW -->|promote| MAIN[Arbore identic]
+    MAIN -->|publishes| PUB[Check download]
 ```
 
 <details>
-<summary>Legendă: etapele și responsabilitățile candidatului</summary>
+<summary>Legend: candidate's stages and responsibilities</summary>
 
-Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG verifică receipt-urile, hash-urile și proveniența. Responsabilul candidatului confruntă inventarul complet și motivează selecția în funcție de risc. Verdictul permite revizia umană înainte de promovare și publicare.
+APK Snapshots is the benchmark for comparing the inputs of each suite. RAG checks the receipts, hashes and provenance. The candidate's manager shall face the full inventory and shall motivate the selection according to risk. The verdict allows for human revision prior to promotion and publication.
 
 </details>
 
-| Grup Android | Dovadă necesară |
+| Group Android | Proof required |
 | --- | --- |
-| `atf-validation`, `atf-test-android`, `atf-tests` | Fiecare suită Maven primară are HTML Extent canonic și rezultate fără FAIL/ERROR/SKIP. |
-| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | Colecțiile Android de bază au fiecare HTML Extent și receipt proprii. Modificările în sursele compilate împreună cer o rulare nouă. |
-| `whist-lab-app-achievements` | Colecție introdusă prin `introducedComponentGroupsByPlatform`; `sinceReleaseVersion` o face obligatorie de la pragul declarat. Raportul este separat, iar JUnit XML singur nu satisface poarta. |
-| `whist-lab-app-atf-card-table-ui` | Suită JVM distinctă pentru contractele bibliotecii grafice comune; introdusă la `0.20.2`, cu Extent și receipt separat. |
-| Fiecare grup selectat | Receipt propriu și intrări identice în perimetrul suitei. `source-provenance.json` păstrează legătura dintre inventarul original, execuție și raport. |
+| `atf-validation`, `atf-test-android`, `atf-tests` | Each Maven primary suite has HTML Extent canon and results without FAIL/ERROR/SKIP. |
+| `whist-lab-app-commands`, `whist-lab-app-bidding`, `whist-lab-app-history`, `whist-lab-app-display` | The basic Android collections have each HTML Extent and its own Receipt. Changes in the sources compiled together require a new run. |
+| `whist-lab-app-achievements` | The collection introduced by `introducedComponentGroupsByPlatform`; `sinceReleaseVersion` makes it mandatory from the stated threshold. The report is separate, and JUnit XML alone does not satisfy the gate. |
+| `whist-lab-app-atf-card-table-ui` | JVM suite for joint graphic library contracts; introduced on `0.20.2`, with Extent and Receipt separately. |
+| Each selected group | Receipt own and identical entries in the suite perimeter. `source-provenance.json` keeps the link between the original inventory, execution and report. |
 
-### Snapshot și preflight înainte de Maven
+### Snapshot and preflight before Maven
 
-[Lansatorul de componente](../../scripts/run-component-suites.ps1) și [lansatorul de guvernanță](../../scripts/run-atf-governance.ps1) folosesc [aceeași pregătire](../../scripts/AtfQualificationSnapshot.ps1). Maven compilează și verifică fișierele din aceeași copie temporară. Verificarea probelor publicate citește obiecte Git istorice din checkout-ul indicat, prin commit, fără a citi fișierele live din acesta.
+[Component Launcher](../../scripts/run-component-suites.ps1) and [Governance launcher](../../scripts/run-atf-governance.ps1) use [Same preparation](../../scripts/AtfQualificationSnapshot.ps1). Maven compiles and checks files from the same temporary copy. The verification of published samples reads historical Git objects from the checked indicated by commit without reading live files from it.
 
-[Preflight-ul directorului temporar](../../atf-tests/tools/qualification-temp-root.mjs) rulează înainte de a crea dosarul rulării, de a copia sursele sau de a porni Maven.
+[The temporary director's preflightul](../../atf-tests/tools/qualification-temp-root.mjs) runs before creating the running folder, copy the sources or turn Maven on.
 
-- `TMP`, `TEMP` și directorul ales de sistem trebuie să indice directoare externe existente.
-- Controlul verifică atât calea declarată, cât și destinația fizică după rezolvarea linkurilor. Un checkout detectat la oricare dintre strămoși, inclusiv un worktree cu fișier `.git`, produce `QUALIFICATION-TEMP-IN-CHECKOUT`.
-- O cale inexistentă, relativă ori inaccesibilă produce `QUALIFICATION-TEMP-INVALID`.
+- `TMP`, `TEMP` the Director-elect of the system shall indicate the existing external guidelines.
+- Control checks both the declared path and the physical destination after the links have been resolved. A checkout detected in any of the ancestors, including a `.git` file worktree, produces `QUALIFICATION-TEMP-IN-CHECKOUT`.
+- A non-existent, relative or inaccessible path produces `QUALIFICATION-TEMP-INVALID`.
 
-| Moment | Control și dovadă |
+| Moment | Control and proof |
 | --- | --- |
-| Fixarea | `source-inputs.json` descrie sursele de build. `release-inputs.json` fixează separat toate fișierele din `release/`, inclusiv catalogul și dosarele păstrate. |
-| Înainte de Maven | [Preflight-ul](../../atf-tests/tools/check-release-artifacts.mjs) confruntă numele, octeții și SHA-256 pentru APK-urile din catalog și fișierele lor `.sha256`. `release-preflight.log` păstrează identitățile observate sau cauza refuzului. |
-| Închiderea | Inventarul copiei și al checkout-ului se confruntă din nou. Orice fișier adăugat, modificat sau șters invalidează rezultatul, iar receipt-ul indică locul și calea. |
+| Fixarea | `source-inputs.json` describes the sources of the building. `release-inputs.json` sets out all files in `release/` separately, including the catalogue and files kept. |
+| Before Maven | [Preflight-ul](../../atf-tests/tools/check-release-artifacts.mjs) confronts the names, bytes and SHA-256 for the APKs in the catalogue and their files `.sha256`. `release-preflight.log` keeps the identities observed or the cause of the refusal. |
+| Closure | The inventory of the copy and the checkout is facing again. Any file added, modified or deleted invalidates the result, and the Receipt indicates the location and path. |
 
-`-PinnedSourceInputs` leagă lansarea de lista folosită la selecție. O modificare între plan și execuție oprește procesul înainte de Maven. Amprenta `release/` se păstrează separat, astfel încât dosarul de dovezi să nu intre în amprenta sursei APK.
+`-PinnedSourceInputs` links the launch to the list used for selection. A change between plan and execution stops the process before Maven. The `release/` fingerprint shall be kept separately so that the evidence file does not fall into the APK source's fingerprint.
 
-### Selecția testelor din diff
+### Selection of diff tests
 
-Calculați selecția înainte de build, din snapshot-ul copiat de lansatoarele de inventariere.
+Calculate the selection before the build, from the snapshots copied by the inventory launchers.
 
-- Pentru o versiune nouă, baza este ediția curentă din `release/index.json`.
-- La reevaluarea unei versiuni reținute, baza este ediția anterioară din același catalog.
-- Baza trebuie să fie publicată și calificată, cu inventarul surselor legat prin hash de manifest.
+- For a new version, the base is the current edition of `release/index.json`.
+- When reassessing a retained version, the base is the previous edition of the same catalogue.
+- The base shall be published and qualified, with the inventory of sources linked by hash to the manifest.
 
 ```powershell
 $ProjectRoot = (Get-Location).Path
@@ -182,23 +182,23 @@ node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
   $SourceInputsFile $ReleaseVersion $SelectionFile
 ```
 
-`$SourceInputsFile` este lista ordinală JSON produsă de [Get-AtfSourceInputs.ps1](../../scripts/Get-AtfSourceInputs.ps1), în afara snapshot-ului și a checkout-ului. `$SelectionFile` este un fișier nou în directorul de lucru extern. Rezultatul arată căile adăugate, modificate și șterse, regula aplicată, suitele obligatorii și selecțiile E2E cerute. [Regulile selectorului](../../atf-tests/tools/release-test-scope.mjs)
+`$SourceInputsFile` is the ordinary JSON list produced by [Get-AtfSourceInputs.ps1](../../scripts/Get-AtfSourceInputs.ps1), outside snapshots and checkout. `$SelectionFile` is a new file in the external workdirectory. The result shows the added, modified and deleted pathways, the rule applied, the mandatory suites and the required E2E selections. [Selector rules](../../atf-tests/tools/release-test-scope.mjs)
 
-| Rezultat | Acțiune |
+| Result | Action |
 | --- | --- |
-| Ajutorul RO/EN | Conținutul din `HowToPlay.java` și ghidurile aferente rulează în suita de reguli. Schimbările în ecran, navigare și regulile motorului își păstrează porțile de flux. |
-| Schimbare editorială | Rulează guvernanța. Refolosește dovezile compatibile pentru celelalte suite. E2E poate rămâne `NOT_RUN` cu motiv. |
-| Schimbare de licitare, masă, scor, profil sau alt flux identificat | Selectează probele native indicate în `requiredE2eGroups`. Testele de componentă rămân obligatorii pentru contractele lor. |
-| Cale de produs ori intrare partajată neclasificată | Selectează toate probele de flux prevăzute de selector și verifică perimetrele de componentă. |
-| Creștere a versiunii Android | Excepția de E2E se aplică dacă înlocuirea celor două valori `versionName` și `versionCode` reproduce exact hash-ul fișierului de build publicat. Dovezile de componentă se verifică separat pe intrările lor. |
+| Ajutorul RO/EN | The content of `HowToPlay.java` and the related guides run in the suite of rules. The changes in the screen, navigation and engine rules keep their flow gates. |
+| Editorial Change | Run the governance. Reuse the evidence compatible with the other suites. E2E can stay `NOT_RUN` for a reason. |
+| Bidding change, mass, score, profile or other identified flow | Select the native samples indicated in `requiredE2eGroups`. Component tests shall remain mandatory for their contracts. |
+| Product path or unclassified shared entry | Select all the flow samples provided by the selector and check the component perimeter. |
+| Increase in Android version | The exception of E2E applies if the replacement of the two values `versionName` and `versionCode` exactly reproduces the hash of the published build file. The component evidence shall be checked separately on their inputs. |
 
-În planul calificării cu `schemaVersion: 2`, păstrați `releaseVersion`, `scope`, `componentGroups` și `userFlowChanged` din selecție.
+In the `schemaVersion: 2` qualification plan, keep `releaseVersion`, `scope`, `componentGroups` and `userFlowChanged` from the selection.
 
-- Completați `channel`, `declaredPlatforms`, `changeRisk` și `e2e`. Planul poate cere probe suplimentare.
-- Pentru `e2e.status: PASS`, enumerați în `e2e.groups` grupurile trecute, inclusiv toate cele cerute de diff.
-- Evaluatorul recalculează selecția și blochează legătura cu altă bază, subestimarea unui flux sau omiterea unui grup.
+- Complete `channel`, `declaredPlatforms`, `changeRisk` and `e2e`. The plan may require further evidence.
+- For `e2e.status: PASS`, list in `e2e.groups` the past groups, including all those required by diff.
+- The evaluator shall recalculate the selection and block the connection to another base, underestimate a flow or miss a group.
 
-Folosiți selecția calculată la lansarea componentelor. `$PreviousComponentEvidence` indică dosarul cu dovezile disponibile pentru reutilizare.
+Use the calculated selection when launching the components. `$PreviousComponentEvidence` indicates the folder with the evidence available for reuse.
 
 ```powershell
 $Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
@@ -206,53 +206,53 @@ $Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
   -Groups $Selection.componentGroups -ReuseFrom $PreviousComponentEvidence
 ```
 
-`runComponentGroups` arată suitele afectate față de baza publicată. Lansatorul verifică fiecare dovadă față de sursa ei originală înainte să decidă ce rulează efectiv.
+`runComponentGroups` shows the affected suites from the published base. The launcher checks every single piece of evidence of her original source before deciding what actually runs.
 
-### Reutilizarea dovezilor de componentă
+### Re-use of component evidence
 
-Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) stabilește ce diferențe pot afecta rezultatul.
+The evaluator compares the added, deleted and modified files. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) determines what differences can affect the result.
 
-- Guvernanța verifică inventarul complet.
-- Componentele bibliotecii grafice au perimetru propriu. Modificările în consumatorii de joc permit reutilizarea raportului bibliotecii. Sursele, testele, resursele, configurația de compilare și puntea auditului fac parte din perimetrul acestei suite.
-- Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android dacă dependențele lor rămân identice.
-- Colecțiile Gradle ale jocului urmăresc codul și configurația lor compilată; documentația și fișierele exclusiv din alte suite nu le invalidează. Calea necunoscută păstrează decizia sigură `RUN`.
+- The government checks the inventory completely.
+- The graphic library components have their own perimeter. Changes in gaming consumers allow the library's report to be re-used. Sources, tests, resources, compiling configuration and audit deck are part of the perimeter of this suite.
+- Independent Maven modules can reuse results after changes limited to Android IU if their dependencies remain identical.
+- Gradle collections of the game follow the code and their compiled configuration; documentation and files exclusively from other suites do not invalidate them. The unknown route keeps the safe decision `RUN`.
 
-| Decizie | Acțiune |
+| Decision | Action |
 |---|---|
-| `MATCH` | Folosește execuția cu inventar identic. |
-| `REUSE` | Păstrează Extent și receipt-ul cu amprenta execuției originale. Toate diferențele sunt în afara perimetrului suitei. |
-| `RUN` | Rulează selecția indicată și consultă intrările afectate din verdict. |
-| `INVALID` | Recuperează dovezile originale sau execută selecția dacă receipt-ul, proveniența ori raportul nu pot fi validate. |
+| `MATCH` | Use execution with identical inventory. |
+| `REUSE` | Keep the Extent and Receipt with the original execution print. All differences are outside the suite perimeter. |
+| `RUN` | Run the selected and consult affected entries in the verdict. |
+| `INVALID` | Recover original evidence or execute the selection if the Receipt, provenance or report cannot be validated. |
 
-- `componentEvidenceOrigin` identifică dosarul original din `reports/component/snapshots/{id}/`. Acesta păstrează `source-inputs.json`, `source-provenance.json`, `source-component-run.json` și, când este declarată, lista `release-inputs.json`.
-- Pentru un candidat nou, evaluatorul cere suitei `atf-tests` inventarul de release și îl confruntă cu dosarul catalogului. O proveniență mai veche fără inventar separat poate susține în continuare celelalte suite, conform perimetrului fiecăreia.
-- Extent și `execution.json` păstrează calea canonică a suitei și intră în inventarul cu hash-uri al candidatului.
-- O rulare agregată cu eșecuri poate furniza dovezi pentru grupurile trecute dacă sursa a rămas stabilă. Fiecare grup obligatoriu trebuie să aibă propria dovadă validată.
-- Lansatorul acceptă numai grupuri din catalog. Parametrul -ReuseFrom primește o rulare anterioară de componente sau dosarul reports/component cu receipt-urile originale.
-- Planul component-reuse.json indică motivul deciziei și ID-ul snapshot-ului. Păstrați planul, Extent, receipt-ul de execuție și snapshot-ul original la asamblarea candidatului. În manifest, setați componentEvidenceOrigin pentru fiecare grup refolosit și folosiți calea androidComponentsReceipt, relativă la reports/component, pentru poarta Android de componente. [Componente](../../scripts/README.md)
+- `componentEvidenceOrigin` identifies the original file of `reports/component/snapshots/{id}/`. It shall keep `source-inputs.json`, `source-provenance.json`, `source-component-run.json` and, when declared, the list `release-inputs.json`.
+- For a new candidate, the valuer asks suite `atf-tests` for the release inventory and confronts it with the catalogue file. An older provenance without separate inventory may continue to support the other suites, according to the perimeter of each.
+- Ecstatic and `execution.json` keep the canonical path of the suite and enter the candidate's hash inventory.
+- An aggregated failure run can provide evidence for past groups if the source remains stable. Each mandatory group must have its own validated evidence.
+- The launcher only accepts groups from the catalogue. The ResuseFrom parameter receives a previous run of components or folder reports/component with original receipts.
+- The component-reuse.json plan indicates the reason for the decision and the Snapshots ID.Keep the plan, Extent, the execution Receipt and the original snapshots when assembling the candidate. In the manifest, set up componentEvidenceOrigin for each reused group and use the path androidComponentsReceipt, relative to reports/component, for the Android component gate. [Componente](../../scripts/README.md)
 
-### Probe native și porți Android
+### Native samples and Android gates
 
-Schimbările vizibile în fluxul utilizatorului cer un E2E focalizat pe acel flux. Pentru catalogul realizărilor, selecția de release deschide ecranul din APK-ul semnat, verifică progresul local și revine la pagina principală; testele de componentă păstrează oracolele pentru praguri, deduplicare și persistența popup-ului.
+The visible changes in the user's flow require an E2E focused on that flow. For the catalogue of achievements, the selection of releases opens the screen in the signed APK, checks local progress and returns to the main page; component tests keep the oracles for thresholds, replenishment and persistence of the popup.
 
-- Porțile platformei cer receipt-uri legate prin hash pentru componente, build APK, identitate și semnare.
-- Stadiul publicat cere dovada descărcării în modul declarat, `AUTHENTICATED` pentru conturile autorizate sau `ANONYMOUS` pentru o copie publică.
-- Flux neschimbat: E2E poate rămâne `NOT_RUN` cu justificare explicită.
-- Flux schimbat: verdictul cere rapoarte E2E trecute.
-- `NOT_RUN` nu devine rezultat pozitiv.
+- Platform gates require hash-linked receipts for components, APK build, identity and signature.
+- The published stage requires proof of discharge in the declared manner, `AUTHENTICATED` for the authorised accounts or `ANONYMOUS` for a public copy.
+- Unchanged flow: E2E can remain `NOT_RUN` with explicit justification.
+- Flow changed: verdict calls for past E2E reports.
+- `NOT_RUN` never counts as a passing result.
 
-### Cronologia calificării
+### Qualification timeline
 
-| Intrare | Intervale măsurate |
+| Intrare | Measured ranges |
 |---|---|
-| `timing.json` din lansatoare | Snapshot și preflight, cache, compilare Maven, suite sau lansarea Gradle comună, verificarea rapoartelor, pregătirea și restaurarea Android. |
-| Chitanța de lângă HTML | Generarea Extent și auditul HTML în JVM și Android. Gradle măsoară finalizarea și auditul sesiunii. |
-| Verdictul RAG și observația GitHub | Durata fiecărei porți RAG, inventarul, descărcarea, hash-urile și confruntarea publicării. |
-| [Comandă măsurată](../../scripts/Measure-AtfReleaseCommand.ps1) | Build APK, semnare, push, publicare sau audit executat separat. Blocul de comandă întoarce un singur cod de ieșire numeric. |
+| `timing.json` of launchers | Snapshot and preflight, cache, compilation Maven, suite or launch of the common Gradle, checking reports, preparing and restoring Android. |
+| Receipt near HTML | Generating Extent and HTML audit in JVM and Android. Gradle measures the completion and audit of the session. |
+| RAG verdict and GitHub observation | The duration of each RAG gate, inventory, download, hashes and confrontation of publication. |
+| [Measured command](../../scripts/Measure-AtfReleaseCommand.ps1) | Build APK, signing, push, publication or audit executed separately. The control block returns a single numerical output code. |
 
-Fiecare etapă are început și sfârșit UTC observate, durată monotonă și rezultat. `REUSED` și `NOT_RUN` au motiv și zero timp de execuție. Pentru procesele care lucrează în paralel, [cronologia](../../atf-tests/tools/assemble-release-timeline.mjs) calculează reuniunea intervalelor observate și arată separat pauzele.
+Each stage has the beginning and end of observed UTC, monotone duration and result. `REUSED` and `NOT_RUN` have motive and zero time of execution. For processes that work in parallel, [cronologia](../../atf-tests/tools/assemble-release-timeline.mjs) calculate the observed intervals meeting and show the breaks separately.
 
-Cronologia păstrează diferența dintre durata monotonă și intervalul UTC al aceleiași etape.
+The timeline shall keep the difference between the monotone duration and the UTC interval of the same stage.
 
 ```powershell
 .\scripts\Measure-AtfReleaseCommand.ps1 -Stage apk.build -TimingFile $BuildTiming -Command {
@@ -262,21 +262,21 @@ Cronologia păstrează diferența dintre durata monotonă și intervalul UTC al 
 node .\atf-tests\tools\assemble-release-timeline.mjs $ProjectRoot $TimelineFile @TimingReceipts
 ```
 
-Alegeți receipt-urile aceleiași calificări, inclusiv verdictul RAG. Cronologia nu deduce durate pentru faze lipsă. [Verificarea înaintea curățării](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
+Choose the receipts of the same qualification, including the RAG verdict. The timeline does not deduce durations for missing phases. [Verification before cleaning](../platform/ATF_ReleaseRetention.md#local-cleaning-after-delivery)
 
-### Promovarea, push-ul și linkul public
+### Promotion, push and public download link
 
-Verdictul read-only nu comite, nu împinge și nu publică artefacte. După `READY_FOR_HUMAN_REVIEW`, responsabilul release-ului închide separat fiecare pas:
+The read-only verdict does not commit, does not push and does not publish artifacts. After `READY_FOR_HUMAN_REVIEW`, the relay's responsible closes each step separately:
 
-1. Compară inventarul candidatului cu snapshot-ul calificat, inclusiv fișiere noi și excluderi; confirmă același fingerprint și un arbore Git curat care conține exact sursele calificate.
-2. Comite sursele, împinge commit-ul pe `main` și creează tag-ul versiunii numai pe commit-ul verificat. Build-ul și manifestul trebuie să identifice acel commit și același APK calificat.
-3. Publică APK-ul și checksum-ul pe canalul declarat. Pentru GitHub folosește [publicarea reluabilă](../platform/ATF_AndroidDelivery.md#publicarea-reluabilă-pe-github) și păstrează jurnalul în directorul rulării. Actualizează `release/index.json`, catalogul și README-ul principal astfel încât versiunea curentă și linkul direct să indice același artefact.
-4. După push, citește README-ul din repository, extrage linkul afișat efectiv și descarcă URL-ul în modul declarat de `publication.accessMode`. Pentru `AUTHENTICATED`, folosește contul GitHub care are acces și păstrează în receipt numai faptul autentificării, URL-ul, HTTP 200, numărul de octeți, SHA-256 și CRC; tokenul și antetele nu se salvează. Pentru `ANONYMOUS`, descarcă fără cookie-uri sau autorizare și păstrează separat confirmarea paginii și a checksum-ului.
-5. Înregistrează probele de publicare și descărcare în dosarul versiunii, comite și împinge dovezile, apoi repetă citirea README-ului și descărcarea folosind exact acel link și același mod de acces declarat.
+1. Compare candidate inventory with qualified snapshots, including new files and exclusions; confirm same fingerprint and a clean Git tree containing exactly qualified sources.
+2. Commit the sources and push the commit to `main`. Create the version tag on the verified commit. The build and the manifest must identify that commit and the same qualified APK.
+3. Publish APK and checksumes on the declared channel. For GitHub uses [Reluable publication](../platform/ATF_AndroidDelivery.md#reluctable-publication-on-github) and keeps the log in the running directory. Update `release/index.json`, the catalogue and the main README so that the current version and direct link indicate the same artifact.
+4. After the push, read the README from the repository, extract the link shown there and download the URL in the mode declared by `publication.accessMode`. For `AUTHENTICATED`, use a GitHub account with access and record only the fact that the download was authenticated, the URL, HTTP 200, byte count, SHA-256 and CRC. Do not retain the token or headers. For `ANONYMOUS`, download without cookies or authorization and record verification of the page and checksum separately.
+5. Record publication and download evidence in the release dossier, commit and push the evidence, then read the README again and download from that exact link using the same declared access mode.
 
-Instrucțiunile executabile și formatul chitanței de distribuție sunt în [ghidul livrării Android](../platform/ATF_AndroidDelivery.md#commit-ul-surselor-și-commit-ul-dovezilor). Dacă un pas nu poate fi verificat, starea rămâne `PENDING` sau `BLOCKED`; nu se promovează dintr-o verificare locală.
+The executable instructions and the format of the distribution receipt are in [Android delivery guide](../platform/ATF_AndroidDelivery.md#source-and-evidence-commits). If a step cannot be checked, the condition remains `PENDING` or `BLOCKED`; no promotion shall be made from a local check.
 
-Din rădăcina proiectului, cu planul și candidatul păstrate în locația TMP:
+From the root of the project, with the plan and candidate kept in the location of TMP:
 
 ```powershell
 $ProjectRoot = (Get-Location).Path
@@ -288,43 +288,43 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
   --output $VerdictFile
 ```
 
-- Variabilele indică dosarul de versiune din candidatul TMP, rădăcina completă a surselor fixate, planul JSON și destinația verdictului; creează destinația separat, în afara tuturor intrărilor.
-- `READY_FOR_HUMAN_REVIEW` confirmă numai probele citite care au trecut verificările implementate.
-- Evaluatorul nu inspectează indexul Git. Compară inventarul complet din directorul fixat cu manifestul, iar operatorul confruntă commitul și arborele înainte de promovare.
-- Verdictul include `DIFF_SCOPE`, cu identitatea bazei și a candidatului, regulile aplicate pe căi și grupurile rezultate.
-- `BLOCKED` arată verificările eșuate și hash-urile dovezilor, fără să aplice o corecție automată.
+- Variables indicate the version file of the TMP candidate, the full root of the fixed sources, the JSON plan and the destination of the verdict; it creates the destination separately, outside all entries.
+- `READY_FOR_HUMAN_REVIEW` confirms only the read evidence that has passed the checks implemented.
+- The evaluator does not inspect the Git index. It compares the complete inventory at the pinned location with the manifest. Before promotion, the operator checks the commit and its tree.
+- The verdict includes `DIFF_SCOPE`, with the identity of the basis and candidate, the rules applied by route and the resulting groups.
+- `BLOCKED` shows failed checks and evidence hashes without applying an automatic correction.
 
-### Retenția pe GitHub după publicare
+### Retention on GitHub after publication
 
-Înainte de retragere, verificați [descărcările și edițiile păstrate](../platform/ATF_ReleaseRetention.md#verificarea-descărcării-înaintea-rotației).
+Before withdrawal, check [kept downloads and editions](../platform/ATF_ReleaseRetention.md#verification-of-the-discharge-before-rotation).
 
-- După retragerea autorizată, rulați colectorul din checkout-ul `main` sincronizat. Colectorul citește catalogul și manifestele de la commitul observat pe GitHub.
-- Folosiți `GH_TOKEN` sau `GITHUB_TOKEN` cu acces la ciorne. Colectorul inventariază toate paginile de release-uri, inclusiv ciornele, toate tagurile și toate asset-urile.
+- After the authorized withdrawal, run the collector in the synchronized checkout `main`. The collector reads the catalogue and manifests from the commissary observed on GitHub.
+- Use `GH_TOKEN` or `GITHUB_TOKEN` with access to the drafts. The collector inventories all pages of relays, including the drafts, all tags and all assetses.
 
 ```powershell
 node .\atf-tests\tools\collect-github-release-retention.mjs $ProjectRoot $GithubRetentionFile
 ```
 
-Evaluatorul post-publicare primește aceeași observație prin `--github-retention-file $GithubRetentionFile`. Poarta `GITHUB_RETENTION` cere exact cele două versiuni din `release/index.json`, cu tagurile la commiturile sursă declarate. Fiecare release trebuie să aibă exact APK-ul și checksum-ul, cu numele, URL-ul, dimensiunea și SHA-256 confruntate inclusiv după descărcare.
+The post-publication evaluator receives the same observation through `--github-retention-file $GithubRetentionFile`. Gate `GITHUB_RETENTION` requires precisely the two versions of `release/index.json`, with the tags to the declared source commits. Each release must have the exact APK and checksum, with the name, URL, size and SHA- 256 faced even after unloading.
 
-Colectorul scrie inventarul într-un fișier extern nou și semnalează abaterile prin `BLOCKED`. Dacă accesul sau colectarea eșuează, diagnosticul identifică pasul, iar evaluatorul cere o observație completă. După retragerea autorizată, colectați o observație nouă și reluați evaluarea. [Procesul de retenție](../platform/ATF_ReleaseRetention.md#resetarea-github)
+The collector writes the inventory in a new external file and signals deviations by `BLOCKED`If access or collection fails, the diagnosis identifies the step, and the evaluator asks for a full observation. After the authorized withdrawal, collect a new observation and resume the evaluation. [Retention process](../platform/ATF_ReleaseRetention.md#resetarea-github)
 
-### Valabilitatea dovezilor
+### Evidence freshness
 
-Politica de calificare citește ora UTC a observației, cu milisecunde și sufixul `Z`. Fereastra se închide exact la termen. Ora lipsă, invalidă sau din viitor blochează folosirea observației pentru o acțiune nouă.
+The qualification policy reads UTC time of observation by milliseconds and suffix `Z`. The window closes exactly on term. The time missing, invalid or future block the use of observation for a new action.
 
-| Dovadă | Fereastră | Când se obține o observație nouă |
+| Evidence | Window | When a new observation is obtained |
 |---|---|---|
-| Preflight Android | 5 minute de la ultima verificare reușită a ADB, bootului și profilului | Înainte de prima acțiune protejată dacă a expirat sau s-au schimbat lease-ul, serialul, ruta ADB ori profilul cerut. |
-| Inventarul GitHub post-publicare | 15 minute de la recitirea stabilă a ramurii, tagurilor și asset-urilor | La expirare sau după orice modificare a catalogului, tagurilor, release-urilor, asset-urilor ori accesului. Rulați din nou colectorul pentru un verdict actual. |
-| Preflight GitHub de rotație | 5 minute de la confirmarea descărcărilor și recitirea ramurii și a ultimei ediții | Imediat înaintea retragerii. Respectați `expiresAtUtc` și reluați verificarea dacă starea s-a schimbat. |
-| Artefacte și probe fixate prin hash | Fără termen cronologic | Când se schimbă octeții, sursa, scenariul sau identitatea cerută. APK-ul, semnătura, rapoartele, capturile și chitanța unei descărcări istorice păstrează valoarea de audit. |
+| Preflight Android | 5 minutes after the last successful check of ADB, boot and profile | Before the first protected action if the leastland, series, ADB route or requested profile has expired or changed. |
+| GitHub inventory post-publication | 15 minutes after stable rereading of the branch, tags and assetons | On expiry or after any change in the catalogue, tags, relays, assetons or access. Run the collector again for an actual verdict. |
+| Preflight GitHub Rotation | 5 minutes after confirmation of downloads and rereading of branch and latest edition | Right before the retreat. Follow `expiresAtUtc` and resume checking that the condition has changed. |
+| Artifacts and evidence fixed by hash | No chronological term | When bytes change, the source, scenario or identity required. The APK, signature, reports, catches and receipt of a historical download shall retain the audit value. |
 
-Verificați ferestrele în [politica executabilă](../../config/release-platform-rag-policy.json). RAG verifică din nou prospețimea inventarului GitHub la finalul evaluării curente și păstrează revalidarea istorică prin verdictul original și dovezile fixate.
+Check the windows in [executable policy](../../config/release-platform-rag-policy.json). RAG is again checking the freshness of the GitHub inventory at the end of the current evaluation and restores historical revalidation through the original verdict and established evidence.
 
 ### Preflight Android
 
-[Lansatorul responsive](../../scripts/run-whist-responsive-sanity.ps1) rezervă dispozitivul și rulează [preflight-ul comun](../../scripts/check-android-release-device.ps1) înainte să copieze sursele sau cache-ul Maven. Pentru o selecție pe APK semnat, apelați aceeași comandă imediat după obținerea rezervării, înainte de instalare, backup sau interacțiuni cu aplicația.
+[Lansatorul responsive](../../scripts/run-whist-responsive-sanity.ps1) reserves the device and runs [preflight-ul comun](../../scripts/check-android-release-device.ps1) before copying the Maven sources or cachet. For a signed APK selection, call the same order immediately after booking, prior to installation, backup or interactions with the application.
 
 ```powershell
 $device = @{
@@ -335,34 +335,34 @@ $device = @{
 .\scripts\check-android-release-device.ps1 @device
 ```
 
-| Control | Criteriu de acceptare |
+| Control | Acceptance criterion |
 | --- | --- |
-| Rezervare și ADB | Rezervarea activă corespunde serialului și ID-ului. ADB răspunde `device` pe ruta cerută în limita de timp a fiecărei comenzi. |
-| Boot | `sys.boot_completed` este exact `1`. |
-| Profil | API-ul este numeric și corespunde valorii așteptate dacă este specificată. Pentru rezoluție și DPI se compară valorile efective în format `LĂȚIMExÎNĂLȚIME@DPI`, cu `Override` înainte de `Physical`. |
+| Reservation and ADB | The active reservation corresponds to the series and the IDA. ADB responds `device` on the requested route within the time limit of each command. |
+| Boot | `sys.boot_completed` is exactly `1`. |
+| Profil | API is numeric and corresponds to the expected value if specified. For resolution and IPR, the actual values in `LĂȚIMExÎNĂLȚIME@DPI` format, `Override` before `Physical`, shall be compared. |
 
-- Pentru un E2E semnat care schimbă starea jocului, folosiți backup cu restaurare verificată sau un utilizator Android secundar temporar. [Scriptul de izolare](../../scripts/Invoke-AtfAndroidDisposableUser.ps1) cere pachetul absent înainte de instalare și chitanța de eliminare după test, folosind rezervarea existentă și păstrând utilizatorul original.
-- APK-ul candidat și rădăcinile `whist.records.runRoot`, `atf.android.artifacts` și `atf.match.evidenceDir` trebuie să fie în afara checkout-ului. Testele refuză directoarele din proiect; instalarea temporară, exporturile de profil și joc, capturile și chitanțele rămân în dosarul extern al rulării. Copia APK-ului trimisă temporar pe Android se șterge după instalare, iar salvările private rămân în utilizatorul temporar până la eliminarea lui.
+- For a signed E2E that changes the status of the game, use backup with verified restoration or a temporary secondary Android user. [Isolation script](../../scripts/Invoke-AtfAndroidDisposableUser.ps1) requires the package absent prior to installation and the removal receipt after the test, using the existing reservation and keeping the original user.
+- The candidate APK and roots `whist.records.runRoot`, `atf.android.artifacts` and `atf.match.evidenceDir` must be outside the checkout. The tests refuse the project directories; temporary installation, profile and game exports, catches and receipts remain in the external running file. The copy of the APK sent to the Android temporarily is deleted after installation, and private saves remain in the temporary user until it is removed.
 
-- Valorile așteptate vin din planul selecției; `ExpectedApi=0` și profilul gol cer observarea unor valori valide. În modul responsive, profilul descrie starea inițială, iar `Profiles` descrie matricea aplicată în scenariu.
+- The expected values come from the selection plan; `ExpectedApi=0` and the empty profile require the observation of valid values. In responsive mode, the profile describes the initial state and `Profiles` describes the matrix applied in the scenario.
 
-- `android-preflight.json` păstrează rezultatul, observația UTC și cauza refuzului. Lansatorul responsive verifică din nou dispozitivul după Maven și păstrează a doua dovadă în `android-preflight-execution.json`.
-- Pregătirea utilizatorului Android secundar colectează aceeași dovadă înainte de interacțiune și verifică valabilitatea ei înainte să creeze utilizatorul. Curățarea folosește în continuare identitatea lease-ului și a utilizatorului creat.
+- `android-preflight.json` keeps the result, UTC observation and the cause of the refusal. The responsive launcher rechecks the device after Maven and restores the second evidence in `android-preflight-execution.json`.
+- The secondary Android user's preparation collects the same evidence prior to interaction and verifies its validity before creating the user. The cleaning still uses the identity of the lease- and user created.
 
-### Reluarea unei calificări
+### Resume a qualification
 
-| Dovadă | Când se reutilizează | Când se repetă |
+| Evidence | When re-used | When repeated |
 |---|---|---|
-| Build și semnare | APK-ul și manifestul de intrări sunt identice, iar verificările de pachet și certificat corespund. | Schimbarea unei intrări de build cere un binar nou și verificarea impactului. |
-| Componente | Folosiți dosarul publicat `reports/component` cu receipt-urile și originea lor, prin `-ReuseFrom`. Verificați deciziile pe grup. | Reexecutați grupurile afectate sau invalide. Guvernanța verifică și inventarul release-ului citit. |
-| E2E semnat | Păstrați HTML-ul, verdictul, capturile, APK-ul, profilul și dovada de izolare din execuția originală. Confruntați și diferența scenariului înainte de reutilizare. | Rerulați fluxul afectat dacă s-au schimbat binarul, contractul, profilul ori scenariul relevant sau dacă lipsește o dovadă obligatorie. |
+| Building and signing | The APK and input manifest are identical and package and certificate checks match. | Changing a building input requires a new binary and impact check. |
+| Componente | Use the published file `reports/component` with their Receipts and origins through `-ReuseFrom`. Check decisions on the group. | Rerun affected or invalid groups. The government also checks the inventory of the read release. |
+| E-2E signed | Keep HTML, verdict, catches, APK, profile and evidence of isolation from original execution. Confront the difference in the scenario before re-use. | Rerulate the affected flow if the binary, contract, profile or relevant scenario has changed or if there is no mandatory evidence. |
 
-Pregătiți un staging propriu și cache-ul Maven înainte să rezervați dispozitivul. Verificați proveniența claselor compilate și validați captura și raportul la închiderea fiecărui flux. Păstrați referințele la loguri în dosarul extern și chitanțele originale de teardown.
+Prepare your own staging and Maven cachet before booking the device. Check the origin of the compiled classes and validate the catch and the ratio on each flow closure. Keep references to logbooks in the external folder and original teardown receipts.
 
-### Rularea și reluarea unui flux pe APK semnat
+### Running and restarting a feed on APK signed
 
-- Alegeți grupurile din selecția calculată de RAG. Pregătiți un JSON extern cu `releaseVersion`, `groups` și `executionProfile`. Profilul conține `api` (număr), `displayProfile` și `responsiveProfiles` (matricea portrait, separată prin virgule).
-- Folosiți aceeași valoare la `e2e.executionProfile` în planul RAG. Din 0.21.5, execuțiile E2E incluse în RAG cer acest profil și chitanțe v2. Dovezile v1 păstrează contractul ediției publicate.
+- Choose groups from the selection calculated by RAG. Prepare an external JSON with `releaseVersion`, `groups` and `executionProfile`. The profile contains `api` (number), `displayProfile` and `responsiveProfiles` (matrix portrait, separated by comma).
+- Use the same value at `e2e.executionProfile` in RAG plan. Since 0.21.5, E2E executions included in RAG require this profile and receipts v2. Evidence v1 keeps the contract of the published edition.
 
 ```powershell
 .\scripts\run-whist-signed-e2e.ps1 -CandidateDir $CandidateDir `
@@ -372,27 +372,27 @@ Pregătiți un staging propriu și cache-ul Maven înainte să rezervați dispoz
 node .\atf-tests\tools\apply-android-e2e.mjs $CandidateDir $FreshRunRoot
 ```
 
-- Lansatorul scrie `e2e-reuse.json` înainte de Maven și rezervare. O dovadă compatibilă produce `REUSE` și încheie comanda.
-- Pentru `RUN`, Maven compilează în staging cu depozit privat. Launcherul confruntă perechile JAR/POM și metoda selectată din clasele compilate, apoi folosește direct Surefire pentru o singură metodă.
-- Opțiunea `-PrepareOnly` se oprește după verificarea compilării, fără Android.
+- The launcher writes `e2e-reuse.json` before Maven and booking. A compatible evidence produces `REUSE` and concludes the order.
+- For `RUN`, Maven compiles in staging with private storage. Launcher confronts JAR/POM pairs and selected method from compiled classes, then uses Surefire directly for one method.
+- Option `-PrepareOnly` stops after compiling check without Android.
 
-- Execuția verifică exact cazul JUnit, trace-ul încheiat cu PASS și fiecare captură originală, inclusiv octeții din Extent. Verifică și chitanța de restaurare.
-- Importul verifică din nou dosarul acceptat și actualizează manifestul candidatului `PREPARED`. Reluați doar grupurile cu `RUN`; importul le lasă celorlalte raportul și chitanța originale. După import rulați evaluatorul pentru dosarul întreg.
+- The execution checks the exact case of JUnit, the PASS track and each original catch, including the bytes of Extent. Check the restoration receipt.
+- The import shall re-check the accepted dossier and update the manifesto of candidate `PREPARED`. Only resume the groups with `RUN`; import leaves the other original report and receipt. After import run the evaluator for the entire folder.
 
-### Acceptanța APK-ului semnat
+### Acceptance of signed APK
 
-- Smoke-ul [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) verifică pachetul instalat, pagina inițială și configurarea fără pornirea altei partide. [Acceptanța licitației](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) are un domeniu separat: un prefix real de Whist românesc, recomandare, alegere manuală, dialog și contract restaurat.
+- The [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) Smokey checks the installed package, initial page and configuration without starting another party. [Acceptance of the tender](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) has a separate field: a real prefix of Romanian Whist, recommendation, manual choice, dialogue and restored contract.
 
-| Selecție | Precondiție suplimentară | Criteriu de închidere |
+| Selection | Additional precondition | Closure criterion |
 |---|---|---|
-| Home și configurare | APK-ul semnat instalat și hash confruntat | Controale vizibile, configurare accesibilă și revenire la pagina inițială. |
-| Interfață comună | Utilizator secundar temporar sau backup verificat, cu același APK identificat | Limbă RO/EN, anulare fără salvare, nume păstrat între limbi și preferințe restabilite după relansare. |
-| Licitație și restaurare | Rezervare exclusivă și chitanță de izolare, cu teardown verificat | Recomandarea legală rămâne neconfirmată; alegerea manuală supraviețuiește dialogului, iar contractul confirmat și scorurile publice se păstrează după oprirea procesului. |
-| Istoric și afișaj | Profil și intrări explicite, cu aceeași identitate a binarului verificat | Coloane, marcaje și accesul la conținut conform diferenței de cod; fixture-urile Debug se disting de execuția APK-ului Release. |
+| Home and configuration | The signed APK installed and hash faced | Obvious controls, accessible configuration and return to the initial page. |
+| Common interface | Temporary secondary user or backup checked with same identified APK | Language RO/EN, cancellation without rescue, name preserved between languages and re-established preferences after relaunch. |
+| Bidding and restoration | Exclusive booking and isolation receipt with teardown checked | The legal recommendation remains unconfirmed; manual choice survives dialogue and the confirmed contract and public scores are maintained after the process has stopped. |
+| History and display | Profile and explicit inputs with same binar identity checked | Column, marking and access to content according to the code difference; Debug fixtures are distinguished from the execution of the Release APK. |
 
-Verificați identitatea APK-ului și limita de izolare a datelor înaintea primei schimbări a aplicației. Un E2E neexecutat rămâne `PENDING`. Auditul static verifică fișierul HTML, iar revizia interactivă verifică accesul și randarea lui.
+Check the identity of the APK and the data isolation limit before the first change of application. An unexecuted E2E remains `PENDING`. Static audit checks HTML file, and interactive revision checks access and rendering.
 
-Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Maven privat:
+From the project root, the existing launcher prepares TMP and a private Maven cache:
 
 ```powershell
 .\scripts\run-whist-responsive-sanity.ps1 -ComponentsOnly -ComponentSuite History
@@ -400,16 +400,16 @@ Din rădăcina proiectului, lansatorul existent pregătește TMP și un cache Ma
 .\scripts\run-whist-responsive-sanity.ps1 -ComponentsOnly -ComponentSuite Display
 ```
 
-- **Istoric:** raportul suitei selectate conține toate comparațiile capturate; `WORKING_STATE.json` păstrează calea HTML-ului și selecția.
-- **Display:** În lansatorul responsive, HTML-ul subsetului de istoric are populație proprie. Pentru raportul complet de componente și proveniență folosiți lansatorul de agregare.
-- **Guvernanță:** folosiți [lansatorul izolat](../governance/README.md#rulare-izolată) și controalele documentelor, frontierelor și livrării afectate. O modificare concurentă invalidează certificarea acelei copii.
-- **Promovare:** un rezultat trecut aparține surselor executate. Sursele schimbate ulterior cer evaluarea diferenței și reverificarea relevantă, înaintea build-ului final.
+- **History: ** the ratio of the selected suite contains all the captured comparisons; `WORKING_STATE.json` keeps the HTML path and selection.
+- **Display: ** In the responsive launcher, the HTML of the historical subset has its own population. For the full component and provenance ratio use the aggregation launcher.
+- **Governance:** use [lansatorul izolat](../governance/README.md#isolated-rolling) A competitive change invalidates the certification of that copy.
+- **Promotion: ** a past result belongs to the executed sources. The sources subsequently changed require the assessment of the difference and the relevant reverification before the final building.
 
-[Strategia comună](README.md) · [Selecțiile de display](ATF_Display.md) · [Procesul livrării](../platform/ATF_AndroidDelivery.md#procesul-unei-versiuni)
+[Common strategy](README.md) · [Display selections](ATF_Display.md) · [Delivery process](../platform/ATF_AndroidDelivery.md#process-of-a-version)
 
-## Profiluri de lucru pentru reluare
+## Work profiles for resumption
 
-Setați `$EvidenceRoot` la un director extern existent și `$Version` la versiunea candidatului. Din checkout-ul calificat, rezervați un subdirector pentru fișiere de lucru și directoare distincte pentru rapoarte, probe și încercările Android.
+Set `$EvidenceRoot` to an existing external director and `$Version` to the candidate's version. From the qualified checkout, book a subdirectory for separate work files and directories for Android reports, samples and tests.
 
 ```powershell
 $shortCommit = git rev-parse --short=12 HEAD
@@ -420,40 +420,40 @@ $env:TMP = $scratch
 $env:TEMP = $scratch
 ```
 
-Folosiți același director la reluarea aceleiași identități. Alegeți un director nou când se schimbă commitul, APK-ul sau setul de intrări. Salvați verdictul și chitanța fiecărei etape lângă raportul ei.
+Use the same directory when resuming the same identity. Choose a new directory when changing the comma, APK or input set. Save the verdict and receipt of each stage next to her report.
 
-| Profil de lucru | Pregătire | Condiție de reluare |
+| Working profile | Preparation | Reception condition |
 |---|---|---|
-| Componente | Fixați manifestul surselor și inventarul dosarului activ. Păstrați cache-ul Maven izolat, clasele, classpath-ul și chitanțele de etapă până la finalul livrării. | Refolosiți rapoartele prin planul selecției și hash-urile acceptate. Reutilizarea compilării cere verificarea sursei, claselor și bibliotecilor. |
-| Android headless | Păstrați APK-ul semnat, profilul API și display cerut, selecția și calea de rezervare. Dați fiecărei încercări director propriu și profil Android temporar. | Reluați doar fluxurile fără dovadă validă pentru APK, snapshot, selecție și profil. Verificați boot-ul, fereastra activă și curățarea profilului. După repornirea gazdei, confruntați rezervarea și profilul înainte de orice curățare. |
-| Publicare | Păstrați verdictul, ID-ul draftului, jurnalul încărcării și hash-urile APK-ului și checksum-ului. | Reluați publicarea din același jurnal după ce reconciliați ID-ul și octeții încărcați. Verificați linkul de pe `main` și reînnoiți observația GitHub când expiră. |
+| Componente | Set the source manifest and the inventory of the active file. Keep the Maven cachet isolated, classes, leaderboard and stage receipts until the end of delivery. | Reuse reports through selection plan and accepted hashes. The reuse of compilation requires verification of source, classes and libraries. |
+| Android headless | Keep the APK signed, API profile and display requested, selection and booking path. Give each of your own director's tests and temporary Android profile. | Just resume the flows without valid proof for APK, snapshot, selection and profile. Check the boot, active window and clean profile. After restarting the host, confront the reservation and profile before any cleaning. |
+| Publication | Keep the verdict, the Draft's IDU, the loading log and the APK and checksumes hashes. | Resume publication from the same journal after reconciling the IDA and uploaded bytes. Check the link on `main` and renew the GitHub observation when it expires. |
 
-Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După publicare și reconstrucția verificată din Git, păstrați rapoartele finale, chitanțele, rețeta EOL aplicabilă și datele de învățare. Directoarele de build și cache-urile izolate se pot elimina. [Retenția după livrare](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
+Keep the work profiles and cachets during reruns. After publication and verified reconstruction in Git, keep final reports, receipts, applicable EOL recipe and learning data. Built-in directories and isolated cachets can be removed. [Retention after delivery](../platform/ATF_ReleaseRetention.md#local-cleaning-after-delivery)
 
-### Snapshot Git și proiecția locală
+### Snapshot Git and local projection
 
-Controlul Maven rulează separat probele de reconstrucție a surselor și probele de proiecție a ediției publicate. Fiecare proces Node păstrează același termen. Fixture-urile folosesc Git real și directoare izolate, inclusiv pentru octeți cu EOL mixt, payload modificat, editări locale și rotația ediției. [Reconstrucție](../../atf-tests/tools/release-git-snapshot.test.mjs) · [Proiecție](../../atf-tests/tools/local-release-sync.test.mjs)
+Maven control runs the sources reconstruction and projection samples of the published edition separately. Every Node trial keeps the same term. Fixturees use real Git and isolated directories, including for bytes with mixed EOL, modified payload, local editing and edition rotation. [Reconstruction](../../atf-tests/tools/release-git-snapshot.test.mjs) · [Projection](../../atf-tests/tools/local-release-sync.test.mjs)
 
-### Reluarea etapelor validate
+### Resume validated steps
 
-După întrerupere păstrați directorul încercării și zona de lucru. Lansați din același checkout fixat, cu aceleași `TMP` și `TEMP` ca la pregătire. Folosiți un director nou pentru următoarea încercare.
+After interruption keep test director and working area. Launch from the same fixed checkout with the same `TMP` and `TEMP` as in preparation. Use a new director for your next attempt.
 
 ```powershell
 & .\scripts\run-component-suites.ps1 -SourceRoot $ProjectRoot -RunRoot $NextAttempt `
   -ResumeFrom $InterruptedAttempt -PinnedSourceInputs $SourceInputs -Groups $RequiredGroups
 ```
 
-| Etapă | Ce se validează și ce se reia |
+| Step | What validates and what resumes |
 |---|---|
-| Identitatea reluării | Lansatorul confruntă amprentele sursei și ale dosarului de release, în copia de lucru și în checkout. Refuză schimbările de inventar și folosirea simultană a aceleiași copii. |
-| Maven | Fiecare selecție are o chitanță după execuție. Verificați chitanța compilării pentru clase, resurse și JAR-uri și reluați classpath-ul dacă rezolvarea a fost întreruptă. O copie fără manifest valid cere o nouă încercare. |
-| Gradle | Fiecare task publică atomic checkpoint-ul după paritatea JUnit și Extent. Un HTML fără checkpoint valid poate explica o întrerupere. Taskul respectiv se rulează din nou. |
-| Rapoarte | Rapoartele acceptate își păstrează octeții și proveniența. Selecțiile lipsă, incomplete, corupte sau eșuate rulează în directorul nou. |
-| Pregătirea APK-ului semnat | Pregătiți clasele cu `-PrepareOnly` și transmiteți directorul prin `-PreparedFrom`. Verificați SHA‑256 al APK-ului și amprenta sursei înainte să refolosiți clasele și bibliotecile. Fiecare execuție folosește un director JUnit nou. |
-| Fluxuri native | Dacă proba a fost produsă integral, importați-o cu `apply-android-e2e.mjs`. Planul refolosește rapoartele acceptate înaintea pregătirii Maven sau a accesului la dispozitiv. |
+| Identity of the resumption | The launcher shall take the fingerprints of the source and release file, in the copy of the work and checkout. Refuse inventory changes and simultaneous use of the same copy. |
+| Maven | Each selection has a receipt after execution. Check the compilation receipt for classes, resources and JARs and resume the ranking if the solution has been interrupted. A copy without a valid manifest requires a new test. |
+| Gradle | Each task publishes the checkpoint atomic after JUnit and Extent parity. A valid HTML without checkpoint can explain a disruption. That task is running again. |
+| Rapoarte | Accepted reports shall retain their octeness and provenance. Missing, incomplete, corrupt or failed selections run in the new directory. |
+| Preparing the signed APK | Prepare the classes with `-PrepareOnly` and transmit the directory via `-PreparedFrom`. Check APK's SHA-256 and source print before reusing the classes and libraries. Each execution uses a new JUnit Director. |
+| Fluxuri native | If the sample was produced in full, import it by `apply-android-e2e.mjs`. The plan reuses the accepted reports prior to the preparation of Maven or access to the device. |
 
-| Nivel | Verificare a licitației |
+| Level | Tender verification |
 |---|---|
-| Componentă de joc | Primele patru mâini cu o carte, rotația dealerului, trecerea la două cărți și checkpoint-ul scorului. Alegerea alternativă, prioritatea față de recomandare și persistența contractului se verifică și cu mai multe mărimi de mână. |
-| Componentă de driver | Ierarhia XML și o notificare de realizări apărută după începerea derulării. Mock-ul ADB măsoară ordinea observațiilor și numărul de gesturi. |
-| E2E pe APK | Recomandarea vizibilă, opțiunea alternativă, dialogul de scor și contractul păstrat după repornirea procesului. Se joacă o singură mână pregătitoare dacă licitația din deschidere este forțată. |
+| Game component | The first four hands with one card, the dealer's rotation, the switch to two cards and the score checkpoint. The alternative choice, priority to the recommendation and persistence of the contract shall be checked by several hand sizes. |
+| Driver component | XML hierarchy and a notification of achievements after the start of the run. ADB Mocker measures the order of observations and the number of gestures. |
+| E 2E on APK | Visible recommendation, alternative option, score dialogue and contract maintained after restart. Only one preparatory hand shall be played if the opening bid is forced. |

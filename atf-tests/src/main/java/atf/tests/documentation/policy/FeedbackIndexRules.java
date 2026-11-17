@@ -33,7 +33,7 @@ public final class FeedbackIndexRules {
             if (cells.length < 6) continue;
             String idHeader = cells[1].trim();
             if (!foundHeader) {
-                if (idHeader.equals("ID") && cells[3].trim().equals("Scor")) foundHeader = true;
+                if (idHeader.equals("ID") && List.of("Score", "Scor").contains(cells[3].trim())) foundHeader = true;
                 continue;
             }
             String id = cells[1].trim();
@@ -78,7 +78,8 @@ public final class FeedbackIndexRules {
     }
 
     public static void inspectPriorities(List<String> lines, Path file, Path root, List<Violation> violations) {
-        int heading = lines.indexOf("## ToDo-uri prioritizate");
+        int heading = lines.indexOf("## Prioritized ToDos");
+        if (heading < 0) heading = lines.indexOf("## ToDo-uri prioritizate");
         if (heading < 0) {
             row(violations, root, file, 1, "the prioritized feedback heading is missing");
             return;
