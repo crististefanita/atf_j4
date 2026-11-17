@@ -465,3 +465,48 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Controale verificate pentru orientarea documentelor în ambele ediții</summary>
+
+```yaml
+testChanges:
+  - id: DOC-ORIENTATION-EN
+    status: VERIFIED
+    base: 14c16ebf3b1dea52a15849f506ed81032bb55337
+    expires: 2026-12-17
+    reason: Enforce the configured document orientation and reject the other edition without weakening structure or content checks.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationReadmeStructureGovernanceTest,DocumentationPolicyGovernanceTest,DocumentationGovernanceCliComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest#ownerDocumentsKeepAReadableStableShape
+      negative:
+        - atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest#theOtherEditionHeadingIsRejectedByTheStructuralRule
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationReadmeStructureRules.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+  - id: DOC-ORIENTATION-RO
+    status: VERIFIED
+    base: 007e3f660c4a2bf7dfa16cc1cb2c1996190c8020
+    expires: 2026-12-17
+    reason: Enforce the configured document orientation and reject the other edition without weakening structure or content checks.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationReadmeStructureGovernanceTest,DocumentationPolicyGovernanceTest,DocumentationGovernanceCliComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest#ownerDocumentsKeepAReadableStableShape
+      negative:
+        - atf.tests.governance.documentation.DocumentationReadmeStructureGovernanceTest#theOtherEditionHeadingIsRejectedByTheStructuralRule
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationReadmeStructureRules.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+```
+
+</details>

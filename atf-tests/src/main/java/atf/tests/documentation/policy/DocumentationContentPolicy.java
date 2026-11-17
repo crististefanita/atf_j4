@@ -7,7 +7,9 @@ import atf.tests.testchange.TestChangeControls;
 import atf.tests.documentation.DocumentationGovernanceSupport.Violation;
 import atf.tests.documentation.DocumentationInventory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -24,10 +26,8 @@ public final class DocumentationContentPolicy {
         public static Context load(Path root) throws IOException {
             ObjectMapper mapper = new ObjectMapper();
             var policy = mapper.readTree(root.resolve(CONFIG).toFile());
-            if (policy == null || !policy.isObject()) throw new IOException("DOC-CONTENT-CONFIG: expected object policy");
+            String language = documentationLanguage(policy);
             String repository = policy.path("publicRepository").asText("");
-            String language = policy.path("documentationLanguage").asText("ro");
-            if (!List.of("en", "ro").contains(language)) throw new IOException("DOC-CONTENT-CONFIG: invalid documentation language");
             if (repository.isEmpty()) return new Context("", null, language);
             if (!repository.matches("https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+"))
                 throw new IOException("DOC-CONTENT-CONFIG: repository must be a GitHub URL");
@@ -38,6 +38,20 @@ public final class DocumentationContentPolicy {
             return new Context(repository, ReleaseDownloadSelection.select("advertised",
                     repository.substring("https://github.com/".length()), index, mapper.readTree(manifest.toFile())), language);
         }
+    }
+
+    public static String documentationLanguage(Path root) throws IOException {
+        Path policy = root.resolve(CONFIG);
+        return Files.exists(policy) ? documentationLanguage(new ObjectMapper().readTree(policy.toFile())) : "ro";
+    }
+
+    private static String documentationLanguage(JsonNode policy) throws IOException {
+        if (policy == null || !policy.isObject()) throw new IOException("DOC-CONTENT-CONFIG: expected object policy");
+        JsonNode language = policy.get("documentationLanguage");
+        if (language == null) return "ro";
+        if (!language.isTextual() || !List.of("en", "ro").contains(language.textValue()))
+            throw new IOException("DOC-CONTENT-CONFIG: invalid documentation language");
+        return language.textValue();
     }
 
     public static void validate(Path file, Path root, List<String> lines, Context context, List<Violation> violations) throws IOException {
