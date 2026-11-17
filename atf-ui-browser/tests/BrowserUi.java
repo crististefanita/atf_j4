@@ -21,7 +21,7 @@ class BrowserUi {
     private static final String SITE_PATH = "/whist/";
     private static final Set<String> ASSETS = Set.of("index.html", "table.css", "table.mjs", "viewport.mjs",
             "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs",
-            "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs", "card-suits.woff2");
+            "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs", "card-suits.woff2", "menu-footer.png");
     private static final String MOBILE_AGENT =
             "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 Chrome/131.0.0.0 Mobile Safari/537.36";
     private static final Gson JSON = new Gson();
@@ -83,6 +83,12 @@ class BrowserUi {
                                 (page, images) -> enlargedHeader(page, url, wideCheckpoint)));
                     }
                 }
+                if (check.equals("all") || check.equals("dedication")) {
+                    results.add(run(browser, mobile(), output, "WEB-COMPONENT-HOME-DEDICATION",
+                            "Dedicația din meniul principal în română și engleză",
+                            "Fotografia apare sub regulile de joc și textul se traduce imediat la schimbarea limbii.",
+                            (page, images) -> homeDedication(page, url, output, images)));
+                }
                 if (check.equals("all") || check.equals("trump")) {
                     results.add(run(browser, mobile(), output, "WEB-COMPONENT-TRUMP",
                             "Chenarul de atu în Whist Descrescător",
@@ -115,6 +121,31 @@ class BrowserUi {
         require(!results.isEmpty(), "Unknown browser check: " + check);
         Files.writeString(resultsFile, JSON.toJson(results));
         if (results.stream().anyMatch(result -> !result.status().equals("PASS"))) System.exit(1);
+    }
+
+    private static Map<String, Object> homeDedication(Page page, String url, Path output, List<Image> images) {
+        page.navigate(url);
+        var home = page.locator(".whist-home");
+        var dedication = home.locator("figure:last-child");
+        var caption = dedication.locator("figcaption");
+        var photo = dedication.locator("img");
+        var language = home.locator("select");
+        assertThat(home).isVisible();
+        language.selectOption("ro");
+        assertThat(caption).hasText("Pentru Teo.. de Moș Nicolae :)");
+        assertThat(dedication.locator("xpath=preceding-sibling::*[1]")).hasText("Reguli de joc");
+        assertThat(photo).hasAttribute("alt", "Pisică");
+        page.waitForFunction("document.querySelector('.whist-home-dedication img')?.naturalWidth > 0");
+        images.add(screenshot(page, output, "WEB-HOME-DEDICATION-RO", "Meniul principal în română"));
+
+        language.selectOption("en");
+        assertThat(caption).hasText("For Teo.. from St. Nicholas :)");
+        assertThat(dedication.locator("xpath=preceding-sibling::*[1]")).hasText("How to play");
+        assertThat(photo).hasAttribute("alt", "Cat");
+        page.waitForFunction("document.querySelector('.whist-home-dedication img')?.naturalWidth > 0");
+        assertThat(home.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("How to play"))).isVisible();
+        return Map.of("ro", "Pentru Teo.. de Moș Nicolae :)", "en", caption.innerText(),
+                "photo", photo.getAttribute("src"), "viewport", "414×896");
     }
 
     private static Browser.NewContextOptions mobile() {
@@ -738,8 +769,8 @@ class BrowserUi {
                     return;
                 }
                 String type = name.endsWith(".woff2") ? "font/woff2" : name.endsWith(".mjs") ? "text/javascript" :
-                        name.endsWith(".css") ? "text/css" : "text/html";
-                exchange.getResponseHeaders().set("Content-Type", type + "; charset=utf-8");
+                        name.endsWith(".css") ? "text/css" : name.endsWith(".png") ? "image/png" : "text/html";
+                exchange.getResponseHeaders().set("Content-Type", type.startsWith("text/") ? type + "; charset=utf-8" : type);
                 exchange.getResponseHeaders().set("Cache-Control", "no-store");
                 byte[] bytes = Files.readAllBytes(site.resolve(name));
                 exchange.sendResponseHeaders(200, bytes.length);

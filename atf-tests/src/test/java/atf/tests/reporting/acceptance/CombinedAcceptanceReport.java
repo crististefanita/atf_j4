@@ -163,7 +163,7 @@ public final class CombinedAcceptanceReport {
         try (var session = new ExtentReportSession(report, settings)) {
             var reportScenario =
                     session.startScenario(
-                            "ATF J4 component and Whist Lab deep test",
+                            "Whist component and deep tests",
                             "atf.tests",
                             "Android API 28 emulator",
                             List.of(

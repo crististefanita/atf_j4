@@ -55,7 +55,7 @@ class CoreReportingConsumerContractTest {
     void allLibrariesLoadTheDeclaredSingleFlatJar() throws Exception {
         Path root = Path.of("").toAbsolutePath();
         while (root != null && !Files.isRegularFile(root.resolve("library-provenance.json"))) root = root.getParent();
-        if (root == null) throw new IllegalStateException("Missing J4 library provenance root");
+        if (root == null) throw new IllegalStateException("Missing Whist library provenance root");
         String pom = Files.readString(root.resolve("pom.xml"));
         for (String artifact : List.of("core", "reporting", "console", "mock")) {
             var version = java.util.regex.Pattern.compile("<atf\\." + artifact + "\\.version>([^<]+)</atf\\." + artifact + "\\.version>").matcher(pom);
@@ -91,7 +91,7 @@ class CoreReportingConsumerContractTest {
         Path report = tempDir.resolve("consumer-contract.html");
         var settings = AtfReportConfigurationLoader.load().reportingSettings();
         try (var session = new ExtentReportSession(report, settings);
-             var scenario = session.startScenario("J4 Core and Reporting consumer contract", "atf.tests",
+             var scenario = session.startScenario("Whist Core and Reporting consumer contract", "atf.tests",
                      "local-consumer", List.of("component", "reporting"));
              var phase = scenario.startPhase("Publish an Extent result")) {
             phase.observation(new ReportObservation("Consumer integration",
@@ -104,7 +104,7 @@ class CoreReportingConsumerContractTest {
         assertTrue(Files.isRegularFile(report), "Reporting did not create the consumer HTML report");
         assertTrue(Files.size(report) > 2_000, "Reporting created an unexpectedly small HTML file");
         String html = Files.readString(report);
-        assertTrue(html.contains("J4 Core and Reporting consumer contract"));
+        assertTrue(html.contains("Whist Core and Reporting consumer contract"));
         assertTrue(html.contains("Publish an Extent result"));
     }
 }

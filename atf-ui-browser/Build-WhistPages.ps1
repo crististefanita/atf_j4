@@ -30,6 +30,8 @@ if ($LASTEXITCODE -ne 0) { throw "Whist engine compilation failed. See $compiler
 $web = Join-Path $PSScriptRoot 'src/main/web'
 Get-ChildItem -LiteralPath $web -File | Copy-Item -Destination $site
 Get-ChildItem -LiteralPath (Join-Path $pages 'web') -File | Copy-Item -Destination $site
+$footerImage = Join-Path $PSScriptRoot '../whist-lab-app/app/src/main/res/drawable-nodpi/teo_dedication.png'
+Copy-Item -LiteralPath $footerImage -Destination (Join-Path $site 'menu-footer.png')
 $index = Join-Path $site 'index.html'
 $markup = [IO.File]::ReadAllText($index).Replace('<html lang="ro">', '<html lang="ro" data-engine="whist">')
 $markup = $markup.Replace('<title>Card Table</title>', '<title>Whist Lab</title>')

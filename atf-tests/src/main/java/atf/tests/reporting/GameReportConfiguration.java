@@ -7,7 +7,7 @@ import atf.tests.learning.EvidencePolicyYaml;
 import java.nio.file.Path;
 import java.util.Objects;
 
-/** Resolves the existing J4 evidence YAML and generic Reporting settings once per publication. */
+/** Resolves the existing Whist evidence YAML and generic Reporting settings once per publication. */
 public record GameReportConfiguration(GameReportPolicy policy, EvidencePolicy selectionPolicy) {
     public GameReportConfiguration {
         Objects.requireNonNull(policy, "policy"); Objects.requireNonNull(selectionPolicy, "selectionPolicy");
@@ -21,15 +21,15 @@ public record GameReportConfiguration(GameReportPolicy policy, EvidencePolicy se
     public static GameReportConfiguration capture() {
         ReportingSettings settings = AtfReportConfigurationLoader.load().reportingSettings();
         try { return from(EvidencePolicyYaml.capture(), settings); }
-        catch (Exception failure) { throw new IllegalArgumentException("Cannot capture J4 evidence policy", failure); }
+        catch (Exception failure) { throw new IllegalArgumentException("Cannot capture Whist evidence policy", failure); }
     }
     public static GameReportConfiguration load(Path file, ReportingSettings settings) {
         try { return from(EvidencePolicyYaml.load(file), settings); }
-        catch (Exception failure) { throw new IllegalArgumentException("Cannot load J4 evidence policy: " + file, failure); }
+        catch (Exception failure) { throw new IllegalArgumentException("Cannot load Whist evidence policy: " + file, failure); }
     }
     public static GameReportConfiguration from(EvidencePolicy source, ReportingSettings settings) {
         if (settings.assertionMaxDisplayCharacters() != 240 || settings.bodyMaxDisplayCharacters() <= 0)
-            throw new IllegalArgumentException("J4 requires assertion preview 240 and a positive configured body budget");
+            throw new IllegalArgumentException("Whist requires assertion preview 240 and a positive configured body budget");
         return new GameReportConfiguration(new GameReportPolicy(source.detailLevel(), source.rowsPerGroup(), source.fieldsPerGroup(),
                 settings.bodyMaxDisplayCharacters(), source.optionalMaxItems(), source.optionalContextBudgetCharacters()), source);
     }

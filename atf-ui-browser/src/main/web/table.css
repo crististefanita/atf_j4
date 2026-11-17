@@ -379,6 +379,16 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 #table[data-automatic] .whist-match .fan .card { pointer-events: none; }
 .whist-home, .whist-score, .whist-help, [data-surface="whist"] .setup { padding: 16px 22px 14px; }
 .whist-home { display: grid; gap: 10px; }
+.whist-home-dedication {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin: 2px 0 0;
+  text-align: center;
+  color: var(--whist-score-muted, #536356);
+  font-size: calc(.9375rem * var(--whist-text-scale));
+}
+.whist-home-dedication img { display: block; width: min(112px, 100%); height: auto; }
 .whist-home h1, .whist-help h1, [data-surface="whist"] .setup h1 { font-size: 1.56rem; margin: 0 0 8px; }
 .whist-home, [data-surface="whist"] .setup {
   font-size: calc(1rem * var(--whist-text-scale));

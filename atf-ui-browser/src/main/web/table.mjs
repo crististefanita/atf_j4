@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.6";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.7";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -270,6 +270,16 @@ function menu() {
       button(copy("ranking", "Clasamente"), showRankings, "quiet"),
       button(copy("achievements", "Realizări"), () => profileDialogs.catalogue(state.profile.catalogue), "quiet"),
       button(copy("help", "Reguli de joc"), helpPage, "quiet"));
+    const dedication = copy("homeDedication", "");
+    if (dedication) {
+      const footer = element("figure", "", "whist-home-dedication");
+      const photo = element("img");
+      photo.alt = copy("homeDedicationPhoto", "");
+      photo.addEventListener("error", () => photo.remove(), { once: true });
+      photo.src = "./menu-footer.png";
+      footer.append(photo, element("figcaption", dedication));
+      home.append(footer);
+    }
     stage.replaceChildren(home, errorBox);
     return;
   }

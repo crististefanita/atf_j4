@@ -14,7 +14,7 @@ import java.nio.file.*;
 import java.time.*;
 import java.util.*;
 
-/** J4 composition root: projects captured invocations; never calls a game engine or reevaluates a rule. */
+/** Whist composition root: projects captured invocations; never calls a game engine or reevaluates a rule. */
 public final class LearningRunReport {
     private static final ObjectMapper JSON=new ObjectMapper();
     public record Input(Path source,JsonNode receipt,String sha256) {

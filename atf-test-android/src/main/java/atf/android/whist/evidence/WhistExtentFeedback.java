@@ -19,14 +19,14 @@ public final class WhistExtentFeedback {
                 .map(value -> Path.of(value).toAbsolutePath().normalize()).anyMatch(output::startsWith);
         if (!inRun) return;
 
-        String configured = System.getProperty("atf.android.feedbackDirectory", System.getenv("ATF_J4_FEEDBACK_DIRECTORY"));
+        String configured = System.getProperty("atf.android.feedbackDirectory", System.getenv().getOrDefault("WHIST_FEEDBACK_DIRECTORY", System.getenv("ATF_J4_FEEDBACK_DIRECTORY")));
         Path indexRoot = configured != null && !configured.isBlank()
                 ? Path.of(configured) : externalArchive().resolve("indexes");
         publish(indexRoot, output, scenario, status);
     }
 
     private static Path externalArchive() {
-        String configured = System.getProperty("atf.android.handoffRoot", System.getenv("ATF_J4_UI_REPORTS"));
+        String configured = System.getProperty("atf.android.handoffRoot", System.getenv().getOrDefault("WHIST_UI_REPORTS", System.getenv("ATF_J4_UI_REPORTS")));
         return Path.of(configured == null || configured.isBlank()
                 ? "C:/work/whist_back/ui-reports" : configured).toAbsolutePath().normalize().resolve("whist-lab");
     }

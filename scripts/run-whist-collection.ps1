@@ -122,7 +122,7 @@ if($CandidateOverlay){
         if(-not (Test-Path -LiteralPath $source -PathType Leaf) -or (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash.ToLowerInvariant() -ne $entry.sha256){throw "Candidate source digest differs: $($entry.source)"}
     }
 }
-$stageRoot=Join-Path ([IO.Path]::GetTempPath()) ('ATF_J4_COLLECTION_'+[guid]::NewGuid().ToString('N'))
+$stageRoot=Join-Path ([IO.Path]::GetTempPath()) ('WHIST_COLLECTION_'+[guid]::NewGuid().ToString('N'))
 $stageApp=Join-Path $stageRoot 'whist-lab-app'
 New-Item -ItemType Directory -Path $RunRoot,$stageApp | Out-Null
 $inventory=@()

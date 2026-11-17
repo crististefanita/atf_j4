@@ -52,7 +52,7 @@ $RunRoot = [IO.Path]::GetFullPath($RunRoot)
 $sourceRoot = [IO.Path]::GetFullPath($root)
 if ($RunRoot.StartsWith($sourceRoot + [IO.Path]::DirectorySeparatorChar,
         [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'Reports must stay outside the J4 source tree.'
+    throw 'Reports must stay outside the Whist source tree.'
 }
 if (Test-Path -LiteralPath $RunRoot) {
     throw 'Choose a new run directory. Existing runs are immutable.'
@@ -140,7 +140,7 @@ function Invoke-SanityMaven {
 try {
     if (-not $ComponentsOnly) {
         $state.status = 'BLOCKED'
-        $leaseId = New-AtfDeviceLease $LeasePath $Serial 'J4 responsive UI sanity' $RunRoot
+        $leaseId = New-AtfDeviceLease $LeasePath $Serial 'Whist responsive UI sanity' $RunRoot
         $leaseAcquired = $true
         $preflightReceipt = Join-Path $RunRoot 'android-preflight.json'
         $state.androidPreflight = $preflightReceipt

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Objects;
 
-/** Persists ordered, renderer-neutral Android UI checkpoints for the final J4 Extent report. */
+/** Persists ordered, renderer-neutral Android UI checkpoints for the final Whist Extent report. */
 public final class AndroidUiFlowTrace implements atf.android.e2e.support.flow.AndroidUiFlowEvidence {
     private final Path outputDirectory;
     private final Path manifest;
@@ -264,7 +264,7 @@ public final class AndroidUiFlowTrace implements atf.android.e2e.support.flow.An
         }
         Path temporary = manifest.resolveSibling(manifest.getFileName() + ".tmp");
         try (OutputStream output = Files.newOutputStream(temporary)) {
-            properties.store(output, "ATF J4 ordered Android UI flow evidence");
+            properties.store(output, "Whist ordered Android UI flow evidence");
         }
         try {
             Files.move(temporary, manifest, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);

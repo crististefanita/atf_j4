@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent><groupId>atf.api</groupId><artifactId>atf</artifactId><version>1.0.0-SNAPSHOT</version></parent>
     <artifactId>atf-tests</artifactId>
-    <name>ATF J4 architecture and acceptance catalog</name>
+    <name>Whist architecture and acceptance catalog</name>
     <dependencies>
         <dependency><groupId>com.fasterxml.jackson.dataformat</groupId><artifactId>jackson-dataformat-yaml</artifactId></dependency>
         <dependency><groupId>org.jsoup</groupId><artifactId>jsoup</artifactId><version>1.23.2</version></dependency>

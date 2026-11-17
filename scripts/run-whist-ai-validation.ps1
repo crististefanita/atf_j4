@@ -64,7 +64,7 @@ try{
         if(Test-Path $leasePath){$existing=Get-Content -Raw $leasePath | ConvertFrom-Json;if($existing.active){throw "Android UI already reserved: $leasePath"}}
         $foreign=Get-CimInstance Win32_Process -Filter "Name='java.exe'" | Where-Object {$_.CommandLine -match 'atf.android.enabled=true' -and $_.CommandLine -match 'Launcher'}
         if($foreign){throw 'Another Android UI test process is active. No process was stopped.'}
-        [ordered]@{active=$true;owner='J4 AI validation';leaseId=$leaseId;serial=$Serial;run=$RunRoot;startedAt=(Get-Date -Format o)} | ConvertTo-Json | Set-Content $leasePath;$leased=$true
+        [ordered]@{active=$true;owner='Whist AI validation';leaseId=$leaseId;serial=$Serial;run=$RunRoot;startedAt=(Get-Date -Format o)} | ConvertTo-Json | Set-Content $leasePath;$leased=$true
         $adb="$AndroidSdk\platform-tools\adb.exe";$apk="$stage\whist-lab-app\app\build\outputs\apk\debug\app-debug.apk"
         Invoke-Checked 'device-ready' {
             Connect-AtfAndroidDevice -AdbExecutable $adb -Serial $Serial `

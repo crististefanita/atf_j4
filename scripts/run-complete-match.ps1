@@ -23,7 +23,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $referenceEvidence 'original-match.p
 }
 if ($referenceRun.StartsWith($root + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase) -or
     $referenceRun.StartsWith($j5Root + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'Reference evidence must remain outside the J4 and J5 source directories.'
+    throw 'Reference evidence must remain outside the Whist and Rentz source directories.'
 }
 $matchProperties = [IO.File]::ReadAllText((Join-Path $referenceEvidence 'original-match.properties'))
 foreach ($required in @('match.complete=true', 'match.handCount=19', 'match.moves=436', 'match.tricks=109')) {
@@ -68,7 +68,7 @@ Copy-Item -LiteralPath (Join-Path $root 'pom.xml'), (Join-Path $root 'atf.yaml')
 $modules = @(([xml](Get-Content -LiteralPath "$root\pom.xml" -Raw)).project.modules.module)
 foreach ($module in $modules) {
     & robocopy (Join-Path $root $module) (Join-Path $stage $module) /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
-    if ($LASTEXITCODE -ge 8) { throw "Could not stage J4 module $module." }
+    if ($LASTEXITCODE -ge 8) { throw "Could not stage Whist module $module." }
 }
 & robocopy (Join-Path $root 'whist-lab-app') (Join-Path $stage 'whist-lab-app') /E /XD target build .git .gradle artifacts /NFL /NDL /NJH /NJS /NP | Out-Null
 if ($LASTEXITCODE -ge 8) { throw 'Could not stage the Whist Lab application and offline test sources.' }

@@ -166,7 +166,7 @@ try {
         $junit = Join-Path $root 'junit'
 
         $lease = Invoke-AtfQualificationPhase $timing 'e2e.lease' {
-            New-AtfDeviceLease $LeasePath $Serial 'J4 signed release E2E' $root
+            New-AtfDeviceLease $LeasePath $Serial 'Whist signed release E2E' $root
         }
         $scenario = $selected.scenario
         $arguments = @{

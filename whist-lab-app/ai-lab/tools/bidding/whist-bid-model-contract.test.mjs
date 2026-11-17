@@ -23,7 +23,7 @@ test('The bilingual rule dossier binds every fitted coefficient, dispersion and 
 });
 
 test('The frozen model and generator reproduce the corrected Java model byte for byte',async()=>{
-    const temporary=await fs.mkdtemp(path.join(os.tmpdir(),'ATF_J4_BID_CODEGEN_'));
+    const temporary=await fs.mkdtemp(path.join(os.tmpdir(),'WHIST_BID_CODEGEN_'));
     const target=path.join(temporary,'LearnedBidEvidence.java');
     try{
         await generateBidEvidence(modelFile.pathname.replace(/^\/(\w:)/,'$1'),target);

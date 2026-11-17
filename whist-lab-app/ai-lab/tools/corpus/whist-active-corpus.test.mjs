@@ -79,7 +79,7 @@ test('an exchange retains a protected alias and every final lesson attribution i
  }
 });
 test('active corpus is development-only, immutable-source, hash-checked, path-safe and independently replayable',async(t)=>{
- const folder=await localFolder(t,'ATF_J4_CURATOR_TEST_');
+ const folder=await localFolder(t,'WHIST_CURATOR_TEST_');
  const archive=path.join(folder,'archive'),active=path.join(folder,'active');
  await fs.mkdir(path.join(archive,'games/development'),{recursive:true});await fs.mkdir(path.join(archive,'games/heldout'));
  const source=path.join(archive,'games/development',game.id+'.json'),bytes=Buffer.from(JSON.stringify(game));
@@ -96,7 +96,7 @@ test('active corpus is development-only, immutable-source, hash-checked, path-sa
 });
 
 test('current pointer binds the development manifest bytes and refuses heldout or relative targets',async(t)=>{
- const folder=await localFolder(t,'ATF_J4_POINTER_TEST_'),manifest=path.join(folder,'manifest.json'),pointer=path.join(folder,'current.json');
+ const folder=await localFolder(t,'WHIST_POINTER_TEST_'),manifest=path.join(folder,'manifest.json'),pointer=path.join(folder,'current.json');
  const bytes=Buffer.from(JSON.stringify({schemaVersion:1,partition:'development'}));await fs.writeFile(manifest,bytes);
  const p={schemaVersion:1,partition:'development',folder,manifestSha256:crypto.createHash('sha256').update(bytes).digest('hex')};await fs.writeFile(pointer,JSON.stringify(p));assert.equal((await resolveActivePointer(pointer)).folder,folder);
  await fs.appendFile(manifest,' ');await assert.rejects(resolveActivePointer(pointer),/manifest hash mismatch/);await fs.writeFile(manifest,bytes);

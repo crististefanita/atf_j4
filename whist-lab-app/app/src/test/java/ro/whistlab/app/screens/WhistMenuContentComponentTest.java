@@ -22,6 +22,17 @@ public final class WhistMenuContentComponentTest extends atf.gradle.audit.Gradle
         }
     }
 
+    @Test public void theDedicationFollowsTheInterfaceLanguage() {
+        var romanian = new WhistUiText(HowToPlay.Language.RO);
+        var english = new WhistUiText(HowToPlay.Language.EN);
+        atf.gradle.audit.GradleInputs.fixture("Home dedication in both languages",
+                "romanian", romanian.homeDedication(), "english", english.homeDedication());
+        assertEquals("Romanian text keeps the diacritics", "Pentru Teo.. de Moș Nicolae :)", romanian.homeDedication());
+        assertEquals("English text is translated", "For Teo.. from St. Nicholas :)", english.homeDedication());
+        assertEquals("Romanian photo label", "Pisică", romanian.homeDedicationPhoto());
+        assertEquals("English photo label", "Cat", english.homeDedicationPhoto());
+    }
+
     @Test public void whistCallbackOrderAndDisabledResumeKeepTheirOriginalMeaning() {
         var invoked=new ArrayList<String>();var copy=new WhistUiText(HowToPlay.Language.EN);
         var actions=new HomeMenuContent.Actions(()->invoked.add("profile"),()->invoked.add("setup"),

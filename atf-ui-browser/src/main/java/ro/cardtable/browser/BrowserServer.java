@@ -34,6 +34,8 @@ public final class BrowserServer implements AutoCloseable {
             "/hand-feedback.mjs", new Asset("hand-feedback.mjs", "text/javascript; charset=utf-8"),
             "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"),
             "/card-suits.woff2", new Asset("card-suits.woff2", "font/woff2"));
+    private static final Asset MENU_FOOTER = new Asset("menu-footer.png", "image/png");
+    private final Map<String, Asset> routes = new HashMap<>(ASSETS);
     private final HttpServer server;
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
     private final String access;
@@ -43,9 +45,17 @@ public final class BrowserServer implements AutoCloseable {
     private final Map<String, BrowserExperience> profiles = new HashMap<>();
 
     public BrowserServer(BrowserGame game, Path assets, InetSocketAddress address) throws IOException {
+        this(game, assets, address, null);
+    }
+
+    private BrowserServer(BrowserGame game, Path assets, InetSocketAddress address, Path menuFooter) throws IOException {
         this.game = game;
         for (var asset : ASSETS.values()) {
             this.assets.put(asset.file(), readAsset(assets, asset.file()));
+        }
+        if (menuFooter != null) {
+            routes.put("/" + MENU_FOOTER.file(), MENU_FOOTER);
+            this.assets.put(MENU_FOOTER.file(), Files.readAllBytes(menuFooter));
         }
         var bytes = new byte[24];
         new SecureRandom().nextBytes(bytes);
@@ -57,9 +67,13 @@ public final class BrowserServer implements AutoCloseable {
     }
 
     public static void launch(BrowserGame game, String[] args) throws IOException {
+        launch(game, args, null);
+    }
+
+    public static void launch(BrowserGame game, String[] args, Path menuFooter) throws IOException {
         if (args.length != 3) throw new IllegalArgumentException("Expected assets directory, listen address and port");
         Path assets = args[0].equals("-") ? null : Path.of(args[0]);
-        var host = new BrowserServer(game, assets, new InetSocketAddress(args[1], Integer.parseInt(args[2])));
+        var host = new BrowserServer(game, assets, new InetSocketAddress(args[1], Integer.parseInt(args[2])), menuFooter);
         Runtime.getRuntime().addShutdownHook(new Thread(host::close));
         System.out.println(host.url());
     }
@@ -80,7 +94,7 @@ public final class BrowserServer implements AutoCloseable {
                     "default-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'");
             String path = http.getRequestURI().getRawPath();
             String method = http.getRequestMethod();
-            var asset = ASSETS.get(path);
+            var asset = routes.get(path);
             if (asset != null && method.equals("GET")) {
                 send(http, 200, asset.mime(), assets.get(asset.file()));
             } else if (path.startsWith("/api/")) {

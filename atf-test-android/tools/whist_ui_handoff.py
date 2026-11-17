@@ -1,4 +1,4 @@
-"""Publică offline dovezi J4 finalizate, fără ADB. Intrările sunt selectate explicit."""
+"""Publică offline dovezi Whist finalizate, fără ADB. Intrările sunt selectate explicit."""
 import argparse
 from html import escape
 from datetime import datetime, timezone
@@ -111,7 +111,7 @@ def build_bundle(spec, out):
               "pngReferences": len(refs), "distinctPng": len(distinct)}
     if rules:
         counts.update({k: v for k,v in offline.items() if k != "status"})
-    return {"schema":"j4.whist-ui-handoff/1", "owner":"J4 UI", "runId":token(spec["runId"]),
+    return {"schema":"j4.whist-ui-handoff/1", "owner":"Whist UI", "runId":token(spec["runId"]),
             "sourceRunId":spec["sourceRunId"], "scope":token(spec["scope"]), "requestedScope":spec["requestedScope"],
             "effectiveScope":spec["effectiveScope"], "scopeComplete":scope_complete, "profile":spec["profile"], "namespace":"whist-lab",
             "publicationKind":"OFFLINE_REPUBLICATION", "startedAt":spec.get("startedAt"), "endedAt":spec["endedAt"],
@@ -147,7 +147,7 @@ def unavailable(spec, out):
     elif status != "NOT_RUN":
         raise ValueError("Native outcome requires a JUnit receipt")
     write_json(out / "native-junit.json", native)
-    return {"schema":"j4.whist-ui-handoff/1","owner":"J4 UI","namespace":"whist-lab","package":spec["package"],
+    return {"schema":"j4.whist-ui-handoff/1","owner":"Whist UI","namespace":"whist-lab","package":spec["package"],
             "runId":spec["runId"],"sourceRunId":spec["sourceRunId"],"scope":spec["scope"],"scenario":spec["scenario"],
             "requestedScope":spec["requestedScope"],"effectiveScope":spec["effectiveScope"],"scopeComplete":False,
             "profile":spec["profile"],"endedAt":spec["endedAt"],"startedAt":spec.get("startedAt"),

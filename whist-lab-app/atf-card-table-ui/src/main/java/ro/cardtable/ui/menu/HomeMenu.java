@@ -19,12 +19,18 @@ public final class HomeMenu {
     public HomeMenu(ScreenViews views) { this.views=views; this.activity=views.activity(); }
     public void home(HomeMenuContent copy, String preferredName, boolean canResume,
             HomeMenuContent.Actions actions, IntConsumer changed) {
+        homePage(copy, preferredName, canResume, actions, changed);
+    }
+
+    public LinearLayout homePage(HomeMenuContent copy, String preferredName, boolean canResume,
+            HomeMenuContent.Actions actions, IntConsumer changed) {
         LinearLayout page=views.page(null,copy.title());
         languagePicker(page,copy.languageLabel(),copy.selectedLanguage(),changed);
         for(var control:copy.controls(preferredName,canResume,actions)) {
             if(control.kind()==HomeMenuContent.Kind.QUIET) views.addQuietButton(page,control.label(),control.action());
             else views.addButton(page,control.label(),control.tag(),control.enabled(),control.action(),control.primary());
         }
+        return page;
     }
     public void languagePicker(LinearLayout parent, String languageLabel, int selectedLanguage, IntConsumer changed) {
         LinearLayout row = new LinearLayout(activity);

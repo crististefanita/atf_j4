@@ -55,7 +55,7 @@ class PlatformLibraryIntegrityTest {
         for (String field : List.of("sourceOwner", "feedbackOwner")) {
             prepare("mock"); var mapper = new ObjectMapper(); Path file = root.resolve("library-provenance.json");
             var metadata = mapper.readTree(file.toFile());
-            ((com.fasterxml.jackson.databind.node.ObjectNode) metadata.path("platformLibraryOwnership")).put(field, "atf_j4");
+            ((com.fasterxml.jackson.databind.node.ObjectNode) metadata.path("platformLibraryOwnership")).put(field, "whist");
             mapper.writeValue(file.toFile(), metadata);
             AuditedAssertions.assertEquals("LIB-OWNERSHIP", AuditedAssertions.assertThrows(IllegalStateException.class,
                     () -> new PlatformLibrarySurface(root, "mock").inspect()).getMessage());

@@ -18,7 +18,7 @@ import java.nio.file.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 
-/** J4 evidence composition using the J0 binary and native UI-flow observations. */
+/** Whist evidence composition using the J0 binary and native UI-flow observations. */
 @AtfIntegrationTest
 class WhistAiTrainingExtentReportTest {
     @Test void publishesRulesEveryAcceptedComponentAndTheDeclaredAndroidDuel()throws Exception{

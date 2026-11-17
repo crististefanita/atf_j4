@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 /** Owns fresh hierarchy transfers and complete PNG retries, within the caller's capture scope. */
 final class UiDeviceCapture {
-    private static final String REMOTE_XML = "/sdcard/atf-j4-window.xml";
+    private static final String REMOTE_XML = "/sdcard/whist-window.xml";
     private final AndroidUiDriver.Device adb;
     private final Path output;
 

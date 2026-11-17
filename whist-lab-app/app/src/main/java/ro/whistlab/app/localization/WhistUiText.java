@@ -39,6 +39,8 @@ public final class WhistUiText {
     public String newGame() { return choose("New game", "Joc nou"); }
     public String resumeGame() { return choose("Resume game", "Reia partida"); }
     public String help() { return choose("How to play", "Reguli de joc"); }
+    public String homeDedication() { return choose("For Teo.. from St. Nicholas :)", "Pentru Teo.. de Moș Nicolae :)"); }
+    public String homeDedicationPhoto() { return choose("Cat", "Pisică"); }
     public String setupTitle() { return choose("Game setup", "Setări joc"); }
     public String rulesAndSchedule() { return choose("Rules & schedule", "Reguli și program"); }
     public String scoringDetails() { return choose("Scoring details", "Calculul punctajului"); }

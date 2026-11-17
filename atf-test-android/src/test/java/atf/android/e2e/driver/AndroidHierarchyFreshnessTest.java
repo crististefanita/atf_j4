@@ -34,7 +34,7 @@ class AndroidHierarchyFreshnessTest {
             if(command.contains("rm")){remote=null;removals++;}
             else if(command.contains("uiautomator")) {
                 dumps++;
-                if(recover&&dumps==2){remote="<hierarchy><node text=\"Fresh bidding\"/></hierarchy>";output="UI hierchary dumped to: /sdcard/atf-j4-window.xml";}
+                if(recover&&dumps==2){remote="<hierarchy><node text=\"Fresh bidding\"/></hierarchy>";output="UI hierchary dumped to: /sdcard/whist-window.xml";}
                 else output="ERROR: null root node returned by UiTestAutomationBridge.";
             }else if(command.getFirst().equals("pull")) {
                 pulls++;if(remote==null)exit=1;else Files.writeString(Path.of(command.get(2)),remote);

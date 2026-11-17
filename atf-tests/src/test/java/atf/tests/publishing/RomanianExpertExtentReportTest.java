@@ -61,7 +61,7 @@ class RomanianExpertExtentReportTest {
                 for(String name:List.of("environment.json","apk-provenance.json","library-binaries.json")){Path p=run.resolve(name);if(Files.exists(p))phase.observation(new ReportObservation(name,List.of(),List.of(new
                     ReportObservation.Body("Complete provenance",Files.readString(p),ReportObservation.Format.TEXT)),List.of(artifact(p))));}
                 Path source=run.resolve("source-snapshot.zip");if(Files.exists(source))GameReportPhase.optional(phase, new ReportObservation("Consumer source and flat library snapshot",List.of(new ReportField("Scope",
-                    "J4 consumer sources, build files and binary dependencies. Generated output and Android credentials are excluded.")),List.of(),List.of(artifact(source))));
+                    "Whist consumer sources, build files and binary dependencies. Generated output and Android credentials are excluded.")),List.of(),List.of(artifact(source))));
                 phase.complete(AtfReportStatus.PASS);
             }
             try(var phase=scenario.startPhase("TEST BODY")){
@@ -88,7 +88,7 @@ class RomanianExpertExtentReportTest {
                 phase.observation(new ReportObservation("Scope and audit limits",List.of(new ReportField("Completion","24 hands / 94 tricks / 376 plays / 94 human cards; same match also resumes after process death."),new
                     ReportField("Boundaries","One normal random four-seat Expert Android match. Other table sizes tested in components. Multiplayer and other devices not certified."),new ReportField("HTML visual audit",
                     "MCP previously denied the local file scheme. No bypass. Exact decoded PNG bytes and complete text are verified automatically; direct PNG review is recorded separately."),new ReportField("Ownership",
-                    "J0 owns Core/Reporting implementation. J4 uses native sessions, short preview 240 and complete TEXT evidence bodies.")),List.of(),List.of()));phase.complete(pass?AtfReportStatus.PASS:AtfReportStatus.FAIL);
+                    "J0 owns Core/Reporting implementation. Whist uses native sessions, short preview 240 and complete TEXT evidence bodies.")),List.of(),List.of()));phase.complete(pass?AtfReportStatus.PASS:AtfReportStatus.FAIL);
             }
             scenario.complete(pass?AtfReportStatus.PASS:AtfReportStatus.FAIL);
             DeepSuiteExtentReportTest.publishUiFlow(session,evidence.resolve("ui-flow-romanian-expert-complete.properties"),evidence,true);

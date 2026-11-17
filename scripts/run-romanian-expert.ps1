@@ -12,7 +12,7 @@ Import-Module (Join-Path $root 'atf-test-android/tools/AndroidDeviceSetup.psm1')
 if([string]::IsNullOrWhiteSpace($RunRoot)){$RunRoot='C:\work\whist_back\romanian-expert\'+(Get-Date -Format 'yyyyMMdd-HHmmss')}
 $RunRoot=[IO.Path]::GetFullPath($RunRoot)
 if(Test-Path -LiteralPath $RunRoot){throw 'Use a fresh run folder; completed evidence must stay immutable.'}
-$stage=Join-Path $env:TEMP ('ATF_J4_ROMANIAN_'+[guid]::NewGuid().ToString('N'))
+$stage=Join-Path $env:TEMP ('WHIST_ROMANIAN_'+[guid]::NewGuid().ToString('N'))
 $component=Join-Path $RunRoot 'component-acceptance'
 $evidence=Join-Path $RunRoot 'evidence\android'
 New-Item -ItemType Directory -Force $stage,$evidence,"$RunRoot\components","$component\components","$component\evidence","$component\coverage" | Out-Null

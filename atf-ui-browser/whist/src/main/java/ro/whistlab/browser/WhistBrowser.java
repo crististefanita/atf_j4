@@ -55,9 +55,11 @@ public final class WhistBrowser implements BrowserGame {
     }
 
     public static void main(String[] args) throws Exception {
-        var storage = args.length == 4 ? Path.of(args[3]) : null;
+        if (args.length < 3 || args.length > 5) throw new IllegalArgumentException("Invalid Whist browser arguments");
+        var storage = args.length >= 4 ? Path.of(args[3]) : null;
+        var footerImage = args.length == 5 ? Path.of(args[4]) : null;
         BrowserServer.launch(new WhistBrowser(RandomGenerator.getDefault()::nextLong, storage),
-                args.length == 4 ? java.util.Arrays.copyOf(args, 3) : args);
+                java.util.Arrays.copyOf(args, 3), footerImage);
     }
 
     @Override public String title() { return "Whist Lab"; }
@@ -156,6 +158,7 @@ public final class WhistBrowser implements BrowserGame {
                 entry("nameError", text.nameError()), entry("achievements", text.achievements()),
                 entry("progress", ro ? "Progresul realizărilor" : "Achievement progress"),
                 entry("close", text.close()), entry("help", text.help()),
+                entry("homeDedication", text.homeDedication()), entry("homeDedicationPhoto", text.homeDedicationPhoto()),
                 entry("instructions", HowToPlay.title(text.language())),
                 entry("instructionsSubtitle", ro ? "Whist românesc — reguli și exemple" : "Romanian Whist — rules and examples"),
                 entry("rulesAndSchedule", text.rulesAndSchedule()), entry("modeRules", modeRules(text)),

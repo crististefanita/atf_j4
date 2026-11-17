@@ -62,7 +62,8 @@ $sources = @(
     }
     $CatalogSource
 )
+$footerImage = Join-Path $checkout 'whist-lab-app/app/src/main/res/drawable-nodpi/teo_dedication.png'
 & (Join-Path $PSScriptRoot 'Start-CardTableBrowser.ps1') -WorkRoot $WorkRoot -GameRoot $checkout `
     -JavaInputs $sources -MainClass 'ro.whistlab.browser.WhistBrowser' -Port $Port `
     -ListenAddress $ListenAddress -BuildOnly:$BuildOnly -Libraries @($JsonLibrary) `
-    -MainArguments @((Join-Path $work 'whist-profile-data'))
+    -MainArguments @((Join-Path $work 'whist-profile-data'), $footerImage)

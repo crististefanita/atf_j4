@@ -7,7 +7,7 @@ import crypto from 'node:crypto';
 import {salvageFeatureGate} from './whist-salvage-feature-gate.mjs';
 
 async function fixture(exactLoss=false) {
-    const root=await fs.mkdtemp(path.join(os.tmpdir(),'ATF_J4_FEATURE_GATE_'));
+    const root=await fs.mkdtemp(path.join(os.tmpdir(),'WHIST_FEATURE_GATE_'));
     await fs.mkdir(path.join(root,'invocations'));await fs.mkdir(path.join(root,'quality-invocations'));
     const protocol={experiment:'CERTIFIED_PUBLIC_SALVAGE_FEATURE',roles:['expert'],opponents:['A','B'],heldout:{seeds:1}};
     const receipts=[];

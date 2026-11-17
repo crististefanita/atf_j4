@@ -1,8 +1,11 @@
 package ro.whistlab.app.screens;
 
 
-import ro.whistlab.app.localization.WhistUiText;
+import android.view.Gravity;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import ro.whistlab.app.R;
+import ro.whistlab.app.localization.WhistUiText;
 import ro.cardtable.ui.menu.HomeMenu;
 import ro.cardtable.ui.menu.HomeMenuContent;
 import ro.whistlab.core.rules.HowToPlay;
@@ -19,8 +22,26 @@ public final class MenuScreens {
         var content=WhistMenuContent.from(copy);
         var callbacks=new HomeMenuContent.Actions(actions.settings(),actions.setup(),
                 actions.resume(),actions.scores(),actions.achievements(),actions.help());
-        home.home(content,preferredName,canResume,callbacks,
-                index->actions.language().accept(index==0?HowToPlay.Language.EN:HowToPlay.Language.RO));
+        var page = home.homePage(content, preferredName, canResume, callbacks,
+                index -> actions.language().accept(index == 0 ? HowToPlay.Language.EN : HowToPlay.Language.RO));
+        addDedication(page, copy);
+    }
+
+    private void addDedication(LinearLayout page, WhistUiText copy) {
+        var photo = new ImageView(views.activity());
+        photo.setImageResource(R.drawable.teo_dedication);
+        photo.setAdjustViewBounds(true);
+        photo.setContentDescription(copy.homeDedicationPhoto());
+        var photoLayout = new LinearLayout.LayoutParams(views.dp(112), LinearLayout.LayoutParams.WRAP_CONTENT);
+        photoLayout.gravity = Gravity.CENTER_HORIZONTAL;
+        photoLayout.topMargin = views.dp(12);
+        page.addView(photo, photoLayout);
+
+        var caption = views.text(copy.homeDedication(), 15, ScreenViews.MUTED, false);
+        caption.setGravity(Gravity.CENTER);
+        var captionLayout = views.matchWrap();
+        captionLayout.topMargin = views.dp(8);
+        page.addView(caption, captionLayout);
     }
     public void instructions(WhistUiText copy, java.util.function.Consumer<HowToPlay.Language> changed, Runnable back) {
         HowToPlay.Language language = copy.language();

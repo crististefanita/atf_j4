@@ -24,12 +24,15 @@ async function check(name, expected, exercise) {
   console.log(checks.at(-1).status + " " + name);
 }
 
-const files = [".nojekyll", "auto-game.mjs", "collection.mjs", "engine-worker.mjs", "hand-feedback.mjs", "index.html", "local-transport.mjs",
+const files = [".nojekyll", "auto-game.mjs", "card-suits-OFL.txt", "card-suits.woff2", "collection.mjs",
+  "engine-worker.mjs", "hand-feedback.mjs", "index.html", "local-transport.mjs", "menu-footer.png",
   "profile.mjs", "records.mjs", "table.css", "table.mjs", "viewport.mjs", "whist-engine.mjs"];
 
 if (!selection) await check("Pages · inventarul public", "Doar resurse statice și legături relative în subdirectorul proiectului", async () => {
   assert.deepEqual((await readdir(directory)).sort(), files.toSorted());
   const markup = await readFile(join(directory, "index.html"), "utf8");
+  const nativePhoto = new URL("../../whist-lab-app/app/src/main/res/drawable-nodpi/teo_dedication.png", import.meta.url);
+  assert.deepEqual(await readFile(join(directory, "menu-footer.png")), await readFile(nativePhoto));
   assert.match(markup, /data-engine="whist"/);
   assert.match(markup, /connect-src 'none'/);
   const styleRevision = markup.match(/href="\.\/table\.css\?v=([0-9]+\.[0-9]+\.[0-9]+)"/)?.[1];
@@ -199,8 +202,9 @@ async function phoneViewport(chrome) {
       response.writeHead(404).end();
       return;
     }
-    const mime = file.endsWith(".mjs") ? "text/javascript" : file.endsWith(".css") ? "text/css" : "text/html";
-    response.writeHead(200, { "content-type": mime + "; charset=utf-8" }).end(await readFile(join(directory, file)));
+    const mime = file.endsWith(".mjs") ? "text/javascript" : file.endsWith(".css") ? "text/css"
+      : file.endsWith(".png") ? "image/png" : file.endsWith(".woff2") ? "font/woff2" : "text/html";
+    response.writeHead(200, { "content-type": mime }).end(await readFile(join(directory, file)));
   });
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
   try {

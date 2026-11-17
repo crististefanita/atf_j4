@@ -99,7 +99,7 @@ try {
     Connect-AtfAndroidDevice -AdbExecutable $AdbExecutable -Serial $Serial `
         -ServerSocket $AdbServerSocket -TimeoutSeconds 15 | Out-Null
 
-    Write-Host 'Installing the J4 reactor artifacts with tests skipped ...'
+    Write-Host 'Installing the Whist reactor artifacts with tests skipped ...'
     & mvn -DskipTests install *> (Join-Path $logsDir 'install.log')
     if ($LASTEXITCODE -ne 0) {
         throw "Maven install failed; see $(Join-Path $logsDir 'install.log')"
