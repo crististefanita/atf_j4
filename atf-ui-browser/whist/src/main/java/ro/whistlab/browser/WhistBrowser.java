@@ -14,7 +14,7 @@ import ro.cardtable.browser.BrowserServer;
 import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.ScoreGridStyle;
 import ro.cardtable.ui.table.PlayedCardStyle;
-import ro.cardtable.ui.table.TrumpTileMetrics;
+import ro.cardtable.ui.table.trump.TrumpTileMetrics;
 import ro.cardtable.ui.cards.CardHighlight;
 import ro.cardtable.ui.cards.CardFaceMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;

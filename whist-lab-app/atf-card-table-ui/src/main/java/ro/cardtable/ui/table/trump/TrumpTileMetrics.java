@@ -1,4 +1,4 @@
-package ro.cardtable.ui.table;
+package ro.cardtable.ui.table.trump;
 
 /** Display contract for the two-line trump tile. Adapters measure glyphs in their own renderer. */
 public final class TrumpTileMetrics {

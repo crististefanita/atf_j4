@@ -5,7 +5,7 @@ import ro.whistlab.app.hand.HandLayoutMetrics;
 
 import static atf.gradle.audit.assertions.GradleAssertions.*;
 import org.junit.Test;
-import ro.cardtable.ui.table.TrumpTileMetrics;
+import ro.cardtable.ui.table.trump.TrumpTileMetrics;
 
 public class TableViewportPolicyTest extends atf.gradle.audit.GradleAuditedTest {
     @Test public void tallPortraitsReclaimDecorationWhenLargerTextExhaustsTheRoomyBudget() {

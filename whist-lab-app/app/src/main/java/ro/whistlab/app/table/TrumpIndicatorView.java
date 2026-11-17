@@ -1,6 +1,6 @@
 package ro.whistlab.app.table;
 
-import ro.cardtable.ui.table.TrumpTileMetrics;
+import ro.cardtable.ui.table.trump.TrumpTileMetrics;
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.theme.TrumpTileStyle;
 

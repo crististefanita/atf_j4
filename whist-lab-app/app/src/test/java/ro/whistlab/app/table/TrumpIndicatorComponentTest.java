@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import ro.cardtable.ui.screens.GameTitleBar;
-import ro.cardtable.ui.table.TrumpTileMetrics;
+import ro.cardtable.ui.table.trump.TrumpTileMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.whistlab.app.theme.GameHeaderTypography;
 import ro.whistlab.app.theme.TrumpTileStyle;
