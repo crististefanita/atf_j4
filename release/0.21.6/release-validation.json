@@ -65,7 +65,7 @@
     },
     "auditedGroups": {
       "atf-validation": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 19,
         "failures": 0,
         "errors": 0,
@@ -73,7 +73,7 @@
         "report": "reports/component/atf-validation/component-report.html"
       },
       "atf-test-android": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 277,
         "failures": 0,
         "errors": 0,
@@ -81,7 +81,7 @@
         "report": "reports/component/atf-test-android/component-report.html"
       },
       "atf-tests": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 452,
         "failures": 0,
         "errors": 0,
@@ -89,7 +89,7 @@
         "report": "reports/component/atf-tests/component-report.html"
       },
       "whist-lab-app-bidding": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 255,
         "failures": 0,
         "errors": 0,
@@ -97,7 +97,7 @@
         "report": "reports/component/whist-lab-app-bidding/component-report.html"
       },
       "whist-lab-app-commands": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 123,
         "failures": 0,
         "errors": 0,
@@ -105,7 +105,7 @@
         "report": "reports/component/whist-lab-app-commands/component-report.html"
       },
       "whist-lab-app-display": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 104,
         "failures": 0,
         "errors": 0,
@@ -113,7 +113,7 @@
         "report": "reports/component/whist-lab-app-display/component-report.html"
       },
       "whist-lab-app-history": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 61,
         "failures": 0,
         "errors": 0,
@@ -121,7 +121,7 @@
         "report": "reports/component/whist-lab-app-history/component-report.html"
       },
       "whist-lab-app-achievements": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 28,
         "failures": 0,
         "errors": 0,
@@ -129,7 +129,7 @@
         "report": "reports/component/whist-lab-app-achievements/component-report.html"
       },
       "whist-lab-app-atf-card-table-ui": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 40,
         "failures": 0,
         "errors": 0,
@@ -137,7 +137,7 @@
         "report": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html"
       },
       "whist-lab-app-rules": {
-        "protocol": "ATF_JVM_COMPONENT_EXTENT",
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
         "tests": 39,
         "failures": 0,
         "errors": 0,
@@ -220,7 +220,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-17T06:05:04.845Z",
+    "observedUtc": "2026-11-17T06:06:53.037Z",
     "files": [
       {
         "path": "README.md",
