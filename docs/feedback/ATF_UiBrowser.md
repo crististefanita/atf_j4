@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-[Documentația adaptorului](../../atf-ui-browser/README.md) explică parcursul APK, JAR și Pages. Registrul urmărește comparația pe dispozitiv, calificarea consumatorilor și proveniența pachetului.
+[Documentația adaptorului](../../atf-ui-browser/README.md) explică parcursul APK, JAR și Pages. Registrul urmărește comparația pe dispozitiv și acceptanța în consumatori.
 
 ## Calificarea pe același dispozitiv
 
@@ -20,6 +20,5 @@ Deciziile AI, seriile și Jocul la 0 se extind prin componente cu oracol de dome
 | ID | Responsabilitate | Criteriu de închidere |
 |---|---|---|
 | WEB-01 | Acceptanța pe browser și în jocurile consumatoare. | În Chrome și Edge pe Windows măsoară centrarea, scara și tastatura la 1280 × 720 și 1920 × 1080 la zoom 100% și 125%, plus o fereastră îngustă. În Rentz și Hold’em validează câte un flux pe JAR-ul fixat, cu oracolul jocului și legătura către propriul dosar. |
-| WEB-14 | Identitatea pachetului Web produs din sursele curente. | Leagă versiunea de runtime și JAR-ul de teste de commit, inventarul surselor portabile și amprentele fișierelor. Respinge reutilizarea aceleiași versiuni pentru conținut diferit. Califică exact aceiași octeți în fiecare consumator vizat. |
 
 Publicați capturile native și Web inline în Extent cu distribuirea, comenzile și comparațiile. Folosiți [dovezile de componentă și Playwright](../../atf-ui-browser/README.md#verificare) pentru a selecta tranzițiile care mai cer proba pe dispozitiv.
