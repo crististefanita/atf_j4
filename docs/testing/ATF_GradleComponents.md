@@ -61,7 +61,7 @@ Capture constructor or save arguments before the call without evaluating them tw
 
 ## Reporting profile
 
-A JUnit citation keeps the identity of the parametric and the original verdict. The measured statementis includes fixtures before/after JUnit 4The Reporting Session is created, used and closed on the same publishing wire; tests are not moved on that wire.
+Each JUnit invocation retains its parameterized identity and original verdict. The measured statement includes JUnit 4 before/after fixtures, with publishing outside that interval. Create, use and close the Reporting session on one publishing thread, while tests remain on their execution thread.
 
 The publication profile comes from the context and comparisons captured prior to the rendering. It is incorporated as metadata control and faces owners, phases and rows of HTML. The absence of HTTP is explicit; a logical component does not receive transport or fictitious actions to satisfy an default validator.
 

@@ -75,7 +75,7 @@ External diagnostic references are inventoried and omitted from HTML; mandatory 
 
 The composition of the data is in the main sources of [integration module](../../atf-tests/README.md). Maintenance of the generic rendering component shall be directed by [joint responsibilities](../feedback/README.md).
 
-[Article 4](ATF_Audit.md) confronts identity, values, order and access to content. [Contractele Android](ATF_Android.md) distinguish the publication of a journal from a new interaction on the device.
+[The audit](ATF_Audit.md) verifies identity, values, order and content access. [Android contracts](ATF_Android.md) distinguish republishing a recorded journal from a new interaction with the device.
 
 ## Navigation and cost of large reports
 

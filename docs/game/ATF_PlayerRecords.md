@@ -46,9 +46,9 @@ Only the last hand score phase can power the top. The unique identity of the mat
 
 ## Series and compatibility
 
-The menu of new games provides5 or ±10 points after five consecutive eligible results, or deactivation of the series. Hands of a card keep the eligibility and interruption rules described in the table below. [game rules](ATF_RulesRo.md).
+The new-game menu offers ±5 or ±10 points after five consecutive eligible results, or disables series. One-card hands follow the eligibility and interruption rules in the [game rules](ATF_RulesRo.md).
 
-[GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) is a separate salvation of reward and penalty. Previous rescue without explicit penalty keeps − 5, including when the reward was + 10; the resumption does not recalculate the balances already granted and does not change the rules of that game.
+[GameSessionStore](../../whist-lab-app/app/src/main/java/ro/whistlab/app/persistence/GameSessionStore.java) saves the reward and penalty separately. Legacy saves without an explicit penalty retain −5, including when the reward was +10. Resuming preserves both the awarded balances and the saved game rules.
 
 - `GameConfig.newMatch` is the entry of the menu for symmetrical rules; the historic single-value builder retains the penalty of 5 for existing protocols.
 - Experiments that adopt the new rule explicitly declare both values and qualify separately; the change of menu does not rewrite the corpusses or reference sources.
