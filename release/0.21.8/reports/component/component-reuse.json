@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "decisions": [
+    {
+      "group": "atf-validation",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "atf-test-android",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "atf-tests",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-bidding",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-commands",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-display",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-history",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-achievements",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-atf-card-table-ui",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    },
+    {
+      "group": "whist-lab-app-rules",
+      "decision": "INVALID",
+      "reason": "Receipt-ul de proveniență sau rularea rădăcină nu corespunde manifestului intrărilor."
+    }
+  ]
+}

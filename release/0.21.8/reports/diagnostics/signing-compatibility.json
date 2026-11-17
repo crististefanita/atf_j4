@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "upgradeCompatibility": "PASS",
+  "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+  "evidence": "Static comparison of package, incremented versionCode, existing certificate and verified signed APK",
+  "apkSha256": "5e8d7ccf460ea3bd3c9e2849d7bb10e76b1ae0b103df76f0e9f0f04121a14f19",
+  "nativeExecution": "NOT_RUN"
+}
