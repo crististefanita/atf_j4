@@ -109,8 +109,8 @@ Din rădăcina ATF. Exportul folosește directorul libraries/card-table-ui din d
 
 - `:atf-card-table-ui` este numele proiectului Gradle. Coordonata de distribuție este `ro.cardtable:card-table-ui`, cu versiunea declarată în build. Exportul conține AAR, POM, metadate Gradle și JAR-ul de surse.
 - [Exportul](../../scripts/export-card-table-ui.ps1) păstrează manifestul intrărilor de producție și SHA-256 pentru fiecare fișier al coordonatei. Un export repetat cu aceleași intrări verifică artefactele și le reutilizează. Modificarea intrărilor sub o coordonată existentă cere o versiune nouă.
-- Whist consumă proiectul din sursă. Rentz și Hold’em admit fiecare versiunea fixată, după confruntarea conținutului și a provenienței. O mutare de director nu schimbă identitatea AAR-urilor deja distribuite.
-- AAR-ul include clasele, manifestul și resursele Android, inclusiv CardTableTheme. Dependența se fixează prin coordonata Maven, cu proveniență și hash-uri, după modelul celorlalte biblioteci.
+- Whist consumă proiectul din sursă. Rentz și Hold’em admit fiecare versiunea fixată, după confruntarea conținutului și a provenienței. Versiunea din sursă și fiecare coordonată admisă la consumator au dovezi proprii.
+- AAR-ul include clasele, manifestul și resursele Android, inclusiv CardTableTheme. Dependența se fixează prin coordonata Maven, cu proveniență și hash-uri. [Distribuția Web](../../atf-ui-browser/README.md#bibliotecă-pentru-adaptoare) compilează direct o selecție de surse portabile din modul și publică un JAR separat.
 - [Politica de nume](../card-table-names/README.md) se publică separat ca JAR Java, pentru motoare și probe JVM. O componentă de geometrie poate avea propria coordonată JAR dacă este Android-independentă și are cel puțin doi consumatori JVM reali.
 
 ## Realizări

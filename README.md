@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, și infrastructura ATF care verifică motorul, aplicațiile și livrarea. Motorul Java deservește Android și ținta iOS, iar laboratorul compară politicile de joc pe distribuiri controlate.
+Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, și infrastructura ATF care verifică motorul, aplicațiile și livrarea. Motorul Java deservește Android, Web și ținta iOS. Laboratorul compară politicile de joc pe distribuiri controlate.
 
 ## Jocul
 
@@ -46,7 +46,7 @@ flowchart LR
 
 ### Motorul și platformele
 
-Motorul validează comenzile, calculează scorul și furnizează starea. Aplicațiile afișează proiecțiile și păstrează salvarea locală.
+Motorul validează comenzile, calculează scorul și furnizează starea. Android și iOS îl integrează prin buildurile native. Web îl apelează prin adaptorul JVM sau îl compilează pentru GitHub Pages. [Traseul Android–Web](atf-ui-browser/README.md#ce-folosesc-împreună-android-și-web)
 
 ```mermaid
 flowchart LR
@@ -69,7 +69,7 @@ flowchart LR
 - Motorul deține regulile, sesiunea, scorul și deciziile AI. Politica AI primește mâna proprie și informația publică a mesei.
 - Android păstrează adaptarea la ecrane, preferințele și checkpoint-ul. Biblioteca vizuală comună oferă prezentarea mesei și emite intențiile de interacțiune.
 - SwiftUI apelează puntea restrânsă către motorul tradus cu J2ObjC. Ținta iOS are o calificare proprie pe simulator. [Ghidul iOS](docs/platform/ATF_iOSDelivery.md)
-- Ediția GitHub Pages apelează motorul Java compilat într-un Web Worker și păstrează profilul în browser. [Distribuția browser](atf-ui-browser/README.md#whist-pe-github-pages)
+- Diagrama arată dependențele buildurilor native. [Adaptorul Web](atf-ui-browser/README.md#traseele-de-execuție-web) explică traseul separat al aceluiași motor și al contractelor portabile de afișare.
 
 </details>
 

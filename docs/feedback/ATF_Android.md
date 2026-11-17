@@ -108,9 +108,7 @@ Limita de memorie a adaptorului rămâne distinctă de geometria interfeței.
 
 ## AND-02 · Mâna de 17 cărți pe ecran compact
 
-- [x] Profilul 720×1280 la 360 dpi este calificat pe APK în „Coborâre și urcare”, cu trei jucători. La deschiderea licitației, cele 18 opțiuni ocupau patru rânduri, iar mâna lipsea din zona vizibilă. Bara compactă a expus cărțile, însă cele două rânduri ale levatei încă depășeau bugetul vertical, iar rotunjirea fracționară muta chenarul de jos cu un pixel.
-- Verifică mâna completă pe înălțime, toate cele 17 cărți prin derulare orizontală, accesul la opțiunile legale și aceleași chenare în licitație și joc. Regresia de componentă reproduce bugetul de spațiu observat. Închide criteriul cu Extent de pe APK-ul semnat, în toate profilurile de calificare.
-- Un gest ADB acceptat poate expune doar o parte din mână. Verifică identitățile acumulate pe mai multe poziții și păstrează pragul de 17 chiar dacă ai atins limita de gesturi.
+- Extinde [probele responsive ale APK-ului](../../release/README.md) la combinațiile rămase din matricea 3–6 locuri, RO/EN, text mărit și AutoGame. Urmărește accesul la cărțile din zona derulabilă, semnalizarea actorului și pozițiile fixe între licitație, joc și colectare. [Strategia de afișaj](../testing/ATF_Display.md)
 
 ## Stabilitatea scenariilor Android
 

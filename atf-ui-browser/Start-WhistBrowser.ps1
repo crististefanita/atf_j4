@@ -34,14 +34,10 @@ $sources = @(
     Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/animation/TrickCollectionRequest.java'
     Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/theme/GameHeaderTypography.java'
     Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/theme/TrumpTileStyle.java'
-    Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/theme/TableColors.java'
     $app = Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app'
     foreach ($metric in 'table/TableLayoutMetrics','table/TrickCardMetrics','bidding/BidGridMetrics','cards/CardFaceMetrics','hand/HandLayoutMetrics') {
         Join-Path $app "$metric.java"
     }
-    $animation = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation'
-    Join-Path $animation 'CollectionTarget.java'
-    Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/turn/TurnPacing.java'
     $achievements = Join-Path $checkout 'whist-lab-app/app/src/main/java/ro/whistlab/app/achievements'
     foreach ($name in 'WhistAchievementCatalog','WhistAchievementCodec','WhistAchievementRepository','WhistAchievementState','WhistHandFacts','WhistMatchFacts') {
         Join-Path $achievements "$name.java"
@@ -56,10 +52,6 @@ $sources = @(
     Join-Path $app 'score/ScoreRows.java'
     Join-Path $app 'table/content/WhistTableContent.java'
     Join-Path $app 'cards/WhistCardFace.java'
-    $ui = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui'
-    foreach ($contract in 'seat/SeatContent','table/PlayedCardContent') {
-        Join-Path $ui "$contract.java"
-    }
     $CatalogSource
 )
 $footerImage = Join-Path $checkout 'whist-lab-app/app/src/main/res/drawable-nodpi/teo_dedication.png'

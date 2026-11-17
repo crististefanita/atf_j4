@@ -2,7 +2,59 @@
 
 ## Pe scurt
 
-Modulul servește o masă locală în browser, cu motorul JVM al jocului. Whist este adaptorul inclus. Rentz și Hold’em furnizează adaptoarele lor și folosesc același server, același afișaj și aceleași controale web.
+Whist folosește motorul Java și contractele portabile ale mesei atât în APK, cât și în browser. Web rulează fie prin serverul JVM local, fie ca site static cu motorul compilat prin TeaVM. Rentz și Hold’em integrează versiuni fixate ale bibliotecii Web prin adaptoare proprii.
+
+**Trasee rapide** · [Contract Android–Web](#ce-folosesc-împreună-android-și-web) · [Rulare Web](#traseele-de-execuție-web) · [JAR și AAR](#bibliotecă-pentru-adaptoare) · [Verificare](#verificare)
+
+## Ce folosesc împreună Android și Web
+
+Cele două interfețe împart regulile jocului și calculele portabile ale mesei. Fiecare adaptor măsoară și desenează cu instrumentele platformei sale.
+
+```mermaid
+flowchart LR
+    Android[Interfață Android]
+    Web[Interfață Web]
+    Engine[Motor Whist]
+    Table[Modelul mesei]
+    Android -->|comandă| Engine
+    Web -->|comandă| Engine
+    Android -->|aplică| Table
+    Web -->|aplică| Table
+```
+
+<details>
+<summary>Legendă privind regulile, geometria și randarea</summary>
+
+- Motorul validează licitațiile și cărțile, decontează scorul și stabilește actorul. Adaptoarele publică starea vizibilă a mesei și opțiunile jucătorului.
+- Modelul mesei cuprinde geometria, evantaiul, aspectul cărților și temporizarea. Android îl aplică prin View-uri, iar Web prin măsurători ale fonturilor și elemente DOM.
+- Tipografia și zonele de sistem se măsoară separat. Probele cu aceleași intrări verifică formulele, iar comparația APK–browser pe dispozitiv măsoară rezultatul randat. [Componentele de afișare](../docs/testing/ATF_DisplayComponents.md)
+
+</details>
+
+## Traseele de execuție Web
+
+```mermaid
+flowchart LR
+    Page[Masă în browser]
+    Http[Server JVM]
+    Worker[Web Worker]
+    Adapter[Adaptor Whist]
+    Engine[Motor Java]
+    Page -->|trimite prin| Http
+    Page -->|trimite prin| Worker
+    Http -->|apelează| Adapter
+    Worker -->|apelează| Adapter
+    Adapter -->|execută în| Engine
+```
+
+<details>
+<summary>Legendă privind traseul comenzilor și datele locale</summary>
+
+- Serverul JVM rulează jocul în procesul local și servește resursele Web. Sesiunea partidei aparține serverului și rămâne asociată filei.
+- Site-ul static încarcă adaptorul și motorul transpuse în JavaScript. Mesajele către Web Worker rămân pe dispozitiv. Transportul local păstrează profilul și checkpointul prin stocarea browserului.
+- Diagrama urmărește comanda. Răspunsul întoarce revizia, opțiunile legale și starea publică pe același traseu. [Transportul ediției statice](pages/web/local-transport.mjs)
+
+</details>
 
 | Strat | Responsabilitate |
 |---|---|
@@ -54,7 +106,7 @@ node .\atf-ui-browser\pages\verify.mjs $Site $EvidenceRoot
 ```
 
 - Pentru modificările de licitare, AutoGame, limbă sau realizări, rulați `node .\atf-ui-browser\pages\verify-controls.mjs $Site $EvidenceRoot`. Proba folosește motorul compilat și înlocuiește temporizatoarele și stocarea browserului în cazurile controlate.
-- Adăugați `--ui-only` pentru geometrie, ritmul mutărilor și parcursul vizual, când inventarul pachetului și partida completă au dovezi valabile.
+- Adăugați `--ui-only` pentru geometrie și ritmul mutărilor. Pentru a include parcursul vizual, treceți calea către Chrome sau Edge înainte de opțiune. `--browser-only` selectează doar parcursul vizual și cere executabilul.
 - Pentru istoricul scorului și compatibilitatea checkpointului, generați datele legale cu [WhistRecordsFixture](pages/WhistRecordsFixture.java) și rulați [verificarea Pages](pages/verify-records.mjs) cu directorul site, dosarul de dovezi și fișierul JSON al datelor. Fixture-ul compilează cu classpath-ul lansatorului JVM și `ScoredHandFixture` din testele aplicației.
 - Pentru limbă, setări, navigare și Joacă din nou, rulați `node .\atf-ui-browser\pages\verify-navigation.mjs $Site $EvidenceRoot`. Proba produce și un checkpoint local pentru verificarea vizuală a reluării de la scorul final.
 - Pentru marcajul cărților, ordinea levatelor și redimensionare, rulați `node .\atf-ui-browser\pages\verify-effects.mjs $Site $EvidenceRoot`.
@@ -75,7 +127,7 @@ Rulați comanda din proiect cu PowerShell 7, JDK 21 și mediul Gradle Android co
 
 Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress` selectează adresa locală accesibilă. Deschideți adresa completă în browserul telefonului.
 
-## Datele de pe telefon
+## Datele în rularea cu server JVM
 
 | Date | Unde se păstrează |
 |---|---|
@@ -88,15 +140,38 @@ Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress
 
 ## Bibliotecă pentru adaptoare
 
-`lib/atf-ui-browser-0.2.6.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează adaptoarele proprii față de JAR și verifică suma SHA-256 la pornire.
+Whist construiește Web și APK din surse. Biblioteca pentru celelalte jocuri se exportă în două formate, cu verificări proprii la fiecare consumator.
 
-Arhiva `lib/atf-ui-browser-0.2.6-tests.jar` verifică reviziile, meniul, ridicarea, colectarea, încadrarea textului atuului și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
-
-```powershell
-.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.6
+```mermaid
+flowchart LR
+    Shared[Calcule portabile]
+    Native[View-uri Android]
+    Browser[Server și DOM]
+    Aar[AAR Android]
+    Jar[JAR Web]
+    Native -->|include în| Aar
+    Shared -->|intră în| Aar
+    Shared -->|intră în| Jar
+    Browser -->|include în| Jar
 ```
 
-Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul extern afișat. La o schimbare a contractelor sau a resurselor, incrementați versiunea și actualizați aceiași octeți și aceleași amprente în consumatori. Reutilizați JAR-ul existent când se schimbă numai motorul sau adaptorul unui joc.
+<details>
+<summary>Legendă privind conținutul pachetelor</summary>
+
+- [AAR-ul Android](../whist-lab-app/atf-card-table-ui/README.md#împachetare-și-consum) conține widgeturi, teme, resurse și calculele portabile selectate de Gradle.
+- [Lansatorul Web](Start-CardTableBrowser.ps1) compilează o selecție explicită de surse portabile, inclusiv conținutul locurilor, cărțile de pe masă, culorile și ritmul mutărilor. JAR-ul include serverul, contractul adaptorului și resursele DOM. Fiecare joc furnizează motorul și adaptorul.
+- Arhiva de teste Web se exportă separat. Probează resursele, reviziile, meniul, ridicarea, colectarea, încadrarea atuului și chenarele în browser. JAR-urile exportate au fișiere SHA-256 alăturate.
+- Site-ul Whist folosește [alt build](Build-WhistPages.ps1), care produce resurse statice din adaptorul și motorul Whist. Proba Pages și acceptanța JAR-ului de către Rentz sau Hold’em au intrări diferite.
+
+</details>
+
+```powershell
+.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion
+```
+
+- Alegeți `$BrowserLibraryVersion` pentru candidatul care se împachetează. Pachetul și amprentele se scriu în directorul extern afișat. Rentz și Hold’em fixează propriile versiuni în `atf-ui-browser/lib` și califică individual artefactele admise.
+- La o schimbare a surselor incluse, a contractelor sau a resurselor, exportați o versiune nouă. Verificați lansarea și prima comandă cu JAR-ul fizic pe classpath alături de adaptor, motor și dependențele externe.
+- Promovați aceiași octeți și aceleași amprente în consumatorii calificați. Versiunea cache-ului din HTML urmărește actualizarea resurselor site-ului. [Criteriul pentru identitatea pachetului](../docs/feedback/ATF_UiBrowser.md#criterii-de-închidere)
 
 ## Verificare
 

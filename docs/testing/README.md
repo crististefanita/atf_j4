@@ -4,7 +4,7 @@
 
 ## Pe scurt
 
-Testarea separă corectitudinea unei reguli, colaborarea componentelor, calitatea politicii și interacțiunea Android.
+Testarea separă corectitudinea unei reguli, colaborarea componentelor, calitatea politicii și interacțiunile randate pe Android și Web.
 Nivelul exprimă limita verificată, iar colecția selectează cazurile și costul execuției.
 
 ## Alegerea verificării
