@@ -1,3 +1,9 @@
+@font-face {
+  font-family: CardTableSuits;
+  src: url("./card-suits.woff2") format("woff2");
+  font-display: block;
+  unicode-range: U+2660, U+2663, U+2665-2666;
+}
 :root {
   font: 100% Roboto, "Segoe UI", sans-serif;
   color: #1a3027;
@@ -632,18 +638,18 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   align-items: flex-start;
   gap: var(--whist-title-gap);
 }
-.whist-header-details > :first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.whist-header-details > :first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; padding-block-start: var(--whist-summary-inset, 0); }
 .whist-progress {
   font-size: calc(var(--progress-size, .6875rem) * var(--whist-text-scale));
-  line-height: calc(.9375rem * var(--whist-text-scale));
+  line-height: var(--whist-summary-leading, calc(.9375rem * var(--whist-text-scale)));
   font-weight: 700;
   color: #e5efe6;
 }
 .whist-bids {
   font-size: calc(var(--bid-size, .73125rem) * var(--whist-text-scale) * .9);
-  line-height: calc(.90625rem * var(--whist-text-scale));
+  line-height: var(--whist-summary-leading, calc(.90625rem * var(--whist-text-scale)));
   color: #c2d8c7;
-  white-space: pre-line;
+  white-space: var(--whist-summary-whitespace, pre-line);
 }
 .whist-trump {
   display: flex;
@@ -662,6 +668,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 }
 .whist-trump strong { font-size: var(--whist-trump-heading-size, .5625rem); line-height: .78125rem; }
 .whist-trump-value, .whist-trump .card {
+  font-family: CardTableSuits, Roboto, "Segoe UI", sans-serif;
   font-size: var(--whist-trump-value-size, 1.25rem);
   font-weight: 700;
   line-height: 1.6875rem;

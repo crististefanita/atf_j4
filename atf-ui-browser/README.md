@@ -87,12 +87,12 @@ Pentru un telefon conectat la rețeaua de test, `-ListenAddress $LocalLanAddress
 
 ## Bibliotecă pentru adaptoare
 
-`lib/atf-ui-browser-0.2.5.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează adaptoarele proprii față de JAR și verifică suma SHA-256 la pornire.
+`lib/atf-ui-browser-0.2.6.jar` conține serverul, contractele Java, geometria partajată și resursele DOM. Rentz și Hold’em compilează adaptoarele proprii față de JAR și verifică suma SHA-256 la pornire.
 
-Arhiva `lib/atf-ui-browser-0.2.5-tests.jar` verifică reviziile, meniul, ridicarea, colectarea, încadrarea textului atuului și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
+Arhiva `lib/atf-ui-browser-0.2.6-tests.jar` verifică reviziile, meniul, ridicarea, colectarea, încadrarea textului atuului și stabilitatea chenarelor după recalcularea tablei în Chrome sau Edge. Probele folosesc suprafața declarată de fiecare adaptor.
 
 ```powershell
-.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.5
+.\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version 0.2.6
 ```
 
 Generarea cere JDK 21 și scrie ambele arhive cu amprentele lor în directorul extern afișat. La o schimbare a contractelor sau a resurselor, incrementați versiunea și actualizați aceiași octeți și aceleași amprente în consumatori. Reutilizați JAR-ul existent când se schimbă numai motorul sau adaptorul unui joc.
@@ -132,5 +132,7 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 |---|---|
 | Componentă | Verifică reviziile, refuzurile, geometria, profilul și decontarea prin contractul HTTP sau motorul Pages, cu stocare și temporizare controlate. |
 | UI Web | Verifică în Chromium indicele `10` și accesul la ultima carte într-o mână de 17 cărți, inclusiv cu text la 200%. Verifică și licitarea de la tastatură, atingerea respinsă, AutoGame și profilul după reîncărcare. Scrie `browser-ui-checks.json` și capturile în directorul rulării. |
-| Comparație pe Android | Folosește APK și Chrome pentru aspecte legate de sistem, inclusiv fonturile, gesturile native și zonele rezervate. Înregistrează viewportul, densitatea și SHA-ul APK-ului în `paired-android.json`. |
+| Comparație pe Android | Compară APK și Chrome la același viewport, la licitare și joc. Verifică în RO și EN pozițiile antetului și ale atuului din carte, din simbol și fără atu, inclusiv la text mărit. Înregistrează viewportul, densitatea și SHA-ul APK-ului în `paired-android.json`. |
 | Raportare | Extent citește rezultatele fiecărui nivel și atașează capturile PNG inline. |
+
+Chenarul de atu încarcă local un subset Noto Sans Symbols 2 cu cele patru simboluri de suită. [Licența OFL](src/main/web/card-suits-OFL.txt)

@@ -88,6 +88,9 @@ public final class WhistBrowser implements BrowserGame {
         tokens.add(new Token("--whist-face-inverted-size", CardFaceMetrics.INVERTED_SIZE_DP + "px"));
         tokens.add(new Token("--whist-menu-touch", "48px"));
         tokens.add(new Token("--whist-title-gap", "8px"));
+        tokens.add(new Token("--whist-summary-inset", "1px"));
+        tokens.add(new Token("--whist-summary-leading", ".9375rem"));
+        tokens.add(new Token("--whist-summary-whitespace", "pre"));
         tokens.add(new Token("--whist-trump-width", TrumpTileMetrics.WIDTH_DP + "px"));
         tokens.add(new Token("--whist-trump-min-height", TrumpTileMetrics.MIN_HEIGHT_DP + "px"));
         tokens.add(new Token("--whist-trump-padding", TrumpTileMetrics.PADDING_DP + "px"));

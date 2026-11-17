@@ -78,6 +78,10 @@ try {
       assert.equal(asset.status, 200, file);
       assert.ok((await asset.text()).length > 0, file);
     }
+    const font = await fetch(new URL("card-suits.woff2", url));
+    assert.equal(font.status, 200);
+    assert.equal(font.headers.get("content-type"), "font/woff2");
+    assert.equal(Buffer.from(await font.arrayBuffer()).subarray(0, 4).toString("ascii"), "wOF2");
     const request = client(url);
     await request("/api/setup", undefined, 403, false);
     const setup = await request("/api/setup");

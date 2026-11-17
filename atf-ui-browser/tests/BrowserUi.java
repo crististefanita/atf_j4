@@ -21,7 +21,7 @@ class BrowserUi {
     private static final String SITE_PATH = "/whist/";
     private static final Set<String> ASSETS = Set.of("index.html", "table.css", "table.mjs", "viewport.mjs",
             "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs",
-            "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs");
+            "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs", "card-suits.woff2");
     private static final String MOBILE_AGENT =
             "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 Chrome/131.0.0.0 Mobile Safari/537.36";
     private static final Gson JSON = new Gson();
@@ -74,6 +74,14 @@ class BrowserUi {
                     results.add(run(browser, mobile(), output, "WEB-UI-AUTO", "Fața cărții în mână, la depunere și colectare",
                             "Rangul, simbolurile și pozițiile lor rămân proporționale când cartea trece între suprafețe.",
                             (page, images) -> autoGame(page, url, checkpoint, output, images)));
+                }
+                if (check.equals("all") || check.equals("header")) {
+                    for (int width : List.of(414, 360)) {
+                        results.add(run(browser, mobile().setViewportSize(width, 896), output, "WEB-12-HEADER-" + width,
+                                "Antet la text 200% și lățime " + width,
+                                "Licitațiile ocupă două rânduri fără decupare și încep imediat sub progres.",
+                                (page, images) -> enlargedHeader(page, url, wideCheckpoint)));
+                    }
                 }
                 if (check.equals("all") || check.equals("numbers")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
@@ -280,6 +288,23 @@ class BrowserUi {
         }
     }
 
+    private static Map<String, Object> enlargedHeader(Page page, String url, String checkpoint) {
+        page.addInitScript("""
+                document.addEventListener("DOMContentLoaded", () => {
+                  document.documentElement.style.fontSize = "200%";
+                }, { once: true });
+                """);
+        resumeHand(page, url, JSON.toJson(Map.of("checkpoint", checkpoint)));
+        assertHeader(page, true);
+        require((boolean) page.evaluate("""
+                () => [...document.fonts].some(font =>
+                  font.family === "CardTableSuits" && font.status === "loaded")
+                """), "Card-suit font is missing");
+        return Map.of("summary", page.locator(".whist-bids").innerText(),
+                "fontPx", page.locator(".whist-bids").evaluate("node => getComputedStyle(node).fontSize"),
+                "heightPx", page.locator(".whist-bids").boundingBox().height);
+    }
+
     private static Map<String, Object> enlargedNumbers(Page page, String url, String checkpoint,
                                                        Path output, List<Image> images) {
         page.addInitScript("""
@@ -355,9 +380,17 @@ class BrowserUi {
         var trump = header.locator(".whist-trump");
         assertThat(title).hasCSS("font-size", enlarged ? "28px" : "14px");
         assertThat(progress).hasCSS("font-size", enlarged ? "33px" : "16.5px");
-        double bidsFont = ((Number) header.locator(".whist-bids")
-                .evaluate("node => parseFloat(getComputedStyle(node).fontSize)")).doubleValue();
-        require(Math.abs(bidsFont - (enlarged ? 31.59 : 15.795)) < .005, "Wrong bid summary size");
+        var bids = header.locator(".whist-bids");
+        assertThat(progress).hasCSS("line-height", enlarged ? "30px" : "15px");
+        assertThat(bids).hasCSS("line-height", enlarged ? "30px" : "15px");
+        require((boolean) bids.evaluate("""
+                node => node.scrollWidth <= node.clientWidth + 1
+                  && node.textContent.split("\\n").length === 2
+                """), "Bid summary is clipped or wrapped");
+        var progressBounds = progress.boundingBox();
+        var bidsBounds = bids.boundingBox();
+        near(progressBounds.y + progressBounds.height, bidsBounds.y);
+        near((enlarged ? 60 : 30) * scale, bidsBounds.height);
         assertThat(trump).hasCSS("width", "57px");
         assertThat(trump).hasCSS("height", enlarged ? "89px" : "49.5px");
         assertThat(menu).hasCSS("width", "48px");
@@ -658,7 +691,7 @@ class BrowserUi {
                     exchange.sendResponseHeaders(404, -1);
                     return;
                 }
-                String type = name.endsWith(".mjs") ? "text/javascript" :
+                String type = name.endsWith(".woff2") ? "font/woff2" : name.endsWith(".mjs") ? "text/javascript" :
                         name.endsWith(".css") ? "text/css" : "text/html";
                 exchange.getResponseHeaders().set("Content-Type", type + "; charset=utf-8");
                 exchange.getResponseHeaders().set("Cache-Control", "no-store");

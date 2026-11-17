@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.5";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.6";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -193,7 +193,9 @@ async function playCards(steps) {
   await placeTable();
   for (const step of steps) {
     if (step.startsTrick) center.replaceChildren();
-    stage.querySelector(".whist-bids").textContent = step.bids;
+    const summary = stage.querySelector(".whist-bids");
+    summary.textContent = step.bids;
+    fitBidSummary(summary);
     for (const [seat, node] of seats.entries()) {
       applySeatFacts(node, step.seatFacts[seat]);
       markSeat(node, seat === step.play.seat, false);
@@ -579,29 +581,42 @@ function bidding(actions, content, native) {
   select(actions.find(move => move.key === selectedBid) ?? suggested ?? { key: undefined });
 }
 
-const trumpText = document.createElement("canvas").getContext("2d");
+const headerText = document.createElement("canvas").getContext("2d");
+let trumpFont;
 
-function fitTrumpText(content) {
+function fitHeaderText(node, width) {
+  node.style.removeProperty("font-size");
+  const style = getComputedStyle(node);
+  const nominal = parseFloat(style.fontSize);
+  headerText.font = `${style.fontWeight} ${nominal}px ${style.fontFamily}`;
+  const lines = (node.dataset.face ?? node.textContent).split("\n");
+  const ink = Math.max(...lines.map(line => headerText.measureText(line).width));
+  const available = width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  node.style.fontSize = fitTextWidth(nominal, ink, available) + "px";
+}
+
+function fitBidSummary(summary) {
+  if (summary && getComputedStyle(summary).whiteSpace === "pre") {
+    fitHeaderText(summary, summary.clientWidth - 1);
+  }
+}
+
+async function fitTrumpText(content) {
   const tile = content.querySelector(".whist-trump");
   if (!tile) return;
-  const tileStyle = getComputedStyle(tile);
-  const width = tile.clientWidth - parseFloat(tileStyle.paddingLeft) - parseFloat(tileStyle.paddingRight);
-  for (const line of tile.children) {
-    line.style.removeProperty("font-size");
-    const style = getComputedStyle(line);
-    const nominal = parseFloat(style.fontSize);
-    trumpText.font = `${style.fontWeight} ${nominal}px ${style.fontFamily}`;
-    const ink = trumpText.measureText(line.dataset.face ?? line.textContent).width;
-    const available = width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
-    line.style.fontSize = fitTextWidth(nominal, ink, available) + "px";
-  }
+  trumpFont ??= document.fonts.load("20px CardTableSuits", "♠♣♥♦").catch(() => []);
+  await trumpFont;
+  const style = getComputedStyle(tile);
+  const width = tile.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+  for (const line of tile.children) fitHeaderText(line, width);
 }
 
 async function placeTable(content = stage.firstElementChild) {
   const board = content?.querySelector(".board");
   const hand = content?.querySelector(".hand");
   if (!board || !hand) return;
-  fitTrumpText(content);
+  await fitTrumpText(content);
+  fitBidSummary(content.querySelector(".whist-bids"));
   const request = {};
   layoutRequests.set(board, request);
   const seats = [...board.querySelectorAll(".seat")];

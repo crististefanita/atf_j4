@@ -32,7 +32,8 @@ public final class BrowserServer implements AutoCloseable {
             "/auto-game.mjs", new Asset("auto-game.mjs", "text/javascript; charset=utf-8"),
             "/records.mjs", new Asset("records.mjs", "text/javascript; charset=utf-8"),
             "/hand-feedback.mjs", new Asset("hand-feedback.mjs", "text/javascript; charset=utf-8"),
-            "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"));
+            "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"),
+            "/card-suits.woff2", new Asset("card-suits.woff2", "font/woff2"));
     private final HttpServer server;
     private final java.util.concurrent.ExecutorService tasks = Executors.newFixedThreadPool(4);
     private final String access;
