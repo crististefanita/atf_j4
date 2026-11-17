@@ -1,4 +1,4 @@
-# Governance of changes in tests
+# Governance of test changes
 
 ## Overview
 
@@ -60,7 +60,7 @@ The proof command expresses the planned verification and runs separately. [Compo
 
 ## Proof of verified control
 
-Place control and selection of tests in the assessed commissary. Create proof in a new, external checkout file. The launcher shall compile an isolated copy and publish the evidence only after confirmation of the source stability.
+Keep the control and its test selection in the commit being assessed. Write the proof to a new directory outside the checkout. The launcher builds an isolated copy and publishes evidence after verifying that its inputs did not change.
 
 ```powershell
 .\scripts\run-component-suites.ps1 -AllTestChangeControls -TestChangeBaseRef $reviewBase -RunRoot $runRoot

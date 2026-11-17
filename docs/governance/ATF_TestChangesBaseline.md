@@ -183,7 +183,7 @@ testChanges:
       - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
 ```
 
-Examples are extracted from RADMES and checked on physical JARs. Change keeps published pairs and existing oracles.
+Examples are extracted from READMEs and checked on physical JARs. Change keeps published pairs and existing oracles.
 
 </details>
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The components of the application, engine, independent player, graphic library and rasters use the same [punte JUnit](../../whist-lab-app/test-audit/README.md). The Oracle remains in the test; the kit captures the comparison when evaluated, and Reporting builds the canonical HTML. [Common strategy](README.md) determine the selection after risk.
+The application, game engine, independent player, graphics library and raster tests use the same [JUnit bridge](../../whist-lab-app/test-audit/README.md). The Oracle remains in the test; the kit captures the comparison when evaluated, and Reporting builds the canonical HTML. Use the [test strategy](README.md) to select suites based on risk.
 
 ## Liabilities and levels
 
@@ -49,7 +49,7 @@ sequenceDiagram
 <details>
 <summary>Legend: catch does not repeat operation</summary>
 
-The arguments of the manufacturer or the rescue shall be designed prior to the call without reassessment. The local context of the assertion may also contain calculated results; it shall not be presented as an initial state. The Oracle and Order of the Operators remain those of the test.
+Capture constructor or save arguments before the call without evaluating them twice. List computed values in the assertion context, separate from the initial state. The test owns the oracle and evaluation order.
 
 </details>
 
@@ -84,7 +84,7 @@ The qualification scheme with audited groups renounces the invocation in HTML, a
 
 ## Rules, policies and memory
 
-[Oracle of the Romanian side](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistModelTest.java) compares distribution, bid, legality, winners, score and resumption for each move. The compliant results shall be aggregated on the invariant and the first non-matching shall publish the hand, step and comparative values. Parametrization remains separate invoicing.
+[Romanian Whist oracle](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/RomanianWhistModelTest.java) checks the deal, bids, legal moves, trick winners, scoring and restoration. The report groups successes by invariant and records the hand, step, expected value and actual value of the first mismatch. Each parameterized invocation has its own report entry.
 
 | Selection | Contract |
 |---|---|

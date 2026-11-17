@@ -1,8 +1,8 @@
-# Qualification of a relay
+# Release qualification
 
 ## Overview
 
-A single candidate file groups the plan, results and report of each selection. The preparation is done outside the project; the active folder is replaced only after the qualification of the new APK, according to the [retention](../platform/ATF_ReleaseRetention.md). [Profit policy on platforms](../../config/release-platform-rag-policy.json) fix the provenance and gates of the readonly verdict prior to the promotion.
+The candidate dossier contains the test plan, results and report for each selection. Prepare it outside the checkout and replace the active dossier only after qualifying the new APK, as defined by the [retention policy](../platform/ATF_ReleaseRetention.md). The [platform evidence policy](../../config/release-platform-rag-policy.json) defines the provenance requirements and checks for the read-only verdict before promotion.
 
 The official repository branch is `main`. Push qualified code to `main` and tag the verified source commit for the version.
 
@@ -10,34 +10,34 @@ The official repository branch is `main`. Push qualified code to `main` and tag 
 
 ```mermaid
 flowchart LR
-    SOURCE[Snapshot fixat] -->|compares with the published edition| DIFF[Selection from diff]
+    SOURCE[Pinned snapshot] -->|compares with the published edition| DIFF[Tests selected from the diff]
     DIFF -->|running or re-using in TMP| JVM[Components and contracts]
-    JVM -->|face data| HTML[Retrieved HTML]
-    HTML -->|permite| APK[Building and identity APK]
-    APK -->|check the change| NATIVE[Sanity Android selectat]
-    NATIVE -->|face live and governance| HANDOFF[Dosar calificat]
+    JVM -->|reconciles evidence| HTML[Standalone HTML]
+    HTML -->|permits| APK[APK build and identity]
+    APK -->|check the change| NATIVE[Selected Android sanity checks]
+    NATIVE -->|checks live state and governance| HANDOFF[Qualified dossier]
 ```
 
 <details>
 <summary>Legend: each stage keeps its own verdict</summary>
 
-A component ratio shall qualify the inputs and comparisons of JVM. The sanityqualifies the interaction on the identified APK; the browser verifies access to evidence. The publication of GitHub is a later step of the operator.
+The component report validates JVM inputs and comparisons. The sanity check validates interaction with the identified APK, and the browser verifies access to the evidence. An operator publishes the release on GitHub after qualification.
 
 </details>
 
-| Pas | Selection and required result |
+| Step | Selection and required result |
 |---|---|
-| 1. Difference | Set the full inventory of copied sources and libraries in TMP. [Selectorul](#selection-of-diff-tests) identifies the basis, the changed paths and the evidence required by the affected flows. |
+| 1. Difference | Set the full inventory of copied sources and libraries in TMP. [The selector](#selection-of-diff-tests) identifies the basis, the changed paths and the evidence required by the affected flows. |
 | 2. Components | Run the affected oracles and rejection checks. [Gradle components](ATF_GradleComponents.md) and the [history suite](ATF_DisplayComponents.md#reporting-of-historical-components) capture the context and comparisons. Each Gradle selection has its own Extent HTML report and receipt, published through `atf-reporting`. Temporary JUnit results are checked against the HTML before the temporary copies are removed. |
 | 3. Publication | Face exact identities and results of JUnit-HTML on each selection; inspect the fallback only if selected and qualified. Check the original cause, the abort, lack of capture and inline images Base64. The XMLs remain temporary oracle, not duplicate report in the final folder. Controlled FAILs qualify the publicist and are delimited by the product tests. |
 | 4. HTML | Apply [minimum interactive revision](../reporting/ATF_Audit.md#minimum-interactive-revision) to the HTML identified by hash; keep owners, controls and sample limits. |
 | 5. APK | Build from snapshot in TMP; check the version, SDKs, bytes, SHA- 256, CRC, signature and alignment. Unbug and Release have distinct identities. |
 | 6. Android | Book the device; run the short change scenario and risk-distinguishing profile. Restore data and configuration. A full match is not repeated on all resolutions. |
-| 7. Predare | Confront the relevant live sources, reports, test population, links and governance. Please record the previous checked prior to the replacement of the active file and APK. |
+| 7. Handoff | Verify the relevant live sources, reports, executed tests, links and governance. Record the previously qualified release before replacing the active dossier and APK. |
 
-## Organisation of candidate file
+## Candidate dossier layout
 
-| Intrare | Canonical content |
+| Entry | Canonical content |
 |---|---|
 | `README.md` | Steps in order, actual selections, status of each and links to results. |
 | `qualification.json` | The inventory of selections, orders, sources, hashes and limits; an unexecuted step remains `PENDING`, with no total deduction. |
@@ -55,9 +55,9 @@ Each executed primary selection owns a canonical Extent report and an execution 
 - PNG captures are incorporated Base64 in the suite report.
 - The component reports and E2E have different owners and do not meet in a common population.
 
-| Selection | Receipt-ul minim | Verified link |
+| Selection | Minimum receipt | Verified link |
 |---|---|---|
-| Maven or Gradle component | `execution.json` per group and common source receipts | HTML hashtag, number and results, source provenance and inventory correspond to the qualified manifest. |
+| Maven or Gradle component | `execution.json` per group and common source receipts | The HTML hash, test counts and results, source provenance and inventory match the qualified manifest. |
 | Android E2E | `execution.json` next to the suite HTML | The installed APK, version, commit and source fingerprint, protocol, results, Extent hash and inline PNG image count match the manifest and report. |
 
 - The release manifesto hashs separately HTML and Receipt.
@@ -66,7 +66,7 @@ Each executed primary selection owns a canonical Extent report and an execution 
 - JUnit XML remains temporarily independent; the final dossier does not keep a second report.
 - The catches are inline Base64; release folder does not duplicate PNG files already incorporated.
 
-## READMETER OF THE FACTOR
+## Release dossier README
 
 The first part provides the main report and the status of the qualification. Details remain schematic, with one source for each result; the READMEM sends to inventory and to [joint strategy](README.md), without copying the general rules.
 
@@ -81,17 +81,17 @@ The first part provides the main report and the status of the qualification. Det
 | Dovezi separate | For each file: specific reason, consumer or diagnostic question and identity; JUnit without captured comparisons remains within its limit. |
 | Limits and next step | Unexecuted cases, sources exchanged after rolling and the criterion left before the building or promotion. |
 
-## Area of public readme
+## Public README contract
 
 - **README public: ** main page offers the current version and direct download. SHA-256 remains in the manifest and evidence; RAG verifies separately that the link corresponds to the binar.
 - **Candidate:** `release/index.json` keep the editions published and may declare `candidateVersion`The readmees face. `release/candidate.json`, in the condition `PREPARED`Use. [branch test channel](../platform/ATF_AndroidDelivery.md#distribution-through-github) when requiring access before qualification.
 - **Promotion: ** by qualification, move the manifest and evidence in `release/{version}/`, update `currentVersion` and `versions`, then remove `candidateVersion`. The READMEM is part of the source print; any change in link after selection requires resumption of qualification.
 
 - **Statements: ** `PENDING` expresses an unexecuted step; `SKIP` / abort expresses the result of the statement of statement. A result of `FAIL` or a publication error shall be retained, together with the impact on the qualification.
-- **History: ** a previous sample may be explicitly highlighted, with the binary and its purpose. The movement of documents or updating of the RADME does not qualify a new APK.
+- **History: ** a previous sample may be explicitly highlighted, with the binary and its purpose. The movement of documents or updating of the README does not qualify a new APK.
 - **Retreatment: ** to document correction, keep the source of the results and describe the re-checked selection; a past composition of results does not become a single whole new run.
 
-## Orders and limits
+## Commands and boundaries
 
 ### Verdictul RAG read-only
 
@@ -116,7 +116,7 @@ The suite of components runs the evaluator on local test files. Each class holds
 |---|---|---|
 | Provenance | [ReleaseRagProvenanceComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagProvenanceComponentTest.java) | Snapshot, the integrity of the payload, the citation of the plan and the re-use of component evidence. |
 | Android | [ReleaseRagAndroidComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagAndroidComponentTest.java) | Signature, attaching E2E proof to APK and source, data isolation and flow selection. |
-| GitHub | [ReleaseRagGithubComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagGithubComponentTest.java) | Access mode, download identity and GitHub retention on simulated invention. |
+| GitHub | [ReleaseRagGithubComponentTest](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagGithubComponentTest.java) | Access mode, download identity and GitHub retention against simulated GitHub inventories. |
 
 When moving a case, compare its Extent receipts by method, parameterized invocation index and outcome. Check that the new class accounts for the identity change and that the audited comparison count matches for each invocation.
 
@@ -124,14 +124,14 @@ When moving a case, compare its Extent receipts by method, parameterized invocat
 
 ```mermaid
 flowchart LR
-    SNAP[Snapshot TMP] -->|select| TEST[Teste alese]
+    SNAP[Snapshot TMP] -->|select| TEST[Selected tests]
     TEST -->|report| EXT[Extent and Receipt]
     EXT -->|tie| APK[APK and identity]
     APK -->|qualifies| RAG[RAG read-only]
     RAG -->|block| FIX[TMP correction]
-    FIX -->|reia| TEST
-    RAG -->|accept| REVIEW[Human Revision]
-    REVIEW -->|promote| MAIN[Arbore identic]
+    FIX -->|resume| TEST
+    RAG -->|accept| REVIEW[Human review]
+    REVIEW -->|promote| MAIN[Identical source tree]
     MAIN -->|publishes| PUB[Check download]
 ```
 
@@ -298,7 +298,7 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 
 Before withdrawal, check [kept downloads and editions](../platform/ATF_ReleaseRetention.md#verification-of-the-discharge-before-rotation).
 
-- After the authorized withdrawal, run the collector in the synchronized checkout `main`. The collector reads the catalogue and manifests from the commissary observed on GitHub.
+- After the authorized withdrawal, run the collector in the synchronized checkout `main`. The collector reads the catalogue and manifests from the repository state observed on GitHub.
 - Use `GH_TOKEN` or `GITHUB_TOKEN` with access to the drafts. The collector inventories all pages of relays, including the drafts, all tags and all assetses.
 
 ```powershell
@@ -307,7 +307,22 @@ node .\atf-tests\tools\collect-github-release-retention.mjs $ProjectRoot $Github
 
 The post-publication evaluator receives the same observation through `--github-retention-file $GithubRetentionFile`. Gate `GITHUB_RETENTION` requires precisely the two versions of `release/index.json`, with the tags to the declared source commits. Each release must have the exact APK and checksum, with the name, URL, size and SHA- 256 faced even after unloading.
 
-The collector writes the inventory in a new external file and signals deviations by `BLOCKED`If access or collection fails, the diagnosis identifies the step, and the evaluator asks for a full observation. After the authorized withdrawal, collect a new observation and resume the evaluation. [Retention process](../platform/ATF_ReleaseRetention.md#resetarea-github)
+The collector writes the inventory in a new external file and reports deviations as `BLOCKED`. If access or collection fails, the diagnosis identifies the step, and the evaluator asks for a full observation. After the authorized withdrawal, collect a new observation and resume the evaluation. [Retention process](../platform/ATF_ReleaseRetention.md#resetarea-github)
+
+### Documentation editions
+
+The release check expects English documentation on `main` and its Romanian counterpart on `main_RO`. It reads the English candidate commit and the published Romanian commit.
+
+- Update both editions when a contract changes. Preserve document paths, heading levels, tables, diagram topology, executable examples and link destinations.
+- For archived releases, preserve the files listed in the integrity manifest. Use `.en.md` or `.ro.md` companions for the other language when needed.
+- Commit the two editions, fetch `main_RO`, and run the paired inspection below. After editorial review, record its `review` object in `config/documentation-editions.json`.
+- The `DOCUMENTATION_EDITIONS` check blocks qualification when a counterpart is missing or the inventories differ from the reviewed hashes. Review changes to meaning against the owning code or test.
+
+```powershell
+git fetch origin main_RO
+node atf-tests/tools/documentation-editions.mjs inspect . HEAD origin/main_RO
+node atf-tests/tools/documentation-editions.mjs verify . HEAD
+```
 
 ### Evidence freshness
 

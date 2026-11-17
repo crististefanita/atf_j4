@@ -68,7 +68,7 @@ Each execution shall keep the inventory of the SHA-256 of copied sources, the lo
 - For a move, keep the old-new mapping and relevant comparisons; a total unchanged can hide one lost case and another added unrelated.
 - For an audited suite, face JUnit's and published claims. The existence of an HTML does not demonstrate that a new class has registered the audit adapter; [the remaining qualification](../feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) maintains this control.
 
-[Qualification folder](ATF_ReleaseQualification.md#readmeter-of-the-factor) explains the selection required, the one executed and the limits. The orders of an execution and its totals remain in the result file, separately from this generic catalogue.
+[Qualification folder](ATF_ReleaseQualification.md#release-dossier-readme) explains the selection required, the one executed and the limits. The orders of an execution and its totals remain in the result file, separately from this generic catalogue.
 
 ## Frozen experiments and sources
 

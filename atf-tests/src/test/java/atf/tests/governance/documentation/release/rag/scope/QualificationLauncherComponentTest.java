@@ -157,7 +157,7 @@ class QualificationLauncherComponentTest {
         write(source, "pom.xml", "<project/>");
         Path real = GovernanceProject.locateProjectRoot();
         Files.copy(real.resolve("config/release-platform-rag-policy.json"), source.resolve("config/release-platform-rag-policy.json"));
-        for (String file : List.of("check-release-artifacts.mjs", "evaluate-release-rag.mjs", "release-evidence-freshness.mjs",
+        for (String file : List.of("check-release-artifacts.mjs", "evaluate-release-rag.mjs", "documentation-editions.mjs", "release-evidence-freshness.mjs",
                 "release-test-scope.mjs", "component-evidence-scope.mjs", "github-release-retention.mjs",
                 "android-e2e-contract.mjs", "android-e2e-evidence.mjs", "android-e2e-images.mjs", "release-timing.mjs")) {
             String relative = "atf-tests/tools/" + file;

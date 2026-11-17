@@ -30,7 +30,7 @@ The cylinder checks the production of the binary, and static controls check the 
 - Build in your own temporary copy with identified dependencies.
 - Check Java APIs available on the Android platform concerned; level `sourceCompatibility` does not add absent methods from the system. For Java APIs newer than `minSdk`, declare `coreLibraryDesugaringEnabled` and a version fixed `desugar_jdk_libs` in the application and Android modules that require isolated verification. Governance must confront the use of these APIs with the desugaring configuration.
 - Check integrity, signature, alignment and key compatibility for upgrade.
-- Keep APK and checksum in `release/<versionName>/`, next to the manifest and RADME; the evidence belongs to the sub-director `reports`. [Release catalog](../../release/README.md) identify the current version and intermediate runs remain external.
+- Keep APK and checksum in `release/<versionName>/`, next to the manifest and README. Store the evidence in the `reports` subdirectory. [Release catalog](../../release/README.md) identifies the current version. Keep intermediate runs outside the checkout.
 - Check the binar installed before assigning the behaviour of that delivery to a scenario.
 - Distance local building from distribution through the shop and from distribution keys management.
 
@@ -88,7 +88,7 @@ A HTTP error response does not constitute an APK, regardless of the file extensi
 
 ## Separating access from Android transfer
 
-- **Navigation: ** from RADME opens GitHub Release page of the current version, then **Assets** and APK. The direct link remains the same versified discharge; the local documentation file is not endpoint distribution.
+- **Navigation.** The README opens the current GitHub release. Under **Assets**, select the APK, which is the same versioned file as the direct link.
 - **Access: ** HTTP 404 on the project page or on the asset, prior to receipt of bytes, is kept separate from the integrity of the APK. The declared public visibility and the success of the authenticated API do not identify the cause of the refusal in the browser on its own.
 - **Native Transfer: ** a Download Manager sample identifies the system, the authorisation mode, the status and reason of Android, the received bytes, the SHAA-256, CRC and the package read through PackageManager. The transfer of the network must be executed by Android; pushing the copy from the computer does not replace it.
 - **Credential: ** API token remains on the computer. A temporary redirect authorised for asset may be consumed by the sample without global token on the device; the signed URL and the query shall not be entered in the documentation or reports.
@@ -129,9 +129,9 @@ The selected execution must pass; a relevant failure blocks publication. A misse
 
 1. Update `versionName` and increment `versionCode` in Gradle; fix the built commit. Relevant sources exchanged in parallel shall be confronted prior to publication.
 2. Run the above selection in TMP; prepare the commands, JUnit results and logs for `release/<versionName>/reports/`, with a short read-through. Extent reports are only derived from actual version executions; an earlier benchmark is explicitly labelled.
-3. Place the audit copy of the signed APK `WhistLab-<versionName>.apk` and checksum in `release/<versionName>/`; keep the current and immediately preceding edition. Archive older editions outside the active catalogue only after confronting identity and hashes. The download channel in RADME is the GitHub Release asset; the copy in the file serves to check integrity.
+3. Place the audit copy of the signed APK `WhistLab-<versionName>.apk` and checksum in `release/<versionName>/`; keep the current and immediately preceding edition. Archive older editions outside the active catalogue only after verifying their identities and hashes. The README links to the GitHub release asset. Use the retained copy to verify integrity.
 4. Update the manifesto and readme of the new version, `release/index.json`, catalogue and notes in the bulllets compared to the previous version. Generic guidelines change only if the process or contract has changed.
-5. Confront governance before publication, publish the tag and the checked assetas, then download the complete assetet into the declared channel. Update the download and direct link from RADME only after confronting current version, size, SHA- 256 and CRC; portal `releases/latest` does not fix the identity of the APK.
+5. Run governance checks before publishing the tag and verified assets. Download the full APK from the advertised channel. Update the README links after verifying the version, size, SHA-256 and CRC. A versioned link identifies the qualified APK.
 
 The draft metadata shall be kept separately in `github-release-draft.json`; `github-release.json` describes the actual publication. GitHub may use temporary addresses `untagged` in the draft, so the test of the notes related to published assetses is performed again after publication on the observed canonical addresses. When published, explicitly send the tag and the source communiqué and confront the answer with the identity of the APK.
 
@@ -207,9 +207,9 @@ The file shall be downloaded in a temporary name and shall be given the final ex
 
 ### Anonymous access and public route
 
-1. After publication, open the Readme delivered in a browser session without account. Follow APK link from the displayed page. Download file and checksumé without cookies, authorization header or token. Compare size and SHA- 256 with `release-validation.json` and the checksum file published.
+1. After publishing, open the delivered README in a signed-out browser. Follow its APK link and download the APK and checksum without cookies, an Authorization header or a token. Compare the size and SHA-256 with `release-validation.json` and the published checksum.
 2. At HTTP 404, Check the repositoryul, READMEul, page release and asset separately. Compare the result anonymously with the one from the owner's session. If the profile or other publicly marked repositoryes are inaccessible, keep URLs, UTC time, HTTP codes and application IDs for [GitHub Support](https://docs.github.com/en/support/contacting-github-support/creating-a-support-ticket). One 404 Anonymous alone does not identify the motive.
-3. If GitHub remains unaccessible anonymously, publish the signed APK and checksumé on a public HTTPS host controlled by the project. The APK link ends in `/v<versionName>/WhistLab-<versionName>.apk` and uses a stable address without interrogation parameters or fragment. If the GitHub READMEM is inaccessible, publish a copy of the commissary identified on the public page and check the link in it. A new copy of the RADME shall be published after each change of version or destination of the download.
+3. If GitHub remains inaccessible without signing in, publish the signed APK and checksum on a public HTTPS host controlled by the project. The stable APK URL ends in `/v<versionName>/WhistLab-<versionName>.apk` and contains no query string or fragment. If the GitHub README is also inaccessible, publish an identified copy on the public site and verify its link. Republish the copy when the download version or destination changes.
 4. Record the declared mode in `release/<versionName>/reports/distribution-verification.json`: `authenticatedDownload` for authenticated GitHub downloads or `publicDownload` for an anonymous site. The authenticated channel and its proof must match `config/release-platform-rag-policy.json`. The API records `httpStatus=200`, and Browser MCP records `downloadCompleted=true` after the download completes. Compare the resulting file. Do not store cookies or authorization headers. Retain only verifiable metadata. Update the main link, regenerate the dossier integrity record and run governance. After the push, read the README again and download from that exact link again using the same access mode.
 
 Run the check from the project root and enter the direct address copied from the published RADM.
@@ -238,7 +238,7 @@ try {
 
 | Control | Purpose and limit |
 |---|---|
-| [Governance of links](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) | Same version in the catalog, label and APK, local or published; refuses `latest` ambiguous, Raw/blob, competing downloads, any old APK in RADME and the retracted directories. |
+| [Governance of links](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) | Same version in the catalog, label and APK, local or published; refuses `latest` ambiguous, Raw/blob, competing downloads, any old APK in the README and retired directories. |
 | [Download components](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java) | HTTP real loopback: complete response, 404, text saved as APK, truncation, excess, SHA wrong, CRC invalid, metadata divergent and cendential unpropagated to another origin. ZIP fixture does not qualify for Android installation. |
 | [Identification selection](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/DownloadSelectionComponentTest.java) | A positive result of the previous online version does not qualify the discharge of the current candidate. The number of bytes is read exactly without permission numerical conversion. |
 | [Live acceptance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java) | GitHub explicit download with version, bytes, SHA- 256, CRC and verdict in Extent. The target is exclusively `currentVersion`; the absence of publication produces HTTP 404 and FAIL without access to any previous APK. |

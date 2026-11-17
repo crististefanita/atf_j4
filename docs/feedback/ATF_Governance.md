@@ -43,7 +43,7 @@ The editorial grid of [contract documentation](../governance/ATF_Documentation.m
 
 | Priority | Lacquer delimited | Closure criterion |
 |---|---|---|
-| P2 | The sample in the authenticated browser depends on the operator and the available GitHub session. | After publication, check the version URL, the received file and the SHA- 256, then open the audit on the commissary in notes. Record anonymous responses and possible local browser refusals separately. |
+| P2 | The authenticated browser check depends on an operator and a working GitHub session. | After publication, check the version URL, the received file and the SHA- 256, then open the audit from the commit linked in the release notes. Record anonymous responses and possible local browser refusals separately. |
 
 The Android Download Manager transfer test and certificate verification are actually tested version file. [Android Transfer Contract](../platform/ATF_AndroidDelivery.md#separating-access-from-android-transfer) describes the data required and [Anonymous access to the public route](../platform/ATF_AndroidDelivery.md#anonymous-access-and-public-route) has its own closing criterion.
 

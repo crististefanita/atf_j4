@@ -1,4 +1,4 @@
-# Test of the Whist Lab
+# Whist Lab test strategy
 
 <!-- atf-testing-strategy-owner -->
 

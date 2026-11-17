@@ -1,4 +1,4 @@
-# Display verificat prin componente
+# Display verification through component tests
 
 ## Overview
 

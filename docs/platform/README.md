@@ -42,7 +42,7 @@ Console and Mock do not depend on Reporting, Validation or application modules. 
 ## Identity and integrity
 
 - [Pome root](../../pom.xml) selects the actual coordinates and versions.
-- `lib` contains one physical JAR/POM pair for each library, directly in the directory, along with the RADME index and the five user guides.
+- `lib` contains one physical JAR/POM pair for each library, directly in the directory, along with the README index and the five user guides.
 - `library-provenance.json` keeps the hashes, manufacturer's inputs, the catalogue of native tests and the reference of current acceptance.
 - The JAR-embedded POM coincides with the byte with the next published POM.
 - Parallel sources, additional versions, incomplete pairs and nested deposits are denied.

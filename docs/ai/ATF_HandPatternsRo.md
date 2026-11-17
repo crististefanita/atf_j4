@@ -1,4 +1,4 @@
-# The contract shall be awarded on a fee or contract basis.
+# Honors, cover cards and contract safety
 
 ## Overview
 

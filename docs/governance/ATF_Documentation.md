@@ -4,7 +4,7 @@
 
 The documentation shall explain a contract, its owner and the use or verification. The code, configuration and live tests determine the behaviour; proposals and limits still unqualified are explicitly marked.
 
-## Liabilities
+## Responsibilities
 
 ```mermaid
 flowchart LR
@@ -45,7 +45,7 @@ Each mechanism has only one guide responsible for definitions and full procedure
 
 To a contradiction, confront the code and configuration, narrow the claim to the proven field and keep the gap in feedback. A process requirement, a past structural test or a declaration field does not prove the implementation of the mechanism on its own.
 
-## Primul ecran
+## First screen
 
 | Question | Visible content |
 |---|---|
@@ -61,7 +61,7 @@ The purpose, responsibility and the main limit remain visible. The secondary det
 
 The main READMETER directs the reader to the product, sources and verification:
 
-- Presents the game and provides the Android edition page and direct download, according to [contract of delivery](../testing/ATF_ReleaseQualification.md#area-of-public-readme).
+- Presents the game and provides the Android edition page and direct download, according to [contract of delivery](../testing/ATF_ReleaseQualification.md#public-readme-contract).
 - Just below the download, show the route between the building, checks and delivery. The engine map explains the platforms and the condition owners separately. The table complements the responsibilities and leads to the documents of the modules.
 - According to the map, it provides a short local check and sends out strategy, governance and qualification. The rules of the game, the publication steps and the results have their own guides and folders.
 
@@ -95,7 +95,7 @@ The values defined by the rules, the limits of the API and general teaching exam
 - The verification of project identifiers protects prose and other fields; an incomplete block or without control scheme does not receive this classification.
 - Address `releases/latest` and the declared delivery destinations are only technical data in Markdown links: the tag page, APK and checksum come from the same [Typed identity](../../atf-tests/src/main/java/atf/tests/distribution/ApkDownloadTarget.java), selected by [project policy](../../config/atf-governance-policy.json). Visible label, other versions or repositorys and query, fragment or suffix addresses remain verified. Classification does not declare downloading, publication of remotor or integrity of APK.
 
-## Revision and live timing
+## Review and synchronization
 
 The notes in the Release page are a user presentation: download and changes in the bullets, followed by a link to evidence. [Delivery contract](../platform/ATF_AndroidDelivery.md#presentation-of-a-version) defines the confirmed differences from the previous version and the summary **On the short ** used when the comparison is not established.
 
@@ -110,7 +110,7 @@ The notes in the Release page are a user presentation: download and changes in t
 
 The traceability of an allegation is `afirmație → sursă live → document responsabil → test sau criteriu → nivel executat`. A valid path does not prove the meaning of the statement, and a structural test does not certify the interaction of Android.
 
-## CLI for governance of documentation
+## Documentation governance CLI
 
 [Lansatorul](../../scripts/run-documentation-governance.ps1) accepts the explicit root of the project and one or more documents. Omission of option `-File` check the inventory completely. API Java and suite use the same [Implementing rules](../../atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java).
 

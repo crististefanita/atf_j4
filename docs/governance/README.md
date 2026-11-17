@@ -1,4 +1,4 @@
-# quality governance ATF
+# ATF quality governance
 
 ## Overview
 
@@ -90,7 +90,7 @@ An inspection shall hold and close its own JDK file manager, reused between the 
 
 ## Isolated rolling
 
-For a file or full documentary inventory, use [Documentation Client](ATF_Documentation.md#cli-for-governance-of-documentation). It tests the same editorial rules as the suite.
+For a file or full documentary inventory, use [Documentation Client](ATF_Documentation.md#documentation-governance-cli). It tests the same editorial rules as the suite.
 
 To verify the published evidence, use a checkout Git with the commits items indicated in the release notes. The suite reads those local objects, and a missing object causes error.
 
@@ -123,7 +123,7 @@ mvn -B '-Dmaven.repo.local=<depozit-Maven-propriu>' -pl atf-tests -am '-Dtest=At
 - Binary qualification remains the distinct contract of [integration of libraries](../platform/ATF_Integration.md).
 - Semantic deficiencies and separation debt remain visible in [feedback](../feedback/ATF_Governance.md).
 - [Retention of the evidence of the release](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) refuses identical PNGs already incorporated. The presence of bytes does not certify the viewer, the autonomy of Android bodies or the integrity of APK; they have separate controls.
-- [Delivery integrity](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) confronts APK, checksumé, CRC, inventory of hashes and actual JUnit cases. Negative samples also alter files whose hashes have been recalculated to qualify semantic oracle separately. [Contract and limits](../platform/ATF_AndroidDelivery.md#integrity-of-files-and-results) distinguish the observation of the octets of execution, signature and provenance.
+- [Delivery integrity](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) checks the APK, checksum, CRC, file hash inventory and recorded JUnit cases. Negative fixtures also alter files and recompute their checksums to test validation of their contents. [Contract and limits](../platform/ATF_AndroidDelivery.md#integrity-of-files-and-results) explains the separate checks for file integrity, test execution, signing and provenance.
 
 [Test architecture](../testing/ATF_Architecture.md) · [Documentation](ATF_Documentation.md) · [Change of tests](ATF_TestChanges.md)
 

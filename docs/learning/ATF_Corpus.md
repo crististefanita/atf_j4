@@ -1,4 +1,4 @@
-# The contract of the body of parties
+# Game corpus contract
 
 ## Overview
 

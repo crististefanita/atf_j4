@@ -59,7 +59,7 @@ PowerShell shall be checked syntactically separately from the operation. An Andr
 | Intrare | Resources and data required | What checks execution |
 |---|---|---|
 | `run-whist-collection.ps1` | JDK selected by `JavaHome`, gradle wrapper and jvm cache; protocol, candidate and corpus when the collection requires them. | Validate the collection and identities, prepare the copy and call Gradle with `--offline`; report the output code separately. |
-| `run-documentation-governance.ps1` | JDK 21 and Caache Maven for Jackson's dependencies. | [Editorial check](../docs/governance/ATF_Documentation.md#cli-for-governance-of-documentation) for selected files or full inventory. |
+| `run-documentation-governance.ps1` | JDK 21 and Caache Maven for Jackson's dependencies. | [Editorial check](../docs/governance/ATF_Documentation.md#documentation-governance-cli) for selected files or full inventory. |
 | `run-atf-governance.ps1` | JDK, `mvn` available, poms and pairs JAR/POM; cache Maven for copy warehouse. | Check APKs before Maven and face sources inventories and release directory. [Snapshot](../docs/testing/ATF_ReleaseQualification.md#snapshot-and-preflight-before-maven) |
 | `run-offline-*` | Tools and parameters declared by each file; some entries use explicit local pathways. | Execute the protocol of that entry; the availability of the tool is not deducted from the parting of the script. |
 | Flux Android | ADB configuration, application binar, booking and backup checked. | [Contractul infrastructurii](../atf-test-android/README.md) delimits transport, command and observation. |

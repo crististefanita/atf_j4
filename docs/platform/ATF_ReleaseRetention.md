@@ -1,4 +1,4 @@
-# Retention of reports and relays
+# Report and release retention
 
 ## Overview
 
@@ -84,7 +84,7 @@ An uncommitted candidate is marked `PREPARED` and identified by its snapshot has
 - [Governance of presentation](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) checks the same sections and bullets, but refuses GitHub metadata published alongside the state `PREPARED`.
 - When published, the operator shall set the URL of documentation to the actual committal, generate `release-notes.md` and record the channel checked. Do not use a fictional commit or verdict of a uncompleted download.
 - A GitHub release uses `publication.state: PUBLISHED`, the `github-release.json` manifest and the same source commit in `targetCommit`. An APK published through the Site uses `publication.state: PUBLISHED_SITE` and proof of anonymous download from `reports/distribution-verification.json`; no GitHub release is invented.
-- Both transitions record `source.sourceCommit`, replace `evidenceUrlTemplate` by `evidenceUrl` and request final notes with the APK and the channel checksumé published.
+- Both transitions record `source.sourceCommit`, replace `evidenceUrlTemplate` by `evidenceUrl` and require final release notes with the APK and the checksum published on the distribution channel.
 
 `versionName` identify the required edition, and `versionCode` increase at each APK delivered. After reset the visible numbering, [codul Android](https://developer.android.com/studio/publish/versioning) and the signature certificate shall keep the update path; promotion of GitHub shall be explicitly marked as the last release.
 

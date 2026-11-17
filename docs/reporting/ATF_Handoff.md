@@ -1,4 +1,4 @@
-# Teaching and Acceptance of Android Results
+# Handoff and acceptance of Android results
 
 ## Overview
 

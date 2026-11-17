@@ -10,6 +10,7 @@ import {evidenceFreshness} from './release-evidence-freshness.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
+import {documentationEditionsPolicy, verifyReviewedDocumentation} from './documentation-editions.mjs';
 
 const VERSION = /^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
 const HASH = /^[0-9a-f]{64}$/;
@@ -590,6 +591,27 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       readmeOkay ? 'README-ul principal este în snapshot și nu expune un digest APK brut.' : 'README-ul principal lipsește din snapshot sau publică un digest APK brut.',
       readmeEvidence, readmeProblems);
 
+  let documentationEditions = null;
+  if (releaseVersionAtLeast(version, documentationEditionsPolicy.requiredFromVersion)) {
+    const problems = [];
+    const sources = evidence('/ragEvaluator/documentationEditions', policyDoc, 'config/release-platform-rag-policy.json');
+    try {
+      if (!isDeepStrictEqual(policy.ragEvaluator?.documentationEditions, documentationEditionsPolicy)) {
+        throw new Error('The bilingual documentation policy is missing or invalid.');
+      }
+      if (!sourceOkay) throw new Error('A qualified English source snapshot is required.');
+      documentationEditions = verifyReviewedDocumentation(project, manifest.source.sourceCommit);
+      problems.push(...documentationEditions.problems);
+      sources.push(citation(documentationEditionsPolicy.reviewPath, documentationEditions.reviewSha256, null, 1));
+    } catch (error) {
+      problems.push(error.message);
+    }
+    recordCheck('DOCUMENTATION_EDITIONS', problems.length === 0,
+        problems.length ? 'The published Romanian edition and the pinned English documentation require review.'
+          : 'The English and Romanian inventories match their recorded review and Markdown contracts.',
+        sources, problems);
+  }
+
   const release = manifest.release ?? {};
   let apkOkay = false;
   try { apkOkay = Boolean(await readApkArtifact(candidate, release)); } catch { apkOkay = false; }
@@ -883,12 +905,12 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     candidateManifestSha256: manifestDoc.sha256, planSha256: planDoc.sha256,
     qualificationPlan: {fileName: 'qualification-plan.json', encoding: 'base64-utf8',
       sha256: planDoc.sha256, contentBase64: planDoc.bytes.toString('base64')},
-    checks, testScope: testScope ?? null, componentGroups: groupResults,
+    checks, testScope: testScope ?? null, documentationEditions, componentGroups: groupResults,
     e2e: {status: e2e.status ?? 'NOT_RUN', userFlowChanged: plan.userFlowChanged ?? null,
       rationale: e2e.rationale ?? null, decisions: e2eDecisions, note: 'NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației.'},
     timing: timing.receipt('rag-evaluator'),
     lifecycleEffect: 'NONE', writesOnly: posix(path.relative(project, output)),
-    limitations: ['Verificarea leagă inventarul complet al snapshot-ului de manifest; nu execută Git și nu certifică starea indexului Git.',
+    limitations: ['The APK snapshot inventory is checked against the manifest. Git reads for documentation use committed objects and do not inspect the index.',
       'Verdictul este o recomandare auditabilă pentru revizie umană; nu promovează, semnează sau publică.']
   };
   await fs.mkdir(path.dirname(output), {recursive: true});
