@@ -215,15 +215,23 @@ await withServer(games[1], games[1].web, async url => {
     assert.ok(state.view.hand.length > 0);
     assert.ok(state.view.actions.some(action => action.key === "choose:TRICKS"));
     state = await request("/api/action", { revision: state.revision, action: "choose:TRICKS" });
-    const legal = state.view.hand.find(card => card.action);
-    assert.ok(legal, "Rentz has at least one legal card");
-    state = await request("/api/action", { revision: state.revision, action: legal.action });
-    if (state.view.history.rows.length === 0) {
-      state = await request("/api/action", { revision: state.revision, action: "auto" });
+    const firstCard = state.view.hand.find(card => card.action);
+    assert.ok(firstCard, "Rentz has at least one legal card");
+    state = await request("/api/action", { revision: state.revision, action: firstCard.action });
+    let steps = 1;
+    for (; steps < 30 && !state.view.history.grid?.rows.length; steps++) {
+      const action = state.view.hand.find(card => card.action)?.action
+        ?? state.view.actions.find(move => move.key === "auto-step")?.key;
+      assert.ok(action, "Rentz must expose a legal card or an automatic step before scoring");
+      state = await request("/api/action", { revision: state.revision, action });
     }
-    assert.equal(state.view.history.rows.length, 1);
-    assert.equal(state.view.history.rows[0][1], "Levate");
-    return { expected: "Contractul Levate decontează o singură mână", observed: state.view.history.rows };
+    const rows = state.view.history.grid?.rows;
+    assert.equal(rows?.length, 1, "Exactly one hand must settle");
+    assert.equal(rows[0].status, "Levate");
+    assert.equal(rows[0].cells.length, 4);
+    assert.ok(rows[0].cells.every(cell => cell.bid === cell.total), "First hand deltas must equal totals");
+    return { expected: "Contractul Levate decontează o singură mână și publică totalul fiecărui jucător",
+      observed: { steps, row: rows[0] } };
   });
 });
 

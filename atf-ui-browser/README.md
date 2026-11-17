@@ -172,7 +172,7 @@ flowchart LR
 - Alegeți `$BrowserLibraryVersion` și porniți dintr-un checkout Git curat. Exportul scrie cele două JAR-uri, amprentele și `browser-build.json` în directorul extern al versiunii. Registrul leagă fișierele de commitul sursă și de inventarul intrărilor.
 - Verificați commitul și SHA-256 la adoptare. Manifestul instalat lângă cele două JAR-uri arată ce versiune folosește fiecare adaptor.
 - Exportul reutilizează directorul aceleiași versiuni după confruntarea intrărilor și a octeților. Schimbarea intrărilor cere o versiune nouă. Proba de integrare pornește prima partidă prin JAR-ul fizic, adaptor și dependențele jocului.
-- Promovați aceiași octeți și aceleași amprente în consumatorii calificați. Versiunea cache-ului din HTML urmărește actualizarea resurselor site-ului. [Criteriul pentru identitatea pachetului](../docs/feedback/ATF_UiBrowser.md#criterii-de-închidere)
+- Promovați aceiași octeți și aceleași amprente în consumatorii calificați. Versiunea cache-ului din HTML urmărește actualizarea resurselor site-ului. [Verificarea în consumatori](#verificare)
 
 ## Verificare
 
@@ -209,6 +209,7 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 |---|---|
 | Componentă | Verifică reviziile, refuzurile, geometria, profilul și decontarea prin contractul HTTP sau motorul Pages, cu stocare și temporizare controlate. |
 | UI Web | Verifică în Chromium indicele `10` și accesul la ultima carte într-o mână de 17 cărți, inclusiv cu text la 200%. Verifică și licitarea de la tastatură, atingerea respinsă, AutoGame și profilul după reîncărcare. Scrie `browser-ui-checks.json` și capturile în directorul rulării. |
+| UI desktop | Verifică în Chrome și Edge, cu zoom de browser 100% și 125%, cadrul la 1280 × 720, 1920 × 1080 și într-o fereastră îngustă. Măsoară viewportul util și poziția cadrului. Confirmă focusul vizibil și parcursul profil, licitare și carte legală de la tastatură. |
 | Comparație pe Android | Compară APK și Chrome la același viewport, la licitare și joc. Verifică în RO și EN pozițiile antetului și ale atuului din carte, din simbol și fără atu, inclusiv la text mărit. Înregistrează viewportul, densitatea și SHA-ul APK-ului în `paired-android.json`. |
 | Raportare | Extent citește rezultatele fiecărui nivel și atașează capturile PNG inline. |
 

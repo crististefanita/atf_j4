@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-[Documentația adaptorului](../../atf-ui-browser/README.md) explică parcursul APK, JAR și Pages. Registrul urmărește comparația pe dispozitiv și acceptanța în consumatori.
+[Documentația adaptorului](../../atf-ui-browser/README.md) explică parcursul APK, JAR și Pages. Registrul urmărește comparația pe același dispozitiv Android.
 
 ## Calificarea pe același dispozitiv
 
@@ -15,10 +15,5 @@ Folosiți același profil util și documentați densitatea, scara textului, limb
 
 Deciziile AI, seriile și Jocul la 0 se extind prin componente cu oracol de domeniu. Capturile și interacțiunile fizice rămân în selecția vizuală. [Strategia de testare](../testing/README.md)
 
-## Criterii de închidere
-
-| ID | Responsabilitate | Criteriu de închidere |
-|---|---|---|
-| WEB-01 | Acceptanța pe browser și în jocurile consumatoare. | În Chrome și Edge pe Windows măsoară centrarea, scara și tastatura la 1280 × 720 și 1920 × 1080 la zoom 100% și 125%, plus o fereastră îngustă. În Rentz și Hold’em validează câte un flux pe JAR-ul fixat, cu oracolul jocului și legătura către propriul dosar. |
-
-Publicați capturile native și Web inline în Extent cu distribuirea, comenzile și comparațiile. Folosiți [dovezile de componentă și Playwright](../../atf-ui-browser/README.md#verificare) pentru a selecta tranzițiile care mai cer proba pe dispozitiv.
+- Atașați capturile native și Web inline în Extent, împreună cu distribuirea, comenzile și comparațiile.
+- Selectați tranzițiile pentru proba pe dispozitiv pe baza verificărilor deja disponibile. [Componente și Playwright](../../atf-ui-browser/README.md#verificare)

@@ -20,4 +20,4 @@ Whist integrează deja modulul Android comun. Registrul urmărește verificăril
 - Reproduceți debifarea cu o decizie AI în așteptare. Executantul controlat livrează răspunsul după debifare, iar revizia jocului confirmă că răspunsul nu produce o mutare.
 - Confruntați bifarea la licitație, oprirea la scor, pauza și reluarea în Whist. Verificați separat poziționarea antetului în consumatorul care folosește AAR-ul. [Acceptanța nativă](ATF_Android.md#acceptanța-nativă-a-proporțiilor-și-ordinii)
 
-Pentru fiecare consumator, atașați la UIX06 coordonata AAR și verdictul nativ pentru antet, chenare și notificări. Criteriul de împachetare și calificare a JAR-ului Web aparține [registrului adaptorului](ATF_UiBrowser.md#criterii-de-închidere).
+Pentru fiecare consumator, atașați la UIX06 coordonata AAR și verdictul nativ pentru antet, chenare și notificări. Criteriul de împachetare și calificare a JAR-ului Web aparține [documentației adaptorului](../../atf-ui-browser/README.md#bibliotecă-pentru-adaptoare).
