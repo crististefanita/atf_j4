@@ -214,7 +214,9 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 .\atf-ui-browser\tests\Publish-BrowserExtent.ps1 -EvidenceRoot $EvidenceRoot -MavenClasspathFile $MavenClasspath
 ```
 
-Use `-Check viewport` for the focused browser-resize contract. It measures the rendered DOM frame in Edge or Chrome at phone portrait/landscape, desktop height-limited and width-limited sizes, including the narrow-window fallback. The check waits for page content and the resize event before comparing the logical frame, CSS transform and centering. The independent Node component contract is included in the shared test JAR.
+- `-Check viewport` runs the focused resize contract in Edge or Chrome across phone portrait/landscape and desktop height-/width-limited sizes, including narrow windows.
+- The browser check waits for page content and the resize event, then verifies the logical frame, CSS transform and centering.
+- The shared JAR includes the independent Node component contract for phone, desktop, monotonic resize, invalid dimensions and overflow on both axes.
 
 `$MavenClasspath` is the list of dependencies produced by the Maven gate of [componente](../docs/testing/README.md). The report links the comparisons and inline images to the browser's running. [Parity criteria still open](../docs/feedback/ATF_UiBrowser.md)
 
