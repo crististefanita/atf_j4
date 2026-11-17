@@ -1,0 +1,1453 @@
+{
+  "schemaVersion": 1,
+  "kind": "ATF_RELEASE_RAG_VERDICT",
+  "evaluatedAtUtc": "2026-11-17T07:52:41.872Z",
+  "verdict": "READY_FOR_HUMAN_REVIEW",
+  "releaseVersion": "0.21.7",
+  "channel": "TEST",
+  "sourceCommit": "dbf9fc97137e72841bf86ab3c4395a0f609e688f",
+  "workingTreeFingerprint": "3a87b6c125dc9436ef93b4dec9823c4b2b0e184e8981310e48f419a88d837da3",
+  "candidateManifestSha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+  "planSha256": "5d3e26ee618deec967fd16951c33045e5fab05e068ee2a0f5640a977317ee64b",
+  "qualificationPlan": {
+    "fileName": "qualification-plan.json",
+    "encoding": "base64-utf8",
+    "sha256": "5d3e26ee618deec967fd16951c33045e5fab05e068ee2a0f5640a977317ee64b",
+    "contentBase64": "ewogICJzY2hlbWFWZXJzaW9uIjogMiwKICAicmVsZWFzZVZlcnNpb24iOiAiMC4yMS43IiwKICAiY2hhbm5lbCI6ICJURVNUIiwKICAiY2hhbmdlUmlzayI6ICJiZWhhdmlvckNoYW5nZSIsCiAgImRlY2xhcmVkUGxhdGZvcm1zIjogWwogICAgImFuZHJvaWQiCiAgXSwKICAiY29tcG9uZW50R3JvdXBzIjogWwogICAgImF0Zi12YWxpZGF0aW9uIiwKICAgICJhdGYtdGVzdC1hbmRyb2lkIiwKICAgICJhdGYtdGVzdHMiLAogICAgIndoaXN0LWxhYi1hcHAtYmlkZGluZyIsCiAgICAid2hpc3QtbGFiLWFwcC1jb21tYW5kcyIsCiAgICAid2hpc3QtbGFiLWFwcC1kaXNwbGF5IiwKICAgICJ3aGlzdC1sYWItYXBwLWhpc3RvcnkiLAogICAgIndoaXN0LWxhYi1hcHAtYWNoaWV2ZW1lbnRzIiwKICAgICJ3aGlzdC1sYWItYXBwLWF0Zi1jYXJkLXRhYmxlLXVpIiwKICAgICJ3aGlzdC1sYWItYXBwLXJ1bGVzIgogIF0sCiAgInVzZXJGbG93Q2hhbmdlZCI6IHRydWUsCiAgInNjb3BlIjogewogICAgImJhc2VsaW5lVmVyc2lvbiI6ICIwLjIxLjYiLAogICAgImJhc2VsaW5lQ29tbWl0IjogIjU4NWQ2MTdhNDdlZjcyZWZmZTk3NmRjYjI0OGVmZTlhMzk4MTQ1NTMiLAogICAgImJhc2VsaW5lRmluZ2VycHJpbnQiOiAiZThhNGUzYmIwNTNmODllNDNiZjE1YzgwNTc3NTUzMWMyOTA3NzMwNmRmOGIwYTE1OWFkNjdiNzJiZTU1NzE4NyIsCiAgICAiY2FuZGlkYXRlRmluZ2VycHJpbnQiOiAiM2E4N2I2YzEyNWRjOTQzNmVmOTNiNGRlYzk4MjNjNGIyYjBlMTg0ZTg5ODEzMTBlNDhmNDE5YTg4ZDgzN2RhMyIKICB9LAogICJlMmUiOiB7CiAgICAic3RhdHVzIjogIlBBU1MiLAogICAgImdyb3VwcyI6IFsKICAgICAgImhpc3RvcnktcmVsZWFzZS1zYW5pdHkiLAogICAgICAicmVzcG9uc2l2ZS11aS1zYW5pdHkiLAogICAgICAic2lnbmVkLXJlbGVhc2UtYWNoaWV2ZW1lbnRzIiwKICAgICAgInNpZ25lZC1yZWxlYXNlLWF1dG8tZ2FtZSIsCiAgICAgICJzaWduZWQtcmVsZWFzZS1iaWRkaW5nIiwKICAgICAgInNpZ25lZC1yZWxlYXNlLWhvbWUtcHJvZmlsZSIsCiAgICAgICJzaWduZWQtcmVsZWFzZS1zbW9rZSIKICAgIF0sCiAgICAiZXhlY3V0aW9uUHJvZmlsZSI6IHsKICAgICAgImFwaSI6IDI4LAogICAgICAiZGlzcGxheVByb2ZpbGUiOiAiMTA4MHgxOTIwQDQ0MCIsCiAgICAgICJyZXNwb25zaXZlUHJvZmlsZXMiOiAiNzIweDEyODBAMzYwLDEwODB4MTkyMEA0NDAsMTIwMHgxOTIwQDQ0MCIKICAgIH0KICB9Cn0K"
+  },
+  "checks": [
+    {
+      "code": "RAG_POLICY",
+      "status": "PASS",
+      "message": "Politica activă limitează evaluatorul la citire și la revizia umană.",
+      "evidence": [
+        {
+          "path": "config/release-platform-rag-policy.json",
+          "sha256": "f9c8e4376d1b443bfba7cca9115c26fefb1e414b53dae6e1293604aeabbdd47b",
+          "jsonPointer": "/ragEvaluator",
+          "line": 46
+        }
+      ]
+    },
+    {
+      "code": "PLAN_SCHEMA",
+      "status": "PASS",
+      "message": "Planul fixează versiunea, platforma, riscul, componentele și decizia E2E.",
+      "evidence": [
+        {
+          "path": "$report.qualificationPlan.contentBase64",
+          "sha256": "5d3e26ee618deec967fd16951c33045e5fab05e068ee2a0f5640a977317ee64b",
+          "jsonPointer": "/schemaVersion",
+          "line": 2,
+          "embedded": true,
+          "encoding": "base64-utf8"
+        }
+      ]
+    },
+    {
+      "code": "RELEASE_IDENTITY",
+      "status": "PASS",
+      "message": "Planul, manifestul și directorul indică aceeași versiune.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/release/versionName",
+          "line": 12
+        }
+      ]
+    },
+    {
+      "code": "PLATFORM_SCOPE",
+      "status": "PASS",
+      "message": "Platforma declarată este Android și corespunde manifestului.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/release",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "code": "QUALIFICATION_STATE",
+      "status": "PASS",
+      "message": "Manifestul declară starea PASS pentru calificarea înregistrată.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/state",
+          "line": 37
+        }
+      ]
+    },
+    {
+      "code": "PAYLOAD_INTEGRITY",
+      "status": "PASS",
+      "message": "Inventarul candidatului și SHA-256 corespund receipt-ului.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/integrity",
+          "line": 225
+        }
+      ]
+    },
+    {
+      "code": "SOURCE_SNAPSHOT",
+      "status": "PASS",
+      "message": "Commitul, manifestul de intrări, amprenta și fișierele sursă corespund.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/source",
+          "line": 30
+        },
+        {
+          "path": "reports/apk-inputs.json",
+          "sha256": "a2ec3c790c2c96f6fd16410d5d014172839fc3386d81ce2e63df211c192658dd",
+          "jsonPointer": "/fingerprint",
+          "line": 4
+        }
+      ]
+    },
+    {
+      "code": "DIFF_SCOPE",
+      "status": "PASS",
+      "message": "Selecția a fost recalculată din inventarele surselor.",
+      "evidence": [
+        {
+          "path": "$report.qualificationPlan.contentBase64",
+          "sha256": "5d3e26ee618deec967fd16951c33045e5fab05e068ee2a0f5640a977317ee64b",
+          "jsonPointer": "/scope",
+          "line": 22,
+          "embedded": true,
+          "encoding": "base64-utf8"
+        },
+        {
+          "path": "release/index.json",
+          "sha256": "dcd2e9b198560b4908db5fd32664a154b9fc3b19904c68efe3f43ed1b8f9fa49",
+          "jsonPointer": "/versions",
+          "line": 4
+        },
+        {
+          "path": "release/0.21.6/release-validation.json",
+          "sha256": "f9b4a03b45db37bbcc9a5f3cf8f639995733fedbe97c1adeab6837a3309a1b11",
+          "jsonPointer": "/source",
+          "line": 30
+        },
+        {
+          "path": "release/0.21.6/reports/apk-inputs.json",
+          "sha256": "ae8ade6ad17b352ee5c32ddfcdcb79919e1427cb18db0eb13acf9edf458d002c",
+          "jsonPointer": "/fingerprint",
+          "line": 4
+        },
+        {
+          "path": "reports/apk-inputs.json",
+          "sha256": "a2ec3c790c2c96f6fd16410d5d014172839fc3386d81ce2e63df211c192658dd",
+          "jsonPointer": "/fingerprint",
+          "line": 4
+        }
+      ]
+    },
+    {
+      "code": "MAIN_README_SURFACE",
+      "status": "PASS",
+      "message": "README-ul principal este în snapshot și nu expune un digest APK brut.",
+      "evidence": [
+        {
+          "path": "README.md",
+          "sha256": "f5e9f47b519e3e2ee5151c669b5d90325ce2e96ba3b2078bb271380ffdd4fd06",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "code": "APK_IDENTITY",
+      "status": "PASS",
+      "message": "APK-ul, dimensiunea și sidecar-ul SHA-256 coincid.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/release/apkSha256",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "code": "SIGNING_CHANNEL",
+      "status": "PASS",
+      "message": "Certificatul este identificat și compatibil cu profilul canalului.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/release",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "code": "PLATFORM_GATES",
+      "status": "PASS",
+      "message": "Porțile Android necesare etapei pre-publicare au receipt-uri valide și hash-uri legate de payload.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/platforms/android/gates/androidComponents",
+          "line": 55
+        },
+        {
+          "path": "reports/component/source-component-run.json",
+          "sha256": "dd3039183454bdb6c1a51190422ca6d07a26e2767c55c2377692685a7afd99af",
+          "jsonPointer": "/",
+          "line": 1
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/platforms/android/gates/apkBuild",
+          "line": 43
+        },
+        {
+          "path": "reports/diagnostics/build.log",
+          "sha256": "e944e0d001fc60a02cc8b9c05d5b292ec34120fa2068ce866c2966d62b971129"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/platforms/android/gates/apkIdentity",
+          "line": 47
+        },
+        {
+          "path": "reports/diagnostics/apk-identity.json",
+          "sha256": "1b29d9fabf63846ea4bc3006aedcb450a0dbbcc7c6b4edae843c535dd8bf3bf9",
+          "jsonPointer": "/",
+          "line": 1
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/platforms/android/gates/signing",
+          "line": 51
+        },
+        {
+          "path": "reports/diagnostics/signing-compatibility.json",
+          "sha256": "c613d075798d789bd9314cadcb5d7199b10ea1163eeca7a237d48a4da4ff1cc4",
+          "jsonPointer": "/",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "code": "COMPONENT_EXTENT",
+      "status": "PASS",
+      "message": "Grupurile obligatorii ale aplicației și guvernanței, plus selecțiile suplimentare, au Extent canonic și zero rezultate nepromovate.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/atf-validation",
+          "line": 63
+        },
+        {
+          "path": "reports/component/atf-validation/component-report.html",
+          "sha256": "c570c0119ed4dd127b212196d67d6250a3460c509d5d9f5de244f855d776672b"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/atf-test-android",
+          "line": 72
+        },
+        {
+          "path": "reports/component/atf-test-android/component-report.html",
+          "sha256": "103865c8e06989d2819ed86d9406345c580582b04b3dddb77ca28b819f8b5609"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/atf-tests",
+          "line": 80
+        },
+        {
+          "path": "reports/component/atf-tests/component-report.html",
+          "sha256": "2f5a0930206a09d811d26ea14c28b49ebc0847eb583905509d1ec74c16a39583"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-bidding",
+          "line": 89
+        },
+        {
+          "path": "reports/component/whist-lab-app-bidding/component-report.html",
+          "sha256": "252bbf9b8ba4001d3130b1cef1b7792a8d773980f112bf4f504466c2d9df978c"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-commands",
+          "line": 98
+        },
+        {
+          "path": "reports/component/whist-lab-app-commands/component-report.html",
+          "sha256": "e75ddc9bc29810ee486adeaea2c15596ad56e8ee0ab888205266a53adb055667"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-display",
+          "line": 107
+        },
+        {
+          "path": "reports/component/whist-lab-app-display/component-report.html",
+          "sha256": "b5baa3715f5f518284e3f1434ec335be56a3cfacc1a671cfe5d1f43d8a1ae510"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-history",
+          "line": 116
+        },
+        {
+          "path": "reports/component/whist-lab-app-history/component-report.html",
+          "sha256": "cb93631c8c219050181af5871415aadaab61ec7b3dc3034baafce6c627b738e4"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-achievements",
+          "line": 125
+        },
+        {
+          "path": "reports/component/whist-lab-app-achievements/component-report.html",
+          "sha256": "c8732d893609193c66903f0167921c8fe7b2916feeed9b1b4e897dc6e4fdf40a"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-atf-card-table-ui",
+          "line": 134
+        },
+        {
+          "path": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html",
+          "sha256": "6bcd4ff3ea8473bbac6dbeec9406f0f6feb928abf1f2d82e528ffc37adf51531"
+        },
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-rules",
+          "line": 143
+        },
+        {
+          "path": "reports/component/whist-lab-app-rules/component-report.html",
+          "sha256": "9a64287b1e44b5659a5f0eac7d001ead24674452c9b60994d09f3aea9d230fae"
+        }
+      ]
+    },
+    {
+      "code": "COMPONENT_SOURCE_BINDING",
+      "status": "PASS",
+      "message": "Fiecare Extent este legat de execuția originală, iar intrările suitei coincid cu snapshot-ul APK.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/source",
+          "line": 30
+        },
+        {
+          "path": "reports/component/snapshots/394793d6811a2f645273c3d85296b0f8ab2b6b7ccb33304e81949c12df416bce/source-inputs.json",
+          "sha256": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/394793d6811a2f645273c3d85296b0f8ab2b6b7ccb33304e81949c12df416bce/source-component-run.json",
+          "sha256": "d62e58d5428a7a32b3988ed16500580c61fead8ff4ccbc06401c1c1605d998a0",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/394793d6811a2f645273c3d85296b0f8ab2b6b7ccb33304e81949c12df416bce/source-provenance.json",
+          "sha256": "394793d6811a2f645273c3d85296b0f8ab2b6b7ccb33304e81949c12df416bce",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/snapshots/394793d6811a2f645273c3d85296b0f8ab2b6b7ccb33304e81949c12df416bce/release-inputs.json",
+          "sha256": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/atf-validation/execution.json",
+          "sha256": "ead5bfe89a6ad1319ed0bd3c2ef82904c75eda065981c99d314a6502ff58a0fd",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/source-inputs.json",
+          "sha256": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/source-component-run.json",
+          "sha256": "dd3039183454bdb6c1a51190422ca6d07a26e2767c55c2377692685a7afd99af",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/source-provenance.json",
+          "sha256": "78a19073aa4c812c4a52fab03ebcdafab5ec8c5899487b9493665a268ab48194",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/release-inputs.json",
+          "sha256": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/atf-test-android/execution.json",
+          "sha256": "c5dda6f485c5054a5336e0bec961daf60781e5143747238a367093da8dcc72eb",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/atf-tests/execution.json",
+          "sha256": "29e2cec898ee7c998cdd5768bd83c2693dacff802b41161c0f319710721159d0",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-bidding/execution.json",
+          "sha256": "329d1fc0c764b1bdcb8f69565239ee2bbf1654a22ef7d20c145fd6fe728db176",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-commands/execution.json",
+          "sha256": "c0120bb72023e0f2c554b45bb02e86f25a57cf2b6022ef6bebe6017f09a24c1b",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-display/execution.json",
+          "sha256": "42ceaf0133d36c7c82c2d8dbbaa62d4118f94dab79554ea6c087ef293bb05f37",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-history/execution.json",
+          "sha256": "33db9c151b5d940a742094c06ccb745c5a1745fae3595a2933f46db70ecea808",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-achievements/execution.json",
+          "sha256": "ce443b3beb779951c057d0b9173bc0c7e1fbc6cbd7e2e2415ca5558ed9f7291b",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-atf-card-table-ui/execution.json",
+          "sha256": "e7f3ef84f03c30b6f574e41abac2cc9a017e223bfe130832634618bd63e8af32",
+          "jsonPointer": "",
+          "line": 1
+        },
+        {
+          "path": "reports/component/whist-lab-app-rules/execution.json",
+          "sha256": "8b40fe382640839449296add1b6fa703d17db0809afb2c236c37135ef96402e0",
+          "jsonPointer": "",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "code": "CANONICAL_EXTENT",
+      "status": "PASS",
+      "message": "Raportul canonic este unul dintre grupurile Extent selectate și hash-ul său corespunde.",
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/evidenceRetention",
+          "line": 221
+        },
+        {
+          "path": "reports/component/atf-tests/component-report.html",
+          "sha256": "2f5a0930206a09d811d26ea14c28b49ebc0847eb583905509d1ec74c16a39583"
+        }
+      ]
+    },
+    {
+      "code": "E2E_SCOPE",
+      "status": "PASS",
+      "message": "E2E: PASS; decizia este explicită, cu raport Extent și receipt legați de APK, sursă, rezultate și capturi.",
+      "evidence": [
+        {
+          "path": "$report.qualificationPlan.contentBase64",
+          "sha256": "5d3e26ee618deec967fd16951c33045e5fab05e068ee2a0f5640a977317ee64b",
+          "jsonPointer": "/e2e",
+          "line": 28,
+          "embedded": true,
+          "encoding": "base64-utf8"
+        },
+        {
+          "path": "reports/e2e/history-release-sanity/execution.json",
+          "sha256": "bf19957b09ec7fe31204f6dd5906719c5459a4e22733127bf400bd42a4ddbd57"
+        },
+        {
+          "path": "reports/e2e/history-release-sanity/report.html",
+          "sha256": "4b97d1e48c53c28ce5b469f9626dbb3884f8f698cbff56ec76da5392c5eb3055"
+        },
+        {
+          "path": "reports/e2e/isolation/764a525f4582494c841e2786d41cf0af/data-isolation-ready.json",
+          "sha256": "fcace875a8b7c2fabe6ce2cc212bb2462db57032ef742b6c7eed311994a83f6d"
+        },
+        {
+          "path": "reports/e2e/isolation/764a525f4582494c841e2786d41cf0af/data-isolation-cleanup.json",
+          "sha256": "3d10169913341a731c22e0cd0cc7d55384fd6445db050666bbf422b48d5affe4"
+        },
+        {
+          "path": "reports/e2e/responsive-ui-sanity/execution.json",
+          "sha256": "7ee660bfe20b7293dad318fa35abc5828fb05875ed0069301ec67a4887375e1d"
+        },
+        {
+          "path": "reports/e2e/responsive-ui-sanity/report.html",
+          "sha256": "9a1b4948077849533a7dad77848210a693c437c549cb0539a2cc60757afa0b18"
+        },
+        {
+          "path": "reports/e2e/isolation/c90f3ed3d7e84e10ac4cfecf22f241d7/data-isolation-ready.json",
+          "sha256": "415d839525b9bdae555dcc37fe2dbf757617c32a857ee8c441baf60a62ade407"
+        },
+        {
+          "path": "reports/e2e/isolation/c90f3ed3d7e84e10ac4cfecf22f241d7/data-isolation-cleanup.json",
+          "sha256": "f41ca544d6d69a417a852f678abb6ec2eb0afa4c734b01e30ee82eed2aa0192e"
+        },
+        {
+          "path": "reports/e2e/signed-release-achievements/execution.json",
+          "sha256": "3db8df5603533f8101637b2ed42ae64495772d46dff2e7269b7ea21aa7e623bf"
+        },
+        {
+          "path": "reports/e2e/signed-release-achievements/report.html",
+          "sha256": "577cd924c4a5284d31d7167141c4f517dea4f748bdb0978a13a0e751f8838c04"
+        },
+        {
+          "path": "reports/e2e/isolation/2ba46f715fab41aeb0f1df42d2b228c5/data-isolation-ready.json",
+          "sha256": "126d83df9a3f2704e4098f3d668580238611280ac5cf5a4e042345c8d30d274a"
+        },
+        {
+          "path": "reports/e2e/isolation/2ba46f715fab41aeb0f1df42d2b228c5/data-isolation-cleanup.json",
+          "sha256": "bd89f410e2a1d6a8d0eeb166d3d8247a9ed09ef360633b27ad166d45154415ee"
+        },
+        {
+          "path": "reports/e2e/signed-release-auto-game/execution.json",
+          "sha256": "9de9a489da541f8f9072cbf35d5dc0e2c5663ad17cc19a002969e5878678d547"
+        },
+        {
+          "path": "reports/e2e/signed-release-auto-game/report.html",
+          "sha256": "c54184ca885f4741d5ed7ad8c82ef81907b03833528b46d8aff91f4c70afabf2"
+        },
+        {
+          "path": "reports/e2e/isolation/24f1243a721a4f628495df1a02c451d4/data-isolation-ready.json",
+          "sha256": "2e0b0486f0a3ced158d19fb5fdfcf8426328340325c9e3080d54f3cc3d570425"
+        },
+        {
+          "path": "reports/e2e/isolation/24f1243a721a4f628495df1a02c451d4/data-isolation-cleanup.json",
+          "sha256": "10972d575f1c076ac6f6db788cf07063c42a844797ad0d29479be878505b0760"
+        },
+        {
+          "path": "reports/e2e/signed-release-bidding/execution.json",
+          "sha256": "2f4ed7be41696c1b36b517265b3f9270104cc04d61387663c5f4b1770ed88876"
+        },
+        {
+          "path": "reports/e2e/signed-release-bidding/report.html",
+          "sha256": "29de03a0fe87ac9617f7686f4966cb5c31b872f7747a0dcd22ba08549b510203"
+        },
+        {
+          "path": "reports/e2e/isolation/3daf42f5890448aea70649b707678d0e/data-isolation-ready.json",
+          "sha256": "1822c25970e8b1489c6f83281bf5770827479dd03d59944fa744abaa3f3e49c5"
+        },
+        {
+          "path": "reports/e2e/isolation/3daf42f5890448aea70649b707678d0e/data-isolation-cleanup.json",
+          "sha256": "09f65636c936666295a7e3ab91503746f62629799f2d7226a30a0a2d2adb92a7"
+        },
+        {
+          "path": "reports/e2e/signed-release-home-profile/execution.json",
+          "sha256": "be30f5ad251928db32445ed5f9e134636ea5a15c5ccb0c47cce7379b3e35e71a"
+        },
+        {
+          "path": "reports/e2e/signed-release-home-profile/report.html",
+          "sha256": "5082b50705cb4ff61dc17fa1ed96036eee7b937377dbfd9efa027ce364c70dee"
+        },
+        {
+          "path": "reports/e2e/isolation/2488538e86d742ee80713ed1b060a90d/data-isolation-ready.json",
+          "sha256": "d59c7b1c61fd3adb9d527cb29b1eaf25454b4ef2aece67407a4595a2115fdfb8"
+        },
+        {
+          "path": "reports/e2e/isolation/2488538e86d742ee80713ed1b060a90d/data-isolation-cleanup.json",
+          "sha256": "46387b85f0d5e660a727bd9985c2c26a242a5ac7f5bcd8a4a9fac6d272ab6d92"
+        },
+        {
+          "path": "reports/e2e/signed-release-smoke/execution.json",
+          "sha256": "f451822e9de09780351b511f655aa0afbd74a83056487fc47e45c95ac162cea2"
+        },
+        {
+          "path": "reports/e2e/signed-release-smoke/report.html",
+          "sha256": "55a6a3eec31ecfe14025dd148181e4ae17337c3b699168a13746cd27f1f8ed3f"
+        },
+        {
+          "path": "reports/e2e/isolation/a62a12cdca1e4f2c9f024afb4eeda493/data-isolation-ready.json",
+          "sha256": "6e37482986768c1ea612b84f490d762694a92a498125b8155b8b01249e927fbd"
+        },
+        {
+          "path": "reports/e2e/isolation/a62a12cdca1e4f2c9f024afb4eeda493/data-isolation-cleanup.json",
+          "sha256": "76ae040d830851872f39964f8de2f92d4543b830473f7e672e2e0c4f2d691f7a"
+        }
+      ]
+    }
+  ],
+  "testScope": {
+    "schemaVersion": 2,
+    "releaseVersion": "0.21.7",
+    "catalogued": false,
+    "scope": {
+      "baselineVersion": "0.21.6",
+      "baselineCommit": "585d617a47ef72effe976dcb248efe9a39814553",
+      "baselineFingerprint": "e8a4e3bb053f89e43bf15c805775531c29077306df8b0a159ad67b72be557187",
+      "candidateFingerprint": "3a87b6c125dc9436ef93b4dec9823c4b2b0e184e8981310e48f419a88d837da3"
+    },
+    "kind": "USER_FLOW",
+    "userFlowChanged": true,
+    "changes": [
+      {
+        "path": "README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-ui-browser/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "atf-ui-browser/pages/verify-card-adapter.mjs",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "atf-ui-browser/src/main/web/table.css",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "atf-ui-browser/src/main/web/table.mjs",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "atf-ui-browser/tests/BrowserUi.java",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+        "kind": "MODIFIED",
+        "rule": "unclassified-or-shared-runtime",
+        "e2eGroups": [
+          "signed-release-smoke",
+          "signed-release-bidding",
+          "signed-release-auto-game",
+          "history-release-sanity",
+          "signed-release-achievements",
+          "signed-release-home-profile",
+          "responsive-ui-sanity"
+        ]
+      },
+      {
+        "path": "docs/feedback/ATF_UiBrowser.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/app/build.gradle",
+        "kind": "MODIFIED",
+        "rule": "android-version-metadata",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/README.md",
+        "kind": "MODIFIED",
+        "rule": "documentation",
+        "e2eGroups": []
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+        "kind": "ADDED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+        "kind": "MODIFIED",
+        "rule": "card-table-ui",
+        "e2eGroups": [
+          "signed-release-home-profile",
+          "responsive-ui-sanity",
+          "signed-release-auto-game",
+          "signed-release-achievements"
+        ]
+      },
+      {
+        "path": "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java",
+        "kind": "MODIFIED",
+        "rule": "non-runtime",
+        "e2eGroups": []
+      }
+    ],
+    "componentGroups": [
+      "atf-validation",
+      "atf-test-android",
+      "atf-tests",
+      "whist-lab-app-bidding",
+      "whist-lab-app-commands",
+      "whist-lab-app-display",
+      "whist-lab-app-history",
+      "whist-lab-app-achievements",
+      "whist-lab-app-atf-card-table-ui",
+      "whist-lab-app-rules"
+    ],
+    "components": [
+      {
+        "group": "atf-validation",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java"
+        ]
+      },
+      {
+        "group": "atf-test-android",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java"
+        ]
+      },
+      {
+        "group": "atf-tests",
+        "decision": "RUN",
+        "affectedInputs": [
+          "README.md",
+          "atf-ui-browser/README.md",
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "docs/feedback/ATF_UiBrowser.md",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/atf-card-table-ui/README.md",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-bidding",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-commands",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-display",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-history",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-achievements",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "whist-lab-app/app/build.gradle",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-atf-card-table-ui",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceDrawable.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceView.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandFan.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+          "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/android/PlayedCardsView.java",
+          "whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/cards/CardFaceInkComponentTest.java"
+        ]
+      },
+      {
+        "group": "whist-lab-app-rules",
+        "decision": "RUN",
+        "affectedInputs": [
+          "atf-ui-browser/pages/verify-card-adapter.mjs",
+          "atf-ui-browser/src/main/web/table.css",
+          "atf-ui-browser/src/main/web/table.mjs",
+          "atf-ui-browser/tests/BrowserUi.java",
+          "atf-ui-browser/whist/src/main/java/ro/whistlab/browser/WhistBrowser.java"
+        ]
+      }
+    ],
+    "runComponentGroups": [
+      "atf-validation",
+      "atf-test-android",
+      "atf-tests",
+      "whist-lab-app-bidding",
+      "whist-lab-app-commands",
+      "whist-lab-app-display",
+      "whist-lab-app-history",
+      "whist-lab-app-achievements",
+      "whist-lab-app-atf-card-table-ui",
+      "whist-lab-app-rules"
+    ],
+    "requiredE2eGroups": [
+      "history-release-sanity",
+      "responsive-ui-sanity",
+      "signed-release-achievements",
+      "signed-release-auto-game",
+      "signed-release-bidding",
+      "signed-release-home-profile",
+      "signed-release-smoke"
+    ],
+    "evidence": [
+      {
+        "path": "release/index.json",
+        "sha256": "dcd2e9b198560b4908db5fd32664a154b9fc3b19904c68efe3f43ed1b8f9fa49",
+        "jsonPointer": "/versions",
+        "line": 4
+      },
+      {
+        "path": "release/0.21.6/release-validation.json",
+        "sha256": "f9b4a03b45db37bbcc9a5f3cf8f639995733fedbe97c1adeab6837a3309a1b11",
+        "jsonPointer": "/source",
+        "line": 30
+      },
+      {
+        "path": "release/0.21.6/reports/apk-inputs.json",
+        "sha256": "ae8ade6ad17b352ee5c32ddfcdcb79919e1427cb18db0eb13acf9edf458d002c",
+        "jsonPointer": "/fingerprint",
+        "line": 4
+      }
+    ]
+  },
+  "componentGroups": [
+    {
+      "name": "atf-validation",
+      "status": "PASS",
+      "invocations": 19,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/atf-validation",
+          "line": 63
+        },
+        {
+          "path": "reports/component/atf-validation/component-report.html",
+          "sha256": "c570c0119ed4dd127b212196d67d6250a3460c509d5d9f5de244f855d776672b"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "atf-test-android",
+      "status": "PASS",
+      "invocations": 277,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/atf-test-android",
+          "line": 72
+        },
+        {
+          "path": "reports/component/atf-test-android/component-report.html",
+          "sha256": "103865c8e06989d2819ed86d9406345c580582b04b3dddb77ca28b819f8b5609"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "atf-tests",
+      "status": "PASS",
+      "invocations": 452,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/atf-tests",
+          "line": 80
+        },
+        {
+          "path": "reports/component/atf-tests/component-report.html",
+          "sha256": "2f5a0930206a09d811d26ea14c28b49ebc0847eb583905509d1ec74c16a39583"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-bidding",
+      "status": "PASS",
+      "invocations": 255,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-bidding",
+          "line": 89
+        },
+        {
+          "path": "reports/component/whist-lab-app-bidding/component-report.html",
+          "sha256": "252bbf9b8ba4001d3130b1cef1b7792a8d773980f112bf4f504466c2d9df978c"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-commands",
+      "status": "PASS",
+      "invocations": 123,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-commands",
+          "line": 98
+        },
+        {
+          "path": "reports/component/whist-lab-app-commands/component-report.html",
+          "sha256": "e75ddc9bc29810ee486adeaea2c15596ad56e8ee0ab888205266a53adb055667"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-display",
+      "status": "PASS",
+      "invocations": 104,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-display",
+          "line": 107
+        },
+        {
+          "path": "reports/component/whist-lab-app-display/component-report.html",
+          "sha256": "b5baa3715f5f518284e3f1434ec335be56a3cfacc1a671cfe5d1f43d8a1ae510"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-history",
+      "status": "PASS",
+      "invocations": 61,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-history",
+          "line": 116
+        },
+        {
+          "path": "reports/component/whist-lab-app-history/component-report.html",
+          "sha256": "cb93631c8c219050181af5871415aadaab61ec7b3dc3034baafce6c627b738e4"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-achievements",
+      "status": "PASS",
+      "invocations": 28,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-achievements",
+          "line": 125
+        },
+        {
+          "path": "reports/component/whist-lab-app-achievements/component-report.html",
+          "sha256": "c8732d893609193c66903f0167921c8fe7b2916feeed9b1b4e897dc6e4fdf40a"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-atf-card-table-ui",
+      "status": "PASS",
+      "invocations": 42,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-atf-card-table-ui",
+          "line": 134
+        },
+        {
+          "path": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html",
+          "sha256": "6bcd4ff3ea8473bbac6dbeec9406f0f6feb928abf1f2d82e528ffc37adf51531"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    },
+    {
+      "name": "whist-lab-app-rules",
+      "status": "PASS",
+      "invocations": 39,
+      "evidence": [
+        {
+          "path": "release-validation.json",
+          "sha256": "a8c6c01e6c83c18a899be490ee3d3f25a9ff17c13e40f47d8eaa54170f0f4141",
+          "jsonPointer": "/qualification/auditedGroups/whist-lab-app-rules",
+          "line": 143
+        },
+        {
+          "path": "reports/component/whist-lab-app-rules/component-report.html",
+          "sha256": "9a64287b1e44b5659a5f0eac7d001ead24674452c9b60994d09f3aea9d230fae"
+        }
+      ],
+      "sourceEvidence": {
+        "decision": "MATCH",
+        "originalSourceFingerprint": "2e900998e4ffd4a5f16ef806b24ad089817038d710681d76c7dd9ae8f044f1c1",
+        "changedInputCount": 0,
+        "affectedInputs": [],
+        "releaseFingerprint": "2a75e5188c4da3afc5c853d8b9f60cb230f6abd662e24ade212cf9dccc230541"
+      }
+    }
+  ],
+  "e2e": {
+    "status": "PASS",
+    "userFlowChanged": true,
+    "rationale": null,
+    "decisions": [
+      {
+        "group": "history-release-sanity",
+        "decision": "REUSE"
+      },
+      {
+        "group": "responsive-ui-sanity",
+        "decision": "REUSE"
+      },
+      {
+        "group": "signed-release-achievements",
+        "decision": "REUSE"
+      },
+      {
+        "group": "signed-release-auto-game",
+        "decision": "REUSE"
+      },
+      {
+        "group": "signed-release-bidding",
+        "decision": "REUSE"
+      },
+      {
+        "group": "signed-release-home-profile",
+        "decision": "REUSE"
+      },
+      {
+        "group": "signed-release-smoke",
+        "decision": "REUSE"
+      }
+    ],
+    "note": "NOT_RUN/NOT_APPLICABLE nu devine PASS; această ieșire nu califică fluxurile E2E ale aplicației."
+  },
+  "timing": {
+    "schemaVersion": 1,
+    "kind": "ATF_RELEASE_TIMING",
+    "owner": "rag-evaluator",
+    "stages": [
+      {
+        "stage": "rag.rag_policy",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.048Z",
+        "endedUtc": "2026-11-17T07:52:36.062Z",
+        "elapsedMs": 14
+      },
+      {
+        "stage": "rag.plan_schema",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.062Z",
+        "endedUtc": "2026-11-17T07:52:36.063Z",
+        "elapsedMs": 1
+      },
+      {
+        "stage": "rag.release_identity",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.063Z",
+        "endedUtc": "2026-11-17T07:52:36.063Z",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "rag.platform_scope",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.063Z",
+        "endedUtc": "2026-11-17T07:52:36.063Z",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "rag.qualification_state",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.063Z",
+        "endedUtc": "2026-11-17T07:52:36.063Z",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "rag.payload_integrity",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.063Z",
+        "endedUtc": "2026-11-17T07:52:36.522Z",
+        "elapsedMs": 459
+      },
+      {
+        "stage": "rag.source_snapshot",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:36.522Z",
+        "endedUtc": "2026-11-17T07:52:39.736Z",
+        "elapsedMs": 3213
+      },
+      {
+        "stage": "rag.diff_scope",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:39.736Z",
+        "endedUtc": "2026-11-17T07:52:39.757Z",
+        "elapsedMs": 22
+      },
+      {
+        "stage": "rag.main_readme_surface",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:39.757Z",
+        "endedUtc": "2026-11-17T07:52:39.760Z",
+        "elapsedMs": 3
+      },
+      {
+        "stage": "rag.apk_identity",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:39.760Z",
+        "endedUtc": "2026-11-17T07:52:39.768Z",
+        "elapsedMs": 8
+      },
+      {
+        "stage": "rag.signing_channel",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:39.768Z",
+        "endedUtc": "2026-11-17T07:52:39.768Z",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "rag.platform_gates",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:39.768Z",
+        "endedUtc": "2026-11-17T07:52:39.793Z",
+        "elapsedMs": 25
+      },
+      {
+        "stage": "rag.component_extent",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:39.793Z",
+        "endedUtc": "2026-11-17T07:52:40.179Z",
+        "elapsedMs": 386
+      },
+      {
+        "stage": "rag.component_source_binding",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:40.179Z",
+        "endedUtc": "2026-11-17T07:52:41.089Z",
+        "elapsedMs": 909
+      },
+      {
+        "stage": "rag.canonical_extent",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:41.089Z",
+        "endedUtc": "2026-11-17T07:52:41.089Z",
+        "elapsedMs": 0
+      },
+      {
+        "stage": "rag.e2e_scope",
+        "status": "PASS",
+        "startedUtc": "2026-11-17T07:52:41.089Z",
+        "endedUtc": "2026-11-17T07:52:41.872Z",
+        "elapsedMs": 784
+      }
+    ]
+  },
+  "lifecycleEffect": "NONE",
+  "writesOnly": "../../r217/rag-prepublication.json",
+  "limitations": [
+    "Verificarea leagă inventarul complet al snapshot-ului de manifest; nu execută Git și nu certifică starea indexului Git.",
+    "Verdictul este o recomandare auditabilă pentru revizie umană; nu promovează, semnează sau publică."
+  ]
+}
