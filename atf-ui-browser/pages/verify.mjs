@@ -195,7 +195,7 @@ if (checks.some(test => test.status === "FAIL")) process.exitCode = 1;
 async function phoneViewport(chrome) {
   const requests = [];
   const server = createServer(async (request, response) => {
-    const path = request.url;
+    const path = new URL(request.url, "http://127.0.0.1").pathname;
     requests.push(path);
     const file = path === "/whist/" ? "index.html" : path.slice("/whist/".length);
     if (!path.startsWith("/whist/") || !files.includes(file)) {
@@ -281,7 +281,8 @@ async function phoneViewport(chrome) {
       const frames = await evaluate("window.cardFrames");
       assert.equal(frames.length, 4);
       assert.equal(new Set(frames.map(frame => frame.seat)).size, 4);
-      assert.deepEqual(frames.map(frame => frame.active), frames.map(frame => frame.seat));
+      assert.deepEqual(frames.slice(0, -1).map(frame => frame.active), frames.slice(0, -1).map(frame => frame.seat));
+      assert.equal(frames.at(-1).active, -1, "The completed trick has no active player during collection");
       assert.ok(frames.every(frame => frame.bids === "Licitații depuse 4/4"));
       assert.ok(frames.slice(1).every((frame, index) => frame.at - frames[index].at >= 500));
       assert.deepEqual(await evaluate(`[document.querySelector('.whist-score h1').textContent,
