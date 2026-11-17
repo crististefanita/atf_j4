@@ -166,7 +166,7 @@ class BrowserUi {
         List<int[]> sizes = mobile
                 ? List.of(new int[]{414, 896}, new int[]{360, 800}, new int[]{896, 414})
                 : List.of(new int[]{1920, 1080}, new int[]{1280, 720}, new int[]{535, 760},
-                        new int[]{400, 900}, new int[]{220, 420}, new int[]{400, 500});
+                        new int[]{400, 900}, new int[]{220, 420}, new int[]{400, 500}, new int[]{400, 600}, new int[]{400, 610});
         List<Map<String, Object>> observations = new ArrayList<>();
         for (int index = 0; index < sizes.size(); index++) {
             int width = sizes.get(index)[0];
@@ -216,7 +216,8 @@ class BrowserUi {
                 require("phone".equals(measured.get("kind")), "The phone adapter must remain in 1:1 mode");
             } else {
                 double fitScale = Math.min(availableHeight / 896.0, availableWidth / 414.0);
-                expectedScale = fitScale >= .68 || availableWidth / 414.0 < .68 ? fitScale : .68;
+                boolean readableFloorFits = availableWidth >= 414.0 * .68 && availableHeight >= 896.0 * .68;
+                expectedScale = fitScale >= .68 || !readableFloorFits ? fitScale : .68;
                 require("desktop".equals(measured.get("kind")), "The desktop adapter must use the scaled frame");
             }
             require(Math.abs(expectedScale - actualScale) <= .002,
@@ -238,11 +239,9 @@ class BrowserUi {
             require(frameWidth <= availableWidth + 1,
                     "The frame exceeded the useful width at " + width + "×" + height + ": " + frame);
             near(((Number) viewport.get("x")).doubleValue() + Math.max(0, (availableWidth - frameWidth) / 2), frameX);
-            if (frameHeight <= availableHeight + 1) {
-                near(((Number) viewport.get("y")).doubleValue() + Math.max(0, (availableHeight - frameHeight) / 2), frameY);
-            } else {
-                near(((Number) viewport.get("y")).doubleValue(), frameY);
-            }
+            require(frameHeight <= availableHeight + 1,
+                    "The frame exceeded the useful height at " + width + "×" + height + ": " + frame);
+            near(((Number) viewport.get("y")).doubleValue() + Math.max(0, (availableHeight - frameHeight) / 2), frameY);
             require(measured.get("transform") instanceof String transform && transform.startsWith("matrix("),
                     "The frame must use a CSS matrix transform");
             observations.add(Map.of("requested", List.of(width, height), "expectedScale", expectedScale,

@@ -17,7 +17,7 @@ export function viewportGeometry(width, height, mobile) {
 
   // Keep the readable desktop floor when width permits. When it does not, fit both axes.
   const fitScale = Math.min(height / REFERENCE.height, width / REFERENCE.width);
-  const scale = fitScale >= MIN_DESKTOP_SCALE || width / REFERENCE.width < MIN_DESKTOP_SCALE
-    ? fitScale : MIN_DESKTOP_SCALE;
+  const readableFloorFits = width >= REFERENCE.width * MIN_DESKTOP_SCALE && height >= REFERENCE.height * MIN_DESKTOP_SCALE;
+  const scale = fitScale >= MIN_DESKTOP_SCALE || !readableFloorFits ? fitScale : MIN_DESKTOP_SCALE;
   return { ...REFERENCE, scale, frameWidth: REFERENCE.width * scale, frameHeight: REFERENCE.height * scale };
 }

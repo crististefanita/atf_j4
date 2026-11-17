@@ -60,7 +60,7 @@ flowchart LR
 |---|---|
 | [The game contract](src/main/java/ro/cardtable/browser/BrowserGame.java) | Publish the places, the cards allowed, the legal orders and scores. Validation remains in the engine of each game. |
 | [Serverul](src/main/java/ro/cardtable/browser/BrowserServer.java) | Serves the resources of the same origin. Isolate the games on the tab, validate the revisions and reject repeated commands. |
-| [Geometry](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Apply the Java plan used in Android for seats and fans. The phone frame uses the CSS viewport 1:1. On desktop, the useful height sets uniform scale when width permits; a readable floor is kept without horizontal overflow, and very narrow windows fit both axes. |
+| [Geometry](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Apply the Java plan used in Android for seats and fans. The phone frame uses the CSS viewport 1:1. On desktop, the useful height sets uniform scale when width permits; a readable floor is kept only when both axes allow it; narrow windows otherwise fit both axes without overflow. |
 | [Adaptorul Whist](whist/src/main/java/ro/whistlab/browser/WhistBrowser.java) | Use distribution, AI policies and engine settlement. The recommendation comes from the same human selection as on Android. |
 
 ## Whist on GitHub Pages
@@ -164,6 +164,16 @@ flowchart LR
 - Whist site uses [alt build](Build-WhistPages.ps1), which produces static resources from the Whist adapter and engine. Pages test and JARs acceptance by Rentz or Hold'em have different inputs.
 
 </details>
+
+### Current qualified package: 0.2.10
+
+The adjacent `browser-build.json` binds this release to its source commit, input inventory and artifact hashes.
+
+- Runtime: [Card Table Browser 0.2.10](lib/atf-ui-browser-0.2.10.jar) · [SHA-256](lib/atf-ui-browser-0.2.10.jar.sha256)
+- Shared tests: [Card Table Browser tests 0.2.10](lib/atf-ui-browser-0.2.10-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.10-tests.jar.sha256)
+- Provenance: [browser-build.json](lib/browser-build.json)
+
+The viewport contract preserves a 414 × 896 logical frame on desktop, scales uniformly to fit the usable browser height and width, and retains a 0.68 readability floor only when both dimensions permit it. Phone browsers use their CSS viewport 1:1. Rentz and Hold’em consume the same runtime and test-archive bytes, verified against this receipt.
 
 ```powershell
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion

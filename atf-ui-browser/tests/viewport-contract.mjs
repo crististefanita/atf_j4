@@ -21,20 +21,22 @@ export function verifyViewportContract(viewport) {
 
   const desktopCases = [
     [1920, 1080], [1280, 720], [1440, 900], [535, 760], [414, 896], [400, 900],
-    [320, 900], [282, 900], [280, 900], [220, 420], [400, 500], [300, 400],
+    [320, 900], [282, 900], [280, 900], [220, 420], [400, 500], [400, 600], [400, 610], [300, 400],
     [800, 600], [1280, 420], [1920, 609], [1920, 610]
   ];
   for (const [width, height] of desktopCases) {
     const result = viewportGeometry(width, height, false);
     const fitScale = Math.min(height / REFERENCE.height, width / REFERENCE.width);
-    const expectedScale = fitScale >= MIN_DESKTOP_SCALE || width / REFERENCE.width < MIN_DESKTOP_SCALE
-      ? fitScale : MIN_DESKTOP_SCALE;
+    const readableFloorFits = width >= REFERENCE.width * MIN_DESKTOP_SCALE && height >= REFERENCE.height * MIN_DESKTOP_SCALE;
+    const expectedScale = fitScale >= MIN_DESKTOP_SCALE || !readableFloorFits ? fitScale : MIN_DESKTOP_SCALE;
     assert.ok(Math.abs(result.scale - expectedScale) < 1e-12,
       `Desktop ${width}×${height} scale should respect both usable axes`);
     assert.ok(Math.abs(result.frameWidth / result.frameHeight - REFERENCE.width / REFERENCE.height) < 1e-12,
       `Desktop ${width}×${height} must preserve the reference aspect ratio`);
     assert.ok(result.frameWidth <= width + 1e-9,
       `Desktop ${width}×${height} must not create horizontal overflow`);
+    assert.ok(result.frameHeight <= height + 1e-9,
+      `Desktop ${width}×${height} must not create vertical overflow`);
     assert.equal(result.width, REFERENCE.width);
     assert.equal(result.height, REFERENCE.height);
   }
@@ -70,7 +72,8 @@ export function verifyViewportContract(viewport) {
     invalidCases: 8,
     totalCases: mobileCases.length + desktopCases.length + widthSeries.length + heightSeries.length + 8 + 3,
     constrainedWidth: viewportGeometry(220, 420, false),
-    readableFloor: viewportGeometry(400, 500, false)
+    shortHeight: viewportGeometry(400, 500, false),
+    readableFloor: viewportGeometry(400, 610, false)
   };
 }
 
