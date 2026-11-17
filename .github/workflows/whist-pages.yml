@@ -1,0 +1,81 @@
+name: Whist browser Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/whist-pages.yml
+      - atf-ui-browser/**
+      - config/whist-*.yaml
+      - whist-lab-app/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whist-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platforms;android-36'
+      - name: Compile and verify the static site
+        id: site
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'whist-pages'
+          $build = Join-Path $root 'catalogue'
+          $null = New-Item -ItemType Directory -Force -Path $root
+          $init = Join-Path $root 'catalogue.gradle'
+          @'
+          gradle.beforeProject { project ->
+              def name = project.path == ':' ? 'root' : project.path.replace(':', '_')
+              project.layout.buildDirectory.set(new File(gradle.startParameter.projectProperties['whist.pages.catalogue'], name))
+          }
+          '@ | Set-Content -LiteralPath $init
+          $gradle = @('--no-daemon', '--max-workers=2', '-p', 'whist-lab-app', '--project-cache-dir',
+              (Join-Path $root 'project-cache'), "-Pwhist.pages.catalogue=$build", '-I', $init, ':app:generateWhistAchievementCatalog')
+          & ./whist-lab-app/gradlew.bat @gradle
+          if ($LASTEXITCODE -ne 0) { throw 'Whist catalogue generation failed.' }
+
+          $dependencies = Join-Path $root 'dependencies'
+          & mvn -B -ntp -f atf-ui-browser/pages/teavm-dependencies.xml org.apache.maven.plugins:maven-dependency-plugin:3.8.1:copy '-Dartifact=org.json:json:20240205' "-DoutputDirectory=$dependencies"
+          if ($LASTEXITCODE -ne 0) { throw 'Whist JSON dependency could not be resolved.' }
+
+          $catalogue = Join-Path $build '_app/generated/sources/whistAchievements/java'
+          $site = & ./atf-ui-browser/Build-WhistPages.ps1 -WorkRoot $root -CatalogSource $catalogue -JsonLibrary (Join-Path $dependencies 'json-20240205.jar')
+          & node atf-ui-browser/pages/verify-card-adapter.mjs $site (Join-Path $root 'verification')
+          if ($LASTEXITCODE -ne 0) { throw 'Whist compiled browser components failed.' }
+          "path=$site" >> $env:GITHUB_OUTPUT
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ steps.site.outputs.path }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - uses: actions/deploy-pages@v5
+        id: deployment
