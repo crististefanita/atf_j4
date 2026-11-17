@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "applicationId": "ro.whistlab.app",
+  "versionName": "0.21.6",
+  "versionCode": 37,
+  "minSdk": 24,
+  "targetSdk": 36,
+  "artifactKind": "apk",
+  "platforms": [
+    "android"
+  ],
+  "platform": "android",
+  "apkName": "WhistLab-0.21.6.apk",
+  "apkRelativePath": "WhistLab-0.21.6.apk",
+  "apkBytes": 980345,
+  "apkSha256": "29854ddbbe0bc6d2593bb672c89af464c05e6ced7141768d8121ac8c6f985ca2",
+  "apkCrc32": "ff88997d",
+  "signingCertificate": "Android Debug",
+  "productionManagedKey": false,
+  "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+  "sourceCommit": "585d617a47ef72effe976dcb248efe9a39814553",
+  "nativeExecution": "NOT_RUN"
+}

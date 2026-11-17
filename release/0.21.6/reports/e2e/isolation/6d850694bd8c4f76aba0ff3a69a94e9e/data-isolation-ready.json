@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "status": "READY",
+  "scope": "ANDROID_SECONDARY_USER",
+  "applicationId": "ro.whistlab.app",
+  "originalUserId": 0,
+  "testUserId": 22,
+  "createdByRun": true,
+  "packageWasInstalledBefore": false,
+  "cleanupRequired": true,
+  "accountsAdded": false,
+  "originalPackageWasInstalledBefore": true,
+  "screenOffTimeoutMs": 2147483647,
+  "screenUnlocked": true,
+  "backgroundPackagesDisabled": [
+    "com.android.vending",
+    "com.google.android.googlequicksearchbox",
+    "com.google.android.apps.docs",
+    "com.google.android.apps.maps",
+    "com.google.android.calendar",
+    "com.google.android.apps.messaging",
+    "com.google.android.setupwizard"
+  ],
+  "userName": "ATFJ4-dd580feeea",
+  "observedApi": 28,
+  "displayProfile": "1080x1920@440",
+  "installedPath": "/data/app/ro.whistlab.app-YDqrPUfredI1tXT7VAspKA==/base.apk",
+  "installedApkSha256": "29854ddbbe0bc6d2593bb672c89af464c05e6ced7141768d8121ac8c6f985ca2",
+  "observedUtc": "2026-11-17T05:57:19.0975732Z"
+}
