@@ -8,7 +8,8 @@ param(
     [Parameter(Mandatory)][string]$MainClass,
     [ValidateRange(0,65535)][int]$Port,
     [string]$ListenAddress = '127.0.0.1',
-    [switch]$BuildOnly
+    [switch]$BuildOnly,
+    [switch]$ListSources
 )
 $ErrorActionPreference = 'Stop'
 $checkout = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).ProviderPath
@@ -22,7 +23,6 @@ foreach ($source in $checkout, (Resolve-Path -LiteralPath $GameRoot).ProviderPat
 }
 $build = Join-Path $output ('browser-' + [guid]::NewGuid().ToString('N'))
 $classes = Join-Path $build 'classes'
-$null = New-Item -ItemType Directory -Path $classes -Force
 $inputs = @(
     Join-Path $PSScriptRoot 'src/main/java'
     $ui = Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui'
@@ -52,6 +52,12 @@ $sources = foreach ($inputPath in $inputs) {
         $item.FullName
     }
 }
+$sources = @($sources | Sort-Object -Unique)
+if ($ListSources) {
+    $sources
+    return
+}
+$null = New-Item -ItemType Directory -Path $classes -Force
 function Format-JavacPath([string]$Path) {
     '"' + $Path.Replace('\', '/') + '"'
 }
@@ -59,7 +65,7 @@ $argFile = Join-Path $build 'javac.args'
 $arguments = @('--release', '17', '-encoding', 'UTF-8', '-d', (Format-JavacPath $classes))
 $libraryPaths = foreach ($library in $Libraries) { (Resolve-Path -LiteralPath $library).ProviderPath }
 if ($libraryPaths) { $arguments += @('-cp', (Format-JavacPath ($libraryPaths -join [IO.Path]::PathSeparator))) }
-$arguments += @($sources | Sort-Object -Unique | ForEach-Object { Format-JavacPath $_ })
+$arguments += @($sources | ForEach-Object { Format-JavacPath $_ })
 [IO.File]::WriteAllLines($argFile, [string[]]$arguments, [Text.UTF8Encoding]::new($false))
 & javac "@$argFile"
 if ($LASTEXITCODE -ne 0) { throw 'Browser adapter compilation failed.' }

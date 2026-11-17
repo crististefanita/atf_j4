@@ -169,8 +169,8 @@ flowchart LR
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion
 ```
 
-- Alegeți `$BrowserLibraryVersion` pentru candidatul care se împachetează. Pachetul și amprentele se scriu în directorul extern afișat. Rentz și Hold’em fixează propriile versiuni în `atf-ui-browser/lib` și califică individual artefactele admise.
-- La o schimbare a surselor incluse, a contractelor sau a resurselor, exportați o versiune nouă. Verificați lansarea și prima comandă cu JAR-ul fizic pe classpath alături de adaptor, motor și dependențele externe.
+- Alegeți `$BrowserLibraryVersion` și porniți dintr-un checkout Git curat. Exportul scrie cele două JAR-uri, amprentele și `browser-build.json` în directorul extern al versiunii. Registrul leagă fișierele de commitul sursă și de inventarul intrărilor.
+- Exportul reutilizează directorul aceleiași versiuni după confruntarea intrărilor și a octeților. Schimbarea intrărilor cere o versiune nouă. Proba de integrare pornește prima partidă prin JAR-ul fizic, adaptor și dependențele jocului.
 - Promovați aceiași octeți și aceleași amprente în consumatorii calificați. Versiunea cache-ului din HTML urmărește actualizarea resurselor site-ului. [Criteriul pentru identitatea pachetului](../docs/feedback/ATF_UiBrowser.md#criterii-de-închidere)
 
 ## Verificare
