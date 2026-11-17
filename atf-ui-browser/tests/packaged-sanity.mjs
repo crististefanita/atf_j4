@@ -5,6 +5,7 @@ import { client, until, withBrowser, withServer } from "./fixtures.mjs";
 import { verifyTrumpTextFit } from "./trump-text-fit.mjs";
 import { verifyHandPresentation } from "./hand-presentation.mjs";
 import { verifyGameMenuDismissal } from "./menu-presentation.mjs";
+import { verifyViewportContract } from "./viewport-contract.mjs";
 
 async function loadAdapter(url, name) {
   const response = await fetch(new URL(name, url));
@@ -88,6 +89,8 @@ try {
     assert.equal(setup.title, title);
     const motion = await verifyMotion(url, setup);
     const { fitTextWidth } = await loadAdapter(url, "viewport.mjs");
+    const viewportModule = await loadAdapter(url, "viewport.mjs");
+    const viewport = verifyViewportContract(viewportModule);
     const trumpText = await verifyTrumpTextFit(fitTextWidth);
     const before = await request("/api/state");
     const started = await request("/api/start", { revision: before.revision });
@@ -147,7 +150,8 @@ try {
         return { version, menu, dropdowns, geometry };
       });
     }
-    return { status: "PASS", observed: { title, seats: started.view.seats.length, revision, browserCheck, motion, trumpText, feedback }, images };
+    return { status: "PASS", observed: { title, seats: started.view.seats.length, revision, browserCheck, motion, trumpText,
+      viewport, feedback }, images };
   });
 } catch (error) {
   result = { status: "FAIL", observed: error.stack };

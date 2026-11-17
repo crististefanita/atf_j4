@@ -1,4 +1,5 @@
 export const REFERENCE = Object.freeze({ width: 414, height: 896 });
+export const MIN_DESKTOP_SCALE = 0.68;
 
 export function isPhone(userAgent) {
   return /Android|iPhone|iPod/.test(userAgent);
@@ -14,7 +15,9 @@ export function viewportGeometry(width, height, mobile) {
   }
   if (mobile) return { width, height, scale: 1, frameWidth: width, frameHeight: height };
 
-  // Height sets the scale whenever width permits. Scroll instead of shrinking touch/text further.
-  const scale = Math.max(0.68, Math.min(height / REFERENCE.height, width / REFERENCE.width));
+  // Keep the readable desktop floor when width permits. When it does not, fit both axes.
+  const fitScale = Math.min(height / REFERENCE.height, width / REFERENCE.width);
+  const scale = fitScale >= MIN_DESKTOP_SCALE || width / REFERENCE.width < MIN_DESKTOP_SCALE
+    ? fitScale : MIN_DESKTOP_SCALE;
   return { ...REFERENCE, scale, frameWidth: REFERENCE.width * scale, frameHeight: REFERENCE.height * scale };
 }

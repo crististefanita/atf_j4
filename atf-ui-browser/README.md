@@ -60,7 +60,7 @@ flowchart LR
 |---|---|
 | [The game contract](src/main/java/ro/cardtable/browser/BrowserGame.java) | Publish the places, the cards allowed, the legal orders and scores. Validation remains in the engine of each game. |
 | [Serverul](src/main/java/ro/cardtable/browser/BrowserServer.java) | Serves the resources of the same origin. Isolate the games on the tab, validate the revisions and reject repeated commands. |
-| [Geometria](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Apply Java plan used in Android for seats and fans. On the phone, it measures the useful view port. On the desktop it sets the logical frame at 414 × 896, calculates the scale by the useful height and centreates. |
+| [Geometry](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Apply the Java plan used in Android for seats and fans. The phone frame uses the CSS viewport 1:1. On desktop, the useful height sets uniform scale when width permits; a readable floor is kept without horizontal overflow, and very narrow windows fit both axes. |
 | [Adaptorul Whist](whist/src/main/java/ro/whistlab/browser/WhistBrowser.java) | Use distribution, AI policies and engine settlement. The recommendation comes from the same human selection as on Android. |
 
 ## Whist on GitHub Pages
@@ -185,6 +185,7 @@ flowchart LR
 - The batches have the same coordinates at bidding, playing and collecting. The component sample compares all the boxes in the hands of one card to five and six players, manually and with AutoGame.
 - The symbols of the cards use the same face ink in hand, on the table and when collecting. The theme provides the colors, and the Web adapter requires the rendering of symbols as text.
 - In the Whistle Web, the bid summary uses 90% of the larger rows, and the rewind lists use 75% of the labels. The check at 360 and 414 px measures the Normal/Dificil selector in the same row as the Romanian label.
+- The viewport contract compares phone portrait/landscape, desktop height-limited and width-limited sizes, monotonic scale, narrow-window fallback, and invalid measurements. The browser check reads the actual frame after resize and confirms its centering and scale from the useful viewport.
 
 Use `-BuildOnly` to the three launchers and pass the classSPath values returned to the suite of components. JVM processes serve the Loopback adapters, and the suite sends HTTP requests and checks the public status. `$EvidenceRoot` indicates an existing and dedicated external rolling directory.
 
@@ -202,6 +203,8 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 .\atf-ui-browser\tests\Run-BrowserUi.ps1 -Site $Site -HandFixture (Join-Path $AdapterEvidence 'hand-fixture.json') -EvidenceRoot $EvidenceRoot
 .\atf-ui-browser\tests\Publish-BrowserExtent.ps1 -EvidenceRoot $EvidenceRoot -MavenClasspathFile $MavenClasspath
 ```
+
+Use `-Check viewport` for the focused browser-resize contract. It measures the rendered DOM frame in Edge or Chrome at phone portrait/landscape, desktop height-limited and width-limited sizes, including the narrow-window fallback. The check waits for page content and the resize event before comparing the logical frame, CSS transform and centering. The independent Node component contract is included in the shared test JAR.
 
 `$MavenClasspath` is the list of dependencies produced by the Maven gate of [componente](../docs/testing/README.md). The report links the comparisons and inline images to the browser's running. [Parity criteria still open](../docs/feedback/ATF_UiBrowser.md)
 

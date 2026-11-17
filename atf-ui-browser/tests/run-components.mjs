@@ -2,9 +2,10 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { isPhone, viewportGeometry } from "../src/main/web/viewport.mjs";
+import { isPhone, MIN_DESKTOP_SCALE, REFERENCE, viewportGeometry } from "../src/main/web/viewport.mjs";
 import { collectionFrame } from "../src/main/web/collection.mjs";
 import { deviceProfile, normalizedNameLength } from "../src/main/web/profile.mjs";
+import { verifyViewportContract } from "./viewport-contract.mjs";
 import { client, withServer } from "./fixtures.mjs";
 
 const [output, whist, rentz, holdem, ...extra] = process.argv.slice(2);
@@ -33,16 +34,9 @@ async function audit(name, check) {
 }
 
 await audit("Modele de viewport portrait și centrare", () => {
-  assert.deepEqual(viewportGeometry(414, 896, true), { width: 414, height: 896, scale: 1, frameWidth: 414, frameHeight: 896 });
-  const tall = viewportGeometry(1920, 1080, false);
-  assert.equal(tall.frameHeight, 1080);
-  assert.ok(Math.abs(tall.frameWidth - 414 * 1080 / 896) < 1e-9);
-  assert.equal(viewportGeometry(320, 982, false).frameWidth, 320);
-  assert.equal(viewportGeometry(220, 420, false).scale, 0.68);
-  assert.throws(() => viewportGeometry(0, 896, true), RangeError);
-  assert.ok(isPhone("Mozilla/5.0 (Linux; Android 14)"));
-  assert.ok(!isPhone("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"));
-  return { expected: "414×896 la 1:1, înălțime sau lățime limitantă, derulare sub prag", observed: tall };
+  const observed = verifyViewportContract({ REFERENCE, MIN_DESKTOP_SCALE, isPhone, viewportGeometry });
+  return { expected: "cadru telefon 1:1; desktop limitat de înălțimea utilă, cu lățime fără depășire și prag lizibil unde încape",
+    observed };
 });
 
 await audit("Componente comune · profil Unicode și animația levatei", () => {
