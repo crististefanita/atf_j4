@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "documentationLanguage": "ro",
   "publicRepository": "https://github.com/crististefanita/whist",
   "mavenModules": [
     "atf-validation",

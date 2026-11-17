@@ -309,6 +309,21 @@ Evaluatorul post-publicare primește aceeași observație prin `--github-retenti
 
 Colectorul scrie inventarul într-un fișier extern nou și semnalează abaterile prin `BLOCKED`. Dacă accesul sau colectarea eșuează, diagnosticul identifică pasul, iar evaluatorul cere o observație completă. După retragerea autorizată, colectați o observație nouă și reluați evaluarea. [Procesul de retenție](../platform/ATF_ReleaseRetention.md#resetarea-github)
 
+### Edițiile documentației
+
+Verificarea release-ului cere documentația în engleză pe `main` și ediția corespunzătoare în română pe `main_RO`. Citește commitul candidatului în engleză și commitul românesc publicat.
+
+- Actualizați ambele ediții când se schimbă un contract. Păstrați căile, nivelurile titlurilor, tabelele, topologia diagramelor, exemplele executabile și destinațiile linkurilor.
+- Pentru release-urile arhivate, păstrați fișierele din manifestul de integritate. Folosiți, unde este nevoie, copii `.en.md` sau `.ro.md` pentru cealaltă limbă.
+- Faceți commit pentru ambele ediții, actualizați referința `main_RO` și rulați comparația de mai jos. După revizia editorială, înregistrați obiectul `review` în `config/documentation-editions.json`.
+- Controlul `DOCUMENTATION_EDITIONS` blochează calificarea când lipsește o traducere sau inventarele diferă de amprentele revizuite. Confruntați schimbările de sens cu sursa sau testul care deține contractul.
+
+```powershell
+git fetch origin main_RO
+node atf-tests/tools/documentation-editions.mjs inspect . HEAD origin/main_RO
+node atf-tests/tools/documentation-editions.mjs verify . HEAD
+```
+
 ### Valabilitatea dovezilor
 
 Politica de calificare citește ora UTC a observației, cu milisecunde și sufixul `Z`. Fereastra se închide exact la termen. Ora lipsă, invalidă sau din viitor blochează folosirea observației pentru o acțiune nouă.
