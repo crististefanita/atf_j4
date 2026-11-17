@@ -89,6 +89,17 @@ class BrowserUi {
                             "Fotografia apare sub regulile de joc și textul se traduce imediat la schimbarea limbii.",
                             (page, images) -> homeDedication(page, url, output, images)));
                 }
+                if (check.equals("all") || check.equals("viewport")) {
+                    results.add(run(browser, mobile().setViewportSize(400, 860), output, "WEB-VIEWPORT-PHONE",
+                            "Viewport mobil păstrează geometria 1:1 la portret și landscape",
+                            "Cadrul urmează viewport-ul CSS disponibil, fără scalare secundară.",
+                            (page, images) -> responsiveViewport(page, url, output, true, images)));
+                    results.add(run(browser, new Browser.NewContextOptions().setViewportSize(1280, 720), output,
+                            "WEB-VIEWPORT-DESKTOP",
+                            "Viewport desktop scalează uniform după spațiul util și se centrează la redimensionare",
+                            "Înălțimea determină scara când lățimea permite; ferestrele înguste nu depășesc lățimea.",
+                            (page, images) -> responsiveViewport(page, url, output, false, images)));
+                }
                 if (check.equals("all") || check.equals("trump")) {
                     results.add(run(browser, mobile(), output, "WEB-COMPONENT-TRUMP",
                             "Chenarul de atu în Whist Descrescător",
@@ -146,6 +157,101 @@ class BrowserUi {
         assertThat(home.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("How to play"))).isVisible();
         return Map.of("ro", "Pentru Teo.. de Moș Nicolae :)", "en", caption.innerText(),
                 "photo", photo.getAttribute("src"), "viewport", "414×896");
+    }
+
+    private static Map<String, Object> responsiveViewport(Page page, String url, Path output,
+                                                           boolean mobile, List<Image> images) {
+        page.navigate(url);
+        page.locator(".whist-home button.primary").waitFor();
+        List<int[]> sizes = mobile
+                ? List.of(new int[]{414, 896}, new int[]{360, 800}, new int[]{896, 414})
+                : List.of(new int[]{1920, 1080}, new int[]{1280, 720}, new int[]{535, 760},
+                        new int[]{400, 900}, new int[]{220, 420}, new int[]{400, 500}, new int[]{400, 600}, new int[]{400, 610});
+        List<Map<String, Object>> observations = new ArrayList<>();
+        for (int index = 0; index < sizes.size(); index++) {
+            int width = sizes.get(index)[0];
+            int height = sizes.get(index)[1];
+            page.evaluate("() => { window.__viewportResize = new Promise(resolve => " +
+                    "window.addEventListener('resize', () => resolve(true), { once: true })); }");
+            page.setViewportSize(width, height);
+            page.evaluate("() => window.__viewportResize");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> measured = (Map<String, Object>) page.evaluate("""
+                    () => {
+                      const frame = document.querySelector('#frame');
+                      const stage = document.querySelector('#table');
+                      const root = document.documentElement;
+                      const visual = window.visualViewport;
+                      const viewport = document.querySelector('.viewport');
+                      const inset = getComputedStyle(viewport);
+                      const number = value => parseFloat(value) || 0;
+                      const rect = node => {
+                        const box = node.getBoundingClientRect();
+                        return { x: box.x, y: box.y, width: box.width, height: box.height };
+                      };
+                      return {
+                        availableWidth: Math.min(root.clientWidth, visual?.width ?? innerWidth) -
+                          number(inset.paddingLeft) - number(inset.paddingRight),
+                        availableHeight: (visual?.height ?? innerHeight) -
+                          number(inset.paddingTop) - number(inset.paddingBottom),
+                        frame: rect(frame), viewport: rect(viewport),
+                        logicalWidth: number(getComputedStyle(stage).getPropertyValue('--stage-width')),
+                        logicalHeight: number(getComputedStyle(stage).getPropertyValue('--stage-height')),
+                        scale: number(getComputedStyle(stage).getPropertyValue('--stage-scale')),
+                        matrixScaleX: new DOMMatrixReadOnly(getComputedStyle(stage).transform).a,
+                        matrixScaleY: new DOMMatrixReadOnly(getComputedStyle(stage).transform).d,
+                        transform: getComputedStyle(stage).transform,
+                        kind: frame.dataset.viewport
+                      };
+                    }
+                    """);
+            double availableWidth = ((Number) measured.get("availableWidth")).doubleValue();
+            double availableHeight = ((Number) measured.get("availableHeight")).doubleValue();
+            double actualScale = ((Number) measured.get("scale")).doubleValue();
+            double expectedScale;
+            if (mobile) {
+                expectedScale = 1;
+                near(availableWidth, ((Number) ((Map<?, ?>) measured.get("frame")).get("width")).doubleValue());
+                near(availableHeight, ((Number) ((Map<?, ?>) measured.get("frame")).get("height")).doubleValue());
+                require("phone".equals(measured.get("kind")), "The phone adapter must remain in 1:1 mode");
+            } else {
+                double fitScale = Math.min(availableHeight / 896.0, availableWidth / 414.0);
+                boolean readableFloorFits = availableWidth >= 414.0 * .68 && availableHeight >= 896.0 * .68;
+                expectedScale = fitScale >= .68 || !readableFloorFits ? fitScale : .68;
+                require("desktop".equals(measured.get("kind")), "The desktop adapter must use the scaled frame");
+            }
+            require(Math.abs(expectedScale - actualScale) <= .002,
+                    "Expected scale " + expectedScale + ", observed " + actualScale + " at " + width + "×" + height);
+            near(mobile ? availableWidth : 414, ((Number) measured.get("logicalWidth")).doubleValue());
+            near(mobile ? availableHeight : 896, ((Number) measured.get("logicalHeight")).doubleValue());
+            require(Math.abs(expectedScale - ((Number) measured.get("matrixScaleX")).doubleValue()) <= .002,
+                    "The horizontal CSS transform scale differs from the viewport contract");
+            require(Math.abs(expectedScale - ((Number) measured.get("matrixScaleY")).doubleValue()) <= .002,
+                    "The vertical CSS transform scale differs from the viewport contract");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> frame = (Map<String, Object>) measured.get("frame");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> viewport = (Map<String, Object>) measured.get("viewport");
+            double frameX = ((Number) frame.get("x")).doubleValue();
+            double frameY = ((Number) frame.get("y")).doubleValue();
+            double frameWidth = ((Number) frame.get("width")).doubleValue();
+            double frameHeight = ((Number) frame.get("height")).doubleValue();
+            require(frameWidth <= availableWidth + 1,
+                    "The frame exceeded the useful width at " + width + "×" + height + ": " + frame);
+            near(((Number) viewport.get("x")).doubleValue() + Math.max(0, (availableWidth - frameWidth) / 2), frameX);
+            require(frameHeight <= availableHeight + 1,
+                    "The frame exceeded the useful height at " + width + "×" + height + ": " + frame);
+            near(((Number) viewport.get("y")).doubleValue() + Math.max(0, (availableHeight - frameHeight) / 2), frameY);
+            require(measured.get("transform") instanceof String transform && transform.startsWith("matrix("),
+                    "The frame must use a CSS matrix transform");
+            observations.add(Map.of("requested", List.of(width, height), "expectedScale", expectedScale,
+                    "measured", measured));
+            if (index == 0 || index == sizes.size() - 1 || (mobile && index == 1)) {
+                images.add(screenshot(page, output, "WEB-VIEWPORT-" + (mobile ? "PHONE" : "DESKTOP") + "-" + width + "x" + height,
+                        "Whist · viewport " + width + "×" + height));
+            }
+        }
+        return Map.of("mobile", mobile, "cases", observations);
     }
 
     private static Browser.NewContextOptions mobile() {

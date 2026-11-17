@@ -1,9 +1,9 @@
-import { fitTextWidth, isPhone, viewportGeometry } from "./viewport.mjs";
+import { fitTextWidth, isPhone, viewportGeometry } from "./viewport.mjs?v=0.2.10";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.7";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.10";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");

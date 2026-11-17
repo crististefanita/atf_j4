@@ -19,6 +19,7 @@ $testInputs = @(
     Join-Path $tests 'packaged-sanity.mjs'
     Join-Path $tests 'hand-presentation.mjs'
     Join-Path $tests 'menu-presentation.mjs'
+    Join-Path $tests 'viewport-contract.mjs'
     Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/test/resources/hand-feedback.tsv'
     Join-Path $tests 'trump-text-fit.mjs'
     Join-Path $checkout 'whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv'

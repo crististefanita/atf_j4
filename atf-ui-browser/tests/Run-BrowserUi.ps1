@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory)][string]$Site,
     [Parameter(Mandatory)][string]$HandFixture,
     [Parameter(Mandatory)][string]$EvidenceRoot,
-    [string]$BrowserExecutable
+    [string]$BrowserExecutable,
+    [ValidateSet('all','playback','seats','card-face','header','dedication','viewport','trump','numbers')]
+    [string]$Check = 'all'
 )
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath $EvidenceRoot).ProviderPath
@@ -21,5 +23,5 @@ if ($LASTEXITCODE -ne 0) { throw "Could not resolve Playwright. See $log." }
 $classpath = (Get-Content -Raw -LiteralPath $dependencies).Trim()
 $arguments = @((Resolve-Path -LiteralPath $Site).ProviderPath, (Resolve-Path -LiteralPath $HandFixture).ProviderPath, $root)
 if ($BrowserExecutable) { $arguments += (Resolve-Path -LiteralPath $BrowserExecutable).ProviderPath }
-& java "-Djava.io.tmpdir=$root" -cp $classpath (Join-Path $PSScriptRoot 'BrowserUi.java') @arguments
+& java "-Djava.io.tmpdir=$root" "-Dwhist.browserCheck=$Check" -cp $classpath (Join-Path $PSScriptRoot 'BrowserUi.java') @arguments
 if ($LASTEXITCODE -ne 0) { throw 'Playwright UI verification failed. See browser-ui-checks.json.' }

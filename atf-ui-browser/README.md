@@ -60,7 +60,7 @@ flowchart LR
 |---|---|
 | [Contractul jocului](src/main/java/ro/cardtable/browser/BrowserGame.java) | Publică locurile, cărțile permise, comenzile legale și punctajele. Validarea rămâne în motorul fiecărui joc. |
 | [Serverul](src/main/java/ro/cardtable/browser/BrowserServer.java) | Servește resursele din aceeași origine. Izolează partidele pe filă, validează reviziile și respinge comenzile repetate. |
-| [Geometria](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Aplică planul Java folosit în Android pentru locuri și evantai. Pe telefon măsoară viewportul util. Pe desktop fixează cadrul logic la 414 × 896, calculează scara după înălțimea utilă și centrează. |
+| [Geometria](src/main/java/ro/cardtable/browser/BrowserGeometry.java) | Aplică planul Java folosit în Android pentru locuri și evantai. Pe telefon măsoară viewportul util. Pe desktop păstrează cadrul logic de 414 × 896 și îl scalează uniform după ambele dimensiuni utile; pragul de lizibilitate se aplică doar când încape. |
 | [Adaptorul Whist](whist/src/main/java/ro/whistlab/browser/WhistBrowser.java) | Folosește distribuirea, politicile AI și decontarea din motor. Recomandarea vine din aceeași selecție umană ca pe Android. |
 
 ## Whist pe GitHub Pages
@@ -164,6 +164,16 @@ flowchart LR
 - Site-ul Whist folosește [alt build](Build-WhistPages.ps1), care produce resurse statice din adaptorul și motorul Whist. Proba Pages și acceptanța JAR-ului de către Rentz sau Hold’em au intrări diferite.
 
 </details>
+
+### Pachetul calificat curent: 0.2.10
+
+Fișierul alăturat `browser-build.json` leagă această versiune de commitul sursă, inventarul intrărilor și hash-urile artefactelor.
+
+- Runtime: [Card Table Browser 0.2.10](lib/atf-ui-browser-0.2.10.jar) · [SHA-256](lib/atf-ui-browser-0.2.10.jar.sha256)
+- Teste comune: [Testele Card Table Browser 0.2.10](lib/atf-ui-browser-0.2.10-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.10-tests.jar.sha256)
+- Proveniență: [browser-build.json](lib/browser-build.json)
+
+Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl scalează uniform după înălțimea și lățimea utilă a browserului și menține pragul de lizibilitate 0,68 numai când încap ambele dimensiuni. Browserul de telefon folosește viewport-ul CSS la scara 1:1. Rentz și Hold’em consumă aceiași octeți pentru runtime și arhiva de teste, verificați cu această chitanță.
 
 ```powershell
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion
