@@ -445,6 +445,20 @@ Use the same directory when resuming the same identity. Choose a new directory w
 
 Keep the work profiles and caches during reruns. After publication and verified reconstruction in Git, keep final reports, receipts, applicable EOL recipe and learning data. Built-in directories and isolated caches can be removed. [Retention after delivery](../platform/ATF_ReleaseRetention.md#local-cleaning-after-delivery)
 
+### Reuse and cleanup boundaries
+
+| Resource | During qualification | After verified delivery |
+|---|---|---|
+| Component evidence | Reuse only groups admitted by the source, dependency and report hashes. Keep their original receipts and snapshots, including the honest status of a partially failed attempt. | Keep canonical Extent reports and all provenance needed to verify them; compiled classes and private dependency caches are regenerable. |
+| Runtime profile | Pass suite-specific properties to the owning JVM. Global `JAVA_TOOL_OPTIONS` also affects child Java processes and can change captured streams. | Keep the applied profile and its diagnosis with the final audit; remove temporary launchers once their mechanism is documented. |
+| Native evidence | Use one verified preparation through `-PrepareOnly` and `-PreparedFrom`. Reuse an accepted flow only when APK, relevant sources, scenario, profile and original captures satisfy admission. | Keep signed-APK identity, inline captures, execution and isolation receipts. A preparation cache is not a qualification result. |
+| Publication observations | Finish payload edits and push the evidence commit before collecting retention. Refresh expired or invalidated observations without rebuilding the APK or rerunning accepted suites. | Keep the publication journal, verified download and final verdict. A historical observation proves its recorded state, not current GitHub availability. |
+| Git reconstruction | Resolve the qualified tag locally and verify its commit before testing source and payload reconstruction. | Preserve the Git proof and EOL recipe. Delete staging only after `cleanupEligible: true` and verified local projection. |
+
+Use stage receipts for elapsed durations and state whether measurements overlap. When UTC timestamps and monotonic durations diverge, preserve both and use `elapsedMs` for measured stage cost. Do not claim an end-to-end duration or a speedup from incomplete or overlapping measurements. [Remaining improvements](../feedback/ATF_Governance.md#release-launcher-and-finalization)
+
+Keep owner-retained local state in `.imp` under the external evidence root: signing material, local device configuration, valuable learning data and final receipts absent from Git. Cleanup must exclude that directory and every descendant, including paths reached through links. Canonical sources and their Git repository belong to the project checkout, not a disposable build directory. Preserve uncommitted work before recovering a checkout; an old worktree is not a cache until that work is accounted for.
+
 ### Snapshot Git and local projection
 
 The source snapshot records its reviewed Romanian documentation commit as well as both document inventories.

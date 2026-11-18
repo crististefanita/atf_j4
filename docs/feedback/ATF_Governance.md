@@ -58,3 +58,11 @@ The Android Download Manager transfer test and certificate verification are actu
 | Priority | Gap and owner | Closure criterion |
 |---|---|---|
 | P2 | Native reuse binds the whole source snapshot, including qualification tooling. A validator-only correction can invalidate otherwise unchanged APK evidence. [Admission](../../atf-tests/tools/prepare-android-e2e.mjs) | Record runtime inputs separately from the validator revision. Reuse only with identical APK bytes, runtime sources, scenario, display profile and original captures. Controlled cases must reject changed game code, binaries, captures or mismatched validator provenance. |
+
+## Release launcher and finalization
+
+| ID | Gap and owner | Closure criterion |
+|---|---|---|
+| RAG-12 | Component launcher: a global JVM option also reaches subprocess fixtures and can alter their standard streams. | Set `atf.test.run.scope=suite` explicitly on the owning suite JVM. Controlled subprocess cases must retain exact stdout, stderr, binary output and exit codes. Preflight must diagnose inherited options that would contaminate the fixture, without changing its oracle or rerunning unaffected suites. |
+| RAG-13 | Publication coordinator: collecting retention before the last manifest change invalidates the observation; a remote-only tag blocks local Git reconstruction. | Seal the payload and push its commit before collecting GitHub inventory. Resolve and verify the local qualified tag before reconstruction. Components must reject stale manifest hashes and missing or mismatched tags, then resume only the affected observation or proof. Preserve the immutable APK and accepted reports. |
+| RAG-14 | Scope planner: a shared typography change can select unrelated native flows when source groups are too coarse. | Map changed visual contracts to adapter components and the required signed-APK sanity. Negative controls must still select every changed interaction, persistence or scoring flow. Measure scenario, profile preparation and report validation separately; preserve current mandatory flows until the narrower policy is proven. |
