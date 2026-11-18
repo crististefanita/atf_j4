@@ -26,7 +26,7 @@ The 1–100 score expresses the recommended order of work, not the quality or pe
 
 | ID | Priority | Score | ToDo remaining and short closing criterion |
 |---|---:|---:|---|
-| INF-01 | P1 | 96 | Qualify bounded unlock and package-registration recovery for disposable Android users, with controlled ADB cases and verified cleanup. [Register](ATF_TestInfrastructure.md#disposable-android-profile-readiness) |
+| INF-01 | P1 | 96 | Recover an interrupted disposable-user creation from a persistent ownership record; reject foreign IDs and prove cleanup before retrying. [Register](ATF_TestInfrastructure.md#disposable-android-profile-readiness) |
 | RPT-01 | P1 | 95 | Check each manufacturer via detached HTML and negative controls for missing, external or misassigned content. [Register](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) |
 | RPT-02 | P1 | 94 | Probe on remaining producers to reject lost claims and the usefulness of original comparisons, including Fail, ERROR and SKIP. [Register](ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrates the recovery of checkpoint after corruption or interruption, keeping user data or reporting explicit error. [Register](ATF_Android.md) |
@@ -36,6 +36,7 @@ The 1–100 score expresses the recommended order of work, not the quality or pe
 | AND-03 | P1 | 89 | Qualify API 37, navigation of the system, resumption, enlarged fonts and memory on an identified device. [Register](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publish large suites within the declared limit of the heap, without repeated copies of HTML and without losing JUnit or comparisons to failure. [Register](ATF_Reporting.md#rpt-bounded-report-heap---safe-completion-for-large-suites) |
 | UI-01 | P1 | 86 | Qualify header, boxes and notifications on consumer APKs and check the name's entry of Unicode. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
+| RAG-11 | P2 | 84 | Separate immutable APK/runtime provenance from the validator revision, preserving strict rejection of changed game inputs. [Register](ATF_Governance.md#release-qualification-boundaries) |
 | AI-02 | P2 | 82 | Measure the opportunities, the conversions to 500, effect on the ranking and latency on new lots, with natural game separate from the controlled prefix. [Register](ATF_Ai.md#playing-for-zero) |
 | WEB-07 | P2 | 79 | Qualify settings, resume, Play again and history in APK and Chrome on the same Android in RO/EN and with increased text. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
 | WEB-11 | P2 | 78 | Qualify rank and glyphs in a handful of 17 Books, to the text enlarged on Chrome Android. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |

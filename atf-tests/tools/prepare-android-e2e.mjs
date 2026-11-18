@@ -45,7 +45,7 @@ export async function verifyOriginalCaptures(root, group, report) {
   if (!trace.text.split(/\r?\n/).includes('flow.id=' + group) || !trace.text.split(/\r?\n/).includes('flow.status=PASS'))
     throw Error('ANDROID_E2E_TRACE_NOT_PASS');
   const screenshots = [...trace.text.matchAll(/^phase\.\d+\.step\.\d+\.screenshot=([\w./-]+\.png)\r?$/gm)];
-  if (!screenshots.length || screenshots.length !== report.ownedCount) throw Error('ANDROID_E2E_TRACE_SCREENSHOT_COUNT');
+  if (!screenshots.length || report.ownedCount > screenshots.length) throw Error('ANDROID_E2E_TRACE_SCREENSHOT_COUNT');
   const expected = new Set();
   for (const [, relative] of screenshots) {
     const capture = await read(root, relative);

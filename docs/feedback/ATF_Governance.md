@@ -52,3 +52,9 @@ The Android Download Manager transfer test and certificate verification are actu
 | Priority | Lacquer delimited | Closure criterion |
 |---|---|---|
 | P2 | The native sample is maintained with sources in Extent, but its launch is still a TMP operation of the operator. | Adapter ochioin versionat: read the identity of the candidate, use your own Android permissions and separate the transfer access. Components inject 404, short file, hash/CRC wrong, certificate absent or different and timeout; do not save signed redirect. The report shall retain the original comparisons, errors and duration, and the cleanup shall only eliminate the resources held. A single Android transfer qualifies delivery; does not multiply on the UI resolutions. |
+
+## Release qualification boundaries
+
+| Priority | Gap and owner | Closure criterion |
+|---|---|---|
+| P2 | Native reuse binds the whole source snapshot, including qualification tooling. A validator-only correction can invalidate otherwise unchanged APK evidence. [Admission](../../atf-tests/tools/prepare-android-e2e.mjs) | Record runtime inputs separately from the validator revision. Reuse only with identical APK bytes, runtime sources, scenario, display profile and original captures. Controlled cases must reject changed game code, binaries, captures or mismatched validator provenance. |

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The working director shall keep the current and immediately preceding edition, each with his or her own qualified APK and evidence. Older history is archived outside the active catalogue; local training does not publish or delete relays.
+Git and GitHub retain the current published release and its immediate predecessor. A local delivery mirror holds only the newest qualified published release; its index is a projection of the canonical catalog.
 
 ## Active structure
 

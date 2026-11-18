@@ -20,7 +20,7 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 
 | Priority | Qualification limit | Closure criterion |
 |---|---|---|
-| P1 | The isolated-user launcher can time out during unlock or package registration before a game test starts. A late package-manager reply must not become an application failure. | Use controlled ADB responses to cover a delayed unlock, installation completed before timeout, unavailable package and cleanup after interruption. Reconcile the installed hash and active user before resuming. Keep profile preparation separate from the native test verdict, preserve the owner profile and reuse every already validated component or native report. Confirm the bounded recovery on the identified low-memory device. |
+| P1 | Android can restart after creating a disposable user but before writing the ready receipt. The in-memory ID is insufficient for recovery. | Persist the generated user ID, name, lease and creation intent before registration. Resume cleanup only for that exact record, refuse foreign or original users, and cover unavailable package service and interruption with controlled components. Keep preparation failure separate from the application verdict and retain accepted native evidence. |
 
 | Priority | Qualification limit | Closure criterion |
 |---|---|---|
