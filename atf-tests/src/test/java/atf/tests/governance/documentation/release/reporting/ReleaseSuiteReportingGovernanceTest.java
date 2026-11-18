@@ -24,7 +24,7 @@ class ReleaseSuiteReportingGovernanceTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final Pattern INLINE_PNG = Pattern.compile("data:image/png;base64,");
 
-    @Test void activeComponentAndE2eSuitesOwnDistinctHashBoundExtentReports() throws Exception {
+    @Test void activeComponentAndE2eSuitesOwnDistinctHashBoundExtentReports(@org.junit.jupiter.api.io.TempDir Path work) throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         String version = JSON.readTree(root.resolve("release/index.json").toFile()).required("currentVersion").asText();
         Path release = root.resolve("release").resolve(version);
@@ -76,8 +76,11 @@ class ReleaseSuiteReportingGovernanceTest {
             assertEquals(group.required("skipped").asInt(), receipt.required("skipped").asInt());
             assertEquals(version, receipt.required("releaseVersion").asText());
             assertEquals(manifest.required("release").required("apkSha256").asText(), receipt.required("installedApkSha256").asText());
-            assertEquals(manifest.required("source").required("sourceCommit").asText(), receipt.required("sourceCommit").asText());
-            assertEquals(manifest.required("source").required("workingTreeFingerprint").asText(), receipt.required("sourceFingerprint").asText());
+            if (group.has("executionSource")) NativeEvidenceProbe.verify(release, name, receipt, work.resolve(name));
+            else {
+                assertEquals(manifest.required("source").required("sourceCommit").asText(), receipt.required("sourceCommit").asText());
+                assertEquals(manifest.required("source").required("workingTreeFingerprint").asText(), receipt.required("sourceFingerprint").asText());
+            }
             assertEquals(hash(release.resolve(report)), receipt.required("reportSha256").asText());
             assertEquals(inlinePngCount(release.resolve(report)), receipt.required("inlinePngCount").asInt());
         }

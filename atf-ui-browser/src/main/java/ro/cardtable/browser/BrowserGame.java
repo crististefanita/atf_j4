@@ -17,6 +17,10 @@ public interface BrowserGame {
     default String surface() { return "table"; }
     default List<Token> palette() { return List.of(); }
     default BoardProfile boardProfile(String mode, int players, int width, int bidOptions,
+            TableViewportPolicy viewport, float fontScale) {
+        return boardProfile(mode, players, width, bidOptions, viewport);
+    }
+    default BoardProfile boardProfile(String mode, int players, int width, int bidOptions,
             TableViewportPolicy viewport) {
         var center = new TableGeometry.CenterSpec(width, 188, true, TableGeometry.CenterAlignment.BALANCED);
         return new BoardProfile(center, 20, null);

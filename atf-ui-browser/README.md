@@ -184,6 +184,20 @@ The viewport contract preserves a 414 × 896 logical frame on desktop, scales un
 - Export shall re-use the Director of the same version after confrontation with entries and bytes. Changing entries requires a new version. The integration challenge starts the first match through the physical JARs, adaptor and game dependencies.
 - Promote the same bytes and same fingerprints in qualified consumers. The version of the HTML cache aims at updating the site's resources. [Consumer verification](#verification)
 
+### Portable Web and APK adapter contracts
+
+Whist uses the same native table policy through [WhistBoardAdapter](whist/src/main/java/ro/whistlab/browser/presentation/WhistBoardAdapter.java). The browser supplies measured CSS units and root text scale; Android supplies density and system text scale. A browser reference therefore compares logical regions rather than raw physical pixels.
+
+| Component boundary | Checked contract |
+|---|---|
+| Table geometry | All modes, 3–6 seats, compact and wide widths, 1–17 cards and enlarged text; bidding and play retain identical seat anchors. |
+| Unit adaptation | Normalize Android density to Web logical coordinates with a bounded rounding tolerance. Desktop zoom remains in the viewport adapter. |
+| Card presentation | All 52 rank/suit combinations retain visible marks, color role and proportional sizing through the actual hand adapters. |
+| Interaction | The shared gesture fixture checks rejection, legal highlights, stale expiry and one accepted deposit; collection keyframes are compared through both adapters. |
+| Acceptance limit | These components execute portable production code, not Android Views or browser font rasterization. Same-device visual acceptance remains separate. |
+
+[Adapter components](tests/whist-surface-contract.test.mjs) compile only the portable dependency closure with the JDK, without Gradle, SDK or emulator. Their [JUnit owner](../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/WhistSurfaceAdapterComponentTest.java) captures actual observations in Extent. The default text scale remains unchanged; invalid scale inputs are rejected at the layout boundary.
+
 ## Verification
 
 The table menu exposes score history directly in Whist and Rentz through the common menu adapter. Opening history pauses automatic scheduling; closing the dialog resumes the same table without replaying commands. Component checks cover localized labels, one callback per choice, outside-click dismissal and immutable menu plans.

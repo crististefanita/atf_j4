@@ -1,4 +1,5 @@
-import crypto from 'node:crypto';
+import {componentInputMap, digest, inputFingerprint, safeRelative} from './source-input-identity.mjs';
+export {componentInputMap, digest, inputFingerprint} from './source-input-identity.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -49,17 +50,6 @@ function stableComponentRun(run) {
       || !results.length || !results.every(row => typeof row?.module === 'string' && Number.isInteger(row.exitCode))
       || new Set(results.map(row => row.module)).size !== results.length) return false;
   return run.status === (results.every(row => row.exitCode === 0) ? 'PASS' : 'FAIL');
-}
-
-export function componentInputMap(rows) {
-  if (!Array.isArray(rows) || rows.length === 0) throw Error('INPUT_LIST_REQUIRED');
-  const result = new Map();
-  for (const row of rows) {
-    const name = safeRelative(row.path);
-    if (!HASH.test(row.sha256 ?? '') || result.has(name)) throw Error('INPUT_ROW_INVALID:' + name);
-    result.set(name, row.sha256);
-  }
-  return result;
 }
 
 export function verifyComponentOrigin(inputs, run, provenance, inputManifest = 'source-inputs.json') {
@@ -162,18 +152,12 @@ class StrictJsonReader {
   }
 }
 
-export const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 export const inlinePngCount = html => [...html.matchAll(/data:image\/png;base64,/g)].length;
 const posix = value => value.split(path.sep).join('/');
 function hasCredentialField(value) {
   if (!value || typeof value !== 'object') return false;
   return Object.entries(value).some(([key, child]) =>
     /authorization|token|cookie|password|secret|credential/i.test(key) || hasCredentialField(child));
-}
-function safeRelative(value) {
-  if (typeof value !== 'string' || value.length === 0 || value.includes('\\') || path.posix.isAbsolute(value)
-      || value.split('/').some(part => part === '' || part === '.' || part === '..')) throw Error('UNSAFE_RELATIVE_PATH:' + value);
-  return value;
 }
 function inside(root, relative) {
   const safe = safeRelative(relative), result = path.resolve(root, ...safe.split('/'));
@@ -265,11 +249,6 @@ const scopePolicy = {
   recomputedAtEvaluation: true,
   changedFlowRequiresSelectedE2e: true
 };
-
-export function inputFingerprint(inputs) {
-  const records = [...inputs.keys()].sort().map(file => `${file}\t${inputs.get(file)}\n`);
-  return digest(records.join(''));
-}
 
 async function verifyGovernanceReleaseSnapshot(project, inputs) {
   if (!inputs) throw Error('COMPONENT_RELEASE_SNAPSHOT_REQUIRED');
@@ -854,6 +833,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
         e2eReportPaths.add(paths.report);
         const accepted = await readE2eEvidence({
           manifest, name, declared, requireScenario: needsExecutionProfile || Boolean(executionProfile),
+          expectedValidatorFingerprint: e2e.validatorRevision,
           scenario: executionProfile ? scenarioFor(name, executionProfile) : undefined,
           readDocument: async relative => strictJson(await regularFile(candidate, relative)),
           readReport: async relative => {
@@ -861,7 +841,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
             return {bytes, text: bytes.toString('utf8'), sha256: digest(bytes)};
           }
         });
-        e2eDecisions.push({group: name, decision: 'REUSE'});
+        e2eDecisions.push({group: name, decision: 'REUSE', ...(accepted.provenance ? {provenance: accepted.provenance} : {})});
         e2eEvidence.push(...[...accepted.documents].map(([relative, doc]) => citation(relative, doc.sha256)));
       } catch (error) {
         e2eReceiptsOkay = false;

@@ -15,9 +15,7 @@ final class BrowserHandAdapter {
     static Feedback apply(BrowserGame.View view, Map<String, String> fields) {
         if (view == null || view.header() == null || view.score() != null)
             throw new IllegalArgumentException("Hand feedback is unavailable");
-        var cards = view.hand().stream().map(card -> new HandCard(card.rank() + card.suit(),
-                new CardFace(card.rank(), card.suit(), card.suit().equals("♥") || card.suit().equals("♦")),
-                card.label(), !card.action().isEmpty())).toList();
+        var cards = cards(view.hand());
         var state = new HandInput.State(fields.getOrDefault("rejected", ""),
                 "true".equals(fields.get("selected")), Long.parseLong(fields.getOrDefault("hintRevision", "0")));
         var hand = new HandInput(cards, true, state);
@@ -31,5 +29,11 @@ final class BrowserHandAdapter {
         };
         var next = hand.state();
         return new Feedback(result.name(), next.rejected(), next.selected(), next.revision(), hand.suggestions());
+    }
+
+    static List<HandCard> cards(List<BrowserGame.Card> cards) {
+        return cards.stream().map(card -> new HandCard(card.rank() + card.suit(),
+                new CardFace(card.rank(), card.suit(), card.suit().equals("♥") || card.suit().equals("♦")),
+                card.label(), !card.action().isEmpty())).toList();
     }
 }

@@ -21,3 +21,8 @@ export function viewportGeometry(width, height, mobile) {
   const scale = fitScale >= MIN_DESKTOP_SCALE || !readableFloorFits ? fitScale : MIN_DESKTOP_SCALE;
   return { ...REFERENCE, scale, frameWidth: REFERENCE.width * scale, frameHeight: REFERENCE.height * scale };
 }
+/** CSS pixels remain logical units; desktop zoom is handled by the viewport adapter. */
+export function textScale(fontSize) {
+  const scale = Number.parseFloat(fontSize) / 16;
+  return Number.isFinite(scale) && scale >= .5 && scale <= 3 ? scale : 1;
+}

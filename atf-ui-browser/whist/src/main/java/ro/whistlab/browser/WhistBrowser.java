@@ -21,9 +21,7 @@ import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.theme.TableColors;
 import ro.cardtable.ui.turn.TurnPacing;
 import ro.whistlab.app.achievements.WhistAchievementRepository.Storage;
-import ro.whistlab.app.bidding.BidGridMetrics;
 import ro.whistlab.app.localization.WhistUiText;
-import ro.whistlab.app.table.TableLayoutMetrics;
 import ro.whistlab.app.theme.TrumpTileStyle;
 import ro.whistlab.core.config.AiDifficulty;
 import ro.whistlab.app.screens.MatchSetup;
@@ -128,16 +126,11 @@ public final class WhistBrowser implements BrowserGame {
     }
     @Override public BoardProfile boardProfile(String mode, int players, int width, int bidOptions,
             TableViewportPolicy viewport) {
-        var reservation = TableLayoutMetrics.matchCenterReservation(GameMode.valueOf(mode), players, width, 1f, viewport);
-        return new BoardProfile(reservation.center(width, 1f, bidOptions > 0, bidOptions), TableLayoutMetrics.HUMAN_HAND_CLEARANCE_DP,
-                reservation.playedCards(), bidOptions == 0 ? null : bidControls(width, bidOptions, reservation.useBidStrip()));
+        return boardProfile(mode, players, width, bidOptions, viewport, 1f);
     }
-    private static BidControls bidControls(int width, int options, boolean strip) {
-        var inset = BidGridMetrics.submitInsets(1f, 0, 0);
-        return new BidControls(BidGridMetrics.columnCount(options, width), strip,
-                BidGridMetrics.CHOICE_TARGET_DP, BidGridMetrics.CHOICE_ROW_DP, BidGridMetrics.CHOICE_FACE_INSET_DP,
-                BidGridMetrics.SUBMIT_WIDTH_DP, BidGridMetrics.SUBMIT_TARGET_DP,
-                inset.horizontalPx(), inset.verticalPx(), BidGridMetrics.SUBMIT_TEXT_SP);
+    @Override public BoardProfile boardProfile(String mode, int players, int width, int bidOptions,
+            TableViewportPolicy viewport, float fontScale) {
+        return ro.whistlab.browser.presentation.WhistBoardAdapter.profile(mode, players, width, bidOptions, viewport, fontScale);
     }
 
     @Override public boolean hasProfile() { return true; }

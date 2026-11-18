@@ -1,6 +1,7 @@
 import {isDeepStrictEqual} from 'node:util';
 import {disposablePaths, e2ePaths} from './android-e2e-contract.mjs';
 import {inspectE2eImages} from './android-e2e-images.mjs';
+import {admitNativeSource, e2eSourcePath, e2eSourceSnapshotPath, verifyNativeValidator} from './android-e2e-provenance.mjs';
 
 const hash = /^[0-9a-f]{64}$/;
 const passing = result => Number.isSafeInteger(result?.tests) && result.tests > 0
@@ -64,7 +65,8 @@ export function verifyE2eReport({manifest, name, group, receipt, report, expecte
   return {...identity, applicationId: manifest.release?.applicationId};
 }
 
-export async function readE2eEvidence({manifest, name, declared, readDocument, readReport, scenario, requireScenario}) {
+export async function readE2eEvidence({manifest, name, declared, readDocument, readReport, scenario, requireScenario,
+  readCurrentSource = readDocument, expectedValidatorFingerprint}) {
   const paths = e2ePaths(name);
   const group = manifest.qualification?.e2eGroups?.[name];
   const verifyPayload = (relative, doc) => {
@@ -75,9 +77,28 @@ export async function readE2eEvidence({manifest, name, declared, readDocument, r
   };
   const receipt = verifyPayload(paths.executionReceipt, await readDocument(paths.executionReceipt));
   const report = verifyPayload(paths.report, await readReport(paths.report));
-  const identity = verifyE2eReport({manifest, name, group, receipt: receipt.value, report, expectedScenario: scenario, requireScenario});
-  const boundary = receipt.value.dataBoundary;
   const documents = new Map([[paths.executionReceipt, receipt], [paths.report, report]]);
+  let provenance, sourceProvenance, executionManifest = manifest;
+  if (expectedValidatorFingerprint !== undefined && group.executionSource === undefined)
+    await verifyNativeValidator(expectedValidatorFingerprint);
+  if (group.executionSource !== undefined) {
+    if (receipt.value.schemaVersion !== 2 || !scenario) throw Error('ANDROID_E2E_SCENARIO_NOT_RECORDED');
+    if (group.executionSource !== e2eSourcePath(name)) throw Error('ANDROID_E2E_EXECUTION_SOURCE_PATH');
+    sourceProvenance = verifyPayload(group.executionSource, await readDocument(group.executionSource));
+    const sourcePath = e2eSourceSnapshotPath(sourceProvenance.value.sourceFingerprint);
+    if (sourceProvenance.value.sourceInputManifest !== sourcePath) throw Error('ANDROID_E2E_EXECUTION_SOURCE_PATH');
+    const originalSource = verifyPayload(sourcePath, await readDocument(sourcePath));
+    provenance = await admitNativeSource({manifest, receipt: receipt.value, receiptSha256: receipt.sha256,
+      origin: sourceProvenance.value, originalSource, currentSource: await readCurrentSource(manifest.source.inputManifest),
+      expectedValidatorFingerprint});
+    executionManifest = {...manifest, source: {...manifest.source, sourceCommit: provenance.executionSourceCommit,
+      workingTreeFingerprint: provenance.executionSourceFingerprint}};
+    documents.set(group.executionSource, sourceProvenance);
+    documents.set(sourcePath, originalSource);
+  }
+  const identity = verifyE2eReport({manifest: executionManifest, name, group, receipt: receipt.value, report,
+    expectedScenario: scenario, requireScenario});
+  const boundary = receipt.value.dataBoundary;
   if (boundary?.mode === 'DISPOSABLE_SECONDARY_USER') {
     const paths = disposablePaths(boundary.leaseId);
     const ready = verifyPayload(paths.readyReceipt, await readDocument(paths.readyReceipt));
@@ -88,5 +109,5 @@ export async function readE2eEvidence({manifest, name, declared, readDocument, r
   } else if ((boundary && boundary.mode !== 'BACKUP_AND_RESTORE') || requireScenario) {
     throw Error('ANDROID_E2E_DATA_BOUNDARY');
   }
-  return {group, documents};
+  return {group, documents, ...(provenance ? {provenance, sourceProvenance} : {})};
 }

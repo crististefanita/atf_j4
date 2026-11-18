@@ -54,6 +54,4 @@ Android Download Manager transfer and certificate checks belong to the tested re
 
 ## Release qualification boundaries
 
-| Priority | Gap and owner | Closure criterion |
-|---|---|---|
-| P2 | Native reuse binds the whole source snapshot, including qualification tooling. A validator-only correction can invalidate otherwise unchanged APK evidence. [Admission](../../atf-tests/tools/prepare-android-e2e.mjs) | Record runtime inputs separately from the validator revision. Reuse only with identical APK bytes, runtime sources, scenario, display profile and original captures. Controlled cases must reject changed game code, binaries, captures or mismatched validator provenance. |
+Native source and validator separation belongs to the [qualification contract](../testing/ATF_ReleaseQualification.md#native-execution-and-validator-provenance). Reuse remains conditional on unchanged runtime, scenario, APK and original evidence.

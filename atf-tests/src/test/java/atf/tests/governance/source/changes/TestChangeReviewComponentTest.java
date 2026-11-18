@@ -27,6 +27,19 @@ class TestChangeReviewComponentTest {
     private static final String NEW_TEST = "nested/module/src/test/java/demo/Test nou ș.java";
     private static final String GATE = "config/atf-test-suites.json";
 
+    @Test void nativeSourceAdmissionAndAdapterOraclesCannotBypassReview(@TempDir Path root) throws Exception {
+        var repo = new TestChangeGitFixture(root);
+        var paths = List.of("atf-tests/tools/android-e2e-provenance.mjs", "atf-tests/tools/android-e2e-evidence.mjs",
+                "atf-tests/tools/source-input-identity.mjs",
+                "atf-tests/tools/prepare-android-e2e.mjs", "atf-tests/tools/apply-android-e2e.mjs",
+                "atf-ui-browser/tests/ro/cardtable/browser/WhistSurfaceContract.java",
+                "atf-ui-browser/tests/whist-surface-contract.test.mjs");
+        for (String path : paths) repo.put(path, "// controlled native source boundary\n");
+        AuditedAssertions.assertEquals(paths.stream().sorted().map(path -> uncovered("A", path, repo.base)).toList(), check(repo).diagnostics());
+        repo.put(FEEDBACK, repo.control("NATIVE-SOURCE", "ACTIVE", repo.base, VALID, false, paths.toArray(String[]::new)));
+        AuditedAssertions.assertEquals(List.of(), check(repo).diagnostics());
+    }
+
     @Test void userRecoveryAndEnglishVocabularyRequireReviewedControls(@TempDir Path root) throws Exception {
         var repo = new TestChangeGitFixture(root);
         var paths = List.of("scripts/AtfAndroidUserOwnership.ps1", "scripts/Invoke-AtfAndroidDisposableUser.ps1",

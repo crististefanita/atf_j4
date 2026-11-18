@@ -17,3 +17,9 @@ Extend coverage of AI decisions, streaks and playing for zero through component 
 
 - Attach native and web inline captures in Extent, along with distribution, controls and comparisons.
 - Select the transitions for the sample on the device based on the already available checks. [Components and Playwright](../../atf-ui-browser/README.md#verification)
+
+## Shared-package adoption
+
+| ID | Remaining work | Closure criterion |
+|---|---|---|
+| WEB-15 | Publish the text-scale-aware browser contract under a new library coordinate. | Repackage runtime and shared tests after source qualification; verify identical package bytes in consumers without changing the Android artifact. The currently qualified package remains immutable. |

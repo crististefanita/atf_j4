@@ -29,6 +29,43 @@ import static atf.tests.governance.documentation.release.rag.RagAndroidEvidenceF
 class ReleaseRagAndroidComponentTest {
     @TempDir Path temporary;
 
+    @Test void nativeRuntimeAndValidatorRevisionsRemainIndependentInTheRealEvaluator() throws Exception {
+        var fixture = create(temporary);
+        var root = atf.tests.governance.support.GovernanceProject.locateProjectRoot();
+        var prepared = atf.android.process.CommandProcess.execute(List.of("node",
+                root.resolve("atf-tests/tools/android-e2e-provenance-fixture.mjs").toString(), "bind-rag",
+                fixture.candidate().toString(), fixture.source().toString(), fixture.plan().toString()),
+                root, java.util.Map.of(), java.time.Duration.ofSeconds(60), true);
+        AuditedAssertions.assertEquals(0, prepared.exitCode(), new String(prepared.stdout(), java.nio.charset.StandardCharsets.UTF_8)
+                + prepared.stderr());
+        refreshPayload(fixture.candidate());
+        evaluate(fixture, fixture.output());
+        var verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
+        AuditedAssertions.assertEquals("PASS", check(verdict, "E2E_SCOPE"));
+        var decision = verdict.at("/e2e/decisions/0");
+        AuditedAssertions.assertEquals("REUSE", decision.path("decision").asText());
+        AuditedAssertions.assertTrue(decision.at("/provenance/validator/fingerprint").asText().matches("[a-f0-9]{64}"));
+
+        Path sourceFile = fixture.candidate().resolve("reports/apk-inputs.json");
+        var source = (ObjectNode) JSON.readTree(sourceFile.toFile());
+        for (JsonNode row : source.withArray("files")) if (row.path("path").asText().equals("src/Game.java"))
+            ((ObjectNode) row).put("sha256", "f".repeat(64));
+        var records = new java.util.TreeMap<String, String>();
+        source.withArray("files").forEach(row -> records.put(row.path("path").asText(), row.path("sha256").asText()));
+        String fingerprint = hashText(records.entrySet().stream().map(row -> row.getKey() + "\t" + row.getValue() + "\n")
+                .collect(java.util.stream.Collectors.joining()));
+        source.put("fingerprint", fingerprint);JSON.writeValue(sourceFile.toFile(), source);
+        Path manifestFile = fixture.candidate().resolve("release-validation.json");
+        var manifest = (ObjectNode) JSON.readTree(manifestFile.toFile());
+        ((ObjectNode) manifest.path("source")).put("workingTreeFingerprint", fingerprint);
+        JSON.writeValue(manifestFile.toFile(), manifest);refreshPayload(fixture.candidate());
+        evaluate(fixture, fixture.output());
+        verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "E2E_SCOPE"));
+        AuditedAssertions.assertEquals("ANDROID_E2E_RUNTIME_CHANGED", verdict.at("/e2e/decisions/0/reason").asText());
+    }
+
     @Test void aDamagedReportRequestsOnlyItsOwnFlow() throws Exception {
         RagCandidateFixture fixture = create(temporary);
         selectPassingE2e(fixture, "signed-release-bidding", "signed-release-auto-game");

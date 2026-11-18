@@ -863,3 +863,76 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Native runtime provenance and portable Web/native adapter contracts</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-NATIVE-ADAPTER-MAIN
+    status: VERIFIED
+    base: 6016fe842dc7b7110fdf7812a4a54004bdb321b1
+    expires: 2026-12-19
+    reason: Separate native runtime and scenario identity from the running validator; preserve original receipts and verify real Web/native portable adapters with controlled measurements.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=NativeSourceProvenanceComponentTest,WhistSurfaceAdapterComponentTest,ReleaseRagAndroidComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#immutableRuntimeEvidenceSurvivesValidatorMaintenanceButRejectsChangedInputs
+        - atf.tests.governance.documentation.release.rag.nativeproof.WhistSurfaceAdapterComponentTest#webAndNativePortablePortsKeepMeasuredGeometryFacesAndGesturesAligned
+      negative:
+        - atf.tests.governance.documentation.release.rag.ReleaseRagAndroidComponentTest#nativeRuntimeAndValidatorRevisionsRemainIndependentInTheRealEvaluator
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#legacyEvidenceAndSourceSelectionKeepTheirIndependentGuards
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#nativeSourceAdmissionAndAdapterOraclesCannotBypassReview
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/NativeSourceProvenanceComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/WhistSurfaceAdapterComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/reporting/NativeEvidenceProbe.java
+      - atf-tests/tools/android-e2e-provenance.mjs
+      - atf-tests/tools/android-e2e-provenance.test.mjs
+      - atf-tests/tools/source-input-identity.mjs
+      - atf-ui-browser/tests/ro/cardtable/browser/WhistSurfaceContract.java
+      - atf-ui-browser/tests/whist-surface-contract.test.mjs
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagAndroidComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/NodeReleaseContracts.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/reporting/ReleaseSuiteReportingGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/android-e2e-evidence.mjs
+      - atf-tests/tools/apply-android-e2e.mjs
+      - atf-tests/tools/evaluate-release-rag.mjs
+      - atf-tests/tools/prepare-android-e2e.mjs
+  - id: WHIST-NATIVE-ADAPTER-RO
+    status: VERIFIED
+    base: 2ea1ccb42cb1d7b34f481438411bbe49b6d61c99
+    expires: 2026-12-19
+    reason: Separate native runtime and scenario identity from the running validator; preserve original receipts and verify real Web/native portable adapters with controlled measurements.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=NativeSourceProvenanceComponentTest,WhistSurfaceAdapterComponentTest,ReleaseRagAndroidComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#immutableRuntimeEvidenceSurvivesValidatorMaintenanceButRejectsChangedInputs
+        - atf.tests.governance.documentation.release.rag.nativeproof.WhistSurfaceAdapterComponentTest#webAndNativePortablePortsKeepMeasuredGeometryFacesAndGesturesAligned
+      negative:
+        - atf.tests.governance.documentation.release.rag.ReleaseRagAndroidComponentTest#nativeRuntimeAndValidatorRevisionsRemainIndependentInTheRealEvaluator
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#legacyEvidenceAndSourceSelectionKeepTheirIndependentGuards
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#nativeSourceAdmissionAndAdapterOraclesCannotBypassReview
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/NativeSourceProvenanceComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/WhistSurfaceAdapterComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/reporting/NativeEvidenceProbe.java
+      - atf-tests/tools/android-e2e-provenance.mjs
+      - atf-tests/tools/android-e2e-provenance.test.mjs
+      - atf-tests/tools/source-input-identity.mjs
+      - atf-ui-browser/tests/ro/cardtable/browser/WhistSurfaceContract.java
+      - atf-ui-browser/tests/whist-surface-contract.test.mjs
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagAndroidComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/NodeReleaseContracts.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/reporting/ReleaseSuiteReportingGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/android-e2e-evidence.mjs
+      - atf-tests/tools/apply-android-e2e.mjs
+      - atf-tests/tools/evaluate-release-rag.mjs
+      - atf-tests/tools/prepare-android-e2e.mjs
+```
+
+</details>

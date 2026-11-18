@@ -268,6 +268,24 @@ The evaluator compares the added, deleted and modified files. [Scope suite](../.
 - The launcher accepts only catalog groups. `-ReuseFrom` takes a prior component run or `reports/component` directory with original receipts.
 - `component-reuse.json` records decisions and snapshot IDs. Retain it with Extent, execution receipts and original snapshots. Set `componentEvidenceOrigin` per reused group and `androidComponentsReceipt` relative to `reports/component` for the Android-component gate. [Launcher contract](../../scripts/README.md)
 
+### Native execution and validator provenance
+
+Native reports retain their original APK, execution commit, source fingerprint, scenario and captures. The [source admission](../../atf-tests/tools/android-e2e-provenance.mjs) separates those execution facts from the content-addressed revision of the running Node validator. Validation never relabels an old receipt with the current commit.
+
+| Input family | Reuse boundary |
+|---|---|
+| APK and runtime | Identical APK SHA-256 and runtime input fingerprint; changed game sources, binaries, resources or unknown inputs require a new flow. |
+| Scenario | Native infrastructure and launcher inputs remain identical, along with flow selection, API, display profile and responsive matrix. |
+| Validator | Top-level Node modules under the release-tool directory have their own observed revision; changing them triggers validation, not native execution. An optional `validatorRevision` in the E2E request or plan pins that revision. |
+| Editorial metadata | Documentation and the bilingual review record can change without changing native runtime identity. |
+| Original evidence | Preserve receipt, report and isolation bytes. Each group owns `source-provenance.json`; groups share the original source-input document under its fingerprint. |
+
+New executions record that provenance automatically. For older schema-2 evidence, export from the original qualified directory into a fresh external run containing `e2e-request.json`, then import into the prepared candidate. The export preserves original bytes and flattens prior reuse to the first execution snapshot.
+
+- `prepare-android-e2e.mjs export <original-edition> <external-run> <group>` prepares the bundle. `apply-android-e2e.mjs <prepared-candidate> <external-run>` validates and imports it. The normal planner and evaluator recheck runtime, scenario, validator pin, payload hashes and original captures; old evidence without sufficient provenance keeps the conservative `RUN` decision.
+
+- `prepare-android-e2e.mjs inspect <edition> <external-run>` performs the same read-only admission for the request in that run. Its profile is a recorded-evidence consistency check; a new release still requires the profile selected by RAG. Missing snapshots, forged validator fingerprints, changed runtime or scenario inputs and damaged captures block reuse.
+
 ### Native samples and Android gates
 
 User-visible flow changes require focused E2E for the affected flow. Achievement-catalog acceptance opens the signed APK screen, checks local progress and returns home; components retain threshold, replenishment and popup-persistence oracles.
