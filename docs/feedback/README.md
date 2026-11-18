@@ -7,41 +7,39 @@ Stable contracts belong to thematic guidelines; each criterion remains open unti
 
 ## Active registers
 
-[Active dossier](../../release/README.md) brings together the APK and evidence of the qualified version. Intermediate candidates remain in external staging; [qualification of delivery](../testing/ATF_ReleaseQualification.md) makes the replacement of the active dossier conditional.
+[Active release dossier](../../release/README.md) holds the qualified APK and evidence. Intermediate candidates stay in external staging; [release qualification](../testing/ATF_ReleaseQualification.md) controls replacement of the active dossier.
 
-| Area | Liability and criteria |
+| Area | Ownership and criteria |
 |---|---|
 | [AI players](ATF_Ai.md) | Inference, estimates, cost and policy qualification on new data. |
 | [Android](ATF_Android.md) | Full history, persistence, geometry, location and accessibility. |
-| [Common interface](ATF_CardUi_Extraction.md) | The limits between reusable presentation and the Whist adapter: menu, profile, table, historical and animation. |
+| [Shared interface](ATF_CardUi_Extraction.md) | Boundaries between reusable presentation and the Whist adapter: menu, profile, table, history and animation. |
 | [Browser](ATF_UiBrowser.md) | Reference geometry and parity with APKs for the common Edge and Chrome adapter. |
 | [Reporting](ATF_Reporting.md) | Qualification of autonomy, comparisons and memory consumption in Extent. |
 | [Governance](ATF_Governance.md) | Reusable API, explicit perimeter and code cohesion. |
-| [Local infrastructure](ATF_TestInfrastructure.md) | The competition of the kit, the isolation of the configuration and the cost of validating API. |
+| [Local infrastructure](ATF_TestInfrastructure.md) | Kit concurrency, configuration isolation and API-validation cost. |
 | [Whist Achievements](ATF_Achievements.md) | Restoring the status of the Android screen and calibration with human players. |
 
 ## Prioritized ToDos
 
-The 1–100 score expresses the recommended order of work, not the quality or percentage of completion. The assessment combines the impact on the user, the size of the verification gap, the risk for release and the clarity of the closure criterion. Each row shall indicate the normative register; the score shall be revised when the risk or proof changes and criteria shall remain open until they are closed there.
+The 1–100 score expresses work priority, not quality or completion percentage. It combines user impact, verification gaps, release risk and clarity of the closure criterion. Each row links to its owning register; revise the score as risk or evidence changes and close a criterion only at its required verification level.
 
 | ID | Priority | Score | ToDo remaining and short closing criterion |
 |---|---:|---:|---|
-| INF-01 | P1 | 96 | Recover an interrupted disposable-user creation from a persistent ownership record; reject foreign IDs and prove cleanup before retrying. [Register](ATF_TestInfrastructure.md#disposable-android-profile-readiness) |
 | RPT-01 | P1 | 95 | Check each producer via detached HTML and negative controls for missing, external or misassigned content. [Register](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) |
-| RPT-02 | P1 | 94 | Probe on remaining producers to reject lost claims and the usefulness of original comparisons, including Fail, ERROR and SKIP. [Register](ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) |
-| AND-01 | P1 | 93 | Demonstrates the recovery of checkpoint after corruption or interruption, keeping user data or reporting explicit error. [Register](ATF_Android.md) |
-| AND-02 | P1 | 92 | Qualify on APK actor, stable geometry and visible hand in bidding, play and AutoGame for 3–6 places, RO/EN and increased text. [Register](ATF_Android.md) |
+| RPT-02 | P1 | 94 | Qualify remaining producers against missing assertions and unusable original comparisons, including FAIL, ERROR and SKIP. [Register](ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) |
+| AND-01 | P1 | 93 | Prove checkpoint recovery after corruption or interruption, preserving user data or reporting an explicit error. [Register](ATF_Android.md) |
+| AND-02 | P1 | 92 | Qualify the active actor, stable geometry and visible hand in bidding, play and AutoGame on the APK, for 3–6 players, RO/EN and enlarged text. [Register](ATF_Android.md) |
 | AI-01 | P1 | 91 | Calibrate Hard inference for bidding with 2–8 cards and cards played on new lots; separate the accuracy of probabilities from the simulated score. [Register](ATF_Ai.md) |
-| ACH-01 | P1 | 90 | Qualify on APK restoration of position and selection from Achievements, then resume notifications after recreation of activity. [Register](ATF_Achievements.md) |
+| ACH-01 | P1 | 90 | Qualify restoration of Achievements scroll position and selection on the APK, and notification resumption after activity recreation. [Register](ATF_Achievements.md) |
 | AND-03 | P1 | 89 | Qualify API 37, navigation of the system, resumption, enlarged fonts and memory on an identified device. [Register](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publish large suites within the declared limit of the heap, without repeated copies of HTML and without losing JUnit or comparisons to failure. [Register](ATF_Reporting.md#rpt-bounded-report-heap---safe-completion-for-large-suites) |
-| UI-01 | P1 | 86 | Qualify header, boxes and notifications on consumer APKs and check the name's entry of Unicode. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
+| UI-01 | P1 | 86 | Qualify headers, player boxes and notifications on consumer APKs, including Unicode name entry. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
 | RAG-11 | P2 | 84 | Separate immutable APK/runtime provenance from the validator revision, preserving strict rejection of changed game inputs. [Register](ATF_Governance.md#release-qualification-boundaries) |
-| AI-02 | P2 | 82 | Measure the opportunities, the conversions to 500, effect on the ranking and latency on new lots, with natural game separate from the controlled prefix. [Register](ATF_Ai.md#playing-for-zero) |
-| DOC-01 | P2 | 81 | Improve English release and governance terminology against live code, preserving Romanian meaning and approved document structure. [Register](ATF_Governance.md#improving-guidance-guides) |
+| AI-02 | P2 | 82 | Measure opportunities, conversions to 500, ranking impact and latency on new batches; separate natural play from controlled prefixes. [Register](ATF_Ai.md#playing-for-zero) |
 | WEB-07 | P2 | 79 | Qualify settings, resume, Play again and history in APK and Chrome on the same Android in RO/EN and with increased text. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
-| WEB-11 | P2 | 78 | Qualify rank and glyphs in a 17-card hand, to the text enlarged on Chrome Android. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
-| AI-03 | P2 | 76 | Extract sample management and reuse from MonteCarloAi without changing the facade; fix random order, reply, cancellation and budget by components. [Register](ATF_Ai.md#engine-evolution) |
+| WEB-11 | P2 | 78 | Qualify ranks and suit glyphs in a 17-card hand with enlarged text in Android Chrome. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
+| AI-03 | P2 | 76 | Extract sample management and reuse from MonteCarloAi without changing its facade; fix random order, replay, cancellation and budget behavior through component tests. [Register](ATF_Ai.md#engine-evolution) |
 
 ## Change ownership
 
@@ -56,26 +54,26 @@ flowchart LR
 <details>
 <summary>Legend: Closure of criteria</summary>
 
-A criterion shall be called the necessary behaviour, source and level of verification. The stable rule shall be documented with the responsible and the concrete results and investigative material shall remain external.
+Each criterion states required behavior, its source and verification level. Stable rules belong in the owning document; concrete results and investigation material stay in the external audit.
 
 </details>
 
-Core, Reporting, Console and Mock are consumed as binary pairs in JAR/POM. This project holds the verification of the contracts it uses, the provenance of the pair, local integration and documentation of any observed limitations; hash and coordinates are the source of identity.
-[Guide editorial Whist](../governance/ATF_Documentation.md) has the rules of documentation and their verification in checkout.
+Core, Reporting, Console and Mock are consumed as pinned JAR/POM pairs. This project verifies the contracts it uses, pair provenance, local integration and observed limits; coordinates and hashes define binary identity.
+[Whist editorial guide](../governance/ATF_Documentation.md) defines documentation rules and local verification.
 
 ## Closure and promotion
 
-- Keep the proven defect distinct, missing qualification and research hypothesis.
-- Check the nominal case, relevant refusal and identity of sources prior to closure.
-- Promote the stable rule in his guide and remove only the criterion shown.
-- Each open work has one responsible register; the READMEs explain the mechanism and send to that criterion.
+- Distinguish demonstrated defects, missing qualification and research hypotheses.
+- Check the nominal case, relevant rejection cases and source identity before closure.
+- Move stable rules into their owning guide and remove only demonstrated closure criteria.
+- Each open item has one owning register; READMEs explain the mechanism and link to that criterion.
 - Keep the technical checks active until their explicit reconciliation.
-- Update all references to consolidation; a change of directory does not prove to resolve behavior.
+- Update references after consolidation; moving a directory does not prove a behavior fix.
 
 ## Joint contract of autonomy
 
-The reports must be opened and audited without runner, additional JAR or ancillary files. HTML keeps the context, comparisons and inline captures; the consumer verifies this contract in [reporting feedback](ATF_Reporting.md).
+Reports must remain readable and auditable without a runner, additional JARs or auxiliary files. HTML retains context, comparisons and inline captures; consumers verify this contract through [reporting feedback](ATF_Reporting.md).
 
 ## Common test support
 
-The kit is consumed by the set JAR/POM pair. Local tests check integration, lifecycle, competition and case propagation; the results of a library do not replace the qualification of the Android adapter or product suite.
+The Kit is consumed as a pinned JAR/POM pair. Local tests verify integration, lifecycle, concurrency and invocation propagation; library results do not replace Android-adapter or product-suite qualification.

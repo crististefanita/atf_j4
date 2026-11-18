@@ -244,7 +244,7 @@ testChanges:
       - atf-tests/src/test/java/atf/libraries/PlatformLibrarySurface.java
 ```
 
-Negative controls reject the missing READMEM, additional documents, a director instead of README- and the assignment of the code or feedback to a consumer. The distributed libraries keep their coordinates and hashes.
+Negative controls reject the missing README, additional documents, a director instead of README- and the assignment of the code or feedback to a consumer. The distributed libraries keep their coordinates and hashes.
 
 The inventory at Git base declared is that of the checked increment. The current pairs and guides are defined in [library contract](../../lib/README.md).
 
@@ -793,6 +793,73 @@ testChanges:
       - atf-tests/tools/visual-contract-sources.mjs
       - atf-tests/tools/visual-scope-fixture.mjs
       - atf-tests/tools/visual-contracts.test.mjs
+```
+
+</details>
+
+<details>
+<summary>English operational terminology and durable temporary-user ownership</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-DOC-RECOVERY-MAIN
+    status: VERIFIED
+    base: 05fde6ecb286184c044b89b161a6036a24357de0
+    expires: 2026-12-18
+    reason: Check English guide terminology against live code and preserve original users through durable ownership, interrupted preparation and lease-bound recovery with mock transport.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationTerminologyComponentTest,DocumentationGovernanceCliComponentTest,AndroidUserOwnershipComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#technicalLiteralsAndRomanianAreOutsideTheEnglishProseRule
+        - atf.tests.governance.documentation.cli.DocumentationGovernanceCliComponentTest#translationArtifactsHaveTheSameFullAndSelectedDiagnostics
+        - atf.tests.governance.documentation.release.rag.scope.AndroidUserOwnershipComponentTest#durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport
+      negative:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#linkLabelsAndTableCellsRemainVisible
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#userRecoveryAndEnglishVocabularyRequireReviewedControls
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationTerminologyRules.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidUserOwnershipComponentTest.java
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - scripts/AtfAndroidUserOwnership.ps1
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/release-test-scope.mjs
+      - scripts/Invoke-AtfAndroidDisposableUser.ps1
+  - id: WHIST-DOC-RECOVERY-RO
+    status: VERIFIED
+    base: 6ce614b643e76d62b068899871658040f90c7186
+    expires: 2026-12-18
+    reason: Check English guide terminology against live code and preserve original users through durable ownership, interrupted preparation and lease-bound recovery with mock transport.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationTerminologyComponentTest,DocumentationGovernanceCliComponentTest,AndroidUserOwnershipComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#technicalLiteralsAndRomanianAreOutsideTheEnglishProseRule
+        - atf.tests.governance.documentation.cli.DocumentationGovernanceCliComponentTest#translationArtifactsHaveTheSameFullAndSelectedDiagnostics
+        - atf.tests.governance.documentation.release.rag.scope.AndroidUserOwnershipComponentTest#durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport
+      negative:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#linkLabelsAndTableCellsRemainVisible
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#userRecoveryAndEnglishVocabularyRequireReviewedControls
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationTerminologyRules.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidUserOwnershipComponentTest.java
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - scripts/AtfAndroidUserOwnership.ps1
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/release-test-scope.mjs
+      - scripts/Invoke-AtfAndroidDisposableUser.ps1
 ```
 
 </details>

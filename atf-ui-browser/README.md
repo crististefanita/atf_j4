@@ -160,7 +160,7 @@ flowchart LR
 
 - [Android AAR](../whist-lab-app/atf-card-table-ui/README.md#packaging-and-consumption) contains the widgets, themes, resources and portable calculations selected by Gradle.
 - [Web launcher](Start-CardTableBrowser.ps1) compiles an explicit selection of portable sources, including the contents of the seats, table cards, colors and the rhythm of the moves. The JAR includes the server, adaptor contract and DOM resources. Each game provides the engine and adapter.
-- Web test archive is exported separately. Probe resources, revisions, menu, pick up, collect, frame the asset and the boxes in the browser. The exported JARs have Sha- 256 files next to them.
+- The Web test archive is exported separately. It checks resources, revisions, menus, card lift, collection and browser frames. Exported JARs have adjacent SHA-256 files.
 - Whist site uses [alt build](Build-WhistPages.ps1), which produces static resources from the Whist adapter and engine. Pages test and JARs acceptance by Rentz or Hold'em have different inputs.
 
 </details>
@@ -180,7 +180,7 @@ The viewport contract preserves a 414 × 896 logical frame on desktop, scales un
 ```
 
 - Choose `$BrowserLibraryVersion` and start out from a clean checkout Git. The exhibition writes the two JARs, fingerprints and `browser-build.json` in the external directory of the version. The registry links the files to the source comma and the input inventory.
-- Check the commit and SHA- 256 at adoption. The manifest installed near the two JARs shows which version each adapter uses.
+- Check the commit and SHA-256 at adoption. The manifest installed near the two JARs shows which version each adapter uses.
 - Export shall re-use the Director of the same version after confrontation with entries and bytes. Changing entries requires a new version. The integration challenge starts the first match through the physical JARs, adaptor and game dependencies.
 - Promote the same bytes and same fingerprints in qualified consumers. The version of the HTML cache aims at updating the site's resources. [Consumer verification](#verification)
 

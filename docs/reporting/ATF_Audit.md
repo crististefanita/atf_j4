@@ -117,7 +117,7 @@ A subsequent correction of the inventory produces a new identity; does not rewri
 
 [Bridge Gradle](../testing/ATF_GradleComponents.md) applies the same contracts to JUnit 4, with the original identity of the parametric and context captured prior to comparison. The publication intent is metadata from execution and is checked separately from HTML; a profile without HTTP does not invent transport. The XMLs remain only temporary oracle for migrated selections.
 
-The dossier's READMEM shall first indicate the canonical report, the purpose and the identity verified. HTML maintains the data required for the verdict; READMES directs the reader and explains the selection, overlaps and supporting evidence justified.
+The dossier's README shall first indicate the canonical report, the purpose and the identity verified. HTML maintains the data required for the verdict; READMES directs the reader and explains the selection, overlaps and supporting evidence justified.
 
 | Order | What are we facing? |
 |---|---|

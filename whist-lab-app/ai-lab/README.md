@@ -91,7 +91,7 @@ Keep learning cases, small regressions, candidate's source and new evaluation ga
 |---|---|
 | Java | [Local contracts](src/test/java/ro/whistlab/coach/IndependentPlayerContractTest.java) checks the observation, legality, determinism, cancellation and budgets. The engine, Android and ATF are missing from the test leaderboard; comparisons in `game-core` remain integration. |
 | Tools Node | `check` include `testTools`; [the legal game builder](tools/testing/legal-game-fixture.mjs) replace the default entries in the archive. The card, bid, levitated and score mutations check the validator's refusals. |
-| Archive | `replayArchive` requires file and SHA- 256 explicit; check bytes prior to parting and rules. It's not the dependency of `check`. |
+| Archive | `replayArchive` requires file and SHA-256 explicit; check bytes prior to parting and rules. It's not the dependency of `check`. |
 | Data exposure | [Shared registry](../../docs/learning/ATF_EvaluationRegistry.md) coordinates reservations between the corpuss and keeps reuse as known exposure. |
 
 The promotion remains conditional on progress on new games and the identity of all sources; a successful local verification closes only her contract. [Learning protocol](../../docs/learning/README.md) holds the procedure and [Feedback AI](../../docs/feedback/ATF_Ai.md) centralises the work still open.

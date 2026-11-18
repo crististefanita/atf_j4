@@ -2,7 +2,7 @@
 
 ## Overview
 
-The delivery links the configuration of the sources to the identity of the APK and the compatibility of the installation. The version declared in the source, the produced binary and the installed application have identities that need to be checked separately.
+Delivery links pinned sources to APK identity and installation compatibility. Verify the declared version, produced binary and installed application separately.
 
 ## Responsibilities
 
@@ -20,29 +20,29 @@ flowchart LR
 <details>
 <summary>Legend: build and behavior</summary>
 
-The build checks the production of the binary, and static controls check the package, the SDKs, the signature and the alignment. The device verification refers to the apk hashtrack actually installed.
+The build produces the binary; static checks verify the package, SDK levels, signature and alignment. Device verification refers to the SHA-256 of the APK actually installed.
 
 </details>
 
 ## Delivery conditions
 
-- Read the identity of the package, the SDKs and the version of [Gradle configuration of application](../../whist-lab-app/app/build.gradle).
-- Build in your own temporary copy with identified dependencies.
-- Check Java APIs available on the Android platform concerned; level `sourceCompatibility` does not add absent methods from the system. For Java APIs newer than `minSdk`, declare `coreLibraryDesugaringEnabled` and a version fixed `desugar_jdk_libs` in the application and Android modules that require isolated verification. Governance must confront the use of these APIs with the desugaring configuration.
+- Read package identity, SDK levels and version from the application's [Gradle configuration](../../whist-lab-app/app/build.gradle).
+- Build an isolated external copy with identified dependencies.
+- Check Java API availability on supported Android levels; `sourceCompatibility` does not provide missing platform methods. For newer APIs, declare `coreLibraryDesugaringEnabled` and pin `desugar_jdk_libs` in each module requiring isolated verification. Governance compares API usage with that configuration.
 - Check integrity, signature, alignment and key compatibility for upgrade.
 - Keep APK and checksum in `release/<versionName>/`, next to the manifest and README. Store the evidence in the `reports` subdirectory. [Release catalog](../../release/README.md) identifies the current version. Keep intermediate runs outside the checkout.
-- Check the binar installed before assigning the behaviour of that delivery to a scenario.
-- Distance local building from distribution through the shop and from distribution keys management.
+- Verify the installed binary before attributing scenario behavior to that delivery.
+- Separate local builds from store distribution and distribution-key management.
 
 ## Signing and migration plan
 
-Qualify the key change starting from the last APK available to users. Identify package, `versionCode`, `minSdk`SHA...256 APK and SHA-256 of certificate of `apksigner verify --verbose --print-certs`If the certificate published is `Android Debug`, treat him as an old signatory and check that you can recover the exact key, with controlled access, before preparing the rotation. [Signature of Android applications](https://developer.android.com/studio/publish/app-signing)
+Qualify signing-key changes against the last APK available to users. Record package, `versionCode`, `minSdk`, APK SHA-256 and certificate SHA-256 from `apksigner verify --verbose --print-certs`. If the signer is `Android Debug`, recover the exact old key under controlled access before planning rotation. [Android app signing](https://developer.android.com/studio/publish/app-signing)
 
 1. Prepare a delivery key with protected storage and a test copy. Keep the key, passwords and local configuration outside Git and reports. The build process receives an explicit signature configuration and stops if the identity cannot be verified. Publish only the fingerprints of the certificates and the verification data.
-2. If you have the exact old key and can be used safely, build a candidate with the same `applicationId`, `versionCode` larger and verifiable rotation history. explicitly set the level from which the new key enters into force. `apksigner` uses API's new key 33. For rotation from API 28, configure and qualify the threshold separately 28. Under the threshold, the compatibility of the upgrade depends on the old signatory. API 24–27 i can't use rotation v3. [Options `apksigner`](https://developer.android.com/tools/apksigner)
+2. If the exact old key remains safe to use, build a candidate with the same `applicationId`, a higher `versionCode` and verifiable signing lineage. Set the rotation threshold explicitly: `apksigner` defaults to the new key from API 33; rotation from API 28 needs separate configuration and qualification. Below the threshold, updates still depend on the old signer; API 24–27 cannot use v3 rotation. [apksigner options](https://developer.android.com/tools/apksigner)
 3. If the old key is missing or is no longer safe, stop publishing as a transparent upgrade for the affected installations. A migration to new installation requires a route for transferring saved data available for the installed version, fully checked prior to distribution. Treat any decision to change the package or the minimum Android level separately.
 
-| Profile Android | Sample prior to publication |
+| Android profile | Required verification before publication |
 |---|---|
 | API 24–27 | Upgrade from the published APK with the compatible signatory. Check first installation and data retention. |
 | API 28–32 | Upgrade and clean installation. Check the actual signatory for the selected rotation threshold. |
@@ -50,28 +50,28 @@ Qualify the key change starting from the last APK available to users. Identify p
 
 - For each profile, create a saved match and an ongoing hand in the published version.
 - Install the candidate over it, resume the match and compare preferences, score, history and next legal action.
-- Record previous version, API level, certificate prints and APK hash installed.
-- Absent profile or lost saved data blocks the migration of the public. Qualify the distributed binary exactly.
+- Record the previous version, API level, certificate fingerprints and installed APK hash.
+- A missing required profile or lost saved data blocks public migration. Qualify the exact distributed binary.
 
 ## Compatibility and qualification
 
-The compatibility of a new Android version qualifies separately from the `targetSdk` choice. The SDK number in APK does not prove installation, display or stability on that system.
+Qualify compatibility with a new Android version separately from choosing `targetSdk`. The APK's SDK value does not prove installation, display or stability on that system.
 
-| Level | What's he checking? | Limit |
+| Level | What it checks | Limit |
 |---|---|---|
-| Construction and package | Sources, dependencies, manifest, SDKs, signature and full APK. | Do not execute the application on every accepted system. |
+| Build and package | Sources, dependencies, manifest, SDKs, signature and complete APK. | Does not execute the app on every supported system. |
 | JVM components | Window models, geometry, persistence and rules, with controlled inputs. | Do not execute system callbacks or actual gestures. |
-| Android identified | Installation, restoration, window, interaction and stability on actual binary. | Qualify the declared profile and system with the limits recorded. |
+| Identified Android device | Installation, restoration, window behavior, interaction and stability of the actual binary. | Qualifies only the declared system and profile, with recorded limits. |
 
 ## Distribution through GitHub
 
-- **Download: ** The main readme indicates a single APK. `currentVersion` selects the published edition and `candidateVersion` selects the announced candidate for testing.
-- **Branch candidate: ** `release/candidate.json` declares `PREPARED`, `artifactSource: MAIN_BRANCH` and anonymous access. The candidate's file contains the guide, APK and checksum, and the direct link GitHub reads the binary from `main`.
-- **Publication:** After qualification, the READMEM indicates the asset of the GitHub Releases edition or the public copy checked. [Release catalog](../../release/README.md) keep the publications published and link the candidate separately.
-- **Navigation: ** GitHub displays the directory of the repository as files and documentation; THE README provides a link to the download without redirect HTTP automatically.
+- **Download:** the main README advertises one APK. `currentVersion` selects the published edition; `candidateVersion` selects an announced test candidate.
+- **Branch candidate:** `release/candidate.json` declares `PREPARED`, `artifactSource: MAIN_BRANCH` and anonymous access. Its directory contains the guide, APK and checksum; the direct GitHub link reads the binary from `main`.
+- **Publication:** after qualification, the README links to the GitHub Release asset or verified public copy. The [release catalog](../../release/README.md) retains published editions and links to candidates separately.
+- **Navigation:** GitHub renders repository files and documentation; the README provides a download link rather than an automatic HTTP redirect.
 
-- **Identity:** [release register](../../release/README.md) be of the version, addresses of assetas and evidence of integrity.
-- **Channels: ** Personal Loading authenticated and Anonymous Access have separate qualifications; the lack of anonymous access does not block the acceptance of the authenticated channel if it is the declared channel.
+- **Identity:** the [release register](../../release/README.md) owns version, asset URLs and integrity evidence.
+- **Channels:** authenticated downloads and anonymous access are qualified separately. Failed anonymous access does not invalidate an explicitly declared authenticated channel.
 
 | Step | Acceptance criterion |
 |---|---|
@@ -80,139 +80,139 @@ The compatibility of a new Android version qualifies separately from the `target
 | Integrity | The ZIP archive passes CRC for all entries and contains the Android manifest and application code; signature and alignment are checked separately. |
 | Installation | The check uses the complete copy, with the package identity and the release upgrade key. |
 
-A HTTP error response does not constitute an APK, regardless of the file extension saved. The success of local construction and installation does not prove the success of public discharge; the integrity and provenance of the downloaded copy is checked separately.
+An HTTP error response is not an APK, regardless of the saved extension. Successful local build and installation do not prove public download; verify the received copy's integrity and provenance separately.
 
-- Write the transfer into a temporary file and publish the APK by moving to the same directory after verification. Upon failure, the download removes his own temporary file and retains the original error. Download the GitHub asset again and confront it before handoff.
+- Download to a temporary file and rename it within the same directory only after verification. On failure, remove only that transfer's temporary file and preserve the original cause. Download and compare the GitHub asset before handoff.
 
-- Qualify separately authenticated and anonymous access. `visibility=public`, state `uploaded` and correct asset digest do not prove that a visitor's browser can download the binary. The sample shall retain the HTTP code, the number of bytes and the hash of the copy received; a blockage of visibility shall remain open until the successful public response is reached.
+- Qualify authenticated and anonymous access separately. `visibility=public`, `uploaded` and a matching asset digest do not prove browser download. Retain HTTP status, byte count and received SHA-256; keep access failures open until the required channel succeeds.
 
 ## Separating access from Android transfer
 
 - **Navigation.** The README opens the current GitHub release. Under **Assets**, select the APK, which is the same versioned file as the direct link.
-- **Access: ** HTTP 404 on the project page or on the asset, prior to receipt of bytes, is kept separate from the integrity of the APK. The declared public visibility and the success of the authenticated API do not identify the cause of the refusal in the browser on its own.
-- **Native Transfer: ** a Download Manager sample identifies the system, the authorisation mode, the status and reason of Android, the received bytes, the SHAA-256, CRC and the package read through PackageManager. The transfer of the network must be executed by Android; pushing the copy from the computer does not replace it.
-- **Credential: ** API token remains on the computer. A temporary redirect authorised for asset may be consumed by the sample without global token on the device; the signed URL and the query shall not be entered in the documentation or reports.
-- **Signature: ** on API 28 ask for both archive signature signs; refuse absence or unexpected number of signatories and confront the exact certificate. The failure of the verifier does not become PASS because the transfer has succeeded.
-- **Audit: ** keep the result JSON and sources of the inline sample in Extent, for the duration of the captured execution. Failed attempts remain in the diagnosis separately; overpublication does not invent a new execution or JUnit invokes.
-- **Limit: ** the authorised native transfer qualifies the file received on Android. The visual route README → authentication → Assets → saved file requires a distinct sample in the browser. Remove the temporary application and release the reservation after verification.
+- **Access:** HTTP 404 on a repository or asset is a separate access failure. Compare authenticated and anonymous requests; never claim successful Android transfer from failed HTTP access.
+- **Native transfer:** an Android Download Manager test records system, access mode, status and reason, received bytes, SHA-256, CRC and PackageManager identity. Android must perform the network transfer; pushing a desktop-downloaded copy is not equivalent.
+- **Credentials:** keep API tokens on the computer. A temporary authorized asset redirect can support the native test without a global device token; never retain its signed URL or query in docs or reports.
+- **Signature:** on API 28, read archive signing information through both supported paths. Reject absent or unexpected signers and compare the exact certificate. Successful transfer cannot override signature-verifier failure.
+- **Audit:** retain the transfer result JSON and test sources inline in Extent for the captured execution. Keep failed attempts separately as diagnostics; republishing evidence does not create a new execution or JUnit invocation.
+- **Limit:** native transfer qualifies the file received on Android. The README → authentication → Assets → saved-file browser route requires a separate check. Remove the temporary test app and release the lease afterward.
 
 ## Process of a version
 
-[Step by step qualification](../testing/ATF_ReleaseQualification.md) orders the selections, HTML verification and candidate dossier; this guide holds the building, identity and publication.
+[Qualification guide](../testing/ATF_ReleaseQualification.md) orders test selections, HTML review and candidate preparation. This guide owns build, identity and publication.
 
-[GitHub Releases model](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) links the delivery to a tag and allows attaching the binaries. The APK is distributed as an asset; the local file `release` keeps the delivery checked without creating a GitHub section or a HTTP redirect.
+[GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) binds delivery to a tag and attached binaries. The APK is an asset; local `release/` retains the verified dossier without creating a GitHub release or HTTP redirect.
 
-1. Identify the source communiqué and application version. Push the commit on the release branch and confirm after `git fetch` that `git merge-base --is-ancestor <commit> origin/<branch>` succeeds; the tag must indicate precisely that commit.
-2. Set the construction copy in TMP, then build and sign once. Check the relevant package and scenarios of the same binary.
-3. Prepare a tag-related draft with APK and checksum; confront the identity of the asset with the delivery register.
+1. Identify source commit and application version. Push to the release branch and verify after `git fetch` that `git merge-base --is-ancestor <commit> origin/<branch>` succeeds. The tag must resolve to that exact commit.
+2. Pin the external build copy, then build and sign once. Check package identity and relevant scenarios against that same binary.
+3. Prepare a draft for the tag with APK and checksum; compare asset identity with the delivery register.
 4. Publish the full version and mark it as the latest version; keep the binary published stable and corrections receive a new version.
-5. Check the download to the requested channel and update the register, links and evidence file.
+5. Verify download through the declared channel and update the register, links and evidence dossier.
 
-[GitHub recommends the draft before attaching the assets and publishing](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) for the immutable relays. The project process uses this order and keeps the difference between the policy established and the activation of the native option of imutability.
+[GitHub recommends creating a draft before attaching assets and publishing](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) immutable releases. This process follows that order; distinguish the project policy from GitHub's native immutability setting.
 
 ## Maintenance releases
 
-A patch close to the previous version uses targeted checks according to the real difference in code. The number of versions does not justify reducing checks alone; changing rules, saves, SDKs or dependencies may require further qualification. Governance uses the release snapshots and candidate metadata, keeping parallel work separate.
+A maintenance release uses checks selected from the actual code diff. Version numbering alone never justifies fewer checks; rule, save, SDK or dependency changes can require additional qualification. Governance reads release snapshots and candidate metadata while keeping parallel work separate.
 
 | Control | Minimum for patch | When it expands |
 |---|---|---|
-| Sources and build | Commit identified, copy in TMP, `assembleRelease` and `lintVitalRelease`. | Addictions, platform or changed construction configuration. |
-| Behaviour | Components and regressions for the modified area and relevant negative cases. | Rules, score, save or policy AI exchanged; selection follows the affected contract. |
-| Governance | Folders and presentation release, plus links and style for the documents reached. | Architecture or agreements exchanged; controls of the area concerned are added. |
+| Sources and build | Identified commit, external copy, `assembleRelease` and `lintVitalRelease`. | Changed dependencies, platform or build configuration. |
+| Behavior | Components and regressions for the changed area, including relevant rejection cases. | Changed rules, scoring, persistence or AI policy; selection follows the affected contract. |
+| Governance | Release layout and presentation, plus links and style for affected documents. | Architecture or contract changes add their owning controls. |
 | APK | Identity, SDKs, CRC, signature, alignment, upgrade key compatibility and SHA-256. | Manifest, install or compatibility Android changed; add native smoke. |
-| Interface | Components of geometry; short sanity for the changed interaction when the device is available. | A profile or a new transition requires distinct acceptance; no full match shall be automatically repeated on each resolution. |
-| Distribution | Asset and checksum, then download into the requested channel, with size and Shah-256 confronted. | Change of channel or signature requires rechecking of distribution. |
+| Interface | Geometry components and focused native sanity for the changed interaction when required. | New profiles or transitions require distinct acceptance; do not repeat a full match at every resolution automatically. |
+| Distribution | Asset and checksum, followed by a download through the declared channel with matching size and SHA-256. | Channel or signing changes require renewed distribution checks. |
 
-The selected execution must pass; a relevant failure blocks publication. A missed native check shall be recorded in the technical file together with the reason, without taking over the qualification of the previous APK and without loading the Release page.
+Selected tests must pass; a relevant failure blocks publication. Record missing native checks and reasons in the technical dossier, without inheriting prior APK qualification or adding diagnostic noise to the release page.
 
 ### Hand over the patch
 
-1. Update `versionName` and increment `versionCode` in Gradle; fix the built commit. Relevant sources exchanged in parallel shall be confronted prior to publication.
-2. Run the above selection in TMP; prepare the commands, JUnit results and logs for `release/<versionName>/reports/`, with a short read-through. Extent reports are only derived from actual version executions; an earlier benchmark is explicitly labelled.
+1. Update `versionName` and increment `versionCode` in Gradle; pin the built commit. Compare relevant parallel source changes before publication.
+2. Run the selected checks in external staging; prepare commands, JUnit results and logs for `release/<versionName>/reports/`, with a short reading guide. Extent reports derive from actual executions; label historical references explicitly.
 3. Place the audit copy of the signed APK `WhistLab-<versionName>.apk` and checksum in `release/<versionName>/`; keep the current and immediately preceding edition. Archive older editions outside the active catalogue only after verifying their identities and hashes. The README links to the GitHub release asset. Use the retained copy to verify integrity.
-4. Update the manifest and readme of the new version, `release/index.json`, catalogue and notes in the bulllets compared to the previous version. Generic guidelines change only if the process or contract has changed.
+4. Update the new version's manifest and README, `release/index.json`, catalog and bullet-point notes against the previous version. Change generic guides only when their process or contract changes.
 5. Run governance checks before publishing the tag and verified assets. Download the full APK from the advertised channel. Update the README links after verifying the version, size, SHA-256 and CRC. A versioned link identifies the qualified APK, while `releases/latest` does not pin its identity.
 
-The draft metadata shall be kept separately in `github-release-draft.json`; `github-release.json` describes the actual publication. GitHub may use temporary addresses `untagged` in the draft, so the test of the notes related to published assetses is performed again after publication on the observed canonical addresses. When published, explicitly send the tag and the source communiqué and confront the answer with the identity of the APK.
+Keep draft metadata separately in `github-release-draft.json`; `github-release.json` describes actual publication. Draft URLs may contain `untagged`, so recheck published note links against canonical asset URLs after publication. Supply the tag and source commit explicitly and compare the response with APK identity.
 
 ## Source and evidence commits
 
-- **Sources: ** the tag sets the qualified commit prior to publication. Confront all inputs of APK and new files; changes in documentation or subsequent samples do not move the tag.
-- **Evidence: ** actual download shall be verified after publication and shall have a subsequent report commit. Note Release fixes this commit in `evidenceUrl`; metadata keeps separate `sourceCommit`.
+- **Sources:** the tag pins the qualified source commit. Compare all APK inputs, including new files; later documentation or evidence changes do not move the tag.
+- **Evidence:** verify the actual download after publication and commit that evidence separately. Release notes pin this commit in `evidenceUrl`; metadata retains `sourceCommit` independently.
 - **Linking:** The evidence commit exists before its hash is added to the release notes. A final commit records the link and the GitHub response. It does not attempt to refer to its own hash.
 - **Audit identity:** [Release presentation governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) reads the index, manifest and direct report at the indicated commit. It compares the SHA-256 with the canonical report declared in the delivered dossier. If a rerun changes the canonical report, pin the new evidence commit in the release notes.
 - **Closure:** After the final push, read the README on GitHub again and compare the exact URL with the downloaded asset. A local check alone cannot establish that the online document has been updated.
 
 ## Resumable publishing on GitHub
 
-[Publication script](../../atf-tests/tools/publish-github-release.mjs) receives the candidate's file and his verdict `READY_FOR_HUMAN_REVIEW`.
+[Publication script](../../atf-tests/tools/publish-github-release.mjs) takes a candidate directory and its `READY_FOR_HUMAN_REVIEW` verdict.
 
-- The manifest declares status `PREPARED`, the repository, the access mode, the canonical URL and the apk hashes, the checksums and notes.
-- Push the source to `main` and the tag of the version on the qualified commit prior to command.
-- Use `GH_TOKEN` or `GITHUB_TOKEN` in the process environment. The running director shall be outside the project and the candidate.
+- The manifest declares `PREPARED`, repository, access mode, canonical URL and hashes for the APK, checksum and notes.
+- Push sources to `main` and the version tag to the qualified commit before invoking publication.
+- Use `GH_TOKEN` or `GITHUB_TOKEN` in the process environment. Keep the publication run directory outside the project and candidate.
 
 ```powershell
 node .\atf-tests\tools\publish-github-release.mjs publish $ProjectRoot $CandidateDir $VerdictFile $PublicationRun
 ```
 
-When resumed, use the qualified manifest, the verdict and the director of the initial running. Keep them until publication and retention are closed.
+Resume with the same qualified manifest, verdict and original run directory. Retain them until publication and retention checks finish.
 
-- The `github-publication.json` log links the commit, the manifest hash, the asset hashs and the fingerprint's numeric IDs. Save status before calls that can leave undetermined results.
-- The atomic writing and file `.lock` prevent two runs in the same directory. After forced shutdown, check the PID in the file before releasing the lock.
+- The `github-publication.json` journal binds commit, manifest hash, asset hashes and numeric draft/asset IDs. Persist intent before calls with potentially ambiguous outcomes.
+- Atomic writes and `.lock` prevent concurrent publication in the same run directory. After a forced stop, check the recorded PID before removing a stale lock.
 
-| Situation | Repetition behaviour |
+| Situation | Resume behavior |
 |---|---|
-| GitHub returns 422 to creation | Recite the authenticated inventory. If the draft is missing after refusal, correct the cause and run again. |
-| Connection cut off when creating | Search the drawing on all pages after the tag and the symbol of the manifest. If the result remains undetermined, check the authenticated inventory and resume after the draft becomes visible. After saving the IDs, the script reads strictly after ID. |
-| Upload interrupted or received 422 | Recite the asset, download the file and compare size and SHA- 256. A different file stops the flow. An empty set in condition `starter` can be withdrawn by ID in its own draft if the log identifies the exact upload interrupted. |
-| Promotional response lost | Recite the same ID and check the published assets' The confirmed promotion is not repeated. |
+| GitHub returns 422 during creation | Reread authenticated inventory. If no matching draft exists, correct the cause before retrying. |
+| Connection lost during creation | Search every page by tag and manifest marker. If still uncertain, inspect authenticated inventory and resume once the draft is observable. After saving IDs, use those exact IDs. |
+| Upload interrupted or returns 422 | Reread the asset, download and compare size and SHA-256. Different bytes stop publication. Remove an empty `starter` asset only by its recorded ID in the owned draft when the journal identifies that interrupted upload. |
+| Promotion response lost | Reread the same release ID and verify published assets. Do not repeat confirmed promotion. |
 
-In Release Notes keep HTML marking `atf-publication` when adding the link to the audit fixed on the commit. After the promotion, publish on the `main` catalogue, manifests and updated readmate. [Rotation Preflag](ATF_ReleaseRetention.md#download-verification-before-rotation) face them with real downloads.
+Preserve the `atf-publication` HTML marker when adding the commit-pinned audit link. After promotion, push the updated catalog, manifests and README to `main`. [Rotation preflight](ATF_ReleaseRetention.md#download-verification-before-rotation) compares them against actual downloads.
 
 ## Folder of a version
 
-[Release catalog](../../release/README.md) keep the current and immediately preceding edition, each in `release/<versionName>/`The presentation of the version and its metadata send to the evidence in `reports/`. [Retention policy](ATF_ReleaseRetention.md) define the archiving of older editions, replacing and resetting GitHub explicitly requested.
+[Release catalog](../../release/README.md) retains the current and immediately previous editions in `release/<versionName>/`. Each version's presentation and metadata link to `reports/`. [Retention policy](ATF_ReleaseRetention.md) defines replacement, archiving and explicitly requested GitHub reset.
 
 | Entry point | Responsibility |
 |---|---|
-| `release/index.json` | The 2 scheme declares `currentVersion` and at most two versions in `versions`, starting with the current edition and then the immediate previous edition; all main links identify the first version. |
-| `release/README.md` | The stable catalogue of the active delivery and the entry point in her file. |
+| `release/index.json` | Schema 2 declares `currentVersion` and at most two `versions`, current first; primary links identify that version. |
+| `release/README.md` | Stable catalog and entry point to active delivery. |
 | `release/<versionName>/README.md` | Presents the edition, identified APK, state of handoff and links to metadata and reports. |
-| `release/<versionName>/reports/README.md` | Presents the selected, the reports, results and the limits of qualification. |
-| Manifesto and metadata in the folder | Tie `versionName`, tag, assetates, checksumes and notes; relative paths start from the version file. |
-| Reports, captures, results and logs in `reports/` | Keep the identified execution, including negative diagnoses and labelled replicas; their local links start from that subdirectory. |
-| [Test strategy](../testing/README.md) | It holds the selection and common principles independently of the version. |
+| `release/<versionName>/reports/README.md` | Explains selected tests, reports, results and qualification limits. |
+| Manifest and directory metadata | Bind `versionName`, tag, assets, checksums and notes; relative paths start at the version directory. |
+| Reports, captures, results and logs in `reports/` | Retain identified executions, negative diagnostics and labeled copies; local links start at that subdirectory. |
+| [Test strategy](../testing/README.md) | Owns shared selection principles independently of release versions. |
 
-- In a new version, qualify the external candidate and only file files older than the immediate previous edition. Update index and catalogue after identity verification; keep in the current and immediately preceding `release` edition, including their local APKs.
-- When reorganizing, move the associated reports and files together, confront the hashes and redo the active references. The absolute captured paths and historical URLs attached to the commit shall retain their original meaning.
-- `artifacts/` and `dist/` are the director who is withdrawn from the project's root. After archiving and confronting unique data, remove old directories, including empty ones; governance refuses to reoccur.
-- The description of the edition starts with a short summary and lists changes at separate points. Check her before the manifest is sealed.
-- The notes from GitHub Release send to the READMEL version in an identified comma; the change of navigation does not move the tag or replace the binary asset.
+- Qualify the new external candidate before retiring editions older than the immediate predecessor. Update catalog and index after identity verification; canonical `release/` retains both editions and their APKs.
+- Move reports and supporting files together, compare hashes and repair active references. Preserve the meaning of captured absolute paths and historical commit URLs.
+- `artifacts/` and `dist/` are retired root directories. After preserving unique data, remove them, including empty directories; governance rejects their return.
+- Start release descriptions with a short summary and separate change bullets. Review them before sealing the manifest.
+- GitHub Release notes link to the version README at an identified commit. Navigation updates neither move the tag nor replace the binary asset.
 
-[Governance of dossiers](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) rejects unregistered population, accumulation of active versions, missing metadata and divergent identities. The verification of the integrity of files and links shall complete this structural contract.
+[Release-layout governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) rejects unregistered files, excess active versions, missing metadata and divergent identities. Integrity and link checks complete this structural contract.
 
 ### Main link and download test
 
 | Situation | Presentation and verification |
 |---|---|
-| Candidate local | Link to exact folder from `release/<versionName>/`, state `PREPARED` and local APK; no statement of publication GitHub. |
+| Local candidate | Exact `release/<versionName>/` directory link, `PREPARED` state and local APK; no claim of GitHub publication. |
 | Asset published | Direct link `releases/download/<tag>/<apkName>`. The label, tag and file identify the same version. |
-| Asset GitHub authenticated | `PUBLISHED` with `accessMode=AUTHENTICATED`; Receipt `authenticatedDownload` confirms the account session through a channel declared in RAG policy. The GitHub API proves HTTP 200; Browser MCP proves the completion of the download. Both routes check URL, bytes, SHA- 256 and CRC, without token, cookie or authorization header. |
-| Public copy verified | `PUBLISHED_SITE` with `accessMode=ANONYMOUS`; the `publicDownload` Receipt confirms the page, APK and checksumes via HTTPS without any credit. |
-| Copy complete | Successful response, size and HA- 256 identical to the stated asset and binar; ZIP with valid CRC, Android manifest and code. An error response shall not be renamed `.apk`. |
-| Channel verified | Each Receipt only qualifies the way it declares access. An authenticated result does not assert anonymous access and a public copy does not state the permissions of the GitHub accounts. |
+| Authenticated GitHub asset | `PUBLISHED` with `accessMode=AUTHENTICATED`; `authenticatedDownload` proves an account session through a RAG-approved channel. The API records HTTP 200; Browser MCP records completed download. Both verify URL, bytes, SHA-256 and CRC without retaining credentials. |
+| Verified public copy | `PUBLISHED_SITE` with `accessMode=ANONYMOUS`; `publicDownload` verifies page, APK and checksum over HTTPS without credentials. |
+| Complete copy | Successful response, exact size and SHA-256, valid ZIP CRC, Android manifest and application code. Never rename an error response to `.apk`. |
+| Verified channel | Each receipt qualifies only its declared access mode. Authenticated success does not prove anonymous access; a public copy does not prove GitHub account permissions. |
 | Unique identity | `currentVersion`, manifest, label, APK name and URL identify the same edition. Evidence of any previous version remains only audit references. |
 
-The file shall be downloaded in a temporary name and shall be given the final extension after the checks. When you pass through `PUBLISHED`, replace the local link with the distribution address of the same version.
+Download under a temporary name and assign the final extension only after verification. On transition to `PUBLISHED`, replace the local link with the same version's distribution URL.
 
 ### Anonymous access and public route
 
 1. After publishing, open the delivered README in a signed-out browser. Follow its APK link and download the APK and checksum without cookies, an Authorization header or a token. Compare the size and SHA-256 with `release-validation.json` and the published checksum.
-2. At HTTP 404, Check the repository, README, page release and asset separately. Compare the result anonymously with the one from the owner's session. If the profile or other publicly marked repositoryes are inaccessible, keep URLs, UTC time, HTTP codes and application IDs for [GitHub Support](https://docs.github.com/en/support/contacting-github-support/creating-a-support-ticket). One 404 Anonymous alone does not identify the motive.
+2. On HTTP 404, check repository, README, release page and asset separately. Compare anonymous and owner-session responses. If the profile or other public repositories are also inaccessible, retain URLs, UTC time, HTTP status and request IDs for [GitHub Support](https://docs.github.com/en/support/contacting-github-support/creating-a-support-ticket). One anonymous 404 does not establish the cause.
 3. If GitHub remains inaccessible without signing in, publish the signed APK and checksum on a public HTTPS host controlled by the project. The stable APK URL ends in `/v<versionName>/WhistLab-<versionName>.apk` and contains no query string or fragment. If the GitHub README is also inaccessible, publish an identified copy on the public site and verify its link. Republish the copy when the download version or destination changes.
 4. Record the declared mode in `release/<versionName>/reports/distribution-verification.json`: `authenticatedDownload` for authenticated GitHub downloads or `publicDownload` for an anonymous site. The authenticated channel and its proof must match `config/release-platform-rag-policy.json`. The API records `httpStatus=200`, and Browser MCP records `downloadCompleted=true` after the download completes. Compare the resulting file. Do not store cookies or authorization headers. Retain only verifiable metadata. Update the main link, regenerate the dossier integrity record and run governance. After the push, read the README again and download from that exact link again using the same access mode.
 
-Run the check from the project root and enter the direct address copied from the published RADM.
+Run from the project root and supply the direct URL copied from the published README.
 
 ```powershell
 $version = (Get-Content release/index.json -Raw | ConvertFrom-Json).currentVersion
@@ -238,12 +238,12 @@ try {
 
 | Control | Purpose and limit |
 |---|---|
-| [Governance of links](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) | Same version in the catalog, label and APK, local or published; refuses `latest` ambiguous, Raw/blob, competing downloads, any old APK in the README and retired directories. |
-| [Download components](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java) | HTTP real loopback: complete response, 404, text saved as APK, truncation, excess, SHA wrong, CRC invalid, metadata divergent and cendential unpropagated to another origin. ZIP fixture does not qualify for Android installation. |
-| [Identification selection](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/DownloadSelectionComponentTest.java) | A positive result of the previous online version does not qualify the discharge of the current candidate. The number of bytes is read exactly without permission numerical conversion. |
-| [Live acceptance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java) | GitHub explicit download with version, bytes, SHA- 256, CRC and verdict in Extent. The target is exclusively `currentVersion`; the absence of publication produces HTTP 404 and FAIL without access to any previous APK. |
+| [Link governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) | Same version in catalog, label and APK; rejects ambiguous `latest`, Raw/blob links, competing downloads, old README APKs and retired directories. |
+| [Download components](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/ApkDownloadComponentTest.java) | Real loopback HTTP: complete download, 404, text masquerading as APK, truncation, excess bytes, wrong SHA-256 or CRC, divergent metadata and credentials not forwarded across origins. ZIP fixtures do not qualify Android installation. |
+| [Identity selection](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/DownloadSelectionComponentTest.java) | Prior-version success does not qualify the current candidate's download. Byte counts are read exactly without lossy conversion. |
+| [Live acceptance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/download/PublishedApkDownloadAcceptanceTest.java) | Explicit GitHub download with version, bytes, SHA-256, CRC and Extent verdict. Targets only `currentVersion`; missing publication yields HTTP 404 and FAIL without falling back to an older APK. |
 
-Under a TMP copy with available dependencies, the components run without GitHub access:
+With available dependencies in an external copy, run components without GitHub access:
 
 ```powershell
 mvn -B -o -pl atf-tests -am '-Dtest=ReleaseArtifactLayoutGovernanceTest,ApkDownloadComponentTest,DownloadSelectionComponentTest' '-Dsurefire.failIfNoSpecifiedTests=false' test
@@ -255,41 +255,41 @@ After publication, check the current APK via separate network sample:
 mvn -B -o -pl atf-tests -am '-Dtest=PublishedApkDownloadAcceptanceTest' '-Dsurefire.failIfNoSpecifiedTests=false' '-Datf.release.download.enabled=true' '-Datf.release.download.scope=current' test
 ```
 
-- **Channel: ** tokens read from `GH_TOKEN` or `GITHUB_TOKEN`; not submitted by argument, YAML or reports. The test does not publish or install the application.
-- **Scoops: ** only `atf.release.download.scope=current` is accepted. The expected identity and size come from the current manifest, including when it is still `PREPARED`; the test is facing real publication.
-- **Report: ** `atf.release.download.report-directory` requires an absolute path; by default uses TMP. The errors and refusal of publication remain FAIL, without PASS from an older subset.
-- **Offline Suite: ** Normal governance excludes the `release-download-live` tag; network acceptance is explicitly selected without transforming its omission into a positive result.
+- **Channel:** read tokens from `GH_TOKEN` or `GITHUB_TOKEN`, never arguments, YAML or reports. The test neither publishes nor installs the app.
+- **Scope:** only `atf.release.download.scope=current` is accepted. Identity and size come from the current manifest, including `PREPARED`; the test checks actual publication.
+- **Report:** `atf.release.download.report-directory` requires an absolute path and defaults to TMP. Publication failures remain FAIL without inheriting an older subset's PASS.
+- **Offline suite:** normal governance excludes `release-download-live`; explicitly select network acceptance without treating its omission as a pass.
 
 - **Inventory: ** structured index, folders and catalogue form the same population checked.
-- **Qualification:** structural validation; and [tying notes to published asset](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) Distinguishing controls are carried out; their passage does not prove access in the declared manner, the provenance of the complete Git or the autonomy of the report.
+- **Qualification:** structure checks and [release-note asset binding](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) are separate controls. Their success does not prove channel access, full Git provenance or report autonomy.
 
 ### Integrity of files and results
 
-[Governance of integrity](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) read the APK and active folder without modifying them. Confront the name, canonical path in the file of the version, size, SHA- 256 and checksum file; read all the ZIP entries for CRC and refuse duplicate names or non-anonymous paths.
+[Integrity governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) reads the APK and active dossier without modifying them. It compares canonical path, size, SHA-256 and checksum, reads every ZIP entry for CRC, and rejects duplicate names or unsafe paths.
 
 | Verified link | Contract |
 |---|---|
-| Manifest–payload | The `integrity.files` registry lists exactly all file files, size and SHA-256; the manifest itself is excluded to avoid self-reference. An added, deleted or modified file invalidates the observation. |
-| Manifest–JUnit | Each group declares exactly the XMLs kept. Cases are recounted, the class-denomination is unique and the attributes of XML and the totals declared must coincide. |
-| Manifest–HTML audited | The audited groups shall declare a canonical HTML and Receipt protocol. The appeals, comparisons and verdicts are recounted to their owner; the same selection does not retain a parallel XML group. The qualification scheme distinguishes these groups from historical results still unmigrated. |
+| Manifest–payload | `integrity.files` lists every payload file, size and SHA-256, excluding the manifest itself. Added, removed or modified files invalidate the observation. |
+| Manifest–JUnit | Each group declares exactly its retained XMLs. Recount cases, require unique class/name identity, and compare XML attributes with declared totals. |
+| Manifest–audited HTML | Audited groups declare canonical HTML and an execution receipt. Recount invocations, comparisons and verdicts under their owner; do not retain parallel XML reporting for the same selection. The schema distinguishes older, unmigrated results. |
 | Qualified result | Actual cases and zero failures, errors or omissions are required; an empty container does not invent tests. A zero-failure header does not hide an item `failure`, `error` or `skipped`. |
-| Manifest-inputs | The source input file is included in the hashs register; the print and the declared commit is consistent, and the inputs' pathways and hashes are valid and without duplicates. |
+| Manifest–inputs | The source-input file is hash-inventoried; declared fingerprint and commit agree, and paths and hashes are valid and unique. |
 
-Recording of hashs is an explicit preparation step after setting files:
+Record hashes explicitly after finalizing payload files:
 
 ```powershell
 node atf-tests/tools/record-release-integrity.mjs
 ```
 
-- **Registration: ** the tool selects the version from the index, verifies the inventory stability and updates section `integrity`. Moment `observedUtc` identifies the observation of bytes, without changing the verdict, the date of execution or the state of publication.
+- **Recording:** the tool selects the indexed version, verifies inventory stability and updates `integrity`. `observedUtc` records byte observation, not a new test execution, verdict or publication state.
 - **Git:** the [`text` attribute](https://git-scm.com/docs/gitattributes) is disabled by `.gitattributes` throughout `release`. Governance checks the effective attribute of each payload, including local overrides; before push, Git object bytes must match the manifest.
-- **Verification: ** after registration is performed the governance; recalculating hashes does not make valid an XML with failures or a corrupt APK.
-- **Limits: ** CRCl and SHA-256 qualify local integrity, separate from APK signature, binary Android manifest, building reproduction and the identity of the published commit. The entry list does not yet face the full external archive or the population of live sources.
-- **Catalogue: ** section delimitation shall be validated prior to current entry, with a diagnosis for missing or reversed titles. The presence of a version in the general table does not substitute the link in the current section.
+- **Verification:** run governance after recording. Rehashing cannot make failed JUnit results or a corrupt APK valid.
+- **Limits:** CRC and SHA-256 prove local integrity separately from APK signing, binary-manifest identity, reproducible build and published-commit identity. This inventory does not by itself compare the full external archive or live-source population.
+- **Catalog:** validate section boundaries before resolving the current entry; diagnose missing or reversed headings. A version in the general table does not replace its link in the current section.
 
 ## Presentation of a version
 
-Release page is intended for the user. Keep three sections of the Bullets and send to the audit file:
+The release page addresses users. Keep three bullet-based sections and link to the audit dossier:
 
 | Section | Content |
 |---|---|
@@ -297,38 +297,38 @@ Release page is intended for the user. Keep three sections of the Bullets and se
 | Improvements compared to the previous version | Confirmed changes for the published binary with the version of comparison identified. |
 | Documentation | The link to reports and provenance in an identified commit. |
 
-- **Comparison: ** if the differences from the previous version are not confirmed, the section is called **On the short ** and describes only known capabilities of the version. Do not turn the summary into a invented history; the next delivery gathers its changes during development.
-- **Audit: ** test numbers, technical verdicts, messages about unchecked devices and the diagnosis of distribution belong to the evidence file. The Release link keeps access to them without loading the presentation of the product.
+- **Comparison:** when differences from the previous version are unverified, use **Overview** and describe only known capabilities. Do not invent history; collect the next release's changes during development.
+- **Audit:** counts, technical verdicts, untested-device limits and distribution diagnostics belong in the evidence dossier. Link to them without overloading product presentation.
 
-[Governance of presentation](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) confronts the snapshots of notes with the asset and register: bullets, destination of APK, checksum, audit reference and declared comparison or explicit summary. The negative samples cover Raw links, wrong versions, lack of comparison basis and test details introduced in the presentation.
+[Presentation governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java) compares notes with assets and catalog: bullets, APK destination, checksum, audit link and declared comparison or explicit overview. Negative cases cover Raw links, wrong versions, missing comparison baseline and test diagnostics in product notes.
 
 ## New Android window and versions
 
-[Android documentation](https://developer.android.com/develop/ui/views/layout/edge-to-edge) describe the display edge-to-edge for applications with `targetSdk` at least 35 on Android 15 Or more recently. [WindowContent](../../whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowContent.java) separate the protection of vision from the window measurement:
+[Android documentation](https://developer.android.com/develop/ui/views/layout/edge-to-edge) describes edge-to-edge behavior for apps targeting SDK 35 or later on Android 15 and newer. [WindowContent](../../whist-lab-app/app/src/main/java/ro/whistlab/app/window/WindowContent.java) separates inset protection from window measurement:
 
 | Code | Implemented behaviour |
 |---|---|
-| `protect`, API 35+ | Add bars, clippings and IME to the original paddin and consume the insets. The base is stored without accumulation upon re-application. |
-| `widthDp` / `heightDp`, API 30+ | Use the current window and exclude bars and clippings, irrespective of their visibility. The EMI is not low in this measurement; the protection of the root has its own path. |
+| `protect`, API 35+ | Adds system bars, cutouts and IME to original padding and consumes the insets. Stored base padding prevents accumulation on repeated application. |
+| `widthDp` / `heightDp`, API 30+ | Measures the current window excluding bars and cutouts regardless of visibility. IME is not subtracted here; root protection has its own path. |
 | Previous systems | Measurement uses platform configuration; the protection listener is not installed by this class before API 35. |
 
 [Window components](../../whist-lab-app/app/src/test/java/ro/whistlab/app/window/WindowPaddingComponentTest.java) verify arithmetic and layout budgets. [Native acceptance](../feedback/ATF_Android.md#native-acceptance-on-android-17) checks the actual viewport, gestures, three-button navigation, clipping and keyboard; the JVM model cannot establish those results.
 
 ## Memory and Diagnosis on Android 17
 
-[Android 17 / API 37](https://developer.android.com/about/versions/17/behavior-changes-all) applies memory limits including applications targeting previous versions. The documentation shall identify the interference of the limitation by `ApplicationExitInfo`, recital `REASON_OTHER` and the description containing `MemoryLimiter:AnonSwap`.
+[Android 17 / API 37](https://developer.android.com/about/versions/17/behavior-changes-all) applies memory limits even to apps targeting older versions. Identify limiter involvement through `ApplicationExitInfo`, `REASON_OTHER` and a description containing `MemoryLimiter:AnonSwap`.
 
 - Identify the APK, system, table profile and application status of the same execution.
-- Record the reference memory and its evolution at resumption and at different hand sizes; the cost of looking for IA and reactivity have their own measurements.
-- Face the reason for the exit with the Android Runtime log; the code or isolated message does not substitute process and range correlation.
-- Keep the system boundaries for acceptance and explicitly record an incomplete diagnosis. JVM calculations are not accurate to qualify for Android process memory.
+- Record baseline memory and its evolution during resume and across hand sizes; AI search cost and responsiveness require their own measurements.
+- Correlate exit reasons with Android runtime logs, process identity and execution interval. An isolated code or message is insufficient.
+- Preserve system acceptance limits and explicitly record incomplete diagnosis. JVM calculations do not qualify Android process memory.
 
 ## Data restoration
 
-1. Export the saved before intervention to an existing data application.
+1. Export existing application saves before intervention.
 2. Check the integrity of the export prior to installation, reset or cleaning.
 3. Treat reading error as error without interpreting it as data absence.
-4. Check the restoration and schematic before removing the backup copy.
-5. Keep explicitly the limits on missing information migration.
+4. Verify restoration and schema compatibility before removing the backup.
+5. State limits for missing migration information explicitly.
 
-[Application building](../../whist-lab-app/README.md) · [Testarea Android](../testing/ATF_Android.md) · [Length history](../game/ATF_ScoreHistory.md)
+[Application build](../../whist-lab-app/README.md) · [Android testing](../testing/ATF_Android.md) · [Score history](../game/ATF_ScoreHistory.md)

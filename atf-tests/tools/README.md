@@ -43,7 +43,7 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
   --output $VerdictFile
 ```
 
-The verdict is JSON with citations by way, SHA- 256 and JSON Pointer/line. Include bytes plan in Base64 UTF- 8 to `qualificationPlan.contentBase64`; hash retains the identity of the plan and allows revision without an external temporary copy. The only writing is `$VerdictFile`, except for all entries.
+The verdict is JSON with citations by way, SHA-256 and JSON Pointer/line. Include bytes plan in Base64 UTF- 8 to `qualificationPlan.contentBase64`; hash retains the identity of the plan and allows revision without an external temporary copy. The only writing is `$VerdictFile`, except for all entries.
 
 - Code `0` means `READY_FOR_HUMAN_REVIEW`; `2` means `BLOCKED`; `1` indicates invalid entry or invocation.
 - Before the human revision are asked for hashrelated receipts for components, build APK, identity and signature.

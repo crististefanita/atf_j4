@@ -2,44 +2,42 @@
 
 ## Overview
 
-The consumer holds the validation of API, processes and local adoption; [Liability register](README.md#common-test-support) routs the primitive Kit. The contracts implemented remain in the module READMES; the binary library and Android acceptance have separate checks.
+The consumer owns API validation, process checks and local adoption; the [ownership register](README.md#common-test-support) routes generic Kit primitives. Module READMEs define implemented contracts; binary-library and native Android acceptance remain separate.
 
 ## Test kit concurrency
 
-[Shared support](README.md#common-test-support) holds the primitives and generic samples. The consumer keeps the acceptance of the Android adapter; the transfer does not qualify for parallelism or close the criterion.
+[Shared support](README.md#common-test-support) owns generic primitives and controlled tests. The consumer retains Android-adapter acceptance; transferring code does not qualify concurrency or close that criterion.
 
 ## Cost of validating API
 
-| Priority | Lacquer and source | Level and criterion of closure |
+| Priority | Gap and source | Verification level and closure criterion |
 |---|---|---|
-| P2 | [JsonSchemaCapabilities](../../atf-validation/src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) and [JsonSchemaValidator](../../atf-validation/src/main/java/atf/validation/contract/JsonSchemaValidator.java) shall not declare a budget for the depth and volume of the evaluation. | Controlled evidence for depth, cardinality and repetition of rules; identified environment and entry, explicit refusal and documented limits in contract. |
+| P2 | [JsonSchemaCapabilities](../../atf-validation/src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) and [JsonSchemaValidator](../../atf-validation/src/main/java/atf/validation/contract/JsonSchemaValidator.java) declare no evaluation-depth or volume budget. | Use controlled depth, cardinality and repeated-rule inputs with an identified environment. Document explicit limits and rejection behavior in the contract. |
 
 ## Stability of process verification
 
 ### Disposable Android profile readiness
 
-| Priority | Qualification limit | Closure criterion |
-|---|---|---|
-| P1 | Android can restart after creating a disposable user but before writing the ready receipt. The in-memory ID is insufficient for recovery. | Persist the generated user ID, name, lease and creation intent before registration. Resume cleanup only for that exact record, refuse foreign or original users, and cover unavailable package service and interruption with controlled components. Keep preparation failure separate from the application verdict and retain accepted native evidence. |
+Durable ownership and recovery now belong to the [release qualification contract](../testing/ATF_ReleaseQualification.md#disposable-user-recovery). Controlled components qualify interruption and identity checks; native profile acceptance remains separate.
 
 | Priority | Qualification limit | Closure criterion |
 |---|---|---|
-| P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combines explicit synchronization with tight thresholds of real time. | Separate the preparation of the sub-process from the transport range and the completion/curtation sample from the latency qualification on the identified environment. Keep product term and negative controls; do not relax thresholds just to get PASS. |
-| P2 | [Android preflight with mocked ADB](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) includes the start of PowerShell within the time limit imposed on the refusal test. Under loading, the evidence may fail before the mock verdict. | Signal the start of the fixture and the refusal of transport separately. Validate the clock and process-controlled refusal, along with a restricted sample of the actual launcher. |
+| P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combines explicit synchronization with tight wall-clock thresholds. | Separate subprocess preparation from transport duration, and completion or truncation checks from latency qualification. Keep timeouts and negative controls; do not relax thresholds merely to obtain PASS. |
+| P2 | [Mocked ADB preflight](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) includes PowerShell startup within the refusal timeout. Under load it can fail before the mock verdict. | Signal fixture readiness and transport refusal separately. Verify controlled clock and process behavior, plus a bounded test of the actual launcher. |
 
 [Test kit](../../lib/README.TestKit.md#purpose-and-integration) · [Validation API](../../atf-validation/README.md) · [Governance](ATF_Governance.md)
 
 ## Launcher composition
 
-| Priority | Lackeys and responsible | Closure criterion |
+| Priority | Gap and owner | Closure criterion |
 |---|---|---|
-| P2 | Android Adapter: [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) keeps together the selection of controls, the repetition of orders and the recording of success or failure of action. Similar blocks increase the cost of changing assignment and timing. | Separate the execution and joint registration of the action in a collaborator with explicit ports, keeping the driver facade and the field oracle. Components with process and watch controlled demonstrate the same order of orders, original cause, range and award setup/body, including timeout and cancellation. |
+| P2 | Android adapter: [AndroidUiDriver](../../atf-test-android/src/test/java/atf/android/e2e/driver/AndroidUiDriver.java) combines control selection, command retries and action reporting. Similar blocks make dispatch and timing changes costly. | Extract shared execution and reporting behind explicit ports while preserving the driver facade and domain oracle. Controlled process and clock tests must prove command order, original cause, duration and setup/body attribution, including timeout and cancellation. |
 
 ## RAG cost rating
 
 | Step | Remaining criterion |
 |---|---|
-| Android | Measure the booking waiting, profile preparation, transport and flow separately. Face the active window to correctly assign third-game interruptions. [Acceptance of Android](ATF_Android.md) |
-| Reports | Qualify the cost of collecting and handing over separately from execution, at the same inventory of invoicing. [Reporting register](ATF_Reporting.md) |
+| Android | Measure lease waiting, profile preparation, transport and scenario execution separately. Correlate the active window to attribute interference from another game correctly. [Android acceptance](ATF_Android.md) |
+| Reports | Measure evidence collection and handoff separately from execution on the same invocation inventory. [Reporting register](ATF_Reporting.md) |
 
-The [reluare RAG](../testing/ATF_ReleaseQualification.md#resume-validated-steps) contract holds checkpoints and the re-use of snapshots. The concrete chronologies shall be the external file of the execution.
+The [RAG resume contract](../testing/ATF_ReleaseQualification.md#resume-validated-steps) defines checkpoints and snapshot reuse. Concrete execution timelines belong to the external run dossier.

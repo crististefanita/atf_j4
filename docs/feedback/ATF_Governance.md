@@ -2,56 +2,55 @@
 
 ## Overview
 
-The project owns the Android perimeter and adapters verifiers. The reusable joint contract is requested through [Liabilities of libraries](README.md), without the introduction into the consumer of their implementation.
+The project owns Android-boundary and adapter checks. Reusable contracts are requested through the [library ownership register](README.md), without copying producer implementations into consumers.
 
 ## Cost of syntactic inspection
 
 | Priority | Observation and source | Closure criterion |
 |---|---|---|
-| P2 | Profiling of layer inspection captures initialization of the processor charger and interrogation of the classpathin [parser syntactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), although the verification consumes the syntax tree. | Qualify a parse- only configuration with delimited dependencies and measure cost on the same inventory. Keep compound annotations, ambiguous imports, syntax errors and parser life cycle through independent controls. |
+| P2 | The [syntax parser](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java) already disables annotation processing and uses empty class and processor paths. The cost of this configuration has not been measured against the same inventory. | Measure parsing cost with an identified environment and inventory. Preserve independent controls for composed annotations, ambiguous imports, syntax errors and parser lifecycle; do not claim a speedup from configuration alone. |
 
 
 ## Cohesion and package development
 
-[Executable policy](../../config/atf-governance-policy.json) applies the limit without derogations to the current structure. [Package responsibilities](../governance/ATF_Packages.md) delimits APIs, common support and test selections.
+[Executable policy](../../config/atf-governance-policy.json) enforces the package limit without exceptions. [Package responsibilities](../governance/ATF_Packages.md) separates public APIs, shared support and test selections.
 
 [Quality governance](../governance/README.md) · [Good documentation practices](../governance/ATF_Documentation.md)
 
 ## Qualification of claims and launchers
 
-The attestation of the qualified source shall be verified by [RAG evaluator regression](../testing/ATF_ReleaseQualification.md#evaluator-regression-tests). The integrity of APK and payload in the recorded files remains verified by the [the integrity of the release](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
+[RAG evaluator regressions](../testing/ATF_ReleaseQualification.md#evaluator-regression-tests) verify qualified-source attestations. [Release integrity governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) separately verifies APK and payload bytes in the recorded dossiers.
 
-| Priority | Responsible and gaps | Level and criterion of closure |
+| Priority | Owner and gap | Verification level and closure criterion |
 |---|---|---|
-| P2 | Coordination: launchers check preconditions in different ways. | Controlled components for Java, Maven, Gradle, Node and Python: the required entry capabilities are checked prior to the costly operation and their absence produces explicit diagnostic and source identity. For Python, detect the installation alias separately from an executable interpreter; [Module PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), check availability, refusal, timeout and status of controlled process transport, separate from parsing and Java customer. |
+| P2 | Launcher coordination: entry points check preconditions inconsistently. | Controlled components for Java, Maven, Gradle, Node and Python must check required capabilities before costly operations and report missing capabilities with source identity. Distinguish the Python installation alias from an executable interpreter. For the [PowerShell ADB module](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verify availability, refusal, timeout and process state separately from parsing and the Java client. |
 
-[Retention of Inline Children](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) checks separately for the absence of identical NGPs near HTML. This guard does not show data autonomy, image readability or integrity of the APK; [Adapter criterion](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) remains distinct.
+[Inline-image retention governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) separately checks for duplicated PNG files beside HTML. It does not prove data autonomy, image readability or APK integrity; the [adapter criterion](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) remains separate.
 
 ## Improving guidance guides
 
-The editorial grid of [contract documentation](../governance/ATF_Documentation.md#editorial-verification-and-evaluation) assesses the document and its limit, separate from the maturity of the code. The notes and the inventory evaluated remain in the external audit; here we keep only the works that can improve reading or reproduction.
+The [documentation editorial grid](../governance/ATF_Documentation.md#editorial-verification-and-evaluation) evaluates documents and their stated limits separately from code maturity. Scores and reviewed inventories belong to the external audit; this register retains only work that can improve comprehension or reproducibility.
 
-| Priority | Responsible for and area | Closure criterion |
+| Priority | Owner and area | Closure criterion |
 |---|---|---|
-| P2 | Libraries guides distributed: re-use of the sample in the producer | [Local acceptance of fragments](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic contract of these evidence in the register of joint officers and synchronise the clarification of the guidelines to consumers. The producer's regression and acceptance of each consumer remain distinct. |
-| P2 | DOC-01: several English release and governance guides contain literal-translation artifacts and inconsistent operational terms. | Edit the affected guides against the live code, preserve the approved architecture and commands, review meaning 1:1 with Romanian, and pass the local factual, language, prose and link controls. Automated structure checks do not replace editorial review. |
-| P2 | The release description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifest. Keep intact the descriptions already included in the inventory of a published edition. |
+| P2 | Distributed library guides: producer-side sample reuse. | [Local example acceptance](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic evidence contract in the shared-ownership register and synchronize consumer guides. Producer regression and each consumer's acceptance remain separate. |
+| P2 | The release-description generator can merge all changes into an overly dense paragraph. | Generate a short summary and separate bullets; validate structure before sealing the manifest. Preserve descriptions already included in a published edition's integrity inventory. |
 
 ## Download via browser
 
-[Distribution contract](../platform/ATF_AndroidDelivery.md#automatic-distribution-checks) separate API sample, actual download from browser and anonymous access. The browser verification and file hasher received shall be recorded in the [active version file](../../release/README.md).
+[Distribution contract](../platform/ATF_AndroidDelivery.md#automatic-distribution-checks) distinguishes API checks, completed browser downloads and anonymous access. Record browser verification and the received file's hash in the [active release dossier](../../release/README.md).
 
-| Priority | Lacquer delimited | Closure criterion |
+| Priority | Bounded gap | Closure criterion |
 |---|---|---|
-| P2 | The authenticated browser check depends on an operator and a working GitHub session. | After publication, check the version URL, the received file and the SHA- 256, then open the audit from the commit linked in the release notes. Record anonymous responses and possible local browser refusals separately. |
+| P2 | Authenticated browser verification depends on an operator and a working GitHub session. | After publication, verify the version URL, received file and SHA-256, then open the audit at the commit linked in the release notes. Record anonymous responses and local browser restrictions separately. |
 
-The Android Download Manager transfer test and certificate verification are actually tested version file. [Android Transfer Contract](../platform/ATF_AndroidDelivery.md#separating-access-from-android-transfer) describes the data required and [Anonymous access to the public route](../platform/ATF_AndroidDelivery.md#anonymous-access-and-public-route) has its own closing criterion.
+Android Download Manager transfer and certificate checks belong to the tested release dossier. [Android transfer contract](../platform/ATF_AndroidDelivery.md#separating-access-from-android-transfer) defines the required data; [anonymous public access](../platform/ATF_AndroidDelivery.md#anonymous-access-and-public-route) has a separate closure criterion.
 
 ## Native acceptance of distribution
 
-| Priority | Lacquer delimited | Closure criterion |
+| Priority | Bounded gap | Closure criterion |
 |---|---|---|
-| P2 | The native sample is maintained with sources in Extent, but its launch is still a TMP operation of the operator. | Versioned native adapter: read the identity of the candidate, use your own Android permissions and separate the transfer access. Components inject 404, short file, hash/CRC wrong, certificate absent or different and timeout; do not save signed redirect. The report shall retain the original comparisons, errors and duration, and the cleanup shall only eliminate the resources held. A single Android transfer qualifies delivery; does not multiply on the UI resolutions. |
+| P2 | Native transfer evidence includes sources in Extent, but launching it still requires an operator-managed temporary operation. | Version a native adapter that reads candidate identity, owns its Android permissions and separates access from transfer. Inject 404, truncation, wrong hash or CRC, absent or mismatched certificates and timeouts. Keep original comparisons, causes and durations, omit signed redirects, and remove only owned resources. One native transfer qualifies delivery; do not repeat it for every UI resolution. |
 
 ## Release qualification boundaries
 

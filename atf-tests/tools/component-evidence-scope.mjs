@@ -10,6 +10,7 @@ const ragPolicy = 'config/release-platform-rag-policy.json';
 const documentationReview = 'config/documentation-editions.json';
 const disposableAndroidUserRunner = 'scripts/Invoke-AtfAndroidDisposableUser.ps1';
 const androidDeviceHarness = new Set([
+  'scripts/AtfAndroidUserOwnership.ps1',
   'scripts/AtfAndroidPackageRegistration.ps1',
   'scripts/AtfAndroidUserReadiness.ps1',
   disposableAndroidUserRunner, 'scripts/run-complete-match.ps1', 'scripts/run-deep-tests.ps1',

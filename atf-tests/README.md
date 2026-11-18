@@ -31,7 +31,7 @@ A record describes a statement of origin: identity, parameters, intervals, compa
 | [Composition](src/main/java/atf/tests/learning/LearningRunReport.java) | Check the records and transmit the original comparisons. |
 | [Publication session](src/main/java/atf/tests/reporting/GameReportSession.java) | Isolate the configuration, context and phases of a publication. |
 | [Audit HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confront the identities, rows, values and purpose published with source data. |
-| [Download APK](src/main/java/atf/tests/distribution/GitHubApkDownload.java) | Check GitHub metadata, full flow, SHA- 256 and CRC; main support, local HTTP samples and live acceptance in the test. |
+| [Download APK](src/main/java/atf/tests/distribution/GitHubApkDownload.java) | Check GitHub metadata, full flow, SHA-256 and CRC; main support, local HTTP samples and live acceptance in the test. |
 
 [Presentation policy](../docs/reporting/ATF_Presentation.md) holds the rules of volume and navigation. The reusable code is in `src/main/java`; JUnit entries and negative samples are in `src/test/java`.
 

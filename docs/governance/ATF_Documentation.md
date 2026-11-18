@@ -77,6 +77,12 @@ Verify the map against the [Maven reactor](../../pom.xml), [Gradle modules](../.
 - Fonts and colors belong to the application that displays Markdown; documents use semantic structure without local CSS.
 - Each block of code has its declared language, and each collapsible section has an explicit summary and balanced delimiters.
 
+### Operational terminology
+
+Describe the operation defined by the code: a directory contains files, a source snapshot pins inputs, an asset is a published download, and a receipt records an observation. A checksum establishes byte identity; it does not prove application behavior or public access.
+
+The terminology rule rejects reviewed translation artifacts in visible English, including table cells and link labels. Technical literals, URLs and fenced examples keep their spelling. The same rule runs through the CLI and suite; editorial review still verifies meaning against code and Romanian documentation.
+
 ### Release presentation and original evidence
 
 Release guides use the branch language at their canonical paths. Translating presentation does not change the APK, test results, source identity or canonical audit reports.
