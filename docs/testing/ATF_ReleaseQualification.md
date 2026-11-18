@@ -168,8 +168,9 @@ APK Snapshots is the benchmark for comparing the inputs of each suite. RAG check
 
 `-PinnedSourceInputs` links the launch to the list used for selection. A change between plan and execution stops the process before Maven. The `release/` fingerprint shall be kept separately so that the evidence file does not fall into the APK source's fingerprint.
 
-
-The [signing source boundary](../../.atf-signing/README.md) keeps local private material out of both source identity and staging. The same Git revision must reconstruct with identical source inputs whether a local key exists or not. Public certificate identity remains mandatory input. [Component controls](../../atf-tests/src/test/java/atf/tests/governance/support/SigningSourceIsolationComponentTest.java) verify reconstruction, private-key rotation, forged manifests and indirect paths. Unrelated additions remain visible in the inventory and invalidate a pinned source list.
+- The [signing source boundary](../../.atf-signing/README.md) excludes local private material from source identity and staging. The same Git revision must reconstruct with identical inputs with or without a local key.
+- Public certificate identity remains source input. Unrelated additions stay visible and invalidate a pinned source list.
+- [Component controls](../../atf-tests/src/test/java/atf/tests/governance/support/SigningSourceIsolationComponentTest.java) verify reconstruction, private-key rotation, forged manifests and indirect paths.
 
 ### Selection of diff tests
 

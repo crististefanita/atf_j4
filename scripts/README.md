@@ -76,4 +76,8 @@ JVM collections do not require connection of emulator. Java/Maven/Gradle is not 
 
 - [Shared registry](../docs/learning/ATF_EvaluationRegistry.md) serializes reservations and refuses to duplicate the assessment between the bodies. Diagnostic launchers record re-use for learning; a run-off does not automatically release distributions.
 
-Source preparation shares [one signing boundary](AtfSigningSourcePolicy.ps1): only public signing metadata enters the source inventory. Private local entries are skipped before hashing. [Copying](Copy-AtfSourceInputs.ps1) validates the entire manifest, canonical paths and link-free source and destination ancestors before writing. It rejects private entries even when a caller supplies an old manifest. The [signing guide](../.atf-signing/README.md) defines the public allowlist and the limits of this policy.
+## Private signing inputs
+
+- [One source policy](AtfSigningSourcePolicy.ps1) admits only public signing metadata and skips private local entries before hashing.
+- [Copying](Copy-AtfSourceInputs.ps1) validates the complete manifest, canonical paths and link-free source and destination ancestors before writing.
+- Private entries are refused even in an old manifest. The [signing guide](../.atf-signing/README.md) defines the public allowlist and policy limits.
