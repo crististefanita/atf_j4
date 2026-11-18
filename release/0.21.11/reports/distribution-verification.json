@@ -1,5 +1,5 @@
 {
-  "observedAtUtc": "2026-11-18T17:07:57.133Z",
+  "observedAtUtc": "2026-11-18T17:11:43.845Z",
   "authenticatedDownload": {
     "authenticated": true,
     "bytes": 1017265,
@@ -9,5 +9,17 @@
     "httpStatus": 200,
     "zipCrc": "PASS",
     "authMode": "GITHUB_ACCOUNT"
+  },
+  "readme": {
+    "commit": "565fd2f27c806dafc2b41e4940a833cbd5819f8e",
+    "sha256": "475c3082302ddd0cf8b57c87fc3bd4f44cbc6feed5ed4b78851b54e82293e186",
+    "apkUrl": "https://github.com/crististefanita/whist/releases/download/v0.21.11/WhistLab-0.21.11.apk"
+  },
+  "anonymousReadmeDownload": {
+    "url": "https://github.com/crististefanita/whist/releases/download/v0.21.11/WhistLab-0.21.11.apk",
+    "bytes": 1017265,
+    "httpStatus": 200,
+    "sha256": "d8415509b34efeb19886326fd6bf242e67d8bde8ded0649bc3fb72eaa31d5cb1",
+    "zipCrc": "PASS"
   }
 }
