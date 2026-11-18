@@ -16,6 +16,12 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 
 ## Stability of process verification
 
+### Disposable Android profile readiness
+
+| Priority | Qualification limit | Closure criterion |
+|---|---|---|
+| P1 | The isolated-user launcher can time out during unlock or package registration before a game test starts. A late package-manager reply must not become an application failure. | Use controlled ADB responses to cover a delayed unlock, installation completed before timeout, unavailable package and cleanup after interruption. Reconcile the installed hash and active user before resuming. Keep profile preparation separate from the native test verdict, preserve the owner profile and reuse every already validated component or native report. Confirm the bounded recovery on the identified low-memory device. |
+
 | Priority | Qualification limit | Closure criterion |
 |---|---|---|
 | P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combines explicit synchronization with tight thresholds of real time. | Separate the preparation of the sub-process from the transport range and the terminare/curtation sample from the latency qualification on the identified environment. Keep product term and negative controls; do not relax thresholds just to get PASS. |

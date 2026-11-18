@@ -26,6 +26,7 @@ The 1–100 score expresses the recommended order of work, not the quality or pe
 
 | ID | Priority | Score | ToDo remaining and short closing criterion |
 |---|---:|---:|---|
+| INF-01 | P1 | 96 | Qualify bounded unlock and package-registration recovery for disposable Android users, with controlled ADB cases and verified cleanup. [Register](ATF_TestInfrastructure.md#disposable-android-profile-readiness) |
 | RPT-01 | P1 | 95 | Check each manufacturer via detached HTML and negative controls for missing, external or misassigned content. [Register](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) |
 | RPT-02 | P1 | 94 | Probe on remaining producers to reject lost claims and the usefulness of original comparisons, including Fail, ERROR and SKIP. [Register](ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrates the recovery of checkpoint after corruption or interruption, keeping user data or reporting explicit error. [Register](ATF_Android.md) |

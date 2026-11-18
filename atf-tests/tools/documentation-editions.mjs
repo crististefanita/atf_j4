@@ -10,6 +10,10 @@ export const documentationEditionsPolicy = Object.freeze({
   reviewPath: 'config/documentation-editions.json',
   requiredFromVersion: '0.21.10'
 });
+export function matchesDocumentationEditionsPolicy(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+    && isDeepStrictEqual({...value}, documentationEditionsPolicy);
+}
 const COMMIT = /^[a-f0-9]{40}$/;
 const ARCHIVED = /^release\/\d+\.\d+\.\d+(?:-[\w.-]+)?\/.+\.md$/;
 const FENCE = /^\s*(~{3,}|\x60{3,})(\w*)\s*$/;
