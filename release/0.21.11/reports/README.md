@@ -41,4 +41,4 @@ The earlier glyph measurements are separate from new APK installation and UI acc
 
 Nine completed component groups were retained from their validated checkpoint; the transport group was rerun with a silent JVM scope argument. Android execution uses API 28 at the three declared portrait resolutions; other Android versions have separate qualification.
 
-[Profile receipt](supplemental/component-runtime-profile.json) · [Manifest](../release-validation.json) · [Test strategy](../../../docs/testing/README.md)
+[Profile receipt](supplemental/component-runtime-profile.json) · [Manifest](../release-validation.json) · [Release catalog](../../README.md) · [Test strategy](../../../docs/testing/README.md)
