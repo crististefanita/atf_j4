@@ -68,6 +68,16 @@ test('standalone governance launchers rerun only the offline governance componen
   assert.ok(selection.changes.every(change => change.rule === 'non-runtime'));
 });
 
+test('the suite-local JVM launcher requires offline components without selecting native game flows', () => {
+  const file = 'scripts/AtfComponentJvm.ps1';
+  const selection = deriveReleaseTestScope(new Map(), new Map([[file, 'new']]), groups);
+  assert.equal(selection.kind, 'MAINTENANCE');
+  assert.deepEqual(selection.requiredE2eGroups, []);
+  assert.ok(selection.runComponentGroups.includes('atf-tests'));
+  const runtime = deriveReleaseTestScope(new Map(), new Map([[file, 'new'], [bid, 'changed']]), groups);
+  assert.deepEqual(runtime.requiredE2eGroups, ['signed-release-auto-game', 'signed-release-bidding']);
+});
+
 
 test('unclassified shared inputs and runtime assets named README retain conservative E2E', () => {
   for (const file of ['config/new-runtime.json', 'whist-lab-app/app/src/main/assets/README.md', 'docs/rules.json']) {

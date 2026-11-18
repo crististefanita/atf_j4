@@ -37,6 +37,7 @@ public final class ComponentSuiteExecution {
         var request = LauncherDiscoveryRequestBuilder.request().selectors(selectClass(args[0]))
                 .filters(EngineFilter.includeEngines("junit-platform-suite"))
                 .configurationParameter("atf.component.aggregate", "true")
+                .configurationParameter("atf.test.run.scope", "suite")
                 .configurationParameter("junit.jupiter.extensions.autodetection.enabled", "true")
                 .configurationParameter("junit.jupiter.execution.parallel.enabled", "false").build();
         try (var session = LauncherFactory.openSession()) { session.getLauncher().execute(request, listener); }

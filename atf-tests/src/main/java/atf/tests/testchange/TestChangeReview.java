@@ -32,7 +32,7 @@ public final class TestChangeReview {
             "config/atf-governance-policy.json", "config/atf-test-suites.json", "config/gradle-app-collections.properties",
             "config/gradle-audit-collections.properties", "config/test-collections.json", "config/release-platform-rag-policy.json",
             "scripts/run-atf-governance.ps1", "scripts/run-component-suites.ps1",
-            "scripts/AtfQualificationSnapshot.ps1", "scripts/AtfTestChangeBatch.ps1",
+            "scripts/AtfQualificationSnapshot.ps1", "scripts/AtfTestChangeBatch.ps1", "scripts/AtfComponentJvm.ps1",
             "scripts/Get-AtfSourceInputs.ps1", "scripts/Copy-AtfSourceInputs.ps1",
             "atf-tests/tools/release-test-scope.mjs", "atf-tests/tools/component-evidence-scope.mjs",
             "atf-tests/tools/evaluate-release-rag.mjs");

@@ -27,6 +27,15 @@ class TestChangeReviewComponentTest {
     private static final String NEW_TEST = "nested/module/src/test/java/demo/Test nou ș.java";
     private static final String GATE = "config/atf-test-suites.json";
 
+    @Test void theComponentJvmProfileCannotChangeWithoutAReviewedControl(@TempDir Path root) throws Exception {
+        var repo = new TestChangeGitFixture(root);
+        String launcher = "scripts/AtfComponentJvm.ps1";
+        repo.put(launcher, "function Get-AtfComponentJvmArguments { '-Datf.test.run.scope=suite' }\n");
+        AuditedAssertions.assertEquals(List.of(uncovered("A", launcher, repo.base)), check(repo).diagnostics());
+        repo.put(FEEDBACK, repo.control("JVM-PROFILE", "ACTIVE", repo.base, VALID, false, launcher));
+        AuditedAssertions.assertEquals(List.of(), check(repo).diagnostics());
+    }
+
     @Test void fullDiffSeesCommittedStagedUnstagedUntrackedAndIgnoredTestPaths(@TempDir Path folder) throws Exception {
         var repo = new TestChangeGitFixture(Files.createDirectory(folder.resolve("checkout de probă")));
         repo.put("pom.xml", "<project><name>committed change</name></project>\n");

@@ -56,6 +56,8 @@ PowerShell se verifică sintactic separat de execuția operației. Un scenariu A
 
 ## Precondiții după intrare
 
+Lansatorul componentelor folosește [opțiuni JVM limitate la suită](AtfComponentJvm.ps1). Elimină `JAVA_TOOL_OPTIONS`, `_JAVA_OPTIONS` și `JDK_JAVA_OPTIONS` moștenite înainte de rulare; diagnosticul numește variabila fără să-i afișeze valoarea. Suitele normale și probele testChanges individuale sau în lot împart acest profil, iar JVM-urile copil nu moștenesc proprietățile sale de raportare.
+
 | Intrare | Resurse și date necesare | Ce verifică executarea |
 |---|---|---|
 | `run-whist-collection.ps1` | JDK selectat prin `JavaHome`, wrapper Gradle și cache JVM; protocol, candidat și corpus când colecția le cere. | Validează colecția și identitățile, pregătește copia și apelează Gradle cu `--offline`; raportează separat codul de ieșire. |
