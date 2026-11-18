@@ -20,7 +20,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 class BrowserUi {
     private static final String SITE_PATH = "/whist/";
     private static final Set<String> ASSETS = Set.of("index.html", "table.css", "table.mjs", "viewport.mjs",
-            "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs",
+            "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs", "table-menu.mjs",
             "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs", "card-suits.woff2", "menu-footer.png");
     private static final String MOBILE_AGENT =
             "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 Chrome/131.0.0.0 Mobile Safari/537.36";
@@ -602,7 +602,7 @@ class BrowserUi {
                 }
                 """.formatted(JSON.toJson(checkpoint)));
         page.navigate(url);
-        button(page, "Reia partida").click(new Locator.ClickOptions().setTimeout(45_000));
+        button(page, "Reia partida").click();
         page.locator(".board[data-layout=ready]").waitFor();
     }
 
