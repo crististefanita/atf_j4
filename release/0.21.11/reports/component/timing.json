@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "kind": "ATF_RELEASE_TIMING",
+  "owner": "components",
+  "stages": [
+    {
+      "stage": "components.resume-validation",
+      "status": "PASS",
+      "startedUtc": "2026-11-18T16:36:59.7632380+00:00",
+      "endedUtc": "2026-11-18T16:37:24.5409193+00:00",
+      "elapsedMs": 28322
+    },
+    {
+      "stage": "components.snapshot-preflight",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:24.6180783+00:00",
+      "endedUtc": "2026-11-18T16:37:24.6180783+00:00",
+      "elapsedMs": 0,
+      "reason": "Verified live and staged snapshot."
+    },
+    {
+      "stage": "components.reuse-check",
+      "status": "PASS",
+      "startedUtc": "2026-11-18T16:37:24.9290196+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6511726+00:00",
+      "elapsedMs": 13791
+    },
+    {
+      "stage": "components.run.atf-validation",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6852318+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6852318+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.atf-tests",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6881558+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6881558+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-achievements",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6900052+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6900052+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-bidding",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6921501+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6921501+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-commands",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6942035+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6942035+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-display",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6964560+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6964560+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-history",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6979590+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6979590+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-atf-card-table-ui",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.6995823+00:00",
+      "endedUtc": "2026-11-18T16:37:39.6995823+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.run.whist-lab-app-rules",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:37:39.7014943+00:00",
+      "endedUtc": "2026-11-18T16:37:39.7014943+00:00",
+      "elapsedMs": 0,
+      "reason": "MATCH"
+    },
+    {
+      "stage": "components.maven-cache",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:38:40.5901500+00:00",
+      "endedUtc": "2026-11-18T16:38:40.5901500+00:00",
+      "elapsedMs": 0,
+      "reason": "Verified Maven preparation and classpath."
+    },
+    {
+      "stage": "components.maven-compile",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:38:40.5919898+00:00",
+      "endedUtc": "2026-11-18T16:38:40.5919898+00:00",
+      "elapsedMs": 0,
+      "reason": "Verified Maven preparation and classpath."
+    },
+    {
+      "stage": "components.maven-classpath",
+      "status": "REUSED",
+      "startedUtc": "2026-11-18T16:38:40.5951585+00:00",
+      "endedUtc": "2026-11-18T16:38:40.5951585+00:00",
+      "elapsedMs": 0,
+      "reason": "Verified classpath."
+    },
+    {
+      "stage": "components.run.atf-test-android",
+      "status": "PASS",
+      "startedUtc": "2026-11-18T16:38:40.6327656+00:00",
+      "endedUtc": "2026-11-18T16:40:15.6792544+00:00",
+      "elapsedMs": 145021
+    },
+    {
+      "stage": "components.snapshot-recheck",
+      "status": "PASS",
+      "startedUtc": "2026-11-18T16:40:15.7141501+00:00",
+      "endedUtc": "2026-11-18T16:40:53.3183188+00:00",
+      "elapsedMs": 41273
+    }
+  ]
+}

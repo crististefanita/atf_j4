@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "e689116ce4cb5f29e791a8fe049ff7297cd1006af94e2ffbf105a0b5c57c5092",
+  "provenanceReceiptSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "FAIL",
+  "stage": "isolated-staging-copy",
+  "inputCount": 1284,
+  "releaseFingerprint": "0c695e516a8bb3327e7eab5236f225386899a99ddb0567486a848781d0fe4ba5",
+  "releaseInputManifest": "release-inputs.json",
+  "snapshotDifferences": [],
+  "results": [
+    {
+      "module": "atf-validation",
+      "suite": "atf.validation.suites.ValidationComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.validation.suites.ValidationComponentSuite",
+        "tests": 19,
+        "outcomes": {
+          "PASS": 19
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "f72e31ccbd6501227471e60204428a2f203bad173b06dc72e872f5a4d8ef40fa",
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "d30c7ce88ef21b8e870e962dc7e77043da2f7c46cebea161d002d2ee46894c49"
+      }
+    },
+    {
+      "module": "atf-test-android",
+      "suite": "atf.android.suites.AndroidComponentSuite",
+      "exitCode": 1,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.android.suites.AndroidComponentSuite",
+        "tests": 277,
+        "outcomes": {
+          "FAIL": 2,
+          "PASS": 275
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "b64ba3f1b2539bfd531219aae811aaadbee521bb64a113c69844e57185cdacab",
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "ed72f34a8e555b7a86bc404c9b73545224610035e02cd6a1468e5943b8995bd4"
+      }
+    },
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 474,
+        "outcomes": {
+          "PASS": 474
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "fc283699873cce2de6e945ea8781235695c9933a8ee38e2ecc8cdf9e5dbfa9a5",
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "b35b9cec6976c9c0cfb5e5ea9639dd1b278c91328902d57689753a2b811c8842"
+      }
+    },
+    {
+      "module": "whist-lab-app-achievements",
+      "suite": "testDebugAchievementsComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugAchievementsComponents",
+        "tests": 28,
+        "outcomes": {
+          "FAIL": 0,
+          "PASS": 28,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "13dc3e6c9bc6370338b3edaf7441fc0d88aa1b740f9733145b010cdde8ef4cf4"
+      }
+    },
+    {
+      "module": "whist-lab-app-bidding",
+      "suite": "testDebugBiddingComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugBiddingComponents",
+        "tests": 255,
+        "outcomes": {
+          "FAIL": 0,
+          "SKIP": 0,
+          "ERROR": 0,
+          "PASS": 255
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "1af858c87cd3d3a1f7a98157539ee9c9deab887c4ab2a2b6ada0134d56f06a3b"
+      }
+    },
+    {
+      "module": "whist-lab-app-commands",
+      "suite": "testDebugCommandsComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugCommandsComponents",
+        "tests": 123,
+        "outcomes": {
+          "FAIL": 0,
+          "PASS": 123,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "3fea31860346220214c71cbd4e4154bd7554361f35496c759b7efb1a13476a6f"
+      }
+    },
+    {
+      "module": "whist-lab-app-display",
+      "suite": "testDebugDisplayComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugDisplayComponents",
+        "tests": 107,
+        "outcomes": {
+          "FAIL": 0,
+          "SKIP": 0,
+          "ERROR": 0,
+          "PASS": 107
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "cbe37630d8ad137aeb48bd9ef5e6d8971e93da11beebb241dc1c9b4e7bd0fe1a"
+      }
+    },
+    {
+      "module": "whist-lab-app-history",
+      "suite": "testDebugHistoryComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugHistoryComponents",
+        "tests": 61,
+        "outcomes": {
+          "PASS": 61,
+          "ERROR": 0,
+          "SKIP": 0,
+          "FAIL": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "ddd1826a0b40532a68c2d96a9ed612ecfde189570b298be8a60f3764b7c6ee27"
+      }
+    },
+    {
+      "module": "whist-lab-app-atf-card-table-ui",
+      "suite": ":atf-card-table-ui:testDebugUnitTest",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": ":atf-card-table-ui:testDebugUnitTest",
+        "tests": 45,
+        "outcomes": {
+          "FAIL": 0,
+          "SKIP": 0,
+          "ERROR": 0,
+          "PASS": 45
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "be613c6de00a39fc63194b940183358453067372612e35050e31161655911525"
+      }
+    },
+    {
+      "module": "whist-lab-app-rules",
+      "suite": ":game-core:releaseRulesComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": ":game-core:releaseRulesComponents",
+        "tests": 40,
+        "outcomes": {
+          "ERROR": 0,
+          "PASS": 40,
+          "FAIL": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "44e37ba6a6f5dc39182c0cab10edc951787cd82f14043135d178c417616d9e5c",
+        "reportSha256": "9f0bcc9b831cfe31919575fe84188b43763217e510964c66adc6407f547b0328"
+      }
+    }
+  ],
+  "reusedGroups": [],
+  "gradleBatch": {
+    "tasks": [
+      ":app:testDebugAchievementsComponents",
+      ":app:testDebugBiddingComponents",
+      ":app:testDebugCommandsComponents",
+      ":app:testDebugDisplayComponents",
+      ":app:testDebugHistoryComponents",
+      ":atf-card-table-ui:testDebugUnitTest",
+      ":game-core:releaseRulesComponents"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 348.929,
+    "log": "gradle-components.log"
+  },
+  "androidComponentsReceipt": "source-component-run.json"
+}
