@@ -2,10 +2,18 @@
 
 ## Pe scurt
 
-Certificatul public Whist și amprenta SHA-256 identifică semnatarul ediției de test. Comparați amprenta cu rezultatul `apksigner verify --print-certs` înainte de a califica un upgrade.
+Certificatul public Whist și amprenta sa SHA-256 identifică semnatarul ediției de test. Comparați amprenta cu `apksigner verify --print-certs` înainte de calificarea unui upgrade.
 
-Keystore-ul utilizat la semnare se păstrează local. Folderul permite în Git doar documentația, certificatul și amprenta, pentru ca un keystore copiat aici să nu intre accidental în index. [Ghidul de livrare Android](../docs/platform/ATF_AndroidDelivery.md)
+Keystore-ul privat rămâne local și ignorat de Git. [Ghidul de livrare Android](../docs/platform/ATF_AndroidDelivery.md) explică semnarea și identitatea pentru upgrade.
 
-Calificarea exportă numai `.gitignore`, `README.md`, certificatul public `whist-android-test.pem` și amprenta sa publică din `.atf-signing`. [Politica comună a surselor](../scripts/AtfSigningSourcePolicy.ps1) exclude toate celelalte intrări din acel director local dedicat înainte de enumerare sau calcularea hash-urilor. Păstrați keystore-ul privat și copia sa protejată în afara snapshot-urilor sursă, rapoartelor și fișierelor de release. Această limită nu este un detector general de secrete pentru alte directoare sursă.
+## Calificarea surselor
 
-Cheia locală poate fi prezentă, absentă sau rotită fără să schimbe identitatea surselor. Schimbarea certificatului public, a amprentei publice sau a altui fișier sursă schimbă acea identitate. Copierea verifică manifestul complet înainte de scriere: căile private de semnare, aliasurile canonice și căile indirecte sunt refuzate. Semnarea folosește în continuare cheia locală explicit; calificarea nu o șterge și nu o modifică.
+| Intrare | Regula de export |
+|---|---|
+| `.gitignore`, `README.md`, `whist-android-test.pem`, `whist-android-test.fingerprint` | Contract public de semnare: inventariat, amprentat și copiat. |
+| Alte intrări din `.atf-signing` | Material privat local: exclus înainte de citirea conținutului sau traversarea directoarelor. |
+| Surse din afara `.atf-signing` | Se aplică regulile normale pentru surse; această limită nu este un detector general de secrete. |
+
+- [Politica comună a surselor](../scripts/AtfSigningSourcePolicy.ps1) ține cheile locale și copiile lor în afara snapshot-urilor sursă, rapoartelor și fișierelor de release.
+- Cheia locală poate fi prezentă, absentă sau rotită fără să schimbe identitatea surselor. Modificarea metadatelor publice sau a altui fișier sursă schimbă acea identitate.
+- Copierea verifică întregul manifest înainte de scriere și refuză căile private, aliasurile canonice și căile indirecte. Semnarea folosește cheia locală explicit; calificarea nu o șterge și nu o modifică.

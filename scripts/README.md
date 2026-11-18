@@ -76,4 +76,8 @@ Colecțiile JVM nu cer conectarea emulatorului. Pregătirea Java/Maven/Gradle nu
 
 - [Registrul comun](../docs/learning/ATF_EvaluationRegistry.md) serializează rezervările și refuză suprapunerile evaluării între corpusuri. Lansatoarele de diagnostic înregistrează reutilizarea pentru învățare; o rulare întreruptă nu eliberează automat distribuțiile.
 
-Pregătirea surselor folosește [o singură limită pentru semnare](AtfSigningSourcePolicy.ps1): numai metadatele publice de semnare intră în inventarul surselor. Intrările locale private sunt omise înainte de calcularea hash-urilor. [Copierea](Copy-AtfSourceInputs.ps1) validează întregul manifest, căile canonice și absența linkurilor în strămoșii sursei și destinației înainte de scriere. Refuză intrările private chiar dacă apelantul furnizează un manifest vechi. [Ghidul de semnare](../.atf-signing/README.md) definește lista publică permisă și limitele acestei politici.
+## Intrări private de semnare
+
+- [O singură politică a surselor](AtfSigningSourcePolicy.ps1) admite numai metadatele publice de semnare și omite intrările private locale înainte de calcularea hash-urilor.
+- [Copierea](Copy-AtfSourceInputs.ps1) validează manifestul complet, căile canonice și absența linkurilor în strămoșii sursei și destinației înainte de scriere.
+- Intrările private sunt refuzate chiar și într-un manifest vechi. [Ghidul de semnare](../.atf-signing/README.md) definește lista publică permisă și limitele politicii.

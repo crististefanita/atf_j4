@@ -168,8 +168,9 @@ Snapshot-ul APK este reperul pentru compararea intrărilor fiecărei suite. RAG 
 
 `-PinnedSourceInputs` leagă lansarea de lista folosită la selecție. O modificare între plan și execuție oprește procesul înainte de Maven. Amprenta `release/` se păstrează separat, astfel încât dosarul de dovezi să nu intre în amprenta sursei APK.
 
-
-[Limita surselor de semnare](../../.atf-signing/README.md) exclude materialul privat local atât din identitatea surselor, cât și din staging. Aceeași revizie Git trebuie reconstruită cu intrări sursă identice indiferent dacă există o cheie locală. Identitatea certificatului public rămâne intrare obligatorie. [Controalele de componentă](../../atf-tests/src/test/java/atf/tests/governance/support/SigningSourceIsolationComponentTest.java) verifică reconstrucția, rotația cheii private, manifestele falsificate și căile indirecte. Adăugările fără legătură rămân vizibile în inventar și invalidează o listă sursă fixată.
+- [Limita surselor de semnare](../../.atf-signing/README.md) exclude materialul privat local din identitatea surselor și din staging. Aceeași revizie Git trebuie reconstruită cu intrări identice cu sau fără cheie locală.
+- Identitatea certificatului public rămâne intrare sursă. Adăugările fără legătură rămân vizibile și invalidează o listă sursă fixată.
+- [Controalele de componentă](../../atf-tests/src/test/java/atf/tests/governance/support/SigningSourceIsolationComponentTest.java) verifică reconstrucția, rotația cheii private, manifestele falsificate și căile indirecte.
 
 ### Selecția testelor din diff
 
