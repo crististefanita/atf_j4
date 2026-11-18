@@ -26,6 +26,7 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 
 | ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
 |---|---:|---:|---|
+| INF-01 | P1 | 96 | Califică recuperarea limitată a deblocării și înregistrării pachetului pentru utilizatorii Android temporari, cu ADB controlat și curățare verificată. [Registru](ATF_TestInfrastructure.md#pregătirea-profilului-android-temporar) |
 | RPT-01 | P1 | 95 | Verifică fiecare producător prin HTML detașat și controale negative pentru conținut lipsă, extern ori atribuit greșit. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
 | RPT-02 | P1 | 94 | Probează pe producătorii rămași respingerea invocărilor pierdute și utilitatea comparațiilor originale, inclusiv la FAIL, ERROR și SKIP. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |

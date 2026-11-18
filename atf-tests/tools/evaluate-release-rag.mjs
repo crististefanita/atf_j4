@@ -10,7 +10,7 @@ import {evidenceFreshness} from './release-evidence-freshness.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
-import {documentationEditionsPolicy, verifyReviewedDocumentation} from './documentation-editions.mjs';
+import {documentationEditionsPolicy, matchesDocumentationEditionsPolicy, verifyReviewedDocumentation} from './documentation-editions.mjs';
 
 const VERSION = /^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
 const HASH = /^[0-9a-f]{64}$/;
@@ -596,7 +596,7 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     const problems = [];
     const sources = evidence('/ragEvaluator/documentationEditions', policyDoc, 'config/release-platform-rag-policy.json');
     try {
-      if (!isDeepStrictEqual(policy.ragEvaluator?.documentationEditions, documentationEditionsPolicy)) {
+      if (!matchesDocumentationEditionsPolicy(policy.ragEvaluator?.documentationEditions)) {
         throw new Error('The bilingual documentation policy is missing or invalid.');
       }
       if (!sourceOkay) throw new Error('A qualified English source snapshot is required.');

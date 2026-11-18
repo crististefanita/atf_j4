@@ -4,7 +4,16 @@ import {mkdtempSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import test from 'node:test';
-import {compareDocumentationEditions, inspectDocumentationEditions, verifyReviewedDocumentation} from './documentation-editions.mjs';
+import {compareDocumentationEditions, documentationEditionsPolicy, matchesDocumentationEditionsPolicy, inspectDocumentationEditions, verifyReviewedDocumentation} from './documentation-editions.mjs';
+
+test('the bilingual policy accepts secured JSON records and rejects missing or extra fields', () => {
+  const secured = Object.assign(Object.create(null), documentationEditionsPolicy);
+  assert.equal(matchesDocumentationEditionsPolicy(secured), true);
+  assert.equal(matchesDocumentationEditionsPolicy({...documentationEditionsPolicy}), true);
+  for (const invalid of [null, undefined, [], {...secured, englishBranch:'master'},
+    {...secured, reviewPath:'elsewhere.json'}, {...secured, extra:true}, {...secured, requiredFromVersion:undefined}])
+    assert.equal(matchesDocumentationEditionsPolicy(invalid), false);
+});
 
 const fence = '\x60'.repeat(3);
 const markdown = (heading, label, target = 'docs/rules.md', command = 'node check.mjs') =>
