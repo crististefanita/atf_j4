@@ -54,5 +54,6 @@ export function visualChangeContract(file, beforeHash, afterHash, sources, compo
     .map(name => ({name, before: before.values[name], after: after.values[name]}));
   if (!constants.length) return fallback('NO_VISUAL_LITERAL_CHANGE');
   return {id: contract.id, status: 'PROVEN', beforeSha256: beforeHash, afterSha256: afterHash, constants,
+    allowedConstants: Object.keys(contract.fields),
     componentGroups: [...contract.componentGroups], e2eGroups: [...contract.e2eGroups]};
 }
