@@ -60,13 +60,17 @@ The facades are compatibility adapters with a single implementation of the algor
 
 ### Card rank typography
 
-`CardFaceMetrics` defines the same rank scale for Android and Web: 19.5 sp at the 88 dp hand face, with a 13 sp suit index. The inverted rank is 13.5 dp; its suit remains 9 dp and the central suit remains 28 dp.
+`CardFaceMetrics` owns rank typography for Android and Web. Table faces scale the complete hand contract; trump tiles keep their separate typography.
 
-Smaller table faces scale the complete contract. Trump tiles have their own typography and are excluded.
-
-Android applies the rank size to a measured text span, leaving the suit and accessible text intact. The fan reserves the widest measured rank, including `10`, before calculating overlap or scrolling.
-
-Web receives the rank scale through the adapter setup, independently of menu fonts. [Shared expected measurements](src/test/resources/card-typography.tsv) are checked by JVM components and distributed in the browser tests JAR. Native component measurements additionally check actual font shaping, clipping and draw/measure agreement at enlarged text sizes.
+| Aspect | Contract |
+|---|---|
+| Hand face | 88 dp high, 19.5 sp rank, 13 sp suit index |
+| Decorative marks | 13.5 dp inverted rank, 9 dp inverted suit, 28 dp central suit |
+| Android text | Rank-only measured span; suit and accessible text remain intact |
+| Fan overlap | Reserve the widest measured rank, including `10`, before overlap or scrolling |
+| Web adapter | Receive rank scale through setup, independently of menu fonts |
+| Shared verification | [Expected measurements](src/test/resources/card-typography.tsv) used by JVM components and distributed in the browser tests JAR |
+| Native verification | Real shaping, clipping and draw/measure agreement at enlarged text sizes |
 
 From the temporary copy of the Android root `whist-lab-app`, with PowerShell 7, JDK 21 and the Android cachet prepared, the module is built without the application's tasks.
 
