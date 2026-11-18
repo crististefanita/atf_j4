@@ -111,7 +111,14 @@ Resume the check with `--recipe $GitProof` and a new output if a prescription ha
 
 ## Synchronisation of local file with current version
 
-Delivery is complete only when the local `release/` projection contains the newest published edition from the canonical catalogue. It retains exactly one version; the canonical Git catalogue and GitHub retain the newest two. From 0.21.10, the Git verifier requires `--local-release` after publication verification and refuses cleanup eligibility without a verified local projection. The receipt binds the catalogue commit, manifest SHA-256 and every retained payload file; an older version, extra directory, missing file or modified byte blocks completion.
+Delivery is complete only when the local `release/` projection contains the newest published edition from the canonical catalogue.
+
+| Location or control | Required state |
+|---|---|
+| Local projection | Exactly one version, selected by the published canonical catalogue. |
+| Canonical Git catalogue and GitHub | The newest two versions, with their own verified APKs and evidence. |
+| Delivery from 0.21.10 | `--local-release` is required after publication verification; cleanup remains blocked until the projection passes. |
+| Integrity receipt | Catalogue commit, manifest SHA-256 and every payload file match; older versions, extra directories, missing files and modified bytes are rejected. |
 
 After the post-publication verdict and confirmation of sources in Git, add `--local-release` to the Git verifier for the `release` file of another checkout. In example, `$ProjectRoot` is the canon checkout, and `$LocalCheckout` is the checkout that receives the copy. Write the proof in a new file from the external running directory.
 

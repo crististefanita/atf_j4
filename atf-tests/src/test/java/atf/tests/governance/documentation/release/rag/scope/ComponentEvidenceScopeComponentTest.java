@@ -18,9 +18,11 @@ class ComponentEvidenceScopeComponentTest {
     private static final Duration PUBLICATION_TIMEOUT = Duration.ofMinutes(2);
 
     @Test void disposablePackageRegistrationReconcilesObservedBytesAndPreservesTheOriginalCause() throws Exception {
-        String output = runContracts(PUBLICATION_TIMEOUT, "android-package-registration.test.mjs", "documentation-editions.test.mjs");
+        String output = runContracts(PUBLICATION_TIMEOUT, "android-package-registration.test.mjs", "android-user-readiness.test.mjs", "documentation-editions.test.mjs");
         AuditedAssertions.assertTrue(output.contains("7 controlled package-registration outcomes"),
                 "The isolated-user gate covers completion after timeout, missing registration and wrong APK bytes.");
+        AuditedAssertions.assertTrue(output.contains("8 controlled Android user readiness outcomes"),
+                "A hidden keyguard does not qualify BOOTING or credential-locked storage as app readiness.");
         AuditedAssertions.assertTrue(output.contains("an unchanged layout cannot hide unreviewed Romanian or English prose"),
                 "A pinned bilingual pair remains immutable and the current pair still requires review after edits.");
     }

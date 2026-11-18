@@ -447,7 +447,11 @@ Keep the work profiles and cachets during reruns. After publication and verified
 
 ### Snapshot Git and local projection
 
-The source snapshot records its reviewed Romanian documentation commit as well as both document inventories. Verify that the pinned commit remains published in the Romanian branch ancestry. Later branch edits do not rewrite this immutable release pair; the current English/Romanian pair has its own review. This separates release reproducibility from ongoing documentation maintenance while still rejecting unreviewed source prose or an unpublished translation commit.
+The source snapshot records its reviewed Romanian documentation commit as well as both document inventories.
+
+- Verify that the pinned commit remains published in the Romanian branch ancestry.
+- Later branch edits do not rewrite the immutable release pair; the current English/Romanian pair has its own review.
+- Reject unreviewed source prose and unpublished translation commits while keeping release reproducibility separate from ongoing documentation maintenance.
 
 Maven control runs the sources reconstruction and projection samples of the published edition separately. Every Node trial keeps the same term. Fixturees use real Git and isolated directories, including for bytes with mixed EOL, modified payload, local editing and edition rotation. [Reconstruction](../../atf-tests/tools/release-git-snapshot.test.mjs) · [Projection](../../atf-tests/tools/local-release-sync.test.mjs)
 

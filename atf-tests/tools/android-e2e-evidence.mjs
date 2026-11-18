@@ -34,6 +34,10 @@ export function verifyDisposableUser(boundary, ready, cleanup, identity, scenari
     throw Error('Chitanța teardown nu dovedește eliminarea aceluiași utilizator și păstrarea stării inițiale a instalării originale.');
   if (scenario && (start.observedApi !== scenario.api || start.displayProfile !== scenario.displayProfile))
     throw Error('ANDROID_E2E_PROFILE_CHANGED');
+  const version = String(identity.releaseVersion ?? '0.0.0').split('-')[0].split('.').map(Number);
+  const needsUnlockedUser = version[0] > 0 || version[1] > 21 || version[1] === 21 && version[2] >= 10;
+  if (needsUnlockedUser && start.userReadiness?.state !== 'RUNNING_UNLOCKED')
+    throw Error('ANDROID_E2E_USER_NOT_UNLOCKED');
 }
 
 export function verifyE2eReport({manifest, name, group, receipt, report, expectedScenario, requireScenario = false}) {
