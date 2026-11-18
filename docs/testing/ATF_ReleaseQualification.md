@@ -401,6 +401,20 @@ $device = @{
 - `android-preflight.json` păstrează rezultatul, observația UTC și cauza refuzului. Lansatorul responsive verifică din nou dispozitivul după Maven și păstrează a doua dovadă în `android-preflight-execution.json`.
 - Pregătirea utilizatorului Android secundar colectează aceeași dovadă înainte de interacțiune și verifică valabilitatea ei înainte să creeze utilizatorul. Curățarea folosește în continuare identitatea lease-ului și a utilizatorului creat.
 
+### Recuperarea utilizatorului temporar
+
+[Modulul de deținere](../../scripts/AtfAndroidUserOwnership.ps1) persistă intenția înainte de `pm create-user` și ID-ul primit înaintea înregistrării pachetului. Implicit, jurnalul persistent este `.imp/local/android-ownership/<creationLeaseId>.json`, sub `WHIST_EVIDENCE_ROOT` sau rădăcina externă implicită a dovezilor. Păstrați jurnalul când eliminați staging-ul regenerabil.
+
+| Stare | Acțiune sigură de recuperare |
+|---|---|
+| `CREATING` | Comparați numele generat cu lista observată a utilizatorilor; refuzați deținerea absentă sau ambiguă. |
+| `CREATED` / `READY` | Cereți ID-ul și numele exacte, excludeți utilizatorii originali sau preexistenți, verificați starea pachetului original, apoi reveniți la acesta. |
+| `REMOVING` / `REMOVED` | Confirmați eliminarea fără a repeta ștergerea încheiată; refuzați un ID reutilizat de alt utilizator. |
+
+Obțineți o rezervare activă pentru același serial și calea originală a rulării înaintea recuperării. Indicați explicit jurnalul original dacă rezervarea diferă; recreați mai întâi directorul șters la aceeași cale externă. Lista utilizatorilor sau pachetelor imposibil de citit oprește curățarea fără a deduce absența.
+
+`Invoke-AtfAndroidDisposableUser.ps1 -Phase Recover` cere `RunRoot`, `Serial`, `AdbExecutable`, `LeasePath`, `LeaseId` și `OwnershipJournal`. Consemnează ID-urile rezervărilor de creare și recuperare cu `applicationVerdict: NOT_RUN`; nu generează chitanțe de pregătire reușită sau curățare E2E reușită. Jurnalul păstrează erorile de pregătire și curățare; reluați pregătirea doar după confirmarea recuperării deținerii.
+
 ### Reluarea unei calificări
 
 | Dovadă | Când se reutilizează | Când se repetă |

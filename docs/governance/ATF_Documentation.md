@@ -77,6 +77,12 @@ Confruntați rolurile din hartă cu [reactorul Maven](../../pom.xml), [modulele 
 - Fonturile și culorile aparțin aplicației care afișează Markdown; documentele folosesc structură semantică, fără CSS local.
 - Fiecare bloc de cod are limbajul declarat, iar fiecare bloc pliabil are rezumat explicit și delimitare echilibrată.
 
+### Terminologia operațională
+
+Descrieți operația definită de cod: directorul conține fișiere, snapshot-ul fixează intrările, asset-ul este o descărcare publicată, iar chitanța consemnează o observație. Suma de control stabilește identitatea octeților; nu dovedește comportamentul aplicației sau accesul public.
+
+Regula terminologică refuză traducerile greșite identificate în textul englez vizibil, inclusiv în celulele tabelelor și etichetele linkurilor. Literalii tehnici, URL-urile și exemplele delimitate își păstrează scrierea. Aceeași regulă rulează prin CLI și suită; revizia editorială verifică în continuare sensul față de cod și documentația română.
+
 ### Prezentarea ediției și dovezile originale
 
 Ghidurile edițiilor folosesc limba ramurii la căile canonice. Traducerea prezentării nu schimbă APK-ul, rezultatele testelor, identitatea sursei sau rapoartele canonice de audit.

@@ -796,3 +796,70 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Terminologie operațională engleză și deținerea persistentă a utilizatorului temporar</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-DOC-RECOVERY-MAIN
+    status: VERIFIED
+    base: 05fde6ecb286184c044b89b161a6036a24357de0
+    expires: 2026-12-18
+    reason: Verifică terminologia ghidurilor engleze față de codul live și păstrează utilizatorii originali prin deținere persistentă, pregătire întreruptă și recuperare legată de rezervare, cu transport simulat.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationTerminologyComponentTest,DocumentationGovernanceCliComponentTest,AndroidUserOwnershipComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#technicalLiteralsAndRomanianAreOutsideTheEnglishProseRule
+        - atf.tests.governance.documentation.cli.DocumentationGovernanceCliComponentTest#translationArtifactsHaveTheSameFullAndSelectedDiagnostics
+        - atf.tests.governance.documentation.release.rag.scope.AndroidUserOwnershipComponentTest#durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport
+      negative:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#linkLabelsAndTableCellsRemainVisible
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#userRecoveryAndEnglishVocabularyRequireReviewedControls
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationTerminologyRules.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidUserOwnershipComponentTest.java
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - scripts/AtfAndroidUserOwnership.ps1
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/release-test-scope.mjs
+      - scripts/Invoke-AtfAndroidDisposableUser.ps1
+  - id: WHIST-DOC-RECOVERY-RO
+    status: VERIFIED
+    base: 6ce614b643e76d62b068899871658040f90c7186
+    expires: 2026-12-18
+    reason: Verifică terminologia ghidurilor engleze față de codul live și păstrează utilizatorii originali prin deținere persistentă, pregătire întreruptă și recuperare legată de rezervare, cu transport simulat.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationTerminologyComponentTest,DocumentationGovernanceCliComponentTest,AndroidUserOwnershipComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#technicalLiteralsAndRomanianAreOutsideTheEnglishProseRule
+        - atf.tests.governance.documentation.cli.DocumentationGovernanceCliComponentTest#translationArtifactsHaveTheSameFullAndSelectedDiagnostics
+        - atf.tests.governance.documentation.release.rag.scope.AndroidUserOwnershipComponentTest#durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport
+      negative:
+        - atf.tests.governance.documentation.language.DocumentationTerminologyComponentTest#linkLabelsAndTableCellsRemainVisible
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#userRecoveryAndEnglishVocabularyRequireReviewedControls
+    paths:
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationTerminologyRules.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationTerminologyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidUserOwnershipComponentTest.java
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - scripts/AtfAndroidUserOwnership.ps1
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/release-test-scope.mjs
+      - scripts/Invoke-AtfAndroidDisposableUser.ps1
+```
+
+</details>

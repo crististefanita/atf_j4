@@ -8,7 +8,7 @@
 
 - [Inventarul JVM](run-jvm-inventory.ps1) verifică sursele unui checkout selectat. [Contractul CLI](../docs/governance/README.md#inventar-jvm-prin-cli) explică perimetrul, excepțiile și codurile de ieșire.
 
-- [Izolare E2E Android cu utilizator temporar](Invoke-AtfAndroidDisposableUser.ps1) creează profil secundar nou, îl deblochează și previne stingerea ecranului doar în acel profil, instalează candidatul numai acolo și îl elimină la teardown după verificarea aceleiași rezervări. Chitanțele păstrează și verifică starea inițială a instalării aplicației în profilul original; contractul și raportarea sunt documentate în [acceptanța APK-ului semnat](../atf-test-android/src/test/java/atf/android/e2e/release/README.md).
+- [Izolare E2E Android](Invoke-AtfAndroidDisposableUser.ps1) creează, deblochează și elimină un utilizator secundar temporar sub rezervarea activă a dispozitivului. Jurnalul persistent de deținere permite recuperarea pregătirii întrerupte; starea pachetului utilizatorului original este verificată înainte și după curățare. [Acceptanța APK-ului semnat](../atf-test-android/src/test/java/atf/android/e2e/release/README.md) definește frontiera datelor și raportarea.
 
 - [Agregarea componentelor Maven și Gradle](run-component-suites.ps1) compilează într-un staging propriu și execută suitele Maven primare, colecțiile aplicației și selecția JVM distinctă a bibliotecii UI comune. Taskurile Gradle selectate împart o singură lansare. Fiecare selecție păstrează un HTML Extent și receipt proprii. [Contractul auditului](../docs/reporting/ATF_Audit.md#agregarea-componentelor-pe-sursa-live) explică inventarul, refuzurile și separarea de calificarea APK-ului.
 

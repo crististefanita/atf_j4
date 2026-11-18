@@ -26,6 +26,22 @@ class DocumentationGovernanceCliComponentTest {
     private static final String BROKEN = "docs/Reguli și dovezi.md";
     @TempDir Path temporary;
 
+    @Test void translationArtifactsHaveTheSameFullAndSelectedDiagnostics() throws Exception {
+        Path root = project();
+        write(root, "config/atf-governance-policy.json", "{\"documentationLanguage\":\"en\"}");
+        String file = "docs/Release.md";
+        write(root, file, "# Delivery\n\n## Overview\n\nCompare SHAA-256 before publication.\n");
+        var selected = run(root, "--file", file);
+        assertEquals(2, selected.code());
+        var findings = values(selected.json().path("diagnostics"));
+        assertEquals(values(run(root).json().path("diagnostics")).stream()
+                .filter(row -> file.equals(row.path("file").asText())).toList(), findings);
+        assertEquals(1L, findings.stream().filter(row -> row.path("code").asText()
+                .equals("DOC-EN-TERMINOLOGY")).count());
+        write(root, file, "# Delivery\n\n## Overview\n\nCompare SHA-256 before publication.\n");
+        assertEquals(0, run(root, "--file", file).code());
+    }
+
     @ParameterizedTest
     @CsvSource({"en,Overview,Pe scurt", "ro,Pe scurt,Overview"})
     void localizedHeadingFailuresHaveTheSameFullAndSelectedDiagnostics(

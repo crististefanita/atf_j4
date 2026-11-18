@@ -8,7 +8,7 @@ Proiectul deține perimetrul Android și adaptarea verificatoarelor. Contractul 
 
 | Prioritate | Observație și sursă | Criteriu de închidere |
 |---|---|---|
-| P2 | Profilarea inspecției straturilor surprinde inițializarea încărcătorului de procesoare și interogarea classpath-ului în [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), deși verificarea consumă arborele de sintaxă. | Calificați o configurare parse-only cu dependențe delimitate și măsurați costul pe același inventar. Păstrați adnotările compuse, importurile ambigue, erorile de sintaxă și ciclul de viață al parserului prin controale independente. |
+| P2 | [Parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java) dezactivează deja procesarea adnotărilor și folosește căi goale pentru clase și procesoare. Costul acestei configurări nu a fost măsurat pe același inventar. | Măsurați costul parsării pe un mediu și inventar identificate. Păstrați controale independente pentru adnotări compuse, importuri ambigue, erori de sintaxă și ciclul de viață al parserului; configurarea singură nu dovedește accelerarea. |
 
 
 ## Coeziunea și evoluția pachetelor
@@ -34,7 +34,6 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 | Prioritate | Responsabil și suprafață | Criteriu de închidere |
 |---|---|---|
 | P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
-| P2 | DOC-01: unele ghiduri engleze de release și guvernanță conțin traduceri literale și termeni operaționali inconsecvenți. | Revizuiți ghidurile afectate față de codul live, păstrați arhitectura și comenzile aprobate, verificați sensul 1:1 cu româna și treceți controalele locale factuale, de limbă, proză și linkuri. Verificările automate de structură nu înlocuiesc revizia editorială. |
 | P2 | Generatorul descrierii release-ului poate lipi toate schimbările într-un paragraf prea dens. | Generatorul trebuie să producă o sinteză scurtă și puncte separate. Verificați forma înainte de sigilarea manifestului. Păstrați intacte descrierile deja incluse în inventarul unei ediții publicate. |
 
 ## Descărcarea prin browser

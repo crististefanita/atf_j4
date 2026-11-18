@@ -27,6 +27,18 @@ class TestChangeReviewComponentTest {
     private static final String NEW_TEST = "nested/module/src/test/java/demo/Test nou ș.java";
     private static final String GATE = "config/atf-test-suites.json";
 
+    @Test void userRecoveryAndEnglishVocabularyRequireReviewedControls(@TempDir Path root) throws Exception {
+        var repo = new TestChangeGitFixture(root);
+        var paths = List.of("scripts/AtfAndroidUserOwnership.ps1", "scripts/Invoke-AtfAndroidDisposableUser.ps1",
+                "atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationTerminologyRules.java",
+                "atf-tests/src/main/java/atf/tests/documentation/DocumentationGovernance.java");
+        for (String path : paths) repo.put(path, "// controlled boundary\n");
+        AuditedAssertions.assertEquals(paths.stream().sorted().map(path -> uncovered("A", path, repo.base)).toList(),
+                check(repo).diagnostics());
+        repo.put(FEEDBACK, repo.control("RECOVERY-DOC", "ACTIVE", repo.base, VALID, false, paths.toArray(String[]::new)));
+        AuditedAssertions.assertEquals(List.of(), check(repo).diagnostics());
+    }
+
     @Test void visualScopeProofsCannotChangeWithoutReview(@TempDir Path root) throws Exception {
         var repo = new TestChangeGitFixture(root);
         var tools = List.of("atf-tests/tools/visual-change-contracts.mjs", "atf-tests/tools/visual-contract-sources.mjs");

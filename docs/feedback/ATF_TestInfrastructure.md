@@ -18,9 +18,7 @@ Consumatorul deține validarea API, procesele și adopția locală; [registrul r
 
 ### Pregătirea profilului Android temporar
 
-| Prioritate | Limită de calificare | Criteriu de închidere |
-|---|---|---|
-| P1 | Android poate reporni după crearea utilizatorului temporar, înaintea scrierii chitanței de pregătire. ID-ul din memorie nu este suficient pentru recuperare. | Persistă ID-ul generat, numele, rezervarea și intenția de creare înaintea înregistrării. Reia curățarea doar pentru acea înregistrare, refuză utilizatorii străini sau originali și acoperă serviciul de pachete indisponibil și întreruperea prin componente controlate. Separă eșecul pregătirii de verdictul aplicației și păstrează dovezile native acceptate. |
+Deținerea persistentă și recuperarea aparțin [contractului de calificare](../testing/ATF_ReleaseQualification.md#recuperarea-utilizatorului-temporar). Componentele controlate califică întreruperea și verificările de identitate; acceptanța profilului nativ rămâne separată.
 
 | Prioritate | Limită de calificare | Criteriu de închidere |
 |---|---|---|

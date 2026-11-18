@@ -3,6 +3,7 @@ package atf.tests.documentation;
 import atf.tests.documentation.DocumentationGovernanceSupport.Violation;
 import atf.tests.documentation.links.DocumentationLocalLinks;
 import atf.tests.documentation.policy.DocumentationContentPolicy;
+import atf.tests.documentation.policy.DocumentationTerminologyRules;
 import atf.tests.documentation.policy.FeedbackIndexRules;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +16,8 @@ import static atf.tests.documentation.DocumentationGovernanceSupport.violation;
 
 /** Executes the same editorial rules for a project inventory or an explicit list of files. */
 public final class DocumentationGovernance {
-    public enum Rule { STRUCTURE, LINKS, DIAGRAM, STYLE, PROSE, PATHS, ARTIFACT_NAMES, CONTENT, FEEDBACK_ROWS, FEEDBACK_PRIORITIES }
+    public enum Rule { STRUCTURE, LINKS, DIAGRAM, STYLE, PROSE, PATHS, ARTIFACT_NAMES, CONTENT,
+        TERMINOLOGY, FEEDBACK_ROWS, FEEDBACK_PRIORITIES }
 
     public record Result(List<String> files, List<Violation> violations) {
         public Result {
@@ -43,7 +45,7 @@ public final class DocumentationGovernance {
         if (documents.isEmpty()) throw new IOException("DOC-INVENTORY-EMPTY: " + root);
 
         var context = rules.contains(Rule.CONTENT) ? DocumentationContentPolicy.Context.load(root) : null;
-        String language = rules.contains(Rule.STRUCTURE)
+        String language = rules.contains(Rule.STRUCTURE) || rules.contains(Rule.TERMINOLOGY)
                 ? (context == null ? DocumentationContentPolicy.documentationLanguage(root) : context.language()) : null;
         List<Violation> violations = new ArrayList<>();
         for (Path file : documents) {
@@ -63,6 +65,7 @@ public final class DocumentationGovernance {
                 case PATHS -> DocumentationPathRules.validatePaths(file, root, lines, violations);
                 case ARTIFACT_NAMES -> DocumentationPathRules.validateGeneratedReportNames(file, root, lines, violations);
                 case CONTENT -> DocumentationContentPolicy.validate(file, root, lines, context, violations);
+                case TERMINOLOGY -> DocumentationTerminologyRules.validate(file, root, lines, language, violations);
                 case FEEDBACK_ROWS -> { if (isFeedbackIndex(root, file)) FeedbackIndexRules.inspectRows(lines, file, root, violations); }
                 case FEEDBACK_PRIORITIES -> { if (isFeedbackIndex(root, file)) FeedbackIndexRules.inspectPriorities(lines, file, root, violations); }
             }
