@@ -27,6 +27,15 @@ class TestChangeReviewComponentTest {
     private static final String NEW_TEST = "nested/module/src/test/java/demo/Test nou ș.java";
     private static final String GATE = "config/atf-test-suites.json";
 
+    @Test void visualScopeProofsCannotChangeWithoutReview(@TempDir Path root) throws Exception {
+        var repo = new TestChangeGitFixture(root);
+        var tools = List.of("atf-tests/tools/visual-change-contracts.mjs", "atf-tests/tools/visual-contract-sources.mjs");
+        for (String tool : tools) repo.put(tool, "// controlled visual selection proof\n");
+        AuditedAssertions.assertEquals(tools.stream().map(tool -> uncovered("A", tool, repo.base)).toList(), check(repo).diagnostics());
+        repo.put(FEEDBACK, repo.control("VISUAL-SCOPE", "ACTIVE", repo.base, VALID, false, tools.toArray(String[]::new)));
+        AuditedAssertions.assertEquals(List.of(), check(repo).diagnostics());
+    }
+
     @Test void publicationSealAndReconstructionRequireReviewedControls(@TempDir Path root) throws Exception {
         var repo = new TestChangeGitFixture(root);
         var tools = List.of("atf-tests/tools/collect-github-release-retention.mjs",

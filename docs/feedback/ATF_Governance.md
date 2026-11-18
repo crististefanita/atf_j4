@@ -34,7 +34,7 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 | Prioritate | Responsabil și suprafață | Criteriu de închidere |
 |---|---|---|
 | P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
-
+| P2 | DOC-01: unele ghiduri engleze de release și guvernanță conțin traduceri literale și termeni operaționali inconsecvenți. | Revizuiți ghidurile afectate față de codul live, păstrați arhitectura și comenzile aprobate, verificați sensul 1:1 cu româna și treceți controalele locale factuale, de limbă, proză și linkuri. Verificările automate de structură nu înlocuiesc revizia editorială. |
 | P2 | Generatorul descrierii release-ului poate lipi toate schimbările într-un paragraf prea dens. | Generatorul trebuie să producă o sinteză scurtă și puncte separate. Verificați forma înainte de sigilarea manifestului. Păstrați intacte descrierile deja incluse în inventarul unei ediții publicate. |
 
 ## Descărcarea prin browser
@@ -58,9 +58,3 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | Prioritate | Lacună și responsabil | Criteriu de închidere |
 |---|---|---|
 | P2 | Reutilizarea nativă leagă întregul snapshot al surselor, inclusiv instrumentele de calificare. O corecție doar în validator poate invalida dovezi ale unui APK neschimbat. [Admitere](../../atf-tests/tools/prepare-android-e2e.mjs) | Înregistrează intrările motorului separat de revizia validatorului. Reutilizează doar cu APK, surse ale jocului, scenariu, profil de afișare și capturi originale identice. Cazurile controlate trebuie să refuze cod al jocului, binare sau capturi schimbate și proveniența nepotrivită a validatorului. |
-
-## Lansarea și finalizarea release-ului
-
-| ID | Lacună și responsabil | Criteriu de închidere |
-|---|---|---|
-| RAG-14 | Planificatorul selecției: o schimbare de tipografie comună poate selecta fluxuri native fără legătură când grupurile surselor sunt prea largi. | Mapează contractele vizuale schimbate pe componentele adaptoarelor și verificarea necesară pe APK semnat. Controalele negative trebuie să selecteze în continuare fiecare flux schimbat de interacțiune, persistență sau scor. Măsoară separat scenariul, pregătirea profilului și validarea raportului; păstrează fluxurile obligatorii actuale până la demonstrarea politicii restrânse. |

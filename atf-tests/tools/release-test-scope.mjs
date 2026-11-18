@@ -1,6 +1,7 @@
 import {componentEvidenceScope, changedInputs, nonBuildDocumentation, isStandaloneGovernanceLauncher} from './component-evidence-scope.mjs';
 
 import {androidFlows} from './android-e2e-contract.mjs';
+import {visualChangeContract} from './visual-change-contracts.mjs';
 
 const android = 'whist-lab-app/';
 const app = android + 'app/';
@@ -45,12 +46,18 @@ function classify(file, metadataOnly, hasRulesComponents) {
   return {rule: 'unclassified-or-shared-runtime', e2eGroups: allFlows};
 }
 
-export function deriveReleaseTestScope(previous, candidate, componentGroups, metadataOnly = false) {
-  const changes = changedInputs(candidate, previous).map(file => ({
-    path: file,
-    kind: !previous.has(file) ? 'ADDED' : !candidate.has(file) ? 'DELETED' : 'MODIFIED',
-    ...classify(file, metadataOnly, componentGroups.includes('whist-lab-app-rules'))
-  }));
+export function deriveReleaseTestScope(previous, candidate, componentGroups, metadataOnly = false, visualSources = new Map()) {
+  const changes = changedInputs(candidate, previous).map(file => {
+    const visual = visualChangeContract(file, previous.get(file), candidate.get(file), visualSources.get(file), componentGroups);
+    const selected = visual ? {rule: visual.status === 'PROVEN' ? 'visual-contract' : 'visual-contract-fallback',
+      visualContract: visual, e2eGroups: visual.status === 'PROVEN' ? visual.e2eGroups : allFlows}
+      : classify(file, metadataOnly, componentGroups.includes('whist-lab-app-rules'));
+    return {
+      path: file,
+      kind: !previous.has(file) ? 'ADDED' : !candidate.has(file) ? 'DELETED' : 'MODIFIED',
+      ...selected
+    };
+  });
   const e2eGroups = [...new Set(changes.flatMap(row => row.e2eGroups))].sort();
   const components = componentGroups.map(group => {
     const {decision, affected} = componentEvidenceScope(group, candidate, previous);

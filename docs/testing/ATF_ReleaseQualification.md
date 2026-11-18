@@ -212,6 +212,39 @@ $Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
 
 `runComponentGroups` arată suitele afectate față de baza publicată. Lansatorul verifică fiecare dovadă față de sursa ei originală înainte să decidă ce rulează efectiv.
 
+### Contracte vizuale și fluxuri obligatorii
+
+[Registrul contractelor vizuale](../../atf-tests/tools/visual-change-contracts.mjs) restrânge selecția nativă numai după verificarea octeților sursă înainte și după modificare. Fiecare cale schimbată contribuie cu propriile fluxuri obligatorii; selecția finală este reuniunea lor.
+
+| Contract | Modificare permisă | Responsabili de componentă obligatorii | Verificare nativă obligatorie |
+|---|---|---|---|
+| Tipografia antetului de joc | Inițializatori numerici pentru `TITLE_SP`, `PROGRESS_SP`, `BID_SUMMARY_SP` | `whist-lab-app-display` | `signed-release-smoke`, `responsive-ui-sanity` |
+| Tipografia rangurilor cărților | Inițializatori numerici pentru `INDEX_SIZE_SP`, `RANK_SCALE`, `INVERTED_SIZE_DP` | `whist-lab-app-display`, `whist-lab-app-atf-card-table-ui` | `signed-release-smoke`, `responsive-ui-sanity`, `signed-release-auto-game` |
+
+- [Admiterea surselor](../../atf-tests/tools/visual-contract-sources.mjs) reconstruiește baza din commitul Git fixat și verifică ambele valori SHA-256. Conversia uniformă EOL din checkout este admisă numai dacă reproduce hash-ul înregistrat al bazei.
+- Tot textul sursă din afara literalilor trebuie să rămână egal. Metodele adăugate, expresiile, numele schimbate, responsabilii lipsă, contractele adăugate sau șterse, textul invalid și octeții sursă indisponibili păstrează toate porțile native.
+- Modificările mixte de licitare, persistență, scor, profil și realizări adaugă fluxurile existente. Fișierele runtime necunoscute și binarele schimbate, inclusiv un AAR sau JAR reîmpachetat, păstrează selecția conservatoare.
+- Selecția componentelor și reutilizarea dovezilor păstrează limitele existente ale dependențelor. Clasificarea vizuală `PROVEN` dovedește eligibilitatea modificării de literali; nu marchează un test nativ ca trecut.
+
+```mermaid
+flowchart LR
+    DIFF[Diff fixat] -->|verifică octeții| PROOF[Probă de literali]
+    PROOF -->|selectează| VISUAL[Verificare vizuală]
+    DIFF -->|nedovedit| FULL[Fluxuri conservatoare]
+    VISUAL -->|combină| UNION[Reuniune de fluxuri]
+    FULL -->|combină| UNION
+    UNION -->|cere| NATIVE[Dovezi APK semnat]
+```
+
+<details>
+<summary>Legendă: selecție și execuție</summary>
+
+Fiecare cale este clasificată independent. Constantele verificate selectează responsabilii de componentă și verificarea APK-ului semnat; celelalte căi schimbate păstrează propriile fluxuri obligatorii. Evaluatorul recalculează selecția și respinge dovezile native omise chiar dacă toate componentele trec.
+
+</details>
+
+[Contractele de componentă](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/VisualContractScopeComponentTest.java) acoperă proba literalilor, modificările mixte, deciziile conservatoare și planificatorul real cu repository-uri simulate. Timpii nativi rămân separați: `e2e.prepare-device`, `e2e.run.<group>` și `e2e.extent-evidence` înregistrează pregătirea profilului, execuția scenariului și validarea dovezilor; numai selecția nu dovedește economii de timp.
+
 ### Reutilizarea dovezilor de componentă
 
 Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) stabilește ce diferențe pot afecta rezultatul.
@@ -459,7 +492,7 @@ Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După pub
 | Observații ale publicării | Finalizează schimbările payload-ului și publică commitul dovezilor înaintea colectării retenției. Reîmprospătează observațiile expirate sau invalidate fără reconstruirea APK-ului sau reluarea suitelor acceptate. | Păstrează jurnalul publicării, descărcarea verificată și verdictul final. O observație istorică demonstrează starea consemnată, nu disponibilitatea curentă pe GitHub. |
 | Reconstrucție Git | Rezolvă local tagul calificat și verifică-i commitul înaintea testării reconstrucției surselor și payload-ului. | Păstrează proba Git și rețeta EOL. Șterge staging-ul numai după `cleanupEligible: true` și verificarea proiecției locale. |
 
-Folosește chitanțele etapelor pentru duratele scurse și precizează dacă măsurătorile se suprapun. Când marcajele UTC și duratele monotone diferă, păstrează-le pe ambele și folosește `elapsedMs` pentru costul măsurat al etapei. Nu afirma o durată integrală sau un câștig de viteză pe baza unor măsurători incomplete ori suprapuse. [Îmbunătățiri rămase](../feedback/ATF_Governance.md#lansarea-și-finalizarea-release-ului)
+Folosește chitanțele etapelor pentru duratele scurse și precizează dacă măsurătorile se suprapun. Când marcajele UTC și duratele monotone diferă, păstrează-le pe ambele și folosește `elapsedMs` pentru costul măsurat al etapei. Nu afirma o durată integrală sau un câștig de viteză pe baza unor măsurători incomplete ori suprapuse. [Limitele lansatoarelor](../feedback/ATF_Governance.md#calificarea-afirmațiilor-și-lansatoarelor)
 
 - Păstrează starea locală reținută de responsabil în `.imp`, sub rădăcina externă a dovezilor: materialul de semnare, configurația locală a dispozitivului, datele valoroase de învățare și chitanțele finale absente din Git. Curățarea trebuie să excludă acel director și fiecare descendent, inclusiv căile accesate prin linkuri.
 

@@ -35,6 +35,7 @@ public final class TestChangeReview {
             "scripts/AtfQualificationSnapshot.ps1", "scripts/AtfTestChangeBatch.ps1", "scripts/AtfComponentJvm.ps1",
             "scripts/Get-AtfSourceInputs.ps1", "scripts/Copy-AtfSourceInputs.ps1", "scripts/AtfSigningSourcePolicy.ps1",
             "atf-tests/tools/release-test-scope.mjs", "atf-tests/tools/component-evidence-scope.mjs",
+            "atf-tests/tools/visual-change-contracts.mjs", "atf-tests/tools/visual-contract-sources.mjs",
             "atf-tests/tools/github-retention-seal.mjs", "atf-tests/tools/collect-github-release-retention.mjs",
             "atf-tests/tools/verify-release-git-snapshot.mjs",
             "atf-tests/tools/evaluate-release-rag.mjs");

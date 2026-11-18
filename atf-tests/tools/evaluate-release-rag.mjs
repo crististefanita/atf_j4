@@ -9,6 +9,7 @@ import {QualificationTiming} from './release-timing.mjs';
 import {evidenceFreshness} from './release-evidence-freshness.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {deriveReleaseTestScope, isOnlyAndroidVersionChange} from './release-test-scope.mjs';
+import {readVisualContractSources} from './visual-contract-sources.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
 import {documentationEditionsPolicy, matchesDocumentationEditionsPolicy, verifyReviewedDocumentation} from './documentation-editions.mjs';
 
@@ -327,11 +328,12 @@ async function readTestScope(project, source, version, candidateInputs, policy) 
   const metadataOnly = isOnlyAndroidVersionChange(previous, candidateInputs, buildText, baseline.release, version, digest);
   const groups = componentGroupsRequiredForVersion(policy, 'android', version);
   if (!REQUIRED_ANDROID_COMPONENT_GROUPS.every(group => groups.includes(group))) throw Error('REQUIRED_COMPONENT_GROUPS_MISSING');
+  const visualSources = await readVisualContractSources(project, source, baseline.source.sourceCommit, previous, candidateInputs);
   return {
     schemaVersion: 2, releaseVersion: version, catalogued: index >= 0,
     scope: {baselineVersion, baselineCommit: baseline.source.sourceCommit, baselineFingerprint,
       candidateFingerprint: inputFingerprint(candidateInputs)},
-    ...deriveReleaseTestScope(previous, candidateInputs, groups, metadataOnly),
+    ...deriveReleaseTestScope(previous, candidateInputs, groups, metadataOnly, visualSources),
     evidence: [citation(catalogFile, catalogDoc.sha256, '/versions', catalogDoc.lines.get('/versions')),
       citation(baselineFile, baselineDoc.sha256, '/source', baselineDoc.lines.get('/source')),
       citation(inputFile, baselineInputsDoc.sha256, '/fingerprint', baselineInputsDoc.lines.get('/fingerprint'))]
