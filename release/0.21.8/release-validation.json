@@ -220,7 +220,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-17T11:07:04.617Z",
+    "observedUtc": "2026-11-18T09:00:15.701Z",
     "files": [
       {
         "path": "README.md",
