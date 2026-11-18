@@ -60,13 +60,17 @@ Fațadele sunt adaptoare de compatibilitate, cu o singură implementare a algori
 
 ### Tipografia rangurilor cărților
 
-`CardFaceMetrics` definește aceeași scară a rangurilor pentru Android și Web: 19,5 sp pentru fața de 88 dp din mână, cu simbolul din colț de 13 sp. Rangul inversat are 13,5 dp; simbolul său rămâne de 9 dp, iar simbolul central de 28 dp.
+`CardFaceMetrics` deține tipografia rangurilor pentru Android și Web. Fețele de pe masă scalează întregul contract al mâinii; zona de atu își păstrează tipografia separată.
 
-Fețele mai mici de pe masă scalează întregul contract. Zona de atu are propria tipografie și este exclusă.
-
-Android aplică mărimea rangului printr-un segment de text măsurat, păstrând simbolul și textul accesibil. Evantaiul rezervă cel mai lat rang măsurat, inclusiv `10`, înainte de calculul suprapunerii sau derulării.
-
-Web primește scara rangurilor prin configurația adaptorului, independent de fonturile meniurilor. [Măsurătorile așteptate comune](src/test/resources/card-typography.tsv) sunt verificate de componentele JVM și distribuite în JAR-ul de teste al browserului. Măsurătorile native verifică suplimentar randarea reală a fontului, încadrarea și concordanța dintre desen și măsurare la text mărit.
+| Aspect | Contract |
+|---|---|
+| Fața din mână | Înălțime de 88 dp, rang de 19,5 sp, simbol în colț de 13 sp |
+| Marcaje decorative | Rang inversat de 13,5 dp, simbol inversat de 9 dp, simbol central de 28 dp |
+| Text Android | Segment măsurat doar pentru rang; simbolul și textul accesibil rămân intacte |
+| Suprapunere în evantai | Rezervă cel mai lat rang măsurat, inclusiv `10`, înainte de suprapunere sau derulare |
+| Adaptor Web | Primește scara rangurilor prin configurație, independent de fonturile meniurilor |
+| Verificare comună | [Măsurători așteptate](src/test/resources/card-typography.tsv) folosite de componentele JVM și distribuite în JAR-ul de teste al browserului |
+| Verificare nativă | Randare reală, încadrare și concordanță între desen și măsurare la text mărit |
 
 Din copia temporară a rădăcinii Android `whist-lab-app`, cu PowerShell 7, JDK 21 și cache-ul Android pregătit, modulul se construiește fără sarcini ale aplicației.
 
