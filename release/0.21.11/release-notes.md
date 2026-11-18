@@ -12,4 +12,4 @@
 
 ## Documentation
 
-- [Extent](https://github.com/crististefanita/whist/blob/main/release/0.21.11/reports/README.md)
+- [Extent](https://github.com/crististefanita/whist/blob/a9b3c2023e83288b11416374e75247e79d3bbff8/release/0.21.11/reports/README.md)
