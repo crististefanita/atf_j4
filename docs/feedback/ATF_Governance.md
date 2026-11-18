@@ -58,3 +58,11 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | Prioritate | Lacună și responsabil | Criteriu de închidere |
 |---|---|---|
 | P2 | Reutilizarea nativă leagă întregul snapshot al surselor, inclusiv instrumentele de calificare. O corecție doar în validator poate invalida dovezi ale unui APK neschimbat. [Admitere](../../atf-tests/tools/prepare-android-e2e.mjs) | Înregistrează intrările motorului separat de revizia validatorului. Reutilizează doar cu APK, surse ale jocului, scenariu, profil de afișare și capturi originale identice. Cazurile controlate trebuie să refuze cod al jocului, binare sau capturi schimbate și proveniența nepotrivită a validatorului. |
+
+## Lansarea și finalizarea release-ului
+
+| ID | Lacună și responsabil | Criteriu de închidere |
+|---|---|---|
+| RAG-12 | Lansatorul componentelor: o opțiune JVM globală ajunge și la procesele copil din fixture și le poate modifica fluxurile standard. | Setează `atf.test.run.scope=suite` explicit pe JVM-ul suitei responsabile. Cazurile controlate cu subprocese trebuie să păstreze exact stdout, stderr, ieșirea binară și codurile de terminare. Preflight-ul trebuie să diagnosticheze opțiunile moștenite care ar contamina fixture-ul, fără schimbarea oracolului sau reluarea suitelor neafectate. |
+| RAG-13 | Coordonatorul publicării: colectarea retenției înaintea ultimei schimbări de manifest invalidează observația; un tag existent doar la distanță blochează reconstrucția Git locală. | Sigilează payload-ul și publică commitul înaintea colectării inventarului GitHub. Rezolvă și verifică local tagul calificat înaintea reconstrucției. Componentele trebuie să refuze hash-uri de manifest expirate și taguri lipsă sau nepotrivite, apoi să reia doar observația sau proba afectată. Păstrează APK-ul imuabil și rapoartele acceptate. |
+| RAG-14 | Planificatorul selecției: o schimbare de tipografie comună poate selecta fluxuri native fără legătură când grupurile surselor sunt prea largi. | Mapează contractele vizuale schimbate pe componentele adaptoarelor și verificarea necesară pe APK semnat. Controalele negative trebuie să selecteze în continuare fiecare flux schimbat de interacțiune, persistență sau scor. Măsoară separat scenariul, pregătirea profilului și validarea raportului; păstrează fluxurile obligatorii actuale până la demonstrarea politicii restrânse. |

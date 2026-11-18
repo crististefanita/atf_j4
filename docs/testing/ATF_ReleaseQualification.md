@@ -445,6 +445,20 @@ Folosiți același director la reluarea aceleiași identități. Alegeți un dir
 
 Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După publicare și reconstrucția verificată din Git, păstrați rapoartele finale, chitanțele, rețeta EOL aplicabilă și datele de învățare. Directoarele de build și cache-urile izolate se pot elimina. [Retenția după livrare](../platform/ATF_ReleaseRetention.md#curățarea-locală-după-livrare)
 
+### Limitele reutilizării și curățării
+
+| Resursă | În timpul calificării | După livrarea verificată |
+|---|---|---|
+| Dovezi de componentă | Reutilizează numai grupurile admise prin hash-urile surselor, dependențelor și rapoartelor. Păstrează chitanțele și snapshot-urile originale, inclusiv starea sinceră a unei încercări parțial eșuate. | Păstrează rapoartele Extent canonice și toată proveniența necesară verificării lor; clasele compilate și cache-urile private de dependențe sunt regenerabile. |
+| Profil de execuție | Transmite proprietățile suitei către JVM-ul responsabil. `JAVA_TOOL_OPTIONS` global afectează și procesele Java copil și poate schimba fluxurile capturate. | Păstrează profilul aplicat și diagnosticul său alături de auditul final; elimină lansatoarele temporare după documentarea mecanismului. |
+| Dovezi native | Folosește o singură pregătire verificată prin `-PrepareOnly` și `-PreparedFrom`. Reutilizează un flux acceptat numai când APK-ul, sursele relevante, scenariul, profilul și capturile originale satisfac admiterea. | Păstrează identitatea APK-ului semnat, capturile inline și chitanțele de execuție și izolare. Cache-ul pregătirii nu este un rezultat de calificare. |
+| Observații ale publicării | Finalizează schimbările payload-ului și publică commitul dovezilor înaintea colectării retenției. Reîmprospătează observațiile expirate sau invalidate fără reconstruirea APK-ului sau reluarea suitelor acceptate. | Păstrează jurnalul publicării, descărcarea verificată și verdictul final. O observație istorică demonstrează starea consemnată, nu disponibilitatea curentă pe GitHub. |
+| Reconstrucție Git | Rezolvă local tagul calificat și verifică-i commitul înaintea testării reconstrucției surselor și payload-ului. | Păstrează proba Git și rețeta EOL. Șterge staging-ul numai după `cleanupEligible: true` și verificarea proiecției locale. |
+
+Folosește chitanțele etapelor pentru duratele scurse și precizează dacă măsurătorile se suprapun. Când marcajele UTC și duratele monotone diferă, păstrează-le pe ambele și folosește `elapsedMs` pentru costul măsurat al etapei. Nu afirma o durată integrală sau un câștig de viteză pe baza unor măsurători incomplete ori suprapuse. [Îmbunătățiri rămase](../feedback/ATF_Governance.md#lansarea-și-finalizarea-release-ului)
+
+Păstrează starea locală reținută de responsabil în `.imp`, sub rădăcina externă a dovezilor: materialul de semnare, configurația locală a dispozitivului, datele valoroase de învățare și chitanțele finale absente din Git. Curățarea trebuie să excludă acel director și fiecare descendent, inclusiv căile accesate prin linkuri. Sursele canonice și depozitul lor Git aparțin checkout-ului proiectului, nu unui director de build dispensabil. Păstrează munca necomisă înaintea refacerii unui checkout; un worktree vechi nu este cache până la inventarierea acelei munci.
+
 ### Snapshot Git și proiecția locală
 
 Snapshot-ul surselor înregistrează commitul documentației române revizuite și ambele inventare de documente.
