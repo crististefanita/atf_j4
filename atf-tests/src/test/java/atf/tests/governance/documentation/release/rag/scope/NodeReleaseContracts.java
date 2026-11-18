@@ -13,15 +13,24 @@ import java.util.Map;
 public final class NodeReleaseContracts {
     private NodeReleaseContracts() { }
     public static String runContracts(Duration timeout, String... scripts) throws Exception {
+        return runContracts(timeout, ignored -> { }, scripts);
+    }
+
+    public static String runContracts(Duration timeout, java.util.function.Consumer<String> capture, String... scripts) throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var args = new ArrayList<>(List.of("node", "--test"));
         for (String script : scripts) args.add(root.resolve("atf-tests/tools").resolve(script).toString());
-        return runNode(args, root, timeout);
+        return runNode(args, root, timeout, capture);
     }
 
     public static String runNode(List<String> args, Path directory, Duration timeout) throws Exception {
+        return runNode(args, directory, timeout, ignored -> { });
+    }
+
+    public static String runNode(List<String> args, Path directory, Duration timeout, java.util.function.Consumer<String> capture) throws Exception {
         var result = CommandProcess.execute(args, directory, Map.of(), timeout, true);
         String output = new String(result.stdout(), StandardCharsets.UTF_8);
+        capture.accept("STDOUT\n" + output + "\nSTDERR\n" + result.stderr());
         AuditedAssertions.assertEquals(0, result.exitCode(),
                 result.exitCode() == 0 ? "The Node child completed successfully" : String.join(" ", args) + "\n" + output);
         return output;

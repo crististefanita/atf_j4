@@ -191,7 +191,7 @@ Whist uses the same native table policy through [WhistBoardAdapter](whist/src/ma
 | Component boundary | Checked contract |
 |---|---|
 | Table geometry | All modes, 3–6 seats, compact and wide widths, 1–17 cards and enlarged text; bidding and play retain identical seat anchors. |
-| Unit adaptation | Normalize Android density to Web logical coordinates with a bounded rounding tolerance. Desktop zoom remains in the viewport adapter. |
+| Unit adaptation | Normalize Android density to Web logical coordinates. The rounding bound accounts for repeated dimension conversions and integer placement in each renderer; unit-density coordinates must match exactly. Desktop zoom remains in the viewport adapter. |
 | Card presentation | All 52 rank/suit combinations retain visible marks, color role and proportional sizing through the actual hand adapters. |
 | Interaction | The shared gesture fixture checks rejection, legal highlights, stale expiry and one accepted deposit; collection keyframes are compared through both adapters. |
 | Acceptance limit | These components execute portable production code, not Android Views or browser font rasterization. Same-device visual acceptance remains separate. |
@@ -202,25 +202,25 @@ Whist uses the same native table policy through [WhistBoardAdapter](whist/src/ma
 
 The table menu exposes score history directly in Whist and Rentz through the common menu adapter. Opening history pauses automatic scheduling; closing the dialog resumes the same table without replaying commands. Component checks cover localized labels, one callback per choice, outside-click dismissal and immutable menu plans.
 
-- The Web Adapter increases by 50% the 2- rankings of the regular cards. It centres the indices in the same band, measured with `10`, and limits the rank of the compact face to the available space. The faces, colours and the trump shall retain their reference dimensions.
+- The Web adapter enlarges the 2–A ranks of regular cards by 50%. It centres indices in the same band, measured with `10`, and limits compact-face ranks to the available space. Card faces, suit symbols and the trump retain their reference dimensions.
 - The width of the visible index sets the overlap in the fan, including `10` and 17 cards.
-- The Web Header retains the anchor of the APK title, progress and asset. The progress and summary of the bids, the game menu, the main menu and settings use text with 50% higher in the Web. The trump scale shall retain the natural height of the two rows and shall restrict the text exceeding the width available.
+- The Web header retains the APK anchors for the title, progress and trump. Progress and bid summaries, the game menu, the main menu and settings use text enlarged by 50% on Web. The trump tile retains the natural height of its two rows and constrains text to the available width.
 - In the Web, the button is the player's only visual prompt to manually bid.
-- Touch the table outside the game menu closes the menu. Probe targets from inside and outside separately, including after redrawing the table.
-- After the moves of the opponents, the visible board retains its geometry until the next condition is settled. The component sample delays measurement just before the player's turn returns. The card's quenary keeps its position and colors in the manual game, AutoGame and during collection.
-- Player frames keep the same coordinates at bidding, playing and collecting. The component sample compares all the boxes in the hands of one card to five and six players, manually and with AutoGame.
+- Touching the table outside the game menu closes the menu. Probe inside and outside targets separately, including after redrawing the table.
+- After opponents move, the visible board retains its geometry until the next state is laid out. The component fixture delays measurement just before the player's turn returns. The trump tile retains its position and colours during manual play, AutoGame and collection.
+- Player frames retain the same coordinates during bidding, play and collection. The component fixture compares every frame in one-card hands with five and six players, during manual play and AutoGame.
 - The symbols of the cards use the same face ink in hand, on the table and when collecting. The theme provides the colors, and the Web adapter requires the rendering of symbols as text.
-- In the Whistle Web, the bid summary uses 90% of the larger rows, and the rewind lists use 75% of the labels. The check at 360 and 414 px measures the Normal/Hard selector in the same row as the Romanian label.
+- In Whist Web, bid summaries use 90% of the enlarged row font size, and dropdowns use 75% of the label font size. The check at 360 and 414 px measures the Normal/Hard selector on the same row as its Romanian label.
 - The viewport contract compares phone portrait/landscape, desktop height-limited and width-limited sizes, monotonic scale, narrow-window fallback, and invalid measurements. The browser check reads the actual frame after resize and confirms its centering and scale from the useful viewport.
 
-Use `-BuildOnly` to the three launchers and pass the classSPath values returned to the suite of components. JVM processes serve the Loopback adapters, and the suite sends HTTP requests and checks the public status. `$EvidenceRoot` indicates an existing and dedicated external rolling directory.
+Use `-BuildOnly` with the three launchers and pass the returned classpaths to the component suite. JVM processes serve the adapters on loopback; the suite sends HTTP requests and checks public state. `$EvidenceRoot` identifies an existing external directory dedicated to the run.
 
 ```powershell
 node .\atf-ui-browser\tests\run-components.mjs $EvidenceRoot $WhistClasses $RentzClasses $HoldemClasses
 java -cp $WhistClasses .\atf-ui-browser\tests\WhistParity.java > (Join-Path $EvidenceRoot 'whist-parity.json')
 ```
 
-For UI, prepare the Pages edition in `$Site` and generates `hand-fixture.json` with sample `verify-card-adapter.mjs`Running uses Playwright Java with Chromium headless, locators by role and an isolated context for each scenario. [Playwright Locators and Expectations](https://playwright.dev/docs/locators)
+For UI checks, prepare the Pages edition in `$Site` and generate `hand-fixture.json` with `verify-card-adapter.mjs`. The run uses Playwright Java with headless Chromium, role locators and an isolated context for each scenario. [Playwright locators and expectations](https://playwright.dev/docs/locators)
 
 `-BrowserExecutable` allows the choice of a Chrome or Edge installation. Compatible chromium should be available when the parameter is omitted.
 
@@ -234,14 +234,14 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 - The browser check waits for page content and the resize event, then verifies the logical frame, CSS transform and centering.
 - The shared JAR includes the independent Node component contract for phone, desktop, monotonic resize, invalid dimensions and overflow on both axes.
 
-`$MavenClasspath` is the list of dependencies produced by the Maven gate of [Components](../docs/testing/README.md). The report links the comparisons and inline images to the browser's running. [Parity criteria still open](../docs/feedback/ATF_UiBrowser.md)
+`$MavenClasspath` is the dependency list produced by the Maven [component gate](../docs/testing/README.md). The report links comparisons and inline images to the browser run. [Open parity criteria](../docs/feedback/ATF_UiBrowser.md)
 
 | Test layer | Responsibility |
 |---|---|
 | Component | Check revisions, refusals, geometry, profile and settlement through HTTP contract or Pages engine with controlled storage and timing. |
 | UI Web | Check the Chromium index `10` and access to the last card in a hand of 17 cards, including text at 200%. Check the keyboard bid, rejected touch, AutoGame and post-reload profile. Write `browser-ui-checks.json` and the captures in the running directory. |
 | UI desktop | Check in Chrome and Edge with browser zoom 100% and 125%, frame at 1280 × 720, 1920 × 1080 and in a narrow window. Measure the useful viewport and frame position. Confirm visible focus and profile, bid and legal card path from the keyboard. |
-| Comparison on Android | Compare APK and Chrome to the same view, to bidding and playing. Check in EN and RO the header and the card card, symbol and no trump, including the larger text. Record the viewport, density and shah of APK in `paired-android.json`. |
+| Comparison on Android | Compare APK and Chrome at the same viewport during bidding and play. Check header and trump positions in EN and RO, with card, symbol and no-trump presentations, including enlarged text. Record viewport, density and APK SHA in `paired-android.json`. |
 | Reporting | Extent reads the results of each level and attaches the captures of PNG inline. |
 
 The trump tile loads a local subset of Noto Sans Symbols 2 containing the four suit symbols. [OFL licence](src/main/web/card-suits-OFL.txt)
