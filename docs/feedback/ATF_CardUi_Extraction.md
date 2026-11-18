@@ -17,7 +17,36 @@ Whist integrează deja modulul Android comun. Registrul urmărește verificăril
 ## Controlul comun „Automat”
 
 - Verificați atingerea și spațiul controlului pe APK compact și cu text mărit în ambele limbi. Refacerea antetului păstrează valoarea furnizată de joc, iar o atingere produce o singură intenție. [Contractul antetului](../../whist-lab-app/atf-card-table-ui/README.md#antetul-mesei)
-- Reproduceți debifarea cu o decizie AI în așteptare. Executantul controlat livrează răspunsul după debifare, iar revizia jocului confirmă că răspunsul nu produce o mutare.
+- Păstrați oprirea controlului activ disponibilă cât un răspuns AI este în așteptare. Un executant controlat livrează răspunsul după oprire; revizia și jurnalul comenzilor trebuie să rămână neschimbate.
 - Confruntați bifarea la licitație, oprirea la scor, pauza și reluarea în Whist. Verificați separat poziționarea antetului în consumatorul care folosește AAR-ul. [Acceptanța nativă](ATF_Android.md#acceptanța-nativă-a-proporțiilor-și-ordinii)
 
 Pentru fiecare consumator, atașați la UIX06 coordonata AAR și verdictul nativ pentru antet, chenare și notificări. Criteriul de împachetare și calificare a JAR-ului Web aparține [documentației adaptorului](../../atf-ui-browser/README.md#bibliotecă-pentru-adaptoare).
+
+## Regresie și livrare
+
+```mermaid
+flowchart LR
+    Source["Surse comune fixate"] -->|califică| Regression["Regresie componente Whist"]
+    Regression -->|identifică| Inputs["Manifest intrări și hash-uri"]
+    Inputs -->|leagă| Android["AAR Android"]
+    Inputs -->|leagă| Web["JAR Browser și JAR teste"]
+    Android -->|furnizează| Adapter["Adaptoare Rentz"]
+    Web -->|furnizează| Adapter
+    Adapter -->|verifică| Consumer["Componente consumator"]
+    Consumer -->|pregătesc| Native["Acceptanță nativă focalizată"]
+```
+
+<details>
+<summary>Legendă</summary>
+
+- Sursele și manifestele identifică biblioteca reutilizabilă independent de adaptorul fiecărui joc.
+- Componentele consumatorului verifică integrarea; acceptanța nativă observă randarea și intrarea platformei.
+
+</details>
+
+- Rulați componentele bibliotecii UI și colecțiile Whist de afișaj, comenzi, licitare, istoric și realizări într-o singură lansare Gradle; confruntați fiecare raport Extent cu JUnit. Păstrați regulile și documentația ca selecție distinctă. [Procesul componentelor](../testing/README.md)
+- Refolosiți o selecție trecută numai când intrările sale relevante de producție, testele și dovezile sunt neschimbate. Un control documentar eșuat cere rerularea corectată a selecției respective fără repetarea testelor de afișaj neafectate.
+- Comparați manifestele de producție și artefactele înaintea construirii: intrările neschimbate reutilizează aceiași octeți AAR/JAR, iar intrările schimbate cer versiune nouă. Livrați împreună runtime-ul, testele, checksum-urile și receipt-urile de proveniență.
+- Rentz verifică adopția binară, contractul comun de viewport și proiecțiile sale publice. Păstrați dispunerea secvențelor, punctajul și regulile în adaptoarele jocurilor; cereți dovada consumatorului înaintea închiderii UIX06.
+
+Matricea comună acoperă 3–6 locuri, ferestre compacte și înalte, font mărit și ancore fixe între faze. Componentele Browser acoperă cadrul de referință 414 × 896, viewport-uri de telefon și constrângerile desktop de înălțime/lățime; verificările de browser măsoară DOM-ul și scalarea efectivă. [Strategia afișajului](../testing/ATF_DisplayComponents.md)
