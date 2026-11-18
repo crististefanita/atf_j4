@@ -75,7 +75,7 @@ try {
     assert.ok(revision, "Versioned script URL is missing");
     assert.ok(markup.includes(`./table.css?v=${revision}`), "Versioned stylesheet must match the script");
     for (const file of ["table.mjs", "viewport.mjs", "profile.mjs", "auto-game.mjs", "collection.mjs",
-      "hand-feedback.mjs", "table.css"]) {
+      "hand-feedback.mjs", "table-menu.mjs", "table.css"]) {
       const asset = await fetch(new URL(file, url));
       assert.equal(asset.status, 200, file);
       assert.ok((await asset.text()).length > 0, file);
