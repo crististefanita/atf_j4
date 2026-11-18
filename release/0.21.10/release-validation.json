@@ -229,7 +229,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-18T11:20:27.971Z",
+    "observedUtc": "2026-11-18T11:31:19.831Z",
     "files": [
       {
         "path": "README.en.md",
@@ -673,8 +673,8 @@
       },
       {
         "path": "reports/supplemental/validator-correction.json",
-        "bytes": 1819,
-        "sha256": "40bb1222394ed4b5da7316e123e112dc68caadc312d75d138964b66c1705bed8"
+        "bytes": 2595,
+        "sha256": "12ea50becdcdef78055c73ad0338e777a5beb91b2f61162e89ef36ed9344f0a0"
       }
     ]
   }
