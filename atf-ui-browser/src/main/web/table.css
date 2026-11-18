@@ -125,6 +125,10 @@ header .subtitle { font-size: 14px; color: #41574b; }
 .card .suit { position: absolute; left: 50%; top: 54%; transform: translate(-50%, -50%); font-size: 28px; }
 .card-index { display: grid; text-align: center; font-size: 13px; line-height: 13px; }
 .card-index.inverted { position: absolute; right: 4px; bottom: 4px; transform: rotate(180deg); font-size: 9px; line-height: 10px; }
+:is(.fan, .cards-on-table, .collection) .card-index .card-rank {
+  font-size: calc(1em * var(--card-rank-scale, 1.5));
+  line-height: 1.15;
+}
 .card[disabled] { opacity: 1; cursor: default; border-color: #8d998e; }
 .card:enabled { border-color: #345e50; }
 .hand {
@@ -320,7 +324,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 :is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted)::before,
 :is(.whist-match .fan, .whist-play-face) .card-index:not(.inverted) .card-rank {
   grid-area: 1 / 1;
-  font-size: calc(min(var(--whist-hand-label), var(--whist-hand-rank-cap)) * var(--whist-text-scale)
+  font-size: calc(min(var(--whist-hand-label), var(--whist-hand-rank-cap)) * var(--card-rank-scale, 1.5)
     * var(--card-face-scale, 1));
   font-variant-numeric: lining-nums tabular-nums;
   line-height: 1.15;
@@ -337,7 +341,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
   line-height: 1.1;
 }
 :is(.whist-match .fan, .whist-play-face) .card-index.inverted .card-rank {
-  font-size: calc(1em * var(--whist-text-scale));
+  font-size: calc(1em * var(--card-rank-scale, 1.5));
   line-height: 1;
 }
 :is(.whist-match .fan .card, .whist-play-face) .suit {

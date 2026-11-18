@@ -2,6 +2,8 @@
 
 ## Overview
 
+Select only the changed card typography component with `adb shell am instrument -w -e component cards ro.cardtable.ui.test/ro.cardtable.ui.seat.SeatFrameComponentInstrumentation`. It checks all ranks and suits at hand/table sizes and font scales 1, 1.5 and 2, then writes contact sheets to the test application's external files directory. The default selection also includes seats, title bars and highlights.
+
 The instrumented tests check the actual geometry of the rows in the Android layout for representative font sizes and scalings.
 
 The matrix measures the common Android components at 3–6 places, 240, 320 and 393 dp, with normal font, 1,5 × and 2 ×. The names with diacritics, the Whist statistics, the complete labels and the symbols of the "y 'are in the same box.

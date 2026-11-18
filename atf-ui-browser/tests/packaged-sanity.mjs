@@ -6,6 +6,7 @@ import { verifyTrumpTextFit } from "./trump-text-fit.mjs";
 import { verifyHandPresentation } from "./hand-presentation.mjs";
 import { verifyGameMenuDismissal } from "./menu-presentation.mjs";
 import { verifyViewportContract } from "./viewport-contract.mjs";
+import { verifyCardTypography } from "./card-typography.mjs";
 
 async function loadAdapter(url, name) {
   const response = await fetch(new URL(name, url));
@@ -87,6 +88,7 @@ try {
     await request("/api/setup", undefined, 403, false);
     const setup = await request("/api/setup");
     assert.equal(setup.title, title);
+    await verifyCardTypography(setup);
     const motion = await verifyMotion(url, setup);
     const { fitTextWidth } = await loadAdapter(url, "viewport.mjs");
     const viewportModule = await loadAdapter(url, "viewport.mjs");

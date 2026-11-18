@@ -27,13 +27,14 @@ public final class CardFaceInkComponentTest extends GradleAuditedTest {
         GradleInputs.fixture("Hand and compact table face bounds", "heightsDp", java.util.List.of(88, 70, 64));
         var hand = CardFaceMetrics.atHeight(88);
         assertEquals("Hand face has its original width", 63, hand.widthDp());
-        assertEquals("Hand rank has its original size", 13f, hand.indexSizeSp(), 0.001f);
+        assertEquals("The suit keeps its original size", 13f, hand.indexSizeSp(), 0.001f);
+        assertEquals("The rank matches the approved Web face", 19.5f, hand.rankSizeSp(), 0.001f);
         for (int height : new int[]{70, 64}) {
             var played = CardFaceMetrics.atHeight(height);
             assertEquals("Whole face uses the same scale at " + height + " dp",
                     height / 88f, played.scale(), 0.001f);
             assertEquals("Corner rank scales with the complete face at " + height + " dp",
-                    hand.indexSizeSp() * height / 88f, played.indexSizeSp(), 0.001f);
+                    hand.rankSizeSp() * height / 88f, played.rankSizeSp(), 0.001f);
         }
     }
 

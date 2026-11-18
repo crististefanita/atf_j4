@@ -75,6 +75,11 @@ class BrowserUi {
                             "Rangul, simbolurile și pozițiile lor rămân proporționale când cartea trece între suprafețe.",
                             (page, images) -> autoGame(page, url, checkpoint, output, images)));
                 }
+                if (check.equals("typography")) {
+                    results.add(run(browser, mobile(), output, "CARD-TYPOGRAPHY",
+                            "Shared rank typography for 2–A", "Ranks scale independently of menus; suits and trump remain unchanged.",
+                            (page, images) -> rankTypography(page, url)));
+                }
                 if (check.equals("all") || check.equals("header")) {
                     for (int width : List.of(414, 360)) {
                         results.add(run(browser, mobile().setViewportSize(width, 896), output, "WEB-12-HEADER-" + width,
@@ -106,7 +111,7 @@ class BrowserUi {
                             "Culoarea, conturul, dimensiunile și textul rămân identice la activarea și oprirea AutoPlay.",
                             (page, images) -> descendingTrump(page, url)));
                 }
-                if (check.equals("all") || check.equals("numbers")) {
+                if (check.equals("all") || check.equals("numbers") || check.equals("typography")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
                             "Rangul 10 în mâna de 17 cărți, la text 200%",
                             "Cifrele și figurile păstrează aceeași ancoră. Antetul respectă scara de text.",
@@ -286,6 +291,8 @@ class BrowserUi {
                 }
                 var diagnostic = new java.io.StringWriter();
                 failure.printStackTrace(new java.io.PrintWriter(diagnostic));
+                diagnostic.append("\nPage errors: ").append(errors.toString());
+                diagnostic.append("\nVisible page text: ").append(page.locator("body").innerText());
                 return new Result(id, title, "FAIL", expected, diagnostic.toString(), images);
             }
         }
@@ -595,7 +602,7 @@ class BrowserUi {
                 }
                 """.formatted(JSON.toJson(checkpoint)));
         page.navigate(url);
-        button(page, "Reia partida").click();
+        button(page, "Reia partida").click(new Locator.ClickOptions().setTimeout(45_000));
         page.locator(".board[data-layout=ready]").waitFor();
     }
 

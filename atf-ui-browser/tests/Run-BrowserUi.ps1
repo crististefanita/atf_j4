@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory)][string]$HandFixture,
     [Parameter(Mandatory)][string]$EvidenceRoot,
     [string]$BrowserExecutable,
-    [ValidateSet('all','playback','seats','card-face','header','dedication','viewport','trump','numbers')]
+    [ValidateSet('all','playback','seats','card-face','header','dedication','viewport','trump','numbers','typography')]
     [string]$Check = 'all'
 )
 $ErrorActionPreference = 'Stop'

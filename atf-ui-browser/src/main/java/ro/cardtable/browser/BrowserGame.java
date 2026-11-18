@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import ro.cardtable.ui.hand.HandInput;
+import ro.cardtable.ui.cards.CardFaceMetrics;
 import ro.cardtable.ui.hand.HandLayoutMetrics;
 import ro.cardtable.ui.table.TableSeatLayout;
 import ro.cardtable.ui.table.TableGeometry;
@@ -29,6 +30,7 @@ public interface BrowserGame {
                 "surface", surface(), "palette", palette(), "collectionSamples", collectionSamples,
                 "copy", Map.of("ro", interfaceCopy("ro"), "en", interfaceCopy("en")),
                 "autoDelayMillis", autoDelayMillis(),
+                "cardFace", Map.of("rankScale", CardFaceMetrics.RANK_SCALE),
                 "handMotion", Map.of("hintMillis", HandInput.HINT_DURATION_MILLIS,
                         "liftMillis", HandInput.PLAY_LIFT_MILLIS, "liftDp", HandLayoutMetrics.CARD_LIFT_DP,
                         "liftScale", HandLayoutMetrics.CARD_LIFT_SCALE,
