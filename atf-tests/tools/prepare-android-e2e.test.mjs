@@ -180,3 +180,26 @@ test('the original checkpoint PNG must match its Extent link', async t => {
   await fs.writeFile(trace, 'flow.id=' + bidding + '\nflow.status=FAIL\nphase.0.step.0.screenshot=shot.png\n');
   await assert.rejects(() => verifyOriginalCaptures(root, bidding, html), /TRACE_NOT_PASS/);
 });
+
+test('repeated original captures may share one Extent image without losing a distinct checkpoint', async t => {
+  const {root} = await fixture(t);
+  const trace = path.join(root, 'ui-flow-' + bidding + '.properties');
+  const original = Buffer.from(png, 'base64');
+  await fs.writeFile(path.join(root, 'first.png'), original);
+  await fs.writeFile(path.join(root, 'second.png'), original);
+  await fs.writeFile(trace, 'flow.id=' + bidding + '\nflow.status=PASS\n'
+    + 'phase.0.step.0.screenshot=first.png\nphase.0.step.1.screenshot=second.png\n');
+  const deduplicated = inspectE2eImages(reportHtml(png), {requireCheckpoints: true});
+  await verifyOriginalCaptures(root, bidding, deduplicated);
+  const repeated = inspectE2eImages(reportHtml(png).replace('</html>', reportHtml(png).replaceAll(/<\/?html>/g, '') + '</html>'),
+    {requireCheckpoints: true});
+  await verifyOriginalCaptures(root, bidding, repeated);
+  await fs.writeFile(trace, 'flow.id=' + bidding + '\nflow.status=PASS\nphase.0.step.0.screenshot=first.png\n');
+  await assert.rejects(() => verifyOriginalCaptures(root, bidding, repeated), /TRACE_SCREENSHOT_COUNT/);
+  const {crc32} = await import('node:zlib');
+  const chunk = Buffer.alloc(16);
+  chunk.writeUInt32BE(4); chunk.write('tEXtx\0y\0', 4, 'ascii');
+  chunk.writeUInt32BE(crc32(chunk.subarray(4, 12)), 12);
+  await fs.writeFile(path.join(root, 'first.png'), Buffer.concat([original.subarray(0, -12), chunk, original.subarray(-12)]));
+  await assert.rejects(() => verifyOriginalCaptures(root, bidding, deduplicated), /SCREENSHOT_DIFFERS_FROM_ORIGINAL/);
+});

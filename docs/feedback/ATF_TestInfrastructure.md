@@ -20,7 +20,7 @@ Consumatorul deține validarea API, procesele și adopția locală; [registrul r
 
 | Prioritate | Limită de calificare | Criteriu de închidere |
 |---|---|---|
-| P1 | Lansatorul utilizatorului izolat poate expira la deblocare sau înregistrarea pachetului, înainte să înceapă testul jocului. Un răspuns întârziat al gestionarului de pachete nu trebuie atribuit aplicației. | Răspunsurile ADB controlate acoperă deblocarea întârziată, instalarea terminată înainte de timeout, pachetul indisponibil și curățarea după întrerupere. Reconciliați hash-ul instalat și utilizatorul activ înaintea reluării. Separați pregătirea profilului de verdictul testului nativ, păstrați profilul proprietarului și reutilizați fiecare raport de componentă sau nativ deja validat. Confirmați recuperarea limitată pe dispozitivul identificat cu memorie redusă. |
+| P1 | Android poate reporni după crearea utilizatorului temporar, înaintea scrierii chitanței de pregătire. ID-ul din memorie nu este suficient pentru recuperare. | Persistă ID-ul generat, numele, rezervarea și intenția de creare înaintea înregistrării. Reia curățarea doar pentru acea înregistrare, refuză utilizatorii străini sau originali și acoperă serviciul de pachete indisponibil și întreruperea prin componente controlate. Separă eșecul pregătirii de verdictul aplicației și păstrează dovezile native acceptate. |
 
 | Prioritate | Limită de calificare | Criteriu de închidere |
 |---|---|---|

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 2,
+  "kind": "android-signed-release-e2e",
+  "flow": "signed-release-smoke",
+  "status": "PASS",
+  "protocol": "ATF_J24_ANDROID_SIGNED_RELEASE_E2E",
+  "tests": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "scenario": {
+    "selection": "WhistReleaseSmokeE2eTest#signedApkOpensItsRealHomeAndConfiguration",
+    "api": 28,
+    "displayProfile": "1080x1920@440",
+    "responsiveProfiles": ""
+  },
+  "compilationReceiptSha256": "f2f43d5168da69c92af697365924f5475704a349e8540fae8385033bd46ce626",
+  "releaseVersion": "0.21.10",
+  "installedApkSha256": "e7c38b8d9826f6d2a8980e4f1dc8b9666c1c6288b391bb3bb0d0bf0ad37e8bbc",
+  "sourceCommit": "3299643b4ea01562a332d626dc9b2050c772401a",
+  "sourceFingerprint": "f46db2de520109c9af0670201ebbb1c66eff5624288dca8f776a5ea5fc08caaa",
+  "reportSha256": "f4c2a97b822ba4a6fc1e678eec858a129e78890f223329837311d47564c7aa3c",
+  "inlinePngCount": 6,
+  "checkpointPngCount": 3,
+  "dataBoundary": {
+    "mode": "DISPOSABLE_SECONDARY_USER",
+    "leaseId": "6595a45f286a4220a34ecf9c80cf6c65",
+    "testUserId": 14,
+    "readyReceipt": "reports/e2e/isolation/6595a45f286a4220a34ecf9c80cf6c65/data-isolation-ready.json",
+    "cleanupReceipt": "reports/e2e/isolation/6595a45f286a4220a34ecf9c80cf6c65/data-isolation-cleanup.json",
+    "readyReceiptSha256": "7ae833e1a70dfc3f2a25f9971f524a4d2afa75fbbc43fe5fc39af42b428f0275",
+    "cleanupReceiptSha256": "002b371998360e01fa9fa5496e9abf0ff26a815a68c3997c07d70fb5c072e721"
+  }
+}

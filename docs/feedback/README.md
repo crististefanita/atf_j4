@@ -26,7 +26,7 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 
 | ID | Prioritate | Scor | ToDo rămas și criteriul scurt de închidere |
 |---|---:|---:|---|
-| INF-01 | P1 | 96 | Califică recuperarea limitată a deblocării și înregistrării pachetului pentru utilizatorii Android temporari, cu ADB controlat și curățare verificată. [Registru](ATF_TestInfrastructure.md#pregătirea-profilului-android-temporar) |
+| INF-01 | P1 | 96 | Recuperează crearea întreruptă a utilizatorului temporar dintr-o înregistrare persistentă de proprietate; refuză ID-uri străine și dovedește curățarea înaintea reluării. [Registru](ATF_TestInfrastructure.md#pregătirea-profilului-android-temporar) |
 | RPT-01 | P1 | 95 | Verifică fiecare producător prin HTML detașat și controale negative pentru conținut lipsă, extern ori atribuit greșit. [Registru](ATF_Reporting.md#rpt-android-html-only--livrabilul-de-audit-fără-copii-auxiliare) |
 | RPT-02 | P1 | 94 | Probează pe producătorii rămași respingerea invocărilor pierdute și utilitatea comparațiilor originale, inclusiv la FAIL, ERROR și SKIP. [Registru](ATF_Reporting.md#rpt-android-component-html--comparații-capturate-nu-doar-junit-xml) |
 | AND-01 | P1 | 93 | Demonstrează recuperarea checkpoint-ului după corupere sau întrerupere, păstrând datele utilizatorului ori raportând eroarea explicit. [Registru](ATF_Android.md) |
@@ -36,6 +36,7 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | AND-03 | P1 | 89 | Califică API 37, navigarea sistemului, reluarea, fonturile mărite și memoria pe un dispozitiv identificat. [Registru](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publică suite mari în limita de heap declarată, fără copii repetate ale HTML-ului și fără să piardă JUnit sau comparațiile la eșec. [Registru](ATF_Reporting.md#rpt-bounded-report-heap--finalizare-sigură-pentru-suite-mari) |
 | UI-01 | P1 | 86 | Califică antetul, chenarele și notificările pe APK-urile consumatorilor și verifică nativ intrarea Unicode a numelui. [Registru](ATF_CardUi_Extraction.md#priorități-și-condiții-de-închidere) |
+| RAG-11 | P2 | 84 | Separă proveniența imuabilă a APK-ului și motorului de revizia validatorului, păstrând refuzul strict al intrărilor schimbate ale jocului. [Registru](ATF_Governance.md#limitele-calificării-release-ului) |
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
 | WEB-07 | P2 | 79 | Califică setările, reluarea, Joacă din nou și istoricul în APK și Chrome pe același Android, în RO/EN și cu text mărit. [Registru](ATF_UiBrowser.md#calificarea-pe-același-dispozitiv) |
 | WEB-11 | P2 | 78 | Califică rangurile și glifele într-o mână de 17 cărți, la text mărit pe Chrome Android. [Registru](ATF_UiBrowser.md#calificarea-pe-același-dispozitiv) |

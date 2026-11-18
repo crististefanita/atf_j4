@@ -52,3 +52,9 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 | Prioritate | Lacună delimitată | Criteriu de închidere |
 |---|---|---|
 | P2 | Proba nativă este păstrată cu sursele în Extent, dar lansarea ei este încă o operație TMP a operatorului. | Adaptor opt-in versionat: citește identitatea candidatului, folosește permisiuni Android proprii și separă accesul de transfer. Componentele injectează 404, fișier scurt, hash/CRC greșit, certificat absent ori diferit și timeout; nu salvează redirectul semnat. Raportul păstrează comparațiile, eroarea și durata originale, iar cleanup-ul elimină doar resursele deținute. Un singur transfer Android califică livrarea; nu se multiplică pe rezoluțiile UI. |
+
+## Limitele calificării release-ului
+
+| Prioritate | Lacună și responsabil | Criteriu de închidere |
+|---|---|---|
+| P2 | Reutilizarea nativă leagă întregul snapshot al surselor, inclusiv instrumentele de calificare. O corecție doar în validator poate invalida dovezi ale unui APK neschimbat. [Admitere](../../atf-tests/tools/prepare-android-e2e.mjs) | Înregistrează intrările motorului separat de revizia validatorului. Reutilizează doar cu APK, surse ale jocului, scenariu, profil de afișare și capturi originale identice. Cazurile controlate trebuie să refuze cod al jocului, binare sau capturi schimbate și proveniența nepotrivită a validatorului. |

@@ -6,7 +6,7 @@ Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, ș
 
 ## Jocul
 
-- **[Descarcă APK 0.21.9](https://github.com/crististefanita/whist/releases/download/v0.21.9/WhistLab-0.21.9.apk)**
+- **[Descarcă APK 0.21.10](https://github.com/crististefanita/whist/releases/download/v0.21.10/WhistLab-0.21.10.apk)**
 - **[Joacă Whist online](https://crististefanita.github.io/whist/)**
 
 ## Harta modulelor

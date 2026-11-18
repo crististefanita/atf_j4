@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Directorul de lucru păstrează ediția curentă și imediat anterioară, fiecare cu propriul APK calificat și dovezi. Istoricul mai vechi se arhivează în afara catalogului activ; pregătirea locală nu publică și nu șterge release-uri.
+Git și GitHub păstrează versiunea publicată curentă și predecesoarea imediată. O oglindă locală de livrare conține doar ultima versiune publicată și calificată; indexul ei este o proiecție a catalogului canonic.
 
 ## Structură activă
 

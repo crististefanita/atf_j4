@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "androidExecution": false,
+  "observedUtc": "2026-11-18T10:14:33.4530932Z",
+  "sourceFingerprint": "e0ad78c88e2110b623d6b4baa112f200eafcbec5ccba7bbe509be206a50a0ab7",
+  "inputCount": 1275,
+  "inputManifest": "source-inputs.json",
+  "inputPartCharacters": 16384,
+  "libraries": [
+    {
+      "path": "lib/atf-console-1.0.0-c2.jar",
+      "sha256": "5a1cc9f3125a2e43134a2048476793e0b733b61e37a7f00b171a42990cc2a6aa"
+    },
+    {
+      "path": "lib/atf-core-1.0.0-c4.jar",
+      "sha256": "7c72a3f08c27f1a5cc1b2d61e2378801e130dd4d54d7eec99481348e1b1752b4"
+    },
+    {
+      "path": "lib/atf-mock-1.0.0-m2.jar",
+      "sha256": "0ae87d84905e3d3177e60a3c3ac2db6d0775852eb88162476f554ba247456704"
+    },
+    {
+      "path": "lib/atf-reporting-1.0.0-j24.jar",
+      "sha256": "8dd71735de004853210a91169297d8965691f6c4bf6781195594be50f70b69ef"
+    },
+    {
+      "path": "lib/atf-test-kit-1.0.0-k2.jar",
+      "sha256": "77767919b304afb093d80f4badcd9342c2192a4edb70884c2b61cbaf9a59ccc6"
+    }
+  ],
+  "releaseFingerprint": "4a9a089d51bb25daa4484b614dca5ccd13fd4539deec68925ad6a89d54956055",
+  "releaseInputManifest": "release-inputs.json"
+}
