@@ -4,7 +4,8 @@ import os from 'node:os';
 import path from 'node:path';
 import {test} from 'node:test';
 import {scenarioFor, disposablePaths, e2ePaths, signedE2eProtocol} from './android-e2e-contract.mjs';
-import {digest} from './evaluate-release-rag.mjs';
+import {digest, strictJson} from './evaluate-release-rag.mjs';
+import {verifyE2eReport} from './android-e2e-evidence.mjs';
 import {inspectE2eImages, verifyPng} from './android-e2e-images.mjs';
 import {planAndroidE2e, verifyOriginalCaptures} from './prepare-android-e2e.mjs';
 import {applyAndroidEvidence} from './apply-android-e2e.mjs';
@@ -82,6 +83,22 @@ test('a changed responsive matrix only invalidates its owner', async t => {
     executionProfile: {...profile, responsiveProfiles: '720x1280@360'}});
   assert.deepEqual(rows.map(row => row.decision), ['REUSE', 'RUN', 'REUSE']);
   assert.equal(rows[1].reason, 'ANDROID_E2E_SCENARIO_CHANGED');
+});
+
+test('secured JSON scenarios compare by their fields and still reject changed execution', async t => {
+  const {root, manifest} = await fixture(t);
+  const group = manifest.qualification.e2eGroups[bidding];
+  const receipt = (await strictJson(path.join(root, group.executionReceipt))).value;
+  const bytes = await fs.readFile(path.join(root, group.report));
+  const report = {text: bytes.toString('utf8'), sha256: digest(bytes)};
+  assert.equal(Object.getPrototypeOf(receipt.scenario), null);
+  const verify = expectedScenario => verifyE2eReport({manifest, name: bidding, group, receipt, report, expectedScenario});
+  assert.doesNotThrow(() => verify(receipt.scenario), 'The real record path reads its scenario through the secured parser');
+  assert.doesNotThrow(() => verify({...receipt.scenario}), 'Planning constructs an ordinary object with the same fields');
+  for (const change of [{api: 35}, {displayProfile: '720x1280@360'}, {responsiveProfiles: '720x1280@360'},
+    {selection: 'AnotherTest#method'}, {extra: true}]) {
+    assert.throws(() => verify(Object.assign(Object.create(null), receipt.scenario, change)), /ANDROID_E2E_SCENARIO_CHANGED/);
+  }
 });
 
 test('APK, source, device profile and cleanup are independent conditions', async t => {

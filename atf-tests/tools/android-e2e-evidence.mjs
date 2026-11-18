@@ -50,7 +50,7 @@ export function verifyE2eReport({manifest, name, group, receipt, report, expecte
   const current = receipt.schemaVersion === 2;
   if (requireScenario && !current) throw Error('ANDROID_E2E_SCENARIO_NOT_RECORDED');
   if (current && (receipt.flow !== name || !expectedScenario
-      || !isDeepStrictEqual({...receipt.scenario}, expectedScenario)
+      || !isDeepStrictEqual({...receipt.scenario}, {...expectedScenario})
       || !hash.test(receipt.compilationReceiptSha256 ?? '') || receipt.dataBoundary?.mode !== 'DISPOSABLE_SECONDARY_USER'))
     throw Error('ANDROID_E2E_SCENARIO_CHANGED');
 
