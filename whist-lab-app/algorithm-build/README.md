@@ -11,7 +11,7 @@ The audited testing requires JDK 21, the Gradle project launcher and the JVM dep
 ```mermaid
 flowchart LR
     RUN[Collections Launcher] -->|isolate| COPY[Temporary Copy]
-    COPY -->|configure| BUILD[Intrare JVM]
+    COPY -->|configure| BUILD[JVM entry point]
     BUILD -->|include| CORE[game-core]
     BUILD -->|include| LAB[ai-lab]
     CORE -->|produce| RESULT[Audited comparisons]
@@ -58,8 +58,8 @@ The chosen task shall determine the limit of verification:
 
 - The native XMLs and construction files appear in `game-core/build` of the temporary copy.
 - [Component audit](../../docs/testing/ATF_GradleComponents.md) produces a canonical HTML per selection and temporarily confronts the claims with XMLs without counting them twice.
-- `whist.componentEvidence` may select an external directory for catches of component; the identity of the catches shall be kept without overwriting.
+- `whist.componentEvidence` may select an external directory for captures of component; the identity of the captures shall be kept without overwriting.
 - The two Gradle entries of the application use the same project directories included; competing executions require separate copies.
 - The result identifies the sources and the execution selection; Android acceptance and skill of the game force have separate criteria.
 
-[Motorul](../game-core/README.md) · [Testarea](../../docs/testing/README.md) · [Learning offline](../../docs/learning/README.md)
+[Engine](../game-core/README.md) · [Testarea](../../docs/testing/README.md) · [Learning offline](../../docs/learning/README.md)

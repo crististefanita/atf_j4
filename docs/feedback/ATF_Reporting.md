@@ -12,22 +12,22 @@ The consumer holds the game records, selection, oracle and external indexation. 
 
 ## RPT-ANDROID-HTML-ONLY - Audit delivery without auxiliary copies
 
-**P1 · responsible Android adapter.** For each modified manufacturer, inventory the bodies and mandatory observations. The component files already have HTML per selection, inline images and provenance. The remaining criterion concerns the data of each manufacturer, including native observations and unique historical data. [The contract of surrender](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions)
+**P1 · responsible Android adapter.** For each modified producer, inventory the bodies and mandatory observations. The component files already have HTML per selection, inline images and provenance. The remaining criterion concerns the data of each producer, including native observations and unique historical data. [Handoff contract](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions)
 
-- Confront the inventory, times and bodies of each checkpoint with the original catches. Inject missing, modified, external or misassigned content. Check long text, HTML and Base64-like content.
+- Confront the inventory, times and bodies of each checkpoint with the original captures. Inject missing, modified, external or misassigned content. Check long text, HTML and Base64-like content.
 - Identify each external exception by file, purpose and consumer. Keep the unique data up to the migration qualification. A crash log or signature check may be aimed separately from the test audit.
-- Open the final HTML identified by SHA-256, with auxiliary sources and network not available. Check navigation, last row, tables and return from the full image. Inject an XML link and an external image. [The audit contract posted](../reporting/ATF_Audit.md#qualification-of-a-manufacturer)
+- Open the final HTML identified by SHA-256, with auxiliary sources and network not available. Check navigation, last row, tables and return from the full image. Inject an XML link and an external image. [The audit contract posted](../reporting/ATF_Audit.md#qualification-of-a-producer)
 
 Incomplete publication keeps diagnosis and unique material. The historical play keeps the original identity, times and verdict. [Lifetime retention governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java)
 
 ## RPT-ANDROID-COMPONENT-HTML - captured comparisons, not just JUnit XML
 
-**P1 · Android adaptor responsible: qualification of each manufacturer and surrender.** [Familiile Maven](../testing/ATF_DisplayComponents.md#families-using-the-same-audit) and [puntea Gradle](../testing/ATF_GradleComponents.md) Gradle keeps separate entries for application, engine, graphic library and raster; catalogue requires classification and participation of classes in the audit. Migrating of the mechanism does not recalibrate historical executions and unexecuted selections.
+**P1 · Android adaptor responsible: qualification of each producer and handoff.** [Families Maven](../testing/ATF_DisplayComponents.md#families-using-the-same-audit) and [bridge Gradle](../testing/ATF_GradleComponents.md) Gradle keeps separate entries for application, engine, graphic library and raster; catalogue requires classification and participation of classes in the audit. Migrating of the mechanism does not recalibrate historical executions and unexecuted selections.
 
-[Suita display](../../atf-test-android/src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java), inclusive [FrameFillAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/display/component/FrameFillAuditComponentTest.java), The families without adaptor keep the population and JUnit verdict; the unfathomable values of a past execution are not reconstructed retrospectively.
+[Display suite](../../atf-test-android/src/test/java/atf/android/suites/AndroidDisplayComponentSuite.java), inclusive [FrameFillAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/display/component/FrameFillAuditComponentTest.java), The families without adaptor keep the population and JUnit verdict; the unfathomable values of a past execution are not reconstructed retrospectively.
 
-- [ ] Identify by inventory producers who may still lose a claim or comparison to publication. The sample injects a component without an adapter, a lost parametric reclection and a FAIL, ERROR and SKIP result. Diagnosis indicates exact invoicing and difference between JUnit and HTML. [Verificatorul Gradle](../testing/ATF_GradleComponents.md)
-- [ ] Review the meaning of the migration rows: Boolean or exceptional comparisons have declarative messages when values do not explain the invariant. The method name or Java line does not substitute the meaning of each comparison in HTML; [contractul citirii](../reporting/ATF_Audit.md#reading-a-report) holds the rule.
+- [ ] Identify by inventory producers who may still lose a claim or comparison to publication. The sample injects a component without an adapter, a lost parametric reclection and a FAIL, ERROR and SKIP result. Diagnosis indicates exact invoicing and difference between JUnit and HTML. [Verifier Gradle](../testing/ATF_GradleComponents.md)
+- [ ] Review the meaning of the migration rows: Boolean or exceptional comparisons have declarative messages when values do not explain the invariant. The method name or Java line does not substitute the meaning of each comparison in HTML; [reading contract](../reporting/ATF_Audit.md#reading-a-report) holds the rule.
 
 **Closure: ** a past and a controlled negative comparison are exclusively audible from HTML, with the last value and the right owner; a case without captured comparisons is explicitly unqualified.
 
@@ -37,7 +37,7 @@ Incomplete publication keeps diagnosis and unique material. The historical play 
 
 | Priority | Lacquer and source | Level and criterion of closure |
 |---|---|---|
-| P2 | [AndroidUiFlowTrace.checkpoint](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) keeps assertions that [publicatorul](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) then faces library policy; too long a summary can be refused only when published. | Component: validated by the same effective policy before the next catch, with localized refusal and without truncating the full values in the observations and XML. |
+| P2 | [AndroidUiFlowTrace.checkpoint](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowTrace.java) keeps assertions that [publisher](../../atf-test-android/src/test/java/atf/android/e2e/support/AndroidUiFlowReportPublisher.java) then faces library policy; too long a summary can be refused only when published. | Component: validated by the same effective policy before the next catch, with localized refusal and without truncating the full values in the observations and XML. |
 
 The consumer shall have the time of validation and the data transmitted. If the public API does not expose the necessary policy, the reusable contract is required by the library's manager; the limit is not recopied as an independent local rule.
 
@@ -49,14 +49,14 @@ The consumer shall have the time of validation and the data transmitted. If the 
 
 ## RPT-BOUNDED-REPORT-HEAP - Safe completion for large suites
 
-**P1 · responsible libraries: HTML publication and verification; consumer: input dimension.** A suite may have JUnit Green tests and still not produce canonical ratio if the injection of navigation or DOM check deplete the head. The publication error shall not hide the results of the tests or leave a partial report submitted as accepted.
+**P1 · responsible libraries: HTML publication and verification; consumer: input dimension.** A suite may have JUnit Green tests and still not produce canonical report if the injection of navigation or DOM check deplete the head. The publication error shall not hide the results of the tests or leave a partial report submitted as accepted.
 
-- [ ] Measure the peak memory separately for initial rendering, injection of navigation and report verification, depending on the number of comparisons, bodies and inline catches.
+- [ ] Measure the peak memory separately for initial rendering, injection of navigation and report verification, depending on the number of comparisons, bodies and inline captures.
 - [ ] Avoid repeated full copies of the document at the publication and verification stages; each step shall be capable of processing a large valid report below the declared limit of the heap.
-- [ ] Qualify the limits with small, medium and large synthetic reports, including repeated payloads and inline images. Check the identities of Junit-HTML, all mandatory catches and bytes after publication.
+- [ ] Qualify the limits with small, medium and large synthetic reports, including repeated payloads and inline images. Check the identities of Junit-HTML, all mandatory captures and bytes after publication.
 - [ ] Upon crossing an explicit limit, issue a localized diagnosis identifying the stage and keeping JUnit's result and available evidence; do not let an exception of heap turn into an ambiguous lack of file.
 
-Qualification is common to the manufacturer and verifier: the increase in the head of a single process does not close the criterion and does not demonstrate that the report remains publishable in the standard environment.
+Qualification is common to the producer and verifier: the increase in the head of a single process does not close the criterion and does not demonstrate that the report remains publishable in the standard environment.
 
 ## RPT-EXTENT-REPEATED-PAYLOAD - Compaction without audit loss
 
@@ -72,8 +72,8 @@ Measurement justifies investigating the reduction of redundancy; it does not pro
 
 ## Owning contracts
 
-- [Teaching results](../reporting/ATF_Handoff.md) has the provenance of republication, the idempotence of registration and distinct pointeres for testing and acceptance.
-- [Publication audit](../reporting/ATF_Audit.md#qualification-of-a-manufacturer) holds the qualification of each producer, the original comparisons, the last value, catches and negative controls.
-- [Contractul Android](../reporting/ATF_Android.md) holds the association of action-observation-comparison and the distinction between the functional result and publication.
+- [Teaching results](../reporting/ATF_Handoff.md) has the provenance of republishing, the idempotence of registration and distinct pointeres for testing and acceptance.
+- [Publication audit](../reporting/ATF_Audit.md#qualification-of-a-producer) holds the qualification of each producer, the original comparisons, the last value, captures and negative controls.
+- [Android contract](../reporting/ATF_Android.md) holds the association of action-observation-comparison and the distinction between the functional result and publication.
 
-[Contractul Android](../reporting/ATF_Android.md) · [Publication audit](../reporting/ATF_Audit.md) · [Retention](../learning/ATF_Retention.md)
+[Android contract](../reporting/ATF_Android.md) · [Publication audit](../reporting/ATF_Audit.md) · [Retention](../learning/ATF_Retention.md)

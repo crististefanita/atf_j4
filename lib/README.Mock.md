@@ -31,13 +31,13 @@ var response = mock.send(ApiRequest.of("GET", "/health"),
 
 ## Catalogue and Matching
 
-| Necesitate | API or contract |
+| need | API or contract |
 |---|---|
 | Catalog YAML explicit | `AtfMockTransport.fromConfiguration(Path)` |
 | Project configuration | `fromProjectConfiguration()`: `atf.mock.config` > `ATF_MOCK_CONFIG` > `atf-mock.yaml/yml` |
 | Requiest conditions | Method, path, auth profile, query, requested heads and body expected in `MockRoute` |
-| Corp de request | Input mode `json`, negative sample MIME `wrong-content-type`; numerical fit without conversion by `double` |
-| Query repetat | `ApiQueryParameters`; includes the required values, multiplication |
+| Body de request | Input mode `json`, negative sample MIME `wrong-content-type`; numerical fit without conversion by `double` |
+| Query repeated | `ApiQueryParameters`; includes the required values, multiplication |
 
 - Without configuration, `fromProjectConfiguration()` uses the `defaults()` fixture; the application catalogue remains local.
 - The en route duration is metadata of the response, not a simulated real delay.
@@ -45,7 +45,7 @@ var response = mock.send(ApiRequest.of("GET", "/health"),
 
 ## Verification of use
 
-| Action | Rezultat observabil |
+| Action | Observed result |
 |---|---|
 | Save YAML as `mock.yaml`, in the trial director. | The example reads exactly that local catalogue. |
 | Send application `GET /health`. | The response has status `200`; the body corresponds to the configured route. |
@@ -55,4 +55,4 @@ Address `offline.test` is the context of the application for mock transport. The
 
 ---
 
-Mock is an external binary fixed in the POM and the home register. The tests here check the route and the fallback used by the project; a defect is reported with the version, hashness, minimum catalogue and the expected / observed response in [registrul local](../docs/feedback/README.md).
+Mock is an external binary fixed in the POM and the home register. The tests here check the route and the fallback used by the project; a defect is reported with the version, hashness, minimum catalogue and the expected / observed response in [registry local](../docs/feedback/README.md).

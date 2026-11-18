@@ -2,11 +2,11 @@
 
 ## Overview
 
-- [Test of a control testChanges](run-component-suites.ps1) uses declared offline selection and writes the proof related to commit. [Contractul probei](../docs/governance/ATF_TestChanges.md#proof-of-verified-control)
+- [Test of a control testChanges](run-component-suites.ps1) uses declared offline selection and writes the proof related to commit. [Control evidence contract](../docs/governance/ATF_TestChanges.md#proof-of-verified-control)
 
 - [Governance of changes in tests](run-atf-governance.ps1) receives Git base of review. [The diff contract](../docs/governance/ATF_TestChanges.md#checking-the-git-diff) explains the perimeter, expiration and refusals.
 
-- [Inventarul JVM](run-jvm-inventory.ps1) checks the sources of a selected checkout. [Contractul CLI](../docs/governance/README.md#jvm-inventory-via-cli) explains the perimeter, exceptions and output codes.
+- [JVM inventory](run-jvm-inventory.ps1) checks the sources of a selected checkout. [CLI contract](../docs/governance/README.md#jvm-inventory-via-cli) explains the perimeter, exceptions and output codes.
 
 - [Isolation E2E Android with temporary user](Invoke-AtfAndroidDisposableUser.ps1) create a new secondary profile, unlock it and prevent the display from being turned off only in that profile, install the candidate only there and remove it at the teardown after checking the same reservation. Quotts keep and check the initial status of the installation of the application in the original profile; contract and reporting are documented in the contract [acceptance of signed APK](../atf-test-android/src/test/java/atf/android/e2e/release/README.md).
 
@@ -26,7 +26,7 @@ Launchers read the project root from their own position and prepare temporary co
 flowchart LR
     RUN[Launcher] -->|select| MODULE[Owning module]
     MODULE -->|execute| CHECK[Verification]
-    CHECK -->|keep| OUT[Rezultat extern]
+    CHECK -->|keep| OUT[External result]
 ```
 
 <details>
@@ -41,28 +41,28 @@ A launcher chooses modules, parameters and resources. The engine and the laborat
 | Operation | Entry and contract |
 |---|---|
 | Rules and offline evaluation | [run-whist-collection.ps1](run-whist-collection.ps1), with [collections and prerequisites](../docs/testing/ATF_Collections.md). |
-| Controlled games and perspectives | [Laboratorul AI](../whist-lab-app/ai-lab/README.md), with launchers `run-offline-*`. |
+| Controlled games and perspectives | [AI lab](../whist-lab-app/ai-lab/README.md), with launchers `run-offline-*`. |
 | Project quality | [run-atf-governance.ps1](run-atf-governance.ps1), with an [explicit scope](../docs/governance/README.md). |
 | Signed Android Qualification | [run-whist-signed-e2e.ps1](run-whist-signed-e2e.ps1) checks the proof per group and prepares Maven prior to booking. [Relocation and import](../docs/testing/ATF_ReleaseQualification.md#starting-and-resuming-a-game-on-the-signed-apk) |
-| Screenplay on device | [Ghidul Android](../docs/testing/ATF_Android.md) and [Screen matrix](../docs/testing/ATF_Display.md). |
+| Screenplay on device | [Android guide](../docs/testing/ATF_Android.md) and [Screen matrix](../docs/testing/ATF_Display.md). |
 
 ## Where the tools are
 
-- [Laboratorul AI](../whist-lab-app/ai-lab/tools/README.md): corpus, models, diagnosis and qualification of policies.
-- [Infrastructura Android](../atf-test-android/tools/README.md): replicay and surrender of captured Android data.
+- [AI lab](../whist-lab-app/ai-lab/tools/README.md): corpus, models, diagnosis and qualification of policies.
+- [Infrastructure Android](../atf-test-android/tools/README.md): replay and handoff of captured Android data.
 - [Reporting consumer](../atf-tests/tools/README.md): validation and selection of published entries.
 
 PowerShell shall be checked syntactically separately from the operation. An Android scenario requires identified application and exclusive booking; ordering documentation is not an execution on the device.
 
 ## Preconditions after entry
 
-| Intrare | Resources and data required | What checks execution |
+| Entry point | Resources and data required | What checks execution |
 |---|---|---|
 | `run-whist-collection.ps1` | JDK selected by `JavaHome`, gradle wrapper and jvm cache; protocol, candidate and corpus when the collection requires them. | Validate the collection and identities, prepare the copy and call Gradle with `--offline`; report the output code separately. |
 | `run-documentation-governance.ps1` | JDK 21 and Caache Maven for Jackson's dependencies. | [Editorial check](../docs/governance/ATF_Documentation.md#documentation-governance-cli) for selected files or full inventory. |
 | `run-atf-governance.ps1` | JDK, `mvn` available, poms and pairs JAR/POM; cache Maven for copy warehouse. | Check APKs before Maven and face sources inventories and release directory. [Snapshot](../docs/testing/ATF_ReleaseQualification.md#snapshot-and-preflight-before-maven) |
 | `run-offline-*` | Tools and parameters declared by each file; some entries use explicit local pathways. | Execute the protocol of that entry; the availability of the tool is not deducted from the parting of the script. |
-| Flux Android | ADB configuration, application binar, booking and backup checked. | [Contractul infrastructurii](../atf-test-android/README.md) delimits transport, command and observation. |
+| Android flow | ADB configuration, application binar, booking and backup checked. | [Infrastructure contract](../atf-test-android/README.md) delimits transport, command and observation. |
 
 JVM collections do not require connection of emulator. Java/Maven/Gradle is not yet a unique capability verifier; [coordination feedback](../docs/feedback/ATF_Governance.md#qualification-of-claims-and-launchers) holds the uniformity.
 
@@ -72,4 +72,4 @@ JVM collections do not require connection of emulator. Java/Maven/Gradle is not 
 
 - [Contract of the candidate's basis](../docs/testing/ATF_Collections.md#full-identity-of-candidate-base) validates the complete inventory, the hashes and the final copy, with explicit identity migration. The criteria and results remain distinct and the overall configuration is not filled with the identities of completed experiments.
 
-- [Registrul comun](../docs/learning/ATF_EvaluationRegistry.md) serializes reservations and refuses to duplicate the assessment between the bodies. Diagnostic launchers record re-use for learning; a run-off does not automatically release distributions.
+- [Shared registry](../docs/learning/ATF_EvaluationRegistry.md) serializes reservations and refuses to duplicate the assessment between the bodies. Diagnostic launchers record re-use for learning; a run-off does not automatically release distributions.

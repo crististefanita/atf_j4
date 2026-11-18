@@ -33,6 +33,14 @@ test('compares linked documents and counts the English companion of a retained o
   assert.equal(audit.review.documents, 3);
 });
 
+test('canonical release guides can be translated without retaining duplicate language Markdown files', () => {
+  const en = english(), ro = romanian(), path = 'release/0.21.9/README.md';
+  en.set(path, Buffer.from('# Release\n\n## Overview\n\nPublished evidence.\n'));
+  ro.set(path, Buffer.from('# Ediție\n\n## Pe scurt\n\nDovezi publicate.\n'));
+  assert.deepEqual(compareDocumentationEditions(en, ro).problems, []);
+  assert.equal(compareDocumentationEditions(en, ro).review.documents, 3);
+});
+
 test('rejects a missing translation, a changed link and a changed command', () => {
   const en = english(), ro = romanian();
   ro.delete('docs/rules.md');
@@ -40,6 +48,16 @@ test('rejects a missing translation, a changed link and a changed command', () =
   assert.deepEqual(compareDocumentationEditions(en, ro).problems.sort(), [
     'Link destinations differ: README.md', 'Markdown structure differs: README.md', 'Missing counterpart: docs/rules.md'
   ]);
+});
+
+test('localized control explanations do not permit changes to technical YAML fields', () => {
+  const en = english(), ro = romanian();
+  const guide = reason => '# Guide\n\n```yaml\nid: CHECK-01\nbase: abc123\nreason: ' + reason + '\n```\n';
+  en.set('docs/control.md', Buffer.from(guide('Preserve the verified contract')));
+  ro.set('docs/control.md', Buffer.from(guide('Păstrează contractul verificat')));
+  assert.deepEqual(compareDocumentationEditions(en, ro).problems, []);
+  ro.set('docs/control.md', Buffer.from(guide('Păstrează contractul verificat').replace('abc123','different')));
+  assert.deepEqual(compareDocumentationEditions(en, ro).problems, ['Markdown structure differs: docs/control.md']);
 });
 
 test('checks the orientation of the actual editions', () => {

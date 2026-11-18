@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "RELEASE_DOCUMENTATION_PROVENANCE",
+  "sourceCommit": "129a629bb65cfedf6032b503c1b826fba63d4a42",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1020,
+      "sha256": "03e498bf324f3179982e248544ef8937b038029de7cd98b4874d2fc98d162155"
+    },
+    {
+      "path": "release-notes.md",
+      "bytes": 956,
+      "sha256": "f967708ff6ec70fc2130b7fdfa0bff4ce13187a85dbb26aca153108ae115a5f5"
+    },
+    {
+      "path": "reports/README.md",
+      "bytes": 2488,
+      "sha256": "e7683d3b54ccd447ccfad54580c68c60218bfbaabe6a0ace924858adb85a6ffb"
+    },
+    {
+      "path": "README.en.md",
+      "bytes": 962,
+      "sha256": "0517527bfaaa2252103d94039eb293b77393d5caed8ea4dcc75c763205585fcf"
+    },
+    {
+      "path": "release-notes.en.md",
+      "bytes": 895,
+      "sha256": "c6e7a65e200e9250d8a4d4ea6470cf18eed07e0ef42da3bee9e5ab6322489527"
+    },
+    {
+      "path": "reports/README.en.md",
+      "bytes": 2419,
+      "sha256": "4585eb644b3ca80b95620868c10e2dce48595bf40126020baa8d413d0c6489eb"
+    }
+  ]
+}

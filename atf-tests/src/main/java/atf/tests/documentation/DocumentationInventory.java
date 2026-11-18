@@ -77,9 +77,7 @@ public final class DocumentationInventory {
     }
 
     private static boolean governed(Path root, Path file) {
-        return isReadme(file) || isLibraryGuide(root, file)
-                || file.startsWith(root.resolve("docs")) && file.getFileName().toString().endsWith(".md")
-                || file.startsWith(root.resolve("release")) && file.getFileName().toString().equals("README.en.md");
+        return file.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".md");
     }
 
     private static boolean excluded(String part) {

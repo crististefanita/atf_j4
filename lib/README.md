@@ -2,9 +2,9 @@
 
 ## Overview
 
-Java 21 and Maven; five JARs thin with transitives from POM. The guidelines shall be autonomous from the manufacturer's sources.
+Java 21 and Maven; five JARs thin with transitives from POM. The guidelines shall be autonomous from the producer's sources.
 
-| Ghid | Artefact, grup `atf.api` | Usage |
+| Guide | Artefact, group `atf.api` | Usage |
 |---|---|---|
 | [Core](README.Core.md) | `atf-core` | HTTP, configuration, JSON and lifecycle. |
 | [Reporting](README.Reporting.md) | `atf-reporting` | Extent/fallback and auditorialevidence. |
@@ -14,8 +14,8 @@ Java 21 and Maven; five JARs thin with transitives from POM. The guidelines shal
 
 ## Integration
 
-1. In a TMP copy of an ATF consumer, `mvn -B -ntp -N validate` installs the pairs of lib in the selected Maven repositoryul.
-2. Declare the dependency in the caller module; the coordinates and the version are in the next tree of the JARI.
+1. In a TMP copy of an ATF consumer, `mvn -B -ntp -N validate` installs the pairs of lib in the selected Maven repository.
+2. Declare the dependency in the caller module; the coordinates and the version are in the next tree of the JAR.
 3. IntelliJ uses the same JDK and repository Maven; reload the root POM.
 
 <details>
@@ -26,7 +26,7 @@ Copy pairs JAR/POM in lib; again, in TMP:
 ```powershell
 Get-ChildItem lib\*.pom | ForEach-Object {
     mvn org.apache.maven.plugins:maven-install-plugin:3.2.0:install-file "-Dfile=$([IO.Path]::ChangeExtension($_.FullName,'jar'))" "-DpomFile=$($_.FullName)" -DgeneratePom=false
-    if ($LASTEXITCODE) { throw "Instalare eșuată: $($_.Name)" }
+    if ($LASTEXITCODE) { throw "Installation failed: $($_.Name)" }
 }
 ```
 
@@ -42,13 +42,13 @@ You declare, for example, `atf.api:atf-reporting:<versiunea din POM>` in depende
 
 ## Choice of minimum verification
 
-| Library | Start point | Contractul observabil |
+| Library | Start point | Observable contract |
 |---|---|---|
-| Core | [Exemplul minim](README.Core.md#minimal-example) | Construction of the URL and maintenance of JSON accuracy. |
-| Reporting | [Exemplul minim](README.Reporting.md#minimal-example) | Publication completed, followed by the spread of the failed comparison. |
-| Console | [Exemplul minim](README.Console.md#minimal-example) | Visible message or console disabled, according to explicit policy. |
-| Mock | [Exemplul minim](README.Mock.md#minimal-example) | The configuration and application produce the answer or the declared fallback. |
-| Test Kit | [Exemplul minim](README.TestKit.md#minimal-example) | Comparison assessed once, PASS/FAIL and the JUnit case kept. |
+| Core | [Minimal example](README.Core.md#minimal-example) | Construction of the URL and maintenance of JSON accuracy. |
+| Reporting | [Minimal example](README.Reporting.md#minimal-example) | Publication completed, followed by the spread of the failed comparison. |
+| Console | [Minimal example](README.Console.md#minimal-example) | Visible message or console disabled, according to explicit policy. |
+| Mock | [Minimal example](README.Mock.md#minimal-example) | The configuration and application produce the answer or the declared fallback. |
+| Test Kit | [Minimal example](README.TestKit.md#minimal-example) | Comparison assessed once, PASS/FAIL and the JUnit case kept. |
 
 Check first the compilation on physical pairs JAR/POM, then the behavior of the fragment. Application contracts, real transport and interactive presentation shall qualify separately in the consumer.
 

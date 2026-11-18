@@ -1,15 +1,17 @@
-## Descărcare
+# Whist 0.21.10
 
-- [Descarcă APK Android 0.21.10](https://github.com/crististefanita/whist/releases/download/v0.21.10/WhistLab-0.21.10.apk)
+## Download
+
+- [Download Android APK 0.21.10](https://github.com/crististefanita/whist/releases/download/v0.21.10/WhistLab-0.21.10.apk)
 - [SHA-256](https://github.com/crististefanita/whist/releases/download/v0.21.10/WhistLab-0.21.10.apk.sha256)
 
-## Pe scurt
+## Overview
 
-- Deschide istoricul punctajului direct din meniul jocului în Android și Web; Oprește jocul automat rămâne disponibil cât automatizarea este activă.
-- Partajează contractul meniului și pachetele UI versionate cu Rentz și Hold’em fără schimbarea regulilor Whist.
-- Cere stocarea deblocată a profilului Android temporar și identitatea APK verificată înaintea acceptanței native.
-- Păstrează doar ultima versiune publicată și calificată în oglinda locală de livrare, iar pe GitHub ultimele două versiuni din catalog.
+- Open score history directly from the game menu in Android and Web; Stop AutoPlay remains available while automation is active.
+- Share the menu contract and versioned UI packages with Rentz and Hold’em without changing the Whist rules.
+- Require unlocked disposable Android storage and verified APK identity before running native acceptance.
+- Keep only the newest qualified published release in the local delivery mirror, while GitHub retains the latest two catalogued versions.
 
-## Documentație
+## Documentation
 
 - [Extent](https://github.com/crististefanita/whist/blob/140e727762e3acb0b9d3f82241fda47dc96db291/release/0.21.10/reports/README.md)

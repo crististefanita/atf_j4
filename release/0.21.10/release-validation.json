@@ -229,17 +229,12 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-18T11:31:19.831Z",
+    "observedUtc": "2026-11-18T15:25:29.955Z",
     "files": [
       {
-        "path": "README.en.md",
-        "bytes": 962,
-        "sha256": "0517527bfaaa2252103d94039eb293b77393d5caed8ea4dcc75c763205585fcf"
-      },
-      {
         "path": "README.md",
-        "bytes": 1020,
-        "sha256": "03e498bf324f3179982e248544ef8937b038029de7cd98b4874d2fc98d162155"
+        "bytes": 959,
+        "sha256": "2f25a50161159ff0923e9e0822a66d4091ae8359e1d5f6ad6a807f8d0211501f"
       },
       {
         "path": "WhistLab-0.21.10.apk",
@@ -252,19 +247,19 @@
         "sha256": "58bb9b6e12b793edbcc01d1673407ff74e0c9edc62a5e159bb9214240b87c097"
       },
       {
+        "path": "documentation-provenance.json",
+        "bytes": 1050,
+        "sha256": "783d2e6de45e436547bb4d7594f406259bb733a2752dd48938fa8e0ff9d5adba"
+      },
+      {
         "path": "github-release.json",
         "bytes": 821,
         "sha256": "068498aca2304cfc2288c497f44abeb59ad17b3e9a3f49d1fedde0a65fc5a95d"
       },
       {
-        "path": "release-notes.en.md",
-        "bytes": 895,
-        "sha256": "c6e7a65e200e9250d8a4d4ea6470cf18eed07e0ef42da3bee9e5ab6322489527"
-      },
-      {
         "path": "release-notes.md",
-        "bytes": 956,
-        "sha256": "f967708ff6ec70fc2130b7fdfa0bff4ce13187a85dbb26aca153108ae115a5f5"
+        "bytes": 912,
+        "sha256": "b97ae2d29393f296cbf531e2425eb056ab577394523bee566f233f1cfbce3b28"
       },
       {
         "path": "release-presentation.json",
@@ -272,14 +267,9 @@
         "sha256": "2ca066ddee376a51396309830695e2d95558055b4d42e2703679f13b68ffbbb0"
       },
       {
-        "path": "reports/README.en.md",
+        "path": "reports/README.md",
         "bytes": 2419,
         "sha256": "4585eb644b3ca80b95620868c10e2dce48595bf40126020baa8d413d0c6489eb"
-      },
-      {
-        "path": "reports/README.md",
-        "bytes": 2488,
-        "sha256": "e7683d3b54ccd447ccfad54580c68c60218bfbaabe6a0ace924858adb85a6ffb"
       },
       {
         "path": "reports/apk-inputs.json",

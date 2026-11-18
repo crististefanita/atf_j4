@@ -1,19 +1,19 @@
 # Whist Lab 0.21.9
 
-## Pe scurt
+## Overview
 
-Ediție Android de test.
+Android test edition.
 
-- Afișează fotografia și dedicația pentru Teo în meniul principal, sub Regulile de joc.
-- Traduce dedicația imediat când alegi limba română sau engleză.
-- Folosește numele Whist în builduri și în rapoartele noi.
+- Shows the photo and dedication to Teo in the main menu, below How to play.
+- Updates the dedication immediately when you select Romanian or English.
+- Uses the Whist name in new builds and reports.
 
-## Descărcare
+## Download
 
-- [Pagina release-ului v0.21.9](https://github.com/crististefanita/whist/releases/tag/v0.21.9)
-- [Descarcă APK-ul 0.21.9](https://github.com/crististefanita/whist/releases/download/v0.21.9/WhistLab-0.21.9.apk)
+- [Page of the v0.21.9 Release](https://github.com/crististefanita/whist/releases/tag/v0.21.9)
+- [Download APK 0.21.9](https://github.com/crististefanita/whist/releases/download/v0.21.9/WhistLab-0.21.9.apk)
 - [Checksum SHA-256](https://github.com/crististefanita/whist/releases/download/v0.21.9/WhistLab-0.21.9.apk.sha256)
 
-## Dovezi și instalare
+## Evidence and installation
 
-[Rapoarte Extent](reports/README.md) · [Manifest](release-validation.json) · [Catalogul versiunilor](../README.md) · [Livrare Android](../../docs/platform/ATF_AndroidDelivery.md)
+[Reports Extent](reports/README.md) · [Manifest](release-validation.json) · [Catalog versions](../README.md) · [Delivery Android](../../docs/platform/ATF_AndroidDelivery.md)

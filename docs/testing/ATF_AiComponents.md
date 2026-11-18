@@ -8,11 +8,11 @@ The test checks a general property in her declared field. Observed match locates
 
 ```mermaid
 flowchart LR
-    RULE[Property] -->|builds| WITNESS[Martor legal]
+    RULE[Property] -->|builds| WITNESS[Legal witness]
     WITNESS -->|Play back| PREFIX[Public prefix]
-    PREFIX -->|design| OBS[Observed observation]
+    PREFIX -->|design| OBS[Permitted observation]
     OBS -->|checks| CHECK[Policy and result]
-    WITNESS -->|stay in the oracle| ORACLE[Independent waiting]
+    WITNESS -->|stay in the oracle| ORACLE[Independent expectation]
 ```
 
 <details>
@@ -24,15 +24,15 @@ The witness may contain the full distribution to demonstrate that the situation 
 
 ## Family of properties
 
-| Familie | Contract |
+| Family | Contract |
 |---|---|
-| Legalitate | Pack without duplicates, undivided card turned, bidding and every card played legally. |
+| Legality | Pack without duplicates, undivided card turned, bidding and every card played legally. |
 | Information | Modification of actual adverse hands cannot change the same observation transmitted to policy. |
 | Context | Controlled change of needs or opportunities may change choice with other fixed inputs. |
-| Memorie | Public cards and proven shortcomings properly restrict the feasible worlds. |
+| Memory | Public cards and proven shortcomings properly restrict the feasible worlds. |
 | Score | Points, series and totals shall be calculated independently of the action selector. |
-| Uncertain estimate | Comparing observations that differ by one factor: trump card, return card, public tender or series. For Hard, the common translation of scores shall keep the entire vector of the estimate, including the budget consumed. |
-| Certificat | The numbers are complete, all relevant sequels are covered, and the exhausted budget keeps the fallback. |
+| Uncertain estimate | Comparing observations that differ by one factor: trump card, return card, public bid or series. For Hard, the common translation of scores shall keep the entire vector of the estimate, including the budget consumed. |
+| Certificate | The numbers are complete, all relevant sequels are covered, and the exhausted budget keeps the fallback. |
 | Comparison | Candidate actions use the same worlds and budgets; policies are compared on distributions and controlled places. |
 
 ## Verification level
@@ -59,11 +59,11 @@ An Android path remains E2E only when performing new interactions in the install
 | [CertifiedContractRegressionTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java) | Certificate, lack of guarantee and fallback. |
 | [HardSalvageObjectiveTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | The order of objectives when the exact is publicly impossible. |
 | [IndependentPlayerModelTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/coach/IndependentPlayerModelTest.java) | Fesibility and independent model. |
-| [HumanUncertainBidComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java) | Hard recommendation on public observation, atu, adverse bids, translation of score and independent formulas for configurable series. |
+| [HumanUncertainBidComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java) | Hard recommendation on public observation, trump, adverse bids, translation of score and independent formulas for configurable series. |
 
 ## Reading of archived observations
 
-[ObservedPositionJson](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJson.java) adapts public catches to the current model without rewriting the original document. The absence of the penalty field retains the historical profile of five points; an explicit value remains explicit and an invalid one is refused.
+[ObservedPositionJson](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJson.java) adapts public captures to the current model without rewriting the original document. The absence of the penalty field retains the historical profile of five points; an explicit value remains explicit and an invalid one is refused.
 
 [Adapter components](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/testing/codec/ObservedPositionJsonComponentTest.java) distinguish the absence, current value and data corruption. The compatibility of the catch is the responsibility of the archive reader and the engine remains independent of the JSON test parser.
 
@@ -73,4 +73,4 @@ Default regression keeps small, stable and independent cases. Research, tourname
 
 A new case must bring a distinct property or border. The large sets of games and their results remain in the external corpus, and [Focused selection](../learning/ATF_Selection.md) controls the cost of analysis.
 
-[Collections](ATF_Collections.md) · [Governance of changes](../governance/ATF_TestChanges.md) · [Modelul deciziei](../ai/ATF_DecisionModel.md)
+[Collections](ATF_Collections.md) · [Governance of changes](../governance/ATF_TestChanges.md) · [Decision model](../ai/ATF_DecisionModel.md)

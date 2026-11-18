@@ -4,9 +4,9 @@
 
 Java engine holds configuration, rules, transitions, score history and game policy. The Android application and JVM environment consume the same sources; production remains independent of Android, ATF and JUnit.
 
-The tests check the field through independent properties and oracles. [Intrarea JVM](../algorithm-build/README.md) allows offline work, and [Variant Guide](../../docs/game/README.md) has the full explanation of the rules.
+The tests check the field through independent properties and oracles. [JVM entry point](../algorithm-build/README.md) allows offline work, and [Variant Guide](../../docs/game/README.md) has the full explanation of the rules.
 
-- [Laboratorul AI](../ai-lab/README.md) is Gradle's dependency only for tests. Independent policy shall be compiled in its module; the distribution of the engine shall only retain its own production sources.
+- [AI lab](../ai-lab/README.md) is Gradle's dependency only for tests. Independent policy shall be compiled in its module; the distribution of the engine shall only retain its own production sources.
 
 ## Domain flow
 
@@ -14,9 +14,9 @@ The tests check the field through independent properties and oracles. [Intrarea 
 flowchart LR
     CMD[Command] -->|validates| SESSION[GameSession]
     SESSION -->|apply| RULES[GameRules]
-    SESSION -->|b.| OBS[Observed observation]
+    SESSION -->|exposes| OBS[Permitted observation]
     OBS -->|feeds| POLICY[A.I. policy]
-    POLICY -->|propune| CMD
+    POLICY -->|proposes| CMD
 ```
 
 <details>
@@ -36,7 +36,7 @@ The session retains the complete status required for the game and restoration. T
 | [GameSession](src/main/java/ro/whistlab/core/session/GameSession.java) | The front of the controls, the rotation between the hands and the publication of the match status. |
 | [HandPlay](src/main/java/ro/whistlab/core/session/HandPlay.java) | Distribution, bids, order of the moves and the public history of the current hand. |
 | [PlayerScore](src/main/java/ro/whistlab/core/session/scoring/PlayerScore.java) | Calculate a player's balance and series when closing his hand. |
-| [SessionCheckpoint](src/main/java/ro/whistlab/core/session/SessionCheckpoint.java) | Capture the rescue contract and rebuild the status after validation. |
+| [SessionCheckpoint](src/main/java/ro/whistlab/core/session/SessionCheckpoint.java) | Capture saving contract and rebuild the status after validation. |
 | [ScoreHistory](src/main/java/ro/whistlab/core/session/ScoreHistory.java) | Bidding, known tricks and balances of hands are the difference between balances. |
 | [HowToPlay](src/main/java/ro/whistlab/core/rules/HowToPlay.java) | Aid RO/EN for the selected profile and programme. |
 
@@ -46,11 +46,11 @@ Profile accepted 3–6 players and a reduced pack of `8 × N` Big cards. [GameMo
 
 - Follow the led suit; in the absence of it, the card is required if it is in the hand. Overrun is not mandatory.
 - Win the greatest card or card in the required color; the winner leads the next trick.
-- The tender is in the range of the hand, and the last offer cannot equalize the amount with the number of tricks.
+- The bid is in the range of the hand, and the last offer cannot equalize the amount with the number of tricks.
 - The exact contract grants `5 + levate`; the failure decreases the absolute difference.
-- The optional series uses the explicit values of GameConfig. `newMatch` applies symmetrically 5 or 10, and the compatibility manufacturer receiving only the positive bonus retains the historical penalty of 5; eligibility and interruption are defined by `RomanianScoring`.
+- The optional series uses the explicit values of GameConfig. `newMatch` applies symmetrically 5 or 10, and the compatibility producer receiving only the positive bonus retains the historical penalty of 5; eligibility and interruption are defined by `RomanianScoring`.
 
-[Regulile RO/EN](../../docs/game/README.md) explains the distribution, the trump, the schedule and the series. The configuration is explicit: the four-argument compatibility manufacturer keeps the series disabled and the other forms validate their options.
+[Rules RO/EN](../../docs/game/README.md) explains the distribution, the trump, the schedule and the series. The configuration is explicit: the four-argument compatibility producer keeps the series disabled and the other forms validate their options.
 
 ## Session and persistence
 
@@ -74,11 +74,11 @@ The Hand rejects an illegal command prior to the transition. After the last levi
 | [SearchWork](src/main/java/ro/whistlab/core/ai/simulation/SearchWork.java) | Accounting and optional global limit on the wire without changing the random generator or utility; exhaustion throws a distinct exception without partial decision. |
 | [JVM cost rating](../../docs/ai/ATF_CostQualification.md) | Separate measurement, overall limit and certificate budget; incomplete proof retains its legal proposal. |
 
-[Modelul deciziei](../../docs/ai/ATF_DecisionModel.md) and [regulile configurabile](../../docs/ai/ATF_RulesConfiguration.md) delimit active behaviour by research assumptions. Probable estimation and local certificate do not guarantee each game's gain with hidden information.
+[Decision model](../../docs/ai/ATF_DecisionModel.md) and [configurable rules](../../docs/ai/ATF_RulesConfiguration.md) delimit active behaviour by research assumptions. The checkble estimation and local certificate do not guarantee each game's gain with hidden information.
 
 ## Offline execution
 
-From the project root, [lansatorul](../../scripts/run-whist-collection.ps1) prepares temporary copy and retains external results:
+From the project root, [Launcher](../../scripts/run-whist-collection.ps1) prepares temporary copy and retains external results:
 
 ```powershell
 .\scripts\run-whist-collection.ps1 -Collection quick
@@ -97,7 +97,7 @@ In a temporary copy of `whist-lab-app`, the direct entry shall be:
 
 ## Limits and qualification
 
-The operational cost, interpretation of probabilities and strategic progress have distinct fields and checks. [Criteriile AI](../../docs/feedback/ATF_Ai.md) centralizes open works, including the evolution of Hard composition and the qualification of borders through semantic mutants.
+The operational cost, interpretation of probabilities and strategic progress have distinct fields and checks. [AI criteria](../../docs/feedback/ATF_Ai.md) centralizes open works, including the evolution of Hard composition and the qualification of borders through semantic mutants.
 
 An extraction retains the behaviour and sources of the reference policies. [Documentation rules](../../docs/governance/ATF_Documentation.md) require the same description of the new profile and compatibility in all summaries.
 

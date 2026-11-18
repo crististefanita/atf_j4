@@ -11,13 +11,13 @@ flowchart LR
     OBS[Own and public cards] -->|described by| EXTRACT[Extractor]
     EXTRACT -->|Classification| PATTERN[Type and unit]
     GAMES[Development games] -->|calibrates descriptively| PATTERN
-    PATTERN -->|require consumer; and| GATE[Separate qualification]
+    PATTERN -->|requires a consumer and qualification| GATE[Separate qualification]
 ```
 
 <details>
 <summary>Legend: description, measurement and activation</summary>
 
-[Extractorul](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) identifies ranks, covers and higher cards as yet unseen. [Calibratorul](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) measures results of some already played policies; none of the operations activate a rule in Hard.
+[Extractor](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) identifies ranks, covers and higher cards as yet unseen. [Calibrator](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) measures results of some already played policies; none of the operations activate a rule in Hard.
 
 </details>
 
@@ -32,7 +32,7 @@ flowchart LR
 | Accurate contract rate | The result of the entire hand for that place; repeating it into categories does not create independent results. |
 | Support and weighting | I describe the grouped comments and the approximation to the original clue. There are no calibrated odds of winning or runtime coefficients. |
 
-[Catalogul YAML](../../config/whist-hand-patterns.yaml) retains the status `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`. Overlay patterns do not give repeated credit to the same card.
+[Catalog YAML](../../config/whist-hand-patterns.yaml) retains the status `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`. Overlay patterns do not give repeated credit to the same card.
 
 ## Rules of interpretation
 
@@ -40,14 +40,14 @@ flowchart LR
 - **Sequences and length: ** honors are valued together; rank, number of cards and number of possible levatas are distinct sizes.
 - **Legal exit: ** a side honor may be discarded when the required color and the asset are missing; the existence of the asset may require an unwanted trick.
 - **Public memory: ** the card turned, a card from a finished trick and the card still on the table have different roles.
-- **Objective:** individual needs and remaining opportunities are read from [modelul deciziei](ATF_DecisionModel.md#state-that-influences-the-decision); table imbalance does not replace them.
+- **Objective:** individual needs and remaining opportunities are read from [decision model](ATF_DecisionModel.md#state-that-influences-the-decision); table imbalance does not replace them.
 
 ## Extractor input
 
 | JSON field for `describe` | Contract |
 |---|---|
 | `hand` | Distinguishing own cards: rank `A`, `K`, `Q`, `J`, `10` or `2`-`9`, followed by `S`, `H`, `C` or `D`; compatible with reduced package. |
-| `trump` | `S`, `H`, `C`, `D` sau `NT`. |
+| `trump` | `S`, `H`, `C`, `D` or `NT`. |
 | `players` | Whole between 3 and 6; default 4. |
 | `handSize` | Initial size declared between 1 and 8; absence uses the length of hand provided. |
 | `publicOut` | Public cards excluded from the unknown pool; implicitly the empty list without intersection with his own hand. |
@@ -57,7 +57,7 @@ The extractor shall check these local limits of cards and parameters. The caller
 From the project root, with Node.js and explicitly selected external files:
 
 ```powershell
-$inputFile = Read-Host 'Fișierul JSON al observației permise'
+$inputFile = Read-Host 'JSON file containing the permitted observation'
 node whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns-cli.mjs describe $inputFile
 ```
 
@@ -71,8 +71,8 @@ The calibrator reads all the `games/development` JSON files of the archive provi
 4. Write in a new calibrated YAML directory, full inventory of contexts, source hashes and comparison record.
 
 ```powershell
-$archive = Read-Host 'Arhiva externă pentru calibrarea development'
-$output = Read-Host 'Director extern nou; părintele trebuie să existe'
+$archive = Read-Host 'External development calibration archive'
+$output = Read-Host 'New external directory; its parent must exist'
 node whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs $archive $output
 ```
 
@@ -86,6 +86,6 @@ Components shall use inputs built for honors, distinct units, duplicates and med
 node --test whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.test.mjs whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.test.mjs
 ```
 
-[Set up the rules](ATF_RulesConfiguration.md) owns the consumer and the field of activation and [protocolul offline](../learning/README.md) holds the promotion. The indication, simulated estimation and the finished certificate have distinct guarantee levels.
+[Set up the rules](ATF_RulesConfiguration.md) owns the consumer and the field of activation and [protocol offline](../learning/README.md) holds the promotion. The indication, simulated estimation and the finished certificate have distinct guarantee levels.
 
 [English guide](ATF_HandPatternsEn.md) · [Context game](ATF_ContextualPlay.md) · [Corpus and integrity](../learning/ATF_Corpus.md)

@@ -9,11 +9,11 @@ A change in the tests shall preserve the meaning of the contract and the reason 
 | Surface | Contract |
 |---|---|
 | Expected | Derived from requirement, invariant or independent oracle. |
-| Control negativ | The intended failure demonstrates that the test detects the defect concerned. |
+| Control negative | The intended failure demonstrates that the test detects the defect concerned. |
 | Identitate | The case, sources, configuration and domain are explicit. |
 | Verdict | The original cause shall be retained by catch and publication. |
 | Population | The selection and omissions shall be declared without historical counting fixed in the guide. |
-| Rezultate | Concrete runs and version comparisons shall be kept in the external archive. |
+| Results | Concrete runs and version comparisons shall be kept in the external archive. |
 
 ## Revision of a change
 
@@ -37,10 +37,10 @@ Run [Governance launcher](../../scripts/run-atf-governance.ps1) from the revised
 |---|---|
 | Base | A local commit prior to or equal to head. In CI, you declare the explicit and prior basis of head. Locally, without a parameter, HEAD only delimits uncommitted changes. |
 | Git inputs | Differences from base, index, work files and new files. Includes protected entries ignored by Git. |
-| Perimetru | Maven and Gradle sets of tests and resources, POMS, Gradle configuration, suite selections and executable inputs of governance and qualification. |
+| Scope | Maven and Gradle sets of tests and resources, POMS, Gradle configuration, suite selections and executable inputs of governance and qualification. |
 | Authorisation | Only one entry eligible for exact route, base SHAUS and UTC date. The expiry date is inclusive. |
-| Refuz | Absence or foreign base, uncovered path, expired control, ambiguous eligibility, invalid metadata or unaccepted Git status. |
-| Redenumire | Erase the old path plus add the new path. The deletion explicitly requires allowDelete. |
+| Rejection | Absence or foreign base, uncovered path, expired control, ambiguous eligibility, invalid metadata or unaccepted Git status. |
+| renaming | Erase the old path plus add the new path. The deletion explicitly requires allowDelete. |
 
 The launcher shall transmit the base by property atf.government ance.testChanges.baseRef. For the selection of components, set ATF_TEST_CHANGE_BASE_REF prior to launch. The entire branch's review always uses a commit prior to head.
 
@@ -48,10 +48,10 @@ The launcher shall transmit the base by property atf.government ance.testChanges
 
 | Step | Place and criterion |
 |---|---|
-| ACTIVE | The [feedback responsabil](../feedback/README.md) document keeps the reason, the order of the sample and the exact list of pathways. |
-| VERIFIED | [Registrul tehnic](ATF_TestChangesBaseline.md) keeps the same ID and sample selection. The current diff authorization requires verified proof, basis and expiration. |
+| ACTIVE | The [feedback owner](../feedback/README.md) document keeps the reason, the order of the sample and the exact list of pathways. |
+| VERIFIED | [Technical registry](ATF_TestChangesBaseline.md) keeps the same ID and sample selection. The current diff authorization requires verified proof, basis and expiration. |
 | DRAFT AND CLOSED | The structured entry may record the proposal or closure. These states have zero eligibility. |
-| Retragere | Face control with the basis of the review. Remove the entrance only when the diff targeted no longer needs it. |
+| withdrawal | Face control with the basis of the review. Remove the entrance only when the diff targeted no longer needs it. |
 
 - The YAML block has the `testChanges` key and a blank list. Each item declares `id`, `status`, `base`, `expires`, `reason`, `proof` and `paths`. Field `allowDelete` is optional and implicitly false.
 - Relative pathways use the `/` separator. Each ID shall be unique in the documents inspected.
@@ -70,22 +70,22 @@ $env:ATF_TEST_CHANGE_PROOF_ROOT = Join-Path $runRoot 'proofs'
 
 | Element | Contract |
 |---|---|
-| Selectori | Declare checks.positive and negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative check.positive checks.negative check.positive check.positive |
-| Control negativ | The method injects the defect and affirms the expected refusal. In evidence, both the valid case and the case of refusal must have a PASS verdict at JUnit level. |
+| selectors | Declare checks.positive and negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative checks.negative check.positive checks.negative check.positive check.positive |
+| Control negative | The method injects the defect and affirms the expected refusal. In evidence, both the valid case and the case of refusal must have a PASS verdict at JUnit level. |
 | Identitate | The receipt fixes the IDA, base SHAA, verified commit SHAA and the SHA-256 of the gross Git diff. Includes blobs and file modes. |
 | Lot of diff | A single compilation feeds all required VERIFIED controls. Each control has its own JVM, log and HTML. The publication of the Director of `proofs` shall be made after the whole lot has passed and the selection and source has been reconfirmed. |
-| Rulare | The launcher shall perform the exact selection declared and shall face the summons with Extent. The receipt and HTML are stored together in the directory with the control IDE. |
+| Execution | The launcher shall perform the exact selection declared and shall face the invocations with Extent. The receipt and HTML are stored together in the directory with the control ID. |
 | Verification | Other commit, other diff, other control, missing or missed samples and HTML with different hash blocks the VERIFIED authorisation. A modified checkout requires a new candidate. |
-| Istoric | Old controls are kept in the register. Using a VERIFIED control for the revised diff requires accurate selection and proof. |
+| History | Old controls are kept in the register. Using a VERIFIED control for the revised diff requires accurate selection and proof. |
 
 When failing or changing source, see the logs per control and the `proofs.pending` diagnostic folder. For a spot test, `-TestChangeControl` keeps the receipt under `<RunRoot>/<ID>`. Reuse the receipt and report for the same commit and diff.
 
 ## Transferring ownership of a check
 
-The transfer of an implementation to a library shall keep all native contracts to the manufacturer. The consumer shall retain the acceptance of the API used, the identity of the loaded JARs and the refusal of metadata or inconsistent deliveries.
+The transfer of an implementation to a library shall keep all native contracts to the producer. The consumer shall retain the acceptance of the API used, the identity of the loaded JARs and the refusal of metadata or inconsistent deliveries.
 
 - The request for change shall identify the affected sources, the new owner, the equivalent replacement and the independent acceptance criteria.
-- The transfers and catches shall be linked to delivery. The technical check shall keep the base of Git and its paths in the register.
+- The transfers and captures shall be linked to delivery. The technical check shall keep the base of Git and its paths in the register.
 - Wiping the local copy does not suppress a negative case and does not transform a library check into an Android acceptance.
 - The current documentation describes the liability limit without historical lists of deleted tests.
 

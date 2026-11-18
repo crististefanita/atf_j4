@@ -2,39 +2,39 @@
 
 ## Overview
 
-`atf-card-table-ui` is the Android Library module that holds the common visual components for Whist, Rentz and Hold'em. It has Java sources 17, resources, JVM tests and Android components instrumented. Applications provide visible data and game intentions, and the library provides the drawing and behaviour of the widgets.
+`atf-card-table-ui` owns the Android visual components shared by Whist, Rentz and Hold'em. It contains Java 17 sources, resources, JVM tests and instrumented Android component tests. Games supply visible data and interaction intents; the library renders the widgets and handles their presentation behaviour.
 
-| Intrare | Where to check |
+| Entry point | Where to check |
 |---|---|
-| Java Code, Resources and Android Contract | [Module building](build.gradle) and [source border](src/test/java/ro/cardtable/ui/boundary/UiLibraryBoundaryComponentTest.java) |
-| Geometry, high-light card and achievements | [JVM components](src/test/README.md) and [probe instrumentate](src/androidTest/README.md) |
+| Java code, resources and Android contract | [Module build](build.gradle) and [source boundary](src/test/java/ro/cardtable/ui/boundary/UiLibraryBoundaryComponentTest.java) |
+| Geometry, card highlighting and achievements | [JVM components](src/test/README.md) and [native instrumentation](src/androidTest/README.md) |
 | Packaging and inventory | [Publication of the AAR](#packaging-and-consumption) and [governance policy](../../config/atf-governance-policy.json) |
 
 ## Responsibilities and limits
 
-| Pachet | Contract implementat |
+| Package | Implemented contract |
 |---|---|
-| [screens](src/main/java/ro/cardtable/ui/screens/ScreenViews.java) | Same page, text, button and selector manufacturers; the selector's label and window protection are ports provided by the application. |
-| [menu](src/main/java/ro/cardtable/ui/menu/HomeMenuContent.java) | Orders, labels, tags, restart status and callbacks; dropdowne preserves the two languages and delayed record of the listener. |
-| [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | The dialogue accepts the game input filter. Normal, persistence and original exception belong to the consumer. |
-| [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Signs, proportions and creme-gold marking. The game provides the card visible and decides when to mark. |
-| [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Geometry, running and interaction for a hand displayed. Adaptors keep the duration of the markings, lifting and revising the gesture by [HandInput](src/main/java/ro/cardtable/ui/hand/HandInput.java). |
-| [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Names, orderly facts and active player provided by the game; labels are measured at the width of the place and the frame receives the same reservation between the phases. |
+| [screens](src/main/java/ro/cardtable/ui/screens/ScreenViews.java) | Shared factories for pages, text, buttons and dropdowns; the app supplies dropdown labels and window protection. |
+| [menu](src/main/java/ro/cardtable/ui/menu/HomeMenuContent.java) | Item order, labels, tags, resume state and callbacks; dropdowns preserve both locales and attach listeners after initialization. |
+| [profile](src/main/java/ro/cardtable/ui/profile/NameEdit.java) | The dialog accepts the game's input policy. Normalization, persistence and the original failure cause belong to the consumer. |
+| [cards](src/main/java/ro/cardtable/ui/cards/CardFace.java) | Rank and suit identity, proportions and cream/gold highlighting. The game provides the visible face and decides when to mark it. |
+| [hand](src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java) | Hand layout, scrolling and gestures. Adapters retain feedback duration, lift timing and gesture revisions through [HandInput](src/main/java/ro/cardtable/ui/hand/HandInput.java). |
+| [seat](src/main/java/ro/cardtable/ui/seat/SeatContent.java) | Names, ordered facts and the active player come from the game; labels fit the measured seat width and frame reservations stay fixed across phases. |
 | [table](src/main/java/ro/cardtable/ui/table/android/BoardLayout.java) | Occupied regions, visual orders, viewport and central band measured between places. The Android Adapter applies common geometry. |
 | [turn](src/main/java/ro/cardtable/ui/turn/TurnPacing.java) | Wait for the first visible frame, apply the common range and invalidate the action if the scene has changed. |
 | [animation](src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java) | Validate the seating set and expose the break, duration and curve of the collection. Android draws native faces, and the website plays the same curve on the page elements. |
 | [CardFaceView](src/main/java/ro/cardtable/ui/cards/CardFaceView.java) | The hand and table draw the rank and symbol in the corner, the central symbol and the inverted corner. The face dimensions are scaled for the table, and the collection moves the cards' views off the table. |
-| [CardFaceMetrics](src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java) | The landmark is the card in the Android hand. The Web Adapter takes over the dimensions and positions and keeps the same structure when depositing and collecting. |
+| [CardFaceMetrics](src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java) | Shared proportions, rank sizes and suit geometry. Each adapter applies the same face contract to hand, table and collection roles. |
 | [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Keep the proportions, height and colours of the score table for the Android adapter and browser. |
-| [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) and [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Colors, enquiring and drawing of the selector. |
+| [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) and [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Colors, checkboxes and drawing of the selector. |
 
-The app has the composition of the table, the rules, the history, the winner and the moment of display of the trick. The library measures the winning faces and box, then applies the movement. The joint contract uses only visible places and data.
+The game owns table composition, rules, history, winner selection and collection timing. The library measures card faces and the winning player frame, then applies the collection motion. The shared contract uses only visible seats and public data.
 
-`CardTableTheme` keeps the six Android attributes of the site; `AppTheme` Whist is the ally of this resource. The consumer explicitly adopts it in the manifest; the admission of the ARA and the building does not declare comparison of pixels or Android focus.
+`CardTableTheme` defines six Android table attributes; Whist keeps `AppTheme` as an alias. Consumers adopt the theme explicitly in their manifests. Accepting the AAR and compiling it does not establish pixel parity or native focus behaviour.
 
 ```mermaid
 flowchart LR
-    GAME[Game Adapter] -->|design visible data| MODEL[UI content]
+    GAME[Game Adapter] -->|projects visible data into| MODEL[UI content]
     MODEL -->|feeds| VIEW[Common widgets]
     VIEW -->|issues intentions| GAME
     POLICY[Local texts and policies] -->|configure| VIEW
@@ -72,7 +72,7 @@ The facades are compatibility adapters with a single implementation of the algor
 | Shared verification | [Expected measurements](src/test/resources/card-typography.tsv) used by JVM components and distributed in the browser tests JAR |
 | Native verification | Real shaping, clipping and draw/measure agreement at enlarged text sizes |
 
-From the temporary copy of the Android root `whist-lab-app`, with PowerShell 7, JDK 21 and the Android cachet prepared, the module is built without the application's tasks.
+From the temporary copy of the Android root `whist-lab-app`, with PowerShell 7, JDK 21 and the Android cache prepared, the module is built without the application's tasks.
 
 ```powershell
 .\gradlew.bat --offline --no-daemon :atf-card-table-ui:testDebugUnitTest :atf-card-table-ui:lintRelease :atf-card-table-ui:assembleDebugAndroidTest
@@ -80,25 +80,25 @@ From the temporary copy of the Android root `whist-lab-app`, with PowerShell 7, 
 
 | Selection | Independent waiting |
 |---|---|
-| Meniul comun | Fixed orders and tags, RO/EN, implicit/configurat name, disabled restart and distinct callbacks. |
-| Edit Name | Proposed interval, retention of selection at refusal, deletion, order validare/salvare and cause of failure. |
+| Shared menu | Fixed orders and tags, RO/EN, implicit/configured name, disabled restart and distinct callbacks. |
+| Edit Name | Proposed interval, retention of selection at refusal, deletion, order validation/persistence and cause of failure. |
 | Table and hand geometry | 3–6 places, profiles between 320 and 600 dp, font 1–2 ×, a centred card and measured indices. |
 | Bookmark | Same pallet for refusal and recommendation. The same [gestures scenario](src/test/resources/hand-feedback.tsv) checks the repeated touch in JVM and the web, the expiry after revision and the selection accepted once. |
 | Achievements | Stable orders and identities, loading of details on request, ambiguous states rejected. |
-| Frontiera bibliotecii | Java separate invention for production, JVM and Android instrumented. Library manifest without application or permissions. |
+| Library boundary | Java separate invention for production, JVM and Android instrumented. Library manifest without application or permissions. |
 | Table models | Stable identities, orderly and immutable facts, measured regions and identical dimensions regardless of the number of seats. |
 | Time-frame | `TurnPacingComponentTest` checks the rendering prior to the delay of 550 ms, single action and cancellation for human actor, block or replaced scene. |
-| Adaptoarele Whist | Real texts, language, callbacks and all card markings. |
+| Adapters Whist | Real texts, language, callbacks and all card markings. |
 
-Existing mass and hand components remain integration checks with their retained assertions. Comparison with the previous snapshots and inspection of drawing bodies qualifies refactorization; pixels, focus and touch Android require native distinct sanity.
+Existing table and hand components remain integration checks with their retained assertions. Comparison with the previous snapshots and inspection of drawing bodies qualifies refactorization; pixels, focus and touch Android require native distinct sanity.
 
 ## Separation of games and components
 
-| Proprietar | Liability and tests |
+| Owner | Liability and tests |
 |---|---|
 | Common Library | Drawing, measuring, centering, caging, displayed facts and widgework mechanics; no game oracles. |
 | Whist | `WhistTableContent`, configuration, legality, bid, trump, score and lifecycle; existing engine components remain in the Whist application, with original expectations. |
-| Consumator extern | Android Adapter; keeps the rules, session, checkpoint and decision in his own engine, then uses the active frame, the timing after the first frame and the common geometry of movement. |
+| External consumer | Android Adapter; keeps the rules, session, checkpoint and decision in his own engine, then uses the active frame, the timing after the first frame and the common geometry of movement. |
 
 - The visual order for 3–6 places keeps man at zero; the adapter holds the stable mapping to the engine identities and the actual actor.
 - `SeatContent.Fact` keeps text and order; the library does not collect points, does not interpret negative values and does not decide the winner.
@@ -122,7 +122,7 @@ ATF root. The export uses the libraries/card-table-ui directory from the externa
 ```
 
 - `:atf-card-table-ui` is the name of the Gradle project. The distribution coordinate is `ro.cardtable:card-table-ui`, with the declared version in the building. The export contains AAR, POM, Gradle metadata and source JAR.
-- [Exportul](../../scripts/export-card-table-ui.ps1) keeps the production input manifest and SHA-256 for each coordinate file. Repeated export with the same entries checks the artifacts and reuses them. The change of entries under an existing coordination requires a new version.
+- [Export](../../scripts/export-card-table-ui.ps1) keeps the production input manifest and SHA-256 for each coordinate file. Repeated export with the same entries checks the artifacts and reuses them. The change of entries under an existing coordination requires a new version.
 - Whist is consuming the project from the source. Rentz and Hold'em shall each accept the fixed version after the content and provenance have been confronted. The source version and each co-ordinated allowed to the consumer have their own evidence.
 - The aARM includes Android classes, manifest and resources, including CardTableTheme. Addiction is fixed by the Maven coordinate, with provenance and hashes. [Web Distribution](../../atf-ui-browser/README.md#adapter-library) compiles directly a selection of portable sources from the module and publishes a separate JAR.
 - [Name policy](../card-table-names/README.md) shall be published separately as JAR Java for JVM engines and samples. A geometry component can have its own JAR coordinated if it is independent android and has at least two real JVM consumers.
@@ -143,7 +143,7 @@ The table popup uses `TableMenuContent`: a direct localized score-history action
 - Rentz may provide two rows of the title by the same measured header. The game keeps the contract, progress and actions on the menu.
 - The adapter provides `Automat` in Romanian and `Auto play` in English, the description of the action and the current value. The state load does not emit intentions and a touch emits a boolean change.
 - Under the header, Whist places progress and bids on the left, and the trump on the right. Rentz and Hold'em can place the hand or stage details in the same place.
-- JVM checks cover the arrangement decision, including at the limit of a pixel. The instrumented sample measures the texts in EN and EN and the tactile target of minimum 48 × 48 d. [Testele native](src/androidTest/README.md)
+- JVM checks cover the arrangement decision, including at the limit of a pixel. The instrumented sample measures the texts in EN and EN and the tactile target of minimum 48 × 48 d. [Tests native](src/androidTest/README.md)
 
 The trump scale uses `TrumpTileMetrics` for shared nominal sizes and sizes. Android measures native glyphs, and the browser uses the calculated font of the item. Same sample checks rank, symbol and text classification without the trump.
 

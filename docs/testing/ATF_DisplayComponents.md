@@ -11,7 +11,7 @@ flowchart LR
     MOCK[Controlled XML] -->|supplies| DECODE[Observation decoder]
     DEVICE[XML natively captured] -->|supplies| DECODE
     DECODE -->|design| SNAPSHOT[Geometric snapshot]
-    SNAPSHOT -->|face| ORACLE[Independent oracle]
+    SNAPSHOT -->|compares| ORACLE[Independent oracle]
     ORACLE -->|explain| RESULT[Comparison assessed]
 ```
 
@@ -24,18 +24,18 @@ The fixture describes measured regions without calling the application layout al
 
 ## What moves into the components
 
-[Nucleul UI comun](../../whist-lab-app/atf-card-table-ui/README.md) has its own JVM tests for menu, name editing, geometry and border of dependence. The app retains adaptor and table tests, and the move of implementation does not change existing oracles; Android widgets and pixels have separate acceptances.
+[Shared UI module](../../whist-lab-app/atf-card-table-ui/README.md) has its own JVM tests for menu, name editing, geometry and border of dependence. The app retains adaptor and table tests, and the move of implementation does not change existing oracles; Android widgets and pixels have separate acceptances.
 
-| Level | Controlled entry | Proprietary checks | Proprietar |
+| Level | Controlled entry | Proprietary checks | Owner |
 |---|---|---|---|
 | Application policies | Width, height, density, font, number of players and cards | Distribution of regions, minimum dimensions, available space, rounding and settings calculated | `app.table`, `app.hand`, `app.window` |
 | Name and action | Measured or simulated text heights, box contents and equalized place | Full action above the name, reserved space between shifts, increased censor without repeated scaling | `app.seat` |
 | Trump | Slide width of [Android and Web fixture](../../whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv) | Framing in the same box for card, symbol and text without trump, including enhanced font. [Reference palette](../../whist-lab-app/app/src/test/resources/whist-trump-palette.properties) and geometry is kept when AutoPlay is activated and stopped and during trick collection | [TrumpTileMetrics](../../whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/trump/TrumpTileMetrics.java) |
-| Istoric | Useful window, number of seats, density and font | Full spread width, minimum legible, headers aligned, vertical budget for legend and red diagonal limited to failed bids | `app.score` |
-| Collection of levatates | Centers, actor, public history, watch, view port and controlled events of the scene | Full-cut, convergence, suspendare/reluare and unique cleaning; rebuilding groups redimensioning, waiting for the closing of dialogues and rejects old stage callbacks, without the mutation of the match | `app.animation`, `app.lifecycle`, `app.navigation`, `app.presentation` |
-| Decodare | XML and display profile | Semantic association, card faces, frames, title, trump and content window | [TableViewportObservation](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) |
-| Oracol geometric | Snapshot cu defecte injectate | Number, completeness, capping, framing and absence of overlaps | [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) |
-| Oracol raster | Synthetic and logical coordinates | Change of scale, dominant colour, contrast and tolerances | [Componente display](../../atf-test-android/src/test/java/atf/android/e2e/display/component/) |
+| History | Useful window, number of seats, density and font | Full spread width, minimum legible, headers aligned, vertical budget for legend and red diagonal limited to failed bids | `app.score` |
+| Collection of levatates | Centers, actor, public history, watch, view port and controlled events of the scene | Full-cut, convergence, suspension/reluare and unique cleaning; rebuilding groups resizing, waiting for the closing of dialogues and rejects old stage callbacks, without the mutation of the match | `app.animation`, `app.lifecycle`, `app.navigation`, `app.presentation` |
+| decoding | XML and display profile | Semantic association, card faces, frames, title, trump and content window | [TableViewportObservation](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) |
+| Geometric oracle | Snapshot with injected defects | Number, completeness, capping, framing and absence of overlaps | [TableViewportAudit](../../atf-test-android/src/main/java/atf/android/whist/evidence/TableViewportAudit.java) |
+| Oracle raster | Synthetic and logical coordinates | Change of scale, dominant colour, contrast and tolerances | [Components display](../../atf-test-android/src/test/java/atf/android/e2e/display/component/) |
 
 ## Mock contract
 
@@ -44,14 +44,14 @@ The fixture describes measured regions without calling the application layout al
 - The simulated transport is misfiring on any command or catch. An accidental call to the device fails in the component.
 - JVM execution uses real Java dependencies before SDK stubs when the names of the classes coincide. The generation of the classpathus is preserved; a failure of the infrastructure does not substitute the verdict of the product.
 - The presence of a node does not prove its visibility; the areas without surface and the elements outside the window are rejected.
-- The window uses `android:id/content` when available; catches without this region have explicit fallback to the declared profile.
+- The window uses `android:id/content` when available; captures without this region have explicit fallback to the declared profile.
 - Full decaying of fixtures uses the EN signals and the action check has explicit contracts RO/EN. Change of language does not allow shortening of the label or loss of association with the active player.
 - [PlayerSeatMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/seat/PlayerSeatMetrics.java) receives the full action height; Android measures it with the actual text and the component injects extensions for the larger text and more. The model does not limit the number of rows and does not deduce legibility from the text's presence in XML.
-- The check of the action of [decodor](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) is common to simulated observations and E2E game and bidding checkpoints. Negative controls remove the action, change the text or move it over the name; the break has clearly zero active actions.
+- The check of the action of [decoder](../../atf-test-android/src/test/java/atf/android/e2e/display/support/TableViewportObservation.java) is common to simulated observations and E2E game and bidding checkpoints. Negative controls remove the action, change the text or move it over the name; the break has clearly zero active actions.
 - The distance to the player shall be measured from the box meeting and its action. A free space up to the box does not allow a control to cover the label above.
 - The declared dimensions of the played edge and faces have comparisons in pixels and rounding tolerance. A face higher than the one required does not pass simply because it exceeds a minimum threshold.
 - [ScoreHistoryMeasure](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryMeasure.java) receives separately the measurements of the font and header. Components check the entire table, including the last cell, signs, unknown values, long names and increased text; Android provides implementation of glider measurement.
-- [HistoryViewportComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/layout/HistoryViewportComponentTest.java) checks the vertical budget, the return to a larger window, fractional densities and invalid measures. Politics does not substitute the rendering of Android font.
+- [HistoryViewportComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/layout/HistoryViewportComponentTest.java) checks the vertical budget, the return to a larger window, fractional densities and invalid measures. Policy does not substitute the rendering of Android font.
 - [HistoryLegendAuditComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/HistoryLegendAuditComponentTest.java) reproduces the wrong property in the horizontal container, empty or intersected regions and missing evidence. The full text of XML is not enough for PASS.
 - [LegendProfilesComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/legend/LegendProfilesComponentTest.java) qualifies offline default plan, focused selection, canonical identities and refusal of invalid configurations. E2E consumes typed cases and performs only the selected native sample.
 - [RecordsRunContractComponentTest](../../atf-test-android/src/test/java/atf/android/e2e/records/RecordsRunContractComponentTest.java) checks the selection of visible text with one observation, the re-reading after disclosure and the identity of the error. The display keeps the driver's fresh reading and a single tap; redundant reefs are not used as a synchronization mechanism.
@@ -64,7 +64,7 @@ The fixture describes measured regions without calling the application layout al
 
 - [TrumpIndicatorComponentTest](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrumpIndicatorComponentTest.java) checks the same projection of the asset in all ways and languages, the lack of redundant row, two regions of complete font and the separation of the contour of the button from the tactile target. Injected measurements shall not replace the rendering of the Android font.
 - [CardFaceMetrics](../../whist-lab-app/app/src/main/java/ro/whistlab/app/cards/CardFaceMetrics.java) holds the proportion 5: 7: 63×88 dp in hand, respectively 46×64 or 50×70 dp per table. The components check the height reduction by 10%, rounding up, lifting and identical sizes to 1–13 cards and 3–6 seats.
-- [Ordinea locurilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java) confronts names and cards with the same circular scroll; a test uses the bid and the first effective trick from the engine for each variant and number of players. At four places, the bow of the opponents releases the full width of the trick.
+- [Order seats](../../whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableSeatOrderComponentTest.java) confronts names and cards with the same circular scroll; a test uses the bid and the first effective trick from the engine for each variant and number of players. At four places, the bow of the opponents releases the full width of the trick.
 - [Java API Governance](../../atf-tests/src/test/java/atf/tests/governance/source/android/AndroidJavaApiGovernanceTest.java) rejects terminal `Stream.toList()` in Android sources; allows compatible collectors and ignores comments and texts. The JDK of tests does not prove the method's availability on the device.
 - Oracle keeps independent expectations: the height of each card and the width of the last uncovered face have a pixel tolerance. For overlapping cards, the Android XMLs describe the exposed tape, which must be positive and at most the standard face; it does not prove the width hidden under the neighbor. The components shall verify separately the full width of all faces. The negative samples cover the thin final face, the null or too wide tape and the deformed faces.
 - The rank measurement adds padding directly in pixels, without converting from pixels to dp and back. The case with density 2.25 and 13 cards checks both edges of the fan, including rounding of the measured strip.
@@ -95,7 +95,7 @@ pwsh -NoProfile -File .\scripts\run-whist-responsive-sanity.ps1 -ComponentsOnly
 
 The launcher prepares a temporary copy and a repository Maven private. `-MavenRepository` indicates the source of the cache; ATF JARs are installed and confronted in the copy of the execution without replacing those read by another process.
 
-The competing regression keeps an JAR open for reading in the source cachet and requires successful bootstrap in private copy with the source intact. The hashes of the resolved libraries must coincide with those of the source copy; a botstrap failure remains distinct from the interface verdict.
+The competing regression keeps an JAR open for reading in the source cache and requires successful bootstrap in private copy with the source intact. The hashes of the resolved libraries must coincide with those of the source copy; a botstrap failure remains distinct from the interface verdict.
 
 A temporary copy of the application with prepared dependencies:
 
@@ -110,7 +110,7 @@ $historyRasterOutput = Join-Path ([IO.Path]::GetTempPath()) 'whist-history-raste
 .\gradlew.bat :app:historyRasterTest "-Pwhist.historyRasterOutput=$historyRasterOutput" --offline --no-daemon
 ```
 
-The exported NGP is a component-controlled rendering, not an Android catch. Labels and values come from the application projection and fonts and graphical adapter belong to the test JVM.
+The exported PNG is a component-controlled rendering, not an Android catch. Labels and values come from the application projection and fonts and graphical adapter belong to the test JVM.
 
 The sources in `src/rasterTest/java` use the JDK completely through a separate compilation task; the compilation of Android units keeps the SDK surface. `historyRasterTest` consumes the same application classes and legal fixtures already compiled; the check `check` includes both collections.
 
@@ -121,11 +121,11 @@ The sources in `src/rasterTest/java` use the JDK completely through a separate c
 | Owner | Contract |
 |---|---|
 | Test Kit | `ComponentAuditExtension` keeps the phases, duration and original cause; `TEST_BODY` requires an audited assertion. |
-| Testul | Use `AuditedAssertions` and declare inputs via `ComponentInputs`; the fixture is not presented as an Android catch. |
-| Adaptorul Android | [Composition](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentReports.java) captures settings once; [ownerul](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) publishes full inputs and comparison in HTML. |
+| Test | Use `AuditedAssertions` and declare inputs via `ComponentInputs`; the fixture is not presented as an Android catch. |
+| Android adapter | [Composition](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentReports.java) captures settings once; [owner](../../atf-test-android/src/main/java/atf/android/evidence/component/AndroidComponentRun.java) publishes full inputs and comparison in HTML. |
 | Reporting | The `AssertionAuditReport.publishStep` binary API provides the standard folding group; Extent and fallback have the same comparisons captured. |
 
-With a copy of TMP, with his own Maven repositoryul already prepared:
+With a copy of TMP, with his own Maven repository already prepared:
 
 ```powershell
 mvn -B -o -pl atf-test-android -am -Phistory-components '-Dtest=AndroidHistoryComponentSuite' '-Dsurefire.failIfNoSpecifiedTests=false' test
@@ -134,7 +134,7 @@ mvn -B -o -pl atf-test-android -am -Phistory-components '-Dtest=AndroidHistoryCo
 - **Individual: ** the `HistoryLegendAuditComponentTest` selector produces class ratio; the suite uses `atf.test.run.scope=suite` and only one owner.
 - **Output: ** default `%TEMP%/whist-component-reports`; `atf.android.component.report-directory` accepts an absolute path. The sole name shall keep separate claims without overwriting an open report.
 - **Renderer: ** `atf.android.component.renderer=extent` is default; `fallback` allows checking the same contract without Extent.
-- **Context: ** XMLs and profile selections are integral text bodies, folding; external copies are not required for this selection. The preview of the assertions uses the captured reporting setting after the drafting.
+- **Context: ** XMLs and profile selections are complete, collapsible text bodies; external copies are not required for this selection. The preview of the assertions uses the captured reporting setting after the drafting.
 - **Long values: ** expected and current above the preview are published in full in the comments after drafting, without reassessing the comparison. The unique identity JUnit allows each parametric or intoxicated call to be confronted with the XML result.
 - **Budget of bodies: ** numbered parts keep the text entirely right above the display ceiling; concatenation and last character have component controls, separate from the forecast of assertions.
 - **Time: ** phases keep the duration measured by Kit; the start of the HTML session identifies subsequent publication without inventing an Android time.
@@ -152,7 +152,7 @@ The classes use audited assertions and [Aggregate launcher](../reporting/ATF_Aud
 
 Gradle selection of the application, engine and graphic library uses [Gradle audit deck](ATF_GradleComponents.md) and are not implicitly included in the Maven aggregate. Each task publishes its own canonical HTML and confronts the calls with the Temporary Junite; the presence of another selection report does not qualify for audit.
 
-- **Contract:** [Adapter samples](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) and [Gradle Deck Samples](../../whist-lab-app/test-audit/src/test/java/atf/gradle/audit/GradleAuditBridgeComponentTest.java) checks the joint session, the original failure, the abort, the lack of assertions and the text longer than the ceilings. [Criteriul complet](../feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) separate the qualification of producers from the migration of historical executions.
+- **Contract:** [Adapter samples](../../atf-test-android/src/test/java/atf/android/component/AndroidComponentReportContractTest.java) and [Gradle Deck Samples](../../whist-lab-app/test-audit/src/test/java/atf/gradle/audit/GradleAuditBridgeComponentTest.java) checks the joint session, the original failure, the abort, the lack of assertions and the text longer than the ceilings. [Criterion complete](../feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) separate the qualification of producers from the migration of historical executions.
 
 - **Launcher: ** `-ComponentsOnly -ComponentSuite History` and `-ComponentRenderer fallback` restrict selection; `Display` is implicit. The report appears in `component-reports` of the external running, and `WORKING_STATE.json` identifies the specimen and the field.
 - **Compilation: ** Maven profiles select tests on execution; the broad profile does not omit the historical sources in compilation.
@@ -168,13 +168,13 @@ Gradle selection of the application, engine and graphic library uses [Gradle aud
 | Interaction | Tap accepted, focus, hit testing, animation and transition observed. |
 | Composition | The same state contains all the necessary regions in the real raster. |
 
-A formula change first runs the components; a change of rendering or integration with the system adds [sanity-ul nativ selectat](ATF_Display.md). The results are external and identify the sources verified.
+A formula change first runs the components; a change of rendering or integration with the system adds [focused native sanity checks](ATF_Display.md). The results are external and identify the sources verified.
 
 ## Frontier of reusable UI components
 
 [atf-card-table-ui](../../whist-lab-app/atf-card-table-ui/README.md) has its own components for geometry, menu, editing and visible table models. Source Guards shall refuse to import engines or sessions into joint production and tests.
 
-| Comun | Whist integration, maintained in the Whist app |
+| Shared | Whist integration, maintained in the Whist app |
 |---|---|
 | Proportion, centering, regions and quarrying | The order of the engine actors and the legality of the card. |
 | Ordered and immutable acts, markings and identities | Bidding, trump, trick, score and restoration. |

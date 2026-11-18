@@ -11,13 +11,13 @@ This guide holds the admission of a new domain. [Development of AIU](ATF_PolicyE
 | Surface | Code status | What does another game require? |
 |---|---|---|
 | Classification and audit JUnit | [Kit](../../lib/README.TestKit.md#purpose-and-integration) independent of the Whist engine. | Own expectations and the adaptor to the publication of results. |
-| Biblioteci comune | [Binary APIs](../platform/README.md), with local acceptance. | Configuration, provenance and verification on the profile of the new consumer. |
+| Shared libraries | [Binary APIs](../platform/README.md), with local acceptance. | Configuration, provenance and verification on the profile of the new consumer. |
 | Governance | [Adapted verifiers](../governance/README.md), with local policy and population; use [Documentary clipboard](../governance/ATF_Documentation.md#documentation-governance-cli) for editorial rules, and [JVM inventory clipper](../governance/README.md#jvm-inventory-via-cli) for sources. | Root, modules and explicit inventory plus negative controls on the new perimeter. |
 | Intersection of the intervals | [Pure component](../../whist-lab-app/ai-lab/tools/qualification/half-open-interval.mjs), consumed by the register. | Valid whole entries and data identity adaptation. |
-| Data exposure | [Registrul actual](ATF_EvaluationRegistry.md) sets the namespaceum of Whist distributions. | Identity contract, data space and migration; change of a name does not qualify as a generic register. |
+| Data exposure | [Registry actual](ATF_EvaluationRegistry.md) sets the namespaceum of Whist distributions. | Identity contract, data space and migration; change of a name does not qualify as a generic register. |
 | Policy and Observation | [AiPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/AiPolicy.java) projects status to the Whist models. | Types, actions, observation and objective of the new game. |
-| Corpus and Comparison | [Corpusul](ATF_Corpus.md) and [arena](ATF_Arena.md) check distributions, contracts and Whist scores. | Schema and validator of own route with comparisons suitable for the domain. |
-| Publication of the domain | [Consumatorul](../../atf-tests/README.md) performs records and results of the Whist. | Mapping of events and comparisons; the common renderer remains with the library's responsible. |
+| Corpus and Comparison | [Corpus](ATF_Corpus.md) and [arena](ATF_Arena.md) check distributions, contracts and Whist scores. | Schema and validator of own route with comparisons suitable for the domain. |
+| Publication of the domain | [Consumer](../../atf-tests/README.md) performs records and results of the Whist. | Mapping of events and comparisons; the common renderer remains with the library's responsible. |
 
 The method preparation allows the first adapter to be built. The compatibility statement between games requires at least two real adapters passing the joint contracts; an additional mock of the same model does not provide this confirmation.
 
@@ -27,8 +27,8 @@ The method preparation allows the first adapter to be built. The compatibility s
 flowchart LR
     SPEC[Confirmed rules] -->|defines| ORACLE[Independent oracle]
     ORACLE -->|checks| ADAPTER[Field Adapter]
-    ADAPTER -->|exercise| CASES[Componente mici]
-    CASES -->|permit| LOOP[Joc offline complet]
+    ADAPTER -->|exercise| CASES[Small components]
+    CASES -->|permit| LOOP[Complete offline game]
     LOOP -->|precede| REAL[Confronting product]
 ```
 
@@ -44,11 +44,11 @@ The adapter exposes the behavior of the domain and preserves the difference betw
 | Contract | The variant, roles, states, actions, termination and score have confirmed definitions and version. |
 | Observation | Permitted information, visible history and source of the random are declared; the future and secrets of other roles are excluded from the decision. |
 | Transition | A legal action changes the status as per the rule; refusal does not change the status. Repeating an order has its semantics declared. |
-| Oracol | The expectation is a rule of independence, an invariant or an enumeration with a finite domain; the agreement of two copies of the same code is not sufficient. |
-| Componente | The nominal case, the injected defect, the valid neighbor and the rule limit are differentiated without an interface. |
+| Oracle | The expectation is a rule of independence, an invariant or an enumeration with a finite domain; the agreement of two copies of the same code is not sufficient. |
+| Components | The nominal case, the injected defect, the valid neighbor and the rule limit are differentiated without an interface. |
 | Offline loop | All shifts lead to termination or an explicit limit; resources, score and preservation of the game objects are checked. |
-| Produs real | A minimum selection of states and transitions shall be in line with the model of the product identified; differences shall be visible. |
-| Evaluare AI | The basis, candidate, budget and criteria shall be fixed before the reserved data; the model adaptation shall open the affected qualification. |
+| Product real | A minimum selection of states and transitions shall be in line with the model of the product identified; differences shall be visible. |
+| Evaluation AI | The basis, candidate, budget and criteria shall be fixed before the reserved data; the model adaptation shall open the affected qualification. |
 
 ## Adapter contracts
 
@@ -69,7 +69,7 @@ In a fully observable game, the observation may contain the entire permitted sta
 
 | Lesson | New application | Verification |
 |---|---|---|
-| The comment does not establish the intention of the product | Separate requirement **confirmed **, behaviour **observat** and hypothesis **assumed **. | A known defect is detected without copying the current pending response. |
+| The comment does not establish the intention of the product | Separate requirement **confirmed **, behaviour **observed** and hypothesis **assumed **. | A known defect is detected without copying the current pending response. |
 | Mock has declared limits | Modulate states, transitions and refusals, then face a selection with the actual product. | The pattern difference and the violation of a requirement receive distinct diagnoses. |
 | Defeat locates analysis | Reduce the first divergence to a property and its border. | The valid neighbor rules out too wide a rule; a game's victory does not become an optimal label. |
 | Prediction differs from decision | The model estimates behaviour; policy follows the stated objective. | The predictive error, legality and strategic progress have separate criteria. |
@@ -81,7 +81,7 @@ In a fully observable game, the observation may contain the entire permitted sta
 
 ## Rules and weightings in another game
 
-Transfer semantics of a feature, not numerical value. Each rule declares the condition, unity, normalisation, priority, consumer, limits and verification; [ghidul YAML](../ai/ATF_RulesConfiguration.md) distinguishes the legal filter, the order of objectives, the mixture of estimates and the coefficient learned.
+Transfer semantics of a feature, not numerical value. Each rule declares the condition, unity, normalisation, priority, consumer, limits and verification; [Guide YAML](../ai/ATF_RulesConfiguration.md) distinguishes the legal filter, the order of objectives, the mixture of estimates and the coefficient learned.
 
 - Redefine the objective and the terminal criterion before a weighting: points, risk and duration may have different units.
 - Recalculate the context from the information available to the role; access to the future does not become acceptable through normalisation.
@@ -95,19 +95,19 @@ This is a drafting structure; current launchers do not interpret the scheme:
 
 ```yaml
 lesson:
-  id: "<identitate stabilă>"
-  domain: "<joc sau produs și versiunea regulilor>"
-  scope: "<precondiții și rol>"
-  observation: "<informație permisă actorului>"
-  claim: "<proprietate verificabilă>"
-  claim_status: "<confirmat | observat | presupus>"
-  contract_owner: "<responsabil și versiunea contractului>"
-  oracle: "<sursă independentă a așteptării>"
-  boundaries: "<când proprietatea nu se aplică>"
-  negative_control: "<defect detectabil și vecin valid>"
-  adapter: "<date și acțiuni specifice domeniului>"
-  data_identity: "<generator, versiune, partiție și expunere>"
-  promotion: "<criteriu fixat înaintea evaluării noi>"
+  id: "<stable identity>"
+  domain: "<game or product and rules version>"
+  scope: "<preconditions and role>"
+  observation: "<information visible to the actor>"
+  claim: "<verifiable property>"
+  claim_status: "<confirmed | observed | assumed>"
+  contract_owner: "<owner and contract version>"
+  oracle: "<independent source of expected results>"
+  boundaries: "<when the property does not apply>"
+  negative_control: "<detectable defect and valid neighbour>"
+  adapter: "<domain-specific data and actions>"
+  data_identity: "<generator, version, partition and exposure>"
+  promotion: "<criterion fixed before fresh evaluation>"
 ```
 
 For testing a new product, replace the shift with the operation, score with invariant or acceptance criterion and role with user permissions. An unconfirmed hypothesis remains an investigation; the contract's manager clarifies the wait before the automatic verdict.

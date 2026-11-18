@@ -12,7 +12,7 @@ The implementation and tests of each mechanism shall be together, grouped in res
 flowchart LR
     GAMES[Declared games] -->|validate by| CORPUS[Corpus]
     CORPUS -->|feeds| ANALYSIS[Diagnostic]
-    ANALYSIS -->|propune| MODEL[Model candidat]
+    ANALYSIS -->|proposes| MODEL[Candidate model]
     MODEL -->|qualifies as| GATE[Protocol offline]
 ```
 
@@ -33,11 +33,11 @@ The validator shall verify the rules and the score before interpreting the resul
 | [learning](learning/) | Composition of the lots and evaluation of protocols or arena. |
 | [diagnostics](diagnostics/) | Divergence, contextual pressure and finite responses. |
 | [qualification](qualification/) | Explicit criteria for local corrections and candidate characteristics. |
-| [testing](testing/) | A determinist builder of legal games for components, without reading the archive. |
+| [testing](testing/) | A deterministic builder of legal games for components, without reading the archive. |
 
 [Validator of candidate base](qualification/WhistCandidateSource.psm1) retains the complete inventory of sources and the final copy verification. [The contract of the manifest](../../../docs/testing/ATF_Collections.md#full-identity-of-candidate-base) holds migration, canonical hash and the boundary between base and candidate; its components use temporary directories built without archived games.
 
-[Registrul expunerii](qualification/whist-evaluation-registry.mjs) coordinates the batches between the corpuss and restores the resumption as known exposure. [Register contract](../../../docs/learning/ATF_EvaluationRegistry.md) defines identity, import of history, blocking and recovery after interruption.
+[Exposure registry](qualification/whist-evaluation-registry.mjs) coordinates the batches between the corpuss and restores the resumption as known exposure. [Register contract](../../../docs/learning/ATF_EvaluationRegistry.md) defines identity, import of history, blocking and recovery after interruption.
 
 - **Generic mechanism:** [intersection of the intervals](qualification/half-open-interval.mjs) is pure and receives full semi-open intervals.
 - **Field Adapter:** Whist keeps distribution space, seedness validation and persistence; [transferable lessons](../../../docs/learning/ATF_PolicyEvolution.md#lessons-to-other-games-and-products) explain this border.
@@ -51,10 +51,10 @@ From the `whist-lab-app` directory of a full temporary copy of the project, with
 ```
 
 - **Solving: ** Gradle executes Node from the root of the project copy. The imports and resources of the tools shall be resolved against the file which holds them; the entries of the CLL and external destinations shall be declared by the caller.
-- **Local data:** tests [corpus](corpus/whist-corpus.test.mjs) and [curator](corpus/whist-active-corpus.test.mjs) use [partide construite](testing/legal-game-fixture.mjs), with distribution, bids, legal game and score calculated separately from the validator. Temporary files belong to the test. `--offline` ask for separate available Gradle dependencies.
-- **Reproduction: ** Semantic identities of the records shall be kept when physically moving the source. The old catches shall be reproduced from their identified copy and the external directories shall not be rewritten by this organization.
+- **Local data:** tests [corpus](corpus/whist-corpus.test.mjs) and [curator](corpus/whist-active-corpus.test.mjs) use [matches constructed](testing/legal-game-fixture.mjs), with distribution, bids, legal game and score calculated separately from the validator. Temporary files belong to the test. `--offline` ask for separate available Gradle dependencies.
+- **Reproduction: ** Semantic identities of the records shall be kept when physically moving the source. The old captures shall be reproduced from their identified copy and the external directories shall not be rewritten by this organization.
 
-[Modulul AI](../README.md) · [Protocolul](../../../docs/learning/README.md) · [Collections](../../../docs/testing/ATF_Collections.md)
+[Module AI](../README.md) · [Protocol](../../../docs/learning/README.md) · [Collections](../../../docs/testing/ATF_Collections.md)
 
 ## Limits and qualification
 
@@ -62,4 +62,4 @@ The built data qualify his mechanism and refusals; there are no new games to dem
 
 Qualification of gear by volume and interruption remains monitored in [Laboratory feedback](../../../docs/feedback/ATF_Ai.md#autonomous-laboratory-verification).
 
-[Protocolul](../../../docs/learning/README.md) holds the display of lots and promotion. The notes and results of an assessment shall remain external; the exposure register shall not automatically certify the other tools.
+[Protocol](../../../docs/learning/README.md) holds the display of lots and promotion. The notes and results of an assessment shall remain external; the exposure register shall not automatically certify the other tools.

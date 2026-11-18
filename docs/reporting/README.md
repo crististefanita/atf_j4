@@ -2,7 +2,7 @@
 
 ## Overview
 
-The consumer has the selection of tests, game semantics and entry dates for publication. The reporting library converts the execution records into an autonomous presentation, keeping the assessed verdicts and the association of catches with the tests that produced them.
+The consumer has the selection of tests, game semantics and entry dates for publication. The reporting library converts the execution records into an autonomous presentation, keeping the assessed verdicts and the association of captures with the tests that produced them.
 
 ## Publication flow
 
@@ -12,7 +12,7 @@ TEST[Executed test] -->|capture| RECEIPT[Execution records]
 SELECT[Selection policy] -->|selects invocations| RECEIPT
 RECEIPT -->|composes| CONSUMER[Whist publisher]
 CONSUMER -->|call API| LIB[Reporting library]
-LIB -->|produce| HTML[HTML autonom]
+LIB -->|produce| HTML[Standalone HTML]
 ```
 
 <details>
@@ -26,7 +26,7 @@ The choice and comparisons of the application belong to the consumer. The librar
 
 - The selection shall retain whole invoicing, all failures and the inventory of omissions.
 - The waiting, the observed value and the original case remain associated with the same claim.
-- The original Android catches are incorporated PNG Base64 and belong to the control point that produced them.
+- The original Android captures are incorporated PNG Base64 and belong to the control point that produced them.
 - Components, simulated games, resumption and actions of Android have distinct types and limits.
 - The republican shall retain the identity of the original execution; the lack of a time interval shall be explicit.
 - Their results and references are published in the configured external repository.
@@ -36,12 +36,12 @@ The choice and comparisons of the application belong to the consumer. The librar
 | Mechanism | Owning contract |
 |---|---|
 | Selection, grouping and navigation | [Presentation policy](ATF_Presentation.md) |
-| Actions, comparisons and images | [Contractul Android](ATF_Android.md) |
-| Original execution and republication | [Time measurement](ATF_PhaseTiming.md) |
+| Actions, comparisons and images | [Android contract](ATF_Android.md) |
+| Original execution and republishing | [Time measurement](ATF_PhaseTiming.md) |
 | Registration and acceptance on purpose | [Teaching results](ATF_Handoff.md) |
 | Integrity and access to content | [Publication audit](ATF_Audit.md) |
 
-[Presentation policy](ATF_Presentation.md) defines the volume and selection of input data. [Contractul Android](ATF_Android.md) defines the relationship between the action-observation-comparison and [handing over results](ATF_Handoff.md) defines atomic publication.
+[Presentation policy](ATF_Presentation.md) defines the volume and selection of input data. [Android contract](ATF_Android.md) defines the relationship between the action-observation-comparison and [handing over results](ATF_Handoff.md) defines atomic publication.
 
 Entry data defects are corrected in the consumer; generic library requirements are directed by [feedback](../feedback/README.md). The binary identity shall be read from the configuration and provenance of the delivery without any versions or results copied to this guide.
 

@@ -8,11 +8,11 @@ JVM module exclusively for test fixtures. JUnit Bridge 4 captures the actual con
 
 ```mermaid
 flowchart LR
-    CASE[Case and fixture] -->|capture before comparison| INPUT[Context efectiv]
+    CASE[Case and fixture] -->|capture before comparison| INPUT[Actual context]
     INPUT -->|evaluate through Kit| CHECK[Expected and actual]
-    CHECK -->|publishing by Reporting| HTML[HTML canonic]
+    CHECK -->|publishing by Reporting| HTML[Canonical HTML]
     XML[Temporary JUnit output] -->|checks identities and verdicts| VERIFY[Acceptance of selection]
-    HTML -->|Recite bodies| VERIFY
+    HTML -->|re-reads bodies| VERIFY
 ```
 
 <details>
@@ -27,7 +27,7 @@ A JUnit rule holds the claim, including fixtures before/after. The duration of t
 - The context shall be captured at execution before the first comparison, including parametric values and local fixtures. Source code does not replace the observed values.
 - JUnit 4 keeps runners and parametrizations; the deck adapts the order of the assertions message to Kit.
 - The lack of context, lack of comparison, omission of an appeal, duplication or divergent verdict prevents acceptance.
-- The declared rasters are PNG inline, labelled as JVM fixture. No Android catches.
+- The declared rasters are PNG inline, labelled as JVM fixture. No Android captures.
 - The catalogue classifies units, components, governance and learning; learning selections remain eighty-in.
 - One worker and one HTML per task avoid unqualified competition; the closureur and final check belong to the selection.
 

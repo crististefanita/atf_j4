@@ -8,9 +8,9 @@ Focused selection reduces the volume of analysis in games that bring distinct le
 
 The selection of data for analysis has distinct mechanisms with explicit status:
 
-| Mechanism | Implementation and limit |
+| Mechanism | Execution and limit |
 |---|---|
-| Corpus activ | [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs): reshoring of traces, protected origins, rarity-weighted coverage and exchanges with strict progress in the declared budget. |
+| Corpus active | [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs): reshoring of traces, protected origins, rarity-weighted coverage and exchanges with strict progress in the declared budget. |
 | Diagnostic examples | [whist-casebook](../../whist-lab-app/ai-lab/tools/corpus/whist-casebook.mjs): selects family gains and regressions, plus contract errors in the size of the hand; the chosen games extract the first eligible observations of the actor by size and type of decision. |
 | Sub-set by category | Extension contract without generic selection qualified in the project; ask parent manifest, explicit criteria and [self-acceptance](../feedback/ATF_Ai.md). |
 
@@ -18,7 +18,7 @@ The selection of data for analysis has distinct mechanisms with explicit status:
 flowchart LR
     ARCH[Development games] -->|clean| ACTIVE[Active manifest]
     RUN[Development calls] -->|select reasons| CASE[Casebook]
-    ARCH -->|provide parties| CASE
+    ARCH -->|supplies games| CASE
     CASE -->|design| OBS[Public comments]
 ```
 
@@ -39,8 +39,8 @@ The curator produces the active corpus, and the casebook consumes separately dec
 
 ## Process Invariants
 
-- [Corpusul](ATF_Corpus.md) holds the partition, identity, hashes and replicayes independently prior to analysis.
-- [Componentele AI](../testing/ATF_AiComponents.md) holds the legal witness, the actor's projection and the justified expectation.
-- [Protocolul offline](README.md#the-improvement-cycle) holds the freezing, reserved lot and promotion.
+- [Corpus](ATF_Corpus.md) holds the partition, identity, hashes and replayes independently prior to analysis.
+- [AI components](../testing/ATF_AiComponents.md) holds the legal witness, the actor's projection and the justified expectation.
+- [Protocol offline](README.md#the-improvement-cycle) holds the freezing, reserved lot and promotion.
 
 The selection for learning and [selection for presentation](../reporting/ATF_Presentation.md) have different purposes. The choice of examples in an HTML does not alter the executed population, active corpus or status of the reserved data.

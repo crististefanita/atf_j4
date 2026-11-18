@@ -13,7 +13,7 @@ The Whist Adapter creates a new state of the screen at each opening. The compone
 - The components shall cover the retention of the tail upon closure, the reappearance of unconfirmed notification and the refusal of an outdated confirmation. On APK, recreate activity before and after confirmation and face each appearance with tail status and saved progress. [Components of notification](../../whist-lab-app/app/src/test/java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java)
 - Use existing checkpoints for catalogue and detail. Extend the sample with the recreation of activity in both languages and check for the return to the same objective, the same position and with the correct visible labels.
 
-[Adaptorul Android](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementsScreen.java) · [Ecranul comun](../../whist-lab-app/atf-card-table-ui/README.md#achievements) · [Acceptance of Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java)
+[Android adapter](../../whist-lab-app/app/src/main/java/ro/whistlab/app/achievements/presentation/WhistAchievementsScreen.java) · [Shared screen](../../whist-lab-app/atf-card-table-ui/README.md#achievements) · [Acceptance of Android](../../atf-test-android/src/test/java/atf/android/e2e/release/WhistReleaseHomeE2eTest.java)
 
 ## P2 · Calibration of Order with Human Players
 

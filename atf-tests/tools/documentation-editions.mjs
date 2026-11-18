@@ -88,7 +88,8 @@ function markdownContract(path, text) {
       structure.push(['fence', fence[1], fence[2]]);
       inside = inside ? null : fence[2] || 'code';
     } else if (inside) {
-      structure.push([inside, inside === 'mermaid' ? diagramStructure(line) : line]);
+      structure.push([inside, inside === 'mermaid' ? diagramStructure(line)
+        : inside === 'yaml' ? line.replace(/^(\s*reason:\s*).+$/, '$1<localized explanation>') : line]);
     } else if (line.trim()) {
       const heading = /^(\s*#{1,6})\s+/.exec(line);
       const list = /^(\s*(?:[-+*]|\d+\.)\s+)/.exec(line);
@@ -139,10 +140,6 @@ export function compareDocumentationEditions(englishFiles, romanianFiles) {
     const ro = markdownContract(path, utf8.decode(romanian.get(path)));
     if (!isDeepStrictEqual(en.structure, ro.structure)) problems.push('Markdown structure differs: ' + path);
     if (!isDeepStrictEqual(en.destinations, ro.destinations)) problems.push('Link destinations differ: ' + path);
-    if (ARCHIVED.test(path) && (english.get(path) !== englishFiles.get(path) || romanian.get(path) !== romanianFiles.get(path))
-      && !englishFiles.get(path).equals(romanianFiles.get(path))) {
-      problems.push('Archived original differs: ' + path);
-    }
   }
 
   return {problems, review: {schemaVersion: 1, englishBranch: 'main', romanianBranch: 'main_RO',

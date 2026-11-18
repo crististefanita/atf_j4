@@ -18,9 +18,9 @@ The alternatives here modify a declared mechanism of bidding or interpreting off
 
 ```mermaid
 flowchart LR
-    CATALOG[Manifest candidat] -->|identify| BASE[Base and files]
+    CATALOG[Candidate manifest] -->|identify| BASE[Base and files]
     BASE -->|validates| COPY[Isolated copy]
-    COPY -->|receive and face| SOURCE[Alternative sources]
+    COPY -->|receives and compares| SOURCE[Alternative sources]
     SOURCE -->|qualifies as| CHECK[Components and protocol]
     CHECK -->|Inform| REVIEW[Promotion review]
 ```
@@ -28,7 +28,7 @@ flowchart LR
 <details>
 <summary>Legend: identity precedes execution</summary>
 
-[Lansatorul](../../../../scripts/run-whist-collection.ps1) checks the base, applies the sources only in temporary copy and confronts the files copied with the manifest. An incompatible basis produces refusal; changing hashes to pass control does not constitute qualified migration.
+[Launcher](../../../../scripts/run-whist-collection.ps1) checks the base, applies the sources only in temporary copy and confronts the files copied with the manifest. An incompatible basis produces refusal; changing hashes to pass control does not constitute qualified migration.
 
 </details>
 
@@ -44,7 +44,7 @@ Check the changed mechanism first, then integration of the candidate. The sample
 
 The launcher shall apply only the files of the candidate-elect. A Gradle selection which does not contain that sample or a basis refused is not the execution of the test by simple presence of the source.
 
-| Intrare | Usage |
+| Entry point | Usage |
 |---|---|
 | `-ResearchCandidate` | Unique identity in the catalogue, in the collection allowed for that candidate. |
 | `-CandidateOverlay` | Frozen external manifest with contract [full base inventory](../../../../docs/testing/ATF_Collections.md#full-identity-of-candidate-base). |
@@ -62,8 +62,8 @@ Collection `learning` ask also candidate, external corpus, compatible protocol a
 
 - **Identity: ** The comparison uses the sources and configuration of the copy executed; live modification does not recalibrate it retrospectively.
 - **Legality: ** lack of a legally deduced colour limits the certain worlds; voluntary bid is a clue by the stated model.
-- **Probe domain:** [tests of the tender model](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) checks also plausible helpers; controlling the future offers of that helper does not prove the behaviour alone `chooseBid`.
+- **Probe domain:** [tests of the bid model](shared/game-core/src/test/java/ro/whistlab/core/LearnedBidEvidenceTest.java) checks also plausible helpers; controlling the future offers of that helper does not prove the behaviour alone `chooseBid`.
 - **Progress: ** regression, cost and comparison on new games have distinct criteria; the research status of the manifest remains explicit until promotion.
 - **Retention: ** games, product calibrations and results remain external. Versified parameters identify implementation without becoming historical scores in the guide.
 
-[Promotion protocol](../../../../docs/learning/README.md) · [Parts and oracles](../../../../docs/testing/ATF_AiComponents.md) · [Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md)
+[Promotion protocol](../../../../docs/learning/README.md) · [Parts and oracles](../../../../docs/testing/ATF_AiComponents.md) · [Decision model](../../../../docs/ai/ATF_DecisionModel.md)

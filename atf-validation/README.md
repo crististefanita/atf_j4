@@ -38,12 +38,12 @@ flowchart LR
 |---|---|
 | Scheme | Object or Boolean; pre-validation independent of court. |
 | Types and values | `type`, `enum`, exact value equality and numerical comparisons; `integer` accepts a total numerical value. |
-| Obiecte | `required`, `properties` and `additionalProperties` Boolean or scheme. |
-| Tablouri | `items` Boolean or schematic, `minItems` and `maxItems`. |
+| Objects | `required`, `properties` and `additionalProperties` Boolean or scheme. |
+| arrays | `items` Boolean or schematic, `minItems` and `maxItems`. |
 | Rings | Limits in Unicode code points and valid Java regular expressions. |
-| Numere | `minimum` and `maximum` inclusive, by `BigDecimal`. |
-| Metadate | `$schema` accepts the 2020-12 Draft Identifier; the other permitted metadata are annotations. |
-| Refuzuri | Key and unsupported forms including `const`, `$ref` and `format`. |
+| Numbers | `minimum` and `maximum` inclusive, by `BigDecimal`. |
+| Metadata | `$schema` accepts the 2020-12 Draft Identifier; the other permitted metadata are annotations. |
+| Rejections | Key and unsupported forms including `const`, `$ref` and `format`. |
 
 [JsonSchemaCapabilities](src/main/java/atf/validation/contract/schema/JsonSchemaCapabilities.java) defines the vocabulary and accepted forms and [JsonSchemaValidator](src/main/java/atf/validation/contract/JsonSchemaValidator.java) assesses the court. The accepted URIO is `https://json-schema.org/draft/2020-12/schema`; the module implements the declared subset with explicit refusal outside it.
 
@@ -74,7 +74,7 @@ mvn -B -pl atf-validation -am test
 | Supported schema subset and rejection cases | [JsonSchemaContractTest](src/test/java/atf/validation/JsonSchemaContractTest.java). |
 | Header classification | [JsonMediaTypeContractTest](src/test/java/atf/validation/media/JsonMediaTypeContractTest.java). |
 
-[Test architecture](../docs/testing/ATF_Architecture.md) separates the rules from the components of the contract evaluation and the collaboration through the Public API. [POM-ul](pom.xml) defines the dependencies and the limit of the module.
+[Test architecture](../docs/testing/ATF_Architecture.md) separates the rules from the components of the contract evaluation and the collaboration through the Public API. [POM](pom.xml) defines the dependencies and the limit of the module.
 
 ## Cost and limits
 

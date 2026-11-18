@@ -1,12 +1,12 @@
-# Dovezile Whist Lab 0.21.9
+# Evidence Whist Lab 0.21.9
 
-## Pe scurt
+## Overview
 
-Rapoartele Extent leagă probele de componentă și cele șapte fluxuri headless de APK-ul semnat. Capturile native sunt incluse în HTML.
+Extent reports link the component samples and the seven headless streams to the signed APK. The native captures are included in HTML.
 
-## Suite de componentă
+## Component Suites
 
-| Selecție | Invocări | Raport |
+| Selection | Summaries | Report |
 |---|---:|---|
 | atf-validation | 19 | [Extent](component/atf-validation/component-report.html) |
 | atf-test-android | 277 | [Extent](component/atf-test-android/component-report.html) |
@@ -19,9 +19,9 @@ Rapoartele Extent leagă probele de componentă și cele șapte fluxuri headless
 | whist-lab-app-atf-card-table-ui | 42 | [Extent](component/whist-lab-app-atf-card-table-ui/component-report.html) |
 | whist-lab-app-rules | 39 | [Extent](component/whist-lab-app-rules/component-report.html) |
 
-## Fluxuri E2E
+## E2E flows
 
-| Flux | Raport |
+| Flow | Report |
 |---|---|
 | history-release-sanity | [Extent](e2e/history-release-sanity/report.html) |
 | responsive-ui-sanity | [Extent](e2e/responsive-ui-sanity/report.html) |
@@ -31,4 +31,4 @@ Rapoartele Extent leagă probele de componentă și cele șapte fluxuri headless
 | signed-release-home-profile | [Extent](e2e/signed-release-home-profile/report.html) |
 | signed-release-smoke | [Extent](e2e/signed-release-smoke/report.html) |
 
-[Manifestul versiunii](../release-validation.json) · [Catalogul livrărilor](../../README.md) · [Strategia de testare](../../../docs/testing/README.md)
+[Manifest release](../release-validation.json) · [Release catalog](../../README.md) · [Test strategy](../../../docs/testing/README.md)

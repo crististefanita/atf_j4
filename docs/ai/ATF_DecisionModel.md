@@ -8,19 +8,19 @@ The model shall convert the permitted observation into legal action, assessed ag
 
 ```mermaid
 flowchart LR
-    OBS[Observed observation] -->|filter| ACTIONS[Legal actions]
-    OBS -->|compress| WORLDS[Lumi compatibile]
+    OBS[Permitted observation] -->|filter| ACTIONS[Legal actions]
+    OBS -->|compress| WORLDS[Compatible worlds]
     WORLDS -->|simulate| OUTCOMES[Continuation]
     ACTIONS -->|assess in the same worlds| OUTCOMES
     OUTCOMES -->|Aggregate| VALUES[Utility vectors]
-    VALUES -->|Order| CHOICE[Propunere]
-    CHOICE -->|check in the finished area| PROOF[Certified guards]
+    VALUES -->|Order| CHOICE[Proposal]
+    CHOICE -->|checks the finite domain| PROOF[Certified guards]
 ```
 
 <details>
 <summary>Legend: separation of responsibilities</summary>
 
-Politics sees its own hand and public prefix. The simulator can build hypothetical hands and a guard can list a finite field; these operations do not introduce actual adverse hands into the observation.
+Policy sees its own hand and public prefix. The simulator can build hypothetical hands and a guard can list a finite field; these operations do not introduce actual adverse hands into the observation.
 
 </details>
 
@@ -30,9 +30,9 @@ Politics sees its own hand and public prefix. The simulator can build hypothetic
 |---|---|---|
 | Individual need null | contract-trick wins | Show if the actor is still looking for tricks, is at target or has exceeded contract. |
 | R opportunities | (cards left in hands + cards on the table) / players | Count the unfinished trick once. |
-| Dezechilibru Δ | sum of the requirements − R | After bidding, it stays constant in the same hand. |
+| imbalance Δ | sum of the requirements − R | After bidding, it stays constant in the same hand. |
 | Density nthe / R for R > 0 | Required for opportunities | Expose individual urgency; it is not a probability and does not apply to a completed hand. |
-| Progres | 1 − R / initial size | It measures the consumption of the hand, separated from the number of hand in the match. |
+| Progress | 1 − R / initial size | It measures the consumption of the hand, separated from the number of hand in the match. |
 | Public memory | Playing cards, table and card | Tear down the unknown pole and compatible color gaps. |
 | Score and series | Public totals and meters | Change the utility of the result by the set-up score rules. |
 
@@ -66,7 +66,7 @@ The laboratory observation distinguishes the first choice for zero from an eligi
 
 The way of evaluation depends on the field. [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) coordinates selection; [PossibleDeals](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/PossibleDeals.java) builds worlds, and [RolloutPolicy](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/simulation/RolloutPolicy.java) continues a hypothetical world.
 
-| Domeniu | Assessment and limit |
+| Scope | Assessment and limit |
 |---|---|
 | Bidding of a card | `OneCardBidBelief` makes the enumeration conditional on the bids already observed in the Romanian domain of four places with a card turned over; outside the domain or without eligible evidence, the basic estimate is used. |
 | Bidding of 2–8 cards | Legal alternatives use the same worlds; public contracts are maintained and offers still unknown are estimated below. |
@@ -78,8 +78,8 @@ The model of a card has [implementation in engine](../../whist-lab-app/game-core
 For simulated alternatives, the terminal vector shall contain its own points, the main rival score, the exact contract indicator and the number of adverse failures:
 
 ```text
-estimare(acțiune) = suma ponderată a utilităților / suma ponderilor
-utilitate_mixtă = (1 − α) × utilitate_rollout + α × utilitate_MaxN
+estimate(action) = weighted_sum_utilities / sum_weights
+mixed_utility = (1 − α) × rollout_utility + α × MaxN_utility
 ```
 
 - The aggregation of general simulations uses equal weights of the worlds generated; the sampler is not proven uniformly over all feasible distributions.
@@ -93,8 +93,8 @@ The order below concerns the Romanian profile; the other variants use their decl
 
 | Policy and phase | Choice orders |
 |---|---|
-| Normal, licitare | Estimating his own hand, projected on legal bids. |
-| Normal, joc | Tracking the need through rank and current situation; avoiding tricks by target. |
+| Normal, bidding | Estimating his own hand, projected on legal bids. |
+| Normal, game | Tracking the need through rank and current situation; avoiding tricks by target. |
 | Romanian Hard, Bidding | The estimated contract opportunity, the exact points, then the smaller bid at equal. |
 | Hard, recoverable contract | Estimated chance of exact, points of the individual, then reduction of the main rival score. |
 | Hard, publicly proven impossibility | Estimated own points, estimated adverse failures, then the score of the main rival. |
@@ -108,11 +108,11 @@ In [PublicSalvage.quota](../../whist-lab-app/game-core/src/main/java/ro/whistlab
 
 ```mermaid
 flowchart LR
-    QUOTA[Necessary and opportunities] -->|compare boundaries| FEAS[Public feasibility]
-    FEAS -->|allows the exact objective| EXACT[Contract recuperabil]
-    FEAS -->|proves impossibility| SALV[Lifetime target]
-    DOMAIN[Full domain listed] -->|universal check| CERT[Certificat]
-    CERT -->|can replace| PROPOSAL[Propunere model]
+    QUOTA[Need and opportunities] -->|compare boundaries| FEAS[Public feasibility]
+    FEAS -->|allows the exact objective| EXACT[Feasible contract]
+    FEAS -->|proves impossibility| SALV[Fallback objective]
+    DOMAIN[Complete enumerated domain] -->|universal check| CERT[Certificate]
+    CERT -->|can replace| PROPOSAL[Model proposal]
 ```
 
 <details>

@@ -6,14 +6,14 @@ The module verifies the integration of common binaries, publication data and pro
 
 ## Collections and responsibilities
 
-[Catalogul](../../../config/atf-test-suites.json) declares the primary entries `AtfUnitSuite`, `AtfComponentSuite` and `AtfIntegrationSuite`. Reporting and governance selections are focused with explicit parents; they are not again over the primary inventory.
+[Catalog](../../../config/atf-test-suites.json) declares the primary entries `AtfUnitSuite`, `AtfComponentSuite` and `AtfIntegrationSuite`. Reporting and governance selections are focused with explicit parents; they are not again over the primary inventory.
 
-| Familie | Entry and limit |
+| Family | Entry and limit |
 |---|---|
-| Publication Whist | [GameReportComponentSuite](java/atf/tests/reporting/GameReportComponentSuite.java) is a focused selection for the policy and data captured on the physical JARI. |
+| Publication Whist | [GameReportComponentSuite](java/atf/tests/reporting/GameReportComponentSuite.java) is a focused selection for the policy and data captured on the physical JAR. |
 | Governance | [AtfQualityGovernanceSuite](java/atf/tests/governance/AtfQualityGovernanceSuite.java) reads the code, documents and contracts of binary; Android is not running. |
-| Integritate release | [ReleaseIntegrityGovernanceTest](java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) checks the real folder; [probele mici](java/atf/tests/governance/documentation/release/integrity/) injects defects in temporary fixtures. |
-| Igiena workspace | [WorkspaceHygieneGovernanceTest](java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) detects temporary directories and files generated in the root without erasing anything. |
+| Integrity release | [ReleaseIntegrityGovernanceTest](java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java) checks the real folder; [checks small](java/atf/tests/governance/documentation/release/integrity/) injects defects in temporary fixtures. |
+| hygiene workspace | [WorkspaceHygieneGovernanceTest](java/atf/tests/governance/source/workspace/WorkspaceHygieneGovernanceTest.java) detects temporary directories and files generated in the root without erasing anything. |
 
 ## How to pick evidence
 

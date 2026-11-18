@@ -15,7 +15,7 @@ testChanges:
     status: VERIFIED
     base: 671a35e0b205069168779a8c6901adb939eab29c
     expires: 2026-12-16
-    reason: Adresa Pages proprie este o destinație de publicare, iar identificatorii proiectelor străine rămân sub control editorial. Sursele adaptorului intră în inventarul JVM.
+    reason: The project Pages address is a publication destination; foreign project identifiers remain governed prose. Adapter sources belong to the JVM inventory.
     proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -39,7 +39,7 @@ testChanges:
     status: VERIFIED
     base: 5ae98e8cc1863c7513f0d7b8396087f19c0bc6cb
     expires: 2026-12-05
-    reason: Distanța se măsoară față de chenar și acțiunea lui observată, păstrând refuzul suprapunerilor; adaugă dimensiuni exacte, localizare, actori pregătiți legal și accesul la toate rândurile și coloanele.
+    reason: Measure distance from the player frame and its observed action, rejecting overlap; cover exact dimensions, localization, legally prepared actors, and access to every row and column.
     proof: 'gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true; mvn -Dtest=AndroidDisplayComponentSuite,RecordsRunContractComponentTest,RecordsFixturesComponentTest,AndroidUiFlowReportPublisherTest test; mvn -Dtest=WhistRecordsE2eTest#historyPresentationAcrossDeclaredPortraitProfiles -Datf.android.enabled=true test'
     paths:
       - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TableViewportPolicyTest.java
@@ -58,12 +58,12 @@ testChanges:
       - atf-test-android/src/test/java/atf/android/e2e/records/NameHistoryScenarios.java
 ```
 
-A simulated landmark shows how the action ignore the comparison of distances on the same coordinates. Negative controls keep text, actor, size and identity errors of the row; native running requires installation metadata, reservation and private archive defined in the [contractul Android](../testing/ATF_Android.md#profile-history-leaderboards-and-series).
+A simulated landmark shows how the action ignore the comparison of distances on the same coordinates. Negative controls keep text, actor, size and identity errors of the row; native running requires installation metadata, reservation and private archive defined in the [Android contract](../testing/ATF_Android.md#profile-history-leaderboards-and-series).
 
 </details>
 
 <details>
-<summary>Check: mass proportions and action above the name</summary>
+<summary>Check: table proportions and action above the name</summary>
 
 ```yaml
 testChanges:
@@ -71,7 +71,7 @@ testChanges:
     status: VERIFIED
     base: 8933374e33ab6eee9cb4217ed1a6112aebacc9b3
     expires: 2026-12-05
-    reason: Aplică cerința de reducere a înălțimii fețelor jucate și lățimii atuului, mărire a chenarelor și separare completă a acțiunii de nume; păstrează geometria fără suprapuneri și identitatea cronologică a scorului.
+    reason: Reduce played-card height and trump width, enlarge player frames, and separate actions from names; retain non-overlapping geometry and chronological score identity.
     proof: 'gradlew.bat :app:testDebugUnitTest -Pwhist.displayComponents=true --offline --no-daemon; pwsh -NoProfile -File scripts/run-whist-responsive-sanity.ps1 -ComponentsOnly'
     paths:
       - whist-lab-app/app/src/test/java/ro/whistlab/app/table/TrickCardMetricsComponentTest.java
@@ -102,7 +102,7 @@ testChanges:
     status: VERIFIED
     base: 180ea08cb639fd09291d191278e18fa93ae6db96
     expires: 2026-12-05
-    reason: Extrage agregarea măsurătorilor din vederea Android și adaugă refuzuri pentru locuri invalide, pierderea levatelor și dimensiuni imposibile; păstrează sufixele necunoscute, imutabilitatea și măsurarea ultimei celule.
+    reason: Extract measurement aggregation from the Android view and reject invalid seats, lost tricks, and impossible dimensions; retain unknown suffixes, immutability, and measurement of the final cell.
     proof: 'gradlew.bat :game-core:test --tests ro.whistlab.core.session.ScoreHistoryInvariantTest --offline; gradlew.bat :app:testDebugUnitTest --tests ro.whistlab.app.score.ScoreHistory*Test --offline'
     paths:
       - whist-lab-app/game-core/src/test/java/ro/whistlab/core/session/ScoreHistoryInvariantTest.java
@@ -123,7 +123,7 @@ testChanges:
     status: VERIFIED
     base: 6e8f3f38e94f0513597b197bc8fa60ce73ee371b
     expires: 2026-12-05
-    reason: Aplică geometria compactă agreată și schema cu levate explicite; păstrează prefixul necunoscut, comparațiile independente de scor, conservarea levatelor și verificarea celulelor complete în ambele limbi.
+    reason: Apply the agreed compact geometry and explicit trick schema; retain unknown prefixes, independent score comparisons, trick conservation, and complete cells in both languages.
     proof: 'gradlew.bat :app:testDebugUnitTest :app:assembleDebug -Pwhist.displayComponents=true --offline --no-daemon; mvn -Dtest=RecordsFixturesComponentTest,RecordsRunContractComponentTest,AndroidUiFlowReportPublisherTest test; mvn -Dtest=WhistRecordsE2eTest#compactHistoryAndSlashedContractsRemainReadable -Datf.android.enabled=true test'
     paths:
       - whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java
@@ -148,7 +148,7 @@ testChanges:
     status: VERIFIED
     base: e183df449ad54d4281925f905ce3a65cf4b6cdf3
     expires: 2026-12-05
-    reason: Elimină rândul redundant despre cartea neîntoarsă și folosește aceeași ramă cu două regiuni în toate modurile; păstrează valoarea vizibilă, identitatea accesibilă și ținta tactilă. Sincronizează dimensiunile mâinii și indicii locurilor cu politica de afișaj modificată în paralel.
+    reason: Remove the redundant unturned-card row and use one two-region frame in every mode; retain the visible value, accessible identity, and touch target. Synchronize hand dimensions and seat indexes with concurrent display-policy changes.
     proof: 'gradlew.bat :app:testDebugUnitTest :app:assembleDebug -Pwhist.displayComponents=true --offline --no-daemon; pwsh -NoProfile -File scripts/run-whist-responsive-sanity.ps1 -ComponentsOnly'
     paths:
       - whist-lab-app/app/src/test/java/ro/whistlab/app/localization/WhistUiTextTest.java
@@ -196,7 +196,7 @@ testChanges:
     status: VERIFIED
     base: cd4e62e4fd89bb5134f874aee1912aa086a5bda2
     expires: 2026-12-05
-    reason: Distinge destinația tehnică a linkului stabil al propriului repository de proza vizibilă; păstrează refuzul identificatorilor din etichete, alte proiecte, căi de sursă și URL-uri modificate.
+    reason: Distinguish the technical destination of the project repository link from visible prose; continue rejecting identifiers in labels, other projects, source paths, and modified URLs.
     proof: 'mvn -B -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
     paths:
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
@@ -216,7 +216,7 @@ testChanges:
     status: VERIFIED
     base: a5eebec1805b760c876f03d2439da8b73d8e3cec
     expires: 2026-12-06
-    reason: Recunoaște strict pagina tag-ului livrării declarate, împreună cu APK-ul și checksum-ul; păstrează verificarea prozei vizibile, a altor versiuni și a adreselor modificate.
+    reason: Recognize only the declared release tag page, APK, and checksum; continue checking visible prose, other versions, and modified addresses.
     proof: 'mvn -B -pl atf-tests -am -Dtest=DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
     paths:
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
@@ -246,7 +246,7 @@ testChanges:
 
 Negative controls reject the missing READMEM, additional documents, a director instead of README- and the assignment of the code or feedback to a consumer. The distributed libraries keep their coordinates and hashes.
 
-The inventory at Git base declared is that of the checked increment. The current pairs and guides are defined in [contractul lib](../../lib/README.md).
+The inventory at Git base declared is that of the checked increment. The current pairs and guides are defined in [library contract](../../lib/README.md).
 
 </details>
 
@@ -259,7 +259,7 @@ testChanges:
     status: VERIFIED
     base: 08706c3a1a3fe0172b706da2c69e9f767fde54bd
     expires: 2026-12-19
-    reason: Leagă autorizarea de commitul revizuit, căile exacte și expirarea, cu probe negative pe depozite Git reale.
+    reason: Bind authorization to the reviewed commit, exact paths, and expiry, with negative checks on real Git repositories.
     proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeReviewComponentTest,TestChangeGovernanceTest,DocumentationPolicyGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
     paths:
       - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
@@ -285,7 +285,7 @@ testChanges:
     status: VERIFIED
     base: 7a28a0978e6b50c1f9dd85cbad40544aecaea06d
     expires: 2026-12-19
-    reason: Leagă proba offline de control, baza revizuită, commit și conținutul diff-ului și cere un control negativ executat.
+    reason: Bind offline evidence to its control, reviewed base, commit, and diff content, and require an executed negative control.
     proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeProofComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -318,7 +318,7 @@ testChanges:
     status: VERIFIED
     base: 48a94740184e39bc23de975c3d133bd132620492
     expires: 2026-12-19
-    reason: Confruntă mutările, scorul și reluarea prin fațada publică folosind un oracol JVM și verifică refuzul fără mutație.
+    reason: Compare moves, scoring, and restoration through the public facade against an independent JVM oracle; verify rejection without mutation.
     proof: 'mvn -o -pl atf-tests -am -Dtest=GameSessionBoundaryComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -343,7 +343,7 @@ testChanges:
     status: VERIFIED
     base: 2b16b7c6b5c0909b59d924189a938683345087a1
     expires: 2026-12-19
-    reason: Fixează bugetul comun și separarea loturilor de strategie, cu refuz pentru suprascrierea heap-ului și oprirea la primul caz.
+    reason: Fix the shared memory budget and separate strategy batches; reject heap overrides and stop at the first failed case.
     proof: 'mvn -o -pl atf-tests -am -Dtest=GradleAuditGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -381,7 +381,7 @@ testChanges:
     status: VERIFIED
     base: f2c1b58d50e57922bbbb9ac44c977149328d7c0c
     expires: 2026-12-19
-    reason: Verifică citirea concurentă a ieșirii Node și păstrează selecția manuală în dialoguri suprapuse fără repetarea legendei în traseul de licitare.
+    reason: Verify concurrent draining of Node output and preserve manual selection under overlapping dialogs without repeating the legend in the bidding flow.
     proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentEvidenceScopeComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -406,7 +406,7 @@ testChanges:
     status: VERIFIED
     base: f2c1b58d50e57922bbbb9ac44c977149328d7c0c
     expires: 2026-12-19
-    reason: Calificarea folosește un director temporar extern și blochează căile care intră într-un checkout înainte de copiere sau Maven.
+    reason: Qualification uses an external temporary directory and rejects paths inside a checkout before copying or Maven execution.
     proof: 'mvn -o -pl atf-tests -am -Dtest=QualificationLauncherComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -432,7 +432,7 @@ testChanges:
     status: VERIFIED
     base: 6f36177aae63557abfeb18160b6ec1101dcf509c
     expires: 2026-12-19
-    reason: Descoperă controalele VERIFIED ale diff-ului real și păstrează identitatea commitului.
+    reason: Discover VERIFIED controls in the real diff and preserve commit identity.
     proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeProofComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -449,7 +449,7 @@ testChanges:
     status: VERIFIED
     base: 6f36177aae63557abfeb18160b6ec1101dcf509c
     expires: 2026-12-19
-    reason: Publică lotul complet după verificarea sursei și păstrează rapoartele individuale la refuz.
+    reason: Publish the complete batch after checking source identity; retain individual reports when publication is rejected.
     proof: 'mvn -o -pl atf-tests -am -Dtest=TestChangeBatchComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -507,6 +507,66 @@ testChanges:
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+```
+
+</details>
+
+<details>
+<summary>Branch language and original publication provenance</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-DOCUMENTATION-LANGUAGE
+    status: VERIFIED
+    base: 129a629bb65cfedf6032b503c1b826fba63d4a42
+    expires: 2026-12-18
+    reason: Govern every Markdown path in the configured branch language, including tables, diagram captions and YAML explanations. Keep API data and original publication bytes intact; verify both editions against build declarations and reject mixed prose, changed links, commands and source hashes.
+    proof: 'mvn -pl atf-tests -am -Dtest=DocumentationLanguageComponentTest,DocumentationGovernanceCliComponentTest,DocumentedModuleMapGovernanceTest,ReleasePresentationGovernanceTest,DocumentationArchiveGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.language.DocumentationLanguageComponentTest#codeAndLinkTargetsRemainTechnicalDataWhileVisibleLabelsAreChecked
+        - atf.tests.governance.documentation.cli.DocumentationGovernanceCliComponentTest#acceptsSeveralExplicitFilesAndExcludesAnUnselectedDefect
+        - atf.tests.governance.documentation.factual.DocumentedModuleMapGovernanceTest#rootMapMatchesTheBuildDeclarations
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#everyHandoffKeepsSchematicNotesBoundToItsActualStateAndAsset
+        - atf.tests.governance.documentation.DocumentationArchiveGovernanceTest#translatedReleaseGuidesRetainTheOriginalDocumentsAtTheirPinnedGitCommit
+      negative:
+        - atf.tests.governance.documentation.language.DocumentationLanguageComponentTest#englishBranchRejectsShortForeignLabelsAndDiagramCaptions
+        - atf.tests.governance.documentation.language.DocumentationLanguageComponentTest#romanianBranchRejectsAnEnglishGuideOrOwnerHeading
+        - atf.tests.governance.documentation.factual.DocumentedModuleMapGovernanceTest#aMissingModuleAChangedScopeAndAnInvertedEdgeAreRejected
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#translatedPresentationKeepsTheReleaseStructureAssetsAndOriginalPointCount
+    paths:
+      - atf-test-android/src/test/README.md
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationInventory.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationLanguageRules.java
+      - atf-tests/src/test/README.md
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationAnchorGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationArchiveGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMap.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationLanguageComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidence.java
+      - atf-tests/tools/documentation-editions.mjs
+      - atf-tests/tools/documentation-editions.test.mjs
+      - atf-tests/tools/release-documentation-provenance.mjs
+      - atf-tests/tools/release-documentation-provenance.test.mjs
+      - atf-validation/src/test/README.md
+      - config/atf-governance-policy.json
+      - whist-lab-app/ai-lab/src/test/README.md
+      - whist-lab-app/app/src/androidTest/README.md
+      - whist-lab-app/app/src/main/java/ro/whistlab/app/README.md
+      - whist-lab-app/app/src/rasterTest/README.md
+      - whist-lab-app/app/src/test/README.md
+      - whist-lab-app/atf-card-table-ui/src/androidTest/README.md
+      - whist-lab-app/atf-card-table-ui/src/test/README.md
+      - whist-lab-app/game-core/src/test/README.md
+      - whist-lab-app/ios-bridge/src/test/README.md
+      - whist-lab-app/test-audit/src/test/README.md
+      - whist-lab-app/test-audit/src/testFixtures/README.md
 ```
 
 </details>

@@ -8,9 +8,9 @@ For the full route, start with [how we build and improve the Ail](../learning/AT
 
 ## Complementary guides
 
-| Mechanism | Ghid |
+| Mechanism | Guide |
 |---|---|
-| Observation, simulation, utility and certificates | [Modelul deciziei](ATF_DecisionModel.md) |
+| Observation, simulation, utility and certificates | [Decision model](ATF_DecisionModel.md) |
 | Role of the manifestations and influence of the context | [Rules and configuration](ATF_RulesConfiguration.md) |
 | Necessary, opportunities and legal outflows | [Context game](ATF_ContextualPlay.md) |
 | Budget, cancellation and measurement on JVM environment | [Cost of AI qualification](ATF_CostQualification.md) |
@@ -22,7 +22,7 @@ For the full route, start with [how we build and improve the Ail](../learning/AT
 flowchart LR
     STATE[Game status] -->|design| OBS[Private and public observation]
     OBS -->|feeds| POLICY[Policy accepted]
-    POLICY -->|propune| ACTION[Action]
+    POLICY -->|proposes| ACTION[Action]
     ACTION -->|validate and apply| STATE
 ```
 
@@ -35,21 +35,21 @@ The observation contains the actor's hand, known contracts, public cards, needs 
 
 ## Layer and source of truth
 
-| Strat | Responsibility | Implementare |
+| Layer | Responsibility | Implementation |
 |---|---|---|
-| Domeniu | Legality, distribution, transitions and score | [game-core](../../whist-lab-app/game-core/README.md) |
+| Scope | Legality, distribution, transitions and score | [game-core](../../whist-lab-app/game-core/README.md) |
 | Runtime policy | Bidding and choosing the card in the permitted observation | `AiPolicy`, Normal and `MonteCarloAi` policies |
 | Independent policy | Distinguishing number of the country where the goods are located | [ai-lab](../../whist-lab-app/ai-lab/README.md) |
 | Corpus | Game validation and explicit selection of development data | [whist-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs), [whist-active-corpus](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) |
-| Tipare | Description of combinations and descriptive calibration | [catalogue and limits](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) |
+| Patterns | Description of combinations and descriptive calibration | [catalogue and limits](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) |
 | Experiment | Isolated copy, identified candidate and paired comparisons | [collection runner](../../scripts/run-whist-collection.ps1), [arena](../learning/ATF_Arena.md) |
-| Promovare | Criteria fixed, batch not reached and keeping the guards of the domain | [evaluation protocol](../learning/README.md) |
+| Promotion | Criteria fixed, batch not reached and keeping the guards of the domain | [evaluation protocol](../learning/README.md) |
 
 ## The role of YAML
 
 The manifests link conditions and sources of verification, and the enforceable effect depends on the consumer in the code. [Rules and configuration](ATF_RulesConfiguration.md) is the guide responsible for the status of each manifest, fixed parameters and contextual activation.
 
-The pattern catalogue remains a research tool. [Ghidul onorurilor](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) explains his interpretation, separate from runtime policy.
+The pattern catalogue remains a research tool. [Honor guide](https://github.com/crististefanita/whist/blob/main_RO/docs/ai/ATF_HandPatternsRo.md) explains his interpretation, separate from runtime policy.
 
 ## Data support mechanism
 
@@ -66,7 +66,7 @@ The pattern catalogue remains a research tool. [Ghidul onorurilor](https://githu
 flowchart LR
     PUBLIC[Public history] -->|deduce legal| VOID[Certain restrictions]
     PUBLIC -->|suggests| MODEL[Behavior assumptions]
-    VOID -->|eliminate worlds| WORLDS[Lumi compatibile]
+    VOID -->|eliminate worlds| WORLDS[Compatible worlds]
     MODEL -->|maybe weight| WORLDS
     WORLDS -->|feeds| PLAN[Estimate of the continuation]
 ```
@@ -78,11 +78,11 @@ The color obligation or the trump allows inference about the lack of a colour. T
 
 </details>
 
-La 2–8 cards, Hard uses contracts known as targets and constrains worlds through public information; general weighting after adverse behavior remains research. At the bid of a card there is already a specialized model conditioned by observed offers, with its own domain and fallback, described in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives).
+La 2–8 cards, Hard uses contracts known as targets and constrains worlds through public information; general weighting after adverse behavior remains research. At the bid of a card there is already a specialized model conditioned by observed offers, with its own domain and fallback, described in [decision model](ATF_DecisionModel.md#estimate-of-alternatives).
 
 ## Conditions for progress
 
-[Protocolul offline](../learning/README.md) holds the diagnostic-component-candidate-registered evaluation-promotion cycle. [Arena](../learning/ATF_Arena.md) holds comparisons on the same distributions and places, and [design of components](../testing/ATF_AiComponents.md) holds the independent justification of the small case.
+[Protocol offline](../learning/README.md) holds the diagnostic-component-candidate-registered evaluation-promotion cycle. [Arena](../learning/ATF_Arena.md) holds comparisons on the same distributions and places, and [design of components](../testing/ATF_AiComponents.md) holds the independent justification of the small case.
 
 The change of architecture shall retain the permitted observation and the identity of the policy evaluated. A competing change requires reconciliation of the source prior to the qualification.
 
@@ -97,4 +97,4 @@ The change of architecture shall retain the permitted observation and the identi
 | Utility and priorities | The contract, the score, the series and the policy objective. |
 | Verification and promotion | Independent properties, controlled comparisons and criteria. |
 
-[Modelul deciziei](ATF_DecisionModel.md), [rules and weights](ATF_RulesConfiguration.md) and [test design](../testing/ATF_AiComponents.md) details these limits without depending on a concrete match.
+[Decision model](ATF_DecisionModel.md), [rules and weights](ATF_RulesConfiguration.md) and [test design](../testing/ATF_AiComponents.md) details these limits without depending on a concrete match.

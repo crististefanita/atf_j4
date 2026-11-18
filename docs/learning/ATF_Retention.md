@@ -8,8 +8,8 @@ The archiving shall keep variable execution data outside source code. The projec
 
 ```mermaid
 flowchart LR
-RUN[Implementation] -->|Close| RECORD[Unexplained recording]
-RECORD -->|indexes| MANIFEST[Manifest extern]
+RUN[Execution] -->|Close| RECORD[Unmodified recording]
+RECORD -->|indexes| MANIFEST[External manifest]
 MANIFEST -->|explicitly select| ANALYSIS[Analysis]
 ANALYSIS -->|generalize| RULE[Verifiable rule]
 ```

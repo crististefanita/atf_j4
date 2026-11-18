@@ -41,11 +41,11 @@ var total = body.path("total").decimalValue();
 
 ## Verification of use
 
-| Action | Rezultat observabil |
+| Action | Observed result |
 |---|---|
 | Compile the fragment with JDK 21 and the dependencies in the POM. | The types and methods shall be resolved from the chosen binary delivery. |
 | Execute the fragment. | The URL is based on and the path of the application; `total` is numerically equal to `19.90` by `BigDecimal`. |
-| Provide duplicate or root content JSON keys. | The parting refuses the document without partially accepted result. |
+| Provide duplicate or root content JSON keys. | The parser rejects the document without partially accepted result. |
 
 The example builds local data; does not execute a HTTP call. The transport check shall be made separately by means of the actual adapter or explicitly selected muck.
 

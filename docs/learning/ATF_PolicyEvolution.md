@@ -4,17 +4,17 @@
 
 We build a game policy from verifiable rules, an allowed observation and an explicit choice criterion. We improve it offline: we analyze games, we isolate property, we change a candidate and we compare it before promotion.
 
-This guide holds the evolution procedure. [Modelul deciziei](../ai/ATF_DecisionModel.md) explains the choice during the game, and [rules and weights](../ai/ATF_RulesConfiguration.md) explains the effect of each type of parameter.
+This guide holds the evolution procedure. [Decision model](../ai/ATF_DecisionModel.md) explains the choice during the game, and [rules and weights](../ai/ATF_RulesConfiguration.md) explains the effect of each type of parameter.
 
 ## Foundation on which we build
 
-| Strat | Ce construim | Preserved limit |
+| Layer | Ce build | Preserved limit |
 |---|---|---|
 | Rules | Legal actions, winner, points and series in [Engine](../../whist-lab-app/game-core/README.md). | The strategy cannot change the legality or the score. |
 | Observation | Hand and public deeds, designed before the call for policy. | Real adverse cards and the future remain in the simulator or oracle. |
 | Simple policy | Normal follows the contract's need by local rules. | The transparent behavior is a basis of comparison, without hidden search. |
 | Search policy | Hard compares alternatives to hypothetical compatible worlds. | The estimation and the finished certificate have different fields. |
-| Reper separat | [Independent Player](../../whist-lab-app/ai-lab/README.md) implements its own decisions and simulations. | The independence of implementation helps the comparison; it does not make it a perfect oracle. |
+| Reference separately | [Independent Player](../../whist-lab-app/ai-lab/README.md) implements its own decisions and simulations. | The independence of implementation helps the comparison; it does not make it a perfect oracle. |
 
 Mandatory rules have tests before performance is interpreted. A policy does not qualify by simply agreeing with another automatic player.
 
@@ -22,7 +22,7 @@ Mandatory rules have tests before performance is interpreted. A policy does not 
 
 | When? | What's up-to-date? | What remains identified? |
 |---|---|---|
-| After an bid or public card | Necessary, opportunities, unknown cards, restrictions and estimates of alternatives. | Implementation and parameters of the policy at stake. |
+| After an bid or public card | Necessary, opportunities, unknown cards, restrictions and estimates of alternatives. | Execution and parameters of the policy at stake. |
 | Between offline experiments | The hypothesis, a rule, a comparator, an estimate or coefficients of a candidate model. | Basis of comparison, candidate's source and evaluation protocol. |
 | After the promotion review | Code and contracts accepted for the following use. | The result of the change and the possibility of returning to the base held. |
 
@@ -32,11 +32,11 @@ The influence of a rule may vary with the situation, even if its parameter is fi
 
 ```mermaid
 flowchart LR
-    GAME[Partide validate] -->|locate| QUESTION[Hypothesis]
+    GAME[Validated games] -->|locate| QUESTION[Hypothesis]
     QUESTION -->|narrow| TEST[Small regression]
     TEST -->|qualifies| CAND[Candidate]
     CAND -->|Freeze| FRESH[New evaluation]
-    FRESH -->|Inform| REVIEW[Promovare]
+    FRESH -->|Inform| REVIEW[Promotion]
 ```
 
 <details>
@@ -57,7 +57,7 @@ A defeat motivates analysis, but does not label every action as wrong. [Selectio
 
 ### From question to small regression
 
-[Componentele AI](../testing/ATF_AiComponents.md) holds the construction of the legal witness and the separation of the actor from the oracle. The case shall be kept in condition, the border to which the rule ceases to apply and the demonstrable expectation.
+[AI components](../testing/ATF_AiComponents.md) holds the construction of the legal witness and the separation of the actor from the oracle. The case shall be kept in condition, the border to which the rule ceases to apply and the demonstrable expectation.
 
 | Justified expectation | What can prove |
 |---|---|
@@ -70,7 +70,7 @@ The action observed in a winning game does not automatically become the expected
 
 ### Normal in an executable candidate
 
-- Declaration in [manifestul responsabil](../ai/ATF_RulesConfiguration.md#who-consumes-the-manifests) condition, status, consumer, limit and verification.
+- Declaration in [manifest owner](../ai/ATF_RulesConfiguration.md#who-consumes-the-manifests) condition, status, consumer, limit and verification.
 - Change the declared mechanism in an isolated copy; compare it with the base kept to attribute the effect of the change.
 - For a data-adjusted model, keep the order of characteristics, normalisation, coefficients, domain and identity of generation.
 - Check legality, fallback, cancellation and cost; fixing a parameter does not prove the only strategic progress.
@@ -83,11 +83,11 @@ The launcher checks [Full inventory of base](../testing/ATF_Collections.md#full-
 
 | Comparison | Question to which he answers |
 |---|---|
-| Same place and distribution | What changes politics, with the advantage of the controlled position? |
+| Same place and distribution | What changes policy, with the advantage of the controlled position? |
 | Rotated places | How much depends on the position in the bid and trick? |
 | Bidding alternatives or card | What changes the prudence, objective or continuation without access to the future? |
 | Families of opponents | Does improvement keep itself beyond one adverse behavior? |
-| Partide complete | How do elections spread in points, contracts, series and final result? |
+| Matches complete | How do elections spread in points, contracts, series and final result? |
 
 Points, exacts and victories are interpreted separately, in the role and the size of the hand. The rotation of the same distribution is related observations and aggregated progress can hide local regression.
 
@@ -96,7 +96,7 @@ Points, exacts and victories are interpreted separately, in the role and the siz
 ```mermaid
 flowchart LR
     DEV[Development] -->|fix| FREEZE[Sources and criteria]
-    FREEZE -->|reserve| LOT[Lot nefolosit]
+    FREEZE -->|reserve| LOT[Unused batch]
     LOT -->|execute| CHECK[Verification]
     CHECK -->|apply thresholds| DECISION[Explicit decision]
 ```
@@ -104,7 +104,7 @@ flowchart LR
 <details>
 <summary>Legend: reserved evaluation does not adjust candidate</summary>
 
-[Registrul comun](ATF_EvaluationRegistry.md) checks exposure prior to execution. If the result leads to a new change, the sources and the evaluation shall be identified again; the consignment seen shall remain exposed, including after failure or removal of the body.
+[Shared registry](ATF_EvaluationRegistry.md) checks exposure prior to execution. If the result leads to a new change, the sources and the evaluation shall be identified again; the consignment seen shall remain exposed, including after failure or removal of the body.
 
 </details>
 
@@ -141,6 +141,6 @@ From the root of the project, for small checking of the rules and context:
 
 - In the project: code, rules, schemes, components and reusable protocols.
 - In the configured archive: JSON games, selections, calibrations, frozen sources and promotion decisions.
-- In [feedback-ul AI](../feedback/ATF_Ai.md): only open gaps with responsible and verifiable criteria.
+- In [Feedback AI](../feedback/ATF_Ai.md): only open gaps with responsible and verifiable criteria.
 
-[Offline Orientation](README.md) · [Rules and weightings](../ai/ATF_RulesConfiguration.md) · [Modelul deciziei](../ai/ATF_DecisionModel.md)
+[Offline Orientation](README.md) · [Rules and weightings](../ai/ATF_RulesConfiguration.md) · [Decision model](../ai/ATF_DecisionModel.md)

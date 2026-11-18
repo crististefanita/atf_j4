@@ -30,8 +30,8 @@ release/
 - The main READMEM and index identify only the current version. An earlier benchmark can document the audit, but does not replace the APK, link or sample of the active candidate's download.
 - The APK and checksumes belong to the same file as the version manifest; no second active copy shall be kept in a distribution directory. The main readme is sending to catalogue `release`.
 - `release` contains the catalogue, index and not more than two version files. The name of each folder and the manifest shall coincide; `currentVersion` shall be in the first position.
-- The readme of the version presents the delivery and sends to `reports/README.md`, which explains the selections, results and limits. The manifest and metadata of the presentation belong to the version; the canonical ratio and diagnoses belong to sub-director `reports`.
-- The file keeps the canon report and only the supporting evidence or diagnoses justified for APK. [The contract of surrender](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions) requires the removal of already incorporated copies and the preservation of unique evidence until full publication. An omitted or blocked result remains explicit; no verdict of any other version shall be taken over automatically.
+- The readme of the version presents the delivery and sends to `reports/README.md`, which explains the selections, results and limits. The manifest and metadata of the presentation belong to the version; the canonical report and diagnoses belong to subdirectory `reports`.
+- The file keeps the canonical report and only the supporting evidence or diagnoses justified for APK. [Handoff contract](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions) requires the removal of already incorporated copies and the preservation of unique evidence until full publication. An omitted or blocked result remains explicit; no verdict of any other version shall be taken over automatically.
 - Buildings, intermediate candidates and historical diagnostics remain in TMP or external archive. [Common strategy](../testing/README.md) remains independent of the version.
 
 ## Replacement and recovery
@@ -45,11 +45,11 @@ release/
 - **Withdrawn directories: ** `artifacts/` and `dist/` no longer appear in the active root. Before disposal, inventory and archive unique data; face hashes and references moved in `release`.
 - **Identity:** moving reports does not publish a GitHub Release and does not convert a link to a Git file into a downloadable asset. [Download process](ATF_AndroidDelivery.md#main-link-and-download-test) be in possession of this verification.
 
-Do not rewrite the catches, HTML or gross tracer to modify the provenance. Active links and navigation metadata can be adapted to the new structure; the original copy remains in the archive and in the history of Git.
+Do not rewrite the captures, HTML or gross tracer to modify the provenance. Active links and navigation metadata can be adapted to the new structure; the original copy remains in the archive and in the history of Git.
 
 Once the folder is fixed, [record integrity](ATF_AndroidDelivery.md#integrity-of-files-and-results) and run the governance. The registry shall identify exactly the files kept without the self-referential manifest; the replacement of a file shall require a new observation at its own time. Capturing hashs does not rewrite historical results and does not qualify for later modified sources.
 
-- **Rename of the repositoryul: ** update the reference from the project policy and active product links. Check Pages address separately. For each edition, please confront the IDs of the assets, the computation of the tag, bytes and SHA-256 from the new addresses. Record the new distribution observation and file integrity. The execution evidence shall preserve the original comms.
+- **Rename of the repository: ** update the reference from the project policy and active product links. Check Pages address separately. For each edition, please confront the IDs of the assets, the computation of the tag, bytes and SHA-256 from the new addresses. Record the new distribution observation and file integrity. The execution evidence shall preserve the original comms.
 - **Parallel development: ** can continue after the candidate is set. Inventory subsequent files in `source-freeze.json` and keep the archive of the hash and CRC qualified sources; publication must be linked to that snapshot. A commit that includes a new code does not automatically take over the qualification of the previous APK.
 - **Live comparison: ** identify the moment of observation and confront the entire population: modified, added and deleted files. The snapshots manifest remains unchanged; the update of the comparison does not retrospectively reconstruct another APK or other results.
 
@@ -57,9 +57,9 @@ Once the folder is fixed, [record integrity](ATF_AndroidDelivery.md#integrity-of
 
 ```mermaid
 flowchart LR
-    SOURCE[Snapshot identificat] -->|build in TMP| APK[APK and checks]
+    SOURCE[Pinned snapshot] -->|build in TMP| APK[APK and checks]
     APK -->|current evidence| LOCAL[PREPARED local]
-    LOCAL -->|subsequent step of operator| BOUND[Commit identificat]
+    LOCAL -->|subsequent step of operator| BOUND[Pinned commit]
     BOUND -->|publishes and downloads| LIVE[Verified release]
     LIVE -->|archiving and explicit plan| RETIRE[Withdrawal of old editions]
 ```
@@ -67,7 +67,7 @@ flowchart LR
 <details>
 <summary>Legend: local training has an explicit limit</summary>
 
-Snapshots and APK qualify before surrender. The operator shall subsequently fix the identity of Git and the publication; the withdrawal of the old editions depends on the verified discharge of the replacement.
+Snapshots and APK qualify before handoff. The operator shall subsequently fix the identity of Git and the publication; the withdrawal of the old editions depends on the verified discharge of the replacement.
 
 </details>
 
@@ -86,18 +86,18 @@ An uncommitted candidate is marked `PREPARED` and identified by its snapshot has
 - A GitHub release uses `publication.state: PUBLISHED`, the `github-release.json` manifest and the same source commit in `targetCommit`. An APK published through the Site uses `publication.state: PUBLISHED_SITE` and proof of anonymous download from `reports/distribution-verification.json`; no GitHub release is invented.
 - Both transitions record `source.sourceCommit`, replace `evidenceUrlTemplate` by `evidenceUrl` and require final release notes with the APK and the checksum published on the distribution channel.
 
-`versionName` identify the required edition, and `versionCode` increase at each APK delivered. After reset the visible numbering, [codul Android](https://developer.android.com/studio/publish/versioning) and the signature certificate shall keep the update path; promotion of GitHub shall be explicitly marked as the last release.
+`versionName` identify the required edition, and `versionCode` increase at each APK delivered. After reset the visible numbering, [code Android](https://developer.android.com/studio/publish/versioning) and the signature certificate shall keep the update path; promotion of GitHub shall be explicitly marked as the last release.
 
 ## Local cleaning after delivery
 
-After the published qualification and download, run [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Use the version file and post-publication verdict for the same manifest bytes. Update the local reference first `origin/main` and the tags with Git.
+After the published qualification and download, run [verifier Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Use the version file and post-publication verdict for the same manifest bytes. Update the local reference first `origin/main` and the tags with Git.
 
 ```powershell
 node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --candidate $PublishedEdition `
   --published-verdict $PublishedVerdict --output $GitProof
 ```
 
-| Result | Efect |
+| Result | Effect |
 |---|---|
 | `GIT_EXACT` | The inventory and each Git blob reproduce directly SHAA-256 from the qualified snapshots. |
 | `GIT_WITH_EOL_RECIPE` | Saving the recipe allows recovery from the same blobs. For mixed EOL, provide once `--qualified-root` with original bytes. |
@@ -106,7 +106,7 @@ node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --can
 Resume the check with `--recipe $GitProof` and a new output if a prescription has been used. `cleanupEligible: true` also requires appropriate post-publication proof, the GitHub tag and the entire canon payload checked in the Git. For a historic verdict, `--published-commit` selects the evidence communiqué from the history of `origin/main`.
 
 - Keep the recipe and the final samples. Check that no running or active booking uses the inventoried directories.
-- Clean the stagint, cachets and regenerated copies from Git or already included with the same hash. Keep learning data and unique diagnosis for an open problem.
+- Clean the staging, caches and regenerated copies from Git or already included with the same hash. Keep learning data and unique diagnosis for an open problem.
 - Keep the sources captured while a resume still needs them. [Hand over evidence](../reporting/ATF_Handoff.md)
 
 ## Synchronisation of local file with current version
@@ -128,7 +128,7 @@ node .\atf-tests\tools\verify-release-git-snapshot.mjs --repo $ProjectRoot --can
   --local-release (Join-Path $LocalCheckout 'release') --output $LocalSyncProof
 ```
 
-- Omite`--recipe` when the reconstruction is exactly directly from Git. The instrument copies the current edition of `origin/main`, validates the bytes and updates the local index.
+- Omit`--recipe` when the reconstruction is exactly directly from Git. The instrument copies the current edition of `origin/main`, validates the bytes and updates the local index.
 - If the training or move fails, the existing file remains available. The instrument shall refuse a file with local changes or unrecognised data.
 - The canon catalogue and GitHub keep two editions for audit, rotation and diff calculation.
 
@@ -157,6 +157,6 @@ Withdraw only the authorized editions outside the check pair, then check the res
 - Use an explicit inventory of IDs, tags, assets and digests. Do not infer the population from just a page or list that can be filtered.
 - Archive the metadata and old assetates prior to deletion. The new APK must be published as the last release and fully downloaded via the declared channel.
 - [Delete a release via GitHub](https://docs.github.com/en/rest/releases/releases#delete-a-release) is a separate operation of [deleting the tag](https://hub.github.com/hub-release.1.html). Encrypt references before withdrawal of tags from the catalogue.
-- Finally, collect the GitHub inventory and check it through the RAG gate. The active catalogue includes exactly two relays and their tags, each with APK and checksum checked. [Verification command](../testing/ATF_ReleaseQualification.md#retention-on-github-after-publication)
+- Finally, collect the GitHub inventory and check it through the RAG gate. The active catalogue includes exactly two releases and their tags, each with APK and checksum checked. [Verification command](../testing/ATF_ReleaseQualification.md#retention-on-github-after-publication)
 
 [Delivery contract](ATF_AndroidDelivery.md) holds the building and identity of the APK; [governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java) checks the active structure and refusals.

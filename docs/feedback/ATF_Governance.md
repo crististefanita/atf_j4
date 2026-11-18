@@ -8,7 +8,7 @@ The project owns the Android perimeter and adapters verifiers. The reusable join
 
 | Priority | Observation and source | Closure criterion |
 |---|---|---|
-| P2 | Profiling of layer inspection captures initialization of the processor charger and interrogation of the classpathin [parserul sintactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), although the verification consumes the syntax tree. | Qualify a parse- only configuration with delimited dependencies and measure cost on the same inventory. Keep compound annotations, ambiguous imports, syntax errors and parser life cycle through independent controls. |
+| P2 | Profiling of layer inspection captures initialization of the processor charger and interrogation of the classpathin [parser syntactic](../../atf-tests/src/test/java/atf/tests/governance/source/JavaTestDeclarations.java), although the verification consumes the syntax tree. | Qualify a parse- only configuration with delimited dependencies and measure cost on the same inventory. Keep compound annotations, ambiguous imports, syntax errors and parser life cycle through independent controls. |
 
 
 ## Cohesion and package development
@@ -19,11 +19,11 @@ The project owns the Android perimeter and adapters verifiers. The reusable join
 
 ## Qualification of claims and launchers
 
-The attestation of the qualified source shall be verified by [RAG evaluator regression](../testing/ATF_ReleaseQualification.md#evaluator-regression-tests). The integrity of APK and payload in the recorded files remains verified by the [the integrity of the relay](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
+The attestation of the qualified source shall be verified by [RAG evaluator regression](../testing/ATF_ReleaseQualification.md#evaluator-regression-tests). The integrity of APK and payload in the recorded files remains verified by the [the integrity of the release](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseIntegrityGovernanceTest.java).
 
 | Priority | Responsible and gaps | Level and criterion of closure |
 |---|---|---|
-| P2 | Coordination: launchers check preconditions in different ways. | Controlled components for Java, Maven, Gradle, Node and Python: the required entry capabilities are checked prior to the costly operation and their absence produces explicit diagnostic and source identity. For Python, detect the installation alias separately from an executable interpreter; [modulul PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), check availability, refusal, timeout and status of controlled process transport, separate from parsing and Java customer. |
+| P2 | Coordination: launchers check preconditions in different ways. | Controlled components for Java, Maven, Gradle, Node and Python: the required entry capabilities are checked prior to the costly operation and their absence produces explicit diagnostic and source identity. For Python, detect the installation alias separately from an executable interpreter; [Module PowerShell ADB](../../atf-test-android/tools/AndroidDeviceSetup.psm1), check availability, refusal, timeout and status of controlled process transport, separate from parsing and Java customer. |
 
 [Retention of Inline Children](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) checks separately for the absence of identical NGPs near HTML. This guard does not show data autonomy, image readability or integrity of the APK; [Adapter criterion](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) remains distinct.
 
@@ -33,9 +33,9 @@ The editorial grid of [contract documentation](../governance/ATF_Documentation.m
 
 | Priority | Responsible for and area | Closure criterion |
 |---|---|---|
-| P2 | Libraries guides distributed: re-use of the sample in the manufacturer | [Local acceptance of fragments](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic contract of these evidence in the register of joint officers and synchronise the clarification of the guidelines to consumers. The manufacturer's regression and acceptance of each consumer remain distinct. |
+| P2 | Libraries guides distributed: re-use of the sample in the producer | [Local acceptance of fragments](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic contract of these evidence in the register of joint officers and synchronise the clarification of the guidelines to consumers. The producer's regression and acceptance of each consumer remain distinct. |
 
-| P2 | The relay description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifest. Keep intact the descriptions already included in the inventory of a published edition. |
+| P2 | The release description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifest. Keep intact the descriptions already included in the inventory of a published edition. |
 
 ## Download via browser
 
@@ -51,7 +51,7 @@ The Android Download Manager transfer test and certificate verification are actu
 
 | Priority | Lacquer delimited | Closure criterion |
 |---|---|---|
-| P2 | The native sample is maintained with sources in Extent, but its launch is still a TMP operation of the operator. | Adapter ochioin versionat: read the identity of the candidate, use your own Android permissions and separate the transfer access. Components inject 404, short file, hash/CRC wrong, certificate absent or different and timeout; do not save signed redirect. The report shall retain the original comparisons, errors and duration, and the cleanup shall only eliminate the resources held. A single Android transfer qualifies delivery; does not multiply on the UI resolutions. |
+| P2 | The native sample is maintained with sources in Extent, but its launch is still a TMP operation of the operator. | Versioned native adapter: read the identity of the candidate, use your own Android permissions and separate the transfer access. Components inject 404, short file, hash/CRC wrong, certificate absent or different and timeout; do not save signed redirect. The report shall retain the original comparisons, errors and duration, and the cleanup shall only eliminate the resources held. A single Android transfer qualifies delivery; does not multiply on the UI resolutions. |
 
 ## Release qualification boundaries
 

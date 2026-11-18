@@ -8,11 +8,11 @@ Joint Java by J2ObjC translation. The original engine continues to be the source
 game, AI, bidding, score and save; adapter iOS does not implement a second
 variant of these rules.
 
-The Depletion Targetul is iOS 17.0. Current Qualification uses iOS 27.2 and
+The Deployment target is iOS 17.0. Current Qualification uses iOS 27.2 and
 Xcode 27.2, latest stable versions found on 7 November 2026; iOS 27.3
 It's still beta. Apple versions change; simultaneously update the runner,
 The simulator runtime and this page after checking official documentation.
-[Versiunile Apple](https://developer.apple.com/news/releases/) ·
+[Versions Apple](https://developer.apple.com/news/releases/) ·
 [Xcode Matrix and SDK](https://developer.apple.com/xcode/system-requirements/)
 
 ## Qualification on GitHub Actions
@@ -36,7 +36,7 @@ The [iOS](../../.github/workflows/ios.yml) workshop checks on the same commit:
 
 J2ObjC 3.1 is fixed in workflow and built from source because distribution
 pre-compiled is no longer published by the project. J2ObjC is beta and translates logic,
-not the interface; SwiftUI remains the native layer of IU. The runner cylinder qualifies
+not the interface; SwiftUI remains the native layer of IU. The runner build qualifies
 compatibility of the compilation and automatic test for iOS 27.2, not each
 intermediate version and no experience on physical devices.
 [J2ObjC - project and limits](https://github.com/google/j2objc) ·
@@ -44,7 +44,7 @@ intermediate version and no experience on physical devices.
 
 ## Delivery steps
 
-1. Run the `iOS simulator qualification` workflow on the source compost of the relay.
+1. Run the `iOS simulator qualification` workflow on the source compost of the release.
 2. Check the test results and keep the `xcresult`the attached to the run.
 3. For TestFlight or App Store, archive with Xcode, sign with identity
    be able to use the system and validate installation on devices iPhone and iPad.
@@ -56,4 +56,4 @@ Distribuible and upload it in TestFlight/App Store asking for an Apple Developer
 Team, certificates, profiling profile and Apple release steps; these
 Accreditation is not stored in the reposition or in the public workshop.
 
-[Livrarea Android](ATF_AndroidDelivery.md) · [Proiectul iOS](../../ios/README.md)
+[Delivery Android](ATF_AndroidDelivery.md) · [Project iOS](../../ios/README.md)

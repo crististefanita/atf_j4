@@ -9,11 +9,11 @@ Publication provides an autonomous presentation of the purpose, inputs and resul
 ```mermaid
 flowchart LR
     ACTION[Real action] -->|produce| OBS[Observation]
-    OBS -->|face through oracle| ASSERT[Comparison assessed]
+    OBS -->|checks through the oracle| ASSERT[Comparison assessed]
     ACTION -->|belongs to| CHECK[Checkpoint]
     ASSERT -->|belongs to| CHECK
-    IMAGE[PNG original] -->|belongs to| CHECK
-    CHECK -->|publish by API| HTML[HTML autonom]
+    IMAGE[Original PNG] -->|belongs to| CHECK
+    CHECK -->|publish by API| HTML[Standalone HTML]
 ```
 
 <details>
@@ -33,9 +33,9 @@ The action, observation, comparison and capture are distinct facts associated wi
 
 | Level | Required content |
 |---|---|
-| Invocare | Actual class identity, method and parameters with effective profile. |
+| Invocation | Actual class identity, method and parameters with effective profile. |
 | Setup | Input and preconditions assessed; training does not replace body verification. |
-| Corp | Previous status, input, resulting status, expected independent, current and verdict. |
+| Body | Previous status, input, resulting status, expected independent, current and verdict. |
 | Teardown | Actual cleaning and secondary cause without replacement of initial error. |
 | Population | Cases, games, pairs, moves and comparisons delimited as distinct units. |
 
@@ -78,7 +78,7 @@ The publication shall be labelled `offline-republication` and shall be made expl
 - Base64 is incorporated into HTML; identical payloads can be canonical, with exact references for each checkpoint.
 - The local status of the checkpoint is maintained; the final result does not retrospectively recolour all states.
 - If more than one catch takes place, the window observed shall be explicitly declared.
-- Components without device use status data and comparisons without manufactured Android catches.
+- Components without device use status data and comparisons without manufactured Android captures.
 
 The viewer keeps the image proportions and provides access to the original size. The return keeps the current owner, the dischargers, the running and the focus; the consumer's verification confronts the original payload with the exact reference.
 
@@ -92,19 +92,19 @@ A hash proves the identity of the bytes without replacing the oracle of the doma
 
 ### Attachment capture
 
-- [Captura text](../../atf-test-android/src/main/java/atf/android/evidence/text/CapturedTextEvidence.java) reads the bytes once and decodes strictly UTF-8; the fingerprint identifies the original, and the published body passes through the drawing up of the library.
+- [Capture text](../../atf-test-android/src/main/java/atf/android/evidence/text/CapturedTextEvidence.java) reads the bytes once and decodes strictly UTF-8; the fingerprint identifies the original, and the published body passes through the drawing up of the library.
 - The publisher shall incorporate the manifest, the annexes declared by checkpoints and additional entries, deducting the same bodies; the non-identifiable data shall be refused prior to the session.
 - The incorporation on publication is labelled as such and does not rebuild the time of the Android capture.
 
 ## Time and status
 
-[Contractul temporal](ATF_PhaseTiming.md) holds the original ranges, axes and treatment of incomplete logs. [Teaching results](ATF_Handoff.md) holds the acceptance of an end and identity of republication.
+[Timing contract](ATF_PhaseTiming.md) holds the original ranges, axes and treatment of incomplete logs. [Teaching results](ATF_Handoff.md) holds the acceptance of an end and identity of republishing.
 
 - Failure to act, compare or catch is not cancelled by subsequent successful completion.
 - The functional verdict and the result of the publication are distinct facts.
 - Zero appeals, missing mandatory data or only the KSPE shall not close a purpose as verified.
 
-## Implementation and verification
+## Execution and verification
 
 The data captured, published and audited shall have separate contracts:
 

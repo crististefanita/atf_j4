@@ -9,7 +9,7 @@ The level of a test results from the limit they check. The collection sets out t
 ```mermaid
 flowchart LR
     CONTRACT[Contract] -->|delimited| LIMIT[Observed limit]
-    LIMIT -->|alege| LAYER[Minimum level]
+    LIMIT -->|selects| LAYER[Minimum level]
     LAYER -->|control| FIXTURE[Isolated preparation]
     FIXTURE -->|exercise| CHECK[Independent verification]
     CHECK -->|justifies| RESULT[Result]
@@ -22,20 +22,20 @@ The level depends on the actual collaboration required for verification. An arch
 
 </details>
 
-| Level | Contract verificat | Suitable preparation | Limit |
+| Level | Contract verified | Suitable preparation | Limit |
 |---|---|---|---|
-| Unitar — `unit` | Pure policy, model, calculation, parsing or formatting | Typed inputs, watch controlled, no service | It does not certify integration between modules. |
+| Unit — `unit` | Pure policy, model, calculation, parsing or formatting | Typed inputs, watch controlled, no service | It does not certify integration between modules. |
 | Component - `component` | Public API of an adaptor or module | Controlled doubles, local data, temporary files | It does not certify a new journey into the installed app. |
-| Integrare — `integration` | Real collaboration between components or modules | Physical libraries, configuration and controlled resources | Don't repeat all the variants already covered at the lower level. |
+| Integration — `integration` | Real collaboration between components or modules | Physical libraries, configuration and controlled resources | Don't repeat all the variants already covered at the lower level. |
 | Head to head - `e2e` | Observed course in Android app | Reserved device, identified application, explicit initial status | Ask for new actions and observations; it shall be activated separately. |
 
-An auxiliary function, a data manufacturer, a charger or an oracle is a support. A class executable from a support package declares its own level.
+An auxiliary function, a data producer, a charger or an oracle is a support. A class executable from a support package declares its own level.
 
 ## Maven Executable Matrix
 
 The table reflects the annotations of executable classes, including compound annotations. "- 'means the absence of a class declared at that level; it does not require the creation of an artificial suite.
 
-| Module | Unitar | Component | Integrare | E2E | Responsibility |
+| Module | Unit | Component | Integration | E2E | Responsibility |
 |---|---|---|---|---|---|
 | `atf-validation` | Da | Da | — | — | Validation rules and evaluation of public contracts. |
 | `atf-test-android` | Da | Da | Da | Da | Time, simulated ADB, oracles, integration of reporting and real Android trails. |
@@ -43,26 +43,26 @@ The table reflects the annotations of executable classes, including compound ann
 
 [Math verification](../../atf-tests/src/test/java/atf/tests/governance/source/TestLayerGovernanceTest.java) faces this table with current sources. Each Maven executable class has one of the exact `@AtfUnitTest`, `@AtfComponentTest`, `@AtfIntegrationTest` and `@AtfE2eTest`, directly or through compound annotation.
 
-Statements are extracted through JDK parser, independent of indentation and annotation position towards modifiers. Methods belong to the type declaring them, containers `@Nested` be explicit and modules retain the identity of the Maven roots; [contractul sintactic](../governance/README.md#test-declarations) delimited this inspection by the execution of JUnit.
+Statements are extracted through JDK parser, independent of indentation and annotation position towards modifiers. Methods belong to the type declaring them, containers `@Nested` be explicit and modules retain the identity of the Maven roots; [syntax contract](../governance/README.md#test-declarations) delimited this inspection by the execution of JUnit.
 
 - **Common libraries:** Core, Reporting, Console, Mock and [Test Kit](../../lib/README.TestKit.md) are [binary libraries](../platform/README.md). Their native tests remain with the joint responsible; the project verifies separately the integration of the binaries and its adapters.
 
-| Contract reprezentativ | Source |
+| Contract representative | Source |
 |---|---|
 | Clock and intervals | [AndroidPhaseClockTest](../../atf-test-android/src/test/java/atf/android/evidence/timing/AndroidPhaseClockTest.java) |
 | Adapter without device | [AdbClientContractTest](../../atf-test-android/src/test/java/atf/android/AdbClientContractTest.java) |
 | Binar and consumer integration | [CoreReportingConsumerContractTest](../../atf-tests/src/test/java/atf/tests/publishing/CoreReportingConsumerContractTest.java) |
-| Parcurs Android | [WhistLabGameplayE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabGameplayE2eTest.java) |
+| Path Android | [WhistLabGameplayE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/gameplay/WhistLabGameplayE2eTest.java) |
 | Quality of sources and documents | [AtfQualityGovernanceSuite](../../atf-tests/src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) |
 
 ## Primary suites and focused selections
 
-[Catalogul executabil](../../config/atf-test-suites.json) assigns each Maven class exactly one primary suite from its module and level. Primary selects use the Jupiter engine packages and level label; a new class goes into the selection without manual completion of a list.
+[Catalog executable](../../config/atf-test-suites.json) assigns each Maven class exactly one primary suite from its module and level. Primary selects use the Jupiter engine packages and level label; a new class goes into the selection without manual completion of a list.
 
-| Rol | Responsibility | Regula de agregare |
+| Rol | Responsibility | Rule de aggregation |
 |---|---|---|
-| Primar | Full population of a level of one module | Every executive class has exactly one primary owner. |
-| Focalizat | Explicit subset of one or more primary parents | Perform for diagnosis or a narrow purpose; do not add cases back to the primary total. |
+| Primary | Full population of a level of one module | Every executive class has exactly one primary owner. |
+| Focused | Explicit subset of one or more primary parents | Perform for diagnosis or a narrow purpose; do not add cases back to the primary total. |
 
 - **Coverage: ** parents include the entire population of the targeted selection before channel filters. The primary suite does not allow exclusions; the filtration of an offline selection keeps the primary owner of the channel.
 
@@ -76,7 +76,7 @@ Engine uses JUnit JVM via [configuration](../../whist-lab-app/game-core/build.gr
 
 [ai-lab](../../whist-lab-app/ai-lab/README.md) is JVM mode consumed only when testing the engine. `:ai-lab:check` performs local Java contracts and Node.js tools, with legal data built without archive. The local Java classpath excludes the engine, Android and ATF; experiments kept below `experiments` are excluded from the main sources.
 
-| Area | Test layer | What does it verify? | Implementation |
+| Area | Test layer | What does it verify? | Execution |
 |---|---|---|---|
 | Rules and score | Unitary or component, after API exercised | Legality, tricks, points, series and limits | JVM, no Android. |
 | Session and restoration | Component | Orders, transitions and rejection of an inconsistent state | Legal situations controlled. |
@@ -120,7 +120,7 @@ The results shall be kept out of the source. Unit tests shall not be required to
 | Geometry, crossings and centering | Typed, extreme legal measurements, increased text and neighbors who violate a single limit. | The actual font, the thirst, the tactile target and the same composition in raster. |
 | Interpretation of the hierarchy | XML controlled: valid status, missing node, duplicate, cut region and malformed document. | Fresh catch after action and the identity of the screen observed. |
 | Transition or resumption | Small ports, actual engine and controlled delivered events, including after cancellation. | Command through displayed control, callbacks and platform persistence. |
-| Localised rules and rescue options | Text provided to the application in each language, configuration options, actual codecul and invalid inputs. | Change of language and reopening of aid, a action for the selector and the check, resumption after the process has stopped. |
+| Localised rules and persistence options | Text provided to the application in each language, configuration options, actual codec and invalid inputs. | Change of language and reopening of aid, a action for the selector and the check, resumption after the process has stopped. |
 | Bidding under overlapping dialogues | The components play the closure of history and score with a recommendation already in the queue. The manual choice remains selected and the score does not change prior to confirmation. | Bidding on APK checks the score dialogue, confirmation and restoration after restart. Legend and rendering remain in the historic route. |
 | Publication | Data captured, original comparisons and failures; Extent/fallback and output mutations. | The interactive review of HTMLs remains report audit with its own environment. |
 
@@ -129,6 +129,6 @@ The results shall be kept out of the source. Unit tests shall not be required to
 - **Order: ** the injected timer checks the sequence of events; actual sleep or a retry does not replace proof of failure.
 - **Selection:** Play the real point of the suite and face [the inventory of the execution](ATF_Collections.md#summary-of-selection); the file moved must be compiled and effectively selected.
 
-The components of the oracle and the native sanityul qualify for different borders. [Display Guide](ATF_Display.md) holds the remaining native selection and [governance of test change](../governance/ATF_TestChanges.md) holds the withdrawal of cases without losing the contract.
+The components of the oracle and the native sanity check qualify for different borders. [Display Guide](ATF_Display.md) holds the remaining native selection and [governance of test change](../governance/ATF_TestChanges.md) holds the withdrawal of cases without losing the contract.
 
 [Collections and commands](ATF_Collections.md) · [Verification of the match](ATF_Gameplay.md) · [Quality governance](../governance/README.md)

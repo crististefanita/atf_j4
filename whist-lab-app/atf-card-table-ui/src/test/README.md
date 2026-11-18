@@ -4,7 +4,7 @@
 
 JVM tests check the geometry of the hand, presentation models and border of the reusable library. Oracles compare calculated values and addictive signatures. [Common strategy](../../../../docs/testing/README.md)
 
-| Familie | Proprietary checks |
+| Family | Proprietary checks |
 |---|---|
 | Table and cards | 3–6 places, central tape, compaction, marking and marking at fractional density. |
 | Places and menu | Content of the model presentation, including name editing and a common height of the badge for the labels of the two phases. |

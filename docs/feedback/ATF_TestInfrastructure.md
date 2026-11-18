@@ -6,7 +6,7 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 
 ## Test kit concurrency
 
-[Suportul comun](README.md#common-test-support) holds the primitives and generic samples. The consumer keeps the acceptance of the Android adapter; the transfer does not qualify for parallelism or close the criterion.
+[Shared support](README.md#common-test-support) holds the primitives and generic samples. The consumer keeps the acceptance of the Android adapter; the transfer does not qualify for parallelism or close the criterion.
 
 ## Cost of validating API
 
@@ -24,10 +24,10 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 
 | Priority | Qualification limit | Closure criterion |
 |---|---|---|
-| P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combines explicit synchronization with tight thresholds of real time. | Separate the preparation of the sub-process from the transport range and the terminare/curtation sample from the latency qualification on the identified environment. Keep product term and negative controls; do not relax thresholds just to get PASS. |
-| P2 | [Preflight-ul Android cu ADB simulat](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) includes the start of PowerShell within the time limit imposed on the refusal test. Under loading, the evidence may fail before the mock verdict. | Signal the start of the fixture and the refusal of transport separately. Validate the clock and process-controlled refusal, along with a restricted sample of the actual launcher. |
+| P2 | [CommandProcessComponentTest](../../atf-test-android/src/test/java/atf/android/process/CommandProcessComponentTest.java) combines explicit synchronization with tight thresholds of real time. | Separate the preparation of the sub-process from the transport range and the completion/curtation sample from the latency qualification on the identified environment. Keep product term and negative controls; do not relax thresholds just to get PASS. |
+| P2 | [Android preflight with mocked ADB](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidReleasePreflightComponentTest.java) includes the start of PowerShell within the time limit imposed on the refusal test. Under loading, the evidence may fail before the mock verdict. | Signal the start of the fixture and the refusal of transport separately. Validate the clock and process-controlled refusal, along with a restricted sample of the actual launcher. |
 
-[Test kit](../../lib/README.TestKit.md#purpose-and-integration) · [Validarea API](../../atf-validation/README.md) · [Governance](ATF_Governance.md)
+[Test kit](../../lib/README.TestKit.md#purpose-and-integration) · [Validation API](../../atf-validation/README.md) · [Governance](ATF_Governance.md)
 
 ## Launcher composition
 
@@ -40,6 +40,6 @@ The consumer holds the validation of API, processes and local adoption; [Liabili
 | Step | Remaining criterion |
 |---|---|
 | Android | Measure the booking waiting, profile preparation, transport and flow separately. Face the active window to correctly assign third-game interruptions. [Acceptance of Android](ATF_Android.md) |
-| Rapoarte | Qualify the cost of collecting and handing over separately from execution, at the same inventory of invoicing. [Reporting register](ATF_Reporting.md) |
+| Reports | Qualify the cost of collecting and handing over separately from execution, at the same inventory of invoicing. [Reporting register](ATF_Reporting.md) |
 
 The [reluare RAG](../testing/ATF_ReleaseQualification.md#resume-validated-steps) contract holds checkpoints and the re-use of snapshots. The concrete chronologies shall be the external file of the execution.

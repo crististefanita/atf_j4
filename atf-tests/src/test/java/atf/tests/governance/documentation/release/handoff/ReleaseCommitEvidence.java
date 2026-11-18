@@ -27,6 +27,11 @@ public final class ReleaseCommitEvidence {
 
     private ReleaseCommitEvidence() { }
 
+    public static String publishedNotes(Path root, String version, String commit) throws Exception {
+        require(commit.matches("[0-9a-f]{40}") && version.matches("[0-9]+\\.[0-9]+\\.[0-9]+"), "IDENTITY", commit);
+        return text(blob(root, commit, "release/" + version + "/release-notes.md"));
+    }
+
     public static String verify(Path root, String version, String commit, JsonNode published) throws Exception {
         require(commit.matches("[0-9a-f]{40}") && version.matches("[0-9]+\\.[0-9]+\\.[0-9]+"), "IDENTITY", commit);
         require(text(git(root, "cat-file", "-t", commit)).strip().equals("commit"), "COMMIT", commit);

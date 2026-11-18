@@ -8,7 +8,7 @@ Research checks whether a choice uses only the information available to the acto
 
 ```mermaid
 flowchart LR
-    OBS[Observed observation] -->|compress| WORLDS[Lumi compatibile]
+    OBS[Permitted observation] -->|compress| WORLDS[Compatible worlds]
     OBS -->|delimited| ACTION[Joint action]
     ACTION -->|be evaluated in| WORLDS
     WORLDS -->|Model aggregation| VALUE[Estimated utility]
@@ -26,19 +26,19 @@ Two hidden worlds compatible with the same observation cannot authorize differen
 |---|---|
 | Observation | Own hand, contracts, public cards and the need available to that decision. |
 | Hypothetical world | It allows for the assessment of consequences; its hidden cards do not become parameters of public choice. |
-| Agregarea | Compare the same alternative on the worlds and weights declared. |
+| Aggregation | Compare the same alternative on the worlds and weights declared. |
 | The policy resulting | It needs its own qualification; the consistency of information does not demonstrate the optimal contract alone or strategic progress. |
 
 ## Order of optimization
 
 ```text
-alegere disponibilă actorului = argmax_acțiune sumă_lume p(lume) × U(acțiune, lume)
-valoare cu informație în plus = sumă_lume p(lume) × max_acțiune U(acțiune, lume)
+actor choice = argmax_action sum_world p(world) × U(action, world)
+value with extra information = sum_world p(world) × max_action U(action, world)
 ```
 
 Separate maximisation after consultation of each world can produce a value which is not accessible to a single public election. Utility, weights and continuation are distinct assumptions; the formula does not state that a rollout is calibrated or a search is complete.
 
-## Implementation and controls
+## Execution and controls
 
 | Property | Source and verification |
 |---|---|
@@ -49,7 +49,7 @@ The components build finite areas with independent expectations. They qualify th
 
 ## Choice of verification
 
-| Mechanism modificat | JUnit load filter `informationResearchTest` |
+| Mechanism modified | JUnit load filter `informationResearchTest` |
 |---|---|
 | Observation and public follow-up | `ro.whistlab.core.ai.information.PublicTailInformationTest` |
 | Aggregation of opening before average | `ro.whistlab.core.ai.information.OpeningBidEvidenceTest` |
@@ -62,6 +62,6 @@ From the `whist-lab-app` directory of a full temporary copy, with Java and local
 
 [Gradle](../../../game-core/build.gradle) define the exact selection, including the component of the contract pressure in the same task. Add `--tests '<filtrul-din-tabel>'` for the mechanism concerned; the two information tests are excluded from the default load `test`and collection `research` of [catalog](../../../../config/test-collections.json) is a wider selection.
 
-To modify a policy, identify separately the observation, generator, continuation and aggregation exchanged. [Protocolul offline](../../../../docs/learning/README.md) requires independent components, frozen candidate and reserved evaluation prior to promotion; concrete data and results remain external.
+To modify a policy, identify separately the observation, generator, continuation and aggregation exchanged. [Protocol offline](../../../../docs/learning/README.md) requires independent components, frozen candidate and reserved evaluation prior to promotion; concrete data and results remain external.
 
-[Modelul deciziei](../../../../docs/ai/ATF_DecisionModel.md) · [Design of components](../../../../docs/testing/ATF_AiComponents.md)
+[Decision model](../../../../docs/ai/ATF_DecisionModel.md) · [Design of components](../../../../docs/testing/ATF_AiComponents.md)

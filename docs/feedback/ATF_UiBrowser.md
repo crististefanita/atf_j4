@@ -15,5 +15,5 @@ Use the same useful profile and document the density, scale of text, language, b
 
 Extend coverage of AI decisions, streaks and playing for zero through component tests with a domain oracle. Captures and physical interactions remain part of visual verification. [Test strategy](../testing/README.md)
 
-- Attach native and web inline catches in Extent, along with distribution, controls and comparisons.
+- Attach native and web inline captures in Extent, along with distribution, controls and comparisons.
 - Select the transitions for the sample on the device based on the already available checks. [Components and Playwright](../../atf-ui-browser/README.md#verification)

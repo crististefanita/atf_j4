@@ -6,7 +6,7 @@ Each variant has its own contract for package, program, trump, bidding and score
 
 ## Complementary guides
 
-| Question | Ghid |
+| Question | Guide |
 |---|---|
 | How to play Romanian Whist? | [Rules in Romanian](https://github.com/crististefanita/whist/blob/main_RO/docs/game/ATF_RulesRo.md) and [English](ATF_RulesEn.md). |
 | What changes with player difficulty? | [Normal and Hard](ATF_Levels.md). |
@@ -22,7 +22,7 @@ flowchart LR
     CONFIG[GameConfig] -->|configure| RULES
     RULES -->|validates| SESSION[GameSession]
     RULES -->|provide rules| HELP[HowToPlay RO/EN]
-    ORACLE[Oracol separat] -->|checks| SESSION
+    ORACLE[Separate oracle] -->|checks| SESSION
 ```
 
 <details>
@@ -36,10 +36,10 @@ The configuration shall determine the rules applicable prior to distribution. Th
 
 | Aspect | All right |
 |---|---|
-| Pachet | Low-level package by number of players, with high ranks defined by GameRules. |
+| Deck | Reduced deck by number of players, with high ranks defined by GameRules. |
 | Program | Sequence determined by variant and number of seats; extreme blocks follow profile program. |
-| Licitare | Contract in the legal range; the last offer cannot equalize the amount with the size of the hand. |
-| Culoare | The colour follow-up is mandatory when it exists in the hand. |
+| Bidding | Contract in the legal range; the last offer cannot equalize the amount with the size of the hand. |
+| Suit | The colour follow-up is mandatory when it exists in the hand. |
 | Trump | In the absence of colour, cutting is mandatory if there is an asset; overcoating is not mandatory. |
 | trick | Win the highest asset or rank of the required color; the winner leads. |
 | Score and series | The points for the contract, misconduct and series are defined in the table below. |
@@ -58,7 +58,7 @@ The configuration shall determine the rules applicable prior to distribution. Th
 
 On a card, a result of the same type keeps the series. The opposite result interrupts the series. The payment of a series resets the meter.
 
-[Testul factual](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java) confronts the table with the engine formulae and checks the refusal of the wrong statements.
+[Test factual](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/rules/documentation/DocumentedScoringComponentTest.java) confronts the table with the engine formulae and checks the refusal of the wrong statements.
 
 ## Principles of implementation
 

@@ -118,7 +118,7 @@ public class DocumentationAnchorGovernanceTest {
     }
 
     @Test
-    void documentDiscoveryIncludesOwnerReadmesAndExcludesGeneratedAndUnrelatedMarkdown(@TempDir Path root) throws Exception {
+    void documentDiscoveryIncludesAllMarkdownAndExcludesGeneratedDirectories(@TempDir Path root) throws Exception {
         Path docs = Files.createDirectories(root.resolve("docs"));
         Path module = Files.createDirectories(root.resolve("module"));
         Files.writeString(docs.resolve("guide.md"), "[missing](absent.md)\n");
@@ -127,10 +127,10 @@ public class DocumentationAnchorGovernanceTest {
             Path output = Files.createDirectories(docs.resolve(ignored));
             Files.writeString(output.resolve("generated.md"), "[ignored](absent.md)\n");
         }
-        Files.writeString(module.resolve("notes.md"), "[outside scope](absent.md)\n");
+        Files.writeString(module.resolve("notes.md"), "[missing](absent.md)\n");
         var violations = new ArrayList<DocumentationGovernanceSupport.Violation>();
         DocumentationLinkGovernanceTest.inspect(root, violations);
-        AuditedAssertions.assertEquals(2, violations.size(), violations::toString);
+        AuditedAssertions.assertEquals(3, violations.size(), violations::toString);
         AuditedAssertions.assertTrue(violations.stream().allMatch(issue -> issue.code().equals("DOC-README-LINK")), violations::toString);
     }
 }

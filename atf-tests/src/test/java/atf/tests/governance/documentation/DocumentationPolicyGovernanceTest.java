@@ -190,7 +190,7 @@ class DocumentationPolicyGovernanceTest {
                 "target/README.md", "node_modules/pkg/README.md", "dist/README.md", "unrelated/example.md")) {
             Path path = root.resolve(file); Files.createDirectories(path.getParent()); Files.writeString(path, "# Control\n");
         }
-        AuditedAssertions.assertEquals(List.of("README.md", "docs/guide.md", "nested/README.md"), GovernanceProject.markdown(root).stream()
+        AuditedAssertions.assertEquals(List.of("README.md", "docs/guide.md", "nested/README.md", "unrelated/example.md"), GovernanceProject.markdown(root).stream()
                 .map(file -> GovernanceProject.relative(root, file)).sorted().toList());
     }
 

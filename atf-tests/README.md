@@ -12,8 +12,8 @@ The common library holds HTML presentation and is consumed through API configure
 flowchart LR
     INPUT[Inputs] -->|feeds| POLICY[Selection policy]
     POLICY -->|passes complete data| DATA[Data for publication]
-    DATA -->|publish by API| HTML[Raport HTML]
-    AUDIT[Audit independent] -->|face entry| HTML
+    DATA -->|publish by API| HTML[HTML report]
+    AUDIT[Audit independent] -->|compares inputs with| HTML
 ```
 
 <details>
@@ -30,7 +30,7 @@ A record describes a statement of origin: identity, parameters, intervals, compa
 | [Selection](src/main/java/atf/tests/learning/EvidenceSelection.java) | Keeps results different from PASS, mandatory collections, population guards and selected deterministic examples. |
 | [Composition](src/main/java/atf/tests/learning/LearningRunReport.java) | Check the records and transmit the original comparisons. |
 | [Publication session](src/main/java/atf/tests/reporting/GameReportSession.java) | Isolate the configuration, context and phases of a publication. |
-| [Auditul HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confront the identities, rows, values and purpose published with source data. |
+| [Audit HTML](src/main/java/atf/tests/learning/LearningReportHtmlAudit.java) | Confront the identities, rows, values and purpose published with source data. |
 | [Download APK](src/main/java/atf/tests/distribution/GitHubApkDownload.java) | Check GitHub metadata, full flow, SHA- 256 and CRC; main support, local HTTP samples and live acceptance in the test. |
 
 [Presentation policy](../docs/reporting/ATF_Presentation.md) holds the rules of volume and navigation. The reusable code is in `src/main/java`; JUnit entries and negative samples are in `src/test/java`.
@@ -52,7 +52,7 @@ mvn -B -pl atf-tests -am '-Dtest=GameReportComponentSuite,LearningRunReportContr
 
 Choose the check after the changed contract:
 
-| Purpose | Intrare JUnit |
+| Purpose | Entry point JUnit |
 |---|---|
 | Policy, JSON/TEXT payloads, redaction and publication | [GameReportComponentSuite](src/test/java/atf/tests/reporting/GameReportComponentSuite.java). |
 | Ownership of values and deliberate mutations of published data | [LearningRunReportContractTest](src/test/java/atf/tests/learning/LearningRunReportContractTest.java). |
@@ -65,13 +65,13 @@ Choose the check after the changed contract:
 
 [LearningRunReportTest](src/test/java/atf/tests/learning/LearningRunReportTest.java) publishes an explicit selection by its dedicated activation. [DeepSuiteExtentReportTest](src/test/java/atf/tests/publishing/DeepSuiteExtentReportTest.java) composes an aggregate publication with separate preconditions and activation.
 
-## Android intervals at republication
+## Android intervals at republishing
 
 [Time measurement contract](../docs/reporting/ATF_PhaseTiming.md) keeps the original ranges and their association with the actions. The verification of this contract on captured logs has a distinct purpose of executing new Android interactions.
 
 ## Levels and governance
 
-Components check selection, adapters and publication; integration checks physical binaries, configuration and composition of modules. [Matricea nivelurilor](../docs/testing/ATF_Architecture.md) is confronted with test statements.
+Components check selection, adapters and publication; integration checks physical binaries, configuration and composition of modules. [Test layer matrix](../docs/testing/ATF_Architecture.md) is confronted with test statements.
 
 [Quality Suite](src/test/java/atf/tests/governance/AtfQualityGovernanceSuite.java) checks the sources, documentation and contracts of libraries. [Governance Launcher](../scripts/run-atf-governance.ps1) prepares temporary copy and warehouse of its own Maven, retains external results and detects changes in source during the verification.
 
@@ -79,7 +79,7 @@ Components check selection, adapters and publication; integration checks physica
 
 ## Limits and qualification
 
-The consumer's responsible shall also retain the auditability at large or predominantly inflows with failure. [Feedback-ul de volum](../docs/feedback/ATF_Reporting.md#cost-of-consumer-inputs) shall be qualified for cost and [handing over results](../docs/reporting/ATF_Handoff.md) shall be held the identity and refusal of contradictory provenance.
+The consumer's responsible shall also retain the auditability at large or predominantly inflows with failure. [Feedback de volume](../docs/feedback/ATF_Reporting.md#cost-of-consumer-inputs) shall be qualified for cost and [handing over results](../docs/reporting/ATF_Handoff.md) shall be held the identity and refusal of contradictory provenance.
 
 For another game, [contract of transfer](../docs/learning/ATF_GameTransfer.md) separate the semantics of the records from the library API. The new adapter keeps comparisons and provenance; the generic requirements of the JAR follow [Rerouting of responsibilities](../docs/feedback/README.md).
 

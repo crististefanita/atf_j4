@@ -18,8 +18,8 @@ Tools belong to Android infrastructure. PowerShell module checks ADB transport, 
 | Surface | Profit test | Limit |
 |---|---|---|
 | Transport PowerShell | Parsing the module and, separately, connecting by `Connect-AtfAndroidDevice`. | Parsing does not exercise the timeout, process errors or device availability. |
-| Replay and surrender | [Contractele Python](test_whist_ui_handoff.py), with directories and records controlled. | Check the captured data and republish without new Android interactions. |
-| Clientul Java ADB | [AdbClientContractTest](../src/test/java/atf/android/AdbClientContractTest.java), with a controlled executor. | Qualify that client; PowerShell module has separate implementation. |
+| Replay and handoff | [Contracts Python](test_whist_ui_handoff.py), with directories and records controlled. | Check the captured data and republish without new Android interactions. |
+| Client Java ADB | [AdbClientContractTest](../src/test/java/atf/android/AdbClientContractTest.java), with a controlled executor. | Qualify that client; PowerShell module has separate implementation. |
 
 From the root of the project, with a real available Python 3 interpreter:
 
@@ -31,4 +31,4 @@ Python imports are solved between files of the same directory. The results and p
 
 The ADB connection can change the transport; it runs in the Android stream holding the reservation and configuration. [Qualification of launchers](../../docs/feedback/ATF_Governance.md#qualification-of-claims-and-launchers) keeps the conditions of the prior check and diagnosis separate from the Python samples.
 
-[Teaching results](../../docs/reporting/ATF_Handoff.md) · [Publication audit](../../docs/reporting/ATF_Audit.md) · [Modulul Android](../README.md)
+[Teaching results](../../docs/reporting/ATF_Handoff.md) · [Publication audit](../../docs/reporting/ATF_Audit.md) · [Module Android](../README.md)

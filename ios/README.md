@@ -19,7 +19,7 @@ release before the support was declared qualified.
 
 ## Structure
 
-| Cale | Rol |
+| Path | Rol |
 |---|---|
 | `WhistLab/` | Swiftui interface, screen model, local checkpoint and C-Objective deck. |
 | `WhistLabTests/` | Smoke test on the engine translated, run in simulator. |
@@ -32,16 +32,16 @@ release before the support was declared qualified.
 - **Requirements: ** macOS, Xcode 27.2, JDK 21, Homebrew, XcodeGen and J2ObjC 3.1.
   Windows Development Machine does not include Xcode.
 - **Workflow: ** public runner `xcode-27` builds J2ObjC distribution from
-  the set tag, run engine and adapter tests, then the application cylinder
+  the set tag, run engine and adapter tests, then the application build
   and test in simulator iOS 27.2.
 - **Native dependencies: ** project connects `libjre_emul` and `libiconv`, necessary
-  J2ObjC runtime. See [ghidul iOS](../docs/platform/ATF_iOSDelivery.md).
+  J2ObjC runtime. See [Guide iOS](../docs/platform/ATF_iOSDelivery.md).
 
 ```sh
 cd whist-lab-app
 ./gradlew :game-core:test :ios-bridge:test
 ```
 
-- The simulator cylinder is not an IPA signed and does not install it on a iPhone.
+- The simulator build is not an IPA signed and does not install it on a iPhone.
 - Publication via TestFlight or App Store requires Apple archiving and signing;
   distribution steps iOS remain separate from Android APK.

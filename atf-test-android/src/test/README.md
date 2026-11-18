@@ -6,7 +6,7 @@ This catalogue explains the JUnit inputs of the Android adapter. [Common strateg
 
 ## Selection and resources
 
-| Intrare | Purpose and preconditions |
+| Entry point | Purpose and preconditions |
 |---|---|
 | [AndroidComponentSuite](java/atf/android/suites/AndroidComponentSuite.java) | Primary suite: all Maven components of the adapter without emulator. |
 | [AndroidDisplayComponentSuite](java/atf/android/suites/AndroidDisplayComponentSuite.java) | Profiles, drivers, history and geometric oracles with controlled inputs. |
@@ -14,7 +14,7 @@ This catalogue explains the JUnit inputs of the Android adapter. [Common strateg
 | [AndroidUiFlowTimingComponentSuite](java/atf/android/e2e/support/AndroidUiFlowTimingComponentSuite.java) | Measured flow intervals, with watch and controlled processes. |
 | [AndroidGameplayE2eSuite](java/atf/android/suites/AndroidGameplayE2eSuite.java) | Interaction on identified APK; requires activation, reserved device and restoration of status. |
 
-[Catalogul](../../../config/atf-test-suites.json) declares the primary suites for each level and the parents of the focused selections. Display, history and timing are subsets of the primary component suite; gameplay is subset of the E2E input, which remains activated separately.
+[Catalog](../../../config/atf-test-suites.json) declares the primary suites for each level and the parents of the focused selections. Display, history and timing are subsets of the primary component suite; gameplay is subset of the E2E input, which remains activated separately.
 
 ## Verification flow
 
@@ -22,18 +22,18 @@ This catalogue explains the JUnit inputs of the Android adapter. [Common strateg
 flowchart LR
     SELECT[Declared selection] -->|control| INPUT[Process or state]
     INPUT -->|produce| OBS[Observation]
-    EXPECT[Independent waiting] -->|face| OBS
+    EXPECT[Independent expectation] -->|compares| OBS
     OBS -->|feeds| REPORT[Selection report]
 ```
 
 <details>
 <summary>Legend: single execution and two types of environment</summary>
 
-Components control processes, clocks and observations. E2E captures a new interaction on the device; republication of an existing observation retains the original identity and does not execute Android again.
+Components control processes, clocks and observations. E2E captures a new interaction on the device; republishing of an existing observation retains the original identity and does not execute Android again.
 
 </details>
 
-## Implementation and interpretation
+## Execution and interpretation
 
 Use [Isolated input of the module](../../README.md#verification-without-device) and [Component Guide](../../../docs/testing/ATF_DisplayComponents.md). Select the suite or its classes with the declared overlap; temporary directories and reports belong to external running.
 
@@ -41,4 +41,4 @@ Use [Isolated input of the module](../../README.md#verification-without-device) 
 
 - **Result:** JUnit identifies execution, and audited HTML keeps the input, expected/actual and the verdict. [Aggregate criterion](../../../docs/feedback/ATF_Reporting.md#rpt-android-component-html---captured-comparisons-not-just-junit-xml) remains distinct from JUnit passing.
 
-[Modulul Android](../../README.md) · [Common strategy](../../../docs/testing/README.md) · [Audit of reports](../../../docs/reporting/ATF_Audit.md)
+[Module Android](../../README.md) · [Common strategy](../../../docs/testing/README.md) · [Audit of reports](../../../docs/reporting/ATF_Audit.md)

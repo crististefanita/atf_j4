@@ -4,10 +4,10 @@
 
 Each candidate represents an identified change in the bid or choice of the card. The protocol specifies the role assessed, sources, families of opponents, score profile and distributions prior to execution.
 
-- **Start:** [Construction and improvement of the IA](ATF_PolicyEvolution.md) policy changes explicitly; recalculation of the context of the hand does not rewrite the accepted parameters.
-- **Liabilities:** [Laboratorul AI](../../whist-lab-app/ai-lab/README.md) be responsible for the implementation of the Union's policy on the implementation of the Union's macro-financial assistance; [lansatoarele comune](../../scripts/README.md) select the configuration and resources of the isolated execution.
+- **Start:** [Building and improving AI](ATF_PolicyEvolution.md) follows the sequence of rule, context, focused regression, comparison and promotion. Policy changes are explicit; recomputing hand context does not rewrite accepted parameters.
+- **Responsibilities:** [AI lab](../../whist-lab-app/ai-lab/README.md) owns experimental tools and sources; [shared launchers](../../scripts/README.md) select configuration and resources for an isolated run.
 
-- [Corpusul](ATF_Corpus.md) defines games and integrity of entries.
+- [Corpus](ATF_Corpus.md) defines games and integrity of entries.
 - [Selection](ATF_Selection.md) restricts analysis to distinct lessons.
 - [Arena](ATF_Arena.md) compares policies on distribution and controlled places.
 - [Retention](ATF_Retention.md) maintains the role and provenance of external data.
@@ -19,7 +19,7 @@ Each candidate represents an identified change in the bid or choice of the card.
 |---|---|
 | Diagnostic | A public observation is drawn from a development match. A counterexample must be justified independently of the result recorded. |
 | Component | The legality of the move, the need for the contract, the return card and cases where the conclusion ceases to be valid shall be verified. |
-| Dezvoltare | Each pair uses identical distributions and places. The results separate on the role, family from opponents and size of the hand. |
+| Development | Each pair uses identical distributions and places. The results separate on the role, family from opponents and size of the hand. |
 | Reserved assessment | Sources are frozen before the range is opened. The external register shall keep the ranges used. |
 | Decision | The declared thresholds and the requirement for strict progress shall apply. Neutral and negative results remain available. |
 
@@ -32,11 +32,11 @@ Each candidate represents an identified change in the bid or choice of the card.
 
 ## Reproduction
 
-[Collections Launcher](../../scripts/run-whist-collection.ps1) selects the tournament according to protocol schematics and verifies the frozen sources. [Ghidul comenzilor](../testing/ATF_Collections.md#frozen-experiments-and-sources) holds the parameters, overlapping modes and actual preconditions.
+[Collections Launcher](../../scripts/run-whist-collection.ps1) selects the tournament according to protocol schematics and verifies the frozen sources. [Command guide](../testing/ATF_Collections.md#frozen-experiments-and-sources) holds the parameters, overlapping modes and actual preconditions.
 
 - A copy shall be identified by the captured sources and configuration; a live modification shall not retrospectively recalibrate it.
 - Reproduction of an old evaluation uses its retained sources and does not open up a new unmet evaluation.
-- [Registrul comun](ATF_EvaluationRegistry.md) faces the ranges and historical exposure independently of the corpus. Development can replay distributions and the continuation retains identity; none represents a new untouched batch.
+- [Shared registry](ATF_EvaluationRegistry.md) faces the ranges and historical exposure independently of the corpus. Development can replay distributions and the continuation retains identity; none represents a new untouched batch.
 
 ## Stable rules and experimental data
 
@@ -53,7 +53,7 @@ flowchart LR
     DIAG[Development Diagnosis] -->|formulate| RULE[General rule]
     RULE -->|checks| TEST[Independent component]
     TEST -->|qualifies| FREEZE[Frozen candidate]
-    FREEZE -->|compare| HELD[Lot rezervat]
+    FREEZE -->|compare| HELD[Reserved evaluation set]
     HELD -->|Inform| REVIEW[Promotion review]
 ```
 
@@ -64,8 +64,8 @@ The roles, opponents, score, distributions, budgets and criteria are declared be
 
 </details>
 
-For first improvement, follow [low diagnosis and regression](ATF_PolicyEvolution.md#from-a-game-to-a-focused-question), then [comparison of games](ATF_PolicyEvolution.md#how-do-we-compare-games) and [promovarea](ATF_PolicyEvolution.md#when-we-promote). The protocol shall be established prior to the reserved assessment.
+For first improvement, follow [low diagnosis and regression](ATF_PolicyEvolution.md#from-a-game-to-a-focused-question), then [comparison of games](ATF_PolicyEvolution.md#how-do-we-compare-games) and [promotion](ATF_PolicyEvolution.md#when-we-promote). The protocol shall be established prior to the reserved assessment.
 
 A defeat locates analysis without demonstrating a mistake on its own. Full hands are admitted to post-game audit, while policy remains limited to [Obligation allowed](../ai/ATF_DecisionModel.md#contract-of-a-decision).
 
-[Arena](ATF_Arena.md) · [Componente AI](../testing/ATF_AiComponents.md) · [Comenzi](../testing/ATF_Collections.md)
+[Arena](ATF_Arena.md) · [Components AI](../testing/ATF_AiComponents.md) · [Commands](../testing/ATF_Collections.md)

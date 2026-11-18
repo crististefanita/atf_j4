@@ -42,10 +42,10 @@ The component report validates JVM inputs and comparisons. The sanity check vali
 | `README.md` | Steps in order, actual selections, status of each and links to results. |
 | `qualification.json` | The inventory of selections, orders, sources, hashes and limits; an unexecuted step remains `PENDING`, with no total deduction. |
 | `component/` | The audited HTML of the suite and the qualified fallback, with inputs and comparisons captured during the test. |
-| `e2e/` | The identified Android execution HTML; historical republication remains its origin. |
+| `e2e/` | The identified Android execution HTML; historical republishing remains its origin. |
 | `diagnostics/` | Only separate justified evidence: Unmigrated JUnit result, signature, crash or rendering control. |
 
-Do not copy PNG/XML/JSON already fully included in HTML after confrontation of bytes and offline access. Keep still the unique evidence required and declare the exception; [compact surrender](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions) be fully qualified.
+Do not copy PNG/XML/JSON already fully included in HTML after confrontation of bytes and offline access. Keep still the unique evidence required and declare the exception; [compact handoff](../reporting/ATF_Handoff.md#compact-handoff-and-exceptions) be fully qualified.
 
 ## Contract of reports by suite
 
@@ -64,7 +64,7 @@ Each executed primary selection owns a canonical Extent report and an execution 
 - The evaluator shall block missing, duplicate or non-anonymous pathways, missing receipts and mismatches of results, hash or provenance.
 - Field `executionReceipt` links the E2E group to the next Receipt report.
 - JUnit XML remains temporarily independent; the final dossier does not keep a second report.
-- The catches are inline Base64; release folder does not duplicate PNG files already incorporated.
+- The captures are inline Base64; release folder does not duplicate PNG files already incorporated.
 
 ## Release dossier README
 
@@ -73,12 +73,12 @@ The first part provides the main report and the status of the qualification. Det
 | Section | Information required |
 |---|---|
 | Purpose and status | The property checked, the basis of the comparison and the actual status: preparation, completed execution or accepted qualification. |
-| Identitate | APK and hash when there is, surse/biblioteci and the time of identification; a later observed fingerprint is not presented as initial catch. |
-| Deschidere | Direct link to canon HTML and short reading order: context, invoicing, input/action, comparison and capture. |
+| Identitate | APK and hash when there is, sources/libraries and the time of identification; a later observed fingerprint is not presented as initial catch. |
+| Opening | Direct link to canon HTML and short reading order: context, invoicing, input/action, comparison and capture. |
 | Selections | The selection or command and the result of each selection, with the unit counted, errors and omissions. |
-| Suprapuneri | The class-suite relationship, parametrization, checkpoints and the same selection in two renderers; totals do not automatically add up. |
+| Overlap | The class-suite relationship, parametrization, checkpoints and the same selection in two renderers; totals do not automatically add up. |
 | Review | HTML hashtag, static and interactive verification performed, browser and checked owners. |
-| Dovezi separate | For each file: specific reason, consumer or diagnostic question and identity; JUnit without captured comparisons remains within its limit. |
+| Separate evidence | For each file: specific reason, consumer or diagnostic question and identity; JUnit without captured comparisons remains within its limit. |
 | Limits and next step | Unexecuted cases, sources exchanged after rolling and the criterion left before the building or promotion. |
 
 ## Public README contract
@@ -100,9 +100,9 @@ The RAG evaluator consumes the evidence already produced and issues a readonly v
 - Entry: JSON plan, candidate manifest, selected Excent reports and source snack root.
 - It doesn't build, run tests, call Git, or move or publish files.
 - Write only the JSON verdict, outside the project, to the candidate and snapshots.
-- Each check cites the path, SHA- 256 and JSON Pointer/linia to the source.
+- Each check cites the path, SHA- 256 and JSON Pointer/line to the source.
 - The verdict keeps the exact plan in Base64 UTF-8, in `qualificationPlan.contentBase64`; his hashery allows revision without an external temporary copy.
-- Unresolved gaps are tracked in [registrul de feedback](../feedback/README.md#prioritized-todos).
+- Unresolved gaps are tracked in [feedback register](../feedback/README.md#prioritized-todos).
 
 The plan sets out the version, channel (`LOCAL`, `TEST` or `PRODUCTION`), risk, platforms, component groups, user flow change and E2E decision for reasons.
 
@@ -154,7 +154,7 @@ APK Snapshots is the benchmark for comparing the inputs of each suite. RAG check
 
 [Component Launcher](../../scripts/run-component-suites.ps1) and [Governance launcher](../../scripts/run-atf-governance.ps1) use [Same preparation](../../scripts/AtfQualificationSnapshot.ps1). Maven compiles and checks files from the same temporary copy. The verification of published samples reads historical Git objects from the checked indicated by commit without reading live files from it.
 
-[The temporary director's preflightul](../../atf-tests/tools/qualification-temp-root.mjs) runs before creating the running folder, copy the sources or turn Maven on.
+[Temporary-directory preflight](../../atf-tests/tools/qualification-temp-root.mjs) runs before creating the running folder, copy the sources or turn Maven on.
 
 - `TMP`, `TEMP` the Director-elect of the system shall indicate the existing external guidelines.
 - Control checks both the declared path and the physical destination after the links have been resolved. A checkout detected in any of the ancestors, including a `.git` file worktree, produces `QUALIFICATION-TEMP-IN-CHECKOUT`.
@@ -162,8 +162,8 @@ APK Snapshots is the benchmark for comparing the inputs of each suite. RAG check
 
 | Moment | Control and proof |
 | --- | --- |
-| Fixarea | `source-inputs.json` describes the sources of the building. `release-inputs.json` sets out all files in `release/` separately, including the catalogue and files kept. |
-| Before Maven | [Preflight-ul](../../atf-tests/tools/check-release-artifacts.mjs) confronts the names, bytes and SHA-256 for the APKs in the catalogue and their files `.sha256`. `release-preflight.log` keeps the identities observed or the cause of the refusal. |
+| Pinning | `source-inputs.json` describes the sources of the building. `release-inputs.json` sets out all files in `release/` separately, including the catalogue and files kept. |
+| Before Maven | [Preflight](../../atf-tests/tools/check-release-artifacts.mjs) confronts the names, bytes and SHA-256 for the APKs in the catalogue and their files `.sha256`. `release-preflight.log` keeps the identities observed or the cause of the refusal. |
 | Closure | The inventory of the copy and the checkout is facing again. Any file added, modified or deleted invalidates the result, and the Receipt indicates the location and path. |
 
 `-PinnedSourceInputs` links the launch to the list used for selection. A change between plan and execution stops the process before Maven. The `release/` fingerprint shall be kept separately so that the evidence file does not fall into the APK source's fingerprint.
@@ -186,9 +186,9 @@ node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
 
 | Result | Action |
 | --- | --- |
-| Ajutorul RO/EN | The content of `HowToPlay.java` and the related guides run in the suite of rules. The changes in the screen, navigation and engine rules keep their flow gates. |
+| RO/EN help | The content of `HowToPlay.java` and the related guides run in the suite of rules. The changes in the screen, navigation and engine rules keep their flow gates. |
 | Editorial Change | Run the governance. Reuse the evidence compatible with the other suites. E2E can stay `NOT_RUN` for a reason. |
-| Bidding change, mass, score, profile or other identified flow | Select the native samples indicated in `requiredE2eGroups`. Component tests shall remain mandatory for their contracts. |
+| Bidding change, table, score, profile or other identified flow | Select the native samples indicated in `requiredE2eGroups`. Component tests shall remain mandatory for their contracts. |
 | Product path or unclassified shared entry | Select all the flow samples provided by the selector and check the component perimeter. |
 | Increase in Android version | The exception of E2E applies if the replacement of the two values `versionName` and `versionCode` exactly reproduces the hash of the published build file. The component evidence shall be checked separately on their inputs. |
 
@@ -210,7 +210,7 @@ $Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
 
 ### Re-use of component evidence
 
-The evaluator compares the added, deleted and modified files. [Perimetrul suitei](../../atf-tests/tools/component-evidence-scope.mjs) determines what differences can affect the result.
+The evaluator compares the added, deleted and modified files. [Scope suite](../../atf-tests/tools/component-evidence-scope.mjs) determines what differences can affect the result.
 
 - The government checks the inventory completely.
 - The graphic library components have their own perimeter. Changes in gaming consumers allow the library's report to be re-used. Sources, tests, resources, compiling configuration and audit deck are part of the perimeter of this suite.
@@ -229,7 +229,7 @@ The evaluator compares the added, deleted and modified files. [Perimetrul suitei
 - Ecstatic and `execution.json` keep the canonical path of the suite and enter the candidate's hash inventory.
 - An aggregated failure run can provide evidence for past groups if the source remains stable. Each mandatory group must have its own validated evidence.
 - The launcher only accepts groups from the catalogue. The ResuseFrom parameter receives a previous run of components or folder reports/component with original receipts.
-- The component-reuse.json plan indicates the reason for the decision and the Snapshots ID.Keep the plan, Extent, the execution Receipt and the original snapshots when assembling the candidate. In the manifest, set up componentEvidenceOrigin for each reused group and use the path androidComponentsReceipt, relative to reports/component, for the Android component gate. [Componente](../../scripts/README.md)
+- The component-reuse.json plan indicates the reason for the decision and the Snapshots ID.Keep the plan, Extent, the execution Receipt and the original snapshots when assembling the candidate. In the manifest, set up componentEvidenceOrigin for each reused group and use the path androidComponentsReceipt, relative to reports/component, for the Android component gate. [Components](../../scripts/README.md)
 
 ### Native samples and Android gates
 
@@ -243,14 +243,14 @@ The visible changes in the user's flow require an E2E focused on that flow. For 
 
 ### Qualification timeline
 
-| Intrare | Measured ranges |
+| Entry point | Measured ranges |
 |---|---|
 | `timing.json` of launchers | Snapshot and preflight, cache, compilation Maven, suite or launch of the common Gradle, checking reports, preparing and restoring Android. |
 | Receipt near HTML | Generating Extent and HTML audit in JVM and Android. Gradle measures the completion and audit of the session. |
 | RAG verdict and GitHub observation | The duration of each RAG gate, inventory, download, hashes and confrontation of publication. |
 | [Measured command](../../scripts/Measure-AtfReleaseCommand.ps1) | Build APK, signing, push, publication or audit executed separately. The control block returns a single numerical output code. |
 
-Each stage has the beginning and end of observed UTC, monotone duration and result. `REUSED` and `NOT_RUN` have motive and zero time of execution. For processes that work in parallel, [cronologia](../../atf-tests/tools/assemble-release-timeline.mjs) calculate the observed intervals meeting and show the breaks separately.
+Each stage has the beginning and end of observed UTC, monotone duration and result. `REUSED` and `NOT_RUN` have motive and zero time of execution. For processes that work in parallel, [chronology](../../atf-tests/tools/assemble-release-timeline.mjs) calculate the observed intervals meeting and show the breaks separately.
 
 The timeline shall keep the difference between the monotone duration and the UTC interval of the same stage.
 
@@ -266,7 +266,7 @@ Choose the receipts of the same qualification, including the RAG verdict. The ti
 
 ### Promotion, push and public download link
 
-The read-only verdict does not commit, does not push and does not publish artifacts. After `READY_FOR_HUMAN_REVIEW`, the relay's responsible closes each step separately:
+The read-only verdict does not commit, does not push and does not publish artifacts. After `READY_FOR_HUMAN_REVIEW`, the release's responsible closes each step separately:
 
 1. Compare candidate inventory with qualified snapshots, including new files and exclusions; confirm same fingerprint and a clean Git tree containing exactly qualified sources.
 2. Commit the sources and push the commit to `main`. Create the version tag on the verified commit. The build and the manifest must identify that commit and the same qualified APK.
@@ -333,13 +333,13 @@ The qualification policy reads UTC time of observation by milliseconds and suffi
 | Preflight Android | 5 minutes after the last successful check of ADB, boot and profile | Before the first protected action if the leastland, series, ADB route or requested profile has expired or changed. |
 | GitHub inventory post-publication | 15 minutes after stable rereading of the branch, tags and assetons | On expiry or after any change in the catalogue, tags, relays, assetons or access. Run the collector again for an actual verdict. |
 | Preflight GitHub Rotation | 5 minutes after confirmation of downloads and rereading of branch and latest edition | Right before the retreat. Follow `expiresAtUtc` and resume checking that the condition has changed. |
-| Artifacts and evidence fixed by hash | No chronological term | When bytes change, the source, scenario or identity required. The APK, signature, reports, catches and receipt of a historical download shall retain the audit value. |
+| Artifacts and evidence fixed by hash | No chronological term | When bytes change, the source, scenario or identity required. The APK, signature, reports, captures and receipt of a historical download shall retain the audit value. |
 
 Check the windows in [executable policy](../../config/release-platform-rag-policy.json). RAG is again checking the freshness of the GitHub inventory at the end of the current evaluation and restores historical revalidation through the original verdict and established evidence.
 
 ### Preflight Android
 
-[Lansatorul responsive](../../scripts/run-whist-responsive-sanity.ps1) reserves the device and runs [preflight-ul comun](../../scripts/check-android-release-device.ps1) before copying the Maven sources or cachet. For a signed APK selection, call the same order immediately after booking, prior to installation, backup or interactions with the application.
+[Responsive launcher](../../scripts/run-whist-responsive-sanity.ps1) reserves the device and runs [shared preflight](../../scripts/check-android-release-device.ps1) before copying the Maven sources or cache. For a signed APK selection, call the same order immediately after booking, prior to installation, backup or interactions with the application.
 
 ```powershell
 $device = @{
@@ -354,10 +354,10 @@ $device = @{
 | --- | --- |
 | Reservation and ADB | The active reservation corresponds to the series and the IDA. ADB responds `device` on the requested route within the time limit of each command. |
 | Boot | `sys.boot_completed` is exactly `1`. |
-| Profil | API is numeric and corresponds to the expected value if specified. For resolution and IPR, the actual values in `LĂȚIMExÎNĂLȚIME@DPI` format, `Override` before `Physical`, shall be compared. |
+| Profile | API is numeric and corresponds to the expected value if specified. For resolution and IPR, the actual values in `WIDTHxHEIGHT@DPI` format, `Override` before `Physical`, shall be compared. |
 
 - For a signed E2E that changes the status of the game, use backup with verified restoration or a temporary secondary Android user. [Isolation script](../../scripts/Invoke-AtfAndroidDisposableUser.ps1) requires the package absent prior to installation and the removal receipt after the test, using the existing reservation and keeping the original user.
-- The candidate APK and roots `whist.records.runRoot`, `atf.android.artifacts` and `atf.match.evidenceDir` must be outside the checkout. The tests refuse the project directories; temporary installation, profile and game exports, catches and receipts remain in the external running file. The copy of the APK sent to the Android temporarily is deleted after installation, and private saves remain in the temporary user until it is removed.
+- The candidate APK and roots `whist.records.runRoot`, `atf.android.artifacts` and `atf.match.evidenceDir` must be outside the checkout. The tests refuse the project directories; temporary installation, profile and game exports, captures and receipts remain in the external running file. The copy of the APK sent to the Android temporarily is deleted after installation, and private saves remain in the temporary user until it is removed.
 
 - The expected values come from the selection plan; `ExpectedApi=0` and the empty profile require the observation of valid values. In responsive mode, the profile describes the initial state and `Profiles` describes the matrix applied in the scenario.
 
@@ -369,10 +369,10 @@ $device = @{
 | Evidence | When re-used | When repeated |
 |---|---|---|
 | Building and signing | The APK and input manifest are identical and package and certificate checks match. | Changing a building input requires a new binary and impact check. |
-| Componente | Use the published file `reports/component` with their Receipts and origins through `-ReuseFrom`. Check decisions on the group. | Rerun affected or invalid groups. The government also checks the inventory of the read release. |
-| E-2E signed | Keep HTML, verdict, catches, APK, profile and evidence of isolation from original execution. Confront the difference in the scenario before re-use. | Rerulate the affected flow if the binary, contract, profile or relevant scenario has changed or if there is no mandatory evidence. |
+| Components | Use the published file `reports/component` with their Receipts and origins through `-ReuseFrom`. Check decisions on the group. | Rerun affected or invalid groups. The government also checks the inventory of the read release. |
+| E-2E signed | Keep HTML, verdict, captures, APK, profile and evidence of isolation from original execution. Confront the difference in the scenario before re-use. | Rerulate the affected flow if the binary, contract, profile or relevant scenario has changed or if there is no mandatory evidence. |
 
-Prepare your own staging and Maven cachet before booking the device. Check the origin of the compiled classes and validate the catch and the ratio on each flow closure. Keep references to logbooks in the external folder and original teardown receipts.
+Prepare your own staging and Maven cache before booking the device. Check the origin of the compiled classes and validate the catch and the ratio on each flow closure. Keep references to logbooks in the external folder and original teardown receipts.
 
 ### Starting and resuming a game on the signed APK
 
@@ -396,12 +396,12 @@ node .\atf-tests\tools\apply-android-e2e.mjs $CandidateDir $FreshRunRoot
 
 ### Acceptance of signed APK
 
-- The [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) Smokey checks the installed package, initial page and configuration without starting another game. [Acceptance of the tender](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) has a separate field: a real prefix of Romanian Whist, recommendation, manual choice, dialogue and restored contract.
+- The [WhistReleaseSmokeE2eTest](../../atf-test-android/src/test/java/atf/android/e2e/display/flow/WhistReleaseSmokeE2eTest.java) Smokey checks the installed package, initial page and configuration without starting another game. [Acceptance of the bid](../../atf-test-android/src/test/java/atf/android/e2e/release/README.md) has a separate field: a real prefix of Romanian Whist, recommendation, manual choice, dialogue and restored contract.
 
 | Selection | Additional precondition | Closure criterion |
 |---|---|---|
 | Home and configuration | The signed APK installed and hash faced | Obvious controls, accessible configuration and return to the initial page. |
-| Common interface | Temporary secondary user or backup checked with same identified APK | Language RO/EN, cancellation without rescue, name preserved between languages and re-established preferences after relaunch. |
+| Common interface | Temporary secondary user or backup checked with same identified APK | Language RO/EN, cancellation without saving, name preserved between languages and re-established preferences after relaunch. |
 | Bidding and restoration | Exclusive booking and isolation receipt with teardown checked | The legal recommendation remains unconfirmed; manual choice survives dialogue and the confirmed contract and public scores are maintained after the process has stopped. |
 | History and display | Profile and explicit inputs with same binar identity checked | Column, marking and access to content according to the code difference; Debug fixtures are distinguished from the execution of the Release APK. |
 
@@ -417,7 +417,7 @@ From the project root, the existing launcher prepares TMP and a private Maven ca
 
 - **History: ** the ratio of the selected suite contains all the captured comparisons; `WORKING_STATE.json` keeps the HTML path and selection.
 - **Display: ** In the responsive launcher, the HTML of the historical subset has its own population. For the full component and provenance ratio use the aggregation launcher.
-- **Governance:** use [lansatorul izolat](../governance/README.md#isolated-execution) A competitive change invalidates the certification of that copy.
+- **Governance:** use [Launcher isolated](../governance/README.md#isolated-execution) A competitive change invalidates the certification of that copy.
 - **Promotion: ** a past result belongs to the executed sources. The sources subsequently changed require the assessment of the difference and the relevant reverification before the final building.
 
 [Common strategy](README.md) · [Display selections](ATF_Display.md) · [Delivery process](../platform/ATF_AndroidDelivery.md#process-of-a-version)
@@ -439,11 +439,11 @@ Use the same directory when resuming the same identity. Choose a new directory w
 
 | Working profile | Preparation | Reception condition |
 |---|---|---|
-| Componente | Set the source manifest and the inventory of the active file. Keep the Maven cachet isolated, classes, leaderboard and stage receipts until the end of delivery. | Reuse reports through selection plan and accepted hashes. The reuse of compilation requires verification of source, classes and libraries. |
+| Components | Set the source manifest and the inventory of the active file. Keep the Maven cache isolated, classes, leaderboard and stage receipts until the end of delivery. | Reuse reports through selection plan and accepted hashes. The reuse of compilation requires verification of source, classes and libraries. |
 | Android headless | Keep the APK signed, API profile and display requested, selection and booking path. Give each of your own director's tests and temporary Android profile. | Just resume the flows without valid proof for APK, snapshot, selection and profile. Check the boot, active window and clean profile. After restarting the host, confront the reservation and profile before any cleaning. |
 | Publication | Keep the verdict, the Draft's IDU, the loading log and the APK and checksumes hashes. | Resume publication from the same journal after reconciling the IDA and uploaded bytes. Check the link on `main` and renew the GitHub observation when it expires. |
 
-Keep the work profiles and cachets during reruns. After publication and verified reconstruction in Git, keep final reports, receipts, applicable EOL recipe and learning data. Built-in directories and isolated cachets can be removed. [Retention after delivery](../platform/ATF_ReleaseRetention.md#local-cleaning-after-delivery)
+Keep the work profiles and caches during reruns. After publication and verified reconstruction in Git, keep final reports, receipts, applicable EOL recipe and learning data. Built-in directories and isolated caches can be removed. [Retention after delivery](../platform/ATF_ReleaseRetention.md#local-cleaning-after-delivery)
 
 ### Snapshot Git and local projection
 
@@ -469,11 +469,11 @@ After interruption keep test director and working area. Launch from the same fix
 | Identity of the resumption | The launcher shall take the fingerprints of the source and release file, in the copy of the work and checkout. Refuse inventory changes and simultaneous use of the same copy. |
 | Maven | Each selection has a receipt after execution. Check the compilation receipt for classes, resources and JARs and resume the ranking if the solution has been interrupted. A copy without a valid manifest requires a new test. |
 | Gradle | Each task publishes the checkpoint atomic after JUnit and Extent parity. A valid HTML without checkpoint can explain a disruption. That task is running again. |
-| Rapoarte | Accepted reports shall retain their octeness and provenance. Missing, incomplete, corrupt or failed selections run in the new directory. |
+| Reports | Accepted reports shall retain their octeness and provenance. Missing, incomplete, corrupt or failed selections run in the new directory. |
 | Preparing the signed APK | Prepare the classes with `-PrepareOnly` and transmit the directory via `-PreparedFrom`. Check APK's SHA-256 and source print before reusing the classes and libraries. Each execution uses a new JUnit Director. |
-| Fluxuri native | If the sample was produced in full, import it by `apply-android-e2e.mjs`. The plan reuses the accepted reports prior to the preparation of Maven or access to the device. |
+| Flows native | If the sample was produced in full, import it by `apply-android-e2e.mjs`. The plan reuses the accepted reports prior to the preparation of Maven or access to the device. |
 
-| Level | Tender verification |
+| Level | Bid verification |
 |---|---|
 | Game component | The first four hands with one card, the dealer's rotation, the switch to two cards and the score checkpoint. The alternative choice, priority to the recommendation and persistence of the contract shall be checked by several hand sizes. |
 | Driver component | XML hierarchy and a notification of achievements after the start of the run. ADB Mocker measures the order of observations and the number of gestures. |

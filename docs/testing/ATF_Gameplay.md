@@ -8,11 +8,11 @@ The verification separates the correctness of the rules, the quality of policy a
 
 ```mermaid
 flowchart LR
-    RULES[Rules and invariants] -->|checks| CORE[Moulds]
-    CORE -->|supports| MATCH[Offline side]
+    RULES[Rules and invariants] -->|checks| CORE[Engine]
+    CORE -->|supports| MATCH[Offline match]
     POLICY[Policy identified] -->|participating in| MATCH
-    MATCH -->|feedss separately| EVAL[Strategic evaluation]
-    UI[Comenzi Android] -->|face through oracle| FLOW[Integration flow]
+    MATCH -->|feeds separately| EVAL[Strategic evaluation]
+    UI[Android commands] -->|checks through the oracle| FLOW[Integration flow]
 ```
 
 <details>
@@ -22,10 +22,10 @@ Components check local rule, simulation checks the transitions of a game, and ev
 
 </details>
 
-| Mechanism | Intrare | Responsibility |
+| Mechanism | Entry point | Responsibility |
 |---|---|---|
 | Component | Small or generated legal situation | Rules, score, priority and border. |
-| Model complet | Configuration, distribution and policies | Transitions, orders, closing hands and cumulative score. |
+| Model complete | Configuration, distribution and policies | Transitions, orders, closing hands and cumulative score. |
 | Comparison of policies | Same distributions and places | The effect of the strategy in the area and budget declared. |
 | Replay | External Trace Identified | Compatibility and association of actions with status. |
 | Android | Installed application and explicit scenario | The semantics of interaction, geometry, accessibility and resumption. |

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The value of a card depends on the remaining objective and public information. [Manifestul contextual](../../config/whist-contextual-discard.yaml) links the general conditions for implementation and independent regressions.
+The value of a card depends on the remaining objective and public information. [Manifest contextual](../../config/whist-contextual-discard.yaml) links the general conditions for implementation and independent regressions.
 
 ## Order of assessment
 
@@ -10,7 +10,7 @@ The value of a card depends on the remaining objective and public information. [
 flowchart LR
     OBS[Private and public observation] -->|filter| LEGAL[Legal cards]
     LEGAL -->|evaluate with the need| QUOTA[Feasibility of contract]
-    QUOTA -->|contract recuperabil| EXACT[Accurate chance]
+    QUOTA -->|contract remains feasible| EXACT[Exact-contract probability]
     QUOTA -->|contract is publicly infeasible| POINTS[Protection of points]
     POINTS -->|tilt| RIVALS[Estimated adverse reactions]
 ```
@@ -36,13 +36,13 @@ Legality precedes any intention. Feasibility uses public and certified limits in
 
 ## State dimensions
 
-[Modelul deciziei](ATF_DecisionModel.md#state-that-influences-the-decision) has the definitions of the need to be signed, opportunities, imbalance and progress. The conditions in this guide use the same units and include the unfinished trick once.
+[Decision model](ATF_DecisionModel.md#state-that-influences-the-decision) has the definitions of the need to be signed, opportunities, imbalance and progress. The conditions in this guide use the same units and include the unfinished trick once.
 
-The positive demand amounts to `max(0, necesar)` per place: a contract already exceeded does not cancel the need of another player. The aggregate imbalance describes mass without replacing individual target or the legality of a card.
+The positive demand amounts to `max(0, necesar)` per place: a contract already exceeded does not cancel the need of another player. The aggregate imbalance describes table without replacing individual target or the legality of a card.
 
 ## Guarantees and estimates
 
-The runtime order and the certificate quantifiers are defined in [modelul deciziei](ATF_DecisionModel.md#priority-objectives). [Rules and configuration](ATF_RulesConfiguration.md) Distinguishing these active branches of experimental clues and weights.
+The runtime order and the certificate quantifiers are defined in [decision model](ATF_DecisionModel.md#priority-objectives). [Rules and configuration](ATF_RulesConfiguration.md) Distinguishing these active branches of experimental clues and weights.
 
 - [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) checks the borders of the rules through legal witnesses and controlled changes of the need.
 - [Design of components](../testing/ATF_AiComponents.md) delimits the actor's observation and oracle.

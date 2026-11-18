@@ -11,7 +11,7 @@ flowchart LR
     OBS[Own and public cards] -->|feeds| EXTRACT[Extractor]
     EXTRACT -->|classifies| PATTERN[Pattern and unit]
     GAMES[Development games] -->|descriptively calibrates| PATTERN
-    PATTERN -->|requires a consumer and| GATE[Separate qualification]
+    PATTERN -->|requires a consumer and qualification| GATE[Separate qualification]
 ```
 
 <details>

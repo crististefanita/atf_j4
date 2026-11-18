@@ -6,24 +6,24 @@ These tests check the application policies and models without installation or em
 
 ## Verification families
 
-| Familie | Controlled entry and oracle |
+| Family | Controlled entry and oracle |
 |---|---|
 | Layout and text | Dimensions, density, font and number of seats; reservation of maximum full schedule, including 17 cards in three places, stable anchors between phases and the title accessible on no more than two rows. |
 | Common IU adapters | [Texts and callbacks](java/ro/whistlab/app/screens/WhistMenuContentComponentTest.java) and [all card faces](java/ro/whistlab/app/cards/WhistCardFaceComponentTest.java) keep the Whist semantics at the library border. |
 | Bidding | [Contextual matrix](java/ro/whistlab/app/bidding/HumanBidMatrixComponentTest.java): 1–8 cards, 3–6 places and each bidding position; public observation, Hard assessment and independent arithmetic oracle for legality. |
 | Bidding actions | [Layout components](java/ro/whistlab/app/bidding/AutoGameBidActionComponentTest.java) checks the centred rows, the reduced contour separately from the tactile area, the densities and the recovered space for the increased text. [Minium component](java/ro/whistlab/app/screens/GameMenuContentComponentTest.java) checks the stop option in EN and EN only during automation. |
-| Continuity of the tender | [Rescue and Resettlement](java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java): actual JSON codec, recalculated recommendation, priority manual choice and contract confirmed retained; delayed deliveries do not change the session. |
-| Uncertainty tender | [Context factors](java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java): return card and trump card, public adverse targets, relative score and payment of series. Oracles distinguish the legitimate change of the usefulness of accidental change of simulated worlds. |
+| Continuity of the bid | [Rescue and Resettlement](java/ro/whistlab/app/bidding/HumanBidResumeComponentTest.java): actual JSON codec, recalculated recommendation, priority manual choice and contract confirmed retained; delayed deliveries do not change the session. |
+| Uncertainty bid | [Context factors](java/ro/whistlab/app/bidding/HumanUncertainBidComponentTest.java): return card and trump card, public adverse targets, relative score and payment of series. Oracles distinguish the legitimate change of the usefulness of accidental change of simulated worlds. |
 | Achievements | [Facts, rules and persistence](java/ro/whistlab/app/achievements/WhistAchievementComponentTest.java), [text projection](java/ro/whistlab/app/achievements/WhistAchievementPresentationComponentTest.java) and [coordination of notifications](java/ro/whistlab/app/achievements/WhistAchievementNoticeCoordinatorComponentTest.java): complete catalogue, persistent IDs, eligibility by variant / table / rules, exact thresholds, simultaneous progress, double credit-free resumption, format RO/EN The Gradle YAML Validator is attached to the collection, with positive and negative vectors prior to Java generation. |
 | Calibration of outputs | [Offline pair games](java/ro/whistlab/app/achievements/WhistAchievementOfflineCalibrationTest.java) uses real AI policies on repetitive seedals, compares the measures per game with cumulative progress and verifies persistence after the reply. The results are excluded from the quick collection; `:app:testDebugAchievementCalibration` runs separately, on external and disjunct intervals, for 3–6 places and Romanian variants 1–8–1/8–1–8. The results measure self-play, eligibility and achievements per match and do not estimate human success. |
 | Persistence and history | Legal orders, checkpoint JSON, balances and migration; refusal of corrupt data. |
 | Life Cycle | Clock, executor, navigation and controlled callbacks; cancellation and resumption without repeated effect. |
-| Actorul mesei | [Projection of Whist](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) checks the actor at bidding and playing for 3–6 seats, the AutoGame marking, the lack of marking at tricks collection and coherent disabling of human commands. |
+| Actor table | [Projection of Whist](java/ro/whistlab/app/table/content/WhistTableContentComponentTest.java) checks the actor at bidding and playing for 3–6 seats, the AutoGame marking, the lack of marking at tricks collection and coherent disabling of human commands. |
 | Collection of levatates | Geometry, players, last levitate and delayed events; the game status is maintained. |
 
-## Implementation and limits
+## Execution and limits
 
-[Componentele bibliotecii UI](../../../atf-card-table-ui/README.md#verification) have their own Gradle task. The application display filter includes the adapters of `screens` and `cards`; existing geometry tests remain at the integration of Whist and are not counted again as new tests of the library.
+[UI library components](../../../atf-card-table-ui/README.md#verification) have their own Gradle task. The application display filter includes the adapters of `screens` and `cards`; existing geometry tests remain at the integration of Whist and are not counted again as new tests of the library.
 
 - **Focused selection: ** `:app:testDebugUnitTest --tests 'ro.whistlab.app.bidding.*'` includes matrix, resumption and small cases of estimation. The fixtures advance the engine through legal commands, with actual score and card turned, without external archive or emulator.
 
@@ -37,7 +37,7 @@ These tests check the application policies and models without installation or em
 
 - **Evidence:** The artifacts and results belong to the external execution. [Qualification of a relay](../../../../docs/testing/ATF_ReleaseQualification.md) decide on the necessary native selection after local checks.
 
-[Application](../main/java/ro/whistlab/app/README.md) · [Common strategy](../../../../docs/testing/README.md) · [Componente display](../../../../docs/testing/ATF_DisplayComponents.md)
+[Application](../main/java/ro/whistlab/app/README.md) · [Common strategy](../../../../docs/testing/README.md) · [Components display](../../../../docs/testing/ATF_DisplayComponents.md)
 
 ## Whist projection of the common table
 

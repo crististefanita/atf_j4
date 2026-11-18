@@ -6,18 +6,18 @@ The tests check the rules, sessions and policies of the observation allowed to t
 
 ## Collections and oracles
 
-| Familie | Property and limit |
+| Family | Property and limit |
 |---|---|
 | Rules and score | Legal cards, winners, contracts, series and invalid neighbours, with independent expectations. |
 | Session and restoration | Orders, unique hand advancement, historical and refusal of inconsistent states. |
 | A.I. policy | The actor's observation, legality, necessity and justified choices in controlled areas. |
 | Playing for zero | The final score in both Romanian variants, the transition of AI to exact zero and the maintenance of the usual strategy when second place remains possible. |
-| Cercetare | Experimental interference and sequelae, separated from the implicit regression. |
+| Research | Experimental interference and sequelae, separated from the implicit regression. |
 | Offline evaluation | Rolls, sources and lots identified; strategic progress has its own protocol and reserved data. |
 
 ## Choice of execution
 
-[Project collections](../../../../docs/testing/ATF_Collections.md) choose the tasks of [Gradle](../../build.gradle). [Intrarea JVM](../../../algorithm-build/README.md) allows checks without Android SDK; use temporary copies and external output.
+[Project collections](../../../../docs/testing/ATF_Collections.md) choose the tasks of [Gradle](../../build.gradle). [JVM entry point](../../../algorithm-build/README.md) allows checks without Android SDK; use temporary copies and external output.
 
 A small regression fixes the rule and the distinct defect without running the entire training corpus again. Research, arena and reserved evaluation shall be explicitly selected and shall not be gathered at regression as unique new tests.
 
@@ -29,7 +29,7 @@ The fairness of a rule, the cost of a decision and the superiority of policy are
 
 Pregnancy `:game-core:zeroMatchPairedTest` explicitly runs full games on JVM. The pair shall retain the seats, series, distribution, order of hands and the trunks, with the rule disabled and activated.
 
-| Parametru Gradle | Rol |
+| Parameter Gradle | Rol |
 |---|---|
 | `whist.zero.firstSeed`, `whist.zero.repeats` | The deterministic range of distributions for each combination of variant and number of places. |
 | `whist.zero.pressure` | Choose the controlled prefix lot, where a place receives legal adverse bids before the last five hands. Natural and controlled lots shall be interpreted separately. |
@@ -39,4 +39,4 @@ Pregnancy `:game-core:zeroMatchPairedTest` explicitly runs full games on JVM. Th
 
 The JSON retains public moves, scores, zero choices and distribution prints. The final comparison separates the development and reserved intervals.
 
-[Motorul](../../README.md) · [Common strategy](../../../../docs/testing/README.md) · [Design of AI components](../../../../docs/testing/ATF_AiComponents.md)
+[Engine](../../README.md) · [Common strategy](../../../../docs/testing/README.md) · [Design of AI components](../../../../docs/testing/ATF_AiComponents.md)

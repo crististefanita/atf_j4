@@ -9,7 +9,7 @@ An immutable policy controls AUTO, SUMMARY and FULL selection and the limits of 
 | Configuration | Responsibility |
 |---|---|
 | `config/game-evidence.yml` | Consumer specific selection and limits; explicit route through `atf.evidence.policy`. |
-| `atf.yaml` sau `atf.yml` | Preview of comparisons and content budget; explicit route through `atf.report.config`. |
+| `atf.yaml` or `atf.yml` | Preview of comparisons and content budget; explicit route through `atf.report.config`. |
 | `EvidencePolicy` and `GameReportConfiguration` | Solving configuration once for publication. |
 
 The subsequent change of configuration does not alter the object already captured. [GameReportConfiguration](../../atf-tests/src/main/java/atf/tests/reporting/GameReportConfiguration.java) requires previsualization of comparisons of 240 characters and a positive body budget; another preview value is denied by the current adapter.
@@ -33,13 +33,13 @@ The selection shall decide which pleas are presented and declare the omissions. 
 
 ## Modes of presentation
 
-| Mod | Claims held | Background and presentation |
+| Mode | Claims held | Background and presentation |
 |---|---|---|
 | AUTO | All population provided within inclusive limits; otherwise full deterministic examples, different results from PASS and mandatory checks. | Optional context in the captured budget and all selected comparisons. |
 | SUMMARY | Successful complete examples, different results of PASS and mandatory checks. | Observe the optional context and fingerprints; declare the original inventory, retained and omitted. |
 | FULL | All the submissions and control points provided. | The budgets remain active; the pre-selected diagnosis and the optional observation required for the session have distinct behaviors defined below. |
 
-Collections explicitly marked for full storage shall be kept in accordance with policy in each way. The presentation mode does not extend the population provided by the manufacturer and does not execute the game or oracle.
+Collections explicitly marked for full storage shall be kept in accordance with policy in each way. The presentation mode does not extend the population provided by the producer and does not execute the game or oracle.
 
 ## Grouping and full content
 
@@ -47,20 +47,20 @@ Collections explicitly marked for full storage shall be kept in accordance with 
 |---|---|
 | Comparison | Natives with no more than `rowsPerGroup` rows; sequels indicate the original range. |
 | Fragment Verdict | Derived from retained rows; the terminal fragment also retains the result of the explicitly provided group. |
-| Valori lungi | Native preview of 240 characters and access to complete values associated with the original group. |
+| Long values | Native preview of 240 characters and access to complete values associated with the original group. |
 | Remarks | Not more than `fieldsPerGroup` rows; long values keep the content complete. |
 | TEXT | Ordered parts, preferably for the end of the line and keeping CR/LF, Unicode and literal entities. |
 | JSON | Full documents at object or painting limits; an indivisible element over budget is denied. |
-| Capturi Android | The original whole PNG associated with the control point; the selection does not replace or cut the image. |
+| Captures Android | The original whole PNG associated with the control point; the selection does not replace or cut the image. |
 | Observation without comparison | The explicit API for attached materials without invented domain assertions. |
 
 Every JSON fragment is a complete document. The original numerical forms shall be maintained by formatting and fragmentation; the lack or reordering of a game invalidates completeness.
 
 ## Optional data and refusal of publication
 
-The optional character is declared by the caller. The file name or label shall not convert the comparative inputs, causes and catches into non-usable data.
+The optional character is declared by the caller. The file name or label shall not convert the comparative inputs, causes and captures into non-usable data.
 
-| Step | Comportament implementat |
+| Step | Implemented behaviour |
 |---|---|
 | [EvidenceSelection](../../atf-tests/src/main/java/atf/tests/learning/EvidenceSelection.java) | It deducts diagnostic fingerprints, keeps entire records in the budget and declares omissions including in FULL; SUMMARY omits them. |
 | [GameReportPresentation](../../atf-tests/src/main/java/atf/tests/reporting/GameReportPresentation.java) | For optional comments requested for the session: AUTO omits that do not fit, SUMMARY omits the context and FULL refuses to exceed the budget. |
@@ -71,7 +71,7 @@ External diagnostic references are inventoried and omitted from HTML; mandatory 
 
 [EvidenceSelectionContractTest](../../atf-tests/src/test/java/atf/tests/learning/EvidenceSelectionContractTest.java) checks selection before the session. [GameReportPublicationContractTest](../../atf-tests/src/test/java/atf/tests/reporting/GameReportPublicationContractTest.java) checks its publication and refusal; the two contracts are not confused.
 
-## Implementation and verification
+## Execution and verification
 
 The composition of the data is in the main sources of [integration module](../../atf-tests/README.md). Maintenance of the generic rendering component shall be directed by [joint responsibilities](../feedback/README.md).
 
@@ -84,8 +84,8 @@ The consumer controls the population and context, and the library has the prepar
 ```mermaid
 flowchart LR
     SELECT[Declared selection] -->|publishes| HTML[Purpose content]
-    HTML -->|display by navigation| VISIBLE[Values and catches]
-    VISIBLE -->|permite| AUDIT[Interactive revision]
+    HTML -->|display by navigation| VISIBLE[Values and captures]
+    VISIBLE -->|allows| AUDIT[Interactive revision]
 ```
 
 <details>
@@ -99,7 +99,7 @@ The selection shall retain full claims and explicit omissions. The change of own
 
 - Limit the optional diagnosis by the policy captured and keep mandatory comparisons of selected invokes.
 - Measure separately the generation, opening and navigation operations on an identified input.
-- Confront values, order and owner of catches after interaction.
+- Confront values, order and owner of captures after interaction.
 - Check the return from the viewer without losing the reader's context.
 
 ### Performance governance

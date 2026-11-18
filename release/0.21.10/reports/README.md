@@ -1,12 +1,12 @@
-# Whist 0.21.10 — dovezi
+# Whist 0.21.10 — evidence
 
-## Pe scurt
+## Overview
 
-Rapoartele leagă aserțiunile observate, proveniența componentelor și capturile native headless de APK-ul semnat. PNG-urile native sunt incluse în HTML. Suitele reutilizate păstrează execuția și hash-urile intrărilor originale.
+The reports bind observed assertions, component provenance and headless native captures to the signed APK. Native PNGs are inline in HTML. Reused suites retain their original execution and input hashes.
 
-## Suite de componentă
+## Component suites
 
-| Selecție | Cazuri | Raport |
+| Selection | Cases | Report |
 |---|---:|---|
 | atf-validation | 19 | [Extent](component/atf-validation/component-report.html) |
 | atf-test-android | 277 | [Extent](component/atf-test-android/component-report.html) |
@@ -19,9 +19,9 @@ Rapoartele leagă aserțiunile observate, proveniența componentelor și capturi
 | whist-lab-app-atf-card-table-ui | 44 | [Extent](component/whist-lab-app-atf-card-table-ui/component-report.html) |
 | whist-lab-app-rules | 40 | [Extent](component/whist-lab-app-rules/component-report.html) |
 
-## Fluxuri native
+## Native flows
 
-| Flux | Raport |
+| Flow | Report |
 |---|---|
 | history-release-sanity | [Extent](e2e/history-release-sanity/report.html) |
 | responsive-ui-sanity | [Extent](e2e/responsive-ui-sanity/report.html) |
@@ -31,12 +31,12 @@ Rapoartele leagă aserțiunile observate, proveniența componentelor și capturi
 | signed-release-home-profile | [Extent](e2e/signed-release-home-profile/report.html) |
 | signed-release-smoke | [Extent](e2e/signed-release-smoke/report.html) |
 
-## Adoptarea UI comune
+## Shared UI adoption
 
-[Aserțiuni de integrare capturate](supplemental/extent-focused-admission.html) · [Rentz observații native](supplemental/extent-native-rentz.html) · [Egalitatea binarelor](supplemental/library-distribution.json)
+[Captured integration assertions](supplemental/extent-focused-admission.html) · [Rentz native observations](supplemental/extent-native-rentz.html) · [Binary equality](supplemental/library-distribution.json)
 
-## Admiterea dovezilor
+## Evidence admission
 
-[Regresiile validatorului capturilor originale](supplemental/extent-validator-correction.html) · [Proveniența corecției](supplemental/validator-correction.json)
+[Original-capture validator regressions](supplemental/extent-validator-correction.html) · [Correction provenance](supplemental/validator-correction.json)
 
-[Manifest](../release-validation.json) · [Catalogul versiunilor](../../README.md) · [Strategia de testare](../../../docs/testing/README.md)
+[Manifest](../release-validation.json) · [Release catalog](../../README.md) · [Test strategy](../../../docs/testing/README.md)

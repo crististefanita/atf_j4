@@ -2,11 +2,11 @@
 
 ## Overview
 
-The corpus is an external entry for the replicay, selection and offline analysis. The project has the schematics and validators; game files, concrete manifests and lot registers remain in the external warehouse configured.
+The corpus is an external entry for the replay, selection and offline analysis. The project has the schematics and validators; game files, concrete manifests and lot registers remain in the external warehouse configured.
 
 ## Data model
 
-| Entitate | Contract |
+| entity | Contract |
 |---|---|
 | Party | Identity, partition, rule profile, policies and order of hands. |
 | Hand | Dealer, distribution, trump card, orderly bids, tricks and closing score. |
@@ -16,8 +16,8 @@ The corpus is an external entry for the replicay, selection and offline analysis
 
 ```mermaid
 flowchart LR
-    FILE[External Party] -->|feeds| ORACLE[Validator independent]
-    ORACLE -->|admissions to partition| MANIFEST[Verified manifest]
+    FILE[External game] -->|feeds| ORACLE[Independent validator]
+    ORACLE -->|admits to a partition| MANIFEST[Verified manifest]
     MANIFEST -->|explicitly select| REPLAY[Replay and analysis]
     REPLAY -->|design| OBS[Diagnostic observations]
 ```
@@ -40,16 +40,16 @@ The validator can check the property of all cards after the game is finished. Th
 
 ## Usage
 
-[Body configuration](../../config/learning-corpus.json) indicates the archive and active pointer.[Validatorul](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs) checks the rules and the score, and [selectorul activ](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) controls the selection.
+[Body configuration](../../config/learning-corpus.json) indicates the archive and active pointer.[Validator](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs) checks the rules and the score, and [selector active](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) controls the selection.
 
 ```powershell
-$gamePath = Read-Host 'Fișierul JSON extern pentru replay'
-$expectedSha256 = Read-Host 'SHA-256 declarat în manifestul sursei'
+$gamePath = Read-Host 'External replay JSON file'
+$expectedSha256 = Read-Host 'SHA-256 declared in the source manifest'
 node whist-lab-app/ai-lab/tools/corpus/whist-corpus-cli.mjs replay $gamePath $expectedSha256
 node whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs verify-current
 ```
 
-[Replay-ul](../../whist-lab-app/ai-lab/tools/corpus/whist-archive-replay.mjs) requires the hash expected prior to reading, compares bytes and then checks the rules; a missing, changed or illegal entry is denied. The hash identifies the file without demonstrating the provenance or correctness of the game. The Gradle `:ai-lab:replayArchive` task accepts the same entries by `-Pwhist.archive.file` and `-Pwhist.archive.sha256` and is not part of `check`.
+[Replay](../../whist-lab-app/ai-lab/tools/corpus/whist-archive-replay.mjs) requires the hash expected prior to reading, compares bytes and then checks the rules; a missing, changed or illegal entry is denied. The hash identifies the file without demonstrating the provenance or correctness of the game. The Gradle `:ai-lab:replayArchive` task accepts the same entries by `-Pwhist.archive.file` and `-Pwhist.archive.sha256` and is not part of `check`.
 
 Default components use [legal data built](../../whist-lab-app/ai-lab/tools/testing/legal-game-fixture.mjs), with rules of training independent of validator. External archive is required only for selected operations on kept data.
 

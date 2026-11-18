@@ -14,11 +14,11 @@ The register stores the bids, the won tricks and the balances; the points are ba
 
 ```mermaid
 flowchart LR
-    END[Hand-held] -->|calculate| SCORE[Score rules and series]
+    END[Completed hand] -->|calculate| SCORE[Score rules and series]
     SCORE -->|add a record| HISTORY[ScoreHistory]
     HISTORY -->|persists| STORE[Checkpoint JSON]
-    HISTORY -->|design on all places| COLUMN[ScoreHistoryTable]
-    COLUMN -->|display| VIEW[Istoricul UI]
+    HISTORY -->|projects every seat into| COLUMN[ScoreHistoryTable]
+    COLUMN -->|display| VIEW[History UI]
 ```
 
 <details>
@@ -37,11 +37,11 @@ The score is calculated once upon closing the hand. The register shall keep the 
 | Playing for zero | At the end of the eligible match, the result and ranking convert the total exactly 0 into 500. The last hand cell keeps the balance, and the legend indicates the players who received the transformation. |
 | Bidding | Elaborated, even if the actions were captured in another order. |
 | Tricks | The values are whole, placed in the hand, and the amount per seat is the number of cards per hand. The last hand ended is consistent with the status of the players. |
-| The contract result | Accomplished, missed or unknown; positive points do not imply the performance of the contract. Zero is a tender distinct from the unknown value. |
+| The contract result | Accomplished, missed or unknown; positive points do not imply the performance of the contract. Zero is a bid distinct from the unknown value. |
 | Registration | One advance for each hand completed. |
 | Limits | An invalid site is not unknown information; indexation and overrun of the hand interval are explicitly refused. A new record includes tricks without deleting the known suffix. |
 | Reload | The final balance shall correspond to the status of the players and the session phase. |
-| Date vechi | The known balance shall be maintained; cards, bids and unregistered hands shall not be reconstructed by assumption. |
+| Date old | The known balance shall be maintained; cards, bids and unregistered hands shall not be reconstructed by assumption. |
 | New game | Own register and initial validated balance. |
 
 ## Compatibility and UI
@@ -59,7 +59,7 @@ The score is calculated once upon closing the hand. The register shall keep the 
 - The legend has the useful width of dialogue and remains outside the horizontal development of columns. Text RO/EN is divided naturally by row; its height and lettages are reserved before the budget for refundable rows.
 - [HistoryViewport](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryViewport.java) receives measured pixels. Each measurement restores the budget from the current space so that the return from a compact window or an enlarged font can expand the table again.
 - The current scheme keeps a known trick suffix separate from the suffix of the known bids. Migrating a hand can recover the last value from the player's condition; older and ongoing hands do not receive invented values.
-- Salvation and reloading keep the unfamiliar prefix. A new hand adds complete information without reinterpreting old data; an unknown contract does not receive a cut.
+- Persistence and reloading keep the unfamiliar prefix. A new hand adds complete information without reinterpreting old data; an unknown contract does not receive a cut.
 - The serial marking compares the points recorded with the usual score of the known contract, in the Romanian profile with activated series. Only the adjustment equal to the bonus or the set-up penalty receives rectangle; a hand of a card, unknown results and uncompleted hands do not receive marking. Accessible description calls separately adjustment, including for old asymmetrical profiles.
 - The geometry of the rectangle reserves the complete number, font height and distance from the contour. The measurement may extend column `P` and the row height; drawing shall remain in that cell without contour around the bid or the entire player group.
 - Normal contour marks the bonus after five consecutive eligible achievements; red contours mark penalty after five consecutive eligible misstatements. The colour of the contour follows the series adjustment, including when the aggregate total is opposite; the width and height of the rectangle shall be measured separately.
@@ -71,10 +71,10 @@ The score is calculated once upon closing the hand. The register shall keep the 
 | Responsibility | Mechanism |
 |---|---|
 | The dialogue window | [HistoryDialogWindow](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryDialogWindow.java) follows the useful window protected from the system bars. The edges shall be proportionate and capped; the observer shall be removed at closure. |
-| Table width | [Grila](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java) extends proportionately the columns to the width available, with the same header borders and rows. Rounding debris does not leave an empty band. |
+| Table width | [Grid](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/ScoreHistoryGridMetrics.java) extends proportionately the columns to the width available, with the same header borders and rows. Rounding debris does not leave an empty band. |
 | Minimum content | Full text measurement sets the compression limit. When the limit exceeds the window, the horizontal running shall retain the numbers and names without reducing the accessibility scale. |
-| Height | Headings and measured legend first receive space; removable rows occupy the rest without fixed ceiling. When a complete row is not in place, [containerul](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryContentScroll.java) allows the full content to run; a new measurement may return to fixed headers. |
-| Text and Markings | [Tipografia](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryTypography.java) keeps dimensions in spp. [Diagonala](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) draw in red over the missed bid and retain thickness when changing the text or outline of the series. |
+| Height | Headings and measured legend first receive space; removable rows occupy the rest without fixed ceiling. When a complete row is not in place, [container](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryContentScroll.java) allows the full content to run; a new measurement may return to fixed headers. |
+| Text and Markings | [Typography](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/HistoryTypography.java) keeps dimensions in spp. [diagonal](../../whist-lab-app/app/src/main/java/ro/whistlab/app/score/layout/BidStrikeGeometry.java) draw in red over the missed bid and retain thickness when changing the text or outline of the series. |
 
 ### Graphical components and samples
 
@@ -82,11 +82,11 @@ The components check the closure of the hand, migration, corruption of the check
 
 [Components of the totals displayed](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) face each historical balance and limit of the prefix known to 3–6 places, in RO/EN. [Measurement of columns](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryMeasureComponentTest.java) uses the same visible value, including for the last row and last player.
 
-- [Componentele seriilor](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java) plays legal games with controlled contracts and calculates separately the balances and meters without calling the engine formula into the oracle; the JSON recharge covers the bidding, playing and closing of the hand.
+- [Streak components](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistorySeriesComponentTest.java) plays legal games with controlled contracts and calculate balances and streak counters independently without calling the engine formula into the oracle; JSON restoration covers the bidding, playing and closing of the hand.
 - [Geometry of marking](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/award/SeriesPointsFrameComponentTest.java) confronts the rectangle and the entire contour with cell boundaries at fractional density, long numbers and enlarged font; the pixels and Android font retain distinct native qualification.
 - [Test component raster](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryCumulativeComponentTest.java) designs legal states through production geometry in a JVM image with controlled fonts. The difference between images with and without markings shall be only of the awarded `P` cells and contain the four sides; the red shall be checked after a penalty leaving the total positive.
 - [Recovery of history in images](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryRecoveryRasterComponentTest.java) writes the JSON checkpoint in a file, reads it through the application code and compares PNG pixels before and after restoration, to 3–6 places, in RO/EN and with increased text. Check the historical markings in the bid, game and after closing another hand; do not deduct them from the current meter of the series.
-- [Adaptive grid](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java) verifies the use of width, measured minima, resizing and rounding. [Probele grafice](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryResponsiveRasterComponentTest.java) composes policies in a controlled view and compares images separately with and without diagonal: only the failed bid cells can change, with red pixels and oblique direction.
+- [Adaptive grid](../../whist-lab-app/app/src/test/java/ro/whistlab/app/score/ScoreHistoryGridMetricsComponentTest.java) verifies the use of width, measured minima, resizing and rounding. [Checks graphics](../../whist-lab-app/app/src/rasterTest/java/ro/whistlab/app/score/raster/ScoreHistoryResponsiveRasterComponentTest.java) composes policies in a controlled view and compares images separately with and without diagonal: only the failed bid cells can change, with red pixels and oblique direction.
 - The last hand and last eligible payment are distinct points: a final hand of a card does not receive a new mark but retains the previous payment in history; a program ending with an eligible hand may pay the series even in the last row. The raster window is limited to the existing program without accessing a row after the last hand.
 
-[Motorul](../../whist-lab-app/game-core/README.md) · [Persistence and interface](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)
+[Engine](../../whist-lab-app/game-core/README.md) · [Persistence and interface](../../whist-lab-app/app/src/main/java/ro/whistlab/app/README.md)

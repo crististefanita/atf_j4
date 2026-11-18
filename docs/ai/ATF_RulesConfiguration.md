@@ -6,7 +6,7 @@ A rule defines its condition, action and limits. A weighting shall only make sen
 
 ## Types of configuration
 
-| Tip | Contract | Efect |
+| Type | Contract | Effect |
 |---|---|---|
 | Mandatory rules | Package, allowed bids, color, trump and score | Filter actions and calculate results in the engine. |
 | Code Manifesto | Conditions, priorities, sources and tests | Documenting and verifying the declared implementation. |
@@ -22,7 +22,7 @@ flowchart LR
     RULES[Rule manifest] -->|tying conditions| CODE[Code and tests]
     PATTERN[Hand pattern catalog] -->|describes| RESEARCH[Research]
     MODEL[Declared model] -->|generate controlled| GENERATED[Experimental implementation]
-    GENERATED -->|requires qualification| PROMOTION[Promovare]
+    GENERATED -->|requires qualification| PROMOTION[Promotion]
 ```
 
 <details>
@@ -34,7 +34,7 @@ Current AI manifests do not form a general YAML rule interpreter. Each executabl
 
 | Manifest | Rol |
 |---|---|
-| [Obiective Normal/Hard](../../config/whist-play-objectives.yaml) | Active priorities, objective change conditions and experimental profiles. |
+| [Objectives Normal/Hard](../../config/whist-play-objectives.yaml) | Active priorities, objective change conditions and experimental profiles. |
 | [Background rules](../../config/whist-contextual-discard.yaml) | Necessary, opportunities, discord, public information and links to components. |
 | [Typing catalogue](../../config/whist-hand-patterns.yaml) | Classes of combinations and non-additive indices, without direct runtime influence. |
 | [Certified rescue](../../config/whist-contract-salvage.yaml) | Domain, universal limits and active guard fallback. |
@@ -45,7 +45,7 @@ Current AI manifests do not form a general YAML rule interpreter. Each executabl
 
 ## How does a rule change influence?
 
-The table separates possible mechanisms; it does not say that each is active in all areas. [Modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives) states that the model conditioned by a card is active and the general weighting of distributions for 2–8 cards remains experimental.
+The table separates possible mechanisms; it does not say that each is active in all areas. [Decision model](ATF_DecisionModel.md#estimate-of-alternatives) states that the model conditioned by a card is active and the general weighting of distributions for 2–8 cards remains experimental.
 
 | Mechanism | What changes in the game | What remains fixed in the frozen policy |
 |---|---|---|
@@ -63,8 +63,8 @@ The table separates possible mechanisms; it does not say that each is active in 
 |---|---|---|
 | Priority objective | The order between exact points and effect on rivals. | [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) orders criteria without an arbitrary amount of scores. |
 | Conversion | The proportion of two estimates of the same utility. | [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) combines rollout and search in the small eligible domain. |
-| Plauzibilitatea lumii | The influence of a hypothetical distribution in aggregation. | The specialized domain of a card is active; the general model of 2–8 cards remains experimental. |
-| Liabilities to other financial institutions | Contribution of a normalized feature to prediction. | Offline adjustment and source generation for identified candidates. |
+| Plausibility of a world | The influence of a hypothetical distribution in aggregation. | The specialized domain of a card is active; the general model of 2–8 cards remains experimental. |
+| Learned coefficient | Contribution of a normalized feature to prediction. | Offline adjustment and source generation for identified candidates. |
 | Hint of honors | Description of the potential of a combination in context. | Research catalogue, non-additive and without direct runtime influence. |
 
 ### Fixed parameter, evolving context
@@ -75,7 +75,7 @@ flowchart LR
     OBS -->|recalculate| FEATURES[Context]
     FEATURES -->|influence| ORDER[Evaluation and order]
     PARAM[Frozen policy] -->|define| ORDER
-    ORDER -->|propune| ACTION[Legal action]
+    ORDER -->|proposes| ACTION[Legal action]
 ```
 
 <details>
@@ -89,21 +89,21 @@ The need, public cards and opportunities change after action; the parameter and 
 <summary>Additive form and experimental pressure correction</summary>
 
 ```text
-scor_contextual(acțiune, stare) =
-  suma_j θ_j × φ_j(acțiune, stare)
+context_score(action, state) =
+  sum_j θ_j × φ_j(action, state)
 
 θ_j = parametru al unei politici identificate
-φ_j = caracteristică definită și normalizată din informația permisă
+φ_j = feature defined and normalized from permitted information
 ```
 
 This form describes an additive model only where the code implements it. Lexicographic priorities and legal filters have other semantics, and overlapping clues do not automatically add up.
 
-The definitions of necessity, opportunities and imbalance are in [modelul deciziei](ATF_DecisionModel.md#state-that-influences-the-decision). Experimental model [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) It has distinct branches for zero need, sufficient reserve and the need for all levatates, with fixed weights on evolving features.
+The definitions of necessity, opportunities and imbalance are in [decision model](ATF_DecisionModel.md#state-that-influences-the-decision). Experimental model [pressure](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) It has distinct branches for zero need, sufficient reserve and the need for all levatates, with fixed weights on evolving features.
 
 ```text
-ρ = clamp(necesar / oportunități, 0, 1)
-progres = 1 − oportunități / mărimea_inițială
-ρ_contextual = clamp(ρ + β × (1 + progres) × Δ / oportunități, 0, 1)
+ρ = clamp(needed_tricks / remaining_opportunities, 0, 1)
+progress = 1 − remaining_opportunities / initial_hand_size
+ρ_context = clamp(ρ + β × (1 + progress) × Δ / remaining_opportunities, 0, 1)
 ```
 
 The contextual correction shall apply only in the eligible branch of the experimental model. The formula is not by default active in the accepted Hard Rollout, and the signed imbalance is constant during a hand.
@@ -112,29 +112,29 @@ The contextual correction shall apply only in the eligible branch of the experim
 
 ### How to adjust an offline model
 
-[The manufacturer of the tender model](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) draws the actor's hand and the existing prefix at bidding from validated development games. It groups the post-seed observations for weighting and separation of the adjustment from predictive validation; the label is the offer observed without claiming that it would have been optimal.
+[The producer of the bid model](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence.mjs) draws the actor's hand and the existing prefix at bidding from validated development games. It groups the post-seed observations for weighting and separation of the adjustment from predictive validation; the label is the offer observed without claiming that it would have been optimal.
 
 [Source generator](../../whist-lab-app/ai-lab/tools/bidding/whist-bid-evidence-codegen.mjs) checks vocabulary, numerical forms and predictive criteria, then keeps the model hash in the generated implementation. This control qualifies generation; [procedure for evolution](../learning/ATF_PolicyEvolution.md#when-we-promote) requires separately components and strategic progress on the new batch prior to activation.
 
 ## Behavior inference
 
-This section describes the general research model for 2–8 The runtime model specialized in a card and its fallback are documented in [modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives); automatic control of the consistency of the manifest with that domain remains [criteriu deschis](../feedback/ATF_Ai.md#coordination-of-evaluation-and-delimitation-of-mechanisms).
+This section describes the general research model for 2–8 The runtime model specialized in a card and its fallback are documented in [decision model](ATF_DecisionModel.md#estimate-of-alternatives); automatic control of the consistency of the manifest with that domain remains [criterion open](../feedback/ATF_Ai.md#coordination-of-evaluation-and-delimitation-of-mechanisms).
 
-[Experimental tender model](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) uses fixed coefficients and features of the original hypothetical hand and prefix available then. The remaining and the cards played by the same place meet without doubling the current table.
+[Experimental bid model](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) uses fixed coefficients and features of the original hypothetical hand and prefix available then. The remaining and the cards played by the same place meet without doubling the current table.
 
 <details>
 <summary>Plausibility, regularisation and actual sample size</summary>
 
 ```text
-μ = clamp(scală × θ · φ(mână_inițială, prefix), 0, mărime)
-p(licitare legală) =
-  masă_uniformă / număr_licitații_legale
-  + masă_model × distribuție_normalizată(licitare, μ, dispersie)
+μ = clamp(scale × θ · φ(initial_hand, prefix), 0, hand_size)
+p(legal_bid) =
+  uniform_mass / legal_bid_count
+  + model_mass × normalized_distribution(bid, μ, dispersion)
 
 pondere_lume =
-  limitare(produsul rapoartelor de plauzibilitate ale licitațiilor observate)
+  clamp(product of likelihood ratios for observed bids)
 
-eșantion_efectiv = suma_ponderilor² / suma_pătratelor_ponderilor
+effective_sample_size = sum_weights² / sum_squared_weights
 ```
 
 - The rule of the last bid only eliminates the legally prohibited value.
@@ -161,8 +161,8 @@ Bidding already submitted remains public facts and the contract itself assessed 
 | Identity and status | Stable, active or research rule. |
 | Scope and preconditions | Variant, allowed observation and condition of application. |
 | Meaning | Filter, priority, score, estimate or certificate. |
-| Parametri | Units, intervals, normalisation and value source. |
+| Parameters | Units, intervals, normalisation and value source. |
 | Limits and fallback | Behaviour outside the domain, no data or budget exhausted. |
 | Code and verification | Explicit consumer, independent component and promotion criterion. |
 
-[Modelul deciziei](ATF_DecisionModel.md) · [Improving protocol](../learning/README.md)
+[Decision model](ATF_DecisionModel.md) · [Improving protocol](../learning/README.md)
