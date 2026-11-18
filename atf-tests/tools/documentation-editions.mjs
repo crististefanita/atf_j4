@@ -158,23 +158,28 @@ export function inspectDocumentationEditions(project, englishRef, romanianRef) {
     .documentationLanguage ?? 'ro';
   if (language(englishCommit) !== 'en') checked.problems.push('The English branch must configure English documentation governance.');
   if (language(romanianCommit) !== 'ro') checked.problems.push('The Romanian branch must configure Romanian documentation governance.');
+  checked.review = {...checked.review, schemaVersion:2, romanianCommit};
   return {englishCommit, romanianCommit, ...checked};
 }
 
 export function verifyReviewedDocumentation(project, englishCommit) {
   if (!COMMIT.test(englishCommit ?? '')) throw new Error('A pinned English source commit is required.');
   const remote = git(project, ['ls-remote', '--exit-code', 'origin', 'refs/heads/main_RO']).toString().trim();
-  const romanianCommit = remote.split(/\s+/)[0];
-  if (!COMMIT.test(romanianCommit)) throw new Error('No published Romanian edition.');
+  const remoteCommit = remote.split(/\s+/)[0];
+  if (!COMMIT.test(remoteCommit)) throw new Error('No published Romanian edition.');
+  const file = documentationEditionsPolicy.reviewPath;
+  const bytes = filesAt(project, englishCommit, [file]).get(file);
+  const recorded = JSON.parse(utf8.decode(bytes));
+  const romanianCommit = recorded.romanianCommit;
+  if (recorded.schemaVersion !== 2 || !COMMIT.test(romanianCommit ?? '')) throw new Error('A pinned Romanian documentation commit is required.');
   try {
-    git(project, ['cat-file', '-e', romanianCommit + '^{commit}']);
+    git(project, ['cat-file', '-e', remoteCommit + '^{commit}']);
   } catch {
     git(project, ['fetch', '--no-tags', '--no-write-fetch-head', '--refmap=', 'origin', 'refs/heads/main_RO']);
   }
+  git(project, ['merge-base', '--is-ancestor', romanianCommit, remoteCommit]);
   const checked = inspectDocumentationEditions(project, englishCommit, romanianCommit);
-  const file = documentationEditionsPolicy.reviewPath;
-  const bytes = filesAt(project, checked.englishCommit, [file]).get(file);
-  if (!isDeepStrictEqual(JSON.parse(utf8.decode(bytes)), checked.review)) {
+  if (!isDeepStrictEqual(recorded, checked.review)) {
     checked.problems.push('Documentation changed since the recorded bilingual review.');
   }
   return {...checked, reviewSha256: sha256(bytes)};

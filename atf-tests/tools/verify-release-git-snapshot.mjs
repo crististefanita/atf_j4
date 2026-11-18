@@ -128,10 +128,12 @@ export async function verifyGitSnapshot({repository, candidate, qualifiedRoot, p
         verifyPublication(repository, candidate, manifestDoc, verdict, publishedRef));
     } catch (error) { problems.push({reason: error.message}); }
   }
-  const cleanupEligible = publication !== null;
+  const parts = identity.releaseVersion.split('-')[0].split('.').map(Number);
+  const localReleaseRequired = parts[0] > 0 || parts[1] > 21 || parts[1] === 21 && parts[2] >= 10;
+  const cleanupEligible = publication !== null && !localReleaseRequired;
   return {schemaVersion: 1, kind, ...identity, manifestSha256: manifestDoc.sha256, inputCount: expected.size,
     status: problems.length ? 'BLOCKED' : 'PASS', reconstruction: endings.length ? 'GIT_WITH_EOL_RECIPE' : 'GIT_EXACT',
-    endings, problems, publication, cleanupEligible, timing: timing.receipt('git-snapshot')};
+    endings, problems, publication, cleanupEligible, localReleaseRequired, timing: timing.receipt('git-snapshot')};
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -163,6 +165,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         repository: roots[0], candidate: roots[1], proof: result,
         destination, stagingParent: path.dirname(target)
       });
+      result.cleanupEligible = result.localRelease.verification.status === 'PASS';
+    } else if (result.localReleaseRequired && result.publication) {
+      result.status = 'BLOCKED';
+      result.problems.push({reason:'LOCAL_RELEASE_REQUIRED: provide --local-release before completing delivery or cleanup'});
     }
     await writeTimingReceipt(target, result);
     console.log(JSON.stringify({status: result.status, files: result.inputCount, endings: result.endings.length,

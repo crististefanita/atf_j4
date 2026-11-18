@@ -34,6 +34,15 @@
     "ragMayAdvanceLifecycle": false,
     "ragOutputOutsideCheckout": true
   },
+  "localReleaseProjection": {
+    "requiredFromVersion": "0.21.10",
+    "phase": "AFTER_PUBLICATION_VERIFICATION",
+    "entrypoint": "atf-tests/tools/verify-release-git-snapshot.mjs",
+    "requiredOption": "--local-release",
+    "directory": "release",
+    "onlyCurrentPublishedVersion": true,
+    "cleanupRequiresVerifiedProjection": true
+  },
   "githubPublication": {
     "entrypoint": "atf-tests/tools/publish-github-release.mjs",
     "journal": "github-publication.json",

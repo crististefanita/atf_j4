@@ -17,6 +17,14 @@ class ComponentEvidenceScopeComponentTest {
     private static final Duration PROCESS_TIMEOUT = Duration.ofSeconds(30);
     private static final Duration PUBLICATION_TIMEOUT = Duration.ofMinutes(2);
 
+    @Test void disposablePackageRegistrationReconcilesObservedBytesAndPreservesTheOriginalCause() throws Exception {
+        String output = runContracts(PUBLICATION_TIMEOUT, "android-package-registration.test.mjs", "documentation-editions.test.mjs");
+        AuditedAssertions.assertTrue(output.contains("7 controlled package-registration outcomes"),
+                "The isolated-user gate covers completion after timeout, missing registration and wrong APK bytes.");
+        AuditedAssertions.assertTrue(output.contains("an unchanged layout cannot hide unreviewed Romanian or English prose"),
+                "A pinned bilingual pair remains immutable and the current pair still requires review after edits.");
+    }
+
     @Test void nodeContractTestsKeepReuseClassificationInsideTheRealBuildBoundary() throws Exception {
         String output = runContracts(PROCESS_TIMEOUT, "release-test-scope.test.mjs", "github-release-retention.test.mjs");
         AuditedAssertions.assertTrue(output.contains("Gradle component checkpoint and audit changes keep qualification offline"),

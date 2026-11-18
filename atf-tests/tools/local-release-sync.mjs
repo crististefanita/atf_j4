@@ -10,6 +10,24 @@ const manifestName = 'release-validation.json';
 const projectionKind = 'ATF_LOCAL_PUBLISHED_RELEASE';
 const versionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
 
+function requirePublication(proof) {
+  if (proof.status !== 'PASS' || !proof.publication
+      || (proof.cleanupEligible !== true && proof.localReleaseRequired !== true))
+    throw Error('LOCAL_RELEASE_PUBLICATION_REQUIRED');
+}
+
+export async function verifyLocalRelease({repository, proof, destination}) {
+  requirePublication(proof);
+  const current = catalogVersions(JSON.parse(gitBlob(repository, proof.publication.checkedOriginMain, 'release/index.json')))[0];
+  if (current !== proof.releaseVersion) throw Error('LOCAL_RELEASE_NOT_CURRENT');
+  const target = path.join(await fs.realpath(path.dirname(destination)), path.basename(destination));
+  if (path.basename(target) !== 'release' || within(repository, target) || within(target, repository)) throw Error('LOCAL_RELEASE_PERIMETER');
+  const observed = await inspectTarget(target);
+  if (observed !== proof.manifestSha256) throw Error('LOCAL_RELEASE_NOT_CURRENT');
+  return {status:'PASS', kind:'ATF_LOCAL_RELEASE_VERIFICATION', version:current, destination:target,
+    manifestSha256:observed, checkedOriginMain:proof.publication.checkedOriginMain, observedAtUtc:new Date().toISOString()};
+}
+
 function localIndex(version, manifestSha256) {
   return JSON.stringify({kind: projectionKind, schemaVersion: 2, currentVersion: version, versions: [version], manifestSha256}, null, 2) + '\n';
 }
@@ -90,7 +108,7 @@ async function inspectTarget(target) {
 }
 
 export async function syncLocalRelease({repository, candidate, proof, destination, stagingParent}) {
-  if (proof.status !== 'PASS' || proof.cleanupEligible !== true || !proof.publication) throw Error('LOCAL_RELEASE_PUBLICATION_REQUIRED');
+  requirePublication(proof);
   const current = catalogVersions(JSON.parse(gitBlob(repository, proof.publication.checkedOriginMain, 'release/index.json')))[0];
   if (current !== proof.releaseVersion) throw Error('LOCAL_RELEASE_NOT_CURRENT');
   const target = path.join(await fs.realpath(path.dirname(destination)), path.basename(destination));
@@ -102,7 +120,8 @@ export async function syncLocalRelease({repository, candidate, proof, destinatio
   const previous = await inspectTarget(target);
   const payload = await qualifiedPayload(candidate, proof.manifestSha256);
   if (payload.version !== current) throw Error('LOCAL_RELEASE_MANIFEST_VERSION');
-  if (previous === payload.manifestHash) return {status: 'UNCHANGED', version: current, destination: target};
+  if (previous === payload.manifestHash) return {status: 'UNCHANGED', version: current, destination: target,
+    verification:await verifyLocalRelease({repository, proof, destination:target})};
 
   const stage = await fs.mkdtemp(path.join(stageRoot, 'atf-local-release-'));
   const next = path.join(stage, 'next'), old = path.join(stage, 'previous');
@@ -138,7 +157,8 @@ export async function syncLocalRelease({repository, candidate, proof, destinatio
       throw error;
     }
     replaced = false;
-    return {status: 'SYNCED', version: current, destination: target};
+    return {status: 'SYNCED', version: current, destination: target,
+      verification:await verifyLocalRelease({repository, proof, destination:target})};
   } finally {
     if (!replaced) await fs.rm(stage, {recursive: true, force: true});
   }

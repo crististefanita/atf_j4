@@ -38,6 +38,12 @@ class ReleaseRagPlatformGovernanceTest {
                 "downloadReceiptMatchesDeclaredAccessModeAndApkSha256")));
         assertFalse(lifecycle.path("ragMayAdvanceLifecycle").asBoolean());
         assertTrue(lifecycle.path("ragOutputOutsideCheckout").asBoolean());
+        var local = policy().path("localReleaseProjection");
+        assertEquals("AFTER_PUBLICATION_VERIFICATION", local.path("phase").asText());
+        assertEquals("--local-release", local.path("requiredOption").asText());
+        assertEquals("release", local.path("directory").asText());
+        assertTrue(local.path("onlyCurrentPublishedVersion").asBoolean());
+        assertTrue(local.path("cleanupRequiresVerifiedProjection").asBoolean());
     }
 
     @Test void componentAndE2eReportsUseAtfExtentAndKeepJUnitOnlyAsATemporaryOracle() throws Exception {
