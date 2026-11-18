@@ -1,0 +1,14 @@
+[
+  {
+    "apk": "WhistLab-0.21.10.apk",
+    "dexBytes": 2649296,
+    "rankSizeSpPresent": false,
+    "dexSha256": "264e28718dbaea529c251df1e23a7f122f1f1dea8880d0acc3e089c0413d81bf"
+  },
+  {
+    "apk": "WhistLab-0.21.11.apk",
+    "dexBytes": 2650612,
+    "rankSizeSpPresent": true,
+    "dexSha256": "e0744de0798069f44e382018182f894f73430d4f09dff1c70650c286af224401"
+  }
+]

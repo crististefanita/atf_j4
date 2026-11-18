@@ -1,0 +1,10 @@
+{
+  "version": "0.21.11",
+  "mode": "changes",
+  "previousVersion": "0.21.10",
+  "evidenceUrl": "https://github.com/crististefanita/whist/blob/main/release/0.21.11/reports/README.md",
+  "points": [
+    "Align Android card ranks with the Web size for every card from 2 through A, including 10 and J/Q/K.",
+    "Improve rank legibility while preserving card proportions, suit sizes and the trump tile typography."
+  ]
+}

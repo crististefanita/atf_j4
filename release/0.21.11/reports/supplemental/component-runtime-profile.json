@@ -1,0 +1,9 @@
+{
+  "originalLauncher": "C:\\work\\whist_back\\r216\\src\\scripts\\run-component-suites.ps1",
+  "inheritedJavaToolOptions": "UNSET",
+  "profileLauncher": "C:\\work\\whist_back\\r2111\\run-component-suites-profile.ps1",
+  "profileSha256": "74f3a9649fa340df1905401365c89fa91044535b5963e7e535a2ec8c5cc486e2",
+  "sourceSha256": "88fea28fe170dc51c5ca2d98d1586ef173489d6d13eb2e116d2ecd21301db9a5",
+  "reason": "Configure the suite JVM without injecting banners into child-process streams",
+  "jvmArgument": "-Datf.test.run.scope=suite"
+}

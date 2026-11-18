@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "status": "READY",
+  "scope": "ANDROID_SECONDARY_USER",
+  "applicationId": "ro.whistlab.app",
+  "originalUserId": 0,
+  "testUserId": 24,
+  "createdByRun": true,
+  "packageWasInstalledBefore": false,
+  "cleanupRequired": true,
+  "accountsAdded": false,
+  "originalPackageWasInstalledBefore": true,
+  "screenOffTimeoutMs": 2147483647,
+  "screenUnlocked": true,
+  "backgroundPackagesDisabled": [
+    "com.google.android.gms",
+    "com.google.android.gsf",
+    "com.android.vending",
+    "com.google.android.googlequicksearchbox",
+    "com.google.android.apps.docs",
+    "com.google.android.apps.maps",
+    "com.google.android.calendar",
+    "com.google.android.setupwizard",
+    "com.google.android.sdksetup",
+    "com.google.android.apps.photos",
+    "com.google.android.gm",
+    "com.google.android.youtube",
+    "com.google.android.videos",
+    "com.google.android.apps.wallpaper"
+  ],
+  "lockScreenDisabledForFreshUser": true,
+  "packageRegistration": {
+    "path": "/data/app/ro.whistlab.app-fbi5VfPXEASUw7AE_zRMZQ==/base.apk",
+    "sha256": "d8415509b34efeb19886326fd6bf242e67d8bde8ded0649bc3fb72eaa31d5cb1",
+    "commandRecovered": false,
+    "commandDiagnostic": ""
+  },
+  "userReadiness": {
+    "state": "RUNNING_UNLOCKED",
+    "observations": 13,
+    "unlockRequested": true
+  },
+  "userName": "ATFJ4-837b0d2aa7",
+  "observedApi": 28,
+  "displayProfile": "1080x1920@440",
+  "installedPath": "/data/app/ro.whistlab.app-fbi5VfPXEASUw7AE_zRMZQ==/base.apk",
+  "installedApkSha256": "d8415509b34efeb19886326fd6bf242e67d8bde8ded0649bc3fb72eaa31d5cb1",
+  "observedUtc": "2026-11-18T16:56:54.1769073Z"
+}

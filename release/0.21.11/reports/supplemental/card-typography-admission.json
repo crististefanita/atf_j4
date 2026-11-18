@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "releaseVersion": "0.21.11",
+  "apkSha256": "d8415509b34efeb19886326fd6bf242e67d8bde8ded0649bc3fb72eaa31d5cb1",
+  "sourceCommit": "4c20200be1b3149038a7fb4467d57582a1c5eb9f",
+  "sharedAndroidUi": "0.1.19",
+  "sharedBrowserUi": "0.2.13",
+  "nativeGlyphComparisons": 468,
+  "evidenceRole": "Prior native typography comparisons; reused only for byte-identical tested face classes. New APK installation and UI evidence belongs to the native flow reports.",
+  "priorReportSha256": "8e81afaea4c2f9ebedf3ebb1d9ca6ebc03c5d1bde109475f57c6fc2c9e31f539",
+  "matchedFaceClasses": [
+    "CardFaceMetrics",
+    "CardFaceView",
+    "CardFaceView$RankSize",
+    "CardFaceDrawable"
+  ]
+}
