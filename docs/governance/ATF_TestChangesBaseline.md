@@ -625,3 +625,58 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Private signing boundary for source qualification</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-SIGNING-SOURCE-MAIN
+    status: VERIFIED
+    base: 23de3299a3ddd40a739fc5a444e80b48bb928aef
+    expires: 2026-12-18
+    reason: Exclude private local signing inputs from source identity and copying; keep public identity and refuse forged or indirect source paths.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SigningSourceIsolationComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.support.SigningSourceIsolationComponentTest#gitReconstructionMatchesACheckoutContainingALocalKey
+      negative:
+        - atf.tests.governance.support.SigningSourceIsolationComponentTest#aForgedManifestCannotCopyPrivateMaterialOrPartiallyExportPublicFiles
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#theSigningExportPolicyRequiresAnExplicitReview
+    paths:
+      - scripts/AtfSigningSourcePolicy.ps1
+      - scripts/Get-AtfSourceInputs.ps1
+      - scripts/Copy-AtfSourceInputs.ps1
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/support/SourceInputFixture.java
+      - atf-tests/src/test/java/atf/tests/governance/support/SigningSourceIsolationComponentTest.java
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/release-test-scope.test.mjs
+  - id: WHIST-SIGNING-SOURCE-RO
+    status: VERIFIED
+    base: e25226e090d2a2f55a265d1bfbb8993342d2c126
+    expires: 2026-12-18
+    reason: Exclude private local signing inputs from source identity and copying; keep public identity and refuse forged or indirect source paths.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SigningSourceIsolationComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.support.SigningSourceIsolationComponentTest#gitReconstructionMatchesACheckoutContainingALocalKey
+      negative:
+        - atf.tests.governance.support.SigningSourceIsolationComponentTest#aForgedManifestCannotCopyPrivateMaterialOrPartiallyExportPublicFiles
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#theSigningExportPolicyRequiresAnExplicitReview
+    paths:
+      - scripts/AtfSigningSourcePolicy.ps1
+      - scripts/Get-AtfSourceInputs.ps1
+      - scripts/Copy-AtfSourceInputs.ps1
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/support/LauncherSourceInventoryComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/support/SourceInputFixture.java
+      - atf-tests/src/test/java/atf/tests/governance/support/SigningSourceIsolationComponentTest.java
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/release-test-scope.test.mjs
+```
+
+</details>

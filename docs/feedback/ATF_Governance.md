@@ -57,7 +57,6 @@ The Android Download Manager transfer test and certificate verification are actu
 
 | Priority | Gap and owner | Closure criterion |
 |---|---|---|
-| P1 | RAG-15: the source inventory enumerates ignored private signing files when the canonical checkout contains a local key. A document worktree need not contain that key. | Exclude private signing material explicitly from source copying and fingerprinting, while preserving public certificate identity. Controlled tests must qualify the same Git source with and without a local key, reject unrelated new inputs and keep private files out of staging and published evidence. |
 | P2 | Native reuse binds the whole source snapshot, including qualification tooling. A validator-only correction can invalidate otherwise unchanged APK evidence. [Admission](../../atf-tests/tools/prepare-android-e2e.mjs) | Record runtime inputs separately from the validator revision. Reuse only with identical APK bytes, runtime sources, scenario, display profile and original captures. Controlled cases must reject changed game code, binaries, captures or mismatched validator provenance. |
 
 ## Release launcher and finalization

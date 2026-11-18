@@ -4,6 +4,7 @@ param(
     [switch]$AsJson
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfSigningSourcePolicy.ps1')
 $root = [IO.Path]::GetFullPath($SourceRoot)
 if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw 'Rădăcina surselor nu există.' }
 $policy = Get-Content -LiteralPath (Join-Path $root 'config/atf-governance-policy.json') -Raw | ConvertFrom-Json
@@ -59,6 +60,7 @@ function Visit-InputDirectory([string]$directory) {
     foreach ($entry in Get-ChildItem -LiteralPath $directory -Force) {
         $relative = [IO.Path]::GetRelativePath($root,$entry.FullName).Replace('\','/')
         if ($relative -ceq '.git') { continue }
+        if (Test-AtfPrivateSigningInput $relative) { continue }
         if ($entry.PSIsContainer -and $excluded.Contains($relative)) { continue }
         if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Intrare indirectă neinventariată: $relative" }
         if ($entry.PSIsContainer) { Visit-InputDirectory $entry.FullName }
