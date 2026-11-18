@@ -457,7 +457,9 @@ Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După pub
 
 Folosește chitanțele etapelor pentru duratele scurse și precizează dacă măsurătorile se suprapun. Când marcajele UTC și duratele monotone diferă, păstrează-le pe ambele și folosește `elapsedMs` pentru costul măsurat al etapei. Nu afirma o durată integrală sau un câștig de viteză pe baza unor măsurători incomplete ori suprapuse. [Îmbunătățiri rămase](../feedback/ATF_Governance.md#lansarea-și-finalizarea-release-ului)
 
-Păstrează starea locală reținută de responsabil în `.imp`, sub rădăcina externă a dovezilor: materialul de semnare, configurația locală a dispozitivului, datele valoroase de învățare și chitanțele finale absente din Git. Curățarea trebuie să excludă acel director și fiecare descendent, inclusiv căile accesate prin linkuri. Sursele canonice și depozitul lor Git aparțin checkout-ului proiectului, nu unui director de build dispensabil. Păstrează munca necomisă înaintea refacerii unui checkout; un worktree vechi nu este cache până la inventarierea acelei munci.
+- Păstrează starea locală reținută de responsabil în `.imp`, sub rădăcina externă a dovezilor: materialul de semnare, configurația locală a dispozitivului, datele valoroase de învățare și chitanțele finale absente din Git. Curățarea trebuie să excludă acel director și fiecare descendent, inclusiv căile accesate prin linkuri.
+
+- Sursele canonice și depozitul lor Git aparțin checkout-ului proiectului, nu unui director de build dispensabil. Păstrează munca necomisă înaintea refacerii unui checkout; un worktree vechi nu este cache până la inventarierea acelei munci.
 
 ### Snapshot Git și proiecția locală
 
