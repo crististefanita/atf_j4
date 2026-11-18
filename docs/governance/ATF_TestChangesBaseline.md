@@ -739,3 +739,60 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Visual contract proof and mandatory native flow union</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-VISUAL-SCOPE-MAIN
+    status: VERIFIED
+    base: f7d876687c476c5684d0a3a7a27fc8e8b6956ddb
+    expires: 2026-12-18
+    reason: Narrow only verified numeric presentation contracts; keep mandatory component owners and union every interaction, persistence, scoring and unknown-runtime flow with native sanity.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=VisualContractScopeComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#provenTypographyKeepsNativeSanityAndItsComponentOwners
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#theRealPlannerBindsPinnedBytesAndKeepsUnavailableProofsConservative
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#mixedBehaviorAndBinaryChangesCannotLoseMandatoryFlows
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#unprovenContractsKeepEveryNativeFlow
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#visualScopeProofsCannotChangeWithoutReview
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/VisualContractScopeComponentTest.java
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/evaluate-release-rag.mjs
+      - atf-tests/tools/visual-change-contracts.mjs
+      - atf-tests/tools/visual-contract-sources.mjs
+      - atf-tests/tools/visual-scope-fixture.mjs
+      - atf-tests/tools/visual-contracts.test.mjs
+  - id: WHIST-VISUAL-SCOPE-RO
+    status: VERIFIED
+    base: a04c0bda3823620774ee4a431b5c13662f6f7ff8
+    expires: 2026-12-18
+    reason: Narrow only verified numeric presentation contracts; keep mandatory component owners and union every interaction, persistence, scoring and unknown-runtime flow with native sanity.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=VisualContractScopeComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#provenTypographyKeepsNativeSanityAndItsComponentOwners
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#theRealPlannerBindsPinnedBytesAndKeepsUnavailableProofsConservative
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#mixedBehaviorAndBinaryChangesCannotLoseMandatoryFlows
+        - atf.tests.governance.documentation.release.rag.scope.VisualContractScopeComponentTest#unprovenContractsKeepEveryNativeFlow
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#visualScopeProofsCannotChangeWithoutReview
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/VisualContractScopeComponentTest.java
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/evaluate-release-rag.mjs
+      - atf-tests/tools/visual-change-contracts.mjs
+      - atf-tests/tools/visual-contract-sources.mjs
+      - atf-tests/tools/visual-scope-fixture.mjs
+      - atf-tests/tools/visual-contracts.test.mjs
+```
+
+</details>

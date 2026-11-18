@@ -38,7 +38,7 @@ The 1–100 score expresses the recommended order of work, not the quality or pe
 | UI-01 | P1 | 86 | Qualify header, boxes and notifications on consumer APKs and check the name's entry of Unicode. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
 | RAG-11 | P2 | 84 | Separate immutable APK/runtime provenance from the validator revision, preserving strict rejection of changed game inputs. [Register](ATF_Governance.md#release-qualification-boundaries) |
 | AI-02 | P2 | 82 | Measure the opportunities, the conversions to 500, effect on the ranking and latency on new lots, with natural game separate from the controlled prefix. [Register](ATF_Ai.md#playing-for-zero) |
-| RAG-14 | P2 | 80 | Derive native acceptance from changed presentation contracts; prove the selection with negative controls before reducing any required APK flow. [Register](ATF_Governance.md#release-launcher-and-finalization) |
+| DOC-01 | P2 | 81 | Improve English release and governance terminology against live code, preserving Romanian meaning and approved document structure. [Register](ATF_Governance.md#improving-guidance-guides) |
 | WEB-07 | P2 | 79 | Qualify settings, resume, Play again and history in APK and Chrome on the same Android in RO/EN and with increased text. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
 | WEB-11 | P2 | 78 | Qualify rank and glyphs in a 17-card hand, to the text enlarged on Chrome Android. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
 | AI-03 | P2 | 76 | Extract sample management and reuse from MonteCarloAi without changing the facade; fix random order, reply, cancellation and budget by components. [Register](ATF_Ai.md#engine-evolution) |

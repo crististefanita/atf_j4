@@ -34,7 +34,7 @@ The editorial grid of [contract documentation](../governance/ATF_Documentation.m
 | Priority | Responsible for and area | Closure criterion |
 |---|---|---|
 | P2 | Libraries guides distributed: re-use of the sample in the producer | [Local acceptance of fragments](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic contract of these evidence in the register of joint officers and synchronise the clarification of the guidelines to consumers. The producer's regression and acceptance of each consumer remain distinct. |
-
+| P2 | DOC-01: several English release and governance guides contain literal-translation artifacts and inconsistent operational terms. | Edit the affected guides against the live code, preserve the approved architecture and commands, review meaning 1:1 with Romanian, and pass the local factual, language, prose and link controls. Automated structure checks do not replace editorial review. |
 | P2 | The release description generator can stick all the changes in a paragraph too dense. | The generator shall produce a short synthesis and separate points. Check the shape before sealing the manifest. Keep intact the descriptions already included in the inventory of a published edition. |
 
 ## Download via browser
@@ -58,9 +58,3 @@ The Android Download Manager transfer test and certificate verification are actu
 | Priority | Gap and owner | Closure criterion |
 |---|---|---|
 | P2 | Native reuse binds the whole source snapshot, including qualification tooling. A validator-only correction can invalidate otherwise unchanged APK evidence. [Admission](../../atf-tests/tools/prepare-android-e2e.mjs) | Record runtime inputs separately from the validator revision. Reuse only with identical APK bytes, runtime sources, scenario, display profile and original captures. Controlled cases must reject changed game code, binaries, captures or mismatched validator provenance. |
-
-## Release launcher and finalization
-
-| ID | Gap and owner | Closure criterion |
-|---|---|---|
-| RAG-14 | Scope planner: a shared typography change can select unrelated native flows when source groups are too coarse. | Map changed visual contracts to adapter components and the required signed-APK sanity. Negative controls must still select every changed interaction, persistence or scoring flow. Measure scenario, profile preparation and report validation separately; preserve current mandatory flows until the narrower policy is proven. |

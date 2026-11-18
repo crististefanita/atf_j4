@@ -212,6 +212,39 @@ $Selection = Get-Content -LiteralPath $SelectionFile -Raw | ConvertFrom-Json
 
 `runComponentGroups` shows the affected suites from the published base. The launcher checks every single piece of evidence of her original source before deciding what actually runs.
 
+### Visual contracts and mandatory flows
+
+The [visual contract registry](../../atf-tests/tools/visual-change-contracts.mjs) narrows native selection only after verifying the source bytes before and after a change. Every changed path contributes its own required flows; the final selection is their union.
+
+| Contract | Allowed change | Required component owners | Required native sanity |
+|---|---|---|---|
+| Game header typography | Numeric initializers of `TITLE_SP`, `PROGRESS_SP`, `BID_SUMMARY_SP` | `whist-lab-app-display` | `signed-release-smoke`, `responsive-ui-sanity` |
+| Card rank typography | Numeric initializers of `INDEX_SIZE_SP`, `RANK_SCALE`, `INVERTED_SIZE_DP` | `whist-lab-app-display`, `whist-lab-app-atf-card-table-ui` | `signed-release-smoke`, `responsive-ui-sanity`, `signed-release-auto-game` |
+
+- [Source admission](../../atf-tests/tools/visual-contract-sources.mjs) reconstructs the baseline from its pinned Git commit and verifies both SHA-256 values. Uniform checkout EOL conversion is admitted only when it reproduces the recorded baseline hash.
+- All non-literal source text must remain equal. Added methods, expressions, changed names, missing owners, added or deleted contracts, invalid text and unavailable source bytes retain all native flow gates.
+- Mixed bidding, persistence, scoring, profile and achievement changes add their existing flows. Unknown runtime files and changed binaries, including a repackaged AAR or JAR, retain the conservative selection.
+- Component selection and evidence reuse keep their existing dependency boundaries. A `PROVEN` visual classification proves literal-change eligibility; it does not mark a native test as passed.
+
+```mermaid
+flowchart LR
+    DIFF[Pinned diff] -->|verify bytes| PROOF[Literal proof]
+    PROOF -->|select| VISUAL[Visual sanity]
+    DIFF -->|unproven| FULL[Conservative flows]
+    VISUAL -->|combine| UNION[Flow union]
+    FULL -->|combine| UNION
+    UNION -->|require| NATIVE[Signed APK evidence]
+```
+
+<details>
+<summary>Legend: selection and execution</summary>
+
+Each path is classified independently. Verified constants select their component owners and signed-APK sanity; other changed paths retain their own mandatory flows. The evaluator recomputes the selection and rejects omitted native evidence even when all components pass.
+
+</details>
+
+[Component contracts](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/VisualContractScopeComponentTest.java) cover the literal proof, mixed changes, fallback decisions and the real planner with mock repositories. Native timing remains separate: `e2e.prepare-device`, `e2e.run.<group>` and `e2e.extent-evidence` record profile preparation, scenario execution and evidence validation; selection alone does not prove elapsed-time savings.
+
 ### Re-use of component evidence
 
 The evaluator compares the added, deleted and modified files. [Scope suite](../../atf-tests/tools/component-evidence-scope.mjs) determines what differences can affect the result.
@@ -459,7 +492,7 @@ Keep the work profiles and caches during reruns. After publication and verified 
 | Publication observations | Finish payload edits and push the evidence commit before collecting retention. Refresh expired or invalidated observations without rebuilding the APK or rerunning accepted suites. | Keep the publication journal, verified download and final verdict. A historical observation proves its recorded state, not current GitHub availability. |
 | Git reconstruction | Resolve the qualified tag locally and verify its commit before testing source and payload reconstruction. | Preserve the Git proof and EOL recipe. Delete staging only after `cleanupEligible: true` and verified local projection. |
 
-Use stage receipts for elapsed durations and state whether measurements overlap. When UTC timestamps and monotonic durations diverge, preserve both and use `elapsedMs` for measured stage cost. Do not claim an end-to-end duration or a speedup from incomplete or overlapping measurements. [Remaining improvements](../feedback/ATF_Governance.md#release-launcher-and-finalization)
+Use stage receipts for elapsed durations and state whether measurements overlap. When UTC timestamps and monotonic durations diverge, preserve both and use `elapsedMs` for measured stage cost. Do not claim an end-to-end duration or a speedup from incomplete or overlapping measurements. [Launcher boundaries](../feedback/ATF_Governance.md#qualification-of-claims-and-launchers)
 
 - Keep owner-retained local state in `.imp` under the external evidence root: signing material, local device configuration, valuable learning data and final receipts absent from Git. Cleanup must exclude that directory and every descendant, including paths reached through links.
 
