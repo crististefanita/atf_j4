@@ -12,4 +12,4 @@
 
 ## Documentație
 
-- [Extent](https://github.com/crististefanita/whist/blob/main/release/0.21.10/reports/README.md)
+- [Extent](https://github.com/crististefanita/whist/blob/140e727762e3acb0b9d3f82241fda47dc96db291/release/0.21.10/reports/README.md)
