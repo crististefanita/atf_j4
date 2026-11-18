@@ -61,7 +61,9 @@ flowchart LR
     APK -->|dovezi curente| LOCAL[PREPARED local]
     LOCAL -->|pas ulterior al operatorului| BOUND[Commit identificat]
     BOUND -->|publicare și descărcare| LIVE[Release verificat]
-    LIVE -->|arhivare și plan explicit| RETIRE[Retragere ediții vechi]
+    LIVE -->|sigilează manifestul și publică| SEALED[Payload publicat]
+    SEALED -->|observă GitHub| OBS[Inventar curent]
+    OBS -->|califică rotația| RETIRE[Retragere ediții vechi]
 ```
 
 <details>
@@ -88,7 +90,22 @@ Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezen
 
 `versionName` identifică ediția cerută, iar `versionCode` crește la fiecare APK livrat. După resetarea numerotării vizibile, [codul Android](https://developer.android.com/studio/publish/versioning) și certificatul de semnare păstrează calea de actualizare; promovarea GitHub se marchează explicit drept ultimul release.
 
+## Sigilarea publicării înaintea inventarului
+
+| Limită | Acțiune obligatorie |
+|---|---|
+| Payload final | Finalizați chitanțele de distribuție, integritatea payload-ului și câmpurile publicării; faceți commit și push pentru catalogul și manifestele finale înainte de colectarea retenției. |
+| Sigiliu local | [Preflight-ul de sigilare](../../atf-tests/tools/github-retention-seal.mjs) compară catalogul și ambele manifeste octet cu octet cu `origin/main`. Intrările lipsă sau nepublicate opresc procesul înaintea oricărei cereri GitHub. |
+| Observație la distanță | [Colectorul](../../atf-tests/tools/collect-github-release-retention.mjs) cere același commit main înainte de enumerarea release-urilor, tagurilor și asset-urilor; reverifică inventarul la distanță, main la distanță și sigiliul local înainte să returneze dovezi. |
+| Recuperare | Restaurați sau publicați payload-ul final, actualizați `origin/main`, apoi colectați o observație nouă. Reutilizați APK-urile neschimbate și rapoartele acceptate; repetați numai observația sau proba Git invalidată. |
+
+Un manifest schimbat invalidează observația sa chiar dacă APK-ul este neschimbat. Observația leagă hash-urile manifestelor finale și commitul main observat; fereastra existentă de valabilitate se aplică în continuare.
+
 ## Curățarea locală după livrare
+
+- O ediție publicată pe GitHub cere local `refs/tags/v<versionName>` rezolvat la `source.sourceCommit`, inclusiv pentru taguri adnotate. Tagurile lipsă sau nepotrivite opresc procesul la `git-snapshot.local-tag`, cu reconstrucția `NOT_RUN`.
+- Rezolvați explicit un tag lipsă prin `git fetch origin tag "v$Version"`; verificatorul nu mută și nu descarcă implicit taguri. Un tag în conflict trebuie investigat față de commitul sursă calificat.
+- Chitanța publicării înregistrează `qualifiedTag` și îl reverifică înainte să permită curățarea. Păstrați APK-ul, rapoartele și rețeta EOL în timp ce reparați numai proba Git lipsă.
 
 După calificarea și descărcarea publicată, rulați [verificatorul Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Folosiți dosarul versiunii și verdictul postpublicare pentru octeții aceluiași manifest. Actualizați mai întâi referința locală `origin/main` și tagurile cu Git.
 

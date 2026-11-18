@@ -680,3 +680,62 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Sigilarea intrărilor publicării înaintea observării GitHub</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-PUBLICATION-SEAL-MAIN
+    status: VERIFIED
+    base: 8032a380bd1e683ac47950216e22a7679ca0b4d4
+    expires: 2026-12-18
+    reason: Sigilează catalogul și manifestele finale față de Git publicat înaintea inventarului, reverifică-le după observare și califică tagurile locale înaintea reconstrucției surselor; păstrează oracolele proiecției și transportului.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleasePublicationSealComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.ReleasePublicationSealComponentTest#publicationSealsTheManifestBeforeObservingGithub
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.ReleasePublicationSealComponentTest#unqualifiedLocalTagsStopBeforeSourceReconstruction
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#publicationSealAndReconstructionRequireReviewedControls
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/NodeReleaseContracts.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ReleasePublicationSealComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/collect-github-release-retention.mjs
+      - atf-tests/tools/github-release-retention.test.mjs
+      - atf-tests/tools/github-retention-fixture.mjs
+      - atf-tests/tools/github-retention-seal.mjs
+      - atf-tests/tools/github-retention-seal.test.mjs
+      - atf-tests/tools/release-git-snapshot.test.mjs
+      - atf-tests/tools/verify-release-git-snapshot.mjs
+  - id: WHIST-PUBLICATION-SEAL-RO
+    status: VERIFIED
+    base: fbbe8127088a6015e8288f3290eb09bb430995c5
+    expires: 2026-12-18
+    reason: Sigilează catalogul și manifestele finale față de Git publicat înaintea inventarului, reverifică-le după observare și califică tagurile locale înaintea reconstrucției surselor; păstrează oracolele proiecției și transportului.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleasePublicationSealComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.ReleasePublicationSealComponentTest#publicationSealsTheManifestBeforeObservingGithub
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.ReleasePublicationSealComponentTest#unqualifiedLocalTagsStopBeforeSourceReconstruction
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#publicationSealAndReconstructionRequireReviewedControls
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/NodeReleaseContracts.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ReleasePublicationSealComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/collect-github-release-retention.mjs
+      - atf-tests/tools/github-release-retention.test.mjs
+      - atf-tests/tools/github-retention-fixture.mjs
+      - atf-tests/tools/github-retention-seal.mjs
+      - atf-tests/tools/github-retention-seal.test.mjs
+      - atf-tests/tools/release-git-snapshot.test.mjs
+      - atf-tests/tools/verify-release-git-snapshot.mjs
+```
+
+</details>

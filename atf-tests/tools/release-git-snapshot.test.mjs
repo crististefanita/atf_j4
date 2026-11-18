@@ -6,6 +6,45 @@ import {inputFingerprint, strictJson} from './evaluate-release-rag.mjs';
 import {checkout} from './release-git-fixture.mjs';
 import {verifyGitSnapshot} from './verify-release-git-snapshot.mjs';
 
+test('a remote-only tag blocks before source reconstruction and resumes after local resolution', async t => {
+  const f = await checkout(t, {mixed: true});
+  const accepted = await verifyGitSnapshot(f);
+  const source = f.git('rev-parse', 'refs/tags/v0.21.4');
+  f.git('update-ref', 'refs/remotes/origin/tags/v0.21.4', source);
+  f.git('tag', '-d', 'v0.21.4');
+  const blocked = await verifyGitSnapshot({...f, prior: accepted});
+  assert.equal(blocked.status, 'BLOCKED');
+  assert.equal(blocked.cleanupEligible, false);
+  assert.equal(blocked.reconstruction, 'NOT_RUN');
+  assert.match(blocked.problems[0].reason, /GIT_SNAPSHOT_LOCAL_TAG_REQUIRED/);
+  assert.ok(!blocked.timing.stages.some(stage => stage.stage === 'git-snapshot.reconstruction'));
+  f.git('tag', 'v0.21.4', source);
+  const resumed = await verifyGitSnapshot({...f, prior: accepted, qualifiedRoot: undefined});
+  assert.equal(resumed.status, 'PASS');
+  assert.equal(resumed.cleanupEligible, true);
+  assert.deepEqual(resumed.endings, accepted.endings);
+  assert.equal(resumed.publication.apkSha256, accepted.publication.apkSha256);
+});
+
+test('a tag on another commit is refused before reconstructing an invalid source', async t => {
+  const f = await checkout(t, {contentChanged: true});
+  f.git('tag', '-f', 'v0.21.4', 'HEAD');
+  const blocked = await verifyGitSnapshot(f);
+  assert.equal(blocked.reconstruction, 'NOT_RUN');
+  assert.match(blocked.problems[0].reason, /GIT_SNAPSHOT_LOCAL_TAG_MISMATCH/);
+  assert.ok(!blocked.timing.stages.some(stage => stage.stage === 'git-snapshot.reconstruction'));
+});
+
+test('annotated qualified tags resolve to the exact source commit', async t => {
+  const f = await checkout(t);
+  const source = f.git('rev-parse', 'refs/tags/v0.21.4');
+  f.git('tag', '-d', 'v0.21.4');
+  f.git('tag', '-a', '-m', 'qualified', 'v0.21.4', source);
+  const verified = await verifyGitSnapshot(f);
+  assert.equal(verified.status, 'PASS');
+  assert.deepEqual(verified.publication.qualifiedTag, {ref: 'refs/tags/v0.21.4', commit: source});
+});
+
 test('compares original blob bytes despite edits in the live worktree', async t => {
   const f = await checkout(t);
   await fs.writeFile(path.join(f.repository, 'README.md'), 'parallel work');

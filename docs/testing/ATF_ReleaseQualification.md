@@ -302,7 +302,7 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 
 Înainte de retragere, verificați [descărcările și edițiile păstrate](../platform/ATF_ReleaseRetention.md#verificarea-descărcării-înaintea-rotației).
 
-- După retragerea autorizată, rulați colectorul din checkout-ul `main` sincronizat. Colectorul citește catalogul și manifestele de la commitul observat pe GitHub.
+- Finalizați modificările payload-ului și publicați catalogul și manifestele finale înainte de colectare. Colectorul sigilează octeții lor față de `origin/main` local, cere același commit la distanță și reverifică sigiliul după observare.
 - Folosiți `GH_TOKEN` sau `GITHUB_TOKEN` cu acces la ciorne. Colectorul inventariază toate paginile de release-uri, inclusiv ciornele, toate tagurile și toate asset-urile.
 
 ```powershell

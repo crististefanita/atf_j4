@@ -27,6 +27,16 @@ class TestChangeReviewComponentTest {
     private static final String NEW_TEST = "nested/module/src/test/java/demo/Test nou ș.java";
     private static final String GATE = "config/atf-test-suites.json";
 
+    @Test void publicationSealAndReconstructionRequireReviewedControls(@TempDir Path root) throws Exception {
+        var repo = new TestChangeGitFixture(root);
+        var tools = List.of("atf-tests/tools/collect-github-release-retention.mjs",
+                "atf-tests/tools/github-retention-seal.mjs", "atf-tests/tools/verify-release-git-snapshot.mjs");
+        for (String tool : tools) repo.put(tool, "// controlled publication boundary\n");
+        AuditedAssertions.assertEquals(tools.stream().map(tool -> uncovered("A", tool, repo.base)).toList(), check(repo).diagnostics());
+        repo.put(FEEDBACK, repo.control("PUBLICATION-SEAL", "ACTIVE", repo.base, VALID, false, tools.toArray(String[]::new)));
+        AuditedAssertions.assertEquals(List.of(), check(repo).diagnostics());
+    }
+
     @Test void theSigningExportPolicyRequiresAnExplicitReview(@TempDir Path root) throws Exception {
         var repo = new TestChangeGitFixture(root);
         String policy = "scripts/AtfSigningSourcePolicy.ps1";

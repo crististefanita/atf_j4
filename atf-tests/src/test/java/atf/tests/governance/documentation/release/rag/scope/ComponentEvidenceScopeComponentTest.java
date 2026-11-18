@@ -1,16 +1,14 @@
 package atf.tests.governance.documentation.release.rag.scope;
 
-import atf.android.process.CommandProcess;
 import atf.testkit.AtfComponentTest;
 import atf.testkit.assertions.AuditedAssertions;
 import atf.tests.governance.support.GovernanceProject;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
+
+import static atf.tests.governance.documentation.release.rag.scope.NodeReleaseContracts.*;
 
 @AtfComponentTest
 class ComponentEvidenceScopeComponentTest {
@@ -58,10 +56,6 @@ class ComponentEvidenceScopeComponentTest {
     }
 
     @Test void localReleaseSyncKeepsOnlyQualifiedPublishedBytesAndRejectsLocalEdits() throws Exception {
-        String snapshot = runContracts(PUBLICATION_TIMEOUT, "release-git-snapshot.test.mjs");
-        AuditedAssertions.assertTrue(snapshot.contains("binds a mixed EOL recipe to the exact commit")
-                        && snapshot.contains("cleanup refuses a stale verdict or changed published report"),
-                "The original snapshot proof binds both reconstructed bytes and published payload.");
         String output = runContracts(PUBLICATION_TIMEOUT, "local-release-sync.test.mjs");
         AuditedAssertions.assertTrue(output.contains("materializes only the current published release and preserves bytes"),
                 "The local release copy preserves the current manifest and payload.");
@@ -89,18 +83,4 @@ class ComponentEvidenceScopeComponentTest {
                 "The failed contract preserves its original stderr");
     }
 
-    private static String runContracts(Duration timeout, String... scripts) throws Exception {
-        var root = GovernanceProject.locateProjectRoot();
-        var args = new ArrayList<>(List.of("node", "--test"));
-        for (String script : scripts) args.add(root.resolve("atf-tests/tools").resolve(script).toString());
-        return runNode(args, root, timeout);
-    }
-
-    private static String runNode(List<String> args, Path directory, Duration timeout) throws Exception {
-        var result = CommandProcess.execute(args, directory, Map.of(), timeout, true);
-        String output = new String(result.stdout(), StandardCharsets.UTF_8);
-        AuditedAssertions.assertEquals(0, result.exitCode(),
-                result.exitCode() == 0 ? "The Node child completed successfully" : String.join(" ", args) + "\n" + output);
-        return output;
-    }
 }
