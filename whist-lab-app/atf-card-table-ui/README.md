@@ -122,6 +122,8 @@ Din rădăcina ATF. Exportul folosește directorul libraries/card-table-ui din d
 
 ## Antetul mesei
 
+Meniul mesei folosește `TableMenuContent`: acțiunea directă și localizată pentru istoricul scorului precedă rutele specifice jocului. Adaptoarele furnizează callback-urile și păstrează jocul selectat și checkpoint-ul la deschiderea sau închiderea istoricului; AutoPlay activ poate expune și acțiunea de oprire în meniu.
+
 [`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) măsoară titlul și bifa nativă înainte de a alege rândul. Titlul poate ocupa cel mult două rânduri și păstrează descrierea completă pentru accesibilitate. Bifa rămâne pe primul rând cât timp titlul are cel puțin 1,5 ori lățimea acțiunii din stânga; controlul trece pe rândul următor când spațiul ar face titlul ilizibil.
 
 - Rentz poate furniza două rânduri de titlu prin același antet măsurat. Jocul păstrează contractul, progresul și acțiunile din meniu.

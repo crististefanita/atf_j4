@@ -57,7 +57,7 @@ public final class GameScreen {
     private final ScreenViews views;
     private final Activity activity;
     public GameScreen(ScreenViews views) { this.views = views; this.activity = views.activity(); }
-    public record MenuActions(Runnable scoreboard, Runnable settings, Runnable scores, Runnable home,
+    public record MenuActions(Runnable scoreboard, Runnable history, Runnable settings, Runnable scores, Runnable home,
                               Runnable autoGame, boolean autoGameActive,
                               java.util.function.Supplier<Runnable> opened) { }
     public void bidding(WhistUiText copy, GameSession.Snapshot state, List<Integer> choices, int selectedBid,
@@ -197,7 +197,7 @@ public final class GameScreen {
     }
     private void showMenu(View anchor, WhistUiText copy, MenuActions actions) {
         PopupMenu menu = new PopupMenu(activity, anchor);
-        for (GameMenuContent.Item entry : GameMenuContent.items(copy, actions)) {
+        for (var entry : GameMenuContent.items(copy, actions)) {
             menu.getMenu().add(entry.label()).setOnMenuItemClickListener(item -> {
                 entry.action().run();
                 return true;

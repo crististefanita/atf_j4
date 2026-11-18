@@ -285,7 +285,8 @@ public final class MainActivity extends Activity {
     private GameScreen.MenuActions gameMenuActions() {
         GameSession.Snapshot state = game == null ? null : game.snapshot();
         boolean autoGameActive = state != null && autoGameHand.activeFor(state);
-        return new GameScreen.MenuActions(this::showLiveScoreboard, this::showPlayerSettings,
+        return new GameScreen.MenuActions(this::showLiveScoreboard,
+                () -> showScoreHistory(game.snapshot(), game.scoreHistory()), this::showPlayerSettings,
                 this::showHighScores, this::renderHome, this::toggleAutoGameHand,
                 autoGameActive, this::suspendGameMenu);
     }

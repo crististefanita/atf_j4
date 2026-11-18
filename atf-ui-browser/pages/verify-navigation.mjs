@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { verifyGameMenuDismissal } from "../tests/menu-presentation.mjs";
+import { verifyGameMenuDismissal, verifyHistoryMenu } from "../tests/menu-presentation.mjs";
 
 const [site, output] = process.argv.slice(2);
 if (!site || !output) throw new Error("Expected compiled site and external evidence directory");
@@ -10,7 +10,10 @@ const asset = file => import(pathToFileURL(join(resolve(site), file)));
 const { initialize, commandLocal } = await asset("whist-engine.mjs");
 const { autoGame } = await asset("auto-game.mjs");
 const { dismissGameMenuOnOutsideClick } = await asset("profile.mjs");
+const { historyFirst } = await asset("table-menu.mjs");
 const checks = [];
+checks.push({ id: "SHARED-MENU-HISTORY", name: "Acces direct la istoric în meniul comun RO/EN", status: "PASS",
+  expected: "Un singur istoric, intenție izolată și plan imuabil ca în adaptorul Android", observed: verifyHistoryMenu(historyFirst) });
 let stored;
 let replayFixture;
 
