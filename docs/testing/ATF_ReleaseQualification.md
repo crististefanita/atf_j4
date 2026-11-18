@@ -457,7 +457,9 @@ Keep the work profiles and caches during reruns. After publication and verified 
 
 Use stage receipts for elapsed durations and state whether measurements overlap. When UTC timestamps and monotonic durations diverge, preserve both and use `elapsedMs` for measured stage cost. Do not claim an end-to-end duration or a speedup from incomplete or overlapping measurements. [Remaining improvements](../feedback/ATF_Governance.md#release-launcher-and-finalization)
 
-Keep owner-retained local state in `.imp` under the external evidence root: signing material, local device configuration, valuable learning data and final receipts absent from Git. Cleanup must exclude that directory and every descendant, including paths reached through links. Canonical sources and their Git repository belong to the project checkout, not a disposable build directory. Preserve uncommitted work before recovering a checkout; an old worktree is not a cache until that work is accounted for.
+- Keep owner-retained local state in `.imp` under the external evidence root: signing material, local device configuration, valuable learning data and final receipts absent from Git. Cleanup must exclude that directory and every descendant, including paths reached through links.
+
+- Canonical sources and their Git repository belong to the project checkout, not a disposable build directory. Preserve uncommitted work before recovering a checkout; an old worktree is not a cache until that work is accounted for.
 
 ### Snapshot Git and local projection
 
