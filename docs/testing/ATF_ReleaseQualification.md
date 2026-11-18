@@ -302,7 +302,7 @@ node .\atf-tests\tools\evaluate-release-rag.mjs `
 
 Before withdrawal, check [kept downloads and editions](../platform/ATF_ReleaseRetention.md#download-verification-before-rotation).
 
-- After the authorized withdrawal, run the collector in the synchronized checkout `main`. The collector reads the catalogue and manifests from the repository state observed on GitHub.
+- Finish payload edits and push the final catalog and manifests before collection. The collector seals their bytes against local `origin/main`, requires the same remote commit and rechecks the seal after observation.
 - Use `GH_TOKEN` or `GITHUB_TOKEN` with access to the drafts. The collector inventories all pages of relays, including the drafts, all tags and all assetses.
 
 ```powershell

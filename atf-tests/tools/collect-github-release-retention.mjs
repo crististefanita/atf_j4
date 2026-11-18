@@ -2,12 +2,21 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
-import {digest, loadGithubRetentionCatalog} from './evaluate-release-rag.mjs';
+import {digest} from './evaluate-release-rag.mjs';
 import {githubRetentionProblems} from './github-release-retention.mjs';
 import {QualificationTiming} from './release-timing.mjs';
 import {githubReleaseApi} from './github-release-api.mjs';
+import {assertGithubRetentionSeal, sealGithubRetentionCatalog} from './github-retention-seal.mjs';
+
+export async function collectGithubRetention(project, token, fetchResponse = fetch, now = Date.now) {
+  const expected = await sealGithubRetentionCatalog(project);
+  const observed = await observeGithubRetention(expected, token, fetchResponse, now);
+  await assertGithubRetentionSeal(project, expected);
+  return {expected, observed};
+}
 
 export async function observeGithubRetention(expected, token, fetchResponse = fetch, now = Date.now) {
+  if (!/^[a-f0-9]{40}$/.test(expected.publishedCommit ?? '')) throw Error('GITHUB_PAYLOAD_UNSEALED');
   const timing = new QualificationTiming({now});
   const {json, pages, content, asset: downloadAsset} = githubReleaseApi(expected.repository, token, fetchResponse);
 
@@ -28,6 +37,7 @@ export async function observeGithubRetention(expected, token, fetchResponse = fe
   const mainCommit = branch.commit?.sha;
   if (repository.full_name !== expected.repository || repository.default_branch !== 'main' || repository.permissions?.push !== true
       || !/^[a-f0-9]{40}$/.test(mainCommit ?? '')) throw Error('GITHUB_INVENTORY_ACCESS: main and access to drafts are required');
+  if (mainCommit !== expected.publishedCommit) throw Error('GITHUB_SEAL_REMOTE_COMMIT: refresh the published Git reference');
 
   const remoteHashes = await Promise.all(expected.evidence.map(async file => {
     if (digest(await content(file.path, mainCommit)) !== file.sha256) throw Error('GITHUB_MAIN_DIFFERS: ' + file.path);
@@ -65,8 +75,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     if (!relative || (!path.isAbsolute(relative) && relative !== '..' && !relative.startsWith('..' + path.sep))) {
       throw Error('OUTPUT_MUST_BE_OUTSIDE_INPUTS');
     }
-    const expected = await loadGithubRetentionCatalog(project);
-    const observed = await observeGithubRetention(expected, process.env.GH_TOKEN || process.env.GITHUB_TOKEN);
+    const {expected, observed} = await collectGithubRetention(project, process.env.GH_TOKEN || process.env.GITHUB_TOKEN);
     await fs.writeFile(destination, JSON.stringify(observed, null, 2) + '\n', {flag: 'wx'});
     const problems = githubRetentionProblems(expected, observed);
     console.log(JSON.stringify({status: problems.length ? 'BLOCKED' : 'PASS', output: destination, problems}));

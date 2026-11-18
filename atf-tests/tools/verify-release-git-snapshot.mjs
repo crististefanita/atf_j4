@@ -11,6 +11,15 @@ import {within, writeTimingReceipt, QualificationTiming} from './release-timing.
 const kind = 'ATF_RELEASE_GIT_SNAPSHOT';
 const hashPattern = /^[a-f0-9]{64}$/;
 
+function qualifiedLocalTag(repository, version, sourceCommit) {
+  const ref = 'refs/tags/v' + version;
+  let commit;
+  try { commit = commitId(repository, ref); }
+  catch { throw Error('GIT_SNAPSHOT_LOCAL_TAG_REQUIRED: ' + ref + '; fetch the qualified tag explicitly'); }
+  if (commit !== sourceCommit) throw Error('GIT_SNAPSHOT_LOCAL_TAG_MISMATCH: ' + ref);
+  return {ref, commit};
+}
+
 async function exactEol(blob, expectedHash, recipe, qualifiedRoot, name) {
   if (recipe) {
     const restored = applyEol(blob, recipe);
@@ -78,8 +87,8 @@ async function verifyPublication(repository, candidate, manifestDoc, verdictDoc,
   const evidenceCommit = publishedRef ? commitId(repository, publishedRef) : main;
   assertAncestor(repository, evidenceCommit, main);
   assertAncestor(repository, manifest.source.sourceCommit, evidenceCommit);
-  if (manifest.publication.state === 'PUBLISHED' && commitId(repository, 'refs/tags/v' + version) !== manifest.source.sourceCommit)
-    throw Error('CLEANUP_RELEASE_TAG_MISMATCH');
+  const qualifiedTag = manifest.publication.state === 'PUBLISHED'
+    ? qualifiedLocalTag(repository, version, manifest.source.sourceCommit) : null;
   const releasePath = 'release/' + version + '/';
   if (digest(gitBlob(repository, evidenceCommit, releasePath + 'release-validation.json')) !== manifestDoc.sha256)
     throw Error('CLEANUP_MANIFEST_ABSENT_FROM_PUBLISHED_GIT');
@@ -102,7 +111,7 @@ async function verifyPublication(repository, candidate, manifestDoc, verdictDoc,
   for (const [name, bytes] of readGitBlobs(repository, tracked)) {
     if (digest(bytes) !== expected.get(name.slice(releasePath.length))) throw Error('CLEANUP_GIT_PAYLOAD_HASH:' + name);
   }
-  return {evidenceCommit, checkedOriginMain: main, postpublicationVerdictSha256: verdictDoc.sha256, apkSha256: apk.sha256};
+  return {evidenceCommit, checkedOriginMain: main, qualifiedTag, postpublicationVerdictSha256: verdictDoc.sha256, apkSha256: apk.sha256};
 }
 
 export async function verifyGitSnapshot({repository, candidate, qualifiedRoot, prior, verdict, publishedRef}) {
@@ -119,8 +128,14 @@ export async function verifyGitSnapshot({repository, candidate, qualifiedRoot, p
   if (input.value.sourceCommit !== identity.sourceCommit || input.value.fingerprint !== identity.sourceFingerprint
       || inputFingerprint(expected) !== identity.sourceFingerprint || commitId(repository, identity.sourceCommit) !== identity.sourceCommit)
     throw Error('GIT_SNAPSHOT_FINGERPRINT');
-  const {problems, endings} = await timing.measure('git-snapshot.reconstruction', () =>
-    verifySources(repository, identity, expected, qualifiedRoot, prior), result => result.problems.length ? 'BLOCKED' : 'PASS');
+  const tagProblems = manifest.publication?.state === 'PUBLISHED'
+    ? await timing.measure('git-snapshot.local-tag', async () => {
+      try { qualifiedLocalTag(repository, identity.releaseVersion, identity.sourceCommit); return []; }
+      catch (error) { return [{reason: error.message}]; }
+    }, problems => problems.length ? 'BLOCKED' : 'PASS') : [];
+  const {problems, endings} = tagProblems.length ? {problems: tagProblems, endings: []}
+    : await timing.measure('git-snapshot.reconstruction', () =>
+      verifySources(repository, identity, expected, qualifiedRoot, prior), result => result.problems.length ? 'BLOCKED' : 'PASS');
   let publication = null;
   if (verdict && !problems.length) {
     try {
@@ -132,7 +147,7 @@ export async function verifyGitSnapshot({repository, candidate, qualifiedRoot, p
   const localReleaseRequired = parts[0] > 0 || parts[1] > 21 || parts[1] === 21 && parts[2] >= 10;
   const cleanupEligible = publication !== null && !localReleaseRequired;
   return {schemaVersion: 1, kind, ...identity, manifestSha256: manifestDoc.sha256, inputCount: expected.size,
-    status: problems.length ? 'BLOCKED' : 'PASS', reconstruction: endings.length ? 'GIT_WITH_EOL_RECIPE' : 'GIT_EXACT',
+    status: problems.length ? 'BLOCKED' : 'PASS', reconstruction: tagProblems.length ? 'NOT_RUN' : endings.length ? 'GIT_WITH_EOL_RECIPE' : 'GIT_EXACT',
     endings, problems, publication, cleanupEligible, localReleaseRequired, timing: timing.receipt('git-snapshot')};
 }
 

@@ -63,5 +63,4 @@ The Android Download Manager transfer test and certificate verification are actu
 
 | ID | Gap and owner | Closure criterion |
 |---|---|---|
-| RAG-13 | Publication coordinator: collecting retention before the last manifest change invalidates the observation; a remote-only tag blocks local Git reconstruction. | Seal the payload and push its commit before collecting GitHub inventory. Resolve and verify the local qualified tag before reconstruction. Components must reject stale manifest hashes and missing or mismatched tags, then resume only the affected observation or proof. Preserve the immutable APK and accepted reports. |
 | RAG-14 | Scope planner: a shared typography change can select unrelated native flows when source groups are too coarse. | Map changed visual contracts to adapter components and the required signed-APK sanity. Negative controls must still select every changed interaction, persistence or scoring flow. Measure scenario, profile preparation and report validation separately; preserve current mandatory flows until the narrower policy is proven. |

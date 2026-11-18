@@ -61,7 +61,9 @@ flowchart LR
     APK -->|current evidence| LOCAL[PREPARED local]
     LOCAL -->|subsequent step of operator| BOUND[Pinned commit]
     BOUND -->|publishes and downloads| LIVE[Verified release]
-    LIVE -->|archiving and explicit plan| RETIRE[Withdrawal of old editions]
+    LIVE -->|seal manifest and push| SEALED[Published payload]
+    SEALED -->|observe GitHub| OBS[Fresh inventory]
+    OBS -->|qualify rotation| RETIRE[Withdrawal of old editions]
 ```
 
 <details>
@@ -88,7 +90,22 @@ An uncommitted candidate is marked `PREPARED` and identified by its snapshot has
 
 `versionName` identify the required edition, and `versionCode` increase at each APK delivered. After reset the visible numbering, [code Android](https://developer.android.com/studio/publish/versioning) and the signature certificate shall keep the update path; promotion of GitHub shall be explicitly marked as the last release.
 
+## Sealing publication before inventory
+
+| Boundary | Required action |
+|---|---|
+| Final payload | Finish distribution receipts, payload integrity and publication fields; commit and push the final catalog and manifests before collecting retention. |
+| Local seal | The [seal preflight](../../atf-tests/tools/github-retention-seal.mjs) compares the catalog and both manifests byte-for-byte with `origin/main`. Missing or unpushed inputs stop before any GitHub request. |
+| Remote observation | The [collector](../../atf-tests/tools/collect-github-release-retention.mjs) requires the same main commit before enumerating releases, tags and assets; it rechecks remote inventory, remote main and the local seal before returning evidence. |
+| Recovery | Restore or publish the final payload, refresh `origin/main`, then collect a new observation. Reuse unchanged APKs and accepted reports; repeat only the invalidated observation or Git proof. |
+
+A changed manifest invalidates its observation even when the APK is unchanged. The observation binds the final manifest hashes and observed main commit; its existing freshness window still applies.
+
 ## Local cleaning after delivery
+
+- A published GitHub edition requires local `refs/tags/v<versionName>` resolving to `source.sourceCommit`, including annotated tags. Missing or mismatched tags stop at `git-snapshot.local-tag` with reconstruction `NOT_RUN`.
+- Resolve a missing tag explicitly with `git fetch origin tag "v$Version"`; the verifier does not move or fetch tags implicitly. A conflicting tag needs investigation against the qualified source commit.
+- The publication receipt records `qualifiedTag` and rechecks it before allowing cleanup. Keep the APK, reports and EOL recipe while repairing only the missing Git proof.
 
 After the published qualification and download, run [verifier Git](../../atf-tests/tools/verify-release-git-snapshot.mjs). Use the version file and post-publication verdict for the same manifest bytes. Update the local reference first `origin/main` and the tags with Git.
 
