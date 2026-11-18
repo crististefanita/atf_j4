@@ -447,7 +447,11 @@ Păstrați profilurile de lucru și cache-urile pe durata reluărilor. După pub
 
 ### Snapshot Git și proiecția locală
 
-Snapshot-ul surselor înregistrează commitul documentației române revizuite și ambele inventare de documente. Verificați că acel commit rămâne publicat în ascendența ramurii române. Editările ulterioare ale ramurii nu rescriu perechea imuabilă a release-ului; perechea engleză/română curentă are propria revizie. Reproductibilitatea livrării rămâne separată de întreținerea documentației, iar textul sursă nerevizuit sau traducerea nepublicată sunt în continuare respinse.
+Snapshot-ul surselor înregistrează commitul documentației române revizuite și ambele inventare de documente.
+
+- Verificați că acel commit rămâne publicat în ascendența ramurii române.
+- Editările ulterioare ale ramurii nu rescriu perechea imuabilă a release-ului; perechea engleză/română curentă are propria revizie.
+- Respingeți textul sursă nerevizuit și traducerile nepublicate, păstrând reproductibilitatea livrării separată de întreținerea documentației.
 
 Controlul Maven rulează separat probele de reconstrucție a surselor și probele de proiecție a ediției publicate. Fiecare proces Node păstrează același termen. Fixture-urile folosesc Git real și directoare izolate, inclusiv pentru octeți cu EOL mixt, payload modificat, editări locale și rotația ediției. [Reconstrucție](../../atf-tests/tools/release-git-snapshot.test.mjs) · [Proiecție](../../atf-tests/tools/local-release-sync.test.mjs)
 

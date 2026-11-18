@@ -11,6 +11,7 @@ const documentationReview = 'config/documentation-editions.json';
 const disposableAndroidUserRunner = 'scripts/Invoke-AtfAndroidDisposableUser.ps1';
 const androidDeviceHarness = new Set([
   'scripts/AtfAndroidPackageRegistration.ps1',
+  'scripts/AtfAndroidUserReadiness.ps1',
   disposableAndroidUserRunner, 'scripts/run-complete-match.ps1', 'scripts/run-deep-tests.ps1',
   'scripts/run-whist-ai-validation.ps1', 'scripts/run-whist-responsive-sanity.ps1',
   'scripts/run-whist-signed-e2e.ps1', 'scripts/AtfAndroidMaven.ps1'
@@ -36,7 +37,7 @@ const independentChange = new Map([
       || androidUi(file) || androidDeviceHarness.has(file) || /^(?:atf-tests|atf-test-android|atf-validation)\//.test(file)],
   ['atf-validation', file => nonBuildDocumentation(file) || androidUi(file)
       || androidDeviceHarness.has(file) || file.startsWith('atf-test-android/') || file.startsWith('atf-tests/')],
-  ['atf-test-android', file => nonBuildDocumentation(file) || androidUi(file)
+  ['atf-test-android', file => nonBuildDocumentation(file) || androidUi(file) || androidDeviceHarness.has(file)
       || file.startsWith('atf-tests/')],
   ['whist-lab-app-atf-card-table-ui', file => nonBuildDocumentation(file)
       || /^(whist-lab-app\/(app|game-core|ai-lab|ios-bridge|card-table-names|algorithm-build)\/|atf-test-android\/|atf-validation\/|atf-tests\/)/.test(file)

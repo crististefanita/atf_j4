@@ -185,7 +185,10 @@ test('the disposable Android profile runner reruns its harness and governance wi
     assert.equal(scope.decision, 'REUSE', `${group}: ${file}`);
     assert.deepEqual(scope.affected, [], `${group}: ${file}`);
   }
-  assert.equal(componentEvidenceScope('atf-test-android', changed, baseline).decision, 'RUN');
+  assert.equal(componentEvidenceScope('atf-test-android', changed, baseline).decision, 'REUSE');
+  for (const owned of ['atf-test-android/src/main/java/atf/android/AdbClient.java','atf-test-android/tools/AndroidDeviceSetup.psm1']) {
+    assert.equal(componentEvidenceScope('atf-test-android', new Map([...baseline,[owned,'changed']]), baseline).decision,'RUN');
+  }
   assert.equal(componentEvidenceScope('atf-tests', changed, baseline).decision, 'RUN');
 });
 

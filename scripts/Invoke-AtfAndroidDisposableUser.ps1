@@ -15,6 +15,7 @@ param(
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfAndroidPreflight.ps1')
 . (Join-Path $PSScriptRoot 'AtfAndroidPackageRegistration.ps1')
+. (Join-Path $PSScriptRoot 'AtfAndroidUserReadiness.ps1')
 Import-Module (Join-Path $PSScriptRoot '../atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 $run = [IO.Path]::GetFullPath($RunRoot)
 $sourceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -158,12 +159,19 @@ if ($Phase -ceq 'Prepare') {
             [pscustomobject]@{path=$path;sha256=($digest -split '\s+')[0]}
         } -ExpectedHash $ApkSha256
         Invoke-DeviceShell @('locksettings','set-disabled','--user',[string]$createdUser,'true') | Out-Null
+        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','secure','user_setup_complete','1') | Out-Null
+        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','system','screen_off_timeout','2147483647') | Out-Null
+        Invoke-DeviceShell @('am','start-user',[string]$createdUser) | Out-Null
+        $userReadiness = Wait-AtfAndroidUserReady -Read {
+            Invoke-DeviceShell -Arguments @('am','get-started-user-state',[string]$createdUser) -TimeoutSeconds 10
+        } -Unlock {
+            $response = Invoke-DeviceShell -Arguments @('am','unlock-user',[string]$createdUser,'!','!') -TimeoutSeconds 10
+            if ($response -notmatch 'Success: user unlocked') { throw "ANDROID_USER_UNLOCK: $response" }
+        }
         Invoke-DeviceShell @('am','switch-user',[string]$createdUser) | Out-Null
         $deadline = [DateTime]::UtcNow.AddSeconds(30)
         while ((Get-CurrentUserId) -ne $createdUser -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
         if ((Get-CurrentUserId) -ne $createdUser) { throw 'Android did not switch to the disposable secondary user.' }
-        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','secure','user_setup_complete','1') | Out-Null
-        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','system','screen_off_timeout','2147483647') | Out-Null
 
         try { Unlock-DisposableUser }
         catch { throw "Android relocked the disposable user during APK installation: $($_.Exception.Message)" }
@@ -181,6 +189,7 @@ if ($Phase -ceq 'Prepare') {
             screenOffTimeoutMs=2147483647;screenUnlocked=$true
             backgroundPackagesDisabled=$quieted
             lockScreenDisabledForFreshUser=$true;packageRegistration=$registration
+            userReadiness=$userReadiness
             userName=$name;observedApi=$readiness.api;displayProfile=$readiness.displayProfile
             installedPath=$apkPathOnDevice;installedApkSha256=$ApkSha256;observedUtc=[DateTime]::UtcNow.ToString('o')
         }

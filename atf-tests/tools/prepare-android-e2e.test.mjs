@@ -5,7 +5,7 @@ import path from 'node:path';
 import {test} from 'node:test';
 import {scenarioFor, disposablePaths, e2ePaths, signedE2eProtocol} from './android-e2e-contract.mjs';
 import {digest, strictJson} from './evaluate-release-rag.mjs';
-import {verifyE2eReport} from './android-e2e-evidence.mjs';
+import {verifyE2eReport, verifyDisposableUser} from './android-e2e-evidence.mjs';
 import {inspectE2eImages, verifyPng} from './android-e2e-images.mjs';
 import {planAndroidE2e, verifyOriginalCaptures} from './prepare-android-e2e.mjs';
 import {applyAndroidEvidence} from './apply-android-e2e.mjs';
@@ -63,6 +63,23 @@ test('the signed report requires owned, complete, decodable PNGs', () => {
   const bad = Buffer.from(png, 'base64');
   bad[48] ^= 1;
   assert.throws(() => verifyPng(bad), /INVALID_PNG/);
+});
+
+test('new native releases require observed unlocked user storage in addition to a hidden keyguard', async t => {
+  const {root,manifest} = await fixture(t);
+  const paths=e2ePaths(bidding);
+  const receipt=JSON.parse(await fs.readFile(path.join(root,paths.executionReceipt)));
+  const boundary=receipt.dataBoundary;
+  const ready={value:JSON.parse(await fs.readFile(path.join(root,boundary.readyReceipt))),sha256:boundary.readyReceiptSha256};
+  const cleanup={value:JSON.parse(await fs.readFile(path.join(root,boundary.cleanupReceipt))),sha256:boundary.cleanupReceiptSha256};
+  const identity={applicationId:manifest.release.applicationId,installedApkSha256:apk,releaseVersion:'0.21.10'};
+  const verify=()=>verifyDisposableUser(boundary,ready,cleanup,identity,scenarioFor(bidding,profile));
+  for(const state of [undefined,'BOOTING','RUNNING_LOCKED','RUNNING_UNLOCKING']) {
+    ready.value.userReadiness=state ? {state} : undefined;
+    assert.throws(verify,/ANDROID_E2E_USER_NOT_UNLOCKED/);
+  }
+  ready.value.userReadiness={state:'RUNNING_UNLOCKED'};
+  assert.doesNotThrow(verify);
 });
 
 test('missing and corrupt material leaves sibling flows reusable', async t => {
