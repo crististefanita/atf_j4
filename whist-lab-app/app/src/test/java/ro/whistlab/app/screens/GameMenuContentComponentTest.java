@@ -13,17 +13,20 @@ public class GameMenuContentComponentTest extends atf.gradle.audit.GradleAudited
         for (var language : HowToPlay.Language.values()) {
             var copy = new WhistUiText(language);
             var calls = new ArrayList<String>();
-            var actions = new GameScreen.MenuActions(() -> calls.add("score"), () -> calls.add("settings"),
+            var actions = new GameScreen.MenuActions(() -> calls.add("score"), () -> calls.add("history"), () -> calls.add("settings"),
                     () -> calls.add("scores"), () -> calls.add("home"), () -> calls.add("stop"), false,
                     () -> () -> calls.add("dismiss"));
             var items = GameMenuContent.items(copy, actions);
             atf.gradle.audit.GradleInputs.fixture("Fixture before first assertion", "actions", actions,
                     "copy", copy, "items", items, "language", language);
             assertEquals("The inactive menu offers only its ordinary navigation",
-                    List.of(copy.scoreSheet(), copy.playerSettings(), copy.highestScores(), copy.mainMenu()),
-                    items.stream().map(GameMenuContent.Item::label).collect(java.util.stream.Collectors.toList()));
+                    List.of(copy.scoreHistory(), copy.scoreSheet(), copy.playerSettings(), copy.highestScores(), copy.mainMenu()),
+                    items.stream().map(ro.cardtable.ui.menu.TableMenuContent.Item::label).collect(java.util.stream.Collectors.toList()));
+            items.get(0).action().run();
+            assertEquals("History opens directly without first opening the live score", List.of("history"), calls);
+            calls.clear();
 
-            var active = new GameScreen.MenuActions(actions.scoreboard(), actions.settings(), actions.scores(),
+            var active = new GameScreen.MenuActions(actions.scoreboard(), actions.history(), actions.settings(), actions.scores(),
                     actions.home(), actions.autoGame(), true, actions.opened());
             var activeItems = GameMenuContent.items(copy, active);
             var stop = activeItems.stream()

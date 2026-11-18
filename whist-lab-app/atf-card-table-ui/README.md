@@ -122,6 +122,8 @@ ATF root. The export uses the libraries/card-table-ui directory from the externa
 
 ## Table header
 
+The table popup uses `TableMenuContent`: a direct localized score-history action precedes game-specific routes. Adapters supply callbacks and retain the selected game and checkpoint when opening or closing history; an active AutoPlay may also expose its stop action in the menu.
+
 [`GameTitleBar`](src/main/java/ro/cardtable/ui/screens/GameTitleBar.java) measures the title and the native tick before choosing the line. The title may take up to two rows and shall keep the full description for accessibility. The check shall be first as long as the title is at least 1,5 times the width of the action on the left; the check shall be carried out in the next row when the space would make the title illegible.
 
 - Rentz may provide two rows of the title by the same measured header. The game keeps the contract, progress and actions on the menu.

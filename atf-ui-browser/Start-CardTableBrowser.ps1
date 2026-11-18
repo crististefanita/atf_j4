@@ -42,6 +42,7 @@ $inputs = @(
     Join-Path $ui 'seat/SeatContent.java'
     Join-Path $ui 'theme/TableColors.java'
     Join-Path $ui 'turn/TurnPacing.java'
+    Join-Path $ui 'menu/TableMenuContent.java'
     Join-Path $checkout 'whist-lab-app/card-table-names/src/main/java'
 ) + $JavaInputs
 $sources = foreach ($inputPath in $inputs) {

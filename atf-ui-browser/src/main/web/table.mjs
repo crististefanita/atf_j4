@@ -3,6 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
+import { historyFirst } from "./table-menu.mjs";
 import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.10";
 
 const stage = document.querySelector("#table");
@@ -724,13 +725,24 @@ function whistHeader(match) {
   }, style);
   const stop = item(copy("stopAutoGame", "Oprește jocul automat"), () => automation.set(false), "stop-auto");
   stop.hidden = !automation.selected();
-  items.append(item(copy("scoreSheet", "Scorul partidei"), () => {
-    profileDialogs.liveScore(match.scoreDetails, scoreGrid(match.scoreDetails.liveTable, true),
-      match.history.rows.length ? () => showHistory(match.history) : null);
-  }), stop,
-  item(copy("name", "Numele tău"), () => profileDialogs.edit(state.profile.name)),
-  item(copy("ranking", "Clasamente"), () => { void showRankings(); }),
-  item(copy("mainMenu", "Meniu principal"), menu));
+  const routes = historyFirst(copy("history", "Istoric punctaj"), () => showHistory(match.history), [
+    { id: "score-sheet", label: copy("scoreSheet", "Scorul partidei"), action: () => {
+      profileDialogs.liveScore(match.scoreDetails, scoreGrid(match.scoreDetails.liveTable, true),
+        match.history.rows.length ? () => showHistory(match.history) : null);
+    } },
+    { id: "stop-auto", label: copy("stopAutoGame", "Oprește jocul automat"), action: () => automation.set(false) },
+    { id: "settings", label: copy("name", "Numele tău"), action: () => profileDialogs.edit(state.profile.name) },
+    { id: "rankings", label: copy("ranking", "Clasamente"), action: () => { void showRankings(); } },
+    { id: "home", label: copy("mainMenu", "Meniu principal"), action: menu }
+  ]);
+  for (const route of routes) {
+    if (route.id === "stop-auto") items.append(stop);
+    else {
+      const entry = item(route.label, route.action);
+      entry.dataset.menuAction = route.id;
+      items.append(entry);
+    }
+  }
   navigation.addEventListener("toggle", refreshAutomationGate);
   navigation.append(items);
   const title = element("h1", match.header.title);

@@ -186,6 +186,8 @@ The viewport contract preserves a 414 × 896 logical frame on desktop, scales un
 
 ## Verification
 
+The table menu exposes score history directly in Whist and Rentz through the common menu adapter. Opening history pauses automatic scheduling; closing the dialog resumes the same table without replaying commands. Component checks cover localized labels, one callback per choice, outside-click dismissal and immutable menu plans.
+
 - The Web Adapter increases by 50% the 2- rankings of the regular cards. It centres the indices in the same band, measured with `10`, and limits the rank of the compact face to the available space. The faces, colours and the trump shall retain their reference dimensions.
 - The width of the visible index sets the overlap in the fan, including `10` and 17 cards.
 - The Web Header retains the anchor of the APK title, progress and asset. The progress and summary of the bids, the game menu, the main menu and settings use text with 50% higher in the Web. The trump scale shall retain the natural height of the two rows and shall restrict the text exceeding the width available.
