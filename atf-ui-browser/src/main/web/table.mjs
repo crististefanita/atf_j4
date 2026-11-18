@@ -928,6 +928,7 @@ try {
   }
   document.documentElement.dataset.surface = setup.surface ?? "table";
   for (const token of setup.palette ?? []) document.documentElement.style.setProperty(token.name, token.color);
+  document.documentElement.style.setProperty('--card-rank-scale', setup.cardFace?.rankScale ?? 1.5);
   const savedName = transport.cachedName?.();
   if (state.profile && !state.profile.savedName && savedName) {
     try {

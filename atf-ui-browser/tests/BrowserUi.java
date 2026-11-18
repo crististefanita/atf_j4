@@ -20,7 +20,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 class BrowserUi {
     private static final String SITE_PATH = "/whist/";
     private static final Set<String> ASSETS = Set.of("index.html", "table.css", "table.mjs", "viewport.mjs",
-            "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs",
+            "profile.mjs", "records.mjs", "auto-game.mjs", "collection.mjs", "hand-feedback.mjs", "table-menu.mjs",
             "local-transport.mjs", "engine-worker.mjs", "whist-engine.mjs", "card-suits.woff2", "menu-footer.png");
     private static final String MOBILE_AGENT =
             "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 Chrome/131.0.0.0 Mobile Safari/537.36";
@@ -75,6 +75,11 @@ class BrowserUi {
                             "Rangul, simbolurile și pozițiile lor rămân proporționale când cartea trece între suprafețe.",
                             (page, images) -> autoGame(page, url, checkpoint, output, images)));
                 }
+                if (check.equals("typography")) {
+                    results.add(run(browser, mobile(), output, "CARD-TYPOGRAPHY",
+                            "Shared rank typography for 2–A", "Ranks scale independently of menus; suits and trump remain unchanged.",
+                            (page, images) -> rankTypography(page, url)));
+                }
                 if (check.equals("all") || check.equals("header")) {
                     for (int width : List.of(414, 360)) {
                         results.add(run(browser, mobile().setViewportSize(width, 896), output, "WEB-12-HEADER-" + width,
@@ -106,7 +111,7 @@ class BrowserUi {
                             "Culoarea, conturul, dimensiunile și textul rămân identice la activarea și oprirea AutoPlay.",
                             (page, images) -> descendingTrump(page, url)));
                 }
-                if (check.equals("all") || check.equals("numbers")) {
+                if (check.equals("all") || check.equals("numbers") || check.equals("typography")) {
                     results.add(run(browser, mobile().setViewportSize(360, 800), output, "WEB-UI-NUMBERS",
                             "Rangul 10 în mâna de 17 cărți, la text 200%",
                             "Cifrele și figurile păstrează aceeași ancoră. Antetul respectă scara de text.",
@@ -286,6 +291,8 @@ class BrowserUi {
                 }
                 var diagnostic = new java.io.StringWriter();
                 failure.printStackTrace(new java.io.PrintWriter(diagnostic));
+                diagnostic.append("\nPage errors: ").append(errors.toString());
+                diagnostic.append("\nVisible page text: ").append(page.locator("body").innerText());
                 return new Result(id, title, "FAIL", expected, diagnostic.toString(), images);
             }
         }

@@ -38,9 +38,14 @@ public class CardFaceDrawable extends GradientDrawable {
                 bounds.top + bounds.height() * CardFaceMetrics.CENTER_SUIT_BASELINE, ink);
         canvas.save();
         canvas.rotate(180, bounds.exactCenterX(), bounds.exactCenterY());
+        ink.setTextSize(CardFaceMetrics.INVERTED_RANK_SIZE_DP * unit);
+        float rankCenter = Math.max(9 * unit, 4 * unit + ink.measureText(card.rankLabel()) / 2);
+        float rankBaseline = Math.max(12 * unit, 4 * unit - ink.ascent());
+        canvas.drawText(card.rankLabel(), bounds.left + rankCenter, bounds.top + rankBaseline, ink);
+        float rankBottom = rankBaseline + ink.descent();
         ink.setTextSize(CardFaceMetrics.INVERTED_SIZE_DP * unit);
-        canvas.drawText(card.rankLabel(), bounds.left + 9 * unit, bounds.top + 12 * unit, ink);
-        canvas.drawText(suitText, bounds.left + 9 * unit, bounds.top + 22 * unit, ink);
+        float suitBaseline = Math.max(22 * unit, rankBottom - ink.ascent());
+        canvas.drawText(suitText, bounds.left + rankCenter, bounds.top + suitBaseline, ink);
         canvas.restore();
     }
 }

@@ -229,8 +229,13 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-18T11:31:20.657Z",
+    "observedUtc": "2026-11-18T11:31:19.831Z",
     "files": [
+      {
+        "path": "README.en.md",
+        "bytes": 962,
+        "sha256": "0517527bfaaa2252103d94039eb293b77393d5caed8ea4dcc75c763205585fcf"
+      },
       {
         "path": "README.md",
         "bytes": 1020,
@@ -252,6 +257,11 @@
         "sha256": "068498aca2304cfc2288c497f44abeb59ad17b3e9a3f49d1fedde0a65fc5a95d"
       },
       {
+        "path": "release-notes.en.md",
+        "bytes": 895,
+        "sha256": "c6e7a65e200e9250d8a4d4ea6470cf18eed07e0ef42da3bee9e5ab6322489527"
+      },
+      {
         "path": "release-notes.md",
         "bytes": 956,
         "sha256": "f967708ff6ec70fc2130b7fdfa0bff4ce13187a85dbb26aca153108ae115a5f5"
@@ -260,6 +270,11 @@
         "path": "release-presentation.json",
         "bytes": 768,
         "sha256": "2ca066ddee376a51396309830695e2d95558055b4d42e2703679f13b68ffbbb0"
+      },
+      {
+        "path": "reports/README.en.md",
+        "bytes": 2419,
+        "sha256": "4585eb644b3ca80b95620868c10e2dce48595bf40126020baa8d413d0c6489eb"
       },
       {
         "path": "reports/README.md",

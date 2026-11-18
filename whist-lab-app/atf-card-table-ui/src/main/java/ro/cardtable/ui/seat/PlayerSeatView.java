@@ -59,7 +59,7 @@ public class PlayerSeatView extends ViewGroup {
         action.setGravity(Gravity.CENTER);
         action.setIncludeFontPadding(false);
         action.setSingleLine(false);
-        action.setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE);
+        action.setBreakStrategy(android.graphics.text.LineBreaker.BREAK_STRATEGY_SIMPLE);
         action.setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE);
         return action;
     }

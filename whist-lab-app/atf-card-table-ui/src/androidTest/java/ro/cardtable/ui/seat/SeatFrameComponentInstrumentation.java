@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ro.cardtable.ui.hand.HandHighlightMeasurement;
+import ro.cardtable.ui.cards.CardTypographyMeasurement;
 import ro.cardtable.ui.screens.GameTitleBar;
 import ro.cardtable.ui.table.android.BoardLayout;
 import ro.cardtable.ui.table.TableGeometry;
@@ -26,9 +27,11 @@ public final class SeatFrameComponentInstrumentation extends Instrumentation {
     private final JSONArray cases = new JSONArray();
     private final JSONArray headers = new JSONArray();
     private int failures;
+    private boolean cardsOnly;
 
     @Override public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
+        cardsOnly = arguments != null && "cards".equals(arguments.getString("component"));
         start();
     }
 
@@ -36,17 +39,22 @@ public final class SeatFrameComponentInstrumentation extends Instrumentation {
         var result = new Bundle();
         var error = new AtomicReference<Exception>();
         var highlights = new AtomicReference<JSONArray>();
+        var typography = new AtomicReference<JSONArray>();
         runOnMainSync(() -> {
             try {
-                verifySeats();
-                verifyTitleBars();
-                highlights.set(HandHighlightMeasurement.verify(getTargetContext()));
+                if (!cardsOnly) {
+                    verifySeats();
+                    verifyTitleBars();
+                    highlights.set(HandHighlightMeasurement.verify(getTargetContext()));
+                }
+                typography.set(CardTypographyMeasurement.verify(getTargetContext()));
             }
             catch (Exception failure) { error.set(failure); }
         });
         try {
             var output = new JSONObject().put("cases", cases).put("gameTitleBars", headers).put("failures", failures);
             if (highlights.get() != null) output.put("cardHighlights", highlights.get());
+            if (typography.get() != null) output.put("cardTypography", typography.get());
             if (error.get() != null) output.put("error", error.get().toString());
             result.putString("stream", "\nATF_NATIVE_SEATS=" + output + "\n");
         } catch (org.json.JSONException failure) {
