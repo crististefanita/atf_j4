@@ -41,4 +41,4 @@ Măsurătorile anterioare ale glifelor sunt separate de instalarea și acceptan�
 
 Nouă grupuri de componente finalizate au fost păstrate din checkpoint-ul validat; grupul de transport a fost reluat cu argumentul JVM de domeniu, fără text suplimentar în fluxuri. Execuția Android folosește API 28 la cele trei rezoluții portret declarate; alte versiuni Android au calificare separată.
 
-[Chitanța profilului](supplemental/component-runtime-profile.json) · [Manifest](../release-validation.json) · [Strategia de testare](../../../docs/testing/README.md)
+[Chitanța profilului](supplemental/component-runtime-profile.json) · [Manifest](../release-validation.json) · [Catalogul versiunilor](../../README.md) · [Strategia de testare](../../../docs/testing/README.md)
