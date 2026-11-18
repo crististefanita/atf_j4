@@ -37,6 +37,15 @@ test('a qualification policy edit affects governance and leaves the game build e
   assert.deepEqual(selection.requiredE2eGroups, []);
 });
 
+test('a bilingual review record reruns governance without replaying unchanged game or device tests', () => {
+  const file='config/documentation-editions.json';
+  const selection=deriveReleaseTestScope(new Map([[file,'old']]),new Map([[file,'new']]),groups);
+  assert.deepEqual(selection.runComponentGroups,['atf-tests']);
+  assert.deepEqual(selection.requiredE2eGroups,[]);
+  const changedRuntime=deriveReleaseTestScope(new Map([[bid,'old']]),new Map([[bid,'new'],[file,'new']]),groups);
+  assert.deepEqual(changedRuntime.requiredE2eGroups,['signed-release-auto-game','signed-release-bidding']);
+});
+
 test('Gradle component checkpoint and audit changes keep qualification offline', () => {
   const changes = ['whist-lab-app/gradle/component-audit.gradle',
     'whist-lab-app/test-audit/src/testFixtures/java/atf/gradle/audit/verification/GradleTaskCheckpoint.java'];

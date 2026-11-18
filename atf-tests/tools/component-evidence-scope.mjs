@@ -7,6 +7,7 @@ export function changedInputs(candidate, previous) {
   return [...paths].filter(file => candidate.get(file) !== previous.get(file)).sort();
 }
 const ragPolicy = 'config/release-platform-rag-policy.json';
+const documentationReview = 'config/documentation-editions.json';
 const disposableAndroidUserRunner = 'scripts/Invoke-AtfAndroidDisposableUser.ps1';
 const androidDeviceHarness = new Set([
   'scripts/AtfAndroidPackageRegistration.ps1',
@@ -51,6 +52,6 @@ export function componentEvidenceScope(group, releaseInputs, executionInputs) {
   const changed = changedInputs(releaseInputs, executionInputs);
   const outsideSuite = independentChange.get(group) ?? (() => false);
   const affected = changed.filter(file => !(outsideSuite(file)
-    || (independentChange.has(group) && (file === ragPolicy || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
+    || (independentChange.has(group) && (file === ragPolicy || file === documentationReview || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
   return {decision: affected.length ? 'RUN' : changed.length ? 'REUSE' : 'MATCH', changed, affected};
 }
