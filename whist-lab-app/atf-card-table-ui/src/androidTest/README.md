@@ -2,6 +2,8 @@
 
 ## Pe scurt
 
+Selectează doar componenta modificată pentru tipografia cărților cu `adb shell am instrument -w -e component cards ro.cardtable.ui.test/ro.cardtable.ui.seat.SeatFrameComponentInstrumentation`. Verifică toate rangurile și simbolurile la dimensiunile din mână și de pe masă, cu scările fontului 1, 1,5 și 2, apoi scrie planșele în directorul extern al aplicației de test. Selecția implicită include și chenarele, antetul și marcajele.
+
 Testele instrumentate verifică geometria reală a rândurilor în layout-ul Android, pentru dimensiuni și scalări de font reprezentative.
 
 Matricea măsoară componentele Android comune la 3–6 locuri, 240, 320 și 393 dp, cu font normal, 1,5× și 2×. Numele cu diacritice, statisticile Whist, etichetele complete și simbolurile Δ/Σ intră în același chenar.
