@@ -70,20 +70,32 @@ public final class WhistSurfaceContract {
                                 Math.round(Math.round(50 * scale) * density), nativeCenter,
                                 Math.round(viewport.regionGapDp() * density), Math.round(viewport.minimumBoardHeightDp() * density),
                                 Math.round(TableLayoutMetrics.HUMAN_HAND_CLEARANCE_DP * density), true);
-                        var nativePlan = nativeBoard.plan(Math.round(width * density),
-                                Math.round(playing.boardHeight() * density), 0);
+                        // BoardLayout.onMeasure reserves its own rounded physical minimum before onLayout.
+                        int nativeHeight = Math.max(nativeBoard.requiredHeight(0), Math.round(playing.boardHeight() * density));
+                        var nativePlan = nativeBoard.plan(Math.round(width * density), nativeHeight, 0);
+                        // Inset/placement integer divisions lose up to two layout units in each renderer.
+                        // Dimension errors below accumulate only where the board actually repeats them.
+                        float bound = density == 1f ? 0f : 2f + 2f / density
+                                + 2 * Math.abs(nativeBoard.seatHeight() / density - Math.round(50 * scale))
+                                + Math.abs(nativeCenter.reservedHeight() / density - center.reservedHeight())
+                                + (players >= 5 ? 6 : 4) * Math.abs(nativeBoard.gap() / density - viewport.regionGapDp())
+                                + Math.abs(nativeBoard.handClearance() / density - TableLayoutMetrics.HUMAN_HAND_CLEARANCE_DP);
                         if (mode == GameMode.ROMANIAN_WHIST && players == 4 && width == 414 && cards == 4
                                 && scale == 1f && density == 2.75f)
                             examples.add(Map.of("viewportHeight", viewportHeight, "web", playing.board(), "nativePixels", nativePlan,
-                                    "density", density, "biddingSeats", bidding.board().seats()));
+                                    "density", density, "roundingBoundDp", bound, "biddingSeats", bidding.board().seats()));
                         for (int seat = 0; seat < players; seat++) {
                             var expected = playing.board().seats().get(seat);
                             var observed = nativePlan.seats().get(seat);
-                            close(expected.left(), observed.left() / density);
-                            close(expected.top(), observed.top() / density);
-                            close(expected.right(), observed.right() / density);
-                            close(expected.bottom(), observed.bottom() / density);
+                            close(expected.left(), observed.left() / density, bound);
+                            close(expected.top(), observed.top() / density, bound);
+                            close(expected.right(), observed.right() / density, bound);
+                            close(expected.bottom(), observed.bottom() / density, bound);
                         }
+                        close(playing.board().center().left(), nativePlan.center().left() / density, bound);
+                        close(playing.board().center().top(), nativePlan.center().top() / density, bound);
+                        close(playing.board().center().right(), nativePlan.center().right() / density, bound);
+                        close(playing.board().center().bottom(), nativePlan.center().bottom() / density, bound);
                     }
                     var nativeHand = ro.whistlab.app.hand.HandLayoutMetrics.fan(cards, width, 1f, scale, Math.round(22 * scale));
                     equal(nativeHand.width(), playing.hand().width(), "Hand width");
@@ -151,8 +163,9 @@ public final class WhistSurfaceContract {
                 "expected", "Rejected taps, stale expiry, legal highlights and single deposit follow the same state machine");
     }
 
-    private static void close(float expected, float actual) {
-        if (Math.abs(expected - actual) > 2f) throw new AssertionError("Density conversion: " + expected + " != " + actual);
+    private static void close(float expected, float actual, float bound) {
+        if (Math.abs(expected - actual) > bound + .0001f)
+            throw new AssertionError("Density conversion: " + expected + " != " + actual + ", derived rounding bound " + bound);
     }
     private static void equal(Object expected, Object actual, String label) {
         if (!expected.equals(actual)) throw new AssertionError(label + ": " + expected + " != " + actual);

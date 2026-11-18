@@ -191,7 +191,7 @@ Whist folosește aceeași politică nativă a mesei prin [WhistBoardAdapter](whi
 | Frontieră de componentă | Contract verificat |
 |---|---|
 | Geometria mesei | Toate modurile, 3–6 locuri, lățimi compacte și mari, 1–17 cărți și text mărit; licitarea și jocul păstrează aceleași ancore ale jucătorilor. |
-| Adaptarea unităților | Normalizarea densității Android la coordonatele logice Web, cu toleranță limitată pentru rotunjire. Zoomul desktop rămâne în adaptorul ferestrei. |
+| Adaptarea unităților | Normalizarea densității Android la coordonatele logice Web. Limita de rotunjire ține cont de conversiile repetate ale dimensiunilor și de plasarea întreagă în fiecare renderer; la densitate unitară, coordonatele trebuie să coincidă exact. Zoomul desktop rămâne în adaptorul ferestrei. |
 | Prezentarea cărților | Cele 52 de combinații rang/culoare păstrează marcajele, rolul culorii și proporțiile prin adaptoarele reale ale mâinii. |
 | Interacțiune | Scenariul comun verifică refuzul, evidențierile legale, expirarea întârziată și o singură depunere acceptată; cadrele colectării sunt comparate prin ambele adaptoare. |
 | Limita acceptanței | Componentele execută cod portabil de producție, nu View-uri Android sau rasterizarea fonturilor din browser. Acceptanța vizuală pe același dispozitiv rămâne separată. |
