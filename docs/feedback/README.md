@@ -35,6 +35,7 @@ The 1–100 score expresses the recommended order of work, not the quality or pe
 | ACH-01 | P1 | 90 | Qualify on APK restoration of position and selection from Achievements, then resume notifications after recreation of activity. [Register](ATF_Achievements.md) |
 | AND-03 | P1 | 89 | Qualify API 37, navigation of the system, resumption, enlarged fonts and memory on an identified device. [Register](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publish large suites within the declared limit of the heap, without repeated copies of HTML and without losing JUnit or comparisons to failure. [Register](ATF_Reporting.md#rpt-bounded-report-heap---safe-completion-for-large-suites) |
+| RAG-15 | P1 | 87 | Exclude private signing material from qualification source snapshots; verify Git reconstruction with a local key present and reject unexpected source additions. [Register](ATF_Governance.md#release-qualification-boundaries) |
 | UI-01 | P1 | 86 | Qualify header, boxes and notifications on consumer APKs and check the name's entry of Unicode. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
 | RAG-11 | P2 | 84 | Separate immutable APK/runtime provenance from the validator revision, preserving strict rejection of changed game inputs. [Register](ATF_Governance.md#release-qualification-boundaries) |
 | RAG-13 | P2 | 83 | Finalize the publication payload before collecting mutable observations; resolve the qualified tag locally and resume only the invalidated check. [Register](ATF_Governance.md#release-launcher-and-finalization) |
