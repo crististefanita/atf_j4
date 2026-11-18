@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {test} from 'node:test';
 import {checkout} from './release-git-fixture.mjs';
-import {syncLocalRelease} from './local-release-sync.mjs';
+import {syncLocalRelease, verifyLocalRelease} from './local-release-sync.mjs';
 import {verifyGitSnapshot} from './verify-release-git-snapshot.mjs';
 
 test('materializes only the current published release and preserves bytes', async t => {
@@ -61,4 +61,24 @@ test('rotates the local copy to the next current edition', async t => {
   const proof = await verifyGitSnapshot(next);
   assert.equal((await syncLocalRelease({...next, proof, destination, stagingParent})).status, 'SYNCED');
   assert.deepEqual((await fs.readdir(destination)).sort(), ['0.21.5', 'README.md', 'index.json']);
+});
+
+test('delivery completion requires the newest local edition, exact bytes and no extra version', async t => {
+  const old=await checkout(t), next=await checkout(t,{version:'0.21.10'});
+  const stagingParent=path.dirname(old.repository), destination=path.join(stagingParent,'release');
+  const prior=await verifyGitSnapshot(old), proof=await verifyGitSnapshot(next);
+  assert.equal(proof.localReleaseRequired,true);assert.equal(proof.cleanupEligible,false);
+  await syncLocalRelease({...old,proof:prior,destination,stagingParent});
+  const inspect=()=>verifyLocalRelease({repository:next.repository,proof,destination});
+  await assert.rejects(inspect,/LOCAL_RELEASE_NOT_CURRENT/);
+  const installed=await syncLocalRelease({...next,proof,destination,stagingParent});
+  assert.equal(installed.verification.status,'PASS');
+  assert.equal((await inspect()).version,'0.21.10');
+  assert.deepEqual((await fs.readdir(destination)).sort(),['0.21.10','README.md','index.json']);
+  await fs.mkdir(path.join(destination,'0.21.9'));
+  await assert.rejects(inspect,/LOCAL_RELEASE_MODIFIED_INVENTORY/);
+  await fs.rmdir(path.join(destination,'0.21.9'));
+  const report=path.join(destination,'0.21.10','reports/report.html');
+  await fs.writeFile(report,'modified');
+  await assert.rejects(inspect,/LOCAL_RELEASE_PAYLOAD_HASH/);
 });

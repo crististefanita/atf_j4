@@ -14,6 +14,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'AtfAndroidPreflight.ps1')
+. (Join-Path $PSScriptRoot 'AtfAndroidPackageRegistration.ps1')
 Import-Module (Join-Path $PSScriptRoot '../atf-test-android/tools/AndroidDeviceSetup.psm1') -Force
 $run = [IO.Path]::GetFullPath($RunRoot)
 $sourceRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -114,21 +115,15 @@ if ($Phase -ceq 'Prepare') {
         $quieted = @()
         foreach ($background in @('com.google.android.gms','com.google.android.gsf','com.android.vending',
                 'com.google.android.googlequicksearchbox','com.google.android.apps.docs','com.google.android.apps.maps',
-                'com.google.android.calendar')) {
+                'com.google.android.calendar','com.google.android.setupwizard','com.google.android.sdksetup',
+                'com.google.android.apps.photos','com.google.android.gm','com.google.android.youtube',
+                'com.google.android.videos','com.google.android.apps.wallpaper')) {
             if (($installed -split "\r?\n") -ccontains "package:$background") {
                 $disabled = Invoke-DeviceShell @('pm','disable-user','--user',[string]$createdUser,$background)
                 if ($disabled -notmatch 'new state: disabled-user') { throw "Could not quiet $background for test user $createdUser." }
                 $quieted += $background
             }
         }
-
-        Invoke-DeviceShell @('am','switch-user',[string]$createdUser) | Out-Null
-        $deadline = [DateTime]::UtcNow.AddSeconds(30)
-        while ((Get-CurrentUserId) -ne $createdUser -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
-        if ((Get-CurrentUserId) -ne $createdUser) { throw 'Android did not switch to the disposable secondary user.' }
-        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','secure','user_setup_complete','1') | Out-Null
-        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','system','screen_off_timeout','2147483647') | Out-Null
-        Unlock-DisposableUser
 
         $before = Invoke-DeviceShell @('pm','list','packages','--user',[string]$createdUser,$packageName)
         if ($before -match "(?m)^package:$([regex]::Escape($packageName))$") { throw 'The new Android user already has Whist Lab installed.' }
@@ -139,22 +134,37 @@ if ($Phase -ceq 'Prepare') {
             $originalDigest = Invoke-DeviceShell @('sha256sum',$originalPackagePath)
             $matchingInstalledApk = $originalDigest.StartsWith("$ApkSha256 ", [StringComparison]::Ordinal)
         }
-        if ($matchingInstalledApk) {
-            $installText = Invoke-DeviceShell @('cmd','package','install-existing','--user',[string]$createdUser,$packageName)
-            if (-not (Test-PackageInstalled $createdUser)) { throw "Could not enable the matching APK: $installText" }
-        } else {
-            $remoteApk = '/data/local/tmp/atf-whistlab-' + $LeaseId + '.apk'
-            try {
-                Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial | Out-Null
-                $push = Invoke-AtfAdbCommand -AdbExecutable $AdbExecutable -Arguments @('-s',$Serial,'push',$ApkPath,$remoteApk) `
-                    -ServerSocket $ServerSocket -TimeoutSeconds 90
-                if ($push.ExitCode -ne 0) { throw "Candidate APK transfer failed: $($push.Output)" }
-                $installText = Invoke-DeviceShell -Arguments @('pm','install','-r','--user',[string]$createdUser,$remoteApk) -TimeoutSeconds 120
-                if ($installText -notmatch '(?m)^Success\s*$') { throw "Candidate APK installation failed: $installText" }
-            } finally {
-                Invoke-DeviceShell @('rm','-f',$remoteApk) | Out-Null
+        $registration = Invoke-AtfVerifiedPackageRegistration -Install {
+            if ($matchingInstalledApk) {
+                $installText = Invoke-DeviceShell -Arguments @('cmd','package','install-existing','--user',[string]$createdUser,$packageName) -TimeoutSeconds 120
+                if (-not (Test-PackageInstalled $createdUser)) { throw "Could not enable the matching APK: $installText" }
+            } else {
+                $remoteApk = '/data/local/tmp/atf-whistlab-' + $LeaseId + '.apk'
+                try {
+                    Get-AtfActiveDeviceLease $LeasePath $LeaseId $Serial | Out-Null
+                    $push = Invoke-AtfAdbCommand -AdbExecutable $AdbExecutable -Arguments @('-s',$Serial,'push',$ApkPath,$remoteApk) `
+                        -ServerSocket $ServerSocket -TimeoutSeconds 90
+                    if ($push.ExitCode -ne 0) { throw "Candidate APK transfer failed: $($push.Output)" }
+                    $installText = Invoke-DeviceShell -Arguments @('pm','install','-r','--user',[string]$createdUser,$remoteApk) -TimeoutSeconds 120
+                    if ($installText -notmatch '(?m)^Success\s*$') { throw "Candidate APK installation failed: $installText" }
+                } finally {
+                    Invoke-DeviceShell @('rm','-f',$remoteApk) | Out-Null
+                }
             }
-        }
+            } -Observe {
+            if (-not (Test-PackageInstalled $createdUser)) { throw 'ANDROID_PACKAGE_NOT_REGISTERED' }
+            $path = Get-PackagePath $createdUser
+            $digest = Invoke-DeviceShell @('sha256sum',$path)
+            [pscustomobject]@{path=$path;sha256=($digest -split '\s+')[0]}
+        } -ExpectedHash $ApkSha256
+        Invoke-DeviceShell @('locksettings','set-disabled','--user',[string]$createdUser,'true') | Out-Null
+        Invoke-DeviceShell @('am','switch-user',[string]$createdUser) | Out-Null
+        $deadline = [DateTime]::UtcNow.AddSeconds(30)
+        while ((Get-CurrentUserId) -ne $createdUser -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
+        if ((Get-CurrentUserId) -ne $createdUser) { throw 'Android did not switch to the disposable secondary user.' }
+        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','secure','user_setup_complete','1') | Out-Null
+        Invoke-DeviceShell @('settings','--user',[string]$createdUser,'put','system','screen_off_timeout','2147483647') | Out-Null
+
         try { Unlock-DisposableUser }
         catch { throw "Android relocked the disposable user during APK installation: $($_.Exception.Message)" }
 
@@ -170,6 +180,7 @@ if ($Phase -ceq 'Prepare') {
             originalPackageWasInstalledBefore=$originalPackageWasInstalled
             screenOffTimeoutMs=2147483647;screenUnlocked=$true
             backgroundPackagesDisabled=$quieted
+            lockScreenDisabledForFreshUser=$true;packageRegistration=$registration
             userName=$name;observedApi=$readiness.api;displayProfile=$readiness.displayProfile
             installedPath=$apkPathOnDevice;installedApkSha256=$ApkSha256;observedUtc=[DateTime]::UtcNow.ToString('o')
         }

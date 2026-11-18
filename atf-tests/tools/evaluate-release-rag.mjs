@@ -396,6 +396,12 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
     planDoc.lines.get(pointer) ?? 1), embedded: true, encoding: 'base64-utf8'});
 
   const policyContract = policy.schemaVersion === 1
+      && (!releaseVersionAtLeast(manifest.release?.versionName ?? '0.0.0', '0.21.10')
+        || policy.localReleaseProjection?.entrypoint === 'atf-tests/tools/verify-release-git-snapshot.mjs'
+          && policy.localReleaseProjection?.requiredOption === '--local-release'
+          && policy.localReleaseProjection?.directory === 'release'
+          && policy.localReleaseProjection?.onlyCurrentPublishedVersion === true
+          && policy.localReleaseProjection?.cleanupRequiresVerifiedProjection === true)
       && policy.ragEvaluator?.entrypoint === 'atf-tests/tools/evaluate-release-rag.mjs'
       && isDeepStrictEqual({...policy.ragEvaluator?.testScope}, scopePolicy)
       && isDeepStrictEqual({...policy.ragEvaluator?.githubRetention}, githubRetentionPolicy)

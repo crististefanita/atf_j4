@@ -88,7 +88,13 @@ test('an unchanged layout cannot hide unreviewed Romanian or English prose', t =
 
   git('switch', 'main_RO');
   write('docs/rules.md', '# Reguli modificate\n');
-  commit('Romanian-only edit');
-  assert.deepEqual(verifyReviewedDocumentation(root, pinned).problems,
-    ['Documentation changed since the recorded bilingual review.']);
+  const newerRomanian = commit('Romanian-only edit');
+  assert.deepEqual(verifyReviewedDocumentation(root, pinned).problems, [], 'A later branch edit cannot rewrite the reviewed release pair');
+  assert.notDeepEqual(inspectDocumentationEditions(root,pinned,newerRomanian).review,reviewed.review,
+    'The current pair still requires a new review after changing Romanian prose');
+  const unrelated = git('-c','user.name=Component Test','-c','user.email=component@example.invalid',
+    'commit-tree',git('rev-parse','HEAD^{tree}'),'-m','unrelated history');
+  git('update-ref','refs/heads/main_RO',unrelated);
+  assert.throws(()=>verifyReviewedDocumentation(root,pinned),/Cannot read documentation Git input/,
+    'An unrelated replacement branch cannot publish the pinned Romanian commit');
 });

@@ -111,6 +111,8 @@ Reluați verificarea cu `--recipe $GitProof` și o ieșire nouă dacă a fost fo
 
 ## Sincronizarea dosarului local cu versiunea curentă
 
+Livrarea este completă numai când proiecția locală `release/` conține cea mai nouă ediție publicată din catalogul canonic. Local se păstrează exact o versiune; catalogul Git canonic și GitHub păstrează ultimele două. Începând cu 0.21.10, verificatorul Git cere `--local-release` după verificarea publicării și refuză eligibilitatea curățării fără o proiecție locală verificată. Receipt-ul leagă commitul catalogului, SHA-256 al manifestului și fiecare fișier păstrat; o versiune veche, un director suplimentar, un fișier lipsă sau un octet modificat blochează finalizarea.
+
 După verdictul postpublicare și confirmarea surselor din Git, adăugați `--local-release` la verificatorul Git pentru dosarul `release` al unui alt checkout. În exemplu, `$ProjectRoot` este checkout-ul canonic, iar `$LocalCheckout` este checkout-ul care primește copia. Scrieți dovada într-un fișier nou din directorul extern al rulării.
 
 ```powershell
