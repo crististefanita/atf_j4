@@ -6,7 +6,7 @@ Whist Lab is a local trick-taking game for 3–6 players, with an automation tes
 
 ## Game
 
-- **[Download APK 0.21.9](https://github.com/crististefanita/whist/releases/download/v0.21.9/WhistLab-0.21.9.apk)**
+- **[Download APK 0.21.10](https://github.com/crististefanita/whist/releases/download/v0.21.10/WhistLab-0.21.10.apk)**
 - **[Play Whist online](https://crististefanita.github.io/whist/)**
 
 ## Module map
