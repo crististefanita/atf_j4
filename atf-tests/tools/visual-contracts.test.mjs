@@ -19,6 +19,7 @@ test('registered visual contracts retain live source and declared component owne
     ...policy.ragEvaluator.introducedComponentGroupsByPlatform.android.map(row => row.group)];
   const collections = await fs.readFile(path.join(project, 'config/gradle-app-collections.properties'), 'utf8');
   const audit = await fs.readFile(path.join(project, 'config/gradle-audit-collections.properties'), 'utf8');
+  const guide = await fs.readFile(path.join(project, 'docs/testing/ATF_ReleaseQualification.md'), 'utf8');
   assert.match(collections, /^theme=display\r?$/m);
   for (const owner of ['ro.whistlab.app.theme.GameHeaderTypographyComponentTest', 'ro.cardtable.ui.cards.CardTypographyComponentTest']) {
     assert.ok(audit.split(/\r?\n/).includes(owner + '=component'), owner);
@@ -32,6 +33,14 @@ test('registered visual contracts retain live source and declared component owne
     assert.equal(selected.status, 'PROVEN', file);
     assert.ok(selected.e2eGroups.includes('signed-release-smoke'));
     assert.ok(selected.e2eGroups.includes('responsive-ui-sanity'));
+    const row = guide.split(/\r?\n/).find(line => line.startsWith('|') && line.includes('`' + selected.allowedConstants[0] + '`'));
+    assert.ok(row, 'The owning guide must document ' + selected.id);
+    const codes = text => [...text.matchAll(/`([^`]+)`/g)].map(match => match[1]).sort();
+    const documented = line => line.split('|').slice(1, -1).slice(1).map(codes);
+    const expected = [selected.allowedConstants, selected.componentGroups, selected.e2eGroups].map(values => [...values].sort());
+    assert.deepEqual(documented(row), expected, 'Documented fields, component owners and native gates must match live policy');
+    assert.throws(() => assert.deepEqual(documented(row.replace('`signed-release-smoke`', '`wrong-native-flow`')), expected),
+      {code: 'ERR_ASSERTION'}, 'A changed native gate in documentation cannot pass the factual contract');
   }
 });
 
