@@ -27,6 +27,15 @@ class TestChangeReviewComponentTest {
     private static final String NEW_TEST = "nested/module/src/test/java/demo/Test nou ș.java";
     private static final String GATE = "config/atf-test-suites.json";
 
+    @Test void theSigningExportPolicyRequiresAnExplicitReview(@TempDir Path root) throws Exception {
+        var repo = new TestChangeGitFixture(root);
+        String policy = "scripts/AtfSigningSourcePolicy.ps1";
+        repo.put(policy, "function Test-AtfPrivateSigningInput { $true }\n");
+        AuditedAssertions.assertEquals(List.of(uncovered("A", policy, repo.base)), check(repo).diagnostics());
+        repo.put(FEEDBACK, repo.control("SIGNING-EXPORT", "ACTIVE", repo.base, VALID, false, policy));
+        AuditedAssertions.assertEquals(List.of(), check(repo).diagnostics());
+    }
+
     @Test void theComponentJvmProfileCannotChangeWithoutAReviewedControl(@TempDir Path root) throws Exception {
         var repo = new TestChangeGitFixture(root);
         String launcher = "scripts/AtfComponentJvm.ps1";

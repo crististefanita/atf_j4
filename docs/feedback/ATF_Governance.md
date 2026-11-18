@@ -57,7 +57,6 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 
 | Prioritate | Lacună și responsabil | Criteriu de închidere |
 |---|---|---|
-| P1 | RAG-15: inventarul surselor enumeră fișierele private de semnare ignorate când checkout-ul canonic conține o cheie locală. Un worktree de documentație nu trebuie să conțină acea cheie. | Exclude explicit materialul privat de semnare din copierea și amprentarea surselor, păstrând identitatea certificatului public. Testele controlate trebuie să califice aceeași sursă Git cu și fără cheie locală, să refuze intrările noi fără legătură și să țină fișierele private în afara staging-ului și dovezilor publicate. |
 | P2 | Reutilizarea nativă leagă întregul snapshot al surselor, inclusiv instrumentele de calificare. O corecție doar în validator poate invalida dovezi ale unui APK neschimbat. [Admitere](../../atf-tests/tools/prepare-android-e2e.mjs) | Înregistrează intrările motorului separat de revizia validatorului. Reutilizează doar cu APK, surse ale jocului, scenariu, profil de afișare și capturi originale identice. Cazurile controlate trebuie să refuze cod al jocului, binare sau capturi schimbate și proveniența nepotrivită a validatorului. |
 
 ## Lansarea și finalizarea release-ului
