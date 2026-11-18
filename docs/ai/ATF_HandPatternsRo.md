@@ -57,7 +57,7 @@ Extractorul verifică aceste limite locale ale cărților și parametrilor. Apel
 Din rădăcina proiectului, cu Node.js și fișiere externe alese explicit:
 
 ```powershell
-$inputFile = Read-Host 'Fișierul JSON al observației permise'
+$inputFile = Read-Host 'JSON file containing the permitted observation'
 node whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns-cli.mjs describe $inputFile
 ```
 
@@ -71,8 +71,8 @@ Calibratorul citește toate fișierele JSON din `games/development` ale arhivei 
 4. Scrie într-un director nou YAML-ul calibrat, inventarul complet al contextelor, hash-urile surselor și înregistrarea comparațiilor.
 
 ```powershell
-$archive = Read-Host 'Arhiva externă pentru calibrarea development'
-$output = Read-Host 'Director extern nou; părintele trebuie să existe'
+$archive = Read-Host 'External development calibration archive'
+$output = Read-Host 'New external directory; its parent must exist'
 node whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs $archive $output
 ```
 
@@ -88,4 +88,4 @@ node --test whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.test.mjs whi
 
 [Configurarea regulilor](ATF_RulesConfiguration.md) deține consumatorul și domeniul activării, iar [protocolul offline](../learning/README.md) deține promovarea. Indiciul, estimarea simulată și certificatul finit au niveluri de garanție distincte.
 
-[English guide](ATF_HandPatternsEn.md) · [Joc contextual](ATF_ContextualPlay.md) · [Corpus și integritate](../learning/ATF_Corpus.md)
+[Ghid complementar](ATF_HandPatternsEn.md) · [Joc contextual](ATF_ContextualPlay.md) · [Corpus și integritate](../learning/ATF_Corpus.md)

@@ -95,19 +95,19 @@ Aceasta este o structură de redactare; lansatoarele curente nu interpretează s
 
 ```yaml
 lesson:
-  id: "<identitate stabilă>"
-  domain: "<joc sau produs și versiunea regulilor>"
-  scope: "<precondiții și rol>"
-  observation: "<informație permisă actorului>"
-  claim: "<proprietate verificabilă>"
-  claim_status: "<confirmat | observat | presupus>"
-  contract_owner: "<responsabil și versiunea contractului>"
-  oracle: "<sursă independentă a așteptării>"
-  boundaries: "<când proprietatea nu se aplică>"
-  negative_control: "<defect detectabil și vecin valid>"
-  adapter: "<date și acțiuni specifice domeniului>"
-  data_identity: "<generator, versiune, partiție și expunere>"
-  promotion: "<criteriu fixat înaintea evaluării noi>"
+  id: "<stable identity>"
+  domain: "<game or product and rules version>"
+  scope: "<preconditions and role>"
+  observation: "<information visible to the actor>"
+  claim: "<verifiable property>"
+  claim_status: "<confirmed | observed | assumed>"
+  contract_owner: "<owner and contract version>"
+  oracle: "<independent source of expected results>"
+  boundaries: "<when the property does not apply>"
+  negative_control: "<detectable defect and valid neighbour>"
+  adapter: "<domain-specific data and actions>"
+  data_identity: "<generator, version, partition and exposure>"
+  promotion: "<criterion fixed before fresh evaluation>"
 ```
 
 Pentru testarea unui produs nou, înlocuiți tura cu operația, scorul cu invariantă sau criteriu de acceptare și rolul cu permisiunile utilizatorului. O ipoteză încă neconfirmată rămâne investigație; responsabilul contractului clarifică așteptarea înaintea verdictului automat.

@@ -48,7 +48,7 @@ Identitatea este calculată din JSON canonic cu chei sortate și SHA-256. Căile
 Inițializarea cere un manifest revizuit: `reviewedBy` și lista `exposures`. Fiecare interval istoric declară `firstSeed`, `seeds` și `evidenceSha256`; sursele și inventarul importului rămân în arhiva externă. O listă goală este admisă numai pentru un mediu revizuit ca nou.
 
 ```powershell
-node .\whist-lab-app\ai-lab\tools\qualification\whist-evaluation-registry.mjs initialize '<registru-comun>' '<istoric-revizuit.json>' '<chitanță-nouă.json>'
+node .\whist-lab-app\ai-lab\tools\qualification\whist-evaluation-registry.mjs initialize '<shared-registry>' '<reviewed-history.json>' '<new-receipt.json>'
 ```
 
 Inițializarea repetată este refuzată. Manifestele vechi, rezervările de sub corpus și partidele deja văzute se importă conservator; lipsa unui fișier nu demonstrează că datele nu au fost expuse. Importul istoricului nu schimbă retrospectiv calificarea experimentelor.

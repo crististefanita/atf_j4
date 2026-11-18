@@ -18,7 +18,7 @@ flowchart LR
 <details>
 <summary>Legendă: execuție și publicare</summary>
 
-O regulă JUnit deține invocarea, inclusiv fixture-urile before/after. Durata acestui statement se măsoară înaintea publicării. Gradle păstrează temporar XML-ul pentru numărare independentă; livrarea reține un HTML pentru fiecare selecție, după confruntarea exactă.
+O regulă JUnit deține invocarea, inclusiv fixture-urile `before`/`after`. Durata acestui statement se măsoară înaintea publicării. Gradle păstrează temporar XML-ul pentru numărare independentă; livrarea reține un HTML pentru fiecare selecție, după confruntarea exactă.
 
 </details>
 

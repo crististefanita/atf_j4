@@ -89,11 +89,11 @@ Necesarul, cărțile publice și oportunitățile se schimbă după acțiuni; pa
 <summary>Forma aditivă și corecția experimentală de presiune</summary>
 
 ```text
-scor_contextual(acțiune, stare) =
-  suma_j θ_j × φ_j(acțiune, stare)
+context_score(action, state) =
+  sum_j θ_j × φ_j(action, state)
 
 θ_j = parametru al unei politici identificate
-φ_j = caracteristică definită și normalizată din informația permisă
+φ_j = feature defined and normalized from permitted information
 ```
 
 Această formă descrie un model aditiv numai acolo unde codul îl implementează. Prioritățile lexicografice și filtrele de legalitate au alte semantici, iar indiciile care se suprapun nu se însumează automat.
@@ -101,9 +101,9 @@ Această formă descrie un model aditiv numai acolo unde codul îl implementeaz�
 Definițiile necesarului, oportunităților și dezechilibrului sunt în [modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia). Modelul experimental de [presiune](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/research/bidding/ContractPressure.java) ajustează densitatea prin dezechilibru, progres și oportunități. El are ramuri distincte pentru necesar zero, rezervă suficientă și necesitatea tuturor levatelor, cu ponderi fixe asupra unor caracteristici care evoluează.
 
 ```text
-ρ = clamp(necesar / oportunități, 0, 1)
-progres = 1 − oportunități / mărimea_inițială
-ρ_contextual = clamp(ρ + β × (1 + progres) × Δ / oportunități, 0, 1)
+ρ = clamp(needed_tricks / remaining_opportunities, 0, 1)
+progress = 1 − remaining_opportunities / initial_hand_size
+ρ_context = clamp(ρ + β × (1 + progress) × Δ / remaining_opportunities, 0, 1)
 ```
 
 Corecția contextuală se aplică doar în ramura eligibilă a modelului experimental. Formula nu este activă implicit în rollout-ul Hard acceptat, iar dezechilibrul semnat Δ rămâne constant în timpul unei mâini.
@@ -126,15 +126,15 @@ Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Mo
 <summary>Plauzibilitate, regularizare și mărimea efectivă a eșantionului</summary>
 
 ```text
-μ = clamp(scală × θ · φ(mână_inițială, prefix), 0, mărime)
-p(licitare legală) =
-  masă_uniformă / număr_licitații_legale
-  + masă_model × distribuție_normalizată(licitare, μ, dispersie)
+μ = clamp(scale × θ · φ(initial_hand, prefix), 0, hand_size)
+p(legal_bid) =
+  uniform_mass / legal_bid_count
+  + model_mass × normalized_distribution(bid, μ, dispersion)
 
 pondere_lume =
-  limitare(produsul rapoartelor de plauzibilitate ale licitațiilor observate)
+  clamp(product of likelihood ratios for observed bids)
 
-eșantion_efectiv = suma_ponderilor² / suma_pătratelor_ponderilor
+effective_sample_size = sum_weights² / sum_squared_weights
 ```
 
 - Regula ultimei licitații elimină numai valoarea interzisă legal.

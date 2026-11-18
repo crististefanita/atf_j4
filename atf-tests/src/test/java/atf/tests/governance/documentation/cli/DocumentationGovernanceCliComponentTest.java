@@ -104,7 +104,8 @@ class DocumentationGovernanceCliComponentTest {
     @Test void rejectsWrongRootsAndMissingOrOutOfScopeFiles() throws Exception {
         Path root = project();
         write(root, "target/README.md", "# Ieșire\n");
-        write(root, "other/fragment.md", "# Fragment\n");
+        write(root, "other/fragment.md", "# Fragment\n\n## Pe scurt\n\nDocument local.\n");
+        write(root, "other/not-markdown.txt", "Not documentation");
         for (String input : List.of("../README.md", "docs/../README.md", "docs//note.md",
                 "C:\\outside\\README.md", root.resolve("README.md").toString(), "missing.md")) {
             Command result = run(root, "--file", input);
@@ -112,14 +113,27 @@ class DocumentationGovernanceCliComponentTest {
             assertTrue(result.errors().contains("DOC-TARGET-PATH"), result.errors());
             assertTrue(result.out().isEmpty(), result.out());
         }
-        for (String input : List.of("target/README.md", "other/fragment.md")) {
+        for (String input : List.of("target/README.md", "other/not-markdown.txt")) {
             Command result = run(root, "--file", input);
             assertEquals(1, result.code(), input);
             assertTrue(result.errors().contains("DOC-TARGET-SCOPE"), result.errors());
         }
+        assertEquals(0, run(root, "--file", "other/fragment.md").code());
         assertTrue(run(temporary).errors().contains("DOC-ROOT"));
         assertTrue(run(root, "--file").errors().contains("Use:"));
         assertTrue(run(fixtureRoot("proiect gol")).errors().contains("DOC-INVENTORY-EMPTY"));
+    }
+
+    @Test void languageChecksIncludeNonReadmeGuidesAndUppercaseMarkdownExtensions() throws Exception {
+        Path root = project();
+        write(root, "notes/Guide.MD", "# Guide\n\n## Overview\n\nThis module preserves the source and its contracts before publication.\n");
+        Command selected = run(root, "--file", "notes/Guide.MD");
+        assertEquals(2, selected.code());
+        assertTrue(values(selected.json().path("diagnostics")).stream()
+                .anyMatch(row -> row.path("code").asText().equals("DOC-DOCUMENT-LANGUAGE")));
+        assertEquals(values(run(root).json().path("diagnostics")).stream()
+                .filter(row -> row.path("file").asText().equals("notes/Guide.MD")).toList(),
+                values(selected.json().path("diagnostics")));
     }
 
     @Test void usesTheSameContentAndFeedbackPoliciesOnExplicitFiles() throws Exception {

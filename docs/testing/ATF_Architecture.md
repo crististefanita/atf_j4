@@ -127,7 +127,7 @@ Rezultatele se păstrează în afara surselor. Testele unitare nu sunt obligate 
 - **Echivalență:** mapați cazul vechi la cazurile noi prin proprietate și identitate; păstrați situația nominală, refuzul și vecinul sănătos.
 - **Izolare:** fixture-ul schimbă intrarea ori observația controlată, iar așteptarea provine din regulă sau oracol independent. Nu folosiți rezultatul implementării ca expected.
 - **Ordine:** temporizarea injectată verifică succesiunea evenimentelor; un somn real sau un retry nu înlocuiește dovada opririi la eșec.
-- **Selecție:** rulați entry point-ul real al suitei și confruntați [inventarul execuției](ATF_Collections.md#inventarul-unei-selecții); fișierul mutat trebuie compilat și selectat efectiv.
+- **Selecție:** rulați punctul de intrare real al suitei și confruntați [inventarul execuției](ATF_Collections.md#inventarul-unei-selecții); fișierul mutat trebuie compilat și selectat efectiv.
 
 Componentele oracolului și sanity-ul nativ califică frontiere diferite. [Ghidul afișajului](ATF_Display.md) deține selecția nativă rămasă, iar [guvernanța schimbării testelor](../governance/ATF_TestChanges.md) deține retragerea cazurilor fără pierderea contractului.
 

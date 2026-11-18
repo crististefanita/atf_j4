@@ -14,7 +14,7 @@ import atf.console.ConsoleSettings;
 
 var console = AtfConsoleReporter.configuredStdout(
         new ConsoleSettings(true, false));
-console.info("Catalogul de scenarii a fost încărcat");
+console.info("The scenario catalog was loaded");
 ```
 
 `configuredStdout()` citește `atf.report.config` → `ATF_REPORT_CONFIG` → `atf.yaml/yml`; opțiunile sunt:

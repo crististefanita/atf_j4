@@ -43,8 +43,8 @@ Validatorul poate verifica proprietatea tuturor cărților după încheierea joc
 [Configurația corpusului](../../config/learning-corpus.json) indică arhiva și pointerul activ. [Validatorul](../../whist-lab-app/ai-lab/tools/corpus/whist-corpus.mjs) verifică regulile și scorul, iar [selectorul activ](../../whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs) controlează selecția.
 
 ```powershell
-$gamePath = Read-Host 'Fișierul JSON extern pentru replay'
-$expectedSha256 = Read-Host 'SHA-256 declarat în manifestul sursei'
+$gamePath = Read-Host 'External replay JSON file'
+$expectedSha256 = Read-Host 'SHA-256 declared in the source manifest'
 node whist-lab-app/ai-lab/tools/corpus/whist-corpus-cli.mjs replay $gamePath $expectedSha256
 node whist-lab-app/ai-lab/tools/corpus/whist-active-corpus.mjs verify-current
 ```

@@ -222,11 +222,11 @@ $payload = [IO.Path]::GetTempFileName()
 try {
     $status = curl.exe -q --fail --location --silent --show-error --max-time 60 `
         --proto '=https' --proto-redir '=https' --output $payload --write-out '%{http_code}' -- $downloadUrl
-    if ($LASTEXITCODE -ne 0 -or $status -ne '200') { throw "Descărcarea a returnat HTTP $status" }
+    if ($LASTEXITCODE -ne 0 -or $status -ne '200') { throw "Download returned HTTP $status" }
     $bytes = (Get-Item -LiteralPath $payload).Length
     $sha256 = (Get-FileHash -LiteralPath $payload -Algorithm SHA256).Hash.ToLowerInvariant()
     if ($bytes -ne $expected.apkBytes -or $sha256 -ne $expected.apkSha256) {
-        throw 'APK-ul descărcat diferă de manifest'
+        throw 'Downloaded APK differs from the manifest'
     }
     [pscustomobject]@{ HttpStatus = [int]$status; Bytes = $bytes; Sha256 = $sha256 }
 } finally {

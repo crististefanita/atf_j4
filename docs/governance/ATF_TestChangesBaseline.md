@@ -173,7 +173,7 @@ testChanges:
     status: VERIFIED
     base: 52270cdbff4a7234c2cc6581c910d3431105f76e
     expires: 2026-11-30
-    reason: Keep the exact flat binary inventory and require only the index plus four named usage guides; retain independent missing, directory and extra-file negatives, physical CodeSource and source/feedback ownership.
+    reason: Păstrează inventarul binar plat exact și cere doar indexul plus cele patru ghiduri de utilizare; păstrează refuzurile independente pentru fișiere lipsă, directoare și fișiere suplimentare, identitatea fizică CodeSource și responsabilitatea pentru surse și feedback.
     proof: 'mvn -B -ntp -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest,LibraryDocumentationExampleTest,DocumentationPolicyGovernanceTest#libraryMaintenanceFooterDoesNotExemptBodyOtherOwnersOrOtherFiles+libraryUsageGuidesAreGovernedAndKeepSourceOwnerOnlyInMaintenanceFooter test'
     paths:
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
@@ -236,7 +236,7 @@ testChanges:
     status: VERIFIED
     base: d46948264e7b35347ad812be1e67e9fba30eef05
     expires: 2026-11-30
-    reason: Require exactly four flat JAR/POM pairs plus the dedicated README and common producer ownership of library source and feedback; preserve physical binary identity, independent negative oracles and consumer acceptance.
+    reason: Cere exact patru perechi JAR/POM într-un singur director, README-ul dedicat și responsabilitatea producătorului comun pentru surse și feedback; păstrează identitatea binară fizică, oracolele negative independente și acceptanța consumatorului.
     proof: 'mvn -B -ntp -pl atf-tests -am -Dtest=PlatformLibraryContractTest,PlatformLibraryIntegrityTest -Dsurefire.failIfNoSpecifiedTests=false test'
     paths:
       - atf-tests/src/test/java/atf/libraries/PlatformLibraryContractTest.java
@@ -475,7 +475,7 @@ testChanges:
     status: VERIFIED
     base: 14c16ebf3b1dea52a15849f506ed81032bb55337
     expires: 2026-12-17
-    reason: Enforce the configured document orientation and reject the other edition without weakening structure or content checks.
+    reason: Impune secțiunea introductivă în limba configurată și respinge cealaltă ediție fără relaxarea verificărilor de structură sau conținut.
     proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationReadmeStructureGovernanceTest,DocumentationPolicyGovernanceTest,DocumentationGovernanceCliComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -493,7 +493,7 @@ testChanges:
     status: VERIFIED
     base: 007e3f660c4a2bf7dfa16cc1cb2c1996190c8020
     expires: 2026-12-17
-    reason: Enforce the configured document orientation and reject the other edition without weakening structure or content checks.
+    reason: Impune secțiunea introductivă în limba configurată și respinge cealaltă ediție fără relaxarea verificărilor de structură sau conținut.
     proof: 'mvn -o -pl atf-tests -am -Dtest=DocumentationReadmeStructureGovernanceTest,DocumentationPolicyGovernanceTest,DocumentationGovernanceCliComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
@@ -507,6 +507,66 @@ testChanges:
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationReadmeStructureGovernanceTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+```
+
+</details>
+
+<details>
+<summary>Limba ramurii și proveniența publicării originale</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-DOCUMENTATION-LANGUAGE
+    status: VERIFIED
+    base: 129a629bb65cfedf6032b503c1b826fba63d4a42
+    expires: 2026-12-18
+    reason: Verifică fiecare document Markdown în limba ramurii, inclusiv tabele, texte de diagrame și explicații YAML. Păstrează datele API și octeții publicării originale; confruntă ambele ediții cu declarațiile buildurilor și respinge proza amestecată, legăturile, comenzile și hash-urile modificate.
+    proof: 'mvn -pl atf-tests -am -Dtest=DocumentationLanguageComponentTest,DocumentationGovernanceCliComponentTest,DocumentedModuleMapGovernanceTest,ReleasePresentationGovernanceTest,DocumentationArchiveGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.language.DocumentationLanguageComponentTest#codeAndLinkTargetsRemainTechnicalDataWhileVisibleLabelsAreChecked
+        - atf.tests.governance.documentation.cli.DocumentationGovernanceCliComponentTest#acceptsSeveralExplicitFilesAndExcludesAnUnselectedDefect
+        - atf.tests.governance.documentation.factual.DocumentedModuleMapGovernanceTest#rootMapMatchesTheBuildDeclarations
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#everyHandoffKeepsSchematicNotesBoundToItsActualStateAndAsset
+        - atf.tests.governance.documentation.DocumentationArchiveGovernanceTest#translatedReleaseGuidesRetainTheOriginalDocumentsAtTheirPinnedGitCommit
+      negative:
+        - atf.tests.governance.documentation.language.DocumentationLanguageComponentTest#englishBranchRejectsShortForeignLabelsAndDiagramCaptions
+        - atf.tests.governance.documentation.language.DocumentationLanguageComponentTest#romanianBranchRejectsAnEnglishGuideOrOwnerHeading
+        - atf.tests.governance.documentation.factual.DocumentedModuleMapGovernanceTest#aMissingModuleAChangedScopeAndAnInvertedEdgeAreRejected
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#translatedPresentationKeepsTheReleaseStructureAssetsAndOriginalPointCount
+    paths:
+      - atf-test-android/src/test/README.md
+      - atf-test-android/src/test/java/atf/android/e2e/release/README.md
+      - atf-tests/src/main/java/atf/tests/documentation/DocumentationInventory.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationLanguageRules.java
+      - atf-tests/src/test/README.md
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationAnchorGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationArchiveGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/DocumentationPolicyGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/cli/DocumentationGovernanceCliComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMap.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/factual/DocumentedModuleMapGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/language/DocumentationLanguageComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidence.java
+      - atf-tests/tools/documentation-editions.mjs
+      - atf-tests/tools/documentation-editions.test.mjs
+      - atf-tests/tools/release-documentation-provenance.mjs
+      - atf-tests/tools/release-documentation-provenance.test.mjs
+      - atf-validation/src/test/README.md
+      - config/atf-governance-policy.json
+      - whist-lab-app/ai-lab/src/test/README.md
+      - whist-lab-app/app/src/androidTest/README.md
+      - whist-lab-app/app/src/main/java/ro/whistlab/app/README.md
+      - whist-lab-app/app/src/rasterTest/README.md
+      - whist-lab-app/app/src/test/README.md
+      - whist-lab-app/atf-card-table-ui/src/androidTest/README.md
+      - whist-lab-app/atf-card-table-ui/src/test/README.md
+      - whist-lab-app/game-core/src/test/README.md
+      - whist-lab-app/ios-bridge/src/test/README.md
+      - whist-lab-app/test-audit/src/test/README.md
+      - whist-lab-app/test-audit/src/testFixtures/README.md
 ```
 
 </details>

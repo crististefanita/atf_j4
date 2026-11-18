@@ -1,74 +1,74 @@
-# Honors, covers and contract safety
+# Onoruri, acoperiri și siguranța contractului
 
-## Pe scurt / Overview
+## Pe scurt
 
-A holding provides hints conditioned on legality, remaining need and public information. [Game rules](../game/ATF_RulesEn.md) define legal actions; the catalog describes holdings with no direct runtime influence.
+O combinație de cărți oferă indicii condiționate de legalitate, necesar și informația publică. [Regulile jocului](../game/ATF_RulesEn.md) definesc acțiunile permise; catalogul descrie combinațiile, fără influență directă la execuție.
 
-## From observation to hint
+## De la observație la indiciu
 
 ```mermaid
 flowchart LR
-    OBS[Own and public cards] -->|feeds| EXTRACT[Extractor]
-    EXTRACT -->|classifies| PATTERN[Pattern and unit]
-    GAMES[Development games] -->|descriptively calibrates| PATTERN
-    PATTERN -->|requires a consumer and| GATE[Separate qualification]
+    OBS[Mână și cărți publice] -->|alimentează| EXTRACT[Extractor]
+    EXTRACT -->|clasifică| PATTERN[Tipar și unitate]
+    GAMES[Partide de dezvoltare] -->|calibrează descriptiv| PATTERN
+    PATTERN -->|necesită consumator și| GATE[Calificare separată]
 ```
 
 <details>
-<summary>Legend: description, measurement and activation</summary>
+<summary>Legendă: descriere, măsurare și activare</summary>
 
-The [extractor](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) identifies ranks, covers and higher cards still unseen. The [calibrator](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) measures outcomes from games already played by particular policies; neither operation activates a Hard rule.
+[Extractorul](../../whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.mjs) identifică ranguri, acoperiri și cărți superioare încă nevăzute. [Calibratorul](../../whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs) măsoară rezultatele unor politici deja jucate; niciuna dintre operații nu activează o regulă în Greu.
 
 </details>
 
-## Hint units
+## Unitatea indiciului
 
-`hint_scope` defines what `trick_hint` describes. Values with different units are neither additive nor interchangeable probabilities.
+`hint_scope` definește ce descrie `trick_hint`. Valorile cu unități diferite nu se adună și nu reprezintă probabilități interschimbabile.
 
-| Field or scope | Meaning and limitation |
+| Câmp sau domeniu | Semnificație și limită |
 |---|---|
-| `HIGHEST_CARD_CAPTURE` | Indicator that the seat played its highest card of the suit in a trick it won. This does not count all tricks won through that suit. |
-| `SUIT_TRICKS` | Number of tricks won by the seat through cards of that suit, separate from capture of its highest card. |
-| Exact-contract rate | The whole-hand result for that seat; repeating it across categories does not create independent outcomes. |
-| Support and weighting | Describe grouped observations and shrinkage towards the initial hint. They are neither calibrated win probabilities nor runtime coefficients. |
+| `HIGHEST_CARD_CAPTURE` | Indicatorul că locul a jucat cea mai mare carte proprie a culorii într-o levată câștigată. Nu numără toate levatele câștigate prin acea culoare. |
+| `SUIT_TRICKS` | Numărul levatelor câștigate de loc prin cărți din acea culoare, separat de captura cărții maxime. |
+| Rata contractului exact | Rezultatul întregii mâini pentru acel loc; repetarea lui în categorii nu creează rezultate independente. |
+| Suport și ponderare | Descriu observațiile grupate și apropierea de indiciul inițial. Nu sunt probabilități calibrate de câștig sau coeficienți de execuție. |
 
-The [YAML catalog](../../config/whist-hand-patterns.yaml) remains `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`. Overlapping patterns cannot give repeated credit to the same card.
+[Catalogul YAML](../../config/whist-hand-patterns.yaml) păstrează statutul `RESEARCH_CATALOG_NOT_RUNTIME_CONFIGURATION`. Tiparele suprapuse nu acordă credit repetat aceleiași cărți.
 
-## Interpretation rules
+## Reguli de interpretare
 
-- **Honor promotion:** low covers may help consume higher ranks; lead, entries and ruffing can prevent a trick.
-- **Sequences and length:** assess honors jointly; rank, card count and attainable suit tricks are different quantities.
-- **Legal exit:** a side honor can be discarded when both the led suit and trump are absent; mandatory trump can force an unwanted trick.
-- **Public memory:** turned cards, completed-trick cards and cards still on the table have different effects.
-- **Objective:** individual remaining need and opportunities follow the [decision model](ATF_DecisionModel.md#starea-care-schimbă-decizia); aggregate auction imbalance does not replace them.
+- **Promovarea unui onor:** cărțile mici pot ajuta consumarea rangurilor superioare; poziția, intrările și tăierile pot împiedica realizarea levatei.
+- **Secvențe și lungime:** onorurile se evaluează împreună; rangul, numărul cărților și numărul levatelor posibile sunt mărimi distincte.
+- **Ieșire legală:** un onor lateral poate fi aruncat când lipsesc culoarea cerută și atuul; atuul obligatoriu poate impune o levată nedorită.
+- **Memorie publică:** cartea întoarsă, cărțile levatelor încheiate și cărțile încă pe masă au efecte diferite.
+- **Obiectiv:** necesarul individual și oportunitățile rămase se citesc din [modelul deciziei](ATF_DecisionModel.md#starea-care-schimbă-decizia); dezechilibrul licitației la nivelul mesei nu le înlocuiește.
 
-## Extractor input
+## Intrarea extractorului
 
-| JSON field for `describe` | Contract |
+| Câmp JSON pentru `describe` | Contract |
 |---|---|
-| `hand` | Distinct own cards: rank `A`, `K`, `Q`, `J`, `10` or `2`–`9`, followed by `S`, `H`, `C` or `D`; within the reduced deck. |
-| `trump` | `S`, `H`, `C`, `D` or `NT`. |
-| `players` | Integer from 3 to 6; defaults to 4. |
-| `handSize` | Declared initial size from 1 to 8; omission uses the supplied hand length. |
-| `publicOut` | Public cards excluded from the unknown pool; defaults to an empty list and cannot intersect the own hand. |
+| `hand` | Cărți proprii distincte: rang `A`, `K`, `Q`, `J`, `10` sau `2`–`9`, urmat de `S`, `H`, `C` ori `D`; compatibile cu pachetul redus. |
+| `trump` | `S`, `H`, `C`, `D` sau `NT`. |
+| `players` | Întreg între 3 și 6; implicit 4. |
+| `handSize` | Mărime inițială declarată între 1 și 8; absența folosește lungimea mâinii furnizate. |
+| `publicOut` | Cărți publice excluse din bazinul necunoscut; implicit lista goală, fără intersecție cu mâna proprie. |
 
-The extractor checks these local card and parameter constraints. The caller owns observation consistency and the legal prefix; describing a holding does not validate an entire match.
+Extractorul verifică aceste limite locale ale cărților și parametrilor. Apelantul deține coerența observației și prefixul legal; descrierea unei mâini nu validează singură o partidă completă.
 
-From the repository root, with Node.js and an explicitly selected external input:
+Din rădăcina proiectului, cu Node.js și un fișier extern ales explicit:
 
 ```powershell
 $inputFile = Read-Host 'External JSON file containing the permitted observation'
 node whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns-cli.mjs describe $inputFile
 ```
 
-## Descriptive calibration
+## Calibrare descriptivă
 
-The calibrator reads all JSON files under `games/development` in the supplied archive and validates rules and scoring first. It does not automatically resolve the active-corpus pointer; select the input and its cost explicitly.
+Calibratorul citește toate fișierele JSON din `games/development` ale arhivei furnizate și validează mai întâi regulile și scorul. Nu rezolvă automat pointerul corpusului activ; intrarea și costul trebuie alese explicit.
 
-1. Reject games from another partition and deduplicate repeated action traces.
-2. Group observations by initial distribution, seat and suit; average policy variations within each unit first.
-3. Aggregate the groups while retaining separate highest-card capture, suit tricks and exact-contract metrics; grouping does not prove statistical independence across categories.
-4. Write the calibrated YAML, full context inventory, source hashes and comparison receipt into a new directory.
+1. Refuză jocurile din altă partiție și elimină urmele de acțiuni repetate.
+2. Grupează observațiile după distribuția inițială, loc și culoare; mediază mai întâi variațiile politicilor în interiorul fiecărei unități.
+3. Agregă grupurile păstrând separat captura maximului, levatele culorii și contractul exact; gruparea nu demonstrează independență statistică între categorii.
+4. Scrie într-un director nou YAML-ul calibrat, inventarul complet al contextelor, hash-urile surselor și înregistrarea comparațiilor.
 
 ```powershell
 $archive = Read-Host 'External archive for development calibration'
@@ -76,16 +76,16 @@ $output = Read-Host 'New external output directory; its parent must exist'
 node whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.mjs $archive $output
 ```
 
-Observed frequencies depend on the generating policy and do not estimate an unplayed alternative action. Thresholds and support come from the catalog and implementation; generated files stay external with zero runtime influence.
+Frecvențele observate depind de politica ce a produs jocurile și nu estimează efectul unei acțiuni alternative nejucate. Pragurile și suportul se citesc din catalog și implementare; fișierele generate rămân externe, fără influență la execuție.
 
-## Verification and promotion
+## Verificare și promovare
 
-Components use constructed inputs for honors, distinct units, duplicates and cluster averaging:
+Componentele folosesc intrări construite pentru onoruri, unități distincte, duplicate și medierea grupurilor:
 
 ```powershell
 node --test whist-lab-app/ai-lab/tools/patterns/whist-hand-patterns.test.mjs whist-lab-app/ai-lab/tools/patterns/whist-heuristic-calibrate.test.mjs
 ```
 
-The [configuration contract](ATF_RulesConfiguration.md) owns the consumer and activation domain; the [offline protocol](../learning/README.md) owns promotion. Hints, simulation estimates and finite certificates provide different levels of guarantee.
+[Configurarea regulilor](ATF_RulesConfiguration.md) deține consumatorul și domeniul activării; [protocolul offline](../learning/README.md) deține promovarea. Indiciile, estimările simulate și certificatele finite oferă niveluri de garanție diferite.
 
-[Ghid în română](ATF_HandPatternsRo.md) · [Contextual play](ATF_ContextualPlay.md) · [Corpus integrity](../learning/ATF_Corpus.md)
+[Ghid complementar](ATF_HandPatternsRo.md) · [Joc contextual](ATF_ContextualPlay.md) · [Integritatea corpusului](../learning/ATF_Corpus.md)

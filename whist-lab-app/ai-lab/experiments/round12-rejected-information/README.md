@@ -32,8 +32,8 @@ Două lumi ascunse compatibile cu aceeași observație nu pot autoriza alegeri p
 ## Ordinea optimizării
 
 ```text
-alegere disponibilă actorului = argmax_acțiune sumă_lume p(lume) × U(acțiune, lume)
-valoare cu informație în plus = sumă_lume p(lume) × max_acțiune U(acțiune, lume)
+actor choice = argmax_action sum_world p(world) × U(action, world)
+value with extra information = sum_world p(world) × max_action U(action, world)
 ```
 
 Maximizarea separată după consultarea fiecărei lumi poate produce o valoare inaccesibilă unei singure alegeri publice. Utilitatea, ponderile și continuarea sunt ipoteze distincte; formula nu afirmă că un rollout este calibrat ori o căutare este completă.

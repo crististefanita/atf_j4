@@ -18,6 +18,12 @@ final class DocumentedModuleMap {
     private DocumentedModuleMap() { }
 
     static List<String> inspect(Path root, String readme) throws Exception {
+        boolean english = atf.tests.documentation.policy.DocumentationContentPolicy.documentationLanguage(root).equals("en");
+        if (!english) readme = readme.replace("## Harta modulelor", "## Module map")
+                .replace("### Motorul și platformele", "### Engine and platforms")
+                .replace("| Build | Module declarate |", MODULES)
+                .replace("| Build | Consumator | Configurație | Dependențe directe |", DEPENDENCIES)
+                .replace("| fixture-uri comune |", "| shared fixtures |");
         Path gradle = root.resolve("whist-lab-app");
         var maven = mavenModules(root);
         var android = gradleModules(gradle.resolve("settings.gradle"));

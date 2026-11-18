@@ -69,13 +69,24 @@ Confruntați rolurile din hartă cu [reactorul Maven](../../pom.xml), [modulele 
 
 ## Limbă, stil și proză
 
-- Documentația este în engleză pe `main` și în română cu diacritice pe `main_RO`, la aceleași căi. Ghidurile de reguli își păstrează sufixele de limbă. Cele două ediții se mențin sincronizate.
+- Toate documentele Markdown sunt în engleză pe `main` și în română cu diacritice pe `main_RO`, la aceleași căi. Numele stabile ale fișierelor și identificatorii API își păstrează forma. Nivelurile titlurilor, forma tabelelor, topologia diagramelor, destinațiile legăturilor și comenzile se mențin sincronizate.
 - Titlurile, tabelele, diagramele și rezumatele pliabile folosesc limba documentului.
 - Identificatorii API, comenzile și etichetele originale citate își păstrează forma exactă.
 - Folosiți un singur titlu principal, o secțiune `Overview` în engleză sau `Pe scurt` în română, titluri progresive și liste cu marcatorul `-`.
 - Un paragraf vizibil are cel mult trei propoziții; responsabilitățile și comparațiile se exprimă prin forma care le face ușor de parcurs.
 - Fonturile și culorile aparțin aplicației care afișează Markdown; documentele folosesc structură semantică, fără CSS local.
 - Fiecare bloc de cod are limbajul declarat, iar fiecare bloc pliabil are rezumat explicit și delimitare echilibrată.
+
+### Prezentarea ediției și dovezile originale
+
+Ghidurile edițiilor folosesc limba ramurii la căile canonice. Traducerea prezentării nu schimbă APK-ul, rezultatele testelor, identitatea sursei sau rapoartele canonice de audit.
+
+| Responsabilitate | Verificare |
+|---|---|
+| Textul publicării originale | `documentation-provenance.json` fixează căile documentelor originale, dimensiunile și SHA-256 la un commit Git |
+| Prezentarea tradusă | Guvernanța limbii verifică fiecare document Markdown, inclusiv celulele tabelelor, etichetele legăturilor și textele diagramelor |
+| Inventarul livrării | Reobservă hash-urile după schimbarea prezentării; păstrează toate faptele despre calificare și binare |
+| Ediția română | Păstrează aceeași structură și aceleași exemple tehnice; verifică revizia EN/RO fixată |
 
 ## Diagrame și tabele
 

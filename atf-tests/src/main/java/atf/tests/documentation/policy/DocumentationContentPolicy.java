@@ -62,11 +62,12 @@ public final class DocumentationContentPolicy {
         String source = String.join("\n", lines);
         boolean english = context.language().equals("en");
         boolean ownerGuide = DocumentationInventory.isReadme(file) || DocumentationInventory.isLibraryGuide(root, file);
-        if (ownerGuide && !DocumentationInventory.isReleaseEvidence(root, file)
-                && (english ? hasRomanianReadmeProse(source) : hasEnglishReadmeProse(source))) {
+        int foreignLine = DocumentationLanguageRules.firstForeignLine(source, context.language());
+        if (foreignLine > 0) {
             String required = english ? "English" : "Romanian";
-            violations.add(violation("DOC-README-LANGUAGE", root, file, 1, "README contains prose outside " + required,
-                    "owner READMEs follow the configured documentation language",
+            violations.add(violation(ownerGuide ? "DOC-README-LANGUAGE" : "DOC-DOCUMENT-LANGUAGE", root, file, foreignLine,
+                    "document contains prose outside " + required,
+                    "all Markdown documents follow the configured branch language",
                     "translate the explanations and keep API names intact"));
         }
         String relative = root.relativize(file).toString().replace('\\', '/');
@@ -132,27 +133,11 @@ public final class DocumentationContentPolicy {
 
 
     public static boolean hasEnglishReadmeProse(String source) {
-        String prose = source.replaceAll("(?s)```.*?```", "").replaceAll("`[^`]*`", "").replaceAll("\\]\\([^)]*\\)", "]");
-        if (java.util.regex.Pattern.compile("(?im)^#{1,6} (?:Overview|Quick start|Getting started|Captured UI timing|Usage|Testing|Architecture|Requirements|Shared platform)\\b")
-                .matcher(prose).find()) return true;
-        var words = java.util.regex.Pattern.compile("(?i)\\b(the|this|these|that|with|without|and|must|should|their|each|after|before|from|where|when|which|remain|remains)\\b");
-        for (String paragraph : prose.split("\\n\\s*\\n")) {
-            long signals = words.matcher(paragraph).results().map(match -> match.group().toLowerCase(java.util.Locale.ROOT)).distinct().count();
-            if (signals >= 4) return true;
-        }
-        return false;
+        return DocumentationLanguageRules.firstForeignLine(source, "ro") > 0;
     }
 
     public static boolean hasRomanianReadmeProse(String source) {
-        String prose = source.replaceAll("(?s)```.*?```", "").replaceAll("`[^`]*`", "")
-                .replaceAll("\\]\\([^)]*\\)", "]");
-        if (Pattern.compile("(?im)^#{1,6} (?:Pe scurt|Harta modulelor|Verificare și ghiduri)\\b").matcher(prose).find()) return true;
-        var words = Pattern.compile("(?iU)\\b(și|sau|este|sunt|pentru|fără|din|dacă|fiecare|înainte|după|aceste|păstrează|acest)\\b");
-        for (String paragraph : prose.split("\\n\\s*\\n")) {
-            long signals = words.matcher(paragraph).results().map(match -> match.group().toLowerCase(java.util.Locale.ROOT)).distinct().count();
-            if (signals >= 4) return true;
-        }
-        return false;
+        return DocumentationLanguageRules.firstForeignLine(source, "en") > 0;
     }
 
     private DocumentationContentPolicy() { }

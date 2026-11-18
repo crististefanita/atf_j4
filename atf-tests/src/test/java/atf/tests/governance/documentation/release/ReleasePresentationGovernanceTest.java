@@ -50,7 +50,8 @@ class ReleasePresentationGovernanceTest {
                 var edition = new Edition(version, asset, asset + ".sha256", evidence,
                         presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                         java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
-                AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.template.md"))), folder.toString());
+                String language = atf.tests.documentation.policy.DocumentationContentPolicy.documentationLanguage(root);
+                AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.template.md")), language, true), folder.toString());
                 AuditedAssertions.assertFalse(Files.exists(folder.resolve("release-notes.md")), "Unbound notes remain a template");
                 releases++;
                 continue;
@@ -74,7 +75,7 @@ class ReleasePresentationGovernanceTest {
                         presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                         java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false)
                                 .map(JsonNode::asText).toList());
-                AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
+                assertPublishedNotes(root, gitRoot, folder, edition);
                 AuditedAssertions.assertFalse(Files.exists(folder.resolve("github-release.json")),
                         "A Site publication does not invent a GitHub release record");
                 releases++;
@@ -113,7 +114,7 @@ class ReleasePresentationGovernanceTest {
             var edition = new Edition(version, asset, asset + ".sha256", evidence,
                     presentation.required("mode").asText(), presentation.path("previousVersion").asText(null),
                     java.util.stream.StreamSupport.stream(presentation.required("points").spliterator(), false).map(JsonNode::asText).toList());
-            AuditedAssertions.assertEquals(List.of(), violations(edition, Files.readString(folder.resolve("release-notes.md"))), folder.toString());
+            assertPublishedNotes(root, gitRoot, folder, edition);
             releases++;
         }
         AuditedAssertions.assertTrue(releases > 0, "The curated handoff population must not be empty");
@@ -182,8 +183,40 @@ class ReleasePresentationGovernanceTest {
         AuditedAssertions.assertTrue(violations(edition, notes(edition).replace("## Descărcare", "## Download")).contains("NOTE-SECTIONS"));
     }
 
+    @Test void translatedPresentationKeepsTheReleaseStructureAssetsAndOriginalPointCount() {
+        var edition = sample("summary", null);
+        String english = "# Whist 1.2.0\n\n" + notes(edition).replace("Descărcare", "Download")
+                .replace("Pe scurt", "Overview").replace("Documentație", "Documentation")
+                .replace("Masă încadrată.", "Table fits the viewport.");
+        AuditedAssertions.assertEquals(List.of(), violations(edition, english, "en", false));
+        AuditedAssertions.assertTrue(violations(edition, english.replace("- Table fits", "- Extra change.\n- Table fits"), "en", false).contains("NOTE-POINTS"));
+        AuditedAssertions.assertTrue(violations(edition, english.replace(edition.asset(), "https://example.invalid/Game.apk"), "en", false).contains("NOTE-ASSET"));
+        AuditedAssertions.assertTrue(violations(edition, english.replace("## Overview", "## Changes"), "en", false).contains("NOTE-SECTIONS"));
+    }
+
+    private static void assertPublishedNotes(Path root, Path gitRoot, Path folder, Edition edition) throws Exception {
+        String current = Files.readString(folder.resolve("release-notes.md"));
+        String language = atf.tests.documentation.policy.DocumentationContentPolicy.documentationLanguage(root);
+        Path receipt = folder.resolve("documentation-provenance.json");
+        if (!Files.exists(receipt)) {
+            AuditedAssertions.assertEquals(List.of(), violations(edition, current, language, true), folder.toString());
+            return;
+        }
+        String originalCommit = JSON.readTree(receipt.toFile()).required("sourceCommit").asText();
+        String original = ReleaseCommitEvidence.publishedNotes(gitRoot, edition.version(), originalCommit);
+        AuditedAssertions.assertEquals(List.of(), violations(edition, original), "Original publication contract: " + folder);
+        AuditedAssertions.assertEquals(List.of(), violations(edition, current, language, false), "Translated presentation: " + folder);
+    }
+
     private static List<String> violations(Edition edition, String markdown) {
+        return violations(edition, markdown, "ro", true);
+    }
+
+    private static List<String> violations(Edition edition, String markdown, String language, boolean exactPoints) {
         var errors = new ArrayList<String>();
+        boolean english = language.equals("en");
+        String changes = english ? edition.mode().equals("changes") ? "Changes since " + edition.previous() : "Overview"
+                : edition.changesHeading();
         if (!List.of("summary", "changes").contains(edition.mode())) errors.add("NOTE-MODE");
         if (edition.mode().equals("changes") && (edition.previous() == null || edition.previous().isBlank()
                 || edition.previous().equals(edition.version()))) errors.add("NOTE-BASELINE");
@@ -193,16 +226,18 @@ class ReleasePresentationGovernanceTest {
         for (String row : markdown.split("\\R")) {
             String line = row.strip();
             if (line.isBlank()) continue;
+            if (current == null && sections.isEmpty() && line.equals("# Whist " + edition.version())) continue;
             if (line.startsWith("## ")) {
                 current = new ArrayList<>();
                 if (sections.put(line.substring(3), current) != null) errors.add("NOTE-SECTIONS");
             } else if (current == null || !line.startsWith("- ")) errors.add("NOTE-BULLETS");
             else current.add(line.substring(2));
         }
-        if (!new ArrayList<>(sections.keySet()).equals(List.of("Descărcare", edition.changesHeading(), "Documentație")))
+        if (!new ArrayList<>(sections.keySet()).equals(List.of(english ? "Download" : "Descărcare", changes, english ? "Documentation" : "Documentație")))
             errors.add("NOTE-SECTIONS");
         if (sections.values().stream().anyMatch(List::isEmpty)) errors.add("NOTE-BULLETS");
-        if (!sections.getOrDefault(edition.changesHeading(), List.of()).equals(edition.points()) || edition.points().isEmpty())
+        var points = sections.getOrDefault(changes, List.of());
+        if ((exactPoints ? !points.equals(edition.points()) : points.size() != edition.points().size()) || edition.points().isEmpty())
             errors.add("NOTE-POINTS");
         var destinations = new ArrayList<String>();
         var matcher = LINKS.matcher(markdown);

@@ -26,7 +26,7 @@ Copiați perechile JAR/POM în lib; din proiectul nou, în TMP:
 ```powershell
 Get-ChildItem lib\*.pom | ForEach-Object {
     mvn org.apache.maven.plugins:maven-install-plugin:3.2.0:install-file "-Dfile=$([IO.Path]::ChangeExtension($_.FullName,'jar'))" "-DpomFile=$($_.FullName)" -DgeneratePom=false
-    if ($LASTEXITCODE) { throw "Instalare eșuată: $($_.Name)" }
+    if ($LASTEXITCODE) { throw "Installation failed: $($_.Name)" }
 }
 ```
 

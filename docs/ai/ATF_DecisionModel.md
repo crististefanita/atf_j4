@@ -78,8 +78,8 @@ Modelul de o carte are [implementare în motor](../../whist-lab-app/game-core/sr
 Pentru alternativele simulate, vectorul terminal conține punctele proprii, scorul rivalului principal, indicatorul contractului exact și numărul ratărilor adverse:
 
 ```text
-estimare(acțiune) = suma ponderată a utilităților / suma ponderilor
-utilitate_mixtă = (1 − α) × utilitate_rollout + α × utilitate_MaxN
+estimate(action) = weighted_sum_utilities / sum_weights
+mixed_utility = (1 − α) × rollout_utility + α × MaxN_utility
 ```
 
 - Agregarea simulărilor generale folosește ponderi egale ale lumilor generate; samplerul nu este dovedit uniform peste toate distribuirile fezabile.

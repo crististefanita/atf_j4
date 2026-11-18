@@ -1,88 +1,88 @@
-# HELP — HOW TO PLAY
+# AJUTOR — CUM SE JOACĂ
 
-## Pe scurt / Overview
+## Pe scurt
 
-This guide covers Romanian Whist in Whist Lab, from bidding to final scoring.
+Ghidul explică Whist românesc în Whist Lab, de la licitare la scorul final.
 
-## Objective
+## Scopul jocului
 
-- In Romanian Whist, win exactly the number of tricks you bid.
-- A hand is one complete deal; a trick contains one card from each player.
-- The highest total score wins; ties remain ties.
+- În Whist românesc trebuie să câștigi exact câte levate ai licitat.
+- O mână este o distribuire completă; o levată cuprinde câte o carte de la fiecare jucător.
+- Câștigă scorul total cel mai mare; egalitățile se păstrează.
 
-## Players and cards
+## Jucători și cărți
 
-- There are 3–6 players.
-- Keep the highest 8 × player count cards: ranks 9 and above for 3 players, 7 for 4, 5 for 5, 3 for 6.
-- Ace is highest, then K, Q, J, 10 and descending numbers.
-- Every player plays individually.
+- Joacă 3–6 persoane.
+- Se păstrează cele mai mari 8 × numărul jucătorilor cărți: la 3 jucători de la 9, la 4 de la 7, la 5 de la 5, la 6 de la 3.
+- Asul este cel mai mare, apoi K, Q, J, 10 și valorile descrescătoare.
+- Fiecare jucător joacă pentru sine.
 
-## Hand schedule and trump
+## Ordinea mâinilor și atuul
 
-- With N players: N one-card hands, one each of 2, 3, 4, 5, 6, 7 cards, N eight-card hands, then 7, 6, 5, 4, 3, 2 and N one-card hands.
-- The dealer rotates.
-- An undealt face-up card determines trump; eight-card hands have no trump.
-- Four players play 24 hands and 94 tricks.
+- Cu N jucători: N mâini de o carte, câte una de 2, 3, 4, 5, 6, 7 cărți, N mâini de 8, apoi 7, 6, 5, 4, 3, 2 și N mâini de o carte.
+- Împărțitorul se rotește.
+- O carte neîmpărțită întoarsă stabilește atuul; mâinile de 8 sunt fără atu.
+- La 4 jucători sunt 24 de mâini și 94 de levate.
 
-## Bidding
+## Licitarea
 
-- Bid from 0 to the hand size.
-- The player left of the dealer bids first, proceeding clockwise.
-- Only the final bid is forbidden when it would make the total bids equal the hand size.
-- Example: at 4 cards, after 0, 1, 1 the last player cannot bid 2.
-- An intermediate total of 4 is allowed.
+- Licitezi între 0 și numărul de cărți.
+- Începe jucătorul din stânga împărțitorului; ordinea continuă circular.
+- Numai ultima licitație este interzisă dacă ar face suma tuturor licitațiilor egală cu numărul de cărți.
+- Exemplu: la 4 cărți, după 0, 1, 1, ultimul nu poate spune 2.
+- O sumă intermediară egală cu 4 este permisă.
 
-## Follow suit
+## Obligația de culoare
 
-- The leader may play any card.
-- If you hold the led suit, you must follow it, even when another player has already trumped.
-- You do not have to beat a higher card of that suit.
-- Example: hearts led, holding 7 of hearts and ace of spades trump, you must play 7 of hearts.
+- Primul jucător poate pune orice carte.
+- Dacă ai culoarea cerută, trebuie să o joci, chiar dacă altcineva a tăiat deja cu atu.
+- Nu ești obligat să depășești o carte mai mare din culoare.
+- Exemplu: la cupă cerută, cu 7 de cupă și as de pică atu, trebuie să pui 7 de cupă.
 
-## Mandatory trump when void
+## Atu obligatoriu când nu ai culoarea
 
-- If you are void in the led suit and hold trump, you must play trump.
-- Any trump is allowed; overtrumping is not compulsory.
-- With neither the led suit nor trump you may discard any card.
-- At no trump, being void lets you discard any card.
+- Dacă nu ai culoarea cerută și ai atu, trebuie să pui atu.
+- Poți pune orice atu; nu este obligatoriu să supratai un atu deja jucat.
+- Dacă nu ai nici culoarea cerută, nici atu, poți arunca orice carte.
+- Fără atu, când nu ai culoarea cerută poți arunca orice carte.
 
-## Trick winner
+## Cine ia levata
 
-- The highest trump wins.
-- If no trump was played, the highest card of the led suit wins.
-- An off-suit ace cannot beat the led suit.
-- The winner leads the next trick.
-- Each card is played exactly once.
+- Cel mai mare atu câștigă.
+- Dacă nu s-a jucat atu, câștigă cea mai mare carte din culoarea cerută.
+- Un as din altă culoare nu bate culoarea cerută.
+- Câștigătorul începe levata următoare.
+- Fiecare carte se joacă o singură dată.
 
-## Hand scoring
+## Scorul mâinii
 
-- Exact contract: 5 + tricks won.
-- Missed contract: minus the absolute difference between bid and tricks won, whether over or under.
-- Bid 0 / win 0 = +5; 2 / 2 = +7; 2 / 4 = −2; 4 / 2 = −2.
-- Totals may be negative.
-- Score each hand exactly once.
+- Contract exact: 5 + levate câștigate.
+- Contract ratat: minus diferența absolută dintre licitat și câștigat, indiferent dacă ai luat prea multe sau prea puține.
+- 0 licitat / 0 luat = +5; 2 / 2 = +7; 2 / 4 = −2; 4 / 2 = −2.
+- Scorul poate fi negativ.
+- Mâna se punctează o singură dată.
 
-## Optional five-hand series
+## Serii opționale de cinci mâini
 
-- Before starting, choose ±5 or ±10 points for series (default ±10), or disable series.
-- Only 2–8-card hands advance a series.
-- The fifth exact contract adds the selected value; the fifth miss subtracts the same value.
-- Reset after awarding.
-- A one-card hand does not advance a matching series, but an opposite outcome breaks it.
-- This bonus is separate from the 5 points awarded for each exact contract.
+- În meniu alegi înaintea jocului ±5 sau ±10 puncte pentru serii (implicit ±10), ori dezactivezi seriile.
+- Numai mâinile de 2–8 cărți avansează seria.
+- Al cincilea contract exact adaugă valoarea aleasă; a cincea ratare scade aceeași valoare.
+- Seria se resetează după acordare.
+- O mână de o carte nu avansează o serie de același tip, dar un rezultat opus o întrerupe.
+- Bonusul de serie este separat de cele 5 puncte ale fiecărui contract exact.
 
-## Playing for zero
+## Joc la 0
 
-- In both Romanian variants, Allow playing for zero is checked by default at setup.
-- After the last hand is scored, including streaks, each player with an exact total of 0 gets a final score of 500.
-- All other totals stay the same.
-- History keeps the hand scores and explains the final conversion separately.
+- În ambele variante românești, opțiunea Permite joc la 0 este bifată implicit la pornire.
+- După punctarea ultimei mâini, inclusiv a seriilor, fiecare jucător cu total exact 0 primește 500 ca scor final.
+- Toate celelalte totaluri se păstrează.
+- Istoricul păstrează punctele pe mâini și explică separat transformarea finală.
 
-## Keep variants distinct
+## Nu confunda variantele
 
-- This guide describes standard Romanian Whist in Whist Lab.
-- In Oh Hell you may discard or trump when void, and score tricks plus 10 for an exact contract.
-- Long Romanian plays the 8–1–8 schedule: each hand size N in 1–8–1 becomes 9 − N.
-- Descending cycles spades, hearts, clubs, diamonds, no trump.
-- House rules may differ; tests here explicitly fix the profile and bonus.
+- Acest ghid descrie Whist românesc standard din Whist Lab.
+- La Oh Hell poți arunca sau tăia când nu ai culoarea, iar scorul este levate +10 pentru contract exact.
+- Long Romanian joacă programul 8–1–8: fiecare mărime de mână N din 1–8–1 devine 9 − N.
+- Descending rotește pică, cupă, treflă, caro, fără atu.
+- Regulile casei pot diferi; aici testele fixează explicit profilul și bonusul.
 

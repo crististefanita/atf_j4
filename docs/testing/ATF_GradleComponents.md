@@ -61,7 +61,7 @@ Argumentele constructorului sau ale salvării sunt proiectate înaintea apelului
 
 ## Proprietatea publicării
 
-O invocare JUnit păstrează identitatea parametrizării și verdictul original. Statement-ul măsurat include fixture-urile before/after ale JUnit 4; publicarea este în afara acestui interval. Sesiunea Reporting se creează, folosește și închide pe același fir de publicare; testele nu se mută pe acel fir.
+O invocare JUnit păstrează identitatea parametrizării și verdictul original. Statement-ul măsurat include fixture-urile `before`/`after` ale JUnit 4; publicarea este în afara acestui interval. Sesiunea Reporting se creează, folosește și închide pe același fir de publicare; testele nu se mută pe acel fir.
 
 Profilul publicării provine din contextul și comparațiile capturate înaintea randării. El este încorporat ca metadată de control și se confruntă cu proprietarii, fazele și rândurile HTML. Absența HTTP este explicită; o componentă logică nu primește transport sau acțiuni fictive pentru a satisface un validator implicit.
 

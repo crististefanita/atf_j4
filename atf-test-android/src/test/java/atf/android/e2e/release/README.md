@@ -52,7 +52,7 @@ $device = @{
 }
 .\scripts\Invoke-AtfAndroidDisposableUser.ps1 @device
 try {
-    # Rulați selecția Maven E2E cu whist.records.runRoot=$RunRoot.
+    # Run the Maven E2E selection with whist.records.runRoot=$RunRoot.
 } finally {
     $device.Phase = 'Teardown'
     $device.Remove('ApkPath'); $device.Remove('ApkSha256')
