@@ -23,17 +23,18 @@ import java.util.concurrent.Executors;
 public final class BrowserServer implements AutoCloseable {
     private static final int MAX_TABS = 32;
     private static final int MAX_FORM = 4096;
-    private static final Map<String, Asset> ASSETS = Map.of(
-            "/", new Asset("index.html", "text/html; charset=utf-8"),
-            "/table.css", new Asset("table.css", "text/css; charset=utf-8"),
-            "/table.mjs", new Asset("table.mjs", "text/javascript; charset=utf-8"),
-            "/viewport.mjs", new Asset("viewport.mjs", "text/javascript; charset=utf-8"),
-            "/profile.mjs", new Asset("profile.mjs", "text/javascript; charset=utf-8"),
-            "/auto-game.mjs", new Asset("auto-game.mjs", "text/javascript; charset=utf-8"),
-            "/records.mjs", new Asset("records.mjs", "text/javascript; charset=utf-8"),
-            "/hand-feedback.mjs", new Asset("hand-feedback.mjs", "text/javascript; charset=utf-8"),
-            "/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8"),
-            "/card-suits.woff2", new Asset("card-suits.woff2", "font/woff2"));
+    private static final Map<String, Asset> ASSETS = Map.ofEntries(
+            Map.entry("/", new Asset("index.html", "text/html; charset=utf-8")),
+            Map.entry("/table.css", new Asset("table.css", "text/css; charset=utf-8")),
+            Map.entry("/table.mjs", new Asset("table.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/viewport.mjs", new Asset("viewport.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/profile.mjs", new Asset("profile.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/auto-game.mjs", new Asset("auto-game.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/records.mjs", new Asset("records.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/hand-feedback.mjs", new Asset("hand-feedback.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/table-menu.mjs", new Asset("table-menu.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/collection.mjs", new Asset("collection.mjs", "text/javascript; charset=utf-8")),
+            Map.entry("/card-suits.woff2", new Asset("card-suits.woff2", "font/woff2")));
     private static final Asset MENU_FOOTER = new Asset("menu-footer.png", "image/png");
     private final Map<String, Asset> routes = new HashMap<>(ASSETS);
     private final HttpServer server;
