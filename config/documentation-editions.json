@@ -3,7 +3,7 @@
   "englishBranch": "main",
   "romanianBranch": "main_RO",
   "documents": 107,
-  "englishSha256": "7947b75f6812dd0416aa9f0f65b8a0bc3d527a5d1ad62d99451c3d5915b9ca5e",
-  "romanianSha256": "076ad44acc599ba68e9fcdf014e25df84b4f46b4c6abb850a95daed538d204f2",
-  "romanianCommit": "77b6edc71dd75dc956c224abbbe12527cc8f1a06"
+  "englishSha256": "7c5301aec6258d2d646effef4c52f482268f9fce657debf0e4b0bd650c5d86e2",
+  "romanianSha256": "a1e8f139d63ce67dadd4c273aa5333fd5ab353f7804a56cf63b66306b3ec06bd",
+  "romanianCommit": "eff98825165ae2b2b03fb7e2dedd4514280e6b2a"
 }
