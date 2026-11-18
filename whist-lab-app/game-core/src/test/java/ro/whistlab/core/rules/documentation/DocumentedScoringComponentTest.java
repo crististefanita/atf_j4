@@ -20,8 +20,16 @@ import static atf.gradle.audit.assertions.GradleAssertions.assertTrue;
 public class DocumentedScoringComponentTest extends GradleAuditedTest {
     private static final String DOCUMENT = "docs/game/README.md";
     private static final String HEADER = "| Regulă | 1–8–1 | 8–1–8 |";
+    private static final String ENGLISH_HEADER = "| Rule | 1–8–1 | 8–1–8 |";
     private static final String EXACT = "Puncte adăugate la levatele unui contract exact";
     private static final String LEGACY = "Penalizare de serie în profilul istoric asimetric";
+    private static final Map<String, String> ENGLISH_RULES = Map.of(
+            "Points added to tricks for an exact contract", EXACT,
+            "Points per trick of deviation", "Puncte pe levată de abatere",
+            "Eligible hands before a series payout", "Mâini eligibile pentru plata seriei",
+            "Bonus and penalty with option 5", "Bonus și penalizare la opțiunea 5",
+            "Bonus and penalty with option 10", "Bonus și penalizare la opțiunea 10",
+            "Series penalty in the historical asymmetric profile", LEGACY);
 
     @Test public void theRomanianScoringTableMatchesTheEngine() throws Exception {
         var table = readTable();
@@ -60,12 +68,51 @@ public class DocumentedScoringComponentTest extends GradleAuditedTest {
     }
 
     private static Table readTable() throws Exception {
-        var lines = Files.readAllLines(Path.of("..", "..", DOCUMENT));
-        int start = lines.indexOf(HEADER);
-        if (start < 0 || start != lines.lastIndexOf(HEADER)) {
-            throw new IllegalStateException(DOCUMENT + " requires one Romanian scoring table");
+        return readTable(Files.readAllLines(Path.of("..", "..", DOCUMENT)));
+    }
+
+    private static Table readTable(List<String> lines) {
+        var headers = java.util.stream.IntStream.range(0, lines.size())
+                .filter(index -> List.of(HEADER, ENGLISH_HEADER).contains(lines.get(index))).toArray();
+        if (headers.length != 1) {
+            throw new IllegalStateException(DOCUMENT + " requires exactly one scoring table in EN or RO");
         }
-        return new Table(start + 3, lines.stream().skip(start + 2L).takeWhile(line -> line.startsWith("|")).toList());
+        int start = headers[0];
+        boolean english = lines.get(start).equals(ENGLISH_HEADER);
+        var rows = lines.stream().skip(start + 2L).takeWhile(line -> line.startsWith("|"))
+                .map(line -> english ? canonicalEnglishRow(line) : line).toList();
+        return new Table(start + 3, rows);
+    }
+
+    private static String canonicalEnglishRow(String row) {
+        for (var entry : ENGLISH_RULES.entrySet()) {
+            String prefix = "| " + entry.getKey() + " |";
+            if (row.startsWith(prefix)) return "| " + entry.getValue() + " |" + row.substring(prefix.length());
+        }
+        return row;
+    }
+
+    @Test public void translatedTablesKeepValuesLineNumbersAndNegativeControls() {
+        var english = List.of("# Scoring", "", ENGLISH_HEADER, "|---|---:|---:|",
+                "| Points added to tricks for an exact contract | 5 | 5 |",
+                "| Points per trick of deviation | -1 | -1 |",
+                "| Eligible hands before a series payout | 5 | 5 |",
+                "| Bonus and penalty with option 5 | 5, -5 | 5, -5 |",
+                "| Bonus and penalty with option 10 | 10, -10 | 10, -10 |",
+                "| Series penalty in the historical asymmetric profile | -5 | -5 |");
+        var romanian = new java.util.ArrayList<>(english.stream().map(DocumentedScoringComponentTest::canonicalEnglishRow).toList());
+        romanian.set(2, HEADER);
+        GradleInputs.fixture("Equivalent localized tables with independent published values", "EN", english, "RO", romanian);
+        assertEquals("Translation keeps source line numbers and canonical rule identity", readTable(romanian), readTable(english));
+        assertTrue("Both languages independently agree with scoring", mismatches(readTable(english)).isEmpty());
+        var wrong = english.stream().map(row -> row.replace("| 5 | 5 |", "| 4 | 5 |")).toList();
+        assertTrue("English values are checked rather than replaced by translation", !mismatches(readTable(wrong)).isEmpty());
+        var duplicated = new java.util.ArrayList<>(english);
+        duplicated.add(HEADER);
+        atf.gradle.audit.assertions.GradleAssertions.assertThrows("A second table in another language is ambiguous",
+                IllegalStateException.class, () -> readTable(duplicated));
+        atf.gradle.audit.assertions.GradleAssertions.assertThrows("A missing table fails in either language",
+                IllegalStateException.class, () -> readTable(List.of("# Scoring")));
     }
 
     private static List<Comparison> mismatches(Table table) {

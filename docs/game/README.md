@@ -47,14 +47,14 @@ The configuration shall determine the rules applicable prior to distribution. Th
 
 ## Score and series
 
-| All right | 1–8–1 | 8–1–8 |
+| Rule | 1–8–1 | 8–1–8 |
 |---|---:|---:|
-| Points added to the tricks of an exact contract | 5 | 5 |
-| Distress trick points | -1 | -1 |
-| Hand eligible for payment of series | 5 | 5 |
-| Bonus and penalty under option 5 | 5, -5 | 5, -5 |
-| Bonus and penalty under option 10 | 10, -10 | 10, -10 |
-| Serial penalty in asymmetrical historical profile | -5 | -5 |
+| Points added to tricks for an exact contract | 5 | 5 |
+| Points per trick of deviation | -1 | -1 |
+| Eligible hands before a series payout | 5 | 5 |
+| Bonus and penalty with option 5 | 5, -5 | 5, -5 |
+| Bonus and penalty with option 10 | 10, -10 | 10, -10 |
+| Series penalty in the historical asymmetric profile | -5 | -5 |
 
 On a card, a result of the same type keeps the series. The opposite result interrupts the series. The payment of a series resets the meter.
 
